@@ -289,10 +289,7 @@ if (is_chromeos) {
       enable_input_discovery_for_gn_analyze = false
       source = "settings/os_settings_resources_vulcanized.grd"
 
-      deps += [
-        "//chrome/browser/resources/settings/chromeos:build",
-        "//chrome/browser/resources/settings/chromeos:build_polymer3",
-      ]
+      deps += [ "//chrome/browser/resources/settings/chromeos:build" ]
     } else {
       source = "settings/os_settings_resources.grd"
       deps += [

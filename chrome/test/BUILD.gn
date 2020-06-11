@@ -1391,7 +1391,6 @@ if (!is_android) {
       "../renderer/chrome_content_renderer_client_browsertest.cc",
       "../renderer/chrome_content_settings_agent_delegate_browsertest.cc",
       "../renderer/chrome_render_frame_observer_browsertest.cc",
-      "../renderer/media/cast_session_browsertest.cc",
       "../renderer/translate/per_frame_translate_agent_browsertest.cc",
       "../renderer/translate/translate_agent_browsertest.cc",
       "../renderer/translate/translate_script_browsertest.cc",
@@ -1642,7 +1641,6 @@ if (!is_android) {
         "../browser/extensions/api/braille_display_private/mock_braille_controller.cc",
         "../browser/extensions/api/braille_display_private/mock_braille_controller.h",
         "../browser/extensions/api/browsing_data/browsing_data_test.cc",
-        "../browser/extensions/api/cast_streaming/cast_streaming_apitest.cc",
         "../browser/extensions/api/cast_streaming/performance_test.cc",
         "../browser/extensions/api/command_line_private/command_line_private_apitest.cc",
         "../browser/extensions/api/commands/command_service_browsertest.cc",
@@ -4186,6 +4184,7 @@ test("unit_tests") {
       "../browser/ui/search/search_tab_helper_unittest.cc",
       "../browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model_unittest.cc",
       "../browser/ui/serial/serial_chooser_controller_unittest.cc",
+      "../browser/ui/tab_contents/chrome_web_contents_menu_helper_unittest.cc",
       "../browser/ui/tab_contents/chrome_web_contents_view_handle_drop_unittest.cc",
       "../browser/ui/tab_contents/tab_contents_iterator_unittest.cc",
       "../browser/ui/tab_sharing/tab_sharing_infobar_delegate_unittest.cc",
@@ -4907,7 +4906,6 @@ test("unit_tests") {
       "../renderer/extensions/i18n_hooks_delegate_unittest.cc",
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
       "../renderer/extensions/tabs_hooks_delegate_unittest.cc",
-      "../renderer/media/cast_ipc_dispatcher_unittest.cc",
       "../utility/image_writer/image_writer_unittest.cc",
     ]
 

@@ -28,11 +28,10 @@ function trusted_click(test, callback, container,
         button.style.display = "block";
         button.style.fontSize = "20px";
         button.style.padding = "10px";
-        button.onclick = test.step_func(function()
-        {
-            callback();
-            button.onclick = null;
-            container.removeChild(button);
+        button.onclick = () => test.step_func(() => {
+          callback();
+          button.onclick = null;
+          container.removeChild(button);
         });
         container.appendChild(button);
     }

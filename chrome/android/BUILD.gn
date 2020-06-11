@@ -1088,7 +1088,6 @@ android_library("chrome_test_java") {
     "//content/test/data/browsing_data/",
     "//content/test/data/android/authenticator.html",
     "//content/test/data/android/auto_downloads_permissions.html",
-    "//content/test/data/android/eme_permissions.html",
     "//content/test/data/android/geolocation.html",
     "//content/test/data/android/installedapp.html",
     "//content/test/data/android/media_permissions.html",

@@ -194,15 +194,10 @@ void AssistantClientImpl::OnExtendedAccountInfoUpdated(
 }
 
 void AssistantClientImpl::OnUserProfileLoaded(const AccountId& account_id) {
-  // Initialize Assistant when primary user profile is loaded so that it could
-  // be used in post oobe steps. OnUserSessionStarted() is too late
-  // because it happens after post oobe steps
-  Profile* user_profile =
-      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(user_profile))
-    return;
-
-  MaybeInit(user_profile);
+  if (!assistant_state_observer_.IsObservingSources() && !initialized_ &&
+      ash::AssistantState::Get()) {
+    assistant_state_observer_.Add(ash::AssistantState::Get());
+  }
 }
 
 void AssistantClientImpl::OnUserSessionStarted(bool is_primary_user) {
@@ -213,4 +208,13 @@ void AssistantClientImpl::OnUserSessionStarted(bool is_primary_user) {
       !command_line->HasSwitch(switches::kBrowserTest)) {
     MaybeStartAssistantOptInFlow();
   }
+}
+
+void AssistantClientImpl::OnAssistantFeatureAllowedChanged(
+    chromeos::assistant::AssistantAllowedState allowed_state) {
+  if (allowed_state != chromeos::assistant::AssistantAllowedState::ALLOWED)
+    return;
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  MaybeInit(profile);
 }

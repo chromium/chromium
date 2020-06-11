@@ -304,34 +304,42 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
   root->Set(keys::kIcons, std::move(icons));
   root->Set(keys::kLinkedAppIcons, std::move(linked_icons));
 
-  // Add shortcut icons and linked shortcut icon information.
+  // Add shortcuts icons and linked shortcut items information.
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenu) &&
       !web_app.shortcut_infos.empty()) {
-    // |linked_shortcut_icons| is a list of all shortcut icons included in the
-    // WebAppManifest. It includes the name and the index of the icon's
-    // corresponding shortcut, the icon's url, and its stated SquareSizePx in
-    // the WebAppManifest.
-    auto linked_shortcut_icons = std::make_unique<base::ListValue>();
-    for (size_t i = 0; i < web_app.shortcut_infos.size(); ++i) {
-      for (const auto& icon : web_app.shortcut_infos[i].shortcut_icon_infos) {
-        auto linked_shortcut_icon = std::make_unique<base::DictionaryValue>();
-        linked_shortcut_icon->SetString(keys::kWebAppLinkedShortcutItemName,
-                                        web_app.shortcut_infos[i].name);
-        linked_shortcut_icon->SetInteger(keys::kWebAppLinkedShortcutItemIndex,
-                                         i);
-        linked_shortcut_icon->SetString(keys::kWebAppLinkedShortcutIconURL,
-                                        icon.url.spec());
-        linked_shortcut_icon->SetInteger(keys::kWebAppLinkedShortcutIconSize,
-                                         icon.square_size_px);
-        linked_shortcut_icons->Append(std::move(linked_shortcut_icon));
+    // |linked_shortcut_items| is a list of all entries in the Web App
+    // Manifest's shortcuts member. It includes the name, url and list of
+    // shortcut_icon_infos associated with the shortcut item.
+    auto linked_shortcut_items = std::make_unique<base::ListValue>();
+    for (const auto& shortcut : web_app.shortcut_infos) {
+      auto linked_shortcut_item = std::make_unique<base::DictionaryValue>();
+      linked_shortcut_item->SetString(keys::kWebAppLinkedShortcutItemName,
+                                      shortcut.name);
+      linked_shortcut_item->SetString(keys::kWebAppLinkedShortcutItemURL,
+                                      shortcut.url.spec());
+      // Add shortcut item icons information.
+      auto shortcut_item_icons = std::make_unique<base::ListValue>();
+      for (const auto& icon : shortcut.shortcut_icon_infos) {
+        DCHECK(icon.url.is_valid());
+        std::unique_ptr<base::DictionaryValue> shortcut_item_icon(
+            new base::DictionaryValue());
+        shortcut_item_icon->SetString(keys::kWebAppLinkedShortcutItemIconURL,
+                                      icon.url.spec());
+        shortcut_item_icon->SetInteger(keys::kWebAppLinkedShortcutItemIconSize,
+                                       icon.square_size_px);
+        shortcut_item_icons->Append(std::move(shortcut_item_icon));
       }
+      linked_shortcut_item->Set(keys::kWebAppLinkedShortcutItemIcons,
+                                std::move(shortcut_item_icons));
+
+      linked_shortcut_items->Append(std::move(linked_shortcut_item));
     }
 
-    // |shortcuts| is a mapping of 'shortcut_icons' specified in the
+    // |shortcuts_icons| is a mapping of 'shortcuts_icons' specified in the
     // WebAppManifest and written to disk, keyed to each index in the
     // WebAppManifest's shortcuts vector.
-    auto shortcuts = std::make_unique<base::DictionaryValue>();
+    auto shortcuts_icons = std::make_unique<base::DictionaryValue>();
     for (const auto& shortcut_icon_bitmaps :
          web_app.shortcuts_menu_icons_bitmaps) {
       // |shortcut_icons| is a mapping of filepath keyed to SquareSizePx
@@ -339,7 +347,7 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
       // current shortcut in web_app.shortcut_infos. A shortcut in the
       // WebAppManifest can have different icons for different sizes.
       auto shortcut_icons = std::make_unique<base::DictionaryValue>();
-      std::string curr_icon = base::NumberToString(shortcuts->size());
+      std::string curr_icon = base::NumberToString(shortcuts_icons->size());
       for (const auto& icon : shortcut_icon_bitmaps) {
         std::string size = base::NumberToString(icon.first);
         std::string icon_path =
@@ -347,15 +355,15 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
                                curr_icon.c_str(), size.c_str());
         shortcut_icons->SetString(size, icon_path);
       }
-      shortcuts->SetDictionary(curr_icon, std::move(shortcut_icons));
+      shortcuts_icons->SetDictionary(curr_icon, std::move(shortcut_icons));
     }
 
-    if (!shortcuts->empty())
-      root->Set(keys::kWebAppShortcutIcons, std::move(shortcuts));
+    if (!shortcuts_icons->empty())
+      root->Set(keys::kWebAppShortcutIcons, std::move(shortcuts_icons));
 
-    if (!linked_shortcut_icons->empty()) {
-      root->Set(keys::kWebAppLinkedShortcutIcons,
-                std::move(linked_shortcut_icons));
+    if (!linked_shortcut_items->empty()) {
+      root->Set(keys::kWebAppLinkedShortcutItems,
+                std::move(linked_shortcut_items));
     }
   }
 

@@ -18,6 +18,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -98,10 +99,10 @@ class QuotaManagerTest : public testing::Test {
 
  protected:
   void ResetQuotaManager(bool is_incognito) {
-    quota_manager_ = new QuotaManager(is_incognito, data_dir_.GetPath(),
-                                      base::ThreadTaskRunnerHandle::Get().get(),
-                                      mock_special_storage_policy_.get(),
-                                      GetQuotaSettingsFunc());
+    quota_manager_ = base::MakeRefCounted<QuotaManager>(
+        is_incognito, data_dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get().get(),
+        mock_special_storage_policy_.get(), GetQuotaSettingsFunc());
     SetQuotaSettings(kDefaultPoolSize, kDefaultPerHostQuota,
                      is_incognito ? INT64_C(0) : kMustRemainAvailableForSystem);
 

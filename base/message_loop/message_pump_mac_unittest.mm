@@ -31,6 +31,10 @@ namespace base {
 
 class TestMessagePumpCFRunLoopBase {
  public:
+  bool IsTimerInvalidationEnabled() {
+    return MessagePumpCFRunLoopBase::IsTimerInvalidationEnabled();
+  }
+
   bool TestCanInvalidateTimers() {
     return MessagePumpCFRunLoopBase::CanInvalidateCFRunLoopTimers();
   }
@@ -55,6 +59,8 @@ class TestMessagePumpCFRunLoopBase {
 
 TEST(MessagePumpMacTest, TestCanInvalidateTimers) {
   TestMessagePumpCFRunLoopBase message_pump_test;
+  if (!message_pump_test.IsTimerInvalidationEnabled())
+    return;
 
   // Catch whether or not the use of private API ever starts failing.
   EXPECT_TRUE(message_pump_test.TestCanInvalidateTimers());
@@ -62,6 +68,8 @@ TEST(MessagePumpMacTest, TestCanInvalidateTimers) {
 
 TEST(MessagePumpMacTest, TestInvalidatedTimerReuse) {
   TestMessagePumpCFRunLoopBase message_pump_test;
+  if (!message_pump_test.IsTimerInvalidationEnabled())
+    return;
 
   CFRunLoopTimerContext timer_context = CFRunLoopTimerContext();
   timer_context.info = &message_pump_test;

@@ -11,8 +11,8 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
+#include "chrome/browser/chromeos/input_method/ui/infolist_window.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/chromeos/ime/infolist_window.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {

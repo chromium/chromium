@@ -212,6 +212,15 @@ void ClassicPendingScript::DisposeInternal() {
   integrity_failure_ = false;
 }
 
+bool ClassicPendingScript::IsEligibleForDelay() const {
+  DCHECK_EQ(GetSchedulingType(), ScriptSchedulingType::kAsync);
+  // We don't delay async scripts that have matched a resource in the preload
+  // cache, because we're using <link rel=preload> as a signal that the script
+  // is higher-than-usual priority, and therefore should be executed earlier
+  // rather than later.
+  return !GetResource()->IsLinkPreload();
+}
+
 void ClassicPendingScript::WatchForLoad(PendingScriptClient* client) {
   if (is_external_) {
     // Once we are watching the ClassicPendingScript for load, we won't ever

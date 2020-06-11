@@ -742,9 +742,14 @@ IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, DISABLED_Performance) {
 
   // Load the extension and test page, and tell the extension to start tab
   // capture + Cast Streaming.
-  LoadExtension(GetApiTestDataDir()
-                    .AppendASCII("cast_streaming")
-                    .AppendASCII("perftest_extension"));
+
+  // TODO(https://crbug.com/974427): Update test to no longer require
+  // extension APIs.
+
+  // LoadExtension(GetApiTestDataDir()
+  //                   .AppendASCII("cast_streaming")
+  //                  .AppendASCII("perftest_extension"));
+
   NavigateToTestPage(test_page_html_);
   const base::Value response = SendMessageToExtension(base::StringPrintf(
       "{start:true, enableAutoThrottling:%s, maxFrameRate:%d, recvPort:%d,"

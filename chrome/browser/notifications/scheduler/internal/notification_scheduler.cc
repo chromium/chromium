@@ -156,7 +156,8 @@ class DisplayHelper {
     // Tracks user impression on the notification to be shown.
     context_->impression_tracker()->AddImpression(
         entry->type, entry->guid, entry->schedule_params.impression_mapping,
-        updated_notification_data->custom_data);
+        updated_notification_data->custom_data,
+        entry->schedule_params.ignore_timeout_duration);
 
     stats::LogNotificationShow(*updated_notification_data, entry->type);
 

@@ -114,6 +114,7 @@ columns
 contain
 containIntrinsicSize
 content
+contentVisibility
 counterIncrement
 counterReset
 cssFloat

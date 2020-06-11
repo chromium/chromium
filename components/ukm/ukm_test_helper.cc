@@ -10,8 +10,8 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "components/metrics/log_decoder.h"
 #include "components/metrics/unsent_log_store.h"
-#include "third_party/zlib/google/compression_utils.h"
 
 namespace ukm {
 
@@ -51,13 +51,8 @@ std::unique_ptr<Report> UkmTestHelper::GetUkmReport() {
   if (!log_store->has_staged_log())
     return nullptr;
 
-  std::string uncompressed_log_data;
-  if (!compression::GzipUncompress(log_store->staged_log(),
-                                   &uncompressed_log_data))
-    return nullptr;
-
   std::unique_ptr<ukm::Report> report = std::make_unique<ukm::Report>();
-  if (!report->ParseFromString(uncompressed_log_data))
+  if (!metrics::DecodeLogDataToProto(log_store->staged_log(), report.get()))
     return nullptr;
 
   return report;

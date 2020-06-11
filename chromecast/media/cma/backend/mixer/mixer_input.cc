@@ -233,6 +233,10 @@ int MixerInput::FillAudioData(int num_frames,
     channel_mixer_->TransformPartial(fill_dest, filled, dest);
   }
 
+  if (filled != num_frames) {
+    slew_volume_.Interrupted();
+  }
+
   return filled;
 }
 

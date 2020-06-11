@@ -2116,7 +2116,7 @@ void QuicChromiumClientSession::OnNetworkConnected(
   } else {
     // The connection is path degrading.
     DCHECK(connection()->IsPathDegrading());
-    OnPathDegrading();
+    MaybeMigrateToAlternateNetworkOnPathDegrading();
   }
 }
 
@@ -2297,6 +2297,9 @@ void QuicChromiumClientSession::OnWriteUnblocked() {
 }
 
 void QuicChromiumClientSession::OnPathDegrading() {
+  if (most_recent_path_degrading_timestamp_ == base::TimeTicks())
+    most_recent_path_degrading_timestamp_ = tick_clock_->NowTicks();
+
   if (go_away_on_path_degrading_ && OneRttKeysAvailable()) {
     net_log_.AddEvent(
         NetLogEventType::QUIC_SESSION_CLIENT_GOAWAY_ON_PATH_DEGRADING);
@@ -2310,11 +2313,6 @@ void QuicChromiumClientSession::OnPathDegrading() {
     return;
   }
 
-  net_log_.AddEvent(
-      NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_PATH_DEGRADING);
-  if (most_recent_path_degrading_timestamp_ == base::TimeTicks())
-    most_recent_path_degrading_timestamp_ = tick_clock_->NowTicks();
-
   if (!stream_factory_)
     return;
 
@@ -2324,16 +2322,7 @@ void QuicChromiumClientSession::OnPathDegrading() {
     return;
   }
 
-  current_migration_cause_ = CHANGE_NETWORK_ON_PATH_DEGRADING;
-
-  if (migrate_session_early_v2_) {
-    MaybeMigrateToAlternateNetworkOnPathDegrading();
-    return;
-  }
-
-  HistogramAndLogMigrationFailure(MIGRATION_STATUS_PATH_DEGRADING_NOT_ENABLED,
-                                  connection_id(),
-                                  "Migration on path degrading not enabled");
+  MaybeMigrateToAlternateNetworkOnPathDegrading();
 }
 
 void QuicChromiumClientSession::OnProofValid(
@@ -2489,7 +2478,17 @@ void QuicChromiumClientSession::MaybeMigrateToDifferentPortOnPathDegrading() {
 
 void QuicChromiumClientSession::
     MaybeMigrateToAlternateNetworkOnPathDegrading() {
-  DCHECK(migrate_session_early_v2_);
+  net_log_.AddEvent(
+      NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_PATH_DEGRADING);
+
+  current_migration_cause_ = CHANGE_NETWORK_ON_PATH_DEGRADING;
+
+  if (!migrate_session_early_v2_) {
+    HistogramAndLogMigrationFailure(MIGRATION_STATUS_PATH_DEGRADING_NOT_ENABLED,
+                                    connection_id(),
+                                    "Migration on path degrading not enabled");
+    return;
+  }
 
   if (GetDefaultSocket()->GetBoundNetwork() == default_network_ &&
       current_migrations_to_non_default_network_on_path_degrading_ >=

@@ -1759,6 +1759,10 @@ const char kRequestTabletSiteDescription[] =
     "changed to indicate a tablet device. Web content optimized for tablets is "
     "received there after for the current tab.";
 
+const char kDelayAsyncScriptExecutionName[] = "Delay Async Script Execution";
+const char kDelayAsyncScriptExecutionDescription[] =
+    "The execution of async scripts will be delayed.";
+
 const char kPrefetchPrivacyChangesName[] =
     "Prefetch request properties are updated to be privacy-preserving";
 const char kPrefetchPrivacyChangesDescription[] =

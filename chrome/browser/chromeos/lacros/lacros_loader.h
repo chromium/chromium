@@ -41,6 +41,19 @@ class LacrosLoader : public session_manager::SessionManagerObserver {
   void OnUserSessionStarted(bool is_primary_user) override;
 
  private:
+  // Starting Lacros requires a hop to a background thread. The flow is
+  // Start(), then StartBackground(), then StartForeground().
+  //
+  // StartBackground returns whether Lacros is already running.
+  bool StartBackground();
+
+  // The parameter |already_running| refers to whether the Lacros binary is
+  // already launched and running.
+  void StartForeground(bool already_running);
+
+  // The path to the Lacros log file.
+  static std::string LogPath();
+
   void OnLoadComplete(component_updater::CrOSComponentManager::Error error,
                       const base::FilePath& path);
 

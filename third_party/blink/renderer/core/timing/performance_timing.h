@@ -134,6 +134,13 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // are the time and size of it.
   uint64_t LargestTextPaint() const;
   uint64_t LargestTextPaintSize() const;
+  // Experimental versions of the above metrics. Currently these are computed by
+  // considering the largest content seen so far, regardless of DOM node
+  // removal.
+  uint64_t ExperimentalLargestImagePaint() const;
+  uint64_t ExperimentalLargestImagePaintSize() const;
+  uint64_t ExperimentalLargestTextPaint() const;
+  uint64_t ExperimentalLargestTextPaintSize() const;
   // The time at which we are notified of the first input or scroll event which
   // causes the largest contentful paint algorithm to stop.
   uint64_t FirstInputOrScrollNotifiedTimestamp() const;

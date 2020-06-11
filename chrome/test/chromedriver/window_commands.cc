@@ -55,7 +55,8 @@ const char kDeprecatedUnreachableWebDataURL[] = "data:text/html,chromewebdata";
 // Match to content/browser/devtools/devTools_session const of same name
 const char kTargetClosedMessage[] = "Inspected target navigated or closed";
 
-// TODO(johnchen@chromium.org): Remove when we stop supporting legacy protocol.
+// TODO(crbug.com/chromedriver/2596): Remove when we stop supporting legacy
+// protocol.
 // Defaults to 20 years into the future when adding a cookie.
 const double kDefaultCookieExpiryTime = 20*365*24*60*60;
 

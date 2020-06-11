@@ -776,6 +776,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "delay-async-script-execution",
+    "owners": [ "dom", "chrome-loading@google.com" ],
+    "expiry_milestone": 88
+  },
+  {
     "name": "delegate-overscroll-swipes",
     "owners": [ "chrome-android-app@chromium.org" ],
     "expiry_milestone": 88

@@ -13,7 +13,7 @@ import "impression.proto";
 import "notification_data.proto";
 
 // Defines scheduling and throttling details.
-// Next tag: 5
+// Next tag: 6
 message ScheduleParams {
   enum Priority {
     LOW = 0;
@@ -28,6 +28,9 @@ message ScheduleParams {
 
   // The end time of deliver time window for the notification.
   optional int64 deliver_time_end = 4;
+
+  // The duration to treat notification with NO_FEEDBACK impression as IGNORE.
+  optional int64 ignore_timeout_duration = 5;
 }
 
 // The notification entry that contains all data for a scheduled notification.

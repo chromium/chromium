@@ -3881,6 +3881,43 @@ TEST_F(TabStripModelTest, MoveWebContentsAtCorrectlySendsGroupClearedEvent) {
   strip.CloseAllTabs();
 }
 
+// Ensure that the opener for a tab never refers to a dangling WebContents.
+// Regression test for crbug.com/1092308.
+TEST_F(TabStripModelTest, DanglingOpener) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  PrepareTabs(&strip, 2);
+
+  WebContents* contents_1 = strip.GetWebContentsAt(0);
+  WebContents* contents_2 = strip.GetWebContentsAt(1);
+  ASSERT_TRUE(contents_1);
+  ASSERT_TRUE(contents_2);
+
+  // Set the openers for the two tabs to each other.
+  strip.SetOpenerOfWebContentsAt(0, contents_2);
+  strip.SetOpenerOfWebContentsAt(1, contents_1);
+  EXPECT_EQ("0 1", GetTabStripStateString(strip));
+
+  // Move the first tab to the end of the tab strip.
+  EXPECT_EQ(1, strip.MoveWebContentsAt(0, 1, false /* select_after_move */));
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+
+  // Replace the WebContents at index 0 with a new WebContents.
+  std::unique_ptr<WebContents> replaced_contents =
+      strip.ReplaceWebContentsAt(0, CreateWebContentsWithID(5));
+  EXPECT_EQ(contents_2, replaced_contents.get());
+  replaced_contents.reset();
+  EXPECT_EQ("5 0", GetTabStripStateString(strip));
+
+  // Ensure the opener for the tab at index 0 isn't dangling. It should be null
+  // instead.
+  WebContents* opener = strip.GetOpenerOfWebContentsAt(0);
+  ASSERT_NE(contents_2, opener);
+  EXPECT_FALSE(opener);
+
+  strip.CloseAllTabs();
+}
+
 class TabToWindowTestTabStripModelDelegate : public TestTabStripModelDelegate {
  public:
   bool CanMoveTabsToWindow(const std::vector<int>& indices) override {

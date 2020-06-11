@@ -101,8 +101,7 @@ fieldset {
   z-index: 1;
 }
 
-#settings-dialog h2 {
-  font-family: 'Roboto Medium', 'Roboto', sans-serif;
+#settings-header h1 {
   font-size: 15px;
 }
 

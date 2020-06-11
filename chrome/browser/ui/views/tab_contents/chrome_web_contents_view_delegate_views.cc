@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/browser/ui/views/renderer_context_menu/render_view_context_menu_views.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
@@ -98,9 +99,9 @@ void ChromeWebContentsViewDelegateViews::ShowMenu(
 void ChromeWebContentsViewDelegateViews::ShowContextMenu(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
-  ShowMenu(
-      BuildMenu(content::WebContents::FromRenderFrameHost(render_frame_host),
-                params));
+  ShowMenu(BuildMenu(
+      content::WebContents::FromRenderFrameHost(render_frame_host),
+      AddContextMenuParamsPropertiesFromPreferences(web_contents_, params)));
 }
 
 void ChromeWebContentsViewDelegateViews::OnPerformDrop(

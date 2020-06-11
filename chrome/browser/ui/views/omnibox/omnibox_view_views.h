@@ -91,7 +91,7 @@ class OmniboxViewViews : public OmniboxView,
   void SaveStateToTab(content::WebContents* tab);
 
   // Called when the window's active tab changes.
-  void OnTabChanged(const content::WebContents* web_contents);
+  void OnTabChanged(content::WebContents* web_contents);
 
   // Called to clear the saved state for |web_contents|.
   void ResetTabState(content::WebContents* web_contents);
@@ -155,6 +155,7 @@ class OmniboxViewViews : public OmniboxView,
   bool IsCommandIdEnabled(int command_id) const override;
 
   // content::WebContentsObserver:
+  void DidFinishNavigation(content::NavigationHandle* navigation) override;
   void DidGetUserInteraction(const blink::WebInputEvent::Type type) override;
 
   // For testing only.
@@ -321,6 +322,12 @@ class OmniboxViewViews : public OmniboxView,
   // of the current text (e.g. extension URLs or non-URLs shouldn't have their
   // paths faded).
   bool CanFadePath();
+
+  // When certain field trials are enabled, the URL's path is shown on page load
+  // and faded out when the user interacts with the page. This method resets
+  // back to the on-page-load state. That is, it unhides the path (if currently
+  // hidden) and resets state so that the path will show until user interaction.
+  void ResetToHideOnInteraction();
 
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.

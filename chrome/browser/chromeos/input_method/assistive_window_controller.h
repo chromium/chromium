@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/chromeos/input_method/ui/suggestion_window_view.h"
+#include "chrome/browser/chromeos/input_method/ui/undo_window.h"
 #include "ui/base/ime/ime_assistive_window_handler_interface.h"
-#include "ui/chromeos/ime/assistive_delegate.h"
-#include "ui/chromeos/ime/suggestion_window_view.h"
-#include "ui/chromeos/ime/undo_window.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace views {

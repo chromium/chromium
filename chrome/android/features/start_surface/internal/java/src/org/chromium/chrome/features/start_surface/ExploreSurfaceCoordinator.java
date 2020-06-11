@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -45,7 +46,8 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
     }
 
     ExploreSurfaceCoordinator(ChromeActivity activity, ViewGroup parentView,
-            PropertyModel containerPropertyModel, boolean hasHeader) {
+            PropertyModel containerPropertyModel, boolean hasHeader,
+            BottomSheetController bottomSheetController) {
         mActivity = activity;
         mHasHeader = hasHeader;
 
@@ -56,7 +58,7 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
             public FeedSurfaceCoordinator createFeedSurfaceCoordinator(
                     boolean isInNightMode, boolean isPlaceholderShown) {
                 return internalCreateFeedSurfaceCoordinator(
-                        mHasHeader, isInNightMode, isPlaceholderShown);
+                        mHasHeader, isInNightMode, isPlaceholderShown, bottomSheetController);
             }
         };
     }
@@ -80,8 +82,9 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
         return false;
     }
 
-    private FeedSurfaceCoordinator internalCreateFeedSurfaceCoordinator(
-            boolean hasHeader, boolean isInNightMode, boolean isPlaceholderShown) {
+    private FeedSurfaceCoordinator internalCreateFeedSurfaceCoordinator(boolean hasHeader,
+            boolean isInNightMode, boolean isPlaceholderShown,
+            BottomSheetController bottomSheetController) {
         if (mExploreSurfaceNavigationDelegate == null) {
             mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(mActivity);
         }
@@ -102,11 +105,11 @@ class ExploreSurfaceCoordinator implements FeedSurfaceDelegate {
                         (SectionHeaderView) inflater.inflate(R.layout.ss_feed_header, null, false);
             }
         }
-        FeedSurfaceCoordinator feedSurfaceCoordinator =
-                new FeedSurfaceCoordinator(mActivity, mActivity.getSnackbarManager(),
-                        mActivity.getTabModelSelector(), mActivity.getActivityTabProvider(), null,
-                        null, sectionHeaderView, exploreSurfaceActionHandler, isInNightMode, this,
-                        mExploreSurfaceNavigationDelegate, profile, isPlaceholderShown);
+        FeedSurfaceCoordinator feedSurfaceCoordinator = new FeedSurfaceCoordinator(mActivity,
+                mActivity.getSnackbarManager(), mActivity.getTabModelSelector(),
+                mActivity.getActivityTabProvider(), null, null, sectionHeaderView,
+                exploreSurfaceActionHandler, isInNightMode, this, mExploreSurfaceNavigationDelegate,
+                profile, isPlaceholderShown, bottomSheetController);
         feedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
         return feedSurfaceCoordinator;
         // TODO(crbug.com/982018): Customize surface background for incognito and dark mode.

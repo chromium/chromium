@@ -50,6 +50,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "net/base/escape.h"
@@ -108,10 +109,6 @@ namespace {
 // behavior doesn't cause big user breakage.
 constexpr base::Feature kOmniboxCanCopyHyperlinksToClipboard{
     "OmniboxCanCopyHyperlinksToClipboard", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// When certain field trials are enabled, the path is hidden and reshown after
-// the user hovers on the omnibox for at least this long.
-const uint32_t kExtendedHoverThresholdMs = 500;
 
 // When certain field trials are enabled, the path is hidden this long after
 // page load.
@@ -323,7 +320,7 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
                                      saved_selection_for_focus_change_));
 }
 
-void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
+void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   model()->RestoreState(state ? &state->model_state : nullptr);
@@ -348,6 +345,13 @@ void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
 
   // TODO(msw|oshima): Consider saving/restoring edit history.
   ClearEditHistory();
+
+  // When the tab is changed, reshow the path in case it had previously been
+  // hidden by a user interaction (when certain field trials are enabled).
+  ResetToHideOnInteraction();
+  if (OmniboxFieldTrial::ShouldHidePathQueryRefOnInteraction()) {
+    Observe(web_contents);
+  }
 }
 
 void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
@@ -406,15 +410,8 @@ void OmniboxViewViews::EmphasizeURLComponents() {
     path_fade_out_animation_->Start(GetPathBounds());
   }
 
-  if (OmniboxFieldTrial::ShouldHidePathQueryRefOnInteraction()) {
-    Observe(location_bar_view_->GetWebContents());
-    // Clear the fade-in animation (if it exists; it won't exist if
-    // reveal-on-hover is not enabled). If reveal-on-hover is enabled, it will
-    // be recreated after the path is faded out in DidGetUserInteraction().
-    // Creating it here would cause the path to unnecessarily fade in on hover
-    // before it's been faded out by user interaction.
-    path_fade_in_animation_.reset();
-  } else if (OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover()) {
+  if (OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover() ||
+      !OmniboxFieldTrial::ShouldHidePathQueryRefOnInteraction()) {
     // If reveal-on-hover is enabled and hide-on-interaction is disabled, hide
     // the path now.
     if (CanFadePath())
@@ -664,7 +661,7 @@ void OmniboxViewViews::OnThemeChanged() {
       // both the fade-in and fade-out animations now.
       path_fade_in_animation_ = std::make_unique<PathFadeAnimation>(
           this, SK_ColorTRANSPARENT, dimmed_text_color,
-          kExtendedHoverThresholdMs);
+          OmniboxFieldTrial::RevealPathQueryRefOnHoverThresholdMs());
       path_fade_out_fast_animation_ = std::make_unique<PathFadeAnimation>(
           this, dimmed_text_color, SK_ColorTRANSPARENT, 0);
     } else {
@@ -1613,6 +1610,17 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
          location_bar_view_->command_updater()->IsCommandEnabled(command_id);
 }
 
+void OmniboxViewViews::DidFinishNavigation(
+    content::NavigationHandle* navigation) {
+  if (navigation->IsSameDocument())
+    return;
+  if (OmniboxFieldTrial::ShouldHidePathQueryRefOnInteraction()) {
+    // Once a navigation finishes, show the path and reset state so that it'll
+    // be hidden on interaction.
+    ResetToHideOnInteraction();
+  }
+}
+
 void OmniboxViewViews::DidGetUserInteraction(
     const blink::WebInputEvent::Type type) {
   if (!OmniboxFieldTrial::ShouldHidePathQueryRefOnInteraction())
@@ -1629,9 +1637,8 @@ void OmniboxViewViews::DidGetUserInteraction(
         this, SK_ColorTRANSPARENT,
         GetOmniboxColor(GetThemeProvider(),
                         OmniboxPart::LOCATION_BAR_TEXT_DIMMED),
-        kExtendedHoverThresholdMs);
+        OmniboxFieldTrial::RevealPathQueryRefOnHoverThresholdMs());
   }
-  Observe(nullptr);
 }
 
 base::string16 OmniboxViewViews::GetSelectionClipboardText() const {
@@ -2139,4 +2146,18 @@ bool OmniboxViewViews::CanFadePath() {
   return url_scheme != base::UTF8ToUTF16(extensions::kExtensionScheme) &&
          url_scheme != base::UTF8ToUTF16(url::kDataScheme) &&
          host.is_nonempty();
+}
+
+void OmniboxViewViews::ResetToHideOnInteraction() {
+  if (!OmniboxFieldTrial::ShouldHidePathQueryRefOnInteraction())
+    return;
+  // Delete the fade-in animation; it'll get recreated in
+  // DidGetUserInteraction() if reveal-on-hover is enabled. We don't want to
+  // fade in the path while it's already showing.
+  path_fade_in_animation_.reset();
+  if (CanFadePath()) {
+    ApplyColor(GetOmniboxColor(GetThemeProvider(),
+                               OmniboxPart::LOCATION_BAR_TEXT_DIMMED),
+               GetPathBounds());
+  }
 }

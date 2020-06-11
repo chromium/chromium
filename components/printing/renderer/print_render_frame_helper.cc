@@ -1275,10 +1275,10 @@ void PrintRenderFrameHelper::PrintPreview(base::Value settings) {
 
   print_preview_context_.OnPrintPreview();
 
-  base::UmaHistogramEnumeration(print_preview_context_.IsForArc()
-                                    ? "Arc.PrintPreview.PreviewEvent"
-                                    : "PrintPreview.PreviewEvent",
-                                PREVIEW_EVENT_REQUESTED, PREVIEW_EVENT_MAX);
+  if (print_preview_context_.IsForArc()) {
+    base::UmaHistogramEnumeration("Arc.PrintPreview.PreviewEvent",
+                                  PREVIEW_EVENT_REQUESTED, PREVIEW_EVENT_MAX);
+  }
 
   if (!print_preview_context_.source_frame()) {
     DidFinishPrinting(FAIL_PREVIEW);
@@ -1481,10 +1481,11 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
   if (!print_pages_params_ || CheckForCancel())
     return CREATE_FAIL;
 
-  base::UmaHistogramEnumeration(
-      print_preview_context_.IsForArc() ? "Arc.PrintPreview.PreviewEvent"
-                                        : "PrintPreview.PreviewEvent",
-      PREVIEW_EVENT_CREATE_DOCUMENT, PREVIEW_EVENT_MAX);
+  if (print_preview_context_.IsForArc()) {
+    base::UmaHistogramEnumeration("Arc.PrintPreview.PreviewEvent",
+                                  PREVIEW_EVENT_CREATE_DOCUMENT,
+                                  PREVIEW_EVENT_MAX);
+  }
 
   const PrintMsg_Print_Params& print_params = print_pages_params_->params;
   const std::vector<int>& pages = print_pages_params_->pages;
@@ -2416,10 +2417,10 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type) {
     }
   }
 
-  base::UmaHistogramEnumeration(print_preview_context_.IsForArc()
-                                    ? "Arc.PrintPreview.PreviewEvent"
-                                    : "PrintPreview.PreviewEvent",
-                                PREVIEW_EVENT_INITIATED, PREVIEW_EVENT_MAX);
+  if (print_preview_context_.IsForArc()) {
+    base::UmaHistogramEnumeration("Arc.PrintPreview.PreviewEvent",
+                                  PREVIEW_EVENT_INITIATED, PREVIEW_EVENT_MAX);
+  }
   Send(new PrintHostMsg_RequestPrintPreview(routing_id(), params));
 }
 

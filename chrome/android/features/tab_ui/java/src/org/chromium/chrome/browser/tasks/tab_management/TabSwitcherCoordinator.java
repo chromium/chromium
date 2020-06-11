@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -94,6 +95,7 @@ public class TabSwitcherCoordinator
     private final TabModelSelector mTabModelSelector;
     private final @TabListCoordinator.TabListMode int mMode;
     private final MessageCardProviderCoordinator mMessageCardProviderCoordinator;
+    private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
 
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
     private TabGroupManualSelectionMode mTabGroupManualSelectionMode;
@@ -136,16 +138,19 @@ public class TabSwitcherCoordinator
             ChromeFullscreenManager fullscreenManager, TabCreatorManager tabCreatorManager,
             MenuOrKeyboardActionController menuOrKeyboardActionController, ViewGroup container,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @TabListCoordinator.TabListMode int mode) {
         mMode = mode;
         mTabModelSelector = tabModelSelector;
         mContainer = container;
         mTabCreatorManager = tabCreatorManager;
+        mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
 
         PropertyModel containerViewModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
         mMediator = new TabSwitcherMediator(this, containerViewModel, tabModelSelector,
-                fullscreenManager, container, tabContentManager, this, mode);
+                fullscreenManager, container, tabContentManager, this,
+                multiWindowModeStateDispatcher, mode);
 
         mMultiThumbnailCardProvider =
                 new MultiThumbnailCardProvider(context, tabContentManager, tabModelSelector);
@@ -433,6 +438,7 @@ public class TabSwitcherCoordinator
     }
 
     private void appendMessagesTo(int index) {
+        if (mMultiWindowModeStateDispatcher.isInMultiWindowMode()) return;
         sAppendedMessagesForTesting = false;
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();

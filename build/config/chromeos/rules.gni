@@ -7,11 +7,58 @@ import("//build/config/chromeos/args.gni")
 
 assert(is_chromeos)
 
-declare_args() {
-  # Determines if we're running tests on VMs or on devices.
-  # TODO(crbug.com/866062): Is there a better way to do this?
-  cros_is_vm = cros_board == "amd64-generic" || cros_board == "betty" ||
-               cros_board == "betty-pi-arc"
+# Determine the real paths for various items in the SDK, which may be used
+# in the 'generate_runner_script' template below. We do so outside the template
+# to confine exec_script to a single invocation.
+if (is_chromeos_device && cros_sdk_version != "") {
+  _cache_path_prefix =
+      "//build/cros_cache/chrome-sdk/symlinks/${cros_board}+${cros_sdk_version}"
+
+  # It's difficult to determine if any given board supports QEMU images. So
+  # check if there's one present in the expected location.
+  _qemu_image_path = "${_cache_path_prefix}+chromiumos_qemu_image.tar.xz"
+
+  # TODO(crbug.com/937821): Check for the board in a gclient list var to
+  # determine if we expect a VM image.
+  cros_is_vm = exec_script("//build/dir_exists.py",
+                           [ rebase_path(_qemu_image_path) ],
+                           "string") == "True"
+
+  _symlinks = [
+    # Tast harness & test data.
+    rebase_path("${_cache_path_prefix}+chromeos-base/tast-cmd"),
+    rebase_path("${_cache_path_prefix}+chromeos-base/tast-remote-tests-cros"),
+
+    # Binutils (and other toolchain tools) used to deploy Chrome to the device.
+    rebase_path(
+        "${_cache_path_prefix}+environment_chromeos-base_chromeos-chrome.tar.xz"),
+    rebase_path("${_cache_path_prefix}+target_toolchain"),
+  ]
+  if (cros_is_vm) {
+    # VM-related tools.
+    _symlinks += [
+      rebase_path("${_cache_path_prefix}+sys-firmware/seabios"),
+      rebase_path(_qemu_image_path),
+      rebase_path("${_cache_path_prefix}+app-emulation/qemu"),
+    ]
+  }
+  _symlink_targets =
+      exec_script("//build/get_symlink_targets.py", _symlinks, "list lines")
+  tast_sdk_items = [
+    _symlink_targets[0],
+    _symlink_targets[1],
+  ]
+  toolchain_sdk_items = [
+    _symlink_targets[2],
+    _symlink_targets[3],
+  ]
+  if (cros_is_vm) {
+    vm_sdk_items = [
+      _symlink_targets[4],
+      _symlink_targets[5],
+      _symlink_targets[6],
+    ]
+  }
 }
 
 # Creates a script at $generated_script that can be used to launch a cros VM
@@ -42,12 +89,6 @@ template("generate_runner_script") {
                          ])
   if (!defined(deploy_chrome)) {
     deploy_chrome = false
-  }
-
-  # These are the only 2 conditions when ${_cache_path_prefix} is used, so
-  # initialize it in a conditional.
-  if (deploy_chrome || cros_is_vm) {
-    _cache_path_prefix = "//build/cros_cache/chrome-sdk/tarballs/"
   }
 
   assert(defined(generated_script),
@@ -90,24 +131,6 @@ template("generate_runner_script") {
       "//third_party/chromite/",
     ]
 
-    # Add the VM/QEMU-launching bits if needed.
-    if (cros_is_vm) {
-      assert(defined(_cache_path_prefix))
-      _vm_image_path = "${_cache_path_prefix}/chromiumos_qemu_image.tar.xz/"
-      _qemu_dir = "${_cache_path_prefix}/app-emulation/"
-      _firmware_dir = "${_cache_path_prefix}/sys-firmware/"
-      data += [
-        _firmware_dir,
-        _vm_image_path,
-        _qemu_dir,
-      ]
-    }
-    if (is_tast) {
-      data += [
-        "${_cache_path_prefix}/chromeos-base/tast-cmd/",
-        "${_cache_path_prefix}/chromeos-base/tast-remote-tests-cros/",
-      ]
-    }
     if (defined(invoker.data)) {
       deps += invoker.data
     }
@@ -134,15 +157,24 @@ template("generate_runner_script") {
 
     if (deploy_chrome) {
       args += [ "--deploy-chrome" ]
+    }
 
-      # To deploy chrome to the VM, it needs to be stripped down to fit into
-      # the VM. This is done by using binutils in the toolchain. So add the
-      # toolchain to the data.
-      assert(defined(_cache_path_prefix))
-      data += [
-        "${_cache_path_prefix}/environment_chromeos-base_chromeos-chrome.tar.xz",
-        "${_cache_path_prefix}/target_toolchain/",
-      ]
+    # If we're in the cros chrome-sdk (and not the raw ebuild), the test will
+    # need some additional runtime data located in the SDK cache.
+    if (cros_sdk_version != "") {
+      # Add the VM/QEMU-launching bits if needed.
+      if (cros_is_vm) {
+        data += vm_sdk_items
+      }
+      if (is_tast) {
+        data += tast_sdk_items
+      }
+      if (deploy_chrome) {
+        # To deploy chrome to the VM, it needs to be stripped down to fit into
+        # the VM. This is done by using binutils in the toolchain. So add the
+        # toolchain to the data.
+        data += toolchain_sdk_items
+      }
     }
 
     # When --test-exe is specified, test_runner.py will push the exe to the VM

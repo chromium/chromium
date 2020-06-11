@@ -114,7 +114,9 @@ class PathBuilderPkitsTestDelegate {
  public:
   static void RunTest(std::vector<std::string> cert_ders,
                       std::vector<std::string> crl_ders,
-                      const PkitsTestInfo& info) {
+                      const PkitsTestInfo& orig_info) {
+    PkitsTestInfo info = orig_info;
+
     ASSERT_FALSE(cert_ders.empty());
     ParsedCertificateList certs;
     for (const std::string& der : cert_ders) {
@@ -139,28 +141,71 @@ class PathBuilderPkitsTestDelegate {
 
     scoped_refptr<ParsedCertificate> target_cert(certs.back());
 
+    base::Time verify_time;
+    ASSERT_TRUE(der::GeneralizedTimeToTime(info.time, &verify_time));
+    CrlCheckingPathBuilderDelegate path_builder_delegate(
+        crl_ders, verify_time, /*max_age=*/base::TimeDelta::FromDays(365 * 2),
+        1024, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
+
     base::StringPiece test_number = info.test_number;
-    std::unique_ptr<CertPathBuilderDelegate> path_builder_delegate;
     if (test_number == "4.4.19" || test_number == "4.5.3" ||
         test_number == "4.5.4" || test_number == "4.5.6") {
-      // TODO(https://crbug.com/749276): extend CRL support: These tests
-      // require better CRL issuer cert discovery & path building and/or
-      // issuingDistributionPoint extension handling. Disable CRL checking for
-      // them for now. Maybe should just run these with CRL checking enabled
-      // and expect them to fail?
-      path_builder_delegate = std::make_unique<SimplePathBuilderDelegate>(
-          1024, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
-    } else {
-      base::Time verify_time;
-      ASSERT_TRUE(der::GeneralizedTimeToTime(info.time, &verify_time));
-      path_builder_delegate = std::make_unique<CrlCheckingPathBuilderDelegate>(
-          crl_ders, verify_time, /*max_age=*/base::TimeDelta::FromDays(365 * 2),
-          1024, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
+      // 4.4.19 - fails since CRL is signed by a certificate that is not part
+      //          of the verified chain, which is not supported.
+      // 4.5.3 - fails since non-URI distribution point names are not supported
+      // 4.5.4, 4.5.6 - fails since CRL is signed by a certificate that is not
+      //                part of verified chain, and also non-URI distribution
+      //                point names not supported
+      info.should_validate = false;
+    } else if (test_number == "4.14.1" || test_number == "4.14.4" ||
+               test_number == "4.14.5" || test_number == "4.14.7" ||
+               test_number == "4.14.18" || test_number == "4.14.19" ||
+               test_number == "4.14.22" || test_number == "4.14.24" ||
+               test_number == "4.14.25" || test_number == "4.14.28" ||
+               test_number == "4.14.29" || test_number == "4.14.30" ||
+               test_number == "4.14.33") {
+      // 4.14 tests:
+      // .1 - fails since non-URI distribution point names not supported
+      // .2, .3 - fails since non-URI distribution point names not supported
+      //          (but test is expected to fail for other reason)
+      // .4, .5 - fails since non-URI distribution point names not supported,
+      //          also uses nameRelativeToCRLIssuer which is not supported
+      // .6 - fails since non-URI distribution point names not supported, also
+      //      uses nameRelativeToCRLIssuer which is not supported (but test is
+      //      expected to fail for other reason)
+      // .7 - fails since relative distributionPointName not supported
+      // .8, .9 - fails since relative distributionPointName not supported (but
+      //          test is expected to fail for other reason)
+      // .10, .11, .12, .13, .14, .27, .35 - PASS
+      // .15, .16, .17, .20, .21 - fails since onlySomeReasons is not supported
+      //                           (but test is expected to fail for other
+      //                           reason)
+      // .18, .19 - fails since onlySomeReasons is not supported
+      // .22, .24, .25, .28, .29, .30, .33 - fails since indirect CRLs are not
+      //                                     supported
+      // .23, .26, .31, .32, .34 - fails since indirect CRLs are not supported
+      //                           (but test is expected to fail for other
+      //                           reason)
+      info.should_validate = false;
+    } else if (test_number == "4.15.1" || test_number == "4.15.5") {
+      // 4.15 tests:
+      // .1 - fails due to unhandled critical deltaCRLIndicator extension
+      // .2, .3, .6, .7, .8, .9, .10 - PASS since expected cert status is
+      //                               reflected in base CRL and delta CRL is
+      //                               ignored
+      // .5 - fails, cert status is "on hold" in base CRL but the delta CRL
+      //      which removes the cert from CRL is ignored
+      info.should_validate = false;
+    } else if (test_number == "4.15.4") {
+      // 4.15.4 - Invalid delta-CRL Test4 has the target cert marked revoked in
+      // a delta-CRL. Since delta-CRLs are not supported, the chain validates
+      // successfully.
+      info.should_validate = true;
     }
 
     CertPathBuilder path_builder(
-        std::move(target_cert), &trust_store, path_builder_delegate.get(),
-        info.time, KeyPurpose::ANY_EKU, info.initial_explicit_policy,
+        std::move(target_cert), &trust_store, &path_builder_delegate, info.time,
+        KeyPurpose::ANY_EKU, info.initial_explicit_policy,
         info.initial_policy_set, info.initial_policy_mapping_inhibit,
         info.initial_inhibit_any_policy);
     path_builder.AddCertIssuerSource(&cert_issuer_source);
@@ -228,12 +273,13 @@ INSTANTIATE_TYPED_TEST_SUITE_P(PathBuilder,
                                PkitsTest13NameConstraints,
                                PathBuilderPkitsTestDelegate);
 INSTANTIATE_TYPED_TEST_SUITE_P(PathBuilder,
+                               PkitsTest14DistributionPoints,
+                               PathBuilderPkitsTestDelegate);
+INSTANTIATE_TYPED_TEST_SUITE_P(PathBuilder,
+                               PkitsTest15DeltaCRLs,
+                               PathBuilderPkitsTestDelegate);
+INSTANTIATE_TYPED_TEST_SUITE_P(PathBuilder,
                                PkitsTest16PrivateCertificateExtensions,
                                PathBuilderPkitsTestDelegate);
-
-// TODO(https://crbug.com/749276): extend CRL support?:
-// PkitsTest14DistributionPoints: indirect CRLs and reason codes are not
-// supported.
-// PkitsTest15DeltaCRLs: Delta CRLs are not supported.
 
 }  // namespace net

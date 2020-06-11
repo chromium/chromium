@@ -217,6 +217,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         SettingsAutofillAndPaymentsObserver.getInstance().notifyOnCreditCardUpdated(card);
         if (mIsNewEntry) {
             RecordUserAction.record("AutofillCreditCardsAdded");
+            if (!card.getNickname().isEmpty()) {
+                RecordUserAction.record("AutofillCreditCardsAddedWithNickname");
+            }
         }
         return true;
     }

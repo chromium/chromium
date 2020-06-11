@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -302,12 +303,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param isInNightMode {@code true} if the night mode setting is on.
      * @param nativePageHost The host that is showing this new tab page.
      * @param tab The {@link Tab} that contains this new tab page.
+     * @param bottomSheetController The controller for bottom sheets, used by the feed.
      */
     public NewTabPage(Activity activity, BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Tab> activityTabProvider, @Nullable OverviewModeBehavior overviewModeBehavior,
             SnackbarManager snackbarManager, ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector, boolean isTablet, NewTabPageUma uma,
-            boolean isInNightMode, NativePageHost nativePageHost, Tab tab) {
+            boolean isInNightMode, NativePageHost nativePageHost, Tab tab,
+            BottomSheetController bottomSheetController) {
         mConstructedTimeNs = System.nanoTime();
         TraceEvent.begin(TAG);
 
@@ -370,7 +373,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         updateSearchProviderHasLogo();
         initializeMainView(activity, activityTabProvider, snackbarManager, tabModelSelector, uma,
-                isInNightMode);
+                isInNightMode, bottomSheetController);
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
@@ -420,10 +423,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * @param tabModelSelector {@link TabModelSelector} object.
      * @param uma {@link NewTabPageUma} object recording user metrics.
      * @param isInNightMode {@code true} if the night mode setting is on.
+     * @param bottomSheetController The controller for bottom sheets.  Used by the feed.
      */
     protected void initializeMainView(Activity activity, Supplier<Tab> tabProvider,
             SnackbarManager snackbarManager, TabModelSelector tabModelSelector, NewTabPageUma uma,
-            boolean isInNightMode) {
+            boolean isInNightMode, BottomSheetController bottomSheetController) {
         Profile profile = Profile.fromWebContents(mTab.getWebContents());
         ActionApi actionApi = new FeedActionHandler(mNewTabPageManager.getNavigationDelegate(),
                 FeedProcessScopeFactory.getFeedConsumptionObserver(),
@@ -446,7 +450,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                         new SnapScrollHelper(mNewTabPageManager, mNewTabPageLayout),
                         mNewTabPageLayout, sectionHeaderView, actionApi, isInNightMode, this,
                         mNewTabPageManager.getNavigationDelegate(), profile,
-                        /* isPlaceholderShown= */ false);
+                        /* isPlaceholderShown= */ false, bottomSheetController);
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);

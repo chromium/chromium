@@ -1570,6 +1570,21 @@
     ]
   },
 
+  "DefaultSearchProviderContextMenuAccessAllowed": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {
+          "DefaultSearchProviderEnabled": true,
+          "DefaultSearchProviderSearchURL": "http://www.google.com/?q={searchTerms}",
+          "DefaultSearchProviderKeyword": "google",
+          "DefaultSearchProviderContextMenuAccessAllowed": true
+        },
+        "prefs": { "default_search_provider_data.template_url_data": {} }
+      }
+    ]
+  },
+
   "DefaultSearchProviderEnabled": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_test": [

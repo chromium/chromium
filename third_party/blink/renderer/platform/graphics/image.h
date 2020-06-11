@@ -273,14 +273,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // Returns an SkBitmap that is a copy of the image's current frame.
   SkBitmap AsSkBitmapForCurrentFrame(RespectImageOrientationEnum);
 
-  DarkModeClassification GetDarkModeClassification(const FloatRect& src_rect);
-
-  // Dark mode classification result is cached to be consistent and have
-  // higher performance for future paints.
-  void AddDarkModeClassification(
-      const FloatRect& src_rect,
-      const DarkModeClassification dark_mode_classification);
-
  protected:
   Image(ImageObserver* = nullptr, bool is_multipart = false);
 
@@ -299,9 +291,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   // Whether or not size is available yet.
   virtual bool IsSizeAvailable() { return true; }
-
-  typedef FloatPoint ClassificationKey;
-  HashMap<ClassificationKey, DarkModeClassification> dark_mode_classifications_;
 
  private:
   bool image_observer_disabled_;

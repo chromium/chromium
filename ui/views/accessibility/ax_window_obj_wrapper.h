@@ -57,11 +57,16 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
   // Fires an accessibility event.
   void FireEvent(ax::mojom::Event event_type);
 
-  aura::Window* window_;
+  aura::Window* const window_;
 
-  bool is_root_window_;
+  const bool is_root_window_;
 
   const ui::AXUniqueId unique_id_;
+
+  // Whether OnWindowDestroying has happened for |window_|. Used to suppress
+  // further events from |window| after OnWindowDestroying. Otherwise, dangling
+  // pointer could be left in |aura_obj_cache_|. See https://crbug.com/1091545
+  bool window_destroying_ = false;
 
   ScopedObserver<aura::Window, aura::WindowObserver> observer_{this};
 };

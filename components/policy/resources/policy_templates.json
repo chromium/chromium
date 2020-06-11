@@ -4799,6 +4799,28 @@
           This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain. or Windows 10 Pro or Enterprise instances that enrolled for device management.''',
     },
     {
+      'name': 'DefaultSearchProviderContextMenuAccessAllowed',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:85-', 'chrome_os:85-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': True,
+      'id': 715,
+      'caption': '''Allow default search provider context menu search access''',
+      'tags': [],
+      'desc': '''Enables the use of a default search provider on the context menu.
+
+          If you set this policy to disabled the search context menu item that relies on your default search provider will not be available.
+
+          If this policy is set to enabled or not set, the context menu item for your default search provider will be available.
+
+          The policy value is only appled when the <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME">DefaultSearchProviderEnabled</ph> policy is enabled, and is not applicable otherwise.''',
+    },
+    {
       'name': 'DefaultSearchProviderName',
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'string',
@@ -22183,6 +22205,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [412, 476, 546, 562, 569, 578],
-  'highest_id_currently_used': 714,
+  'highest_id_currently_used': 715,
   'highest_atomic_group_id_currently_used': 38
 }

@@ -29,7 +29,6 @@
            file="${root_gen_dir}/chrome/browser/resources/settings/lifetime_browser_proxy.m.js"
            use_base_dir="false"
            compress="false"
-           preprocess="true"
            type="BINDATA"/>
   <include name="IDR_OS_SETTINGS_SETTINGS_SHARED_CSS_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/settings_shared_css.m.js"

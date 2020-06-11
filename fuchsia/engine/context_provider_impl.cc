@@ -61,6 +61,13 @@
 
 namespace {
 
+// Use a constexpr instead of the existing base::Feature, because of the
+// additional dependencies required.
+constexpr char kMixedContentAutoupgradeFeatureName[] =
+    "AutoupgradeMixedContent";
+constexpr char kDisableMixedContentAutoupgradeOrigin[] =
+    "disable-mixed-content-autoupgrade";
+
 // Returns the underlying channel if |directory| is a client endpoint for a
 // |fuchsia::io::Directory| protocol. Otherwise, returns an empty channel.
 zx::channel ValidateDirectoryAndTakeChannel(
@@ -494,10 +501,13 @@ void ContextProviderImpl::Create(
   if (params.has_unsafely_treat_insecure_origins_as_secure()) {
     const std::vector<std::string>& insecure_origins =
         params.unsafely_treat_insecure_origins_as_secure();
-    if (std::find(insecure_origins.begin(), insecure_origins.end(),
-                  switches::kAllowRunningInsecureContent) !=
-        insecure_origins.end()) {
-      launch_command.AppendSwitch(switches::kAllowRunningInsecureContent);
+    for (auto origin : insecure_origins) {
+      if (origin == switches::kAllowRunningInsecureContent)
+        launch_command.AppendSwitch(switches::kAllowRunningInsecureContent);
+      if (origin == kDisableMixedContentAutoupgradeOrigin) {
+        AppendFeature(switches::kDisableFeatures,
+                      kMixedContentAutoupgradeFeatureName, &launch_command);
+      }
     }
     // TODO(crbug.com/1023510): Pass the rest of the list to the Context
     // process.

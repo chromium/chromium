@@ -82,6 +82,8 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
     not_streamed_reason_ = reason;
   }
 
+  bool IsEligibleForDelay() const override;
+
  private:
   // See AdvanceReadyState implementation for valid state transitions.
   enum ReadyState {

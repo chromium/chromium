@@ -19,38 +19,6 @@ const float kEpsilon = 0.00001;
 
 }  // namespace
 
-class FakeImageForCacheTest : public Image {
- public:
-  static scoped_refptr<FakeImageForCacheTest> Create() {
-    return base::AdoptRef(new FakeImageForCacheTest());
-  }
-
-  int GetMapSize() { return dark_mode_classifications_.size(); }
-
-  DarkModeClassification GetClassification(const FloatRect& src_rect) {
-    return GetDarkModeClassification(src_rect);
-  }
-
-  void AddClassification(
-      const FloatRect& src_rect,
-      const DarkModeClassification dark_mode_classification) {
-    AddDarkModeClassification(src_rect, dark_mode_classification);
-  }
-
-  // Pure virtual functions that have to be overridden.
-  bool CurrentFrameKnownToBeOpaque() override { return false; }
-  IntSize Size() const override { return IntSize(0, 0); }
-  void DestroyDecodedData() override {}
-  PaintImage PaintImageForCurrentFrame() override { return PaintImage(); }
-  void Draw(cc::PaintCanvas*,
-            const cc::PaintFlags&,
-            const FloatRect& dst_rect,
-            const FloatRect& src_rect,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override {}
-};
-
 class DarkModeImageClassifierTest : public testing::Test {
  public:
   DarkModeImageClassifierTest() {
@@ -189,31 +157,41 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
 }
 
 TEST_F(DarkModeImageClassifierTest, Caching) {
-  scoped_refptr<FakeImageForCacheTest> image = FakeImageForCacheTest::Create();
-  FloatRect src_rect1(0, 0, 50, 50);
-  FloatRect src_rect2(5, 20, 100, 100);
-  FloatRect src_rect3(6, -9, 50, 50);
+  PaintImage::Id image_id = PaintImage::GetNextId();
+  SkRect src1 = SkRect::MakeXYWH(0, 0, 50, 50);
+  SkRect src2 = SkRect::MakeXYWH(5, 20, 100, 100);
+  SkRect src3 = SkRect::MakeXYWH(6, -9, 50, 50);
 
-  EXPECT_EQ(image->GetClassification(src_rect1),
+  EXPECT_EQ(image_classifier()->GetCacheValue(image_id, src1),
             DarkModeClassification::kNotClassified);
-  image->AddClassification(src_rect1, DarkModeClassification::kApplyFilter);
-  EXPECT_EQ(image->GetClassification(src_rect1),
+  image_classifier()->AddCacheValue(image_id, src1,
+                                    DarkModeClassification::kApplyFilter);
+  EXPECT_EQ(image_classifier()->GetCacheValue(image_id, src1),
             DarkModeClassification::kApplyFilter);
 
-  EXPECT_EQ(image->GetClassification(src_rect2),
+  EXPECT_EQ(image_classifier()->GetCacheValue(image_id, src2),
             DarkModeClassification::kNotClassified);
-  image->AddClassification(src_rect2,
-                           DarkModeClassification::kDoNotApplyFilter);
-  EXPECT_EQ(image->GetClassification(src_rect2),
+  image_classifier()->AddCacheValue(image_id, src2,
+                                    DarkModeClassification::kDoNotApplyFilter);
+  EXPECT_EQ(image_classifier()->GetCacheValue(image_id, src2),
             DarkModeClassification::kDoNotApplyFilter);
 
-  EXPECT_EQ(image->GetClassification(src_rect3),
+  EXPECT_EQ(image_classifier()->GetCacheSize(image_id), 2u);
+  DarkModeImageClassifier::RemoveCache(image_id);
+  EXPECT_EQ(image_classifier()->GetCacheSize(image_id), 0u);
+
+  EXPECT_EQ(image_classifier()->GetCacheValue(image_id, src1),
             DarkModeClassification::kNotClassified);
-  image->AddClassification(src_rect3, DarkModeClassification::kApplyFilter);
-  EXPECT_EQ(image->GetClassification(src_rect3),
+  EXPECT_EQ(image_classifier()->GetCacheValue(image_id, src2),
+            DarkModeClassification::kNotClassified);
+  EXPECT_EQ(image_classifier()->GetCacheValue(image_id, src3),
+            DarkModeClassification::kNotClassified);
+  image_classifier()->AddCacheValue(image_id, src3,
+                                    DarkModeClassification::kApplyFilter);
+  EXPECT_EQ(image_classifier()->GetCacheValue(image_id, src3),
             DarkModeClassification::kApplyFilter);
 
-  EXPECT_EQ(image->GetMapSize(), 3);
+  EXPECT_EQ(image_classifier()->GetCacheSize(image_id), 1u);
 }
 
 TEST_F(DarkModeImageClassifierTest, BlocksCount) {

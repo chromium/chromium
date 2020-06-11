@@ -150,6 +150,9 @@ const base::FilePath::CharType kAndroidFilesPath[] =
 const base::FilePath::CharType kSystemFontsPath[] =
     FILE_PATH_LITERAL("/usr/share/fonts");
 
+const base::FilePath::CharType kArchiveMountPath[] =
+    FILE_PATH_LITERAL("/media/archive");
+
 base::FilePath GetDownloadsFolderForProfile(Profile* profile) {
   // Check if FilesApp has a registered path already.  This happens for tests.
   const std::string mount_point_name =
@@ -364,6 +367,10 @@ bool ConvertFileSystemURLToPathInsideCrostini(
   } else if (id == GetAndroidFilesMountPointName()) {
     *inside = crostini::ContainerChromeOSBaseDirectory().Append(
         kCrostiniMapPlayFiles);
+  } else if (id == chromeos::kSystemMountNameArchive) {
+    // Archive.
+    *inside = crostini::ContainerChromeOSBaseDirectory().Append(
+        chromeos::kSystemMountNameArchive);
   } else {
     return false;
   }
@@ -602,6 +609,12 @@ std::string GetPathDisplayTextForSettings(Profile* profile,
                                .value(),
                            "")) {
     // Strip prefix of "/media/removable/" including trailing slash.
+  } else if (ReplacePrefix(&result,
+                           base::FilePath(kArchiveMountPath)
+                               .AsEndingWithSeparator()
+                               .value(),
+                           "")) {
+    // Strip prefix of "/media/archive/" including trailing slash.
   }
 
   base::ReplaceChars(result, "/", " \u203a ", &result);

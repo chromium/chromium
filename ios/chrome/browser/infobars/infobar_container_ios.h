@@ -33,6 +33,8 @@ class InfoBarContainerIOS : public infobars::InfoBarContainer {
                                   size_t position) override;
   void PlatformSpecificRemoveInfoBar(infobars::InfoBar* infobar) override;
   void PlatformSpecificInfoBarStateChanged(bool is_animating) override;
+  void PlatformSpecificReplaceInfoBar(infobars::InfoBar* old_infobar,
+                                      infobars::InfoBar* new_infobar) override;
 
  private:
   infobars::InfoBarManager* info_bar_manager_ = nullptr;

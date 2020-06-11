@@ -20,6 +20,7 @@ source_set("privacy_budget") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
     "//third_party/blink/public/common/privacy_budget:privacy_budget",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
   ]
 }
 

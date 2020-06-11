@@ -86,7 +86,8 @@ void ImpressionHistoryTrackerImpl::AddImpression(
     SchedulerClientType type,
     const std::string& guid,
     const Impression::ImpressionResultMap& impression_mapping,
-    const Impression::CustomData& custom_data) {
+    const Impression::CustomData& custom_data,
+    base::Optional<base::TimeDelta> ignore_timeout_duration) {
   DCHECK(initialized_);
   auto it = client_states_.find(type);
   if (it == client_states_.end())
@@ -98,6 +99,7 @@ void ImpressionHistoryTrackerImpl::AddImpression(
   it->second->impressions.emplace_back(std::move(impression));
   it->second->last_shown_ts = clock_->Now();
   impression_map_.emplace(guid, &it->second->impressions.back());
+  impression.ignore_timeout_duration = ignore_timeout_duration;
   SetNeedsUpdate(type, true /*needs_update*/);
   MaybeUpdateDb(type);
 }
@@ -232,15 +234,31 @@ void ImpressionHistoryTrackerImpl::SyncRegisteredClients() {
   }
 }
 
+void ImpressionHistoryTrackerImpl::HandleIgnoredImpressions(
+    ClientState* client_state) {
+  for (auto& it : client_state->impressions) {
+    auto* impression = &it;
+    if (impression->feedback != UserFeedback::kNoFeedback)
+      continue;
+
+    if (impression->ignore_timeout_duration.has_value() &&
+        impression->create_time + impression->ignore_timeout_duration.value() <=
+            clock_->Now())
+      impression->feedback = UserFeedback::kIgnore;
+  }
+}
+
 void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory(
     ClientState* client_state) {
   DCHECK(client_state);
+  HandleIgnoredImpressions(client_state);
   base::circular_deque<Impression*> dismisses;
   for (auto it = client_state->impressions.begin();
        it != client_state->impressions.end(); ++it) {
     auto* impression = &*it;
     switch (impression->feedback) {
       case UserFeedback::kDismiss:
+      case UserFeedback::kIgnore:
         dismisses.emplace_back(impression);
         PruneImpressionByCreateTime(
             &dismisses, impression->create_time - config_.dismiss_duration);
@@ -256,8 +274,6 @@ void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory(
       case UserFeedback::kNotHelpful:
         OnButtonClickInternal(impression->guid, ActionButtonType::kUnhelpful,
                               false /*update_db*/);
-        break;
-      case UserFeedback::kIgnore:
         break;
       case UserFeedback::kNoFeedback:
         FALLTHROUGH;
@@ -280,8 +296,8 @@ void ImpressionHistoryTrackerImpl::PruneImpressionByCreateTime(
   while (!impressions->empty()) {
     if (impressions->front()->create_time > start_time)
       break;
-    // Anything created before |start_time| is considered to have no effect and
-    // will never be processed again.
+    // Anything created before |start_time| is considered to have no effect
+    // and will never be processed again.
     impressions->front()->integrated = true;
     impressions->pop_front();
   }
@@ -358,11 +374,11 @@ void ImpressionHistoryTrackerImpl::OnCustomNegativeActionCountQueried(
   if (impressions->size() < num_actions)
     return;
 
-  // Suppress the notification if the user performed consecutive operations that
-  // generates negative impressions.
-  for (size_t i = 0, size = impressions->size(); i < size; ++i) {
-    Impression* impression = (*impressions)[i];
-    DCHECK_EQ(impression->feedback, UserFeedback::kDismiss);
+  // Suppress the notification if the user performed consecutive operations
+  // that generates negative impressions.
+  for (auto* impression : *impressions) {
+    DCHECK(impression->feedback == UserFeedback::kDismiss ||
+           impression->feedback == UserFeedback::kIgnore);
     if (impression->integrated)
       continue;
 
@@ -423,8 +439,8 @@ void ImpressionHistoryTrackerImpl::OnCustomSuppressionDurationQueried(
     return;
   ClientState* client_state = it->second.get();
   auto now = clock_->Now();
-  // Suppress the notification, the user will not see this type of notification
-  // for a while.
+  // Suppress the notification, the user will not see this type of
+  // notification for a while.
   SuppressionInfo supression_info(
       now, GetSuppressionDuration(custom_throttle_config.get(), config_));
   client_state->suppression_info = std::move(supression_info);

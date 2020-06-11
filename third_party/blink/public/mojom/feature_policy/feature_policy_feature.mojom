@@ -41,8 +41,6 @@ enum FeaturePolicyFeature {
   kUsb = 14,
   // Controls access to AOM event listeners.
   kAccessibilityEvents = 15,
-  // Controls use of WebVR API.
-  kWebVr = 16,
   // The following features control access to the corresponding sensor classes.
   // Fusion sensor APIs (e.g. LinearAcceleration, OrientationSensor-based
   // classes)require all of the features that are inputs into that API to be

@@ -439,6 +439,7 @@ std::string OnDeviceHeadSuggestDemoteMode();
 bool IsHidePathQueryRefEnabled();
 bool ShouldRevealPathQueryRefOnHover();
 bool ShouldHidePathQueryRefOnInteraction();
+int RevealPathQueryRefOnHoverThresholdMs();
 
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
@@ -526,6 +527,10 @@ extern const char kRichAutocompletionAutocompleteNonPrefix[];
 // Parameter names used by image search experiment that shows thumbnail in front
 // of the Omnibox clipboard image search suggestion.
 extern const char kImageSearchSuggestionThumbnail[];
+
+// Parameter names used by omnibox experiments that hide the path in the steady
+// state.
+extern const char kOmniboxUIRevealPathQueryAndRefOnHoverThresholdMsParam[];
 
 namespace internal {
 // The bundled omnibox experiment comes with a set of parameters

@@ -1073,11 +1073,8 @@ class TabListMediator {
      */
     void updateSpanCountForOrientation(GridLayoutManager manager, int orientation) {
         // When in multi-window mode, the span count is fixed to 2 to keep tab card size reasonable.
-        if (MultiWindowUtils.getInstance().isInMultiWindowMode((Activity) mContext)) {
-            manager.setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT);
-            return;
-        }
         int spanCount = orientation == Configuration.ORIENTATION_PORTRAIT
+                        || MultiWindowUtils.getInstance().isInMultiWindowMode((Activity) mContext)
                 ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT
                 : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LANDSCAPE;
         manager.setSpanCount(spanCount);

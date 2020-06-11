@@ -48,13 +48,15 @@ def ExtractValues(xml_path):
   return values
 
 
-def ExportProfiles(xml_path, sql_path):
-  sql_values = ['(%s, %s, %s, %s)' % v for v in ExtractValues(xml_path)]
+def ExportProfiles(device_xmls, sql_path):
+  sql_values = []
+  for device, xml_path in device_xmls:
+    sql_values += [
+        '("%s", %s, %s, %s, %s)' % ((device, ) + v)
+        for v in ExtractValues(xml_path)
+    ]
 
   with open(sql_path, 'w') as sql_file:
-    sql_file.write('DROP TABLE IF EXISTS power_profile;\n\n')
-    sql_file.write('CREATE TABLE power_profile '
-                   '(cpu INT, cluster INT, freq INT, power DOUBLE);\n\n')
     sql_file.write('INSERT INTO power_profile VALUES\n')
     sql_file.write(',\n'.join(sql_values))
     sql_file.write(';\n')
@@ -63,13 +65,18 @@ def ExportProfiles(xml_path, sql_path):
 def main(args):
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--xml', help='Path to the XML file with the device power profile.')
+      '--device-xml',
+      nargs=2,
+      metavar=('DEVICE', 'XML_FILE'),
+      action='append',
+      help='Device name and path to the XML file with the device '
+      'power profile. Can be used multiple times.')
 
   args = parser.parse_args(args)
 
   with tempfile_ext.NamedTemporaryDirectory() as tempdir:
     sql_path = os.path.join(tempdir, trace_processor.POWER_PROFILE_SQL)
-    ExportProfiles(args.xml, sql_path)
+    ExportProfiles(args.device_xml, sql_path)
     version = datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
     binary_deps_manager.UploadAndSwitchDataFile(
         trace_processor.POWER_PROFILE_SQL, sql_path, version)

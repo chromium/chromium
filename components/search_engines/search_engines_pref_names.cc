@@ -14,6 +14,10 @@ namespace prefs {
 const char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
+// Whether a search context menu item is allowed.
+const char kDefaultSearchProviderContextMenuAccessAllowed[] =
+    "default_search_provider.context_menu_access_allowed";
+
 // Whether having a default search provider is enabled.
 const char kDefaultSearchProviderEnabled[] =
     "default_search_provider.enabled";

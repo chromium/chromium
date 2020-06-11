@@ -88,6 +88,7 @@ public class AwAutofillTest {
     public static final int AUTOFILL_VALUE_CHANGED = 3;
     public static final int AUTOFILL_COMMIT = 4;
     public static final int AUTOFILL_CANCEL = 5;
+    public static final int AUTOFILL_SESSION_STARTED = 6;
 
     /**
      * This class only implements the necessary methods of ViewStructure for testing.
@@ -509,6 +510,13 @@ public class AwAutofillTest {
             mEventQueue.add(AUTOFILL_CANCEL);
             mCallbackHelper.notifyCalled();
         }
+
+        @Override
+        public void notifyNewSessionStarted() {
+            if (DEBUG) Log.i(TAG, "notifyNewSessionStarted");
+            mEventQueue.add(AUTOFILL_SESSION_STARTED);
+            mCallbackHelper.notifyCalled();
+        }
     }
 
     private static class AwAutofillTestClient extends TestAwContentsClient {
@@ -598,7 +606,8 @@ public class AwAutofillTest {
             mTest.dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
             // Note that we currently call ENTER/EXIT one more time.
             mCnt += mTest.waitForCallbackAndVerifyTypes(mCnt,
-                    new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                    new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                            AUTOFILL_VALUE_CHANGED});
         }
 
         public void simulateUserSelectSuggestion() throws Throwable {
@@ -639,7 +648,8 @@ public class AwAutofillTest {
             // Note that we currently call ENTER/EXIT one more time.
             mCnt += mTest.waitForCallbackAndVerifyTypes(mCnt,
                     new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED,
-                            AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                            AUTOFILL_SESSION_STARTED, AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED,
+                            AUTOFILL_VALUE_CHANGED});
         }
 
         public void simulateUserChangeField() throws Throwable {
@@ -807,8 +817,8 @@ public class AwAutofillTest {
         // Note that we currently depend on keyboard app's behavior.
         // TODO(changwan): mock out IME interaction.
         Assert.assertTrue(DOMUtils.clickNode(mTestContainerView.getWebContents(), "text1"));
-        cnt += waitForCallbackAndVerifyTypes(
-                cnt, new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED});
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED});
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         waitForCallbackAndVerifyTypes(cnt, new Integer[] {AUTOFILL_VALUE_CHANGED});
 
@@ -842,7 +852,8 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         invokeOnProvideAutoFillVirtualStructure();
         TestViewStructure viewStructure = mTestValues.testViewStructure;
         assertNotNull(viewStructure);
@@ -972,7 +983,8 @@ public class AwAutofillTest {
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
 
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
         // Check if NotifyVirtualValueChanged() called and value is 'a'.
         assertEquals(1, values.size());
@@ -1004,7 +1016,8 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
         // Check if NotifyVirtualValueChanged() called and value is 'a'.
         assertEquals(1, values.size());
@@ -1012,9 +1025,9 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('text1').value='c';");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // There is no AUTOFILL_CANCEL from Android P.
-            assertEquals(2, getCallbackCount());
-        } else {
             assertEquals(3, getCallbackCount());
+        } else {
+            assertEquals(4, getCallbackCount());
         }
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
         // Check if NotifyVirtualValueChanged() called one more time and value is 'cb', this
@@ -1044,7 +1057,8 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         invokeOnProvideAutoFillVirtualStructure();
         // Fill the password.
         executeJavaScriptAndWaitForResult("document.getElementById('passwordid').select();");
@@ -1075,7 +1089,8 @@ public class AwAutofillTest {
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         // Cancel called for the first query.
         waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
     }
 
     @Test
@@ -1098,13 +1113,15 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         // Move to form2, cancel() should be called again.
         executeJavaScriptAndWaitForResult("document.getElementById('text2').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         waitForCallbackAndVerifyTypes(cnt,
                 new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED,
-                        AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                        AUTOFILL_SESSION_STARTED, AUTOFILL_VIEW_EXITED, AUTOFILL_VIEW_ENTERED,
+                        AUTOFILL_VALUE_CHANGED});
     }
 
     /**
@@ -1160,7 +1177,8 @@ public class AwAutofillTest {
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         // Verify autofill session triggered.
         count += waitForCallbackAndVerifyTypes(count,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         // Verify focus is in iframe.
         assertEquals("true",
                 executeJavaScriptAndWaitForResult(
@@ -1172,7 +1190,7 @@ public class AwAutofillTest {
         // The new session starts because cancel() has been called.
         waitForCallbackAndVerifyTypes(count,
                 new Integer[] {AUTOFILL_VIEW_EXITED, AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED,
-                        AUTOFILL_VALUE_CHANGED});
+                        AUTOFILL_SESSION_STARTED, AUTOFILL_VALUE_CHANGED});
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
         assertEquals(1, values.size());
         assertEquals("a", values.get(0).second.getTextValue());
@@ -1201,8 +1219,8 @@ public class AwAutofillTest {
         // Note that we currently depend on keyboard app's behavior.
         // TODO(changwan): mock out IME interaction.
         Assert.assertTrue(DOMUtils.clickNode(mTestContainerView.getWebContents(), "passwordid"));
-        cnt += waitForCallbackAndVerifyTypes(
-                cnt, new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED});
+        cnt += waitForCallbackAndVerifyTypes(cnt,
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED});
     }
 
     /**
@@ -1234,7 +1252,8 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         executeJavaScriptAndWaitForResult("window.location.href = 'success.html'; ");
         waitForCallbackAndVerifyTypes(cnt,
                 new Integer[] {AUTOFILL_VALUE_CHANGED, AUTOFILL_VALUE_CHANGED, AUTOFILL_COMMIT});
@@ -1296,7 +1315,8 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         clearChangedValues();
         executeJavaScriptAndWaitForResult("document.getElementById('color').focus();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_SPACE);
@@ -1336,7 +1356,8 @@ public class AwAutofillTest {
         // Use key B to select 'blue'.
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
         assertEquals(1, values.size());
         assertTrue(values.get(0).second.isList());
@@ -1382,7 +1403,8 @@ public class AwAutofillTest {
         // Change select control first shall start autofill session.
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_SPACE);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
         assertEquals(1, values.size());
         assertTrue(values.get(0).second.isList());
@@ -1418,7 +1440,8 @@ public class AwAutofillTest {
         // work.
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_SPACE);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         ArrayList<Pair<Integer, AutofillValue>> values = getChangedValues();
         assertEquals(1, values.size());
         assertTrue(values.get(0).second.isList());
@@ -1450,7 +1473,8 @@ public class AwAutofillTest {
         executeJavaScriptAndWaitForResult("document.getElementById('frmAddressB').select();");
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         invokeOnProvideAutoFillVirtualStructure();
         TestViewStructure viewStructure = mTestValues.testViewStructure;
         assertNotNull(viewStructure);
@@ -1745,7 +1769,8 @@ public class AwAutofillTest {
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
 
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
 
         // Moved view, the position change trigger additional AUTOFILL_VIEW_EXITED and
         // AUTOFILL_VIEW_ENTERED.
@@ -1780,7 +1805,8 @@ public class AwAutofillTest {
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
 
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         invokeOnProvideAutoFillVirtualStructure();
         TestViewStructure viewStructure = mTestValues.testViewStructure;
         assertNotNull(viewStructure);
@@ -1811,7 +1837,8 @@ public class AwAutofillTest {
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
 
         cnt += waitForCallbackAndVerifyTypes(cnt,
-                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
+                new Integer[] {AUTOFILL_CANCEL, AUTOFILL_VIEW_ENTERED, AUTOFILL_SESSION_STARTED,
+                        AUTOFILL_VALUE_CHANGED});
         invokeOnProvideAutoFillVirtualStructure();
         TestViewStructure viewStructure = mTestValues.testViewStructure;
         assertNotNull(viewStructure);
@@ -1832,6 +1859,37 @@ public class AwAutofillTest {
         String value1 =
                 executeJavaScriptAndWaitForResult("document.getElementById('text2').value;");
         assertEquals("\"example@example.com\"", value1);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNoEventSentToAutofillServiceForFocusedDatalist() throws Throwable {
+        final String data = "<html><head></head><body><form action='a.html' name='formname'>"
+                + "<input type='text' id='text1' name='username'>"
+                + "<input list='datalist_id' name='count' id='text2'/><datalist id='datalist_id'>"
+                + "<option value='A1'>one</option><option value='A2'>two</option></datalist>"
+                + "</form></body></html>";
+        final String url = mWebServer.setResponse(FILE, data, null);
+        loadUrlSync(url);
+        int cnt = 0;
+        executeJavaScriptAndWaitForResult("document.getElementById('text2').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
+        // Verify not notifying AUTOFILL_VIEW_ENTERED and AUTOFILL_VALUE_CHANGED events for the
+        // datalist.
+        cnt += waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_CANCEL, AUTOFILL_SESSION_STARTED});
+        // Verify input accepted.
+        String value1 =
+                executeJavaScriptAndWaitForResult("document.getElementById('text2').value;");
+        assertEquals("\"a\"", value1);
+        // Move cursor to text1 and enter something.
+        executeJavaScriptAndWaitForResult("document.getElementById('text1').select();");
+        dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
+        // Verify no AUTOFILL_VIEW_EXITED sent for datalist and autofill service shall get the
+        // events from the change of text1.
+        cnt += waitForCallbackAndVerifyTypes(
+                cnt, new Integer[] {AUTOFILL_VIEW_ENTERED, AUTOFILL_VALUE_CHANGED});
     }
 
     private void scrollToBottom() {

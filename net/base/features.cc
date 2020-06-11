@@ -129,11 +129,11 @@ const base::FeatureParam<int> kEsniDnsMaxAbsoluteAdditionalWaitMilliseconds{
 const base::FeatureParam<int> kEsniDnsMaxRelativeAdditionalWaitPercent{
     &kRequestEsniDnsRecords, "EsniDnsMaxRelativeAdditionalWaitPercent", 5};
 
-const base::Feature kSameSiteByDefaultCookies{
-    "SameSiteByDefaultCookies", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSameSiteByDefaultCookies{"SameSiteByDefaultCookies",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCookiesWithoutSameSiteMustBeSecure{
-    "CookiesWithoutSameSiteMustBeSecure", base::FEATURE_DISABLED_BY_DEFAULT};
+    "CookiesWithoutSameSiteMustBeSecure", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kShortLaxAllowUnsafeThreshold{
     "ShortLaxAllowUnsafeThreshold", base::FEATURE_DISABLED_BY_DEFAULT};

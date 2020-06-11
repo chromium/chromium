@@ -14,10 +14,12 @@ video::-webkit-media-controls {
 </style>
 <video></video>
 <script>
-testRunner.waitUntilDone();
+if (window.testRunner)
+  testRunner.waitUntilDone();
 var t = { step_func: func => func() };
 trusted_request(t, document.querySelector("video"));
 document.addEventListener("fullscreenchange", function() {
-  testRunner.notifyDone();
+  if (window.testRunner)
+    testRunner.notifyDone();
 });
 </script>

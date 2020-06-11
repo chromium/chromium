@@ -160,7 +160,7 @@ function decodeString16(arr) {
  *     History store.
  */
 function renderStatsTable(stats) {
-  statsTableBody.innerHTML = '';
+  statsTableBody.innerHTML = trustedTypes.emptyHTML;
 
   Object.keys(stats.tableRowCounts).forEach((key) => {
     statsTableBody.appendChild(createStatsRow(key, stats.tableRowCounts[key]));

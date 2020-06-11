@@ -30,7 +30,6 @@
     "iron-validatable-behavior": "PolymerElements/iron-validatable-behavior#2.1.0",
     "neon-animation": "PolymerElements/neon-animation#2.1.0",
     "paper-behaviors": "PolymerElements/paper-behaviors#2.1.0",
-    "paper-input": "PolymerElements/paper-input#2.2.2",
     "paper-progress": "PolymerElements/paper-progress#2.0.1",
     "paper-ripple": "PolymerElements/paper-ripple#2.0.1",
     "paper-spinner": "PolymerElements/paper-spinner#2.0.0",

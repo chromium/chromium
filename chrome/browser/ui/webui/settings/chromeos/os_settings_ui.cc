@@ -68,10 +68,6 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   html_source->AddResourcePath("chromeos/lazy_load.html",
                                IDR_OS_SETTINGS_LAZY_LOAD_VULCANIZED_HTML);
   html_source->SetDefaultResource(IDR_OS_SETTINGS_VULCANIZED_HTML);
-  html_source->AddResourcePath("chromeos/os_settings_v3.html",
-                               IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML);
-  html_source->AddResourcePath("chromeos/os_settings.js",
-                               IDR_OS_SETTINGS_SETTINGS_ROLLUP_JS);
 #else
   webui::SetupWebUIDataSource(
       html_source,

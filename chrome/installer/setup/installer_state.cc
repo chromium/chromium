@@ -79,8 +79,6 @@ void InstallerState::Initialize(const base::CommandLine& command_line,
 
   const bool is_uninstall = command_line.HasSwitch(switches::kUninstall);
 
-  // TODO(grt): Infer target_path_ from an existing install in support of
-  // varying install locations; see https://crbug.com/380177.
   target_path_ = GetChromeInstallPath(system_install());
   state_key_ = install_static::GetClientStateKeyPath();
 

@@ -13,10 +13,12 @@ cast_source_set("reboot_util") {
 
   deps = [ "//base" ]
 
-  if (chromecast_branding == "google" && !is_fuchsia) {
-    deps += [ "//chromecast/internal/system/reboot:reboot_util" ]
-  } else {
-    sources += [ "reboot_util_dummy.cc" ]
+  if (!is_fuchsia) {
+    if (chromecast_branding == "google") {
+      deps += [ "//chromecast/internal/system/reboot:reboot_util" ]
+    } else {
+      sources += [ "reboot_util_dummy.cc" ]
+    }
   }
 
   if (is_android && chromecast_branding != "public") {
@@ -41,6 +43,18 @@ test("cast_reboot_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_fuchsia) {
+    sources += [ "reboot_fuchsia_test.cc" ]
+    deps += [
+      ":fuchsia",
+      "//chromecast/public",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+      "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+  }
 }
 
 # Target for OEM partners to override reboot shared library, i.e.
@@ -53,13 +67,19 @@ cast_shared_library("libcast_reboot_1.0") {
 
 if (is_fuchsia) {
   cast_source_set("fuchsia") {
-    sources = [ "reboot_fuchsia.cc" ]
+    sources = [
+      "reboot_fuchsia.cc",
+      "reboot_fuchsia.h",
+      "reboot_util.h",
+    ]
     public_deps = [ "//chromecast/public" ]
     deps = [
       "//base",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hardware.power.statecontrol",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
 }

@@ -803,6 +803,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Accessibility.ScreenReader.Image.MinSize"
     units="px" expires_after="2020-05-10">
+  <obsolete>
+    Removed 06/2020 as this is stable and doesn't need to be tracked closely.
+  </obsolete>
 <!-- Name completed by histogram_suffixes
        name="AccessibilityScreenReaderImage" -->
 
@@ -817,6 +820,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Accessibility.ScreenReader.Image.SizeRatio"
     units="%" expires_after="2020-05-10">
+  <obsolete>
+    Removed 06/2020 as this is stable and doesn't need to be tracked closely.
+  </obsolete>
 <!-- Name completed by histogram_suffixes
        name="AccessibilityScreenReaderImage" -->
 
@@ -25983,6 +25989,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.NumCharsOfQueries" units="characters"
+    expires_after="2020-12-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    The number of characters for queries used to fetch results from the Settings
+    Search Mojo API.
+  </summary>
+</histogram>
+
 <histogram base="true" name="ChromeOS.Settings.NumClicksUntilChange"
     units="clicks" expires_after="2020-12-01">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
@@ -26010,6 +26027,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The number of searches before changing a setting.</summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.NumSearchResultsFetched" units="results"
+    expires_after="2020-12-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    The number of search results fetched each time a successful search request
+    is made to the Settings Search Mojo API.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.OsBannerInteraction"
     enum="CrosSettingsOsBannerInteraction" expires_after="2020-10-18">
   <owner>jamescook@chromium.org</owner>
@@ -26028,6 +26056,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Paths visited within chrome://os-settings. For evaluating popularity and
     priorities for OS Settings UI.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchLatency" units="ms"
+    expires_after="2020-12-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    The time fetching search results from the Settings Search Mojo API. Recorded
+    when getSearchHandler().search() completes.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchRequests"
+    enum="OsSettingSearchRequestTypes" expires_after="2020-12-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    The number of search requests made to the Settings Search Mojo API. For
+    search requests that succeeded with a response, the number of search
+    requests that had results which were discarded, and the number of search
+    requests that were shown to the user. Recorded when
+    getSearchHandler().search() completes.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.SearchRequestsPerSession"
+    units="mojo search requests" expires_after="2020-12-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    The number of search requests made to the Settings Search Mojo API in one
+    session of the settings app.
   </summary>
 </histogram>
 
@@ -26079,6 +26143,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>cros-customization@google.com</owner>
   <summary>
     The time spent on the settings page before changing a setting.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.UserActionOnSearchResultsShown"
+    enum="OsSettingSearchBoxUserAction" expires_after="2020-12-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    The user action taken when search results exist and are displayed.
   </summary>
 </histogram>
 
@@ -28402,6 +28476,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="CompositorLatency.Diagnostic.PresentationTimeDeltaFromDeadline"
+    units="ms" expires_after="M87">
+  <owner>behdadb@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <summary>
+    For the compositor pipeline, measures how far the presentation time of a
+    compositor frame is from the frame deadline (i.e. vsync time).
+  </summary>
+</histogram>
+
 <histogram base="true" name="CompositorLatency.DroppedFrame"
     units="microseconds" expires_after="2021-01-31">
   <owner>sadrul@chromium.org</owner>
@@ -30185,6 +30270,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Android: failure reason when attempting to fetch an OAuth token for the
     feed. Recorded when an artcile fetch completes.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.UploadActionsBatchStatus"
+    enum="FeedUploadActionsBatchStatus" expires_after="2020-12-01">
+  <owner>iwells@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Result of attempting to upload a batch of one or more actions.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.UploadActionsStatus"
+    enum="FeedUploadActionsStatus" expires_after="2020-12-01">
+  <owner>iwells@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Result of an UploadActionsTask run in which zero or more batches of user
+    actions are uploaded. See ContentSuggestions.Feed.UploadActionsBatchStatus
+    for the status of a particular batch upload.
   </summary>
 </histogram>
 
@@ -47002,7 +47109,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingStaleProfileCount" units="profiles"
-    expires_after="2021-02-01">
+    expires_after="2020-06-09">
+  <obsolete>
+    Removed 06/2020 because enough data had been gathered.
+  </obsolete>
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -62866,8 +62976,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11InitializeResult" enum="D3D11InitializeResult"
-    expires_after="M82">
-  <owner>jmadill@chromium.org</owner>
+    expires_after="2020-11-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     The result from initializing a D3D11 device in ANGLE. Can be success, or one
     of several error codes which indicate different reasons for failing.
@@ -64039,8 +64150,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GPU.InitializeOneOffMediumTime" units="ms" expires_after="M82">
-  <owner>jmadill@chromium.org</owner>
+<histogram name="GPU.InitializeOneOffMediumTime" units="ms"
+    expires_after="2020-11-30">
+  <owner>jonahr@google.com</owner>
+  <owner>angle-team@google.com</owner>
   <summary>
     The time that the GPU process spends in initializing the GL surface, and
     collecting graphics information. Records times up to three minutes.
@@ -78053,7 +78166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.MSE.CodecChangeTime" units="ms"
-    expires_after="M85">
+    expires_after="2020-10-11">
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -78065,7 +78178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MSE.DemuxerDestructionTime" units="ms"
-    expires_after="M82">
+    expires_after="2020-10-11">
   <owner>wolenetz@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -78127,7 +78240,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MSE.ExecutionContext" enum="MediaSourceExecutionContext"
-    expires_after="M81">
+    expires_after="2020-10-11">
   <owner>wolenetz@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -78202,7 +78315,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.MSE.Mp4TrunSampleCount" units="samples"
-    expires_after="2020-06-07">
+    expires_after="2020-10-11">
   <owner>wolenetz@chromium.org</owner>
   <owner>sandersd@chromium.org</owner>
   <summary>
@@ -92629,6 +92742,50 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Duration of time taken by a secure DnsTransaction to an available DoH server
     to succeed. A DoH server is available if a probe has been successfully
     completed and fewer than a threshold amount of failures have occurred.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsTransaction.UDP.IdMismatch"
+    enum="DNS.UdpIdMismatchStatus" expires_after="2020-12-01">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Enumerated status of whether a DNS over UDP response ID matched the expected
+    query ID and whether a mismatched ID is recognized as a recently-queried
+    one. Logged for every DNS over UDP response received with a parsable ID.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsTransaction.UDP.IdMismatch.OldestMatchTime"
+    units="ms" expires_after="2020-12-01">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Time between receiving a mismatched DNS ID (when a DNS response contains an
+    ID that does not match the ID sent in the query) via UDP and the oldest
+    known use of the same ID in a query. Logged for every DNS over UDP response
+    receivied with a mismatched DNS ID.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsTransaction.UDP.ReusedPort.Count"
+    units="num recent uses" expires_after="2020-12-01">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Number of recent uses found of a local port number used for DNS over UDP.
+    Logged for every DNS over UDP query sent.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsTransaction.UDP.ReusedPort.MostRecentAge"
+    units="ms" expires_after="2020-12-01">
+  <owner>ericorth@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Time between use of a local port number for DNS over UDP and the most recent
+    DNS over UDP use of the same port. Logged for every DNS over UDP query sent
+    with at least 1 recognized previous use of the local port.
   </summary>
 </histogram>
 
@@ -134239,6 +134396,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PrintPreview.PreviewEvent" enum="PrintPreviewHelperEvents"
     expires_after="M85">
+  <obsolete>
+    Removed 06/2020.
+  </obsolete>
   <owner>thestig@chromium.org</owner>
   <summary>Print preview events.</summary>
 </histogram>
@@ -138400,7 +138560,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.SoftwareImageDecodeState"
-    enum="SoftwareImageDecodeState" expires_after="M85">
+    enum="SoftwareImageDecodeState" expires_after="2021-06-08">
+  <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
     Software image decode usage statistics. Images are decoded and locked prior
@@ -138409,7 +138570,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.SoftwareImageDecodeState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="M85">
+    enum="BooleanWasted" expires_after="2021-06-08">
+  <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
     Indication whether the first lock of an image decode was wasted (image was
@@ -158005,6 +158167,8 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.Extensions.GetAuthTokenResult"
     enum="GetAuthTokenResult" expires_after="2020-10-04">
+<!-- Name completed by histogram_suffixes name="GetAuthTokenType" -->
+
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -197648,6 +197812,7 @@ regressions. -->
 
 <histogram_suffixes name="FileBrowserCrostiniSharedPathsDepth" separator=".">
   <suffix name="AndroidFiles" label="Shared path in Android volume."/>
+  <suffix name="Archive" label="Shared path in archive mount."/>
   <suffix name="Crostini" label="Shared path in Crostini volume."/>
   <suffix name="Downloads" label="Shared path in Downloads volume."/>
   <suffix name="DriveComputers" label="Shared path in Drive Computers volume."/>
@@ -197872,6 +198037,13 @@ regressions. -->
   <suffix name="Intro" label="Gesture Navigation Intro Page"/>
   <suffix name="Overview" label="Gesture Navigation Overview Page"/>
   <affected-histogram name="OOBE.GestureNavigationScreen.PageShownTime"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="GetAuthTokenType" separator=".">
+  <suffix name="RemoteConsentApproved"
+      label="The remote consent has been approved for the getAuthToken()
+             call."/>
+  <affected-histogram name="Signin.Extensions.GetAuthTokenResult"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="GLApisWithErrorReporting" separator="_">

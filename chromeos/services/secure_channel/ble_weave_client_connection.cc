@@ -692,9 +692,11 @@ void BluetoothLowEnergyWeaveClientConnection::SendPendingWriteRequest() {
   if (sub_status() == SubStatus::CONNECTED_AND_IDLE)
     SetSubStatus(SubStatus::CONNECTED_AND_SENDING_MESSAGE);
 
+  // Note: the Android implementation of this GATT characteristic does not
+  // support kWithoutResponse; we must specify kWithResponse.
   characteristic->WriteRemoteCharacteristic(
       pending_write_request_->value,
-      device::BluetoothRemoteGattCharacteristic::WriteType::kWithoutResponse,
+      device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
       base::BindOnce(&BluetoothLowEnergyWeaveClientConnection::
                          OnRemoteCharacteristicWritten,
                      weak_ptr_factory_.GetWeakPtr()),

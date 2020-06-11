@@ -10,6 +10,8 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
@@ -82,75 +84,13 @@ void LacrosLoader::Start() {
   if (!lacros_util::IsLacrosAllowed())
     return;
 
-  // TODO(jamescook): Provide a switch to override the lacros-chrome path for
-  // developers.
-  std::string chrome_path;
-  if (lacros_path_.empty()) {
-    LOG(WARNING) << "lacros component image not yet available";
-    return;
-  }
-
-  // TODO(erikchen): If Lacros is already running, then we should send a mojo
-  // signal to open a new tab rather than going through the start flow again.
-  bool already_running = IsLacrosRunning();
-
-  chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
-  LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
-
-  base::LaunchOptions options;
-  options.environment["EGL_PLATFORM"] = "surfaceless";
-  options.environment["XDG_RUNTIME_DIR"] = "/run/chrome";
-
-  std::string api_key;
-  if (google_apis::HasAPIKeyConfigured())
-    api_key = google_apis::GetAPIKey();
-  else
-    api_key = google_apis::GetNonStableAPIKey();
-  options.environment["GOOGLE_API_KEY"] = api_key;
-  options.environment["GOOGLE_DEFAULT_CLIENT_ID"] =
-      google_apis::GetOAuth2ClientID(google_apis::CLIENT_MAIN);
-  options.environment["GOOGLE_DEFAULT_CLIENT_SECRET"] =
-      google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN);
-
-  options.kill_on_parent_death = true;
-
-  std::vector<std::string> argv = {
-      chrome_path,
-      "--ozone-platform=wayland",
-      std::string("--user-data-dir=") + kUserDataDir,
-      "--enable-gpu-rasterization",
-      "--enable-oop-rasterization",
-      "--lang=en-US",
-      "--breakpad-dump-location=/tmp"};
-
-  // We assume that if there's a custom chrome path, that this is a developer
-  // and they want to enable logging.
-  bool custom_chrome_path = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kLacrosChromePath);
-  if (custom_chrome_path) {
-    std::string log_file(kUserDataDir);
-    log_file += "/lacros.log";
-
-    // Only delete the old log file if lacros is not running. If it's already
-    // running, then the subsequent call to base::LaunchProcess opens a new
-    // window, and we do not want to delete the existing log file.
-    // TODO(erikchen): Currently, launching a second instance of chrome deletes
-    // the existing log file, even though the new instance quickly exits.
-    if (!already_running) {
-      base::DeleteFile(base::FilePath(log_file), /*recursive=*/false);
-    }
-    argv.push_back("--enable-logging");
-    argv.push_back(std::string("--log-file=") + log_file);
-  }
-
-  // If Lacros is already running, then the new call to launch process spawns a
-  // new window but does not create a lasting process.
-  if (already_running) {
-    base::LaunchProcess(argv, options);
-  } else {
-    lacros_process_ = base::LaunchProcess(argv, options);
-  }
-  LOG(WARNING) << "Launched lacros-chrome with pid " << lacros_process_.Pid();
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&LacrosLoader::StartBackground, base::Unretained(this)),
+      base::BindOnce(&LacrosLoader::StartForeground, base::Unretained(this)));
 }
 
 void LacrosLoader::OnUserSessionStarted(bool is_primary_user) {
@@ -190,6 +130,86 @@ void LacrosLoader::OnUserSessionStarted(bool is_primary_user) {
         base::BindOnce(&CheckIfPreviouslyInstalled, cros_component_manager_),
         base::BindOnce(&LacrosLoader::CleanUp, weak_factory_.GetWeakPtr()));
   }
+}
+
+bool LacrosLoader::StartBackground() {
+  // TODO(erikchen): If Lacros is already running, then we should send a mojo
+  // signal to open a new tab rather than going through the start flow again.
+  bool already_running = IsLacrosRunning();
+
+  if (!already_running) {
+    // Only delete the old log file if lacros is not running. If it's already
+    // running, then the subsequent call to base::LaunchProcess opens a new
+    // window, and we do not want to delete the existing log file.
+    // TODO(erikchen): Currently, launching a second instance of chrome deletes
+    // the existing log file, even though the new instance quickly exits.
+    base::DeleteFile(base::FilePath(LogPath()), /*recursive=*/false);
+  }
+
+  return already_running;
+}
+
+void LacrosLoader::StartForeground(bool already_running) {
+  // TODO(jamescook): Provide a switch to override the lacros-chrome path for
+  // developers.
+  if (lacros_path_.empty()) {
+    LOG(WARNING) << "lacros component image not yet available";
+    return;
+  }
+
+  std::string chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
+  LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
+
+  base::LaunchOptions options;
+  options.environment["EGL_PLATFORM"] = "surfaceless";
+  options.environment["XDG_RUNTIME_DIR"] = "/run/chrome";
+
+  std::string api_key;
+  if (google_apis::HasAPIKeyConfigured())
+    api_key = google_apis::GetAPIKey();
+  else
+    api_key = google_apis::GetNonStableAPIKey();
+  options.environment["GOOGLE_API_KEY"] = api_key;
+  options.environment["GOOGLE_DEFAULT_CLIENT_ID"] =
+      google_apis::GetOAuth2ClientID(google_apis::CLIENT_MAIN);
+  options.environment["GOOGLE_DEFAULT_CLIENT_SECRET"] =
+      google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN);
+
+  options.kill_on_parent_death = true;
+
+  std::vector<std::string> argv = {
+      chrome_path,
+      "--ozone-platform=wayland",
+      std::string("--user-data-dir=") + kUserDataDir,
+      "--enable-gpu-rasterization",
+      "--enable-oop-rasterization",
+      "--lang=en-US",
+      "--breakpad-dump-location=/tmp"};
+
+  // We assume that if there's a custom chrome path, that this is a developer
+  // and they want to enable logging.
+  bool custom_chrome_path = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kLacrosChromePath);
+  if (custom_chrome_path) {
+    argv.push_back("--enable-logging");
+    argv.push_back(std::string("--log-file=") + LogPath());
+  }
+
+  // If Lacros is already running, then the new call to launch process spawns a
+  // new window but does not create a lasting process.
+  if (already_running) {
+    base::LaunchProcess(argv, options);
+  } else {
+    base::RecordAction(base::UserMetricsAction("Lacros.Launch"));
+    lacros_process_ = base::LaunchProcess(argv, options);
+  }
+  LOG(WARNING) << "Launched lacros-chrome with pid " << lacros_process_.Pid();
+}
+
+// static
+std::string LacrosLoader::LogPath() {
+  std::string log_file(kUserDataDir);
+  return log_file + "/lacros.log";
 }
 
 void LacrosLoader::OnLoadComplete(

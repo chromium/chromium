@@ -132,6 +132,9 @@ crbug.com/angleproject/4417 [ win ] conformance2/rendering/framebuffer-render-to
 
 # Intel flaky issues
 crbug.com/912579 [ opengl win passthrough intel ] conformance2/rendering/out-of-bounds-index-buffers-after-copying.html [ RetryOnFailure ]
+# Flakily times out on driver 26.20.100.8141.
+crbug.com/1093482 [ win10 intel-0x3e92 ] deqp/functional/gles3/shadermatrix/div_dynamic.html [ RetryOnFailure ]
+crbug.com/1093482 [ win10 intel-0x5912 ] deqp/functional/gles3/shadermatrix/div_dynamic.html [ RetryOnFailure ]
 
 # Intel failed issues
 crbug.com/795030 [ opengl win passthrough intel ] deqp/functional/gles3/shadercommonfunction.html [ Failure ]
@@ -284,9 +287,6 @@ crbug.com/angleproject/3354 [ win amd-0x699f ] deqp/functional/gles3/fborender/s
 
 # Flaky on AMD Win7
 crbug.com/989050 [ d3d11 win7 amd ] conformance2/textures/misc/tex-unpack-params-imagedata.html [ RetryOnFailure ]
-
-# Passthrough command decoder
-crbug.com/953120 [ passthrough ] conformance/programs/program-test.html [ Failure ]
 
 # Passthrough command decoder / OpenGL / Windows
 crbug.com/835364 [ opengl win passthrough nvidia ] deqp/functional/gles3/fbocompleteness.html [ Failure ]

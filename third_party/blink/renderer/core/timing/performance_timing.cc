@@ -431,6 +431,40 @@ uint64_t PerformanceTiming::LargestTextPaintSize() const {
   return paint_timing_detector->LargestTextPaintSize();
 }
 
+uint64_t PerformanceTiming::ExperimentalLargestImagePaint() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  if (!paint_timing_detector)
+    return 0;
+
+  return MonotonicTimeToIntegerMilliseconds(
+      paint_timing_detector->ExperimentalLargestImagePaint());
+}
+
+uint64_t PerformanceTiming::ExperimentalLargestImagePaintSize() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  if (!paint_timing_detector)
+    return 0;
+
+  return paint_timing_detector->ExperimentalLargestImagePaintSize();
+}
+
+uint64_t PerformanceTiming::ExperimentalLargestTextPaint() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  if (!paint_timing_detector)
+    return 0;
+
+  return MonotonicTimeToIntegerMilliseconds(
+      paint_timing_detector->ExperimentalLargestTextPaint());
+}
+
+uint64_t PerformanceTiming::ExperimentalLargestTextPaintSize() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  if (!paint_timing_detector)
+    return 0;
+
+  return paint_timing_detector->ExperimentalLargestTextPaintSize();
+}
+
 uint64_t PerformanceTiming::FirstInputOrScrollNotifiedTimestamp() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)

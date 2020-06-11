@@ -620,11 +620,12 @@
     {
       "id": 90,
       "description": "Accelerated video decode interferes with GPU sandbox on certain NVIDIA drivers",
-      "cr_bugs": [298968],
+      "cr_bugs": [298968, 1020137],
       "os": {
         "type": "win"
       },
       "vendor_id": "0x10de",
+      "multi_gpu_category": "any",
       "driver_version": {
         "comment": "INF_version: 8.17.12.5729, 8.17.12.8026; date: 05/22/2010, 08/03/2011",
         "op": "between",

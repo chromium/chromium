@@ -378,6 +378,11 @@ public final class AwBrowserProcess {
      */
     public static void transmitRecordedMetrics() {
         final Context appContext = ContextUtils.getApplicationContext();
+        if (AwMetricsServiceClient.isAppOptedOut(appContext)) {
+            Log.d(TAG, "App opted out from metrics collection, not connecting to metrics service");
+            return;
+        }
+
         final Intent intent = new Intent();
         intent.setClassName(getWebViewPackageName(), ServiceNames.METRICS_BRIDGE_SERVICE);
 

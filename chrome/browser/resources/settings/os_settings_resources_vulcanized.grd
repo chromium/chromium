@@ -88,18 +88,6 @@
                file="${root_gen_dir}\chrome\browser\ui\webui\settings\chromeos\search\user_action_recorder.mojom-lite.js"
                use_base_dir="false"
                type="BINDATA" />
-
-      <!-- Polymer3 related files-->
-      <include name="IDR_OS_SETTINGS_SETTINGS_ROLLUP_JS"
-               file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\os_settings.rollup.js"
-               use_base_dir="false"
-               preprocess="true"
-               compress="gzip"
-               type="BINDATA" />
-      <include name="IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML"
-               file="chromeos/os_settings_v3.html"
-               compress="false"
-               type="BINDATA" />
     </includes>
   </release>
 </grit>

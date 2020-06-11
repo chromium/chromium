@@ -95,7 +95,7 @@ void XMLErrors::AppendErrorMessage(const String& type_string,
 static inline Element* CreateXHTMLParserErrorHeader(
     Document* doc,
     const String& error_messages) {
-  const CreateElementFlags flags = CreateElementFlags::ByParser();
+  const CreateElementFlags flags = CreateElementFlags::ByParser(doc);
   Element* report_element = doc->CreateRawElement(
       QualifiedName(g_null_atom, "parsererror", html_names::xhtmlNamespaceURI),
       flags);
@@ -135,7 +135,7 @@ void XMLErrors::InsertErrorMessageBlock() {
   // manually and includes line/col info regarding where the errors are located)
 
   // Create elements for display
-  const CreateElementFlags flags = CreateElementFlags::ByParser();
+  const CreateElementFlags flags = CreateElementFlags::ByParser(document_);
   Element* document_element = document_->documentElement();
   if (!document_element) {
     Element* root_element =

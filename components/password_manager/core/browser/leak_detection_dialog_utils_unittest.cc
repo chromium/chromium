@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -198,4 +199,69 @@ INSTANTIATE_TEST_SUITE_P(InstantiationName,
                          BulkCheckCredentialLeakDialogUtilsTest,
                          testing::ValuesIn(kBulkCheckTestCases));
 
+#if defined(OS_ANDROID)
+struct PasswordChangeParams {
+  // Specifies the test case.
+  CredentialLeakType leak_type;
+  int accept_button_id;
+  bool should_show_cancel_button;
+  bool should_show_change_password_button;
+} kPasswordChangeTestCases[] = {
+    {CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(false)), IDS_OK,
+     false, false},
+    {CreateLeakType(IsSaved(false), IsReused(false), IsSyncing(true)), IDS_OK,
+     false, false},
+    {CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(false)), IDS_OK,
+     false, false},
+    {CreateLeakType(IsSaved(false), IsReused(true), IsSyncing(true)),
+     IDS_LEAK_CHECK_CREDENTIALS, true, false},
+    {CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(false)), IDS_OK,
+     false, false},
+    {CreateLeakType(IsSaved(true), IsReused(false), IsSyncing(true)),
+     IDS_PASSWORD_CHANGE, true, true},
+    {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(false)), IDS_OK,
+     false, false},
+    {CreateLeakType(IsSaved(true), IsReused(true), IsSyncing(true)),
+     IDS_LEAK_CHECK_CREDENTIALS, true, false}};
+
+class PasswordChangeCredentialLeakDialogUtilsTest
+    : public testing::TestWithParam<PasswordChangeParams> {
+ public:
+  PasswordChangeCredentialLeakDialogUtilsTest() {
+    feature_list_.InitAndEnableFeature(features::kPasswordChange);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PasswordChangeCredentialLeakDialogUtilsTest,
+       ShouldShowChangePasswordButton) {
+  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
+
+  // ShouldCheckPasswords and ShouldShowChangePasswordButton
+  // should never be true both.
+  EXPECT_FALSE(ShouldCheckPasswords(GetParam().leak_type) &&
+               ShouldShowChangePasswordButton(GetParam().leak_type));
+
+  EXPECT_EQ(GetParam().should_show_change_password_button,
+            ShouldShowChangePasswordButton(GetParam().leak_type));
+}
+
+TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, ShouldShowCancelButton) {
+  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
+  EXPECT_EQ(GetParam().should_show_cancel_button,
+            ShouldShowCancelButton(GetParam().leak_type));
+}
+
+TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, GetAcceptButtonLabel) {
+  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
+  EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().accept_button_id),
+            GetAcceptButtonLabel(GetParam().leak_type));
+}
+
+INSTANTIATE_TEST_SUITE_P(InstantiationName,
+                         PasswordChangeCredentialLeakDialogUtilsTest,
+                         testing::ValuesIn(kPasswordChangeTestCases));
+#endif
 }  // namespace password_manager

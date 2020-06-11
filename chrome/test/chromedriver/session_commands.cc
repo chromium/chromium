@@ -846,7 +846,8 @@ Status ExecuteSwitchToWindow(Session* session,
 }
 
 // Handles legacy format SetTimeout command.
-// TODO(johnchen@chromium.org): Remove when we stop supporting legacy protocol.
+// TODO(crbug.com/chromedriver/2596): Remove when we stop supporting legacy
+// protocol.
 Status ExecuteSetTimeoutLegacy(Session* session,
                                const base::DictionaryValue& params,
                                std::unique_ptr<base::Value>* value) {
@@ -907,8 +908,8 @@ Status ExecuteSetTimeoutsW3C(Session* session,
 Status ExecuteSetTimeouts(Session* session,
                           const base::DictionaryValue& params,
                           std::unique_ptr<base::Value>* value) {
-  // TODO(johnchen@chromium.org): Remove legacy version support when we stop
-  // supporting non-W3C protocol. At that time, we can delete the legacy
+  // TODO(crbug.com/chromedriver/2596): Remove legacy version support when we
+  // stop supporting non-W3C protocol. At that time, we can delete the legacy
   // function and merge the W3C function into this function.
   if (params.HasKey("ms")) {
     return ExecuteSetTimeoutLegacy(session, params, value);

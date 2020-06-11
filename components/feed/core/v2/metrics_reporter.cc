@@ -380,6 +380,18 @@ void MetricsReporter::OnLoadMore(LoadStreamStatus status) {
       "ContentSuggestions.Feed.LoadStreamStatus.LoadMore", status);
 }
 
+void MetricsReporter::OnUploadActionsBatch(UploadActionsBatchStatus status) {
+  DVLOG(1) << "UploadActionsBatchStatus: " << status;
+  base::UmaHistogramEnumeration(
+      "ContentSuggestions.Feed.UploadActionsBatchStatus", status);
+}
+
+void MetricsReporter::OnUploadActions(UploadActionsStatus status) {
+  DVLOG(1) << "UploadActionsTask finished with status " << status;
+  base::UmaHistogramEnumeration("ContentSuggestions.Feed.UploadActionsStatus",
+                                status);
+}
+
 void MetricsReporter::SurfaceReceivedContent(SurfaceId surface_id) {
   ReportGetMoreIfNeeded(surface_id, true);
 }

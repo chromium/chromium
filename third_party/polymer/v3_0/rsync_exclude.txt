@@ -31,9 +31,6 @@ package-lock.json
 */site/
 */templates/
 
-# iron-autogrow-textarea
-iron-autogrow-textarea/*
-
 # iron-checked-element-behavior
 iron-checked-element-behavior/*
 
@@ -47,12 +44,6 @@ iron-test-helpers/test-helpers.js
 # paper-behaviors
 paper-behaviors/paper-button-behavior.js
 paper-behaviors/paper-checked-element-behavior.js
-
-# paper-input
-paper-input/paper-input-behavior.js
-paper-input/paper-input-char-counter.js
-paper-input/paper-input.js
-paper-input/paper-textarea.js
 
 # paper-spinner
 paper-spinner/paper-spinner.js

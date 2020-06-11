@@ -7,7 +7,13 @@
 
 #include <string>
 
-#include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+namespace google {
+namespace protobuf {
+
+class MessageLite;
+
+}  // namespace protobuf
+}  // namespace google
 
 namespace metrics {
 
@@ -18,10 +24,10 @@ namespace metrics {
 bool DecodeLogData(const std::string& compressed_log_data,
                    std::string* log_data);
 
-// Decodes |compressed_log_data| and populates |uma_proto| with the decompressed
-// log data. Returns true on success and false on failure.
+// Decodes |compressed_log_data| and populates |proto| with the decompressed log
+// data. Returns true on success and false on failure.
 bool DecodeLogDataToProto(const std::string& compressed_log_data,
-                          ChromeUserMetricsExtension* uma_proto);
+                          google::protobuf::MessageLite* proto);
 
 }  // namespace metrics
 

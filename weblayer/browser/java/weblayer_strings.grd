@@ -178,28 +178,6 @@
       <message name="IDS_WEBLAYER_INFOBAR_CLOSE" desc="Accessibility label for the dismiss infobar Button">
         Close
       </message>
-      <!-- TranslateInfoBar -->
-      <message name="IDS_TRANSLATE_INFOBAR_ERROR">
-        Oops. This page could not be translated.
-      </message>
-      <message name="IDS_TRANSLATE_BUTTON" desc="Possible texts to display on the translate infobar buttons. [CHAR-LIMIT=24]">
-        Translate
-      </message>
-      <message name="IDS_TRANSLATE_NEVER_TRANSLATE_SITE" desc="Text to display on the never translate site (like www.google.com) button. [CHAR-LIMIT=64]">
-        Never translate this site
-      </message>
-      <message name="IDS_TRANSLATE_OPTION_ALWAYS_TRANSLATE" desc="Option in the Chrome menu. User can click the 'Always Translate' option to indicate that they want Chrome to translate pages in this language automatically. Imperative.">
-        Always translate pages in <ph name="SOURCE_LANGUAGE">%1$s<ex>French</ex></ph>
-      </message>
-      <message name="IDS_TRANSLATE_OPTION_NEVER_TRANSLATE" desc="Option in the Chrome menu. User can click the 'Never Translate' option to indicate that they never want Chrome to translate pages in this language. The variable SOURCE_LANGUAGE could be any of 50+ languages supported by Google Translate, like French, Spanish, German, Italian, Japanese, Korean, etc. Imperative.">
-        Never translate pages in <ph name="SOURCE_LANGUAGE">%1$s<ex>French</ex></ph>
-      </message>
-      <message name="IDS_TRANSLATE_OPTION_MORE_LANGUAGE" desc="Option in the Chrome menu. Lets the user open a dialog to choose other target languages for translation, from a list of available languages. [CHAR-LIMIT=64]">
-        More languages
-      </message>
-      <message name="IDS_TRANSLATE_OPTION_NOT_SOURCE_LANGUAGE" desc="Option in the Chrome menu. Sometimes a web page's source language is not correctly identified by Google Translate, and this menu option lets the user open a submenu to select another language as the source language to translate. Phrased as a question as if to query the user, 'Is this page not in [source language identified]? If so, click here.' [CHAR-LIMIT=64]">
-        Page is not in <ph name="LANGUAGE">%1$s<ex>French</ex></ph>?
-      </message>
     </messages>
   </release>
 </grit>

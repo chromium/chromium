@@ -9,17 +9,10 @@ import("//weblayer/variables.gni")
 
 android_resources("weblayer_resources") {
   sources = [
-    "res/drawable/tab_indicator.xml",
-    "res/layout/infobar_translate_compact_content.xml",
-    "res/layout/infobar_translate_tab_content.xml",
     "res/layout/site_settings_layout.xml",
-    "res/layout/translate_menu_item.xml",
-    "res/layout/translate_menu_item_checked.xml",
     "res/layout/weblayer_url_bar.xml",
-    "res/values/colors.xml",
     "res/values/dimens.xml",
     "res/values/ids.xml",
-    "res/values/styles.xml",
     "res/values/styles.xml",
   ]
   custom_package = "org.chromium.weblayer_private"
@@ -32,7 +25,6 @@ android_resources("weblayer_resources") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/page_info/android:java_resources",
     "//components/permissions/android:java_resources",
-    "//third_party/android_deps:com_google_android_material_material_java",
     "//weblayer:components_java_strings",
   ]
 }
@@ -62,7 +54,6 @@ java_cpp_enum("generated_enums") {
   sources = [
     "//weblayer/browser/controls_visibility_reason.h",
     "//weblayer/browser/infobar_android.h",
-    "//weblayer/browser/translate_utils.h",
     "//weblayer/public/download.h",
     "//weblayer/public/navigation.h",
     "//weblayer/public/new_tab_delegate.h",
@@ -116,12 +107,6 @@ android_library("java") {
     "org/chromium/weblayer_private/SwipableOverlayView.java",
     "org/chromium/weblayer_private/TabCallbackProxy.java",
     "org/chromium/weblayer_private/TabImpl.java",
-    "org/chromium/weblayer_private/TranslateCompactInfoBar.java",
-    "org/chromium/weblayer_private/TranslateMenu.java",
-    "org/chromium/weblayer_private/TranslateMenuHelper.java",
-    "org/chromium/weblayer_private/TranslateOptions.java",
-    "org/chromium/weblayer_private/TranslateTabContent.java",
-    "org/chromium/weblayer_private/TranslateTabLayout.java",
     "org/chromium/weblayer_private/UrlBarControllerImpl.java",
     "org/chromium/weblayer_private/WebContentsGestureStateTracker.java",
     "org/chromium/weblayer_private/WebLayerAccessibilityUtil.java",
@@ -156,7 +141,6 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/webshare/android:java",
-    "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:java",
     "//components/crash/android:handler_java",
     "//components/crash/android:java",
@@ -196,7 +180,6 @@ android_library("java") {
     "//third_party/android_deps:androidx_core_core_java",
     "//third_party/android_deps:androidx_fragment_fragment_java",
     "//third_party/android_deps:androidx_preference_preference_java",
-    "//third_party/android_deps:com_google_android_material_material_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java",
@@ -276,7 +259,6 @@ generate_jni("jni") {
     "org/chromium/weblayer_private/ProfileImpl.java",
     "org/chromium/weblayer_private/TabCallbackProxy.java",
     "org/chromium/weblayer_private/TabImpl.java",
-    "org/chromium/weblayer_private/TranslateCompactInfoBar.java",
     "org/chromium/weblayer_private/UrlBarControllerImpl.java",
     "org/chromium/weblayer_private/WebLayerExceptionFilter.java",
     "org/chromium/weblayer_private/WebLayerFactoryImpl.java",

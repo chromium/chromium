@@ -13,7 +13,6 @@ import("./os_settings.gni")
 if (optimize_webui) {
   settings_pak_file = "os_settings_resources.pak"
   unpak_folder = "os_settings_resources.unpak"
-  unpak_folder_v3 = "os_settings_resources.unpak/chromeos"
 
   optimize_webui("build") {
     host = "os-settings"
@@ -52,44 +51,6 @@ if (optimize_webui) {
     ]
 
     deps = [ ":unpak" ]
-  }
-
-  optimize_webui("build_polymer3") {
-    host = "os-settings"
-    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
-    js_out_files = [ "os_settings.rollup.js" ]
-    js_module_in_files = [ "chromeos/os_settings.js" ]
-
-    deps = [
-      ":unpak_v3",
-      "../../../../../ui/webui/resources:modulize",
-    ]
-    excludes = [
-      "chrome://resources/js/cr.m.js",
-      "chrome://resources/css/cros_colors.generated.css",
-
-      # TODO: Determine how to move the mojo files into the expected directories
-      # in the unpak folder, so that they can be included in the bundle.
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "app-management/app_management.mojom-lite.js",
-      "app-management/bitmap.mojom-lite.js",
-      "app-management/file_path.mojom-lite.js",
-      "app-management/image_info.mojom-lite.js",
-      "app-management/image.mojom-lite.js",
-      "app-management/types.mojom-lite.js",
-      "constants/routes.mojom-lite.js",
-      "constants/setting.mojom-lite.js",
-      "search/search.mojom-lite.js",
-      "search/search_result_icon.mojom-lite.js",
-      "search/user_action_recorder.mojom-lite.js",
-    ]
-  }
-
-  unpak("unpak_v3") {
-    pak_file = settings_pak_file
-    out_folder = unpak_folder_v3
-
-    deps = [ ":flattened_resources" ]
   }
 
   unpak("unpak") {

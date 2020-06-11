@@ -7,11 +7,11 @@
 suite('OSSettingsSearchBox', () => {
   // TODO(hsuregan): Keep count and add getters for metrics.
   class MockMetricsPrivate {
-    // Used by <os-search-result-row>
     recordEnumerationValue(metricName, value, enumSize) {}
 
-    // Used by <os-search-result-row>
     recordSparseValue(metricName, value) {}
+
+    recordTime(metricName, value) {}
 
     // Required to use recordSparsValue()
     recordSparseHashable(metricName, value) {}

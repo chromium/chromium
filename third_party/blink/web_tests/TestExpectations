@@ -245,6 +245,14 @@ crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-002.tentative.
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-003.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-005.tentative.html [ Failure ]
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-006.tentative.html [ Failure ]
+crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-007.tentative.html [ Failure ]
+
+# We currently don't implement min/max-content contributions correctly :(
+crbug.com/1093094 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-001.tentative.html [ Failure ]
+crbug.com/1093094 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-002.tentative.html [ Failure ]
+
+# No final CSSWG resolution yet. https://github.com/w3c/csswg-drafts/issues/5032
+crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-004.tentative.html [ Failure ]
 
 # It is not clear if this test is correct. https://github.com/w3c/csswg-drafts/issues/5151
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-004.tentative.html [ Failure ]
@@ -1354,19 +1362,6 @@ crbug.com/929098 virtual/dark-color-scheme/external/wpt/css/css-color-adjust/ren
 
 # ====== Style team owned tests to here ======
 
-# ====== OOPIF-mode failures from here ======
-
-# See crbug.com/891427. These tests either fail or become flaky on one or more
-# platforms when --enable-display-compositor-pixel-dump is turned on. They need
-# triage. Note that these overlap with several existing entries in this
-# TestExpectations file. All of those have been commented out with a pointer back
-# up to this section. So if you close one of these, you should search for the
-# same test elsewhere, to see if perhaps you need to uncomment the old line.
-crbug.com/891427 virtual/android/fullscreen/rendering/backdrop-video.html [ Failure ]
-crbug.com/891427 virtual/threaded-no-composited-antialiasing/animations/timing/animation-duration-infinite.html [ Failure ]
-
-# ====== OOPIF-mode failures until here ======
-
 # ====== Form Controls Refresh (chrome://flags/#form-controls-refresh) failures from here ======
 
 crbug.com/1057518 virtual/controls-refresh/month-picker/month-picker-appearance-step.html [ Skip ]
@@ -1518,6 +1513,9 @@ crbug.com/520736 [ Win7 ] media/W3C/video/networkState/networkState_during_progr
 crbug.com/520736 [ Win10 ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
 crbug.com/520736 [ Linux ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
 crbug.com/909095 [ Mac ] media/W3C/video/networkState/networkState_during_progress.html [ Failure Pass ]
+
+# Hiding video::-webkit-media-controls breaks --force-overlay-fullscreen-video.
+crbug.com/1093447 virtual/android/fullscreen/rendering/backdrop-video.html [ Failure ]
 
 # gpuBenchmarking.pinchBy is busted on desktops for touchscreen pinch
 crbug.com/787615 [ Win ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-in-slow.html [ Failure Pass ]
@@ -4753,9 +4751,6 @@ crbug.com/1069817 external/wpt/css/css-ruby/line-break-around-ruby-001.html [ Fa
 crbug.com/1069817 fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 crbug.com/1069817 fast/ruby/line-break-ruby.html [ Failure ]
 crbug.com/1069817 fast/ruby/position-after.html [ Failure ]
-crbug.com/1069817 [ Linux ] fast/writing-mode/Kusa-Makura-background-canvas.html [ Failure ]
-crbug.com/1069817 [ Mac ] fast/writing-mode/Kusa-Makura-background-canvas.html [ Failure ]
-crbug.com/1069817 [ Win10 ] fast/writing-mode/Kusa-Makura-background-canvas.html [ Failure ]
 crbug.com/1069817 virtual/text-antialias/emphasis-avoid-ruby.html [ Failure ]
 
 crbug.com/676229 plugins/mouse-click-plugin-clears-selection.html [ Failure Pass ]
@@ -6727,4 +6722,4 @@ crbug.com/1090180 virtual/gpu/fast/canvas/canvas-gpu-consistency.html [ Failure 
 crbug.com/1093003 [ Mac ] external/wpt/html/rendering/replaced-elements/embedded-content/cross-domain-iframe.sub.html [ Pass Failure ]
 
 # Sheriff 2020-06-10
-crbug.com/1093203 [ Retina ] virtual/text-antialias/color-emoji.html [ Pass Failure ]
+crbug.com/1093429 [ Mac ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Failure ]

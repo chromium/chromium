@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h"
 #include "chrome/browser/ui/cocoa/tab_contents/web_drag_bookmark_handler_mac.h"
+#include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -52,9 +53,9 @@ content::WebDragDestDelegate*
 void ChromeWebContentsViewDelegateMac::ShowContextMenu(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
-  ShowMenu(
-      BuildMenu(content::WebContents::FromRenderFrameHost(render_frame_host),
-                params));
+  ShowMenu(BuildMenu(
+      content::WebContents::FromRenderFrameHost(render_frame_host),
+      AddContextMenuParamsPropertiesFromPreferences(web_contents_, params)));
 }
 
 void ChromeWebContentsViewDelegateMac::StoreFocus() {

@@ -30,8 +30,7 @@ class CompositorFrameReporterTest : public testing::Test {
   CompositorFrameReporterTest()
       : pipeline_reporter_(std::make_unique<CompositorFrameReporter>(
             CompositorFrameReporter::ActiveTrackers(),
-            viz::BeginFrameId(),
-            base::TimeTicks() + base::TimeDelta::FromMilliseconds(16),
+            viz::BeginFrameArgs(),
             nullptr,
             /*should_report_metrics=*/true)) {
     pipeline_reporter_->set_tick_clock(&test_tick_clock_);

@@ -134,7 +134,10 @@ void SynchronousCompositorSyncCallBridge::BeginFrameCompleteOnUIThread() {
     if (!begin_frame_response_valid_) {
       base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
           allow_base_sync_primitives;
-      begin_frame_condition_.Wait();
+      while (!begin_frame_response_valid_ &&
+             remote_state_ == RemoteState::READY) {
+        begin_frame_condition_.Wait();
+      }
     }
     DCHECK(begin_frame_response_valid_ || remote_state_ != RemoteState::READY);
     begin_frame_response_valid_ = false;

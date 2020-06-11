@@ -2697,7 +2697,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_ClearedForm">
-  <owner>ftirelo@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when a user has cleared the form after having
     accepted an Autofill suggestion.
@@ -2713,7 +2713,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FilledCreditCardSuggestion">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the form is filled with the credit card
     suggestion selected by the user. This should always happen after a
@@ -2722,7 +2722,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FilledProfileSuggestion">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the form is filled with the profile
     suggestion selected by the user. This should always happen after a
@@ -2742,7 +2742,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_FilledAll">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
     form where all the fields were autofilled.
@@ -2750,7 +2750,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_FilledNone_SuggestionsNotShown">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
     form where Autofill suggestions were not shown.
@@ -2758,7 +2758,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_FilledNone_SuggestionsShown">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
     form where an Autofill suggestion was shown but no fields were filled.
@@ -2766,7 +2766,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_FilledSome">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
     form where some field were filled.
@@ -2774,7 +2774,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_FormSubmitted_NonFillable">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill detects a form submission for a
     form that is not Autofillable or for a form that was filled with new
@@ -2783,7 +2783,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_OnWillSubmitForm">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when Autofill thinks a form is about to be
     submitted. The reason behind this is that some sites do not use the
@@ -2792,21 +2792,21 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_ParsedCreditCardForm">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when a credit card form is parsed.
   </description>
 </action>
 
 <action name="Autofill_ParsedProfileForm" not_user_triggered="true">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when a profile form is parsed.
   </description>
 </action>
 
 <action name="Autofill_PolledCreditCardSuggestions">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the user interacts with an autofillable
     credit card field, either by clicking or by typing.
@@ -2814,7 +2814,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_PolledProfileSuggestions">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the user interacts with an autofillable
     profile field, either by clicking or by typing.
@@ -2822,7 +2822,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_SelectedSuggestion">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when a user has selected (clicked on) an Autofill
     suggestion. This should always happen after
@@ -2831,7 +2831,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_ShowedCreditCardSuggestions">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the user is shown some credit card
     suggestions. This should always happen after a
@@ -2850,7 +2850,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_ShowedProfileSuggestions">
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the user is shown some profile suggestions.
     This should always happen after a Autofill_PolledProfileSuggestion.
@@ -2858,24 +2858,49 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AutofillAddressesViewed">
-  <owner>nikunjb@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <description>
     Recorded when user visits chrome://settings/autofill page.
   </description>
 </action>
 
 <action name="AutofillCreditCardsAdded">
-  <owner>nikunjb@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <description>
     Recorded when user adds card via chrome://settings/payments page.
   </description>
 </action>
 
+<action name="AutofillCreditCardsAddedWithNickname">
+  <owner>sujiezhu@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user adds card with a nickname via settings page.
+  </description>
+</action>
+
+<action name="AutofillCreditCardsEdited">
+  <owner>sujiezhu@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits card via chrome://settings/payments page.
+  </description>
+</action>
+
+<action name="AutofillCreditCardsEditedWithNickname">
+  <owner>sujiezhu@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <description>
+    Recorded when user edits card with a new nickname via
+    chrome://settings/payments page.
+  </description>
+</action>
+
 <action name="AutofillCreditCardsViewed">
-  <owner>nikunjb@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <description>
     Recorded when user visits chrome://settings/payments page.
   </description>
@@ -8890,6 +8915,15 @@ should be able to be added at any place in this file.
 <action name="KeywordEditor_RemoveKeyword">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="Lacros.Launch">
+  <owner>jamescook@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <description>
+    Recorded when the user launches a new instance of the lacros-chrome binary,
+    for example by clicking on the Lacros shelf icon.
+  </description>
 </action>
 
 <action name="LanguageChange_Accept">
@@ -20388,7 +20422,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromAutofillDropdown" not_user_triggered="true">
-  <owner>mathp@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the Autofill dropdown.
   </description>
@@ -20452,7 +20486,7 @@ should be able to be added at any place in this file.
     not_user_triggered="true">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the manage cards bubble.
   </description>
@@ -20502,7 +20536,7 @@ should be able to be added at any place in this file.
 <action name="Signin_Impression_FromSaveCardBubble" not_user_triggered="true">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the save card bubble.
   </description>
@@ -20581,7 +20615,7 @@ should be able to be added at any place in this file.
     not_user_triggered="true">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
     manage cards bubble.
@@ -20622,7 +20656,7 @@ should be able to be added at any place in this file.
     not_user_triggered="true">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with an account in the
     save card bubble.
@@ -20692,7 +20726,7 @@ should be able to be added at any place in this file.
     not_user_triggered="true">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
     manage cards bubble.
@@ -20734,7 +20768,7 @@ should be able to be added at any place in this file.
     not_user_triggered="true">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded when the personalized sign-in promo is shown with no account in the
     save card bubble.
@@ -20856,7 +20890,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromAutofillDropdown">
-  <owner>mathp@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN.
@@ -20956,7 +20990,7 @@ should be able to be added at any place in this file.
 <action name="Signin_Signin_FromManageCardsBubble">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE.
@@ -21014,7 +21048,7 @@ should be able to be added at any place in this file.
 <action name="Signin_Signin_FromSaveCardBubble">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE.
@@ -21276,7 +21310,7 @@ should be able to be added at any place in this file.
   <owner>jsaul@chromium.org</owner>
   <owner>manasverma@google.com</owner>
   <owner>msarda@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE, with a new
@@ -21320,7 +21354,7 @@ should be able to be added at any place in this file.
   <owner>jsaul@chromium.org</owner>
   <owner>manasverma@google.com</owner>
   <owner>msarda@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE, with a new
@@ -21397,7 +21431,7 @@ should be able to be added at any place in this file.
   <owner>jsaul@chromium.org</owner>
   <owner>manasverma@google.com</owner>
   <owner>msarda@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE, with a new
@@ -21443,7 +21477,7 @@ should be able to be added at any place in this file.
   <owner>jsaul@chromium.org</owner>
   <owner>manasverma@google.com</owner>
   <owner>msarda@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE, with a new
@@ -21649,7 +21683,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninNotDefault_FromManageCardsBubble">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE, using another
@@ -21693,7 +21727,7 @@ should be able to be added at any place in this file.
   <owner>jsaul@chromium.org</owner>
   <owner>manasverma@google.com</owner>
   <owner>msarda@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE, using another
@@ -21777,7 +21811,7 @@ should be able to be added at any place in this file.
 <action name="Signin_SigninWithDefault_FromManageCardsBubble">
   <owner>manasverma@google.com</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_MANAGE_CARDS_BUBBLE, using the
@@ -21821,7 +21855,7 @@ should be able to be added at any place in this file.
   <owner>jsaul@chromium.org</owner>
   <owner>manasverma@google.com</owner>
   <owner>msarda@chromium.org</owner>
-  <owner>sebsg@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_SAVE_CARD_BUBBLE, using the

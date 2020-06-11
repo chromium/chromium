@@ -717,6 +717,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   // Helper method to perform a few checks and initiate connection migration
   // attempt when path degrading is detected.
+  // Called when path is degrading and there is an alternate network or a new
+  // network is connected after path degrading.
   void MaybeMigrateToAlternateNetworkOnPathDegrading();
 
   // Helper method to initiate a port migration on path degrading is detected.

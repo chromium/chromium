@@ -4,12 +4,14 @@
 
 #include <stdint.h>
 
+#include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/process/launch.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "mojo/core/mojo_core_unittest.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -18,6 +20,11 @@
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+
+namespace switches {
+const char kMojoLoadBeforeInit[] = "mojo-load-before-init";
+const char kMojoUseExplicitLibraryPath[] = "mojo-use-explicit-library-path";
+}  // namespace switches
 
 namespace {
 
@@ -66,10 +73,27 @@ TEST(MojoCoreTest, SanityCheck) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
 }
 
-TEST(MojoCoreTest, BasicMultiprocess) {
-  base::CommandLine child_cmd(base::GetMultiProcessTestChildBaseCommandLine());
-  base::LaunchOptions options;
+enum class InitializationMode { kCombinedLoadAndInit, kLoadBeforeInit };
 
+enum class LoadPathSpec { kImplicit, kExplicit };
+
+class MojoCoreMultiprocessTest
+    : public ::testing::TestWithParam<
+          std::tuple<InitializationMode, LoadPathSpec>> {
+ public:
+  void SetChildCommandLineForTestParams(base::CommandLine* command_line) {
+    if (std::get<0>(GetParam()) == InitializationMode::kLoadBeforeInit)
+      command_line->AppendSwitch(switches::kMojoLoadBeforeInit);
+    if (std::get<1>(GetParam()) == LoadPathSpec::kExplicit)
+      command_line->AppendSwitch(switches::kMojoUseExplicitLibraryPath);
+  }
+};
+
+TEST_P(MojoCoreMultiprocessTest, BasicMultiprocess) {
+  base::CommandLine child_cmd(base::GetMultiProcessTestChildBaseCommandLine());
+  SetChildCommandLineForTestParams(&child_cmd);
+
+  base::LaunchOptions options;
   mojo::PlatformChannel channel;
   channel.PrepareToPassRemoteEndpoint(&options, &child_cmd);
   base::Process child_process = base::SpawnMultiProcessTestChild(
@@ -108,6 +132,15 @@ MULTIPROCESS_TEST_MAIN(BasicMultiprocessClientMain) {
 
   return 0;
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MojoCoreMultiprocessTest,
+    ::testing::Combine(
+        ::testing::Values(InitializationMode::kCombinedLoadAndInit,
+                          InitializationMode::kLoadBeforeInit),
+        ::testing::Values(LoadPathSpec::kImplicit, LoadPathSpec::kExplicit)));
+
 #endif  // !defined(MEMORY_SANITIZER)
 
 }  // namespace

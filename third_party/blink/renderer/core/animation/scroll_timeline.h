@@ -107,6 +107,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   void WorkletAnimationAttached();
   void WorkletAnimationDetached();
 
+  void AnimationAttached(Animation*) override;
+  void AnimationDetached(Animation*) override;
+
   void Trace(Visitor*) const override;
 
   static bool HasActiveScrollTimeline(Node* node);
@@ -171,6 +174,12 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
+
+  // The only purpose of scroll_animations_ is keeping strong references to
+  // attached animations. This is required to keep attached animations alive
+  // as long as the timeline is alive. Scroll timeline is alive as long as its
+  // scroller is alive.
+  HeapHashSet<Member<Animation>> scroll_animations_;
 };
 
 template <>

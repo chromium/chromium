@@ -1,0 +1,18 @@
+{
+  "name": "test extension",
+  "manifest_version": 2,
+  "version": "1.0.0.0",
+  "app": {
+    "launch": {
+      "web_url": "https://chromium.org/"
+    }
+  },
+  "web_app_linked_shortcut_items": [{
+    "name": "Home",
+    "shortcut_item_icons" : [{
+      "size" : 64,
+      "url" : "<<<"
+    }],
+    "url": "https://chromium.org/shortcuts/shortcut1"
+  }]
+}

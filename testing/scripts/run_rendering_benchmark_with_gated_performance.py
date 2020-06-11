@@ -251,10 +251,9 @@ class RenderingRepresentativePerfTest(object):
         csv_obj = csv.DictReader(csv_file)
         values_per_story = self.parse_csv_results(csv_obj)
 
-      if not rerun:
-        # Clearing the result of run_benchmark and write the gated perf results
-        resultsFile.seek(0)
-        resultsFile.truncate(0)
+      # Clearing the result of run_benchmark and write the gated perf results
+      resultsFile.seek(0)
+      resultsFile.truncate(0)
 
     self.compare_values(values_per_story, rerun)
 
@@ -280,27 +279,25 @@ class RenderingRepresentativePerfTest(object):
         if story_name not in self.result_recorder[True].failed_stories:
           self.result_recorder[False].remove_failure(story_name,
             self.benchmark, self.is_control_story(story_name))
-    else:
-      # Should only report the results for the initial run and not the rerun.
 
-      if self.result_recorder[False].is_control_stories_noisy:
-        # In this case all failures are reported as expected, and the number of
-        # Failed stories in output.json will be zero.
-        self.result_recorder[False].invalidate_failures(self.benchmark)
+    if self.result_recorder[False].is_control_stories_noisy:
+      # In this case all failures are reported as expected, and the number of
+      # Failed stories in output.json will be zero.
+      self.result_recorder[False].invalidate_failures(self.benchmark)
 
-      (
-        finalOut,
-        self.return_code
-      ) = self.result_recorder[False].get_output(self.return_code)
+    (
+      finalOut,
+      self.return_code
+    ) = self.result_recorder[False].get_output(self.return_code)
 
-      with open(self.output_path[rerun], 'r+') as resultsFile:
-        json.dump(finalOut, resultsFile, indent=4)
-      with open(self.options.isolated_script_test_output, 'w') as outputFile:
-        json.dump(finalOut, outputFile, indent=4)
+    with open(self.output_path[rerun], 'r+') as resultsFile:
+      json.dump(finalOut, resultsFile, indent=4)
+    with open(self.options.isolated_script_test_output, 'w') as outputFile:
+      json.dump(finalOut, outputFile, indent=4)
 
-      if self.result_recorder[False].is_control_stories_noisy:
-        assert self.return_code == 0
-        print('Control story has high noise. These runs are not reliable!')
+    if self.result_recorder[False].is_control_stories_noisy:
+      assert self.return_code == 0
+      print('Control story has high noise. These runs are not reliable!')
 
     return self.return_code
 

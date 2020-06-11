@@ -206,6 +206,7 @@ TEST(ProtoConversionTest, NotificationEntryConversion) {
   entry.schedule_params.deliver_time_start = entry.create_time;
   entry.schedule_params.deliver_time_end =
       entry.create_time + base::TimeDelta::FromMinutes(10);
+  entry.schedule_params.ignore_timeout_duration = base::TimeDelta::FromDays(3);
   TestNotificationEntryConversion(&entry);
 }
 

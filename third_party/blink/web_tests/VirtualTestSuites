@@ -577,6 +577,16 @@
     "args": ["--enable-features=AppCacheRequireOriginTrial"]
   },
   {
+    "prefix": "async-script-scheduling-finished-parsing",
+    "bases": ["wpt_internal/async-script-scheduling"],
+    "args": ["--enable-blink-features=DelayAsyncScriptExecutionUntilFinishedParsing"]
+  },
+  {
+    "prefix": "async-script-scheduling-first-paint-or-finished-parsing",
+    "bases": ["wpt_internal/async-script-scheduling"],
+    "args": ["--enable-blink-features=DelayAsyncScriptExecutionUntilFirstPaintOrFinishedParsing"]
+  },
+  {
     "prefix": "force-defer-script",
     "bases": ["defer-script"],
     "args": ["--enable-blink-features=ForceDeferScriptIntervention"]

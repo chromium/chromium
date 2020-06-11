@@ -47841,7 +47841,6 @@
           "dimension_sets": [
             {
               "gpu": "8086:0a2e",
-              "hidpi": "0",
               "os": "Mac-10.14.6"
             }
           ],

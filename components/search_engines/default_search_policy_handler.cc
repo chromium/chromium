@@ -54,6 +54,19 @@ void SetStringInPref(const PolicyMap& policies,
   dict->SetString(key, str);
 }
 
+void SetBooleanInPref(const PolicyMap& policies,
+                      const char* policy_name,
+                      const char* key,
+                      base::DictionaryValue* dict) {
+  DCHECK(dict);
+  const base::Value* policy_value = policies.GetValue(policy_name);
+  bool bool_value = false;
+  if (policy_value) {
+    DCHECK(policy_value->GetAsBoolean(&bool_value));
+  }
+  dict->SetBoolean(key, bool_value);
+}
+
 }  // namespace
 
 // List of policy types to preference names, for policies affecting the default
@@ -86,6 +99,9 @@ const PolicyToPreferenceMapEntry kDefaultSearchPolicyDataMap[] = {
      base::Value::Type::STRING},
     {key::kDefaultSearchProviderImageURLPostParams,
      DefaultSearchManager::kImageURLPostParams, base::Value::Type::STRING},
+    {key::kDefaultSearchProviderContextMenuAccessAllowed,
+     prefs::kDefaultSearchProviderContextMenuAccessAllowed,
+     base::Value::Type::BOOLEAN},
 };
 
 // DefaultSearchPolicyHandler implementation -----------------------------------
@@ -102,11 +118,13 @@ bool DefaultSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   if (!DefaultSearchProviderPolicyIsSet(policies) ||
       DefaultSearchProviderIsDisabled(policies)) {
     // Add an error for all specified default search policies except
-    // DefaultSearchProviderEnabled.
+    // DefaultSearchProviderEnabled and
+    // DefaultSearchProviderContextMenuAccessAllowed.
 
     for (const auto& policy_map_entry : kDefaultSearchPolicyDataMap) {
       const char* policy_name = policy_map_entry.policy_name;
       if (policy_name != key::kDefaultSearchProviderEnabled &&
+          policy_name != key::kDefaultSearchProviderContextMenuAccessAllowed &&
           HasDefaultSearchPolicy(policies, policy_name)) {
         errors->AddError(policy_name, IDS_POLICY_DEFAULT_SEARCH_DISABLED);
       }
@@ -164,6 +182,11 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                       policy_name,
                       kDefaultSearchPolicyDataMap[i].preference_path,
                       dict.get());
+        break;
+      case base::Value::Type::BOOLEAN:
+        SetBooleanInPref(policies, policy_name,
+                         kDefaultSearchPolicyDataMap[i].preference_path,
+                         dict.get());
         break;
       default:
         NOTREACHED();

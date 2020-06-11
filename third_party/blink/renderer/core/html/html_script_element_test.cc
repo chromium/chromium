@@ -22,7 +22,7 @@ class HTMLScriptElementTest : public testing::Test {
   HTMLScriptElement* MakeScript() {
     HTMLScriptElement* script = To<HTMLScriptElement>(
         document().body()->AppendChild(MakeGarbageCollected<HTMLScriptElement>(
-            document(), CreateElementFlags::ByParser())));
+            document(), CreateElementFlags::ByParser(&document()))));
     EXPECT_TRUE(script);
     return script;
   }

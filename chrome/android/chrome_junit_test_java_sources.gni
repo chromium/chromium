@@ -45,6 +45,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/compositor/CompositorSurfaceManagerImplTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/animation/CompositorAnimationHandlerTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/animation/CompositorAnimatorTest.java",
+  "junit/src/org/chromium/chrome/browser/compositor/layouts/CompositorModelChangeProcessorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/compositor/layouts/MockLayoutUpdateHost.java",
   "junit/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelperTest.java",
   "junit/src/org/chromium/chrome/browser/contextmenu/RevampedContextMenuCoordinatorTest.java",

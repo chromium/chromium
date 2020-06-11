@@ -159,6 +159,9 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // avoids querying Now() for key callers.
   void ScheduleDelayedWorkImpl(TimeDelta delta);
 
+  // Returns true if the timer invalidation feature is enabled.
+  static bool IsTimerInvalidationEnabled();
+
   // Marking timers as invalid at the right time helps significantly reduce
   // power use (see the comment in RunDelayedWorkTimer()), however there is no
   // public API for doing so. CFRuntime.h states that CFRuntimeBase, upon which

@@ -6908,12 +6908,42 @@ void Document::RecordAsyncScriptCount() {
       .Record(recorder);
 }
 
+void Document::MaybeExecuteDelayedAsyncScripts() {
+  // Notify the ScriptRunner if the first paint has been recorded and we're
+  // delaying async scripts until first paint.
+  if (first_paint_recorded_ &&
+      ((base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
+        features::kDelayAsyncScriptExecutionDelayParam.Get() ==
+            features::DelayAsyncScriptDelayType::
+                kFirstPaintOrFinishedParsing) ||
+       RuntimeEnabledFeatures::
+           DelayAsyncScriptExecutionUntilFirstPaintOrFinishedParsingEnabled())) {
+    script_runner_->NotifyDelayedAsyncScriptsMilestoneReached();
+  }
+
+  if (!Parsing() &&
+      (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) ||
+       RuntimeEnabledFeatures::
+           DelayAsyncScriptExecutionUntilFinishedParsingEnabled() ||
+       RuntimeEnabledFeatures::
+           DelayAsyncScriptExecutionUntilFirstPaintOrFinishedParsingEnabled())) {
+    script_runner_->NotifyDelayedAsyncScriptsMilestoneReached();
+  }
+}
+
+void Document::MarkFirstPaint() {
+  first_paint_recorded_ = true;
+  MaybeExecuteDelayedAsyncScripts();
+}
+
 void Document::FinishedParsing() {
   DCHECK(!GetScriptableDocumentParser() || !parser_->IsParsing());
   DCHECK(!GetScriptableDocumentParser() || ready_state_ != kLoading);
   RecordAsyncScriptCount();
   SetParsingState(kInDOMContentLoaded);
   DocumentParserTiming::From(*this).MarkParserStop();
+
+  MaybeExecuteDelayedAsyncScripts();
 
   // FIXME: DOMContentLoaded is dispatched synchronously, but this should be
   // dispatched in a queued task, see https://crbug.com/425790

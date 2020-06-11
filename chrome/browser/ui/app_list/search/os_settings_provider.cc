@@ -132,11 +132,7 @@ OsSettingsResult::OsSettingsResult(
   if (hierarchy.empty()) {
     LogError(Error::kHierarchyEmpty);
   } else if (result->type != SettingsResultType::kSection) {
-    const base::string16 details = hierarchy.back();
-    // TODO(crbug.com/1068851): Confirm whether or not we want to show sub-text
-    // when it's the same as the result text.
-    if (details != result->canonical_result_text)
-      SetDetails(details);
+    SetDetails(hierarchy.back());
   }
 }
 

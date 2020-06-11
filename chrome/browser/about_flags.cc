@@ -480,6 +480,22 @@ const FeatureEntry::FeatureVariation kForceDarkVariations[] = {
      base::size(kForceDark_SelectiveGeneralInversion), nullptr}};
 #endif  // !OS_CHROMEOS
 
+const FeatureEntry::FeatureParam kDelayAsyncScriptExecutionFinishedParsing[] = {
+    {"delay_type", "finished_parsing"}};
+const FeatureEntry::FeatureParam
+    kDelayAsyncScriptExecutionFirstPaintOrFinishedParsing[] = {
+        {"delay_type", "first_paint_or_finished_parsing"}};
+
+const FeatureEntry::FeatureVariation
+    kDelayAsyncScriptExecutionFeatureVariations[] = {
+        {"with delay until finished parsing document",
+         kDelayAsyncScriptExecutionFinishedParsing,
+         base::size(kDelayAsyncScriptExecutionFinishedParsing), nullptr},
+        {"with delay until first paint or finished parsing document",
+         kDelayAsyncScriptExecutionFirstPaintOrFinishedParsing,
+         base::size(kDelayAsyncScriptExecutionFirstPaintOrFinishedParsing),
+         nullptr}};
+
 #if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kCloseTabSuggestionsStale_Immediate[] = {
     {"baseline_tab_suggestions", "true"},
@@ -3668,6 +3684,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-keepalive-fetch", flag_descriptions::kDisableKeepaliveFetchName,
      flag_descriptions::kDisableKeepaliveFetchDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kDisableKeepaliveFetch)},
+
+    {"delay-async-script-execution",
+     flag_descriptions::kDelayAsyncScriptExecutionName,
+     flag_descriptions::kDelayAsyncScriptExecutionDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kDelayAsyncScriptExecution,
+                                    kDelayAsyncScriptExecutionFeatureVariations,
+                                    "DelayAsyncScriptExecution")},
 
     {"prefetch-privacy-changes", flag_descriptions::kPrefetchPrivacyChangesName,
      flag_descriptions::kPrefetchPrivacyChangesDescription, kOsAll,

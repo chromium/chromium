@@ -7,12 +7,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "components/metrics/log_decoder.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_demographics.h"
 #include "components/sync/engine_impl/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
-#include "third_party/zlib/google/compression_utils.h"
 
 namespace metrics {
 namespace test {
@@ -94,18 +94,11 @@ bool HasUnsentLogs(MetricsService* metrics_service) {
 // Returns an UMA log if the MetricsService has a staged log.
 std::unique_ptr<ChromeUserMetricsExtension> GetLastUmaLog(
     MetricsService* metrics_service) {
-  // Decompress the staged log.
-  std::string uncompressed_log;
-  if (!compression::GzipUncompress(
-          metrics_service->LogStoreForTest()->staged_log(),
-          &uncompressed_log)) {
-    return nullptr;
-  }
-
-  // Deserialize and return the log.
+  // Decompress and deserialize the staged log.
   std::unique_ptr<ChromeUserMetricsExtension> log =
       std::make_unique<ChromeUserMetricsExtension>();
-  if (!log->ParseFromString(uncompressed_log)) {
+  if (!DecodeLogDataToProto(metrics_service->LogStoreForTest()->staged_log(),
+                            log.get())) {
     return nullptr;
   }
   return log;

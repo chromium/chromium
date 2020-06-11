@@ -32,9 +32,6 @@ package-lock.json
 html-imports/src/*
 html-imports/gulpfile.js
 
-# iron-autogrow-textarea
-iron-autogrow-textarea/*
-
 # iron-checked-element-behavior
 iron-checked-element-behavior/*
 
@@ -50,13 +47,6 @@ iron-test-helpers/test-helpers.js
 paper-behaviors/paper-button-behavior.html
 paper-behaviors/paper-checked-element-behavior.html
 paper-behaviors/paper-inky-focus-behavior.html
-
-# paper-input
-paper-input/all-imports.html
-paper-input/paper-input-behavior.html
-paper-input/paper-input-char-counter.html
-paper-input/paper-input.html
-paper-input/paper-textarea.html
 
 # paper-spinner
 paper-spinner/paper-spinner.html

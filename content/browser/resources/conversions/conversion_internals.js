@@ -28,7 +28,7 @@ let reports = null;
  * @param {!HTMLElement} table DOM element corresponding to table body.
  */
 function clearTable(table) {
-  table.innerHTML = '';
+  table.innerHTML = trustedTypes.emptyHTML;
 }
 
 /**

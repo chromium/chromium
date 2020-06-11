@@ -27,7 +27,12 @@ public class AwMetricsServiceClient {
     // reporting. See https://developer.android.com/reference/android/webkit/WebView.html
     private static final String OPT_OUT_META_DATA_STR = "android.webkit.WebView.MetricsOptOut";
 
-    private static boolean isAppOptedOut(Context ctx) {
+    /**
+     * Find out if the App opted out from metrics collection using the meta-data tag.
+     *
+     * @param ctx App {@link Context}.
+     */
+    public static boolean isAppOptedOut(Context ctx) {
         try {
             ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(
                     ctx.getPackageName(), PackageManager.GET_META_DATA);
@@ -45,6 +50,13 @@ public class AwMetricsServiceClient {
         }
     }
 
+    /**
+     * Set user consent settings.
+     *
+     * @param ctx application {@link Context}
+     * @param userConsent user consent via Android Usage & diagnostics settings.
+     * @return whether metrics reporting is enabled or not.
+     */
     public static void setConsentSetting(Context ctx, boolean userConsent) {
         ThreadUtils.assertOnUiThread();
         AwMetricsServiceClientJni.get().setHaveMetricsConsent(userConsent, !isAppOptedOut(ctx));

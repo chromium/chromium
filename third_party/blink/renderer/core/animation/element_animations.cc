@@ -142,11 +142,10 @@ void ElementAnimations::ClearBaseComputedStyle() {
 bool ElementAnimations::AnimationsPreserveAxisAlignment() const {
   for (const auto& entry : animations_) {
     const Animation& animation = *entry.key;
-    DCHECK(animation.effect());
-    DCHECK(IsA<KeyframeEffect>(animation.effect()));
-    const auto& effect = *To<KeyframeEffect>(animation.effect());
-    if (!effect.AnimationsPreserveAxisAlignment())
-      return false;
+    if (const auto* effect = DynamicTo<KeyframeEffect>(animation.effect())) {
+      if (!effect->AnimationsPreserveAxisAlignment())
+        return false;
+    }
   }
   return true;
 }

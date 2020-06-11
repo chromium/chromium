@@ -1465,22 +1465,10 @@
       'Dawn Win10 x64 ASAN Release': {
         'os_type': 'win',
         'browser_config': 'release_x64',
-        'swarming': {
-          'dimension_sets': [
-            # This bot spawns jobs on multiple GPU types.
-            # TODO(kbr): figure out how to use mixins for these.
-            {
-              'gpu': '10de:1cb3-26.21.14.3102',
-              'os': 'Windows-10',
-              'pool': 'chromium.tests.gpu.template',
-            },
-            {
-              'gpu': '8086:5912-24.20.100.6286',
-              'os': 'Windows-10-17134',
-              'pool': 'chromium.tests.gpu.template',
-            },
-          ],
-        },
+        'mixins': [
+          'win10_nvidia_quadro_p400_stable_dimension_set',
+          'win10_1803_intel_hd_630',
+        ],
         'test_suites': {
           'gtest_tests': 'gpu_dawn_integration_asan_gtests_passthrough',
           'isolated_scripts': 'gpu_dawn_asan_isolated_scripts',
@@ -2323,16 +2311,11 @@
         },
       },
       'mac10.14-blink-rel-dummy': {
+        'mixins': [
+          'mac_mini_7,1',
+          'mac_10.14',
+        ],
         'swarming': {
-          'dimension_sets': [
-            {
-              # This matches the dimensions for "Chromium Mac10.14" in
-              # chromium_fyi.py.
-              'gpu': '8086:0a2e',
-              'hidpi': '0',
-              'os': 'Mac-10.14.6',
-            },
-          ],
           'hard_timeout': 900,
         },
         'test_suites': {
@@ -3475,22 +3458,11 @@
       'Mac FYI GPU ASAN Release': {
         'os_type': 'mac',
         'browser_config': 'release',
-        'swarming': {
-          'dimension_sets': [
-            # This bot spawns jobs on multiple GPU types.
-            # TODO(kbr): figure out how to use mixins for these.
-            {
-              'gpu': '8086:0a2e',
-              'os': 'Mac-10.14.6',
-            },
-            {
-              'gpu': '1002:6821',
-              'hidpi': '1',
-              'os': 'Mac-10.14.6',
-              'pool': 'chromium.tests.gpu.template',
-            },
-          ],
-        },
+        'mixins': [
+          'mac_mini_7,1',
+          'mac_pro_11,5',
+          'mac_10.14',
+        ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',

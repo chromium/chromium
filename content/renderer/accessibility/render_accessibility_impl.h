@@ -204,7 +204,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // a running task
   void ScheduleSendPendingAccessibilityEvents(
       bool scheduling_from_task = false);
-  void RecordImageMetrics(AXContentTreeUpdate* update);
   void AddImageAnnotationDebuggingAttributes(
       const std::vector<AXContentTreeUpdate>& updates);
 

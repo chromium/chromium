@@ -167,17 +167,6 @@
   <structure name="IDR_POLYMER_3_0_PAPER_BEHAVIORS_PAPER_RIPPLE_BEHAVIOR_JS"
              file="../../../third_party/polymer/v3_0/components-chromium/paper-behaviors/paper-ripple-behavior.js"
              type="chrome_html" />
-  <if expr="chromeos">
-    <structure name="IDR_POLYMER_3_0_PAPER_INPUT_PAPER_INPUT_ADDON_BEHAVIOR_JS"
-               file="../../../third_party/polymer/v3_0/components-chromium/paper-input/paper-input-addon-behavior.js"
-               type="chrome_html" />
-    <structure name="IDR_POLYMER_3_0_PAPER_INPUT_PAPER_INPUT_CONTAINER_JS"
-               file="../../../third_party/polymer/v3_0/components-chromium/paper-input/paper-input-container.js"
-               type="chrome_html" />
-    <structure name="IDR_POLYMER_3_0_PAPER_INPUT_PAPER_INPUT_ERROR_JS"
-               file="../../../third_party/polymer/v3_0/components-chromium/paper-input/paper-input-error.js"
-               type="chrome_html" />
-  </if>
   <structure name="IDR_POLYMER_3_0_PAPER_PROGRESS_PAPER_PROGRESS_JS"
              file="../../../third_party/polymer/v3_0/components-chromium/paper-progress/paper-progress.js"
              type="chrome_html" />

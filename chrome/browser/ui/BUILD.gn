@@ -2241,6 +2241,8 @@ static_library("ui") {
       "signin_view_controller.h",
       "signin_view_controller_delegate.cc",
       "signin_view_controller_delegate.h",
+      "tab_contents/chrome_web_contents_menu_helper.cc",
+      "tab_contents/chrome_web_contents_menu_helper.h",
       "tab_contents/chrome_web_contents_view_handle_drop.cc",
       "tab_contents/chrome_web_contents_view_handle_drop.h",
       "views/autofill/payments/virtual_card_selection_dialog_view_impl.cc",

@@ -1178,6 +1178,19 @@ class BBJSONGenerator(object):
     if 'swarming' in mixin:
       swarming_mixin = mixin['swarming']
       new_test.setdefault('swarming', {})
+      # Copy over any explicit dimension sets first so that they will be updated
+      # by any subsequent 'dimensions' entries.
+      if 'dimension_sets' in swarming_mixin:
+        existing_dimension_sets = new_test['swarming'].setdefault(
+            'dimension_sets', [])
+        # Appending to the existing list could potentially result in different
+        # behavior depending on the order the mixins were applied, but that's
+        # already the case for other parts of mixins, so trust that the user
+        # will verify that the generated output is correct before submitting.
+        for dimension_set in swarming_mixin['dimension_sets']:
+          if dimension_set not in existing_dimension_sets:
+            existing_dimension_sets.append(dimension_set)
+        del swarming_mixin['dimension_sets']
       if 'dimensions' in swarming_mixin:
         new_test['swarming'].setdefault('dimension_sets', [{}])
         for dimension_set in new_test['swarming']['dimension_sets']:

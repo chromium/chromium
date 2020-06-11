@@ -187,6 +187,7 @@ if (is_chromeos || is_linux || is_android || is_win) {
     defines = [ "MOJO_CORE_SHARED_LIBRARY" ]
     deps = [
       ":impl_for_shared_library",
+      "//base:base_static",
       "//mojo/public/c/system:headers",
     ]
     if (is_win) {
@@ -240,6 +241,7 @@ if (is_chromeos || is_linux || is_android || is_win) {
     test("mojo_core_unittests") {
       sources = [
         "mojo_core_unittest.cc",
+        "mojo_core_unittest.h",
         "run_all_core_unittests.cc",
       ]
 

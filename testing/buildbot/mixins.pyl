@@ -466,6 +466,19 @@
       },
     },
   },
+  'mac_mini_7,1': {
+    'swarming': {
+      # We use explicit 'dimension_sets' instead of 'dimensions' since this is
+      # used in conjunction with 'mac_pro_11,5' to trigger tests on multiple
+      # configurations.
+      'dimension_sets': [
+        {
+          'gpu': '8086:0a2e',
+          'os': 'Mac',
+        },
+      ],
+    },
+  },
   'mac_mini_intel_gpu_experimental': {
     'swarming': {
       'dimensions': {
@@ -480,6 +493,21 @@
         'gpu': '8086:0a2e',
         'os': 'Mac-10.14.6',
       },
+    },
+  },
+  'mac_pro_11,5': {
+    'swarming': {
+      # We use explicit 'dimension_sets' instead of 'dimensions' since this is
+      # used in conjunction with 'mac_mini_7,1' to trigger tests on multiple
+      # configurations.
+      'dimension_sets': [
+        {
+          'gpu': '1002:6821',
+          'hidpi': '1',
+          'os': 'Mac',
+          'pool': 'chromium.tests.gpu.template',
+        }
+      ],
     },
   },
   'mac_pro_amd_gpu': {
@@ -704,11 +732,16 @@
   # TODO(crbug.com/1087153): Remove this once the fleet is upgraded to 1909.
   'win10_1803_intel_hd_630': {
     'swarming': {
-      'dimensions': {
-        'gpu': '8086:5912-24.20.100.6286',
-        'os': 'Windows-10-17134',
-        'pool': 'chromium.tests.gpu.template',
-      },
+      # We use explicit 'dimension_sets' instead of 'dimensions' since this is
+      # used in conjunction with 'win10_nvidia_quadro_p400_stable_dimension_set'
+      # to trigger tests on multiple configurations.
+      'dimension_sets': [
+        {
+          'gpu': '8086:5912-24.20.100.6286',
+          'os': 'Windows-10-17134',
+          'pool': 'chromium.tests.gpu.template',
+        },
+      ],
     },
   },
   'win10_amd_rx_550': {
@@ -778,6 +811,20 @@
         'os': 'Windows-10',
         'pool': 'chromium.tests.gpu.template',
       },
+    },
+  },
+  # Version of win10_nvidia_quadro_p400_stable that uses 'dimension_sets'
+  # instead of 'dimensions' so it can be used to trigger tests on multiple
+  # configurations.
+  'win10_nvidia_quadro_p400_stable_dimension_set': {
+    'swarming': {
+      'dimension_sets': [
+        {
+          'gpu': '10de:1cb3-26.21.14.3102',
+          'os': 'Windows-10',
+          'pool': 'chromium.tests.gpu.template',
+        },
+      ],
     },
   },
   'win7': {

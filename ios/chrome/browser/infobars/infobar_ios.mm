@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "ios/chrome/browser/infobars/infobar_controller.h"
+#include "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/infobar_ui_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -34,8 +35,8 @@ InfoBarIOS::InfoBarIOS(id<InfobarUIDelegate> ui_delegate,
 }
 
 InfoBarIOS::~InfoBarIOS() {
-  [ui_delegate_ detachView];
   ui_delegate_.delegate = nullptr;
+  [ui_delegate_ detachView];
   ui_delegate_ = nil;
   for (auto& observer : observers_) {
     observer.InfobarDestroyed(this);

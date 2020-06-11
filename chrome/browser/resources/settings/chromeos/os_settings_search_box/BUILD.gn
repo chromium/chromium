@@ -22,6 +22,7 @@ js_library("os_settings_search_box") {
     "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
     "//ui/webui/resources/js:assert",
   ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("os_search_result_row") {
@@ -61,6 +62,7 @@ js_library("os_settings_search_box.m") {
     # TODO: Fill those in.
   ]
   extra_deps = [ ":os_settings_search_box_module" ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 import("//tools/polymer/polymer.gni")

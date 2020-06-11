@@ -210,10 +210,9 @@ def _bundle_v3(tmp_out_dir, in_path, out_path, manifest_out_path, args,
   # arbitrary names?
   bundled_paths = []
   for index, js_file in enumerate(args.js_module_in_files):
-    base_file_name = os.path.basename(js_file)
-    expected_name = '%s.rollup.js' % base_file_name[:-len('.js')]
+    expected_name = '%s.rollup.js' % js_file[:-len('.js')]
     assert args.js_out_files[index] == expected_name, \
-           'Output file corresponding to %s should be named %s' % \
+           'Output file corresponding to %s should be named %s.rollup.js' % \
            (js_file, expected_name)
     bundled_paths.append(os.path.join(tmp_out_dir, expected_name))
 

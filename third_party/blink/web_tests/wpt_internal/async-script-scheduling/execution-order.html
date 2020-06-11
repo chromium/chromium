@@ -3,6 +3,7 @@
   <title>Async Script Execution Order</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <link rel="preload" as="script" href="resources/async-script.js?preload">
 </head>
 <body>
   <!-- Note: This test serves mainly to document the current scheduling behavior
@@ -18,7 +19,7 @@
     }
     window.onload = e => {
       const actualOrder = logs.join(";");
-      const expectedOrder = "Async;Async;inline1;external;inline2;DOMContentLoaded";
+      const expectedOrder = "Async;Async;Async;inline1;external;inline2;DOMContentLoaded";
       scriptlog.textContent += actualOrder;
       assert_equals(actualOrder, expectedOrder);
       done();
@@ -28,6 +29,7 @@
 
   <script async src="resources/async-script.js?1"></script>
   <script async src="resources/async-script.js?2"></script>
+  <script async src="resources/async-script.js?preload"></script>
   <link rel=stylesheet href=resources/main.css?pipe=trickle(d1)>
   <pre id="scriptlog"></pre>
   <script>

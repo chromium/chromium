@@ -132,6 +132,8 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
   // This is virtual only for testing.
   virtual void ExecuteScriptBlock(const KURL&);
 
+  virtual bool IsEligibleForDelay() const { return false; }
+
  protected:
   PendingScript(ScriptElementBase*, const TextPosition& starting_position);
 

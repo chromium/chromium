@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 
+#include <map>
+
+#include "base/memory/singleton.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -69,6 +72,70 @@ class DarkModeGradientGeneratedImageClassifier
   }
 };
 
+// DarkModeImageClassificationCache - Implements classification caches for
+// different paint image ids. The classification result for the given |src|
+// rect is added to cache identified by |image_id| and result for the same
+// can be retrieved. Using Remove(), the cache identified by |image_id| can
+// be deleted.
+class DarkModeImageClassificationCache {
+ public:
+  static DarkModeImageClassificationCache* GetInstance() {
+    return base::Singleton<DarkModeImageClassificationCache>::get();
+  }
+
+  DarkModeClassification Get(PaintImage::Id image_id, const SkRect& src) {
+    auto map = cache_.find(image_id);
+    if (map == cache_.end())
+      return DarkModeClassification::kNotClassified;
+
+    Key key = std::pair<float, float>(src.x(), src.y());
+    auto result = map->second.find(key);
+
+    if (result == map->second.end())
+      return DarkModeClassification::kNotClassified;
+
+    return result->second;
+  }
+
+  void Add(PaintImage::Id image_id,
+           const SkRect& src,
+           const DarkModeClassification result) {
+    DCHECK(Get(image_id, src) == DarkModeClassification::kNotClassified);
+
+    auto map = cache_.find(image_id);
+    if (map == cache_.end())
+      map = cache_.emplace(image_id, ClassificationMap()).first;
+
+    // TODO(prashant.n): Check weather full |src| should be used or not for
+    // key, considering the scenario of same origin and different sizes in the
+    // given sprite. Here only location in the image is considered as of now.
+    Key key = std::pair<float, float>(src.x(), src.y());
+    map->second.emplace(key, result);
+  }
+
+  size_t GetSize(PaintImage::Id image_id) {
+    auto map = cache_.find(image_id);
+    if (map == cache_.end())
+      return 0;
+
+    return map->second.size();
+  }
+
+  void Remove(PaintImage::Id image_id) { cache_.erase(image_id); }
+
+ private:
+  typedef std::pair<float, float> Key;
+  typedef std::map<Key, DarkModeClassification> ClassificationMap;
+
+  std::map<PaintImage::Id, ClassificationMap> cache_;
+
+  DarkModeImageClassificationCache() = default;
+  ~DarkModeImageClassificationCache() = default;
+  friend struct base::DefaultSingletonTraits<DarkModeImageClassificationCache>;
+
+  DISALLOW_COPY_AND_ASSIGN(DarkModeImageClassificationCache);
+};
+
 }  // namespace
 
 DarkModeImageClassifier::DarkModeImageClassifier()
@@ -97,13 +164,16 @@ DarkModeClassification DarkModeImageClassifier::Classify(
     Image* image,
     const FloatRect& src_rect,
     const FloatRect& dest_rect) {
-  DarkModeClassification result = image->GetDarkModeClassification(src_rect);
+  DarkModeImageClassificationCache* cache =
+      DarkModeImageClassificationCache::GetInstance();
+  PaintImage::Id image_id = image->paint_image_id();
+  DarkModeClassification result = cache->Get(image_id, src_rect);
   if (result != DarkModeClassification::kNotClassified)
     return result;
 
   result = DoInitialClassification(dest_rect);
   if (result != DarkModeClassification::kNotClassified) {
-    image->AddDarkModeClassification(src_rect, result);
+    cache->Add(image_id, src_rect, result);
     return result;
   }
 
@@ -114,7 +184,7 @@ DarkModeClassification DarkModeImageClassifier::Classify(
   }
 
   result = ClassifyWithFeatures(features_or_null.value());
-  image->AddDarkModeClassification(src_rect, result);
+  cache->Add(image_id, src_rect, result);
   return result;
 }
 
@@ -346,6 +416,28 @@ DarkModeClassification DarkModeImageClassifier::ClassifyUsingDecisionTree(
 
   // In-between, decision tree cannot give a precise result.
   return DarkModeClassification::kNotClassified;
+}
+
+// static
+void DarkModeImageClassifier::RemoveCache(PaintImage::Id image_id) {
+  DarkModeImageClassificationCache::GetInstance()->Remove(image_id);
+}
+
+DarkModeClassification DarkModeImageClassifier::GetCacheValue(
+    PaintImage::Id image_id,
+    const SkRect& src) {
+  return DarkModeImageClassificationCache::GetInstance()->Get(image_id, src);
+}
+
+void DarkModeImageClassifier::AddCacheValue(PaintImage::Id image_id,
+                                            const SkRect& src,
+                                            DarkModeClassification result) {
+  return DarkModeImageClassificationCache::GetInstance()->Add(image_id, src,
+                                                              result);
+}
+
+size_t DarkModeImageClassifier::GetCacheSize(PaintImage::Id image_id) {
+  return DarkModeImageClassificationCache::GetInstance()->GetSize(image_id);
 }
 
 }  // namespace blink

@@ -10,6 +10,7 @@ build_dotfile_settings = {
     "//build/config/android/config.gni",
     "//build/config/android/internal_rules.gni",
     "//build/config/android/rules.gni",
+    "//build/config/chromeos/rules.gni",
     "//build/config/compiler/BUILD.gn",
     "//build/config/compiler/pgo/BUILD.gn",
     "//build/config/gcc/gcc_version.gni",

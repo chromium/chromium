@@ -58,7 +58,7 @@ public class FeedStreamSurfaceTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mocker.mock(FeedStreamSurfaceJni.TEST_HOOKS, mFeedStreamSurfaceJniMock);
-        mFeedStreamSurface = new FeedStreamSurface(mActivity, mSnackbarManager, null);
+        mFeedStreamSurface = new FeedStreamSurface(mActivity, mSnackbarManager, null, null);
     }
 
     @Test

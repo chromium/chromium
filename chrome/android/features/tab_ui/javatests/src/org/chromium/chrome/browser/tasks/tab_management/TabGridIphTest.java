@@ -21,11 +21,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.closeFirstTabInTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.rotateDeviceToOrientation;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
+import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -56,6 +58,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -325,6 +328,27 @@ public class TabGridIphTest {
                         1, getSwipeToDismissAction(true)));
 
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testNotShowIPHInMultiWindowMode() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        enterTabSwitcher(cta);
+        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+
+        // Mock that user enters multi-window mode, and the IPH message should not show in tab
+        // switcher.
+        clickFirstCardFromTabSwitcher(cta);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        enterTabSwitcher(cta);
+        CriteriaHelper.pollUiThread(() -> cta.findViewById(R.id.tab_grid_message_item) == null);
+
+        // Mock that user exits multi-window mode, and the IPH message should show in tab switcher.
+        clickFirstCardFromTabSwitcher(cta);
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+        enterTabSwitcher(cta);
+        onViewWaiting(allOf(withId(R.id.tab_grid_message_item), isDisplayed()));
     }
 
     private void verifyIphDialogShowing(ChromeTabbedActivity cta) {

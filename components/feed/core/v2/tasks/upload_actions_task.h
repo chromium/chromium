@@ -87,6 +87,7 @@ class UploadActionsTask : public offline_pages::Task {
                         FeedNetwork::ActionRequestResult result);
   void OnUploadedActionsRemoved(bool remove_ok);
   void UpdateTokenAndFinish();
+  void BatchComplete(UploadActionsBatchStatus status);
   void Done(UploadActionsStatus status);
 
   FeedStream* stream_;

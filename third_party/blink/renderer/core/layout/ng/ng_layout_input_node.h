@@ -129,6 +129,8 @@ class CORE_EXPORT NGLayoutInputNode {
   }
   bool IsTable() const { return IsBlock() && box_->IsTable(); }
 
+  bool IsTableCaption() const { return IsBlock() && box_->IsTableCaption(); }
+
   bool IsMathRoot() const { return box_->IsMathMLRoot(); }
 
   bool IsAnonymousBlock() const { return box_->IsAnonymousBlock(); }

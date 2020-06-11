@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices;
 
 import android.support.test.filters.SmallTest;
+import android.util.Pair;
 
 import androidx.browser.customtabs.CustomTabsService;
 
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.browserservices.OriginVerifier.OriginVerifica
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -31,7 +33,9 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -61,6 +65,20 @@ public class OriginVerifierTest {
 
     private Origin mHttpsOrigin;
     private Origin mHttpOrigin;
+    private TestExternalAuthUtils mExternalAuthUtils;
+
+    private class TestExternalAuthUtils extends ExternalAuthUtils {
+        private List<Pair<String, Origin>> mAllowlist = new ArrayList<>();
+
+        public void addToAllowlist(String packageName, Origin origin) {
+            mAllowlist.add(Pair.create(packageName, origin));
+        }
+
+        @Override
+        public boolean isAllowlistedForTwaVerification(String packageName, Origin origin) {
+            return mAllowlist.contains(Pair.create(packageName, origin));
+        }
+    }
 
     private class TestOriginVerificationListener implements OriginVerificationListener {
         @Override
@@ -87,11 +105,13 @@ public class OriginVerifierTest {
         mHttpsOrigin = Origin.create("https://www.example.com");
         mHttpOrigin = Origin.create("http://www.android.com");
 
-        mHandleAllUrlsVerifier = new OriginVerifier(
-                PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, new MockWebContents());
-        mUseAsOriginVerifier = new OriginVerifier(
-                PACKAGE_NAME, CustomTabsService.RELATION_USE_AS_ORIGIN, /* webContents= */ null);
+        mHandleAllUrlsVerifier = new OriginVerifier(PACKAGE_NAME,
+                CustomTabsService.RELATION_HANDLE_ALL_URLS, new MockWebContents(), null);
+        mUseAsOriginVerifier = new OriginVerifier(PACKAGE_NAME,
+                CustomTabsService.RELATION_USE_AS_ORIGIN, /* webContents= */ null, null);
         mVerificationResultSemaphore = new Semaphore(0);
+
+        mExternalAuthUtils = new TestExternalAuthUtils();
     }
 
     @Test
@@ -163,5 +183,26 @@ public class OriginVerifierTest {
 
         callbackHelper.waitForCallback(0);
         Assert.assertTrue(VerificationResultStore.getRelationships().isEmpty());
+    }
+
+    @Test
+    @SmallTest
+    public void testVerificationBypass() throws InterruptedException {
+        OriginVerifier verifier = new OriginVerifier(
+                PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null, mExternalAuthUtils);
+
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                () -> verifier.start(new TestOriginVerificationListener(), mHttpsOrigin));
+        Assert.assertTrue(
+                mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertFalse(mLastVerified);
+
+        // Try again, but this time allowlist the package/origin.
+        mExternalAuthUtils.addToAllowlist(PACKAGE_NAME, mHttpsOrigin);
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                () -> verifier.start(new TestOriginVerificationListener(), mHttpsOrigin));
+        Assert.assertTrue(
+                mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        Assert.assertTrue(mLastVerified);
     }
 }

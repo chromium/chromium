@@ -111,6 +111,7 @@
 #include "components/policy/content/policy_blacklist_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -1607,6 +1608,12 @@ void RenderViewContextMenu::AppendSearchProvider() {
             ->GetDefaultSearchProvider();
     if (!default_provider)
       return;
+
+    if (params_.properties.find(
+            prefs::kDefaultSearchProviderContextMenuAccessAllowed) ==
+        params_.properties.end())
+      return;
+
     menu_model_.AddItem(
         IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
         l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,

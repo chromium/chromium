@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.Ta
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.toolbar.bottom.BottomToolbarConfiguration;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
 import org.chromium.chrome.features.start_surface.StartSurfaceMediator.SurfaceMode;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -35,6 +36,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final ChromeActivity mActivity;
     private final StartSurfaceMediator mStartSurfaceMediator;
     private final @SurfaceMode int mSurfaceMode;
+    private final BottomSheetController mBottomSheetController;
 
     // Non-null in SurfaceMode.TASKS_ONLY, SurfaceMode.TWO_PANES and SurfaceMode.SINGLE_PANE modes.
     @Nullable
@@ -83,9 +85,11 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     private boolean mIsSecondaryTaskInitPending;
 
+    // TODO(http://crbug.com/1093421): Remove dependency on ChromeActivity.
     public StartSurfaceCoordinator(ChromeActivity activity) {
         mActivity = activity;
         mSurfaceMode = computeSurfaceMode();
+        mBottomSheetController = mActivity.getBottomSheetController();
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
                 || mSurfaceMode == SurfaceMode.OMNIBOX_ONLY
@@ -172,7 +176,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(mActivity,
                     mSurfaceMode == SurfaceMode.SINGLE_PANE ? mTasksSurface.getBodyViewContainer()
                                                             : mActivity.getCompositorViewHolder(),
-                    mPropertyModel, mSurfaceMode == SurfaceMode.SINGLE_PANE);
+                    mPropertyModel, mSurfaceMode == SurfaceMode.SINGLE_PANE,
+                    mBottomSheetController);
         }
         mStartSurfaceMediator.initWithNative(mSurfaceMode != SurfaceMode.NO_START_SURFACE
                         ? mActivity.getToolbarManager().getFakeboxDelegate()

@@ -38,6 +38,7 @@ class DecoderContext;
 class ExternalVkImageBacking;
 class ExternalVkImageGlRepresentation;
 class ServiceDiscardableManager;
+class SharedImageBackingGLImage;
 class SharedImageBackingGLTexture;
 class SharedImageBackingFactoryGLTexture;
 class SharedImageBackingAHB;
@@ -435,6 +436,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   friend class gpu::ExternalVkImageBacking;
   friend class gpu::ExternalVkImageGlRepresentation;
   friend class gpu::SharedImageVideo;
+  friend class gpu::SharedImageBackingGLImage;
   friend class gpu::SharedImageBackingGLTexture;
   friend class gpu::SharedImageBackingFactoryGLTexture;
   friend class gpu::SharedImageBackingAHB;

@@ -74,6 +74,9 @@ base::string16 GetLeakDetectionTooltip();
 // Checks whether the leak dialog should prompt user to password checkup.
 bool ShouldCheckPasswords(password_manager::CredentialLeakType leak_type);
 
+// Checks whether the leak dialog should show change password button.
+bool ShouldShowChangePasswordButton(CredentialLeakType leak_type);
+
 // Checks whether the leak dialog should show cancel button.
 bool ShouldShowCancelButton(password_manager::CredentialLeakType leak_type);
 

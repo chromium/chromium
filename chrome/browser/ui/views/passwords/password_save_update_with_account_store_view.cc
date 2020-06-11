@@ -50,9 +50,9 @@
 namespace {
 
 struct ComboboxItem {
-  std::string combobox_text;
-  std::string dropdown_text;
-  std::string dropdown_secondary_text;
+  base::string16 combobox_text;
+  base::string16 dropdown_text;
+  base::string16 dropdown_secondary_text;
   ui::ImageModel icon;
 };
 
@@ -63,13 +63,13 @@ class ComboboxModelWithIcons : public ui::ComboboxModel {
 
   int GetItemCount() const override { return items_.size(); }
   base::string16 GetItemAt(int index) const override {
-    return base::ASCIIToUTF16(items_[index].combobox_text);
+    return items_[index].combobox_text;
   }
   base::string16 GetDropDownTextAt(int index) const override {
-    return base::ASCIIToUTF16(items_[index].dropdown_text);
+    return items_[index].dropdown_text;
   }
   base::string16 GetDropDownSecondaryTextAt(int index) const override {
-    return base::ASCIIToUTF16(items_[index].dropdown_secondary_text);
+    return items_[index].dropdown_secondary_text;
   }
   ui::ImageModel GetIconAt(int index) const override {
     return items_[index].icon;
@@ -260,15 +260,20 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
   ui::ImageModel computer_image = ui::ImageModel::FromVectorIcon(
       kHardwareComputerIcon, ui::NativeTheme::kColorId_DefaultIconColor,
       ComboboxIconSize());
+
   // TODO(crbug.com/1044038): Use an internationalized string instead.
   std::vector<ComboboxItem> destinations = {
-      {.combobox_text = "in your Google Acccount",
-       .dropdown_text = "in your Google Acccount",
-       .dropdown_secondary_text = primary_account_email,
+      {.combobox_text = l10n_util::GetStringUTF16(
+           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT),
+       .dropdown_text = l10n_util::GetStringUTF16(
+           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT),
+       .dropdown_secondary_text = base::UTF8ToUTF16(primary_account_email),
        .icon = primary_account_avatar},
-      {.combobox_text = "only on this device",
-       .dropdown_text = "only on this device",
-       .dropdown_secondary_text = "",
+      {.combobox_text = l10n_util::GetStringUTF16(
+           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
+       .dropdown_text = l10n_util::GetStringUTF16(
+           IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE),
+       .dropdown_secondary_text = base::string16(),
        .icon = computer_image}};
 
   auto combobox = std::make_unique<views::Combobox>(
@@ -534,15 +539,16 @@ void PasswordSaveUpdateWithAccountStoreView::OnThemeChanged() {
                ? IDR_SAVE_PASSWORD_DARK
                : IDR_SAVE_PASSWORD;
   GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(id));
-
-  const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DefaultIconColor);
-  views::SetImageFromVectorIconWithColor(password_view_button_, kEyeIcon,
-                                         GetDefaultSizeOfVectorIcon(kEyeIcon),
-                                         icon_color);
-  views::SetToggledImageFromVectorIconWithColor(
-      password_view_button_, kEyeCrossedIcon,
-      GetDefaultSizeOfVectorIcon(kEyeCrossedIcon), icon_color);
+  if (password_view_button_) {
+    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_DefaultIconColor);
+    views::SetImageFromVectorIconWithColor(password_view_button_, kEyeIcon,
+                                           GetDefaultSizeOfVectorIcon(kEyeIcon),
+                                           icon_color);
+    views::SetToggledImageFromVectorIconWithColor(
+        password_view_button_, kEyeCrossedIcon,
+        GetDefaultSizeOfVectorIcon(kEyeCrossedIcon), icon_color);
+  }
 }
 
 void PasswordSaveUpdateWithAccountStoreView::TogglePasswordVisibility() {

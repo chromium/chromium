@@ -67,3 +67,15 @@ void InfoBarContainerIOS::PlatformSpecificInfoBarStateChanged(
   [consumer_ setUserInteractionEnabled:!is_animating];
   [legacyConsumer_ setUserInteractionEnabled:!is_animating];
 }
+
+void InfoBarContainerIOS::PlatformSpecificReplaceInfoBar(
+    infobars::InfoBar* old_infobar,
+    infobars::InfoBar* new_infobar) {
+  // This is called after the Infobar has been replaced and deleted. Set its
+  // InfobarController to nullptr to prevent an use after free crash.
+  // Once we migrate to Overlays InfobarBannerContainer this shouldn't be
+  // necessary.
+  DCHECK(!IsInfobarOverlayUIEnabled());
+  InfoBarIOS* infobar_ios = static_cast<InfoBarIOS*>(old_infobar);
+  infobar_ios->InfobarUIDelegate().delegate = nullptr;
+}

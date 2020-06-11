@@ -310,6 +310,7 @@ if (is_win) {
       "experiment_storage_unittest.cc",
       "experiment_unittest.cc",
       "google_update_settings_unittest.cc",
+      "helper_unittest.cc",
       "install_util_unittest.cc",
       "l10n_string_util_unittest.cc",
       "logging_installer_unittest.cc",

@@ -101,21 +101,6 @@ var tests = [
       tabId = tab.id;
     });
   },
-  function castStreaming() {
-    // chrome.cast.streaming APIs are the only ones that are triply-prefixed.
-    chrome.test.assertTrue(!!chrome.cast);
-    chrome.test.assertTrue(!!chrome.cast.streaming);
-    chrome.test.assertTrue(!!chrome.cast.streaming.udpTransport);
-    chrome.test.assertTrue(!!chrome.cast.streaming.udpTransport.setOptions);
-
-    // Verify that we can overwite prefixed APIs.
-    let oldUdpTransport = chrome.cast.streaming.udpTransport;
-    chrome.cast.streaming.udpTransport = 'foo';
-    chrome.test.assertEq('foo', chrome.cast.streaming.udpTransport);
-    chrome.cast.streaming.udpTransport = oldUdpTransport;
-
-    chrome.test.succeed();
-  },
   function injectScript() {
     var url =
         'http://example.com:' + portNumber + '/native_bindings/simple.html';

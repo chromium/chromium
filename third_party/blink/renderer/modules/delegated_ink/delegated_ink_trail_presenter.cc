@@ -60,6 +60,15 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
     return;
   }
 
+  // If diameter is less than or equal to 0, then nothing is going to be
+  // displayed anyway, so just bail early and save the effort.
+  if (style->diameter() <= 0) {
+    ThrowException(state->GetIsolate(),
+                   ToExceptionCode(DOMExceptionCode::kNotSupportedError),
+                   "Delegated ink trail diameter must be greater than 0.");
+    return;
+  }
+
   Color color;
   if (!CSSParser::ParseColor(color, style->color(), true /*strict*/)) {
     ThrowException(state->GetIsolate(),

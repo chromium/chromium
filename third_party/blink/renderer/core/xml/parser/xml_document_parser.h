@@ -218,6 +218,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
   XMLErrors xml_errors_;
 
+  Member<Document> document_;
   Member<XMLParserScriptRunner> script_runner_;
   TextPosition script_start_position_;
 

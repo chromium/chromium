@@ -473,6 +473,150 @@ SharedImageBackingGLTexture::SharedImageBackingGLTexture(
     const gfx::ColorSpace& color_space,
     uint32_t usage,
     gles2::Texture* texture,
+    scoped_refptr<gles2::TexturePassthrough> passthrough_texture)
+    : SharedImageBackingWithReadAccess(
+          mailbox,
+          format,
+          size,
+          color_space,
+          usage,
+          texture ? texture->estimated_size()
+                  : passthrough_texture->estimated_size(),
+          false /* is_thread_safe */),
+      texture_(texture),
+      passthrough_texture_(passthrough_texture) {
+  if (IsPassthrough()) {
+    DCHECK(passthrough_texture_ && !texture_);
+    DCHECK(!passthrough_texture_->GetLevelImage(passthrough_texture_->target(),
+                                                0));
+  } else {
+    DCHECK(texture_ && !passthrough_texture_);
+    DCHECK(!texture_->GetLevelImage(texture_->target(), 0, nullptr));
+  }
+}
+
+SharedImageBackingGLTexture::~SharedImageBackingGLTexture() {
+  if (IsPassthrough()) {
+    if (!have_context())
+      passthrough_texture_->MarkContextLost();
+    passthrough_texture_.reset();
+  } else {
+    DCHECK(texture_);
+    texture_->RemoveLightweightRef(have_context());
+    texture_ = nullptr;
+  }
+}
+
+gfx::Rect SharedImageBackingGLTexture::ClearedRect() const {
+  if (IsPassthrough())
+    return gfx::Rect(size());
+  else
+    return texture_->GetLevelClearedRect(texture_->target(), 0);
+}
+
+void SharedImageBackingGLTexture::SetClearedRect(
+    const gfx::Rect& cleared_rect) {
+  if (!IsPassthrough())
+    texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
+}
+
+void SharedImageBackingGLTexture::Update(
+    std::unique_ptr<gfx::GpuFence> in_fence) {}
+
+bool SharedImageBackingGLTexture::ProduceLegacyMailbox(
+    MailboxManager* mailbox_manager) {
+  if (IsPassthrough())
+    mailbox_manager->ProduceTexture(mailbox(), passthrough_texture_.get());
+  else
+    mailbox_manager->ProduceTexture(mailbox(), texture_);
+  return true;
+}
+
+void SharedImageBackingGLTexture::OnMemoryDump(
+    const std::string& dump_name,
+    base::trace_event::MemoryAllocatorDump* dump,
+    base::trace_event::ProcessMemoryDump* pmd,
+    uint64_t client_tracing_id) {
+  const auto client_guid = GetSharedImageGUIDForTracing(mailbox());
+  if (!IsPassthrough()) {
+    const auto service_guid =
+        gl::GetGLTextureServiceGUIDForTracing(texture_->service_id());
+    pmd->CreateSharedGlobalAllocatorDump(service_guid);
+    pmd->AddOwnershipEdge(client_guid, service_guid, /* importance */ 2);
+    texture_->DumpLevelMemory(pmd, client_tracing_id, dump_name);
+  }
+}
+
+std::unique_ptr<SharedImageRepresentationGLTexture>
+SharedImageBackingGLTexture::ProduceGLTexture(SharedImageManager* manager,
+                                              MemoryTypeTracker* tracker) {
+  DCHECK(texture_);
+  return std::make_unique<SharedImageRepresentationGLTextureImpl>(
+      manager, this, tracker, texture_);
+}
+
+std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+SharedImageBackingGLTexture::ProduceGLTexturePassthrough(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker) {
+  DCHECK(passthrough_texture_);
+  return std::make_unique<SharedImageRepresentationGLTexturePassthroughImpl>(
+      manager, this, tracker, passthrough_texture_);
+}
+
+std::unique_ptr<SharedImageRepresentationSkia>
+SharedImageBackingGLTexture::ProduceSkia(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+  std::unique_ptr<SharedImageRepresentationSkiaImpl> result;
+  if (IsPassthrough()) {
+    result = std::make_unique<SharedImageRepresentationSkiaImpl>(
+        manager, this, std::move(context_state), cached_promise_texture_,
+        tracker, passthrough_texture_->target(),
+        passthrough_texture_->service_id());
+  } else {
+    result = std::make_unique<SharedImageRepresentationSkiaImpl>(
+        manager, this, std::move(context_state), cached_promise_texture_,
+        tracker, texture_->target(), texture_->service_id());
+  }
+  cached_promise_texture_ = result->promise_texture();
+  return result;
+}
+
+std::unique_ptr<SharedImageRepresentationDawn>
+SharedImageBackingGLTexture::ProduceDawn(SharedImageManager* manager,
+                                         MemoryTypeTracker* tracker,
+                                         WGPUDevice device) {
+  if (!factory()) {
+    DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
+    return nullptr;
+  }
+
+  return ProduceDawnCommon(factory(), manager, tracker, device, this,
+                           IsPassthrough());
+}
+
+void SharedImageBackingGLTexture::BeginReadAccess() {
+  // TODO(https://crbug.com/1092155): Sub-class this from SharedImageBacking
+  // instead of SharedImageBackingReadAccess.
+}
+
+bool SharedImageBackingGLTexture::IsPassthrough() const {
+  return !!passthrough_texture_;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// SharedImageBackingGLImage
+
+SharedImageBackingGLImage::SharedImageBackingGLImage(
+    scoped_refptr<gl::GLImage> image,
+    const Mailbox& mailbox,
+    viz::ResourceFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    uint32_t usage,
+    gles2::Texture* texture,
     const UnpackStateAttribs& attribs)
     : SharedImageBackingWithReadAccess(mailbox,
                                        format,
@@ -481,15 +625,14 @@ SharedImageBackingGLTexture::SharedImageBackingGLTexture(
                                        usage,
                                        texture->estimated_size(),
                                        false /* is_thread_safe */),
+      image_(image),
       texture_(texture),
       attribs_(attribs) {
   DCHECK(texture_);
-  gl::GLImage* image = texture_->GetLevelImage(texture_->target(), 0, nullptr);
-  if (image)
-    native_pixmap_ = image->GetNativePixmap();
+  DCHECK(image_);
 }
 
-SharedImageBackingGLTexture::~SharedImageBackingGLTexture() {
+SharedImageBackingGLImage::~SharedImageBackingGLImage() {
   DCHECK(texture_);
   texture_->RemoveLightweightRef(have_context());
   texture_ = nullptr;
@@ -500,16 +643,15 @@ SharedImageBackingGLTexture::~SharedImageBackingGLTexture() {
   }
 }
 
-gfx::Rect SharedImageBackingGLTexture::ClearedRect() const {
+gfx::Rect SharedImageBackingGLImage::ClearedRect() const {
   return texture_->GetLevelClearedRect(texture_->target(), 0);
 }
 
-void SharedImageBackingGLTexture::SetClearedRect(
-    const gfx::Rect& cleared_rect) {
+void SharedImageBackingGLImage::SetClearedRect(const gfx::Rect& cleared_rect) {
   texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
 }
 
-void SharedImageBackingGLTexture::Update(
+void SharedImageBackingGLImage::Update(
     std::unique_ptr<gfx::GpuFence> in_fence) {
   GLenum target = texture_->target();
   gl::GLApi* api = gl::g_current_gl_context;
@@ -518,8 +660,7 @@ void SharedImageBackingGLTexture::Update(
 
   gles2::Texture::ImageState old_state = gles2::Texture::UNBOUND;
   gl::GLImage* image = texture_->GetLevelImage(target, 0, &old_state);
-  if (!image)
-    return;
+  DCHECK_EQ(image, image_.get());
   if (old_state == gles2::Texture::BOUND)
     image->ReleaseTexImage(target);
 
@@ -541,14 +682,14 @@ void SharedImageBackingGLTexture::Update(
     texture_->SetLevelImage(target, 0, image, new_state);
 }
 
-bool SharedImageBackingGLTexture::ProduceLegacyMailbox(
+bool SharedImageBackingGLImage::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
   DCHECK(texture_);
   mailbox_manager->ProduceTexture(mailbox(), texture_);
   return true;
 }
 
-void SharedImageBackingGLTexture::OnMemoryDump(
+void SharedImageBackingGLImage::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDump* dump,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -569,11 +710,12 @@ void SharedImageBackingGLTexture::OnMemoryDump(
   texture_->DumpLevelMemory(pmd, client_tracing_id, dump_name);
 }
 
-void SharedImageBackingGLTexture::BeginReadAccess() {
+void SharedImageBackingGLImage::BeginReadAccess() {
   GLenum target = texture_->target();
   gles2::Texture::ImageState old_state = gles2::Texture::UNBOUND;
   gl::GLImage* image = texture_->GetLevelImage(target, 0, &old_state);
-  if (image && old_state == gpu::gles2::Texture::UNBOUND) {
+  DCHECK_EQ(image, image_.get());
+  if (old_state == gpu::gles2::Texture::UNBOUND) {
     gl::GLApi* api = gl::g_current_gl_context;
     ScopedRestoreTexture scoped_restore(api, target);
     api->glBindTextureFn(target, texture_->service_id());
@@ -592,20 +734,19 @@ void SharedImageBackingGLTexture::BeginReadAccess() {
   }
 }
 
-scoped_refptr<gfx::NativePixmap>
-SharedImageBackingGLTexture::GetNativePixmap() {
-  return native_pixmap_;
+scoped_refptr<gfx::NativePixmap> SharedImageBackingGLImage::GetNativePixmap() {
+  return image_->GetNativePixmap();
 }
 
 std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageBackingGLTexture::ProduceGLTexture(SharedImageManager* manager,
-                                              MemoryTypeTracker* tracker) {
+SharedImageBackingGLImage::ProduceGLTexture(SharedImageManager* manager,
+                                            MemoryTypeTracker* tracker) {
   return std::make_unique<SharedImageRepresentationGLTextureImpl>(
       manager, this, tracker, texture_);
 }
 
 std::unique_ptr<SharedImageRepresentationGLTexture>
-SharedImageBackingGLTexture::ProduceRGBEmulationGLTexture(
+SharedImageBackingGLImage::ProduceRGBEmulationGLTexture(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   if (!rgb_emulation_texture_) {
@@ -620,6 +761,7 @@ SharedImageBackingGLTexture::ProduceRGBEmulationGLTexture(
 
     gles2::Texture::ImageState image_state = gles2::Texture::BOUND;
     gl::GLImage* image = texture_->GetLevelImage(target, 0, &image_state);
+    DCHECK_EQ(image, image_.get());
     if (!image) {
       LOG(ERROR) << "Texture is not bound to an image.";
       return nullptr;
@@ -660,7 +802,7 @@ SharedImageBackingGLTexture::ProduceRGBEmulationGLTexture(
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingGLTexture::ProduceSkia(
+SharedImageBackingGLImage::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -672,9 +814,9 @@ SharedImageBackingGLTexture::ProduceSkia(
 }
 
 std::unique_ptr<SharedImageRepresentationDawn>
-SharedImageBackingGLTexture::ProduceDawn(SharedImageManager* manager,
-                                         MemoryTypeTracker* tracker,
-                                         WGPUDevice device) {
+SharedImageBackingGLImage::ProduceDawn(SharedImageManager* manager,
+                                       MemoryTypeTracker* tracker,
+                                       WGPUDevice device) {
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;
@@ -684,9 +826,10 @@ SharedImageBackingGLTexture::ProduceDawn(SharedImageManager* manager,
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// SharedImageBackingPassthroughGLTexture
+// SharedImageBackingPassthroughGLImage
 
-SharedImageBackingPassthroughGLTexture::SharedImageBackingPassthroughGLTexture(
+SharedImageBackingPassthroughGLImage::SharedImageBackingPassthroughGLImage(
+    scoped_refptr<gl::GLImage> image,
     const Mailbox& mailbox,
     viz::ResourceFormat format,
     const gfx::Size& size,
@@ -700,28 +843,31 @@ SharedImageBackingPassthroughGLTexture::SharedImageBackingPassthroughGLTexture(
                                        usage,
                                        passthrough_texture->estimated_size(),
                                        false /* is_thread_safe */),
+      image_(image),
       texture_passthrough_(std::move(passthrough_texture)) {
+  DCHECK_EQ(
+      texture_passthrough_->GetLevelImage(texture_passthrough_->target(), 0),
+      image_.get());
   DCHECK(texture_passthrough_);
 }
 
-SharedImageBackingPassthroughGLTexture::
-    ~SharedImageBackingPassthroughGLTexture() {
+SharedImageBackingPassthroughGLImage::~SharedImageBackingPassthroughGLImage() {
   DCHECK(texture_passthrough_);
   if (!have_context())
     texture_passthrough_->MarkContextLost();
   texture_passthrough_.reset();
 }
 
-gfx::Rect SharedImageBackingPassthroughGLTexture::ClearedRect() const {
+gfx::Rect SharedImageBackingPassthroughGLImage::ClearedRect() const {
   // This backing is used exclusively with ANGLE which handles clear tracking
   // internally. Act as though the texture is always cleared.
   return gfx::Rect(size());
 }
 
-void SharedImageBackingPassthroughGLTexture::SetClearedRect(
+void SharedImageBackingPassthroughGLImage::SetClearedRect(
     const gfx::Rect& cleared_rect) {}
 
-void SharedImageBackingPassthroughGLTexture::Update(
+void SharedImageBackingPassthroughGLImage::Update(
     std::unique_ptr<gfx::GpuFence> in_fence) {
   GLenum target = texture_passthrough_->target();
   gl::GLApi* api = gl::g_current_gl_context;
@@ -729,8 +875,7 @@ void SharedImageBackingPassthroughGLTexture::Update(
   api->glBindTextureFn(target, texture_passthrough_->service_id());
 
   gl::GLImage* image = texture_passthrough_->GetLevelImage(target, 0);
-  if (!image)
-    return;
+  DCHECK_EQ(image, image_.get());
   image->ReleaseTexImage(target);
   if (image->ShouldBindOrCopy() == gl::GLImage::BIND)
     image->BindTexImage(target);
@@ -738,14 +883,14 @@ void SharedImageBackingPassthroughGLTexture::Update(
     image->CopyTexImage(target);
 }
 
-bool SharedImageBackingPassthroughGLTexture::ProduceLegacyMailbox(
+bool SharedImageBackingPassthroughGLImage::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
   DCHECK(texture_passthrough_);
   mailbox_manager->ProduceTexture(mailbox(), texture_passthrough_.get());
   return true;
 }
 
-void SharedImageBackingPassthroughGLTexture::OnMemoryDump(
+void SharedImageBackingPassthroughGLImage::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDump* dump,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -766,10 +911,10 @@ void SharedImageBackingPassthroughGLTexture::OnMemoryDump(
     gl_image->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
-void SharedImageBackingPassthroughGLTexture::BeginReadAccess() {}
+void SharedImageBackingPassthroughGLImage::BeginReadAccess() {}
 
 std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-SharedImageBackingPassthroughGLTexture::ProduceGLTexturePassthrough(
+SharedImageBackingPassthroughGLImage::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   return std::make_unique<SharedImageRepresentationGLTexturePassthroughImpl>(
@@ -777,7 +922,7 @@ SharedImageBackingPassthroughGLTexture::ProduceGLTexturePassthrough(
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
-SharedImageBackingPassthroughGLTexture::ProduceSkia(
+SharedImageBackingPassthroughGLImage::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
@@ -789,9 +934,9 @@ SharedImageBackingPassthroughGLTexture::ProduceSkia(
 }
 
 std::unique_ptr<SharedImageRepresentationDawn>
-SharedImageBackingPassthroughGLTexture::ProduceDawn(SharedImageManager* manager,
-                                                    MemoryTypeTracker* tracker,
-                                                    WGPUDevice device) {
+SharedImageBackingPassthroughGLImage::ProduceDawn(SharedImageManager* manager,
+                                                  MemoryTypeTracker* tracker,
+                                                  WGPUDevice device) {
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;
@@ -1132,9 +1277,15 @@ SharedImageBackingFactoryGLTexture::MakeBacking(
                                &texture_memory_size);
     passthrough_texture->SetEstimatedSize(texture_memory_size);
 
-    return std::make_unique<SharedImageBackingPassthroughGLTexture>(
-        mailbox, format, size, color_space, usage,
-        std::move(passthrough_texture));
+    if (image) {
+      return std::make_unique<SharedImageBackingPassthroughGLImage>(
+          image, mailbox, format, size, color_space, usage,
+          std::move(passthrough_texture));
+    } else {
+      return std::make_unique<SharedImageBackingGLTexture>(
+          mailbox, format, size, color_space, usage, nullptr,
+          std::move(passthrough_texture));
+    }
   } else {
     gles2::Texture* texture = new gles2::Texture(service_id);
     texture->SetLightweightRef();
@@ -1152,8 +1303,13 @@ SharedImageBackingFactoryGLTexture::MakeBacking(
       texture->SetLevelImage(target, 0, image.get(), image_state);
     texture->SetImmutable(true, has_immutable_storage);
 
-    return std::make_unique<SharedImageBackingGLTexture>(
-        mailbox, format, size, color_space, usage, texture, attribs);
+    if (image) {
+      return std::make_unique<SharedImageBackingGLImage>(
+          image, mailbox, format, size, color_space, usage, texture, attribs);
+    } else {
+      return std::make_unique<SharedImageBackingGLTexture>(
+          mailbox, format, size, color_space, usage, texture, nullptr);
+    }
   }
 }
 

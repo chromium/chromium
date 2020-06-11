@@ -4,7 +4,7 @@
   "description": "A simple e2e test for native bindings, id is ddchlicdkolnonkihahngkmmmjnjlkkf",
   "manifest_version": 2,
   "version": "0.1",
-  "permissions": ["history", "tabs", "cast.streaming", "*://example.com:*/*",
+  "permissions": ["history", "tabs", "*://example.com:*/*",
                   "storage", "privacy", "webNavigation", "contentSettings"],
   "background": {
     "persistent": false,

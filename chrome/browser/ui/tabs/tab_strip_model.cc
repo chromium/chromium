@@ -179,7 +179,10 @@ class TabStripModel::WebContentsData : public content::WebContentsObserver {
 
   // See comments on fields.
   WebContents* opener() const { return opener_; }
-  void set_opener(WebContents* value) { opener_ = value; }
+  void set_opener(WebContents* value) {
+    DCHECK_NE(value, web_contents()) << "A tab should not be its own opener.";
+    opener_ = value;
+  }
   void set_reset_opener_on_active_tab_change(bool value) {
     reset_opener_on_active_tab_change_ = value;
   }
@@ -2160,10 +2163,24 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
 
 void TabStripModel::FixOpeners(int index) {
   WebContents* old_contents = GetWebContentsAtImpl(index);
+  WebContents* new_opener = GetOpenerOfWebContentsAt(index);
+
   for (auto& data : contents_data_) {
-    if (data->opener() == old_contents)
-      data->set_opener(contents_data_[index]->opener());
+    if (data->opener() != old_contents)
+      continue;
+
+    // Ensure a tab isn't its own opener.
+    data->set_opener(new_opener == data->web_contents() ? nullptr : new_opener);
   }
+
+  // Sanity check that none of the tabs' openers refer |old_contents| or
+  // themselves.
+  DCHECK(!std::any_of(
+      contents_data_.begin(), contents_data_.end(),
+      [old_contents](const std::unique_ptr<WebContentsData>& data) {
+        return data->opener() == old_contents ||
+               data->opener() == data->web_contents();
+      }));
 }
 
 void TabStripModel::EnsureGroupContiguity(int index) {

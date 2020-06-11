@@ -117,11 +117,6 @@ crbug.com/735483 conformance/rendering/texture-switch-performance.html [ Skip ]
 crbug.com/951628 [ passthrough ] conformance/rendering/blending.html [ Failure ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
-# TODO(shrekshao): Restore failure expectation for
-# ['win', 'nvidia', 'passthrough', 'd3d11'], bug=737016
-# as Flaky after 953120 is fixed.
-# And restore ['linux', 'intel'], bug=928530 as Fail
-crbug.com/953120 [ passthrough ] conformance/programs/program-test.html [ Failure ]
 
 # TODO(crbug.com/979444): once this is passing on the passthrough
 # command decoder on Android, simplify this expectation to just not
@@ -136,9 +131,6 @@ crbug.com/979444 [ android ] conformance/textures/misc/texture-corner-case-video
 crbug.com/685232 [ win amd d3d11 passthrough ] conformance/textures/misc/copytexsubimage2d-subrects.html [ RetryOnFailure ]
 crbug.com/772037 [ win7 debug amd d3d11 passthrough ] conformance/textures/misc/texture-sub-image-cube-maps.html [ RetryOnFailure ]
 crbug.com/772037 [ win7 release amd d3d11 passthrough ] conformance/extensions/oes-texture-half-float.html [ RetryOnFailure ]
-
-# Win / NVIDIA / Passthrough command decoder / D3D11
-# crbug.com/737016 [ win nvidia d3d11 passthrough ] conformance/programs/program-test.html [ RetryOnFailure ]
 
 # Vulkan / Passthrough command decoder
 crbug.com/angleproject/3930 [ vulkan passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
@@ -374,10 +366,6 @@ crbug.com/1059760 [ mac asan ] conformance/textures/video/* [ RetryOnFailure ]
 ####################
 
 crbug.com/1081973 [ linux ] conformance/textures/misc/compressed-tex-image.html [ Failure ]
-
-# The following two tests only fail on Linux/Intel with Mesa 18.0.5,
-# not on Mesa 17.1.4 with the same Intel HD 630 GPU.
-crbug.com/928530 [ linux intel mesa_eq_18.0.5 no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
 # Linux / Vulkan / Passthrough command decoder
 crbug.com/angleproject/3469 [ linux vulkan passthrough intel ] conformance/extensions/webgl-draw-buffers.html [ Failure ]

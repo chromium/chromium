@@ -43,8 +43,6 @@ namespace {
 
 constexpr char kDMToken[] = "dm_token";
 constexpr char kClientId[] = "client_id";
-constexpr char kStaleProfileCountMetricsName[] =
-    "Enterprise.CloudReportingStaleProfileCount";
 constexpr base::TimeDelta kDefaultUploadInterval =
     base::TimeDelta::FromHours(24);
 
@@ -396,87 +394,6 @@ TEST_F(ReportSchedulerTest, ReportingIsDisabledWhileNewReportIsPosted) {
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(generator_);
-}
-
-TEST_F(ReportSchedulerTest, NoStaleProfileMetricsForSystemAndGuestProfile) {
-  EXPECT_CALL_SetupRegistration();
-  CreateScheduler();
-  // Does not record for system or guest profile.
-  profile_manager_.CreateSystemProfile();
-  profile_manager_.CreateGuestProfile();
-  scheduler_.reset();
-  histogram_tester_.ExpectTotalCount(kStaleProfileCountMetricsName, 0);
-}
-
-TEST_F(ReportSchedulerTest, NoStaleProfileMetricsBeforeFirstReport) {
-  EXPECT_CALL_SetupRegistration();
-  CreateScheduler();
-  profile_manager_.CreateTestingProfile("profile1");
-  scheduler_.reset();
-  histogram_tester_.ExpectTotalCount(kStaleProfileCountMetricsName, 0);
-}
-
-TEST_F(ReportSchedulerTest, StaleProfileMetricsForProfileAdded) {
-  EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
-      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
-
-  CreateScheduler();
-  task_environment_.FastForwardBy(base::TimeDelta());
-
-  profile_manager_.CreateTestingProfile("profile1");
-
-  scheduler_.reset();
-  histogram_tester_.ExpectUniqueSample(kStaleProfileCountMetricsName, 1, 1);
-}
-
-TEST_F(ReportSchedulerTest, StaleProfileMetricsForProfileRemoved) {
-  EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
-      .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
-
-  // Create a profile a head of time to prevent default profile creation during
-  // profile deleting.
-  profile_manager_.CreateTestingProfile("profile0");
-  CreateScheduler();
-  task_environment_.FastForwardBy(base::TimeDelta());
-
-  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile1");
-  profile_manager_.profile_manager()->ScheduleProfileForDeletion(
-      profile->GetPath(), base::DoNothing());
-  task_environment_.FastForwardBy(base::TimeDelta());
-
-  scheduler_.reset();
-  histogram_tester_.ExpectUniqueSample(kStaleProfileCountMetricsName, 0, 1);
-}
-
-TEST_F(ReportSchedulerTest, StaleProfileMetricsResetAfterNewUpload) {
-  EXPECT_CALL_SetupRegistration();
-  EXPECT_CALL(*generator_, OnGenerate(/*with_profiles=*/true, _))
-      .WillRepeatedly(WithArgs<1>(ScheduleGeneratorCallback(1)));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
-
-  CreateScheduler();
-  task_environment_.FastForwardBy(base::TimeDelta());
-
-  // Re-assign uploader for the second upload
-  auto new_uploader = std::make_unique<MockReportUploader>();
-  uploader_ = new_uploader.get();
-  scheduler_->SetReportUploaderForTesting(std::move(new_uploader));
-  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _))
-      .WillOnce(RunOnceCallback<1>(ReportUploader::kSuccess));
-
-  profile_manager_.CreateTestingProfile("profile1");
-
-  task_environment_.FastForwardBy(kDefaultUploadInterval);
-
-  scheduler_.reset();
-  histogram_tester_.ExpectUniqueSample(kStaleProfileCountMetricsName, 0, 1);
 }
 
 #if !defined(OS_CHROMEOS)

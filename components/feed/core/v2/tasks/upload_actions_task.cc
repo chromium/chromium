@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <vector>
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/action_request.pb.h"
@@ -15,6 +16,7 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/request_throttler.h"
 
 namespace feed {
@@ -34,11 +36,6 @@ bool ShouldUpload(const StoredAction& action) {
   return action.upload_attempt_count() <
              GetFeedConfig().max_action_upload_attempts &&
          age < GetFeedConfig().max_action_age;
-}
-
-void ReportBatchStatus(UploadActionsBatchStatus status) {
-  // TODO(iwells): Get rid of the DVLOG and record status to a histogram.
-  DVLOG(1) << "UploadActionsBatchStatus: " << status;
 }
 
 }  // namespace
@@ -196,19 +193,10 @@ void UploadActionsTask::UploadPendingActions() {
 }
 
 void UploadActionsTask::UpdateAndUploadNextBatch() {
-  // Finish if all pending actions have been visited.
-  if (pending_actions_.empty()) {
-    ReportBatchStatus(UploadActionsBatchStatus::kSuccessfullyUploadedBatch);
-    UpdateTokenAndFinish();
-    return;
-  }
-
   // Finish if there's no quota remaining for actions uploads.
   if (!stream_->GetRequestThrottler()->RequestQuota(
           NetworkRequestType::kUploadActions)) {
-    ReportBatchStatus(UploadActionsBatchStatus::kExhaustedUploadQuota);
-    UpdateTokenAndFinish();
-    return;
+    return BatchComplete(UploadActionsBatchStatus::kExhaustedUploadQuota);
   }
 
   // Grab a few actions to be processed and erase them from pending_actions_.
@@ -228,18 +216,13 @@ void UploadActionsTask::OnUpdateActionsFinished(
     std::unique_ptr<UploadActionsTask::Batch> batch,
     bool update_ok) {
   // Stop if there are no actions to upload.
-  if (batch->UploadCount() == 0ul) {
-    ReportBatchStatus(UploadActionsBatchStatus::kAllActionsWereStale);
-    UpdateTokenAndFinish();
-    return;
-  }
+  if (batch->UploadCount() == 0ul)
+    return BatchComplete(UploadActionsBatchStatus::kAllActionsWereStale);
 
-  // Skip uploading if these actions couldn't be updated in the store.
-  if (!update_ok) {
-    ReportBatchStatus(UploadActionsBatchStatus::kFailedToUpdateStore);
-    UpdateAndUploadNextBatch();
-    return;
-  }
+  // Skip uploading batch if these actions couldn't be updated in the store.
+  if (!update_ok)
+    return BatchComplete(UploadActionsBatchStatus::kFailedToUpdateStore);
+
   upload_attempt_count_ += batch->UploadCount();
   stale_count_ += batch->StaleCount();
 
@@ -264,11 +247,8 @@ void UploadActionsTask::OnUpdateActionsFinished(
 void UploadActionsTask::OnUploadFinished(
     std::unique_ptr<UploadActionsTask::Batch> batch,
     FeedNetwork::ActionRequestResult result) {
-  if (!result.response_body) {
-    ReportBatchStatus(UploadActionsBatchStatus::kFailedToUpload);
-    UpdateAndUploadNextBatch();
-    return;
-  }
+  if (!result.response_body)
+    return BatchComplete(UploadActionsBatchStatus::kFailedToUpload);
 
   consistency_token_ = std::move(result.response_body->feed_response()
                                      .feed_response()
@@ -282,22 +262,33 @@ void UploadActionsTask::OnUploadFinished(
 }
 
 void UploadActionsTask::OnUploadedActionsRemoved(bool remove_ok) {
-  ReportBatchStatus(UploadActionsBatchStatus::kFailedToRemoveUploadedActions);
+  if (remove_ok)
+    BatchComplete(UploadActionsBatchStatus::kSuccessfullyUploadedBatch);
+  else
+    BatchComplete(UploadActionsBatchStatus::kFailedToRemoveUploadedActions);
+}
+
+void UploadActionsTask::BatchComplete(UploadActionsBatchStatus status) {
+  MetricsReporter::OnUploadActionsBatch(status);
+
+  if (pending_actions_.empty() ||
+      status == UploadActionsBatchStatus::kExhaustedUploadQuota ||
+      status == UploadActionsBatchStatus::kAllActionsWereStale) {
+    return UpdateTokenAndFinish();
+  }
   UpdateAndUploadNextBatch();
 }
 
 void UploadActionsTask::UpdateTokenAndFinish() {
-  if (consistency_token_.empty()) {
-    Done(UploadActionsStatus::kFinishedWithoutUpdatingConsistencyToken);
-    return;
-  }
+  if (consistency_token_.empty())
+    return Done(UploadActionsStatus::kFinishedWithoutUpdatingConsistencyToken);
 
   stream_->GetMetadata()->SetConsistencyToken(consistency_token_);
   Done(UploadActionsStatus::kUpdatedConsistencyToken);
 }
 
 void UploadActionsTask::Done(UploadActionsStatus status) {
-  DVLOG(1) << "UploadActionsTask finished with status " << status;
+  MetricsReporter::OnUploadActions(status);
   std::move(callback_).Run({status, upload_attempt_count_, stale_count_});
   TaskComplete();
 }

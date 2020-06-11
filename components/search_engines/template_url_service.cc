@@ -323,6 +323,8 @@ void TemplateURLService::RegisterProfilePrefs(
                                std::string(),
                                flags);
   registry->RegisterBooleanPref(prefs::kDefaultSearchProviderEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
 }
 
 #if defined(OS_ANDROID)

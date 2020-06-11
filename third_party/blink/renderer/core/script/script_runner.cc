@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/script/script_runner.h"
 
 #include <algorithm>
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -115,8 +117,43 @@ void ScriptRunner::ScheduleReadyInOrderScripts() {
   }
 }
 
+void ScriptRunner::DelayAsyncScriptUntilMilestoneReached(
+    PendingScript* pending_script) {
+  DCHECK(!delay_async_script_milestone_reached_);
+  SECURITY_CHECK(pending_async_scripts_.Contains(pending_script));
+  pending_async_scripts_.erase(pending_script);
+
+  // When the ScriptRunner is notified via
+  // |NotifyDelayedAsyncScriptsMilestoneReached()|, the scripts in
+  // |pending_delayed_async_scripts_| will be scheduled for execution.
+  pending_delayed_async_scripts_.push_back(pending_script);
+}
+
+void ScriptRunner::NotifyDelayedAsyncScriptsMilestoneReached() {
+  delay_async_script_milestone_reached_ = true;
+  while (!pending_delayed_async_scripts_.IsEmpty()) {
+    PendingScript* pending_script = pending_delayed_async_scripts_.TakeFirst();
+    DCHECK_EQ(pending_script->GetSchedulingType(),
+              ScriptSchedulingType::kAsync);
+
+    async_scripts_to_execute_soon_.push_back(pending_script);
+    PostTask(FROM_HERE);
+  }
+}
+
+bool ScriptRunner::CanDelayAsyncScripts() {
+  static bool flags_enabled =
+      base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) ||
+      RuntimeEnabledFeatures::
+          DelayAsyncScriptExecutionUntilFinishedParsingEnabled() ||
+      RuntimeEnabledFeatures::
+          DelayAsyncScriptExecutionUntilFirstPaintOrFinishedParsingEnabled();
+  return !delay_async_script_milestone_reached_ && flags_enabled;
+}
+
 void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
   SECURITY_CHECK(pending_script);
+
   switch (pending_script->GetSchedulingType()) {
     case ScriptSchedulingType::kAsync:
       // SECURITY_CHECK() makes us crash in a controlled way in error cases
@@ -124,6 +161,11 @@ void ScriptRunner::NotifyScriptReady(PendingScript* pending_script) {
       // (otherwise we'd cause a use-after-free in ~ScriptRunner when it tries
       // to detach).
       SECURITY_CHECK(pending_async_scripts_.Contains(pending_script));
+
+      if (pending_script->IsEligibleForDelay() && CanDelayAsyncScripts()) {
+        DelayAsyncScriptUntilMilestoneReached(pending_script);
+        return;
+      }
 
       pending_async_scripts_.erase(pending_script);
       async_scripts_to_execute_soon_.push_back(pending_script);
@@ -254,6 +296,7 @@ void ScriptRunner::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(pending_in_order_scripts_);
   visitor->Trace(pending_async_scripts_);
+  visitor->Trace(pending_delayed_async_scripts_);
   visitor->Trace(async_scripts_to_execute_soon_);
   visitor->Trace(in_order_scripts_to_execute_soon_);
 }

@@ -202,7 +202,7 @@ bool BrowserFrame::GetAccelerator(int command_id,
 
 const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
   Browser* browser = browser_view_->browser();
-  if (browser->app_controller() && !IsUsingGtkTheme(browser->profile()))
+  if (browser->app_controller())
     return browser->app_controller()->GetThemeProvider();
   return &ThemeService::GetThemeProviderForProfile(browser->profile());
 }

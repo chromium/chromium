@@ -44,7 +44,7 @@ cr.define('cr.ui', function() {
     render() {
       // Find the body of the table and clear it.
       const body = this.table_.querySelectorAll('tbody')[0];
-      body.innerHTML = '';
+      body.innerHTML = trustedTypes.emptyHTML;
 
       // Get the sort key from the columns to determine which data should be in
       // which column.

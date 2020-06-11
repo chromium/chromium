@@ -336,15 +336,17 @@ public class AutofillProviderImpl extends AutofillProvider {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             mAutofillManager.cancel();
         }
-        mAutofillManager.notifyNewSessionStarted();
+
         Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
-        if (mRequest != null) notifyViewExitBeforeDestoryRequest();
+        if (mRequest != null) notifyViewExitBeforeDestroyRequest();
         transformFormFieldToContainViewCoordinates(formData);
         mRequest = new AutofillRequest(formData, new FocusField((short) focus, absBound));
         int virtualId = mRequest.getVirtualId((short) focus);
-        mAutofillManager.notifyVirtualViewEntered(mContainerView, virtualId, absBound);
+        notifyVirtualViewEntered(mContainerView, virtualId, absBound);
         mAutofillUMA.onSessionStarted(mAutofillManager.isDisabled());
         mAutofillTriggeredTimeMillis = System.currentTimeMillis();
+
+        mAutofillManager.notifyNewSessionStarted();
     }
 
     @Override
@@ -364,13 +366,13 @@ public class AutofillProviderImpl extends AutofillProvider {
             int virtualId = mRequest.getVirtualId(sIndex);
             Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
             if (!focusField.absBound.equals(absBound)) {
-                mAutofillManager.notifyVirtualViewExited(mContainerView, virtualId);
-                mAutofillManager.notifyVirtualViewEntered(mContainerView, virtualId, absBound);
+                notifyVirtualViewExited(mContainerView, virtualId);
+                notifyVirtualViewEntered(mContainerView, virtualId, absBound);
                 // Update focus field position.
                 mRequest.setFocusField(new FocusField(focusField.fieldIndex, absBound));
             }
         }
-        notifyVirtualValueChanged(index);
+        notifyVirtualValueChanged(index, /* forceNotify = */ false);
         mAutofillUMA.onUserChangeFieldValue(mRequest.getField(sIndex).hasPreviouslyAutofilled());
     }
 
@@ -389,24 +391,50 @@ public class AutofillProviderImpl extends AutofillProvider {
         Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
         // Notify the new position to the Android framework. Note that we do not call
         // notifyVirtualViewExited() here intentionally to avoid flickering.
-        mAutofillManager.notifyVirtualViewEntered(mContainerView, virtualId, absBound);
+        notifyVirtualViewEntered(mContainerView, virtualId, absBound);
 
         // Update focus field position.
         mRequest.setFocusField(new FocusField(focusField.fieldIndex, absBound));
     }
 
-    private void notifyVirtualValueChanged(int index) {
+    private boolean isDatalistField(int childId) {
+        FormFieldData field = mRequest.getField((short) childId);
+        return field.mControlType == FormFieldData.ControlType.DATALIST;
+    }
+
+    private void notifyVirtualValueChanged(int index, boolean forceNotify) {
+        // The ValueChanged, ViewEntered and ViewExited aren't notified to the autofill service for
+        // the focused datalist to avoid the potential UI conflict.
+        // The datalist support was added later and the option list is displayed by WebView, the
+        // autofill service might also show its suggestions when the datalist (associated the input
+        // field) is focused, the two UI overlap, the solution is to completely hide the fact that
+        // the datalist is being focused to the autofill service to prevent it from displaying the
+        // suggestion.
+        // The ValueChange will still be sent to autofill service when the form
+        // submitted or autofilled.
+        if (!forceNotify && isDatalistField(index)) return;
         AutofillValue autofillValue = mRequest.getFieldNewValue(index);
         if (autofillValue == null) return;
         mAutofillManager.notifyVirtualValueChanged(
                 mContainerView, mRequest.getVirtualId((short) index), autofillValue);
     }
 
+    private void notifyVirtualViewEntered(View parent, int childId, Rect absBounds) {
+        // Refer to notifyVirtualValueChanged() for the reason of the datalist's special handling.
+        if (isDatalistField(childId)) return;
+        mAutofillManager.notifyVirtualViewEntered(parent, childId, absBounds);
+    }
+
+    private void notifyVirtualViewExited(View parent, int childId) {
+        // Refer to notifyVirtualValueChanged() for the reason of the datalist's special handling.
+        if (isDatalistField(childId)) return;
+        mAutofillManager.notifyVirtualViewExited(parent, childId);
+    }
     @Override
     public void onFormSubmitted(int submissionSource) {
         // The changes could be missing, like those made by Javascript, we'd better to notify
         // AutofillManager current values. also see crbug.com/353001 and crbug.com/732856.
-        notifyFormValues();
+        forceNotifyFormValues();
         mAutofillManager.commit(submissionSource);
         mRequest = null;
         mAutofillUMA.onFormSubmitted(submissionSource);
@@ -422,12 +450,11 @@ public class AutofillProviderImpl extends AutofillProvider {
     @Override
     protected void hidePopup() {}
 
-    private void notifyViewExitBeforeDestoryRequest() {
+    private void notifyViewExitBeforeDestroyRequest() {
         if (mRequest == null) return;
         FocusField focusField = mRequest.getFocusField();
         if (focusField == null) return;
-        mAutofillManager.notifyVirtualViewExited(
-                mContainerView, mRequest.getVirtualId(focusField.fieldIndex));
+        notifyVirtualViewExited(mContainerView, mRequest.getVirtualId(focusField.fieldIndex));
         mRequest.setFocusField(null);
     }
 
@@ -445,25 +472,23 @@ public class AutofillProviderImpl extends AutofillProvider {
 
             // Notify focus changed.
             if (prev != null) {
-                mAutofillManager.notifyVirtualViewExited(
-                        mContainerView, mRequest.getVirtualId(prev.fieldIndex));
+                notifyVirtualViewExited(mContainerView, mRequest.getVirtualId(prev.fieldIndex));
             }
 
-            mAutofillManager.notifyVirtualViewEntered(
+            notifyVirtualViewEntered(
                     mContainerView, mRequest.getVirtualId((short) focusField), absBound);
 
             if (!causedByValueChange) {
                 // The focus field value might not sync with platform's
                 // AutofillManager, just notify it value changed.
-                notifyVirtualValueChanged(focusField);
+                notifyVirtualValueChanged(focusField, /* forceNotify = */ false);
                 mAutofillTriggeredTimeMillis = System.currentTimeMillis();
             }
             mRequest.setFocusField(new FocusField((short) focusField, absBound));
         } else {
             if (prev == null) return;
             // Notify focus changed.
-            mAutofillManager.notifyVirtualViewExited(
-                    mContainerView, mRequest.getVirtualId(prev.fieldIndex));
+            notifyVirtualViewExited(mContainerView, mRequest.getVirtualId(prev.fieldIndex));
             mRequest.setFocusField(null);
         }
     }
@@ -500,12 +525,16 @@ public class AutofillProviderImpl extends AutofillProvider {
 
     @Override
     protected void onDidFillAutofillFormData() {
-        notifyFormValues();
+        // The changes were caused by the autofill service autofill form,
+        // notified it about the result.
+        forceNotifyFormValues();
     }
 
-    private void notifyFormValues() {
+    private void forceNotifyFormValues() {
         if (mRequest == null) return;
-        for (int i = 0; i < mRequest.getFieldCount(); ++i) notifyVirtualValueChanged(i);
+        for (int i = 0; i < mRequest.getFieldCount(); ++i) {
+            notifyVirtualValueChanged(i, /* forceNotify = */ true);
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

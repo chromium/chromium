@@ -137,9 +137,6 @@ struct CONTENT_EXPORT UntrustworthyContextMenuParams {
 
   ui::MenuSourceType source_type;
 
-  // Extra properties for the context menu.
-  std::map<std::string, std::string> properties;
-
   // If this node is an input field, the type of that field.
   blink::ContextMenuDataInputFieldType input_field_type;
 

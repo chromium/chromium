@@ -104,6 +104,10 @@ class MetricsReporter {
   // Called when Chrome is entering the background.
   void OnEnterBackground();
 
+  // Actions upload.
+  static void OnUploadActionsBatch(UploadActionsBatchStatus status);
+  static void OnUploadActions(UploadActionsStatus status);
+
  private:
   base::WeakPtr<MetricsReporter> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

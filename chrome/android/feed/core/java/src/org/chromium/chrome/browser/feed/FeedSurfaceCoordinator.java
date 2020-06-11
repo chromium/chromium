@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
 import org.chromium.chrome.feed.R;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -81,6 +82,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private final int mDefaultMargin;
     private final int mWideMargin;
     private final FeedSurfaceMediator mMediator;
+    private final BottomSheetController mBottomSheetController;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -308,7 +310,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             @Nullable SectionHeaderView sectionHeaderView, ActionApi actionApi,
             boolean showDarkBackground, FeedSurfaceDelegate delegate,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
-            boolean isPlaceholderShown) {
+            boolean isPlaceholderShown, BottomSheetController bottomSheetController) {
         mActivity = activity;
         mSnackbarManager = snackbarManager;
         mNtpHeader = ntpHeader;
@@ -318,6 +320,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mIsPlaceholderShown = isPlaceholderShown;
         mDelegate = delegate;
         mPageNavigationDelegate = pageNavigationDelegate;
+        mBottomSheetController = bottomSheetController;
 
         Resources resources = mActivity.getResources();
         mDefaultMargin =
@@ -413,8 +416,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
         if (FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2)) {
-            mStream = new FeedStream(
-                    mActivity, mShowDarkBackground, mSnackbarManager, mPageNavigationDelegate);
+            mStream = new FeedStream(mActivity, mShowDarkBackground, mSnackbarManager,
+                    mPageNavigationDelegate, mBottomSheetController);
         } else {
             ProcessScope feedProcessScope = FeedProcessScopeFactory.getFeedProcessScope();
             assert feedProcessScope != null;

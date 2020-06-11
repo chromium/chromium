@@ -2076,22 +2076,6 @@ crbug.com/582750 external/wpt/storage/estimate-usage-details-application-cache.h
 crbug.com/582750 http/tests/loading/appcache-delay/appcache-loads-subresource.html [ Skip ]
 crbug.com/582750 http/tests/security/cors-rfc1918/addressspace-document-appcache.https.html [ Skip ]
 crbug.com/582750 http/tests/security/cors-rfc1918/addressspace-document-csp-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/cache-storage-eager-reading/external/wpt/service-workers/service-worker/appcache-ordering-main.https.html [ Skip ]
-crbug.com/582750 virtual/cache-storage-eager-reading/external/wpt/service-workers/service-worker/claim-fetch-with-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/cache-storage-sequence/external/wpt/service-workers/service-worker/appcache-ordering-main.https.html [ Skip ]
-crbug.com/582750 virtual/cache-storage-sequence/external/wpt/service-workers/service-worker/claim-fetch-with-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/conditional-appcache-delay/http/tests/loading/appcache-delay/appcache-loads-subresource.html [ Skip ]
-crbug.com/582750 virtual/cors/external/wpt/service-workers/service-worker/appcache-ordering-main.https.html [ Skip ]
-crbug.com/582750 virtual/cors/external/wpt/service-workers/service-worker/claim-fetch-with-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/cors/http/tests/security/cors-rfc1918/addressspace-document-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/cors/http/tests/security/cors-rfc1918/addressspace-document-csp-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/cors-rfc1918/http/tests/security/cors-rfc1918/addressspace-document-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/cors-rfc1918/http/tests/security/cors-rfc1918/addressspace-document-csp-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/omt-worker-fetch/external/wpt/service-workers/service-worker/appcache-ordering-main.https.html [ Skip ]
-crbug.com/582750 virtual/omt-worker-fetch/external/wpt/service-workers/service-worker/claim-fetch-with-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/omt-worker-fetch-cors-rfc1918/http/tests/security/cors-rfc1918/addressspace-document-appcache.https.html [ Skip ]
-crbug.com/582750 virtual/omt-worker-fetch-cors-rfc1918/http/tests/security/cors-rfc1918/addressspace-document-csp-appcache.https.html [ Skip ]
-
 
 # Remove these from virtual tests when Network Error Logging is turned on by default
 crbug.com/748549 external/wpt/network-error-logging/* [ Skip ]

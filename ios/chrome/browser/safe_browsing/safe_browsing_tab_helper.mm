@@ -316,10 +316,15 @@ SafeBrowsingTabHelper::PolicyDecider::GetUrlCheckCallback(
     return base::BindOnce(&PolicyDecider::OnMainFrameUrlQueryDecided,
                           AsWeakPtr(), url);
   } else {
+    // TODO(crbug.com/1084741): Refactor this code so that no query is initiated
+    // when the last committed item is null. This happens when a stale subframe
+    // query races with a back/forward navigation to a restore session URL.
     web::NavigationItem* navigation_item =
         web_state()->GetNavigationManager()->GetLastCommittedItem();
+    int navigation_item_id =
+        navigation_item ? navigation_item->GetUniqueID() : -1;
     return base::BindOnce(&PolicyDecider::OnSubFrameUrlQueryDecided,
-                          AsWeakPtr(), url, navigation_item->GetUniqueID());
+                          AsWeakPtr(), url, navigation_item_id);
   }
 }
 
@@ -374,8 +379,11 @@ void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
 
   // If the URL check for a sub frame completes after a new main frame has been
   // committed, |decision| can be ignored and the pending allow list decision
-  // for |url| can be removed.
-  if (navigation_item_id != main_frame_item->GetUniqueID()) {
+  // for |url| can be removed. |main_frame_item| can be null if the new main
+  // frame is for a restore session URL, and the target of that URL hasn't yet
+  // committed.
+  if (!main_frame_item ||
+      navigation_item_id != main_frame_item->GetUniqueID()) {
     SafeBrowsingUrlAllowList::FromWebState(web_state())
         ->RemovePendingUnsafeNavigationDecisions(url);
     return;

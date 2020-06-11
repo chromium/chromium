@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browserservices.OriginVerifier.OriginVerifica
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.test.util.browser.Features;
@@ -51,6 +52,7 @@ public class TwaVerifierTest {
     private static final String INITIAL_URL = "https://www.initialurl.com/page.html";
     private static final String ADDITIONAL_ORIGIN = "https://www.otherverifiedorigin.com";
     private static final String OTHER_URL = "https://www.notverifiedurl.com/page2.html";
+    private static final String PACKAGE_NAME = "some.package.name";
 
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
@@ -69,6 +71,8 @@ public class TwaVerifierTest {
     CustomTabActivityTabProvider mActivityTabProvider;
     @Mock
     ClientPackageNameProvider mClientPackageNameProvider;
+    @Mock
+    ExternalAuthUtils mExternalAuthUtils;
 
     private TwaVerifier mDelegate;
 
@@ -80,13 +84,14 @@ public class TwaVerifierTest {
         when(mIntentDataProvider.getTrustedWebActivityAdditionalOrigins())
                 .thenReturn(Collections.singletonList(ADDITIONAL_ORIGIN));
 
-        when(mOriginVerifierFactory.create(anyString(), anyInt(), any()))
+        when(mOriginVerifierFactory.create(anyString(), anyInt(), any(), any()))
                 .thenReturn(mOriginVerifier);
 
         when(mClientPackageNameProvider.get()).thenReturn("some.package.name");
 
-        mDelegate = new TwaVerifier(mLifecycleDispatcher, mIntentDataProvider,
-                mOriginVerifierFactory, mActivityTabProvider, mClientPackageNameProvider);
+        mDelegate =
+                new TwaVerifier(mLifecycleDispatcher, mIntentDataProvider, mOriginVerifierFactory,
+                        mActivityTabProvider, mClientPackageNameProvider, mExternalAuthUtils);
     }
 
     @Test

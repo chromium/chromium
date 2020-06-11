@@ -491,8 +491,6 @@ const FeaturePolicy::FeatureList& FeaturePolicy::GetDefaultFeatureList() {
         FeatureDefault(FeaturePolicy::FeatureDefault::EnableForAll)},
        {mojom::FeaturePolicyFeature::kScreenWakeLock,
         FeatureDefault(FeaturePolicy::FeatureDefault::EnableForSelf)},
-       {mojom::FeaturePolicyFeature::kWebVr,
-        FeatureDefault(FeaturePolicy::FeatureDefault::EnableForSelf)},
        {mojom::FeaturePolicyFeature::kWebXr,
         FeatureDefault(FeaturePolicy::FeatureDefault::EnableForSelf)},
        {mojom::FeaturePolicyFeature::kStorageAccessAPI,

@@ -98,6 +98,8 @@ const char kExtensionId[] = "ext_id";
 
 const char kGetAuthTokenResultHistogramName[] =
     "Signin.Extensions.GetAuthTokenResult";
+const char kGetAuthTokenResultAfterConsentApprovedHistogramName[] =
+    "Signin.Extensions.GetAuthTokenResult.RemoteConsentApproved";
 
 #if defined(OS_CHROMEOS)
 void InitNetwork() {
@@ -2333,6 +2335,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       histogram_tester()->ExpectUniqueSample(
           kGetAuthTokenResultHistogramName,
           IdentityGetAuthTokenError::State::kRemoteConsentUserNonPrimary, 1);
+      histogram_tester()->ExpectUniqueSample(
+          kGetAuthTokenResultAfterConsentApprovedHistogramName,
+          IdentityGetAuthTokenError::State::kRemoteConsentUserNonPrimary, 1);
       return;
     }
 
@@ -2353,6 +2358,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
     histogram_tester()->ExpectUniqueSample(
         kGetAuthTokenResultHistogramName,
         IdentityGetAuthTokenError::State::kNone, 1);
+    histogram_tester()->ExpectUniqueSample(
+        kGetAuthTokenResultAfterConsentApprovedHistogramName,
+        IdentityGetAuthTokenError::State::kNone, 1);
   }
 
   {
@@ -2371,6 +2379,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
     histogram_tester()->ExpectUniqueSample(
         kGetAuthTokenResultHistogramName,
         IdentityGetAuthTokenError::State::kNone, 2);
+    histogram_tester()->ExpectUniqueSample(
+        kGetAuthTokenResultAfterConsentApprovedHistogramName,
+        IdentityGetAuthTokenError::State::kNone, 1);
   }
 }
 

@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -40,6 +41,15 @@ class ScrollTimelineTest : public RenderingTest {
     auto new_time = GetAnimationClock().CurrentTime() +
                     base::TimeDelta::FromMilliseconds(100);
     GetPage().Animator().ServiceScriptedAnimations(new_time);
+  }
+
+  wtf_size_t AnimationsCount() const {
+    wtf_size_t count = 0;
+    for (auto timeline :
+         GetDocument().GetDocumentAnimations().GetTimelinesForTesting()) {
+      count += timeline->GetAnimations().size();
+    }
+    return count;
   }
 };
 
@@ -364,8 +374,50 @@ TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullScrollSource) {
   EXPECT_TRUE(scroll_timeline->GetAnimations().Contains(animation));
 
   animation = nullptr;
+  scroll_timeline = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_EQ(0u, scroll_timeline->GetAnimations().size());
+  EXPECT_EQ(0u, AnimationsCount());
+}
+
+TEST_F(ScrollTimelineTest, AnimationIsGarbageCollectedWhenScrollerIsRemoved) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller { overflow: scroll; width: 100px; height: 100px; }
+      #spacer { width: 200px; height: 200px; }
+    </style>
+    <div id='scroller'>
+      <div id ='spacer'></div>
+    </div>
+  )HTML");
+
+  TestScrollTimeline* scroll_timeline =
+      MakeGarbageCollected<TestScrollTimeline>(&GetDocument(),
+                                               GetElementById("scroller"));
+  NonThrowableExceptionState exception_state;
+  Timing timing;
+  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+  Animation* animation =
+      Animation::Create(MakeGarbageCollected<KeyframeEffect>(
+                            nullptr,
+                            MakeGarbageCollected<StringKeyframeEffectModel>(
+                                StringKeyframeVector()),
+                            timing),
+                        scroll_timeline, exception_state);
+  animation->play();
+  UpdateAllLifecyclePhasesForTest();
+
+  animation->finish();
+  animation = nullptr;
+  scroll_timeline = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  // Scroller is alive, animation is not GC'ed.
+  EXPECT_EQ(1u, AnimationsCount());
+
+  GetElementById("scroller")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  // Scroller is removed and unreachable, animation is GC'ed.
+  EXPECT_EQ(0u, AnimationsCount());
 }
 
 TEST_F(ScrollTimelineTest, ScheduleFrameOnlyWhenScrollOffsetChanges) {

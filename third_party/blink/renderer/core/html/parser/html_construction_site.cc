@@ -750,6 +750,9 @@ void HTMLConstructionSite::InsertFormattingElement(AtomicHTMLToken* token) {
 
 void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
   CreateElementFlags flags;
+  bool should_be_parser_inserted =
+      parser_content_policy_ !=
+      kAllowScriptingContentAndDoNotMarkAlreadyStarted;
   flags
       // http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#already-started
       // http://html5.org/specs/dom-parsing.html#dom-range-createcontextualfragment
@@ -757,8 +760,8 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
       // parser-inserted and already-started and later unmark them. However, we
       // short circuit that logic to avoid the subtree traversal to find script
       // elements since scripts can never see those flags or effects thereof.
-      .SetCreatedByParser(parser_content_policy_ !=
-                          kAllowScriptingContentAndDoNotMarkAlreadyStarted)
+      .SetCreatedByParser(should_be_parser_inserted,
+                          should_be_parser_inserted ? document_ : nullptr)
       .SetAlreadyStarted(is_parsing_fragment_ && flags.IsCreatedByParser());
   HTMLScriptElement* element = nullptr;
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
@@ -866,8 +869,8 @@ void HTMLConstructionSite::TakeAllChildren(
 }
 
 CreateElementFlags HTMLConstructionSite::GetCreateElementFlags() const {
-  return is_parsing_fragment_ ? CreateElementFlags::ByFragmentParser()
-                              : CreateElementFlags::ByParser();
+  return is_parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
+                              : CreateElementFlags::ByParser(document_);
 }
 
 Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
@@ -876,8 +879,13 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
   // used in those places. The spec needs to be updated to reflect this
   // behavior, and when that happens, a link to the spec should be placed here.
   if (auto* template_element = DynamicTo<HTMLTemplateElement>(*CurrentNode())) {
-    return template_element->TemplateContentForHTMLConstructionSite()
-        ->GetDocument();
+    // If the Document was detached in the middle of parsing, The template
+    // element won't be able to initialize its contents. Fallback to the
+    // current node's document in that case..
+    if (auto* content =
+            template_element->TemplateContentForHTMLConstructionSite()) {
+      return content->GetDocument();
+    }
   }
   return CurrentNode()->GetDocument();
 }
@@ -959,7 +967,8 @@ Element* HTMLConstructionSite::CreateElement(
     // only partially construct themselves when created by the parser, but since
     // this is a custom element, we need a fully-constructed element here.
     element = definition->CreateElement(
-        document, tag_name, GetCreateElementFlags().SetCreatedByParser(false));
+        document, tag_name,
+        GetCreateElementFlags().SetCreatedByParser(false, nullptr));
 
     // "8. Append each attribute in the given token to element." We don't use
     // setAttributes here because the custom element constructor may have

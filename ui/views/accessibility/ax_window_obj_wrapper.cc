@@ -160,6 +160,9 @@ void AXWindowObjWrapper::OnWindowDestroyed(aura::Window* window) {
 }
 
 void AXWindowObjWrapper::OnWindowDestroying(aura::Window* window) {
+  if (window == window_)
+    window_destroying_ = true;
+
   Widget* widget = GetWidgetForWindow(window);
   if (widget)
     aura_obj_cache_->Remove(widget);
@@ -179,6 +182,9 @@ void AXWindowObjWrapper::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
+  if (window_destroying_)
+    return;
+
   if (window == window_)
     FireLocationChangesRecursively(window_, aura_obj_cache_);
 }
@@ -186,22 +192,34 @@ void AXWindowObjWrapper::OnWindowBoundsChanged(
 void AXWindowObjWrapper::OnWindowPropertyChanged(aura::Window* window,
                                                  const void* key,
                                                  intptr_t old) {
+  if (window_destroying_)
+    return;
+
   if (window == window_ && key == ui::kChildAXTreeID)
     FireEvent(ax::mojom::Event::kChildrenChanged);
 }
 
 void AXWindowObjWrapper::OnWindowVisibilityChanged(aura::Window* window,
                                                    bool visible) {
+  if (window_destroying_)
+    return;
+
   FireEvent(ax::mojom::Event::kStateChanged);
 }
 
 void AXWindowObjWrapper::OnWindowTransformed(aura::Window* window,
                                              ui::PropertyChangeReason reason) {
+  if (window_destroying_)
+    return;
+
   if (window == window_)
     FireLocationChangesRecursively(window_, aura_obj_cache_);
 }
 
 void AXWindowObjWrapper::OnWindowTitleChanged(aura::Window* window) {
+  if (window_destroying_)
+    return;
+
   FireEventOnWindowChildWidgetAndRootView(
       window_, ax::mojom::Event::kTreeChanged, aura_obj_cache_);
 }

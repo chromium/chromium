@@ -247,7 +247,7 @@ fuchsia::web::CreateContextParams CastRunner::GetMainContextParams() {
   // TODO(crbug.com/1023514): Remove this switch when it is no longer
   // necessary.
   params.set_unsafely_treat_insecure_origins_as_secure(
-      {"allow-running-insecure-content"});
+      {"allow-running-insecure-content", "disable-mixed-content-autoupgrade"});
 
   return params;
 }

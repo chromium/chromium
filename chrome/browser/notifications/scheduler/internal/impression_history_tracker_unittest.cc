@@ -53,6 +53,19 @@ Impression CreateImpression(const base::Time& create_time,
   return impression;
 }
 
+Impression CreateImpression(
+    const base::Time& create_time,
+    const std::string& guid,
+    UserFeedback feedback,
+    base::TimeDelta ignore_timeout_duration,
+    Impression::ImpressionResultMap impression_mapping) {
+  Impression impression(SchedulerClientType::kTest1, guid, create_time);
+  impression.feedback = feedback;
+  impression.ignore_timeout_duration = ignore_timeout_duration;
+  impression.impression_mapping = impression_mapping;
+  return impression;
+}
+
 TestCase CreateDefaultTestCase() {
   TestCase test_case;
   test_case.input = {{SchedulerClientType::kTest1,
@@ -236,7 +249,7 @@ TEST_F(ImpressionHistoryTrackerTest, AddImpression) {
   // No-op for unregistered client.
   tracker()->AddImpression(SchedulerClientType::kTest2, kGuid2,
                            Impression::ImpressionResultMap(),
-                           Impression::CustomData());
+                           Impression::CustomData(), base::nullopt);
   VerifyClientStates(test_case);
 
   clock()->SetNow(kTimeStr);
@@ -246,7 +259,7 @@ TEST_F(ImpressionHistoryTrackerTest, AddImpression) {
   Impression::CustomData custom_data = {{"url", "https://www.example.com"}};
   EXPECT_CALL(*store(), Update(_, _, _));
   tracker()->AddImpression(SchedulerClientType::kTest1, kGuid1,
-                           impression_mapping, custom_data);
+                           impression_mapping, custom_data, base::nullopt);
   Impression expected_impression(SchedulerClientType::kTest1, kGuid1,
                                  clock()->Now());
   expected_impression.impression_mapping = impression_mapping;
@@ -300,6 +313,57 @@ TEST_F(ImpressionHistoryTrackerTest, ConsecutiveDismisses) {
   for (auto& impression : test_case.expected.front().impressions) {
     impression.feedback = UserFeedback::kDismiss;
     impression.impression = ImpressionResult::kNeutral;
+    impression.integrated = true;
+  }
+
+  CreateTracker(test_case);
+  InitTrackerWithData(test_case);
+  EXPECT_CALL(*store(), Update(_, _, _));
+  EXPECT_CALL(*delegate(), GetThrottleConfig(_, _))
+      .Times(test_case.input.front().impressions.size())
+      .WillRepeatedly(Invoke(
+          [&](SchedulerClientType type,
+              base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)> cb) {
+            std::move(cb).Run(nullptr);
+          }));
+  UserActionData action_data(SchedulerClientType::kTest1,
+                             UserActionType::kDismiss, "guid2");
+  tracker()->OnUserAction(action_data);
+  VerifyClientStates(test_case);
+}
+
+// Verifies consecutive dismisses or timeout-ignored impressions will generate
+// impression result with timeout configured.
+TEST_F(ImpressionHistoryTrackerTest, ConsecutiveDismissesWithIgnoreTimeout) {
+  TestCase test_case = CreateDefaultTestCase();
+  clock()->SetNow(kTimeStr);
+
+  // Config timeout duration and negative impression mapping.
+  Impression::ImpressionResultMap impression_mapping;
+  impression_mapping.emplace(UserFeedback::kDismiss,
+                             ImpressionResult::kNegative);
+  impression_mapping.emplace(UserFeedback::kIgnore,
+                             ImpressionResult::kNegative);
+  base::TimeDelta ignore_timeout_duration = base::TimeDelta::FromHours(12);
+
+  // Construct 3 dismisses or timeout-ignored impressions in a row, which will
+  // generate negative impression result.
+  auto dismiss_0 = CreateImpression(
+      clock()->Now() - base::TimeDelta::FromDays(1), "guid0",
+      UserFeedback::kNoFeedback, ignore_timeout_duration, impression_mapping);
+  auto dismiss_1 = CreateImpression(
+      clock()->Now() - base::TimeDelta::FromHours(16), "guid1",
+      UserFeedback::kNoFeedback, ignore_timeout_duration, impression_mapping);
+  auto dismiss_2 = CreateImpression(
+      clock()->Now() - base::TimeDelta::FromMinutes(15), "guid2",
+      UserFeedback::kDismiss, ignore_timeout_duration, impression_mapping);
+  test_case.input.front().impressions = {dismiss_0, dismiss_1, dismiss_2};
+  test_case.expected.front().impressions = test_case.input.front().impressions;
+  for (auto& impression : test_case.expected.front().impressions) {
+    if (impression.guid != "guid2") {
+      impression.feedback = UserFeedback::kIgnore;
+    }
+    impression.impression = ImpressionResult::kNegative;
     impression.integrated = true;
   }
 

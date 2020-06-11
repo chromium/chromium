@@ -38,6 +38,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+/* NO_BUILDER:
+ *
+ * Several comments below describe how binary blobs in this file were produced. However, they use
+ * Builder classes that no longer appear to exist. Because of this, it's difficult to update these
+ * blobs.
+ *
+ * The blobs are in Android's Parcel format. This format defines a tag-value object that represents
+ * a (tag, bytestring) pair. A tag-value is serialized as a little-endian, uint32 where the bottom
+ * 16 bits are the tag, and the top 16 bits are the length of the value. If the length is 0xffff,
+ * then a second uint32 is used to store the actual length. (This two-word format appears to be
+ * always used in practice, even when the length would fit in 16 bits.) The bytestring contains are
+ * then the |length| following bytes.
+ *
+ * A Parcel consists of a tag-value object with tag 0x4f45 and whose value is the rest of the
+ * Parcel data. That value contains a series of tag-values that define the members of the
+ * destination object. Unknown tags are skipped over.
+ *
+ * The semantics of the values of the inner values are tag-specific. In the case of byte[] objects,
+ * the value is, itself, a tag-value object. Since this has its own length, there can be padding at
+ * the end and they seem to be padded with zeros to the nearest four-byte boundary.
+ */
+
 /**
  * A Helper class for testing Fido2ApiHandlerInternal.
  */
@@ -55,11 +77,25 @@ public class Fido2ApiTestHelper {
      *                 .setClientDataJSON(TEST_CLIENT_DATA_JSON)
      *                 .setKeyHandle(TEST_KEY_HANDLE)
      *                 .build().serializeToBytes();
+     *
+     * NOTE: See NO_BUILDER comment, above.
      */
     private static final byte[] TEST_AUTHENTICATOR_ATTESTATION_RESPONSE = new byte[] {69, 79, -1,
-            -1, 76, 0, 0, 0, 2, 0, -1, -1, 36, 0, 0, 0, 32, 0, 0, 0, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6,
+            -1, 44, 1, 0, 0, 2, 0, -1, -1, 36, 0, 0, 0, 32, 0, 0, 0, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6,
             7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 9, 3, 0, -1, -1, 8, 0, 0,
-            0, 3, 0, 0, 0, 4, 5, 6, 0, 4, 0, -1, -1, 8, 0, 0, 0, 3, 0, 0, 0, 1, 2, 3, 0};
+            0, 3, 0, 0, 0, 4, 5, 6, 0, 4, 0, -1, -1, -24, 0, 0, 0, -30, 0, 0, 0, -93, 99, 102, 109,
+            116, 100, 110, 111, 110, 101, 103, 97, 116, 116, 83, 116, 109, 116, -96, 104, 97, 117,
+            116, 104, 68, 97, 116, 97, 88, -60, 38, -67, 114, 120, -66, 70, 55, 97, -15, -6, -95,
+            -79, 10, -76, -60, -8, 38, 112, 38, -100, 65, 12, 114, 106, 31, -42, -32, 88, 85, -31,
+            -101, 70, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 124,
+            80, -60, -114, 69, -117, 44, -120, 122, -62, 63, 104, 18, -66, 2, -3, -56, 35, -24, 66,
+            -4, 74, 48, -128, -52, 80, -100, 46, 97, 93, -25, -21, -53, 40, 123, 90, -107, -20, 111,
+            -4, 15, 64, 122, 15, -84, -21, -33, -15, 26, 11, 35, 36, -49, 116, 52, -74, 107, 63,
+            113, -59, 125, -27, -120, -63, -91, 1, 2, 3, 38, 32, 1, 33, 88, 32, -75, -80, 118, 102,
+            -14, 124, -108, -9, -27, -91, 59, -48, -92, -102, -38, -44, 92, 95, 14, -62, 41, -117,
+            -70, 101, 9, 64, 35, 31, -20, 79, -71, -71, 34, 88, 32, -24, -33, 64, 97, -31, -34, 96,
+            -83, -119, -25, 21, -14, -56, -70, -37, -116, -21, -33, -128, -66, 61, 41, 107, 16, -25,
+            120, 106, -113, 54, -62, -102, 42, 0, 0};
 
     /**
      * This byte array is produced by
@@ -71,6 +107,8 @@ public class Fido2ApiTestHelper {
      *         .setClientDataJSON(TEST_CLIENT_DATA_JSON)
      *         .setKeyHandle(TEST_KEY_HANDLE)
      *         .build().serializeToBytes();
+     *
+     * NOTE: See NO_BUILDER comment, above.
      */
     private static final byte[] TEST_AUTHENTICATOR_ASSERTION_RESPONSE = new byte[] {69, 79, -1, -1,
             92, 0, 0, 0, 2, 0, -1, -1, 36, 0, 0, 0, 32, 0, 0, 0, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8,
@@ -114,6 +152,8 @@ public class Fido2ApiTestHelper {
      *                 .setAuthenticationExtensionsClientOutputs(
      *                         authenticationExtensionsClientOutputs)
      *                 .build().serializeToBytes();
+     *
+     * NOTE: See NO_BUILDER comment, above.
      */
     private static final byte[] TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_UVM = new byte[] {69, 79,
             -1, -1, 4, 1, 0, 0, 2, 0, -1, -1, 28, 0, 0, 0, 10, 0, 0, 0, 112, 0, 117, 0, 98, 0, 108,
@@ -136,6 +176,8 @@ public class Fido2ApiTestHelper {
      *                           .setErrorCode(errorCode)
      *                           .setErrorMessage(errorMsg)
      *                           .build().serializeToBytes();
+     *
+     * NOTE: See NO_BUILDER comment, above.
      */
     private static final byte[] TEST_ERROR_WITH_FILLER_ERROR_MSG_RESPONSE_FRONT =
             new byte[] {69, 79, -1, -1, 44, 0, 0, 0, 2, 0, 4, 0};
@@ -185,7 +227,19 @@ public class Fido2ApiTestHelper {
             "0506070805060708050607080506070805060708050607080506070805060709");
     private static final String TEST_ENCODED_KEY_HANDLE = Base64.encodeToString(
             TEST_KEY_HANDLE, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
-    private static final byte[] TEST_ATTESTATION_OBJECT = new byte[] {1, 2, 3};
+    private static final byte[] TEST_ATTESTATION_OBJECT = new byte[] {-93, 99, 102, 109, 116, 100,
+            110, 111, 110, 101, 103, 97, 116, 116, 83, 116, 109, 116, -96, 104, 97, 117, 116, 104,
+            68, 97, 116, 97, 88, -60, 38, -67, 114, 120, -66, 70, 55, 97, -15, -6, -95, -79, 10,
+            -76, -60, -8, 38, 112, 38, -100, 65, 12, 114, 106, 31, -42, -32, 88, 85, -31, -101, 70,
+            65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 124, 80, -60,
+            -114, 69, -117, 44, -120, 122, -62, 63, 104, 18, -66, 2, -3, -56, 35, -24, 66, -4, 74,
+            48, -128, -52, 80, -100, 46, 97, 93, -25, -21, -53, 40, 123, 90, -107, -20, 111, -4, 15,
+            64, 122, 15, -84, -21, -33, -15, 26, 11, 35, 36, -49, 116, 52, -74, 107, 63, 113, -59,
+            125, -27, -120, -63, -91, 1, 2, 3, 38, 32, 1, 33, 88, 32, -75, -80, 118, 102, -14, 124,
+            -108, -9, -27, -91, 59, -48, -92, -102, -38, -44, 92, 95, 14, -62, 41, -117, -70, 101,
+            9, 64, 35, 31, -20, 79, -71, -71, 34, 88, 32, -24, -33, 64, 97, -31, -34, 96, -83, -119,
+            -25, 21, -14, -56, -70, -37, -116, -21, -33, -128, -66, 61, 41, 107, 16, -25, 120, 106,
+            -113, 54, -62, -102, 42};
     private static final byte[] TEST_CLIENT_DATA_JSON = new byte[] {4, 5, 6};
     private static final byte[] TEST_AUTHENTICATOR_DATA = new byte[] {7, 8, 9};
     private static final byte[] TEST_SIGNATURE = new byte[] {10, 11, 12};

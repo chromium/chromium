@@ -46,14 +46,4 @@
         <item name="android:layout">@layout/preference_compat</item>
         <item name="android:widgetLayout">@layout/preference_widget_switch_compat</item>
     </style>
-
-    <!-- The following styles may be used to style views provided by a CustomViewBinder or attached
-         to the app menu as headers or footers. -->
-
-    <!-- Styling for an app menu item row. -->
-    <style name="AppMenuItem">
-        <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
-    </style>
 </resources>

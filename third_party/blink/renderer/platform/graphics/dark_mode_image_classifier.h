@@ -9,8 +9,10 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkRect.h"
 
 namespace blink {
 
@@ -47,6 +49,9 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
   DarkModeClassification Classify(Image* image,
                                   const FloatRect& src_rect,
                                   const FloatRect& dest_rect);
+
+  // Removes cache identified by given |image_id|.
+  static void RemoveCache(PaintImage::Id image_id);
 
  protected:
   DarkModeImageClassifier();
@@ -89,6 +94,16 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
   // is grayscale, each bucket is a 4 bit representation of luminance.
   float ComputeColorBucketsRatio(const Vector<SkColor>& sampled_pixels,
                                  const ColorMode color_mode);
+
+  // Gets cached value from the given |image_id| cache.
+  DarkModeClassification GetCacheValue(PaintImage::Id image_id,
+                                       const SkRect& src);
+  // Adds cache value |result| to the given |image_id| cache.
+  void AddCacheValue(PaintImage::Id image_id,
+                     const SkRect& src,
+                     DarkModeClassification result);
+  // Returns the cache size for the given |image_id|.
+  size_t GetCacheSize(PaintImage::Id image_id);
 
   int pixels_to_sample_;
   // Holds the number of blocks in the horizontal direction when the image is

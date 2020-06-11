@@ -22,6 +22,10 @@ var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
 
+var failOnceCalled = function() {
+  chrome.test.fail();
+};
+
 var availableTests = [
   function getCountryList() {
     var handler = function(countries) {
@@ -221,7 +225,33 @@ var availableTests = [
         }));
   },
 
+  function noChangesToExistingCreditCard() {
+    chrome.autofillPrivate.getCreditCardList(chrome.test.callbackPass(function(
+        cardList) {
+      // The card from the addNewCreditCard function should still be there.
+      chrome.test.assertEq(1, cardList.length);
+      var cardGuid = cardList[0].guid;
+
+      // Set up the listener that verifies that onPersonalDataChanged shouldn't
+      // be called.
+      chrome.autofillPrivate.onPersonalDataChanged.addListener(failOnceCalled);
+
+      // Save the card with the same info, shouldn't invoke
+      // onPersonalDataChanged.
+      chrome.autofillPrivate.saveCreditCard({
+        guid: cardGuid,
+        name: CARD_NAME,
+        cardNumber: NUMBER,
+        expirationMonth: EXP_MONTH,
+        expirationYear: EXP_YEAR
+      });
+    }));
+  },
+
   function updateExistingCreditCard() {
+    // Reset onPersonalDataChanged.
+    chrome.autofillPrivate.onPersonalDataChanged.removeListener(failOnceCalled);
+
     var UPDATED_CARD_NAME = 'UpdatedCardName';
     var UPDATED_EXP_YEAR = '2888';
     var UPDATED_NICKNAME = 'New nickname';
@@ -244,7 +274,7 @@ var availableTests = [
           chrome.test.assertEq(1, cardList.length);
           var cardGuid = cardList[0].guid;
 
-          // Setup the callback that verifies that the address was correctly
+          // Set up the callback that verifies that the card was correctly
           // updated.
           chrome.test.listenOnce(
               chrome.autofillPrivate.onPersonalDataChanged,
@@ -349,7 +379,10 @@ var availableTests = [
 /** @const */
 var TESTS_FOR_CONFIG = {
   'addAndUpdateAddress': ['addNewAddress', 'updateExistingAddress'],
-  'addAndUpdateCreditCard': ['addNewCreditCard', 'updateExistingCreditCard']
+  'addAndUpdateCreditCard': [
+    'addNewCreditCard', 'noChangesToExistingCreditCard',
+    'updateExistingCreditCard'
+  ]
 };
 
 var testConfig = window.location.search.substring(1);

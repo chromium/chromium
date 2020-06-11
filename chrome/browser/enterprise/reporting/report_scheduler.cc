@@ -18,7 +18,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/browser_dm_token_storage.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -35,7 +34,6 @@ namespace {
 constexpr base::TimeDelta kDefaultUploadInterval =
     base::TimeDelta::FromHours(24);  // Default upload interval is 24 hours.
 const int kMaximumRetry = 10;  // Retry 10 times takes about 15 to 19 hours.
-const int kMaximumTrackedProfiles = 21;
 
 // Returns true if cloud reporting is enabled.
 bool IsReportingEnabled() {
@@ -66,14 +64,11 @@ ReportScheduler::ReportScheduler(
 }
 
 ReportScheduler::~ReportScheduler() {
-  // Stop observing ProfileManager if we are tracking stale profiles.
-  if (stale_profiles_)
-    g_browser_process->profile_manager()->RemoveObserver(this);
-  if (IsReportingEnabled() && stale_profiles_) {
-    base::UmaHistogramExactLinear("Enterprise.CloudReportingStaleProfileCount",
-                                  stale_profiles_->size(),
-                                  kMaximumTrackedProfiles);
-  }
+  // If new profiles have been added since the last report was sent, they won't
+  // be reported until the next launch, since Chrome is shutting down. However,
+  // the (now obsolete) Enterprise.CloudReportingStaleProfileCount metric has
+  // shown that this very rarely happens, with 99.23% of samples reporting no
+  // stale profiles and 0.72% reporting a single stale profile.
   if (ShouldReportUpdates())
     g_browser_process->GetBuildState()->RemoveObserver(this);
 }
@@ -251,8 +246,6 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
       // Schedule the next report for success. Reset uploader to reset failure
       // count.
       report_uploader_.reset();
-      if (IsReportingEnabled())
-        TrackStaleProfiles();
       if (ShouldReportUpdates()) {
         // Remember what browser version made this upload.
         g_browser_process->local_state()->SetString(kLastUploadVersion,
@@ -294,16 +287,6 @@ void ReportScheduler::RunPendingTriggers() {
   GenerateAndUploadReport(trigger);
 }
 
-void ReportScheduler::TrackStaleProfiles() {
-  if (!stale_profiles_) {
-    // If we haven't, start the tracking.
-    stale_profiles_ = std::make_unique<base::flat_set<base::FilePath>>();
-    g_browser_process->profile_manager()->AddObserver(this);
-  } else {
-    stale_profiles_->clear();
-  }
-}
-
 // static
 void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
   // These values are persisted to logs. Entries should not be renumbered and
@@ -330,20 +313,6 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
   }
   base::UmaHistogramEnumeration("Enterprise.CloudReportingUploadTrigger",
                                 sample);
-}
-
-void ReportScheduler::OnProfileAdded(Profile* profile) {
-  if (profile->IsSystemProfile() || profile->IsGuestSession() ||
-      profile->IsOffTheRecord()) {
-    return;
-  }
-  DCHECK(stale_profiles_);
-  stale_profiles_->insert(profile->GetPath());
-}
-
-void ReportScheduler::OnProfileMarkedForPermanentDeletion(Profile* profile) {
-  DCHECK(stale_profiles_);
-  stale_profiles_->erase(profile->GetPath());
 }
 
 }  // namespace enterprise_reporting

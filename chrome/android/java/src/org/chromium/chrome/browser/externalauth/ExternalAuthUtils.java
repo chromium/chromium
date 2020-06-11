@@ -25,6 +25,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
@@ -95,6 +96,15 @@ public class ExternalAuthUtils {
      */
     public boolean isGoogleSigned(String packageName) {
         // This is overridden in a subclass.
+        return false;
+    }
+
+    /**
+     * Returns whether the package can bypass TWA verification.
+     * @param packageName The package name to inquire about.
+     * @param origin The origin of the TWA.
+     */
+    public boolean isAllowlistedForTwaVerification(String packageName, Origin origin) {
         return false;
     }
 

@@ -11,7 +11,8 @@
 
 namespace gpu {
 
-// Representation of a SharedImageBackingGLTexture as a GL Texture.
+// Representation of a SharedImageBackingGLTexture or SharedImageBackingGLImage
+// as a GL Texture.
 class SharedImageRepresentationGLTextureImpl
     : public SharedImageRepresentationGLTexture {
  public:
@@ -27,8 +28,8 @@ class SharedImageRepresentationGLTextureImpl
   gles2::Texture* texture_;
 };
 
-// Representation of a SharedImageBackingGLTexturePassthrough as a GL
-// TexturePassthrough.
+// Representation of a SharedImageBackingGLTexture or
+// SharedImageBackingGLTexturePassthrough as a GL TexturePassthrough.
 class SharedImageRepresentationGLTexturePassthroughImpl
     : public SharedImageRepresentationGLTexturePassthrough {
  public:
@@ -49,7 +50,7 @@ class SharedImageRepresentationGLTexturePassthroughImpl
 };
 
 // Common superclass for SharedImageBackingGLTexture,
-// SharedImageBackingPassthroughGLTexture, and
+// SharedImageBackingPassthroughGLImage, and
 // SharedImageRepresentationSkiaImpl.
 class SharedImageBackingWithReadAccess : public SharedImageBacking {
  public:
@@ -108,8 +109,8 @@ class SharedImageRepresentationSkiaImpl : public SharedImageRepresentationSkia {
 #endif
 };
 
-// Implementation of SharedImageBacking that creates a GL Texture and stores it
-// as a gles2::Texture. Can be used with the legacy mailbox implementation.
+// Implementation of SharedImageBacking that creates a GL Texture that is not
+// backed by a GLImage.
 class SharedImageBackingGLTexture : public SharedImageBackingWithReadAccess {
  public:
   SharedImageBackingGLTexture(
@@ -119,8 +120,60 @@ class SharedImageBackingGLTexture : public SharedImageBackingWithReadAccess {
       const gfx::ColorSpace& color_space,
       uint32_t usage,
       gles2::Texture* texture,
-      const SharedImageBackingFactoryGLTexture::UnpackStateAttribs& attribs);
+      scoped_refptr<gles2::TexturePassthrough> passthrough_texture);
   ~SharedImageBackingGLTexture() override;
+
+ private:
+  // SharedImageBacking:
+  gfx::Rect ClearedRect() const override;
+  void SetClearedRect(const gfx::Rect& cleared_rect) override;
+  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
+  void OnMemoryDump(const std::string& dump_name,
+                    base::trace_event::MemoryAllocatorDump* dump,
+                    base::trace_event::ProcessMemoryDump* pmd,
+                    uint64_t client_tracing_id) override;
+  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
+  std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
+  ProduceGLTexturePassthrough(SharedImageManager* manager,
+                              MemoryTypeTracker* tracker) override;
+  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override;
+  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      WGPUDevice device) override;
+
+  // SharedImageBackingWithReadAccess:
+  void BeginReadAccess() override;
+
+  bool IsPassthrough() const;
+
+  gles2::Texture* texture_ = nullptr;
+  scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
+
+  sk_sp<SkPromiseImageTexture> cached_promise_texture_;
+};
+
+// Implementation of SharedImageBacking that creates a GL Texture that is backed
+// by a GLImage and stores it as a gles2::Texture. Can be used with the legacy
+// mailbox implementation.
+class SharedImageBackingGLImage : public SharedImageBackingWithReadAccess {
+ public:
+  SharedImageBackingGLImage(
+      scoped_refptr<gl::GLImage> image,
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      uint32_t usage,
+      gles2::Texture* texture,
+      const SharedImageBackingFactoryGLTexture::UnpackStateAttribs& attribs);
+  ~SharedImageBackingGLImage() override;
 
  private:
   // SharedImageBacking:
@@ -148,9 +201,10 @@ class SharedImageBackingGLTexture : public SharedImageBackingWithReadAccess {
       MemoryTypeTracker* tracker,
       WGPUDevice device) override;
 
-  // SharedImageBackingPassthroughGLTexture:
+  // SharedImageBackingWithReadAccess:
   void BeginReadAccess() override;
 
+  scoped_refptr<gl::GLImage> image_;
   gles2::Texture* texture_ = nullptr;
   gles2::Texture* rgb_emulation_texture_ = nullptr;
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
@@ -161,17 +215,18 @@ class SharedImageBackingGLTexture : public SharedImageBackingWithReadAccess {
 // Implementation of SharedImageBacking that creates a GL Texture and stores it
 // as a gles2::TexturePassthrough. Can be used with the legacy mailbox
 // implementation.
-class SharedImageBackingPassthroughGLTexture
+class SharedImageBackingPassthroughGLImage
     : public SharedImageBackingWithReadAccess {
  public:
-  SharedImageBackingPassthroughGLTexture(
+  SharedImageBackingPassthroughGLImage(
+      scoped_refptr<gl::GLImage> image,
       const Mailbox& mailbox,
       viz::ResourceFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       uint32_t usage,
       scoped_refptr<gles2::TexturePassthrough> passthrough_texture);
-  ~SharedImageBackingPassthroughGLTexture() override;
+  ~SharedImageBackingPassthroughGLImage() override;
 
  private:
   // SharedImageBacking:
@@ -195,9 +250,10 @@ class SharedImageBackingPassthroughGLTexture
       MemoryTypeTracker* tracker,
       WGPUDevice device) override;
 
-  // SharedImageBackingPassthroughGLTexture:
+  // SharedImageBackingWithReadAccess:
   void BeginReadAccess() override;
 
+  scoped_refptr<gl::GLImage> image_;
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   sk_sp<SkPromiseImageTexture> cached_promise_texture_;
 };

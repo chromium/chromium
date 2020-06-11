@@ -61,7 +61,7 @@ public class ExploreSurfaceViewBinderTest {
             mExploreSurfaceCoordinator =
                     new ExploreSurfaceCoordinator(mActivityTestRule.getActivity(),
                             mActivityTestRule.getActivity().getCompositorViewHolder(),
-                            mPropertyModel, true);
+                            mPropertyModel, true, null);
             mFeedSurfaceCoordinator =
                     mExploreSurfaceCoordinator.getFeedSurfaceCreator().createFeedSurfaceCoordinator(
                             false, /* isPlaceholderShown= */ false);

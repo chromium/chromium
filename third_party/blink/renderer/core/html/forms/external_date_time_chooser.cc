@@ -39,20 +39,20 @@
 
 namespace blink {
 
-static ui::mojom::TextInputType ToTextInputType(const AtomicString& source) {
+static ui::TextInputType ToTextInputType(const AtomicString& source) {
   if (source == input_type_names::kDate)
-    return ui::mojom::TextInputType::DATE;
+    return ui::TextInputType::TEXT_INPUT_TYPE_DATE;
   if (source == input_type_names::kDatetime)
-    return ui::mojom::TextInputType::TIME;
+    return ui::TextInputType::TEXT_INPUT_TYPE_TIME;
   if (source == input_type_names::kDatetimeLocal)
-    return ui::mojom::TextInputType::DATE_TIME_LOCAL;
+    return ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_LOCAL;
   if (source == input_type_names::kMonth)
-    return ui::mojom::TextInputType::MONTH;
+    return ui::TextInputType::TEXT_INPUT_TYPE_MONTH;
   if (source == input_type_names::kTime)
-    return ui::mojom::TextInputType::TIME;
+    return ui::TextInputType::TEXT_INPUT_TYPE_TIME;
   if (source == input_type_names::kWeek)
-    return ui::mojom::TextInputType::WEEK;
-  return ui::mojom::TextInputType::NONE;
+    return ui::TextInputType::TEXT_INPUT_TYPE_WEEK;
+  return ui::TextInputType::TEXT_INPUT_TYPE_NONE;
 }
 
 ExternalDateTimeChooser::~ExternalDateTimeChooser() = default;

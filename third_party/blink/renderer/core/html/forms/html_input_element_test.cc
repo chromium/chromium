@@ -89,7 +89,7 @@ TEST_F(HTMLInputElementTest, create) {
   EXPECT_NE(nullptr, input->UserAgentShadowRoot());
 
   input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByParser());
+      GetDocument(), CreateElementFlags::ByParser(&GetDocument()));
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->ParserSetAttributes(Vector<Attribute>());
   EXPECT_NE(nullptr, input->UserAgentShadowRoot());

@@ -613,7 +613,9 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
             if (ignoreConnectedNetwork(network, capabilities)) {
                 return;
             }
-            final boolean makeVpnDefault = capabilities.hasTransport(TRANSPORT_VPN);
+            final boolean makeVpnDefault = capabilities.hasTransport(TRANSPORT_VPN) &&
+                    // Only make the VPN the default if it isn't already.
+                    (mVpnInPlace == null || !network.equals(mVpnInPlace));
             if (makeVpnDefault) {
                 mVpnInPlace = network;
             }

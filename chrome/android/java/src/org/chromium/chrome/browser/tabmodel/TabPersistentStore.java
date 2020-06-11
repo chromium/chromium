@@ -196,11 +196,6 @@ public class TabPersistentStore extends TabPersister {
 
     // Tracks whether this TabPersistentStore's tabs are being loaded.
     private boolean mLoadInProgress;
-    // The number of tabs being merged. Used for logging time to restore per tab.
-    private int mMergeTabCount;
-    // Set when restoreTabs() is called during a non-cold-start merge. Used for logging time to
-    // restore per tab.
-    private long mRestoreMergedTabsStartTime;
 
     @VisibleForTesting
     AsyncTask<TabState> mPrefetchActiveTabTask;
@@ -469,8 +464,6 @@ public class TabPersistentStore extends TabPersister {
 
         // Restore the tabs from the second activity asynchronously.
         PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            mMergeTabCount = mTabsToRestore.size();
-            mRestoreMergedTabsStartTime = SystemClock.uptimeMillis();
             restoreTabs(false);
         });
     }
@@ -867,6 +860,7 @@ public class TabPersistentStore extends TabPersister {
      * @param tabsBeingRestored Tabs that are in the process of being restored.
      * @return                  {@code byte[]} containing the serialized state of {@code selector}.
      */
+    @VisibleForTesting
     public static byte[] serializeMetadata(TabModelMetadata standardInfo,
             TabModelMetadata incognitoInfo, @Nullable List<TabRestoreDetails> tabsBeingRestored)
             throws IOException {
@@ -932,7 +926,7 @@ public class TabPersistentStore extends TabPersister {
      * @param stateFileName  File name to save TabModel data into.
      * @param listData       TabModel data in the form of a serialized byte array.
      */
-    public static void saveListToFile(File stateDirectory, String stateFileName, byte[] listData) {
+    private static void saveListToFile(File stateDirectory, String stateFileName, byte[] listData) {
         synchronized (SAVE_LIST_LOCK) {
             // Save the index file containing the list of tabs to restore.
             File metadataFile = new File(stateDirectory, stateFileName);
@@ -1490,7 +1484,7 @@ public class TabPersistentStore extends TabPersister {
     }
 
     @VisibleForTesting
-    public SequencedTaskRunner getTaskRunnerForTests() {
+    SequencedTaskRunner getTaskRunnerForTests() {
         return mSequencedTaskRunner;
     }
 }

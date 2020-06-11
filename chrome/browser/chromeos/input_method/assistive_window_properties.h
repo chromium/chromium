@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_INPUT_METHOD_ASSISTIVE_WINDOW_PROPERTIES_H_
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_ASSISTIVE_WINDOW_PROPERTIES_H_
 
-#include "ui/chromeos/ime/assistive_delegate.h"
+#include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
 
 namespace chromeos {
 struct AssistiveWindowProperties {

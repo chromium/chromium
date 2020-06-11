@@ -385,6 +385,20 @@ void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
   current_offset = std::abs(current_offset);
 }
 
+void ScrollTimeline::AnimationAttached(Animation* animation) {
+  AnimationTimeline::AnimationAttached(animation);
+  if (resolved_scroll_source_ && scroll_animations_.IsEmpty())
+    resolved_scroll_source_->RegisterScrollTimeline(this);
+
+  scroll_animations_.insert(animation);
+}
+
+void ScrollTimeline::AnimationDetached(Animation* animation) {
+  AnimationTimeline::AnimationDetached(animation);
+  scroll_animations_.erase(animation);
+  if (resolved_scroll_source_ && scroll_animations_.IsEmpty())
+    resolved_scroll_source_->UnregisterScrollTimeline(this);
+}
 
 void ScrollTimeline::WorkletAnimationAttached() {
   if (!resolved_scroll_source_)
@@ -399,6 +413,7 @@ void ScrollTimeline::WorkletAnimationDetached() {
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
+  visitor->Trace(scroll_animations_);
   visitor->Trace(scroll_source_);
   visitor->Trace(resolved_scroll_source_);
   visitor->Trace(start_scroll_offset_);

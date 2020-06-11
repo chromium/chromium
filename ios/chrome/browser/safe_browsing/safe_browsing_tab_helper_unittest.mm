@@ -96,7 +96,6 @@ class SafeBrowsingTabHelperTest
   // the NavigationItem that was committed.  Used for sub frame tests.
   web::NavigationItem* SimulateSafeMainFrameLoad() {
     GURL safe_url("http://chromium.test");
-
     navigation_manager_->AddItem(safe_url, ui::PAGE_TRANSITION_LINK);
     web::NavigationItem* item = navigation_manager_->GetItemAtIndex(
         navigation_manager_->GetItemCount() - 1);
@@ -354,6 +353,47 @@ TEST_P(SafeBrowsingTabHelperTest,
   web::WebStatePolicyDecider::PolicyDecision decision_after_navigation =
       ShouldAllowResponseUrl(url, /*for_main_frame=*/false);
   EXPECT_TRUE(decision_after_navigation.ShouldAllowNavigation());
+}
+
+// Tests that a subframe navigation request that arrives just after a main-frame
+// navigation to restore session URL doesn't crash
+TEST_P(SafeBrowsingTabHelperTest,
+       SubframeRequestAfterRestoreSessionNavigation) {
+  GURL url("http://chromium_sub_frame.test");
+  SimulateSafeMainFrameLoad();
+
+  // Simulate loading a restore session URL, which will cause the navigation
+  // manager to return a null last committed item.
+  navigation_manager_->SetLastCommittedItem(nullptr);
+
+  // Verify that ShouldAllowNavigation() doesn't crash.
+  web::WebStatePolicyDecider::PolicyDecision sub_frame_response_decision =
+      ShouldAllowRequestUrl(url, /*for_main_frame=*/false);
+  EXPECT_TRUE(sub_frame_response_decision.ShouldAllowNavigation());
+
+  // Wait until the Safe Browsing decision is received, ensuring that there's
+  // no crash when this happens.
+  base::RunLoop().RunUntilIdle();
+}
+
+// Tests that a subframe navigation query whose request arrives just before a
+// main-frame navigation to a restore session URL and whose Safe Browsing
+// decision arrives just after this navigation doesn't crash.
+TEST_P(SafeBrowsingTabHelperTest, SubframeResultAfterRestoreSessionNavigation) {
+  GURL url("http://chromium_sub_frame.test");
+  SimulateSafeMainFrameLoad();
+
+  web::WebStatePolicyDecider::PolicyDecision sub_frame_response_decision =
+      ShouldAllowRequestUrl(url, /*for_main_frame=*/false);
+  EXPECT_TRUE(sub_frame_response_decision.ShouldAllowNavigation());
+
+  // Simulate loading a restore session URL, which will cause the navigation
+  // manager to return a null last committed item.
+  navigation_manager_->SetLastCommittedItem(nullptr);
+
+  // Wait until the Safe Browsing decision is received, ensuring that there's no
+  // no crash when this happens.
+  base::RunLoop().RunUntilIdle();
 }
 
 // Tests the case of a single sub frame navigation request and response, for a

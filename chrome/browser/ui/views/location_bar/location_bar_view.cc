@@ -704,7 +704,7 @@ void LocationBarView::SetOmniboxAdditionalText(const base::string16& text) {
   omnibox_additional_text_view_->SetText(wrappedText);
 }
 
-void LocationBarView::Update(const WebContents* contents) {
+void LocationBarView::Update(WebContents* contents) {
   RefreshContentSettingViews();
 
   RefreshPageActionIconViews();

@@ -881,7 +881,7 @@
       # the CI configuration, where no debug builder exists.
       'linux_chromium_ubsan_rel_ng': 'ubsan_vptr_release_bot',
 
-      'linux_layout_tests_composite_after_paint': 'release_trybot',
+      'linux_layout_tests_composite_after_paint': 'gpu_tests_release_trybot',
       'linux_layout_tests_layout_ng_disabled': 'release_trybot',
       'linux-layout-tests-edit-ng': 'release_trybot',
       'linux-layout-tests-fragment-item': 'release_trybot',
@@ -2836,7 +2836,7 @@
     },
 
     'use_clang_coverage': {
-      'gn_args': 'use_clang_coverage=true',
+      'gn_args': 'use_clang_coverage=false',
     },
 
     'use_cxx11': {

@@ -10,6 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/usb/usb_blocklist.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
 
@@ -17,16 +18,29 @@ namespace {
 
 constexpr char kHidDeviceNameKey[] = "name";
 constexpr char kHidGuidKey[] = "guid";
+constexpr char kHidVendorIdKey[] = "vendor-id";
+constexpr char kHidProductIdKey[] = "product-id";
+constexpr char kHidSerialNumberKey[] = "serial-number";
+
+bool CanStorePersistentEntry(const device::mojom::HidDeviceInfo& device) {
+  return !device.serial_number.empty();
+}
 
 base::Value DeviceInfoToValue(const device::mojom::HidDeviceInfo& device) {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey(kHidDeviceNameKey, device.product_name);
-  // The GUID is a temporary ID created on connection that remains valid until
-  // the device is disconnected. Ephemeral permissions are keyed by this ID and
-  // must be granted again each time the device is connected.
-  // TODO(crbug.com/958918): Extract a persistent identifier to allow device
-  // permissions to be retained after the device is disconnected.
-  value.SetStringKey(kHidGuidKey, device.guid);
+  value.SetIntKey(kHidVendorIdKey, device.vendor_id);
+  value.SetIntKey(kHidProductIdKey, device.product_id);
+  if (CanStorePersistentEntry(device)) {
+    // Use the USB serial number as a persistent identifier. If it is
+    // unavailable, only ephemeral permissions may be granted.
+    value.SetStringKey(kHidSerialNumberKey, device.serial_number);
+  } else {
+    // The GUID is a temporary ID created on connection that remains valid until
+    // the device is disconnected. Ephemeral permissions are keyed by this ID
+    // and must be granted again each time the device is connected.
+    value.SetStringKey(kHidGuidKey, device.guid);
+  }
   return value;
 }
 
@@ -48,49 +62,56 @@ base::string16 HidChooserContext::GetObjectDisplayName(
 }
 
 bool HidChooserContext::IsValidObject(const base::Value& object) {
-  if (!object.is_dict() || object.DictSize() != 2 ||
-      !object.FindStringKey(kHidDeviceNameKey)) {
+  if (!object.is_dict() || object.DictSize() != 4 ||
+      !object.FindStringKey(kHidDeviceNameKey) ||
+      !object.FindIntKey(kHidProductIdKey) ||
+      !object.FindIntKey(kHidVendorIdKey)) {
     return false;
   }
 
   const std::string* guid = object.FindStringKey(kHidGuidKey);
-  return guid && !guid->empty();
+  const std::string* serial_number = object.FindStringKey(kHidSerialNumberKey);
+  return (guid && !guid->empty()) || (serial_number && !serial_number->empty());
 }
 
 std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
 HidChooserContext::GetGrantedObjects(const url::Origin& requesting_origin,
                                      const url::Origin& embedding_origin) {
-  // TODO(crbug.com/958918): Include devices with persistent permissions in the
-  // returned list.
-  if (!CanRequestObjectPermission(requesting_origin, embedding_origin))
-    return {};
+  std::vector<std::unique_ptr<ChooserContextBase::Object>> objects =
+      ChooserContextBase::GetGrantedObjects(requesting_origin,
+                                            embedding_origin);
 
-  auto origin_it = ephemeral_devices_.find(
-      std::make_pair(requesting_origin, embedding_origin));
-  if (origin_it == ephemeral_devices_.end())
-    return {};
-
-  const std::set<std::string> devices = origin_it->second;
-
-  std::vector<std::unique_ptr<Object>> objects;
-  for (const auto& guid : devices) {
-    auto it = device_info_.find(guid);
-    if (it == device_info_.end())
-      continue;
-
-    objects.push_back(std::make_unique<Object>(
-        requesting_origin, embedding_origin, it->second.Clone(),
-        content_settings::SettingSource::SETTING_SOURCE_USER, is_incognito_));
+  if (CanRequestObjectPermission(requesting_origin, embedding_origin)) {
+    auto it = ephemeral_devices_.find(
+        std::make_pair(requesting_origin, embedding_origin));
+    if (it != ephemeral_devices_.end()) {
+      for (const std::string& guid : it->second) {
+        // |devices_| should be initialized when |ephemeral_devices_| is filled.
+        // Because |ephemeral_devices_| is filled by GrantDevicePermission()
+        // which is called in HidChooserController::Select(), this method will
+        // always be called after device initialization in HidChooserController
+        // which always returns after the device list initialization in this
+        // class.
+        DCHECK(base::Contains(devices_, guid));
+        objects.push_back(std::make_unique<ChooserContextBase::Object>(
+            requesting_origin, embedding_origin,
+            DeviceInfoToValue(*devices_[guid]),
+            content_settings::SettingSource::SETTING_SOURCE_USER,
+            is_incognito_));
+      }
+    }
   }
+
+  // TODO(crbug.com/1049825): Include policy-granted objects.
 
   return objects;
 }
 
 std::vector<std::unique_ptr<permissions::ChooserContextBase::Object>>
 HidChooserContext::GetAllGrantedObjects() {
-  // TODO(crbug.com/958918): Include devices with persistent permissions in the
-  // returned list.
-  std::vector<std::unique_ptr<Object>> objects;
+  std::vector<std::unique_ptr<ChooserContextBase::Object>> objects =
+      ChooserContextBase::GetAllGrantedObjects();
+
   for (const auto& map_entry : ephemeral_devices_) {
     const url::Origin& requesting_origin = map_entry.first.first;
     const url::Origin& embedding_origin = map_entry.first.second;
@@ -99,15 +120,15 @@ HidChooserContext::GetAllGrantedObjects() {
       continue;
 
     for (const auto& guid : map_entry.second) {
-      auto it = device_info_.find(guid);
-      if (it == device_info_.end())
-        continue;
-
-      objects.push_back(std::make_unique<Object>(
-          requesting_origin, embedding_origin, it->second.Clone(),
+      DCHECK(base::Contains(devices_, guid));
+      objects.push_back(std::make_unique<ChooserContextBase::Object>(
+          requesting_origin, embedding_origin,
+          DeviceInfoToValue(*devices_[guid]),
           content_settings::SettingSource::SETTING_SOURCE_USER, is_incognito_));
     }
   }
+
+  // TODO(crbug.com/1049825): Include policy-granted objects.
 
   return objects;
 }
@@ -116,50 +137,79 @@ void HidChooserContext::RevokeObjectPermission(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin,
     const base::Value& object) {
-  // TODO(crbug.com/958918): Revoke persistent permissions if the device has a
-  // persistent ID.
-  auto origin_it = ephemeral_devices_.find(
-      std::make_pair(requesting_origin, embedding_origin));
-  if (origin_it == ephemeral_devices_.end())
+  const std::string* guid = object.FindStringKey(kHidGuidKey);
+
+  if (!guid) {
+    ChooserContextBase::RevokeObjectPermission(requesting_origin,
+                                               embedding_origin, object);
+    // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED).
     return;
+  }
 
-  std::set<std::string>& devices = origin_it->second;
+  auto it = ephemeral_devices_.find({requesting_origin, embedding_origin});
+  if (it != ephemeral_devices_.end()) {
+    std::set<std::string>& devices = it->second;
 
-  DCHECK(IsValidObject(object));
-  devices.erase(*object.FindStringKey(kHidGuidKey));
-  NotifyPermissionRevoked(requesting_origin, embedding_origin);
+    DCHECK(IsValidObject(object));
+    devices.erase(*guid);
+    if (devices.empty())
+      ephemeral_devices_.erase(it);
+    NotifyPermissionRevoked(requesting_origin, embedding_origin);
+  }
+
+  // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED_EPHEMERAL).
 }
 
 void HidChooserContext::GrantDevicePermission(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin,
     const device::mojom::HidDeviceInfo& device) {
-  // TODO(crbug.com/958918): Grant persistent permissions for eligible devices.
-  ephemeral_devices_[std::make_pair(requesting_origin, embedding_origin)]
-      .insert(device.guid);
-  device_info_[device.guid] = DeviceInfoToValue(device);
-  NotifyPermissionChanged();
+  devices_[device.guid] = device.Clone();
+  if (CanStorePersistentEntry(device)) {
+    GrantObjectPermission(requesting_origin, embedding_origin,
+                          DeviceInfoToValue(device));
+  } else {
+    ephemeral_devices_[std::make_pair(requesting_origin, embedding_origin)]
+        .insert(device.guid);
+    NotifyPermissionChanged();
+  }
 }
 
 bool HidChooserContext::HasDevicePermission(
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin,
     const device::mojom::HidDeviceInfo& device) {
-  // TODO(crbug.com/958918): Also check if a persistent permission was granted
-  // for |device|.
-  if (!CanRequestObjectPermission(requesting_origin, embedding_origin)) {
+  if (UsbBlocklist::Get().IsExcluded(
+          {device.vendor_id, device.product_id, 0})) {
     return false;
   }
 
-  auto origin_it = ephemeral_devices_.find(
-      std::make_pair(requesting_origin, embedding_origin));
-  if (origin_it == ephemeral_devices_.end())
+  if (!CanRequestObjectPermission(requesting_origin, embedding_origin))
     return false;
 
-  const std::set<std::string> devices = origin_it->second;
+  auto it = ephemeral_devices_.find(
+      std::make_pair(requesting_origin, embedding_origin));
+  if (it != ephemeral_devices_.end() &&
+      base::Contains(it->second, device.guid)) {
+    return true;
+  }
 
-  auto device_it = devices.find(device.guid);
-  return device_it != devices.end();
+  std::vector<std::unique_ptr<ChooserContextBase::Object>> object_list =
+      GetGrantedObjects(requesting_origin, embedding_origin);
+  for (const auto& object : object_list) {
+    const base::Value& device_value = object->value;
+    DCHECK(IsValidObject(device_value));
+
+    if (device.vendor_id != *device_value.FindIntKey(kHidVendorIdKey) ||
+        device.product_id != *device_value.FindIntKey(kHidProductIdKey)) {
+      continue;
+    }
+
+    const auto* serial_number = device_value.FindStringKey(kHidSerialNumberKey);
+    if (serial_number && device.serial_number == *serial_number)
+      return true;
+  }
+  return false;
 }
 
 device::mojom::HidManager* HidChooserContext::GetHidManager() {
@@ -191,12 +241,12 @@ void HidChooserContext::SetUpHidManagerConnection(
   hid_manager_.Bind(std::move(manager));
   hid_manager_.set_disconnect_handler(base::BindOnce(
       &HidChooserContext::OnHidManagerConnectionError, base::Unretained(this)));
-  // TODO(mattreynolds): Register a HidManagerClient to be notified when devices
-  // are disconnected so that ephemeral permissions can be revoked.
+  // TODO(crbug.com/1082303): Register a HidManagerClient to be notified when
+  // devices are disconnected so that ephemeral permissions can be revoked.
 }
 
 void HidChooserContext::OnHidManagerConnectionError() {
-  device_info_.clear();
+  devices_.clear();
 
   std::vector<std::pair<url::Origin, url::Origin>> revoked_origins;
   revoked_origins.reserve(ephemeral_devices_.size());

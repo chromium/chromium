@@ -7,14 +7,6 @@
     <dimen name="security_status_icon_size">18dp</dimen>
     <dimen name="url_text_edge_padding">5dp</dimen>
   
-    <!-- Dimensions for compact translate infobar. -->
-    <dimen name="infobar_translate_fade_edge_length">18dp</dimen>
-    <dimen name="infobar_translate_menu_width">260dp</dimen>
-
-    <!-- Dimens of tab indicator -->
-    <dimen name="tab_indicator_radius">3dp</dimen>
-    <dimen name="tab_indicator_padding">2dp</dimen>
-
     <!-- Infobar dimensions -->
     <!-- Maximum width of an infobar. -->
     <dimen name="infobar_max_width">600dp</dimen>
@@ -30,6 +22,5 @@
     <dimen name="infobar_compact_message_vertical_padding">8dp</dimen>
 
     <!-- Dimensions applied to InfoBars with differently sized icons. -->
-    <dimen name="infobar_small_icon_size">24dp</dimen>
     <dimen name="infobar_big_icon_size">48dp</dimen>
 </resources>

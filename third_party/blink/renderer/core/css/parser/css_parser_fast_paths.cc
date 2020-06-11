@@ -913,8 +913,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kLoose ||
              value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kStrict ||
-             (RuntimeEnabledFeatures::CSS3TextBreakAnywhereEnabled() &&
-              value_id == CSSValueID::kAnywhere);
+             value_id == CSSValueID::kAnywhere;
     case CSSPropertyID::kWebkitLineBreak:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kLoose ||
              value_id == CSSValueID::kNormal ||

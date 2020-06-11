@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.contextmenu;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -21,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -64,6 +66,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -737,9 +740,22 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
      * it will use the right activity set when the menu was displayed.
      * @param renderFrameHost {@link RenderFrameHost} to get the encoded images from.
      */
-    void shareImage(RenderFrameHost renderFrameHost) {
-        retrieveImage(renderFrameHost, ContextMenuImageFormat.ORIGINAL,
-                (Uri imageUri) -> { ShareHelper.shareImage(getWindow(), null, imageUri); });
+    private void shareImage(RenderFrameHost renderFrameHost) {
+        retrieveImage(renderFrameHost, ContextMenuImageFormat.ORIGINAL, (Uri imageUri) -> {
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARING_HUB_V15)) {
+                ShareHelper.shareImage(getWindow(), null, imageUri);
+                return;
+            }
+            ContentResolver contentResolver =
+                    ContextUtils.getApplicationContext().getContentResolver();
+            ShareParams imageShareParams =
+                    new ShareParams.Builder(getWindow(), /*title=*/"", /*url=*/"")
+                            .setFileUris(new ArrayList<>(Collections.singletonList(imageUri)))
+                            .setFileContentType(contentResolver.getType(imageUri))
+                            .build();
+            mShareDelegateSupplier.get().share(imageShareParams,
+                    new ChromeShareExtras.Builder().setSaveLastUsed(true).build());
+        });
     }
 
     @Override

@@ -37,6 +37,9 @@ struct CONTENT_EXPORT ContextMenuParams
   // This is the URL of the subframe that the context menu was invoked on.
   GURL frame_url;
 
+  // Extra properties for the context menu.
+  std::map<std::string, std::string> properties;
+
  private:
   // RenderFrameHostImpl is responsible for validating and sanitizing
   // UntrustworthyContextMenuParams into ContextMenuParams and therefore is a

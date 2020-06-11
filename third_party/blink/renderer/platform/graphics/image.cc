@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -64,7 +65,12 @@ Image::Image(ImageObserver* observer, bool is_multipart)
       stable_image_id_(PaintImage::GetNextId()),
       is_multipart_(is_multipart) {}
 
-Image::~Image() = default;
+Image::~Image() {
+  // TODO(prashant.n): This logic is needed to purge cache for the same origin
+  // page navigations. Redesign this once dark mode filter module gets moved to
+  // compositor side.
+  DarkModeImageClassifier::RemoveCache(stable_image_id_);
+}
 
 Image* Image::NullImage() {
   DCHECK(IsMainThread());
@@ -386,29 +392,6 @@ FloatRect Image::CorrectSrcRectForImageOrientation(FloatSize image_size,
   AffineTransform forward_map = orientation.TransformFromDefault(image_size);
   AffineTransform inverse_map = forward_map.Inverse();
   return inverse_map.MapRect(src_rect);
-}
-
-DarkModeClassification Image::GetDarkModeClassification(
-    const FloatRect& src_rect) {
-  // Assuming that multiple uses of the same sprite region all have the same
-  // size, only the top left corner coordinates of the src_rect are used to
-  // generate the key for caching and retrieving the classification.
-  ClassificationKey key(src_rect.X(), src_rect.Y());
-  auto result = dark_mode_classifications_.find(key);
-  if (result == dark_mode_classifications_.end())
-    return DarkModeClassification::kNotClassified;
-
-  return result->value;
-}
-
-void Image::AddDarkModeClassification(
-    const FloatRect& src_rect,
-    DarkModeClassification dark_mode_classification) {
-  // Add the classification in the map only if the image is not classified yet.
-  DCHECK(GetDarkModeClassification(src_rect) ==
-         DarkModeClassification::kNotClassified);
-  ClassificationKey key(src_rect.X(), src_rect.Y());
-  dark_mode_classifications_.insert(key, dark_mode_classification);
 }
 
 }  // namespace blink

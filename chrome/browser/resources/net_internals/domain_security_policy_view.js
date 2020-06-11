@@ -152,7 +152,7 @@ const DomainSecurityPolicyView = (function() {
 
     onHSTSQueryResult(result) {
       if (result.error != undefined) {
-        this.queryStsOutputDiv_.innerHTML = '';
+        this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
         const s = addNode(this.queryStsOutputDiv_, 'span');
         s.textContent = result.error;
         s.style.color = '#e00';
@@ -161,15 +161,21 @@ const DomainSecurityPolicyView = (function() {
       }
 
       if (result.result == false) {
-        this.queryStsOutputDiv_.innerHTML = '<b>Not found</b>';
+        this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
+        const notFound = document.createElement('b');
+        notFound.textContent = 'Not found';
+        this.queryStsOutputDiv_.appendChild(notFound);
         yellowFade(this.queryStsOutputDiv_);
         return;
       }
 
-      this.queryStsOutputDiv_.innerHTML = '';
+      this.queryStsOutputDiv_.innerHTML = trustedTypes.emptyHTML;
 
       const s = addNode(this.queryStsOutputDiv_, 'span');
-      s.innerHTML = '<b>Found:</b><br/>';
+      const found = document.createElement('b');
+      found.textContent = 'Found:';
+      s.appendChild(found);
+      s.appendChild(document.createElement('br'));
 
       const keys = [
         'static_sts_domain',
@@ -244,7 +250,7 @@ const DomainSecurityPolicyView = (function() {
 
     onExpectCTQueryResult(result) {
       if (result.error != undefined) {
-        this.queryExpectCTOutputDiv_.innerHTML = '';
+        this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
         const s = addNode(this.queryExpectCTOutputDiv_, 'span');
         s.textContent = result.error;
         s.style.color = '#e00';
@@ -253,15 +259,21 @@ const DomainSecurityPolicyView = (function() {
       }
 
       if (result.result == false) {
-        this.queryExpectCTOutputDiv_.innerHTML = '<b>Not found</b>';
+        this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
+        const notFound = document.createElement('b');
+        notFound.textContent = 'Not found';
+        this.queryExpectCTOutputDiv_.appendChild(notFound);
         yellowFade(this.queryExpectCTOutputDiv_);
         return;
       }
 
-      this.queryExpectCTOutputDiv_.innerHTML = '';
+      this.queryExpectCTOutputDiv_.innerHTML = trustedTypes.emptyHTML;
 
       const s = addNode(this.queryExpectCTOutputDiv_, 'span');
-      s.innerHTML = '<b>Found:</b><br/>';
+      const found = document.createElement('b');
+      found.textContent = 'Found:';
+      s.appendChild(found);
+      s.appendChild(document.createElement('br'));
 
       const keys = [
         'dynamic_expect_ct_domain',

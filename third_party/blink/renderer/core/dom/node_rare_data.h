@@ -37,6 +37,7 @@ class FlatTreeNodeData;
 class LayoutObject;
 class MutationObserverRegistration;
 class NodeListsNodeData;
+class ScrollTimeline;
 
 class NodeMutationObserverData final
     : public GarbageCollected<NodeMutationObserverData> {
@@ -200,6 +201,8 @@ class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.") NodeRareData
 
   void TraceAfterDispatch(blink::Visitor*) const;
   void FinalizeGarbageCollectedObject();
+  void RegisterScrollTimeline(ScrollTimeline*);
+  void UnregisterScrollTimeline(ScrollTimeline*);
 
  protected:
   explicit NodeRareData(NodeRenderingData* node_layout_data,
@@ -217,6 +220,9 @@ class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.") NodeRareData
   Member<NodeListsNodeData> node_lists_;
   Member<NodeMutationObserverData> mutation_observer_data_;
   Member<FlatTreeNodeData> flat_tree_node_data_;
+  // Keeps strong scroll timeline pointers linked to this node to ensure
+  // the timelines are alive as long as the node is alive.
+  HeapHashSet<Member<ScrollTimeline>> scroll_timelines_;
 
   DISALLOW_COPY_AND_ASSIGN(NodeRareData);
 };

@@ -27,6 +27,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.Origin;
@@ -79,6 +80,8 @@ public class OriginVerifier {
     private long mVerificationStartTime;
     @Nullable
     private WebContents mWebContents;
+    @Nullable
+    private ExternalAuthUtils mExternalAuthUtils;
 
     /**
      * A collection of Relationships (stored as Strings, with the signature set to an empty String)
@@ -95,9 +98,9 @@ public class OriginVerifier {
         @Inject
         public Factory() {}
 
-        public OriginVerifier create(
-                String packageName, @Relation int relation, @Nullable WebContents webContents) {
-            return new OriginVerifier(packageName, relation, webContents);
+        public OriginVerifier create(String packageName, @Relation int relation,
+                @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils) {
+            return new OriginVerifier(packageName, relation, webContents, externalAuthUtils);
         }
     }
 
@@ -214,13 +217,16 @@ public class OriginVerifier {
      * @param relation Digital Asset Links {@link Relation} to use during verification.
      * @param webContents The web contents of the tab used for reporting errors to DevTools. Can be
      *         null if unavailable.
+     * @param externalAuthUtils The auth utils used to check if an origin is allowlisted to bypass
+     *         verification. Can be null.
      */
-    public OriginVerifier(
-            String packageName, @Relation int relation, @Nullable WebContents webContents) {
+    public OriginVerifier(String packageName, @Relation int relation,
+            @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils) {
         mPackageName = packageName;
         mSignatureFingerprint = getCertificateSHA256FingerprintForPackage(mPackageName);
         mRelation = relation;
         mWebContents = webContents;
+        mExternalAuthUtils = externalAuthUtils;
     }
 
     /**
@@ -258,6 +264,13 @@ public class OriginVerifier {
 
         if (shouldOverrideVerification(mPackageName, mOrigin, mRelation)) {
             Log.i(TAG, "Verification succeeded for %s, it was overridden.", origin);
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, new VerifiedCallback(true, null));
+            return;
+        }
+
+        if (isAllowlisted(mPackageName, mOrigin, mRelation)) {
+            Log.i(TAG, "Verification succeeded for %s, %s, it was allowlisted.", mPackageName,
+                    mOrigin);
             PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, new VerifiedCallback(true, null));
             return;
         }
@@ -307,6 +320,14 @@ public class OriginVerifier {
 
         return sVerificationOverrides.get().contains(
                 new Relationship(packageName, "", origin, relation).toString());
+    }
+
+    private boolean isAllowlisted(String packageName, Origin origin, int relation) {
+        if (mExternalAuthUtils == null) return false;
+
+        if (relation != CustomTabsService.RELATION_HANDLE_ALL_URLS) return false;
+
+        return mExternalAuthUtils.isAllowlistedForTwaVerification(packageName, origin);
     }
 
     /**

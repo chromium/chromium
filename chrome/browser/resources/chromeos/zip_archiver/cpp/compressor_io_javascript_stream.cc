@@ -43,14 +43,13 @@ int64_t CompressorIOJavaScriptStream::Flush() {
   memcpy(array_buffer_data, buffer_.get(), buffer_data_length_);
   array_buffer.Unmap();
 
+  written_bytes_ = 0;
   requestor_->WriteChunkRequest(buffer_offset_, buffer_data_length_,
                                 array_buffer);
+  while (written_bytes_ == 0)
+    data_written_cond_.Wait();
 
-  // TODO(amistry): Handle spurious wakeups.
-  data_written_cond_.Wait();
-
-  int64_t written_bytes = written_bytes_;
-  if (written_bytes < buffer_data_length_) {
+  if (written_bytes_ < buffer_data_length_) {
     return -1 /* Error */;
   }
 
@@ -58,7 +57,7 @@ int64_t CompressorIOJavaScriptStream::Flush() {
   buffer_offset_ = -1;
   buffer_data_length_ = 0;
 
-  return written_bytes;
+  return written_bytes_;
 }
 
 int64_t CompressorIOJavaScriptStream::Write(int64_t zip_offset,

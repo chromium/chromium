@@ -83,17 +83,6 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
-  "cast.streaming": [{
-    "channel": "dev",
-    "extension_types": ["extension"]
-  }, {
-    "channel": "stable",
-    "extension_types": ["extension"],
-    "whitelist": [
-      "63ED55E43214C211F82122ED56407FF1A807F2A3",  // Media Router Dev
-      "226CF815E39A363090A1E547D53063472B8279FA"   // Media Router Stable
-    ]
-  }],
   "certificateProvider": {
     "channel": "stable",
     "platforms": ["chromeos"],

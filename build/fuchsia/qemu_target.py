@@ -119,7 +119,7 @@ class QemuTarget(emu_target.EmuTarget):
       if self._target_cpu == 'arm64':
         kvm_command.append('host')
       else:
-        kvm_command.append('host,migratable=no')
+        kvm_command.append('host,migratable=no,+invtsc')
     else:
       logging.warning('Unable to launch %s with KVM acceleration.'
                        % (self._emu_type) +

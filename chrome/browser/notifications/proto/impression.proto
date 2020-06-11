@@ -13,7 +13,7 @@ import "notification_data.proto";
 // Contains data to determine when a notification should be shown to the user
 // and the user impression towards this notification. Should match Impression in
 // impression_types.h.
-// Next tag: 8
+// Next tag: 9
 message Impression {
   // The type of user feedback from a displayed notification. Should match
   // UserFeedback in notification_scheduler_types.h.
@@ -63,4 +63,7 @@ message Impression {
 
   // Custom data associated with a notification.
   repeated CustomData custom_data = 7;
+
+  // Duration to mark NO_FEEDBACK notification as IGNORE.
+  optional int64 ignore_timeout_duration = 8;
 }

@@ -8,13 +8,11 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/util/timer/wall_clock_timer.h"
 #include "chrome/browser/enterprise/reporting/notification/extension_request_observer_factory.h"
 #include "chrome/browser/enterprise/reporting/report_generator.h"
 #include "chrome/browser/enterprise/reporting/report_uploader.h"
-#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -28,8 +26,7 @@ namespace enterprise_reporting {
 // for desktop Chrome while cloud reporting is enabled via administrative
 // policy. If either of these triggers fires while a report is being generated,
 // processing is deferred until the existing processing completes.
-class ReportScheduler : public ProfileManagerObserver,
-                        public BuildStateObserver {
+class ReportScheduler : public BuildStateObserver {
  public:
   ReportScheduler(policy::CloudPolicyClient* client,
                   std::unique_ptr<ReportGenerator> report_generator,
@@ -94,13 +91,6 @@ class ReportScheduler : public ProfileManagerObserver,
   // Records that |trigger| was responsible for an upload attempt.
   static void RecordUploadTrigger(ReportTrigger trigger);
 
-  // Tracks profiles that miss at least one report.
-  void TrackStaleProfiles();
-
-  // ProfileManagerObserver
-  void OnProfileAdded(Profile* profile) override;
-  void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
-
   // Policy value watcher
   PrefChangeRegistrar pref_change_registrar_;
 
@@ -111,8 +101,6 @@ class ReportScheduler : public ProfileManagerObserver,
   std::unique_ptr<ReportUploader> report_uploader_;
 
   std::unique_ptr<ReportGenerator> report_generator_;
-
-  std::unique_ptr<base::flat_set<base::FilePath>> stale_profiles_;
 
   ExtensionRequestObserverFactory extension_request_observer_factory_;
 

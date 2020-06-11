@@ -625,6 +625,12 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/renderer/core/html/forms'],
+        'allowed': [
+            'ui::TextInputType',
+        ],
+    },
+    {
         'paths': [
             'third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.cc'
         ],

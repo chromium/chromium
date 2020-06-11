@@ -872,11 +872,8 @@ bool QuickIsChromeRegisteredForMode(
 base::string16 GetInstallationSuffixForModeAtLevel(
     const install_static::InstallConstants& mode,
     bool system_install) {
-  // Search based on the default install location for the mode. If we ever
-  // support customizing the install location (https://crbug.com/113987,
-  // https://crbug.com/302491) this will have to change to something else, such
-  // as probing the Omaha keys in the registry to see where the mode is
-  // installed.
+  // Search based on the existing install location. If no existing install
+  // found, uses the default install location for the mode.
   const base::FilePath chrome_exe =
       installer::GetChromeInstallPath(system_install)
           .Append(installer::kChromeExe);

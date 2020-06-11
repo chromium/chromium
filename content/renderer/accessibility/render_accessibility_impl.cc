@@ -17,7 +17,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -712,7 +711,8 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // If there's a layout complete message, we need to send location changes.
   bool had_layout_complete_messages = false;
 
-  // If there's a load complete message, we need to send image metrics.
+  // If there's a load complete message, we need to change the event schedule
+  // mode.
   bool had_load_complete_messages = false;
 
   ScopedFreezeBlinkAXTreeSource freeze(&tree_source_);
@@ -866,9 +866,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     }
 
     updates.push_back(update);
-
-    if (had_load_complete_messages)
-      RecordImageMetrics(&update);
 
     VLOG(1) << "Accessibility tree update:\n" << update.ToString();
   }
@@ -1146,51 +1143,6 @@ void RenderAccessibilityImpl::Scroll(const ui::AXActionTarget* target,
   }
 
   target->SetScrollOffset(gfx::Point(x, y));
-}
-
-void RenderAccessibilityImpl::RecordImageMetrics(AXContentTreeUpdate* update) {
-  if (!GetAccessibilityMode().has_mode(ui::AXMode::kScreenReader))
-    return;
-  float scale_factor = render_frame_->GetDeviceScaleFactor();
-  for (size_t i = 0; i < update->nodes.size(); ++i) {
-    ui::AXNodeData& node_data = update->nodes[i];
-    if (node_data.role != ax::mojom::Role::kImage)
-      continue;
-    // Convert to DIPs based on screen scale factor.
-    int width = node_data.relative_bounds.bounds.width() / scale_factor;
-    int height = node_data.relative_bounds.bounds.height() / scale_factor;
-    if (width == 0 || height == 0)
-      continue;
-    // We log the min size in a histogram with a max of 10000, so set a ceiling
-    // of 10000 on min_size.
-    int min_size = std::min({width, height, 10000});
-    int max_size = std::max(width, height);
-    // The ratio is always the smaller divided by the larger so as not to go
-    // over 100%.
-    int ratio = min_size * 100.0 / max_size;
-    const std::string name =
-        node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
-    bool explicitly_empty = node_data.GetNameFrom() ==
-                            ax::mojom::NameFrom::kAttributeExplicitlyEmpty;
-    if (!name.empty()) {
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Accessibility.ScreenReader.Image.SizeRatio.Labeled", ratio);
-      UMA_HISTOGRAM_COUNTS_10000(
-          "Accessibility.ScreenReader.Image.MinSize.Labeled", min_size);
-    } else if (explicitly_empty) {
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Accessibility.ScreenReader.Image.SizeRatio.ExplicitlyUnlabeled",
-          ratio);
-      UMA_HISTOGRAM_COUNTS_10000(
-          "Accessibility.ScreenReader.Image.MinSize.ExplicitlyUnlabeled",
-          min_size);
-    } else {
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Accessibility.ScreenReader.Image.SizeRatio.Unlabeled", ratio);
-      UMA_HISTOGRAM_COUNTS_10000(
-          "Accessibility.ScreenReader.Image.MinSize.Unlabeled", min_size);
-    }
-  }
 }
 
 void RenderAccessibilityImpl::AddImageAnnotationDebuggingAttributes(

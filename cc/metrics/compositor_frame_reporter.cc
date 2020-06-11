@@ -212,19 +212,34 @@ std::string GetEventLatencyHistogramBaseName(
        is_scroll ? event_metrics.GetScrollTypeName() : nullptr});
 }
 
+base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {
+  return args.frame_time + (args.interval * 1.5);
+}
+
+void ReportOffsetBetweenDeadlineAndPresentationTime(
+    const viz::BeginFrameArgs& args,
+    base::TimeTicks presentation_time) {
+  const base::TimeTicks strict_deadline = args.frame_time + args.interval;
+  const base::TimeDelta offset = presentation_time - strict_deadline;
+  // |strict_deadline| and |presentation_time| should normally be pretty close.
+  // Measure how close they are.
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "CompositorLatency.Diagnostic.PresentationTimeDeltaFromDeadline", offset,
+      base::TimeDelta::FromMilliseconds(1),
+      base::TimeDelta::FromMilliseconds(32), /*bucket_count=*/16);
+}
+
 }  // namespace
 
 CompositorFrameReporter::CompositorFrameReporter(
     const ActiveTrackers& active_trackers,
-    const viz::BeginFrameId& id,
-    const base::TimeTicks frame_deadline,
+    const viz::BeginFrameArgs& args,
     LatencyUkmReporter* latency_ukm_reporter,
     bool should_report_metrics)
-    : frame_id_(id),
-      should_report_metrics_(should_report_metrics),
+    : should_report_metrics_(should_report_metrics),
+      args_(args),
       active_trackers_(active_trackers),
-      latency_ukm_reporter_(latency_ukm_reporter),
-      frame_deadline_(frame_deadline) {}
+      latency_ukm_reporter_(latency_ukm_reporter) {}
 
 std::unique_ptr<CompositorFrameReporter>
 CompositorFrameReporter::CopyReporterAtBeginImplStage() const {
@@ -235,8 +250,7 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() const {
     return nullptr;
   }
   auto new_reporter = std::make_unique<CompositorFrameReporter>(
-      active_trackers_, frame_id_, frame_deadline_, latency_ukm_reporter_,
-      should_report_metrics_);
+      active_trackers_, args_, latency_ukm_reporter_, should_report_metrics_);
   new_reporter->did_finish_impl_frame_ = did_finish_impl_frame_;
   new_reporter->impl_frame_finish_time_ = impl_frame_finish_time_;
   new_reporter->main_frame_abort_time_ = main_frame_abort_time_;
@@ -357,7 +371,9 @@ void CompositorFrameReporter::TerminateReporter() {
     case FrameTerminationStatus::kPresentedFrame:
       EnableReportType(FrameReportType::kNonDroppedFrame);
       termination_status_str = "presented_frame";
-      if (frame_deadline_ < frame_termination_time_)
+      ReportOffsetBetweenDeadlineAndPresentationTime(args_,
+                                                     frame_termination_time_);
+      if (ComputeSafeDeadlineForFrame(args_) < frame_termination_time_)
         EnableReportType(FrameReportType::kMissedDeadlineFrame);
       break;
     case FrameTerminationStatus::kDidNotPresentFrame:
@@ -706,7 +722,7 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
   const auto trace_id = TRACE_ID_LOCAL(this);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
       "cc,benchmark", "PipelineReporter", trace_id,
-      stage_history_.front().start_time, "frame_id", frame_id_.ToString());
+      stage_history_.front().start_time, "frame_id", args_.frame_id.ToString());
 
   // The trace-viewer cannot seem to handle a single child-event that has the
   // same start/end timestamps as the parent-event. So avoid adding the

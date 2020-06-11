@@ -287,15 +287,15 @@ void TaskQueueViz::ScheduleOnVizAndBlock(VizTask viz_task) {
 
     base::AutoLock lock(lock_);
     while (!done_ || !tasks_.empty()) {
-      if (tasks_.empty())
+      while (!done_ && tasks_.empty())
         condvar_.Wait();
-      base::circular_deque<base::OnceClosure> tasks;
-      tasks.swap(tasks_);
-      {
-        base::AutoUnlock unlock(lock_);
-        if (!tasks.empty()) {
+      if (!tasks_.empty()) {
+        base::circular_deque<base::OnceClosure> tasks;
+        tasks.swap(tasks_);
+        {
+          base::AutoUnlock unlock(lock_);
           TRACE_EVENT0("android_webview", "RunTasks");
-          while (tasks.size()) {
+          while (!tasks.empty()) {
             std::move(tasks.front()).Run();
             tasks.pop_front();
           }

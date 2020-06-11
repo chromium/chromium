@@ -393,9 +393,8 @@ class MediaFeedsServiceTest : public ChromeRenderViewHostTestHarness {
       EXPECT_EQ(domain_cookies, cookie->IsDomainCookie());
       EXPECT_EQ(!domain_cookies, cookie->IsHostCookie());
 
-      net::CookieOptions options;
       GetCookieManager()->SetCanonicalCookie(
-          *cookie, url, options,
+          *cookie, url, net::CookieOptions::MakeAllInclusive(),
           base::BindLambdaForTesting([&](net::CookieInclusionStatus status) {
             if (--tasks == 0)
               run_loop.Quit();

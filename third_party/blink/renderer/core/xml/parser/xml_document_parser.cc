@@ -756,6 +756,7 @@ XMLDocumentParser::XMLDocumentParser(Document& document,
       requesting_script_(false),
       finish_called_(false),
       xml_errors_(&document),
+      document_(&document),
       script_runner_(frame_view
                          ? MakeGarbageCollected<XMLParserScriptRunner>(this)
                          : nullptr),  // Don't execute scripts for
@@ -783,6 +784,7 @@ XMLDocumentParser::XMLDocumentParser(DocumentFragment* fragment,
       requesting_script_(false),
       finish_called_(false),
       xml_errors_(&fragment->GetDocument()),
+      document_(&fragment->GetDocument()),
       script_runner_(nullptr),  // Don't execute scripts for document fragments.
       script_start_position_(TextPosition::BelowRangePosition()),
       parsing_fragment_(true) {
@@ -832,6 +834,7 @@ void XMLDocumentParser::Trace(Visitor* visitor) const {
   visitor->Trace(current_node_stack_);
   visitor->Trace(leaf_text_node_);
   visitor->Trace(xml_errors_);
+  visitor->Trace(document_);
   visitor->Trace(script_runner_);
   ScriptableDocumentParser::Trace(visitor);
   XMLParserScriptRunnerHost::Trace(visitor);
@@ -1011,8 +1014,8 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
     q_name = QualifiedName(g_null_atom, prefix + ":" + local_name, g_null_atom);
   Element* new_element = current_node_->GetDocument().CreateElement(
       q_name,
-      parsing_fragment_ ? CreateElementFlags::ByFragmentParser()
-                        : CreateElementFlags::ByParser(),
+      parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
+                        : CreateElementFlags::ByParser(document_),
       is);
   if (!new_element) {
     StopParsing();

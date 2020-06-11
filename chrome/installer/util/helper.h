@@ -11,11 +11,14 @@
 
 namespace installer {
 
-// This function returns the install path for Chrome depending on whether its
-// system wide install or user specific install.
-// system_install: if true, the function returns system wide location
-//                 (ProgramFiles\Google). Otherwise it returns user specific
-//                 location (Document And Settings\<user>\Local Settings...)
+// This function returns the install path for Chrome depending on whether it's
+// a system wide install or a user specific install.
+// Returns the install path stored at
+// Software\Google\Update\ClientState\{appguid}\UninstallString
+// under HKLM if |system_install| is true, HKCU otherwise. If no path was stored
+// in the registry, returns (%ProgramFiles%\[Company\]Product\Application) if
+// |system_install| is true, otherwise returns user specific location
+// (%LOCALAPPDATA%\[Company\]Product\Application).
 base::FilePath GetChromeInstallPath(bool system_install);
 
 }  // namespace installer

@@ -31,6 +31,9 @@
 #include "chrome/browser/chromeos/input_method/assistive_window_controller.h"
 #include "chrome/browser/chromeos/input_method/candidate_window_controller.h"
 #include "chrome/browser/chromeos/input_method/component_extension_ime_manager_impl.h"
+#include "chrome/browser/chromeos/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/chromeos/input_method/ui/input_method_menu_item.h"
+#include "chrome/browser/chromeos/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/chromeos/language_preferences.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -49,9 +52,6 @@
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/base/ime/chromeos/ime_keyboard_impl.h"
 #include "ui/base/ime/chromeos/input_method_delegate.h"
-#include "ui/chromeos/ime/assistive_delegate.h"
-#include "ui/chromeos/ime/input_method_menu_item.h"
-#include "ui/chromeos/ime/input_method_menu_manager.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace chromeos {

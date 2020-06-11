@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
@@ -45,6 +46,7 @@ namespace blink {
 struct SameSizeAsNodeRareData {
   Member<void*> willbe_member_[4];
   unsigned bitfields_;
+  HeapHashSet<Member<void*>> scroll_timelines_;
 };
 
 static_assert(sizeof(NodeRareData) == sizeof(SameSizeAsNodeRareData),
@@ -108,11 +110,19 @@ NodeRenderingData& NodeRenderingData::SharedEmptyData() {
   return *shared_empty_data;
 }
 
+void NodeRareData::RegisterScrollTimeline(ScrollTimeline* timeline) {
+  scroll_timelines_.insert(timeline);
+}
+void NodeRareData::UnregisterScrollTimeline(ScrollTimeline* timeline) {
+  scroll_timelines_.erase(timeline);
+}
+
 void NodeRareData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(mutation_observer_data_);
   visitor->Trace(flat_tree_node_data_);
   visitor->Trace(node_layout_data_);
   visitor->Trace(node_lists_);
+  visitor->Trace(scroll_timelines_);
   NodeData::TraceAfterDispatch(visitor);
 }
 

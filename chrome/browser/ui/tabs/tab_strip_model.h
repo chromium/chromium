@@ -321,7 +321,8 @@ class TabStripModel : public TabGroupController {
   content::WebContents* GetOpenerOfWebContentsAt(int index);
 
   // Changes the |opener| of the WebContents at |index|.
-  // Note: |opener| must be in this tab strip.
+  // Note: |opener| must be in this tab strip. Also a tab must not be its own
+  // opener.
   void SetOpenerOfWebContentsAt(int index, content::WebContents* opener);
 
   // Returns the index of the last WebContents in the model opened by the
@@ -737,7 +738,7 @@ class TabStripModel : public TabGroupController {
   void SetSitesMuted(const std::vector<int>& indices, bool mute) const;
 
   // Sets the opener of any tabs that reference the tab at |index| to that tab's
-  // opener.
+  // opener or null if there's a cycle.
   void FixOpeners(int index);
 
   // Makes sure the tab at |index| is not causing a group contiguity error. Will

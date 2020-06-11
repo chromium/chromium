@@ -173,6 +173,22 @@ class CORE_EXPORT PaintTimingDetector
   uint64_t LargestImagePaintSize() const { return largest_image_paint_size_; }
   base::TimeTicks LargestTextPaint() const { return largest_text_paint_time_; }
   uint64_t LargestTextPaintSize() const { return largest_text_paint_size_; }
+  // Experimental counterparts of the above methods. Currently these values are
+  // computed by looking at the largest content seen so far, without caring
+  // about whether the content remains alive on the page or not.
+  base::TimeTicks ExperimentalLargestImagePaint() const {
+    return experimental_largest_image_paint_time_;
+  }
+  uint64_t ExperimentalLargestImagePaintSize() const {
+    return experimental_largest_image_paint_size_;
+  }
+  base::TimeTicks ExperimentalLargestTextPaint() const {
+    return experimental_largest_text_paint_time_;
+  }
+  uint64_t ExperimentalLargestTextPaintSize() const {
+    return experimental_largest_text_paint_size_;
+  }
+
   base::TimeTicks FirstInputOrScrollNotifiedTimestamp() const {
     return first_input_or_scroll_notified_timestamp_;
   }
@@ -207,12 +223,16 @@ class CORE_EXPORT PaintTimingDetector
 
   base::Optional<PaintTimingVisualizer> visualizer_;
 
-  // Largest image information.
   base::TimeTicks largest_image_paint_time_;
   uint64_t largest_image_paint_size_ = 0;
-  // Largest text information.
   base::TimeTicks largest_text_paint_time_;
   uint64_t largest_text_paint_size_ = 0;
+
+  base::TimeTicks experimental_largest_image_paint_time_;
+  uint64_t experimental_largest_image_paint_size_ = 0;
+  base::TimeTicks experimental_largest_text_paint_time_;
+  uint64_t experimental_largest_text_paint_size_ = 0;
+
   bool is_recording_largest_contentful_paint_ = true;
 };
 

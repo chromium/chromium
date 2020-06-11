@@ -128,8 +128,7 @@ class CC_EXPORT CompositorFrameReporter {
       std::bitset<static_cast<size_t>(FrameSequenceTrackerType::kMaxType)>;
 
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
-                          const viz::BeginFrameId& id,
-                          const base::TimeTicks frame_deadline,
+                          const viz::BeginFrameArgs& args,
                           LatencyUkmReporter* latency_ukm_reporter,
                           bool should_report_metrics);
   ~CompositorFrameReporter();
@@ -139,8 +138,6 @@ class CC_EXPORT CompositorFrameReporter {
       delete;
 
   std::unique_ptr<CompositorFrameReporter> CopyReporterAtBeginImplStage() const;
-
-  const viz::BeginFrameId frame_id_;
 
   // Note that the started stage may be reported to UMA. If the histogram is
   // intended to be reported then the histograms.xml file must be updated too.
@@ -183,6 +180,8 @@ class CC_EXPORT CompositorFrameReporter {
     DCHECK(tick_clock);
     tick_clock_ = tick_clock;
   }
+
+  const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
 
  private:
   void TerminateReporter();
@@ -234,6 +233,7 @@ class CC_EXPORT CompositorFrameReporter {
   base::TimeTicks Now() const;
 
   const bool should_report_metrics_;
+  const viz::BeginFrameArgs args_;
 
   StageData current_stage_;
 
@@ -272,7 +272,6 @@ class CC_EXPORT CompositorFrameReporter {
   // The time that work on Impl frame is finished. It's only valid if the
   // reporter is in a stage other than begin impl frame.
   base::TimeTicks impl_frame_finish_time_;
-  base::TimeTicks frame_deadline_;
 
   // The timestamp of when the frame was marked as not having produced a frame
   // (through a call to DidNotProduceFrame()).
@@ -282,6 +281,7 @@ class CC_EXPORT CompositorFrameReporter {
 
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 };
+
 }  // namespace cc
 
 #endif  // CC_METRICS_COMPOSITOR_FRAME_REPORTER_H_"

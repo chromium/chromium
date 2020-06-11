@@ -424,7 +424,7 @@ TEST_F(ContentSecurityPolicyTest, NonceInline) {
 
     unsigned expected_reports = test.allowed ? 0u : 1u;
     auto* element = MakeGarbageCollected<HTMLScriptElement>(
-        *window->document(), CreateElementFlags::ByParser());
+        *window->document(), CreateElementFlags());
 
     // Enforce 'script-src'
     Persistent<ContentSecurityPolicy> policy =
@@ -1299,8 +1299,8 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   String context_url;
   String nonce;
   OrdinalNumber ordinal_number;
-  auto* element = MakeGarbageCollected<HTMLScriptElement>(
-      *document, CreateElementFlags::ByParser());
+  auto* element =
+      MakeGarbageCollected<HTMLScriptElement>(*document, CreateElementFlags());
 
   EXPECT_TRUE(csp->Headers().IsEmpty());
   EXPECT_TRUE(csp->AllowInline(ContentSecurityPolicy::InlineType::kNavigation,

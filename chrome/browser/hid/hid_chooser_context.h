@@ -31,9 +31,11 @@ class Value;
 class HidChooserContext : public permissions::ChooserContextBase {
  public:
   explicit HidChooserContext(Profile* profile);
+  HidChooserContext(const HidChooserContext&) = delete;
+  HidChooserContext& operator=(const HidChooserContext&) = delete;
   ~HidChooserContext() override;
 
-  // ChooserContextBase:
+  // permissions::ChooserContextBase implementation:
   bool IsValidObject(const base::Value& object) override;
   // In addition these methods from ChooserContextBase are overridden in order
   // to expose ephemeral devices through the public interface.
@@ -74,14 +76,12 @@ class HidChooserContext : public permissions::ChooserContextBase {
   std::map<std::pair<url::Origin, url::Origin>, std::set<std::string>>
       ephemeral_devices_;
 
-  // Holds information about devices in |ephemeral_devices_|.
-  std::map<std::string, base::Value> device_info_;
+  // Map from device GUID to device info.
+  std::map<std::string, device::mojom::HidDeviceInfoPtr> devices_;
 
   mojo::Remote<device::mojom::HidManager> hid_manager_;
 
   base::WeakPtrFactory<HidChooserContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HidChooserContext);
 };
 
 #endif  // CHROME_BROWSER_HID_HID_CHOOSER_CONTEXT_H_

@@ -162,7 +162,7 @@ class LocationBarView : public LocationBar,
 
   // Updates the controller, and, if |contents| is non-null, restores saved
   // state that the tab holds.
-  void Update(const content::WebContents* contents);
+  void Update(content::WebContents* contents);
 
   // Clears the location bar's state for |contents|.
   void ResetTabState(content::WebContents* contents);

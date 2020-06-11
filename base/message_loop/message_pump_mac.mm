@@ -55,7 +55,7 @@ bool g_not_using_cr_app = false;
 MessagePumpNSApplication* g_app_pump;
 
 Feature kMessagePumpTimerInvalidation{"MessagePumpMacTimerInvalidation",
-                                      FEATURE_ENABLED_BY_DEFAULT};
+                                      FEATURE_DISABLED_BY_DEFAULT};
 
 // Various CoreFoundation definitions.
 typedef struct __CFRuntimeBase {
@@ -369,11 +369,16 @@ int MessagePumpCFRunLoopBase::GetModeMask() const {
 }
 
 #if !defined(OS_IOS)
+// static
+bool MessagePumpCFRunLoopBase::IsTimerInvalidationEnabled() {
+  return FeatureList::IsEnabled(kMessagePumpTimerInvalidation);
+}
+
 // This function uses private API to modify a test timer's valid state and
 // uses public API to confirm that the private API changed the correct bit.
 // static
 bool MessagePumpCFRunLoopBase::CanInvalidateCFRunLoopTimers() {
-  if (!FeatureList::IsEnabled(kMessagePumpTimerInvalidation)) {
+  if (!IsTimerInvalidationEnabled()) {
     return false;
   }
 

@@ -14,7 +14,8 @@ bool ScheduleParams::operator==(const ScheduleParams& other) const {
   return priority == other.priority &&
          impression_mapping == other.impression_mapping &&
          deliver_time_start == other.deliver_time_start &&
-         deliver_time_end == other.deliver_time_end;
+         deliver_time_end == other.deliver_time_end &&
+         ignore_timeout_duration == other.ignore_timeout_duration;
 }
 
 ScheduleParams::~ScheduleParams() = default;

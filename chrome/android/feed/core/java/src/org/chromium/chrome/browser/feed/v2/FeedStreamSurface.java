@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -66,6 +67,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     private final HybridListRenderer mHybridListRenderer;
     private final SnackbarManager mSnackbarManager;
     private final Activity mActivity;
+    private final BottomSheetController mBottomSheetController;
     @Nullable
     private FeedSliceViewTracker mSliceViewTracker;
     private final NativePageNavigationDelegate mPageNavigationDelegate;
@@ -128,11 +130,13 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
      * client implementation.
      */
     public FeedStreamSurface(Activity activity, SnackbarManager snackbarManager,
-            NativePageNavigationDelegate pageNavigationDelegate) {
+            NativePageNavigationDelegate pageNavigationDelegate,
+            BottomSheetController bottomSheetController) {
         mNativeFeedStreamSurface = FeedStreamSurfaceJni.get().init(FeedStreamSurface.this);
         mSnackbarManager = snackbarManager;
         mActivity = activity;
         mPageNavigationDelegate = pageNavigationDelegate;
+        mBottomSheetController = bottomSheetController;
 
         mContentManager = new FeedListContentManager(this, this);
 

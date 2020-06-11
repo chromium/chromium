@@ -5917,6 +5917,21 @@ the Bookmarks menu.">
         <message name="IDS_PASSWORD_MANAGER_BUBBLE_BLACKLIST_BUTTON" desc="Button text for the 'Save Password' bubble's 'Never remember for this site' option">
           Never
         </message>
+        <message name="IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_ACCOUNT" desc="Text shown in the destination dropdown in the password save bubble when saving to the account">
+          Save in your Google Account
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_SAVE_TO_DEVICE" desc="Text shown in the destination dropdown in the password save bubble when saving to the device">
+          Save only on this device
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT" desc="Title of the in Product Help shown when the 'Save to account` is selected ">
+          Choose where to save
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT" desc="Body of the in Product Help shown when the 'Save to account` is selected">
+          You can save this password in your Google Account or only on this device
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_DEVICE" desc="Title of the in Product Help shown when the 'Save to device` is selected ">
+          This password will be saved on this device
+        </message>
         <message name="IDS_PASSWORD_MANAGER_TOOLTIP_SAVE" desc="Text for the 'Manage Passwords' icon's 'password to be saved' state">
           Save your password
         </message>
@@ -9855,7 +9870,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Ad removed.
     </message>
     <message name="IDS_HEAVY_AD_INTERVENTION_SUMMARY" desc="Summary in heavy ad intervention page when ad was removed for using too many system resources.">
-      This ad uses too many resources for your device, so Chrome removed it.
+      This ad used too many resources for your device, so Chrome removed it.
     </message>
 
     <if expr="is_win">

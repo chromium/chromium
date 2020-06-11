@@ -12,14 +12,12 @@ const CrosView = (function() {
   let passcode = '';
 
   /**
-   *  Clear file input div
+   *  Clear file input
    *
    *  @private
    */
   function clearFileInput_() {
-    $(CrosView.IMPORT_DIV_ID).innerHTML = $(CrosView.IMPORT_DIV_ID).innerHTML;
-    $(CrosView.IMPORT_ONC_ID)
-        .addEventListener('change', handleFileChangeEvent_, false);
+    $(CrosView.IMPORT_ONC_ID).value = '';
   }
 
   /**

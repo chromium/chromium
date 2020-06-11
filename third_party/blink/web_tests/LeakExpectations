@@ -143,6 +143,9 @@ crbug.com/1068175 [ Linux ] external/wpt/referrer-policy/gen/worker-classic.http
 # Sheriff 2020-05-06
 crbug.com/1078769 [ Linux ] external/wpt/wasm/jsapi/idlharness.any.html [ Pass Failure ]
 
+# Sheriff 2020-06-10
+crbug.com/1093438 [ Linux ] external/wpt/html/cross-origin-opener-policy/access-reporting/openee-accessed_openee-coop.https.html [ Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #

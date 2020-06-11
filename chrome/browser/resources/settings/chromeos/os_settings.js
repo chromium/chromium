@@ -6,5 +6,5 @@ import './os_reset_page/os_powerwash_dialog.m.js';
 import './os_reset_page/os_reset_page.m.js';
 import './localized_link/localized_link.m.js';
 
-export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.m.js';
+export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.m.js';

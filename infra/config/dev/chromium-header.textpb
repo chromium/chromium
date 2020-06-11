@@ -1,6 +1,6 @@
 oncalls {
   name: "Chromium"
-  url: "https://rota-ng-staging.appspot.com/legacy/sheriff.json"
+  url: "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-build-sheriff"
 }
 
 links: {

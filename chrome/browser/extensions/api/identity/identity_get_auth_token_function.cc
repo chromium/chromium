@@ -79,9 +79,15 @@ std::string GetOAuth2MintTokenFlowChannel() {
   return version_info::GetChannelString(chrome::GetChannel());
 }
 
-void RecordFunctionResult(const IdentityGetAuthTokenError& error) {
+void RecordFunctionResult(const IdentityGetAuthTokenError& error,
+                          bool remote_consent_approved) {
   base::UmaHistogramEnumeration("Signin.Extensions.GetAuthTokenResult",
                                 error.state());
+  if (remote_consent_approved) {
+    base::UmaHistogramEnumeration(
+        "Signin.Extensions.GetAuthTokenResult.RemoteConsentApproved",
+        error.state());
+  }
 }
 
 }  // namespace
@@ -113,7 +119,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   if (GetProfile()->IsOffTheRecord()) {
     IdentityGetAuthTokenError error(
         IdentityGetAuthTokenError::State::kOffTheRecord);
-    RecordFunctionResult(error);
+    RecordFunctionResult(error, remote_consent_approved_);
     return RespondNow(Error(error.ToString()));
   }
 
@@ -134,7 +140,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   if (oauth2_client_id_.empty()) {
     IdentityGetAuthTokenError error(
         IdentityGetAuthTokenError::State::kInvalidClientId);
-    RecordFunctionResult(error);
+    RecordFunctionResult(error, remote_consent_approved_);
     return RespondNow(Error(error.ToString()));
   }
 
@@ -155,7 +161,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   if (scopes.empty()) {
     IdentityGetAuthTokenError error(
         IdentityGetAuthTokenError::State::kEmptyScopes);
-    RecordFunctionResult(error);
+    RecordFunctionResult(error, remote_consent_approved_);
     return RespondNow(Error(error.ToString()));
   }
 
@@ -322,7 +328,7 @@ void IdentityGetAuthTokenFunction::CompleteAsyncRun(ResponseValue response) {
 
 void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
     const std::string& access_token) {
-  RecordFunctionResult(IdentityGetAuthTokenError());
+  RecordFunctionResult(IdentityGetAuthTokenError(), remote_consent_approved_);
   CompleteAsyncRun(OneArgument(std::make_unique<base::Value>(access_token)));
 }
 
@@ -330,7 +336,7 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithError(
     const IdentityGetAuthTokenError& error) {
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("identity", "CompleteFunctionWithError",
                                       this, "error", error.ToString());
-  RecordFunctionResult(error);
+  RecordFunctionResult(error, remote_consent_approved_);
   CompleteAsyncRun(Error(error.ToString()));
 }
 
@@ -789,6 +795,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
       "identity", "OnGaiaRemoteConsentFlowApproved", this, "gaia_id", gaia_id);
   DCHECK(!consent_result.empty());
+  remote_consent_approved_ = true;
 
   CompleteMintTokenFlow();
   base::Optional<AccountInfo> account =

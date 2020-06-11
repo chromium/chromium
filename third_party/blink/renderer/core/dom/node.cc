@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -3359,6 +3360,13 @@ void Node::RemovedFromFlatTree() {
   // the StyleEngine in case the StyleRecalcRoot is removed from the flat tree.
   DetachLayoutTree();
   GetDocument().GetStyleEngine().RemovedFromFlatTree(*this);
+}
+
+void Node::RegisterScrollTimeline(ScrollTimeline* timeline) {
+  EnsureRareData().RegisterScrollTimeline(timeline);
+}
+void Node::UnregisterScrollTimeline(ScrollTimeline* timeline) {
+  EnsureRareData().UnregisterScrollTimeline(timeline);
 }
 
 void Node::Trace(Visitor* visitor) const {

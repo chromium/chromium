@@ -314,26 +314,6 @@ static_library("renderer") {
       "extensions/sync_file_system_custom_bindings.h",
       "extensions/tabs_hooks_delegate.cc",
       "extensions/tabs_hooks_delegate.h",
-      "media/cast_ipc_dispatcher.cc",
-      "media/cast_ipc_dispatcher.h",
-      "media/cast_receiver_audio_valve.cc",
-      "media/cast_receiver_audio_valve.h",
-      "media/cast_receiver_session.cc",
-      "media/cast_receiver_session.h",
-      "media/cast_receiver_session_delegate.cc",
-      "media/cast_receiver_session_delegate.h",
-      "media/cast_rtp_stream.cc",
-      "media/cast_rtp_stream.h",
-      "media/cast_session.cc",
-      "media/cast_session.h",
-      "media/cast_session_delegate.cc",
-      "media/cast_session_delegate.h",
-      "media/cast_threads.cc",
-      "media/cast_threads.h",
-      "media/cast_transport_ipc.cc",
-      "media/cast_transport_ipc.h",
-      "media/cast_udp_transport.cc",
-      "media/cast_udp_transport.h",
     ]
     deps += [
       # TODO(hclam): See crbug.com/298380 for details.
@@ -348,12 +328,6 @@ static_library("renderer") {
       "//services/network/public/cpp",
     ]
     public_deps += [ "//ipc" ]
-  }
-  if (enable_extensions) {
-    sources += [
-      "extensions/cast_streaming_native_handler.cc",
-      "extensions/cast_streaming_native_handler.h",
-    ]
   }
   if (enable_spellcheck) {
     deps += [ "//components/spellcheck/renderer:renderer" ]

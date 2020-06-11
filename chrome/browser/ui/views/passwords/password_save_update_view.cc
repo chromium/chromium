@@ -416,15 +416,16 @@ void PasswordSaveUpdateView::OnThemeChanged() {
                ? IDR_SAVE_PASSWORD_DARK
                : IDR_SAVE_PASSWORD;
   GetBubbleFrameView()->SetHeaderView(CreateHeaderImage(id));
-
-  const SkColor icon_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DefaultIconColor);
-  views::SetImageFromVectorIconWithColor(password_view_button_, kEyeIcon,
-                                         GetDefaultSizeOfVectorIcon(kEyeIcon),
-                                         icon_color);
-  views::SetToggledImageFromVectorIconWithColor(
-      password_view_button_, kEyeCrossedIcon,
-      GetDefaultSizeOfVectorIcon(kEyeCrossedIcon), icon_color);
+  if (password_view_button_) {
+    const SkColor icon_color = GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_DefaultIconColor);
+    views::SetImageFromVectorIconWithColor(password_view_button_, kEyeIcon,
+                                           GetDefaultSizeOfVectorIcon(kEyeIcon),
+                                           icon_color);
+    views::SetToggledImageFromVectorIconWithColor(
+        password_view_button_, kEyeCrossedIcon,
+        GetDefaultSizeOfVectorIcon(kEyeCrossedIcon), icon_color);
+  }
 }
 
 void PasswordSaveUpdateView::TogglePasswordVisibility() {

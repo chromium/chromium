@@ -244,10 +244,23 @@ PaintTimingDetector::GetLargestContentfulPaintCalculator() {
 bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     base::TimeTicks image_paint_time,
     uint64_t image_paint_size) {
+  // The experimental version (where we look at largest seen so far, regardless
+  // of node removal) cannot change when the regular version does not change.
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
+
   largest_image_paint_time_ = image_paint_time;
   largest_image_paint_size_ = image_paint_size;
+  if (experimental_largest_image_paint_size_ < image_paint_size) {
+    // We've found a new largest image.
+    experimental_largest_image_paint_time_ = image_paint_time;
+    experimental_largest_image_paint_size_ = image_paint_size;
+  } else if (experimental_largest_image_paint_size_ == image_paint_size &&
+             experimental_largest_image_paint_time_.is_null()) {
+    // If the experimental largest image was loading when it was first set, we
+    // need to set the actual paint time.
+    experimental_largest_image_paint_time_ = image_paint_time;
+  }
   DidChangePerformanceTiming();
   return true;
 }
@@ -255,10 +268,17 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
 bool PaintTimingDetector::NotifyIfChangedLargestTextPaint(
     base::TimeTicks text_paint_time,
     uint64_t text_paint_size) {
+  // The experimental version (where we look at largest seen so far, regardless
+  // of node removal) cannot change when the regular version does not change.
   if (!HasLargestTextPaintChanged(text_paint_time, text_paint_size))
     return false;
   largest_text_paint_time_ = text_paint_time;
   largest_text_paint_size_ = text_paint_size;
+  if (experimental_largest_text_paint_size_ < text_paint_size) {
+    DCHECK(!text_paint_time.is_null());
+    experimental_largest_text_paint_time_ = text_paint_time;
+    experimental_largest_text_paint_size_ = text_paint_size;
+  }
   DidChangePerformanceTiming();
   return true;
 }

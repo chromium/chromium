@@ -27,7 +27,9 @@ def main():
                       default=[],
                       help='Target device for apk to install on. Enter multiple'
                            ' times for multiple devices.')
-  parser.add_argument('remaining_args', nargs=argparse.REMAINDER)
+  parser.add_argument('remaining_args', nargs=argparse.REMAINDER,
+                      help='Flags to be passed to WebLayer should be appended'
+                           ' as --args="--myflag"')
   args = parser.parse_args()
 
   devil_chromium.Initialize()

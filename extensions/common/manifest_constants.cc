@@ -190,11 +190,12 @@ const char kWebAccessibleResources[] = "web_accessible_resources";
 const char kWebAppFileHandlers[] = "web_app_file_handlers";
 const char kWebAppFileHandlerAccept[] = "accept";
 const char kWebAppFileHandlerAction[] = "action";
-const char kWebAppLinkedShortcutIcons[] = "web_app_linked_shortcut_icons";
-const char kWebAppLinkedShortcutIconSize[] = "size";
-const char kWebAppLinkedShortcutIconURL[] = "url";
-const char kWebAppLinkedShortcutItemIndex[] = "shortcut_item_index";
-const char kWebAppLinkedShortcutItemName[] = "shortcut_item_name";
+const char kWebAppLinkedShortcutItems[] = "web_app_linked_shortcut_items";
+const char kWebAppLinkedShortcutItemIcons[] = "shortcut_item_icons";
+const char kWebAppLinkedShortcutItemIconSize[] = "size";
+const char kWebAppLinkedShortcutItemIconURL[] = "url";
+const char kWebAppLinkedShortcutItemName[] = "name";
+const char kWebAppLinkedShortcutItemURL[] = "url";
 const char kWebAppShortcutIcons[] = "web_app_shortcut_icons";
 const char kWebURLs[] = "app.urls";
 const char kWebview[] = "webview";
@@ -721,24 +722,28 @@ const char kInvalidWebAppFileHandlerFileExtensions[] =
     "Invalid value for 'web_app_file_handlers[*].accept[*].file_extensions'.";
 const char kInvalidWebAppFileHandlerFileExtension[] =
     "Invalid value for web_app_file_handlers[*].accept[*].file_extensions[*]'.";
-const char kInvalidWebAppLinkedShortcutIcon[] =
-    "Invalid 'web_app_linked_shortcut_icon'. Must be a dictionary";
-const char kInvalidWebAppLinkedShortcutIcons[] =
-    "Invalid 'web_app_linked_shortcut_icons'. Must be an array";
-const char kInvalidWebAppLinkedShortcutIconsNotBookmarkApp[] =
-    "The 'web_app_linked_shortcut_icons' manifest key is only supported for "
+const char kInvalidWebAppLinkedShortcutItem[] =
+    "Invalid 'web_app_linked_shortcut_item'. Must be a dictionary";
+const char kInvalidWebAppLinkedShortcutItems[] =
+    "Invalid 'web_app_linked_shortcut_items'. Must be an array";
+const char kInvalidWebAppLinkedShortcutItemsNotBookmarkApp[] =
+    "The 'web_app_linked_shortcut_items' manifest key is only supported for "
     "Bookmark Apps.";
-const char kInvalidWebAppLinkedShortcutIconSize[] =
-    "Invalid 'size' for 'web_app_linked_shortcut_icon'. Must be an integer";
-const char kInvalidWebAppLinkedShortcutIconURL[] =
-    "Invalid 'url' for 'web_app_linked_shortcut_icon'. Must be a string that "
-    "is a valid URL";
-const char kInvalidWebAppLinkedShortcutItemIndex[] =
-    "Invalid 'shortcut_item_index' for 'web_app_linked_shortcut_icon'. Must be "
-    "an integer";
+const char kInvalidWebAppLinkedShortcutItemIcons[] =
+    "Invalid 'shortcut_item_icons'. Must be an array";
+const char kInvalidWebAppLinkedShortcutItemIcon[] =
+    "Invalid 'shortcut_item_icon'. Must be a dictionary";
+const char kInvalidWebAppLinkedShortcutItemIconSize[] =
+    "Invalid 'size' for 'shortcut_item_icon'. Must be an "
+    "integer";
+const char kInvalidWebAppLinkedShortcutItemIconUrl[] =
+    "Invalid 'url' for 'shortcut_item_icon'. Must be a "
+    "string that is a valid URL";
 const char kInvalidWebAppLinkedShortcutItemName[] =
-    "Invalid 'shortcut_item_name' for 'web_app_linked_shortcut_icon'. Must be "
-    "a string.";
+    "Invalid 'name' for 'web_app_linked_shortcut_item'. Must be a string.";
+const char kInvalidWebAppLinkedShortcutItemUrl[] =
+    "Invalid 'url' for 'web_app_linked_shortcut_item'. Must be a string that "
+    "is a valid URL";
 const char kInvalidWebAppShortcutItemIcons[] =
     "Invalid value for web app shortcut item's icons. Must be a Dictionary.";
 const char kInvalidWebAppShortcutIcons[] =

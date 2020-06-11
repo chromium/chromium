@@ -28,6 +28,9 @@ extern const base::FilePath::CharType kAndroidFilesPath[];
 // Absolute path for the folder containing font files.
 extern const base::FilePath::CharType kSystemFontsPath[];
 
+// Absolute path for the folder containing archive mounts.
+extern const base::FilePath::CharType kArchiveMountPath[];
+
 // Gets the absolute path for the 'Downloads' folder for the |profile|.
 base::FilePath GetDownloadsFolderForProfile(Profile* profile);
 

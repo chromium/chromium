@@ -189,22 +189,6 @@
     "dependencies": ["permission:cast"],
     "contexts": ["blessed_extension"]
   },
-  "cast.streaming.rtpStream": {
-    "dependencies": ["permission:cast.streaming"],
-    "contexts": ["blessed_extension"]
-  },
-  "cast.streaming.receiverSession": {
-    "dependencies": ["permission:cast.streaming"],
-    "contexts": ["blessed_extension"]
-  },
-  "cast.streaming.session": {
-    "dependencies": ["permission:cast.streaming"],
-    "contexts": ["blessed_extension"]
-  },
-  "cast.streaming.udpTransport": {
-    "dependencies": ["permission:cast.streaming"],
-    "contexts": ["blessed_extension"]
-  },
   "certificateProvider": {
     "dependencies": ["permission:certificateProvider"],
     "contexts": ["blessed_extension"]

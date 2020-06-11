@@ -5,17 +5,25 @@
 #include <stddef.h>
 
 #include "base/at_exit.h"
+#include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/command_line.h"
+#include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
+#include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/core.h"
 #include "mojo/core/entrypoints.h"
 #include "mojo/public/c/system/core.h"
+#include "mojo/public/c/system/macros.h"
 #include "mojo/public/c/system/thunks.h"
 
 namespace {
@@ -56,6 +64,62 @@ std::unique_ptr<IPCSupport>& GetIPCSupport() {
   return *state;
 }
 
+// This helper is only called from within the context of a newly loaded Mojo
+// Core shared library, where various bits of static state (e.g. //base globals)
+// will not yet be initialized. Base library initialization steps are thus
+// consolidated here so that base APIs work as expected from within the loaded
+// Mojo Core implementation.
+//
+// NOTE: This is a no-op in component builds, as we expect both the client
+// application and the Mojo Core library to have been linked against the same
+// base component library, and we furthermore expect that the client application
+// has already initialized base globals by this point.
+class GlobalStateInitializer {
+ public:
+  GlobalStateInitializer() = default;
+
+  bool Initialize(int argc, const char* const* argv) {
+    if (initialized_)
+      return false;
+    initialized_ = true;
+#if !defined(COMPONENT_BUILD)
+    base::CommandLine::Init(argc, argv);
+
+    logging::LoggingSettings settings;
+    settings.logging_dest =
+        logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+    logging::InitLogging(settings);
+    logging::SetLogItems(true,   // Process ID
+                         true,   // Thread ID
+                         true,   // Timestamp
+                         true);  // Tick count
+
+#if !defined(OFFICIAL_BUILD) && !defined(OS_WIN)
+    // Correct stack dumping behavior requires symbol names in all loaded
+    // libraries to be cached. We do this here in case the calling process will
+    // imminently enter a sandbox.
+    base::debug::EnableInProcessStackDumping();
+#endif
+
+#if defined(OS_POSIX)
+    // Tickle base's PRNG. This lazily opens a static handle to /dev/urandom.
+    // Mojo Core uses the API internally, so it's important to warm the handle
+    // before potentially entering a sandbox.
+    base::RandUint64();
+#endif
+
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    base::FeatureList::InitializeInstance(
+        command_line->GetSwitchValueASCII(switches::kEnableFeatures),
+        command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+#endif  // !defined(COMPONENT_BUILD)
+    return true;
+  }
+
+ private:
+  bool initialized_ = false;
+};
+
 }  // namespace
 
 extern "C" {
@@ -63,13 +127,47 @@ extern "C" {
 namespace {
 
 MojoResult InitializeImpl(const struct MojoInitializeOptions* options) {
+  std::unique_ptr<IPCSupport>& ipc_support = GetIPCSupport();
+  if (ipc_support) {
+    // Already fully initialized, so there's nothing to do.
+    return MOJO_RESULT_FAILED_PRECONDITION;
+  }
+
+  // NOTE: |MojoInitialize()| may be called more than once if the caller wishes
+  // to separate basic initialization from IPC support initialization. We only
+  // do basic initialization the first time this is called.
+  const bool should_initialize_ipc_support =
+      !options || ((options->flags & MOJO_INITIALIZE_FLAG_LOAD_ONLY) == 0);
+
+  int argc = 0;
+  const char* const* argv = nullptr;
+  if (options && MOJO_IS_STRUCT_FIELD_PRESENT(options, argv)) {
+    argc = options->argc;
+    argv = options->argv;
+  }
+
+  static base::NoDestructor<GlobalStateInitializer> global_state_initializer;
+  const bool was_global_state_already_initialized =
+      !global_state_initializer->Initialize(argc, argv);
+
+  if (!should_initialize_ipc_support) {
+    if (was_global_state_already_initialized)
+      return MOJO_RESULT_ALREADY_EXISTS;
+    else
+      return MOJO_RESULT_OK;
+  }
+
+  DCHECK(!mojo::core::Core::Get());
   mojo::core::Configuration config;
   config.is_broker_process =
       options && options->flags & MOJO_INITIALIZE_FLAG_AS_BROKER;
+  config.force_direct_shared_memory_allocation =
+      options && options->flags &
+                     MOJO_INITIALIZE_FLAG_FORCE_DIRECT_SHARED_MEMORY_ALLOCATION;
   mojo::core::internal::g_configuration = config;
-
   mojo::core::InitializeCore();
-  GetIPCSupport() = std::make_unique<IPCSupport>();
+  ipc_support = std::make_unique<IPCSupport>();
+
   return MOJO_RESULT_OK;
 }
 

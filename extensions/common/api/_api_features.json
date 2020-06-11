@@ -217,7 +217,6 @@
       "matches": [
         "chrome://add-supervision/*",
         "chrome://assistant-optin/*",
-        "chrome://cast/*",
         "chrome://cellular-setup/*",
         "chrome://discards/*",
         "chrome://extensions/*",

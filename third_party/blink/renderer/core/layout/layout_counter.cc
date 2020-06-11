@@ -494,18 +494,25 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
 
   // Find a container on which to create the counter if one needs creating.
   LayoutObject* container = Parent();
-  while (true) {
-    if (!container)
-      return nullptr;
-    if (!container->IsAnonymous() && !container->IsPseudoElement())
-      return nullptr;  // LayoutCounters are restricted to before, after and
-                       // marker pseudo elements
-    PseudoId container_style = container->StyleRef().StyleType();
-    if ((container_style == kPseudoIdBefore) ||
-        (container_style == kPseudoIdAfter) ||
-        (container_style == kPseudoIdMarker))
-      break;
-    container = container->Parent();
+  bool should_create_counter = counter_.Separator().IsNull();
+  // Optimization: the only reason we need a proper container is if we might not
+  // need to create a counter (in which case, we navigate container's
+  // ancestors), or if we don't have a counter_node_ (in which case we need to
+  // find the container to place the counter on).
+  if (!should_create_counter || !counter_node_) {
+    while (true) {
+      if (!container)
+        return nullptr;
+      if (!container->IsAnonymous() && !container->IsPseudoElement())
+        return nullptr;  // LayoutCounters are restricted to before, after and
+                         // marker pseudo elements
+      PseudoId container_style = container->StyleRef().StyleType();
+      if ((container_style == kPseudoIdBefore) ||
+          (container_style == kPseudoIdAfter) ||
+          (container_style == kPseudoIdMarker))
+        break;
+      container = container->Parent();
+    }
   }
 
   // Now that we have a container, check if the counter directives are
@@ -517,7 +524,6 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
   // value for our identifier, then we don't need a counter here and it is
   // instead omitted. See counter-scoping-001.html WPT and crbug.com/882383#c11
   // for more context.
-  bool should_create_counter = counter_.Separator().IsNull();
   if (!should_create_counter) {
     for (auto* scope_ancestor = container; scope_ancestor;
          scope_ancestor = scope_ancestor->Parent()) {

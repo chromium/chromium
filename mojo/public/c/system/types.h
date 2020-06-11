@@ -147,7 +147,37 @@ typedef uint32_t MojoInitializeFlags;
 // process. That process is always the first member of the network and it should
 // set this flag during initialization. Attempts to invite a broker process into
 // an existing network will always fail.
+//
+// This flag is ignored when |MOJO_INITIALIZE_FLAG_LOAD_ONLY| is set.
 #define MOJO_INITIALIZE_FLAG_AS_BROKER ((MojoInitializeFlags)1)
+
+// Even if not initialized as the broker process, the calling process will be
+// configured for direct shared memory allocation. This can be used for
+// non-broker processes which are still sufficiently privileged to allocate
+// their own shared memory.
+//
+// This flag is ignored when |MOJO_INITIALIZE_FLAG_LOAD_ONLY| is set.
+#define MOJO_INITIALIZE_FLAG_FORCE_DIRECT_SHARED_MEMORY_ALLOCATION \
+  ((MojoInitializeFlags)2)
+
+// This call to |MojoInitialize()| should NOT fully initialize Mojo's internal
+// IPC support engine. Initialization is essentially a two-phase operation:
+// first the library is loaded and its global state is initialized, and then
+// full IPC support is initialized. The latter phase may spawn a background
+// thread, thus making it hostile to certain scenarios (e.g. prior to a fork()
+// on Linux et al); meanwhile the former phase may still need to be completed
+// early, e.g. prior to some sandbox configuration which may precede a fork().
+//
+// Applications wishing to separate initialization into two phases can set
+// this flag during an initial call to |MojoInitialize()|. To subsequently
+// enable use of all Mojo APIs, |MojoInitialize()| must be called another time,
+// without this flag set.
+//
+// Note that various MojoInitializeOptions may be ignored on the second call
+// to |MojoInitialize()|, while others may actually override options passed to
+// the first call. Documentation on individual option fields and flags clarifies
+// this behavior.
+#define MOJO_INITIALIZE_FLAG_LOAD_ONLY ((MojoInitializeFlags)4)
 
 // Options passed to |MojoInitialize()|.
 struct MOJO_ALIGNAS(8) MojoInitializeOptions {
@@ -161,10 +191,22 @@ struct MOJO_ALIGNAS(8) MojoInitializeOptions {
   // to load. If the |mojo_core_path| is null then |mojo_core_path_length| is
   // ignored and Mojo will fall back first onto the |MOJO_CORE_LIBRARY_PATH|
   // environment variable, and then onto the current working directory.
+  //
+  // NOTE: These fields are only observed during the first successful call to
+  // |MojoInitialize()| in a process.
   MOJO_POINTER_FIELD(const char*, mojo_core_path);
   uint32_t mojo_core_path_length;
+
+  // For POSIX and Fuchsia systems only, this is the |argc| and |argv| from
+  // the calling process's main() entry point. These fields are ignored on
+  // Windows, but we define them anyway for the sake of ABI consistency.
+  //
+  // NOTE: These fields are only observed during the first successful call to
+  // |MojoInitialize()| within a process.
+  int32_t argc;
+  MOJO_POINTER_FIELD(const char* const*, argv);
 };
-MOJO_STATIC_ASSERT(sizeof(struct MojoInitializeOptions) == 24,
+MOJO_STATIC_ASSERT(sizeof(struct MojoInitializeOptions) == 32,
                    "MojoInitializeOptions has wrong size");
 
 // Flags passed to |MojoShutdown()| via |MojoShutdownOptions|.

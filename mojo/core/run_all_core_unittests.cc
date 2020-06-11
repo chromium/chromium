@@ -4,25 +4,54 @@
 
 #include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/optional.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "mojo/core/mojo_core_unittest.h"
 #include "mojo/public/c/system/core.h"
+#include "mojo/public/cpp/system/dynamic_library_support.h"
+
+base::FilePath GetMojoCoreLibraryPath() {
+#if defined(OS_WIN)
+  const char kLibraryFilename[] = "mojo_core.dll";
+#else
+  const char kLibraryFilename[] = "libmojo_core.so";
+#endif
+  base::FilePath executable_dir =
+      base::CommandLine::ForCurrentProcess()->GetProgram().DirName();
+  if (executable_dir.IsAbsolute())
+    return executable_dir.AppendASCII(kLibraryFilename);
+
+  base::FilePath current_directory;
+  CHECK(base::GetCurrentDirectory(&current_directory));
+  return current_directory.Append(executable_dir).AppendASCII(kLibraryFilename);
+}
 
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
 
-  MojoInitializeOptions options;
-  options.struct_size = sizeof(options);
-  options.flags = MOJO_INITIALIZE_FLAG_NONE;
-  options.mojo_core_path = NULL;
-  options.mojo_core_path_length = 0;
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTestChildProcess)) {
-    options.flags = MOJO_INITIALIZE_FLAG_AS_BROKER;
+  MojoInitializeFlags flags = MOJO_INITIALIZE_FLAG_NONE;
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (!command_line.HasSwitch(switches::kTestChildProcess))
+    flags |= MOJO_INITIALIZE_FLAG_AS_BROKER;
+
+  base::Optional<base::FilePath> library_path;
+  if (command_line.HasSwitch(switches::kMojoUseExplicitLibraryPath))
+    library_path = GetMojoCoreLibraryPath();
+
+  if (command_line.HasSwitch(switches::kMojoLoadBeforeInit)) {
+    CHECK_EQ(MOJO_RESULT_OK, mojo::LoadCoreLibrary(library_path));
+    CHECK_EQ(MOJO_RESULT_OK, mojo::InitializeCoreLibrary(flags));
+  } else {
+    CHECK_EQ(MOJO_RESULT_OK,
+             mojo::LoadAndInitializeCoreLibrary(library_path, flags));
   }
 
-  CHECK_EQ(MOJO_RESULT_OK, MojoInitialize(&options));
   int result = base::LaunchUnitTests(
       argc, argv,
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));

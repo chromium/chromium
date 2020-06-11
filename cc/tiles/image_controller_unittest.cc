@@ -202,7 +202,7 @@ class BlockingTask : public TileTask {
     EXPECT_FALSE(HasCompleted());
     EXPECT_FALSE(thread_checker_.CalledOnValidThread());
     base::AutoLock hold(lock_);
-    if (!can_run_)
+    while (!can_run_)
       run_cv_.Wait();
     has_run_ = true;
   }

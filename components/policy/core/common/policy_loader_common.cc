@@ -41,6 +41,7 @@ const char* kSensitivePolicies[] = {
     key::kSafeBrowsingForTrustedSourcesEnabled,
     key::kSafeBrowsingEnabled,
     key::kSafeBrowsingWhitelistDomains,
+    key::kDefaultSearchProviderContextMenuAccessAllowed,
 };
 
 }  // namespace

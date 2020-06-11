@@ -4,6 +4,20 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+component("shared_mojom_traits") {
+  output_name = "ime_shared_mojom_traits"
+  defines = [ "IS_IME_SHARED_MOJOM_TRAITS_IMPL" ]
+  sources = [
+    "ime_types_mojom_traits.cc",
+    "ime_types_mojom_traits.h",
+  ]
+  public_deps = [
+    ":mojom_shared",
+    "//ipc:param_traits",
+    "//ui/base/ime:ime_types",
+  ]
+}
+
 mojom("mojom") {
   generate_java = true
   sources = [
@@ -34,14 +48,14 @@ mojom("mojom") {
         },
       ]
 
-      traits_sources = [ "ime_types_mojom_traits.cc" ]
       traits_headers = [ "ime_types_mojom_traits.h" ]
       traits_public_deps = [
-        "//ui/base/ime:ime_types",
+        ":shared_mojom_traits",
         "//ui/gfx/range",
       ]
     },
   ]
+  blink_cpp_typemaps = cpp_typemaps
 }
 
 mojom("test_interfaces") {

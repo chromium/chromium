@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.feed.shared.stream.Header;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
 import org.chromium.chrome.feed.R;
 
 import java.util.ArrayList;
@@ -39,11 +40,12 @@ public class FeedStream implements Stream {
     private boolean mIsStreamContentVisible = false;
 
     public FeedStream(Activity activity, boolean isBackgroundDark, SnackbarManager snackbarManager,
-            NativePageNavigationDelegate nativePageNavigationDelegate) {
+            NativePageNavigationDelegate nativePageNavigationDelegate,
+            BottomSheetController bottomSheetController) {
         // TODO(petewil): Use isBackgroundDark to turn on dark theme.
         this.mActivity = activity;
-        this.mFeedStreamSurface =
-                new FeedStreamSurface(activity, snackbarManager, nativePageNavigationDelegate);
+        this.mFeedStreamSurface = new FeedStreamSurface(
+                activity, snackbarManager, nativePageNavigationDelegate, bottomSheetController);
         this.mScrollListeners = new ObserverList<ScrollListener>();
     }
 

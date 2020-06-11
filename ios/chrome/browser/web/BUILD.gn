@@ -186,14 +186,7 @@ js_compile_bundle("chrome_bundle_main_frame") {
     "resources/chrome_bundle_main_frame.js",
     "resources/image_fetch.js",
   ]
-  deps = [
-    ":credential_manager",
-    ":payment_request",
-  ]
-}
-
-js_compile_checked("payment_request") {
-  sources = [ "resources/payment_request.js" ]
+  deps = [ ":credential_manager" ]
 }
 
 js_compile_checked("credential_manager") {

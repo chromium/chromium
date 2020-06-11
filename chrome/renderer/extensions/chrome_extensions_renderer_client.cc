@@ -21,7 +21,6 @@
 #include "chrome/renderer/extensions/extension_process_policy.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
 #include "chrome/renderer/extensions/resource_request_policy.h"
-#include "chrome/renderer/media/cast_ipc_dispatcher.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -166,7 +165,6 @@ void ChromeExtensionsRendererClient::RenderThreadStarted() {
 
   thread->AddObserver(extension_dispatcher_.get());
   thread->AddObserver(guest_view_container_dispatcher_.get());
-  thread->AddFilter(new CastIPCDispatcher(thread->GetIOTaskRunner()));
 }
 
 void ChromeExtensionsRendererClient::RenderFrameCreated(

@@ -550,7 +550,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   }
   HideSavePasswordInfobar(web_contents());
   (new CredentialLeakControllerAndroid(
-       leak_type, origin, web_contents()->GetTopLevelNativeWindow()))
+       leak_type, origin, username, web_contents()->GetTopLevelNativeWindow()))
       ->ShowDialog();
 #else   // !defined(OS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =

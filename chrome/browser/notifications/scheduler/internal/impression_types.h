@@ -66,6 +66,9 @@ struct Impression {
   // Custom data associated with a notification. Send back to the client when
   // the user interacts with the notification.
   CustomData custom_data;
+
+  // Duration to mark a notification without feedback as ignored.
+  base::Optional<base::TimeDelta> ignore_timeout_duration;
 };
 
 // Contains details about supression and recovery after suppression expired.

@@ -157,6 +157,13 @@ void PaintTiming::NotifyPaintTimingChanged() {
 void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
   if (!first_paint_.is_null())
     return;
+
+  LocalFrame* frame = GetFrame();
+  if (frame && frame->GetDocument()) {
+    Document* document = frame->GetDocument();
+    document->MarkFirstPaint();
+  }
+
   first_paint_ = stamp;
   RegisterNotifySwapTime(PaintEvent::kFirstPaint);
 }

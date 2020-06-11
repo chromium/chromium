@@ -17,6 +17,7 @@
 #include "base/rand_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/metrics/log_decoder.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
@@ -28,7 +29,6 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
-#include "third_party/zlib/google/compression_utils.h"
 
 namespace ukm {
 
@@ -108,17 +108,9 @@ void PurgeExtensionDataFromUnsentLogStore(
     metrics::UnsentLogStore* ukm_log_store) {
   for (size_t index = 0; index < ukm_log_store->size(); index++) {
     // Uncompress log data from store back into a Report.
-    const std::string& compressed_log_data =
-        ukm_log_store->GetLogAtIndex(index);
-    std::string uncompressed_log_data;
-    const bool uncompress_successful = compression::GzipUncompress(
-        compressed_log_data, &uncompressed_log_data);
-    DCHECK(uncompress_successful);
     Report report;
-
-    const bool report_parse_successful =
-        report.ParseFromString(uncompressed_log_data);
-    DCHECK(report_parse_successful);
+    DCHECK(metrics::DecodeLogDataToProto(ukm_log_store->GetLogAtIndex(index),
+                                         &report));
 
     std::unordered_set<SourceId> extension_source_ids;
 

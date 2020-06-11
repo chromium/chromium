@@ -107,12 +107,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, NoThemeColor) {
 IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, SystemThemeColor) {
   SetThemeMode(ThemeMode::kSystem);
   // The color here should be ignored in system mode.
-  ASSERT_TRUE(InstallAndLaunchWebApp(SK_ColorBLACK));
+  ASSERT_TRUE(InstallAndLaunchWebApp(SK_ColorRED));
 
-  EXPECT_EQ(opaque_browser_frame_view_->GetFrameColor(),
-            SkColorSetRGB(0xED, 0xED, 0xED));
-  EXPECT_EQ(opaque_browser_frame_view_->GetCaptionColor(BrowserFrameActiveState::kActive),
-            gfx::kGoogleGrey900);
   EXPECT_EQ(web_app_frame_toolbar_->active_color_for_testing(),
             gfx::kGoogleGrey900);
 }

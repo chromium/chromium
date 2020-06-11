@@ -551,7 +551,7 @@ function createConfigRowWithToggle(name, value, clickAction) {
  * @param {!mediaFeeds.mojom.DebugInformation} info The debug info
  */
 function renderConfigTable(info) {
-  configTableBody.innerHTML = '';
+  configTableBody.innerHTML = trustedTypes.emptyHTML;
 
   configTableBody.appendChild(createConfigRow(
       'Safe Search Enabled (value)',
