@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/ml/compilation_impl_android.h"
+#include "services/ml/compilation_impl_nn.h"
 
 #include <memory>
 #include <utility>
@@ -12,43 +12,58 @@
 
 namespace ml {
 
-CompilationImplAndroid::CompilationImplAndroid(const ModelImplAndroid* model)
+CompilationImplNN::CompilationImplNN(const ModelImplNN* model, mojom::ModelInfoPtr model_info,
+      mojo::ScopedSharedBufferMapping mapping)
     : operands_(model->operands_),
       operations_(model->operations_),
       inputs_(model->inputs_),
-      outputs_(model->outputs_) {
+      outputs_(model->outputs_),
+      model_info_(std::move(model_info)),
+      mapping_(std::move(mapping)) {
+#if defined(OS_ANDROID)
   int32_t result =
       ANeuralNetworksCompilation_create(model->nn_model_, &nn_compilation_);
+#else
+  int32_t result =
+      ie_compilation_create(model->ie_model_, &ie_compilation_);
+#endif
   DLOG(INFO) << "ANeuralNetworksCompilation_create: " << result;
 }
 
-CompilationImplAndroid::~CompilationImplAndroid() {
+CompilationImplNN::~CompilationImplNN() {
   // ANeuralNetworksCompilation_free(nn_compilation_);
   // The nn_compilation_ will be deleted in execution phase.
 }
 
-void CompilationImplAndroid::Finish(int32_t preference,
+void CompilationImplNN::Finish(int32_t preference,
                                     FinishCallback callback) {
-  DLOG(INFO) << "CompilationImplAndroid::finish";
+  DLOG(INFO) << "CompilationImplNN::finish";
   DLOG(INFO) << "  "
              << "preference: " << preference;
 
+#if defined(OS_ANDROID)
   int32_t result =
       ANeuralNetworksCompilation_setPreference(nn_compilation_, preference);
-  DLOG(INFO) << "ANeuralNetworksCompilation_setPreference: " << result;
-  if (result != ANEURALNETWORKS_NO_ERROR) {
+#else
+  int32_t result = ie_compilation_set_preference(ie_compilation_, preference);
+#endif
+  if (result != 0) {
     std::move(callback).Run(result);
     return;
   }
 
+#if defined(OS_ANDROID)
   result = ANeuralNetworksCompilation_finish(nn_compilation_);
+#else
+  result = ie_compilation_finish(ie_compilation_);
+#endif
   DLOG(INFO) << "ANeuralNetworksCompilation_finish: " << result;
 
   std::move(callback).Run(result);
 }
 
-void CompilationImplAndroid::CreateExecution(CreateExecutionCallback callback) {
-  DLOG(INFO) << "CompilationImplAndroid::CreateExecution";
+void CompilationImplNN::CreateExecution(CreateExecutionCallback callback) {
+  DLOG(INFO) << "CompilationImplNN::CreateExecution";
   auto init_params = mojom::ExecutionInitParams::New();
 
   uint32_t input_memory_size = 0;
@@ -80,7 +95,7 @@ void CompilationImplAndroid::CreateExecution(CreateExecutionCallback callback) {
 
   mojom::ExecutionPtrInfo ptr_info;
   mojo::MakeStrongBinding(
-      std::make_unique<ExecutionImplAndroid>(this, std::move(memory_handle)),
+      std::make_unique<ExecutionImplNN>(this, std::move(memory_handle)),
       mojo::MakeRequest(&ptr_info));
   init_params->execution = std::move(ptr_info);
 

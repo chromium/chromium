@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_ML_MODEL_IMPL_ANDROID_H_
-#define SERVICES_ML_MODEL_IMPL_ANDROID_H_
+#ifndef SERVICES_ML_MODEL_IMPL_NN_H_
+#define SERVICES_ML_MODEL_IMPL_NN_H_
 
 #include <vector>
 
@@ -12,21 +12,25 @@
 #include "services/ml/public/mojom/constants.mojom.h"
 #include "services/ml/public/mojom/model.mojom.h"
 
+#if defined(OS_ANDROID)
 #ifdef __ANDROID_API__
 #undef __ANDROID_API__
 #define __ANDROID_API__ 27
 #include "android/NeuralNetworks.h"
 #undef __ANDROID_API__
 #endif
+#else
+#include "third_party/ienn/include/ie_nn_c_api.h"
+#endif
 
 namespace ml {
 
-class CompilationImplAndroid;
+class CompilationImplNN;
 
-class ModelImplAndroid : public mojom::Model {
+class ModelImplNN : public mojom::Model {
  public:
-  ModelImplAndroid();
-  ~ModelImplAndroid() override;
+  ModelImplNN();
+  ~ModelImplNN() override;
 
   void Finish(mojom::ModelInfoPtr model_info, FinishCallback callback) override;
 
@@ -45,19 +49,25 @@ class ModelImplAndroid : public mojom::Model {
                                    const std::vector<uint32_t>& outputs);
 
  private:
-  friend class CompilationImplAndroid;
+  friend class CompilationImplNN;
   std::vector<Operand> operands_;
   std::vector<Operation> operations_;
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
 
+#if defined(OS_ANDROID)
   ANeuralNetworksModel* nn_model_;
+#else
+  ie_model_t* ie_model_;
+  mojom::ModelInfoPtr model_info_;
+  mojo::ScopedSharedBufferMapping mapping_;
+#endif
 
   std::vector<void*> operand_memories_;
 
-  DISALLOW_COPY_AND_ASSIGN(ModelImplAndroid);
+  DISALLOW_COPY_AND_ASSIGN(ModelImplNN);
 };
 
 }  // namespace ml
 
-#endif  // SERVICES_ML_MODEL_IMPL_ANDROID_H_
+#endif  // SERVICES_ML_MODEL_IMPL_NN_H_

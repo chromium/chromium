@@ -8,6 +8,7 @@ if (is_win) {
   cldnn_dll = "clDNN64.dll"
   dnnl_dll = "dnnl.dll"
   omp_dll = "vcomp140.dll"
+  ie_nn_dll = "ie_nn_c_api.dll"
   os_folder = "Windows64"
 } else if (is_linux) {
   cldnn_dll = "libclDNN64.so"
@@ -98,14 +99,14 @@ source_set("lib") {
     ]
   } else if (is_android) {
     sources += [
-      "compilation_impl_android.cc",
-      "compilation_impl_android.h",
-      "execution_impl_android.cc",
-      "execution_impl_android.h",
-      "model_impl_android.cc",
-      "model_impl_android.h",
-      "neural_network_impl_android.cc",
-      "neural_network_impl_android.h",
+      "compilation_impl_nn.cc",
+      "compilation_impl_nn.h",
+      "execution_impl_nn.cc",
+      "execution_impl_nn.h",
+      "model_impl_nn.cc",
+      "model_impl_nn.h",
+      "neural_network_impl_nn.cc",
+      "neural_network_impl_nn.h",
     ]
 
     #include_dirs = [ "${android_ndk_root}/sysroot/usr/include" ]
@@ -244,6 +245,7 @@ source_set("lib") {
       ":copy_cldnn_dll",
       ":copy_dnnl_dll",
       ":copy_omp_dll",
+      ":copy_ie_nn_dll",
     ]
   } else if (is_mac) {
     deps += [
@@ -259,7 +261,21 @@ source_set("lib") {
   ]
 
   if (is_linux || is_win) {
-    deps += [ ":ie" ]
+    sources += [
+      "compilation_impl_nn.cc",
+      "compilation_impl_nn.h",
+      "execution_impl_nn.cc",
+      "execution_impl_nn.h",
+      "model_impl_nn.cc",
+      "model_impl_nn.h",
+      "neural_network_impl_nn.cc",
+      "neural_network_impl_nn.h",
+    ]
+
+    lib_dirs += [ "//third_party/ienn/Windows64" ]
+    libs += [ "ie_nn_c_api.lib" ]
+
+    #deps += [ ":ie" ]
   }
 }
 
@@ -286,6 +302,15 @@ if (is_win || is_linux || is_mac) {
     copy("copy_cldnn_dll") {
       sources = [
         "${cldnn_dll_path}/${cldnn_dll}",
+      ]
+      outputs = [
+        "$root_out_dir/{{source_file_part}}",
+      ]
+    }
+    ie_nn_dll_path = "//third_party/ienn/${os_folder}"
+    copy("copy_ie_nn_dll") {
+      sources = [
+        "${ie_nn_dll_path}/${ie_nn_dll}",
       ]
       outputs = [
         "$root_out_dir/{{source_file_part}}",

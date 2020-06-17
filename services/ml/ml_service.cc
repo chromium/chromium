@@ -10,8 +10,9 @@
 #include "build/build_config.h"
 #if defined(OS_LINUX) || defined(OS_WIN)
 #include "services/ml/neural_network_impl.h"
+#include "services/ml/neural_network_impl_nn.h"
 #elif defined(OS_ANDROID)
-#include "services/ml/neural_network_impl_android.h"
+#include "services/ml/neural_network_impl_nn.h"
 #elif defined(OS_MACOSX)
 #include "services/ml/neural_network_impl_mac.h"
 #endif
@@ -25,9 +26,14 @@ MLService::~MLService() = default;
 
 void MLService::OnStart() {
 #if (OS_LINUX) || defined(OS_WIN)
-  registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kUseInferenceEngine)) {
+    registry_.AddInterface(base::Bind(&NeuralNetworkImplNN::Create));
+  } else {
+    registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
+  }
 #elif defined(OS_ANDROID)
-  registry_.AddInterface(base::Bind(&NeuralNetworkImplAndroid::Create));
+  registry_.AddInterface(base::Bind(&NeuralNetworkImplNN::Create));
 #elif defined(OS_MACOSX)
   registry_.AddInterface(base::Bind(&NeuralNetworkImplMac::Create));
 #endif

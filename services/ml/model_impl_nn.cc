@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/ml/model_impl_android.h"
+#include "services/ml/model_impl_nn.h"
 
 #include <memory>
 #include <utility>
@@ -10,26 +10,34 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
-#include "services/ml/compilation_impl_android.h"
+#include "services/ml/compilation_impl_nn.h"
 
 namespace ml {
 
-ModelImplAndroid::ModelImplAndroid() {
+ModelImplNN::ModelImplNN() {
+#if defined(OS_ANDROID)
   int32_t result = ANeuralNetworksModel_create(&nn_model_);
+#else
+  int32_t result = ie_model_create(&ie_model_);
+#endif
   DLOG(INFO) << "ANeuralNetworksModel_create: " << result;
 }
 
-ModelImplAndroid::~ModelImplAndroid() {
+ModelImplNN::~ModelImplNN() {
+#if defined(OS_ANDROID)
   ANeuralNetworksModel_free(nn_model_);
+#else
+  ie_model_free(ie_model_);
+#endif
   DLOG(INFO) << "ANeuralNetworksModel_free";
 }
 
-int32_t ModelImplAndroid::AddOperand(int32_t type,
+int32_t ModelImplNN::AddOperand(int32_t type,
                                      const std::vector<uint32_t>& dimensions,
                                      float scale,
                                      int32_t zeroPoint) {
   // Logging
-  DLOG(INFO) << "  ModelImplAndroid::AddOperand";
+  DLOG(INFO) << "  ModelImplNN::AddOperand";
   DLOG(INFO) << "    "
              << "type: " << type;
   DLOG(INFO) << "    "
@@ -47,6 +55,7 @@ int32_t ModelImplAndroid::AddOperand(int32_t type,
   operand.zeroPoint = zeroPoint;
   operands_.push_back(operand);
 
+#if defined(OS_ANDROID)
   // Implementation
   ANeuralNetworksOperandType operand_type;
   // TODO: convert from blink operand type to NN API type.
@@ -55,15 +64,23 @@ int32_t ModelImplAndroid::AddOperand(int32_t type,
   operand_type.dimensions = dimensions.data();
   operand_type.scale = scale;
   operand_type.zeroPoint = zeroPoint;
-
   return ANeuralNetworksModel_addOperand(nn_model_, &operand_type);
+#else
+  ie_operand_t ie_operand;
+  ie_operand.type = type;
+  ie_operand.dimensionCount = dimensions.size();
+  ie_operand.dimensions = dimensions.data();
+  ie_operand.scale = scale;
+  ie_operand.zeroPoint = zeroPoint;
+  return ie_model_add_operand(ie_model_, &ie_operand);
+#endif
 }
 
-int32_t ModelImplAndroid::SetOperandValue(uint32_t index,
+int32_t ModelImplNN::SetOperandValue(uint32_t index,
                                           const void* buffer,
                                           uint32_t length) {
   // Logging
-  DLOG(INFO) << "  ModelImplAndroid::SetOperandValue";
+  DLOG(INFO) << "  ModelImplNN::SetOperandValue";
   DLOG(INFO) << "    "
              << "index: " << index;
   DLOG(INFO) << "    "
@@ -73,41 +90,20 @@ int32_t ModelImplAndroid::SetOperandValue(uint32_t index,
     return mojom::BAD_DATA;
   }
 
-  // TODO: DEBUG Mode
-  auto operand = operands_[index];
-  if (operand.type == mojom::TENSOR_FLOAT32 || operand.type == mojom::FLOAT32) {
-    const float* value = static_cast<const float*>(buffer);
-    uint32_t size = length / 4;
-    DLOG(INFO) << "    "
-               << "buffer(" << size << "): " << VectorToString(value, size);
-  } else if (operand.type == mojom::TENSOR_INT32 ||
-             operand.type == mojom::INT32) {
-    const int32_t* value = static_cast<const int32_t*>(buffer);
-    uint32_t size = length / 4;
-    DLOG(INFO) << "    "
-               << "buffer(" << size << "): " << VectorToString(value, size);
-  } else if (operand.type == mojom::TENSOR_QUANT8_ASYMM) {
-    const int8_t* value = static_cast<const int8_t*>(buffer);
-    uint32_t size = length;
-    DLOG(INFO) << "    "
-               << "buffer(" << size << "): " << VectorToString(value, size);
-  } else if (operand.type == mojom::UINT32) {
-    const uint32_t* value = static_cast<const uint32_t*>(buffer);
-    uint32_t size = length;
-    DLOG(INFO) << "    "
-               << "buffer(" << size << "): " << VectorToString(value, size);
-  }
-
   // Implementation
   // TODO: optimize the memory copies.
+#if defined(OS_ANDROID)
   return ANeuralNetworksModel_setOperandValue(nn_model_, index, buffer, length);
+#else
+  return ie_model_set_operand_value(ie_model_, index, buffer, length);
+#endif
 }
 
-int32_t ModelImplAndroid::AddOperation(int32_t type,
+int32_t ModelImplNN::AddOperation(int32_t type,
                                        const std::vector<uint32_t>& inputs,
                                        const std::vector<uint32_t>& outputs) {
   // Logging
-  DLOG(INFO) << "  ModelImplAndroid::AddOperation";
+  DLOG(INFO) << "  ModelImplNN::AddOperation";
   DLOG(INFO) << "    "
              << "type: " << type;
   DLOG(INFO) << "    "
@@ -125,15 +121,21 @@ int32_t ModelImplAndroid::AddOperation(int32_t type,
 
   // Implementation
   // TODO: convert blink operation type to NN API type.
+#if defined(OS_ANDROID)
   return ANeuralNetworksModel_addOperation(nn_model_, type, inputs.size(),
                                            inputs.data(), outputs.size(),
                                            outputs.data());
+#else
+  return ie_model_add_operation(ie_model_, type, inputs.size(),
+                               inputs.data(), outputs.size(),
+                                           outputs.data());
+#endif
 }
 
-int32_t ModelImplAndroid::IdentifyInputsAndOutputs(
+int32_t ModelImplNN::IdentifyInputsAndOutputs(
     const std::vector<uint32_t>& inputs,
     const std::vector<uint32_t>& outputs) {
-  DLOG(INFO) << "  ModelImplAndroid::IdentifyInputsAndOutputs";
+  DLOG(INFO) << "  ModelImplNN::IdentifyInputsAndOutputs";
   DLOG(INFO) << "    "
              << "inputs(" << inputs.size()
              << "): " << VectorToString(inputs.data(), inputs.size());
@@ -144,13 +146,18 @@ int32_t ModelImplAndroid::IdentifyInputsAndOutputs(
   inputs_ = inputs;
   outputs_ = outputs;
 
+#if defined(OS_ANDROID)
   return ANeuralNetworksModel_identifyInputsAndOutputs(
       nn_model_, inputs.size(), inputs.data(), outputs.size(), outputs.data());
+#else
+  return ie_model_identify_inputs_outputs(
+      ie_model_, inputs.size(), inputs.data(), outputs.size(), outputs.data());
+#endif
 }
 
-void ModelImplAndroid::Finish(mojom::ModelInfoPtr model_info,
+void ModelImplNN::Finish(mojom::ModelInfoPtr model_info,
                               FinishCallback callback) {
-  DLOG(INFO) << "ModelImplAndroid::Finish";
+  DLOG(INFO) << "ModelImplNN::Finish";
   DLOG(INFO) << "operands(" << model_info->operands.size() << ")";
 
   int32_t result;
@@ -159,7 +166,7 @@ void ModelImplAndroid::Finish(mojom::ModelInfoPtr model_info,
     const mojom::OperandPtr& operand = model_info->operands[i];
     result = AddOperand(operand->type, operand->dimensions, operand->scale,
                         operand->zeroPoint);
-    if (result != ANEURALNETWORKS_NO_ERROR) {
+    if (result != 0) {
       DLOG(ERROR) << "Fail to add operand, result = " << result;
       std::move(callback).Run(result);
       return;
@@ -180,18 +187,18 @@ void ModelImplAndroid::Finish(mojom::ModelInfoPtr model_info,
 
     result =
         AddOperation(operation->type, operation->inputs, operation->outputs);
-    if (result != ANEURALNETWORKS_NO_ERROR) {
+    if (result != 0) {
       DLOG(ERROR) << "Fail to add operation, result = " << result;
       std::move(callback).Run(result);
       return;
     }
   }
 
-  mojo::ScopedSharedBufferMapping mapping;
+  // mojo::ScopedSharedBufferMapping mapping;
   DLOG(INFO) << "values(" << model_info->values.size() << ")";
   if (model_info->values.size() != 0) {
-    mapping = model_info->memory->Map(model_info->memory_size);
-    const int8_t* base = static_cast<const int8_t*>(mapping.get());
+    mapping_ = model_info->memory->Map(model_info->memory_size);
+    const int8_t* base = static_cast<const int8_t*>(mapping_.get());
     for (auto itr = model_info->values.begin(); itr != model_info->values.end();
          ++itr) {
       const mojom::OperandValueInfoPtr& value_info = itr->second;
@@ -204,22 +211,27 @@ void ModelImplAndroid::Finish(mojom::ModelInfoPtr model_info,
   DLOG(INFO) << "inputs(" << model_info->inputs.size() << ")";
   DLOG(INFO) << "outputs(" << model_info->outputs.size() << ")";
   result = IdentifyInputsAndOutputs(model_info->inputs, model_info->outputs);
-  if (result != ANEURALNETWORKS_NO_ERROR) {
+    if (result != 0) {
     DLOG(ERROR) << "Fail to IdentifyInputsAndOutputs, result = " << result;
     std::move(callback).Run(result);
     return;
   }
 
+#if defined(OS_ANDROID)
   result = ANeuralNetworksModel_finish(nn_model_);
+#else
+  // ie backend shared the memory from ScopedSharedBufferMapping
+  model_info_ = std::move(model_info);
+#endif
   DLOG(INFO) << "ANeuralNetworksModel_finish: " << result;
 
   std::move(callback).Run(result);
 }
 
-void ModelImplAndroid::CreateCompilation(CreateCompilationCallback callback) {
-  DLOG(INFO) << "ModelImplAndroid::CreateCompilation";
+void ModelImplNN::CreateCompilation(CreateCompilationCallback callback) {
+  DLOG(INFO) << "ModelImplNN::CreateCompilation";
   mojom::CompilationPtrInfo ptr_info;
-  mojo::MakeStrongBinding(std::make_unique<CompilationImplAndroid>(this),
+  mojo::MakeStrongBinding(std::make_unique<CompilationImplNN>(this, std::move(model_info_), std::move(mapping_)),
                           mojo::MakeRequest(&ptr_info));
 
   auto init_params = mojom::CompilationInitParams::New();
