@@ -585,8 +585,8 @@ int32_t CompilationDelegateDnnl::AddActivation(const std::string& input_name,
     return mojom::BAD_DATA;
   }
 
-  status = LATE(dnnl_eltwise_forward_desc_init)(&activation_desc, dnnl_forward,
-                                                alg_kind, input_md, alpha, 0.0);
+  status = LATE(dnnl_eltwise_forward_desc_init)(
+      &activation_desc, dnnl_forward_inference, alg_kind, input_md, alpha, 0.0);
   if (status != dnnl_success) {
     LOG(ERROR) << "[DNNL] failed to init eltwise descriptor " << status;
     return mojom::OP_FAILED;
@@ -1204,8 +1204,8 @@ int32_t CompilationDelegateDnnl::AddPooling(
   dnnl_dim_t pad_left[2] = {params.padding_top, params.padding_left};
   dnnl_dim_t pad_right[2] = {params.padding_bottom, params.padding_right};
   status = LATE(dnnl_pooling_forward_desc_init)(
-      &pool_desc, dnnl_forward, pooling_kind, input_pd, &output_md, strides,
-      kernel, pad_left, pad_right);
+      &pool_desc, dnnl_forward_inference, pooling_kind, input_pd, &output_md,
+      strides, kernel, pad_left, pad_right);
   if (status != mojom::NOT_ERROR) {
     LOG(ERROR) << "[DNNL] failed to init pooling descriptor " << status;
     return mojom::OP_FAILED;
@@ -1310,8 +1310,8 @@ int32_t CompilationDelegateDnnl::AddSoftmax(
   }
 
   dnnl_softmax_desc_t softmax_desc;
-  status = LATE(dnnl_softmax_forward_desc_init)(&softmax_desc, dnnl_forward,
-                                                input_md, input_md->ndims - 1);
+  status = LATE(dnnl_softmax_forward_desc_init)(
+      &softmax_desc, dnnl_forward_inference, input_md, input_md->ndims - 1);
   if (status != mojom::NOT_ERROR) {
     LOG(ERROR) << "[DNNL] failed to init softmax descriptor " << status;
     return mojom::OP_FAILED;
@@ -1580,8 +1580,8 @@ int32_t CompilationDelegateDnnl::AddFullyConnected(
 
   dnnl_inner_product_desc_t ip_desc;
   status = LATE(dnnl_inner_product_forward_desc_init)(
-      &ip_desc, dnnl_forward, &ip_input_desc, &weights_desc, &bias_desc,
-      &output_desc);
+      &ip_desc, dnnl_forward_inference, &ip_input_desc, &weights_desc,
+      &bias_desc, &output_desc);
   if (status != dnnl_success) {
     LOG(ERROR) << "[DNNL] failed to init inner product descriptor " << status;
     return mojom::OP_FAILED;
