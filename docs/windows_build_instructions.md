@@ -63,40 +63,59 @@ to install the Debugging Tools.
 
 ## Install `depot_tools`
 
-Download the [depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
-and extract it somewhere.
 
+1. Download the [depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
+and extract it somewhere.
 *** note
 **Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
 this will not extract the hidden “.git” folder which is necessary for
 depot_tools to autoupdate itself. You can use “Extract all…” from the
 context menu though.
-***
 
-Add depot_tools to the start of your PATH (must be ahead of any installs of
-Python). Assuming you unzipped the bundle to C:\src\depot_tools, open:
 
+2. Add depot_tools to the start of your PATH:
+ (must be ahead of any installs of Python). 
+ Assuming you unzipped the bundle to C:\src\depot_tools:
+ You can update PATH via GUI or shell.
+* If you choose to update PATH using GUI:
 Control Panel → System and Security → System → Advanced system settings
-
-If you have Administrator access, Modify the PATH system variable and
+** If you have Administrator access, Modify the PATH system variable and
 put `C:\src\depot_tools` at the front (or at least in front of any directory
 that might already have a copy of Python or Git).
-
-If you don't have Administrator access, you can add a user-level PATH
+** If you don't have Administrator access, you can add a user-level PATH
 environment variable and put `C:\src\depot_tools` at the front, but
 if your system PATH has a Python in it, you will be out of luck.
-
-Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
+* If you choose to do it using shell (open CMD as Admin if you have Administrator access)
+	```shell
+	> setx PATH C:\src\depot_tools;"%PATH%" /M
+	```
+	to verify it was added, open a new shell window, and type:
+	```shell
+	> echo %PATH%
+	```
+3. Add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
 it to 0. This tells depot_tools to use your locally installed version of Visual
 Studio (by default, depot_tools will try to use a google-internal version).
-
-You may also have to set variable `vs2017_install` or `vs2019_install` to your
-installation path of Visual Studio 2017 or 19, like
-`set vs2019_install=C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional`
-for Visual Studio 2019.
-
-From a cmd.exe shell, run the command gclient (without arguments). On first
-run, gclient will install all the Windows-specific bits needed to work with
+To do it via shell:
+	```shell
+	> setx DEPOT_TOOLS_WIN_TOOLCHAIN 0 /M
+	```
+	To verify it was added, you can use the following command that lists all variables:
+	```shell
+	> set
+	```	
+4. You may also have to set variable `vs2017_install` or `vs2019_install` to your
+installation path of Visual Studio 2017 or 2019. 
+Eg for Visual Studio 2019:
+	```shell
+	> set vs2019_install=C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional
+	```
+5. Run gclient:
+From a cmd.exe shell, run the command gclient (without arguments).
+	```shell
+	> gclient
+	```
+	On first run, gclient will install all the Windows-specific bits needed to work with
 the code, including msysgit and python.
 
 * If you run gclient from a non-cmd shell (e.g., cygwin, PowerShell),
@@ -105,9 +124,12 @@ the code, including msysgit and python.
 * If you see strange errors with the file system on the first run of gclient,
   you may want to [disable Windows Indexing](http://tortoisesvn.tigris.org/faq.html#cantmove2).
 
-After running gclient open a command prompt and type `where python` and
-confirm that the depot_tools `python.bat` comes ahead of any copies of
-python.exe. Failing to ensure this can lead to overbuilding when
+6. Verify python was installed correctly:
+After running gclient open a command prompt and type:
+	```shell
+	> where python
+	```
+	and confirm that the depot_tools `python.bat` comes ahead of any copies of python.exe. Failing to ensure this can lead to overbuilding when
 using gn - see [crbug.com/611087](https://crbug.com/611087).
 
 ## Get the code
