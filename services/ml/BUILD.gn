@@ -14,6 +14,7 @@ if (is_win) {
   cldnn_dll = "libclDNN64.so"
   dnnl_dll = "libdnnl.so"
   omp_dll = "libiomp5.so"
+  ie_nn_dll="libie_nn_c_api.so"
   os_folder = "Linux64"
 } else if (is_mac) {
   dnnl_dll = "libdnnl.1.2.dylib"
@@ -272,8 +273,13 @@ source_set("lib") {
       "neural_network_impl_nn.h",
     ]
 
-    lib_dirs += [ "//third_party/ienn/Windows64" ]
-    libs += [ "ie_nn_c_api.lib" ]
+    if (is_win) {
+      lib_dirs += [ "//third_party/ienn/${os_folder}" ]
+      libs += [ "ie_nn_c_api.lib" ]
+    } else {
+      lib_dirs = [ "//third_party/ienn/${os_folder}" ]
+      libs = [ "ie_nn_c_api" ]
+    }
 
     #deps += [ ":ie" ]
   }
