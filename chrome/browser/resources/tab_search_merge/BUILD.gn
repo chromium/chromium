@@ -1,0 +1,33 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/optimize_webui.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/webui_features.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [ ":app" ]
+}
+
+js_library("app") {
+  deps = [
+    ":tab_search_api_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("tab_search_api_proxy") {
+  deps = [
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "app.js" ]
+}
+

@@ -1,0 +1,17 @@
+<div id="searchBar">
+  <iron-icon id="searchIcon" icon="cr:search"></iron-icon>
+  <input id="searchInput" type="text" value="[[searchText_]]"
+    on-input="onSearchInput_">
+</div>
+<div id="content">
+  <template is="dom-repeat" items="[[filteredOpenTabs_]]">
+    <div id="[[item.tabId]]" on-click="onItemClick_">
+      <div>
+        <img src="[[item.favIconUrl]]">
+      </div>
+      <div>
+        <div>[[item.title]]</div>
+        <div>[[item.url]]</div>
+      </div>
+  </template>
+</div>
