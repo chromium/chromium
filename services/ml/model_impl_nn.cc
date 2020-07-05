@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/compilation_impl_nn.h"
+#include "services/ml/ienn_symbol_table.h"
 
 namespace ml {
 
@@ -18,7 +19,7 @@ ModelImplNN::ModelImplNN() {
 #if defined(OS_ANDROID)
   int32_t result = ANeuralNetworksModel_create(&nn_model_);
 #else
-  int32_t result = ie_model_create(&ie_model_);
+  int32_t result = IE(ie_model_create)(&ie_model_);
 #endif
   DLOG(INFO) << "ANeuralNetworksModel_create: " << result;
 }
@@ -27,15 +28,15 @@ ModelImplNN::~ModelImplNN() {
 #if defined(OS_ANDROID)
   ANeuralNetworksModel_free(nn_model_);
 #else
-  ie_model_free(ie_model_);
+  IE(ie_model_free)(ie_model_);
 #endif
   DLOG(INFO) << "ANeuralNetworksModel_free";
 }
 
 int32_t ModelImplNN::AddOperand(int32_t type,
-                                     const std::vector<uint32_t>& dimensions,
-                                     float scale,
-                                     int32_t zeroPoint) {
+                                const std::vector<uint32_t>& dimensions,
+                                float scale,
+                                int32_t zeroPoint) {
   // Logging
   DLOG(INFO) << "  ModelImplNN::AddOperand";
   DLOG(INFO) << "    "
@@ -72,13 +73,13 @@ int32_t ModelImplNN::AddOperand(int32_t type,
   ie_operand.dimensions = dimensions.data();
   ie_operand.scale = scale;
   ie_operand.zeroPoint = zeroPoint;
-  return ie_model_add_operand(ie_model_, &ie_operand);
+  return IE(ie_model_add_operand)(ie_model_, &ie_operand);
 #endif
 }
 
 int32_t ModelImplNN::SetOperandValue(uint32_t index,
-                                          const void* buffer,
-                                          uint32_t length) {
+                                     const void* buffer,
+                                     uint32_t length) {
   // Logging
   DLOG(INFO) << "  ModelImplNN::SetOperandValue";
   DLOG(INFO) << "    "
@@ -95,13 +96,13 @@ int32_t ModelImplNN::SetOperandValue(uint32_t index,
 #if defined(OS_ANDROID)
   return ANeuralNetworksModel_setOperandValue(nn_model_, index, buffer, length);
 #else
-  return ie_model_set_operand_value(ie_model_, index, buffer, length);
+  return IE(ie_model_set_operand_value)(ie_model_, index, buffer, length);
 #endif
 }
 
 int32_t ModelImplNN::AddOperation(int32_t type,
-                                       const std::vector<uint32_t>& inputs,
-                                       const std::vector<uint32_t>& outputs) {
+                                  const std::vector<uint32_t>& inputs,
+                                  const std::vector<uint32_t>& outputs) {
   // Logging
   DLOG(INFO) << "  ModelImplNN::AddOperation";
   DLOG(INFO) << "    "
@@ -126,9 +127,9 @@ int32_t ModelImplNN::AddOperation(int32_t type,
                                            inputs.data(), outputs.size(),
                                            outputs.data());
 #else
-  return ie_model_add_operation(ie_model_, type, inputs.size(),
-                               inputs.data(), outputs.size(),
-                                           outputs.data());
+  return IE(ie_model_add_operation)(ie_model_, type, inputs.size(),
+                                    inputs.data(), outputs.size(),
+                                    outputs.data());
 #endif
 }
 
@@ -150,13 +151,13 @@ int32_t ModelImplNN::IdentifyInputsAndOutputs(
   return ANeuralNetworksModel_identifyInputsAndOutputs(
       nn_model_, inputs.size(), inputs.data(), outputs.size(), outputs.data());
 #else
-  return ie_model_identify_inputs_outputs(
+  return IE(ie_model_identify_inputs_outputs)(
       ie_model_, inputs.size(), inputs.data(), outputs.size(), outputs.data());
 #endif
 }
 
 void ModelImplNN::Finish(mojom::ModelInfoPtr model_info,
-                              FinishCallback callback) {
+                         FinishCallback callback) {
   DLOG(INFO) << "ModelImplNN::Finish";
   DLOG(INFO) << "operands(" << model_info->operands.size() << ")";
 
@@ -211,7 +212,7 @@ void ModelImplNN::Finish(mojom::ModelInfoPtr model_info,
   DLOG(INFO) << "inputs(" << model_info->inputs.size() << ")";
   DLOG(INFO) << "outputs(" << model_info->outputs.size() << ")";
   result = IdentifyInputsAndOutputs(model_info->inputs, model_info->outputs);
-    if (result != 0) {
+  if (result != 0) {
     DLOG(ERROR) << "Fail to IdentifyInputsAndOutputs, result = " << result;
     std::move(callback).Run(result);
     return;
@@ -231,8 +232,10 @@ void ModelImplNN::Finish(mojom::ModelInfoPtr model_info,
 void ModelImplNN::CreateCompilation(CreateCompilationCallback callback) {
   DLOG(INFO) << "ModelImplNN::CreateCompilation";
   mojom::CompilationPtrInfo ptr_info;
-  mojo::MakeStrongBinding(std::make_unique<CompilationImplNN>(this, std::move(model_info_), std::move(mapping_)),
-                          mojo::MakeRequest(&ptr_info));
+  mojo::MakeStrongBinding(
+      std::make_unique<CompilationImplNN>(this, std::move(model_info_),
+                                          std::move(mapping_)),
+      mojo::MakeRequest(&ptr_info));
 
   auto init_params = mojom::CompilationInitParams::New();
   init_params->compilation = std::move(ptr_info);

@@ -14,7 +14,7 @@ if (is_win) {
   cldnn_dll = "libclDNN64.so"
   dnnl_dll = "libdnnl.so"
   omp_dll = "libiomp5.so"
-  ie_nn_dll="libie_nn_c_api.so"
+  ie_nn_dll = "libie_nn_c_api.so"
   os_folder = "Linux64"
 } else if (is_mac) {
   dnnl_dll = "libdnnl.1.2.dylib"
@@ -245,8 +245,8 @@ source_set("lib") {
     deps += [
       ":copy_cldnn_dll",
       ":copy_dnnl_dll",
-      ":copy_omp_dll",
       ":copy_ie_nn_dll",
+      ":copy_omp_dll",
     ]
   } else if (is_mac) {
     deps += [
@@ -267,20 +267,13 @@ source_set("lib") {
       "compilation_impl_nn.h",
       "execution_impl_nn.cc",
       "execution_impl_nn.h",
+      "ienn_symbol_table.cc",
+      "ienn_symbol_table.h",
       "model_impl_nn.cc",
       "model_impl_nn.h",
       "neural_network_impl_nn.cc",
       "neural_network_impl_nn.h",
     ]
-
-    if (is_win) {
-      lib_dirs += [ "//third_party/ienn/lib/${os_folder}" ]
-      libs += [ "ie_nn_c_api.lib" ]
-    } else {
-      lib_dirs = [ "//third_party/ienn/lib/${os_folder}" ]
-      libs = [ "ie_nn_c_api" ]
-    }
-
     #deps += [ ":ie" ]
   }
 }

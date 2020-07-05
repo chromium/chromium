@@ -9,11 +9,13 @@
 
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
+#include "services/ml/ienn_symbol_table.h"
 
 namespace ml {
 
-CompilationImplNN::CompilationImplNN(const ModelImplNN* model, mojom::ModelInfoPtr model_info,
-      mojo::ScopedSharedBufferMapping mapping)
+CompilationImplNN::CompilationImplNN(const ModelImplNN* model,
+                                     mojom::ModelInfoPtr model_info,
+                                     mojo::ScopedSharedBufferMapping mapping)
     : operands_(model->operands_),
       operations_(model->operations_),
       inputs_(model->inputs_),
@@ -25,7 +27,7 @@ CompilationImplNN::CompilationImplNN(const ModelImplNN* model, mojom::ModelInfoP
       ANeuralNetworksCompilation_create(model->nn_model_, &nn_compilation_);
 #else
   int32_t result =
-      ie_compilation_create(model->ie_model_, &ie_compilation_);
+      IE(ie_compilation_create)(model->ie_model_, &ie_compilation_);
 #endif
   DLOG(INFO) << "ANeuralNetworksCompilation_create: " << result;
 }
@@ -35,8 +37,7 @@ CompilationImplNN::~CompilationImplNN() {
   // The nn_compilation_ will be deleted in execution phase.
 }
 
-void CompilationImplNN::Finish(int32_t preference,
-                                    FinishCallback callback) {
+void CompilationImplNN::Finish(int32_t preference, FinishCallback callback) {
   DLOG(INFO) << "CompilationImplNN::finish";
   DLOG(INFO) << "  "
              << "preference: " << preference;
@@ -45,7 +46,8 @@ void CompilationImplNN::Finish(int32_t preference,
   int32_t result =
       ANeuralNetworksCompilation_setPreference(nn_compilation_, preference);
 #else
-  int32_t result = ie_compilation_set_preference(ie_compilation_, preference);
+  int32_t result =
+      IE(ie_compilation_set_preference)(ie_compilation_, preference);
 #endif
   if (result != 0) {
     std::move(callback).Run(result);
@@ -55,7 +57,7 @@ void CompilationImplNN::Finish(int32_t preference,
 #if defined(OS_ANDROID)
   result = ANeuralNetworksCompilation_finish(nn_compilation_);
 #else
-  result = ie_compilation_finish(ie_compilation_);
+  result = IE(ie_compilation_finish)(ie_compilation_);
 #endif
   DLOG(INFO) << "ANeuralNetworksCompilation_finish: " << result;
 

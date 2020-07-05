@@ -9,15 +9,15 @@
 
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
+#include "services/ml/ienn_symbol_table.h"
 #include "services/ml/public/mojom/constants.mojom.h"
 
 namespace ml {
 
-// TODO:: CompilationImplNN* => std::unique<CompilationImplNN> so that 
+// TODO:: CompilationImplNN* => std::unique<CompilationImplNN> so that
 // ie_compilation_free(ie_compilation_); can host in class CompilationImplNN.
-ExecutionImplNN::ExecutionImplNN(
-    const CompilationImplNN* compilation,
-    mojo::ScopedSharedBufferHandle memory)
+ExecutionImplNN::ExecutionImplNN(const CompilationImplNN* compilation,
+                                 mojo::ScopedSharedBufferHandle memory)
     : operands_(compilation->operands_),
       operations_(compilation->operations_),
       inputs_(compilation->inputs_),
@@ -30,7 +30,7 @@ ExecutionImplNN::ExecutionImplNN(
 #endif
 #if defined(OS_LINUX) || defined(OS_WIN)
   // Create Execution
-  int32_t result = ie_execution_create(ie_compilation_, &ie_execution_);
+  int32_t result = IE(ie_execution_create)(ie_compilation_, &ie_execution_);
 #endif
   uint32_t total_length = 0;
   inputs_info_.reserve(inputs_.size());
@@ -42,9 +42,8 @@ ExecutionImplNN::ExecutionImplNN(
         offset, length, memory_->MapAtOffset(length, offset)));
     total_length += length;
 #if defined(OS_LINUX) || defined(OS_WIN)
-    result = ie_execution_set_input(
-            ie_execution_, inputs_[i], inputs_info_[i]->mapping.get(),
-            length);
+    result = IE(ie_execution_set_input)(ie_execution_, inputs_[i],
+                                        inputs_info_[i]->mapping.get(), length);
 #endif
   }
 
@@ -57,9 +56,8 @@ ExecutionImplNN::ExecutionImplNN(
         offset, length, memory_->MapAtOffset(length, offset)));
     total_length += length;
 #if defined(OS_LINUX) || defined(OS_WIN)
-    result = ie_execution_set_output(
-            ie_execution_, outputs_[i], outputs_info_[i]->mapping.get(),
-            length);
+    result = IE(ie_execution_set_output)(
+        ie_execution_, outputs_[i], outputs_info_[i]->mapping.get(), length);
 #endif
   }
 }
@@ -68,8 +66,8 @@ ExecutionImplNN::~ExecutionImplNN() {
 #if defined(OS_ANDROID)
   ANeuralNetworksCompilation_free(nn_compilation_);
 #else
-  ie_compilation_free(ie_compilation_);
-  ie_execution_free(ie_execution_);
+  IE(ie_compilation_free)(ie_compilation_);
+  IE(ie_execution_free)(ie_execution_);
 #endif
   DLOG(INFO) << "ANeuralNetworksCompilation_free";
 }
@@ -78,7 +76,7 @@ void ExecutionImplNN::StartCompute(StartComputeCallback callback) {
   DLOG(INFO) << "ExecutionImplNN::StartCompute";
 
 #if defined(OS_LINUX) || defined(OS_WIN)
-  int32_t result = ie_execution_start_compute(ie_execution_);
+  int32_t result = IE(ie_execution_start_compute)(ie_execution_);
   LOG(INFO) << "ie_execution_start_compute: " << result;
 #else
   ANeuralNetworksExecution* nn_execution;
