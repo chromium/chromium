@@ -259,9 +259,9 @@ stage_install_common() {
   fi
 
   # ie nn c api
-  #if [ -f "${BUILDDIR}/libie_nn_c_api.so" ]; then
-  #  install -m ${SHLIB_PERMS} "${BUILDDIR}/libie_nn_c_api.so" "${STAGEDIR}/${INSTALLDIR}/"
-  #fi
+  if [ -f "${BUILDDIR}/libie_nn_c_api.so" ]; then
+    install -m ${SHLIB_PERMS} "${BUILDDIR}/libie_nn_c_api.so" "${STAGEDIR}/${INSTALLDIR}/"
+  fi
 
   # ANGLE
   if [ -f "${OUTPUTDIR}/libEGL.so" ]; then
@@ -408,9 +408,11 @@ stage_install_common() {
     for elf in $(find "${STAGEDIR}/${INSTALLDIR}/" -type f | xargs file |
                    grep ELF | awk '{print $1;}' | sed 's/:$//'); do
       if [ "$(basename ${elf})" != "libclDNN64.so" ]; then
-      if readelf -d ${elf} | grep "(RPATH)" >/dev/null; then
-        RPATH_BINS="${RPATH_BINS} $(basename ${elf})"
-      fi
+        if [ "$(basename ${elf})" != "libie_nn_c_api.so" ]; then
+          if readelf -d ${elf} | grep "(RPATH)" >/dev/null; then
+            RPATH_BINS="${RPATH_BINS} $(basename ${elf})"
+          fi
+        fi
       fi
     done
     if [ -n "${RPATH_BINS}" ]; then

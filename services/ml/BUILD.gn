@@ -274,10 +274,10 @@ source_set("lib") {
     ]
 
     if (is_win) {
-      lib_dirs += [ "//third_party/ienn/${os_folder}" ]
+      lib_dirs += [ "//third_party/ienn/lib/${os_folder}" ]
       libs += [ "ie_nn_c_api.lib" ]
     } else {
-      lib_dirs = [ "//third_party/ienn/${os_folder}" ]
+      lib_dirs = [ "//third_party/ienn/lib/${os_folder}" ]
       libs = [ "ie_nn_c_api" ]
     }
 
@@ -313,7 +313,7 @@ if (is_win || is_linux || is_mac) {
         "$root_out_dir/{{source_file_part}}",
       ]
     }
-    ie_nn_dll_path = "//third_party/ienn/${os_folder}"
+    ie_nn_dll_path = "//third_party/ienn/lib/${os_folder}"
     copy("copy_ie_nn_dll") {
       sources = [
         "${ie_nn_dll_path}/${ie_nn_dll}",

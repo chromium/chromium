@@ -20,7 +20,7 @@
 #undef __ANDROID_API__
 #endif
 #else
-#include "third_party/ienn/include/ie_nn_c_api.h"
+#include "third_party/ienn/src/ie_nn_c_api.h"
 #endif
 
 namespace ml {
