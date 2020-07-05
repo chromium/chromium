@@ -1,3 +1,7 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "utils.h"
 
 #include <iostream>
@@ -15,20 +19,20 @@ inline void CalculateExplicitPadding(bool padding_same,
                                      uint32_t& padding_head,
                                      uint32_t& padding_tail,
                                      uint32_t dilation = 1) {
-    padding_head = 0;
-    padding_tail = 0;
+  padding_head = 0;
+  padding_tail = 0;
 
-    if (padding_same) {
-        uint32_t out_size = (in_size + stride - 1) / stride;
-        uint32_t effective_filter_size = (filter_size - 1) * dilation + 1;
-        uint32_t tmp = (out_size - 1) * stride + effective_filter_size;
-        if (tmp > in_size) {
-        padding_head = (tmp - in_size) / 2;
-        padding_tail = (tmp - in_size) - padding_head;
-        }
+  if (padding_same) {
+    uint32_t out_size = (in_size + stride - 1) / stride;
+    uint32_t effective_filter_size = (filter_size - 1) * dilation + 1;
+    uint32_t tmp = (out_size - 1) * stride + effective_filter_size;
+    if (tmp > in_size) {
+      padding_head = (tmp - in_size) / 2;
+      padding_tail = (tmp - in_size) - padding_head;
     }
-    }
+  }
 }
+}  // namespace
 
 Operation::Operation() = default;
 Operation::~Operation() = default;
@@ -38,11 +42,13 @@ ModelInfo::~ModelInfo() = default;
 
 OperandValue::OperandValue() = default;
 OperandValue::~OperandValue() = default;
-OperandValue::OperandValue(const void* buffer, uint32_t length) : buffer(buffer), length(length) {};
+OperandValue::OperandValue(const void* buffer, uint32_t length)
+    : buffer(buffer), length(length){};
 
 OutputData::OutputData() = default;
 OutputData::~OutputData() = default;
-OutputData::OutputData(void* buffer, uint32_t length) : buffer(buffer), length(length) {};
+OutputData::OutputData(void* buffer, uint32_t length)
+    : buffer(buffer), length(length){};
 
 uint32_t product(const std::vector<uint32_t>& dims) {
   uint32_t prod = 1;
@@ -63,10 +69,9 @@ float GetScalarFloat(ModelInfoPtr model, uint32_t index) {
   return reinterpret_cast<const float*>(info.buffer)[0];
 }
 
-int32_t GetElementWiseParams(
-    ModelInfoPtr model,
-    const Operation& operation,
-    ElementWiseParams& params) {
+int32_t GetElementWiseParams(ModelInfoPtr model,
+                             const Operation& operation,
+                             ElementWiseParams& params) {
   const int32_t type = operation.type;
   if (!(type == ADD || type == MUL)) {
     std::cout << "Operation type " << type << " is not element-wise";
@@ -76,27 +81,23 @@ int32_t GetElementWiseParams(
   return NOT_ERROR;
 }
 
-int32_t GetConvParams(
-    ModelInfoPtr model,
-    const Operation& operation,
-    ConvParams& params) {
+int32_t GetConvParams(ModelInfoPtr model,
+                      const Operation& operation,
+                      ConvParams& params) {
   const int32_t type = operation.type;
   if (!(type == CONV_2D || type == DEPTHWISE_CONV_2D ||
-        type == ATROUS_CONV_2D ||
-        type == ATROUS_DEPTHWISE_CONV_2D)) {
+        type == ATROUS_CONV_2D || type == ATROUS_DEPTHWISE_CONV_2D)) {
     std::cout << "Operation type " << type << " is not convolution";
     return BAD_DATA;
   }
   const std::vector<uint32_t>& inputs = operation.inputs;
   const std::vector<uint32_t>& outputs = operation.outputs;
-  params.depthwise = (type == DEPTHWISE_CONV_2D ||
-                      type == ATROUS_DEPTHWISE_CONV_2D)
-                         ? true
-                         : false;
-  params.atrous =
-      (type == ATROUS_CONV_2D || type == ATROUS_DEPTHWISE_CONV_2D)
-          ? true
-          : false;
+  params.depthwise =
+      (type == DEPTHWISE_CONV_2D || type == ATROUS_DEPTHWISE_CONV_2D) ? true
+                                                                      : false;
+  params.atrous = (type == ATROUS_CONV_2D || type == ATROUS_DEPTHWISE_CONV_2D)
+                      ? true
+                      : false;
   const uint32_t output_index = outputs[0];
   const Operand& output = model->operands[output_index];
   params.output_batch = output.dimensions[0];
@@ -161,23 +162,22 @@ int32_t GetConvParams(
   params.fuse_code = GetScalarInt32(model, inputs[index++]);
 
   if (implicit_padding) {
-    CalculateExplicitPadding(padding_code == PADDING_SAME,
-                             params.input_width, params.stride_width,
-                             params.filter_width, params.padding_left,
-                             params.padding_right, params.dilation_width);
-    CalculateExplicitPadding(padding_code == PADDING_SAME,
-                             params.input_height, params.stride_height,
-                             params.filter_height, params.padding_top,
-                             params.padding_bottom, params.dilation_height);
+    CalculateExplicitPadding(padding_code == PADDING_SAME, params.input_width,
+                             params.stride_width, params.filter_width,
+                             params.padding_left, params.padding_right,
+                             params.dilation_width);
+    CalculateExplicitPadding(padding_code == PADDING_SAME, params.input_height,
+                             params.stride_height, params.filter_height,
+                             params.padding_top, params.padding_bottom,
+                             params.dilation_height);
   }
 
   return NOT_ERROR;
 }
 
-int32_t GetPoolingParams(
-    ModelInfoPtr model,
-    const Operation& operation,
-    PoolingParams& params) {
+int32_t GetPoolingParams(ModelInfoPtr model,
+                         const Operation& operation,
+                         PoolingParams& params) {
   const int32_t type = operation.type;
   if (!(type == AVERAGE_POOL_2D || type == MAX_POOL_2D)) {
     std::cout << "Operation type " << type << " is not pooling";
@@ -222,22 +222,19 @@ int32_t GetPoolingParams(
 
   // Setup paddings.
   if (implicit_padding) {
-    CalculateExplicitPadding(padding_code == PADDING_SAME,
-                             params.input_width, params.stride_width,
-                             params.filter_width, params.padding_left,
-                             params.padding_right);
-    CalculateExplicitPadding(padding_code == PADDING_SAME,
-                             params.input_height, params.stride_height,
-                             params.filter_height, params.padding_top,
-                             params.padding_bottom);
+    CalculateExplicitPadding(padding_code == PADDING_SAME, params.input_width,
+                             params.stride_width, params.filter_width,
+                             params.padding_left, params.padding_right);
+    CalculateExplicitPadding(padding_code == PADDING_SAME, params.input_height,
+                             params.stride_height, params.filter_height,
+                             params.padding_top, params.padding_bottom);
   }
   return NOT_ERROR;
 }
 
-int32_t GetSoftmaxParams(
-    ModelInfoPtr model,
-    const Operation& operation,
-    SoftmaxParams& params) {
+int32_t GetSoftmaxParams(ModelInfoPtr model,
+                         const Operation& operation,
+                         SoftmaxParams& params) {
   const int32_t type = operation.type;
   if (type != SOFTMAX) {
     std::cout << "Operation type " << type << " is not softmax";
@@ -247,10 +244,9 @@ int32_t GetSoftmaxParams(
   return NOT_ERROR;
 }
 
-int32_t GetConcatParams(
-    ModelInfoPtr model,
-    const Operation& operation,
-    ConcatParams& params) {
+int32_t GetConcatParams(ModelInfoPtr model,
+                        const Operation& operation,
+                        ConcatParams& params) {
   const int32_t type = operation.type;
   if (type != CONCATENATION) {
     std::cout << "Operation type " << type << " is not concatenation";
@@ -261,10 +257,9 @@ int32_t GetConcatParams(
   return NOT_ERROR;
 }
 
-int32_t GetFullyConnectedParams(
-    ModelInfoPtr model,
-    const Operation& operation,
-    FullyConnectedParams& params) {
+int32_t GetFullyConnectedParams(ModelInfoPtr model,
+                                const Operation& operation,
+                                FullyConnectedParams& params) {
   const int32_t type = operation.type;
   if (type != FULLY_CONNECTED) {
     std::cout << "Operation type " << type << " is not fully connected";
@@ -304,7 +299,7 @@ int32_t GetFullyConnectedParams(
   } else {
     if (input.dimensions[1] != params.input_size) {
       std::cout << "input.dimensions[1] (" << input.dimensions[1] << ") "
-                 << "!= input_size (" << params.input_size << ")";
+                << "!= input_size (" << params.input_size << ")";
       return BAD_DATA;
     }
     params.input_batch_size = input.dimensions[0];
@@ -316,7 +311,7 @@ int32_t GetFullyConnectedParams(
   params.bias_num_units = bias.dimensions[0];
   if (params.bias_num_units != params.num_units) {
     std::cout << "bias_num_units (" << params.bias_num_units << ") != "
-               << "num_units (" << params.num_units << ")";
+              << "num_units (" << params.num_units << ")";
     return BAD_DATA;
   }
 
@@ -325,10 +320,9 @@ int32_t GetFullyConnectedParams(
   return NOT_ERROR;
 }
 
-int32_t GetResizeBilinearParams(
-    ModelInfoPtr model,
-    const Operation& operation,
-    ResizeBilinearParams& params) {
+int32_t GetResizeBilinearParams(ModelInfoPtr model,
+                                const Operation& operation,
+                                ResizeBilinearParams& params) {
   const int32_t type = operation.type;
   if (operation.type != operation_t::RESIZE_BILINEAR_NN) {
     std::cout << "Operation type " << type << " is not resize bilinear";
@@ -359,10 +353,9 @@ int32_t GetResizeBilinearParams(
   return NOT_ERROR;
 }
 
-int32_t GetArgmaxParams(
-    ModelInfoPtr model,
-    const Operation& operation,
-    ArgmaxParams& params) {
+int32_t GetArgmaxParams(ModelInfoPtr model,
+                        const Operation& operation,
+                        ArgmaxParams& params) {
   const int32_t type = operation.type;
   if (type != ARGMAX) {
     std::cout << "Operation type " << type << " is not argmax";
@@ -373,4 +366,4 @@ int32_t GetArgmaxParams(
   return NOT_ERROR;
 }
 
-}
+}  // namespace InferenceEngine

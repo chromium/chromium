@@ -1,17 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef IE_COMPILATION_H
 #define IE_COMPILATION_H
 
 #include <map>
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "constants.h"
-#include "utils.h"
-#include "ie_nn_c_api.h"
-#include <inference_engine.hpp>
 #include <ie_builders.hpp>
+#include <inference_engine.hpp>
+#include "constants.h"
+#include "ie_nn_c_api.h"
+#include "utils.h"
 
 namespace InferenceEngine {
 
@@ -167,18 +170,18 @@ class Compilation {
   int32_t AddArgmax(const Operation& operation);
 
  private:
-    friend class Execution;
-    ModelInfoPtr model_;
-    int32_t preference_;
+  friend class Execution;
+  ModelInfoPtr model_;
+  int32_t preference_;
 
-    std::unique_ptr<Builder::Network> builder_;
-    std::unique_ptr<CNNNetwork> network_;
+  std::unique_ptr<Builder::Network> builder_;
+  std::unique_ptr<CNNNetwork> network_;
 
-    std::map<uint32_t, size_t> layer_id_map_;
+  std::map<uint32_t, size_t> layer_id_map_;
 
-    DISALLOW_COPY_AND_ASSIGN(Compilation);
+  DISALLOW_COPY_AND_ASSIGN(Compilation);
 };
 
-}  // namespace ml
+}  // namespace InferenceEngine
 
 #endif  // IE_COMPILATION_H

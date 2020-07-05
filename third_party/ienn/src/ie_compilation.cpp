@@ -7,164 +7,164 @@
 #include <string>
 #include <utility>
 
-#include "utils.h"
 #include <ie_builders.hpp>
 #include "constants.h"
+#include "utils.h"
 
 namespace InferenceEngine {
 
 namespace {
 
 int32_t ConvertDims(const std::vector<uint32_t>& dimensions,
-                        std::vector<size_t>& dims) {
-    // IE default layout is NCHW
-    dims.resize(dimensions.size());
-    if (dimensions.size() == 1) {
-        dims[0] = dimensions[0];
-    } else if (dimensions.size() == 2) {
-        dims[0] = dimensions[0];
-        dims[1] = dimensions[1];
-    } else if (dimensions.size() == 3) {
-        // HWC -> CHW
-        dims[0] = dimensions[2];
-        dims[1] = dimensions[0];
-        dims[2] = dimensions[1];
-    } else if (dimensions.size() == 4) {
-        // NHWC -> NCHW
-        dims[0] = dimensions[0];
-        dims[1] = dimensions[3];
-        dims[2] = dimensions[1];
-        dims[3] = dimensions[2];
-    } else {
-        std::cout << "Tensor rank " << dimensions.size() << " is not supproted" << std::endl;
-        return error_t::BAD_DATA;
-    }
-    return error_t::NOT_ERROR;
+                    std::vector<size_t>& dims) {
+  // IE default layout is NCHW
+  dims.resize(dimensions.size());
+  if (dimensions.size() == 1) {
+    dims[0] = dimensions[0];
+  } else if (dimensions.size() == 2) {
+    dims[0] = dimensions[0];
+    dims[1] = dimensions[1];
+  } else if (dimensions.size() == 3) {
+    // HWC -> CHW
+    dims[0] = dimensions[2];
+    dims[1] = dimensions[0];
+    dims[2] = dimensions[1];
+  } else if (dimensions.size() == 4) {
+    // NHWC -> NCHW
+    dims[0] = dimensions[0];
+    dims[1] = dimensions[3];
+    dims[2] = dimensions[1];
+    dims[3] = dimensions[2];
+  } else {
+    std::cout << "Tensor rank " << dimensions.size() << " is not supproted"
+              << std::endl;
+    return error_t::BAD_DATA;
+  }
+  return error_t::NOT_ERROR;
 }
-}
+}  // namespace
 
 Compilation::Compilation(ModelInfoPtr model)
-    : model_(model),
-      builder_(nullptr),
-      network_(nullptr) {}
+    : model_(model), builder_(nullptr), network_(nullptr) {}
 
 void Compilation::SetPreference(int32_t prefer) {
-    preference_ = prefer;
+  preference_ = prefer;
 }
 
 int32_t Compilation::GetPreference() {
-    return preference_;
+  return preference_;
 }
 
 int32_t Compilation::Compile() {
-    try {
-        builder_.reset(new Builder::Network("webnn"));
-    } catch (const std::exception& ex) {
-        std::cout << "[IE] exception " << ex.what() << std::endl;
-        return error_t::OP_FAILED;
+  try {
+    builder_.reset(new Builder::Network("webnn"));
+  } catch (const std::exception& ex) {
+    std::cout << "[IE] exception " << ex.what() << std::endl;
+    return error_t::OP_FAILED;
+  }
+
+  int32_t result;
+  for (size_t i = 0; i < model_->inputs.size(); ++i) {
+    result = AddInput(model_->inputs[i]);
+    if (result != error_t::NOT_ERROR)
+      return result;
+  }
+
+  for (size_t i = 0; i < model_->operations.size(); ++i) {
+    const Operation& operation = model_->operations[i];
+    const int32_t type = operation.type;
+
+    if (operation.outputs.size() != 1) {
+      std::cout << "Only 1 output is supported";
+      return error_t::BAD_DATA;
     }
 
-    int32_t result;
-    for (size_t i = 0; i < model_->inputs.size(); ++i) {
-        result = AddInput(model_->inputs[i]);
-        if (result != error_t::NOT_ERROR) return result;
+    int32_t result = error_t::NOT_ERROR;
+    if (type == operation_t::ADD || type == operation_t::MUL) {
+      result = AddElementwise(operation);
+    } else if (type == operation_t::CONV_2D ||
+               type == operation_t::DEPTHWISE_CONV_2D ||
+               type == operation_t::ATROUS_CONV_2D ||
+               type == operation_t::ATROUS_DEPTHWISE_CONV_2D) {
+      result = AddConvolution(operation);
+    } else if (type == operation_t::AVERAGE_POOL_2D ||
+               type == operation_t::MAX_POOL_2D) {
+      result = AddPooling(operation);
+    } else if (type == operation_t::SOFTMAX) {
+      result = AddSoftmax(operation);
+    } else if (type == operation_t::RESHAPE) {
+      result = AddReshape(operation);
+    } else if (type == operation_t::CONCATENATION) {
+      result = AddConcatenation(operation);
+    } else if (type == operation_t::FULLY_CONNECTED) {
+      result = AddFullyConnected(operation);
+    } else if (type == operation_t::RESIZE_BILINEAR_NN) {
+      result = AddResizeBilinear(operation);
+    } else if (type == operation_t::LOGISTIC) {
+      result = AddSigmoid(operation);
+    } else if (type == operation_t::ARGMAX) {
+      result = AddArgmax(operation);
+    } else {
+      std::cout << "Operation type " << type << " is not supported.";
+      return error_t::BAD_DATA;
     }
 
-    for (size_t i = 0; i < model_->operations.size(); ++i) {
-        const Operation& operation = model_->operations[i];
-        const int32_t type = operation.type;
+    if (result != error_t::NOT_ERROR) {
+      return result;
+    }
+  }
 
-        if (operation.outputs.size() != 1) {
-            std::cout << "Only 1 output is supported";
-            return error_t::BAD_DATA;
-        }
+  for (size_t i = 0; i < model_->outputs.size(); ++i) {
+    result = AddOutput(model_->outputs[i]);
+    if (result != error_t::NOT_ERROR) {
+      return result;
+    }
+  }
 
-        int32_t result = error_t::NOT_ERROR;
-        if (type == operation_t::ADD || type == operation_t::MUL) {
-            result = AddElementwise(operation);
-        } else if (type == operation_t::CONV_2D ||
-                type == operation_t::DEPTHWISE_CONV_2D ||
-                type == operation_t::ATROUS_CONV_2D ||
-                type == operation_t::ATROUS_DEPTHWISE_CONV_2D) {
-            result = AddConvolution(operation);
-        } else if (type == operation_t::AVERAGE_POOL_2D ||
-                 type == operation_t::MAX_POOL_2D) {
-            result = AddPooling(operation);
-        } else if (type == operation_t::SOFTMAX) {
-            result = AddSoftmax(operation);
-        } else if (type == operation_t::RESHAPE) {
-            result = AddReshape(operation);
-        } else if (type == operation_t::CONCATENATION) {
-            result = AddConcatenation(operation);
-        } else if (type == operation_t::FULLY_CONNECTED) {
-            result = AddFullyConnected(operation);
-        } else if (type == operation_t::RESIZE_BILINEAR_NN) {
-            result = AddResizeBilinear(operation);
-        } else if (type == operation_t::LOGISTIC) {
-            result = AddSigmoid(operation);
-        } else if (type == operation_t::ARGMAX) {
-            result = AddArgmax(operation);
-        } else {
-            std::cout << "Operation type " << type << " is not supported.";
-            return error_t::BAD_DATA;
-        }
+  try {
+    network_.reset(
+        new CNNNetwork(Builder::convertToICNNNetwork(builder_->build())));
 
-        if (result != error_t::NOT_ERROR) {
-            return result;
-        }
+    InputsDataMap input_info(network_->getInputsInfo());
+    for (auto itr : input_info) {
+      if (itr.second->getLayout() == Layout::NCHW) {
+        itr.second->setLayout(Layout::NHWC);
+      }
+      itr.second->setPrecision(Precision::FP32);
     }
 
-    for (size_t i = 0; i < model_->outputs.size(); ++i) {
-        result = AddOutput(model_->outputs[i]);
-        if (result != error_t::NOT_ERROR) {
-        return result;
-        }
+    OutputsDataMap output_info(network_->getOutputsInfo());
+    for (auto itr : output_info) {
+      SizeVector dims = itr.second->getTensorDesc().getDims();
+      if (itr.second->getLayout() == Layout::NCHW) {
+        itr.second->setLayout(Layout::NHWC);
+      }
+      itr.second->setPrecision(Precision::FP32);
     }
-
-    try {
-        network_.reset(new CNNNetwork(
-            Builder::convertToICNNNetwork(builder_->build())));
-
-        InputsDataMap input_info(network_->getInputsInfo());
-        for (auto itr : input_info) {
-            if (itr.second->getLayout() == Layout::NCHW) {
-                itr.second->setLayout(Layout::NHWC);
-            }
-            itr.second->setPrecision(Precision::FP32);
-        }
-
-        OutputsDataMap output_info(network_->getOutputsInfo());
-        for (auto itr : output_info) {
-            SizeVector dims = itr.second->getTensorDesc().getDims();
-            if (itr.second->getLayout() == Layout::NCHW) {
-                itr.second->setLayout(Layout::NHWC);
-            }
-            itr.second->setPrecision(Precision::FP32);
-        }
-    } catch (const std::exception& ex) {
-        std::cout << "[IE] exception " << ex.what();
-        return error_t::OP_FAILED;
-    }
-    return error_t::NOT_ERROR;
+  } catch (const std::exception& ex) {
+    std::cout << "[IE] exception " << ex.what();
+    return error_t::OP_FAILED;
+  }
+  return error_t::NOT_ERROR;
 }
 
 int32_t Compilation::AddInput(uint32_t index) {
-    const Operand& operand = model_->operands[index];
-    SizeVector dims;
-    int32_t result = ConvertDims(operand.dimensions, dims);
-    if (result != error_t::NOT_ERROR) {
-        return result;
-    }
-    try {
-        std::string name(std::to_string(index));
-        size_t layer_id = builder_->addLayer(
-            Builder::InputLayer(name).setPort(Port(dims)));
-        layer_id_map_[index] = layer_id;
-    } catch (const std::exception& ex) {
-        std::cout << "[IE] failed to add input layer " << ex.what() << std::endl;
-        return error_t::OP_FAILED;
-    }
-    return error_t::NOT_ERROR;
+  const Operand& operand = model_->operands[index];
+  SizeVector dims;
+  int32_t result = ConvertDims(operand.dimensions, dims);
+  if (result != error_t::NOT_ERROR) {
+    return result;
+  }
+  try {
+    std::string name(std::to_string(index));
+    size_t layer_id =
+        builder_->addLayer(Builder::InputLayer(name).setPort(Port(dims)));
+    layer_id_map_[index] = layer_id;
+  } catch (const std::exception& ex) {
+    std::cout << "[IE] failed to add input layer " << ex.what() << std::endl;
+    return error_t::OP_FAILED;
+  }
+  return error_t::NOT_ERROR;
 }
 
 int32_t Compilation::AddOutput(uint32_t index) {
@@ -185,9 +185,8 @@ int32_t Compilation::AddOutput(uint32_t index) {
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::CreateBlob(
-    uint32_t index,
-    std::shared_ptr<InferenceEngine::Blob>& blob) {
+int32_t Compilation::CreateBlob(uint32_t index,
+                                std::shared_ptr<InferenceEngine::Blob>& blob) {
   try {
     const Operand& operand = model_->operands[index];
     SizeVector dims;
@@ -196,9 +195,8 @@ int32_t Compilation::CreateBlob(
       return result;
     }
     size_t rank = dims.size();
-    Layout layout = rank == 1
-                            ? Layout::C
-                            : rank == 2 ? Layout::HW : Layout::NCHW;
+    Layout layout =
+        rank == 1 ? Layout::C : rank == 2 ? Layout::HW : Layout::NCHW;
     // GNA also only support FP32 representing with PREFER_ULTRA_LOW_POWER.
     bool fp32_precision = preference_ != PREFER_LOW_POWER;
     if (fp32_precision) {
@@ -209,7 +207,8 @@ int32_t Compilation::CreateBlob(
       blob = make_shared_blob<int16_t>({Precision::FP16, dims, layout});
     }
     blob->allocate();
-    const float* src = reinterpret_cast<const float*>(model_->values[index].buffer);
+    const float* src =
+        reinterpret_cast<const float*>(model_->values[index].buffer);
     if (fp32_precision) {
       float* dst = blob->buffer().as<float*>();
       result = Reorder<float>(dst, src, operand.dimensions);
@@ -254,11 +253,10 @@ int32_t Compilation::AddConstant(uint32_t index) {
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddActivationByFusedCode(
-    int32_t fuse_code,
-    size_t input_layer,
-    const std::string& name,
-    size_t& activiation_layer_id) {
+int32_t Compilation::AddActivationByFusedCode(int32_t fuse_code,
+                                              size_t input_layer,
+                                              const std::string& name,
+                                              size_t& activiation_layer_id) {
   try {
     if (fuse_code == FUSED_RELU) {
       activiation_layer_id =
@@ -282,8 +280,7 @@ int32_t Compilation::AddActivationByFusedCode(
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddElementwise(
-    const Operation& operation) {
+int32_t Compilation::AddElementwise(const Operation& operation) {
   // Setup element-wise parameters.
   ElementWiseParams params;
   int32_t result = GetElementWiseParams(model_, operation, params);
@@ -312,7 +309,7 @@ int32_t Compilation::AddElementwise(
         }
       } else {
         std::cout << "The layer for operand index " << input_index
-                   << " is not ready";
+                  << " is not ready";
         return error_t::BAD_DATA;
       }
     }
@@ -356,8 +353,7 @@ int32_t Compilation::AddElementwise(
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddConvolution(
-    const Operation& operation) {
+int32_t Compilation::AddConvolution(const Operation& operation) {
   // Setup convolution params.
   ConvParams params;
   int32_t result = GetConvParams(model_, operation, params);
@@ -366,7 +362,7 @@ int32_t Compilation::AddConvolution(
   if (params.depthwise) {
     if (params.depthwise_multiplier != 1) {
       std::cout << "depthwise_multiplier " << params.depthwise_multiplier
-                 << " is not supported";
+                << " is not supported";
       return error_t::BAD_DATA;
     }
 
@@ -379,7 +375,7 @@ int32_t Compilation::AddConvolution(
   const uint32_t input_index = operation.inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     std::cout << "The layer for operand index " << input_index
-               << " is not ready";
+              << " is not ready";
     return error_t::BAD_DATA;
   }
   try {
@@ -431,8 +427,7 @@ int32_t Compilation::AddConvolution(
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddPooling(
-    const Operation& operation) {
+int32_t Compilation::AddPooling(const Operation& operation) {
   // Setup pooling params.
   PoolingParams params;
   int32_t result = GetPoolingParams(model_, operation, params);
@@ -441,7 +436,7 @@ int32_t Compilation::AddPooling(
   const uint32_t input_index = operation.inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     std::cout << "The layer for operand index " << input_index
-               << " is not ready";
+              << " is not ready";
     return error_t::BAD_DATA;
   }
   try {
@@ -479,8 +474,7 @@ int32_t Compilation::AddPooling(
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddSoftmax(
-    const Operation& operation) {
+int32_t Compilation::AddSoftmax(const Operation& operation) {
   // Setup softmax params.
   SoftmaxParams params;
   int32_t result = GetSoftmaxParams(model_, operation, params);
@@ -494,7 +488,7 @@ int32_t Compilation::AddSoftmax(
   const uint32_t input_index = operation.inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     std::cout << "The layer for operand index " << input_index
-               << " is not ready";
+              << " is not ready";
     return error_t::BAD_DATA;
   }
   try {
@@ -511,12 +505,11 @@ int32_t Compilation::AddSoftmax(
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddReshape(
-    const Operation& operation) {
+int32_t Compilation::AddReshape(const Operation& operation) {
   const uint32_t input_index = operation.inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     std::cout << "The layer for operand index " << input_index
-               << " is not ready";
+              << " is not ready";
     return error_t::BAD_DATA;
   }
   try {
@@ -542,8 +535,7 @@ int32_t Compilation::AddReshape(
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddConcatenation(
-    const Operation& operation) {
+int32_t Compilation::AddConcatenation(const Operation& operation) {
   // Setup concatenation params.
   ConcatParams params;
   int32_t result = GetConcatParams(model_, operation, params);
@@ -563,7 +555,7 @@ int32_t Compilation::AddConcatenation(
         }
       } else {
         std::cout << "The layer for operand index " << input_index
-                   << " is not ready";
+                  << " is not ready";
         return error_t::BAD_DATA;
       }
     }
@@ -573,8 +565,7 @@ int32_t Compilation::AddConcatenation(
   }
 
   int axis = 0;
-  const uint32_t rank =
-      model_->operands[operation.inputs[0]].dimensions.size();
+  const uint32_t rank = model_->operands[operation.inputs[0]].dimensions.size();
   if (rank == 1 || rank == 2) {
     axis = params.axis;
   } else if (rank == 3) {
@@ -605,10 +596,9 @@ int32_t Compilation::AddConcatenation(
   const uint32_t output_index = operation.outputs[0];
   std::string name(std::to_string(output_index));
   try {
-    size_t layer_id =
-        builder_->addLayer(input_port_infos, Builder::ConcatLayer(name)
-                                                 .setInputPorts(input_ports)
-                                                 .setAxis(axis));
+    size_t layer_id = builder_->addLayer(
+        input_port_infos,
+        Builder::ConcatLayer(name).setInputPorts(input_ports).setAxis(axis));
     layer_id_map_[output_index] = layer_id;
   } catch (const std::exception& ex) {
     std::cout << "[IE] failed to add concat layer " << ex.what();
@@ -617,8 +607,7 @@ int32_t Compilation::AddConcatenation(
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddFullyConnected(
-    const Operation& operation) {
+int32_t Compilation::AddFullyConnected(const Operation& operation) {
   // Setup fully connected params.
   FullyConnectedParams params;
   int32_t result = GetFullyConnectedParams(model_, operation, params);
@@ -627,7 +616,7 @@ int32_t Compilation::AddFullyConnected(
   const uint32_t input_index = operation.inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     std::cout << "The layer for operand index " << input_index
-               << " is not ready";
+              << " is not ready";
     return error_t::BAD_DATA;
   }
   try {
@@ -678,8 +667,7 @@ int32_t Compilation::AddFullyConnected(
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddResizeBilinear(
-    const Operation& operation) {
+int32_t Compilation::AddResizeBilinear(const Operation& operation) {
   // Setup resize bilinear params.
   ResizeBilinearParams params;
   int32_t result = GetResizeBilinearParams(model_, operation, params);
@@ -689,7 +677,7 @@ int32_t Compilation::AddResizeBilinear(
   const uint32_t input_index = operation.inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     std::cout << "The layer for operand index " << input_index
-               << " is not ready";
+              << " is not ready";
     return error_t::BAD_DATA;
   }
 
@@ -726,7 +714,7 @@ int32_t Compilation::AddArgmax(const Operation& operation) {
   const uint32_t input_index = operation.inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     std::cout << "The layer for operand index " << input_index
-               << " is not ready";
+              << " is not ready";
     return error_t::BAD_DATA;
   }
   try {
@@ -744,12 +732,11 @@ int32_t Compilation::AddArgmax(const Operation& operation) {
   return error_t::NOT_ERROR;
 }
 
-int32_t Compilation::AddSigmoid(
-    const Operation& operation) {
+int32_t Compilation::AddSigmoid(const Operation& operation) {
   const uint32_t input_index = operation.inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     std::cout << "The layer for operand index " << input_index
-               << " is not ready";
+              << " is not ready";
     return error_t::BAD_DATA;
   }
   try {

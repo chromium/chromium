@@ -55,12 +55,12 @@ class ModelImplNN : public mojom::Model {
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
 
+  mojom::ModelInfoPtr model_info_;
+  mojo::ScopedSharedBufferMapping mapping_;
 #if defined(OS_ANDROID)
   ANeuralNetworksModel* nn_model_;
 #else
   ie_model_t* ie_model_;
-  mojom::ModelInfoPtr model_info_;
-  mojo::ScopedSharedBufferMapping mapping_;
 #endif
 
   std::vector<void*> operand_memories_;

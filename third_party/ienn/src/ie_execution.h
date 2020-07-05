@@ -1,3 +1,7 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #ifndef IE_EXECUTION_H
 #define IE_EXECUTION_H
 
@@ -36,4 +40,4 @@ class Execution {
 
 }  // namespace InferenceEngine
 
-#endif // IE_EXECUTION_H
+#endif  // IE_EXECUTION_H

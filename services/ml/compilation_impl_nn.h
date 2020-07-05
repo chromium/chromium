@@ -39,12 +39,12 @@ class CompilationImplNN : public mojom::Compilation {
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
 
+  mojom::ModelInfoPtr model_info_;
+  mojo::ScopedSharedBufferMapping mapping_;
 #if defined(OS_ANDROID)
   ANeuralNetworksCompilation* nn_compilation_;
 #else
   ie_compilation_t* ie_compilation_;
-  mojom::ModelInfoPtr model_info_;
-  mojo::ScopedSharedBufferMapping mapping_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(CompilationImplNN);
