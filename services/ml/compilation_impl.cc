@@ -14,7 +14,6 @@
 #include "services/ml/compilation_delegate_dml.h"
 #endif
 #include "services/ml/compilation_delegate_dnnl.h"
-#include "services/ml/compilation_delegate_ie.h"
 #include "services/ml/ml_switches.h"
 #include "services/ml/model_impl.h"
 
@@ -56,11 +55,7 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
              << "preference: " << preference;
   preference_ = preference;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kUseInferenceEngine)) {
-#if defined(OS_LINUX) || defined(OS_WIN)
-    // delegate_ = std::make_unique<CompilationDelegateIe>(this);
-#endif
-  } else if (preference == mojom::PREFER_SUSTAINED_SPEED) {
+  if (preference == mojom::PREFER_SUSTAINED_SPEED) {
     if (command_line->HasSwitch(switches::kUseDirectML)) {
 #if defined(OS_WIN)
       delegate_ = std::make_unique<CompilationDelegateDML>(this);
