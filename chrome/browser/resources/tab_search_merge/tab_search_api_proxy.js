@@ -7,7 +7,17 @@ import './tab_search.mojom-lite.js';
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
+/** @interface */
 export class TabSearchApiProxy {
+  /**  @return {Promise<{profileTabs: tabSearch.mojom.ProfileTabs}>} */
+  getProfileTabs() {}
+
+  /** @param {!tabSearch.mojom.SwitchToTabInfo} info */
+  switchToTab(info) {}
+}
+
+/** @implements {TabSearchApiProxy} */
+export class TabSearchApiProxyImpl {
   constructor() {
     /** @type {!tabSearch.mojom.PageCallbackRouter} */
     this.callbackRouter = new tabSearch.mojom.PageCallbackRouter();
@@ -21,15 +31,15 @@ export class TabSearchApiProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  /**  @return {Promise<{profileTabs: tabSearch.mojom.ProfileTabs}>} */
+  /** override */
   getProfileTabs() {
     return this.handler.getProfileTabs();
   }
 
-  /** @param {!tabSearch.mojom.SwitchToTabInfo} info */
+  /** override */
   switchToTab(info) {
     this.handler.switchToTab(info);
   }
 }
 
-addSingletonGetter(TabSearchApiProxy);
+addSingletonGetter(TabSearchApiProxyImpl);

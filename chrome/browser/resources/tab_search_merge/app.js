@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {TabSearchApiProxy} from './tab_search_api_proxy.js';
+import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 /**
  * @param {string} searchText
@@ -17,7 +17,7 @@ function filterFunc(searchText, item) {
   return item.title.toLowerCase().includes(searchText.toLowerCase());
 };
 
-class TabSearchElement extends PolymerElement {
+export class TabSearchAppElement extends PolymerElement {
   static get is() {
     return 'tab-search-app';
   }
@@ -48,7 +48,7 @@ class TabSearchElement extends PolymerElement {
   constructor() {
     super();
     /** @private {!TabSearchApiProxy} */
-    this.apiProxy_ = TabSearchApiProxy.getInstance();
+    this.apiProxy_ = TabSearchApiProxyImpl.getInstance();
   }
 
   /** @override */
@@ -94,6 +94,13 @@ class TabSearchElement extends PolymerElement {
     }
     return result;
   }
+
+  /**
+   * @param {string} text
+   */
+  setSearchText(text) {
+    this.searchText_ = text;
+  }
 }
 
-customElements.define(TabSearchElement.is, TabSearchElement);
+customElements.define(TabSearchAppElement.is, TabSearchAppElement);
