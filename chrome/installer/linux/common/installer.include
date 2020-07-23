@@ -231,33 +231,6 @@ stage_install_common() {
     install -m ${SHLIB_PERMS} "${BUILDDIR}/libiomp5.so" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
-  # Inference Engine
-  if [ -f "${BUILDDIR}/libinference_engine.so" ]; then
-    for file in libinference_engine.so libMKLDNNPlugin.so libclDNNPlugin.so libGNAPlugin.so libgna_api.so libgna_kernel.so; do
-      buildfile="${BUILDDIR}/${file}"
-      strippedfile="${buildfile}.stripped"
-      debugfile="${buildfile}.debug"
-      "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
-      install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
-    done
-    # myriad plugin and firmware
-    file="libmyriadPlugin.so"
-    buildfile="${BUILDDIR}/${file}"
-    if [ -f ${buildfile} ]; then
-      strippedfile="${buildfile}.stripped"
-      debugfile="${buildfile}.debug"
-      "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
-      install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
-      install -m 644 "${BUILDDIR}/usb-ma2450.mvcmd" "${STAGEDIR}/${INSTALLDIR}/"
-      install -m 644 "${BUILDDIR}/usb-ma2x8x.mvcmd" "${STAGEDIR}/${INSTALLDIR}/"
-      # custom kernels.
-      #install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/vpu_custom_kernels/"
-      #find "${BUILDDIR}/vpu_custom_kernels" -type f -name '*' -exec \
-      #  cp -a '{}' "${STAGEDIR}/${INSTALLDIR}/vpu_custom_kernels/" \;
-      #find "${STAGEDIR}/${INSTALLDIR}/vpu_custom_kernels" -type f -exec chmod 644 '{}' \;
-    fi
-  fi
-
   # ie nn c api
   if [ -f "${BUILDDIR}/libie_nn_c_api.so" ]; then
     install -m ${SHLIB_PERMS} "${BUILDDIR}/libie_nn_c_api.so" "${STAGEDIR}/${INSTALLDIR}/"
