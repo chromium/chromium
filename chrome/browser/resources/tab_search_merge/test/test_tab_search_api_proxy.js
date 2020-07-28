@@ -13,6 +13,13 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
       'switchToTab',
     ]);
 
+    /** @type {!tabSearch.mojom.PageCallbackRouter} */
+    this.callbackRouter = new tabSearch.mojom.PageCallbackRouter();
+
+    /** @type {!tabSearch.mojom.PageRemote} */
+    this.callbackRouterRemote =
+        this.callbackRouter.$.bindNewPipeAndPassRemote();
+
     /** @private {tabSearch.mojom.ProfileTabs} */
     this.profileTabs_;
   }
@@ -26,6 +33,16 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   /** override */
   switchToTab(tabInfo) {
     this.methodCalled('switchToTab');
+  }
+
+  /** override */
+  getCallbackRouter() {
+    return this.callbackRouter;
+  }
+
+  /** return {!tabSearch.mojom.PageRemote} */
+  getCallbackRouterRemote() {
+    return this.callbackRouterRemote;
   }
 
   /** @param {tabSearch.mojom.ProfileTabs} profileTabs */

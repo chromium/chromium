@@ -173,4 +173,13 @@ suite('TabSearchAppTest', () => {
     keyDownOn(searchInput, 0, [], 'Home');
     assertEquals(0, tabSearchApp.getSelectedIndex());
   });
+
+  test('refresh on tabs changed', async () => {
+    await setupTest(sampleData());
+    verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
+    testProxy.setProfileTabs({windows: []});
+    testProxy.getCallbackRouterRemote().tabsChanged();
+    await flushTasks();
+    verifyTabIds(queryRows(), []);
+  });
 });

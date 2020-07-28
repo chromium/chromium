@@ -62,12 +62,29 @@ export class TabSearchAppElement extends PolymerElement {
 
     /** @private {!TabSearchApiProxy} */
     this.apiProxy_ = TabSearchApiProxyImpl.getInstance();
+
+    /** @private {!Array<number>} */
+    this.listenerIds_ = [];
   }
 
   /** @override */
   ready() {
     super.ready();
 
+    this.listenerIds_.push(
+        this.apiProxy_.getCallbackRouter().tabsChanged.addListener(
+            this.getTabs.bind(this)));
+    this.getTabs();
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    this.listenerIds_.forEach(
+        id => this.apiProxy_.getCallbackRouter().removeListener(id));
+  }
+
+  /** @private */
+  getTabs() {
     this.apiProxy_.getProfileTabs().then(({profileTabs}) => {
       if (profileTabs) {
         this.openTabs_ = profileTabs.windows;

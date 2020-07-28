@@ -14,6 +14,9 @@ export class TabSearchApiProxy {
 
   /** @param {!tabSearch.mojom.SwitchToTabInfo} info */
   switchToTab(info) {}
+
+  /** @return {!tabSearch.mojom.PageCallbackRouter} */
+  getCallbackRouter() {}
 }
 
 /** @implements {TabSearchApiProxy} */
@@ -39,6 +42,11 @@ export class TabSearchApiProxyImpl {
   /** override */
   switchToTab(info) {
     this.handler.switchToTab(info);
+  }
+
+  /** override */
+  getCallbackRouter() {
+    return this.callbackRouter;
   }
 }
 
