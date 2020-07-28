@@ -1,17 +1,34 @@
+<style>
+  ::-webkit-scrollbar-thumb {
+    background: var(--google-grey-refresh-100);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--cr-focused-item-color);
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  #tabs {
+    max-height: 280px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+</style>
+
 <div id="searchBar">
   <iron-icon id="searchIcon" icon="cr:search"></iron-icon>
   <input id="searchInput" type="text" value="[[searchText_]]"
-    on-input="onSearchInput_">
+      on-input="onSearchInput_" on-keydown="onKeyDown_" autofocus>
 </div>
-<div id="content">
-  <template is="dom-repeat" items="[[filteredOpenTabs_]]">
-    <div class="row" id="[[item.tabId]]" on-click="onItemClick_">
-      <div>
-        <img src="[[item.favIconUrl]]">
-      </div>
-      <div>
-        <div>[[item.title]]</div>
-        <div>[[item.url]]</div>
-      </div>
-  </template>
+<div id="tabs">
+  <iron-selector id="selector" selected="{{selectedIndex_}}" selected-class="selected">
+    <template id="tabs-list" is="dom-repeat" items="[[filteredOpenTabs_]]">
+      <tab-search-item id="[[item.tabId]]" data="[[item]]"
+          on-click="onItemClick_" tabindex="-1" >
+      </tab-search-item>
+    </template>
+  </iron-selector>
 </div>

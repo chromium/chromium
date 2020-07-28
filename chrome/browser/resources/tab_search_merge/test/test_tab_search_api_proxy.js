@@ -25,7 +25,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
 
   /** override */
   switchToTab(tabInfo) {
-    this.methodCalled('swtichToTab');
+    this.methodCalled('switchToTab');
   }
 
   /** @param {tabSearch.mojom.ProfileTabs} profileTabs */

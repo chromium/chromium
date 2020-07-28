@@ -1,0 +1,70 @@
+<style>
+  /* TODO(crbug.com/1110109): Add dark mode support. */
+  :host {
+    --horizontal-margin: 16px;
+    --icon-size: 16px;
+    --vertical-margin: 12px;
+    align-items: center;
+    background-color:  white;
+    display: flex;
+    padding: var(--vertical-margin) var(--horizontal-margin);
+  }
+
+  :host-context(.selected, :host:hover) {
+    background-color: var(--cr-focused-item-color);
+  }
+
+  :host-context(.selected, :host:hover) .button-container {
+    display: flex;
+  }
+
+  .button-container {
+    display: none;
+  }
+
+  img {
+    height: var(--icon-size);
+    margin-inline-end: var(--horizontal-margin);
+    width: var(--icon-size);
+  }
+
+  .text-container {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .primary-text,
+  .secondary-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .primary-text {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+
+  .secondary-text {
+    color: var(--cr-secondary-text-color);
+    font-size: 12px;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-margin-end: calc(var(--icon-size) / 4);
+    --cr-icon-button-margin-start: calc(var(--icon-size) / 4);
+    --cr-icon-button-size: var(--icon-size);
+  }
+</style>
+
+<img src="[[data.favIconUrl]]">
+<div class="text-container">
+  <div class="primary-text">[[data.title]]</div>
+  <div class="secondary-text">[[urlHostname_(data.url)]]</div>
+</div>
+<div class="button-container">
+  <cr-icon-button aria-labelledby="label" iron-icon="cr:cancel"
+      on-click="onItemCancel_" title="$i18n{close}">
+  </cr-icon-button>
+</div>
