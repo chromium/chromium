@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import './tab_search_item.js';
+import './tab_search_search_field.js'
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -116,6 +117,14 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
+   * @param {!CustomEvent<string>} e
+   * @private
+   */
+  onSearchChanged_(e) {
+    this.searchText_ = e.detail;
+  }
+
+  /**
    * @param {!Event} e
    * @private
    */
@@ -136,6 +145,8 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
+   * TODO(crbug.com/1111003): Check for the presence of modifiers before
+   * triggering a navigation.
    * @param {!KeyboardEvent} e
    * @private
    */
@@ -166,14 +177,6 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Event} e
-   * @private
-   */
-  onSearchInput_(e) {
-    this.searchText_ = e.target.value;
-  }
-
-  /**
    * @param {number} offset Distance from the desired item to select and the
    *     currently selected item.
    * @private
@@ -193,13 +196,6 @@ export class TabSearchAppElement extends PolymerElement {
 
     this.getTabSearchItem_(scrollToIndex)
         .scrollIntoView({behavior: 'smooth', block: 'nearest'});
-  }
-
-  /**
-   * @param {string} text
-   */
-  setSearchText(text) {
-    this.searchText_ = text;
   }
 }
 

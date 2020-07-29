@@ -116,7 +116,9 @@ suite('TabSearchAppTest', () => {
 
   test('return filtered tabs', async () => {
     await setupTest(sampleData());
-    tabSearchApp.setSearchText('bing');
+    const searchField = /** @type {!TabSearchSearchFieldElement} */
+      (tabSearchApp.shadowRoot.querySelector("#searchField"));
+    searchField.setValue('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
   });
@@ -131,19 +133,19 @@ suite('TabSearchAppTest', () => {
   test('Keyboard navigation on an empty list', async () => {
     await setupTest({windows: [{active: true, tabs: []}]});
 
-    const searchInput = /** @type {!HTMLInputElement} */ (
-        tabSearchApp.shadowRoot.getElementById('searchInput'));
+    const searchField = /** @type {!TabSearchSearchFieldElement} */
+        (tabSearchApp.shadowRoot.querySelector("#searchField"));
 
-    keyDownOn(searchInput, 0, [], 'ArrowUp');
+    keyDownOn(searchField, 0, [], 'ArrowUp');
     assertEquals(-1, tabSearchApp.getSelectedIndex());
 
-    keyDownOn(searchInput, 0, [], 'ArrowDown');
+    keyDownOn(searchField, 0, [], 'ArrowDown');
     assertEquals(-1, tabSearchApp.getSelectedIndex());
 
-    keyDownOn(searchInput, 0, [], 'Home');
+    keyDownOn(searchField, 0, [], 'Home');
     assertEquals(-1, tabSearchApp.getSelectedIndex());
 
-    keyDownOn(searchInput, 0, [], 'End');
+    keyDownOn(searchField, 0, [], 'End');
     assertEquals(-1, tabSearchApp.getSelectedIndex());
   });
 
@@ -152,25 +154,25 @@ suite('TabSearchAppTest', () => {
 
     const numTabs =
         sampleData().windows.reduce((total, w) => total + w.tabs.length, 0);
-    const searchInput = /** @type {!HTMLInputElement} */ (
-        tabSearchApp.shadowRoot.getElementById('searchInput'));
+    const searchField = /** @type {!TabSearchSearchFieldElement} */
+        (tabSearchApp.shadowRoot.querySelector("#searchField"));
 
-    keyDownOn(searchInput, 0, [], 'ArrowUp');
+    keyDownOn(searchField, 0, [], 'ArrowUp');
     assertEquals(numTabs - 1, tabSearchApp.getSelectedIndex());
 
-    keyDownOn(searchInput, 0, [], 'ArrowDown');
+    keyDownOn(searchField, 0, [], 'ArrowDown');
     assertEquals(0, tabSearchApp.getSelectedIndex());
 
-    keyDownOn(searchInput, 0, [], 'ArrowDown');
+    keyDownOn(searchField, 0, [], 'ArrowDown');
     assertEquals(1, tabSearchApp.getSelectedIndex());
 
-    keyDownOn(searchInput, 0, [], 'ArrowUp');
+    keyDownOn(searchField, 0, [], 'ArrowUp');
     assertEquals(0, tabSearchApp.getSelectedIndex());
 
-    keyDownOn(searchInput, 0, [], 'End');
+    keyDownOn(searchField, 0, [], 'End');
     assertEquals(numTabs - 1, tabSearchApp.getSelectedIndex());
 
-    keyDownOn(searchInput, 0, [], 'Home');
+    keyDownOn(searchField, 0, [], 'Home');
     assertEquals(0, tabSearchApp.getSelectedIndex());
   });
 

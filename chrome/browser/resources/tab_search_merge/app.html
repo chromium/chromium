@@ -17,12 +17,10 @@
     overflow-y: auto;
   }
 </style>
-
-<div id="searchBar">
-  <iron-icon id="searchIcon" icon="cr:search"></iron-icon>
-  <input id="searchInput" type="text" value="[[searchText_]]"
-      on-input="onSearchInput_" on-keydown="onKeyDown_" autofocus>
-</div>
+<tab-search-search-field id="searchField" on-search-changed="onSearchChanged_"
+    label="Search tabs" clear-label="Clear search" on-keydown="onKeyDown_"
+    autofocus>
+</tab-search-search-field>
 <div id="tabs">
   <iron-selector id="selector" selected="{{selectedIndex_}}" selected-class="selected">
     <template id="tabs-list" is="dom-repeat" items="[[filteredOpenTabs_]]">

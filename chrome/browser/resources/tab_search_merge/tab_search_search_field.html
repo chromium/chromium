@@ -1,0 +1,35 @@
+<style include="cr-icons">
+  :host {
+    align-items: center;
+    background-color: var(--google-grey-refresh-100);
+    border-radius: 32px;
+    display: flex;
+    height: 28px;
+    padding: 0 8px;
+    user-select: none;
+  }
+
+  #searchIcon {
+    height: var(--icon-size);
+    padding-inline-end: 4px;
+    width: var(--icon-size);
+  }
+
+  input {
+    align-self: stretch;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--cr-primary-text-color);
+    flex: 1;
+    font-size: var(--primary-text-font-size);
+    outline: none;
+    text-overflow: ellipsis;
+  }
+
+</style>
+<iron-icon id="searchIcon" icon="cr:search"></iron-icon>
+<input id="searchInput" on-search="onSearchTermSearch"
+    on-input="onSearchTermInput" aria-label$="[[label]]" type="search"
+    autofocus="[[autofocus]]" placeholder="[[label]]" autocomplete="off"
+    spellcheck="false" />

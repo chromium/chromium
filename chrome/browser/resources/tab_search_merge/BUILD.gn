@@ -10,13 +10,19 @@ import("//ui/webui/webui_features.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  deps = [ ":app" ]
+  deps = [
+    ":app",
+    ":tab_search_api_proxy",
+    ":tab_search_item",
+    ":tab_search_search_field"
+  ]
 }
 
 js_library("app") {
   deps = [
     ":tab_search_api_proxy",
     ":tab_search_item",
+    ":tab_search_search_field",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -35,9 +41,18 @@ js_library("tab_search_item") {
   ]
 }
 
+js_library("tab_search_search_field") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior.m",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "app.js",
+    "shared_vars.js",
     "tab_search_item.js",
+    "tab_search_search_field.js",
   ]
 }
