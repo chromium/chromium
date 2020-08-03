@@ -26,10 +26,10 @@ source_set("lib") {
   sources = [
     "common.cc",
     "common.h",
-    "ml_service.cc",
-    "ml_service.h",
     "ml_switches.cc",
     "ml_switches.h",
+    "neural_network_service.cc",
+    "neural_network_service.h",
   ]
 
   if (is_linux) {
@@ -217,7 +217,6 @@ source_set("lib") {
   public_deps = [
     "//base",
     "//services/ml/public/mojom",
-    "//services/service_manager/public/cpp",
   ]
 
   if (is_linux || is_win) {
@@ -239,39 +238,23 @@ source_set("lib") {
 if (is_win || is_linux || is_mac) {
   dnnl_dll_path = "//third_party/dnnl/lib/${os_folder}/Release"
   copy("copy_dnnl_dll") {
-    sources = [
-      "${dnnl_dll_path}/${dnnl_dll}",
-    ]
-    outputs = [
-      "$root_out_dir/{{source_file_part}}",
-    ]
+    sources = [ "${dnnl_dll_path}/${dnnl_dll}" ]
+    outputs = [ "$root_out_dir/{{source_file_part}}" ]
   }
   copy("copy_omp_dll") {
-    sources = [
-      "${dnnl_dll_path}/${omp_dll}",
-    ]
-    outputs = [
-      "$root_out_dir/{{source_file_part}}",
-    ]
+    sources = [ "${dnnl_dll_path}/${omp_dll}" ]
+    outputs = [ "$root_out_dir/{{source_file_part}}" ]
   }
   if (is_win || is_linux) {
     cldnn_dll_path = "//third_party/clDNN/build/out/${os_folder}/Release"
     copy("copy_cldnn_dll") {
-      sources = [
-        "${cldnn_dll_path}/${cldnn_dll}",
-      ]
-      outputs = [
-        "$root_out_dir/{{source_file_part}}",
-      ]
+      sources = [ "${cldnn_dll_path}/${cldnn_dll}" ]
+      outputs = [ "$root_out_dir/{{source_file_part}}" ]
     }
     ie_nn_dll_path = "//third_party/ienn/lib/${os_folder}"
     copy("copy_ie_nn_dll") {
-      sources = [
-        "${ie_nn_dll_path}/${ie_nn_dll}",
-      ]
-      outputs = [
-        "$root_out_dir/{{source_file_part}}",
-      ]
+      sources = [ "${ie_nn_dll_path}/${ie_nn_dll}" ]
+      outputs = [ "$root_out_dir/{{source_file_part}}" ]
     }
   }
 }

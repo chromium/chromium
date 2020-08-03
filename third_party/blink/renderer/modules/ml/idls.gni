@@ -1,0 +1,18 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+modules_dependency_idl_files = [ "navigator_ml.idl" ]
+
+modules_idl_files = [
+  "compilation.idl",
+  "execution.idl",
+  "ml.idl",
+  "model.idl",
+  "neural_network_context.idl",
+]
+
+modules_dictionary_idl_files = [
+  "operand_options.idl",
+  "operand_symm_per_channel_quant_param.idl",
+]

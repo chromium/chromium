@@ -175,7 +175,6 @@ jumbo_source_set("browser") {
     "//services/metrics",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/ml:lib",
-    "//services/ml/public/cpp:manifest",
     "//services/ml/public/mojom",
     "//services/network:network_service",
     "//services/network/public/cpp",

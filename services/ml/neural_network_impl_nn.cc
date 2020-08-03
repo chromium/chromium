@@ -14,12 +14,6 @@
 
 namespace ml {
 
-// static
-void NeuralNetworkImplNN::Create(ml::mojom::NeuralNetworkRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<NeuralNetworkImplNN>(),
-                          std::move(request));
-}
-
 NeuralNetworkImplNN::NeuralNetworkImplNN() = default;
 
 NeuralNetworkImplNN::~NeuralNetworkImplNN() = default;

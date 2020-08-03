@@ -15,6 +15,7 @@
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/media_service.mojom.h"
+#include "services/ml/public/mojom/neuralnetwork.mojom.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
 
 namespace gpu {
@@ -41,6 +42,8 @@ class GpuServiceFactory {
 
   void RunMediaService(
       mojo::PendingReceiver<media::mojom::MediaService> receiver);
+  void RunNeuralNetworkService(
+      mojo::PendingReceiver<ml::mojom::NeuralNetworkService> receiver);
 
  private:
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)

@@ -14,3 +14,8 @@ interface NeuralNetwork {
   CreateModel()
     => (int32 result_code, ModelInitParams? init_params);
 };
+
+// Bind an endpoint which can be used to get NeuralNetwork context.
+interface NeuralNetworkService {
+  BindNeuralNetwork(pending_receiver<NeuralNetwork> receiver);
+};

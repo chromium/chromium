@@ -5,13 +5,14 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ml/navigator_ml.h"
 #include "third_party/blink/renderer/modules/ml/neural_network_context.h"
 
 namespace blink {
 
 ML::ML(NavigatorML& navigator_ml)
-    : ContextLifecycleObserver(navigator_ml.GetDocument()),
+    : ExecutionContextLifecycleObserver(navigator_ml.DomWindow()),
       navigator_ml_(&navigator_ml) {}
 
 ML::~ML() = default;
@@ -23,11 +24,11 @@ NeuralNetworkContext* ML::getNeuralNetworkContext() {
   return nn_.Get();
 }
 
-void ML::ContextDestroyed(ExecutionContext*) {
+void ML::ContextDestroyed() {
   Dispose();
 }
 
-void ML::Trace(blink::Visitor* visitor) {
+void ML::Trace(blink::Visitor* visitor) const {
   visitor->Trace(navigator_ml_);
   visitor->Trace(nn_);
   ScriptWrappable::Trace(visitor);

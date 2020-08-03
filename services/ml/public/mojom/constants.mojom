@@ -4,8 +4,6 @@
 
 module ml.mojom;
 
-const string kServiceName = "ml";
-
 // Operand types.
 const int32 FLOAT32 = 0;
 const int32 INT32 = 1;

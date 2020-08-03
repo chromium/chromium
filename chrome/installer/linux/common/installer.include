@@ -83,7 +83,7 @@ process_template() (
     -e "s#@@PACKAGE_RELEASE@@#${PACKAGE_RELEASE}#g" \
     -e "s#@@VERSIONFULL@@#${VERSIONFULL}#g" \
     -e "s#@@INSTALLDIR@@#${INSTALLDIR}#g" \
-    -e "s#@@BUILDDIR@@#${OUTPUTDIR}#g" \
+    -e "s#@@OUTPUTDIR@@#${OUTPUTDIR}#g" \
     -e "s#@@STAGEDIR@@#${STAGEDIR}#g" \
     -e "s#@@SCRIPTDIR@@#${SCRIPTDIR}#g" \
     -e "s#@@MENUNAME@@#${MENUNAME}#g" \
@@ -217,23 +217,23 @@ stage_install_common() {
   fi
 
   # clDNN.
-  if [ -f "${BUILDDIR}/libclDNN64.so" ]; then
-    install -m ${SHLIB_PERMS} "${BUILDDIR}/libclDNN64.so" "${STAGEDIR}/${INSTALLDIR}/"
+  if [ -f "${OUTPUTDIR}/libclDNN64.so" ]; then
+    install -m ${SHLIB_PERMS} "${OUTPUTDIR}/libclDNN64.so" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
   # MKLDNN.
-  if [ -f "${BUILDDIR}/libdnnl.so" ]; then
-    install -m ${SHLIB_PERMS} "${BUILDDIR}/libdnnl.so" "${STAGEDIR}/${INSTALLDIR}/"
+  if [ -f "${OUTPUTDIR}/libdnnl.so" ]; then
+    install -m ${SHLIB_PERMS} "${OUTPUTDIR}/libdnnl.so" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
   # Intel OpenMP runtime required by MKLDNN
-  if [ -f "${BUILDDIR}/libiomp5.so" ]; then
-    install -m ${SHLIB_PERMS} "${BUILDDIR}/libiomp5.so" "${STAGEDIR}/${INSTALLDIR}/"
+  if [ -f "${OUTPUTDIR}/libiomp5.so" ]; then
+    install -m ${SHLIB_PERMS} "${OUTPUTDIR}/libiomp5.so" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
   # ie nn c api
-  if [ -f "${BUILDDIR}/libie_nn_c_api.so" ]; then
-    install -m ${SHLIB_PERMS} "${BUILDDIR}/libie_nn_c_api.so" "${STAGEDIR}/${INSTALLDIR}/"
+  if [ -f "${OUTPUTDIR}/libie_nn_c_api.so" ]; then
+    install -m ${SHLIB_PERMS} "${OUTPUTDIR}/libie_nn_c_api.so" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
   # ANGLE

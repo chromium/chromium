@@ -91,7 +91,7 @@ void Execution::setInput(uint32_t index,
   }
 
   std::unique_ptr<OperandInfo>& info = inputs_.at(index);
-  uint32_t length = data.View()->byteLength();
+  uint32_t length = data.View()->deprecatedByteLengthAsUnsigned();
   if (info->length != length) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid data");
@@ -112,7 +112,7 @@ void Execution::setOutput(uint32_t index,
   }
 
   std::unique_ptr<OperandInfo>& info = outputs_.at(index);
-  uint32_t length = data.View()->byteLength();
+  uint32_t length = data.View()->deprecatedByteLengthAsUnsigned();
   if (info->length != length) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid data");
@@ -154,7 +154,7 @@ void Execution::OnStartCompute(ScriptPromiseResolver* resolver,
   for (wtf_size_t i = 0; i < outputs_.size(); ++i) {
     DOMArrayBufferView* view = output_buffer_views_.at(i);
     if (view) {
-      uint32_t length = view->byteLength();
+      uint32_t length = view->deprecatedByteLengthAsUnsigned();
       std::unique_ptr<OperandInfo>& info = outputs_.at(i);
       memcpy(view->BaseAddress(), static_cast<const void*>(info->mapping.get()),
              length);
@@ -178,7 +178,7 @@ void Execution::OnResultCode(ScriptPromiseResolver* resolver,
   resolver->Resolve(result_code);
 }
 
-void Execution::Trace(blink::Visitor* visitor) {
+void Execution::Trace(blink::Visitor* visitor) const {
   visitor->Trace(requests_);
   visitor->Trace(output_buffer_views_);
   ScriptWrappable::Trace(visitor);

@@ -7,10 +7,10 @@
 #include <utility>
 
 #include "services/ml/public/mojom/constants.mojom-blink.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ml/model.h"
 #include "third_party/blink/renderer/modules/ml/navigator_ml.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -18,8 +18,8 @@
 namespace blink {
 
 NeuralNetworkContext::NeuralNetworkContext(NavigatorML* navigator_ml)
-    : ContextLifecycleObserver(navigator_ml->GetDocument()) {
-  navigator_ml->GetDocument()->GetFrame()->GetInterfaceProvider().GetInterface(
+    : ExecutionContextLifecycleObserver(navigator_ml->DomWindow()) {
+  navigator_ml->DomWindow()->GetBrowserInterfaceBroker().GetInterface(
       mojo::MakeRequest(&neural_network_));
   neural_network_.set_connection_error_handler(WTF::Bind(
       &NeuralNetworkContext::OnConnectionError, WrapWeakPersistent(this)));
@@ -44,14 +44,14 @@ ScriptPromise NeuralNetworkContext::createModel(ScriptState* script_state) {
   return promise;
 }
 
-void NeuralNetworkContext::ContextDestroyed(ExecutionContext*) {
+void NeuralNetworkContext::ContextDestroyed() {
   Dispose();
 }
 
-void NeuralNetworkContext::Trace(blink::Visitor* visitor) {
+void NeuralNetworkContext::Trace(Visitor* visitor) const {
   visitor->Trace(requests_);
   ScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 void NeuralNetworkContext::OnCreateModel(

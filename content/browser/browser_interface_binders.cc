@@ -65,6 +65,7 @@
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
+#include "services/ml/public/mojom/neuralnetwork.mojom.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
@@ -197,6 +198,26 @@ void BindTextInputHost(
       base::BindOnce(&TextInputHostImpl::Create, std::move(receiver)));
 }
 #endif
+
+void RunNerualNetworkServiceOnIOThread(
+    mojo::PendingReceiver<ml::mojom::NeuralNetworkService> receiver) {
+  auto* gpu = GpuProcessHost::Get();
+  if (gpu)
+    gpu->RunService(std::move(receiver));
+}
+
+void BindNerualNetwork(
+    mojo::PendingReceiver<ml::mojom::NeuralNetwork> receiver) {
+  static base::NoDestructor<mojo::Remote<ml::mojom::NeuralNetworkService>>
+      remote;
+  if (!*remote) {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&RunNerualNetworkServiceOnIOThread,
+                                  remote->BindNewPipeAndPassReceiver()));
+    remote->reset_on_disconnect();
+  }
+  remote->get()->BindNeuralNetwork(std::move(receiver));
+}
 
 void BindBadgeServiceForServiceWorkerOnUI(
     int service_worker_process_id,
@@ -681,6 +702,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<shape_detection::mojom::TextDetection>(
       base::BindRepeating(&BindTextDetection));
 
+  map->Add<ml::mojom::NeuralNetwork>(base::BindRepeating(&BindNerualNetwork));
+
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(cc::switches::kEnableGpuBenchmarking)) {
     map->Add<mojom::InputInjector>(
@@ -813,6 +836,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
   map->Add<shape_detection::mojom::TextDetection>(
       base::BindRepeating(&BindTextDetection));
 
+  map->Add<ml::mojom::NeuralNetwork>(base::BindRepeating(&BindNerualNetwork));
+
   // worker host binders
   // base::Unretained(host) is safe because the map is owned by
   // |DedicatedWorkerHost::broker_|.
@@ -906,6 +931,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
   map->Add<shape_detection::mojom::TextDetection>(
       base::BindRepeating(&BindTextDetection));
 
+  map->Add<ml::mojom::NeuralNetwork>(base::BindRepeating(&BindNerualNetwork));
+
   // worker host binders
   // base::Unretained(host) is safe because the map is owned by
   // |SharedWorkerHost::broker_|.
@@ -983,6 +1010,8 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
       base::BindRepeating(&BindFaceDetectionProvider));
   map->Add<shape_detection::mojom::TextDetection>(
       base::BindRepeating(&BindTextDetection));
+
+  map->Add<ml::mojom::NeuralNetwork>(base::BindRepeating(&BindNerualNetwork));
 
   // worker host binders
   map->Add<blink::mojom::QuicTransportConnector>(

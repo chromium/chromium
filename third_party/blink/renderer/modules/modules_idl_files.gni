@@ -89,6 +89,7 @@ _idl_imports = [
   "//third_party/blink/renderer/modules/mediasession/idls.gni",
   "//third_party/blink/renderer/modules/mediasource/idls.gni",
   "//third_party/blink/renderer/modules/mediastream/idls.gni",
+  "//third_party/blink/renderer/modules/ml/idls.gni",
   "//third_party/blink/renderer/modules/native_file_system/idls.gni",
   "//third_party/blink/renderer/modules/native_io/idls.gni",
   "//third_party/blink/renderer/modules/navigatorcontentutils/idls.gni",

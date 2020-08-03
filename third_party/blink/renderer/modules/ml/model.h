@@ -43,7 +43,7 @@ class Model final : public ScriptWrappable {
   ScriptPromise finish(ScriptState*);
   ScriptPromise createCompilation(ScriptState*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(blink::Visitor*) const override;
 
  private:
   void OnResultCode(ScriptPromiseResolver*, const String&, int32_t);

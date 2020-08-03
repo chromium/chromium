@@ -7,12 +7,13 @@
 #include "content/gpu/gpu_child_thread.h"
 
 #include "base/no_destructor.h"
+#include "content/gpu/gpu_service_factory.h"
 #include "media/mojo/buildflags.h"
+#include "services/ml/neural_network_service.h"
 #include "services/shape_detection/public/mojom/shape_detection_service.mojom.h"
 #include "services/shape_detection/shape_detection_service.h"
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-#include "content/gpu/gpu_service_factory.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #endif
 
@@ -38,6 +39,11 @@ void GpuChildThread::BindServiceInterface(
     return;
   }
 #endif
+
+  if (auto r = receiver.As<ml::mojom::NeuralNetworkService>()) {
+    service_factory_->RunNeuralNetworkService(std::move(r));
+    return;
+  }
 }
 
 }  // namespace content

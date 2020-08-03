@@ -71,17 +71,9 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-<<<<<<< cf6e3a37194e38ef0329d29f639be7591a3b2883
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/ml/ml_switches.h"
-=======
-#include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
-#include "services/service_manager/sandbox/sandbox_type.h"
-#include "services/service_manager/sandbox/switches.h"
->>>>>>> [IE] add inference engine backend for Linux
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"

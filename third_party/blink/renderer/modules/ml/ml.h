@@ -5,7 +5,7 @@
 #ifndef ML_h
 #define ML_h
 
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -13,7 +13,8 @@ namespace blink {
 class NavigatorML;
 class NeuralNetworkContext;
 
-class ML final : public ScriptWrappable, public ContextLifecycleObserver {
+class ML final : public ScriptWrappable,
+                 public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(ML);
   USING_PRE_FINALIZER(ML, Dispose);
@@ -24,11 +25,11 @@ class ML final : public ScriptWrappable, public ContextLifecycleObserver {
 
   NeuralNetworkContext* getNeuralNetworkContext();
 
-  // ContextLifecycleObserver overrides.
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver overrides.
+  void ContextDestroyed() override;
 
   // Interface required by garbage collection.
-  void Trace(blink::Visitor*) override;
+  void Trace(blink::Visitor*) const override;
 
  private:
   void Dispose();

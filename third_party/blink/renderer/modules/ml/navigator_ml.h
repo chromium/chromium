@@ -29,9 +29,9 @@ class NavigatorML final : public GarbageCollected<NavigatorML>,
 
   static ML* ml(Navigator&);
 
-  Document* GetDocument();
+  LocalDOMWindow* DomWindow();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(blink::Visitor*) const override;
 
  private:
   Member<ML> ml_;

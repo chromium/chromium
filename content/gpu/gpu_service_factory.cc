@@ -12,8 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
-#include "services/ml/ml_service.h"
-#include "services/ml/public/mojom/constants.mojom.h"
+#include "services/ml/neural_network_service.h"
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 #include "base/bind.h"
@@ -75,21 +74,22 @@ void GpuServiceFactory::RunMediaService(
           std::move(factory)));
   return;
 #endif  // BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
+}
 
-  if (service_name == ml::mojom::kServiceName) {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        base::CreateSingleThreadTaskRunner(
-            {base::ThreadPool(), base::TaskPriority::USER_BLOCKING});
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](service_manager::mojom::ServiceRequest request) {
-              service_manager::Service::RunAsyncUntilTermination(
-                  std::make_unique<ml::MLService>(std::move(request)));
-            },
-            std::move(request)));
-    return;
-  }
+void GpuServiceFactory::RunNeuralNetworkService(
+    mojo::PendingReceiver<ml::mojom::NeuralNetworkService> receiver) {
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      base::CreateSingleThreadTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::USER_BLOCKING});
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::PendingReceiver<ml::mojom::NeuralNetworkService> receiver) {
+            static base::NoDestructor<ml::NeuralNetworkService> service{
+                std::move(receiver)};
+          },
+          std::move(receiver)));
+  return;
 }
 
 }  // namespace content

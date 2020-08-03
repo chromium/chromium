@@ -84,7 +84,7 @@ ScriptPromise Compilation::createExecution(ScriptState* script_state) {
   return promise;
 }
 
-void Compilation::Trace(blink::Visitor* visitor) {
+void Compilation::Trace(blink::Visitor* visitor) const {
   visitor->Trace(requests_);
   ScriptWrappable::Trace(visitor);
 }

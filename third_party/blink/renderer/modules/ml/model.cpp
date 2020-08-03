@@ -118,41 +118,41 @@ bool InvalidOperandValue(
     return InvalidState("Data type is invalid.", exception_state);
 
   int32_t operand_type = operands[index]->type;
-  WTF::ArrayBufferView::ViewType data_type = data->GetType();
+  auto data_type = data->GetType();
 
   bool invalid = false;
   switch (operand_type) {
     case NeuralNetworkContext::kFloat32:
-      if (data->byteLength() / data->TypeSize() > 1)
+      if (data->deprecatedByteLengthAsUnsigned() / data->TypeSize() > 1)
         invalid = true;
       FALLTHROUGH;
     case NeuralNetworkContext::kTensorFloat32:
-      if (data_type != WTF::ArrayBufferView::kTypeFloat32)
+      if (data_type != DOMArrayBufferView::kTypeFloat32)
         invalid = true;
       break;
     case NeuralNetworkContext::kInt32:
-      if (data->byteLength() / data->TypeSize() > 1)
+      if (data->deprecatedByteLengthAsUnsigned() / data->TypeSize() > 1)
         invalid = true;
       FALLTHROUGH;
     case NeuralNetworkContext::kTensorInt32:
-      if (data_type != WTF::ArrayBufferView::kTypeInt32)
+      if (data_type != DOMArrayBufferView::kTypeInt32)
         invalid = true;
       break;
     case NeuralNetworkContext::kUint32:
-      if (data_type != WTF::ArrayBufferView::kTypeUint32 ||
-          data->byteLength() / data->TypeSize() > 1)
+      if (data_type != DOMArrayBufferView::kTypeUint32 ||
+          data->deprecatedByteLengthAsUnsigned() / data->TypeSize() > 1)
         invalid = true;
       break;
     case NeuralNetworkContext::kTensorQuant8Asymm:
-      if (data_type != WTF::ArrayBufferView::kTypeUint8)
+      if (data_type != DOMArrayBufferView::kTypeUint8)
         invalid = true;
       break;
     case NeuralNetworkContext::kTensorQuant8AsymmSigned:
-      if (data_type != WTF::ArrayBufferView::kTypeInt8)
+      if (data_type != DOMArrayBufferView::kTypeInt8)
         invalid = true;
       break;
     case NeuralNetworkContext::kTensorQuant8SymmPerChannel:
-      if (data_type != WTF::ArrayBufferView::kTypeInt8)
+      if (data_type != DOMArrayBufferView::kTypeInt8)
         invalid = true;
       break;
     default:
@@ -264,7 +264,7 @@ ScriptPromise Model::finish(ScriptState* script_state) {
   for (HeapHashMap<WTF::String, Member<DOMArrayBufferView>>::const_iterator
            itr = buffer_views_.begin();
        itr != buffer_views_.end(); ++itr)
-    total_byte_length += itr->value->byteLength();
+    total_byte_length += itr->value->deprecatedByteLengthAsUnsigned();
 
   if (total_byte_length != 0) {
     memory_ = mojo::SharedBufferHandle::Create(total_byte_length);
@@ -280,7 +280,7 @@ ScriptPromise Model::finish(ScriptState* script_state) {
     const ml::mojom::blink::OperandValueInfoPtr& value_info = itr->value;
     DOMArrayBufferView* view =
         buffer_views_.at(WTF::String::Number(value_info->index));
-    uint32_t length = view->byteLength();
+    uint32_t length = view->deprecatedByteLengthAsUnsigned();
     value_info->offset = offset;
     value_info->length = length;
     uint8_t* base = static_cast<uint8_t*>(mapping.get()) + offset;
@@ -353,7 +353,7 @@ void Model::OnResultCode(ScriptPromiseResolver* resolver,
   }
 }
 
-void Model::Trace(blink::Visitor* visitor) {
+void Model::Trace(blink::Visitor* visitor) const {
   visitor->Trace(requests_);
   visitor->Trace(buffer_views_);
   ScriptWrappable::Trace(visitor);

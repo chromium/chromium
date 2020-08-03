@@ -6,6 +6,8 @@
 #define SERVICES_ML_NEURAL_NETWORK_IMPL_H_
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/ml/public/mojom/neuralnetwork.mojom.h"
 
@@ -16,9 +18,13 @@ class NeuralNetworkImpl : public mojom::NeuralNetwork {
   NeuralNetworkImpl();
   ~NeuralNetworkImpl() override;
 
-  void CreateModel(CreateModelCallback callback) override;
+  // static
+  static void Create(mojo::PendingReceiver<ml::mojom::NeuralNetwork> receiver) {
+    mojo::MakeSelfOwnedReceiver(std::make_unique<NeuralNetworkImpl>(),
+                                std::move(receiver));
+  }
 
-  static void Create(mojom::NeuralNetworkRequest request);
+  void CreateModel(CreateModelCallback callback) override;
 
  protected:
   friend class ModelImpl;

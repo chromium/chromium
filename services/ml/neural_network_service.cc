@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/ml/ml_service.h"
-#include "services/ml/ml_switches.h"
+#include "services/ml/neural_network_service.h"
 
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "services/ml/ml_switches.h"
 #if defined(OS_LINUX) || defined(OS_WIN)
 #include "services/ml/neural_network_impl.h"
 #include "services/ml/neural_network_impl_nn.h"
@@ -19,31 +19,26 @@
 
 namespace ml {
 
-MLService::MLService(service_manager::mojom::ServiceRequest request)
-    : service_binding_(this, std::move(request)) {}
+NeuralNetworkService::NeuralNetworkService(
+      mojo::PendingReceiver<mojom::NeuralNetworkService> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
-MLService::~MLService() = default;
+NeuralNetworkService::~NeuralNetworkService() = default;
 
-void MLService::OnStart() {
+void NeuralNetworkService::BindNeuralNetwork(
+      mojo::PendingReceiver<mojom::NeuralNetwork> receiver) {
 #if (OS_LINUX) || defined(OS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kUseInferenceEngine)) {
-    registry_.AddInterface(base::Bind(&NeuralNetworkImplNN::Create));
+    NeuralNetworkImplNN::Create(std::move(receiver));
   } else {
-    registry_.AddInterface(base::Bind(&NeuralNetworkImpl::Create));
+    NeuralNetworkImpl::Create(std::move(receiver));
   }
 #elif defined(OS_ANDROID)
-  registry_.AddInterface(base::Bind(&NeuralNetworkImplNN::Create));
+  NeuralNetworkImplNN::Create(std::move(receiver));
 #elif defined(OS_MACOSX)
-  registry_.AddInterface(base::Bind(&NeuralNetworkImplMac::Create));
+  NeuralNetworkImplMac::Create(std::move(receiver));
 #endif
-}
-
-void MLService::OnBindInterface(
-    const service_manager::BindSourceInfo& source_info,
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle interface_pipe) {
-  registry_.BindInterface(interface_name, std::move(interface_pipe));
 }
 
 }  // namespace ml

@@ -44,7 +44,7 @@ class Execution final : public ScriptWrappable {
   void setOutput(uint32_t, MaybeShared<DOMArrayBufferView>, ExceptionState&);
   ScriptPromise startCompute(ScriptState*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(blink::Visitor*) const override;
 
  private:
   void OnResultCode(ScriptPromiseResolver*, const String&, int32_t);

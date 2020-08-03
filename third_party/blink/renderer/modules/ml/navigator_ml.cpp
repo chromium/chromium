@@ -39,14 +39,14 @@ ML* NavigatorML::ml(Navigator& navigator) {
   return self.ml_.Get();
 }
 
-Document* NavigatorML::GetDocument() {
+LocalDOMWindow* NavigatorML::DomWindow() {
   if (!GetSupplementable() || !GetSupplementable()->GetFrame())
     return nullptr;
 
-  return GetSupplementable()->GetFrame()->GetDocument();
+  return GetSupplementable()->DomWindow();
 }
 
-void NavigatorML::Trace(blink::Visitor* visitor) {
+void NavigatorML::Trace(blink::Visitor* visitor) const {
   visitor->Trace(ml_);
   Supplement<Navigator>::Trace(visitor);
 }
