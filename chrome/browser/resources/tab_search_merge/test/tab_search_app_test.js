@@ -4,6 +4,7 @@
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TabSearchAppElement} from 'chrome://tab-search/app.js';
+import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js'
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
@@ -116,7 +117,7 @@ suite('TabSearchAppTest', () => {
 
   test('return filtered tabs', async () => {
     await setupTest(sampleData());
-    const searchField = /** @type {!TabSearchSearchFieldElement} */
+    const searchField = /** @type {!TabSearchSearchField} */
       (tabSearchApp.shadowRoot.querySelector("#searchField"));
     searchField.setValue('bing');
     await flushTasks();
@@ -133,7 +134,7 @@ suite('TabSearchAppTest', () => {
   test('Keyboard navigation on an empty list', async () => {
     await setupTest({windows: [{active: true, tabs: []}]});
 
-    const searchField = /** @type {!TabSearchSearchFieldElement} */
+    const searchField = /** @type {!TabSearchSearchField} */
         (tabSearchApp.shadowRoot.querySelector("#searchField"));
 
     keyDownOn(searchField, 0, [], 'ArrowUp');
@@ -154,7 +155,7 @@ suite('TabSearchAppTest', () => {
 
     const numTabs =
         sampleData().windows.reduce((total, w) => total + w.tabs.length, 0);
-    const searchField = /** @type {!TabSearchSearchFieldElement} */
+    const searchField = /** @type {!TabSearchSearchField} */
         (tabSearchApp.shadowRoot.querySelector("#searchField"));
 
     keyDownOn(searchField, 0, [], 'ArrowUp');

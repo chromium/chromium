@@ -7,11 +7,19 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shared_vars.js';
 
-import {CrSearchFieldBehavior} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.m.js';
-import {html, PolymerElement, mixinBehaviors} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrSearchFieldBehavior, CrSearchFieldBehaviorInterface} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-class TabSearchSearchField extends mixinBehaviors(
-  [CrSearchFieldBehavior], PolymerElement) {
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrSearchFieldBehaviorInterface}
+ */
+const TabSearchSearchFieldBase =
+    mixinBehaviors([ CrSearchFieldBehavior ], PolymerElement);
+
+/** @polymer */
+export class TabSearchSearchField extends TabSearchSearchFieldBase {
 
   static get is() {
     return 'tab-search-search-field';
