@@ -188,14 +188,16 @@ export class TabSearchAppElement extends PolymerElement {
     // Ensure the scroll view can fully display a preceding or following tab
     // item if existing. Use Math.sign to identify any such preceding or
     // following item.
-    const scrollToIndex =
-        (this.selectedIndex_ === 0 ||
-         this.selectedIndex_ === this.filteredOpenTabs_.length - 1) ?
-        this.selectedIndex_ :
-        this.selectedIndex_ + Math.sign(offset);
-
-    this.getTabSearchItem_(scrollToIndex)
-        .scrollIntoView({behavior: 'smooth', block: 'nearest'});
+    if (this.selectedIndex_ === 0 ||
+        this.selectedIndex_ === this.filteredOpenTabs_.length - 1) {
+      this.getTabSearchItem_(this.selectedIndex_).scrollIntoView({
+        behavior: 'smooth'
+      });
+    } else {
+      this.getTabSearchItem_(this.selectedIndex_ + Math.sign(offset))
+          .scrollIntoView(
+              {behavior: 'smooth', block: offset > 0 ? 'end' : 'start'});
+    }
   }
 }
 
