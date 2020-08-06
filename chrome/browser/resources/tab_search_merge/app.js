@@ -6,11 +6,11 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-
 import './tab_search_item.js';
 import './tab_search_search_field.js'
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
@@ -198,6 +198,14 @@ export class TabSearchAppElement extends PolymerElement {
           .scrollIntoView(
               {behavior: 'smooth', block: offset > 0 ? 'end' : 'start'});
     }
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getKeyboardShortcut_() {
+    return (isMac ? 'Cmd' : 'Ctrl') + '+Shift+E';
   }
 }
 

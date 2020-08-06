@@ -14,7 +14,7 @@ js_type_check("closure_compile") {
     ":app",
     ":tab_search_api_proxy",
     ":tab_search_item",
-    ":tab_search_search_field"
+    ":tab_search_search_field",
   ]
 }
 
@@ -24,6 +24,7 @@ js_library("app") {
     ":tab_search_item",
     ":tab_search_search_field",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 

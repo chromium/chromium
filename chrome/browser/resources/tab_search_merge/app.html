@@ -16,9 +16,16 @@
     overflow-x: hidden;
     overflow-y: auto;
   }
+
+  #no-results {
+    color: var(--cr-primary-text-color);
+    font-size: var(--primary-text-font-size);
+    padding: 12px;
+    text-align: center;
+  }
 </style>
 <tab-search-search-field id="searchField" on-search-changed="onSearchChanged_"
-    label="Search tabs" clear-label="Clear search" on-keydown="onKeyDown_"
+    label="Search tabs [[getKeyboardShortcut_()]]" clear-label="Clear search" on-keydown="onKeyDown_"
     autofocus>
 </tab-search-search-field>
 <div id="tabs">
@@ -30,3 +37,4 @@
     </template>
   </iron-selector>
 </div>
+<div id="no-results" hidden="[[filteredOpenTabs_.length]]">No results found</div>
