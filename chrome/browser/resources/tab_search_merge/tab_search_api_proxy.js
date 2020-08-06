@@ -34,17 +34,17 @@ export class TabSearchApiProxyImpl {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  /** override */
+  /** @override */
   getProfileTabs() {
     return this.handler.getProfileTabs();
   }
 
-  /** override */
+  /** @override */
   switchToTab(info) {
     this.handler.switchToTab(info);
   }
 
-  /** override */
+  /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
   }

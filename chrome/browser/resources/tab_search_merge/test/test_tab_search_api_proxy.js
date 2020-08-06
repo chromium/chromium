@@ -24,18 +24,18 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
     this.profileTabs_;
   }
 
-  /** override */
+  /** @override */
   getProfileTabs() {
     this.methodCalled('getProfileTabs');
     return Promise.resolve({profileTabs: this.profileTabs_});
   }
 
-  /** override */
+  /** @override */
   switchToTab(tabInfo) {
-    this.methodCalled('switchToTab');
+    this.methodCalled('switchToTab', tabInfo);
   }
 
-  /** override */
+  /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
   }
