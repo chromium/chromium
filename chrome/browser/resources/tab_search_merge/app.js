@@ -145,35 +145,45 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * TODO(crbug.com/1111003): Check for the presence of modifiers before
-   * triggering a navigation.
    * @param {!KeyboardEvent} e
    * @private
    */
   onKeyDown_(e) {
-    if (this.selectedIndex_ !== -1) {
-      switch (e.key) {
-        case 'ArrowUp':
-          this.selectItem_(-1);
-          break;
-        case 'ArrowDown':
-          this.selectItem_(1);
-          break;
-        case 'Home':
-          this.selectItem_(-this.selectedIndex_);
-          break;
-        case 'End':
-          this.selectItem_(
-              this.filteredOpenTabs_.length - 1 - this.selectedIndex_);
-          break;
-        case 'Enter':
-          const selectedItem = this.filteredOpenTabs_[this.selectedIndex_];
-          this.apiProxy_.switchToTab({tabId: selectedItem.tabId});
-          break;
-      }
+    // Do not interfere with the search field's management of text selection.
+    if (e.shiftKey) {
+      return;
     }
 
     e.stopPropagation();
+
+    if (this.selectedIndex_ === -1) {
+      // No tabs matching the search text criteria.
+      return;
+    }
+
+    switch (e.key) {
+      case 'ArrowUp':
+        this.selectItem_(-1);
+        e.preventDefault();
+        break;
+      case 'ArrowDown':
+        this.selectItem_(1);
+        e.preventDefault();
+        break;
+      case 'Home':
+        this.selectItem_(-this.selectedIndex_);
+        e.preventDefault();
+        break;
+      case 'End':
+        this.selectItem_(
+            this.filteredOpenTabs_.length - 1 - this.selectedIndex_);
+        e.preventDefault();
+        break;
+      case 'Enter':
+        const selectedItem = this.filteredOpenTabs_[this.selectedIndex_];
+        this.apiProxy_.switchToTab({tabId: selectedItem.tabId});
+        break;
+    }
   }
 
   /**

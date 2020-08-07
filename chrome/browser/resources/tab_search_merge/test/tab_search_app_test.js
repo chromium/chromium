@@ -177,6 +177,18 @@ suite('TabSearchAppTest', () => {
     assertEquals(0, tabSearchApp.getSelectedIndex());
   });
 
+  test('Key with modifiers should not affect selected item', async () => {
+    await setupTest(sampleData());
+
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+
+    for (const key of ['ArrowUp', 'ArrowDown', 'Home', 'End']) {
+      keyDownOn(searchField, 0, ['shift'], key);
+      assertEquals(0, tabSearchApp.getSelectedIndex());
+    }
+  });
+
   test('refresh on tabs changed', async () => {
     await setupTest(sampleData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
