@@ -9,6 +9,7 @@ import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 export class TestTabSearchApiProxy extends TestBrowserProxy {
   constructor() {
     super([
+      'closeTab',
       'getProfileTabs',
       'switchToTab',
     ]);
@@ -22,6 +23,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
 
     /** @private {tabSearch.mojom.ProfileTabs} */
     this.profileTabs_;
+  }
+
+  /** @override */
+  closeTab(tabId) {
+    this.methodCalled('closeTab', tabId);
   }
 
   /** @override */

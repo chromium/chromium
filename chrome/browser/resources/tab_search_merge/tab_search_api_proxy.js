@@ -9,6 +9,9 @@ import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
 /** @interface */
 export class TabSearchApiProxy {
+  /** @param {number} tabId */
+  closeTab(tabId) {}
+
   /**  @return {Promise<{profileTabs: tabSearch.mojom.ProfileTabs}>} */
   getProfileTabs() {}
 
@@ -32,6 +35,11 @@ export class TabSearchApiProxyImpl {
     factory.createPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
+  }
+
+  /** @override */
+  closeTab(tabId) {
+    this.handler.closeTab(tabId);
   }
 
   /** @override */

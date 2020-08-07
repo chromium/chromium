@@ -131,6 +131,29 @@ suite('TabSearchAppTest', () => {
         'No default selection in the precense of data');
   });
 
+  test('Click on tab item triggers actions', async () => {
+    const tabData = {
+      index: 0,
+      tabId: 1,
+      favIconUrl: '',
+      title: 'Google',
+      url: 'https://www.google.com',
+    };
+    await setupTest({windows: [{active: true, tabs: [tabData]}]});
+
+    const tabSearchItem = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item'));
+    tabSearchItem.click();
+    const tabInfo = await testProxy.whenCalled('switchToTab');
+    assertEquals(tabData.tabId, tabInfo.tabId);
+
+    const tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
+        tabSearchItem.shadowRoot.querySelector('cr-icon-button'));
+    tabSearchItemCloseButton.click();
+    const tabId = await testProxy.whenCalled('closeTab');
+    assertEquals(tabData.tabId, tabId);
+  });
+
   test('Keyboard navigation on an empty list', async () => {
     await setupTest({windows: [{active: true, tabs: []}]});
 

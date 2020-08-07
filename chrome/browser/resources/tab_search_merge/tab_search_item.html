@@ -4,13 +4,21 @@
     --horizontal-margin: 8px;
     --vertical-margin: 12px;
     align-items: center;
-    background-color:  white;
+    background-color: white;
     display: flex;
     padding: var(--vertical-margin) var(--horizontal-margin);
   }
 
-  :host-context(.selected, :host:hover) {
+  :host(:hover) {
     background-color: rgba(var(--google-grey-900-rgb), 0.1);
+  }
+
+  :host(.selected) {
+    background-color: rgba(var(--google-grey-900-rgb), 0.16);
+  }
+
+  :host(:hover, .selected) .button-container {
+    display: flex;
   }
 
   .button-container {

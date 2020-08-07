@@ -134,6 +134,15 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
+   * @param {!Event} e
+   * @private
+   */
+  onItemClose_(e) {
+    const tabId = Number.parseInt(e.currentTarget.id, 10);
+    this.apiProxy_.closeTab(tabId);
+  }
+
+  /**
    * @param {number} index A valid index for an element present in the
    *     filteredOpenTabs_ array.
    * @return {?HTMLElement}
@@ -145,6 +154,7 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
+   * TODO(crbug.com/1113470): Tab Search item and buttons focus and navigation.
    * @param {!KeyboardEvent} e
    * @private
    */
