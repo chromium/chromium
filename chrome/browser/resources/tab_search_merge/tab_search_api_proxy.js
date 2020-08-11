@@ -7,6 +7,16 @@ import './tab_search.mojom-lite.js';
 
 import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 
+/**
+ * These values are persisted to logs and should not be renumbered or re-used.
+ * See tools/metrics/histograms/enums.xml.
+ * @enum {number}
+ */
+export const TabSwitchAction = {
+  WITHOUT_SEARCH : 0,
+  WITH_SEARCH : 1,
+};
+
 /** @interface */
 export class TabSearchApiProxy {
   /** @param {number} tabId */
@@ -15,8 +25,11 @@ export class TabSearchApiProxy {
   /**  @return {Promise<{profileTabs: tabSearch.mojom.ProfileTabs}>} */
   getProfileTabs() {}
 
-  /** @param {!tabSearch.mojom.SwitchToTabInfo} info */
-  switchToTab(info) {}
+  /**
+   * @param {!tabSearch.mojom.SwitchToTabInfo} info
+   * @param {boolean} withSearch
+   */
+  switchToTab(info, withSearch) {}
 
   /** @return {!tabSearch.mojom.PageCallbackRouter} */
   getCallbackRouter() {}
@@ -48,7 +61,12 @@ export class TabSearchApiProxyImpl {
   }
 
   /** @override */
-  switchToTab(info) {
+  switchToTab(info, withSearch) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Tabs.TabSearch.WebUI.TabSwitchAction',
+        withSearch ? TabSwitchAction.WITH_SEARCH
+                   : TabSwitchAction.WITHOUT_SEARCH,
+        Object.keys(TabSwitchAction).length);
     this.handler.switchToTab(info);
   }
 

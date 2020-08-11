@@ -37,8 +37,8 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  switchToTab(tabInfo) {
-    this.methodCalled('switchToTab', tabInfo);
+  switchToTab(tabInfo, withSearch) {
+    this.methodCalled('switchToTab', [ tabInfo, withSearch ]);
   }
 
   /** @override */

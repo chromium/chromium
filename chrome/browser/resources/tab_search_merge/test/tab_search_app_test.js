@@ -7,7 +7,7 @@ import {TabSearchAppElement} from 'chrome://tab-search/app.js';
 import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js'
 
-import {assertEquals, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
@@ -144,7 +144,7 @@ suite('TabSearchAppTest', () => {
     const tabSearchItem = /** @type {!HTMLElement} */
         (tabSearchApp.shadowRoot.querySelector('tab-search-item'));
     tabSearchItem.click();
-    const tabInfo = await testProxy.whenCalled('switchToTab');
+    const [tabInfo] = await testProxy.whenCalled('switchToTab');
     assertEquals(tabData.tabId, tabInfo.tabId);
 
     const tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
@@ -254,5 +254,45 @@ suite('TabSearchAppTest', () => {
     // |chrome.metricsPrivate.recordTime()| should still have only been
     // called once.
     assertEquals(1, recordTimeCalled);
+  });
+
+  test('Verify tab switch is logged correctly.', async () => {
+    await setupTest(sampleData());
+    // Make sure that tab data has been recieved.
+    verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
+
+    // Click the first element with tabId 1.
+    let tabSearchItem = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
+    tabSearchItem.click();
+
+    // Assert switchToTab() was called appropriately for an unfiltered tab list.
+    await testProxy.whenCalled('switchToTab')
+        .then(([ tabInfo, withSearch ]) => {
+          assertEquals(1, tabInfo.tabId);
+          assertFalse(withSearch);
+        });
+
+    // Force a change to filtered tab data that would result in a
+    // re-render.
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    searchField.setValue('bing');
+    await flushTasks();
+    verifyTabIds(queryRows(), [ 2 ]);
+
+    testProxy.reset();
+    // Click the only remaining element with tabId 2.
+    tabSearchItem = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="2"]'));
+    tabSearchItem.click();
+
+    // Assert switchToTab() was called appropriately for a tab list fitlered by
+    // the search query.
+    await testProxy.whenCalled('switchToTab')
+        .then(([ tabInfo, withSearch ]) => {
+          assertEquals(2, tabInfo.tabId);
+          assertTrue(withSearch);
+        });
   });
 });

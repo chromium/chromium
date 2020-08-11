@@ -35,6 +35,7 @@ js_library("tab_search_api_proxy") {
     "//chrome/browser/ui/webui/tab_search:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("tab_search_item") {

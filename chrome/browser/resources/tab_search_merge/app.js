@@ -142,7 +142,7 @@ export class TabSearchAppElement extends PolymerElement {
    */
   onItemClick_(e) {
     const tabId = Number.parseInt(e.currentTarget.id, 10);
-    this.apiProxy_.switchToTab({tabId});
+    this.apiProxy_.switchToTab({tabId}, !!this.searchText_);
   }
 
   /**
@@ -203,7 +203,8 @@ export class TabSearchAppElement extends PolymerElement {
         break;
       case 'Enter':
         const selectedItem = this.filteredOpenTabs_[this.selectedIndex_];
-        this.apiProxy_.switchToTab({tabId: selectedItem.tabId});
+        this.apiProxy_.switchToTab({tabId : selectedItem.tabId},
+                                   !!this.searchText_);
         break;
     }
   }
