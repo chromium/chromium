@@ -30,7 +30,7 @@
 </tab-search-search-field>
 <div id="tabs">
   <iron-selector id="selector" selected="{{selectedIndex_}}" selected-class="selected">
-    <template id="tabs-list" is="dom-repeat" items="[[filteredOpenTabs_]]">
+    <template id="tabsList" is="dom-repeat" items="[[filteredOpenTabs_]]">
       <tab-search-item id="[[item.tabId]]" data="[[item]]"
           on-click="onItemClick_" on-close="onItemClose_" tabindex="-1" >
       </tab-search-item>

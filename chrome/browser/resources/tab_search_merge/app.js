@@ -12,7 +12,7 @@ import './tab_search_search_field.js'
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
 /**
@@ -72,10 +72,12 @@ export class TabSearchAppElement extends PolymerElement {
   ready() {
     super.ready();
 
+    // TODO(tluk): The listener should provide the data needed to update the
+    // WebUI without having to make another round trip request to the Browser.
     this.listenerIds_.push(
         this.apiProxy_.getCallbackRouter().tabsChanged.addListener(
-            this.getTabs.bind(this)));
-    this.getTabs();
+            () => { this.updateTabs_(); }));
+    this.updateTabs_();
   }
 
   /** @override */
@@ -85,11 +87,21 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /** @private */
-  getTabs() {
+  updateTabs_() {
     this.apiProxy_.getProfileTabs().then(({profileTabs}) => {
-      if (profileTabs) {
-        this.openTabs_ = profileTabs.windows;
+      // Prior to the first load |this.openTabs_| has not been set. Record the
+      // time it takes for the initial list of tabs to render.
+      if (!this.openTabs_) {
+        listenOnce(this.$.tabsList, 'rendered-item-count-changed', e => {
+          const event = /** @type {!CustomEvent<!{value: number}>} */ (e);
+          // Ensure that the full list of tabs has been rendered.
+          assert(event.detail.value === this.filteredOpenTabs_.length);
+          chrome.metricsPrivate.recordTime(
+              'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
+              Math.round(window.performance.now()));
+        });
       }
+      this.openTabs_ = profileTabs.windows;
     });
   }
 

@@ -8,7 +8,7 @@ import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js'
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
@@ -219,5 +219,40 @@ suite('TabSearchAppTest', () => {
     testProxy.getCallbackRouterRemote().tabsChanged();
     await flushTasks();
     verifyTabIds(queryRows(), []);
+  });
+
+  test('Verify initial tab render time is logged correctly.', async () => {
+    // |recordTimeCalled| tracks the number of calls to recordTime().
+    let recordTimeCalled = 0;
+    // |metricString| tracks the metric name passed to recordTime().
+    let metricName;
+    chrome.metricsPrivate.recordTime = (...args) => {
+      recordTimeCalled += 1;
+      metricName = args[0];
+    };
+
+    await setupTest(sampleData());
+    await waitAfterNextRender(tabSearchApp);
+
+    // Make sure that tab data has been recieved.
+    verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
+
+    // Ensure that |chrome.metricsPrivate.recordTime()| has been called
+    // once after initial tab data has been recieved.
+    assertEquals(1, recordTimeCalled);
+    assertEquals('Tabs.TabSearch.WebUI.InitialTabsRenderTime', metricName);
+
+    // Force a change to filtered tab data that would result in a
+    // re-render.
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    searchField.setValue('bing');
+    await flushTasks();
+    await waitAfterNextRender(tabSearchApp);
+    verifyTabIds(queryRows(), [ 2 ]);
+
+    // |chrome.metricsPrivate.recordTime()| should still have only been
+    // called once.
+    assertEquals(1, recordTimeCalled);
   });
 });
