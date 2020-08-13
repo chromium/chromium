@@ -1,10 +1,9 @@
 <style>
-  /* TODO(crbug.com/1110109): Add dark mode support. */
   :host {
     --horizontal-margin: 8px;
     --vertical-margin: 12px;
     align-items: center;
-    background-color: white;
+    background-color: var(--tab-search-background-color);
     display: flex;
     padding: var(--vertical-margin) var(--horizontal-margin);
   }
@@ -13,8 +12,20 @@
     background-color: rgba(var(--google-grey-900-rgb), 0.1);
   }
 
+  @media (prefers-color-scheme: dark) {
+    :host(:hover) {
+      background-color: var(--google-grey-800);
+    }
+  }
+
   :host(.selected) {
     background-color: rgba(var(--google-grey-900-rgb), 0.16);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host(.selected) {
+      background-color: var(--google-grey-refresh-700);
+    }
   }
 
   :host(:hover, .selected) .button-container {

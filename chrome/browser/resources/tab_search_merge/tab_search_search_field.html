@@ -10,10 +10,22 @@
     user-select: none;
   }
 
+  @media (prefers-color-scheme: dark) {
+    :host {
+      background-color: var(--google-grey-800);
+    }
+  }
+
   #searchIcon {
     height: var(--icon-size);
     padding-inline-end: 4px;
     width: var(--icon-size);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #searchIcon {
+      color: var(--google-blue-refresh-300);
+    }
   }
 
   input {
@@ -27,7 +39,6 @@
     outline: none;
     text-overflow: ellipsis;
   }
-
 </style>
 <iron-icon id="searchIcon" icon="cr:search"></iron-icon>
 <input id="searchInput" on-search="onSearchTermSearch"

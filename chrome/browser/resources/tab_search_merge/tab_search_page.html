@@ -5,12 +5,23 @@
   <title>Tab Search</title>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <style>
+    html {
+      --tab-search-background-color: white;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        --tab-search-background-color: var(--google-grey-900);
+      }
+    }
+
     html,
     body {
       width: 320px;
     }
 
     body {
+      background-color: var(--tab-search-background-color);
       margin: 0;
     }
   </style>
@@ -18,4 +29,5 @@
 <body>
   <tab-search-app></tab-search-app>
   <script type="module" src="app.js"></script>
+</body>
 </html>
