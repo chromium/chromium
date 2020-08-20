@@ -74,9 +74,10 @@ export class TabSearchAppElement extends PolymerElement {
 
     // TODO(tluk): The listener should provide the data needed to update the
     // WebUI without having to make another round trip request to the Browser.
+    const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
-        this.apiProxy_.getCallbackRouter().tabsChanged.addListener(
-            () => { this.updateTabs_(); }));
+        callbackRouter.tabsChanged.addListener(() => this.updateTabs_()),
+        callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab)));
     this.updateTabs_();
   }
 
@@ -103,6 +104,28 @@ export class TabSearchAppElement extends PolymerElement {
       }
       this.openTabs_ = profileTabs.windows;
     });
+  }
+
+  /**
+   * @param {!tabSearch.mojom.Tab} updatedTab
+   * @private
+   */
+  onTabUpdated_(updatedTab) {
+    const updatedTabId = updatedTab.tabId;
+    const windows = this.openTabs_;
+    if (windows) {
+      for (const window of windows) {
+        const {tabs} = window;
+        for (let i = 0; i < tabs.length; ++i) {
+          // Replace the tab with the same tabId and trigger rerender.
+          if (tabs[i].tabId === updatedTabId) {
+            tabs[i] = updatedTab;
+            this.openTabs_ = windows.concat();
+            return;
+          }
+        }
+      }
+    }
   }
 
   /** @return {number} */

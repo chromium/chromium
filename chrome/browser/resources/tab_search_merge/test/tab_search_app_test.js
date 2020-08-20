@@ -221,6 +221,30 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), []);
   });
 
+  test('refresh on tab updated', async () => {
+    await setupTest(sampleData());
+    verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
+    let tabSearchItem = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
+    assertEquals('Google', tabSearchItem.data.title);
+    assertEquals('https://www.google.com', tabSearchItem.data.url);
+    const updatedTab = /** @type {!tabSearch.mojom.Tab} */ ({
+      index: 0,
+      tabId: 1,
+      favIconUrl: '',
+      title: 'Example',
+      url: 'https://example.com',
+    });
+    testProxy.getCallbackRouterRemote().tabUpdated(updatedTab);
+    await flushTasks();
+    // tabIds are not changed after tab updated.
+    verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
+    tabSearchItem = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
+    assertEquals(updatedTab.title, tabSearchItem.data.title);
+    assertEquals(updatedTab.url, tabSearchItem.data.url);
+  });
+
   test('Verify initial tab render time is logged correctly.', async () => {
     // |recordTimeCalled| tracks the number of calls to recordTime().
     let recordTimeCalled = 0;
