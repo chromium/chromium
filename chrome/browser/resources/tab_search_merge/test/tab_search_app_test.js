@@ -7,7 +7,7 @@ import {TabSearchAppElement} from 'chrome://tab-search/app.js';
 import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_search_api_proxy.js'
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertNotEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
@@ -115,20 +115,30 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
   });
 
-  test('return filtered tabs', async () => {
+  test('Default tab selection when data is present', async () => {
+    await setupTest(sampleData());
+    assertNotEquals(-1, tabSearchApp.getSelectedIndex(),
+        'No default selection in the presence of data');
+  });
+
+  test('Search text changes tab items', async () => {
     await setupTest(sampleData());
     const searchField = /** @type {!TabSearchSearchField} */
       (tabSearchApp.shadowRoot.querySelector("#searchField"));
     searchField.setValue('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
+    assertEquals(0, tabSearchApp.getSelectedIndex());
   });
 
-  test('Default tab selection when data is present', async () => {
+  test('No tab selected when there are no search matches', async () => {
     await setupTest(sampleData());
-    assertTrue(
-        tabSearchApp.getSelectedIndex() != -1,
-        'No default selection in the precense of data');
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    searchField.setValue('Twitter');
+    await flushTasks();
+    assertEquals(0, queryRows().length);
+    assertEquals(-1, tabSearchApp.getSelectedIndex());
   });
 
   test('Click on tab item triggers actions', async () => {
@@ -174,10 +184,11 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Keyboard navigation abides by item list range boundaries', async () => {
-    await setupTest(sampleData());
+    const testData = sampleData();
+    await setupTest(testData);
 
     const numTabs =
-        sampleData().windows.reduce((total, w) => total + w.tabs.length, 0);
+        testData.windows.reduce((total, w) => total + w.tabs.length, 0);
     const searchField = /** @type {!TabSearchSearchField} */
         (tabSearchApp.shadowRoot.querySelector("#searchField"));
 
@@ -219,6 +230,28 @@ suite('TabSearchAppTest', () => {
     testProxy.getCallbackRouterRemote().tabsChanged();
     await flushTasks();
     verifyTabIds(queryRows(), []);
+    assertEquals(-1, tabSearchApp.getSelectedIndex());
+  });
+
+  test('On tabs changed, tab item selection preserved or updated', async () => {
+    const testData = sampleData();
+    await setupTest(testData);
+
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    keyDownOn(searchField, 0, [], 'ArrowDown');
+    assertEquals(1, tabSearchApp.getSelectedIndex());
+
+    testProxy.setProfileTabs({windows: [testData.windows[0]]});
+    testProxy.getCallbackRouterRemote().tabsChanged();
+    await flushTasks();
+    assertEquals(1, tabSearchApp.getSelectedIndex());
+
+    testProxy.setProfileTabs(
+        {windows: [{active: true, tabs: [testData.windows[0].tabs[0]]}]});
+    testProxy.getCallbackRouterRemote().tabsChanged();
+    await flushTasks();
+    assertEquals(0, tabSearchApp.getSelectedIndex());
   });
 
   test('refresh on tab updated', async () => {

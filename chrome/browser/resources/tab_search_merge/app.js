@@ -15,15 +15,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
-/**
- * @param {string} searchText
- * @param {!tabSearch.mojom.Tab} item
- * @return {boolean}
- */
-function filterFunc(searchText, item) {
-  return item.title.toLowerCase().includes(searchText.toLowerCase());
-};
-
 export class TabSearchAppElement extends PolymerElement {
   static get is() {
     return 'tab-search-app';
@@ -48,12 +39,15 @@ export class TabSearchAppElement extends PolymerElement {
       selectedIndex_: {type: Number, value: -1},
 
       /** @private {?Array<!tabSearch.mojom.WindowTabs>} */
-      openTabs_: Array,
+      openTabs_: {
+        type: Array,
+        observer: 'openTabsChanged_',
+      },
 
       /** @private {!Array<!tabSearch.mojom.Tab>} */
       filteredOpenTabs_: {
         type: Array,
-        computed: 'getFilteredTabs_(openTabs_, searchText_)',
+        value: [],
       },
     };
   }
@@ -134,29 +128,16 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {?Array<!tabSearch.mojom.WindowTabs>} windows
-   * @param {string} searchText
-   * @return {!Array<!tabSearch.mojom.Tab>}
-   * @private
-   */
-  getFilteredTabs_(windows, searchText) {
-    const result = [];
-    if (windows) {
-      windows.forEach(window => {
-        result.push(...window.tabs.filter(filterFunc.bind(null, searchText)));
-      });
-    }
-
-    this.selectedIndex_ = result.length > 0 ? 0 : -1;
-    return result;
-  }
-
-  /**
    * @param {!CustomEvent<string>} e
    * @private
    */
   onSearchChanged_(e) {
     this.searchText_ = e.detail;
+
+    this.updateFilteredTabs_(this.openTabs_ || []);
+    // Reset the selected item whenever a search query is provided.
+    this.selectedIndex_ = this.filteredOpenTabs_.length > 0 ? 0 : -1;
+    this.$.tabs.scrollTop = 0;
   }
 
   /**
@@ -175,6 +156,21 @@ export class TabSearchAppElement extends PolymerElement {
   onItemClose_(e) {
     const tabId = Number.parseInt(e.currentTarget.id, 10);
     this.apiProxy_.closeTab(tabId);
+  }
+
+  /**
+   * @param {!Array<!tabSearch.mojom.WindowTabs>} newOpenTabs
+   * @private
+   */
+  openTabsChanged_(newOpenTabs) {
+    this.updateFilteredTabs_(newOpenTabs);
+
+    // If there was no previously selected index, set the first item as
+    // selected; else retain the currently selected index. If the list
+    // shrunk above the selected index, select the last index in the list.
+    // If there are no matching results, set the selected index value to none.
+    this.selectedIndex_ = Math.min(
+        Math.max(this.selectedIndex_, 0), this.filteredOpenTabs_.length - 1);
   }
 
   /**
@@ -262,6 +258,23 @@ export class TabSearchAppElement extends PolymerElement {
    */
   getKeyboardShortcut_() {
     return (isMac ? 'Cmd' : 'Ctrl') + '+Shift+E';
+  }
+
+  /**
+   * @param {!Array<!tabSearch.mojom.WindowTabs>} windowTabs
+   * @private
+   */
+  updateFilteredTabs_(windowTabs) {
+    const lowerCaseSearchText = this.searchText_.toLowerCase();
+    this.filteredOpenTabs_ = !!this.searchText_ ?
+        windowTabs
+            .map(window => {
+              return window.tabs.filter(item => {
+                return item.title.toLowerCase().includes(lowerCaseSearchText);
+              });
+            })
+            .flat() :
+        windowTabs.map(window => window.tabs).flat();
   }
 }
 
