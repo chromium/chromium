@@ -2543,6 +2543,8 @@ void WebViewImpl::ReportActiveSchedulerTrackedFeatures() {
     if (!frame->IsLocalFrame())
       continue;
     auto* local_frame = DynamicTo<LocalFrame>(frame);
+    if (!local_frame->GetFrameScheduler())
+      continue;
     local_frame->GetFrameScheduler()->ReportActiveSchedulerTrackedFeatures();
   }
 }
