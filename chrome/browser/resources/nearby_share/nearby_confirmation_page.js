@@ -64,17 +64,15 @@ Polymer({
 
   /** @private */
   onAcceptTap_() {
-    this.confirmationManager.accept().then(
-        result => {
-            // TODO(knollr): Close dialog as send is now in progress.
-        });
+    this.confirmationManager.accept().then(result => {
+      this.fire('close');
+    });
   },
 
   /** @private */
   onCancelTap_() {
-    this.confirmationManager.reject().then(
-        result => {
-            // TODO(knollr): Close dialog or go back to device discovery.
-        });
+    this.confirmationManager.reject().then(result => {
+      this.fire('close');
+    });
   },
 });

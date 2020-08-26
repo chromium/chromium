@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEARBY_SHARE_NEARBY_SHARE_DIALOG_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_NEARBY_SHARE_NEARBY_SHARE_DIALOG_UI_H_
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -17,10 +20,19 @@ namespace nearby_share {
 // The WebUI controller for chrome://nearby.
 class NearbyShareDialogUI : public ui::MojoWebUIController {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnClose() = 0;
+  };
+
   explicit NearbyShareDialogUI(content::WebUI* web_ui);
   NearbyShareDialogUI(const NearbyShareDialogUI&) = delete;
   NearbyShareDialogUI& operator=(const NearbyShareDialogUI&) = delete;
   ~NearbyShareDialogUI() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+  void SetShareIntent(apps::mojom::IntentPtr intent);
 
   // Instantiates the implementor of the mojom::DiscoveryManager mojo
   // interface passing the pending receiver that will be internally bound.
@@ -30,6 +42,9 @@ class NearbyShareDialogUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<mojom::NearbyShareSettings> receiver);
 
  private:
+  void HandleClose(const base::ListValue* args);
+  apps::mojom::IntentPtr intent_;
+  base::ObserverList<Observer> observers_;
   NearbySharingService* nearby_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

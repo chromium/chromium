@@ -198,7 +198,7 @@ Polymer({
             this.confirmationToken = token;
             this.fire('change-page', {page: 'confirmation'});
           } else {
-            // TODO(knollr): Close dialog as send is now in progress.
+            this.fire('close');
           }
         });
   },
@@ -234,5 +234,10 @@ Polymer({
       this.lastSelectedShareTarget_ = shareTarget;
       this.selectedShareTarget = shareTarget;
     }
-  }
+  },
+
+  /** @private */
+  onCancelTap_() {
+    this.fire('close');
+  },
 });

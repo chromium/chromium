@@ -112,6 +112,6 @@ Polymer({
    * @private
    */
   onClose_(event) {
-    // TODO(vecore): handle closing when share sheet is hooked up
+    chrome.send('close');
   }
 });

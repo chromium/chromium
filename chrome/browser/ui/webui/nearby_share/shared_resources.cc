@@ -37,6 +37,7 @@ void RegisterNearbySharedResources(content::WebUIDataSource* data_source) {
 void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"secureConnectionId", IDS_NEARBY_SECURE_CONNECTION_ID},
+      {"nearbyShareFeatureName", IDS_NEARBY_SHARE_FEATURE_NAME},
   };
   webui::AddLocalizedStringsBulk(data_source, kLocalizedStrings);
 }

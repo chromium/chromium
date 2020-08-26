@@ -54,10 +54,27 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   RegisterNearbySharedStrings(html_source);
   html_source->UseStringsJs();
 
+  web_ui->RegisterMessageCallback(
+      "close", base::BindRepeating(&NearbyShareDialogUI::HandleClose,
+                                   base::Unretained(this)));
+
   content::WebUIDataSource::Add(profile, html_source);
 }
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;
+
+void NearbyShareDialogUI::AddObserver(NearbyShareDialogUI::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void NearbyShareDialogUI::RemoveObserver(
+    NearbyShareDialogUI::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void NearbyShareDialogUI::SetShareIntent(apps::mojom::IntentPtr intent) {
+  intent_ = std::move(intent);
+}
 
 void NearbyShareDialogUI::BindInterface(
     mojo::PendingReceiver<mojom::DiscoveryManager> manager) {
@@ -71,6 +88,12 @@ void NearbyShareDialogUI::BindInterface(
       NearbySharingServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
   nearby_sharing_service->GetSettings()->Bind(std::move(receiver));
+}
+
+void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
+  for (auto& observer : observers_) {
+    observer.OnClose();
+  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NearbyShareDialogUI)
