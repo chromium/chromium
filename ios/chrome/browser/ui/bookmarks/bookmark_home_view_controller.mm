@@ -1472,6 +1472,12 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     // If the Signin promo is visible on the root view, we have to shift the
     // empty TableView background to make it fully visible on all devices.
     if ([self isDisplayingBookmarkRoot]) {
+      // Reload the data to ensure consistency between the model and the table
+      // (an example scenario can be found at crbug.com/1116408). Reloading the
+      // data should only be done for the root bookmark folder since it can be
+      // very expensive in other folders.
+      [self.sharedState.tableView reloadData];
+
       self.navigationItem.largeTitleDisplayMode =
           UINavigationItemLargeTitleDisplayModeNever;
       if (self.sharedState.promoVisible &&
