@@ -3519,6 +3519,7 @@ test("unit_tests") {
     "../browser/push_messaging/budget_database_unittest.cc",
     "../browser/push_messaging/push_messaging_app_identifier_unittest.cc",
     "../browser/push_messaging/push_messaging_notification_manager_unittest.cc",
+    "../browser/push_messaging/push_messaging_refresher_unittest.cc",
     "../browser/push_messaging/push_messaging_service_unittest.cc",
     "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unit_test.mm",
     "../browser/resource_coordinator/tab_load_tracker_unittest.cc",

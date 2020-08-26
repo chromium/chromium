@@ -1411,6 +1411,8 @@ static_library("browser") {
     "push_messaging/push_messaging_features.h",
     "push_messaging/push_messaging_notification_manager.cc",
     "push_messaging/push_messaging_notification_manager.h",
+    "push_messaging/push_messaging_refresher.cc",
+    "push_messaging/push_messaging_refresher.h",
     "push_messaging/push_messaging_service_factory.cc",
     "push_messaging/push_messaging_service_factory.h",
     "push_messaging/push_messaging_service_impl.cc",

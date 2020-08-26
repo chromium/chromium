@@ -19,4 +19,8 @@ extern const char kPushMessagingForcedNotificationTag[];
 constexpr base::TimeDelta kPushSubscriptionExpirationPeriodTimeDelta =
     base::TimeDelta::FromDays(90);
 
+// TimeDelta for subscription refreshes to keep old subscriptions alive
+constexpr base::TimeDelta kPushSubscriptionRefreshTimeDelta =
+    base::TimeDelta::FromMinutes(2);
+
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_CONSTANTS_H_
