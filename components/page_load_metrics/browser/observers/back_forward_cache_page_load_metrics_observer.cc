@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 
+#include "components/page_load_metrics/browser/observers/core_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -20,6 +21,27 @@ extern const char
 extern const char kHistogramCumulativeShiftScoreAfterBackForwardCacheRestore[] =
     "PageLoad.LayoutInstability.CumulativeShiftScore."
     "AfterBackForwardCacheRestore";
+
+// Enables to emit zero values for some key metrics when back-forward cache is
+// used.
+//
+// With this flag disabled, no samples are emitted for regular VOLT metrics
+// after the page is restored from the back-forward cache. This means that we
+// will miss a lot of metrics for history navigations after we launch back-
+// forward cache. As metrics for history navigations tend to be better figures
+// than other navigations (e.g., due to network cache), the average of such
+// metrics values will become worse and might seem regression if we don't take
+// any actions.
+//
+// To mitigate this issue, we plan to emit 0 samples for such key metrics for
+// back-forward navigations. This is implemented behind this flag so far, and we
+// will enable this by default when we reach the conclusion how to adjust them.
+//
+// For cumulative layout shift scores, we use actual score values for back-
+// forward cache navigations instead of 0s.
+const base::Feature kBackForwardCacheEmitZeroSamplesForKeyMetrics{
+    "BackForwardCacheEmitZeroSamplesForKeyMetrics",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace internal
 
@@ -63,6 +85,15 @@ void BackForwardCachePageLoadMetricsObserver::
     builder.SetNavigationToFirstPaintAfterBackForwardCacheRestore(
         first_paint.InMilliseconds());
     builder.Record(ukm::UkmRecorder::Get());
+
+    if (base::FeatureList::IsEnabled(
+            internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstPaint, base::TimeDelta{});
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstContentfulPaint,
+                          base::TimeDelta{});
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramLargestContentfulPaint,
+                          base::TimeDelta{});
+    }
   }
 }
 
@@ -86,6 +117,12 @@ void BackForwardCachePageLoadMetricsObserver::
     builder.SetFirstInputDelayAfterBackForwardCacheRestore(
         first_input_delay.value().InMilliseconds());
     builder.Record(ukm::UkmRecorder::Get());
+
+    if (base::FeatureList::IsEnabled(
+            internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
+      PAGE_LOAD_HISTOGRAM(internal::kHistogramFirstInputDelay,
+                          base::TimeDelta{});
+    }
   }
 }
 
@@ -151,6 +188,16 @@ void BackForwardCachePageLoadMetricsObserver::
       GetDelegate().GetMainFrameRenderData().layout_shift_score;
   last_layout_shift_score_ =
       GetDelegate().GetPageRenderData().layout_shift_score;
+
+  if (base::FeatureList::IsEnabled(
+          internal::kBackForwardCacheEmitZeroSamplesForKeyMetrics)) {
+    UMA_HISTOGRAM_COUNTS_100(
+        "PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame",
+        page_load_metrics::LayoutShiftUmaValue(layout_main_frame_shift_score));
+    UMA_HISTOGRAM_COUNTS_100(
+        "PageLoad.LayoutInstability.CumulativeShiftScore",
+        page_load_metrics::LayoutShiftUmaValue(layout_shift_score));
+  }
 }
 
 int64_t BackForwardCachePageLoadMetricsObserver::
