@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/bind.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
@@ -24,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -45,7 +45,7 @@ media::AudioParameters Params() {
 }
 
 MojoAudioOutputIPC::FactoryAccessorCB NullAccessor() {
-  return base::BindRepeating(
+  return WTF::BindRepeating(
       []() -> blink::mojom::blink::RendererAudioOutputStreamFactory* {
         return nullptr;
       });
@@ -172,7 +172,7 @@ class TestRemoteFactory
   }
 
   MojoAudioOutputIPC::FactoryAccessorCB GetAccessor() {
-    return base::BindRepeating(&TestRemoteFactory::get, base::Unretained(this));
+    return WTF::BindRepeating(&TestRemoteFactory::get, WTF::Unretained(this));
   }
 
  private:
