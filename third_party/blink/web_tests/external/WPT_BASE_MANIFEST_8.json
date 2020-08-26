@@ -43758,7 +43758,7 @@
       ]
      ],
      "css3-border-image-repeat-repeat.html": [
-      "001e52a003cd3669fd574ebfa629650f2d8ac229",
+      "1b8e7588d261e9478cbe35a68039b0da06c900e3",
       [
        null,
        [
@@ -43771,7 +43771,7 @@
       ]
      ],
      "css3-border-image-repeat-stretch.html": [
-      "d9e1fc03e6f131c5a181422a83de263b5f9a357a",
+      "c83cf383725572c0ebc6c19146416ad59ab2847f",
       [
        null,
        [
@@ -168279,11 +168279,11 @@
        []
       ],
       "css3-border-image-repeat-repeat-ref.html": [
-       "64490d2e5ce99601e9ca38eccf2944509519d496",
+       "58d48f007502c1d149dccb8efb94f47f067d8208",
        []
       ],
       "css3-border-image-repeat-stretch-ref.html": [
-       "cdbffd153b2d71e5fa4f4a095ff6f0f42ef0ca8c",
+       "ed83c3dbf279aadc94da3df5d767fe453f8ce39c",
        []
       ],
       "css3-border-image-source-ref.html": [
@@ -168438,6 +168438,10 @@
        "5b2f7e156ce34b51379b7a72e65d912ed0066171",
        []
       ],
+      "blue-diamond-27x27.png": [
+       "1e66726482551231aba9e44557752fd483afa0cd",
+       []
+      ],
       "blue-diamond.png": [
        "3617045efbc0ab9702af523f4999cf45247db38b",
        []
@@ -168520,6 +168524,10 @@
       ],
       "import-red.css": [
        "9945ef47114c2841a746c99a2fb1e93e050aac8b",
+       []
+      ],
+      "new-red-diamond-27x27.png": [
+       "859cbc33d216aa454ede2702b1c6ac7f39e6ca02",
        []
       ],
       "orange_color.png": [
@@ -298933,6 +298941,13 @@
        {}
       ]
      ],
+     "recursive-exec-command-calls.tentative.html": [
+      "60a3b03099f358cf88e8e10c67347d9322cc9124",
+      [
+       null,
+       {}
+      ]
+     ],
      "restoration.html": [
       "4c53008b41027c4e11734dea068a57ea0e7283db",
       [
@@ -318013,6 +318028,13 @@
        ],
        "empty_fragment.html": [
         "18a6f84c9f591b3d65ad66c528e1cb4d2c05364f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "failure-check-sequence.https.html": [
+        "5d7aa2b9cbbf8a0a2aebe3f1af3e10dd38d5f1a7",
         [
          null,
          {}
