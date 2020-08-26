@@ -1186,6 +1186,7 @@ test("content_browsertests") {
     ":web_ui_test_mojo_bindings",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
+    "//build:lacros_buildflags",
     "//components/discardable_memory/client",
     "//components/discardable_memory/common",
     "//components/discardable_memory/service",
