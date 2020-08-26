@@ -806,6 +806,10 @@ TEST(AXEventGeneratorTest, ObjectAttributeChanged) {
   EXPECT_THAT(
       event_generator,
       UnorderedElementsAre(
+          HasEventAtNode(
+              AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED, 2),
+          HasEventAtNode(
+              AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED, 3),
           HasEventAtNode(AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED, 2),
           HasEventAtNode(AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED,
                          3)));

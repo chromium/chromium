@@ -51,9 +51,12 @@ void RemoveEvent(std::set<AXEventGenerator::EventParams>* node_events,
 // platforms likely will do that in response to ignored-changed.
 // Suppress name- and description-changed because those can be emitted as a side
 // effect of calculating alternative text values for a newly-displayed object.
-// Ditto for text attributes such as foreground and background colors.
+// Ditto for text attributes such as foreground and background colors, or
+// display changing from "none" to "block."
 void RemoveEventsDueToIgnoredChanged(
     std::set<AXEventGenerator::EventParams>* node_events) {
+  RemoveEvent(node_events,
+              AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::CHILDREN_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::DESCRIPTION_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::NAME_CHANGED);
@@ -392,6 +395,11 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
       AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
       break;
     case ax::mojom::IntAttribute::kTextAlign:
+      // Alignment is exposed as an object attribute because it cannot apply to
+      // a substring. However, for some platforms (e.g. ATK), alignment is a
+      // text attribute. Therefore fire both events to ensure platforms get the
+      // expected notifications.
+      AddEvent(node, Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
       AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
       break;
     default:
@@ -425,6 +433,11 @@ void AXEventGenerator::OnFloatAttributeChanged(AXTree* tree,
       AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
       break;
     case ax::mojom::FloatAttribute::kTextIndent:
+      // Indentation is exposed as an object attribute because it cannot apply
+      // to a substring. However, for some platforms (e.g. ATK), alignment is a
+      // text attribute. Therefore fire both events to ensure platforms get the
+      // expected notifications.
+      AddEvent(node, Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
       AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
       break;
     default:
@@ -834,6 +847,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "ACTIVE_DESCENDANT_CHANGED";
     case AXEventGenerator::Event::ALERT:
       return "ALERT";
+    case AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
+      return "ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED";
     case AXEventGenerator::Event::BUSY_CHANGED:
       return "BUSY_CHANGED";
     case AXEventGenerator::Event::CHECKED_STATE_CHANGED:
