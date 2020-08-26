@@ -1086,7 +1086,6 @@
     # exception once there is enough capacity to run these tests.
     'remove_from': [
       'Android FYI Release (Pixel 2)',
-      'Fuchsia x64' # https://crbug.com/1058255
     ],
     'modifications': {
       'Mac FYI GPU ASAN Release': {
@@ -2282,11 +2281,6 @@
       },
     },
   },
-  'pixel_tests': {
-    'remove_from': [
-      'Fuchsia x64' # https://crbug.com/1058255
-    ],
-  },
   'rendering_representative_perf_tests': {
     'modifications': {
       'Win10 FYI x64 Exp Release (Intel HD 630)': {
@@ -2351,11 +2345,6 @@
     },
     'remove_from': [
       'android-asan',  # https://crbug.com/962650
-    ],
-  },
-  'screenshot_sync_tests': {
-    'remove_from': [
-      'Fuchsia x64' # https://crbug.com/1058255
     ],
   },
   'services_unittests': {
@@ -2630,11 +2619,6 @@
     'remove_from': [
       # crbug.com/1080749
       'Optional Linux Release (NVIDIA)',
-    ],
-  },
-  'trace_test': {
-    'remove_from': [
-      'Fuchsia x64' # https://crbug.com/1058255
     ],
   },
   'unit_tests': {
