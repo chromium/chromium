@@ -1478,14 +1478,12 @@ void AddSearchStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"searchEnginesManage", IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES},
       {"searchPageTitle", IDS_SETTINGS_SEARCH},
-
+      {"searchExplanation", IDS_SETTINGS_SEARCH_EXPLANATION},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
-  html_source->AddString("searchExplanation",
-                         l10n_util::GetStringFUTF16(
-                             IDS_SETTINGS_SEARCH_EXPLANATION,
-                             base::ASCIIToUTF16(chrome::kOmniboxLearnMoreURL)));
+  html_source->AddString("searchExplanationLearnMoreURL",
+                         base::ASCIIToUTF16(chrome::kOmniboxLearnMoreURL));
 }
 
 void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {

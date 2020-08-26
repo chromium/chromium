@@ -11,7 +11,11 @@
     <!-- Omnibox search engine -->
     <div class="cr-row first">
       <div id="searchExplanation" class="flex cr-padded-text">
-        $i18nRaw{searchExplanation}
+        $i18n{searchExplanation}
+        <a href="$i18n{searchExplanationLearnMoreURL}"
+            target="_blank">
+          $i18n{learnMore}
+        </a>
       </div>
       <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
           prefs.default_search_provider_data.template_url_data)]]">

@@ -1521,7 +1521,7 @@
     Search engine
   </message>
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION" desc="Explanation for the search engine dropdown setting.">
-    Search engine used in the <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>address bar<ph name="END_LINK">&lt;/a&gt;</ph>
+    Search engine used in the address bar
   </message>
   <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES" desc="Label for the Manage Search Engines button.">
     Manage search engines

@@ -235,10 +235,6 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                                   is_assistant_allowed
                                       ? IDS_SETTINGS_SEARCH_AND_ASSISTANT
                                       : IDS_SETTINGS_SEARCH);
-  html_source->AddString("searchExplanation",
-                         l10n_util::GetStringFUTF16(
-                             IDS_SETTINGS_SEARCH_EXPLANATION,
-                             base::ASCIIToUTF16(chrome::kOmniboxLearnMoreURL)));
   html_source->AddString(
       "osSearchEngineTooltip",
       ui::SubstituteChromeOSDeviceType(IDS_OS_SETTINGS_SEARCH_ENGINE_TOOLTIP));
