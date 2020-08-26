@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/javascript_app_modal_event_blocker_x11.h"
+#include "chrome/browser/ui/views/javascript_app_modal_event_blocker.h"
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/aura/env.h"
@@ -23,14 +23,14 @@ aura::Window* GetTopmostTransientParent(aura::Window* window) {
 
 }  // namespace
 
-JavascriptAppModalEventBlockerX11::JavascriptAppModalEventBlockerX11(
+JavascriptAppModalEventBlocker::JavascriptAppModalEventBlocker(
     aura::Window* modal_window)
     : modal_window_(modal_window), browser_view_with_modal_dialog_(nullptr) {
   aura::Window* topmost_transient_parent =
       GetTopmostTransientParent(modal_window);
   browser_view_with_modal_dialog_ =
       BrowserView::GetBrowserViewForNativeWindow(topmost_transient_parent);
-  // |browser_view_with_modal_dialog_| is NULL if the dialog was opened by an
+  // |browser_view_with_modal_dialog_| is nullptr if the dialog was opened by an
   // extension background page.
 
   aura::Env::GetInstance()->AddPreTargetHandler(
@@ -39,11 +39,11 @@ JavascriptAppModalEventBlockerX11::JavascriptAppModalEventBlockerX11(
   // WindowModalityController will cancel touches as appropriate.
 }
 
-JavascriptAppModalEventBlockerX11::~JavascriptAppModalEventBlockerX11() {
+JavascriptAppModalEventBlocker::~JavascriptAppModalEventBlocker() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
 }
 
-bool JavascriptAppModalEventBlockerX11::ShouldStopPropagationTo(
+bool JavascriptAppModalEventBlocker::ShouldStopPropagationTo(
     ui::EventTarget* target) {
   // Stop propagation if:
   // -|target| is a browser window or a transient child of a browser window.
@@ -61,12 +61,12 @@ bool JavascriptAppModalEventBlockerX11::ShouldStopPropagationTo(
   return browser_view && browser_view != browser_view_with_modal_dialog_;
 }
 
-void JavascriptAppModalEventBlockerX11::OnKeyEvent(ui::KeyEvent* event) {
+void JavascriptAppModalEventBlocker::OnKeyEvent(ui::KeyEvent* event) {
   if (ShouldStopPropagationTo(event->target()))
     event->StopPropagation();
 }
 
-void JavascriptAppModalEventBlockerX11::OnMouseEvent(ui::MouseEvent* event) {
+void JavascriptAppModalEventBlocker::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() != ui::ET_MOUSE_CAPTURE_CHANGED &&
       ShouldStopPropagationTo(event->target())) {
     if (event->type() == ui::ET_MOUSE_PRESSED)
@@ -75,12 +75,12 @@ void JavascriptAppModalEventBlockerX11::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
-void JavascriptAppModalEventBlockerX11::OnScrollEvent(ui::ScrollEvent* event) {
+void JavascriptAppModalEventBlocker::OnScrollEvent(ui::ScrollEvent* event) {
   if (ShouldStopPropagationTo(event->target()))
     event->StopPropagation();
 }
 
-void JavascriptAppModalEventBlockerX11::OnTouchEvent(ui::TouchEvent* event) {
+void JavascriptAppModalEventBlocker::OnTouchEvent(ui::TouchEvent* event) {
   if (event->type() != ui::ET_TOUCH_CANCELLED &&
       ShouldStopPropagationTo(event->target())) {
     if (event->type() == ui::ET_TOUCH_PRESSED)

@@ -4307,8 +4307,8 @@ static_library("ui") {
     if (use_aura) {
       sources += [
         "views/chrome_javascript_app_modal_view_factory_views.cc",
-        "views/javascript_app_modal_event_blocker_x11.cc",
-        "views/javascript_app_modal_event_blocker_x11.h",
+        "views/javascript_app_modal_event_blocker.cc",
+        "views/javascript_app_modal_event_blocker.h",
       ]
       deps += [ "//ui/wm/public" ]
     }

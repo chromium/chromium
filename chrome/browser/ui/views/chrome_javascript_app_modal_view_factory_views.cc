@@ -7,7 +7,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
-#include "chrome/browser/ui/views/javascript_app_modal_event_blocker_x11.h"
+#include "chrome/browser/ui/views/javascript_app_modal_event_blocker.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
@@ -58,7 +58,7 @@ class ChromeJavaScriptAppModalDialogViews
     // unnecessary on Windows and Chrome OS.
     // TODO(pkotwicz): Find a better way of doing this and remove this hack.
     if (UseEventBlocker() && !event_blocker_.get()) {
-      event_blocker_ = std::make_unique<JavascriptAppModalEventBlockerX11>(
+      event_blocker_ = std::make_unique<JavascriptAppModalEventBlocker>(
           GetWidget()->GetNativeView());
     }
     AppModalDialogViewViews::ShowAppModalDialog();
@@ -69,7 +69,7 @@ class ChromeJavaScriptAppModalDialogViews
 
  private:
   // Blocks events to other browser windows while the dialog is open.
-  std::unique_ptr<JavascriptAppModalEventBlockerX11> event_blocker_;
+  std::unique_ptr<JavascriptAppModalEventBlocker> event_blocker_;
 
   PopunderPreventer popunder_preventer_;
 
