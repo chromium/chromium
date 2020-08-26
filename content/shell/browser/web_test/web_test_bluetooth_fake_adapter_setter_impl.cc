@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "content/browser/bluetooth/bluetooth_device_chooser_controller.h"
+#include "content/public/test/bluetooth_test_utils.h"
 #include "content/shell/browser/web_test/web_test_bluetooth_adapter_provider.h"
 #include "content/shell/common/web_test/web_test_bluetooth_fake_adapter_setter.mojom.h"
-#include "device/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -37,7 +37,7 @@ void WebTestBluetoothFakeAdapterSetterImpl::Set(const std::string& adapter_name,
       BluetoothDeviceChooserController::TestScanDurationSetting::
           IMMEDIATE_TIMEOUT);
 
-  device::BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
+  SetBluetoothAdapter(
       WebTestBluetoothAdapterProvider::GetBluetoothAdapter(adapter_name));
 
   std::move(callback).Run();

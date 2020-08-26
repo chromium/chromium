@@ -103,6 +103,8 @@ static_library("test_support") {
     "../public/test/background_sync_test_util.h",
     "../public/test/blink_test_environment.cc",
     "../public/test/blink_test_environment.h",
+    "../public/test/bluetooth_test_utils.cc",
+    "../public/test/bluetooth_test_utils.h",
     "../public/test/browser_task_environment.cc",
     "../public/test/browser_task_environment.h",
     "../public/test/browser_test.h",

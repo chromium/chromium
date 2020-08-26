@@ -8,10 +8,10 @@
 
 #include "base/macros.h"
 #include "base/test/bind_test_util.h"
+#include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
-#include "device/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -157,7 +157,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness {
     // Set up an adapter.
     scoped_refptr<FakeBluetoothAdapter> adapter(new FakeBluetoothAdapter());
     EXPECT_CALL(*adapter, IsPresent()).WillRepeatedly(Return(true));
-    device::BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
+    BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
         adapter);
 
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();

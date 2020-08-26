@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "device/bluetooth/bluetooth_adapter_factory_wrapper.h"
+#include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 
 #include <stddef.h>
 
@@ -10,33 +10,33 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-namespace {
+using device::BluetoothAdapter;
+using device::BluetoothAdapterFactory;
 
-static base::LazyInstance<device::BluetoothAdapterFactoryWrapper>::Leaky
-    g_bluetooth_adapter_factory_wrapper_singleton = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
-
-namespace device {
+BluetoothAdapterFactoryWrapper::BluetoothAdapterFactoryWrapper() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
 
 BluetoothAdapterFactoryWrapper::~BluetoothAdapterFactoryWrapper() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // All observers should have been removed already.
   DCHECK(adapter_observers_.empty());
   // Clear adapter.
-  set_adapter(scoped_refptr<BluetoothAdapter>());
+  set_adapter(nullptr);
 }
 
 // static
 BluetoothAdapterFactoryWrapper& BluetoothAdapterFactoryWrapper::Get() {
-  return g_bluetooth_adapter_factory_wrapper_singleton.Get();
+  static base::NoDestructor<BluetoothAdapterFactoryWrapper> singleton;
+  return *singleton;
 }
 
 bool BluetoothAdapterFactoryWrapper::IsLowEnergySupported() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (adapter_ != nullptr) {
     return true;
   }
@@ -46,7 +46,7 @@ bool BluetoothAdapterFactoryWrapper::IsLowEnergySupported() {
 void BluetoothAdapterFactoryWrapper::AcquireAdapter(
     BluetoothAdapter::Observer* observer,
     AcquireAdapterCallback callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!GetAdapter(observer));
 
   AddAdapterObserver(observer);
@@ -64,18 +64,18 @@ void BluetoothAdapterFactoryWrapper::AcquireAdapter(
 
 void BluetoothAdapterFactoryWrapper::ReleaseAdapter(
     BluetoothAdapter::Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!HasAdapter(observer)) {
     return;
   }
   RemoveAdapterObserver(observer);
   if (adapter_observers_.empty())
-    set_adapter(scoped_refptr<BluetoothAdapter>());
+    set_adapter(nullptr);
 }
 
 BluetoothAdapter* BluetoothAdapterFactoryWrapper::GetAdapter(
     BluetoothAdapter::Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (HasAdapter(observer)) {
     return adapter_.get();
   }
@@ -84,18 +84,14 @@ BluetoothAdapter* BluetoothAdapterFactoryWrapper::GetAdapter(
 
 void BluetoothAdapterFactoryWrapper::SetBluetoothAdapterForTesting(
     scoped_refptr<BluetoothAdapter> mock_adapter) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   set_adapter(std::move(mock_adapter));
-}
-
-BluetoothAdapterFactoryWrapper::BluetoothAdapterFactoryWrapper() {
-  DCHECK(thread_checker_.CalledOnValidThread());
 }
 
 void BluetoothAdapterFactoryWrapper::OnGetAdapter(
     AcquireAdapterCallback continuation,
     scoped_refptr<BluetoothAdapter> adapter) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   set_adapter(adapter);
   std::move(continuation).Run(adapter_);
@@ -103,14 +99,14 @@ void BluetoothAdapterFactoryWrapper::OnGetAdapter(
 
 bool BluetoothAdapterFactoryWrapper::HasAdapter(
     BluetoothAdapter::Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   return base::Contains(adapter_observers_, observer);
 }
 
 void BluetoothAdapterFactoryWrapper::AddAdapterObserver(
     BluetoothAdapter::Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto iter = adapter_observers_.insert(observer);
   DCHECK(iter.second);
@@ -121,7 +117,7 @@ void BluetoothAdapterFactoryWrapper::AddAdapterObserver(
 
 void BluetoothAdapterFactoryWrapper::RemoveAdapterObserver(
     BluetoothAdapter::Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   size_t removed = adapter_observers_.erase(observer);
   DCHECK(removed);
@@ -132,7 +128,7 @@ void BluetoothAdapterFactoryWrapper::RemoveAdapterObserver(
 
 void BluetoothAdapterFactoryWrapper::set_adapter(
     scoped_refptr<BluetoothAdapter> adapter) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (adapter_.get()) {
     for (BluetoothAdapter::Observer* observer : adapter_observers_) {
@@ -146,5 +142,3 @@ void BluetoothAdapterFactoryWrapper::set_adapter(
     }
   }
 }
-
-}  // namespace device
