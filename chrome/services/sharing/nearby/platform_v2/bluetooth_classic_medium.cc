@@ -147,6 +147,14 @@ void BluetoothClassicMedium::DeviceAdded(
     return;
   }
 
+  // Best-effort attempt to filter out BLE advertisements. BLE advertisements
+  // represented as "devices" may have their |name| set if the system has
+  // created a GATT connection to the advertiser, but all BT Classic devices
+  // that we are interested in must have their |name| set. See BleMedium
+  // for separate discovery of BLE advertisements (BlePeripherals).
+  if (!device->name)
+    return;
+
   const std::string& address = device->address;
   if (base::Contains(discovered_bluetooth_devices_map_, address)) {
     auto& bluetooth_device = discovered_bluetooth_devices_map_.at(address);

@@ -155,7 +155,8 @@ TEST_F(BluetoothClassicMediumTest, TestDiscovery_StartDiscoveryError) {
   EXPECT_FALSE(fake_adapter_->IsDiscoverySessionActive());
 }
 
-TEST_F(BluetoothClassicMediumTest, TestDiscovery_DeviceDiscovered) {
+TEST_F(BluetoothClassicMediumTest,
+       TestDiscovery_DeviceDiscovered_BluetoothClassicDevice) {
   StartDiscovery();
 
   NotifyDeviceAdded(kDeviceAddress1, kDeviceName1);
@@ -166,6 +167,25 @@ TEST_F(BluetoothClassicMediumTest, TestDiscovery_DeviceDiscovered) {
   EXPECT_EQ(kDeviceName2, last_device_discovered_->GetName());
 
   EXPECT_NE(first_device_discovered, last_device_discovered_);
+
+  StopDiscovery();
+}
+
+TEST_F(BluetoothClassicMediumTest,
+       TestDiscovery_DeviceDiscovered_BleAdvertisement) {
+  StartDiscovery();
+
+  on_device_discovered_callback_ = base::BindOnce([]() { FAIL(); });
+
+  // Do not set |name|. This reflects Chrome's usual representation of a BLE
+  // advertisement.
+  auto device_info = bluetooth::mojom::DeviceInfo::New();
+  device_info->address = kDeviceAddress1;
+  device_info->name_for_display = kDeviceAddress1;
+
+  fake_adapter_->NotifyDeviceAdded(std::move(device_info));
+
+  EXPECT_FALSE(last_device_discovered_);
 
   StopDiscovery();
 }
