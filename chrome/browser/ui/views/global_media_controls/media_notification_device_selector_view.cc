@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/global_media_controls/media_notification_audio_device_selector_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/util/ranges/algorithm.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_audio_device_selector_view_delegate.h"
+#include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/audio/audio_device_description.h"
@@ -21,25 +21,25 @@
 
 namespace {
 
-// Constants for the AudioDeviceEntryView
+// Constants for the DeviceEntryView
 constexpr gfx::Insets kIconContainerInsets{10, 15};
 constexpr int kDeviceIconSize = 18;
 constexpr gfx::Insets kLabelsContainerInsets{18, 0};
-constexpr gfx::Size kAudioDeviceEntryViewSize{400, 30};
+constexpr gfx::Size kDeviceEntryViewSize{400, 30};
 constexpr int kEntryHighlightOpacity = 45;
-// Constants for the MediaNotificationAudioDeviceSelectorView
+// Constants for the MediaNotificationDeviceSelectorView
 constexpr gfx::Insets kExpandButtonStripInsets{6, 15};
 constexpr gfx::Size kExpandButtonStripSize{400, 30};
 constexpr gfx::Insets kExpandButtonBorderInsets{4, 8};
 constexpr int kExpandButtonBorderCornerRadius = 16;
 
-class AudioDeviceEntryView : public views::Button {
+class DeviceEntryView : public views::Button {
  public:
-  AudioDeviceEntryView(const SkColor& foreground_color,
-                       const SkColor& background_color,
-                       const std::string& raw_device_id,
-                       const std::string& name,
-                       const std::string& subtext = "");
+  DeviceEntryView(const SkColor& foreground_color,
+                  const SkColor& background_color,
+                  const std::string& raw_device_id,
+                  const std::string& name,
+                  const std::string& subtext = "");
 
   const std::string& GetDeviceId() { return raw_device_id_; }
   const std::string& GetDeviceName() { return device_name_; }
@@ -64,11 +64,11 @@ class AudioDeviceEntryView : public views::Button {
 
 }  // anonymous namespace
 
-AudioDeviceEntryView::AudioDeviceEntryView(const SkColor& foreground_color,
-                                           const SkColor& background_color,
-                                           const std::string& raw_device_id,
-                                           const std::string& name,
-                                           const std::string& subtext)
+DeviceEntryView::DeviceEntryView(const SkColor& foreground_color,
+                                 const SkColor& background_color,
+                                 const std::string& raw_device_id,
+                                 const std::string& name,
+                                 const std::string& subtext)
     : foreground_color_(foreground_color),
       background_color_(background_color),
       raw_device_id_(raw_device_id),
@@ -123,10 +123,10 @@ AudioDeviceEntryView::AudioDeviceEntryView(const SkColor& foreground_color,
   SetInkDropMode(Button::InkDropMode::ON);
   set_ink_drop_base_color(foreground_color);
   set_has_ink_drop_action_on_click(true);
-  SetPreferredSize(kAudioDeviceEntryViewSize);
+  SetPreferredSize(kDeviceEntryViewSize);
 }
 
-void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
+void DeviceEntryView::SetHighlighted(bool highlighted) {
   is_highlighted_ = highlighted;
   if (highlighted) {
     SetInkDropMode(Button::InkDropMode::OFF);
@@ -140,8 +140,8 @@ void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
   }
 }
 
-void AudioDeviceEntryView::OnColorsChanged(const SkColor& foreground_color,
-                                           const SkColor& background_color) {
+void DeviceEntryView::OnColorsChanged(const SkColor& foreground_color,
+                                      const SkColor& background_color) {
   foreground_color_ = foreground_color;
   background_color_ = background_color;
   set_ink_drop_base_color(foreground_color_);
@@ -161,12 +161,11 @@ void AudioDeviceEntryView::OnColorsChanged(const SkColor& foreground_color,
   SetHighlighted(is_highlighted_);
 }
 
-MediaNotificationAudioDeviceSelectorView::
-    MediaNotificationAudioDeviceSelectorView(
-        MediaNotificationAudioDeviceSelectorViewDelegate* delegate,
-        const std::string& current_device_id,
-        const SkColor& foreground_color,
-        const SkColor& background_color)
+MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
+    MediaNotificationDeviceSelectorViewDelegate* delegate,
+    const std::string& current_device_id,
+    const SkColor& foreground_color,
+    const SkColor& background_color)
     : delegate_(delegate),
       current_device_id_(current_device_id),
       foreground_color_(foreground_color),
@@ -217,12 +216,12 @@ MediaNotificationAudioDeviceSelectorView::
   // Get a list of the connected audio output devices
   audio_device_subscription_ =
       delegate->RegisterAudioOutputDeviceDescriptionsCallback(
-          base::BindRepeating(&MediaNotificationAudioDeviceSelectorView::
-                                  UpdateAvailableAudioDevices,
-                              weak_ptr_factory_.GetWeakPtr()));
+          base::BindRepeating(
+              &MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
-void MediaNotificationAudioDeviceSelectorView::UpdateCurrentAudioDevice(
+void MediaNotificationDeviceSelectorView::UpdateCurrentAudioDevice(
     const std::string& current_device_id) {
   if (current_device_entry_view_) {
     current_device_entry_view_->SetHighlighted(false);
@@ -232,14 +231,14 @@ void MediaNotificationAudioDeviceSelectorView::UpdateCurrentAudioDevice(
   auto it = util::ranges::find_if(
       audio_device_entries_container_->children(),
       [&current_device_id](auto& item) {
-        return static_cast<AudioDeviceEntryView*>(item)->GetDeviceId() ==
+        return static_cast<DeviceEntryView*>(item)->GetDeviceId() ==
                current_device_id;
       });
 
   if (it == audio_device_entries_container_->children().end())
     return;
 
-  current_device_entry_view_ = static_cast<AudioDeviceEntryView*>(*it);
+  current_device_entry_view_ = static_cast<DeviceEntryView*>(*it);
   current_device_entry_view_->SetHighlighted(true);
   audio_device_entries_container_->ReorderChildView(current_device_entry_view_,
                                                     0);
@@ -247,19 +246,18 @@ void MediaNotificationAudioDeviceSelectorView::UpdateCurrentAudioDevice(
   current_device_entry_view_->Layout();
 }
 
-MediaNotificationAudioDeviceSelectorView::
-    ~MediaNotificationAudioDeviceSelectorView() {
+MediaNotificationDeviceSelectorView::~MediaNotificationDeviceSelectorView() {
   audio_device_subscription_.release();
 }
 
-void MediaNotificationAudioDeviceSelectorView::UpdateAvailableAudioDevices(
+void MediaNotificationDeviceSelectorView::UpdateAvailableAudioDevices(
     const media::AudioDeviceDescriptions& device_descriptions) {
   audio_device_entries_container_->RemoveAllChildViews(true);
   current_device_entry_view_ = nullptr;
 
   bool current_device_still_exists = false;
   for (auto description : device_descriptions) {
-    auto device_entry_view = std::make_unique<AudioDeviceEntryView>(
+    auto device_entry_view = std::make_unique<DeviceEntryView>(
         foreground_color_, background_color_, description.unique_id,
         description.device_name, "");
     device_entry_view->set_listener(this);
@@ -276,10 +274,10 @@ void MediaNotificationAudioDeviceSelectorView::UpdateAvailableAudioDevices(
           : media::AudioDeviceDescription::kDefaultDeviceId);
 
   SetVisible(ShouldBeVisible(device_descriptions));
-  delegate_->OnAudioDeviceSelectorViewSizeChanged();
+  delegate_->OnDeviceSelectorViewSizeChanged();
 }
 
-void MediaNotificationAudioDeviceSelectorView::OnColorsChanged(
+void MediaNotificationDeviceSelectorView::OnColorsChanged(
     const SkColor& foreground_color,
     const SkColor& background_color) {
   foreground_color_ = foreground_color;
@@ -291,13 +289,13 @@ void MediaNotificationAudioDeviceSelectorView::OnColorsChanged(
       views::CreateSolidBackground(background_color_));
   SetBackground(views::CreateSolidBackground(background_color_));
   for (auto* view : audio_device_entries_container_->children()) {
-    static_cast<AudioDeviceEntryView*>(view)->OnColorsChanged(
-        foreground_color_, background_color_);
+    static_cast<DeviceEntryView*>(view)->OnColorsChanged(foreground_color_,
+                                                         background_color_);
   }
   SchedulePaint();
 }
 
-void MediaNotificationAudioDeviceSelectorView::ButtonPressed(
+void MediaNotificationDeviceSelectorView::ButtonPressed(
     views::Button* sender,
     const ui::Event& event) {
   if (sender == expand_button_) {
@@ -306,32 +304,31 @@ void MediaNotificationAudioDeviceSelectorView::ButtonPressed(
     else
       ShowDevices();
 
-    delegate_->OnAudioDeviceSelectorViewSizeChanged();
+    delegate_->OnDeviceSelectorViewSizeChanged();
   } else {
     DCHECK(std::find(audio_device_entries_container_->children().cbegin(),
                      audio_device_entries_container_->children().cend(),
                      sender) !=
            audio_device_entries_container_->children().end());
     delegate_->OnAudioSinkChosen(
-        static_cast<AudioDeviceEntryView*>(sender)->GetDeviceId());
+        static_cast<DeviceEntryView*>(sender)->GetDeviceId());
   }
 }
 
 // static
-std::string
-MediaNotificationAudioDeviceSelectorView::get_entry_label_for_testing(
+std::string MediaNotificationDeviceSelectorView::get_entry_label_for_testing(
     views::View* entry_view) {
-  return static_cast<AudioDeviceEntryView*>(entry_view)->GetDeviceName();
+  return static_cast<DeviceEntryView*>(entry_view)->GetDeviceName();
 }
 
 // static
-bool MediaNotificationAudioDeviceSelectorView::
-    get_entry_is_highlighted_for_testing(views::View* entry_view) {
-  return static_cast<AudioDeviceEntryView*>(entry_view)
+bool MediaNotificationDeviceSelectorView::get_entry_is_highlighted_for_testing(
+    views::View* entry_view) {
+  return static_cast<DeviceEntryView*>(entry_view)
       ->is_highlighted_for_testing();
 }
 
-void MediaNotificationAudioDeviceSelectorView::ShowDevices() {
+void MediaNotificationDeviceSelectorView::ShowDevices() {
   DCHECK(!is_expanded_);
   is_expanded_ = true;
 
@@ -339,7 +336,7 @@ void MediaNotificationAudioDeviceSelectorView::ShowDevices() {
   PreferredSizeChanged();
 }
 
-void MediaNotificationAudioDeviceSelectorView::HideDevices() {
+void MediaNotificationDeviceSelectorView::HideDevices() {
   DCHECK(is_expanded_);
   is_expanded_ = false;
 
@@ -347,7 +344,7 @@ void MediaNotificationAudioDeviceSelectorView::HideDevices() {
   PreferredSizeChanged();
 }
 
-bool MediaNotificationAudioDeviceSelectorView::ShouldBeVisible(
+bool MediaNotificationDeviceSelectorView::ShouldBeVisible(
     const media::AudioDeviceDescriptions& device_descriptions) {
   // The UI should be visible if there are more than one unique devices. That is
   // when:
@@ -357,7 +354,7 @@ bool MediaNotificationAudioDeviceSelectorView::ShouldBeVisible(
   if (audio_device_entries_container_->children().size() == 2) {
     return util::ranges::any_of(
         audio_device_entries_container_->children(), [](views::View* view) {
-          auto* entry = static_cast<AudioDeviceEntryView*>(view);
+          auto* entry = static_cast<DeviceEntryView*>(view);
           return entry->GetDeviceId() ==
                      media::AudioDeviceDescription::kDefaultDeviceId &&
                  entry->GetDeviceName() !=

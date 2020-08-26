@@ -474,9 +474,9 @@ void MediaNotificationViewImpl::OnThemeChanged() {
   UpdateForegroundColor();
 }
 
-void MediaNotificationViewImpl::UpdateAudioDeviceSelectorAvailability(
+void MediaNotificationViewImpl::UpdateDeviceSelectorAvailability(
     bool availability) {
-  GetMediaNotificationBackground()->UpdateAudioDeviceSelectorAvailability(
+  GetMediaNotificationBackground()->UpdateDeviceSelectorAvailability(
       availability);
 }
 

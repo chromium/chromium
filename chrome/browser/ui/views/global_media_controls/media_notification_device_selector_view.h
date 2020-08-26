@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_AUDIO_DEVICE_SELECTOR_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_AUDIO_DEVICE_SELECTOR_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_SELECTOR_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_SELECTOR_VIEW_H_
 
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "media/audio/audio_device_description.h"
@@ -12,20 +12,20 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace {
-class AudioDeviceEntryView;
+class DeviceEntryView;
 }  // anonymous namespace
 
-class MediaNotificationAudioDeviceSelectorViewDelegate;
+class MediaNotificationDeviceSelectorViewDelegate;
 
-class MediaNotificationAudioDeviceSelectorView : public views::View,
-                                                 public views::ButtonListener {
+class MediaNotificationDeviceSelectorView : public views::View,
+                                            public views::ButtonListener {
  public:
-  MediaNotificationAudioDeviceSelectorView(
-      MediaNotificationAudioDeviceSelectorViewDelegate* delegate,
+  MediaNotificationDeviceSelectorView(
+      MediaNotificationDeviceSelectorViewDelegate* delegate,
       const std::string& current_device_id,
       const SkColor& foreground_color,
       const SkColor& background_color);
-  ~MediaNotificationAudioDeviceSelectorView() override;
+  ~MediaNotificationDeviceSelectorView() override;
 
   // Called when audio output devices are discovered.
   void UpdateAvailableAudioDevices(
@@ -42,17 +42,17 @@ class MediaNotificationAudioDeviceSelectorView : public views::View,
   static bool get_entry_is_highlighted_for_testing(views::View* entry_view);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationAudioDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            DeviceButtonsCreated);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationAudioDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            ExpandButtonOpensEntryContainer);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationAudioDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            DeviceButtonClickNotifiesContainer);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationAudioDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            CurrentDeviceHighlighted);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationAudioDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            DeviceHighlightedOnChange);
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationAudioDeviceSelectorViewTest,
+  FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            DeviceButtonsChange);
 
   bool ShouldBeVisible(
@@ -62,10 +62,10 @@ class MediaNotificationAudioDeviceSelectorView : public views::View,
   void HideDevices();
 
   bool is_expanded_ = false;
-  MediaNotificationAudioDeviceSelectorViewDelegate* const delegate_;
+  MediaNotificationDeviceSelectorViewDelegate* const delegate_;
   std::string current_device_id_;
   SkColor foreground_color_, background_color_;
-  AudioDeviceEntryView* current_device_entry_view_ = nullptr;
+  DeviceEntryView* current_device_entry_view_ = nullptr;
 
   // Child views
   views::View* expand_button_strip_;
@@ -76,8 +76,8 @@ class MediaNotificationAudioDeviceSelectorView : public views::View,
                       GetOutputDevicesCallbackList::Subscription>
       audio_device_subscription_;
 
-  base::WeakPtrFactory<MediaNotificationAudioDeviceSelectorView>
-      weak_ptr_factory_{this};
+  base::WeakPtrFactory<MediaNotificationDeviceSelectorView> weak_ptr_factory_{
+      this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_AUDIO_DEVICE_SELECTOR_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_SELECTOR_VIEW_H_

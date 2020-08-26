@@ -108,7 +108,7 @@ class MediaNotificationService
   // Called by a |MediaNotificationService::Session| when it becomes inactive.
   void OnSessionBecameInactive(const std::string& id);
 
-  // Used by a |MediaNotificationAudioDeviceSelectorView| to query the system
+  // Used by a |MediaNotificationDeviceSelectorView| to query the system
   // for connected audio output devices.
   std::unique_ptr<MediaNotificationDeviceProvider::
                       GetOutputDevicesCallbackList::Subscription>

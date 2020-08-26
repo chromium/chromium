@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
-#include "chrome/browser/ui/views/global_media_controls/media_notification_audio_device_selector_view_delegate.h"
+#include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/browser/ui/views/global_media_controls/overlay_media_notification_view.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_view_impl.h"
@@ -29,7 +29,7 @@ class ImageButton;
 class SlideOutController;
 }  // namespace views
 
-class MediaNotificationAudioDeviceSelectorView;
+class MediaNotificationDeviceSelectorView;
 class MediaNotificationContainerObserver;
 class MediaNotificationService;
 
@@ -40,7 +40,7 @@ class MediaNotificationContainerImplView
     : public views::Button,
       public media_message_center::MediaNotificationContainer,
       public MediaNotificationContainerImpl,
-      public MediaNotificationAudioDeviceSelectorViewDelegate,
+      public MediaNotificationDeviceSelectorViewDelegate,
       public views::SlideOutControllerDelegate,
       public views::ButtonListener,
       public views::FocusChangeListener {
@@ -92,10 +92,10 @@ class MediaNotificationContainerImplView
   void AddObserver(MediaNotificationContainerObserver* observer) override;
   void RemoveObserver(MediaNotificationContainerObserver* observer) override;
 
-  // MediaNotificationAudioDeviceSelectorViewDelegate
+  // MediaNotificationDeviceSelectorViewDelegate
   // Called when an audio device has been selected for output.
   void OnAudioSinkChosen(const std::string& sink_id) override;
-  void OnAudioDeviceSelectorViewSizeChanged() override;
+  void OnDeviceSelectorViewSizeChanged() override;
   std::unique_ptr<MediaNotificationDeviceProvider::
                       GetOutputDevicesCallbackList::Subscription>
   RegisterAudioOutputDeviceDescriptionsCallback(
@@ -164,8 +164,7 @@ class MediaNotificationContainerImplView
 
   DismissButton* dismiss_button_ = nullptr;
   media_message_center::MediaNotificationViewImpl* view_ = nullptr;
-  MediaNotificationAudioDeviceSelectorView* audio_device_selector_view_ =
-      nullptr;
+  MediaNotificationDeviceSelectorView* audio_device_selector_view_ = nullptr;
 
   SkColor foreground_color_;
   SkColor background_color_;

@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackground
   bool UpdateCornerRadius(int top_radius, int bottom_radius);
   bool UpdateArtworkMaxWidthPct(double max_width_pct);
   void UpdateFavicon(const gfx::ImageSkia& icon);
-  void UpdateAudioDeviceSelectorAvailability(bool availability);
+  void UpdateDeviceSelectorAvailability(bool availability);
 
   SkColor GetBackgroundColor(const views::View& owner) const;
   SkColor GetForegroundColor(const views::View& owner) const;

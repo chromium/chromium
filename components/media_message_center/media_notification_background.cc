@@ -363,7 +363,7 @@ void MediaNotificationBackground::UpdateFavicon(const gfx::ImageSkia& icon) {
   UpdateColorsInternal();
 }
 
-void MediaNotificationBackground::UpdateAudioDeviceSelectorAvailability(
+void MediaNotificationBackground::UpdateDeviceSelectorAvailability(
     bool availability) {
   if (audio_device_selector_availability_ == availability)
     return;
