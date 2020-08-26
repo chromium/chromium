@@ -5,6 +5,6 @@ PASS setLocalDescription() with answer not created by own createAnswer() should 
 FAIL Calling setLocalDescription(answer) from stable state should reject with InvalidModificationError promise_rejects_dom: function "function() { throw e }" threw object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to set local answer sdp: Called in wrong state: stable" that is not a DOMException InvalidModificationError: property "code" is equal to 0, expected 13
 FAIL Calling setLocalDescription(answer) from have-local-offer state should reject with InvalidModificationError promise_rejects_dom: function "function() { throw e }" threw object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to set local answer sdp: Called in wrong state: have-local-offer" that is not a DOMException InvalidModificationError: property "code" is equal to 0, expected 13
 FAIL Setting previously generated answer after a call to createOffer should work promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Rollback not supported in Plan B"
-PASS setLocalDescription(answer) should update internal state with a queued task, in the right order
+FAIL setLocalDescription(answer) should update internal state with a queued task, in the right order assert_not_equals: pendingRemoteDescription should not be set synchronously after a call to sLD got disallowed value null
 Harness: the test ran to completion.
 

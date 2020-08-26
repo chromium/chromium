@@ -43,9 +43,8 @@
 namespace blink {
 
 class RTCIceCandidatePlatform;
-class RTCRtpReceiverPlatform;
 class RTCRtpTransceiverPlatform;
-class RTCSessionDescriptionPlatform;
+class RTCRtpReceiverPlatform;
 
 struct PLATFORM_EXPORT WebRTCSctpTransportSnapshot {
   rtc::scoped_refptr<webrtc::SctpTransportInterface> transport;
@@ -67,11 +66,6 @@ class PLATFORM_EXPORT RTCPeerConnectionHandlerClient {
                                    const String& url,
                                    int error_code,
                                    const String& error_text) = 0;
-  virtual void DidChangeSessionDescriptions(
-      RTCSessionDescriptionPlatform* pending_local_description,
-      RTCSessionDescriptionPlatform* current_local_description,
-      RTCSessionDescriptionPlatform* pending_remote_description,
-      RTCSessionDescriptionPlatform* current_remote_description) = 0;
   virtual void DidChangeSignalingState(
       webrtc::PeerConnectionInterface::SignalingState) = 0;
   virtual void DidChangeIceGatheringState(

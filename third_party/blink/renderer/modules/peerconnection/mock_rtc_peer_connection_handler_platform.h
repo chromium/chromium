@@ -48,6 +48,12 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
                            RTCSessionDescriptionPlatform*) override;
   void SetRemoteDescription(RTCVoidRequest*,
                             RTCSessionDescriptionPlatform*) override;
+  RTCSessionDescriptionPlatform* LocalDescription() override;
+  RTCSessionDescriptionPlatform* RemoteDescription() override;
+  RTCSessionDescriptionPlatform* CurrentLocalDescription() override;
+  RTCSessionDescriptionPlatform* CurrentRemoteDescription() override;
+  RTCSessionDescriptionPlatform* PendingLocalDescription() override;
+  RTCSessionDescriptionPlatform* PendingRemoteDescription() override;
   const webrtc::PeerConnectionInterface::RTCConfiguration& GetConfiguration()
       const override;
   webrtc::RTCErrorType SetConfiguration(

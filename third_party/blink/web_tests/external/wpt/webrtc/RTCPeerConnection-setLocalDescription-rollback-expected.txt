@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS setLocalDescription(rollback) from have-local-offer state should reset back to stable state
+PASS setLocalDescription(rollback) from stable state should reject with InvalidStateError
+PASS setLocalDescription(rollback) after setting answer description should reject with InvalidStateError
+PASS setLocalDescription(rollback) should ignore invalid sdp content and succeed
+FAIL setLocalDescription(rollback) should update internal state with a queued tassk, in the right order assert_not_equals: pendingLocalDescription should not be set synchronously after a call to sLD got disallowed value null
+Harness: the test ran to completion.
+

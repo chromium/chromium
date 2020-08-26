@@ -746,10 +746,6 @@ RTCPeerConnection::RTCPeerConnection(
     MediaConstraints constraints,
     ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(context),
-      pending_local_description_(nullptr),
-      current_local_description_(nullptr),
-      pending_remote_description_(nullptr),
-      current_remote_description_(nullptr),
       signaling_state_(
           webrtc::PeerConnectionInterface::SignalingState::kStable),
       ice_gathering_state_(webrtc::PeerConnectionInterface::kIceGatheringNew),
@@ -1463,17 +1459,28 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
   return ScriptPromise::CastUndefined(script_state);
 }
 
-RTCSessionDescription* RTCPeerConnection::localDescription() const {
-  return pending_local_description_ ? pending_local_description_
-                                    : current_local_description_;
+RTCSessionDescription* RTCPeerConnection::localDescription() {
+  auto* platform_session_description = peer_handler_->LocalDescription();
+  if (!platform_session_description)
+    return nullptr;
+
+  return RTCSessionDescription::Create(platform_session_description);
 }
 
-RTCSessionDescription* RTCPeerConnection::currentLocalDescription() const {
-  return current_local_description_;
+RTCSessionDescription* RTCPeerConnection::currentLocalDescription() {
+  auto* platform_session_description = peer_handler_->CurrentLocalDescription();
+  if (!platform_session_description)
+    return nullptr;
+
+  return RTCSessionDescription::Create(platform_session_description);
 }
 
-RTCSessionDescription* RTCPeerConnection::pendingLocalDescription() const {
-  return pending_local_description_;
+RTCSessionDescription* RTCPeerConnection::pendingLocalDescription() {
+  auto* platform_session_description = peer_handler_->PendingLocalDescription();
+  if (!platform_session_description)
+    return nullptr;
+
+  return RTCSessionDescription::Create(platform_session_description);
 }
 
 ScriptPromise RTCPeerConnection::setRemoteDescription(
@@ -1580,17 +1587,30 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   return ScriptPromise::CastUndefined(script_state);
 }
 
-RTCSessionDescription* RTCPeerConnection::remoteDescription() const {
-  return pending_remote_description_ ? pending_remote_description_
-                                     : current_remote_description_;
+RTCSessionDescription* RTCPeerConnection::remoteDescription() {
+  auto* platform_session_description = peer_handler_->RemoteDescription();
+  if (!platform_session_description)
+    return nullptr;
+
+  return RTCSessionDescription::Create(platform_session_description);
 }
 
-RTCSessionDescription* RTCPeerConnection::currentRemoteDescription() const {
-  return current_remote_description_;
+RTCSessionDescription* RTCPeerConnection::currentRemoteDescription() {
+  auto* platform_session_description =
+      peer_handler_->CurrentRemoteDescription();
+  if (!platform_session_description)
+    return nullptr;
+
+  return RTCSessionDescription::Create(platform_session_description);
 }
 
-RTCSessionDescription* RTCPeerConnection::pendingRemoteDescription() const {
-  return pending_remote_description_;
+RTCSessionDescription* RTCPeerConnection::pendingRemoteDescription() {
+  auto* platform_session_description =
+      peer_handler_->PendingRemoteDescription();
+  if (!platform_session_description)
+    return nullptr;
+
+  return RTCSessionDescription::Create(platform_session_description);
 }
 
 RTCConfiguration* RTCPeerConnection::getConfiguration(
@@ -2014,7 +2034,7 @@ String RTCPeerConnection::connectionState() const {
 }
 
 base::Optional<bool> RTCPeerConnection::canTrickleIceCandidates() const {
-  if (closed_ || !remoteDescription()) {
+  if (closed_ || !peer_handler_->RemoteDescription()) {
     return base::nullopt;
   }
   webrtc::PeerConnectionInterface* native_connection =
@@ -2874,31 +2894,6 @@ void RTCPeerConnection::DidFailICECandidate(const String& address,
       address, port, host_candidate, url, error_code, error_text));
 }
 
-void RTCPeerConnection::DidChangeSessionDescriptions(
-    RTCSessionDescriptionPlatform* pending_local_description,
-    RTCSessionDescriptionPlatform* current_local_description,
-    RTCSessionDescriptionPlatform* pending_remote_description,
-    RTCSessionDescriptionPlatform* current_remote_description) {
-  DCHECK(!closed_);
-  DCHECK(GetExecutionContext()->IsContextThread());
-  pending_local_description_ =
-      pending_local_description
-          ? RTCSessionDescription::Create(pending_local_description)
-          : nullptr;
-  current_local_description_ =
-      current_local_description
-          ? RTCSessionDescription::Create(current_local_description)
-          : nullptr;
-  pending_remote_description_ =
-      pending_remote_description
-          ? RTCSessionDescription::Create(pending_remote_description)
-          : nullptr;
-  current_remote_description_ =
-      current_remote_description
-          ? RTCSessionDescription::Create(current_remote_description)
-          : nullptr;
-}
-
 void RTCPeerConnection::DidChangeSignalingState(
     webrtc::PeerConnectionInterface::SignalingState new_state) {
   DCHECK(!closed_);
@@ -3550,10 +3545,6 @@ void RTCPeerConnection::DispatchScheduledEvents() {
 }
 
 void RTCPeerConnection::Trace(Visitor* visitor) const {
-  visitor->Trace(pending_local_description_);
-  visitor->Trace(current_local_description_);
-  visitor->Trace(pending_remote_description_);
-  visitor->Trace(current_remote_description_);
   visitor->Trace(tracks_);
   visitor->Trace(rtp_senders_);
   visitor->Trace(rtp_receivers_);
