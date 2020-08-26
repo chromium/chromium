@@ -9,395 +9,395 @@
 # * trailing commas are allowed.
 
 {
-    'OZONE_HEADLESS': {
-        'args': [
-            '--no-xvfb',
-            '--ozone-platform=headless',
-            '--enable-features=UseOzonePlatform',
-        ],
-        'identifier': 'headless',
+  'OZONE_HEADLESS': {
+    'args': [
+      '--no-xvfb',
+      '--ozone-platform=headless',
+      '--enable-features=UseOzonePlatform',
+    ],
+    'identifier': 'headless',
+  },
+  'OZONE_WAYLAND': {
+    'args': [
+      '--no-xvfb',
+      '--use-weston',
+      '--ozone-platform=wayland',
+      '--enable-features=UseOzonePlatform',
+    ],
+    'identifier': 'wayland',
+  },
+  'OZONE_X11': {
+    'args': [
+      '--ozone-platform=x11',
+      '--enable-features=UseOzonePlatform',
+    ],
+    'identifier': 'x11',
+  },
+  'IPHONE_6S_12_3_1': {
+    'swarming': {
+      'dimension_sets': [
+        {
+          'os': 'iOS-12.3.1',
+          'device': 'iPhone8,1'
+        }
+      ]
     },
-    'OZONE_WAYLAND': {
-        'args': [
-            '--no-xvfb',
-            '--use-weston',
-            '--ozone-platform=wayland',
-            '--enable-features=UseOzonePlatform',
-        ],
-        'identifier': 'wayland',
+    'identifier': 'iPhone 6S 12.3.1'
+  },
+  'SIM_IPAD_AIR_2_12_4': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '12.4'
+    ],
+    'identifier': 'iPad Air 2 12.4'
+  },
+  'SIM_IPAD_AIR_2_13_6': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '13.6'
+    ],
+    'identifier': 'iPad Air 2 13.6'
+  },
+  'SIM_IPAD_AIR_2_13_5': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '13.5'
+    ],
+    'identifier': 'iPad Air 2 13.5'
+  },
+  'SIM_IPAD_AIR_2_13_6': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '13.6'
+    ],
+    'identifier': 'iPad Air 2 13.6'
+  },
+  'SIM_IPAD_AIR_2_14_0': {
+    'args': [
+      '--platform',
+      'iPad Air 2',
+      '--version',
+      '14.0'
+    ],
+    'identifier': 'iPad Air 2 14.0'
+  },
+  'SIM_IPAD_AIR_3RD_GEN_14_0': {
+    'args': [
+      '--platform',
+      'iPad Air (3rd generation)',
+      '--version',
+      '14.0'
+    ],
+    'identifier': 'iPad Air (3rd generation) 14.0'
+  },
+  # In Xcode 12, "iPad Pro (12.9-inch)" requires a generation suffix in
+  # "platform" arg.
+  'SIM_IPAD_PRO_2ND_GEN_14_0': {
+    'args': [
+      '--platform',
+      'iPad Pro (12.9-inch) (2nd generation)',
+      '--version',
+      '14.0',
+    ],
+    'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.0'
+  },
+  'SIM_IPAD_6_GEN_14_0': {
+    'args': [
+      '--platform',
+      'iPad (6th generation)',
+      '--version',
+      '14.0',
+    ],
+    'identifier': 'iPad (6th generation) 14.0'
+  },
+  'SIM_IPHONE_6S_12_4': {
+    'args': [
+      '--platform',
+      'iPhone 6s',
+      '--version',
+      '12.4',
+    ],
+    'identifier': 'iPhone 6s 12.4'
+  },
+  'SIM_IPHONE_6S_13_6': {
+    'args': [
+      '--platform',
+      'iPhone 6s',
+      '--version',
+      '13.6',
+    ],
+    'identifier': 'iPhone 6s 13.6'
+  },
+  'SIM_IPHONE_6S_13_6': {
+    'args': [
+      '--platform',
+      'iPhone 6s',
+      '--version',
+      '13.6',
+    ],
+    'identifier': 'iPhone 6s 13.6'
+  },
+  'SIM_IPHONE_6S_14_0': {
+    'args': [
+      '--platform',
+      'iPhone 6s',
+      '--version',
+      '14.0',
+    ],
+    'identifier': 'iPhone 6s 14.0'
+  },
+  'SIM_IPHONE_6S_PLUS_13_6': {
+    'args': [
+      '--platform',
+      'iPhone 6s Plus',
+      '--version',
+      '13.6',
+    ],
+    'identifier': 'iPhone 6s Plus 13.6'
+  },
+  'SIM_IPHONE_6S_PLUS_13_6': {
+    'args': [
+      '--platform',
+      'iPhone 6s Plus',
+      '--version',
+      '13.6',
+    ],
+    'identifier': 'iPhone 6s Plus 13.6'
+  },
+  'SIM_IPHONE_6S_PLUS_14_0': {
+    'args': [
+      '--platform',
+      'iPhone 6s Plus',
+      '--version',
+      '14.0',
+    ],
+    'identifier': 'iPhone 6s Plus 14.0'
+  },
+  'SIM_IPHONE_7_13_6': {
+    'args': [
+      '--platform',
+      'iPhone 7',
+      '--version',
+      '13.6',
+    ],
+    'identifier': 'iPhone 7 13.6'
+  },
+  'SIM_IPHONE_7_13_6': {
+    'args': [
+      '--platform',
+      'iPhone 7',
+      '--version',
+      '13.6',
+    ],
+    'identifier': 'iPhone 7 13.6'
+  },
+  'SIM_IPHONE_7_14_0': {
+    'args': [
+      '--platform',
+      'iPhone 7',
+      '--version',
+      '14.0',
+    ],
+    'identifier': 'iPhone 7 14.0'
+  },
+  'SIM_IPHONE_SE_1ST_GEN_13_6': {
+    'args': [
+      '--platform',
+      'iPhone SE (1st generation)',
+      '--version',
+      '13.6',
+    ],
+    'identifier': 'iPhone SE (1st generation) 13.6'
+  },
+  'SIM_IPHONE_X_12_4': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '12.4',
+    ],
+    'identifier': 'iPhone X 12.4'
+  },
+  'SIM_IPHONE_X_13_4': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '13.4',
+    ],
+    'identifier': 'iPhone X 13.4'
+  },
+  'SIM_IPHONE_X_13_5': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '13.5',
+    ],
+    'identifier': 'iPhone X 13.5'
+  },
+  'SIM_IPHONE_X_13_6': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '13.6',
+    ],
+    'identifier': 'iPhone X 13.6'
+  },
+  'SIM_IPHONE_X_14_0': {
+    'args': [
+      '--platform',
+      'iPhone X',
+      '--version',
+      '14.0',
+    ],
+    'identifier': 'iPhone X 14.0'
+  },
+  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE': {
+    'args': [
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M85/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=85',
+    ],
+    'identifier': 'M85_Implementation_Library_Tests',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M85',
+          'revision': 'version:85.0.4183.69',
+        }
+      ],
     },
-    'OZONE_X11': {
-        'args': [
-            '--ozone-platform=x11',
-            '--enable-features=UseOzonePlatform',
-        ],
-        'identifier': 'x11',
+  },
+  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
+    'args': [
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M84/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=84',
+    ],
+    'identifier': 'M84_Implementation_Library_Tests',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M84',
+          'revision': 'version:84.0.4147.89',
+        }
+      ],
     },
-    'IPHONE_6S_12_3_1': {
-        'swarming': {
-            'dimension_sets': [
-                {
-                    'os': 'iOS-12.3.1',
-                    'device': 'iPhone8,1'
-                }
-            ]
-        },
-        'identifier': 'iPhone 6S 12.3.1'
+  },
+  'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
+    'args': [
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M83/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=83',
+    ],
+    'identifier': 'M83_Implementation_Library_Tests',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M83',
+          'revision': 'version:83.0.4103.83',
+        }
+      ],
     },
-    'SIM_IPAD_AIR_2_12_4': {
-        'args': [
-            '--platform',
-            'iPad Air 2',
-            '--version',
-            '12.4'
-        ],
-        'identifier': 'iPad Air 2 12.4'
+  },
+  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE': {
+    'args': [
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M85/out/Release',
+      '--implementation-outdir',
+      '.',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--client-version=85',
+    ],
+    'identifier': 'M85_Client_Library_Tests',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M85',
+          'revision': 'version:85.0.4183.69',
+        }
+      ],
     },
-    'SIM_IPAD_AIR_2_13_6': {
-        'args': [
-            '--platform',
-            'iPad Air 2',
-            '--version',
-            '13.6'
-        ],
-        'identifier': 'iPad Air 2 13.6'
+  },
+  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
+    'args': [
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M84/out/Release',
+      '--implementation-outdir',
+      '.',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--client-version=84',
+    ],
+    'identifier': 'M84_Client_Library_Tests',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M84',
+          'revision': 'version:84.0.4147.89',
+        }
+      ],
     },
-    'SIM_IPAD_AIR_2_13_5': {
-        'args': [
-            '--platform',
-            'iPad Air 2',
-            '--version',
-            '13.5'
-        ],
-        'identifier': 'iPad Air 2 13.5'
+  },
+  'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
+    'args': [
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M83/out/Release',
+      '--implementation-outdir',
+      '.',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--client-version=83',
+    ],
+    'identifier': 'M83_Client_Library_Tests',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M83',
+          'revision': 'version:83.0.4103.83',
+        }
+      ],
     },
-    'SIM_IPAD_AIR_2_13_6': {
-        'args': [
-            '--platform',
-            'iPad Air 2',
-            '--version',
-            '13.6'
-        ],
-        'identifier': 'iPad Air 2 13.6'
-    },
-    'SIM_IPAD_AIR_2_14_0': {
-        'args': [
-            '--platform',
-            'iPad Air 2',
-            '--version',
-            '14.0'
-        ],
-        'identifier': 'iPad Air 2 14.0'
-    },
-    'SIM_IPAD_AIR_3RD_GEN_14_0': {
-        'args': [
-            '--platform',
-            'iPad Air (3rd generation)',
-            '--version',
-            '14.0'
-        ],
-        'identifier': 'iPad Air (3rd generation) 14.0'
-    },
-    # In Xcode 12, "iPad Pro (12.9-inch)" requires a generation suffix in
-    # "platform" arg.
-    'SIM_IPAD_PRO_2ND_GEN_14_0': {
-        'args': [
-          '--platform',
-          'iPad Pro (12.9-inch) (2nd generation)',
-          '--version',
-          '14.0',
-        ],
-        'identifier': 'iPad Pro (12.9-inch) (2nd generation) 14.0'
-    },
-    'SIM_IPAD_6_GEN_14_0': {
-        'args': [
-          '--platform',
-          'iPad (6th generation)',
-          '--version',
-          '14.0',
-        ],
-        'identifier': 'iPad (6th generation) 14.0'
-    },
-    'SIM_IPHONE_6S_12_4': {
-        'args': [
-            '--platform',
-            'iPhone 6s',
-            '--version',
-            '12.4',
-        ],
-        'identifier': 'iPhone 6s 12.4'
-    },
-    'SIM_IPHONE_6S_13_6': {
-        'args': [
-            '--platform',
-            'iPhone 6s',
-            '--version',
-            '13.6',
-        ],
-        'identifier': 'iPhone 6s 13.6'
-    },
-    'SIM_IPHONE_6S_13_6': {
-        'args': [
-            '--platform',
-            'iPhone 6s',
-            '--version',
-            '13.6',
-        ],
-        'identifier': 'iPhone 6s 13.6'
-    },
-    'SIM_IPHONE_6S_14_0': {
-        'args': [
-            '--platform',
-            'iPhone 6s',
-            '--version',
-            '14.0',
-        ],
-        'identifier': 'iPhone 6s 14.0'
-    },
-    'SIM_IPHONE_6S_PLUS_13_6': {
-        'args': [
-            '--platform',
-            'iPhone 6s Plus',
-            '--version',
-            '13.6',
-        ],
-        'identifier': 'iPhone 6s Plus 13.6'
-    },
-    'SIM_IPHONE_6S_PLUS_13_6': {
-        'args': [
-            '--platform',
-            'iPhone 6s Plus',
-            '--version',
-            '13.6',
-        ],
-        'identifier': 'iPhone 6s Plus 13.6'
-    },
-    'SIM_IPHONE_6S_PLUS_14_0': {
-        'args': [
-            '--platform',
-            'iPhone 6s Plus',
-            '--version',
-            '14.0',
-        ],
-        'identifier': 'iPhone 6s Plus 14.0'
-    },
-    'SIM_IPHONE_7_13_6': {
-        'args': [
-            '--platform',
-            'iPhone 7',
-            '--version',
-            '13.6',
-        ],
-        'identifier': 'iPhone 7 13.6'
-    },
-    'SIM_IPHONE_7_13_6': {
-        'args': [
-            '--platform',
-            'iPhone 7',
-            '--version',
-            '13.6',
-        ],
-        'identifier': 'iPhone 7 13.6'
-    },
-    'SIM_IPHONE_7_14_0': {
-        'args': [
-            '--platform',
-            'iPhone 7',
-            '--version',
-            '14.0',
-        ],
-        'identifier': 'iPhone 7 14.0'
-    },
-    'SIM_IPHONE_SE_1ST_GEN_13_6': {
-        'args': [
-            '--platform',
-            'iPhone SE (1st generation)',
-            '--version',
-            '13.6',
-        ],
-        'identifier': 'iPhone SE (1st generation) 13.6'
-    },
-    'SIM_IPHONE_X_12_4': {
-        'args': [
-            '--platform',
-            'iPhone X',
-            '--version',
-            '12.4',
-        ],
-        'identifier': 'iPhone X 12.4'
-    },
-    'SIM_IPHONE_X_13_4': {
-        'args': [
-            '--platform',
-            'iPhone X',
-            '--version',
-            '13.4',
-        ],
-        'identifier': 'iPhone X 13.4'
-    },
-    'SIM_IPHONE_X_13_5': {
-        'args': [
-            '--platform',
-            'iPhone X',
-            '--version',
-            '13.5',
-        ],
-        'identifier': 'iPhone X 13.5'
-    },
-    'SIM_IPHONE_X_13_6': {
-        'args': [
-            '--platform',
-            'iPhone X',
-            '--version',
-            '13.6',
-        ],
-        'identifier': 'iPhone X 13.6'
-    },
-    'SIM_IPHONE_X_14_0': {
-        'args': [
-            '--platform',
-            'iPhone X',
-            '--version',
-            '14.0',
-        ],
-        'identifier': 'iPhone X 14.0'
-    },
-    'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE': {
-        'args': [
-          '--test-runner-outdir',
-          '.',
-          '--client-outdir',
-          '.',
-          '--implementation-outdir',
-          '../../weblayer_instrumentation_test_M85/out/Release',
-          '--test-expectations',
-          '../../weblayer/browser/android/javatests/skew/expectations.txt',
-          '--impl-version=85',
-        ],
-        'identifier': 'M85_Implementation_Library_Tests',
-        'swarming': {
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/testing/weblayer-x86',
-              'location': 'weblayer_instrumentation_test_M85',
-              'revision': 'version:85.0.4183.69',
-            }
-          ],
-        },
-    },
-    'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
-        'args': [
-          '--test-runner-outdir',
-          '.',
-          '--client-outdir',
-          '.',
-          '--implementation-outdir',
-          '../../weblayer_instrumentation_test_M84/out/Release',
-          '--test-expectations',
-          '../../weblayer/browser/android/javatests/skew/expectations.txt',
-          '--impl-version=84',
-        ],
-        'identifier': 'M84_Implementation_Library_Tests',
-        'swarming': {
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/testing/weblayer-x86',
-              'location': 'weblayer_instrumentation_test_M84',
-              'revision': 'version:84.0.4147.89',
-            }
-          ],
-        },
-    },
-    'WEBLAYER_IMPL_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
-        'args': [
-          '--test-runner-outdir',
-          '.',
-          '--client-outdir',
-          '.',
-          '--implementation-outdir',
-          '../../weblayer_instrumentation_test_M83/out/Release',
-          '--test-expectations',
-          '../../weblayer/browser/android/javatests/skew/expectations.txt',
-          '--impl-version=83',
-        ],
-        'identifier': 'M83_Implementation_Library_Tests',
-        'swarming': {
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/testing/weblayer-x86',
-              'location': 'weblayer_instrumentation_test_M83',
-              'revision': 'version:83.0.4103.83',
-            }
-          ],
-        },
-    },
-    'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MILESTONE': {
-        'args': [
-          '--test-runner-outdir',
-          '.',
-          '--client-outdir',
-          '../../weblayer_instrumentation_test_M85/out/Release',
-          '--implementation-outdir',
-          '.',
-          '--test-expectations',
-          '../../weblayer/browser/android/javatests/skew/expectations.txt',
-          '--client-version=85',
-        ],
-        'identifier': 'M85_Client_Library_Tests',
-        'swarming': {
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/testing/weblayer-x86',
-              'location': 'weblayer_instrumentation_test_M85',
-              'revision': 'version:85.0.4183.69',
-            }
-          ],
-        },
-    },
-    'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
-        'args': [
-          '--test-runner-outdir',
-          '.',
-          '--client-outdir',
-          '../../weblayer_instrumentation_test_M84/out/Release',
-          '--implementation-outdir',
-          '.',
-          '--test-expectations',
-          '../../weblayer/browser/android/javatests/skew/expectations.txt',
-          '--client-version=84',
-        ],
-        'identifier': 'M84_Client_Library_Tests',
-        'swarming': {
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/testing/weblayer-x86',
-              'location': 'weblayer_instrumentation_test_M84',
-              'revision': 'version:84.0.4147.89',
-            }
-          ],
-        },
-    },
-    'WEBLAYER_CLIENT_SKEW_TESTS_NTH_MINUS_TWO_MILESTONE': {
-        'args': [
-          '--test-runner-outdir',
-          '.',
-          '--client-outdir',
-          '../../weblayer_instrumentation_test_M83/out/Release',
-          '--implementation-outdir',
-          '.',
-          '--test-expectations',
-          '../../weblayer/browser/android/javatests/skew/expectations.txt',
-          '--client-version=83',
-        ],
-        'identifier': 'M83_Client_Library_Tests',
-        'swarming': {
-          'cipd_packages': [
-            {
-              'cipd_package': 'chromium/testing/weblayer-x86',
-              'location': 'weblayer_instrumentation_test_M83',
-              'revision': 'version:83.0.4103.83',
-            }
-          ],
-        },
-    },
+  },
 }
