@@ -42,10 +42,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
   // any calls to GetInstance().
   static void InitializeForTesting();
 
-  // Injects an alternative TSFBridge such as MockTSFBridge for testing. The
-  // injected object should be released by the caller. This function returns
-  // previous TSFBridge pointer with ownership.
-  static TSFBridge* ReplaceForTesting(TSFBridge* bridge);
+  // Sets the new instance of TSFBridge in the thread-local storage (such as
+  // MockTSFBridge for testing). This function replaces previous TSFBridge
+  // instance with the newInstance and also deletes the old instance.
+  static void ReplaceThreadLocalTSFBridge(TSFBridge* new_instance);
 
   // Destroys the thread local instance.
   static void Shutdown();

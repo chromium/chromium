@@ -183,7 +183,7 @@ HRESULT TSFBridgeImpl::Initialize() {
   DCHECK(base::CurrentUIThread::IsSet());
   if (client_id_ != TF_CLIENTID_NULL) {
     DVLOG(1) << "Already initialized.";
-    return S_FALSE;
+    return S_OK;  // shouldn't return error code in this case.
   }
 
   HRESULT hr =
@@ -332,8 +332,7 @@ void TSFBridgeImpl::SetFocusedClient(HWND focused_window,
 
 void TSFBridgeImpl::RemoveFocusedClient(TextInputClient* client) {
   DCHECK(base::CurrentUIThread::IsSet());
-  if (!IsInitialized())
-    return;
+  DCHECK(IsInitialized());
   if (client_ != client)
     return;
   ClearAssociateFocus();
@@ -633,6 +632,11 @@ base::ThreadLocalStorage::Slot& TSFBridgeTLS() {
   return *tsf_bridge_tls;
 }
 
+// Get the TSFBridge from the thread-local storage without its ownership.
+TSFBridgeImpl* GetThreadLocalTSFBridge() {
+  return static_cast<TSFBridgeImpl*>(TSFBridgeTLS().Get());
+}
+
 }  // namespace
 
 // TsfBridge  -----------------------------------------------------------------
@@ -644,18 +648,24 @@ TSFBridge::~TSFBridge() {}
 // static
 HRESULT TSFBridge::Initialize() {
   if (!base::CurrentUIThread::IsSet()) {
-    DVLOG(1) << "Do not use TSFBridge without UI thread.";
     return E_FAIL;
   }
+
   TSFBridgeImpl* delegate = static_cast<TSFBridgeImpl*>(TSFBridgeTLS().Get());
   if (delegate)
     return S_OK;
   // If we aren't supporting TSF early out.
   if (!base::FeatureList::IsEnabled(features::kTSFImeSupport))
     return E_FAIL;
+
   delegate = new TSFBridgeImpl();
-  TSFBridgeTLS().Set(delegate);
-  return delegate->Initialize();
+  ReplaceThreadLocalTSFBridge(delegate);
+  HRESULT hr = delegate->Initialize();
+  if (FAILED(hr)) {
+    // reset the TSFBridge as the initialization has failed.
+    ReplaceThreadLocalTSFBridge(nullptr);
+  }
+  return hr;
 }
 
 // static
@@ -663,41 +673,40 @@ void TSFBridge::InitializeForTesting() {
   if (!base::CurrentUIThread::IsSet()) {
     return;
   }
-  TSFBridgeImpl* delegate = static_cast<TSFBridgeImpl*>(TSFBridgeTLS().Get());
+
+  TSFBridgeImpl* delegate = GetThreadLocalTSFBridge();
   if (delegate)
     return;
   if (!base::FeatureList::IsEnabled(features::kTSFImeSupport))
     return;
-  TSFBridgeTLS().Set(new MockTSFBridge());
+  ReplaceThreadLocalTSFBridge(new MockTSFBridge());
 }
 
 // static
-TSFBridge* TSFBridge::ReplaceForTesting(TSFBridge* bridge) {
+void TSFBridge::ReplaceThreadLocalTSFBridge(TSFBridge* new_instance) {
   if (!base::CurrentUIThread::IsSet()) {
-    return nullptr;
+    return;
   }
-  TSFBridge* old_bridge = TSFBridge::GetInstance();
-  TSFBridgeTLS().Set(bridge);
-  return old_bridge;
+
+  TSFBridgeImpl* old_instance = GetThreadLocalTSFBridge();
+  TSFBridgeTLS().Set(new_instance);
+  delete old_instance;
 }
 
 // static
 void TSFBridge::Shutdown() {
   if (!base::CurrentUIThread::IsSet()) {
-    DVLOG(1) << "Do not use TSFBridge without UI thread.";
   }
-  TSFBridgeImpl* delegate = static_cast<TSFBridgeImpl*>(TSFBridgeTLS().Get());
-  TSFBridgeTLS().Set(nullptr);
-  delete delegate;
+  ReplaceThreadLocalTSFBridge(nullptr);
 }
 
 // static
 TSFBridge* TSFBridge::GetInstance() {
   if (!base::CurrentUIThread::IsSet()) {
-    DVLOG(1) << "Do not use TSFBridge without UI thread.";
     return nullptr;
   }
-  TSFBridgeImpl* delegate = static_cast<TSFBridgeImpl*>(TSFBridgeTLS().Get());
+
+  TSFBridgeImpl* delegate = GetThreadLocalTSFBridge();
   DCHECK(delegate) << "Do no call GetInstance before TSFBridge::Initialize.";
   return delegate;
 }
