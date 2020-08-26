@@ -156,6 +156,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2712127207578915686">Impossible ouvrir fichier</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
+<translation id="2764831210418622012">à l'instant</translation>
 <translation id="2773292004659987824">Recherche en mode navigation privée</translation>
 <translation id="277771892408211951">Sélectionner la langue</translation>
 <translation id="2780046210906776326">Aucun compte messag.</translation>
@@ -301,6 +302,7 @@ En revanche, lorsque vous êtes en mode navigation privée, les sites ne peuvent
 <translation id="4476574785019001431">Paramètres</translation>
 <translation id="4496373720959965247">Ajoutez des onglets pour naviguer d'une page à l'autre</translation>
 <translation id="4502566650163919158">Vérifier maintenant</translation>
+<translation id="4505980578794259603">Dernière vérification <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Fermer la promo de connexion</translation>
 <translation id="4526249700380860531">Afficher et gérer les mots de passe enregistrés sur <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Veuillez essayer de vous reconnecter.</translation>
@@ -482,6 +484,7 @@ Vos données ont été chiffrées avec votre phrase secrète de synchronisation 
 <translation id="6445051938772793705">Pays</translation>
 <translation id="6445981559479772097">Message envoyé.</translation>
 <translation id="6447842834002726250">Cookies</translation>
+<translation id="6453018583485750254">Aucune vérification jusqu'à présent.</translation>
 <translation id="6464071786529933911">Ouvrir nouvel onglet navigation privée</translation>
 <translation id="6464397691496239022">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation (par exemple, pour maintenir votre connexion ou mémoriser les articles de votre panier).
 

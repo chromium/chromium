@@ -1130,6 +1130,7 @@
 
       如未設定這項政策，在預設情況下，受管理的使用者無法使用這項功能，未受管理的使用者則可使用這項功能。</translation>
 <translation id="2660846099862559570">永不使用 Proxy</translation>
+<translation id="2664682171745499686">禁止在網域上顯示相似網域的警告訊息</translation>
 <translation id="2665422249821137126">在登入畫面上啟用大型游標</translation>
 <translation id="2672012807430078509">控管是否要為 SMB 掛接功能啟用 NTLM 驗證通訊協定</translation>
 <translation id="2678503605767349615">必須提供裝置通用用戶端憑證</translation>
@@ -1763,13 +1764,13 @@
           如果不設定這項政策，系統預設會停用隨選朗讀功能，但使用者可以隨時啟用這項功能。</translation>
 <translation id="3591527072193107424">啟用「舊版瀏覽器支援」功能。</translation>
 <translation id="3591584750136265240">設定登入驗證行為</translation>
-<translation id="3603469950773500315">在新版 <ph name="CORS" /> 模式中啟用緩和措施來放寬 <ph name="CORS" /> 檢查標準，讓擴充功能保持相容行為，並允許 <ph name="PRODUCT_NAME" /> 不需經過 <ph name="CORS" /> 檢查即可傳送指定標頭。
+<translation id="3603469950773500315">在新版 <ph name="CORS" /> 模式中啟用寬鬆檢查機制來放寬 <ph name="CORS" /> 檢查標準，讓擴充功能保持相容行為，並允許 <ph name="PRODUCT_NAME" /> 不需經過 <ph name="CORS" /> 檢查即可傳送指定標頭。
 
       如果將這份清單設為空白，<ph name="PRODUCT_NAME" /> 會嘗試以相容方式執行擴充功能，且不會採用 <ph name="PRODUCT_NAME" /> 第 79 版的 <ph name="API" /> 變更，詳情請參閱 <ph name="WEB_REQUEST_API_MANUAL" />。
 
-      如果在這份清單中納入 <ph name="HTTP" /> 要求標頭名稱，則 <ph name="CORS" /> 檢查將忽略此處列出的標頭，並針對擴充功能啟用緩和措施。
+      如果在這份清單中納入 <ph name="HTTP" /> 要求標頭名稱，則 <ph name="CORS" /> 檢查將忽略此處列出的標頭，並針對擴充功能啟用寬鬆檢查機制。
 
-      如果未設定這份清單，則不會套用上述兩種緩和措施。
+      如果未設定這份清單，則不會套用上述兩種寬鬆檢查機制。
 
       如要進一步瞭解 <ph name="CORS" />，請前往：<ph name="CORS_HELP_URL" />。
 
@@ -4068,6 +4069,15 @@
 
       注意：這項政策僅適用於 Android 裝置上的 Chrome，而且裝置一定要有超過 1GB 的 RAM。如要在非 Android 平台上套用這項政策，請使用 SitePerProcess。
       </translation>
+<translation id="6916817094593836501">這項政策會禁止系統在列出的網站上顯示相似網址的警告訊息。一般而言，當 <ph name="PRODUCT_NAME" /> 認為網站可能試圖假冒成使用者熟悉的其他網站時，就會在網站上顯示這類警告訊息。
+
+
+       如果啟用這項政策並設為一或多個網域，當使用者造訪該網域的網頁時，系統不會顯示任何相似警告訊息網頁。
+
+       如果停用這項政策、不設定或設為空白清單，系統可能會在使用者造訪的任何網站上顯示警告訊息。
+
+
+       系統可允許主機完全相符或網域相符的主機名稱。舉例來說，如果這份清單包含「foo.example.com」或「example.com」，「https://foo.example.com/bar」這類網址可能不會顯示警告訊息。</translation>
 <translation id="6922884955650325312">封鎖 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
 <translation id="6923731550900440989">在登入畫面上啟用插入點醒目顯示功能</translation>
 <translation id="6924223708804692571">這項政策會強制停用指定語言的拼字檢查功能。系統會忽略該清單中無法辨識的語言。

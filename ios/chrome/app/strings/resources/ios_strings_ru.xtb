@@ -156,6 +156,7 @@
 <translation id="2712127207578915686">Невозможно открыть файл</translation>
 <translation id="2718352093833049315">Только Wi-Fi</translation>
 <translation id="2747003861858887689">Предыдущее поле</translation>
+<translation id="2764831210418622012">только что</translation>
 <translation id="2773292004659987824">Поиск в режиме инкогнито</translation>
 <translation id="277771892408211951">Выберите язык</translation>
 <translation id="2780046210906776326">Создайте аккаунт</translation>
@@ -301,6 +302,7 @@
 <translation id="4476574785019001431">Настройки</translation>
 <translation id="4496373720959965247">Добавляйте вкладки и переключайтесь между ними</translation>
 <translation id="4502566650163919158">Проверить сейчас</translation>
+<translation id="4505980578794259603">Последняя проверка: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Закрыть сообщение о входе</translation>
 <translation id="4526249700380860531">Просматривайте сохраненные пароли и управляйте ими на странице <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="4536418791685807335">Войдите в аккаунт снова.</translation>
@@ -482,6 +484,7 @@
 <translation id="6445051938772793705">Страна</translation>
 <translation id="6445981559479772097">Сообщение отправлено</translation>
 <translation id="6447842834002726250">Файлы сookie</translation>
+<translation id="6453018583485750254">Пароли не проверялись.</translation>
 <translation id="6464071786529933911">Откр. в режиме инкогнито</translation>
 <translation id="6464397691496239022">Сайты могут использовать файлы cookie для вашего удобства, например сохранять информацию о товарах в корзине или о том, что вы вошли в аккаунт.
 

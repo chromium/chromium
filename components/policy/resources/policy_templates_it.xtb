@@ -1140,6 +1140,7 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
       Se questa norma non viene impostata, per impostazione predefinita non sarà disponibile per gli utenti gestiti, mentre lo sarà invece per gli utenti non gestiti.</translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
+<translation id="2664682171745499686">Elimina gli avvisi di domini simili dai domini</translation>
 <translation id="2665422249821137126">Attiva il puntatore grande nella schermata di accesso</translation>
 <translation id="2672012807430078509">Controlla l'attivazione del protocollo di autenticazione NTLM per i montaggi SMB</translation>
 <translation id="2678503605767349615">Certificati client a livello di dispositivo richiesti</translation>
@@ -4097,6 +4098,13 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       NOTA: questa norma viene applicata solo a Chrome su dispositivi Android con più di 1 GB di RAM. Per applicare la norma su piattaforme non Android, utilizza SitePerProcess.
       </translation>
+<translation id="6916817094593836501">Questo criterio impedisce la visualizzazione di avvisi di URL simili sui siti elencati. Questi avvisi sono solitamente mostrati sui siti in cui <ph name="PRODUCT_NAME" /> crede che sia in atto un tentativo di spoofing di un altro sito noto all'utente.
+
+       Se il criterio non viene attivato e viene impostato su uno o più domini, non verrà visualizzata alcuna pagina di avviso di somiglianza quando l'utente visita le pagine di quel dominio.
+
+       Se il criterio è disattivato, non impostato o impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualunque sito visitato dall'utente.
+
+       Un nome host può essere consentito nel caso di una completa corrispondenza del nome host o della corrispondenza con un qualsiasi dominio. Ad esempio, gli avvisi per un URL come "https://foo.example.com/bar" potrebbero essere eliminati se l'elenco include "foo.example.com" o "example.com".</translation>
 <translation id="6922884955650325312">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Attiva l'evidenziazione del cursore del testo nella schermata di accesso</translation>
 <translation id="6924223708804692571">Forza la disattivazione delle lingue per correttore ortografico. Le lingue non riconosciute di quell'elenco verranno ignorate.

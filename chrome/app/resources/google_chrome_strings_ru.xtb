@@ -8,13 +8,16 @@
 <translation id="1088300314857992706">Адрес <ph name="USER_EMAIL_ADDRESS" /> уже использовался в Chrome</translation>
 <translation id="1097330777386562916">Удалять файлы cookie и данные сайтов при выходе из Chrome</translation>
 <translation id="110877069173485804">Ваш персональный Chrome</translation>
+<translation id="1125124144982679672">Кто использует Chrome?</translation>
 <translation id="1142745911746664600">Не удалось обновить Chrome</translation>
 <translation id="1154147086299354128">&amp;Открыть в Chrome</translation>
 <translation id="123620459398936149">Не удалось синхронизировать данные. Обновите кодовую фразу в Sync.</translation>
 <translation id="1302523850133262269">Подождите, пока Chrome устанавливает последние обновления системы</translation>
+<translation id="1355000804395496115">Разные профили Chrome нужны для раздельного использования браузера в личных и рабочих целях или если с ним работают разные люди.</translation>
 <translation id="137466361146087520">Google Chrome (бета)</translation>
 <translation id="1399397803214730675">На компьютере уже установлена последняя версия браузера Google Chrome. Если он не работает, удалите его и установите снова.</translation>
 <translation id="1434626383986940139">Приложения Chrome Canary</translation>
+<translation id="1513277449617685876">Чтобы использовать браузер в личных целях, а не как <ph name="NEW_USER" />, создайте профиль в Chrome.</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
 <translation id="1587325591171447154">Chrome заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
@@ -102,6 +105,7 @@
 <translation id="3889417619312448367">Удалить Google Chrome</translation>
 <translation id="4050175100176540509">В последней версии улучшена защита и добавлены новые функции.</translation>
 <translation id="4053720452172726777">Настройка и управление Google Chrome</translation>
+<translation id="4110895483821904099">Создайте профиль Chrome</translation>
 <translation id="4143243756087420366">Имя и фото профиля Chrome</translation>
 <translation id="4147555960264124640">Выполнив вход в управляемый аккаунт, вы предоставляете администратору право контролировать настройки вашего профиля Google Chrome. Ваши данные Chrome (приложения, закладки, история, пароли и другие настройки) будут временно связаны с аккаунтом <ph name="USER_NAME" />. Эти данные можно удалить в Личном кабинете Google, но их нельзя связать с другим аккаунтом. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Не удалось извлечь файлы из архива. Скачайте Google Chrome заново.</translation>
@@ -151,6 +155,7 @@
 <translation id="5430073640787465221">Файл настроек поврежден или недействителен. Google Chrome не может восстановить ваши параметры.</translation>
 <translation id="556024056938947818">Вводимые пароли будут отображаться в Google Chrome.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5633355459292055250">Спрашивать во время запуска Chrome</translation>
 <translation id="5657226924540934362">Если нужного параметра нет на этой странице, откройте <ph name="LINK_BEGIN" />настройки Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="565744775970812598">Chrome заблокировал файл <ph name="FILE_NAME" /> как потенциально опасный.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Администратор просит перезапустить Chrome для установки обновления.}=1{Администратор просит перезапустить Chrome для установки обновления. Окно в режиме инкогнито не будет открыто повторно.}one{Администратор просит перезапустить Chrome для установки обновления. # окно в режиме инкогнито не будет открыто повторно.}few{Администратор просит перезапустить Chrome для установки обновления. # окна в режиме инкогнито не будут открыты повторно.}many{Администратор просит перезапустить Chrome для установки обновления. # окон в режиме инкогнито не будут открыты повторно.}other{Администратор просит перезапустить Chrome для установки обновления. # окна в режиме инкогнито не будут открыты повторно.}}</translation>
@@ -203,6 +208,7 @@
 <translation id="7398801000654795464">Ранее вы входили в Chrome как <ph name="USER_EMAIL_ADDRESS" />. Войдите снова, используя тот же аккаунт.</translation>
 <translation id="7408085963519505752">Условия использования Chrome OS</translation>
 <translation id="7419046106786626209">Не удалось синхронизировать данные, поскольку сервис Sync недоступен в вашем домене.</translation>
+<translation id="7423733001651488593">Все данные о работе в браузере будут удалены с устройства. Чтобы восстановить их, войдите в Chrome как</translation>
 <translation id="7486227612705979895">Chrome получит доступ к Google Диску, чтобы вы могли просматривать рекомендации в адресной строке</translation>
 <translation id="7535429826459677826">Google Chrome для разработчиков</translation>
 <translation id="7573289029918943991">Чтобы посмотреть, обновлена ли операционная система устройства, перейдите в <ph name="LINK_BEGIN" />настройки Chrome OS<ph name="LINK_END" />.</translation>
@@ -250,6 +256,7 @@
 <translation id="8681614230122836773">Браузер Chrome обнаружил на вашем компьютере вредоносное ПО.</translation>
 <translation id="870251953148363156">Обновить &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome не удалось определить или задать браузер по умолчанию</translation>
+<translation id="8748242232968346981">Создать свой профиль в Chrome?</translation>
 <translation id="8823341990149967727">Версия Chrome устарела</translation>
 <translation id="8834965163890861871">Google Chrome пытается изменить пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="884296878221830158">Кроме того, расширение изменило стартовую страницу Chrome и страницу, отображаемую при нажатии кнопки "Главная страница".</translation>

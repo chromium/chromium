@@ -1144,6 +1144,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se esta política não for definida, o padrão será "não permitido" para usuários gerenciados e "permitido" para usuários não gerenciados.</translation>
 <translation id="2660846099862559570">Nunca usar um proxy</translation>
+<translation id="2664682171745499686">Suprimir alertas de domínios parecidos em domínios</translation>
 <translation id="2665422249821137126">Ativar o cursor grande na tela de login</translation>
 <translation id="2672012807430078509">Controles que ativam o NTLM como protocolo de autenticação para ativações de PMEs</translation>
 <translation id="2678503605767349615">Certificados do cliente em todo o dispositivo obrigatórios</translation>
@@ -3654,7 +3655,7 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
 
       Se esta configuração for definida como falsa ou não for definida, a nova implementação será usada e poderá causar possíveis problemas de compatibilidade específicos da empresa.
 
-      Esta política será removida depois de alguns marcos.
+      Esta política será removida após o lançamento de alguns recursos.
 
       Para ver detalhes sobre <ph name="CORS" />, acesse: <ph name="CORS_HELP_URL" />.
 
@@ -4079,6 +4080,13 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       OBSERVAÇÃO: esta política só se aplica ao Chrome no Android sendo executado estritamente em dispositivos com mais de 1 GB de RAM. Para aplicar a política em plataformas não Android, use SitePerProcess.
       </translation>
+<translation id="6916817094593836501">Esta política evita a exibição de alertas de URL parecido nos sites listados. Geralmente, esses alertas são exibidos em sites que o <ph name="PRODUCT_NAME" /> acredita estarem tentando copiar um endereço conhecido pelo usuário.
+
+       Se a política estiver ativada e for definida para um ou mais domínios, nenhuma página de alerta para URL parecido será exibida nas páginas do domínio em questão.
+
+       Se a política estiver desativada ou não for definida, ou ainda se for definida para uma lista vazia, os alertas poderão ser exibidos em qualquer site visitado.
+
+       Um nome de host pode ser permitido com uma correspondência completa do host ou qualquer correspondência do domínio. Por exemplo, os alertas de um URL como "https://foo.example.com/bar" serão suprimidos se a lista incluir "foo.example.com" ou "example.com".</translation>
 <translation id="6922884955650325312">Bloquear o plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Ativar o destaque de circunflexos na tela de login</translation>
 <translation id="6924223708804692571">Força a desativação da verificação ortográfica de idiomas. Os idiomas não reconhecidos incluídos na lista serão ignorados.
@@ -4415,11 +4423,11 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       A pesquisa e a instalação automáticas de plug-ins ausentes não são mais compatíveis.</translation>
 <translation id="7267809745244694722">Teclas de mídia padrão para teclas de função</translation>
 <translation id="7271085005502526897">Importar homepage do navegador padrão na primeira execução</translation>
-<translation id="7271181393214180342">Definir a política como "Ativada" faz com que a autenticação HTTP respeite a aprovação pela política KDC. Em outras palavras, o <ph name="PRODUCT_NAME" /> delegará credenciais de usuário para o serviço acessado se o KDC definir <ph name="OK_AS_DELEGATE" /> em um ticket de serviço. Consulte RFC 5896 (https://tools.ietf.org/html/rfc5896.html, link em inglês). O serviço também precisa ter a permissão de <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
+<translation id="7271181393214180342">Definir a política como "Ativada" faz com que a autenticação HTTP respeite a aprovação pela política de KDC. Em outras palavras, o <ph name="PRODUCT_NAME" /> delegará credenciais de usuário para o serviço acessado se o KDC definir <ph name="OK_AS_DELEGATE" /> em um ticket de serviço. Consulte RFC 5896 (https://tools.ietf.org/html/rfc5896.html, link em inglês). O serviço também precisa ter a permissão de <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
-      Definir a política como "Desativada" ou deixá-la sem definição faz com que a KDC seja ignorada nas plataformas compatíveis, e somente <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> será respeitada.
+      Definir a política como "Desativada" ou deixá-la sem definição faz com que a política de KDC seja ignorada nas plataformas compatíveis, e somente <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> será respeitada.
 
-      No <ph name="MS_WIN_NAME" />, a política KDC sempre é respeitada.</translation>
+      No <ph name="MS_WIN_NAME" />, a política de KDC sempre é respeitada.</translation>
 <translation id="7273823081800296768">Se esta definição estiver ativada ou não estiver configurada, os usuários podem optar por parear clientes e hosts no momento da conexão, eliminando a necessidade de inserir um PIN todas as vezes.
 
           Se esta definição estiver desativada, esse recurso não fica disponível.</translation>

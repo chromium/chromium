@@ -1161,6 +1161,7 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 
       Nếu không đặt chính sách này, chế độ mặc định sẽ là không được phép đối với người dùng được quản lý và được phép đối với người dùng không được quản lý.</translation>
 <translation id="2660846099862559570">Không bao giờ sử dụng proxy</translation>
+<translation id="2664682171745499686">Chặn các cảnh báo tương tự về miền trên các miền</translation>
 <translation id="2665422249821137126">Bật con trỏ lớn trên màn hình đăng nhập</translation>
 <translation id="2672012807430078509">Kiểm soát việc bật NTLM làm giao thức xác thực cho các điểm kết nối SMB</translation>
 <translation id="2678503605767349615">Chứng chỉ ứng dụng bắt buộc cho toàn thiết bị</translation>
@@ -4141,6 +4142,13 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       LƯU Ý: Chính sách này chỉ áp dụng cho Chrome trên Android đang chạy trên các thiết bị chắc chắn có RAM lớn hơn 1 GB. Để áp dụng chính sách này trên các nền tảng không phải là Android, hãy sử dụng SitePerProcess.
       </translation>
+<translation id="6916817094593836501">Chính sách này ngăn không cho hiển thị các cảnh báo tương tự về URL trên những trang web có trong danh sách. Các cảnh báo này thường hiển thị trên những trang web mà <ph name="PRODUCT_NAME" /> cho là có thể đang cố giả mạo một trang web khác quen thuộc với người dùng.
+
+       Nếu bạn bật và đặt chính sách này cho một hoặc nhiều miền, thì sẽ không có trang cảnh báo tương tự nào hiển thị khi người dùng truy cập vào các trang trên miền đó.
+
+       Nếu bạn tắt, không đặt hoặc đặt chính sách này thành danh sách trống, thì các cảnh báo có thể xuất hiện trên bất kỳ trang web nào mà người dùng truy cập.
+
+       Một tên máy chủ có thể được phép nếu trùng khớp hoàn toàn với máy chủ hoặc trùng khớp với bất kỳ miền nào. Ví dụ: một URL như "https://foo.example.com/bar" có thể không hiển thị cảnh báo nếu danh sách này có "foo.example.com" hoặc "example.com".</translation>
 <translation id="6922884955650325312">Chặn plugin <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Bật tính năng làm nổi bật dấu chèn trên màn hình đăng nhập</translation>
 <translation id="6924223708804692571">Buộc tắt các ngôn ngữ có tính năng kiểm tra chính tả. Các ngôn ngữ không nhận dạng được trong danh sách đó sẽ bị bỏ qua.

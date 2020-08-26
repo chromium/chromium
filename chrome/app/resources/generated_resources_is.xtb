@@ -2523,7 +2523,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3984159763196946143">Ekki tókst að setja upp prufustillingu</translation>
 <translation id="3984431586879874039">Viltu leyfa þessu vefsvæði að sjá öryggislykilinn þinn?</translation>
 <translation id="3986705137476756801">Slökkva á skjátextum í rauntíma í bili</translation>
-<translation id="3987544746655539083">Halda áfram að loka fyrir aðgang þessa vefsvæðis að staðsetningu þinni</translation>
+<translation id="3987544746655539083">Halda áfram að loka fyrir aðgang þessa vefsvæðis að staðsetningunni</translation>
 <translation id="3987938432087324095">Náði þessu ekki.</translation>
 <translation id="3988996860813292272">Veldu tímabelti</translation>
 <translation id="399179161741278232">Innflutt</translation>
@@ -2770,7 +2770,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4348766275249686434">Safna villum</translation>
 <translation id="4349828822184870497">Gagnlegt</translation>
 <translation id="4350019051035968019">Þetta tæki er ekki hægt að skrá á lénið sem reikningurinn þinn tilheyrir því að tækið lýtur stjórn á öðru léni.</translation>
-<translation id="4350230709416545141">Loka alltaf fyrir aðgang <ph name="HOST" /> að staðsetningu þinni</translation>
+<translation id="4350230709416545141">Loka alltaf fyrir aðgang <ph name="HOST" /> að staðsetningunni þinni</translation>
 <translation id="4350782034419308508">Ok Google</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vill leita að nálægum Bluetooth-tækjum. Eftirfarandi tæki hafa fundist:</translation>
 <translation id="4354073718307267720">Spyrja þegar vefsvæði vill búa til þrívíddarkort af umhverfinu eða rekja staðsetningu myndavélarinnar</translation>
@@ -3618,7 +3618,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="543338862236136125">Breyta aðgangsorði</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-dulkóðun</translation>
-<translation id="5435779377906857208">Veita <ph name="HOST" /> alltaf aðgang að staðsetningu þinni</translation>
+<translation id="5435779377906857208">Veita <ph name="HOST" /> alltaf aðgang að staðsetningunni þinni</translation>
 <translation id="5436492226391861498">Bíður eftir proxy-gögnum...</translation>
 <translation id="5436510242972373446">Leita á <ph name="SITE_NAME" />:</translation>
 <translation id="543806387003274181">Vistaðu skrárnar þínar og stofnaðu nýjan reikning núna.</translation>
@@ -6174,7 +6174,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8590375307970699841">Setja upp sjálfvirkar uppfærslur</translation>
 <translation id="8591783563402255548">1 sekúnda</translation>
 <translation id="8592141010104017453">Sýna engar tilkynningar</translation>
-<translation id="859246725979739260">Lokað hefur verið á aðgang þessa vefsvæðis að staðsetningu þinni.</translation>
+<translation id="859246725979739260">Lokað hefur verið á aðgang þessa vefsvæðis að staðsetningunni þinni.</translation>
 <translation id="8593121833493516339">Senda notkunar- og greiningargögn. Hjálpaðu okkur að bæta Android fyrir barnið þitt með því að senda sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta verður ekki notað til að bera kennsl á barnið þitt og mun stuðla að því að bæta stöðugleika kerfa og forrita auk annarra endurbóta. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google reikningi barnsins. <ph name="BEGIN_LINK1" />Frekari upplýsingar<ph name="END_LINK1" /></translation>
 <translation id="8594908476761052472">Taka upp myndskeið</translation>
 <translation id="8596540852772265699">Sérsniðnar skrár</translation>
@@ -6648,7 +6648,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9147392381910171771">Valk&amp;ostir</translation>
 <translation id="9148058034647219655">Hætta</translation>
 <translation id="9148126808321036104">Skrá inn aftur</translation>
-<translation id="9148963623915467028">Þetta vefsvæði hefur aðgang að staðsetningu þinni.</translation>
+<translation id="9148963623915467028">Þetta vefsvæði hefur aðgang að staðsetningunni þinni.</translation>
 <translation id="9149866541089851383">Breyta...</translation>
 <translation id="9150045010208374699">Nota myndavélina þína</translation>
 <translation id="9153934054460603056">Vista auðkenni og aðgangsorð</translation>

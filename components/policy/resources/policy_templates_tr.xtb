@@ -4229,7 +4229,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Dosya indirilir ve önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
-      Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" /> dosyayı yazıcı yapılandırmaları için indirecektir ve yazıcıları<ph name="DEVICE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_PRINTERS_ALLOWLIST" />, ve <ph name="DEVICE_PRINTERS_BLOCKLIST" /> uyarınca kullanılabilir hale getirecektir.
+      Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" /> dosyayı yazıcı yapılandırmaları için indirecektir ve yazıcıları <ph name="DEVICE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_PRINTERS_ALLOWLIST" /> ve <ph name="DEVICE_PRINTERS_BLOCKLIST" /> uyarınca kullanılabilir hale getirecektir.
 
       Bu politika, kullanıcıların yazıcıları ayrı ayrı cihazlarda yapılandırıp yapılandıramayacağı konusunu etkilemez.  Ayrı ayrı kullanıcılar tarafından yazıcıların yapılandırılması konusunda tamamlayıcı olacak şekilde tasarlanmıştır.
 
@@ -4504,7 +4504,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Dosya indirilir ve önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
-      Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" /> dosyayı yazıcı yapılandırmaları için indirecektir ve yazıcıları<ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" />, ve <ph name="BULK_PRINTERS_BLACKLIST" /> uyarınca kullanılabilir hale getirecektir.
+      Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" /> dosyayı yazıcı yapılandırmaları için indirecektir ve yazıcıları <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="BULK_PRINTERS_WHITELIST" /> ve <ph name="BULK_PRINTERS_BLACKLIST" /> uyarınca kullanılabilir hale getirecektir.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamaz.
 
@@ -4727,7 +4727,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Dosya indirilir ve önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
-      Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" /> dosyayı yazıcı yapılandırmaları için indirecektir ve yazıcıları<ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_PRINTERS_ALLOWLIST" />, ve <ph name="DEVICE_PRINTERS_BLOCKLIST" /> uyarınca kullanılabilir hale getirecektir.
+      Bu politika ayarlanmazsa <ph name="PRODUCT_OS_NAME" /> dosyayı yazıcı yapılandırmaları için indirecektir ve yazıcıları <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_PRINTERS_ALLOWLIST" /> ve <ph name="DEVICE_PRINTERS_BLOCKLIST" /> uyarınca kullanılabilir hale getirecektir.
 
       Bu politika, kullanıcıların yazıcıları ayrı ayrı cihazlarda yapılandırıp yapılandıramayacağı konusunu etkilemez.  Ayrı ayrı kullanıcılar tarafından yazıcıların yapılandırılması konusunda tamamlayıcı olacak şekilde tasarlanmıştır.
 

@@ -1135,7 +1135,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2347644257713614136">Upotrebu usluga Hangouts i Cast for Education reguliraju Googleova pravila o privatnosti.</translation>
 <translation id="2348176352564285430">Aplikacija: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="234889437187286781">Pogreška prilikom učitavanja podataka</translation>
-<translation id="2349610121459545414">Ovoj web-lokaciji i dalje omogućite pristup vašoj lokaciji</translation>
+<translation id="2349610121459545414">Omogućite ovoj web-lokaciji da i dalje pristupa vašoj lokaciji</translation>
 <translation id="2349896577940037438">Ako je uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. Na stranici account.google.com možete pogledati svoje podatke, izbrisati ih ili promijeniti postavke računa.</translation>
 <translation id="2350133097354918058">Ponovno učitano</translation>
 <translation id="2350182423316644347">Inicijalizacija aplikacije...</translation>
@@ -2770,7 +2770,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4348766275249686434">Prikupljaj pogreške</translation>
 <translation id="4349828822184870497">Korisno</translation>
 <translation id="4350019051035968019">Uređaj se ne može prijaviti na domenu kojoj pripada vaš račun jer je postavljen za upravljanje na nekoj drugoj domeni.</translation>
-<translation id="4350230709416545141">Uvijek blokiraj hostu <ph name="HOST" /> pristup vašoj lokaciji</translation>
+<translation id="4350230709416545141">Uvijek blokirajte pristup svojoj lokaciji za <ph name="HOST" /></translation>
 <translation id="4350782034419308508">Hey Google</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> želi potražiti Bluetooth uređaje u blizini. Pronađeni su sljedeći uređaji:</translation>
 <translation id="4354073718307267720">Prikaži upit kada web-lokacija želi izraditi 3D kartu vašeg okruženja ili pratiti položaj kamere</translation>

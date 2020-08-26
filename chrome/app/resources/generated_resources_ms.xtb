@@ -328,7 +328,7 @@
 <translation id="1383876407941801731">Carian</translation>
 <translation id="1386387014181100145">Helo.</translation>
 <translation id="1386791642444521222">Aktifkan SIM</translation>
-<translation id="1387519831959169718">Untuk menjadikan penyemakan imbas anda terpisah, anda boleh mencipta profil baharu untuk <ph name="NEW_USER" /></translation>
+<translation id="1387519831959169718">Untuk menjadikan penyemakan imbas anda terpisah, anda boleh membuat profil baharu untuk <ph name="NEW_USER" /></translation>
 <translation id="138784436342154190">Pulihkan halaman permulaan lalai?</translation>
 <translation id="1388728792929436380"><ph name="DEVICE_TYPE" /> akan dimulakan semula apabila kemaskinian selesai.</translation>
 <translation id="1390548061267426325">Buka sebagai Tab Biasa</translation>
@@ -1061,7 +1061,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2256115617011615191">Mulakan semula sekarang</translation>
 <translation id="225614027745146050">Selamat datang</translation>
 <translation id="225692081236532131">Status pengaktifan</translation>
-<translation id="2257053455312861282">Tindakan menambah akaun sekolah membolehkan anda log masuk dengan mudah ke tapak web, sambungan dan apl sebagai pelajar dan dalam masa yang sama, masih beroperasi bawah kawalan ibu bapa.</translation>
+<translation id="2257053455312861282">Tindakan menambah akaun sekolah membolehkan anda log masuk dengan mudah ke tapak web, sambungan dan apl sebagai pelajar dan dalam masa yang sama, masih beroperasi di bawah kawalan ibu bapa.</translation>
 <translation id="2261323523305321874">Pentadbir anda telah membuat perubahan pada seluruh sistem yang melumpuhkan beberapa profil lama.</translation>
 <translation id="2262332168014443534">Kini mod Ringkas menjadikan penyemakan imbas lebih pantas pada semua halaman, termasuk halaman HTTPS.</translation>
 <translation id="2262477216570151239">Lengah sebelum mengulang</translation>
@@ -2909,7 +2909,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4522570452068850558">Butiran</translation>
 <translation id="4522600456902129422">Teruskan membenarkan tapak ini melihat papan keratan</translation>
 <translation id="4524832533047962394">Mod pendaftaran yang diberikan tidak disokong oleh versi sistem pengendalian ini. Sila pastikan anda menjalankan versi terbaharu.</translation>
-<translation id="4527186207340858212">Cipta profil baharu untuk kerja?</translation>
+<translation id="4527186207340858212">Buat profil baharu untuk kerja?</translation>
 <translation id="452750746583162491">Semak data anda yang disegerak</translation>
 <translation id="4530494379350999373">Asal</translation>
 <translation id="4532646538815530781">Tapak ini menggunakan penderia gerakan.</translation>
@@ -2960,7 +2960,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4573515936045019911">Sambungan rangkaian diperlukan untuk meningkatkan Linux. Sila sambung ke Internet dan cuba lagi.</translation>
 <translation id="457386861538956877">Lagi...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Tindakan menambahkan akaun sekolah pada profil membolehkan anda log masuk dengan mudah ke tapak web, sambungan dan apl sebagai pelajar dan dalam masa yang sama, beroperasi bawah kawalan ibu bapa. Tindakan ini tidak memberi kanak-kanak akses kepada penanda halaman, kata laluan atau data penyemak imbas lain yang disegerakkan dengan akaun sekolah.&lt;br&gt;&lt;br&gt;
+<translation id="457564749856982089">Tindakan menambahkan akaun sekolah pada profil membolehkan anda log masuk dengan mudah ke tapak web, sambungan dan apl sebagai pelajar dan dalam masa yang sama, beroperasi di bawah kawalan ibu bapa. Tindakan ini tidak memberi kanak-kanak akses kepada penanda halaman, kata laluan atau data penyemak imbas lain yang disegerakkan dengan akaun sekolah.&lt;br&gt;&lt;br&gt;
     Jika anak anda menggunakan Chromebook di sekolah dan anda ingin mencerminkan pengalaman sekolah di rumah untuk memastikan anak anda mempunyai akses kepada semua kerja sekolah yang diperlukan, sila log keluar daripada akaun Family Link ini dan log masuk ke akaun sekolah daripada halaman akaun OS Chrome (nota: kawalan ibu bapa Family Link tidak akan digunakan).&lt;br&gt;&lt;br&gt;
     Jika anak anda tidak menggunakan Chromebook di sekolah atau jika anda lebih suka mengurus pengalaman anak anda di rumah menggunakan Family Link, sila klik butang Seterusnya di bawah untuk menambahkan akaun sekolah pada profil ini.</translation>
 <translation id="4576541033847873020">Gandingkan peranti Bluetooth</translation>
@@ -4334,7 +4334,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6298962879096096191">Gunakan Google Play untuk memasang apl Android</translation>
 <translation id="630065524203833229">K&amp;eluar</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> tidak dapat dikonfigurasi secara automatik. Sila nyatakan butiran terperinci pencetak. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">Untuk memisahkan penyemakan imbas peribadi dan <ph name="EXISTING_USER" />, cipta profil baharu untuk <ph name="NEW_USER" /></translation>
+<translation id="6301076166764763868">Untuk memisahkan penyemakan imbas peribadi dan <ph name="EXISTING_USER" />, buat profil baharu untuk <ph name="NEW_USER" /></translation>
 <translation id="630292539633944562">Cadangan maklumat peribadi</translation>
 <translation id="6305607932814307878">Dasar Global:</translation>
 <translation id="6307990684951724544">Sistem sibuk</translation>

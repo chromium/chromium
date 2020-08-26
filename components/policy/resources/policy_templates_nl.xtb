@@ -1137,6 +1137,7 @@ Als dit beleid niet is ingesteld, is het privacyscherm in eerste instantie uitge
 
       Als dit beleid niet wordt ingesteld, is sms-synchronisatie standaard niet toegestaan voor beheerde gebruikers en wel toegestaan voor niet-beheerde gebruikers.</translation>
 <translation id="2660846099862559570">Nooit een proxy gebruiken</translation>
+<translation id="2664682171745499686">Waarschuwingen voor nagebootste domeinen onderdrukken voor domeinen</translation>
 <translation id="2665422249821137126">De grote muisaanwijzer op het inlogscherm inschakelen</translation>
 <translation id="2672012807430078509">Bepaalt of NTLM is ingeschakeld als verificatieprotocol voor SMB-activeringen</translation>
 <translation id="2678503605767349615">Vereiste clientcertificaten voor het hele apparaat</translation>
@@ -4095,6 +4096,13 @@ Geheugengegevens worden in alle gevallen aan de pagina gerapporteerd, afgezien v
 
       OPMERKING: Dit beleid is alleen van toepassing op Chrome op Android-apparaten met meer dan 1 GB RAM. Als je het beleid op andere platforms wilt toepassen, gebruik je SitePerProcess.
       </translation>
+<translation id="6916817094593836501">Dit beleid voorkomt dat er waarschuwingen worden weergegeven voor nagebootste URL's op de vermelde sites. Deze waarschuwingen worden meestal weergegeven op sites waarvan <ph name="PRODUCT_NAME" /> denkt dat deze mogelijk een andere site probeert te spoofen die bij de gebruiker bekend is.
+
+       Als je het beleid inschakelt en instelt op een of meer domeinen, worden er geen waarschuwingen voor nagebootste URL's weergegeven als de gebruiker pagina's in dat domein bezoekt.
+
+       Als dit beleid is uitgeschakeld, niet is ingesteld of is ingesteld op een lege lijst, kunnen er waarschuwingen worden weergegeven op elke site die de gebruiker bezoekt.
+
+       Een hostnaam kan worden toegestaan als deze exact overeenkomt met een host of overeenkomt met een domein. Voor een URL zoals "https://foo.example.com/bar" kunnen waarschuwingen bijvoorbeeld worden onderdrukt als deze lijst "foo.example.com" of "example.com" bevat.</translation>
 <translation id="6922884955650325312">De <ph name="FLASH_PLUGIN_NAME" />-plug-in blokkeren</translation>
 <translation id="6923731550900440989">De markering van het caret-teken op het inlogscherm inschakelen.</translation>
 <translation id="6924223708804692571">Talen voor spellingcontrole worden gedwongen uitgeschakeld. Niet-herkende talen in de lijst worden genegeerd.

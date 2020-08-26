@@ -395,7 +395,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Los usuarios no pueden modificar ni anular este ajuste.
 
-      Nota: Esta política provoca que el encabezado X-GoogApps-Allowed-Domains se añada a todas las solicitudes HTTP y HTTPS en todos los dominios de google.com, como se describe en la página https://support.google.com/a/answer/1668854.</translation>
+      Nota: Esta política provoca que el encabezado X-GoogApps-Allowed-Domains se añada a todas las solicitudes HTTP y HTTPS en todos los dominios de google.com, como se describe https://support.google.com/a/answer/1668854.</translation>
 <translation id="1599424828227887013">Habilitar el aislamiento de sitios web específicos en dispositivos Android</translation>
 <translation id="159946228300522107">Si se asigna el valor "Verdadero" a esta política, Chrome maximizará la primera ventana que se muestre al ejecutarse por primera vez.
 
@@ -404,7 +404,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si se le asigna el valor "False" o no se le asigna ningún valor, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.</translation>
 <translation id="1608755754295374538">URLs a las que se concederá acceso a dispositivos de captura de audio sin confirmación</translation>
-<translation id="1609917034797989341">Si se define esta política, se concederá acceso a claves corporativas de extensiones. Las claves están designadas solo para un uso corporativo si se generan con la API chrome.enterprise.platformKeys API en una cuenta gestionada. Los usuarios no pueden conceder acceso a extensiones mediante claves corporativas ni retirarlo.
+<translation id="1609917034797989341">Si se define esta política, se concederá acceso a claves corporativas de extensiones. Las claves están designadas solo para un uso corporativo si se generan con la API chrome.enterprise.platformKeys API en una cuenta gestionada. Los usuarios no pueden conceder acceso a extensiones mediante claves corporativas ni quitarlo.
 
       De forma predeterminada, una extensión no puede utilizar una clave designada para uso corporativo, lo que equivale a asignar el valor "False" a allowCorporateKeyUsage en esa extensión. Solo si se le asigna el valor "True" a allowCorporateKeyUsage en una extensión, esta podrá utilizar cualquier clave de plataforma marcada para uso corporativo para firmar datos arbitrarios. Este permiso solo se debe conceder si se tiene la certeza de que la extensión garantiza un acceso seguro a la clave y la protege de posibles ataques.</translation>
 <translation id="1611394564825535541">Permite controlar si los usuarios pueden acceder a impresoras que no sean de empresa
@@ -919,11 +919,11 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2364639863953745682">Modo de la experiencia de incorporación del Asistente</translation>
 <translation id="2366401226808353434">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios web pueden pedir a los usuarios que les otorguen acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
 
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
+      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web (si se ha definido). Si no se ha definido, se aplicará la configuración personal del usuario.
 
       Los patrones de URL no deben entrar en conflicto con <ph name="FILE_SYSTEM_READ_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
 
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta el sitio web https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
 <translation id="2394674739523870144">Si se define esta política como una lista de cadenas, dichas cadenas se unirán mediante espacios y pasarán de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de línea de comandos. Si un parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> se sustituirá por la URL de la página que se vaya a abrir. Si ningún parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, la URL se añadirá al final de la línea de comandos.
 
@@ -1065,11 +1065,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2522304491589804974">Configura la lista de extensiones de instalación permitidas</translation>
 <translation id="2525272234967793245">Si se le asigna un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios web pueden pedirles a los usuarios que les otorguen acceso de escritura a archivos o directorios en el sistema de archivos del sistema operativo del host.
 
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
+      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web (si se ha definido). Si no se ha definido, se aplicará la configuración personal del usuario.
 
       Los patrones de URL no deben entrar en conflicto con <ph name="FILE_SYSTEM_WRITE_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
 
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta el sitio web https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2529880111512635313">Configura la lista de aplicaciones y extensiones de instalación forzada</translation>
 <translation id="253135976343875019">Tiempo de espera de inactividad cuando el dispositivo está conectado a la red</translation>
 <translation id="2536525645274582300">El usuario decide si quiere habilitar los servicios de ubicación de Google</translation>
@@ -1159,6 +1159,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si no se define esta política, no estará disponible de forma predeterminada para los usuarios administrados pero sí lo estará para los no administrados.</translation>
 <translation id="2660846099862559570">No utilizar nunca un proxy</translation>
+<translation id="2664682171745499686">Eliminar las advertencias de dominio similares en dominios</translation>
 <translation id="2665422249821137126">Habilitar el cursor grande en la pantalla de inicio de sesión</translation>
 <translation id="2672012807430078509">Controla la habilitación de NTLM como protocolo de autenticación para activaciones SMB.</translation>
 <translation id="2678503605767349615">Certificados de cliente de todo el dispositivo obligatorios</translation>
@@ -2681,13 +2682,13 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
 <translation id="4952347392677351397">Si se le asigna el valor 1 a esta política, los sitios web podrán usar y acceder a los sensores, como los de luz o movimiento. Si se le asigna el valor 2, se denegará el acceso a los sensores.
 
       Si no se le asigna ningún valor, se aplicará la política <ph name="ALLOW_SENSORS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
-<translation id="4954185885991137927">Si se habilita esta política, se activan los informes ampliados de Navegación Segura de <ph name="PRODUCT_NAME" />, que envían información del sistema y contenido de páginas a los servidores de Google para ayudar a detectar aplicaciones y sitios web peligrosos.
+<translation id="4954185885991137927">Si se habilita esta política, se activan los informes ampliados de Navegación Segura de <ph name="PRODUCT_NAME" />, que envían parte de la información del sistema y del contenido de las páginas a los servidores de Google para ayudar a detectar aplicaciones y sitios web peligrosos.
 
       Si se inhabilita, no se envía ningún informe.
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ningún valor, los usuarios podrán decidir si quieren enviar informes o no.
 
-      Consulta más información sobre Navegación Segura en el siguiente sitio web: https://developers.google.com/safe-browsing.</translation>
+      Consulta más información sobre Navegación Segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="4962262530309732070">Si se asigna el valor true a esta política o si esta no se configura, <ph name="PRODUCT_NAME" /> permitirá la opción Añadir persona del administrador de usuarios.
 
       Si se asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> no se podrán crear perfiles desde el administrador de usuarios.</translation>
@@ -3637,9 +3638,9 @@ Si esta política se establece en False, el usuario no podrá canjear ofertas.</
       Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar aplicaciones en la estantería de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6208896993204286313">Proporcionar información de políticas de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Proporcionar información de versiones del SO y de <ph name="PRODUCT_NAME" /></translation>
-<translation id="6210261948043479030">Si se define esta política, se configura la lista de las URL de acceso empresarial (únicamente con protocolos HTTP y HTTPS). El servicio de protección de contraseñas capturará los hashes con salt de las contraseñas en estas URL y las usará para detectar si la contraseña se reutiliza. Para que <ph name="PRODUCT_NAME" /> capture correctamente los hashes con salt de las contraseñas, tus páginas de inicio de sesión deben seguir las directrices incluidas en el sitio web https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
+<translation id="6210261948043479030">Si se define esta política, se configura la lista de las URL de acceso empresarial (únicamente con protocolos HTTP y HTTPS). El servicio de protección de contraseñas capturará los hashes con salt de las contraseñas en estas URL y las usará para detectar si la contraseña se reutiliza. Para que <ph name="PRODUCT_NAME" /> capture correctamente los hashes con salt de las contraseñas, tus páginas de inicio de sesión deben seguir las directrices incluidas en https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
-      Si se desactiva esta opción o no se define, el servicio de protección de contraseñas solo capturará los hashes con salt de las contraseñas en la página https://accounts.google.com.
+      Si se desactiva esta opción o no se define, el servicio de protección de contraseñas solo capturará los hashes con salt de las contraseñas en https://accounts.google.com.
 
       En <ph name="MS_WIN_NAME" />, esta política solo está disponible en las instancias vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="6210610748361191729">Si se asigna el valor "False" a esta política, la interfaz de usuario de exportación e importación no estará disponible para los usuarios. Sin embargo, podrán seguir utilizando comandos "lxc" directamente en la máquina virtual para exportar e importar imágenes de contenedor.</translation>
@@ -3669,11 +3670,11 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
       de informes sobre fallos.</translation>
 <translation id="6242872287610413959">Si se le asigna un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios web no pueden pedirles a los usuarios que les otorguen acceso de escritura a archivos o directorios en el sistema de archivos del sistema operativo del host.
 
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
+      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web (si se ha definido). Si no se ha definido, se aplicará la configuración personal del usuario.
 
       Los patrones de URL no pueden entrar en conflicto con la política <ph name="FILE_SYSTEM_WRITE_ASK_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
 
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta el sitio web https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6244210204546589761">URL que se deben abrir al inicio</translation>
 <translation id="6247316685259031374">Esta política controla la zona de pruebas de audio.
       Si la política se habilita, el proceso de audio se ejecutará en una zona de pruebas.
@@ -3819,11 +3820,11 @@ Si la política está establecida en False, no se informará sobre los usuarios.
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
 <translation id="6485813825811798133">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios web no pueden pedir a los usuarios que les otorguen acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
 
-      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
+      Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios web (si se ha definido). Si no se ha definido, se aplicará la configuración personal del usuario.
 
       Los patrones de URL no pueden entrar en conflicto con la política <ph name="FILE_SYSTEM_READ_ASK_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
 
-      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta el sitio web https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
+      Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6491139795995924304">Permitir Bluetooth en el dispositivo</translation>
 <translation id="6491872498385040936">Esta política está obsoleta, pero puedes utilizar <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, que la anula y permite un ajuste más detallado.
 
@@ -4032,7 +4033,7 @@ Si la política está establecida en False, no se informará sobre los usuarios.
 <translation id="6752711782954612641">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, se especificarán los parámetros utilizados al buscar una URL con POST. Se compone de pares de nombre-valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se sustituirá por datos de términos de búsqueda reales.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda se enviarán mediante el método "get".</translation>
-<translation id="6753052385433167009">Si se define esta política, se configurará la URL donde los usuarios podrán cambiar sus contraseñas después de ver una advertencia en el navegador. El servicio de protección de contraseñas envía a los usuarios a la URL que designes (únicamente con protocolos HTTP y HTTPS) a través de esta política. Para que <ph name="PRODUCT_NAME" /> capture correctamente el hash con salt de la nueva contraseña en esta página de cambio de contraseña, la página debe seguir las directrices incluidas en el sitio web https://www.chromium.org/developers/design-documents/create-amazing-password-forms .
+<translation id="6753052385433167009">Si se define esta política, se configurará la URL donde los usuarios podrán cambiar sus contraseñas después de ver una advertencia en el navegador. El servicio de protección de contraseñas envía a los usuarios a la URL que designes (únicamente con protocolos HTTP y HTTPS) a través de esta política. Para que <ph name="PRODUCT_NAME" /> capture correctamente el hash con salt de la nueva contraseña en esta página de cambio de contraseña, la página debe seguir las directrices incluidas en https://www.chromium.org/developers/design-documents/create-amazing-password-forms .
 
       Si la política se desactiva o no se define, el servicio enviará a los usuarios a https://myaccount.google.com para cambiar su contraseña.
 
@@ -4135,6 +4136,13 @@ Si la política está establecida en False, no se informará sobre los usuarios.
 
       NOTA:  Esta política solo se aplica a Chrome si se utiliza en dispositivos Android con más de 1 GB de RAM. Para aplicar esta política a plataformas distintas de Android, usa SiteperProcess.
       </translation>
+<translation id="6916817094593836501">Esta política evita que aparezcan advertencias URL similares en los sitios web incluidos en la lista. Normalmente, estas advertencias aparecen en sitios web que <ph name="PRODUCT_NAME" /> considera que podrían tratar de falsificar mediante spoofing un sitio web conocido por el usuario.
+
+       Si se habilita esta política y se establece uno o más dominios, no se mostrarán páginas de advertencia similares cuando el usuario visite páginas de esos dominios.
+
+       Si se inhabilita, no se define o se le asigna una lista vacía a esta política, es posible que aparezcan advertencias en cualquier sitio web que visite el usuario.
+
+       Se puede permitir un nombre de host con una coincidencia completa o cualquier coincidencia con el dominio. Por ejemplo, es posible que se eliminen las advertencias en una URL como "https://foo.example.com/bar" si la lista incluye "foo.example.com" o "example.com".</translation>
 <translation id="6922884955650325312">Bloquear el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Habilita el resaltado del símbolo de intercalación de texto en la pantalla de inicio de sesión</translation>
 <translation id="6924223708804692571">Permite forzar la inhabilitación del corrector ortográfico de idiomas. Se ignorarán los idiomas no reconocidos de esa lista.
@@ -4874,7 +4882,7 @@ Si esta opción no está establecida o está establecida en True, los dispositiv
 
           Todos los hosts de mensajes nativos están permitidos de manera predeterminada, pero si todos los hosts de mensajes nativos se han bloqueado de acuerdo con la política, se puede usar una lista de permitidos para anular dicha política.</translation>
 <translation id="7818131573217430250">Establecer el estado predeterminado del modo de contraste alto en la pantalla de inicio de sesión</translation>
-<translation id="7823420548819808002">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes inseguros. Las organizaciones pueden incluir orígenes en lista blanca para aplicaciones antiguas que no pueden implementar TLS o para configurar un servidor provisional para el desarrollo interno de webs, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
+<translation id="7823420548819808002">Si se define esta política, se especificará una lista de orígenes (URLs) o de patrones de nombre de host (como *.example.com) para los que no se aplicarán las restricciones de seguridad de orígenes inseguros. Las organizaciones pueden incluir orígenes en lista de permitidos para aplicaciones antiguas que no pueden implementar TLS o para configurar un servidor provisional para el desarrollo interno de webs, de manera que los desarrolladores puedan probar las funciones que necesiten contextos seguros sin tener que implementar TLS en el servidor provisional. Esta política también evita que el origen aparezca con la etiqueta "No es seguro" en la barra de direcciones.
 
       Definir la lista de URLs de esta política tiene el mismo resultado que asignar la instrucción de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto instrucción de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
 
@@ -5117,11 +5125,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Las solicitudes de unión a diferentes hosts mediante conexiones que utilizan certificados de cliente pueden dar lugar a problemas de seguridad y privacidad, ya que la autoridad de certificación se vinculará a todas las solicitudes, aunque el usuario no lo autorice de forma explícita. Esta política es temporal y se retirará en versiones posteriores. Consulta https://crbug.com/855690
 
       Si no se establece esta política, se realizará la acción predeterminada: no permitir la unión de ninguna conexión HTTP/2 en conexiones que utilicen certificados de cliente.</translation>
-<translation id="8197373549462388216">Si se habilita esta política, se evita que los usuarios sigan navegando desde la página de advertencia que muestra el servicio Navegación Segura hasta el sitio web malicioso. Esta política solo evita que los usuarios sigan navegando si aparece una advertencia de Navegación Segura (por ejemplo, por software malicioso o suplantación de identidad), pero no si se trata de un problema relacionado con un certificado SSL, como que no es válido o ha caducado.
+<translation id="8197373549462388216">Si se habilita esta política, se evita que los usuarios puedan pasar de la página de advertencia que muestra el servicio Navegación Segura antes de acceder a un sitio web malicioso. Esta política solo evita que los usuarios continúen si aparece una advertencia de Navegación Segura (por ejemplo, por software malicioso o suplantación de identidad), pero no si se trata de un problema relacionado con un certificado SSL (por ejemplo, si no es válido o ha caducado).
 
-      Si se inhabilita o no se le asigna ningún valor, los usuarios podrán decidir si quieren acceder al sitio web marcado después de ver la advertencia.
+      Si se inhabilita o no se le asigna ningún valor, los usuarios podrán decidir si quieren acceder al sitio web denunciado después de ver la advertencia.
 
-      Consulta más información sobre Navegación Segura en el siguiente sitio web: https://developers.google.com/safe-browsing.</translation>
+      Consulta más información sobre Navegación Segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="8213770777756919897">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
           Cuando se configura esta política, se especifica la acción que realiza <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante el periodo de tiempo indicado por el retraso de inactividad, que puede configurarse por separado.
@@ -5732,7 +5740,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
       * PasswordProtectionWarningOff: no se mostrará ninguna advertencia de protección de contraseñas.
 
-      * PasswordProtectionWarningOnPasswordReuse: se mostrará la advertencia de protección de contraseñas cuando el usuario reutilice la contraseña protegida en los sitios web que no estén en la lista blanca.
+      * PasswordProtectionWarningOnPasswordReuse: se mostrará la advertencia de protección de contraseñas cuando el usuario reutilice la contraseña protegida en los sitios web que no estén en la lista de permitidos.
 
       * PasswordProtectionWarningOnPhishingReuse: se mostrará la advertencia de protección de contraseñas cuando el usuario reutilice la contraseña protegida en un sitio web de suplantación de identidad.
 

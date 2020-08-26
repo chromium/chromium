@@ -1161,6 +1161,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan ini tidak ditetapkan, setelan defaultnya adalah tidak diizinkan untuk pengguna yang dikelola dan diizinkan untuk pengguna yang tidak dikelola.</translation>
 <translation id="2660846099862559570">Jangan pernah gunakan proxy</translation>
+<translation id="2664682171745499686">Menyembunyikan peringatan domain yang mirip di domain</translation>
 <translation id="2665422249821137126">Mengaktifkan kursor besar di layar login</translation>
 <translation id="2672012807430078509">Kontrol yang mengaktifkan NTLM sebagai protokol autentikasi untuk pemasangan SMB</translation>
 <translation id="2678503605767349615">Sertifikat Klien seluruh perangkat yang diperlukan</translation>
@@ -4126,6 +4127,13 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       CATATAN: Kebijakan ini hanya berlaku untuk Chrome di Android yang berjalan di perangkat dengan RAM harus di atas 1 GB. Untuk menerapkan kebijakan di platform non-Android, gunakan SitePerProcess.
       </translation>
+<translation id="6916817094593836501">Kebijakan ini mencegah tampilan peringatan URL yang mirip di situs yang tercantum. Peringatan ini biasanya ditampilkan di situs yang diyakini <ph name="PRODUCT_NAME" /> mencoba melakukan spoofing pada situs lain yang biasa dikunjungi pengguna.
+
+       Jika kebijakan ini diaktifkan dan disetel ke satu atau beberapa domain, halaman peringatan yang mirip tidak akan ditampilkan saat pengguna mengunjungi halaman di domain tersebut.
+
+       Jika kebijakan ini dinonaktifkan, tidak disetel, atau disetel ke daftar kosong, peringatan akan muncul di situs yang dikunjungi pengguna.
+
+       Hostname dapat diizinkan menggunakan pencocokan host lengkap, atau pencocokan domain apa pun. Misalnya, URL seperti "https://foo.example.com/bar" dapat memiliki peringatan yang disembunyikan jika daftar ini menyertakan "foo.example.com" atau "example.com".</translation>
 <translation id="6922884955650325312">Blokir plugin <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Mengaktifkan sorotan kursor teks di layar login</translation>
 <translation id="6924223708804692571">Menonaktifkan secara paksa bahasa pemeriksaan ejaan. Bahasa yang tidak dikenal dalam daftar tersebut akan diabaikan.

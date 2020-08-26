@@ -480,7 +480,7 @@
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1556537182262721003">無法將擴充功能目錄移至設定檔。</translation>
 <translation id="155865706765934889">觸控板</translation>
-<translation id="1563702743503072935">當你登入帳戶時，也可以在這部裝置上查看 Google 帳戶中的密碼</translation>
+<translation id="1563702743503072935">當你登入帳戶時，也可以在這部裝置上使用 Google 帳戶中的密碼</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">選取的印表機無法使用或未正確安裝。請檢查你的印表機，或改選其他印表機。</translation>
 <translation id="1567387640189251553">自你上次輸入密碼後，裝置已連接其他鍵盤。你的按鍵行為可能會遭到側錄。</translation>
@@ -2958,9 +2958,9 @@
 <translation id="4573515936045019911">必須連上網路才能升級 Linux。請連線至網際網路，然後再試一次。</translation>
 <translation id="457386861538956877">更多…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">將學校帳戶新增至設定檔可讓子女以學生的身分輕鬆登入網站、擴充功能及應用程式，同時遵守家長監護功能的操作規範。這項操作不允許子女存取與學校帳戶同步的書籤、密碼或其他瀏覽器資料。&lt;br&gt;&lt;br&gt;
-    如果子女在學校使用 Chromebook，而你想在家中複製相同的學校使用體驗，以確保子女可存取所有與學校作業相關的必要資訊，請登出這個 Family Link 帳戶，然後從 Chrome 作業系統帳戶頁面登入學校帳戶 (注意：系統不會套用 Family Link 家長監護功能)。&lt;br&gt;&lt;br&gt;
-    如果子女在學校不是使用 Chromebook，或是你想要使用 Family Link 管理子女在家中的使用體驗，請按下方的 [下一步] 按鈕，將學校帳戶新增至這個設定檔。</translation>
+<translation id="457564749856982089">將學校帳戶新增至設定檔可讓孩子以學生的身分輕鬆登入網站、擴充功能及應用程式，同時遵守家長監護功能的操作規範。這項操作不允許孩子存取與學校帳戶同步的書籤、密碼或其他瀏覽器資料。&lt;br&gt;&lt;br&gt;
+    如果孩子在學校使用 Chromebook，而你想在家中複製相同的學校使用體驗，以確保孩子可存取所有與學校作業相關的必要資訊，請登出這個 Family Link 帳戶，然後從 Chrome 作業系統帳戶頁面登入學校帳戶 (注意：系統不會套用 Family Link 家長監護功能)。&lt;br&gt;&lt;br&gt;
+    如果孩子在學校不是使用 Chromebook，或是你想要使用 Family Link 管理孩子在家中的使用體驗，請按下方的 [下一步] 按鈕，將學校帳戶新增至這個設定檔。</translation>
 <translation id="4576541033847873020">配對藍牙裝置</translation>
 <translation id="4579453506923101210">清除已連結的手機</translation>
 <translation id="4579581181964204535">無法投放 <ph name="HOST_NAME" />。</translation>
@@ -4536,7 +4536,7 @@
 <translation id="6556866813142980365">重做</translation>
 <translation id="6556903358015358733">主題與桌布</translation>
 <translation id="6557290421156335491">我的捷徑</translation>
-<translation id="6560151649238390891">已插入建議</translation>
+<translation id="6560151649238390891">已插入建議項目</translation>
 <translation id="6561560012278703671">使用低擾式通知 (禁止網站顯示通知，以免干擾)</translation>
 <translation id="6561726789132298588">Enter 鍵</translation>
 <translation id="6562117348069327379">將系統記錄儲存至「下載」目錄。</translation>

@@ -1137,6 +1137,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Falls die Richtlinie nicht konfiguriert ist, kommt die Standardeinstellung zum Einsatz, bei der die Funktion von verwalteten Nutzern nicht verwendet und von nicht verwalteten Nutzern verwendet werden kann.</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
+<translation id="2664682171745499686">Warnungen zu nachgeahmten URLs auf Domains unterdrücken</translation>
 <translation id="2665422249821137126">Großen Cursor auf der Anmeldeseite aktivieren</translation>
 <translation id="2672012807430078509">Steuerung, durch die NTLM als Authentifizierungsprotokoll für SMB-Bereitstellungen aktiviert wird</translation>
 <translation id="2678503605767349615">Erforderliche geräteübergreifende Clientzertifikate</translation>
@@ -4096,6 +4097,13 @@ Speicherinformationen werden unabhängig von der gewählten Option an die Seite 
 
       HINWEIS: Diese Richtlinie funktioniert nur für Chrome unter Android auf Geräten, die mehr als 1 GB RAM aufweisen. Damit die Richtlinie auf anderen Plattformen als Android genutzt werden kann, muss "SitePerProcess" verwendet werden.
       </translation>
+<translation id="6916817094593836501">Die Richtlinie verhindert, dass für die aufgeführten Websites Warnungen zu nachgeahmten URLs angezeigt werden. Diese Warnungen werden normalerweise dann eingeblendet, wenn <ph name="PRODUCT_NAME" /> feststellt, dass sich eine Website als eine dem Nutzer bekannte Website ausgeben könnte.
+
+       Ist die Richtlinie aktiviert und für eine oder mehrere Domains konfiguriert, werden keine Warnungen zu nachgeahmten URLs angezeigt, wenn Nutzer Seiten auf der jeweiligen Domain aufrufen.
+
+       Wenn diese Richtlinie deaktiviert, nicht konfiguriert oder auf eine leere Liste festgelegt, können jederzeit Warnungen zu nachgeahmten URLs erscheinen.
+
+       Ein Hostname kann bei vollständiger Host- oder beliebiger Domainübereinstimmung erlaubt sein. Beispiel: Für die URL "https://foo.example.com/bar" werden Warnungen möglicherweise unterdrückt, wenn "foo.example.com" oder "example.com" zur Liste hinzugefügt wurden.</translation>
 <translation id="6922884955650325312">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" blockieren</translation>
 <translation id="6923731550900440989">Hiermit wird die Funktion "Textcursor hervorheben" auf dem Anmeldebildschirm aktiviert</translation>
 <translation id="6924223708804692571">Damit wird die Deaktivierung von Sprachen für die Rechtschreibprüfung erzwungen. Sprachen in dieser Liste, die nicht erkannt werden, werden ignoriert.

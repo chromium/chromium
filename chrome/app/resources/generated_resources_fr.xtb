@@ -328,6 +328,7 @@
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1386387014181100145">Bonjour</translation>
 <translation id="1386791642444521222">Activer une carte SIM physique</translation>
+<translation id="1387519831959169718">Pour distinguer votre navigation, vous pouvez créer un nouveau profil pour <ph name="NEW_USER" /></translation>
 <translation id="138784436342154190">Restaurer la page de démarrage par défaut ?</translation>
 <translation id="1388728792929436380">Ce <ph name="DEVICE_TYPE" /> va redémarrer lorsque les mises à jour seront installées.</translation>
 <translation id="1390548061267426325">Ouvrir dans un onglet standard</translation>
@@ -342,6 +343,7 @@
 <translation id="139911022479327130">Déverrouillez votre téléphone et confirmez votre identité</translation>
 <translation id="1399511500114202393">Aucun certificat utilisateur</translation>
 <translation id="1401308693935339022">Utiliser la localisation. Permettre aux services et applications d'utiliser la position de cet appareil s'ils disposent de l'autorisation d'accès nécessaire. Google peut collecter des données de localisation régulièrement et s'en servir de manière anonyme pour améliorer la précision de la localisation et les services géolocalisés.</translation>
+<translation id="1403222014593521787">Impossible de se connecter au proxy</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (supervisé)</translation>
 <translation id="1405779994569073824">A planté.</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
@@ -478,6 +480,7 @@
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="1556537182262721003">Impossible de déplacer le répertoire d'extensions dans le profil.</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
+<translation id="1563702743503072935">Les mots de passe enregistrés dans votre compte Google seront également disponibles sur cet appareil lorsque vous serez connecté</translation>
 <translation id="1566049601598938765">Site Web</translation>
 <translation id="15662109988763471">L'imprimante sélectionnée n'est pas disponible ou n'est pas installée correctement. Vérifiez votre imprimante ou sélectionnez-en une autre.</translation>
 <translation id="1567387640189251553">Un clavier différent a été branché depuis la dernière fois où vous avez saisi votre mot de passe. Il est possible que ce soit pour enregistrer les touches sur lesquelles vous appuyez et vous soutirer ainsi des informations.</translation>
@@ -906,6 +909,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2081816110395725788">Mode veille lorsque l'appareil fonctionne sur batterie</translation>
 <translation id="2082187087049518845">Regrouper les onglets</translation>
+<translation id="2082510809738716738">Choisissez une couleur de thème</translation>
 <translation id="2087822576218954668">Imprimer : <ph name="PRINT_NAME" /></translation>
 <translation id="2088690981887365033">Réseau VPN</translation>
 <translation id="208928984520943006">Vous pouvez accéder à l'écran d'accueil à tout moment en balayant l'écran de bas en haut.</translation>
@@ -1057,6 +1061,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2256115617011615191">Redémarrer maintenant</translation>
 <translation id="225614027745146050">Bienvenue</translation>
 <translation id="225692081236532131">État d'activation</translation>
+<translation id="2257053455312861282">L'ajout d'un compte scolaire permet de se connecter facilement aux sites Web, aux extensions et aux applications en tant qu'élève. Le contrôle parental n'est pas désactivé.</translation>
 <translation id="2261323523305321874">Votre administrateur a effectué une modification s'appliquant à tout le système qui désactive certains anciens profils.</translation>
 <translation id="2262332168014443534">Désormais, le mode simplifié accélère la navigation sur toutes les pages, y compris sur les pages HTTPS.</translation>
 <translation id="2262477216570151239">Délai avant répétition</translation>
@@ -1972,6 +1977,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3396800784455899911">En cliquant sur le bouton "Accepter et continuer", vous acceptez le processus décrit ci-dessus pour ces services Google.</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hz) – entrelacé</translation>
+<translation id="3402255108239926910">Choisissez un avatar</translation>
 <translation id="3402585168444815892">Inscription au mode démo</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Aucun mot de passe enregistré pour ce site</translation>
@@ -1999,6 +2005,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3428747202529429621">Ce mode assure votre sécurité dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté</translation>
 <translation id="3428800329481094896">Extraction des clés SSH du conteneur Linux…</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
+<translation id="3431370546335300761">Identifiez-vous pour vous connecter au proxy</translation>
 <translation id="3432227430032737297">Supprimer tous les cookies affichés</translation>
 <translation id="3432757130254800023">Envoyer les contenus audio et vidéo aux écrans sur le réseau local</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -2380,6 +2387,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3841964634449506551">Mot de passe non valide</translation>
 <translation id="3842552989725514455">Police Serif</translation>
 <translation id="3843464315703645664">Ajouté à la liste d'autorisation interne</translation>
+<translation id="3844888638014364087">Emoji ajouté</translation>
 <translation id="3846116211488856547">Accédez à des outils conçus pour développer des sites Web, des applications Android, etc. En installant Linux, vous téléchargerez <ph name="DOWNLOAD_SIZE" /> de données.</translation>
 <translation id="3847319713229060696">Contribuer à améliorer la sécurité sur le Web pour tous</translation>
 <translation id="385051799172605136">Retour</translation>
@@ -2683,6 +2691,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
 <translation id="4235200303672858594">Plein écran</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
+<translation id="4237773362828263530">Les paramètres avec des caractères génériques "*" ne sont plus acceptés. Contactez votre administrateur pour <ph name="BEGIN_LINK" />modifier ces paramètres<ph name="END_LINK" />.</translation>
 <translation id="4242145785130247982">Plusieurs certificats client ne sont pas compatibles</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4242577469625748426">Échec de l'installation des paramètres des règles sur l'appareil : <ph name="VALIDATION_ERROR" />.</translation>
@@ -2793,6 +2802,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4384312707950789900">Ajouter aux réseaux préférés</translation>
 <translation id="4384652540891215547">Activer l'extension</translation>
 <translation id="438503109373656455">Longchamp</translation>
+<translation id="4385040356362222432">Pour distinguer la navigation de <ph name="NEW_USER" /> de celle associée au compte <ph name="EXISTING_USER" />, créez un nouveau profil</translation>
 <translation id="4387004326333427325">Certificat d'authentification rejeté à distance.</translation>
 <translation id="4387890294700445764">Mots de passe compromis</translation>
 <translation id="4389091756366370506">Utilisateur <ph name="VALUE" /></translation>
@@ -2899,6 +2909,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4522600456902129422">Continuer à autoriser ce site à voir le contenu du presse-papiers</translation>
 <translation id="4524832533047962394">Le mode d'enregistrement proposé n'est pas compatible avec cette version du système d'exploitation. Vérifiez que vous utilisez bien la version la plus récente.</translation>
+<translation id="4527186207340858212">Créer un profil pour le travail ?</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4530494379350999373">Origine</translation>
 <translation id="4532646538815530781">Ce site utilise des capteurs de mouvement.</translation>
@@ -2949,6 +2960,9 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4573515936045019911">Vous devez disposer d'une connexion réseau pour mettre à niveau Linux. Veuillez vous connecter à Internet, puis réessayer.</translation>
 <translation id="457386861538956877">Autres...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
+<translation id="457564749856982089">L'ajout d'un compte scolaire à un profil permet de se connecter facilement aux sites Web, aux extensions et aux applications en tant qu'élève. Le contrôle parental n'est pas désactivé. Cependant, l'enfant ne pourra pas accéder aux favoris, mots de passe et autres données du navigateur qui sont synchronisés avec le compte scolaire.&lt;br&gt;&lt;br&gt;
+    Si votre enfant utilise un Chromebook à l'école et que vous souhaitez qu'il ait accès aux mêmes ressources à la maison pour faire ses devoirs, veuillez vous déconnecter du compte Family Link, puis vous connecter au compte scolaire depuis la page des comptes de Chrome OS. Remarque : le contrôle parental Family Link ne s'applique pas dans ce cas.&lt;br&gt;&lt;br&gt;
+    Si votre enfant n'utilise pas un Chromebook à l'école ou si vous préférez gérer son activité à la maison avec Family Link, veuillez cliquer sur le bouton "Suivant" ci-dessous pour ajouter un compte scolaire à ce profil.</translation>
 <translation id="4576541033847873020">Associer un appareil Bluetooth</translation>
 <translation id="4579453506923101210">Supprimer le téléphone connecté</translation>
 <translation id="4579581181964204535">Impossible de caster <ph name="HOST_NAME" />.</translation>
@@ -3086,6 +3100,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4763408175235639573">Les cookies suivants étaient autorisés lorsque vous avez consulté cette page</translation>
 <translation id="4765582662863429759">Autorise Android Messages à transmettre les SMS de votre téléphone à votre Chromebook</translation>
 <translation id="4768332406694066911">Certains certificats provenant de ces organisations vous identifient.</translation>
+<translation id="477647109558161443">Créer un raccourci sur le bureau</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Configurer des serveurs de noms réseau</translation>
@@ -3457,6 +3472,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5249624017678798539">Le navigateur a planté avant la fin du téléchargement.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utilise votre position pour vous proposer des contenus locaux. Pour modifier ce paramètre, accédez à la page <ph name="SETTINGS_LINK" />.</translation>
 <translation id="5252456968953390977">Itinérance</translation>
+<translation id="5252496130205799136">Utiliser votre compte Google pour enregistrer et saisir automatiquement les mots de passe ?</translation>
 <translation id="5252653240322147470">Le code doit comprendre moins de <ph name="MAXIMUM" /> chiffres</translation>
 <translation id="5254368820972107711">Affichez les fichiers à supprimer</translation>
 <translation id="52550593576409946">Impossible de lancer l'application kiosque.</translation>
@@ -3721,6 +3737,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5565735124758917034">Actif</translation>
 <translation id="5567989639534621706">Caches des applications</translation>
 <translation id="5568069709869097550">Impossible de se connecter</translation>
+<translation id="5571832155627049070">Personnalisez votre profil</translation>
 <translation id="5572851009514199876">Veuillez démarrer Chrome et vous connecter à votre compte pour que le navigateur puisse vérifier que vous êtes autorisé à accéder à ce site.</translation>
 <translation id="5575473780076478375">Extension en mode navigation privée :<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Un problème est survenu avec la demande d'enregistrement en mode de démonstration.</translation>
@@ -4297,6 +4314,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6270770586500173387">Envoyer des <ph name="BEGIN_LINK1" />informations sur le système et l'application<ph name="END_LINK1" />, ainsi que des <ph name="BEGIN_LINK2" />statistiques<ph name="END_LINK2" /></translation>
 <translation id="6272643420381259437">Une erreur (<ph name="ERROR" />) s'est produite lors du téléchargement du plug-in.</translation>
 <translation id="6273677812470008672">Qualité</translation>
+<translation id="6276210637549544171">Le proxy <ph name="PROXY_SERVER" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="6277105963844135994">Délai d'expiration du réseau dépassé.</translation>
 <translation id="6277518330158259200">F&amp;aire une capture d'écran</translation>
 <translation id="6278057325678116358">Utiliser le thème GTK+</translation>
@@ -4317,6 +4335,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6298962879096096191">Utilise Google Play pour installer des applications Android</translation>
 <translation id="630065524203833229">&amp;Quitter</translation>
 <translation id="6300718114348072351">Impossible de configurer automatiquement <ph name="PRINTER_NAME" />. Veuillez définir des paramètres avancés pour cette imprimante. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="6301076166764763868">Pour distinguer votre navigation personnelle de celle associée au compte <ph name="EXISTING_USER" />, créez un profil pour <ph name="NEW_USER" /></translation>
 <translation id="630292539633944562">Suggestions d'informations personnelles</translation>
 <translation id="6305607932814307878">Règlement global :</translation>
 <translation id="6307990684951724544">Système occupé.</translation>
@@ -4520,6 +4539,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6556866813142980365">Rétablir</translation>
 <translation id="6556903358015358733">Thème et fond d'écran</translation>
 <translation id="6557290421156335491">Mes raccourcis</translation>
+<translation id="6560151649238390891">Suggestion ajoutée</translation>
 <translation id="6561560012278703671">Activer l'affichage discret (permet d'empêcher les invites liées aux notifications de vous interrompre)</translation>
 <translation id="6561726789132298588">entrée</translation>
 <translation id="6562117348069327379">Stockez les journaux système dans le répertoire des téléchargements.</translation>
@@ -5168,6 +5188,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7385854874724088939">Erreur lors de la tentative d'impression. Vérifiez votre imprimante et réessayez.</translation>
 <translation id="7385896526023870365">Cette extension n'a accès à aucun site supplémentaire.</translation>
 <translation id="7388044238629873883">Vous avez presque terminé !</translation>
+<translation id="7388209873137778229">Seuls les appareils compatibles sont affichés.</translation>
 <translation id="7392118418926456391">Échec de l'analyse antivirus.</translation>
 <translation id="7392915005464253525">&amp;Rouvrir la fenêtre fermée</translation>
 <translation id="7396017167185131589">Les dossiers partagés s'afficheront ici</translation>
@@ -5191,6 +5212,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7415454883318062233">Configuration terminée</translation>
 <translation id="7416362041876611053">Erreur réseau inconnue.</translation>
 <translation id="741906494724992817">Cette application fonctionne sans autorisation spéciale.</translation>
+<translation id="7420817660256886596">Le proxy <ph name="PROXY" /> nécessite votre authentification avec un nom d'utilisateur et un mot de passe.</translation>
 <translation id="742130257665691897">Favoris supprimés</translation>
 <translation id="7421925624202799674">&amp;Afficher le code source de la page</translation>
 <translation id="7422192691352527311">Préférences...</translation>
@@ -5450,6 +5472,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7737115349420013392">Association avec "<ph name="DEVICE_NAME" />" en cours…</translation>
 <translation id="7737238973539693982">Effacer Linux (Bêta)</translation>
 <translation id="7740996059027112821">Standard</translation>
+<translation id="7741721175294046818">Impossible de se connecter au proxy, veuillez réessayer.</translation>
 <translation id="774377079771918250">Choisir l'emplacement d'enregistrement</translation>
 <translation id="7744047395460924128">Afficher l'historique d'impression</translation>
 <translation id="7744192722284567281">Détecté lors d'une violation des données</translation>
@@ -5694,6 +5717,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> n'est plus disponible</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8005600846065423578">Toujours autoriser <ph name="HOST" /> à voir le contenu du presse-papiers</translation>
+<translation id="8006143138282906848">Supprimer ce profil</translation>
 <translation id="8008356846765065031">Connexion Internet interrompue. Veuillez vérifier votre connexion.</translation>
 <translation id="8009225694047762179">Gérer les mots de passe</translation>
 <translation id="8012647001091218357">Impossible de joindre vos parents pour le moment. Veuillez réessayer.</translation>
@@ -5760,9 +5784,11 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Configurer l'imprimante <ph name="PRINTER_NAME" /></translation>
+<translation id="8086550884324762001">Par exemple : Travail, Personnel, Enfants ou un nom</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier étant chiffré, demandez à son propriétaire de le déchiffrer.}one{Ce fichier étant chiffré, demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers étant chiffrés, demandez à leur propriétaire de les déchiffrer.}}</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous consultez le plus souvent</translation>
+<translation id="8092681102116274204">Les paramètres avec des caractères génériques "*" ne sont plus acceptés. Contactez le développeur de l'extension ou votre administrateur pour <ph name="BEGIN_LINK" />modifier ces paramètres<ph name="END_LINK" />.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ne répond pas</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. La sauvegarde inclut les données d'applications.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.<ph name="END_PARAGRAPH2" />
@@ -5815,6 +5841,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8146177459103116374">Si vous êtes déjà enregistré sur ​​cet appareil, vous pouvez vous <ph name="LINK2_START" />connecter en tant qu'utilisateur existant<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Échec de la connexion. Veuillez contacter votre administrateur ou réessayer.</translation>
 <translation id="8148760431881541277">Limiter les connexions</translation>
+<translation id="8151579390896831136">Personnalisez votre profil, y compris son nom</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8152091997436726702">L'enregistrement de l'imprimante a expiré. Pour enregistrer une imprimante, vous devez confirmer l'enregistrement sur l'imprimante.</translation>
 <translation id="8154790740888707867">Fichier introuvable.</translation>
@@ -6539,6 +6566,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9031549947500880805">Sauvegarder dans Google Drive. Restaurez vos données ou changez d'appareil facilement et à tout moment. Les données des applications sont également sauvegardées.</translation>
 <translation id="9033765790910064284">Continuer</translation>
 <translation id="9033857511263905942">&amp;Coller</translation>
+<translation id="9037818663270399707">Votre connexion n'est pas privée pour l'ensemble du trafic réseau</translation>
 <translation id="9037965129289936994">Afficher l'original</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Il vous reste une tentative.}one{Il vous reste # tentative.}other{Il vous reste # tentatives.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>
