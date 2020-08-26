@@ -55,7 +55,6 @@ js_library("tab_search_search_field") {
 html_to_js("web_components") {
   js_files = [
     "app.js",
-    "shared_vars.js",
     "tab_search_item.js",
     "tab_search_search_field.js",
   ]

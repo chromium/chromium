@@ -34,10 +34,6 @@
                file="${root_gen_dir}/chrome/browser/resources/tab_search/tab_search_search_field.js"
                type="BINDATA"
                use_base_dir="false" />
-      <include name="IDR_TAB_SEARCH_SHARED_VARS_JS"
-               file="${root_gen_dir}/chrome/browser/resources/tab_search/shared_vars.js"
-               type="BINDATA"
-               use_base_dir="false"/>
     </includes>
   </release>
 </grit>

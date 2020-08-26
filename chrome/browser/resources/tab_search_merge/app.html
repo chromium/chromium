@@ -1,33 +1,4 @@
-<style>
-  ::-webkit-scrollbar-thumb {
-    background: var(--google-grey-refresh-300);
-  }
-
-  /* TODO(crbug.com/1110109): Add WCAG compliant dark mode support. */
-  @media (prefers-color-scheme: dark) {
-    ::-webkit-scrollbar-thumb {
-      background: var(--google-grey-refresh-500);
-    }
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--google-grey-refresh-500);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--google-grey-refresh-300);
-    }
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--tab-search-background-color);
-  }
-
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-
+<style include="mwb-shared-style">
   #tabs {
     max-height: 280px;
     overflow-x: hidden;
@@ -36,22 +7,25 @@
 
   #no-results {
     color: var(--cr-primary-text-color);
-    font-size: var(--primary-text-font-size);
+    font-size: var(--mwb-primary-text-font-size);
     padding: 12px;
     text-align: center;
   }
 </style>
-<tab-search-search-field id="searchField" on-search-changed="onSearchChanged_"
-    label="Search tabs [[getKeyboardShortcut_()]]" clear-label="Clear search" on-keydown="onKeyDown_"
-    autofocus>
+<tab-search-search-field id="searchField" autofocus clear-label="Clear search"
+    label="Search tabs [[getKeyboardShortcut_()]]" on-keydown="onKeyDown_"
+    on-search-changed="onSearchChanged_" >
 </tab-search-search-field>
 <div id="tabs">
-  <iron-selector id="selector" selected="{{selectedIndex_}}" selected-class="selected">
+  <iron-selector id="selector" selected="{{selectedIndex_}}"
+      selected-class="selected">
     <template id="tabsList" is="dom-repeat" items="[[filteredOpenTabs_]]">
-      <tab-search-item id="[[item.tabId]]" data="[[item]]"
+      <tab-search-item id="[[item.tabId]]" class="mwb-list-item" data="[[item]]"
           on-click="onItemClick_" on-close="onItemClose_" tabindex="-1" >
       </tab-search-item>
     </template>
   </iron-selector>
 </div>
-<div id="no-results" hidden="[[filteredOpenTabs_.length]]">No results found</div>
+<div id="no-results" hidden="[[filteredOpenTabs_.length]]">
+  No results found
+</div>
