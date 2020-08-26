@@ -171,6 +171,10 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     }
 
     if (render_frame()->IsMainFrame()) {
+      // Track main frames once they are swapped in, if they started
+      // provisional.
+      test_runner()->AddMainFrame(frame_proxy());
+
       // Looking for navigations to about:blank after a test completes.
       blink_test_runner()->DidCommitNavigationInMainFrame();
     }
@@ -234,7 +238,9 @@ void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
   RenderFrameImpl::Initialize(parent);
 
   TestRunner* test_runner = web_view_test_proxy_->GetTestRunner();
-  if (IsMainFrame())
+  // Track main frames if they started in the frame tree. Otherwise they are
+  // provisional and will be tracked once swapped in.
+  if (IsMainFrame() && in_frame_tree())
     test_runner->AddMainFrame(this);
 
   GetWebFrame()->SetContentSettingsClient(test_runner->GetWebContentSettings());

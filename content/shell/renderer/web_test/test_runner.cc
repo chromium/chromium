@@ -2608,6 +2608,7 @@ class WorkItemBackForward : public TestRunner::WorkItem {
 WebFrameTestProxy* TestRunner::FindInProcessMainWindowMainFrame() {
   for (WebFrameTestProxy* main_frame : main_frames_) {
     WebViewTestProxy* view = main_frame->GetWebViewTestProxy();
+    DCHECK_EQ(view->GetMainRenderFrame(), main_frame);
     if (view->blink_test_runner()->is_main_window())
       return main_frame;
   }
