@@ -82,13 +82,12 @@ bool IsLacrosAllowed(Channel channel) {
       return true;
     case Channel::CANARY:
     case Channel::DEV:
-    case Channel::BETA: {
+    case Channel::BETA:
+    case Channel::STABLE: {
       std::string canonical_email = user->GetAccountId().GetUserEmail();
       return base::EndsWith(canonical_email, "google.com",
                             base::CompareCase::INSENSITIVE_ASCII);
     }
-    case Channel::STABLE:
-      return false;
   }
 }
 
