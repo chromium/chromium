@@ -96,8 +96,12 @@ namespace renderer_preferences_util {
 void UpdateFromSystemSettings(blink::mojom::RendererPreferences* prefs,
                               Profile* profile) {
   const PrefService* pref_service = profile->GetPrefs();
-  prefs->accept_languages =
-      pref_service->GetString(language::prefs::kAcceptLanguages);
+  if (profile->IsOffTheRecord()) {
+    prefs->accept_languages = g_browser_process->GetApplicationLocale();
+  } else {
+    prefs->accept_languages =
+        pref_service->GetString(language::prefs::kAcceptLanguages);
+  }
   prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
   prefs->enable_do_not_track =
       pref_service->GetBoolean(prefs::kEnableDoNotTrack);
