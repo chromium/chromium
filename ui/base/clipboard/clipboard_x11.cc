@@ -462,8 +462,6 @@ bool ClipboardX11::X11Details::DispatchXEvent(x11::Event* xev) {
       clipboard_owner_.OnSelectionClear(*xev);
     }
   } else if (auto* prop = xev->As<x11::PropertyNotifyEvent>()) {
-    if (prop->window != x_window_)
-      return false;
     if (primary_owner_.CanDispatchPropertyEvent(*xev))
       primary_owner_.OnPropertyEvent(*xev);
     if (clipboard_owner_.CanDispatchPropertyEvent(*xev))
