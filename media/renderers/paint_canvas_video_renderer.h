@@ -257,17 +257,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
                          viz::RasterContextProvider* raster_context_provider,
                          const gpu::MailboxHolder& dest_holder);
 
-  bool UploadVideoFrameToGLTexture(
-      viz::RasterContextProvider* raster_context_provider,
-      gpu::gles2::GLES2Interface* destination_gl,
-      scoped_refptr<VideoFrame> video_frame,
-      unsigned int target,
-      unsigned int texture,
-      unsigned int internal_format,
-      unsigned int format,
-      unsigned int type,
-      bool flip_y);
-
   base::Optional<Cache> cache_;
 
   // If |cache_| is not used for a while, it's deleted to save memory.

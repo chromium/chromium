@@ -5,11 +5,15 @@
 #ifndef MEDIA_RENDERERS_YUV_UTIL_H_
 #define MEDIA_RENDERERS_YUV_UTIL_H_
 
-#include "gpu/GLES2/gl2extchromium.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space.h"
+
+// Skia forward declarations
+class GrBackendTexture;
+class GrDirectContext;
+class SkImage;
 
 namespace gpu {
 struct MailboxHolder;
@@ -31,11 +35,20 @@ class VideoFrame;
 MEDIA_EXPORT void ConvertFromVideoFrameYUV(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
-    const gpu::MailboxHolder& dest_mailbox_holder,
-    unsigned int internal_format = GL_RGBA,
-    unsigned int type = GL_UNSIGNED_BYTE,
-    bool flip_y = false,
-    bool use_visible_rect = false);
+    const gpu::MailboxHolder& dest_mailbox_holder);
+
+MEDIA_EXPORT sk_sp<SkImage> NewSkImageFromVideoFrameYUV(
+    const VideoFrame* video_frame,
+    viz::RasterContextProvider* raster_context_provider,
+    unsigned int texture_target,
+    unsigned int texture_id);
+
+MEDIA_EXPORT sk_sp<SkImage> YUVGrBackendTexturesToSkImage(
+    GrDirectContext* gr_context,
+    gfx::ColorSpace video_color_space,
+    VideoPixelFormat video_format,
+    GrBackendTexture* yuv_textures,
+    const GrBackendTexture& result_texture);
 
 }  // namespace media
 
