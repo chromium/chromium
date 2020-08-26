@@ -716,6 +716,8 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
       base::SysUTF8ToNSString(policy::key::kDefaultSearchProviderName),
       base::SysUTF8ToNSString(policy::key::kDefaultSearchProviderSearchURL),
       base::SysUTF8ToNSString(policy::key::kPasswordManagerEnabled),
+      base::SysUTF8ToNSString(policy::key::kSafeBrowsingProtectionLevel),
+      base::SysUTF8ToNSString(policy::key::kSearchSuggestEnabled),
       base::SysUTF8ToNSString(policy::key::kTranslateEnabled)
     ];
 
@@ -745,6 +747,11 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
       base::SysUTF8ToNSString(policy::key::kPasswordManagerEnabled) : @NO,
 
       base::SysUTF8ToNSString(policy::key::kTranslateEnabled) : @NO,
+
+      // 2 = Enhanced safe browsing protection
+      base::SysUTF8ToNSString(policy::key::kSafeBrowsingProtectionLevel) : @2,
+
+      base::SysUTF8ToNSString(policy::key::kSearchSuggestEnabled) : @YES,
     }];
   }
 
