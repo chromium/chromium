@@ -12,10 +12,12 @@
 #include "cc/trees/ukm_manager.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink.h"
+#include "third_party/blink/public/mojom/widget/visual_properties.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -98,7 +100,8 @@ WidgetBase::WidgetBase(
     : client_(client),
       widget_host_(std::move(widget_host)),
       receiver_(this, std::move(widget)),
-      next_previous_flags_(kInvalidNextPreviousFlagsValue) {
+      next_previous_flags_(kInvalidNextPreviousFlagsValue),
+      use_zoom_for_dsf_(Platform::Current()->IsUseZoomForDSFEnabled()) {
   if (auto* main_thread_scheduler =
           scheduler::WebThreadScheduler::MainThreadScheduler()) {
     render_widget_scheduling_state_ =
@@ -333,7 +336,10 @@ void WidgetBase::UpdateVisualProperties(
 void WidgetBase::UpdateScreenRects(const gfx::Rect& widget_screen_rect,
                                    const gfx::Rect& window_screen_rect,
                                    UpdateScreenRectsCallback callback) {
-  client_->UpdateScreenRects(widget_screen_rect, window_screen_rect);
+  if (!client_->UpdateScreenRects(widget_screen_rect, window_screen_rect)) {
+    widget_screen_rect_ = widget_screen_rect;
+    window_screen_rect_ = window_screen_rect;
+  }
   std::move(callback).Run();
 }
 
@@ -1066,7 +1072,7 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
   if (orientation_changed)
     client_->OrientationChanged();
 
-  client_->UpdatedSurfaceAndScreen(previous_original_screen_info);
+  client_->DidUpdateSurfaceAndScreen(previous_original_screen_info);
 }
 
 void WidgetBase::UpdateScreenInfo(const ScreenInfo& new_screen_info) {
@@ -1089,6 +1095,42 @@ void WidgetBase::UpdateCompositorViewportRect(
 
 const ScreenInfo& WidgetBase::GetScreenInfo() {
   return screen_info_;
+}
+
+void WidgetBase::SetScreenRects(const gfx::Rect& widget_screen_rect,
+                                const gfx::Rect& window_screen_rect) {
+  widget_screen_rect_ = widget_screen_rect;
+  window_screen_rect_ = window_screen_rect;
+}
+
+void WidgetBase::SetPendingWindowRect(const gfx::Rect* rect) {
+  if (rect)
+    pending_window_rect_ = *rect;
+  else
+    pending_window_rect_.reset();
+}
+
+gfx::Rect WidgetBase::WindowRect() {
+  gfx::Rect rect;
+  if (pending_window_rect_) {
+    // NOTE(mbelshe): If there is a pending_window_rect_, then getting
+    // the RootWindowRect is probably going to return wrong results since the
+    // browser may not have processed the Move yet.  There isn't really anything
+    // good to do in this case, and it shouldn't happen - since this size is
+    // only really needed for windowToScreen, which is only used for Popups.
+    rect = pending_window_rect_.value();
+  } else {
+    rect = window_screen_rect_;
+  }
+
+  client_->ScreenRectToEmulated(rect);
+  return rect;
+}
+
+gfx::Rect WidgetBase::ViewRect() {
+  gfx::Rect rect = widget_screen_rect_;
+  client_->ScreenRectToEmulated(rect);
+  return rect;
 }
 
 gfx::Rect WidgetBase::CompositorViewportRect() const {

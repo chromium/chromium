@@ -262,7 +262,7 @@ bool ThrowIfPointOutOfBounds(GpuBenchmarkingContext* context,
                              gin::Arguments* args,
                              const gfx::Point& point,
                              const std::string& message) {
-  gfx::Rect rect = context->render_widget()->ViewRect();
+  gfx::Rect rect = context->render_widget()->GetWebWidget()->ViewRect();
   rect -= rect.OffsetFromOrigin();
 
   // If the bounds are not available here, as is the case with an OOPIF,
@@ -711,7 +711,7 @@ bool GpuBenchmarking::GestureSourceTypeSupported(int gesture_source_type) {
 // SmoothScrollByXY in telemetry/internal/actions/scroll.js.
 bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.render_widget()->ViewRect();
+  blink::WebRect rect = context.render_widget()->GetWebWidget()->ViewRect();
 
   float pixels_to_scroll = 0;
   v8::Local<v8::Function> callback;
@@ -783,7 +783,7 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
 // scroll left.
 bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.render_widget()->ViewRect();
+  blink::WebRect rect = context.render_widget()->GetWebWidget()->ViewRect();
 
   float pixels_to_scroll_x = 0;
   float pixels_to_scroll_y = 0;
@@ -891,7 +891,7 @@ bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
 // should change this to match with SmoothScrollBy or SmoothScrollByXY.
 bool GpuBenchmarking::Swipe(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.render_widget()->ViewRect();
+  blink::WebRect rect = context.render_widget()->GetWebWidget()->ViewRect();
 
   std::string direction = "up";
   float pixels_to_scroll = 0;
@@ -941,7 +941,8 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
 
 bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect content_rect = context.render_widget()->ViewRect();
+  blink::WebRect content_rect =
+      context.render_widget()->GetWebWidget()->ViewRect();
 
   std::string direction = "down";
   float distance_length = 0;

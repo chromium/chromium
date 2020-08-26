@@ -413,7 +413,7 @@ const char kCheckedIdentifier[] = "*";
 float DeviceScaleFactorForEvents(WebWidgetTestProxy* widget) {
   if (!widget->compositor_deps()->IsUseZoomForDSFEnabled())
     return 1;
-  return widget->GetOriginalScreenInfo().device_scale_factor;
+  return widget->GetWebWidget()->GetOriginalScreenInfo().device_scale_factor;
 }
 
 bool OutsideRadius(const gfx::PointF& a, const gfx::PointF& b, float radius) {

@@ -31,7 +31,6 @@
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_widget_delegate.h"
-#include "content/renderer/render_widget_screen_metrics_emulator.h"
 #include "content/test/fake_compositor_dependencies.h"
 #include "ipc/ipc_test_sink.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -545,9 +544,6 @@ class StubRenderWidgetDelegate : public RenderWidgetDelegate {
   void ResizeWebWidgetForWidget(const gfx::Size& main_frame_widget_size,
                                 const gfx::Size& visible_viewport_size,
                                 cc::BrowserControlsParams) override {}
-  void SetScreenMetricsEmulationParametersForWidget(
-      bool enabled,
-      const blink::DeviceEmulationParams& params) override {}
 };
 
 class RenderWidgetSubFrameUnittest : public RenderWidgetUnittest {

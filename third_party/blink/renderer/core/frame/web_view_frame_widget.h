@@ -97,10 +97,13 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
                                   bool is_pinch_gesture_active,
                                   float minimum,
                                   float maximum) override;
+  ScreenMetricsEmulator* DeviceEmulator() override;
+  const ScreenInfo& GetOriginalScreenInfo() override;
 
   // FrameWidget overrides:
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
   bool ShouldHandleImeEvents() override;
+  float GetEmulatorScale() override;
 
   // WidgetBaseClient overrides:
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
@@ -126,12 +129,23 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void FocusChanged(bool enabled) override;
   float GetDeviceScaleFactorForTesting() override;
   gfx::Rect ViewportVisibleRect() override;
+  bool UpdateScreenRects(const gfx::Rect& widget_screen_rect,
+                         const gfx::Rect& window_screen_rect) override;
+
+  // RenderWidgetScreenMetricsEmulatorDelegate
+  void SetScreenMetricsEmulationParameters(
+      bool enabled,
+      const blink::DeviceEmulationParams& params);
+  void SetScreenInfoAndSize(const blink::ScreenInfo& screen_info,
+                            const gfx::Size& widget_size,
+                            const gfx::Size& visible_viewport_size);
 
   void Trace(Visitor*) const override;
 
   void SetIsNestedMainFrameWidget(bool is_nested);
   void DidAutoResize(const gfx::Size& size);
   void SetDeviceColorSpaceForTesting(const gfx::ColorSpace& color_space);
+  bool AutoResizeMode();
 
  private:
   PageWidgetEventHandler* GetPageWidgetEventHandler() override;
@@ -154,6 +168,11 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // contents") like a <webview> or <portal> widget. If false, the widget is the
   // top level widget.
   bool is_for_nested_main_frame_ = false;
+
+  // Present when emulation is enabled, only in a main frame WidgetBase. Used
+  // to override values given from the browser such as ScreenInfo,
+  // WidgetScreenRect, WindowScreenRect, and the widget's size.
+  Member<ScreenMetricsEmulator> device_emulator_;
 
   SelfKeepAlive<WebViewFrameWidget> self_keep_alive_;
 

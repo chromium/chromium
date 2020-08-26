@@ -167,9 +167,6 @@ class WebWidget {
   // Returns the state of focus for the WebWidget.
   virtual bool HasFocus() { return false; }
 
-  // Sets the root widget's window segments.
-  virtual void SetWindowSegments(WebVector<WebRect> window_segments) {}
-
   // Returns the anchor and focus bounds of the current selection.
   // If the selection range is empty, it returns the caret bounds.
   virtual bool SelectionBounds(WebRect& anchor, WebRect& focus) const {
@@ -286,6 +283,39 @@ class WebWidget {
   // Returns information about the screen where this view's widgets are being
   // displayed.
   virtual const ScreenInfo& GetScreenInfo() = 0;
+
+  // Returns original (non-emulated) information about the screen where this
+  // view's widgets are being displayed.
+  virtual const ScreenInfo& GetOriginalScreenInfo() = 0;
+
+  // Called to get the position of the widget's window in screen
+  // coordinates. Note, the window includes any decorations such as borders,
+  // scrollbars, URL bar, tab strip, etc. if they exist.
+  virtual gfx::Rect WindowRect() = 0;
+
+  // Called to get the view rect in screen coordinates. This is the actual
+  // content view area, i.e. doesn't include any window decorations.
+  virtual gfx::Rect ViewRect() = 0;
+
+  // Sets the screen rects (in screen coordinates).
+  virtual void SetScreenRects(const gfx::Rect& widget_screen_rect,
+                              const gfx::Rect& window_screen_rect) = 0;
+
+  // Sets the visible viewport size (in screen coorindates).
+  virtual void SetVisibleViewportSize(
+      const gfx::Size& visible_viewport_size) = 0;
+
+  // Returns the visible viewport size (in screen coorindates).
+  virtual const gfx::Size& VisibleViewportSize() = 0;
+
+  // Returns the emulator scale.
+  virtual float GetEmulatorScale() { return 1.0f; }
+
+  // Sets the pending window rects (in screen coordinates). This is used because
+  // the window rect is delivered asynchronously to the browser. Pass in nullptr
+  // to clear the pending window rect once the browser has acknowledged the
+  // request.
+  virtual void SetPendingWindowRect(const gfx::Rect* window_screen_rect) = 0;
 
 #if defined(OS_ANDROID)
   // Return the synchronous compositor registry.

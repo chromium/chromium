@@ -33,7 +33,8 @@ class RenderWidgetTest : public RenderViewTest {
 
   void OnSynchronizeVisualProperties(
       const blink::VisualProperties& visual_properties) {
-    widget()->UpdateVisualProperties(visual_properties);
+    widget()->UpdateVisualProperties(/*emulator_enabled=*/false,
+                                     visual_properties);
   }
 
   gfx::Range LastCompositionRange() {

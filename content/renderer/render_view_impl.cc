@@ -1070,15 +1070,6 @@ void RenderViewImpl::ResizeWebWidgetForWidget(
                                           browser_controls_params);
 }
 
-void RenderViewImpl::SetScreenMetricsEmulationParametersForWidget(
-    bool enabled,
-    const blink::DeviceEmulationParams& params) {
-  if (enabled)
-    GetWebView()->EnableDeviceEmulation(params);
-  else
-    GetWebView()->DisableDeviceEmulation();
-}
-
 // IPC message handlers -----------------------------------------
 
 void RenderViewImpl::OnUpdateTargetURLAck() {
@@ -1351,9 +1342,9 @@ blink::WebPagePopup* RenderViewImpl::CreatePopup(
   // Adds a self-reference on the |popup_widget| so it will not be destroyed
   // when leaving scope. The WebPagePopup takes responsibility for Close()ing
   // and thus destroying the RenderWidget.
-  popup_widget->InitForPopup(std::move(opener_callback), opener_render_widget,
-                             popup_web_widget,
-                             opener_render_widget->GetOriginalScreenInfo());
+  popup_widget->InitForPopup(
+      std::move(opener_callback), opener_render_widget, popup_web_widget,
+      opener_render_widget->GetWebWidget()->GetOriginalScreenInfo());
   return popup_web_widget;
 }
 

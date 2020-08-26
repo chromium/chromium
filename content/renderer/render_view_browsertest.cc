@@ -292,19 +292,13 @@ class RenderViewImplTest : public RenderViewTest {
   }
 
   void ReceiveDisableDeviceEmulation(RenderViewImpl* view) {
-    // Emulates receiving an IPC message.
-    RenderWidget* widget =
-        view->GetMainRenderFrame()->GetLocalRootRenderWidget();
-    widget->DisableDeviceEmulation();
+    view->GetWebView()->DisableDeviceEmulation();
   }
 
   void ReceiveEnableDeviceEmulation(
       RenderViewImpl* view,
       const blink::DeviceEmulationParams& params) {
-    // Emulates receiving an IPC message.
-    RenderWidget* widget =
-        view->GetMainRenderFrame()->GetLocalRootRenderWidget();
-    widget->EnableDeviceEmulation(params);
+    view->GetWebView()->EnableDeviceEmulation(params);
   }
 
   void GoToOffsetWithParams(int offset,
@@ -520,7 +514,9 @@ class RenderViewImplScaleFactorTest : public RenderViewImplTest {
         MakeVisualPropertiesWithDeviceScaleFactor(dsf));
 
     ASSERT_EQ(dsf, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
-    ASSERT_EQ(dsf, widget->GetOriginalScreenInfo().device_scale_factor);
+    ASSERT_EQ(
+        dsf,
+        widget->GetWebWidget()->GetOriginalScreenInfo().device_scale_factor);
   }
 
   blink::VisualProperties MakeVisualPropertiesWithDeviceScaleFactor(float dsf) {
@@ -706,14 +702,13 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
     ASSERT_TRUE(popup_widget);
 
     // Set its size.
-    popup_widget->UpdateScreenRects(widget_screen_rect, window_screen_rect);
+    popup->SetScreenRects(widget_screen_rect, window_screen_rect);
 
     // The WindowScreenRect, WidgetScreenRect, and ScreenRect are all available
     // to the popup.
-    EXPECT_EQ(window_screen_rect, gfx::Rect(popup_widget->WindowRect()));
-    EXPECT_EQ(widget_screen_rect, gfx::Rect(popup_widget->ViewRect()));
-    EXPECT_EQ(screen_rect,
-              gfx::Rect(popup_widget->GetWebWidget()->GetScreenInfo().rect));
+    EXPECT_EQ(window_screen_rect, gfx::Rect(popup->WindowRect()));
+    EXPECT_EQ(widget_screen_rect, gfx::Rect(popup->ViewRect()));
+    EXPECT_EQ(screen_rect, gfx::Rect(popup->GetScreenInfo().rect));
 
     // Close and destroy the widget.
     {
@@ -730,17 +725,18 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
   emulation_params.screen_type = blink::mojom::EmulatedScreenType::kMobile;
   emulation_params.view_size = emulated_widget_rect.size();
   emulation_params.view_position = emulated_widget_rect.origin();
-  main_widget()->EnableDeviceEmulation(emulation_params);
+  view()->GetWebView()->EnableDeviceEmulation(emulation_params);
 
   {
     // Make a popup again. It should inherit device emulation params.
     blink::WebPagePopup* popup = view()->CreatePopup(frame()->GetWebFrame());
+    popup->InitializeForTesting(view()->GetWebView());
     RenderWidget* popup_widget =
         static_cast<RenderWidget*>(popup->GetClientForTesting());
     ASSERT_TRUE(popup_widget);
 
     // Set its size again.
-    popup_widget->UpdateScreenRects(widget_screen_rect, window_screen_rect);
+    popup->SetScreenRects(widget_screen_rect, window_screen_rect);
 
     // This time, the position of the WidgetScreenRect and WindowScreenRect
     // should be affected by emulation params.
@@ -749,23 +745,25 @@ TEST_F(RenderViewImplEmulatingPopupTest, EmulatingPopupRect) {
     // widget will see itself at the emulation position. Why this inconsistency?
     int window_x = emulated_widget_rect.x() + window_screen_rect.x();
     int window_y = emulated_widget_rect.y() + window_screen_rect.y();
-    EXPECT_EQ(window_x, popup_widget->WindowRect().x);
-    EXPECT_EQ(window_y, popup_widget->WindowRect().y);
+    EXPECT_EQ(window_x, popup->WindowRect().x());
+    EXPECT_EQ(window_y, popup->WindowRect().y());
 
     int widget_x = emulated_widget_rect.x() + widget_screen_rect.x();
     int widget_y = emulated_widget_rect.y() + widget_screen_rect.y();
-    EXPECT_EQ(widget_x, popup_widget->ViewRect().x);
-    EXPECT_EQ(widget_y, popup_widget->ViewRect().y);
+    EXPECT_EQ(widget_x, popup->ViewRect().x());
+    EXPECT_EQ(widget_y, popup->ViewRect().y());
 
     // TODO(danakj): Why don't the sizes get changed by emulation? The comments
     // that used to be in this test suggest that the sizes used to change, and
     // we were testing for that. But now we only test for positions changing?
-    EXPECT_EQ(window_screen_rect.width(), popup_widget->WindowRect().width);
-    EXPECT_EQ(window_screen_rect.height(), popup_widget->WindowRect().height);
-    EXPECT_EQ(widget_screen_rect.width(), popup_widget->ViewRect().width);
-    EXPECT_EQ(widget_screen_rect.height(), popup_widget->ViewRect().height);
-    EXPECT_EQ(emulated_widget_rect, gfx::Rect(main_widget()->ViewRect()));
-    EXPECT_EQ(emulated_widget_rect, gfx::Rect(main_widget()->WindowRect()));
+    EXPECT_EQ(window_screen_rect.width(), popup->WindowRect().width());
+    EXPECT_EQ(window_screen_rect.height(), popup->WindowRect().height());
+    EXPECT_EQ(widget_screen_rect.width(), popup->ViewRect().width());
+    EXPECT_EQ(widget_screen_rect.height(), popup->ViewRect().height());
+    EXPECT_EQ(emulated_widget_rect,
+              gfx::Rect(main_widget()->GetWebWidget()->ViewRect()));
+    EXPECT_EQ(emulated_widget_rect,
+              gfx::Rect(main_widget()->GetWebWidget()->WindowRect()));
 
     // TODO(danakj): Why isn't the ScreenRect visible to the popup an emulated
     // value? The ScreenRect has been changed by emulation as demonstrated
@@ -1151,16 +1149,20 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceEmulationWithOOPIF) {
   // Verify that the system device scale factor has propagated into the
   // RenderFrameProxy.
   EXPECT_EQ(device_scale, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
-  EXPECT_EQ(device_scale,
-            main_widget()->GetOriginalScreenInfo().device_scale_factor);
+  EXPECT_EQ(device_scale, main_widget()
+                              ->GetWebWidget()
+                              ->GetOriginalScreenInfo()
+                              .device_scale_factor);
   EXPECT_EQ(device_scale, child_proxy->screen_info().device_scale_factor);
 
   TestEmulatedSizeDprDsf(640, 480, 3.f, compositor_dsf);
 
   // Verify that the RenderFrameProxy device scale factor is still the same.
   EXPECT_EQ(3.f, view()->GetMainRenderFrame()->GetDeviceScaleFactor());
-  EXPECT_EQ(device_scale,
-            main_widget()->GetOriginalScreenInfo().device_scale_factor);
+  EXPECT_EQ(device_scale, main_widget()
+                              ->GetWebWidget()
+                              ->GetOriginalScreenInfo()
+                              .device_scale_factor);
   EXPECT_EQ(device_scale, child_proxy->screen_info().device_scale_factor);
 
   ReceiveDisableDeviceEmulation(view());

@@ -217,6 +217,50 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                CrossVariantMojoRemote<
                    mojom::blink::PointerLockContextInterfaceBase>)> callback);
 
+  const viz::LocalSurfaceIdAllocation&
+  local_surface_id_allocation_from_parent() {
+    return local_surface_id_allocation_from_parent_;
+  }
+
+  // Called to get the position of the widget's window in screen
+  // coordinates. Note, the window includes any decorations such as borders,
+  // scrollbars, URL bar, tab strip, etc. if they exist.
+  gfx::Rect WindowRect();
+
+  // Called to get the view rect in screen coordinates. This is the actual
+  // content view area, i.e. doesn't include any window decorations.
+  gfx::Rect ViewRect();
+
+  // Sets the pending window rects (in screen coordinates). This is used because
+  // the window rect is delivered asynchronously to the browser. Pass in nullptr
+  // to clear the pending window rect once the browser has acknowledged the
+  // request.
+  void SetPendingWindowRect(const gfx::Rect* rect);
+
+  // Returns the location/bounds of the widget (in screen coordinates).
+  const gfx::Rect& WidgetScreenRect() const { return widget_screen_rect_; }
+
+  // Returns the bounds of the screen the widget is contained in (in screen
+  // coordinates).
+  const gfx::Rect& WindowScreenRect() const { return window_screen_rect_; }
+
+  // Sets the screen rects (in screen coordinates).
+  void SetScreenRects(const gfx::Rect& widget_screen_rect,
+                      const gfx::Rect& window_screen_rect);
+
+  // Returns the visible viewport size (in screen coorindates).
+  const gfx::Size& VisibleViewportSize() const {
+    return visible_viewport_size_;
+  }
+
+  // Set the visible viewport size (in screen coorindates).
+  void SetVisibleViewportSize(const gfx::Size& size) {
+    visible_viewport_size_ = size;
+  }
+
+  // Returns whether Zoom for DSF is enabled for the widget.
+  bool UseZoomForDsf() { return use_zoom_for_dsf_; }
+
   void BindWidgetCompositor(
       mojo::PendingReceiver<mojom::blink::WidgetCompositor> receiver);
 
@@ -325,6 +369,18 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // It is possible that one ImeEventGuard is nested inside another
   // ImeEventGuard. We keep track of the outermost one, and update it as needed.
   ImeEventGuard* ime_event_guard_ = nullptr;
+
+  // The screen rects of the view and the window that contains it. These do not
+  // include any scaling by device scale factor, so are logical pixels not
+  // physical device pixels.
+  gfx::Rect widget_screen_rect_;
+  gfx::Rect window_screen_rect_;
+  base::Optional<gfx::Rect> pending_window_rect_;
+
+  // The size of the visible viewport in pixels.
+  gfx::Size visible_viewport_size_;
+
+  const bool use_zoom_for_dsf_;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

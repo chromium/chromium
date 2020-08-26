@@ -104,7 +104,6 @@ bool ExternalPopupMenu::ShowInternal() {
     IntRect rect_in_viewport = local_frame_->View()->FrameToViewport(rect);
     float scale_for_emulation = WebLocalFrameImpl::FromFrame(local_frame_)
                                     ->LocalRootFrameWidget()
-                                    ->Client()
                                     ->GetEmulatorScale();
 
     gfx::Rect bounds =

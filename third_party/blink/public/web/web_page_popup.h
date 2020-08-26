@@ -41,6 +41,7 @@ namespace blink {
 
 class WebWidgetClient;
 class WebDocument;
+class WebView;
 
 class WebPagePopupClient : public WebWidgetClient {
  public:
@@ -59,12 +60,15 @@ class WebPagePopup : public WebWidget {
       CrossVariantMojoAssociatedRemote<mojom::WidgetHostInterfaceBase>
           widget_host,
       CrossVariantMojoAssociatedReceiver<mojom::WidgetInterfaceBase> widget);
-  virtual gfx::Point PositionRelativeToOwner() = 0;
 
   // The popup's accessibility tree is connected to the main document's
   // accessibility tree. Access to the popup document is needed to ensure the
   // popup's layout is clean before serializing the combined tree.
   virtual WebDocument GetDocument() = 0;
+
+  // Initialization is typically done after creation inside blink, but some
+  // content tests call Create directly so we expose an initialization.
+  virtual void InitializeForTesting(WebView* view) = 0;
 
   // Web tests require access to the client for a WebPagePopup in order
   // to synchronously composite.

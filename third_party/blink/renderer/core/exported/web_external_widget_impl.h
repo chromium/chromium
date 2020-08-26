@@ -90,6 +90,13 @@ class WebExternalWidgetImpl : public WebExternalWidget,
   void UpdateCompositorViewportRect(
       const gfx::Rect& compositor_viewport_pixel_rect) override;
   const ScreenInfo& GetScreenInfo() override;
+  gfx::Rect WindowRect() override;
+  gfx::Rect ViewRect() override;
+  void SetScreenRects(const gfx::Rect& widget_screen_rect,
+                      const gfx::Rect& window_screen_rect) override;
+  void SetVisibleViewportSize(const gfx::Size& visible_viewport_size) override;
+  const gfx::Size& VisibleViewportSize() override;
+  void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
 
   // WebExternalWidget overrides:
   void SetRootLayer(scoped_refptr<cc::Layer>) override;
@@ -115,9 +122,7 @@ class WebExternalWidgetImpl : public WebExternalWidget,
   void CancelCompositionForPepper() override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
-  void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
-                         const gfx::Rect& window_screen_rect) override;
-  ScreenInfo GetOriginalScreenInfo() override;
+  const ScreenInfo& GetOriginalScreenInfo() override;
   gfx::Rect ViewportVisibleRect() override;
 
  private:

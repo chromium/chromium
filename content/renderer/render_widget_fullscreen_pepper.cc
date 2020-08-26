@@ -165,12 +165,8 @@ class PepperExternalWidgetClient : public blink::WebExternalWidgetClient {
 
   void UpdateVisualProperties(
       const blink::VisualProperties& visual_properties) override {
-    widget_->UpdateVisualProperties(visual_properties);
-  }
-
-  void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
-                         const gfx::Rect& window_screen_rect) override {
-    widget_->UpdateScreenRects(widget_screen_rect, window_screen_rect);
+    widget_->UpdateVisualProperties(/*emulator_enabled=*/false,
+                                    visual_properties);
   }
 
  private:
@@ -283,14 +279,15 @@ void RenderWidgetFullscreenPepper::UpdateLayerBounds() {
 
   // The |layer_| is sized here to cover the entire renderer's compositor
   // viewport.
-  gfx::Size layer_size = gfx::Rect(ViewRect()).size();
+  gfx::Size layer_size = gfx::Rect(GetWebWidget()->ViewRect()).size();
   // When IsUseZoomForDSFEnabled() is true, layout and compositor layer sizes
   // given by blink are all in physical pixels, and the compositor does not do
   // any scaling. But the ViewRect() is always in DIP so we must scale the layer
   // here as the compositor won't.
   if (compositor_deps()->IsUseZoomForDSFEnabled()) {
     layer_size = gfx::ScaleToCeiledSize(
-        layer_size, GetOriginalScreenInfo().device_scale_factor);
+        layer_size,
+        GetWebWidget()->GetOriginalScreenInfo().device_scale_factor);
   }
   layer_->SetBounds(layer_size);
 }

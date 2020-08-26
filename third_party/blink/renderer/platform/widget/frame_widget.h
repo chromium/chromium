@@ -92,7 +92,7 @@ class PLATFORM_EXPORT FrameWidget
   virtual mojom::blink::DisplayMode DisplayMode() const = 0;
 
   // Returns the window segments for the widget.
-  virtual const WebVector<WebRect>& WindowSegments() const = 0;
+  virtual const WebVector<gfx::Rect>& WindowSegments() const = 0;
 
   // Sets the ink metadata on the layer tree host
   virtual void SetDelegatedInkMetadata(
@@ -179,6 +179,15 @@ class PLATFORM_EXPORT FrameWidget
 
   // Returns information about the screen where this widget is being displayed.
   virtual const ScreenInfo& GetScreenInfo() = 0;
+
+  // Called to get the position of the widget's window in screen
+  // coordinates. Note, the window includes any decorations such as borders,
+  // scrollbars, URL bar, tab strip, etc. if they exist.
+  virtual gfx::Rect WindowRect() = 0;
+
+  // Called to get the view rect in screen coordinates. This is the actual
+  // content view area, i.e. doesn't include any window decorations.
+  virtual gfx::Rect ViewRect() = 0;
 };
 
 }  // namespace blink

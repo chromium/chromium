@@ -165,19 +165,34 @@ class WidgetBaseClient {
   virtual void UpdateVisualProperties(
       const VisualProperties& visual_properties) = 0;
 
-  // Apply the updated screen rects.
-  virtual void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
-                                 const gfx::Rect& window_screen_rect) = 0;
+  // A callback to apply the updated screen rects, return true if it
+  // was handled. If not handled WidgetBase will apply the screen
+  // rects as the new values.
+  virtual bool UpdateScreenRects(const gfx::Rect& widget_screen_rect,
+                                 const gfx::Rect& window_screen_rect) {
+    return false;
+  }
 
+  // Convert screen coordinates to device emulated coordinates (scaled
+  // coordinates when devtools is used). This occurs for popups where their
+  // window bounds are emulated.
+  virtual void ScreenRectToEmulated(gfx::Rect& screen_rect) {}
+  virtual void EmulatedToScreenRect(gfx::Rect& screen_rect) {}
+
+  // Signal the orientation has changed.
   virtual void OrientationChanged() {}
 
-  virtual ScreenInfo GetOriginalScreenInfo() = 0;
+  // Return the original (non-emulated) screen info.
+  virtual const ScreenInfo& GetOriginalScreenInfo() = 0;
 
-  virtual void UpdatedSurfaceAndScreen(
+  // Indication that the surface and screen were updated.
+  virtual void DidUpdateSurfaceAndScreen(
       const ScreenInfo& previous_original_screen_info) {}
 
+  // Return the viewport visible rect.
   virtual gfx::Rect ViewportVisibleRect() = 0;
 
+  // The screen orientation override.
   virtual base::Optional<mojom::blink::ScreenOrientation>
   ScreenOrientationOverride() {
     return base::nullopt;

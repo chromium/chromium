@@ -161,6 +161,17 @@ void RemoteFrameClientImpl::DidChangeScreenInfo(
   web_frame_->Client()->DidChangeScreenInfo(original_screen_info);
 }
 
+void RemoteFrameClientImpl::DidChangeRootWindowSegments(
+    const std::vector<gfx::Rect>& root_widget_window_segments) {
+  web_frame_->Client()->DidChangeRootWindowSegments(
+      root_widget_window_segments);
+}
+
+void RemoteFrameClientImpl::DidChangeVisibleViewportSize(
+    const gfx::Size& visible_viewport_size) {
+  web_frame_->Client()->DidChangeVisibleViewportSize(visible_viewport_size);
+}
+
 void RemoteFrameClientImpl::UpdateRemoteViewportIntersection(
     const ViewportIntersectionState& intersection_state) {
   web_frame_->Client()->UpdateRemoteViewportIntersection(intersection_state);

@@ -52,6 +52,12 @@ class RemoteFrameClient : public FrameClient {
 
   virtual void DidChangeScreenInfo(const ScreenInfo& original_screen_info) = 0;
 
+  virtual void DidChangeRootWindowSegments(
+      const std::vector<gfx::Rect>& root_widget_window_segments) = 0;
+
+  virtual void DidChangeVisibleViewportSize(
+      const gfx::Size& visible_viewport_size) = 0;
+
   virtual void UpdateRemoteViewportIntersection(
       const ViewportIntersectionState& intersection_state) = 0;
 

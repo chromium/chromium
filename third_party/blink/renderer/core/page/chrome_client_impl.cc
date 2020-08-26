@@ -196,8 +196,7 @@ IntRect ChromeClientImpl::RootWindowRect(LocalFrame& frame) {
   // The WindowRect() for each WebWidgetClient will be the same rect of the top
   // level window. Since there is not always a WebWidgetClient attached to the
   // WebView, we ask the WebWidget associated with the |frame|'s local root.
-  WebWidgetClient* client = frame.GetWidgetForLocalRoot()->Client();
-  return IntRect(client->WindowRect());
+  return IntRect(frame.GetWidgetForLocalRoot()->WindowRect());
 }
 
 void ChromeClientImpl::FocusPage() {
@@ -443,13 +442,13 @@ IntRect ChromeClientImpl::ViewportToScreen(
   // TODO(dcheng): Is this null check needed?
   if (client) {
     client->ConvertViewportToWindow(&screen_rect);
-    WebRect view_rect = client->ViewRect();
+    gfx::Rect view_rect = frame.GetWidgetForLocalRoot()->ViewRect();
 
     base::CheckedNumeric<int> screen_rect_x = screen_rect.x;
     base::CheckedNumeric<int> screen_rect_y = screen_rect.y;
 
-    screen_rect_x += view_rect.x;
-    screen_rect_y += view_rect.y;
+    screen_rect_x += view_rect.x();
+    screen_rect_y += view_rect.y();
 
     screen_rect.x =
         screen_rect_x.ValueOrDefault(std::numeric_limits<int>::max());
@@ -491,9 +490,8 @@ void ChromeClientImpl::OverrideVisibleRectForMainFrame(
     LocalFrame& frame,
     IntRect* visible_rect) const {
   DCHECK(frame.IsMainFrame());
-  WebWidgetClient* client = frame.GetWidgetForLocalRoot()->Client();
   return web_view_->GetDevToolsEmulator()->OverrideVisibleRect(
-      IntRect(client->ViewRect()).Size(), visible_rect);
+      IntRect(frame.GetWidgetForLocalRoot()->ViewRect()).Size(), visible_rect);
 }
 
 float ChromeClientImpl::InputEventsScaleForEmulation() const {

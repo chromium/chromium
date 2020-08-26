@@ -39,7 +39,6 @@
 #include "content/renderer/mouse_lock_dispatcher.h"
 #include "content/renderer/render_widget_delegate.h"
 #include "content/renderer/render_widget_mouse_lock_dispatcher.h"
-#include "content/renderer/render_widget_screen_metrics_emulator_delegate.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_sender.h"
@@ -68,7 +67,6 @@
 
 namespace blink {
 struct VisualProperties;
-struct DeviceEmulationParams;
 class WebDragData;
 class WebFrameWidget;
 class WebInputMethodController;
@@ -90,7 +88,6 @@ class RenderFrameImpl;
 class RenderFrameProxy;
 class RenderViewImpl;
 class RenderWidgetDelegate;
-class RenderWidgetScreenMetricsEmulator;
 
 // RenderWidget provides a communication bridge between a WebWidget and
 // a RenderWidgetHost, the latter of which lives in a different process.
@@ -113,8 +110,7 @@ class RenderWidgetScreenMetricsEmulator;
 class CONTENT_EXPORT RenderWidget
     : public IPC::Listener,
       public IPC::Sender,
-      public blink::WebPagePopupClient,  // Is-a WebWidgetClient also.
-      public RenderWidgetScreenMetricsEmulatorDelegate {
+      public blink::WebPagePopupClient {  // Is-a WebWidgetClient also
  public:
   RenderWidget(int32_t widget_routing_id,
                CompositorDependencies* compositor_deps,
@@ -212,9 +208,6 @@ class CONTENT_EXPORT RenderWidget
 
   const gfx::Size& size() const { return size_; }
   bool is_hidden() const { return is_hidden_; }
-  const gfx::Size& visible_viewport_size() const {
-    return visible_viewport_size_;
-  }
 
   // A main frame RenderWidget is destroyed and recreated using the same routing
   // id. So messages en route to a destroyed RenderWidget may end up being
@@ -239,28 +232,15 @@ class CONTENT_EXPORT RenderWidget
   // IPC::Sender
   bool Send(IPC::Message* msg) override;
 
-  // RenderWidgetScreenMetricsEmulatorDelegate
-  void SetScreenMetricsEmulationParameters(
-      bool enabled,
-      const blink::DeviceEmulationParams& params) override;
-  void SetScreenInfoAndSize(const blink::ScreenInfo& screen_info,
-                            const gfx::Size& widget_size,
-                            const gfx::Size& visible_viewport_size) override;
-  void SetScreenRects(const gfx::Rect& widget_screen_rect,
-                      const gfx::Rect& window_screen_rect) override;
-  void SetRootWindowSegments(
-      const std::vector<gfx::Rect>& root_window_segments) override;
-
   // blink::WebWidgetClient
   void ScheduleAnimation() override;
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void CloseWidgetSoon() override;
   void ClosePopupWidgetSoon() override;
   void Show(blink::WebNavigationPolicy) override;
-  blink::WebRect WindowRect() override;
-  blink::WebRect ViewRect() override;
-  void SetWindowRect(const blink::WebRect&) override;
+  void SetWindowRect(const gfx::Rect&) override;
   void SetSize(const gfx::Size&) override;
+  void UpdateCompositingToLCDTextPreference() override;
   void ConvertViewportToWindow(blink::WebRect* rect) override;
   void ConvertViewportToWindow(blink::WebFloatRect* rect) override;
   void ConvertWindowToViewport(blink::WebFloatRect* rect) override;
@@ -307,18 +287,6 @@ class CONTENT_EXPORT RenderWidget
       const gfx::Range& replacement_range,
       int relative_cursor_pos) override;
   void ImeFinishComposingTextForPepper(bool keep_selection) override;
-  void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
-                         const gfx::Rect& window_screen_rect) override;
-  void EnableDeviceEmulation(
-      const blink::DeviceEmulationParams& params) override;
-  void DisableDeviceEmulation() override;
-  blink::ScreenInfo GetOriginalScreenInfo() override;
-
-  // Returns the scale being applied to the document in blink by the device
-  // emulator. Returns 1 if there is no emulation active. Use this to position
-  // things when the coordinates did not come from blink, such as from the mouse
-  // position.
-  float GetEmulatorScale() const override;
 
   void UpdateTextInputState();
 
@@ -362,6 +330,7 @@ class CONTENT_EXPORT RenderWidget
  protected:
   // blink::WebWidgetClient
   void UpdateVisualProperties(
+      bool emulator_enabled,
       const blink::VisualProperties& properties) override;
 
   // Notify subclasses that we handled OnUpdateVisualProperties.
@@ -400,10 +369,6 @@ class CONTENT_EXPORT RenderWidget
   // visual viewport size, or the device scale factor change.
   void ResizeWebWidget();
 
-  // Helper method to get the device_viewport_rect() from the compositor, which
-  // is always in physical pixels.
-  gfx::Rect CompositorViewportRect() const;
-
   // RenderWidget IPC message handlers.
   void OnClose();
   void OnCreatingNewAck();
@@ -412,11 +377,8 @@ class CONTENT_EXPORT RenderWidget
                   bool was_evicted,
                   const blink::mojom::RecordContentToVisibleTimeRequestPtr&
                       record_tab_switch_time_request);
-  void OnCreateVideoAck(int32_t video_id);
-  void OnUpdateVideoAck(int32_t video_id);
   void OnRequestSetBoundsAck();
 
-  void OnGetFPS();
   void OnSetViewportIntersection(
       const blink::ViewportIntersectionState& intersection_state);
   void OnDragTargetDragEnter(
@@ -428,17 +390,11 @@ class CONTENT_EXPORT RenderWidget
   void OnDragSourceEnded(const gfx::PointF& client_point,
                          const gfx::PointF& screen_point,
                          blink::WebDragOperation drag_operation);
-  void OnOrientationChange();
 
   // Sets the "hidden" state of this widget.  All modification of is_hidden_
   // should use this method so that we can properly inform the RenderThread of
   // our state.
   void SetHidden(bool hidden);
-
-  // Returns a rect that the compositor needs to raster. For a main frame this
-  // is always the entire viewport, but for out-of-process iframes this can be
-  // constrained to limit overdraw.
-  gfx::Rect ViewportVisibleRect();
 
   // Set the pending window rect.
   // Because the real render_widget is hosted in another process, there is
@@ -446,7 +402,7 @@ class CONTENT_EXPORT RenderWidget
   // been processed by the browser.  So we maintain a pending window rect
   // size.  If JS code sets the WindowRect, and then immediately calls
   // GetWindowRect() we'll use this pending window rect as the size.
-  void SetPendingWindowRect(const blink::WebRect& r);
+  void SetPendingWindowRect(const gfx::Rect& r);
 
   // Returns the WebFrameWidget associated with this RenderWidget if any.
   // Returns nullptr if GetWebWidget() returns nullptr or returns a WebWidget
@@ -454,11 +410,6 @@ class CONTENT_EXPORT RenderWidget
   // a local root associated with it. RenderWidgetFullscreenPepper and a swapped
   // out RenderWidgets are amongst the cases where this method returns nullptr.
   blink::WebFrameWidget* GetFrameWidget() const;
-
-  // Applies/Removes the DevTools device emulation transformation to/from a
-  // screen rect.
-  void ScreenRectToEmulated(gfx::Rect* screen_rect) const;
-  void EmulatedToScreenRect(gfx::Rect* screen_rect) const;
 
   // Used to force the size of a window when running web tests.
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
@@ -503,19 +454,6 @@ class CONTENT_EXPORT RenderWidget
   // This is valid while |webwidget_| is valid.
   cc::LayerTreeHost* layer_tree_host_ = nullptr;
 
-  // Present when emulation is enabled, only in a main frame RenderWidget. Used
-  // to override values given from the browser such as ScreenInfo,
-  // WidgetScreenRect, WindowScreenRect, and the widget's size.
-  std::unique_ptr<RenderWidgetScreenMetricsEmulator> device_emulator_;
-
-  // When emulation is enabled, and a popup widget is opened, the popup widget
-  // needs these values to move between the popup's (non-emulated) coordinates
-  // and the opener widget's (emulated) coordinates. They are only valid when
-  // the |opener_emulator_scale_| is non-zero.
-  gfx::Point opener_widget_screen_origin_;
-  gfx::Point opener_original_widget_screen_origin_;
-  float opener_emulator_scale_ = 0;
-
   // The rect where this view should be initially shown.
   gfx::Rect initial_rect_;
 
@@ -525,9 +463,6 @@ class CONTENT_EXPORT RenderWidget
   // - When (hiding-on-scroll) top and bottom controls are present.
   // - Rounding issues with OOPIFs (??).
   gfx::Size size_;
-
-  // The size of the visible viewport in pixels.
-  gfx::Size visible_viewport_size_;
 
   // Indicates that we shouldn't bother generated paint events.
   bool is_hidden_;
@@ -556,18 +491,6 @@ class CONTENT_EXPORT RenderWidget
   // While we are waiting for the browser to update window sizes, we track the
   // pending size temporarily.
   int pending_window_rect_count_ = 0;
-  gfx::Rect pending_window_rect_;
-
-  // The screen rects of the view and the window that contains it. These do not
-  // include any scaling by device scale factor, so are logical pixels not
-  // physical device pixels.
-  gfx::Rect widget_screen_rect_;
-  gfx::Rect window_screen_rect_;
-
-  // Stored during the SynchronizeVisualProperties cascade. See VisualProperties
-  // for a more detailed explanation of how when this value is computed and
-  // propagated.
-  std::vector<gfx::Rect> root_widget_window_segments_;
 
   // The time spent in input handlers this frame. Used to throttle input acks.
   base::TimeDelta total_input_handling_time_this_frame_;

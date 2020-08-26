@@ -44,6 +44,10 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   void PageScaleFactorChanged(float page_scale_factor,
                               bool is_pinch_gesture_active) override;
   void DidChangeScreenInfo(const ScreenInfo& original_screen_info) override;
+  void DidChangeRootWindowSegments(
+      const std::vector<gfx::Rect>& root_widget_window_segments) override;
+  void DidChangeVisibleViewportSize(
+      const gfx::Size& visible_viewport_size) override;
   void UpdateRemoteViewportIntersection(
       const ViewportIntersectionState& intersection_state) override;
   AssociatedInterfaceProvider* GetRemoteAssociatedInterfaces() override;

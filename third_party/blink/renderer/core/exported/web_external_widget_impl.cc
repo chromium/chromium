@@ -202,6 +202,34 @@ const ScreenInfo& WebExternalWidgetImpl::GetScreenInfo() {
   return widget_base_->GetScreenInfo();
 }
 
+gfx::Rect WebExternalWidgetImpl::WindowRect() {
+  return widget_base_->WindowRect();
+}
+
+gfx::Rect WebExternalWidgetImpl::ViewRect() {
+  return widget_base_->ViewRect();
+}
+
+void WebExternalWidgetImpl::SetScreenRects(
+    const gfx::Rect& widget_screen_rect,
+    const gfx::Rect& window_screen_rect) {
+  widget_base_->SetScreenRects(widget_screen_rect, window_screen_rect);
+}
+
+void WebExternalWidgetImpl::SetVisibleViewportSize(
+    const gfx::Size& visible_viewport_size) {
+  widget_base_->SetVisibleViewportSize(visible_viewport_size);
+}
+
+const gfx::Size& WebExternalWidgetImpl::VisibleViewportSize() {
+  return widget_base_->VisibleViewportSize();
+}
+
+void WebExternalWidgetImpl::SetPendingWindowRect(
+    const gfx::Rect* window_screen_rect) {
+  widget_base_->SetPendingWindowRect(window_screen_rect);
+}
+
 void WebExternalWidgetImpl::DidOverscrollForTesting(
     const gfx::Vector2dF& overscroll_delta,
     const gfx::Vector2dF& accumulated_overscroll,
@@ -263,13 +291,7 @@ void WebExternalWidgetImpl::UpdateVisualProperties(
   client_->UpdateVisualProperties(visual_properties);
 }
 
-void WebExternalWidgetImpl::UpdateScreenRects(
-    const gfx::Rect& widget_screen_rect,
-    const gfx::Rect& window_screen_rect) {
-  client_->UpdateScreenRects(widget_screen_rect, window_screen_rect);
-}
-
-ScreenInfo WebExternalWidgetImpl::GetOriginalScreenInfo() {
+const ScreenInfo& WebExternalWidgetImpl::GetOriginalScreenInfo() {
   return widget_base_->GetScreenInfo();
 }
 

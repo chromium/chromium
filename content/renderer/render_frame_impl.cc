@@ -2178,8 +2178,8 @@ RenderWidgetFullscreenPepper* RenderFrameImpl::CreatePepperFullscreenContainer(
   RenderWidgetFullscreenPepper* widget = RenderWidgetFullscreenPepper::Create(
       fullscreen_widget_routing_id, std::move(show_callback),
       GetLocalRootRenderWidget()->compositor_deps(),
-      GetLocalRootRenderWidget()->GetOriginalScreenInfo(), plugin,
-      std::move(main_frame_url), std::move(blink_widget_host),
+      GetLocalRootRenderWidget()->GetWebWidget()->GetOriginalScreenInfo(),
+      plugin, std::move(main_frame_url), std::move(blink_widget_host),
       std::move(blink_widget_receiver));
   // TODO(nick): The show() handshake seems like unnecessary complexity here,
   // since there's no real delay between CreateFullscreenWidget and
@@ -4715,7 +4715,8 @@ void RenderFrameImpl::ShowContextMenu(
     // them to DIP coordiates relative to the WindowScreenRect.
     blink::WebRect position_in_window(params.x, params.y, 0, 0);
     GetLocalRootRenderWidget()->ConvertViewportToWindow(&position_in_window);
-    const float scale = GetLocalRootRenderWidget()->GetEmulatorScale();
+    const float scale =
+        GetLocalRootRenderWidget()->GetWebWidget()->GetEmulatorScale();
     params.x = position_in_window.x * scale;
     params.y = position_in_window.y * scale;
   }

@@ -206,6 +206,10 @@ class WebFrameWidget : public WebWidget {
   // Override the device scale factor for testing.
   virtual void SetDeviceScaleFactorForTesting(float factor) = 0;
 
+  // Get the window segments for this widget.
+  // See https://github.com/webscreens/window-segments/blob/master/EXPLAINER.md
+  virtual const WebVector<gfx::Rect>& WindowSegments() const = 0;
+
  private:
   // This private constructor and the class/friend declaration ensures that
   // WebFrameWidgetBase is the only concrete subclass that implements

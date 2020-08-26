@@ -184,6 +184,8 @@ blink_core_sources("frame") {
     "scheduling.h",
     "screen.cc",
     "screen.h",
+    "screen_metrics_emulator.cc",
+    "screen_metrics_emulator.h",
     "settings.cc",
     "settings.h",
     "settings_delegate.cc",

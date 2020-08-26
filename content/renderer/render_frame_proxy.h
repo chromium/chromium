@@ -138,9 +138,10 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // RenderWidget, and we would only need to send one update to the browser as
   // a result.
   void DidChangeScreenInfo(const blink::ScreenInfo& screen_info) override;
-  void OnRootWindowSegmentsChanged(
-      std::vector<gfx::Rect> root_widget_window_segments);
-  void OnVisibleViewportSizeChanged(const gfx::Size& visible_viewport_size);
+  void DidChangeRootWindowSegments(
+      const std::vector<gfx::Rect>& root_widget_window_segments) override;
+  void DidChangeVisibleViewportSize(
+      const gfx::Size& visible_viewport_size) override;
 
   // Pass replicated information, such as security origin, to this
   // RenderFrameProxy's WebRemoteFrame.

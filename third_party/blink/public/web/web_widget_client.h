@@ -113,19 +113,10 @@ class WebWidgetClient {
   // Called to show the widget according to the given policy.
   virtual void Show(WebNavigationPolicy) {}
 
-  // Returns original (non-emulated) information about the screen where this
-  // view's widgets are being displayed.
-  virtual ScreenInfo GetOriginalScreenInfo() { return {}; }
-
-  // Called to get/set the position of the widget's window in screen
+  // Called to set the position of the widget's window in screen
   // coordinates. Note, the window includes any decorations such as borders,
   // scrollbars, URL bar, tab strip, etc. if they exist.
-  virtual WebRect WindowRect() { return WebRect(); }
-  virtual void SetWindowRect(const WebRect&) {}
-
-  // Called to get the view rect in screen coordinates. This is the actual
-  // content view area, i.e. doesn't include any window decorations.
-  virtual WebRect ViewRect() { return WebRect(); }
+  virtual void SetWindowRect(const gfx::Rect&) {}
 
   // Set the size of the widget.
   virtual void SetSize(const gfx::Size&) {}
@@ -239,9 +230,6 @@ class WebWidgetClient {
   // from background inactive to active.
   virtual void RecordTimeToFirstActivePaint(base::TimeDelta duration) {}
 
-  // Returns a scale of the device emulator from the widget.
-  virtual float GetEmulatorScale() const { return 1.0f; }
-
   // Returns whether we handled a GestureScrollEvent.
   virtual void DidHandleGestureScrollEvent(
       const WebGestureEvent& gesture_event,
@@ -305,15 +293,12 @@ class WebWidgetClient {
 
   // Apply the visual properties to the widget.
   virtual void UpdateVisualProperties(
+      bool emulator_enabled,
       const VisualProperties& visual_properties) {}
 
-  // Apply the updated screen rects.
-  virtual void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
-                                 const gfx::Rect& window_screen_rect) {}
-
-  // Device emulation control.
-  virtual void EnableDeviceEmulation(const DeviceEmulationParams& parameters) {}
-  virtual void DisableDeviceEmulation() {}
+  // After screen info has been updated the compositing to LCD text preference
+  // may need to be recalculated.
+  virtual void UpdateCompositingToLCDTextPreference() {}
 };
 
 }  // namespace blink

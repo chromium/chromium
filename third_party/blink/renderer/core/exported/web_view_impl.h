@@ -254,6 +254,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void EnableAutoResizeMode(const gfx::Size& min_viewport_size,
                             const gfx::Size& max_viewport_size);
   void DisableAutoResizeMode();
+  void ActivateDevToolsTransform(const DeviceEmulationParams&);
+  void DeactivateDevToolsTransform();
 
   SkColor BackgroundColor() const;
   Color BaseBackgroundColor() const;

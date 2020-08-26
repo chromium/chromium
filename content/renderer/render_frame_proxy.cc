@@ -267,8 +267,17 @@ void RenderFrameProxy::Init(blink::WebRemoteFrame* web_frame,
     pending_visual_properties_.is_pinch_gesture_active =
         ancestor_frame_widget->PinchGestureActiveInMainFrame();
     pending_visual_properties_.screen_info =
-        ancestor_render_widget_->GetOriginalScreenInfo();
+        ancestor_render_widget_->GetWebWidget()->GetOriginalScreenInfo();
+    pending_visual_properties_.visible_viewport_size =
+        ancestor_render_widget_->GetWebWidget()->VisibleViewportSize();
+    const blink::WebVector<gfx::Rect>& window_segments =
+        static_cast<blink::WebFrameWidget*>(
+            ancestor_render_widget_->GetWebWidget())
+            ->WindowSegments();
+    pending_visual_properties_.root_widget_window_segments.assign(
+        window_segments.begin(), window_segments.end());
     ancestor_render_widget_->RegisterRenderFrameProxy(this);
+    SynchronizeVisualProperties();
   }
 
   std::pair<FrameProxyMap::iterator, bool> result =
@@ -307,8 +316,8 @@ void RenderFrameProxy::ZoomLevelChanged(double zoom_level) {
   SynchronizeVisualProperties();
 }
 
-void RenderFrameProxy::OnRootWindowSegmentsChanged(
-    std::vector<gfx::Rect> root_widget_window_segments) {
+void RenderFrameProxy::DidChangeRootWindowSegments(
+    const std::vector<gfx::Rect>& root_widget_window_segments) {
   pending_visual_properties_.root_widget_window_segments =
       std::move(root_widget_window_segments);
   SynchronizeVisualProperties();
@@ -323,7 +332,7 @@ void RenderFrameProxy::PageScaleFactorChanged(float page_scale_factor,
   SynchronizeVisualProperties();
 }
 
-void RenderFrameProxy::OnVisibleViewportSizeChanged(
+void RenderFrameProxy::DidChangeVisibleViewportSize(
     const gfx::Size& visible_viewport_size) {
   DCHECK(ancestor_render_widget_);
 
@@ -666,7 +675,7 @@ void RenderFrameProxy::FrameRectsChanged(
   pending_visual_properties_.local_frame_size =
       gfx::Size(local_frame_rect.width, local_frame_rect.height);
   pending_visual_properties_.screen_info =
-      ancestor_render_widget_->GetOriginalScreenInfo();
+      ancestor_render_widget_->GetWebWidget()->GetOriginalScreenInfo();
   if (crashed_) {
     // Update the sad page to match the current size.
     compositing_helper_->ChildFrameGone(local_frame_size(),

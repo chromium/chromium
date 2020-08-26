@@ -50,6 +50,7 @@ class RemoteFrame;
 class WebLocalFrameImpl;
 class WebViewImpl;
 class WidgetBase;
+class ScreenMetricsEmulator;
 
 class CORE_EXPORT WebFrameWidgetBase
     : public GarbageCollected<WebFrameWidgetBase>,
@@ -128,7 +129,7 @@ class CORE_EXPORT WebFrameWidgetBase
   cc::EventListenerProperties EventListenerProperties(
       cc::EventListenerClass) const final;
   mojom::blink::DisplayMode DisplayMode() const override;
-  const WebVector<WebRect>& WindowSegments() const override;
+  const WebVector<gfx::Rect>& WindowSegments() const override;
   void SetDelegatedInkMetadata(
       std::unique_ptr<viz::DelegatedInkMetadata> metadata) final;
   void DidOverscroll(const gfx::Vector2dF& overscroll_delta,
@@ -274,7 +275,6 @@ class CORE_EXPORT WebFrameWidgetBase
   void DidNotAcquirePointerLock() override;
   void DidLosePointerLock() override;
   void SetCompositorVisible(bool visible) override;
-  void SetWindowSegments(WebVector<WebRect> window_segments) override;
   void SetCursor(const ui::Cursor& cursor) override;
   bool HandlingInputEvent() override;
   void SetHandlingInputEvent(bool handling) override;
@@ -314,6 +314,13 @@ class CORE_EXPORT WebFrameWidgetBase
   void UpdateCompositorViewportRect(
       const gfx::Rect& compositor_viewport_pixel_rect) override;
   const ScreenInfo& GetScreenInfo() override;
+  gfx::Rect WindowRect() override;
+  gfx::Rect ViewRect() override;
+  void SetScreenRects(const gfx::Rect& widget_screen_rect,
+                      const gfx::Rect& window_screen_rect) override;
+  void SetVisibleViewportSize(const gfx::Size& visible_viewport_size) override;
+  const gfx::Size& VisibleViewportSize() override;
+  void SetPendingWindowRect(const gfx::Rect* window_screen_rect) override;
 
   // WidgetBaseClient methods.
   void RecordDispatchRafAlignedInputTime(
@@ -349,13 +356,11 @@ class CORE_EXPORT WebFrameWidgetBase
   bool ShouldAckSyntheticInputImmediately() override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
-  void UpdateScreenRects(const gfx::Rect& widget_screen_rect,
-                         const gfx::Rect& window_screen_rect) override;
   void ScheduleAnimationForWebTests() override;
   void OrientationChanged() override;
-  void UpdatedSurfaceAndScreen(
+  void DidUpdateSurfaceAndScreen(
       const ScreenInfo& previous_original_screen_info) override;
-  ScreenInfo GetOriginalScreenInfo() override;
+  const ScreenInfo& GetOriginalScreenInfo() override;
   base::Optional<blink::mojom::ScreenOrientation> ScreenOrientationOverride()
       override;
 
@@ -529,6 +534,10 @@ class CORE_EXPORT WebFrameWidgetBase
   const viz::LocalSurfaceIdAllocation& LocalSurfaceIdAllocationFromParent();
   cc::LayerTreeHost* LayerTreeHost();
 
+  virtual ScreenMetricsEmulator* DeviceEmulator() { return nullptr; }
+
+  void SetWindowSegments(const std::vector<gfx::Rect>& window_segments);
+
  protected:
   enum DragAction { kDragEnter, kDragOver };
 
@@ -608,7 +617,7 @@ class CORE_EXPORT WebFrameWidgetBase
 
   mojom::blink::DisplayMode display_mode_;
 
-  WebVector<WebRect> window_segments_;
+  WebVector<gfx::Rect> window_segments_;
 
   // This is owned by the LayerTreeHostImpl, and should only be used on the
   // compositor thread, so we keep the TaskRunner where you post tasks to

@@ -7,6 +7,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
+#include "third_party/blink/renderer/core/frame/screen_metrics_emulator.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
@@ -181,6 +182,12 @@ bool WebViewFrameWidget::ShouldHandleImeEvents() {
   return HasFocus();
 }
 
+float WebViewFrameWidget::GetEmulatorScale() {
+  if (device_emulator_)
+    return device_emulator_->scale();
+  return 1.0f;
+}
+
 bool WebViewFrameWidget::SelectionBounds(WebRect& anchor,
                                          WebRect& focus) const {
   return web_view_->SelectionBounds(anchor, focus);
@@ -196,11 +203,25 @@ WebString WebViewFrameWidget::GetLastToolTipTextForTesting() const {
 
 void WebViewFrameWidget::EnableDeviceEmulation(
     const DeviceEmulationParams& parameters) {
-  Client()->EnableDeviceEmulation(parameters);
+  if (!device_emulator_) {
+    WebSize web_view_size = web_view_->GetSize();
+    WebRect size_in_window(0, 0, web_view_size.width, web_view_size.height);
+    Client()->ConvertViewportToWindow(&size_in_window);
+
+    device_emulator_ = MakeGarbageCollected<ScreenMetricsEmulator>(
+        this, widget_base_->GetScreenInfo(),
+        gfx::Size(size_in_window.width, size_in_window.height),
+        widget_base_->VisibleViewportSize(), widget_base_->WidgetScreenRect(),
+        widget_base_->WindowScreenRect());
+  }
+  device_emulator_->ChangeEmulationParams(parameters);
 }
 
 void WebViewFrameWidget::DisableDeviceEmulation() {
-  Client()->DisableDeviceEmulation();
+  if (!device_emulator_)
+    return;
+  device_emulator_->DisableAndApply();
+  device_emulator_ = nullptr;
 }
 
 void WebViewFrameWidget::DidDetachLocalFrameTree() {
@@ -242,6 +263,7 @@ void WebViewFrameWidget::ZoomToFindInPageRect(
 
 void WebViewFrameWidget::Trace(Visitor* visitor) const {
   WebFrameWidgetBase::Trace(visitor);
+  visitor->Trace(device_emulator_);
 }
 
 PageWidgetEventHandler* WebViewFrameWidget::GetPageWidgetEventHandler() {
@@ -352,6 +374,52 @@ void WebViewFrameWidget::SetDeviceColorSpaceForTesting(
   blink::ScreenInfo info = widget_base_->GetScreenInfo();
   info.display_color_spaces = gfx::DisplayColorSpaces(color_space);
   widget_base_->UpdateScreenInfo(info);
+}
+
+bool WebViewFrameWidget::AutoResizeMode() {
+  return web_view_->AutoResizeMode();
+}
+
+bool WebViewFrameWidget::UpdateScreenRects(
+    const gfx::Rect& widget_screen_rect,
+    const gfx::Rect& window_screen_rect) {
+  if (!device_emulator_)
+    return false;
+  device_emulator_->OnUpdateScreenRects(widget_screen_rect, window_screen_rect);
+  return true;
+}
+
+const ScreenInfo& WebViewFrameWidget::GetOriginalScreenInfo() {
+  if (device_emulator_)
+    return device_emulator_->original_screen_info();
+  return GetScreenInfo();
+}
+
+ScreenMetricsEmulator* WebViewFrameWidget::DeviceEmulator() {
+  return device_emulator_;
+}
+
+void WebViewFrameWidget::SetScreenMetricsEmulationParameters(
+    bool enabled,
+    const DeviceEmulationParams& params) {
+  if (enabled)
+    View()->ActivateDevToolsTransform(params);
+  else
+    View()->DeactivateDevToolsTransform();
+}
+
+void WebViewFrameWidget::SetScreenInfoAndSize(
+    const ScreenInfo& screen_info,
+    const gfx::Size& widget_size,
+    const gfx::Size& visible_viewport_size) {
+  // Emulation happens on regular main frames which don't use auto-resize mode.
+  DCHECK(!web_view_->AutoResizeMode());
+
+  UpdateScreenInfo(screen_info);
+
+  Client()->UpdateCompositingToLCDTextPreference();
+  widget_base_->SetVisibleViewportSize(visible_viewport_size);
+  Client()->SetSize(widget_size);
 }
 
 }  // namespace blink

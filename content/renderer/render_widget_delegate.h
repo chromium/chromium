@@ -9,7 +9,6 @@
 
 namespace blink {
 class WebWidget;
-struct DeviceEmulationParams;
 }  // namespace blink
 
 namespace content {
@@ -63,12 +62,6 @@ class CONTENT_EXPORT RenderWidgetDelegate {
       const gfx::Size& size,
       const gfx::Size& visible_viewport_size,
       cc::BrowserControlsParams browser_controls_params) = 0;
-
-  // Called when RenderWidget services RenderWidgetScreenMetricsEmulatorDelegate
-  // SetScreenMetricsEmulationParameters().
-  virtual void SetScreenMetricsEmulationParametersForWidget(
-      bool enabled,
-      const blink::DeviceEmulationParams& params) = 0;
 };
 
 }  // namespace content

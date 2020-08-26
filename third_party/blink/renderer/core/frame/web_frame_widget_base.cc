@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
+#include "third_party/blink/renderer/core/frame/screen_metrics_emulator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -78,6 +79,19 @@ struct CrossThreadCopier<blink::WebReportTimeCallback>
 namespace blink {
 
 namespace {
+
+void ForEachWebLocalFrameControlledByWidget(
+    WebLocalFrame* frame,
+    const base::RepeatingCallback<void(WebLocalFrame*)>& callback) {
+  callback.Run(frame);
+  for (WebFrame* child = frame->FirstChild(); child;
+       child = child->NextSibling()) {
+    if (child->IsWebLocalFrame()) {
+      ForEachWebLocalFrameControlledByWidget(child->ToWebLocalFrame(),
+                                             callback);
+    }
+  }
+}
 
 // Iterate the remote children that will be controlled by the widget. Skip over
 // any RemoteFrames have have another LocalFrame as their parent.
@@ -635,7 +649,32 @@ void WebFrameWidgetBase::UpdateVisualProperties(
     }
   }
 
-  Client()->UpdateVisualProperties(visual_properties);
+  gfx::Size old_visible_viewport_size = widget_base_->VisibleViewportSize();
+  auto* emulator = DeviceEmulator();
+  if (emulator) {
+    emulator->UpdateVisualProperties(visual_properties);
+  } else {
+    SetWindowSegments(visual_properties.root_widget_window_segments);
+  }
+
+  Client()->UpdateVisualProperties(/*emulator_enabled=*/!!emulator,
+                                   visual_properties);
+
+  if (old_visible_viewport_size != widget_base_->VisibleViewportSize()) {
+    ForEachWebLocalFrameControlledByWidget(
+        local_root_, WTF::BindRepeating([](WebLocalFrame* local_frame) {
+          local_frame->Client()->ResetHasScrolledFocusedEditableIntoView();
+        }));
+
+    // Propagate changes down to child local root RenderWidgets and
+    // BrowserPlugins in other frame trees/processes.
+    ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
+        [](const gfx::Size& visible_viewport_size, RemoteFrame* remote_frame) {
+          remote_frame->Client()->DidChangeVisibleViewportSize(
+              visible_viewport_size);
+        },
+        widget_base_->VisibleViewportSize()));
+  }
 
   // All non-top-level Widgets (child local-root frames, Portals, GuestViews,
   // etc.) propagate and consume the page scale factor as "external", meaning
@@ -660,12 +699,6 @@ void WebFrameWidgetBase::UpdateVisualProperties(
         1.f,
         /*is_pinch_gesture_active=*/false);
   }
-}
-
-void WebFrameWidgetBase::UpdateScreenRects(
-    const gfx::Rect& widget_screen_rect,
-    const gfx::Rect& window_screen_rect) {
-  Client()->UpdateScreenRects(widget_screen_rect, window_screen_rect);
 }
 
 void WebFrameWidgetBase::ScheduleAnimationForWebTests() {
@@ -724,7 +757,7 @@ mojom::blink::DisplayMode WebFrameWidgetBase::DisplayMode() const {
   return display_mode_;
 }
 
-const WebVector<WebRect>& WebFrameWidgetBase::WindowSegments() const {
+const WebVector<gfx::Rect>& WebFrameWidgetBase::WindowSegments() const {
   return window_segments_;
 }
 
@@ -962,11 +995,20 @@ void WebFrameWidgetBase::SetDisplayMode(mojom::blink::DisplayMode mode) {
   }
 }
 
-void WebFrameWidgetBase::SetWindowSegments(WebVector<WebRect> window_segments) {
+void WebFrameWidgetBase::SetWindowSegments(
+    const std::vector<gfx::Rect>& window_segments_param) {
+  WebVector<gfx::Rect> window_segments(window_segments_param);
   if (!window_segments_.Equals(window_segments)) {
-    window_segments_ = std::move(window_segments);
+    window_segments_ = window_segments;
     LocalFrame* frame = LocalRootImpl()->GetFrame();
     frame->WindowSegmentsChanged(window_segments_);
+
+    ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
+        [](const std::vector<gfx::Rect>& window_segments,
+           RemoteFrame* remote_frame) {
+          remote_frame->Client()->DidChangeRootWindowSegments(window_segments);
+        },
+        window_segments_param));
   }
 }
 
@@ -1073,6 +1115,33 @@ void WebFrameWidgetBase::UpdateCompositorViewportRect(
 
 const ScreenInfo& WebFrameWidgetBase::GetScreenInfo() {
   return widget_base_->GetScreenInfo();
+}
+
+gfx::Rect WebFrameWidgetBase::WindowRect() {
+  return widget_base_->WindowRect();
+}
+
+gfx::Rect WebFrameWidgetBase::ViewRect() {
+  return widget_base_->ViewRect();
+}
+
+void WebFrameWidgetBase::SetScreenRects(const gfx::Rect& widget_screen_rect,
+                                        const gfx::Rect& window_screen_rect) {
+  widget_base_->SetScreenRects(widget_screen_rect, window_screen_rect);
+}
+
+void WebFrameWidgetBase::SetVisibleViewportSize(
+    const gfx::Size& visible_viewport_size) {
+  widget_base_->SetVisibleViewportSize(visible_viewport_size);
+}
+
+const gfx::Size& WebFrameWidgetBase::VisibleViewportSize() {
+  return widget_base_->VisibleViewportSize();
+}
+
+void WebFrameWidgetBase::SetPendingWindowRect(
+    const gfx::Rect* window_screen_rect) {
+  widget_base_->SetPendingWindowRect(window_screen_rect);
 }
 
 void WebFrameWidgetBase::AutoscrollStart(const gfx::PointF& position) {
@@ -2021,7 +2090,7 @@ void WebFrameWidgetBase::OrientationChanged() {
   LocalRoot()->SendOrientationChangeEvent();
 }
 
-void WebFrameWidgetBase::UpdatedSurfaceAndScreen(
+void WebFrameWidgetBase::DidUpdateSurfaceAndScreen(
     const ScreenInfo& previous_original_screen_info) {
   ScreenInfo screen_info = widget_base_->GetScreenInfo();
   if (Platform::Current()->IsUseZoomForDSFEnabled()) {
@@ -2050,8 +2119,8 @@ void WebFrameWidgetBase::UpdatedSurfaceAndScreen(
   }
 }
 
-ScreenInfo WebFrameWidgetBase::GetOriginalScreenInfo() {
-  return Client()->GetOriginalScreenInfo();
+const ScreenInfo& WebFrameWidgetBase::GetOriginalScreenInfo() {
+  return widget_base_->GetScreenInfo();
 }
 
 base::Optional<blink::mojom::ScreenOrientation>

@@ -3034,12 +3034,21 @@ TransformationMatrix WebViewImpl::GetDeviceEmulationTransform() const {
 }
 
 void WebViewImpl::EnableDeviceEmulation(const DeviceEmulationParams& params) {
+  web_widget_->EnableDeviceEmulation(params);
+}
+
+void WebViewImpl::ActivateDevToolsTransform(
+    const DeviceEmulationParams& params) {
   TransformationMatrix device_emulation_transform =
       dev_tools_emulator_->EnableDeviceEmulation(params);
   SetDeviceEmulationTransform(device_emulation_transform);
 }
 
 void WebViewImpl::DisableDeviceEmulation() {
+  web_widget_->DisableDeviceEmulation();
+}
+
+void WebViewImpl::DeactivateDevToolsTransform() {
   dev_tools_emulator_->DisableDeviceEmulation();
   SetDeviceEmulationTransform(TransformationMatrix());
 }
