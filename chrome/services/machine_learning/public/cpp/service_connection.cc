@@ -113,6 +113,8 @@ static ServiceConnection* g_fake_service_connection = nullptr;
 void ServiceConnectionImpl::OnServiceProcessLaunched(
     const content::ServiceProcessInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!info.IsService<mojom::MachineLearningService>())
+    return;
 
   last_launched_time_ = base::TimeTicks::Now();
   metrics::LogServiceLaunch();
@@ -121,6 +123,9 @@ void ServiceConnectionImpl::OnServiceProcessLaunched(
 void ServiceConnectionImpl::OnServiceProcessTerminatedNormally(
     const content::ServiceProcessInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!info.IsService<mojom::MachineLearningService>())
+    return;
+
   if (last_launched_time_) {
     metrics::LogServiceAliveDuration(base::TimeTicks::Now() -
                                      *last_launched_time_);
@@ -133,6 +138,9 @@ void ServiceConnectionImpl::OnServiceProcessTerminatedNormally(
 void ServiceConnectionImpl::OnServiceProcessCrashed(
     const content::ServiceProcessInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!info.IsService<mojom::MachineLearningService>())
+    return;
+
   if (last_launched_time_) {
     metrics::LogServiceAliveDuration(base::TimeTicks::Now() -
                                      *last_launched_time_);

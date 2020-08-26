@@ -93,8 +93,7 @@ void RetryForHistogramUntilCountReached(base::HistogramTester* histogram_tester,
 
 using MachineLearningServiceBrowserTest = InProcessBrowserTest;
 
-// The test is flaky: crbug.com/1122160
-IN_PROC_BROWSER_TEST_F(MachineLearningServiceBrowserTest, DISABLED_LaunchAndTerminate) {
+IN_PROC_BROWSER_TEST_F(MachineLearningServiceBrowserTest, LaunchAndTerminate) {
   base::HistogramTester histogram_tester;
   ServiceProcessObserver observer;
   auto* service_connection = ServiceConnection::GetInstance();
