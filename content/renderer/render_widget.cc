@@ -8,7 +8,6 @@
 #include <limits>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
@@ -27,15 +26,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
-#include "cc/input/touch_action.h"
-#include "cc/paint/paint_worklet_layer_painter.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/ukm_manager.h"
-#include "components/viz/common/display/de_jelly.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -70,11 +65,8 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/input/web_input_event_attribution.h"
-#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/web_drag_operation.h"
 #include "third_party/blink/public/common/switches.h"
-#include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_render_widget_scheduling_state.h"
@@ -86,13 +78,10 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
-#include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_page_popup.h"
 #include "third_party/blink/public/web/web_popup_menu_info.h"
-#include "third_party/blink/public/web/web_range.h"
-#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "third_party/skia/include/core/SkShader.h"
@@ -123,29 +112,14 @@
 #include "third_party/skia/include/core/SkPixelRef.h"
 #endif  // defined(OS_POSIX)
 
-using blink::DeviceEmulationParams;
 using blink::WebDragData;
 using blink::WebDragOperation;
 using blink::WebDragOperationsMask;
 using blink::WebFrameWidget;
-using blink::WebGestureEvent;
-using blink::WebInputEvent;
-using blink::WebInputEventResult;
-using blink::WebInputMethodController;
 using blink::WebLocalFrame;
-using blink::WebMouseEvent;
-using blink::WebMouseWheelEvent;
 using blink::WebNavigationPolicy;
-using blink::WebNode;
-using blink::WebPagePopup;
-using blink::WebRange;
 using blink::WebRect;
-using blink::WebSize;
 using blink::WebString;
-using blink::WebTouchEvent;
-using blink::WebTouchPoint;
-using blink::WebVector;
-using blink::WebWidget;
 
 namespace content {
 
@@ -153,8 +127,6 @@ namespace {
 
 RenderWidget::CreateRenderWidgetFunction g_create_render_widget_for_frame =
     nullptr;
-
-typedef std::map<std::string, ui::TextInputMode> TextInputModeMap;
 
 static const char* kOOPIF = "OOPIF";
 static const char* kRenderer = "Renderer";
@@ -372,7 +344,7 @@ void RenderWidget::CloseForFrame(std::unique_ptr<RenderWidget> widget) {
 }
 
 void RenderWidget::Initialize(ShowCallback show_callback,
-                              WebWidget* web_widget,
+                              blink::WebWidget* web_widget,
                               const blink::ScreenInfo& screen_info) {
   DCHECK_NE(routing_id_, MSG_ROUTING_NONE);
   DCHECK(web_widget);
@@ -516,8 +488,6 @@ void RenderWidget::UpdateVisualProperties(
       }
     }
   }
-
-  AfterUpdateVisualProperties();
 }
 
 void RenderWidget::OnWasHidden() {

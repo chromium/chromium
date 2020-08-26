@@ -70,7 +70,6 @@ class RenderWidgetFullscreenPepper : public RenderWidget,
 
   // RenderWidget API.
   void Close(std::unique_ptr<RenderWidget> widget) override;
-  void AfterUpdateVisualProperties() override;
 
  private:
   friend class PepperExternalWidgetClient;

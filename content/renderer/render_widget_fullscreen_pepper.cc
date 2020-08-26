@@ -167,6 +167,7 @@ class PepperExternalWidgetClient : public blink::WebExternalWidgetClient {
       const blink::VisualProperties& visual_properties) override {
     widget_->UpdateVisualProperties(/*emulator_enabled=*/false,
                                     visual_properties);
+    widget_->UpdateLayerBounds();
   }
 
  private:
@@ -267,10 +268,6 @@ void RenderWidgetFullscreenPepper::Close(std::unique_ptr<RenderWidget> widget) {
 
   // Call Close on the base class to destroy the WebWidget instance.
   RenderWidget::Close(std::move(widget));
-}
-
-void RenderWidgetFullscreenPepper::AfterUpdateVisualProperties() {
-  UpdateLayerBounds();
 }
 
 void RenderWidgetFullscreenPepper::UpdateLayerBounds() {

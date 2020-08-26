@@ -333,9 +333,6 @@ class CONTENT_EXPORT RenderWidget
       bool emulator_enabled,
       const blink::VisualProperties& properties) override;
 
-  // Notify subclasses that we handled OnUpdateVisualProperties.
-  virtual void AfterUpdateVisualProperties() {}
-
   // Destroy the RenderWidget. The |widget| is the owning pointer of |this|.
   virtual void Close(std::unique_ptr<RenderWidget> widget);
 
