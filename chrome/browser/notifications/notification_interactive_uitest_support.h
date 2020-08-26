@@ -15,6 +15,9 @@
 class MessageCenterChangeObserver {
  public:
   MessageCenterChangeObserver();
+  MessageCenterChangeObserver(const MessageCenterChangeObserver&) = delete;
+  MessageCenterChangeObserver& operator=(const MessageCenterChangeObserver&) =
+      delete;
   ~MessageCenterChangeObserver();
 
   bool Wait();
@@ -22,13 +25,14 @@ class MessageCenterChangeObserver {
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageCenterChangeObserver);
 };
 
 class TestMessageCenterObserver : public message_center::MessageCenterObserver {
  public:
   TestMessageCenterObserver() = default;
+  TestMessageCenterObserver(const TestMessageCenterObserver&) = delete;
+  TestMessageCenterObserver& operator=(const TestMessageCenterObserver&) =
+      delete;
 
   // MessageCenterObserver:
   void OnNotificationDisplayed(
@@ -39,8 +43,6 @@ class TestMessageCenterObserver : public message_center::MessageCenterObserver {
 
  private:
   std::string last_displayed_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMessageCenterObserver);
 };
 
 class NotificationsTest : public InProcessBrowserTest {

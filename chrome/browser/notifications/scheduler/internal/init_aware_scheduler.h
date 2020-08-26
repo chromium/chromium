@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_scheduler.h"
@@ -27,6 +26,10 @@ class InitAwareNotificationScheduler : public NotificationScheduler {
  public:
   explicit InitAwareNotificationScheduler(
       std::unique_ptr<NotificationScheduler> impl);
+  InitAwareNotificationScheduler(const InitAwareNotificationScheduler&) =
+      delete;
+  InitAwareNotificationScheduler& operator=(
+      const InitAwareNotificationScheduler&) = delete;
   ~InitAwareNotificationScheduler() override;
 
  private:
@@ -63,7 +66,6 @@ class InitAwareNotificationScheduler : public NotificationScheduler {
   std::unique_ptr<NotificationScheduler> impl_;
 
   base::WeakPtrFactory<InitAwareNotificationScheduler> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InitAwareNotificationScheduler);
 };
 
 }  // namespace notifications

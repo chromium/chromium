@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/public/client_overview.h"
 #include "chrome/browser/notifications/scheduler/public/notification_background_task_scheduler.h"
 #include "chrome/browser/notifications/scheduler/public/user_action_handler.h"
@@ -29,6 +28,8 @@ class NotificationScheduler
       std::unique_ptr<NotificationSchedulerContext> context);
 
   NotificationScheduler();
+  NotificationScheduler(const NotificationScheduler&) = delete;
+  NotificationScheduler& operator=(const NotificationScheduler&) = delete;
   ~NotificationScheduler() override;
 
   // Initializes the scheduler.
@@ -47,9 +48,6 @@ class NotificationScheduler
 
   // Deletes all notifications of a given |SchedulerClientType|.
   virtual void DeleteAllNotifications(SchedulerClientType type) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationScheduler);
 };
 
 }  // namespace notifications

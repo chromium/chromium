@@ -51,6 +51,10 @@ class NotificationPlatformBridgeWinTest : public testing::Test {
  public:
   NotificationPlatformBridgeWinTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  NotificationPlatformBridgeWinTest(const NotificationPlatformBridgeWinTest&) =
+      delete;
+  NotificationPlatformBridgeWinTest& operator=(
+      const NotificationPlatformBridgeWinTest&) = delete;
 
   ~NotificationPlatformBridgeWinTest() override = default;
 
@@ -93,9 +97,6 @@ class NotificationPlatformBridgeWinTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeWinTest);
 };
 
 TEST_F(NotificationPlatformBridgeWinTest, GroupAndTag) {

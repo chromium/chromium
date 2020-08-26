@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 
@@ -33,14 +32,16 @@ class NotificationScheduleServiceFactory : public SimpleKeyedServiceFactory {
       NotificationScheduleServiceFactory>;
 
   NotificationScheduleServiceFactory();
+  NotificationScheduleServiceFactory(
+      const NotificationScheduleServiceFactory&) = delete;
+  NotificationScheduleServiceFactory& operator=(
+      const NotificationScheduleServiceFactory&) = delete;
   ~NotificationScheduleServiceFactory() override;
 
   // SimpleKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
   SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationScheduleServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_NOTIFICATION_SCHEDULE_SERVICE_FACTORY_H_

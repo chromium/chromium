@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -43,6 +42,10 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
       ProcessNotificationOperationCallback;
 
   explicit StubNotificationDisplayService(Profile* profile);
+  StubNotificationDisplayService(const StubNotificationDisplayService&) =
+      delete;
+  StubNotificationDisplayService& operator=(
+      const StubNotificationDisplayService&) = delete;
   ~StubNotificationDisplayService() override;
 
   // Sets |closure| to be invoked when any notification has been added.
@@ -135,8 +138,6 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   Profile* profile_;
 
   ProcessNotificationOperationCallback process_notification_operation_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubNotificationDisplayService);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_STUB_NOTIFICATION_DISPLAY_SERVICE_H_

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -32,13 +31,12 @@ class DisplayAgent {
       std::unique_ptr<NotificationData> notification_data,
       std::unique_ptr<SystemData> system_data) = 0;
 
+  DisplayAgent(const DisplayAgent&) = delete;
+  DisplayAgent& operator=(const DisplayAgent&) = delete;
   virtual ~DisplayAgent() = default;
 
  protected:
   DisplayAgent() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayAgent);
 };
 
 }  // namespace notifications

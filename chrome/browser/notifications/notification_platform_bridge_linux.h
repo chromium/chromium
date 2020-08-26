@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
@@ -21,7 +20,10 @@ class Bus;
 class NotificationPlatformBridgeLinux : public NotificationPlatformBridge {
  public:
   NotificationPlatformBridgeLinux();
-
+  NotificationPlatformBridgeLinux(const NotificationPlatformBridgeLinux&) =
+      delete;
+  NotificationPlatformBridgeLinux& operator=(
+      const NotificationPlatformBridgeLinux&) = delete;
   ~NotificationPlatformBridgeLinux() override;
 
   // NotificationPlatformBridge:
@@ -44,8 +46,6 @@ class NotificationPlatformBridgeLinux : public NotificationPlatformBridge {
   void CleanUp();
 
   scoped_refptr<NotificationPlatformBridgeLinuxImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeLinux);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_LINUX_H_

@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,6 +61,9 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
       : message_center::NotificationBlocker(
             message_center::MessageCenter::Get()),
         notifications_enabled_(true) {}
+  ToggledNotificationBlocker(const ToggledNotificationBlocker&) = delete;
+  ToggledNotificationBlocker& operator=(const ToggledNotificationBlocker&) =
+      delete;
   ~ToggledNotificationBlocker() override {}
 
   void SetNotificationsEnabled(bool enabled) {
@@ -79,8 +81,6 @@ class ToggledNotificationBlocker : public message_center::NotificationBlocker {
 
  private:
   bool notifications_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ToggledNotificationBlocker);
 };
 
 }  // namespace

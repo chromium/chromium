@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/proto/client_state.pb.h"
 #include "chrome/browser/notifications/scheduler/internal/collection_store.h"
@@ -34,6 +33,8 @@ class ImpressionStore : public CollectionStore<ClientState> {
   ImpressionStore(
       std::unique_ptr<
           leveldb_proto::ProtoDatabase<proto::ClientState, ClientState>> db);
+  ImpressionStore(const ImpressionStore&) = delete;
+  ImpressionStore& operator=(const ImpressionStore&) = delete;
   ~ImpressionStore() override;
 
  private:
@@ -64,8 +65,6 @@ class ImpressionStore : public CollectionStore<ClientState> {
   std::unique_ptr<leveldb_proto::ProtoDatabase<proto::ClientState, ClientState>>
       db_;
   base::WeakPtrFactory<ImpressionStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImpressionStore);
 };
 
 }  // namespace notifications

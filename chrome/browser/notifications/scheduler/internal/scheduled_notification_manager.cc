@@ -60,6 +60,10 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
         icon_store_(std::move(icon_store)),
         clients_(clients.begin(), clients.end()),
         config_(config) {}
+  ScheduledNotificationManagerImpl(const ScheduledNotificationManagerImpl&) =
+      delete;
+  ScheduledNotificationManagerImpl& operator=(
+      const ScheduledNotificationManagerImpl&) = delete;
 
  private:
   // NotificationManager implementation.
@@ -443,7 +447,6 @@ class ScheduledNotificationManagerImpl : public ScheduledNotificationManager {
   const SchedulerConfig& config_;
   base::WeakPtrFactory<ScheduledNotificationManagerImpl> weak_ptr_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(ScheduledNotificationManagerImpl);
 };
 
 }  // namespace

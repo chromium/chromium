@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
@@ -36,6 +35,10 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   // SystemNotificationHelper, and is only expected to handle TRANSIENT
   // notifications.
   explicit NotificationDisplayServiceImpl(Profile* profile);
+  NotificationDisplayServiceImpl(const NotificationDisplayServiceImpl&) =
+      delete;
+  NotificationDisplayServiceImpl& operator=(
+      const NotificationDisplayServiceImpl&) = delete;
   ~NotificationDisplayServiceImpl() override;
 
   // Returns an instance of the display service implementation for the given
@@ -113,8 +116,6 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<NotificationDisplayServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationDisplayServiceImpl);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_IMPL_H_

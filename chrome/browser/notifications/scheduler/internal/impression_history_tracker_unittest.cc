@@ -83,6 +83,8 @@ TestCase CreateDefaultTestCase() {
 class MockImpressionStore : public CollectionStore<ClientState> {
  public:
   MockImpressionStore() {}
+  MockImpressionStore(const MockImpressionStore&) = delete;
+  MockImpressionStore& operator=(const MockImpressionStore&) = delete;
 
   MOCK_METHOD1(InitAndLoad, void(CollectionStore<ClientState>::LoadCallback));
   MOCK_METHOD3(Add,
@@ -95,27 +97,26 @@ class MockImpressionStore : public CollectionStore<ClientState> {
                     base::OnceCallback<void(bool)>));
   MOCK_METHOD2(Delete,
                void(const std::string&, base::OnceCallback<void(bool)>));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockImpressionStore);
 };
 
 class MockDelegate : public ImpressionHistoryTracker::Delegate {
  public:
   MockDelegate() = default;
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
   ~MockDelegate() final = default;
   MOCK_METHOD2(GetThrottleConfig,
                void(SchedulerClientType,
                     base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)>));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 // TODO(xingliu): Add more test cases following the test doc.
 class ImpressionHistoryTrackerTest : public ::testing::Test {
  public:
   ImpressionHistoryTrackerTest() : store_(nullptr), delegate_(nullptr) {}
+  ImpressionHistoryTrackerTest(const ImpressionHistoryTrackerTest&) = delete;
+  ImpressionHistoryTrackerTest& operator=(const ImpressionHistoryTrackerTest&) =
+      delete;
   ~ImpressionHistoryTrackerTest() override = default;
 
   void SetUp() override {
@@ -190,8 +191,6 @@ class ImpressionHistoryTrackerTest : public ::testing::Test {
   std::unique_ptr<ImpressionHistoryTracker> impression_trakcer_;
   MockImpressionStore* store_;
   std::unique_ptr<MockDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImpressionHistoryTrackerTest);
 };
 
 // New client data should be added to impression tracker.
@@ -399,10 +398,11 @@ class ImpressionHistoryTrackerUserActionTest
       public ::testing::WithParamInterface<UserActionTestParam> {
  public:
   ImpressionHistoryTrackerUserActionTest() = default;
+  ImpressionHistoryTrackerUserActionTest(
+      const ImpressionHistoryTrackerUserActionTest&) = delete;
+  ImpressionHistoryTrackerUserActionTest& operator=(
+      const ImpressionHistoryTrackerUserActionTest&) = delete;
   ~ImpressionHistoryTrackerUserActionTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImpressionHistoryTrackerUserActionTest);
 };
 
 const UserActionTestParam kUserActionTestParams[] = {

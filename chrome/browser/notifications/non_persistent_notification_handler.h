@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NON_PERSISTENT_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NON_PERSISTENT_NOTIFICATION_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 
@@ -13,6 +12,10 @@
 class NonPersistentNotificationHandler : public NotificationHandler {
  public:
   NonPersistentNotificationHandler();
+  NonPersistentNotificationHandler(const NonPersistentNotificationHandler&) =
+      delete;
+  NonPersistentNotificationHandler& operator=(
+      const NonPersistentNotificationHandler&) = delete;
   ~NonPersistentNotificationHandler() override;
 
   // NotificationHandler implementation
@@ -43,8 +46,6 @@ class NonPersistentNotificationHandler : public NotificationHandler {
 
   base::WeakPtrFactory<NonPersistentNotificationHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(NonPersistentNotificationHandler);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NON_PERSISTENT_NOTIFICATION_HANDLER_H_

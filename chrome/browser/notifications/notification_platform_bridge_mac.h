@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/alert_dispatcher_mac.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -31,6 +30,9 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   NotificationPlatformBridgeMac(NSUserNotificationCenter* notification_center,
                                 id<AlertDispatcher> alert_dispatcher);
 
+  NotificationPlatformBridgeMac(const NotificationPlatformBridgeMac&) = delete;
+  NotificationPlatformBridgeMac& operator=(
+      const NotificationPlatformBridgeMac&) = delete;
   ~NotificationPlatformBridgeMac() override;
 
   // NotificationPlatformBridge implementation.
@@ -66,8 +68,6 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
 
   // The object in charge of dispatching remote notifications.
   base::scoped_nsprotocol<id<AlertDispatcher>> alert_dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeMac);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_

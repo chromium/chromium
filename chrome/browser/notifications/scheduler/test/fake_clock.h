@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_TEST_FAKE_CLOCK_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_TEST_FAKE_CLOCK_H_
 
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 
@@ -19,6 +18,8 @@ class FakeClock : public base::Clock {
   static base::Time GetTime(const char* time_str);
 
   FakeClock();
+  FakeClock(const FakeClock&) = delete;
+  FakeClock& operator=(const FakeClock&) = delete;
   ~FakeClock() override;
 
   // Helper functions to set the current timestamp.
@@ -37,8 +38,6 @@ class FakeClock : public base::Clock {
 
   // Whether Now() should return mocked time.
   bool time_mocked_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClock);
 };
 
 }  // namespace test

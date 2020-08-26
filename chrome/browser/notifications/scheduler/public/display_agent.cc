@@ -12,6 +12,8 @@ namespace notifications {
 class DisplayAgentDefault : public DisplayAgent {
  public:
   DisplayAgentDefault() = default;
+  DisplayAgentDefault(const DisplayAgentDefault&) = delete;
+  DisplayAgentDefault& operator=(const DisplayAgentDefault&) = delete;
   ~DisplayAgentDefault() override = default;
 
  private:
@@ -19,8 +21,6 @@ class DisplayAgentDefault : public DisplayAgent {
                         std::unique_ptr<SystemData> system_data) override {
     NOTIMPLEMENTED();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayAgentDefault);
 };
 
 // static

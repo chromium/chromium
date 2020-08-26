@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -52,6 +51,8 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
   class TestDelegate : public message_center::NotificationDelegate {
    public:
     TestDelegate() = default;
+    TestDelegate(const TestDelegate&) = delete;
+    TestDelegate& operator=(const TestDelegate&) = delete;
     void Close(bool by_user) override {
       log_ += "Close_";
       log_ += (by_user ? "by_user_" : "programmatically_");
@@ -70,8 +71,6 @@ class NotificationUIManagerBrowserTest : public InProcessBrowserTest {
    private:
     ~TestDelegate() override {}
     std::string log_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestDelegate);
   };
 
   Notification CreateTestNotification(const std::string& id,

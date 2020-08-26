@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +14,10 @@ class Profile;
 class NotificationDisplayServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  NotificationDisplayServiceFactory(const NotificationDisplayServiceFactory&) =
+      delete;
+  NotificationDisplayServiceFactory& operator=(
+      const NotificationDisplayServiceFactory&) = delete;
   static NotificationDisplayService* GetForProfile(Profile* profile);
   static NotificationDisplayServiceFactory* GetInstance();
 
@@ -28,7 +31,6 @@ class NotificationDisplayServiceFactory
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  DISALLOW_COPY_AND_ASSIGN(NotificationDisplayServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_FACTORY_H_

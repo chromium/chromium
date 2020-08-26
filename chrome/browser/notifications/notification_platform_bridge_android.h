@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -36,6 +35,10 @@ class PrefRegistrySyncable;
 class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
  public:
   NotificationPlatformBridgeAndroid();
+  NotificationPlatformBridgeAndroid(const NotificationPlatformBridgeAndroid&) =
+      delete;
+  NotificationPlatformBridgeAndroid& operator=(
+      const NotificationPlatformBridgeAndroid&) = delete;
   ~NotificationPlatformBridgeAndroid() override;
 
   // Called by the Java implementation when the notification has been clicked.
@@ -116,8 +119,6 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
       regenerated_notification_infos_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeAndroid);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_ANDROID_H_

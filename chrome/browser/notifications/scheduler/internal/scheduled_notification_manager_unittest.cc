@@ -79,6 +79,8 @@ IconStore::IconTypeBundleMap CreateIcons() {
 class MockNotificationStore : public CollectionStore<NotificationEntry> {
  public:
   MockNotificationStore() {}
+  MockNotificationStore(const MockNotificationStore&) = delete;
+  MockNotificationStore& operator=(const MockNotificationStore&) = delete;
 
   MOCK_METHOD1(InitAndLoad,
                void(CollectionStore<NotificationEntry>::LoadCallback));
@@ -92,14 +94,13 @@ class MockNotificationStore : public CollectionStore<NotificationEntry> {
                     base::OnceCallback<void(bool)>));
   MOCK_METHOD2(Delete,
                void(const std::string&, base::OnceCallback<void(bool)>));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNotificationStore);
 };
 
 class MockIconStore : public IconStore {
  public:
   MockIconStore() {}
+  MockIconStore(const MockIconStore&) = delete;
+  MockIconStore& operator=(const MockIconStore&) = delete;
 
   MOCK_METHOD1(InitAndLoadKeys, void(IconStore::InitAndLoadKeysCallback));
   MOCK_METHOD2(LoadIcons,
@@ -110,15 +111,16 @@ class MockIconStore : public IconStore {
   MOCK_METHOD2(DeleteIcons,
                void(const std::vector<std::string>&,
                     IconStore::UpdateCallback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIconStore);
 };
 
 class ScheduledNotificationManagerTest : public testing::Test {
  public:
   ScheduledNotificationManagerTest()
       : notification_store_(nullptr), icon_store_(nullptr) {}
+  ScheduledNotificationManagerTest(const ScheduledNotificationManagerTest&) =
+      delete;
+  ScheduledNotificationManagerTest& operator=(
+      const ScheduledNotificationManagerTest&) = delete;
   ~ScheduledNotificationManagerTest() override = default;
 
   void SetUp() override {
@@ -213,8 +215,6 @@ class ScheduledNotificationManagerTest : public testing::Test {
   std::vector<SchedulerClientType> clients_;
   std::unique_ptr<ScheduledNotificationManager> manager_;
   SchedulerConfig config_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScheduledNotificationManagerTest);
 };
 
 // Verify that error is received when notification database failed to

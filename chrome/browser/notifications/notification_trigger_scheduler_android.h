@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/notification_trigger_scheduler.h"
 
@@ -17,6 +16,10 @@
 class NotificationTriggerSchedulerAndroid
     : public NotificationTriggerScheduler {
  public:
+  NotificationTriggerSchedulerAndroid(
+      const NotificationTriggerSchedulerAndroid&) = delete;
+  NotificationTriggerSchedulerAndroid& operator=(
+      const NotificationTriggerSchedulerAndroid&) = delete;
   ~NotificationTriggerSchedulerAndroid() override;
 
   // NotificationTriggerScheduler
@@ -30,8 +33,6 @@ class NotificationTriggerSchedulerAndroid
 
   base::android::ScopedJavaGlobalRef<jobject>
       java_notification_trigger_scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationTriggerSchedulerAndroid);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_TRIGGER_SCHEDULER_ANDROID_H_

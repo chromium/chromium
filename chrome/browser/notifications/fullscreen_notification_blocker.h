@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_FULLSCREEN_NOTIFICATION_BLOCKER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_FULLSCREEN_NOTIFICATION_BLOCKER_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/message_center/notification_blocker.h"
 
@@ -16,6 +15,9 @@ class FullscreenNotificationBlocker
  public:
   explicit FullscreenNotificationBlocker(
       message_center::MessageCenter* message_center);
+  FullscreenNotificationBlocker(const FullscreenNotificationBlocker&) = delete;
+  FullscreenNotificationBlocker& operator=(
+      const FullscreenNotificationBlocker&) = delete;
   ~FullscreenNotificationBlocker() override;
 
   // message_center::NotificationBlocker overrides:
@@ -27,8 +29,6 @@ class FullscreenNotificationBlocker
   bool is_fullscreen_mode_;
 
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenNotificationBlocker);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_FULLSCREEN_NOTIFICATION_BLOCKER_H_

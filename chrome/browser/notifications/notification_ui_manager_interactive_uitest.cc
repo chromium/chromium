@@ -30,6 +30,10 @@ const char kTestFileName[] = "notifications/platform_notification_service.html";
 class NotificationUIManagerInteractiveUITest : public InProcessBrowserTest {
  public:
   NotificationUIManagerInteractiveUITest() = default;
+  NotificationUIManagerInteractiveUITest(
+      const NotificationUIManagerInteractiveUITest&) = delete;
+  NotificationUIManagerInteractiveUITest& operator=(
+      const NotificationUIManagerInteractiveUITest&) = delete;
   ~NotificationUIManagerInteractiveUITest() override = default;
 
   // InProcessBrowserTest overrides.
@@ -79,8 +83,6 @@ class NotificationUIManagerInteractiveUITest : public InProcessBrowserTest {
   const base::FilePath server_root_{FILE_PATH_LITERAL("chrome/test/data")};
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationUIManagerInteractiveUITest);
 };
 
 // Make sure that clicks go through on web notifications. Regression test for

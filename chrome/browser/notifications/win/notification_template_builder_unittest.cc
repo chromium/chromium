@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -53,6 +52,10 @@ base::Time FixedTime() {
 class NotificationTemplateBuilderTest : public ::testing::Test {
  public:
   NotificationTemplateBuilderTest() = default;
+  NotificationTemplateBuilderTest(const NotificationTemplateBuilderTest&) =
+      delete;
+  NotificationTemplateBuilderTest& operator=(
+      const NotificationTemplateBuilderTest&) = delete;
   ~NotificationTemplateBuilderTest() override = default;
 
   void SetUp() override { SetContextMenuLabelForTesting(kContextMenuLabel); }
@@ -88,9 +91,6 @@ class NotificationTemplateBuilderTest : public ::testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationTemplateBuilderTest);
 };
 
 TEST_F(NotificationTemplateBuilderTest, SimpleToast) {

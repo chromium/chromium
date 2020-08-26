@@ -32,6 +32,10 @@ NotificationDisplayServiceTester* g_tester = nullptr;
 class MockNotificationPlatformBridge : public NotificationPlatformBridge {
  public:
   MockNotificationPlatformBridge() = default;
+  MockNotificationPlatformBridge(const MockNotificationPlatformBridge&) =
+      delete;
+  MockNotificationPlatformBridge& operator=(
+      const MockNotificationPlatformBridge&) = delete;
   ~MockNotificationPlatformBridge() override = default;
 
   // NotificationPlatformBridge implementation:
@@ -51,9 +55,6 @@ class MockNotificationPlatformBridge : public NotificationPlatformBridge {
     std::move(callback).Run(true /* ready */);
   }
   void DisplayServiceShutDown(Profile* profile) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNotificationPlatformBridge);
 };
 
 #endif  // !BUILDFLAG(ENABLE_MESSAGE_CENTER)
@@ -61,6 +62,10 @@ class MockNotificationPlatformBridge : public NotificationPlatformBridge {
 class NotificationDisplayServiceShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  NotificationDisplayServiceShutdownNotifierFactory(
+      const NotificationDisplayServiceShutdownNotifierFactory&) = delete;
+  NotificationDisplayServiceShutdownNotifierFactory& operator=(
+      const NotificationDisplayServiceShutdownNotifierFactory&) = delete;
   static NotificationDisplayServiceShutdownNotifierFactory* GetInstance() {
     return base::Singleton<
         NotificationDisplayServiceShutdownNotifierFactory>::get();
@@ -76,8 +81,6 @@ class NotificationDisplayServiceShutdownNotifierFactory
     DependsOn(NotificationDisplayServiceFactory::GetInstance());
   }
   ~NotificationDisplayServiceShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationDisplayServiceShutdownNotifierFactory);
 };
 
 }  // namespace

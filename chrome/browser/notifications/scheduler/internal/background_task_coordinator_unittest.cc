@@ -76,6 +76,9 @@ struct TestData {
 class BackgroundTaskCoordinatorTest : public testing::Test {
  public:
   BackgroundTaskCoordinatorTest() = default;
+  BackgroundTaskCoordinatorTest(const BackgroundTaskCoordinatorTest&) = delete;
+  BackgroundTaskCoordinatorTest& operator=(
+      const BackgroundTaskCoordinatorTest&) = delete;
   ~BackgroundTaskCoordinatorTest() override = default;
 
  protected:
@@ -138,8 +141,6 @@ class BackgroundTaskCoordinatorTest : public testing::Test {
   test::MockNotificationBackgroundTaskScheduler* background_task_;
   TestData test_data_;
   std::map<SchedulerClientType, std::unique_ptr<ClientState>> client_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskCoordinatorTest);
 };
 
 // No notification persisted, then no background task needs to be scheduled.

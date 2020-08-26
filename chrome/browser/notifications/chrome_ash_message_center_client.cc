@@ -63,6 +63,10 @@ class ForwardingNotificationDelegate
   ForwardingNotificationDelegate(const std::string& notification_id,
                                  NotificationPlatformBridgeDelegate* delegate)
       : notification_id_(notification_id), delegate_(delegate) {}
+  ForwardingNotificationDelegate(const ForwardingNotificationDelegate&) =
+      delete;
+  ForwardingNotificationDelegate& operator=(
+      const ForwardingNotificationDelegate&) = delete;
 
   // message_center::NotificationDelegate:
   void Close(bool by_user) override {
@@ -94,8 +98,6 @@ class ForwardingNotificationDelegate
   const std::string notification_id_;
 
   NotificationPlatformBridgeDelegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForwardingNotificationDelegate);
 };
 
 }  // namespace

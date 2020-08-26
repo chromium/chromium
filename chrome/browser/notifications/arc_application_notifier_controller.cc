@@ -25,6 +25,10 @@ constexpr int kArcAppIconSizeInDp = 48;
 class ArcAppNotifierShutdownNotifierFactory
     : public BrowserContextKeyedServiceShutdownNotifierFactory {
  public:
+  ArcAppNotifierShutdownNotifierFactory(
+      const ArcAppNotifierShutdownNotifierFactory&) = delete;
+  ArcAppNotifierShutdownNotifierFactory& operator=(
+      const ArcAppNotifierShutdownNotifierFactory&) = delete;
   static ArcAppNotifierShutdownNotifierFactory* GetInstance() {
     return base::Singleton<ArcAppNotifierShutdownNotifierFactory>::get();
   }
@@ -39,8 +43,6 @@ class ArcAppNotifierShutdownNotifierFactory
   }
 
   ~ArcAppNotifierShutdownNotifierFactory() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppNotifierShutdownNotifierFactory);
 };
 
 }  // namespace

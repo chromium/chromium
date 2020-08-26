@@ -47,6 +47,10 @@ class FakeNotificationChannelsBridge
     should_use_channels_ = should_use_channels;
   }
 
+  FakeNotificationChannelsBridge(const FakeNotificationChannelsBridge&) =
+      delete;
+  FakeNotificationChannelsBridge& operator=(
+      const FakeNotificationChannelsBridge&) = delete;
   ~FakeNotificationChannelsBridge() override = default;
 
   void SetChannelStatus(const std::string& origin,
@@ -105,8 +109,6 @@ class FakeNotificationChannelsBridge
 
   // Map from channel_id - channel.
   std::map<std::string, NotificationChannel> channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNotificationChannelsBridge);
 };
 
 class NotificationChannelsProviderAndroidTest : public testing::Test {

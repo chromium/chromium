@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/notification_platform_bridge_delegate.h"
 #include "chrome/browser/notifications/profile_notification.h"
@@ -22,6 +21,10 @@ class NotificationPlatformBridgeChromeOs
       public NotificationPlatformBridgeDelegate {
  public:
   NotificationPlatformBridgeChromeOs();
+  NotificationPlatformBridgeChromeOs(
+      const NotificationPlatformBridgeChromeOs&) = delete;
+  NotificationPlatformBridgeChromeOs& operator=(
+      const NotificationPlatformBridgeChromeOs&) = delete;
   ~NotificationPlatformBridgeChromeOs() override;
 
   // NotificationPlatformBridge:
@@ -62,8 +65,6 @@ class NotificationPlatformBridgeChromeOs
   // the permuted ID.
   std::map<std::string, std::unique_ptr<ProfileNotification>>
       active_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeChromeOs);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_CHROMEOS_H_

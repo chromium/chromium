@@ -11,7 +11,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -68,6 +67,10 @@ class NotificationChannelsProviderAndroid
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   NotificationChannelsProviderAndroid();
+  NotificationChannelsProviderAndroid(
+      const NotificationChannelsProviderAndroid&) = delete;
+  NotificationChannelsProviderAndroid& operator=(
+      const NotificationChannelsProviderAndroid&) = delete;
   ~NotificationChannelsProviderAndroid() override;
 
   // Migrates any notification settings from the passed-in provider to
@@ -143,8 +146,6 @@ class NotificationChannelsProviderAndroid
   std::map<std::string, NotificationChannel> cached_channels_;
 
   base::WeakPtrFactory<NotificationChannelsProviderAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationChannelsProviderAndroid);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_CHANNELS_PROVIDER_ANDROID_H_

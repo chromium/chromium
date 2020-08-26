@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_converter_result.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -25,6 +24,9 @@ class IconConverter {
   using DecodeCallback =
       base::OnceCallback<void(std::unique_ptr<DecodeResult>)>;
 
+  IconConverter(const IconConverter&) = delete;
+  IconConverter& operator=(const IconConverter&) = delete;
+
   // Converts SkBitmap icons to strings.
   virtual void ConvertIconToString(std::vector<SkBitmap> images,
                                    EncodeCallback callback) = 0;
@@ -37,9 +39,6 @@ class IconConverter {
 
  protected:
   IconConverter() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IconConverter);
 };
 
 }  // namespace notifications

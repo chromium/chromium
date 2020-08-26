@@ -14,6 +14,8 @@ namespace {
 class IconConverterTest : public testing::Test {
  public:
   IconConverterTest() : encoded_result_(), decoded_result_() {}
+  IconConverterTest(const IconConverterTest&) = delete;
+  IconConverterTest& operator=(const IconConverterTest&) = delete;
   ~IconConverterTest() override = default;
 
   void SetUp() override {
@@ -55,8 +57,6 @@ class IconConverterTest : public testing::Test {
   std::unique_ptr<IconConverter> icon_converter_;
   std::unique_ptr<EncodeResult> encoded_result_;
   std::unique_ptr<DecodeResult> decoded_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconConverterTest);
 };
 
 TEST_F(IconConverterTest, EncodeRoundTrip) {

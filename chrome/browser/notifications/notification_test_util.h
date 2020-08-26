@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -22,6 +21,9 @@ class Profile;
 class StubNotificationUIManager : public NotificationUIManager {
  public:
   StubNotificationUIManager();
+  StubNotificationUIManager(const StubNotificationUIManager&) = delete;
+  StubNotificationUIManager& operator=(const StubNotificationUIManager&) =
+      delete;
   ~StubNotificationUIManager() override;
 
   // Returns the number of currently active notifications.
@@ -60,8 +62,6 @@ class StubNotificationUIManager : public NotificationUIManager {
 
   bool is_shutdown_started_ = false;
   GURL last_canceled_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(StubNotificationUIManager);
 };
 
 #if !defined(OS_ANDROID)
@@ -70,14 +70,14 @@ class StubNotificationUIManager : public NotificationUIManager {
 class FullscreenStateWaiter {
  public:
   FullscreenStateWaiter(Browser* browser, bool desired_state);
+  FullscreenStateWaiter(const FullscreenStateWaiter&) = delete;
+  FullscreenStateWaiter& operator=(const FullscreenStateWaiter&) = delete;
 
   void Wait();
 
  private:
   Browser* const browser_;
   bool desired_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenStateWaiter);
 };
 #endif
 

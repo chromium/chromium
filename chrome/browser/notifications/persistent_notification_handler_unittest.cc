@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
@@ -40,6 +39,10 @@ class TestingProfileWithPermissionManager : public TestingProfile {
       : permission_manager_(
             std::make_unique<
                 testing::NiceMock<content::MockPermissionManager>>()) {}
+  TestingProfileWithPermissionManager(
+      const TestingProfileWithPermissionManager&) = delete;
+  TestingProfileWithPermissionManager& operator=(
+      const TestingProfileWithPermissionManager&) = delete;
 
   ~TestingProfileWithPermissionManager() override = default;
 
@@ -59,8 +62,6 @@ class TestingProfileWithPermissionManager : public TestingProfile {
 
  private:
   std::unique_ptr<content::MockPermissionManager> permission_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingProfileWithPermissionManager);
 };
 
 }  // namespace
@@ -69,6 +70,10 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
  public:
   PersistentNotificationHandlerTest()
       : display_service_tester_(&profile_), origin_(kExampleOrigin) {}
+  PersistentNotificationHandlerTest(const PersistentNotificationHandlerTest&) =
+      delete;
+  PersistentNotificationHandlerTest& operator=(
+      const PersistentNotificationHandlerTest&) = delete;
 
   ~PersistentNotificationHandlerTest() override = default;
 
@@ -95,9 +100,6 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
 
   // Owned by the |profile_| as a keyed service.
   MockNotificationMetricsLogger* mock_logger_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PersistentNotificationHandlerTest);
 };
 
 TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {

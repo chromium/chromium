@@ -313,6 +313,10 @@ MATCHER_P(Calls, member, "") {
 class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
  public:
   NotificationPlatformBridgeLinuxTest() = default;
+  NotificationPlatformBridgeLinuxTest(
+      const NotificationPlatformBridgeLinuxTest&) = delete;
+  NotificationPlatformBridgeLinuxTest& operator=(
+      const NotificationPlatformBridgeLinuxTest&) = delete;
   ~NotificationPlatformBridgeLinuxTest() override = default;
 
   void SetUp() override {
@@ -443,8 +447,6 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     writer.AppendString(action);
     std::move(action_invoked_callback_).Run(&signal);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeLinuxTest);
 };
 
 TEST_F(NotificationPlatformBridgeLinuxTest, SetUpAndTearDown) {

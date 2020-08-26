@@ -47,6 +47,8 @@ class VisibilityTimerTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<VisibilityTimerTabHelper> {
  public:
+  VisibilityTimerTabHelper(const VisibilityTimerTabHelper&) = delete;
+  VisibilityTimerTabHelper& operator=(const VisibilityTimerTabHelper&) = delete;
   ~VisibilityTimerTabHelper() override {}
 
   // Runs |task| after the WebContents has been visible for a consecutive
@@ -92,8 +94,6 @@ class VisibilityTimerTabHelper
   base::circular_deque<Task> task_queue_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(VisibilityTimerTabHelper);
 };
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VisibilityTimerTabHelper)

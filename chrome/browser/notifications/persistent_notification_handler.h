@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/common/buildflags.h"
@@ -23,6 +22,9 @@ enum class PersistentNotificationStatus;
 class PersistentNotificationHandler : public NotificationHandler {
  public:
   PersistentNotificationHandler();
+  PersistentNotificationHandler(const PersistentNotificationHandler&) = delete;
+  PersistentNotificationHandler& operator=(
+      const PersistentNotificationHandler&) = delete;
   ~PersistentNotificationHandler() override;
 
   // NotificationHandler implementation.
@@ -60,8 +62,6 @@ class PersistentNotificationHandler : public NotificationHandler {
 #endif
 
   base::WeakPtrFactory<PersistentNotificationHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentNotificationHandler);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_PERSISTENT_NOTIFICATION_HANDLER_H_

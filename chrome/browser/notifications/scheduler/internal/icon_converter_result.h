@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -18,26 +17,24 @@ namespace notifications {
 struct EncodeResult {
   EncodeResult(bool success, std::vector<std::string> data);
   bool operator==(const EncodeResult& other) const;
+  EncodeResult(const EncodeResult&) = delete;
+  EncodeResult& operator=(const EncodeResult&) = delete;
   ~EncodeResult();
 
   bool success;
   std::vector<std::string> encoded_data;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EncodeResult);
 };
 
 // Result from IconConverter's decoding process.
 struct DecodeResult {
   DecodeResult(bool success, std::vector<SkBitmap> icons);
   bool operator==(const DecodeResult& other) const;
+  DecodeResult(const DecodeResult&) = delete;
+  DecodeResult& operator=(const DecodeResult&) = delete;
   ~DecodeResult();
 
   bool success;
   std::vector<SkBitmap> decoded_icons;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DecodeResult);
 };
 
 }  // namespace notifications

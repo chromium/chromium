@@ -17,6 +17,8 @@ namespace notifications {
 class WebUIClient : public NotificationSchedulerClient {
  public:
   WebUIClient();
+  WebUIClient(const WebUIClient&) = delete;
+  WebUIClient& operator=(const WebUIClient&) = delete;
   ~WebUIClient() override;
 
  private:
@@ -28,8 +30,6 @@ class WebUIClient : public NotificationSchedulerClient {
                               std::set<std::string> guids) override;
   void OnUserAction(const UserActionData& action_data) override;
   void GetThrottleConfig(ThrottleConfigCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIClient);
 };
 
 }  // namespace notifications

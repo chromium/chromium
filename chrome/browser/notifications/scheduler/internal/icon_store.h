@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/proto/icon.pb.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_converter.h"
@@ -62,10 +61,9 @@ class IconStore {
                            UpdateCallback callback) = 0;
 
   IconStore() = default;
+  IconStore(const IconStore&) = delete;
+  IconStore& operator=(const IconStore&) = delete;
   virtual ~IconStore() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IconStore);
 };
 
 // IconStore implementation backed by a proto database.
@@ -74,6 +72,8 @@ class IconProtoDbStore : public IconStore {
   explicit IconProtoDbStore(
       std::unique_ptr<leveldb_proto::ProtoDatabase<proto::Icon, IconEntry>> db,
       std::unique_ptr<IconConverter> icon_converter);
+  IconProtoDbStore(const IconProtoDbStore&) = delete;
+  IconProtoDbStore& operator=(const IconProtoDbStore&) = delete;
   ~IconProtoDbStore() override;
 
  private:
@@ -118,8 +118,6 @@ class IconProtoDbStore : public IconStore {
   std::unique_ptr<IconConverter> icon_converter_;
 
   base::WeakPtrFactory<IconProtoDbStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconProtoDbStore);
 };
 
 }  // namespace notifications

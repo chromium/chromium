@@ -39,6 +39,9 @@ class NotificationImageRetainer {
       scoped_refptr<base::SequencedTaskRunner> deletion_task_runner,
       const base::TickClock* tick_clock);
 
+  NotificationImageRetainer(const NotificationImageRetainer&) = delete;
+  NotificationImageRetainer& operator=(const NotificationImageRetainer&) =
+      delete;
   NotificationImageRetainer();
   virtual ~NotificationImageRetainer();
 
@@ -90,8 +93,6 @@ class NotificationImageRetainer {
 
   // For callbacks may run after destruction.
   base::WeakPtrFactory<NotificationImageRetainer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationImageRetainer);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_WIN_NOTIFICATION_IMAGE_RETAINER_H_

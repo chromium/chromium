@@ -106,6 +106,9 @@ class RevokeDeleteCountRecorder
     : public base::RefCounted<RevokeDeleteCountRecorder> {
  public:
   RevokeDeleteCountRecorder() : total_deleted_count_(0) {}
+  RevokeDeleteCountRecorder(const RevokeDeleteCountRecorder&) = delete;
+  RevokeDeleteCountRecorder& operator=(const RevokeDeleteCountRecorder&) =
+      delete;
 
   void OnDeleted(bool success, size_t deleted_count) {
     total_deleted_count_ += deleted_count;
@@ -120,8 +123,6 @@ class RevokeDeleteCountRecorder
   }
 
   size_t total_deleted_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(RevokeDeleteCountRecorder);
 };
 
 }  // namespace

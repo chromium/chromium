@@ -19,6 +19,10 @@ class NoopNotificationScheduleService
       public UserActionHandler {
  public:
   NoopNotificationScheduleService();
+  NoopNotificationScheduleService(const NoopNotificationScheduleService&) =
+      delete;
+  NoopNotificationScheduleService& operator=(
+      const NoopNotificationScheduleService&) = delete;
   ~NoopNotificationScheduleService() override;
 
  private:
@@ -39,8 +43,6 @@ class NoopNotificationScheduleService
 
   // UserActionHandler implementation.
   void OnUserAction(const UserActionData& action_data) override;
-
-  DISALLOW_COPY_AND_ASSIGN(NoopNotificationScheduleService);
 };
 
 }  // namespace notifications

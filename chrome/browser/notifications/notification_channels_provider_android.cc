@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -123,6 +122,8 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
   explicit ChannelsRuleIterator(std::vector<NotificationChannel> channels)
       : channels_(std::move(channels)), index_(0) {}
 
+  ChannelsRuleIterator(const ChannelsRuleIterator&) = delete;
+  ChannelsRuleIterator& operator=(const ChannelsRuleIterator&) = delete;
   ~ChannelsRuleIterator() override = default;
 
   bool HasNext() const override { return index_ < channels_.size(); }
@@ -143,7 +144,6 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
  private:
   std::vector<NotificationChannel> channels_;
   size_t index_;
-  DISALLOW_COPY_AND_ASSIGN(ChannelsRuleIterator);
 };
 
 // This copies the logic of

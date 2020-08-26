@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_WIN_FAKE_NOTIFICATION_IMAGE_RETAINER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_WIN_FAKE_NOTIFICATION_IMAGE_RETAINER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/win/notification_image_retainer.h"
 
 namespace gfx {
@@ -17,6 +16,9 @@ class Image;
 class FakeNotificationImageRetainer : public NotificationImageRetainer {
  public:
   FakeNotificationImageRetainer() : NotificationImageRetainer() {}
+  FakeNotificationImageRetainer(const FakeNotificationImageRetainer&) = delete;
+  FakeNotificationImageRetainer& operator=(
+      const FakeNotificationImageRetainer&) = delete;
   ~FakeNotificationImageRetainer() override = default;
 
   // NotificationImageRetainer implementation:
@@ -25,8 +27,6 @@ class FakeNotificationImageRetainer : public NotificationImageRetainer {
 
  private:
   int counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNotificationImageRetainer);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_WIN_FAKE_NOTIFICATION_IMAGE_RETAINER_H_

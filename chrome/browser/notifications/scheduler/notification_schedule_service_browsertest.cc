@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +38,8 @@ const base::FilePath::CharType kTestDir[] =
 class TestClient : public NotificationSchedulerClient {
  public:
   TestClient() {}
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
   ~TestClient() override = default;
 
   const std::vector<NotificationData>& shown_notification_data() const {
@@ -68,13 +69,14 @@ class TestClient : public NotificationSchedulerClient {
 
   // Any NotificationData received before showing the notification.
   std::vector<NotificationData> shown_notification_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 class TestBackgroundTaskScheduler : public NotificationBackgroundTaskScheduler {
  public:
   TestBackgroundTaskScheduler() = default;
+  TestBackgroundTaskScheduler(const TestBackgroundTaskScheduler&) = delete;
+  TestBackgroundTaskScheduler& operator=(const TestBackgroundTaskScheduler&) =
+      delete;
   ~TestBackgroundTaskScheduler() override = default;
 
   // Waits until a background task has been updated.
@@ -111,8 +113,6 @@ class TestBackgroundTaskScheduler : public NotificationBackgroundTaskScheduler {
 
   // Delegates to a mock to setup call expectations.
   test::MockNotificationBackgroundTaskScheduler mock_background_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBackgroundTaskScheduler);
 };
 
 // Browser test for notification scheduling system. Uses real database
@@ -123,6 +123,10 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kNotificationScheduleService}, {});
   }
+  NotificationScheduleServiceTest(const NotificationScheduleServiceTest&) =
+      delete;
+  NotificationScheduleServiceTest& operator=(
+      const NotificationScheduleServiceTest&) = delete;
 
   ~NotificationScheduleServiceTest() override {}
 
@@ -208,8 +212,6 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   std::unique_ptr<KeyedService> service_;
   TestBackgroundTaskScheduler* task_scheduler_;
   std::map<SchedulerClientType, TestClient*> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationScheduleServiceTest);
 };
 
 // Test to schedule a notification.

@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -51,6 +50,9 @@ class NotificationDisplayService : public KeyedService {
     ~Observer() override;
   };
 
+  NotificationDisplayService(const NotificationDisplayService&) = delete;
+  NotificationDisplayService& operator=(const NotificationDisplayService&) =
+      delete;
   ~NotificationDisplayService() override;
 
   // Callback to be used with the GetDisplayed() method. Includes the set of
@@ -88,9 +90,6 @@ class NotificationDisplayService : public KeyedService {
 
  protected:
   NotificationDisplayService() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationDisplayService);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_H_

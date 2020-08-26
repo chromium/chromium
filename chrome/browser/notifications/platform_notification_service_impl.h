@@ -12,7 +12,6 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -40,6 +39,10 @@ class PlatformNotificationServiceImpl
       public KeyedService {
  public:
   explicit PlatformNotificationServiceImpl(Profile* profile);
+  PlatformNotificationServiceImpl(const PlatformNotificationServiceImpl&) =
+      delete;
+  PlatformNotificationServiceImpl& operator=(
+      const PlatformNotificationServiceImpl&) = delete;
   ~PlatformNotificationServiceImpl() override;
 
   // Register profile-specific prefs.
@@ -131,8 +134,6 @@ class PlatformNotificationServiceImpl
 
   // Testing-only closure to observe when a UKM event has been recorded.
   base::OnceClosure ukm_recorded_closure_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformNotificationServiceImpl);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_

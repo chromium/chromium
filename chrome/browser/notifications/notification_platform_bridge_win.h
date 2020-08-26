@@ -10,7 +10,6 @@
 #include <windows.ui.notifications.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
@@ -29,6 +28,9 @@ class NotificationTemplateBuilder;
 class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
  public:
   NotificationPlatformBridgeWin();
+  NotificationPlatformBridgeWin(const NotificationPlatformBridgeWin&) = delete;
+  NotificationPlatformBridgeWin& operator=(
+      const NotificationPlatformBridgeWin&) = delete;
   ~NotificationPlatformBridgeWin() override;
 
   // NotificationPlatformBridge implementation.
@@ -116,8 +118,6 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   scoped_refptr<NotificationPlatformBridgeWinImpl> impl_;
 
   scoped_refptr<base::SequencedTaskRunner> notification_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeWin);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_WIN_H_

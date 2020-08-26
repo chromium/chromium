@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "extensions/buildflags/buildflags.h"
@@ -41,6 +40,8 @@ class NotifierStateTracker : public KeyedService
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* prefs);
 
   explicit NotifierStateTracker(Profile* profile);
+  NotifierStateTracker(const NotifierStateTracker&) = delete;
+  NotifierStateTracker& operator=(const NotifierStateTracker&) = delete;
   ~NotifierStateTracker() override;
 
   // Returns whether the notifier with |notifier_id| may send notifications.
@@ -83,8 +84,6 @@ class NotifierStateTracker : public KeyedService
                  extensions::ExtensionRegistryObserver>
       extension_registry_observer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(NotifierStateTracker);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFIER_STATE_TRACKER_H_

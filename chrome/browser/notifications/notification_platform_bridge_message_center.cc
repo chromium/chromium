@@ -31,6 +31,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
         notification_type_(notification_type) {
     DCHECK_NE(notification_type, NotificationHandler::Type::TRANSIENT);
   }
+  PassThroughDelegate(const PassThroughDelegate&) = delete;
+  PassThroughDelegate& operator=(const PassThroughDelegate&) = delete;
 
   void SettingsClick() override {
     NotificationDisplayServiceImpl::GetForProfile(profile_)
@@ -74,8 +76,6 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
   Profile* profile_;
   message_center::Notification notification_;
   NotificationHandler::Type notification_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PassThroughDelegate);
 };
 
 }  // namespace

@@ -28,6 +28,10 @@ class BackgroundTaskCoordinatorHelper {
       const SchedulerConfig* config,
       base::Clock* clock)
       : background_task_(background_task), config_(config), clock_(clock) {}
+  BackgroundTaskCoordinatorHelper(const BackgroundTaskCoordinatorHelper&) =
+      delete;
+  BackgroundTaskCoordinatorHelper& operator=(
+      const BackgroundTaskCoordinatorHelper&) = delete;
   ~BackgroundTaskCoordinatorHelper() = default;
 
   void ScheduleBackgroundTask(
@@ -168,8 +172,6 @@ class BackgroundTaskCoordinatorHelper {
   const SchedulerConfig* config_;
   base::Clock* clock_;
   base::Optional<base::Time> background_task_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskCoordinatorHelper);
 };
 
 }  // namespace
@@ -184,6 +186,9 @@ class BackgroundTaskCoordinatorImpl : public BackgroundTaskCoordinator {
         config_(config),
         clock_(clock) {}
 
+  BackgroundTaskCoordinatorImpl(const BackgroundTaskCoordinatorImpl&) = delete;
+  BackgroundTaskCoordinatorImpl& operator=(
+      const BackgroundTaskCoordinatorImpl&) = delete;
   ~BackgroundTaskCoordinatorImpl() override = default;
 
  private:
@@ -204,8 +209,6 @@ class BackgroundTaskCoordinatorImpl : public BackgroundTaskCoordinator {
 
   // Clock to query the current timestamp.
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskCoordinatorImpl);
 };
 
 // static

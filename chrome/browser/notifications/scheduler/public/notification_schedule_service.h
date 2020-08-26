@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/public/client_overview.h"
 #include "chrome/browser/notifications/scheduler/public/impression_detail.h"
 #include "chrome/browser/notifications/scheduler/public/notification_background_task_scheduler.h"
@@ -44,13 +43,13 @@ class NotificationScheduleService : public KeyedService {
   // Returns the user action handler to process notification events.
   virtual UserActionHandler* GetUserActionHandler() = 0;
 
+  NotificationScheduleService(const NotificationScheduleService&) = delete;
+  NotificationScheduleService& operator=(const NotificationScheduleService&) =
+      delete;
   ~NotificationScheduleService() override = default;
 
  protected:
   NotificationScheduleService() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationScheduleService);
 };
 
 }  // namespace notifications

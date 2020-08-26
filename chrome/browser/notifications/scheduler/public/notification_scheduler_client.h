@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
@@ -28,6 +27,9 @@ class NotificationSchedulerClient {
   using ThrottleConfigCallback =
       base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)>;
   NotificationSchedulerClient() = default;
+  NotificationSchedulerClient(const NotificationSchedulerClient&) = delete;
+  NotificationSchedulerClient& operator=(const NotificationSchedulerClient&) =
+      delete;
   virtual ~NotificationSchedulerClient() = default;
 
   // Called before the notification should be displayed to the user. The clients
@@ -50,9 +52,6 @@ class NotificationSchedulerClient {
   // Used to pull customized throttle config from client and may override global
   // config in the framework. Return |nullptr| to callback if no customization.
   virtual void GetThrottleConfig(ThrottleConfigCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationSchedulerClient);
 };
 
 }  // namespace notifications

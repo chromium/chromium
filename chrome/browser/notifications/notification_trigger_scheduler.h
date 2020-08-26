@@ -22,6 +22,9 @@ class NotificationTriggerScheduler {
   // Triggers pending notifications for all loaded profiles.
   static void TriggerNotifications();
 
+  NotificationTriggerScheduler(const NotificationTriggerScheduler&) = delete;
+  NotificationTriggerScheduler& operator=(const NotificationTriggerScheduler&) =
+      delete;
   virtual ~NotificationTriggerScheduler();
 
   // Schedules a trigger at |timestamp| that calls TriggerNotifications on each
@@ -41,8 +44,6 @@ class NotificationTriggerScheduler {
 
  private:
   base::OneShotTimer trigger_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationTriggerScheduler);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_TRIGGER_SCHEDULER_H_

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 namespace base {
@@ -44,6 +43,8 @@ class DisplayDecider {
       base::Clock* clock);
 
   DisplayDecider() = default;
+  DisplayDecider(const DisplayDecider&) = delete;
+  DisplayDecider& operator=(const DisplayDecider&) = delete;
   virtual ~DisplayDecider() = default;
 
   // Finds notifications to show. Returns a list of notification guids.
@@ -51,9 +52,6 @@ class DisplayDecider {
       Notifications notifications,
       ClientStates client_states,
       Results* results) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplayDecider);
 };
 
 }  // namespace notifications

@@ -8,7 +8,6 @@
 #include <windows.ui.notifications.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
 #include "base/strings/string16.h"
 
 class FakeIToastNotification
@@ -20,6 +19,8 @@ class FakeIToastNotification
  public:
   explicit FakeIToastNotification(const base::string16& xml,
                                   const base::string16& tag);
+  FakeIToastNotification(const FakeIToastNotification&) = delete;
+  FakeIToastNotification& operator=(const FakeIToastNotification&) = delete;
   ~FakeIToastNotification() override = default;
 
   // ABI::Windows::UI::Notifications::IToastNotification implementation:
@@ -61,8 +62,6 @@ class FakeIToastNotification
 
   base::string16 group_;
   base::string16 tag_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIToastNotification);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_WIN_FAKE_ITOASTNOTIFICATION_H_

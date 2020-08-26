@@ -22,6 +22,9 @@ class ChromeAshMessageCenterClient : public NotificationPlatformBridge,
  public:
   explicit ChromeAshMessageCenterClient(
       NotificationPlatformBridgeDelegate* delegate);
+  ChromeAshMessageCenterClient(const ChromeAshMessageCenterClient&) = delete;
+  ChromeAshMessageCenterClient& operator=(const ChromeAshMessageCenterClient&) =
+      delete;
   ~ChromeAshMessageCenterClient() override;
 
   // NotificationPlatformBridge:
@@ -60,8 +63,6 @@ class ChromeAshMessageCenterClient : public NotificationPlatformBridge,
   base::ObserverList<ash::NotifierSettingsObserver> notifier_observers_;
 
   base::WeakPtrFactory<ChromeAshMessageCenterClient> weak_ptr_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAshMessageCenterClient);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_CHROME_ASH_MESSAGE_CENTER_CLIENT_H_

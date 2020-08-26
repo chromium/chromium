@@ -76,6 +76,8 @@ std::string DebugString(const DisplayDecider::Results& results) {
 class DisplayDeciderTest : public testing::Test {
  public:
   DisplayDeciderTest() = default;
+  DisplayDeciderTest(const DisplayDeciderTest&) = delete;
+  DisplayDeciderTest& operator=(const DisplayDeciderTest&) = delete;
   ~DisplayDeciderTest() override = default;
 
   void SetUp() override {
@@ -160,8 +162,6 @@ class DisplayDeciderTest : public testing::Test {
   // Test target class and output.
   std::unique_ptr<DisplayDecider> decider_;
   DisplayDecider::Results results_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayDeciderTest);
 };
 
 TEST_F(DisplayDeciderTest, NoNotification) {

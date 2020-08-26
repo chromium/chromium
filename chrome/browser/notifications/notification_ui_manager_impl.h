@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
@@ -42,6 +41,9 @@ class NotificationUIManagerImpl : public NotificationUIManager,
                                   public ProfileObserver {
  public:
   NotificationUIManagerImpl();
+  NotificationUIManagerImpl(const NotificationUIManagerImpl&) = delete;
+  NotificationUIManagerImpl& operator=(const NotificationUIManagerImpl&) =
+      delete;
   ~NotificationUIManagerImpl() override;
 
   // NotificationUIManager
@@ -111,8 +113,6 @@ class NotificationUIManagerImpl : public NotificationUIManager,
 
   // Tracks the current visibility status of the popup bubbles.
   bool popups_visible_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationUIManagerImpl);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_UI_MANAGER_IMPL_H_

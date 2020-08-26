@@ -197,6 +197,9 @@ class FakeIToastActivatedEventArgs
  public:
   explicit FakeIToastActivatedEventArgs(const base::string16& args)
       : arguments_(args) {}
+  FakeIToastActivatedEventArgs(const FakeIToastActivatedEventArgs&) = delete;
+  FakeIToastActivatedEventArgs& operator=(const FakeIToastActivatedEventArgs&) =
+      delete;
   ~FakeIToastActivatedEventArgs() override = default;
 
   HRESULT STDMETHODCALLTYPE get_Arguments(HSTRING* value) override {
@@ -208,8 +211,6 @@ class FakeIToastActivatedEventArgs
 
  private:
   base::string16 arguments_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeIToastActivatedEventArgs);
 };
 
 IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeWinUITest, HandleEvent) {

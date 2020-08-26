@@ -23,6 +23,9 @@ namespace {
 class MockNotificationScheduler : public NotificationScheduler {
  public:
   MockNotificationScheduler() = default;
+  MockNotificationScheduler(const MockNotificationScheduler&) = delete;
+  MockNotificationScheduler& operator=(const MockNotificationScheduler&) =
+      delete;
   ~MockNotificationScheduler() override = default;
 
   MOCK_METHOD1(Init, void(InitCallback));
@@ -34,14 +37,15 @@ class MockNotificationScheduler : public NotificationScheduler {
   MOCK_METHOD1(OnStartTask, void(TaskFinishedCallback));
   MOCK_METHOD0(OnStopTask, void());
   MOCK_METHOD1(OnUserAction, void(const UserActionData&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockNotificationScheduler);
 };
 
 class InitAwareNotificationSchedulerTest : public testing::Test {
  public:
   InitAwareNotificationSchedulerTest() : scheduler_impl_(nullptr) {}
+  InitAwareNotificationSchedulerTest(
+      const InitAwareNotificationSchedulerTest&) = delete;
+  InitAwareNotificationSchedulerTest& operator=(
+      const InitAwareNotificationSchedulerTest&) = delete;
   ~InitAwareNotificationSchedulerTest() override = default;
 
   void SetUp() override {
@@ -67,8 +71,6 @@ class InitAwareNotificationSchedulerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   MockNotificationScheduler* scheduler_impl_;
   std::unique_ptr<NotificationScheduler> init_aware_scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitAwareNotificationSchedulerTest);
 };
 
 // Checks std::unique_ptr<NotificationParams> has specific guid.

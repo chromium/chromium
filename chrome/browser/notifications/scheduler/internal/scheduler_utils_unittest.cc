@@ -23,6 +23,8 @@ const char kFakeNow[] = "01/01/18 01:23:45 AM";
 class SchedulerUtilsTest : public testing::Test {
  public:
   SchedulerUtilsTest() {}
+  SchedulerUtilsTest(const SchedulerUtilsTest&) = delete;
+  SchedulerUtilsTest& operator=(const SchedulerUtilsTest&) = delete;
   ~SchedulerUtilsTest() override = default;
 
   void SetUp() override { config_.initial_daily_shown_per_type = 100; }
@@ -63,7 +65,6 @@ class SchedulerUtilsTest : public testing::Test {
   test::FakeClock clock_;
   SchedulerConfig config_;
   base::Time beginning_of_today_;
-  DISALLOW_COPY_AND_ASSIGN(SchedulerUtilsTest);
 };
 
 // Verifies we can get the correct time stamp at certain hour in yesterday.

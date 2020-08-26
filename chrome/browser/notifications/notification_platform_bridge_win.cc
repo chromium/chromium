@@ -159,6 +159,10 @@ class NotificationPlatformBridgeWinImpl
                                       InitializeExpectedDisplayedNotification,
                                   base::Unretained(this)));
   }
+  NotificationPlatformBridgeWinImpl(const NotificationPlatformBridgeWinImpl&) =
+      delete;
+  NotificationPlatformBridgeWinImpl& operator=(
+      const NotificationPlatformBridgeWinImpl&) = delete;
 
   // Obtain an IToastNotification interface from a given XML as in
   // |xml_template|. This function is only used when displaying notification in
@@ -849,8 +853,6 @@ class NotificationPlatformBridgeWinImpl
 
   // The ToastNotifier to use to communicate with the Action Center.
   mswr::ComPtr<winui::Notifications::IToastNotifier> notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeWinImpl);
 };
 
 std::vector<mswr::ComPtr<winui::Notifications::IToastNotification>>*

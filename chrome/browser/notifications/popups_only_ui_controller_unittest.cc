@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -33,6 +32,9 @@ namespace {
 class PopupsOnlyUiControllerTest : public views::test::WidgetTest {
  public:
   PopupsOnlyUiControllerTest() = default;
+  PopupsOnlyUiControllerTest(const PopupsOnlyUiControllerTest&) = delete;
+  PopupsOnlyUiControllerTest& operator=(const PopupsOnlyUiControllerTest&) =
+      delete;
   ~PopupsOnlyUiControllerTest() override = default;
 
   void SetUp() override {
@@ -85,9 +87,6 @@ class PopupsOnlyUiControllerTest : public views::test::WidgetTest {
   bool HasNotification(const std::string& id) {
     return !!MessageCenter::Get()->FindVisibleNotificationById(id);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PopupsOnlyUiControllerTest);
 };
 
 TEST_F(PopupsOnlyUiControllerTest, WebNotificationPopupBubble) {

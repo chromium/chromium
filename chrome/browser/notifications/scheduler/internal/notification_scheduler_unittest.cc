@@ -50,6 +50,9 @@ class NotificationSchedulerTest : public testing::Test {
         task_coordinator_(nullptr),
         display_agent_(nullptr),
         display_decider_(nullptr) {}
+  NotificationSchedulerTest(const NotificationSchedulerTest&) = delete;
+  NotificationSchedulerTest& operator=(const NotificationSchedulerTest&) =
+      delete;
   ~NotificationSchedulerTest() override = default;
 
   void SetUp() override {
@@ -150,7 +153,6 @@ class NotificationSchedulerTest : public testing::Test {
   test::MockDisplayDecider* display_decider_;
 
   std::unique_ptr<NotificationScheduler> notification_scheduler_;
-  DISALLOW_COPY_AND_ASSIGN(NotificationSchedulerTest);
 };
 
 // Tests successful initialization flow.

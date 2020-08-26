@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MESSAGE_CENTER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MESSAGE_CENTER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
 class Profile;
@@ -21,6 +20,10 @@ class NotificationPlatformBridgeMessageCenter
     : public NotificationPlatformBridge {
  public:
   explicit NotificationPlatformBridgeMessageCenter(Profile* profile);
+  NotificationPlatformBridgeMessageCenter(
+      const NotificationPlatformBridgeMessageCenter&) = delete;
+  NotificationPlatformBridgeMessageCenter& operator=(
+      const NotificationPlatformBridgeMessageCenter&) = delete;
   ~NotificationPlatformBridgeMessageCenter() override;
 
   // NotificationPlatformBridge implementation:
@@ -36,8 +39,6 @@ class NotificationPlatformBridgeMessageCenter
 
  private:
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeMessageCenter);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MESSAGE_CENTER_H_

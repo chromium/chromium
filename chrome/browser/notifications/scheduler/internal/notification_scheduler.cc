@@ -40,7 +40,8 @@ class InitHelper {
  public:
   using InitCallback = base::OnceCallback<void(bool)>;
   InitHelper() : context_(nullptr) {}
-
+  InitHelper(const InitHelper&) = delete;
+  InitHelper& operator=(const InitHelper&) = delete;
   ~InitHelper() = default;
 
   // Initializes subsystems in notification scheduler, |callback| will be
@@ -80,7 +81,6 @@ class InitHelper {
   InitCallback callback_;
 
   base::WeakPtrFactory<InitHelper> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(InitHelper);
 };
 
 // Helper class to display multiple notifications, and invoke a callback when
@@ -109,6 +109,8 @@ class DisplayHelper {
     }
   }
 
+  DisplayHelper(const DisplayHelper&) = delete;
+  DisplayHelper& operator=(const DisplayHelper&) = delete;
   ~DisplayHelper() = default;
 
  private:
@@ -188,8 +190,6 @@ class DisplayHelper {
   FinishCallback finish_callback_;
   int shown_count_;
   base::WeakPtrFactory<DisplayHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayHelper);
 };
 
 // Implementation of NotificationScheduler.
@@ -200,6 +200,9 @@ class NotificationSchedulerImpl : public NotificationScheduler,
       std::unique_ptr<NotificationSchedulerContext> context)
       : context_(std::move(context)) {}
 
+  NotificationSchedulerImpl(const NotificationSchedulerImpl&) = delete;
+  NotificationSchedulerImpl& operator=(const NotificationSchedulerImpl&) =
+      delete;
   ~NotificationSchedulerImpl() override = default;
 
  private:
@@ -381,7 +384,6 @@ class NotificationSchedulerImpl : public NotificationScheduler,
   std::unique_ptr<DisplayHelper> display_helper_;
 
   base::WeakPtrFactory<NotificationSchedulerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NotificationSchedulerImpl);
 };
 
 }  // namespace

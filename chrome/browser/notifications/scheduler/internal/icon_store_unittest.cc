@@ -28,13 +28,12 @@ namespace {
 class MockIconConverter : public IconConverter {
  public:
   MockIconConverter() = default;
+  MockIconConverter(const MockIconConverter&) = delete;
+  MockIconConverter& operator=(const MockIconConverter&) = delete;
   MOCK_METHOD2(ConvertIconToString,
                void(std::vector<SkBitmap>, IconConverter::EncodeCallback));
   MOCK_METHOD2(ConvertStringToIcon,
                void(std::vector<std::string>, IconConverter::DecodeCallback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIconConverter);
 };
 
 class IconStoreTest : public testing::Test {
@@ -44,6 +43,8 @@ class IconStoreTest : public testing::Test {
         load_result_(false),
         db_(nullptr),
         icon_converter_(nullptr) {}
+  IconStoreTest(const IconStoreTest&) = delete;
+  IconStoreTest& operator=(const IconStoreTest&) = delete;
   ~IconStoreTest() override = default;
 
   void SetUp() override {
@@ -140,8 +141,6 @@ class IconStoreTest : public testing::Test {
   std::map<std::string, proto::Icon> db_entries_;
   leveldb_proto::test::FakeDB<proto::Icon, IconEntry>* db_;
   MockIconConverter* icon_converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(IconStoreTest);
 };
 
 TEST_F(IconStoreTest, Init) {

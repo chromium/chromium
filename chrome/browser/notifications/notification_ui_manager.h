@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/notifications/notification_common.h"
 
 typedef void* ProfileID;
@@ -43,6 +42,8 @@ class NotificationUIManager {
     return static_cast<ProfileID>(profile);
   }
 
+  NotificationUIManager(const NotificationUIManager&) = delete;
+  NotificationUIManager& operator=(const NotificationUIManager&) = delete;
   virtual ~NotificationUIManager() {}
 
   // Creates an initialized UI manager.
@@ -92,9 +93,6 @@ class NotificationUIManager {
 
  protected:
   NotificationUIManager() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationUIManager);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_UI_MANAGER_H_

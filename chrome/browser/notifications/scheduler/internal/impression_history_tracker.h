@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -37,15 +36,17 @@ class ImpressionHistoryTracker : public UserActionHandler {
     using ThrottleConfigCallback =
         base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)>;
     Delegate() = default;
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate() = default;
 
     // Get ThrottleConfig.
     virtual void GetThrottleConfig(SchedulerClientType type,
                                    ThrottleConfigCallback callback) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
+
+  ImpressionHistoryTracker(const ImpressionHistoryTracker&) = delete;
+  ImpressionHistoryTracker& operator=(const ImpressionHistoryTracker&) = delete;
 
   // Initializes the impression tracker.
   virtual void Init(Delegate* delegate, InitCallback callback) = 0;
@@ -80,9 +81,6 @@ class ImpressionHistoryTracker : public UserActionHandler {
 
  protected:
   ImpressionHistoryTracker() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImpressionHistoryTracker);
 };
 
 // An implementation of ImpressionHistoryTracker backed by a database.
@@ -93,6 +91,9 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
       std::vector<SchedulerClientType> registered_clients,
       std::unique_ptr<CollectionStore<ClientState>> store,
       base::Clock* clock);
+  ImpressionHistoryTrackerImpl(const ImpressionHistoryTrackerImpl&) = delete;
+  ImpressionHistoryTrackerImpl& operator=(const ImpressionHistoryTrackerImpl&) =
+      delete;
   ~ImpressionHistoryTrackerImpl() override;
 
  private:
@@ -208,7 +209,6 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   Delegate* delegate_;
 
   base::WeakPtrFactory<ImpressionHistoryTrackerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ImpressionHistoryTrackerImpl);
 };
 
 }  // namespace notifications

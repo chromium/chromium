@@ -224,14 +224,14 @@ class ResourceFile {
     DCHECK(!file_path.empty());
     DCHECK(file_path.IsAbsolute());
   }
+  ResourceFile(const ResourceFile&) = delete;
+  ResourceFile& operator=(const ResourceFile&) = delete;
   ~ResourceFile() { base::DeleteFile(file_path_); }
 
   const base::FilePath& file_path() const { return file_path_; }
 
  private:
   const base::FilePath file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceFile);
 };
 
 // Writes |data| to a new temporary file and returns the ResourceFile
@@ -309,6 +309,10 @@ class NotificationPlatformBridgeLinuxImpl
     registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                    content::NotificationService::AllSources());
   }
+  NotificationPlatformBridgeLinuxImpl(
+      const NotificationPlatformBridgeLinuxImpl&) = delete;
+  NotificationPlatformBridgeLinuxImpl& operator=(
+      const NotificationPlatformBridgeLinuxImpl&) = delete;
 
   // InitOnTaskRunner() cannot be posted from within the constructor
   // because of a race condition.  The reference count for |this|
@@ -1070,8 +1074,6 @@ class NotificationPlatformBridgeLinuxImpl
   UnorderedUniqueSet<NotificationData> notifications_;
 
   bool clean_up_on_task_runner_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeLinuxImpl);
 };
 
 NotificationPlatformBridgeLinux::NotificationPlatformBridgeLinux()

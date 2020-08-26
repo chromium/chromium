@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/internal/collection_store.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -32,6 +31,10 @@ class ScheduledNotificationManager {
   using ScheduleCallback = base::OnceCallback<void(bool)>;
   using DisplayCallback =
       base::OnceCallback<void(std::unique_ptr<NotificationEntry>)>;
+
+  ScheduledNotificationManager(const ScheduledNotificationManager&) = delete;
+  ScheduledNotificationManager& operator=(const ScheduledNotificationManager&) =
+      delete;
 
   // Creates the instance.
   static std::unique_ptr<ScheduledNotificationManager> Create(
@@ -70,9 +73,6 @@ class ScheduledNotificationManager {
 
  protected:
   ScheduledNotificationManager();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScheduledNotificationManager);
 };
 
 }  // namespace notifications

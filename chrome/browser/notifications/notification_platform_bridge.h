@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -38,6 +37,9 @@ class NotificationPlatformBridge {
   // Returns a unique string identifier for |profile|.
   static std::string GetProfileId(Profile* profile);
 
+  NotificationPlatformBridge(const NotificationPlatformBridge&) = delete;
+  NotificationPlatformBridge& operator=(const NotificationPlatformBridge&) =
+      delete;
   virtual ~NotificationPlatformBridge() {}
 
   // Shows a toast on screen using the data passed in |notification|.
@@ -69,9 +71,6 @@ class NotificationPlatformBridge {
 
  protected:
   NotificationPlatformBridge() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridge);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_H_

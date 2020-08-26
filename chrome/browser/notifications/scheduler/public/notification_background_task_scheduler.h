@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_NOTIFICATION_BACKGROUND_TASK_SCHEDULER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
@@ -20,6 +19,9 @@ class NotificationBackgroundTaskScheduler {
   class Handler {
    public:
     using TaskFinishedCallback = base::OnceCallback<void(bool)>;
+
+    Handler(const Handler&) = delete;
+    Handler& operator=(const Handler&) = delete;
     // Called when the background task is started.
     virtual void OnStartTask(TaskFinishedCallback callback) = 0;
 
@@ -32,9 +34,6 @@ class NotificationBackgroundTaskScheduler {
    protected:
     Handler() = default;
     virtual ~Handler() = default;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Handler);
   };
 
   // Schedules a background task in a time window between |window_start| and
@@ -46,13 +45,14 @@ class NotificationBackgroundTaskScheduler {
   // Cancels the background task.
   virtual void Cancel() = 0;
 
+  NotificationBackgroundTaskScheduler(
+      const NotificationBackgroundTaskScheduler&) = delete;
+  NotificationBackgroundTaskScheduler& operator=(
+      const NotificationBackgroundTaskScheduler&) = delete;
   virtual ~NotificationBackgroundTaskScheduler() = default;
 
  protected:
   NotificationBackgroundTaskScheduler() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationBackgroundTaskScheduler);
 };
 
 }  // namespace notifications

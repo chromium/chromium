@@ -6,7 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
@@ -28,6 +27,9 @@ class NotificationImageRetainerTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         user_data_dir_override_(chrome::DIR_USER_DATA) {}
 
+  NotificationImageRetainerTest(const NotificationImageRetainerTest&) = delete;
+  NotificationImageRetainerTest& operator=(
+      const NotificationImageRetainerTest&) = delete;
   ~NotificationImageRetainerTest() override = default;
 
  protected:
@@ -35,8 +37,6 @@ class NotificationImageRetainerTest : public ::testing::Test {
 
  private:
   base::ScopedPathOverride user_data_dir_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationImageRetainerTest);
 };
 
 TEST_F(NotificationImageRetainerTest, RegisterTemporaryImage) {
