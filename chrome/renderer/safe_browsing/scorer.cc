@@ -86,15 +86,14 @@ double Scorer::ComputeScore(const FeatureMap& features) const {
   return LogOdds2Prob(logodds);
 }
 
-bool Scorer::GetMatchingVisualTargets(const SkBitmap& bitmap,
-                                      ClientPhishingRequest* request) const {
-  bool has_match = false;
+std::unique_ptr<ClientPhishingRequest> Scorer::GetMatchingVisualTargets(
+    const SkBitmap& bitmap,
+    std::unique_ptr<ClientPhishingRequest> request) const {
   for (const VisualTarget& target : model_.vision_model().targets()) {
     base::Optional<VisionMatchResult> result =
         visual_utils::IsVisualMatch(bitmap, target);
     if (result.has_value()) {
       *request->add_vision_match() = result.value();
-      has_match = true;
     }
   }
 
@@ -112,7 +111,7 @@ bool Scorer::GetMatchingVisualTargets(const SkBitmap& bitmap,
     }
   }
 
-  return has_match;
+  return request;
 }
 
 int Scorer::model_version() const {
