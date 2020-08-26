@@ -12,7 +12,6 @@ try_.declare_bucket(settings, branch_selector = branches.ALL_RELEASES)
 try_.set_defaults(
     settings,
     add_to_list_view = True,
-    main_list_view = settings.main_list_view_name,
 )
 
 # Automatically maintained consoles
@@ -76,6 +75,7 @@ try_.blink_builder(
     name = "linux-blink-rel",
     branch_selector = branches.STANDARD_RELEASES,
     goma_backend = goma.backend.RBE_PROD,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/cc/.+",
@@ -123,6 +123,7 @@ try_.chromium_android_builder(
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:binary_size_trybot",
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
@@ -143,6 +144,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-cronet-arm-dbg",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/components/cronet/.+",
@@ -160,6 +162,7 @@ try_.chromium_android_builder(
     name = "android-lollipop-arm-rel",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
@@ -168,6 +171,7 @@ try_.chromium_android_builder(
     branch_selector = branches.STANDARD_RELEASES,
     cores = 16,
     goma_jobs = goma.jobs.J300,
+    main_list_view = settings.main_list_view_name,
     ssd = True,
     use_java_coverage = True,
     tryjob = try_.job(),
@@ -188,12 +192,14 @@ try_.chromium_android_builder(
 #    name = "android-nougat-arm64-rel",
 #    branch_selector = branches.STANDARD_RELEASES,
 #    goma_jobs = goma.jobs.J150,
+#    main_list_view = settings.main_list_view_name,
 #)
 
 try_.chromium_android_builder(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J300,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/chrome/android/features/vr/.+",
@@ -218,6 +224,7 @@ try_.chromium_android_builder(
     ssd = True,
     # TODO(crbug.com/1111436): Enable on CQ once the maintenance for
     # Pixel 2 devices are finished.
+    #main_list_view = settings.main_list_view_name,
     #tryjob = try_.job(),
 )
 
@@ -225,12 +232,14 @@ try_.chromium_android_builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_android_builder(
     name = "android_compile_x64_dbg",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/chrome/android/java/src/org/chromium/chrome/browser/vr/.+",
@@ -248,6 +257,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android_compile_x86_dbg",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/chrome/android/java/src/org/chromium/chrome/browser/vr/.+",
@@ -265,18 +275,21 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android_cronet",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_android_builder(
     name = "cast_shell_android",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_chromiumos_builder(
     name = "chromeos-amd64-generic-dbg",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/content/gpu/.+",
@@ -288,18 +301,21 @@ try_.chromium_chromiumos_builder(
 try_.chromium_chromiumos_builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_chromiumos_builder(
     name = "chromeos-arm-generic-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_chromiumos_builder(
     name = "linux-chromeos-compile-dbg",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
@@ -307,6 +323,7 @@ try_.chromium_chromiumos_builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(cancel_stale = False),
     use_clang_coverage = True,
 )
@@ -314,6 +331,7 @@ try_.chromium_chromiumos_builder(
 try_.chromium_dawn_builder(
     name = "dawn-linux-x64-deps-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/gpu/.+",
@@ -332,6 +350,7 @@ try_.chromium_dawn_builder(
 try_.chromium_dawn_builder(
     name = "dawn-mac-x64-deps-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     os = os.MAC_ANY,
     tryjob = try_.job(
         location_regexp = [
@@ -351,6 +370,7 @@ try_.chromium_dawn_builder(
 try_.chromium_dawn_builder(
     name = "dawn-win10-x64-deps-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     os = os.WINDOWS_ANY,
     tryjob = try_.job(
         location_regexp = [
@@ -370,6 +390,7 @@ try_.chromium_dawn_builder(
 try_.chromium_dawn_builder(
     name = "dawn-win10-x86-deps-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     os = os.WINDOWS_ANY,
     tryjob = try_.job(
         location_regexp = [
@@ -389,6 +410,7 @@ try_.chromium_dawn_builder(
 try_.chromium_linux_builder(
     name = "cast_shell_linux",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
@@ -396,6 +418,7 @@ try_.chromium_linux_builder(
     name = "closure_compilation",
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:closure_compilation",
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/third_party/closure_compiler/.+",
@@ -408,6 +431,7 @@ try_.chromium_linux_builder(
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:presubmit",
     goma_backend = None,
+    main_list_view = settings.main_list_view_name,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
@@ -424,6 +448,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/chromecast/.+",
@@ -434,18 +459,21 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "fuchsia-x64-cast",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_linux_builder(
     name = "fuchsia_arm64",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_linux_builder(
     name = "fuchsia_x64",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
@@ -453,12 +481,14 @@ try_.chromium_linux_builder(
     name = "linux-libfuzzer-asan-rel",
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:chromium_libfuzzer_trybot",
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_linux_builder(
     name = "linux-ozone-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
@@ -469,6 +499,7 @@ try_.chromium_linux_builder(
     # not explicitly set
     builder_group = "tryserver.chromium.linux",
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
     use_clang_coverage = True,
 )
@@ -477,6 +508,7 @@ try_.chromium_linux_builder(
     name = "linux_chromium_asan_rel_ng",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     ssd = True,
     tryjob = try_.job(),
 )
@@ -491,6 +523,7 @@ try_.chromium_linux_builder(
         ),
     ],
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
@@ -503,6 +536,7 @@ try_.chromium_linux_builder(
             path = "linux_debug",
         ),
     ],
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/build/.*check_gn_headers.*",
@@ -514,12 +548,14 @@ try_.chromium_linux_builder(
     name = "linux_chromium_tsan_rel_ng",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
 
 try_.chromium_linux_builder(
     name = "linux_layout_tests_composite_after_paint",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/third_party/blink/renderer/core/paint/.+",
@@ -533,6 +569,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux_layout_tests_layout_ng_disabled",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/third_party/blink/renderer/core/editing/.+",
@@ -550,6 +587,7 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux_vr",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/chrome/browser/vr/.+",
@@ -562,6 +600,7 @@ try_.chromium_mac_builder(
     name = "mac-rel",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     os = os.MAC_10_13,
     tryjob = try_.job(),
 )
@@ -577,6 +616,7 @@ try_.chromium_mac_builder(
     name = "mac_chromium_compile_dbg_ng",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     os = os.MAC_10_13,
     tryjob = try_.job(),
 )
@@ -585,6 +625,7 @@ try_.chromium_mac_ios_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:chromium_trybot",
+    main_list_view = settings.main_list_view_name,
     properties = {
         "xcode_build_version": "12a8189n",
     },
@@ -596,6 +637,7 @@ try_.chromium_mac_ios_builder(
     branch_selector = branches.STANDARD_RELEASES,
     caches = [xcode_cache.x11e146],
     executable = "recipe:chromium_trybot",
+    main_list_view = settings.main_list_view_name,
     properties = {
         "xcode_build_version": "11e146",
     },
@@ -615,6 +657,7 @@ try_.chromium_mac_ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:chromium_trybot",
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/ios/.+",
@@ -627,6 +670,7 @@ try_.chromium_win_builder(
     branch_selector = branches.STANDARD_RELEASES,
     builderless = False,
     executable = "recipe:chromium_libfuzzer_trybot",
+    main_list_view = settings.main_list_view_name,
     os = os.WINDOWS_ANY,
     tryjob = try_.job(cancel_stale = False),
 )
@@ -635,6 +679,7 @@ try_.chromium_win_builder(
     name = "win_chromium_compile_dbg_ng",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(cancel_stale = False),
 )
 
@@ -642,6 +687,7 @@ try_.chromium_win_builder(
     name = "win10_chromium_x64_rel_ng",
     branch_selector = branches.STANDARD_RELEASES,
     goma_jobs = goma.jobs.J150,
+    main_list_view = settings.main_list_view_name,
     os = os.WINDOWS_10,
     ssd = True,
     use_clang_coverage = True,
@@ -653,6 +699,7 @@ try_.chromium_win_builder(
     branch_selector = branches.STANDARD_RELEASES,
     execution_timeout = 4 * time.hour + 30 * time.minute,
     goma_jobs = goma.jobs.J300,
+    main_list_view = settings.main_list_view_name,
     ssd = True,
     tryjob = try_.job(
         location_regexp = [
@@ -664,6 +711,7 @@ try_.chromium_win_builder(
 try_.gpu_chromium_android_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/cc/.+",
@@ -689,6 +737,7 @@ try_.gpu_chromium_android_builder(
 try_.gpu_chromium_linux_builder(
     name = "linux_optional_gpu_tests_rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/chrome/browser/vr/.+",
@@ -712,6 +761,7 @@ try_.gpu_chromium_linux_builder(
 try_.gpu_chromium_mac_builder(
     name = "mac_optional_gpu_tests_rel",
     branch_selector = branches.STANDARD_RELEASES,
+    main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/chrome/browser/vr/.+",
@@ -737,6 +787,7 @@ try_.gpu_chromium_win_builder(
     name = "win_optional_gpu_tests_rel",
     branch_selector = branches.STANDARD_RELEASES,
     builderless = True,
+    main_list_view = settings.main_list_view_name,
     os = os.WINDOWS_DEFAULT,
     tryjob = try_.job(
         location_regexp = [
