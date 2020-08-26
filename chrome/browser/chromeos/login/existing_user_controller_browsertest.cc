@@ -853,7 +853,7 @@ class ExistingUserControllerActiveDirectoryUserWhitelistTest
     ExistingUserControllerActiveDirectoryTest::
         SetUpInProcessBrowserTestFixture();
     em::ChromeDeviceSettingsProto device_policy;
-    device_policy.mutable_user_whitelist()->add_user_whitelist()->assign(
+    device_policy.mutable_user_allowlist()->add_user_allowlist()->assign(
         kUserWhitelist);
     FakeAuthPolicyClient::Get()->set_device_policy(device_policy);
   }

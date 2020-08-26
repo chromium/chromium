@@ -78,7 +78,7 @@ class SessionManagerOperationTest : public testing::Test {
   }
 
   void SetUp() override {
-    policy_.payload().mutable_user_whitelist()->add_user_whitelist(
+    policy_.payload().mutable_user_allowlist()->add_user_allowlist(
         "fake-whitelist");
     policy_.Build();
 

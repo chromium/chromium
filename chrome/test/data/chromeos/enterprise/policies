@@ -535,7 +535,7 @@
     u'device_recommended_policies': {},
     u'device_mandatory_policies': {
       u'DeviceGuestModeEnabled': False,
-      u'DeviceUserWhitelist': [
+      u'DeviceUserAllowlist': [
         u'adm@crosprqa4.com',
         u'scott@crosprqa4.com',
         u'bob.exc@crosprqa4.com',
@@ -582,7 +582,7 @@
   u'test_enterprise_crosqa3_user': {
     u'device_recommended_policies': {},
     u'device_mandatory_policies': {
-      u'DeviceUserWhitelist': [
+      u'DeviceUserAllowlist': [
         u'bob.exc@crosprqa1.com',
         u'*@crosqa3.com',
         u'*@crosqa2.com',
@@ -599,7 +599,7 @@
     u'device_recommended_policies': {},
     u'device_mandatory_policies': {
       u'DeviceGuestModeEnabled': False,
-      u'DeviceUserWhitelist': [
+      u'DeviceUserAllowlist': [
         u'adm@crosqa4.com',
         u'scott@crosqa4.com',
         u'bob.exc@crosqa4.com',

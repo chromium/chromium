@@ -126,7 +126,7 @@ class CrosSettingsTest : public testing::Test {
     }
   }
 
-  bool IsWhitelisted(const std::string& username) {
+  bool IsAllowlisted(const std::string& username) {
     return CrosSettings::Get()->FindEmailInList(kAccountsPrefUsers, username,
                                                 NULL);
   }
@@ -157,22 +157,22 @@ TEST_F(CrosSettingsTest, GetAndSetPref) {
   ExpectPref(kAccountsPrefEphemeralUsersEnabled, base::Value(true));
 }
 
-TEST_F(CrosSettingsTest, SetWhitelist) {
-  // Set a non-empty whitelist.
-  device_policy_.payload().mutable_user_whitelist()->add_user_whitelist(kOwner);
+TEST_F(CrosSettingsTest, SetAllowlist) {
+  // Set a non-empty allowlist.
+  device_policy_.payload().mutable_user_allowlist()->add_user_allowlist(kOwner);
   // Clear allow_new_users, so it is not set to true or false.
   device_policy_.payload().mutable_allow_new_users()->clear_allow_new_users();
 
   StoreDevicePolicy();
 
-  base::ListValue whitelist;
-  whitelist.AppendString(kOwner);
-  ExpectPref(kAccountsPrefUsers, whitelist);
-  // When a non-empty whitelist is set, allow_new_user defaults to false.
+  base::ListValue allowlist;
+  allowlist.AppendString(kOwner);
+  ExpectPref(kAccountsPrefUsers, allowlist);
+  // When a non-empty allowlist is set, allow_new_user defaults to false.
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
-TEST_F(CrosSettingsTest, SetWhitelistWithListOps) {
+TEST_F(CrosSettingsTest, SetAllowlistWithListOps) {
   // Clear allow_new_users, so it is not set to true or false.
   device_policy_.payload().mutable_allow_new_users()->clear_allow_new_users();
   StoreDevicePolicy();
@@ -188,14 +188,14 @@ TEST_F(CrosSettingsTest, SetWhitelistWithListOps) {
   modified_list.AppendString(kOwner);
   modified_list.AppendString(kUser1);
 
-  // Add some user to the whitelist.
+  // Add some user to the allowlist.
   oss->AppendToList(kAccountsPrefUsers, base::Value(kUser1));
   ExpectPref(kAccountsPrefUsers, modified_list);
-  // When a non-empty whitelist is set, allow_new_user defaults to false.
+  // When a non-empty allowlist is set, allow_new_user defaults to false.
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
-TEST_F(CrosSettingsTest, SetWhitelistWithListOps2) {
+TEST_F(CrosSettingsTest, SetAllowlistWithListOps2) {
   // Clear allow_new_users, so it is not set to true or false.
   device_policy_.payload().mutable_allow_new_users()->clear_allow_new_users();
   StoreDevicePolicy();
@@ -213,83 +213,83 @@ TEST_F(CrosSettingsTest, SetWhitelistWithListOps2) {
   modified_list.AppendString(kOwner);
   modified_list.AppendString(kUser1);
 
-  // Remove some user from the whitelist.
+  // Remove some user from the allowlist.
   oss->RemoveFromList(kAccountsPrefUsers, base::Value(kUser2));
   ExpectPref(kAccountsPrefUsers, modified_list);
-  // When a non-empty whitelist is set, allow_new_user defaults to false.
+  // When a non-empty allowlist is set, allow_new_user defaults to false.
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
-// The following tests check that the whitelist / allow_new_users logic in
+// The following tests check that the allowlist / allow_new_users logic in
 // DeviceSettings:Provider::DecodeLoginPolicies still works properly at this
 // level, the CrosSettings API.
 // They do not use OwnerSettingsService since having a local
 // OwnerSettingsService constrains the policies in certain ways - see
 // OwnerSettingsServiceChromeOS::FixupLocalOwnerPolicy.
 
-TEST_F(CrosSettingsTest, SetEmptyWhitelist) {
-  // Set an empty whitelist.
-  device_policy_.payload().mutable_user_whitelist()->clear_user_whitelist();
+TEST_F(CrosSettingsTest, SetEmptyAllowlist) {
+  // Set an empty allowlist.
+  device_policy_.payload().mutable_user_allowlist()->clear_user_allowlist();
   // Clear allow_new_users, so it is not set to true or false.
   device_policy_.payload().mutable_allow_new_users()->clear_allow_new_users();
   StoreDevicePolicy();
 
   ExpectPref(kAccountsPrefUsers, base::ListValue());
-  // When an empty whitelist is set, allow_new_user defaults to true.
+  // When an empty allowlist is set, allow_new_user defaults to true.
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(true));
 }
 
-TEST_F(CrosSettingsTest, SetEmptyWhitelistAndDisallowNewUsers) {
-  // Set an empty whitelist.
-  device_policy_.payload().mutable_user_whitelist()->clear_user_whitelist();
+TEST_F(CrosSettingsTest, SetEmptyAllowlistAndDisallowNewUsers) {
+  // Set an empty allowlist.
+  device_policy_.payload().mutable_user_allowlist()->clear_user_allowlist();
   // Set allow_new_users to false.
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
       false);
   StoreDevicePolicy();
 
-  // Expect the same - an empty whitelist and no new users allowed.
+  // Expect the same - an empty allowlist and no new users allowed.
   ExpectPref(kAccountsPrefUsers, base::ListValue());
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
-TEST_F(CrosSettingsTest, SetWhitelistAndDisallowNewUsers) {
-  // Set a non-empty whitelist.
-  device_policy_.payload().mutable_user_whitelist()->add_user_whitelist(kOwner);
+TEST_F(CrosSettingsTest, SetAllowlistAndDisallowNewUsers) {
+  // Set a non-empty allowlist.
+  device_policy_.payload().mutable_user_allowlist()->add_user_allowlist(kOwner);
   // Set allow_new_users to false.
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
       false);
   StoreDevicePolicy();
 
-  // Expect the same - a non-empty whitelist and no new users allowed.
-  base::ListValue whitelist;
-  whitelist.AppendString(kOwner);
-  ExpectPref(kAccountsPrefUsers, whitelist);
+  // Expect the same - a non-empty allowlist and no new users allowed.
+  base::ListValue allowlist;
+  allowlist.AppendString(kOwner);
+  ExpectPref(kAccountsPrefUsers, allowlist);
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
 }
 
-TEST_F(CrosSettingsTest, SetEmptyWhitelistAndAllowNewUsers) {
-  // Set an empty whitelist.
-  device_policy_.payload().mutable_user_whitelist()->clear_user_whitelist();
+TEST_F(CrosSettingsTest, SetEmptyAllowlistAndAllowNewUsers) {
+  // Set an empty allowlist.
+  device_policy_.payload().mutable_user_allowlist()->clear_user_allowlist();
   // Set allow_new_users to true.
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(true);
   StoreDevicePolicy();
 
-  // Expect the same - an empty whitelist and new users allowed.
+  // Expect the same - an empty allowlist and new users allowed.
   ExpectPref(kAccountsPrefUsers, base::ListValue());
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(true));
 }
 
-TEST_F(CrosSettingsTest, SetWhitelistAndAllowNewUsers) {
-  // Set a non-empty whitelist.
-  device_policy_.payload().mutable_user_whitelist()->add_user_whitelist(kOwner);
+TEST_F(CrosSettingsTest, SetAllowlistAndAllowNewUsers) {
+  // Set a non-empty allowlist.
+  device_policy_.payload().mutable_user_allowlist()->add_user_allowlist(kOwner);
   // Set allow_new_users to true.
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(true);
   StoreDevicePolicy();
 
-  // Expect the same - a non-empty whitelist and new users allowed.
-  base::ListValue whitelist;
-  whitelist.AppendString(kOwner);
-  ExpectPref(kAccountsPrefUsers, whitelist);
+  // Expect the same - a non-empty allowlist and new users allowed.
+  base::ListValue allowlist;
+  allowlist.AppendString(kOwner);
+  ExpectPref(kAccountsPrefUsers, allowlist);
   ExpectPref(kAccountsPrefAllowNewUser, base::Value(true));
 }
 
@@ -305,25 +305,25 @@ TEST_F(CrosSettingsTest, FindEmailInList) {
   oss->Set(kAccountsPrefUsers, list);
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(IsWhitelisted("user@example.com"));
-  EXPECT_FALSE(IsWhitelisted("us.er@example.com"));
-  EXPECT_TRUE(IsWhitelisted("USER@example.com"));
-  EXPECT_FALSE(IsWhitelisted("user"));
+  EXPECT_TRUE(IsAllowlisted("user@example.com"));
+  EXPECT_FALSE(IsAllowlisted("us.er@example.com"));
+  EXPECT_TRUE(IsAllowlisted("USER@example.com"));
+  EXPECT_FALSE(IsAllowlisted("user"));
 
-  EXPECT_TRUE(IsWhitelisted("nodomain"));
-  EXPECT_TRUE(IsWhitelisted("nodomain@gmail.com"));
-  EXPECT_TRUE(IsWhitelisted("no.domain@gmail.com"));
-  EXPECT_TRUE(IsWhitelisted("NO.DOMAIN"));
+  EXPECT_TRUE(IsAllowlisted("nodomain"));
+  EXPECT_TRUE(IsAllowlisted("nodomain@gmail.com"));
+  EXPECT_TRUE(IsAllowlisted("no.domain@gmail.com"));
+  EXPECT_TRUE(IsAllowlisted("NO.DOMAIN"));
 
-  EXPECT_TRUE(IsWhitelisted("with.dots@gmail.com"));
-  EXPECT_TRUE(IsWhitelisted("withdots@gmail.com"));
-  EXPECT_TRUE(IsWhitelisted("WITH.DOTS@gmail.com"));
-  EXPECT_TRUE(IsWhitelisted("WITHDOTS"));
+  EXPECT_TRUE(IsAllowlisted("with.dots@gmail.com"));
+  EXPECT_TRUE(IsAllowlisted("withdots@gmail.com"));
+  EXPECT_TRUE(IsAllowlisted("WITH.DOTS@gmail.com"));
+  EXPECT_TRUE(IsAllowlisted("WITHDOTS"));
 
-  EXPECT_TRUE(IsWhitelisted("Upper@example.com"));
-  EXPECT_FALSE(IsWhitelisted("U.pper@example.com"));
-  EXPECT_FALSE(IsWhitelisted("Upper"));
-  EXPECT_TRUE(IsWhitelisted("upper@example.com"));
+  EXPECT_TRUE(IsAllowlisted("Upper@example.com"));
+  EXPECT_FALSE(IsAllowlisted("U.pper@example.com"));
+  EXPECT_FALSE(IsAllowlisted("Upper"));
+  EXPECT_TRUE(IsAllowlisted("upper@example.com"));
 }
 
 TEST_F(CrosSettingsTest, FindEmailInListWildcard) {

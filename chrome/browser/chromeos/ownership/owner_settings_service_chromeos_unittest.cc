@@ -29,6 +29,9 @@ namespace chromeos {
 
 namespace {
 
+const char kUserAllowlist[] = "*@allowlist-domain.com";
+const char kOther[] = "other";
+
 void OnPrefChanged(const std::string& /* setting */) {}
 
 class PrefsChecker : public ownership::OwnerSettingsService::Observer {
@@ -185,13 +188,104 @@ TEST_F(OwnerSettingsServiceChromeOSTest, FailedSetRequest) {
                                  .release_channel());
 }
 
-TEST_F(OwnerSettingsServiceChromeOSTest, ForceWhitelist) {
+TEST_F(OwnerSettingsServiceChromeOSTest, ForceAllowlist) {
   EXPECT_FALSE(FindInListValue(device_policy_->policy_data().username(),
                                provider_->Get(kAccountsPrefUsers)));
   // Force a settings write.
   TestSingleSet(service_, kReleaseChannel, base::Value("dev-channel"));
   EXPECT_TRUE(FindInListValue(device_policy_->policy_data().username(),
                               provider_->Get(kAccountsPrefUsers)));
+}
+
+TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersEmptyLists) {
+  std::vector<base::Value> list;
+  list.push_back(base::Value(kUserAllowlist));
+
+  EXPECT_EQ(0,
+            device_policy_->payload().user_allowlist().user_allowlist().size());
+  EXPECT_EQ(0,
+            device_policy_->payload().user_whitelist().user_whitelist().size());
+
+  OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+
+  EXPECT_EQ(1,
+            device_policy_->payload().user_allowlist().user_allowlist().size());
+  EXPECT_EQ(kUserAllowlist,
+            device_policy_->payload().user_allowlist().user_allowlist(0));
+  EXPECT_EQ(0,
+            device_policy_->payload().user_whitelist().user_whitelist().size());
+}
+
+TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersAllowList) {
+  std::vector<base::Value> list;
+  list.push_back(base::Value(kUserAllowlist));
+
+  device_policy_->payload().mutable_user_allowlist()->add_user_allowlist(
+      kOther);
+
+  EXPECT_EQ(1,
+            device_policy_->payload().user_allowlist().user_allowlist().size());
+  EXPECT_EQ(0,
+            device_policy_->payload().user_whitelist().user_whitelist().size());
+
+  OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+
+  EXPECT_EQ(1,
+            device_policy_->payload().user_allowlist().user_allowlist().size());
+  EXPECT_EQ(kUserAllowlist,
+            device_policy_->payload().user_allowlist().user_allowlist(0));
+  EXPECT_EQ(0,
+            device_policy_->payload().user_whitelist().user_whitelist().size());
+}
+
+TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersWhiteList) {
+  std::vector<base::Value> list;
+  list.push_back(base::Value(kUserAllowlist));
+
+  device_policy_->payload().mutable_user_whitelist()->add_user_whitelist(
+      kOther);
+
+  EXPECT_EQ(0,
+            device_policy_->payload().user_allowlist().user_allowlist().size());
+  EXPECT_EQ(1,
+            device_policy_->payload().user_whitelist().user_whitelist().size());
+
+  OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+
+  EXPECT_EQ(0,
+            device_policy_->payload().user_allowlist().user_allowlist().size());
+  EXPECT_EQ(1,
+            device_policy_->payload().user_whitelist().user_whitelist().size());
+  EXPECT_EQ(kUserAllowlist,
+            device_policy_->payload().user_whitelist().user_whitelist(0));
+}
+
+TEST_F(OwnerSettingsServiceChromeOSTest, AccountPrefUsersBothLists) {
+  std::vector<base::Value> list;
+  list.push_back(base::Value(kUserAllowlist));
+
+  device_policy_->payload().mutable_user_allowlist()->add_user_allowlist(
+      kOther);
+  device_policy_->payload().mutable_user_whitelist()->add_user_whitelist(
+      kOther);
+
+  EXPECT_EQ(1,
+            device_policy_->payload().user_allowlist().user_allowlist().size());
+  EXPECT_EQ(1,
+            device_policy_->payload().user_whitelist().user_whitelist().size());
+
+  OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
+      kAccountsPrefUsers, base::ListValue(list), device_policy_->payload());
+
+  EXPECT_EQ(1,
+            device_policy_->payload().user_allowlist().user_allowlist().size());
+  EXPECT_EQ(kUserAllowlist,
+            device_policy_->payload().user_allowlist().user_allowlist(0));
+  EXPECT_EQ(0,
+            device_policy_->payload().user_whitelist().user_whitelist().size());
 }
 
 class OwnerSettingsServiceChromeOSNoOwnerTest
@@ -220,7 +314,7 @@ TEST_F(OwnerSettingsServiceChromeOSNoOwnerTest, SingleSetTest) {
   ASSERT_FALSE(service_->SetBoolean(kAccountsPrefAllowGuest, false));
 }
 
-TEST_F(OwnerSettingsServiceChromeOSNoOwnerTest, TakeOwnershipForceWhitelist) {
+TEST_F(OwnerSettingsServiceChromeOSNoOwnerTest, TakeOwnershipForceAllowlist) {
   EXPECT_FALSE(FindInListValue(device_policy_->policy_data().username(),
                                provider_->Get(kAccountsPrefUsers)));
   owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());

@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
@@ -35,6 +36,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using google::protobuf::RepeatedField;
 using google::protobuf::RepeatedPtrField;
@@ -151,6 +153,14 @@ std::unique_ptr<base::Value> DecodeConnectionType(int value) {
   return std::make_unique<base::Value>(iter->second);
 }
 
+void AddDeprecationWarning(const std::string& old_name,
+                           const std::string& new_name,
+                           PolicyMap* policies) {
+  policies->AddError(old_name,
+                     l10n_util::GetStringFUTF8(IDS_POLICY_MIGRATED_OLD_POLICY,
+                                               base::UTF8ToUTF16(new_name)));
+}
+
 void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                          PolicyMap* policies) {
   if (policy.has_guest_mode_enabled()) {
@@ -216,6 +226,15 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_user_allowlist()) {
+    const em::UserAllowlistProto& container(policy.user_allowlist());
+    base::Value allowlist(base::Value::Type::LIST);
+    for (const auto& entry : container.user_allowlist())
+      allowlist.Append(entry);
+    policies->Set(key::kDeviceUserAllowlist, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  std::move(allowlist), nullptr);
+  }
   if (policy.has_user_whitelist()) {
     const em::UserWhitelistProto& container(policy.user_whitelist());
     base::Value whitelist(base::Value::Type::LIST);
@@ -224,6 +243,8 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     policies->Set(key::kDeviceUserWhitelist, POLICY_LEVEL_MANDATORY,
                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                   std::move(whitelist), nullptr);
+    AddDeprecationWarning(key::kDeviceUserWhitelist, key::kDeviceUserAllowlist,
+                          policies);
   }
 
   if (policy.has_ephemeral_users_enabled()) {

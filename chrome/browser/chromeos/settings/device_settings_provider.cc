@@ -200,15 +200,17 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       // New users allowed, user whitelist ignored.
       new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, true);
     } else {
-      // New users not allowed, enforce user whitelist if present.
-      new_values_cache->SetBoolean(kAccountsPrefAllowNewUser,
-                                   !policy.has_user_whitelist());
+      // New users not allowed, enforce user allowlist if present.
+      new_values_cache->SetBoolean(
+          kAccountsPrefAllowNewUser,
+          !policy.has_user_whitelist() && !policy.has_user_allowlist());
     }
   } else {
     // No configured allow-new-users value, enforce whitelist if non-empty.
     new_values_cache->SetBoolean(
         kAccountsPrefAllowNewUser,
-        policy.user_whitelist().user_whitelist_size() == 0);
+        policy.user_whitelist().user_whitelist_size() == 0 &&
+            policy.user_allowlist().user_allowlist_size() == 0);
   }
 
   new_values_cache->SetBoolean(
@@ -243,12 +245,22 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
           policy.ephemeral_users_enabled().ephemeral_users_enabled());
 
   std::vector<base::Value> list;
-  const em::UserWhitelistProto& whitelist_proto = policy.user_whitelist();
-  const RepeatedPtrField<std::string>& whitelist =
-      whitelist_proto.user_whitelist();
-  for (const std::string& value : whitelist) {
-    list.push_back(base::Value(value));
+  const em::UserAllowlistProto& allowlist_proto = policy.user_allowlist();
+  if (policy.user_allowlist().user_allowlist_size() > 0) {
+    const RepeatedPtrField<std::string>& allowlist =
+        allowlist_proto.user_allowlist();
+    for (const std::string& value : allowlist) {
+      list.push_back(base::Value(value));
+    }
+  } else {
+    const em::UserWhitelistProto& whitelist_proto = policy.user_whitelist();
+    const RepeatedPtrField<std::string>& whitelist =
+        whitelist_proto.user_whitelist();
+    for (const std::string& value : whitelist) {
+      list.push_back(base::Value(value));
+    }
   }
+
   new_values_cache->SetValue(kAccountsPrefUsers, base::Value(std::move(list)));
 
   std::vector<base::Value> account_list;

@@ -15,6 +15,7 @@
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
@@ -47,6 +48,7 @@
 namespace em = enterprise_management;
 
 using content::BrowserThread;
+using google::protobuf::RepeatedPtrField;
 using ownership::OwnerKeyUtil;
 using ownership::PrivateKey;
 using ownership::PublicKey;
@@ -436,9 +438,19 @@ void OwnerSettingsServiceChromeOS::FixupLocalOwnerPolicy(
   if (!settings->has_allow_new_users())
     settings->mutable_allow_new_users()->set_allow_new_users(true);
 
-  em::UserWhitelistProto* whitelist_proto = settings->mutable_user_whitelist();
-  if (!base::Contains(whitelist_proto->user_whitelist(), user_id))
-    whitelist_proto->add_user_whitelist(user_id);
+  // Only add the owner id to the whitelist if the allowlist doesn't exist.
+  // Otherwise, use the allowlist.
+  if (settings->has_user_whitelist() && !settings->has_user_allowlist()) {
+    em::UserWhitelistProto* whitelist_proto =
+        settings->mutable_user_whitelist();
+    if (!base::Contains(whitelist_proto->user_whitelist(), user_id))
+      whitelist_proto->add_user_whitelist(user_id);
+  } else {
+    em::UserAllowlistProto* allowlist_proto =
+        settings->mutable_user_allowlist();
+    if (!base::Contains(allowlist_proto->user_allowlist(), user_id))
+      allowlist_proto->add_user_allowlist(user_id);
+  }
 }
 
 // static
@@ -568,16 +580,20 @@ void OwnerSettingsServiceChromeOS::UpdateDeviceSettings(
     else
       NOTREACHED();
   } else if (path == kAccountsPrefUsers) {
-    em::UserWhitelistProto* whitelist_proto = settings.mutable_user_whitelist();
-    whitelist_proto->clear_user_whitelist();
-    const base::ListValue* users;
-    if (value.GetAsList(&users)) {
-      for (base::ListValue::const_iterator i = users->begin();
-           i != users->end();
-           ++i) {
-        std::string email;
-        if (i->GetAsString(&email))
-          whitelist_proto->add_user_whitelist(email);
+    RepeatedPtrField<std::string>* list = nullptr;
+    // Only use the whitelist if the allowlist isn't being used.
+    if (settings.has_user_whitelist() && !settings.has_user_allowlist()) {
+      list = settings.mutable_user_whitelist()->mutable_user_whitelist();
+    } else {
+      // Clear the whitelist when using the allowlist
+      settings.mutable_user_whitelist()->clear_user_whitelist();
+      list = settings.mutable_user_allowlist()->mutable_user_allowlist();
+    }
+    DCHECK(list);
+    list->Clear();
+    for (const auto& user : value.GetList()) {
+      if (user.is_string()) {
+        list->Add(std::string(user.GetString()));
       }
     }
   } else if (path == kAccountsPrefEphemeralUsersEnabled) {
