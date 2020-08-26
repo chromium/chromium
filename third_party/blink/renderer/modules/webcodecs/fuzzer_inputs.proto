@@ -13,12 +13,24 @@ message ConfigureVideoDecoder {
   optional bytes description = 2;
 }
 
+message ConfigureAudioDecoder {
+  // String describing codec (e.g. "opus")
+  optional string codec = 1;
+
+  optional uint32 sample_rate = 2;
+
+  optional uint32 number_of_channels = 3;
+
+  optional bytes description = 4;
+}
+
+enum EncodedChunkType {
+  KEY = 0;
+  DELTA = 1;
+}
+
 message EncodedVideoChunk {
-  enum EncodedVideoChunkType {
-    KEY = 0;
-    DELTA = 1;
-  }
-  optional EncodedVideoChunkType type = 1;
+  optional EncodedChunkType type = 1;
 
   optional uint64 timestamp = 2;
 
@@ -27,8 +39,20 @@ message EncodedVideoChunk {
   optional bytes data = 4;
 }
 
+message EncodedAudioChunk {
+  optional EncodedChunkType type = 1;
+
+  optional uint64 timestamp = 2;
+
+  optional bytes data = 4;
+}
+
 message DecodeVideo {
   optional EncodedVideoChunk chunk = 1;
+}
+
+message DecodeAudio {
+  optional EncodedAudioChunk chunk = 1;
 }
 
 message Flush {
@@ -51,4 +75,18 @@ message VideoDecoderApiInvocation {
 
 message VideoDecoderApiInvocationSequence {
   repeated VideoDecoderApiInvocation invocations = 1;
+}
+
+message AudioDecoderApiInvocation {
+  oneof Api {
+    ConfigureAudioDecoder configure = 1;
+    DecodeAudio decode = 2;
+    Flush flush = 3;
+    Reset reset = 4;
+    Close close = 5;
+  }
+}
+
+message AudioDecoderApiInvocationSequence {
+  repeated AudioDecoderApiInvocation invocations = 1;
 }

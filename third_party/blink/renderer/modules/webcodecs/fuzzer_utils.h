@@ -7,9 +7,11 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -32,13 +34,19 @@ class FakeFunction : public ScriptFunction {
   const std::string name_;
 };
 
-EncodedVideoConfig* MakeDecoderConfig(
+EncodedVideoConfig* MakeVideoDecoderConfig(
     const wc_fuzzer::ConfigureVideoDecoder& proto);
+
+EncodedAudioConfig* MakeAudioDecoderConfig(
+    const wc_fuzzer::ConfigureAudioDecoder& proto);
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
     const wc_fuzzer::EncodedVideoChunk& proto);
 
-String ToChunkType(wc_fuzzer::EncodedVideoChunk_EncodedVideoChunkType type);
+EncodedAudioChunk* MakeEncodedAudioChunk(
+    const wc_fuzzer::EncodedAudioChunk& proto);
+
+String ToChunkType(wc_fuzzer::EncodedChunkType type);
 
 }  // namespace blink
 

@@ -5,17 +5,17 @@
 #include "base/run_loop.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_config.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_output_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_output_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_codecs_error_callback.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
-#include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -29,7 +29,7 @@
 namespace blink {
 
 DEFINE_TEXT_PROTO_FUZZER(
-    const wc_fuzzer::VideoDecoderApiInvocationSequence& proto) {
+    const wc_fuzzer::AudioDecoderApiInvocationSequence& proto) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   static DummyPageHolder* page_holder = []() {
     auto page_holder = std::make_unique<DummyPageHolder>();
@@ -59,42 +59,42 @@ DEFINE_TEXT_PROTO_FUZZER(
         V8WebCodecsErrorCallback::Create(error_function->Bind());
     Persistent<FakeFunction> output_function =
         FakeFunction::Create(script_state, "output");
-    Persistent<V8VideoFrameOutputCallback> output_callback =
-        V8VideoFrameOutputCallback::Create(output_function->Bind());
+    Persistent<V8AudioFrameOutputCallback> output_callback =
+        V8AudioFrameOutputCallback::Create(output_function->Bind());
 
-    Persistent<VideoDecoderInit> video_decoder_init =
-        MakeGarbageCollected<VideoDecoderInit>();
-    video_decoder_init->setError(error_callback);
-    video_decoder_init->setOutput(output_callback);
+    Persistent<AudioDecoderInit> audio_decoder_init =
+        MakeGarbageCollected<AudioDecoderInit>();
+    audio_decoder_init->setError(error_callback);
+    audio_decoder_init->setOutput(output_callback);
 
-    Persistent<VideoDecoder> video_decoder = VideoDecoder::Create(
-        script_state, video_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
+    Persistent<AudioDecoder> audio_decoder = AudioDecoder::Create(
+        script_state, audio_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
 
     for (auto& invocation : proto.invocations()) {
       switch (invocation.Api_case()) {
-        case wc_fuzzer::VideoDecoderApiInvocation::kConfigure:
-          video_decoder->configure(
-              MakeVideoDecoderConfig(invocation.configure()),
+        case wc_fuzzer::AudioDecoderApiInvocation::kConfigure:
+          audio_decoder->configure(
+              MakeAudioDecoderConfig(invocation.configure()),
               IGNORE_EXCEPTION_FOR_TESTING);
           break;
-        case wc_fuzzer::VideoDecoderApiInvocation::kDecode:
-          video_decoder->decode(
-              MakeEncodedVideoChunk(invocation.decode().chunk()),
+        case wc_fuzzer::AudioDecoderApiInvocation::kDecode:
+          audio_decoder->decode(
+              MakeEncodedAudioChunk(invocation.decode().chunk()),
               IGNORE_EXCEPTION_FOR_TESTING);
           break;
-        case wc_fuzzer::VideoDecoderApiInvocation::kFlush: {
+        case wc_fuzzer::AudioDecoderApiInvocation::kFlush: {
           // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
           // of the flush promise.
-          video_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+          audio_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
           break;
         }
-        case wc_fuzzer::VideoDecoderApiInvocation::kReset:
-          video_decoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
+        case wc_fuzzer::AudioDecoderApiInvocation::kReset:
+          audio_decoder->reset(IGNORE_EXCEPTION_FOR_TESTING);
           break;
-        case wc_fuzzer::VideoDecoderApiInvocation::kClose:
-          video_decoder->close(IGNORE_EXCEPTION_FOR_TESTING);
+        case wc_fuzzer::AudioDecoderApiInvocation::kClose:
+          audio_decoder->close(IGNORE_EXCEPTION_FOR_TESTING);
           break;
-        case wc_fuzzer::VideoDecoderApiInvocation::API_NOT_SET:
+        case wc_fuzzer::AudioDecoderApiInvocation::API_NOT_SET:
           break;
       }
 

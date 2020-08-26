@@ -34,7 +34,7 @@ ScriptValue FakeFunction::Call(ScriptValue) {
   return ScriptValue();
 }
 
-EncodedVideoConfig* MakeDecoderConfig(
+EncodedVideoConfig* MakeVideoDecoderConfig(
     const wc_fuzzer::ConfigureVideoDecoder& proto) {
   auto* config = EncodedVideoConfig::Create();
   config->setCodec(proto.codec().c_str());
@@ -45,11 +45,26 @@ EncodedVideoConfig* MakeDecoderConfig(
   return config;
 }
 
-String ToChunkType(wc_fuzzer::EncodedVideoChunk_EncodedVideoChunkType type) {
+EncodedAudioConfig* MakeAudioDecoderConfig(
+    const wc_fuzzer::ConfigureAudioDecoder& proto) {
+  auto* config = EncodedAudioConfig::Create();
+  config->setCodec(proto.codec().c_str());
+  config->setSampleRate(proto.sample_rate());
+  config->setNumberOfChannels(proto.number_of_channels());
+
+  DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
+      proto.description().data(), proto.description().size());
+  config->setDescription(
+      ArrayBufferOrArrayBufferView::FromArrayBuffer(data_copy));
+
+  return config;
+}
+
+String ToChunkType(wc_fuzzer::EncodedChunkType type) {
   switch (type) {
-    case wc_fuzzer::EncodedVideoChunk_EncodedVideoChunkType_KEY:
+    case wc_fuzzer::EncodedChunkType::KEY:
       return "key";
-    case wc_fuzzer::EncodedVideoChunk_EncodedVideoChunkType_DELTA:
+    case wc_fuzzer::EncodedChunkType::DELTA:
       return "delta";
   }
 }
@@ -61,6 +76,15 @@ EncodedVideoChunk* MakeEncodedVideoChunk(
 
   return EncodedVideoChunk::Create(ToChunkType(proto.type()), proto.timestamp(),
                                    proto.duration(), data_copy);
+}
+
+EncodedAudioChunk* MakeEncodedAudioChunk(
+    const wc_fuzzer::EncodedAudioChunk& proto) {
+  DOMArrayBuffer* data_copy =
+      DOMArrayBuffer::Create(proto.data().data(), proto.data().size());
+
+  return EncodedAudioChunk::Create(ToChunkType(proto.type()), proto.timestamp(),
+                                   data_copy);
 }
 
 }  // namespace blink
