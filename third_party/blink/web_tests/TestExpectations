@@ -5254,6 +5254,9 @@ crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Failure Pas
 # Recently became flaky on multiple platforms (Linux and Windows primarily)
 crbug.com/927769 fast/webgl/OffscreenCanvas-webgl-preserveDrawingBuffer.html [ Skip ]
 
+# Flaky test.
+crbug.com/1084378 external/wpt/webvtt/rendering/cues-with-video/processing-model/dom_override_remove_cue_while_paused.html [ Pass Failure ]
+
 # Flay probably due to outstanding work for FeaturePolicyForSandbox.
 
 # Sheriff 2019-02-12
