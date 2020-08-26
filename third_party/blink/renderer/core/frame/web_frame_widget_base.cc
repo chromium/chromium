@@ -1604,13 +1604,13 @@ void WebFrameWidgetBase::DidHandleGestureEvent(const WebGestureEvent& event,
 
 #if defined(OS_ANDROID) || defined(USE_AURA)
   if (event.GetType() == WebInputEvent::Type::kGestureTap) {
-    widget_base_->input_handler().ShowVirtualKeyboard();
+    widget_base_->ShowVirtualKeyboard();
   } else if (event.GetType() == WebInputEvent::Type::kGestureLongPress) {
     WebInputMethodController* controller = GetActiveWebInputMethodController();
     if (!controller || controller->TextInputInfo().value.IsEmpty())
-      widget_base_->input_handler().UpdateTextInputState();
+      widget_base_->UpdateTextInputState();
     else
-      widget_base_->input_handler().ShowVirtualKeyboard();
+      widget_base_->ShowVirtualKeyboard();
   }
 #endif
 }
