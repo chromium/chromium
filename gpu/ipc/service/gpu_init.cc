@@ -82,13 +82,18 @@ bool CollectGraphicsInfo(GPUInfo* gpu_info) {
   return success;
 }
 
-void InitializePlatformOverlaySettings(GPUInfo* gpu_info) {
+void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
+                                       const GpuFeatureInfo& gpu_feature_info) {
 #if defined(OS_WIN)
   // This has to be called after a context is created, active GPU is identified,
   // and GPU driver bug workarounds are computed again. Otherwise the workaround
   // |disable_direct_composition| may not be correctly applied.
   // Also, this has to be called after falling back to SwiftShader decision is
   // finalized because this function depends on GL is ANGLE's GLES or not.
+  if (gpu_feature_info.IsWorkaroundEnabled(
+          gpu::ENABLE_BGRA8_OVERLAYS_WITH_YUV_OVERLAY_SUPPORT)) {
+    gl::DirectCompositionSurfaceWin::EnableBGRA8OverlaysWithYUVOverlaySupport();
+  }
   DCHECK(gpu_info);
   CollectHardwareOverlayInfo(&gpu_info->overlay_info);
 #elif defined(OS_ANDROID)
@@ -483,7 +488,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 
-  InitializePlatformOverlaySettings(&gpu_info_);
+  InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Driver may create a compatibility profile context when collect graphics
@@ -675,7 +680,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     }
   }
 
-  InitializePlatformOverlaySettings(&gpu_info_);
+  InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Driver may create a compatibility profile context when collect graphics

@@ -3487,6 +3487,18 @@
       "features": [
         "force_rgb10a2_overlay_support_flags"
       ]
+    },
+    {
+      "id": 347,
+      "cr_bugs": [1119491],
+      "description": "Intel GPUs fail to report BGRA8 overlay support",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "features": [
+        "enable_bgra8_overlays_with_yuv_overlay_support"
+      ]
     }
   ]
 }

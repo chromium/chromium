@@ -99,6 +99,11 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   static void SetOverlayHDRGpuInfoUpdateCallback(
       OverlayHDRInfoUpdateCallback callback);
 
+  // On Intel GPUs where YUV overlays are supported, BGRA8 overlays are
+  // supported as well but IDXGIOutput3::CheckOverlaySupport() returns
+  // unsupported. So allow manually enabling BGRA8 overlay support.
+  static void EnableBGRA8OverlaysWithYUVOverlaySupport();
+
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
   void Destroy() override;
