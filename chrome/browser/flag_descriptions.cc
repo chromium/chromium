@@ -1986,6 +1986,12 @@ const char kDelayAsyncScriptExecutionName[] = "Delay Async Script Execution";
 const char kDelayAsyncScriptExecutionDescription[] =
     "The execution of async scripts will be delayed.";
 
+const char kDelayCompetingLowPriorityRequestsName[] =
+    "Delay Competing Low Priority Requests";
+const char kDelayCompetingLowPriorityRequestsDescription[] =
+    "Low priority requests will be delayed if they would otherwise compete "
+    "with a high priority request.";
+
 const char kPrefetchPrivacyChangesName[] =
     "Prefetch request properties are updated to be privacy-preserving";
 const char kPrefetchPrivacyChangesDescription[] =

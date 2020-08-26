@@ -141,6 +141,14 @@ class PLATFORM_EXPORT ResourceFetcher
                             const ResourceFactory&,
                             ResourceClient*);
 
+  // TODO(crbug/1112515): Instead of having one-off notifications of these
+  // loading milestones, we should introduce an abstract interface that
+  // interested parties can hook into, to be notified of relevant loading
+  // milestones.
+  // These are only called for main frames.
+  void MarkFirstPaint();
+  void MarkFirstContentfulPaint();
+
   // Returns the task runner used by this fetcher, and loading operations
   // this fetcher initiates. The returned task runner will keep working even
   // after ClearContext is called.

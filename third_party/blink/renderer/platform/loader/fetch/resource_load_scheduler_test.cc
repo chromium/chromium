@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 
 #include <memory>
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
@@ -66,7 +68,7 @@ class MockClient final : public GarbageCollected<MockClient>,
   bool was_run_ = false;
 };
 
-class ResourceLoadSchedulerTest : public testing::Test {
+class ResourceLoadSchedulerTestBase : public testing::Test {
  public:
   class MockConsoleLogger final : public GarbageCollected<MockConsoleLogger>,
                                   public ConsoleLogger {
@@ -112,12 +114,48 @@ class ResourceLoadSchedulerTest : public testing::Test {
         ResourceLoadScheduler::TrafficReportHints::InvalidInstance());
   }
 
- private:
+ protected:
+  base::test::ScopedFeatureList feature_list_;
   Persistent<MockConsoleLogger> console_logger_;
   Persistent<ResourceLoadScheduler> scheduler_;
 };
 
-TEST_F(ResourceLoadSchedulerTest, StopStoppableRequest) {
+class ResourceLoadSchedulerTest
+    : public ResourceLoadSchedulerTestBase,
+      public testing::WithParamInterface<
+          std::tuple<base::test::ScopedFeatureList::FeatureAndParams, bool>> {
+ public:
+  void SetUp() override {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        features_with_params;
+    std::vector<base::Feature> disabled_features;
+
+    bool enabled = std::get<1>(GetParam());
+    if (enabled) {
+      features_with_params.push_back(std::get<0>(GetParam()));
+    } else {
+      disabled_features.push_back(std::get<0>(GetParam()).feature);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(features_with_params,
+                                                disabled_features);
+    ResourceLoadSchedulerTestBase::SetUp();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ResourceLoadSchedulerTest,
+    testing::Combine(
+        // A list of FeatureAndParams structs representing a single feature and
+        // an arbitrary number of parameters.
+        testing::Values(base::test::ScopedFeatureList::FeatureAndParams(
+            features::kDelayCompetingLowPriorityRequests,
+            {{"delay_type", "always"}})),
+        // A boolean indicating whether or not the feature is enabled.
+        testing::Bool()));
+
+TEST_P(ResourceLoadSchedulerTest, StopStoppableRequest) {
   Scheduler()->OnLifecycleStateChanged(
       scheduler::SchedulingLifecycleState::kStopped);
   // A request that disallows throttling should be queued.
@@ -163,7 +201,7 @@ TEST_F(ResourceLoadSchedulerTest, StopStoppableRequest) {
   EXPECT_FALSE(Release(static_cast<ResourceLoadScheduler::ClientId>(774)));
 }
 
-TEST_F(ResourceLoadSchedulerTest, ThrottleThrottleableRequest) {
+TEST_P(ResourceLoadSchedulerTest, ThrottleThrottleableRequest) {
   Scheduler()->OnLifecycleStateChanged(
       scheduler::SchedulingLifecycleState::kThrottled);
 
@@ -211,7 +249,7 @@ TEST_F(ResourceLoadSchedulerTest, ThrottleThrottleableRequest) {
   EXPECT_FALSE(Release(static_cast<ResourceLoadScheduler::ClientId>(774)));
 }
 
-TEST_F(ResourceLoadSchedulerTest, Throttled) {
+TEST_P(ResourceLoadSchedulerTest, Throttled) {
   // The first request should be ran synchronously.
   MockClient* client1 = MakeGarbageCollected<MockClient>();
   ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
@@ -263,7 +301,7 @@ TEST_F(ResourceLoadSchedulerTest, Throttled) {
   EXPECT_TRUE(client4->WasRun());
 }
 
-TEST_F(ResourceLoadSchedulerTest, Unthrottle) {
+TEST_P(ResourceLoadSchedulerTest, Unthrottle) {
   // Push three requests.
   MockClient* client1 = MakeGarbageCollected<MockClient>();
   ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
@@ -300,7 +338,7 @@ TEST_F(ResourceLoadSchedulerTest, Unthrottle) {
   EXPECT_TRUE(Release(id1));
 }
 
-TEST_F(ResourceLoadSchedulerTest, Stopped) {
+TEST_P(ResourceLoadSchedulerTest, Stopped) {
   // Push three requests.
   MockClient* client1 = MakeGarbageCollected<MockClient>();
   ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
@@ -342,7 +380,7 @@ TEST_F(ResourceLoadSchedulerTest, Stopped) {
   EXPECT_TRUE(Release(id2));
 }
 
-TEST_F(ResourceLoadSchedulerTest, PriorityIsConsidered) {
+TEST_P(ResourceLoadSchedulerTest, PriorityIsConsidered) {
   // Push three requests.
   MockClient* client1 = MakeGarbageCollected<MockClient>();
 
@@ -381,26 +419,55 @@ TEST_F(ResourceLoadSchedulerTest, PriorityIsConsidered) {
   EXPECT_FALSE(client3->WasRun());
   EXPECT_TRUE(client4->WasRun());
 
-  Scheduler()->SetOutstandingLimitForTesting(2);
+  if (base::FeatureList::IsEnabled(
+          features::kDelayCompetingLowPriorityRequests)) {
+    // Allows two requests (regardless of priority). No other clients are run,
+    // because the kHigh request is considered running / in-flight, so the kLow
+    // priority request should be delayed behind it as per this feature.
+    Scheduler()->SetOutstandingLimitForTesting(2);
 
-  EXPECT_FALSE(client1->WasRun());
-  EXPECT_FALSE(client2->WasRun());
-  EXPECT_TRUE(client3->WasRun());
-  EXPECT_TRUE(client4->WasRun());
+    EXPECT_FALSE(client1->WasRun());
+    EXPECT_FALSE(client2->WasRun());
+    EXPECT_FALSE(client3->WasRun());
+    EXPECT_TRUE(client4->WasRun());
 
-  Scheduler()->SetOutstandingLimitForTesting(3);
+    // ResourceLoadPriority::kLow requests will not run until client4 is
+    // released.
+    EXPECT_TRUE(ReleaseAndSchedule(id4));
 
-  EXPECT_FALSE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
-  EXPECT_TRUE(client3->WasRun());
-  EXPECT_TRUE(client4->WasRun());
+    EXPECT_FALSE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+    EXPECT_TRUE(client3->WasRun());
+    EXPECT_TRUE(client4->WasRun());
 
-  Scheduler()->SetOutstandingLimitForTesting(4);
+    Scheduler()->SetOutstandingLimitForTesting(3);
 
-  EXPECT_TRUE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
-  EXPECT_TRUE(client3->WasRun());
-  EXPECT_TRUE(client4->WasRun());
+    EXPECT_TRUE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+    EXPECT_TRUE(client3->WasRun());
+    EXPECT_TRUE(client4->WasRun());
+  } else {
+    Scheduler()->SetOutstandingLimitForTesting(2);
+
+    EXPECT_FALSE(client1->WasRun());
+    EXPECT_FALSE(client2->WasRun());
+    EXPECT_TRUE(client3->WasRun());
+    EXPECT_TRUE(client4->WasRun());
+
+    Scheduler()->SetOutstandingLimitForTesting(3);
+
+    EXPECT_FALSE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+    EXPECT_TRUE(client3->WasRun());
+    EXPECT_TRUE(client4->WasRun());
+
+    Scheduler()->SetOutstandingLimitForTesting(4);
+
+    EXPECT_TRUE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+    EXPECT_TRUE(client3->WasRun());
+    EXPECT_TRUE(client4->WasRun());
+  }
 
   // Release the rest.
   EXPECT_TRUE(Release(id3));
@@ -408,7 +475,7 @@ TEST_F(ResourceLoadSchedulerTest, PriorityIsConsidered) {
   EXPECT_TRUE(Release(id1));
 }
 
-TEST_F(ResourceLoadSchedulerTest, AllowedRequestsRunInPriorityOrder) {
+TEST_P(ResourceLoadSchedulerTest, AllowedRequestsRunInPriorityOrder) {
   Scheduler()->OnLifecycleStateChanged(
       scheduler::SchedulingLifecycleState::kStopped);
   Scheduler()->SetOutstandingLimitForTesting(0);
@@ -441,20 +508,32 @@ TEST_F(ResourceLoadSchedulerTest, AllowedRequestsRunInPriorityOrder) {
   Scheduler()->OnLifecycleStateChanged(
       scheduler::SchedulingLifecycleState::kThrottled);
 
-  EXPECT_TRUE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
+  if (base::FeatureList::IsEnabled(
+          features::kDelayCompetingLowPriorityRequests)) {
+    EXPECT_FALSE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+
+    EXPECT_TRUE(ReleaseAndSchedule(id2));
+    EXPECT_TRUE(client1->WasRun());
+
+    // Finish releasing all.
+    EXPECT_TRUE(Release(id1));
+  } else {
+    EXPECT_TRUE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+
+    // Release all.
+    EXPECT_TRUE(Release(id1));
+    EXPECT_TRUE(Release(id2));
+  }
 
   // Verify high priority request ran first.
   auto& order = delegate.client_order();
   EXPECT_EQ(order[0], client2);
   EXPECT_EQ(order[1], client1);
-
-  // Release all.
-  EXPECT_TRUE(Release(id1));
-  EXPECT_TRUE(Release(id2));
 }
 
-TEST_F(ResourceLoadSchedulerTest, StoppableRequestResumesWhenThrottled) {
+TEST_P(ResourceLoadSchedulerTest, StoppableRequestResumesWhenThrottled) {
   Scheduler()->OnLifecycleStateChanged(
       scheduler::SchedulingLifecycleState::kStopped);
   // Push two requests.
@@ -505,7 +584,7 @@ TEST_F(ResourceLoadSchedulerTest, StoppableRequestResumesWhenThrottled) {
   EXPECT_TRUE(Release(id3));
 }
 
-TEST_F(ResourceLoadSchedulerTest, SetPriority) {
+TEST_P(ResourceLoadSchedulerTest, SetPriority) {
   // Push three requests.
   MockClient* client1 = MakeGarbageCollected<MockClient>();
 
@@ -548,28 +627,62 @@ TEST_F(ResourceLoadSchedulerTest, SetPriority) {
   EXPECT_FALSE(client2->WasRun());
   EXPECT_FALSE(client3->WasRun());
 
-  // Loosen the policy to adopt the normal limit for all.
-  Scheduler()->LoosenThrottlingPolicy();
-  Scheduler()->SetOutstandingLimitForTesting(0, 2);
+  if (base::FeatureList::IsEnabled(
+          features::kDelayCompetingLowPriorityRequests)) {
+    // Loosen the policy to adopt the normal limit for all. One request
+    // regardless of priority can be granted.
+    Scheduler()->LoosenThrottlingPolicy();
 
-  EXPECT_TRUE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
-  EXPECT_FALSE(client3->WasRun());
+    // The kLow requests are still delayed behind the in-flight kHigh one, since
+    // it hasn't been released yet.
+    EXPECT_TRUE(client1->WasRun());
+    EXPECT_FALSE(client2->WasRun());
+    EXPECT_FALSE(client3->WasRun());
 
-  // kHigh priority does not help here.
-  Scheduler()->SetPriority(id3, ResourceLoadPriority::kHigh, 0);
+    // Releasing the in-flight high priority request makes room for the next two
+    // low priority requests to be granted, since the limit is two, and low
+    // priority.
+    EXPECT_TRUE(ReleaseAndSchedule(id1));
+    EXPECT_TRUE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+    EXPECT_FALSE(client3->WasRun());
 
-  EXPECT_TRUE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
-  EXPECT_FALSE(client3->WasRun());
+    // kHigh priority does not help the third request here.
+    Scheduler()->SetPriority(id3, ResourceLoadPriority::kHigh, 0);
 
-  // Release all.
-  EXPECT_TRUE(Release(id3));
-  EXPECT_TRUE(Release(id2));
-  EXPECT_TRUE(Release(id1));
+    EXPECT_TRUE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+    EXPECT_FALSE(client3->WasRun());
+
+    // Release remaining clients.
+    EXPECT_TRUE(Release(id3));
+    EXPECT_TRUE(Release(id2));
+  } else {
+    // Loosen the policy to adopt the normal limit for all. Two requests
+    // regardless of priority can be granted (including the in-flight high
+    // priority request).
+    Scheduler()->LoosenThrottlingPolicy();
+    Scheduler()->SetOutstandingLimitForTesting(0, 2);
+
+    EXPECT_TRUE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+    EXPECT_FALSE(client3->WasRun());
+
+    // kHigh priority does not help the third request here.
+    Scheduler()->SetPriority(id3, ResourceLoadPriority::kHigh, 0);
+
+    EXPECT_TRUE(client1->WasRun());
+    EXPECT_TRUE(client2->WasRun());
+    EXPECT_FALSE(client3->WasRun());
+
+    // Release all.
+    EXPECT_TRUE(Release(id3));
+    EXPECT_TRUE(Release(id2));
+    EXPECT_TRUE(Release(id1));
+  }
 }
 
-TEST_F(ResourceLoadSchedulerTest, LoosenThrottlingPolicy) {
+TEST_P(ResourceLoadSchedulerTest, LoosenThrottlingPolicy) {
   MockClient* client1 = MakeGarbageCollected<MockClient>();
 
   Scheduler()->SetOutstandingLimitForTesting(0, 0);
@@ -645,7 +758,7 @@ TEST_F(ResourceLoadSchedulerTest, LoosenThrottlingPolicy) {
   EXPECT_TRUE(Release(id1));
 }
 
-TEST_F(ResourceLoadSchedulerTest, ConsoleMessage) {
+TEST_P(ResourceLoadSchedulerTest, ConsoleMessage) {
   auto test_task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   Scheduler()->SetClockForTesting(test_task_runner->GetMockClock());
   Scheduler()->SetOutstandingLimitForTesting(0, 0);
@@ -688,6 +801,161 @@ TEST_F(ResourceLoadSchedulerTest, ConsoleMessage) {
       scheduler::SchedulingLifecycleState::kNotThrottled);
   EXPECT_TRUE(GetConsoleLogger()->HasMessage());
   EXPECT_TRUE(Release(id2));
+}
+
+class ResourceLoadSchedulerTestDelayCompetingLowPriorityRequests
+    : public ResourceLoadSchedulerTestBase,
+      public testing::WithParamInterface<
+          std::tuple<features::DelayCompetingLowPriorityRequestsDelayType,
+                     features::DelayCompetingLowPriorityRequestsThreshold>> {
+ public:
+  void SetUp() override {
+    std::map<std::string, std::string> parameters;
+    until_ = std::get<0>(GetParam());
+    priority_threshold_ = std::get<1>(GetParam());
+
+    switch (until_) {
+      case features::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint:
+        parameters[features::kDelayCompetingLowPriorityRequestsDelayParam
+                       .name] = "first_paint";
+        break;
+      case features::DelayCompetingLowPriorityRequestsDelayType::
+          kFirstContentfulPaint:
+        parameters[features::kDelayCompetingLowPriorityRequestsDelayParam
+                       .name] = "first_contentful_paint";
+        break;
+      // This value is only included for manual testing.
+      case features::DelayCompetingLowPriorityRequestsDelayType::kAlways:
+        NOTREACHED();
+        break;
+    }
+
+    switch (priority_threshold_) {
+      case features::DelayCompetingLowPriorityRequestsThreshold::kMedium:
+        parameters[features::kDelayCompetingLowPriorityRequestsThresholdParam
+                       .name] = "medium";
+        break;
+      case features::DelayCompetingLowPriorityRequestsThreshold::kHigh:
+        parameters[features::kDelayCompetingLowPriorityRequestsThresholdParam
+                       .name] = "high";
+        break;
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kDelayCompetingLowPriorityRequests, parameters}}, {});
+    ASSERT_TRUE(base::FeatureList::IsEnabled(
+        features::kDelayCompetingLowPriorityRequests));
+    ASSERT_EQ(features::kDelayCompetingLowPriorityRequestsDelayParam.Get(),
+              until_);
+    ASSERT_EQ(features::kDelayCompetingLowPriorityRequestsThresholdParam.Get(),
+              priority_threshold_);
+    ResourceLoadSchedulerTestBase::SetUp();
+  }
+
+  // Returns a ResourceLoadPriority value (either kHigh, or kMedium)
+  // corresponding with the priority threshold field trial parameter.
+  ResourceLoadPriority ImportantPriority() {
+    if (priority_threshold_ ==
+        features::DelayCompetingLowPriorityRequestsThreshold::kMedium) {
+      return ResourceLoadPriority::kMedium;
+    }
+
+    if (priority_threshold_ ==
+        features::DelayCompetingLowPriorityRequestsThreshold::kHigh) {
+      return ResourceLoadPriority::kHigh;
+    }
+
+    NOTREACHED();
+    return ResourceLoadPriority::kUnresolved;
+  }
+
+ protected:
+  features::DelayCompetingLowPriorityRequestsDelayType until_;
+  features::DelayCompetingLowPriorityRequestsThreshold priority_threshold_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ResourceLoadSchedulerTestDelayCompetingLowPriorityRequests,
+    testing::Combine(
+        // Delay "until" parameter:
+        testing::Values(
+            features::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint,
+            features::DelayCompetingLowPriorityRequestsDelayType::
+                kFirstContentfulPaint),
+        // Priority threshold parameter:
+        testing::Values(
+            features::DelayCompetingLowPriorityRequestsThreshold::kMedium,
+            features::DelayCompetingLowPriorityRequestsThreshold::kHigh)));
+
+TEST_P(ResourceLoadSchedulerTestDelayCompetingLowPriorityRequests,
+       DelayRequests) {
+  ResourceLoadPriority important = ImportantPriority();
+
+  // No throttling, so we can test the delay logic in an unobstructed way.
+  Scheduler()->OnLifecycleStateChanged(
+      scheduler::SchedulingLifecycleState::kNotThrottled);
+  Scheduler()->SetOutstandingLimitForTesting(
+      ResourceLoadScheduler::kOutstandingUnlimited);
+
+  MockClient* important_client1 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(important_client1, ThrottleOption::kThrottleable,
+                       important, 0 /* intra_priority */, &id1);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
+  EXPECT_TRUE(important_client1->WasRun());
+
+  MockClient* important_client2 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id2 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(important_client2, ThrottleOption::kThrottleable,
+                       important, 0 /* intra_priority */, &id2);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id2);
+  EXPECT_TRUE(important_client2->WasRun());
+
+  MockClient* low_client1 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id3 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(low_client1, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLow, 0 /* intra_priority */,
+                       &id3);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id3);
+  EXPECT_FALSE(low_client1->WasRun());
+
+  MockClient* low_client2 = MakeGarbageCollected<MockClient>();
+  ResourceLoadScheduler::ClientId id4 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(low_client2, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLow, 0 /* intra_priority */,
+                       &id4);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id4);
+  EXPECT_FALSE(low_client2->WasRun());
+
+  EXPECT_TRUE(ReleaseAndSchedule(id1));
+
+  // Releasing one important request is not enough to grant the low priority
+  // clients.
+  EXPECT_FALSE(low_client1->WasRun());
+  EXPECT_FALSE(low_client2->WasRun());
+
+  // Triggering the loading milestone that we're not interested is not enough to
+  // grant the low priority clients.
+  if (until_ ==
+      features::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint) {
+    Scheduler()->MarkFirstContentfulPaint();
+  } else {
+    Scheduler()->MarkFirstPaint();
+  }
+  EXPECT_FALSE(low_client1->WasRun());
+  EXPECT_FALSE(low_client2->WasRun());
+
+  // Triggering the loading milestone we are interested in *is* enough to grant
+  // the low priority clients.
+  Scheduler()->MarkFirstPaint();
+  Scheduler()->MarkFirstContentfulPaint();
+  EXPECT_TRUE(low_client1->WasRun());
+  EXPECT_TRUE(low_client2->WasRun());
+
+  EXPECT_TRUE(Release(id2));
+  EXPECT_TRUE(Release(id3));
+  EXPECT_TRUE(Release(id4));
 }
 
 }  // namespace

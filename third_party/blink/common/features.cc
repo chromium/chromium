@@ -578,6 +578,39 @@ const base::FeatureParam<DelayAsyncScriptDelayType>
         DelayAsyncScriptDelayType::kFinishedParsing,
         &delay_async_script_execution_delay_types};
 
+// Feature and parameters for delaying low priority requests behind "important"
+// (either high or medium priority requests). There are two parameters
+// highlighted below.
+const base::Feature kDelayCompetingLowPriorityRequests{
+    "DelayCompetingLowPriorityRequests", base::FEATURE_DISABLED_BY_DEFAULT};
+// The delay type: We don't want to delay low priority requests behind
+// "important" requests forever. Rather, it makes sense to have this behavior up
+// *until* some relevant loading milestone, which this parameter specifies.
+const base::FeatureParam<DelayCompetingLowPriorityRequestsDelayType>::Option
+    delay_competing_low_priority_requests_delay_types[] = {
+        {DelayCompetingLowPriorityRequestsDelayType::kFirstPaint,
+         "first_paint"},
+        {DelayCompetingLowPriorityRequestsDelayType::kFirstContentfulPaint,
+         "first_contentful_paint"},
+        {DelayCompetingLowPriorityRequestsDelayType::kAlways, "always"}};
+const base::FeatureParam<DelayCompetingLowPriorityRequestsDelayType>
+    kDelayCompetingLowPriorityRequestsDelayParam{
+        &kDelayCompetingLowPriorityRequests, "until",
+        DelayCompetingLowPriorityRequestsDelayType::kFirstContentfulPaint,
+        &delay_competing_low_priority_requests_delay_types};
+// The priority threshold: indicates which ResourceLoadPriority should be
+// considered "important", such that low priority requests are delayed behind
+// in-flight "important" requests.
+const base::FeatureParam<DelayCompetingLowPriorityRequestsThreshold>::Option
+    delay_competing_low_priority_requests_thresholds[] = {
+        {DelayCompetingLowPriorityRequestsThreshold::kMedium, "medium"},
+        {DelayCompetingLowPriorityRequestsThreshold::kHigh, "high"}};
+const base::FeatureParam<DelayCompetingLowPriorityRequestsThreshold>
+    kDelayCompetingLowPriorityRequestsThresholdParam{
+        &kDelayCompetingLowPriorityRequests, "priority_threshold",
+        DelayCompetingLowPriorityRequestsThreshold::kHigh,
+        &delay_competing_low_priority_requests_thresholds};
+
 // The AppCache feature is a kill-switch for the entire AppCache feature,
 // both backend and API.  If disabled, then it will turn off the backend and
 // api, regardless of the presence of valid origin trial tokens.  Disabling

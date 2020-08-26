@@ -81,6 +81,11 @@ class PLATFORM_EXPORT ResourceLoadSchedulerClient
 //     and sub frames. When the frame has been background for more than five
 //     minutes, all throttleable resource loading requests are throttled
 //     indefinitely (i.e., threshold is zero in such a circumstance).
+//   - (As of M86): Low-priority requests are delayed behind "important"
+//     requests before some general loading milestone has been reached.
+//     "Important", for the experiment means either kHigh or kMedium priority,
+//     and the milestones being experimented with are first paint and first
+//     contentful paint so far.
 class PLATFORM_EXPORT ResourceLoadScheduler final
     : public GarbageCollected<ResourceLoadScheduler>,
       public FrameOrWorkerScheduler::Observer {
@@ -225,6 +230,10 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
     throttle_option_override_ = throttle_option_override;
   }
 
+  // Indicates that some loading milestones have been reached.
+  void MarkFirstPaint();
+  void MarkFirstContentfulPaint();
+
  private:
   class ClientIdWithPriority {
    public:
@@ -247,7 +256,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
           intra_priority(intra_priority) {}
 
     const ClientId client_id;
-    const WebURLRequest::Priority priority;
+    const ResourceLoadPriority priority;
     const int intra_priority;
   };
 
@@ -269,6 +278,8 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
     int intra_priority;
   };
 
+  using PendingRequestMap = HeapHashMap<ClientId, Member<ClientInfo>>;
+
   // Checks if |pending_requests_| for the specified option is effectively
   // empty, that means it does not contain any request that is still alive in
   // |pending_request_map_|.
@@ -276,6 +287,9 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   // Gets the highest priority pending request that is allowed to be run.
   bool GetNextPendingRequest(ClientId* id);
+
+  // Determines whether or not a low-priority request should be delayed.
+  bool ShouldDelay(PendingRequestMap::iterator found) const;
 
   // Returns whether we can throttle a request with the given option based
   // on life cycle state.
@@ -288,7 +302,10 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   void MaybeRun();
 
   // Grants a client to run,
-  void Run(ClientId, ResourceLoadSchedulerClient*, bool throttleable);
+  void Run(ClientId,
+           ResourceLoadSchedulerClient*,
+           bool throttleable,
+           ResourceLoadPriority priority);
 
   size_t GetOutstandingLimit(ResourceLoadPriority priority) const;
 
@@ -319,7 +336,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   ClientId current_id_ = kInvalidClientId;
 
   // Holds clients that were granted and are running.
-  HashSet<ClientId> running_requests_;
+  HashMap<ClientId, ResourceLoadPriority> running_requests_;
 
   HashSet<ClientId> running_throttleable_requests_;
 
@@ -330,7 +347,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
       scheduler::SchedulingLifecycleState::kNotThrottled;
 
   // Holds clients that haven't been granted, and are waiting for a grant.
-  HeapHashMap<ClientId, Member<ClientInfo>> pending_request_map_;
+  PendingRequestMap pending_request_map_;
 
   // We use std::set here because WTF doesn't have its counterpart.
   // This tracks two sets of requests, throttleable and stoppable.
@@ -349,6 +366,11 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
   const Member<DetachableConsoleLogger> console_logger_;
 
   const base::Clock* clock_;
+
+  int in_flight_important_requests_ = 0;
+  // When this is true, the scheduler no longer needs to delay low-priority
+  // resources. |ShouldDelay()| will always return false after this point.
+  bool delay_milestone_reached_ = false;
 
   ThrottleOptionOverride throttle_option_override_;
 

@@ -1208,6 +1208,14 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   return resource;
 }
 
+void ResourceFetcher::MarkFirstPaint() {
+  scheduler_->MarkFirstPaint();
+}
+
+void ResourceFetcher::MarkFirstContentfulPaint() {
+  scheduler_->MarkFirstContentfulPaint();
+}
+
 void ResourceFetcher::ResourceTimingReportTimerFired(TimerBase* timer) {
   DCHECK_EQ(timer, &resource_timing_report_timer_);
   Vector<scoped_refptr<ResourceTimingInfo>> timing_reports;

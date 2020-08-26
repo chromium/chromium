@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -182,6 +183,8 @@ void PaintTiming::SetFirstPaint(base::TimeTicks stamp) {
   if (frame && frame->GetDocument()) {
     Document* document = frame->GetDocument();
     document->MarkFirstPaint();
+    if (frame->IsMainFrame())
+      document->Fetcher()->MarkFirstPaint();
   }
 
   first_paint_ = stamp;
@@ -200,6 +203,9 @@ void PaintTiming::SetFirstContentfulPaint(base::TimeTicks stamp) {
   if (!frame || !frame->IsMainFrame())
     return;
   frame->View()->OnFirstContentfulPaint();
+
+  if (frame->GetDocument() && frame->GetDocument()->Fetcher())
+    frame->GetDocument()->Fetcher()->MarkFirstContentfulPaint();
 
   if (frame->GetFrameScheduler())
     frame->GetFrameScheduler()->OnFirstContentfulPaint();

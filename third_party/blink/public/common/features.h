@@ -182,6 +182,7 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::Feature kFlexNG;
 
 BLINK_COMMON_EXPORT extern const base::Feature kKeepScriptResourceAlive;
+
 BLINK_COMMON_EXPORT extern const base::Feature kDelayAsyncScriptExecution;
 enum class DelayAsyncScriptDelayType {
   kFinishedParsing,
@@ -190,6 +191,24 @@ enum class DelayAsyncScriptDelayType {
 };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<DelayAsyncScriptDelayType>
     kDelayAsyncScriptExecutionDelayParam;
+
+BLINK_COMMON_EXPORT extern const base::Feature
+    kDelayCompetingLowPriorityRequests;
+enum class DelayCompetingLowPriorityRequestsDelayType {
+  kFirstPaint,
+  kFirstContentfulPaint,
+  kAlways,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    DelayCompetingLowPriorityRequestsDelayType>
+    kDelayCompetingLowPriorityRequestsDelayParam;
+enum class DelayCompetingLowPriorityRequestsThreshold {
+  kMedium,
+  kHigh,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    DelayCompetingLowPriorityRequestsThreshold>
+    kDelayCompetingLowPriorityRequestsThresholdParam;
 
 BLINK_COMMON_EXPORT extern const base::Feature kAppCache;
 BLINK_COMMON_EXPORT extern const base::Feature kAppCacheRequireOriginTrial;

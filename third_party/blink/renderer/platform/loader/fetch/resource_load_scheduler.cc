@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/default_clock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -67,6 +68,21 @@ uint32_t GetFieldTrialUint32Param(const char* trial_name,
     return default_param;
 
   return param;
+}
+
+// We're experimenting with delaying low priority requests when "important"
+// requests are already in-flight. An "important" request is either
+// ResourceLoadPriority::kHigh or ResourceLoadPriority::kMedium, depending on
+// the experimental parameter.
+ResourceLoadPriority PriorityImportanceThreshold() {
+  if (features::kDelayCompetingLowPriorityRequestsThresholdParam.Get() ==
+      features::DelayCompetingLowPriorityRequestsThreshold::kHigh) {
+    return ResourceLoadPriority::kHigh;
+  }
+
+  DCHECK_EQ(features::kDelayCompetingLowPriorityRequestsThresholdParam.Get(),
+            features::DelayCompetingLowPriorityRequestsThreshold::kMedium);
+  return ResourceLoadPriority::kMedium;
 }
 
 }  // namespace
@@ -149,7 +165,7 @@ void ResourceLoadScheduler::Request(ResourceLoadSchedulerClient* client,
   // Check if the request can be throttled.
   ClientIdWithPriority request_info(*id, priority, intra_priority);
   if (!IsClientDelayable(option)) {
-    Run(*id, client, false);
+    Run(*id, client, /*throttleable=*/false, priority);
     return;
   }
 
@@ -197,7 +213,13 @@ bool ResourceLoadScheduler::Release(
   if (id == kInvalidClientId)
     return false;
 
-  if (running_requests_.Contains(id)) {
+  auto running_request = running_requests_.find(id);
+  if (running_request != running_requests_.end()) {
+    if (running_request->value >= PriorityImportanceThreshold()) {
+      in_flight_important_requests_--;
+      DCHECK_GE(in_flight_important_requests_, 0);
+    }
+
     running_requests_.erase(id);
     running_throttleable_requests_.erase(id);
 
@@ -205,9 +227,13 @@ bool ResourceLoadScheduler::Release(
       MaybeRun();
     return true;
   }
-  auto found = pending_request_map_.find(id);
-  if (found != pending_request_map_.end()) {
-    pending_request_map_.erase(found);
+
+  // The client may not appear in the |pending_request_map_|. For example,
+  // non-delayable requests are immediately granted and skip being placed into
+  // this map.
+  auto pending_request = pending_request_map_.find(id);
+  if (pending_request != pending_request_map_.end()) {
+    pending_request_map_.erase(pending_request);
     // Intentionally does not remove it from |pending_requests_|.
 
     // Didn't release any running requests, but the outstanding limit might be
@@ -306,11 +332,16 @@ bool ResourceLoadScheduler::GetNextPendingRequest(ClientId* id) {
   // corresponding |pending_queue_update_times_|.
   if (use_stoppable) {
     *id = stoppable_it->client_id;
+    if (ShouldDelay(pending_request_map_.find(*id)))
+      return false;
     stoppable_queue.erase(stoppable_it);
     pending_queue_update_times_[ThrottleOption::kStoppable] = clock_->Now();
     return true;
   }
+
   *id = throttleable_it->client_id;
+  if (ShouldDelay(pending_request_map_.find(*id)))
+    return false;
   throttleable_queue.erase(throttleable_it);
   pending_queue_update_times_[ThrottleOption::kThrottleable] = clock_->Now();
   return true;
@@ -327,17 +358,54 @@ void ResourceLoadScheduler::MaybeRun() {
     auto found = pending_request_map_.find(id);
     if (found == pending_request_map_.end())
       continue;  // Already released.
+
+    auto priority = found->value->priority;
     ResourceLoadSchedulerClient* client = found->value->client;
     ThrottleOption option = found->value->option;
     pending_request_map_.erase(found);
-    Run(id, client, option == ThrottleOption::kThrottleable);
+    Run(id, client, option == ThrottleOption::kThrottleable, priority);
+  }
+}
+
+void ResourceLoadScheduler::MarkFirstPaint() {
+  if (delay_milestone_reached_) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kDelayCompetingLowPriorityRequests) &&
+      features::kDelayCompetingLowPriorityRequestsDelayParam.Get() ==
+          features::DelayCompetingLowPriorityRequestsDelayType::kFirstPaint) {
+    DCHECK(!delay_milestone_reached_);
+    delay_milestone_reached_ = true;
+    MaybeRun();
+  }
+}
+
+void ResourceLoadScheduler::MarkFirstContentfulPaint() {
+  if (delay_milestone_reached_) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kDelayCompetingLowPriorityRequests) &&
+      features::kDelayCompetingLowPriorityRequestsDelayParam.Get() ==
+          features::DelayCompetingLowPriorityRequestsDelayType::
+              kFirstContentfulPaint) {
+    DCHECK(!delay_milestone_reached_);
+    delay_milestone_reached_ = true;
+    MaybeRun();
   }
 }
 
 void ResourceLoadScheduler::Run(ResourceLoadScheduler::ClientId id,
                                 ResourceLoadSchedulerClient* client,
-                                bool throttleable) {
-  running_requests_.insert(id);
+                                bool throttleable,
+                                ResourceLoadPriority priority) {
+  if (priority >= PriorityImportanceThreshold()) {
+    in_flight_important_requests_++;
+  }
+  running_requests_.insert(id, priority);
   if (throttleable)
     running_throttleable_requests_.insert(id);
   client->Run();
@@ -401,6 +469,15 @@ void ResourceLoadScheduler::ShowConsoleMessageIfNeeded() {
 
 void ResourceLoadScheduler::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
+}
+
+bool ResourceLoadScheduler::ShouldDelay(
+    PendingRequestMap::iterator found) const {
+  return base::FeatureList::IsEnabled(
+             features::kDelayCompetingLowPriorityRequests) &&
+         !delay_milestone_reached_ && in_flight_important_requests_ > 0 &&
+         found != pending_request_map_.end() &&
+         found->value->priority <= ResourceLoadPriority::kLow;
 }
 
 }  // namespace blink
