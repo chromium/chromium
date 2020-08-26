@@ -285,7 +285,7 @@ TEST_F(
       });
     });
 
-TEST_F('ChromeVoxBackgroundTest', 'SelectSingleBasic', function() {
+TEST_F('ChromeVoxBackgroundTest', 'DISABLED_SelectSingleBasic', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.formsDoc, function() {
     mockFeedback.expectSpeech('apple', 'has pop up', 'Collapsed')
@@ -726,7 +726,7 @@ TEST_F(
       });
     });
 
-TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', function() {
+TEST_F('ChromeVoxBackgroundTest', 'DISABLED_SelectOptionSelected', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `
@@ -2814,7 +2814,7 @@ TEST_F('ChromeVoxBackgroundTest', 'SmartStickyModeJumpCommands', function() {
       });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'PopupButtonCollapsed', function() {
+TEST_F('ChromeVoxBackgroundTest', 'DISABLED_PopupButtonCollapsed', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `

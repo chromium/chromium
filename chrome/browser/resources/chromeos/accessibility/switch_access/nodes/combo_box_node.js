@@ -7,6 +7,17 @@
  * TODO(anastasi): Add a test for this class.
  */
 class ComboBoxNode extends NodeWrapper {
+  /**
+   * @param {!AutomationNode} baseNode
+   * @param {?SARootNode} parent
+   */
+  constructor(baseNode, parent) {
+    super(baseNode, parent);
+
+    /** @private {?RepeatedEventHandler} */
+    this.childrenChangedHandler_;
+  }
+
   /** @override */
   get actions() {
     const actions = super.actions;
@@ -20,13 +31,24 @@ class ComboBoxNode extends NodeWrapper {
 
   /** @override */
   onFocus() {
+    if (this.automationNode) {
+      this.childrenChangedHandler_ = new RepeatedEventHandler(
+          this.automationNode, chrome.automation.EventType.CHILDREN_CHANGED,
+          () => this.onChildrenChanged(), {exactMatch: true});
+    }
+
     super.onFocus();
     this.automationNode.focus();
   }
 
   /** @override */
-  isGroup() {
-    return false;
+  onUnfocus() {
+    super.onUnfocus();
+
+    if (this.childrenChangedHandler_) {
+      this.childrenChangedHandler_.stopListening();
+      this.childrenChangedHandler_ = null;
+    }
   }
 
   /** @override */
@@ -44,5 +66,14 @@ class ComboBoxNode extends NodeWrapper {
         return SAConstants.ActionResponse.REMAIN_OPEN;
     }
     return super.performAction(action);
+  }
+
+  onChildrenChanged() {
+    // TODO: figure out why a short timeout is needed here.
+    window.setTimeout(() => {
+      if (this.isGroup()) {
+        NavigationManager.enterGroup();
+      }
+    }, 250);
   }
 }
