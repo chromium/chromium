@@ -5,9 +5,12 @@
 #include "chrome/services/sharing/nearby/platform_v2/bluetooth_socket.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/platform_v2/bluetooth_device.h"
@@ -47,6 +50,50 @@ class FakeSocket : public bluetooth::mojom::Socket {
   bool called_disconnect_ = false;
   base::OnceClosure on_destroy_callback_;
 };
+
+// Writes |message| to |receive_stream| in chunks defined by the underlying mojo
+// pipe. Must be called on a background thread as this will block until all data
+// has been written to the pipe.
+void WriteDataBlocking(const std::string& message,
+                       mojo::ScopedDataPipeProducerHandle* receive_stream) {
+  mojo::ScopedDataPipeProducerHandle& stream = *receive_stream;
+  uint32_t message_pos = 0;
+  while (message_pos < message.size()) {
+    uint32_t written_size = message.size() - message_pos;
+    MojoResult result = stream->WriteData(
+        message.data() + message_pos, &written_size, MOJO_WRITE_DATA_FLAG_NONE);
+    // |result| might be MOJO_RESULT_SHOULD_WAIT in which
+    // case we need to retry until the reader has emptied
+    // the mojo pipe enough.
+    if (result == MOJO_RESULT_OK)
+      message_pos += written_size;
+  }
+  EXPECT_EQ(message.size(), message_pos);
+}
+
+// Tries to read |expected_message| from |send_stream| in chunks defined by the
+// underlying mojo pipe. This will read exactly |expected_message.size()| bytes
+// from the pipe and compare the bytes to |expected_message|. Must be called on
+// a background thread as this will block until all data has been read from the
+// stream.
+void ReadDataBlocking(const std::string& expected_message,
+                      mojo::ScopedDataPipeConsumerHandle* send_stream) {
+  mojo::ScopedDataPipeConsumerHandle& stream = *send_stream;
+  std::vector<char> message(expected_message.size());
+  uint32_t message_pos = 0;
+  while (message_pos < message.size()) {
+    uint32_t read_size = message.size() - message_pos;
+    MojoResult result = stream->ReadData(message.data() + message_pos,
+                                         &read_size, MOJO_READ_DATA_FLAG_NONE);
+    // |result| might be MOJO_RESULT_SHOULD_WAIT in which
+    // case we need to retry until the writer has filled
+    // the mojo pipe again.
+    if (result == MOJO_RESULT_OK)
+      message_pos += read_size;
+  }
+  EXPECT_EQ(message.size(), message_pos);
+  EXPECT_EQ(expected_message, std::string(message.data(), message.size()));
+}
 
 }  // namespace
 
@@ -162,6 +209,33 @@ TEST_F(BluetoothSocketTest, TestInputStream) {
   EXPECT_EQ(Exception::kSuccess, input_stream.Close().value);
 }
 
+TEST_F(BluetoothSocketTest, TestInputStream_MultipleChunks) {
+  InputStream& input_stream = bluetooth_socket_->GetInputStream();
+
+  // Expect a total message size of 1MB delivered in chunks because a mojo pipe
+  // has a maximum buffer size and only accepts a certain amount of data per
+  // call. The default is 64KB defined in //mojo/core/core.cc
+  uint32_t message_size = 1024 * 1024;
+  std::string message(message_size, 'A');
+
+  // Post to a thead pool because both InputStream::Read() and
+  // WriteDataBlocking() below are blocking on each other.
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
+      FROM_HERE, base::BindOnce(&WriteDataBlocking, message, &receive_stream_),
+      run_loop.QuitClosure());
+
+  // Read from stream and expect to receive 1MB.
+  ExceptionOr<ByteArray> exception_or_byte_array =
+      input_stream.Read(message_size);
+  ASSERT_TRUE(exception_or_byte_array.ok());
+  EXPECT_EQ(message, std::string(exception_or_byte_array.result()));
+  EXPECT_EQ(Exception::kSuccess, input_stream.Close().value);
+
+  // Make sure writer thread is done after we read all the data from it.
+  run_loop.Run();
+}
+
 TEST_F(BluetoothSocketTest, TestOutputStream) {
   OutputStream& output_stream = bluetooth_socket_->GetOutputStream();
 
@@ -180,6 +254,31 @@ TEST_F(BluetoothSocketTest, TestOutputStream) {
 
   EXPECT_EQ(Exception::kSuccess, output_stream.Flush().value);
   EXPECT_EQ(Exception::kSuccess, output_stream.Close().value);
+}
+
+TEST_F(BluetoothSocketTest, TestOutputStream_MultipleChunks) {
+  OutputStream& output_stream = bluetooth_socket_->GetOutputStream();
+
+  // Expect a total message size of 1MB delivered in chunks because a mojo pipe
+  // has a maximum buffer size and only accepts a certain amount of data per
+  // call. The default is 64KB defined in //mojo/core/core.cc
+  uint32_t message_size = 1024 * 1024;
+  std::string message(message_size, 'A');
+
+  // Post to a thead pool because both InputStream::Write() and
+  // ReadDataBlocking() below are blocking on each other.
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReply(
+      FROM_HERE, base::BindOnce(&ReadDataBlocking, message, &send_stream_),
+      run_loop.QuitClosure());
+
+  // Write to stream and expect a succcessful transfer.
+  EXPECT_EQ(Exception::kSuccess, output_stream.Write(ByteArray(message)).value);
+  EXPECT_EQ(Exception::kSuccess, output_stream.Flush().value);
+  EXPECT_EQ(Exception::kSuccess, output_stream.Close().value);
+
+  // Make sure reader thread is done after we wrote all the data to it.
+  run_loop.Run();
 }
 
 }  // namespace chrome

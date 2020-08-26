@@ -4,7 +4,9 @@
 
 #include "chrome/services/sharing/nearby/platform_v2/bluetooth_socket.h"
 
+#include <stdint.h>
 #include <limits>
+#include <vector>
 
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -46,13 +48,18 @@ class InputStreamImpl : public InputStream {
     if (size <= 0 || size > std::numeric_limits<uint32_t>::max())
       return {Exception::kIo};
 
+    pending_read_buffer_ = std::make_unique<ByteArray>(size);
+    pending_read_buffer_pos_ = 0;
+
     task_run_.emplace();
-    read_size_ = static_cast<uint32_t>(size);
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&mojo::SimpleWatcher::ArmOrNotify,
                                   base::Unretained(&receive_stream_watcher_)));
     task_run_->Wait();
     task_run_.reset();
+
+    pending_read_buffer_.reset();
+    pending_read_buffer_pos_ = 0;
 
     return exception_or_received_byte_array_;
   }
@@ -80,23 +87,29 @@ class InputStreamImpl : public InputStream {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     DCHECK_NE(result, MOJO_RESULT_SHOULD_WAIT);
     DCHECK(receive_stream_.is_valid());
-    DCHECK_NE(read_size_, 0u);
+    DCHECK(pending_read_buffer_);
+    DCHECK_LT(pending_read_buffer_pos_, pending_read_buffer_->size());
     DCHECK(task_run_);
 
-    std::vector<char> buf(read_size_);
-    uint32_t num_bytes = read_size_;
-
     if (result == MOJO_RESULT_OK) {
-      // Pass MOJO_READ_DATA_FLAG_ALL_OR_NONE to ensure the exact number of
-      // bytes requested is read.
-      result = receive_stream_->ReadData(buf.data(), &num_bytes,
-                                         MOJO_READ_DATA_FLAG_ALL_OR_NONE);
+      uint32_t num_bytes = static_cast<uint32_t>(pending_read_buffer_->size() -
+                                                 pending_read_buffer_pos_);
+      result = receive_stream_->ReadData(
+          pending_read_buffer_->data() + pending_read_buffer_pos_, &num_bytes,
+          MOJO_READ_DATA_FLAG_NONE);
+      if (result == MOJO_RESULT_OK)
+        pending_read_buffer_pos_ += num_bytes;
     }
 
-    read_size_ = 0;
+    if (result == MOJO_RESULT_SHOULD_WAIT ||
+        pending_read_buffer_pos_ < pending_read_buffer_->size()) {
+      receive_stream_watcher_.ArmOrNotify();
+      return;
+    }
+
     if (result == MOJO_RESULT_OK) {
       exception_or_received_byte_array_ =
-          ExceptionOr<ByteArray>(ByteArray(buf.data(), num_bytes));
+          ExceptionOr<ByteArray>(std::move(*pending_read_buffer_));
     } else {
       exception_or_received_byte_array_ =
           ExceptionOr<ByteArray>(Exception::kIo);
@@ -108,7 +121,8 @@ class InputStreamImpl : public InputStream {
   mojo::ScopedDataPipeConsumerHandle receive_stream_;
   mojo::SimpleWatcher receive_stream_watcher_;
 
-  uint32_t read_size_ = 0;
+  std::unique_ptr<ByteArray> pending_read_buffer_;
+  uint32_t pending_read_buffer_pos_ = 0;
   ExceptionOr<ByteArray> exception_or_received_byte_array_;
   base::Optional<base::WaitableEvent> task_run_;
 };
@@ -141,6 +155,7 @@ class OutputStreamImpl : public OutputStream {
   Exception Write(const ByteArray& data) override {
     DCHECK(!write_success_);
     pending_write_buffer_ = std::make_unique<ByteArray>(data);
+    pending_write_buffer_pos_ = 0;
 
     task_run_.emplace();
     task_runner_->PostTask(
@@ -152,6 +167,7 @@ class OutputStreamImpl : public OutputStream {
 
     write_success_ = false;
     pending_write_buffer_.reset();
+    pending_write_buffer_pos_ = 0;
     task_run_.reset();
 
     return result;
@@ -186,15 +202,23 @@ class OutputStreamImpl : public OutputStream {
     DCHECK_NE(result, MOJO_RESULT_SHOULD_WAIT);
     DCHECK(send_stream_.is_valid());
     DCHECK(pending_write_buffer_);
+    DCHECK_LT(pending_write_buffer_pos_, pending_write_buffer_->size());
     DCHECK(task_run_);
 
     if (result == MOJO_RESULT_OK) {
-      uint32_t num_bytes = static_cast<uint32_t>(pending_write_buffer_->size());
-      // Pass MOJO_WRITE_DATA_FLAG_ALL_OR_NONE to ensure the exact number of
-      // bytes requested is written.
-      result =
-          send_stream_->WriteData(pending_write_buffer_->data(), &num_bytes,
-                                  MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+      uint32_t num_bytes = static_cast<uint32_t>(pending_write_buffer_->size() -
+                                                 pending_write_buffer_pos_);
+      result = send_stream_->WriteData(
+          pending_write_buffer_->data() + pending_write_buffer_pos_, &num_bytes,
+          MOJO_WRITE_DATA_FLAG_NONE);
+      if (result == MOJO_RESULT_OK)
+        pending_write_buffer_pos_ += num_bytes;
+    }
+
+    if (result == MOJO_RESULT_SHOULD_WAIT ||
+        pending_write_buffer_pos_ < pending_write_buffer_->size()) {
+      send_stream_watcher_.ArmOrNotify();
+      return;
     }
 
     write_success_ = result == MOJO_RESULT_OK;
@@ -206,6 +230,7 @@ class OutputStreamImpl : public OutputStream {
   mojo::SimpleWatcher send_stream_watcher_;
 
   std::unique_ptr<ByteArray> pending_write_buffer_;
+  uint32_t pending_write_buffer_pos_ = 0;
   bool write_success_ = false;
   base::Optional<base::WaitableEvent> task_run_;
 };
