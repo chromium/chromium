@@ -11,7 +11,7 @@ enum EncodedAudioChunkType {
     Exposed=(Window,Worker),
     RuntimeEnabled=WebCodecs
 ] interface EncodedAudioChunk {
-  constructor(EncodedAudioChunkType type, unsigned long long timestamp, BufferSource data);
+  constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
   readonly attribute unsigned long long timestamp;  // microseconds
   readonly attribute ArrayBuffer data;

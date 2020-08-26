@@ -6,28 +6,26 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-EncodedVideoChunk* EncodedVideoChunk::Create(String type,
-                                             uint64_t timestamp,
-                                             const DOMArrayPiece& data) {
-  return EncodedVideoChunk::Create(type, timestamp, 0 /* duration */, data);
-}
-
-EncodedVideoChunk* EncodedVideoChunk::Create(String type,
-                                             uint64_t timestamp,
-                                             uint64_t duration,
-                                             const DOMArrayPiece& data) {
+EncodedVideoChunk* EncodedVideoChunk::Create(EncodedVideoChunkInit* init) {
   EncodedVideoMetadata metadata;
-  metadata.timestamp = base::TimeDelta::FromMicroseconds(timestamp);
-  metadata.key_frame = (type == "key");
-  if (duration)
-    metadata.duration = base::TimeDelta::FromMicroseconds(duration);
-  return MakeGarbageCollected<EncodedVideoChunk>(
-      metadata, DOMArrayBuffer::Create(data.Bytes(), data.ByteLengthAsSizeT()));
+  metadata.timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
+  metadata.key_frame = (init->type() == "key");
+  if (init->hasDuration())
+    metadata.duration = base::TimeDelta::FromMicroseconds(init->duration());
+  DOMArrayPiece piece(init->data());
+
+  // A full copy of the data happens here.
+  auto* buffer = piece.IsNull() ? nullptr
+                                : DOMArrayBuffer::Create(
+                                      piece.Data(), piece.ByteLengthAsSizeT());
+  return MakeGarbageCollected<EncodedVideoChunk>(metadata, buffer);
 }
 
 EncodedVideoChunk::EncodedVideoChunk(EncodedVideoMetadata metadata,

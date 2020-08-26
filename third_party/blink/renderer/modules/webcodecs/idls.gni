@@ -25,7 +25,9 @@ modules_callback_function_idl_files = [
 modules_dictionary_idl_files = [
   "audio_decoder_init.idl",
   "encoded_video_config.idl",
+  "encoded_video_chunk_init.idl",
   "encoded_audio_config.idl",
+  "encoded_audio_chunk_init.idl",
   "image_decoder_init.idl",
   "image_frame.idl",
   "image_track.idl",

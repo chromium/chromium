@@ -13,6 +13,7 @@
 namespace blink {
 
 class DOMArrayBuffer;
+class EncodedAudioChunkInit;
 
 class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -20,9 +21,7 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
  public:
   EncodedAudioChunk(EncodedAudioMetadata metadata, DOMArrayBuffer* buffer);
 
-  static EncodedAudioChunk* Create(String type,
-                                   uint64_t timestamp,
-                                   const DOMArrayPiece& data);
+  static EncodedAudioChunk* Create(const EncodedAudioChunkInit* init);
 
   // encoded_audio_chunk.idl implementation.
   String type() const;

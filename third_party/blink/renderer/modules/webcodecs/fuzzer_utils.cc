@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
 
+#include <string>
+
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
@@ -15,14 +17,14 @@
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk_init.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk_init.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-#include <string>
 
 namespace blink {
 
@@ -108,20 +110,29 @@ String ToChunkType(wc_fuzzer::EncodedChunkType type) {
 
 EncodedVideoChunk* MakeEncodedVideoChunk(
     const wc_fuzzer::EncodedVideoChunk& proto) {
-  DOMArrayBuffer* data_copy =
-      DOMArrayBuffer::Create(proto.data().data(), proto.data().size());
+  ArrayBufferOrArrayBufferView data;
+  data.SetArrayBuffer(
+      DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
 
-  return EncodedVideoChunk::Create(ToChunkType(proto.type()), proto.timestamp(),
-                                   proto.duration(), data_copy);
+  auto* init = EncodedVideoChunkInit::Create();
+  init->setTimestamp(proto.timestamp());
+  init->setType(ToChunkType(proto.type()));
+  init->setDuration(proto.duration());
+  init->setData(data);
+  return EncodedVideoChunk::Create(init);
 }
 
 EncodedAudioChunk* MakeEncodedAudioChunk(
     const wc_fuzzer::EncodedAudioChunk& proto) {
-  DOMArrayBuffer* data_copy =
-      DOMArrayBuffer::Create(proto.data().data(), proto.data().size());
+  ArrayBufferOrArrayBufferView data;
+  data.SetArrayBuffer(
+      DOMArrayBuffer::Create(proto.data().data(), proto.data().size()));
 
-  return EncodedAudioChunk::Create(ToChunkType(proto.type()), proto.timestamp(),
-                                   data_copy);
+  auto* init = EncodedAudioChunkInit::Create();
+  init->setTimestamp(proto.timestamp());
+  init->setType(ToChunkType(proto.type()));
+  init->setData(data);
+  return EncodedAudioChunk::Create(init);
 }
 
 VideoEncoderEncodeOptions* MakeEncodeOptions(

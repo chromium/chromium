@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk_init.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -12,8 +14,10 @@ namespace {
 
 class EncodedVideoChunkTest : public testing::Test {
  public:
-  DOMArrayBuffer* StringToBuffer(std::string data) {
-    return DOMArrayBuffer::Create(data.data(), data.size());
+  ArrayBufferOrArrayBufferView StringToBuffer(std::string data) {
+    ArrayBufferOrArrayBufferView result;
+    result.SetArrayBuffer(DOMArrayBuffer::Create(data.data(), data.size()));
+    return result;
   }
 
   std::string BufferToString(DOMArrayBuffer* buffer) {
@@ -26,8 +30,11 @@ TEST_F(EncodedVideoChunkTest, ConstructorAndAttributes) {
   String type = "key";
   uint64_t timestamp = 1000000;
   std::string data = "test";
-  auto* encoded =
-      EncodedVideoChunk::Create(type, timestamp, StringToBuffer(data));
+  auto* init = EncodedVideoChunkInit::Create();
+  init->setTimestamp(timestamp);
+  init->setType(type);
+  init->setData(StringToBuffer(data));
+  auto* encoded = EncodedVideoChunk::Create(init);
 
   EXPECT_EQ(type, encoded->type());
   EXPECT_EQ(timestamp, encoded->timestamp());
@@ -40,8 +47,12 @@ TEST_F(EncodedVideoChunkTest, ConstructorWithDuration) {
   uint64_t timestamp = 1000000;
   uint64_t duration = 16667;
   std::string data = "test";
-  auto* encoded = EncodedVideoChunk::Create(type, timestamp, duration,
-                                            StringToBuffer(data));
+  auto* init = EncodedVideoChunkInit::Create();
+  init->setTimestamp(timestamp);
+  init->setDuration(duration);
+  init->setType(type);
+  init->setData(StringToBuffer(data));
+  auto* encoded = EncodedVideoChunk::Create(init);
 
   EXPECT_EQ(type, encoded->type());
   EXPECT_EQ(timestamp, encoded->timestamp());

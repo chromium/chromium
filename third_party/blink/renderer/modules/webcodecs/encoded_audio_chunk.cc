@@ -6,19 +6,25 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-EncodedAudioChunk* EncodedAudioChunk::Create(String type,
-                                             uint64_t timestamp,
-                                             const DOMArrayPiece& data) {
+EncodedAudioChunk* EncodedAudioChunk::Create(
+    const EncodedAudioChunkInit* init) {
   EncodedAudioMetadata metadata;
-  metadata.timestamp = base::TimeDelta::FromMicroseconds(timestamp);
-  metadata.key_frame = (type == "key");
-  return MakeGarbageCollected<EncodedAudioChunk>(
-      metadata, DOMArrayBuffer::Create(data.Bytes(), data.ByteLengthAsSizeT()));
+  metadata.timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
+  metadata.key_frame = (init->type() == "key");
+  DOMArrayPiece piece(init->data());
+
+  // A full copy of the data happens here.
+  auto* buffer = piece.IsNull() ? nullptr
+                                : DOMArrayBuffer::Create(
+                                      piece.Data(), piece.ByteLengthAsSizeT());
+  return MakeGarbageCollected<EncodedAudioChunk>(metadata, buffer);
 }
 
 EncodedAudioChunk::EncodedAudioChunk(EncodedAudioMetadata metadata,
