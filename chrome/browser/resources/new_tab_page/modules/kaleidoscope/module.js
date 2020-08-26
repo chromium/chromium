@@ -56,8 +56,9 @@ function loadResource(resource) {
 
 /** @type {!ModuleDescriptor} */
 export const kaleidoscopeDescriptor = new ModuleDescriptor(
-    'kaleidoscope',
-    loadTimeData.getString('modulesKaleidoscopeName'),
+    /*id=*/ 'kaleidoscope',
+    /*name=*/ loadTimeData.getString('modulesKaleidoscopeName'),
+    /*heightPx=*/ 270,
     () => {
       // Load all the Kaleidoscope resources into the NTP and return the module
       // once the loading is complete.

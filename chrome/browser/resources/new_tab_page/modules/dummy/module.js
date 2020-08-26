@@ -41,15 +41,16 @@ customElements.define(DummyModuleElement.is, DummyModuleElement);
 
 /** @type {!ModuleDescriptor} */
 export const dummyDescriptor = new ModuleDescriptor(
-    'dummy', loadTimeData.getString('modulesDummyName'), () => Promise.resolve({
+    /*id=*/ 'dummy', /*name=*/ loadTimeData.getString('modulesDummyName'),
+    /*heightPx=*/ 260, () => Promise.resolve({
       element: new DummyModuleElement(),
       title: loadTimeData.getString('modulesDummyTitle'),
     }));
 
 /** @type {!ModuleDescriptor} */
 export const dummyDescriptor2 = new ModuleDescriptor(
-    'dummy2', loadTimeData.getString('modulesDummy2Name'),
-    () => Promise.resolve({
+    /*id=*/ 'dummy2', /*name=*/ loadTimeData.getString('modulesDummy2Name'),
+    /*heightPx=*/ 260, () => Promise.resolve({
       element: new DummyModuleElement(),
       title: loadTimeData.getString('modulesDummy2Title'),
     }));

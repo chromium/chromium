@@ -30,6 +30,7 @@ class ModuleWrapperElement extends PolymerElement {
   onDescriptorChange_() {
     this.$.moduleElement.innerHTML = '';
     this.$.moduleElement.appendChild(this.descriptor.element);
+    this.$.moduleElement.style.height = `${this.descriptor.heightPx}px`;
   }
 }
 

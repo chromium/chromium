@@ -19,28 +19,45 @@ export class ModuleDescriptor {
   /**
    * @param {string} id
    * @param {string} name
+   * @param {number} heightPx
    * @param {!InitializeModuleCallback} initializeCallback
    */
-  constructor(id, name, initializeCallback) {
+  constructor(id, name, heightPx, initializeCallback) {
+    /** @private {string} */
     this.id_ = id;
+    /** @private {string} */
     this.name_ = name;
+    /** @private {number} */
+    this.heightPx_ = heightPx;
+    /** @private {?string} */
     this.title_ = null;
+    /** @private {HTMLElement} */
     this.element_ = null;
+    /** @private {!InitializeModuleCallback} */
     this.initializeCallback_ = initializeCallback;
   }
 
+  /** @return {string} */
   get id() {
     return this.id_;
   }
 
+  /** @return {string} */
   get name() {
     return this.name_;
   }
 
+  /** @return {number} */
+  get heightPx() {
+    return this.heightPx_;
+  }
+
+  /** @return {?string} */
   get title() {
     return this.title_;
   }
 
+  /** @return {HTMLElement} */
   get element() {
     return this.element_;
   }
