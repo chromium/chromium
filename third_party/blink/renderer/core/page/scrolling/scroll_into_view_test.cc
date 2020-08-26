@@ -535,6 +535,8 @@ TEST_F(ScrollIntoViewTest, ApplyRootElementScrollBehaviorToViewport) {
 // This test ensures the stop-at-layout viewport option works correctly when a
 // non-default root scroller is set as the layout viewport.
 TEST_F(ScrollIntoViewTest, StopAtLayoutViewportOption) {
+  ScopedImplicitRootScrollerForTest implicit_root_scroller(true);
+
   v8::HandleScope HandleScope(v8::Isolate::GetCurrent());
   WebView().MainFrameWidget()->Resize(WebSize(800, 600));
   SimRequest request("https://example.com/test.html", "text/html");

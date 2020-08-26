@@ -12003,6 +12003,8 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
 // Ensures scrolling a focused editable text into view that's located in the
 // root scroller works by scrolling the root scroller.
 TEST_F(WebFrameSimTest, TestScrollFocusedEditableInRootScroller) {
+  ScopedImplicitRootScrollerForTest implicit_root_scroller(true);
+
   WebView().MainFrameWidget()->Resize(WebSize(500, 300));
   WebView().SetDefaultPageScaleLimits(1.f, 4);
   WebView().EnableFakePageScaleAnimationForTesting(true);

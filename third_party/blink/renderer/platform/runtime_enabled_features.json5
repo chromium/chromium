@@ -919,7 +919,6 @@
     },
     {
       name: "ImplicitRootScroller",
-      status: "experimental",
       settable_from_internals: true,
     },
     {
