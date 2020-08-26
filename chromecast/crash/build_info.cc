@@ -1,0 +1,49 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromecast/crash/build_info.h"
+
+#include <string>
+
+#include "chromecast/base/version.h"
+
+namespace chromecast {
+namespace {
+
+constexpr char kEngVariant[] = "eng";
+constexpr char kUserVariant[] = "user";
+
+}  // namespace
+
+const std::string VersionToCrashString(const std::string& cast_build_revision) {
+  // Incremental number for eng+user builds is too long for Crash server
+  // so cap it to "eng" or "user".
+  for (std::string infix : {kEngVariant, kUserVariant}) {
+    size_t index = cast_build_revision.find(infix);
+    if (index != std::string::npos) {
+      return cast_build_revision.substr(
+          0, index + infix.size());  // Truncate after ".eng" / ".user".
+    }
+  }
+  return cast_build_revision;
+}
+
+const std::string GetVersionString() {
+  return VersionToCrashString(CAST_BUILD_REVISION);
+}
+
+const std::string VersionToVariant(const std::string& cast_build_revision) {
+  for (std::string variant : {kEngVariant, kUserVariant}) {
+    if (cast_build_revision.find(variant) != std::string::npos) {
+      return variant;
+    }
+  }
+  return CAST_IS_DEBUG_BUILD() ? kEngVariant : kUserVariant;
+}
+
+const std::string GetBuildVariant() {
+  return VersionToVariant(CAST_BUILD_REVISION);
+}
+
+}  // namespace chromecast

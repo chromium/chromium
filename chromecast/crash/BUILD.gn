@@ -5,6 +5,17 @@
 import("//chromecast/chromecast.gni")
 import("//testing/test.gni")
 
+cast_source_set("build_info") {
+  sources = [
+    "build_info.cc",
+    "build_info.h",
+  ]
+
+  deps = [
+      "//chromecast/base:cast_version",
+  ]
+}
+
 cast_source_set("crash_storage") {
   sources = [
     "cast_crash_keys.cc",
@@ -72,6 +83,7 @@ cast_source_set("crash") {
     ]
 
     deps += [
+      ":build_info",
       "//chromecast/base",
       "//chromecast/base:cast_sys_info_util",
       "//chromecast/base:cast_version",
@@ -127,6 +139,7 @@ test("cast_crash_unittests") {
     ]
   } else if (is_linux || is_chromeos) {
     sources = [
+      "build_info_unittest.cc",
       "cast_crashdump_uploader_unittest.cc",
       "linux/dummy_minidump_generator_unittest.cc",
       "linux/dump_info_unittest.cc",
@@ -136,11 +149,13 @@ test("cast_crash_unittests") {
     ]
 
     deps = [
+      ":build_info",
       ":crash",
       ":test_support",
       "//base",
       "//base/test:run_all_unittests",
       "//base/test:test_support",
+      "//chromecast/base:cast_version",
       "//chromecast/base:dummy_cast_sys_info",
       "//chromecast/base:test_support",
       "//components/metrics",
