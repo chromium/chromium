@@ -1509,7 +1509,7 @@ java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
   jar_path =
-      "libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-3.12.2.jar"
+      "libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-3.13.0.jar"
   output_name = "com_google_protobuf_protobuf_javalite"
   supports_android = true
 
