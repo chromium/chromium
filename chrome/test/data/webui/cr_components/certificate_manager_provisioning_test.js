@@ -68,8 +68,8 @@ function getEntries(certProvisioningList) {
 }
 
 suite('CertificateProvisioningEntryTests', function() {
-  /** @type {?CertificateProvisioningEntryElement} */
-  let entry = null;
+  /** @type {!CertificateProvisioningEntryElement} */
+  let entry;
 
   /** @type {?TestCertificateProvisioningBrowserProxy} */
   let browserProxy = null;
@@ -170,7 +170,9 @@ suite('CertificateManagerProvisioningTests', function() {
 
     return whenDialogOpen
         .then(() => {
-          const dialog = certProvisioningList.$$(dialogId);
+          const dialog =
+              /** @type {!CertificateProvisioningDetailsDialogElement} */ (
+                  certProvisioningList.$$(dialogId));
           assertTrue(!!dialog);
           const whenDialogClosed = eventToPromise('close', dialog);
           dialog.$$('#dialog').$$('#close').click();

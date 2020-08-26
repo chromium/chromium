@@ -9,6 +9,24 @@
          file="${root_gen_dir}/ui/webui/resources/cr_components/omnibox/cr_autocomplete_match_list.js"
          use_base_dir="false"
          type="BINDATA" />
+
+  <!-- customize_themes -->
+  <include name="IDR_WEBUI_CR_COMPONENTS_CUSTOMIZE_THEMES_CUSTOMIZE_THEMES_JS"
+         file="${root_gen_dir}/ui/webui/resources/cr_components/customize_themes/customize_themes.js"
+         use_base_dir="false"
+         type="BINDATA" />
+  <include name="IDR_WEBUI_CR_COMPONENTS_CUSTOMIZE_THEMES_THEME_ICON_JS"
+         file="${root_gen_dir}/ui/webui/resources/cr_components/customize_themes/theme_icon.js"
+         use_base_dir="false"
+         type="BINDATA" />
+  <include name="IDR_CUSTOMIZE_THEMES_MOJOM_LITE_JS"
+         file="${root_gen_dir}/ui/webui/resources/cr_components/customize_themes/customize_themes.mojom-lite.js"
+         use_base_dir="false"
+         type="BINDATA" />
+  <include name="IDR_WEBUI_CR_COMPONENTS_CUSTOMIZE_THEMES_BROWSER_PROXY_JS"
+         file="cr_components/customize_themes/browser_proxy.js"
+         type="BINDATA" />
+
   <if expr="chromeos">
     <include name="IDR_WEBUI_CHROMEOS_SMB_SHARES_ADD_SMB_SHARE_DIALOG_M_JS"
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/smb_shares/add_smb_share_dialog.m.js"

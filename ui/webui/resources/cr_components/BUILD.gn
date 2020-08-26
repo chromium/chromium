@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 group("closure_compile") {
   deps = [
     "certificate_manager:closure_compile_module",
+    "customize_themes:closure_compile",
     "managed_footnote:closure_compile",
     "managed_footnote:closure_compile_module",
     "omnibox:closure_compile",
@@ -20,6 +21,7 @@ group("closure_compile") {
 group("polymer3_elements") {
   public_deps = [
     "certificate_manager:web_components",
+    "customize_themes:web_components",
     "managed_footnote:managed_footnote_module",
     "omnibox:web_components",
   ]

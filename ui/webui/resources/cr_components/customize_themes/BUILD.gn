@@ -1,0 +1,64 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+group("web_components") {
+  public_deps = [
+    ":mojom_js",
+    ":web_components_local",
+  ]
+}
+
+mojom("mojom") {
+  sources = [ "customize_themes.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+  ]
+}
+
+html_to_js("web_components_local") {
+  js_files = [
+    "customize_themes.js",
+    "theme_icon.js",
+  ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":browser_proxy",
+    ":customize_themes",
+    ":theme_icon",
+  ]
+}
+
+js_library("customize_themes") {
+  deps = [
+    ":browser_proxy",
+    ":mojom_js_library_for_compile",
+    ":theme_icon",
+    "//skia/public/mojom:mojom_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_grid",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("theme_icon") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("browser_proxy") {
+  deps = [
+    ":mojom_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}

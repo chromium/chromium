@@ -15,11 +15,15 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
                     "browser_resolver_prefix_replacements=\"chrome://settings/=../../chrome/browser/resources/settings/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page//\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
 
-  deps = [ ":certificate_manager_provisioning_test" ]
+  deps = [
+    ":certificate_manager_provisioning_test",
+    ":customize_themes_test",
+  ]
 }
 
 js_library("certificate_manager_provisioning_test") {
@@ -29,6 +33,18 @@ js_library("certificate_manager_provisioning_test") {
     "//ui/webui/resources/cr_components/certificate_manager:certificate_provisioning_details_dialog",
     "//ui/webui/resources/cr_components/certificate_manager:certificate_provisioning_entry",
     "//ui/webui/resources/cr_components/certificate_manager:certificate_provisioning_list",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("customize_themes_test") {
+  deps = [
+    "..:chai_assert",
+    "..:test_browser_proxy.m",
+    "..:test_util.m",
+    "//ui/webui/resources/cr_components/customize_themes",
+    "//ui/webui/resources/cr_components/customize_themes:browser_proxy",
+    "//ui/webui/resources/cr_components/customize_themes:theme_icon",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

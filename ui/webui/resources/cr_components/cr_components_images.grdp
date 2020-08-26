@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
+  <!-- CustomizeThemes Images -->
+  <include name="IDR_WEBUI_CR_COMPONENTS_CUSTOMIZE_THEMES_COLORIZE_ICON_SVG"
+           file="cr_components/customize_themes/colorize.svg"
+           type="BINDATA" />
+  <include name="IDR_WEBUI_CR_COMPONENTS_CUSTOMIZE_THEMES_BRUSH_ICON_SVG"
+           file="cr_components/customize_themes/brush.svg"
+           type="BINDATA" />
   <if expr="chromeos">
     <!-- MultiDeviceSetup Images -->
     <include name="IDR_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_START_SETUP_ICON_1X_PNG"

@@ -304,6 +304,7 @@ if (include_js_tests) {
 
     sources = [
       "bluetooth_internals_browsertest.js",
+      "cr_components/cr_components_mojo_browsertest.js",
       "downloads/downloads_browsertest.js",
       "engagement/site_engagement_browsertest.js",
       "interventions_internals_browsertest.js",
