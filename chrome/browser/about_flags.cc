@@ -5554,10 +5554,16 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniWebUIUpgrader)},
 #endif  // OS_CHROMEOS
 
-    {"turn-off-streaming-media-caching",
-     flag_descriptions::kTurnOffStreamingMediaCachingName,
-     flag_descriptions::kTurnOffStreamingMediaCachingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kTurnOffStreamingMediaCaching)},
+    {"turn-off-streaming-media-caching-on-battery",
+     flag_descriptions::kTurnOffStreamingMediaCachingOnBatteryName,
+     flag_descriptions::kTurnOffStreamingMediaCachingOnBatteryDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kTurnOffStreamingMediaCachingOnBattery)},
+
+    {"turn-off-streaming-media-caching-always",
+     flag_descriptions::kTurnOffStreamingMediaCachingAlwaysName,
+     flag_descriptions::kTurnOffStreamingMediaCachingAlwaysDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kTurnOffStreamingMediaCachingAlways)},
 
 #if defined(OS_ANDROID)
     {"password-manager-onboarding-android",

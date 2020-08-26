@@ -4365,9 +4365,14 @@
     "expiry_milestone": 76
   },
   {
-    "name": "turn-off-streaming-media-caching",
-    "owners": [ "shawnpi@microsoft.com" ],
-    "expiry_milestone": 86
+    "name": "turn-off-streaming-media-caching-always",
+    "owners": [ "shawnpi@microsoft.com", "cassew@google.com" ],
+    "expiry_milestone": 87
+  },
+  {
+    "name": "turn-off-streaming-media-caching-on-battery",
+    "owners": [ "shawnpi@microsoft.com", "cassew@google.com" ],
+    "expiry_milestone": 87
   },
   {
     "name": "ui-disable-partial-swap",

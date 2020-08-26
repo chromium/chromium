@@ -40236,6 +40236,7 @@ from previous Chrome versions.
   <int value="-2146832142" label="SyncPseudoUSSSearchEngines:enabled"/>
   <int value="-2146613579" label="V8Future:disabled"/>
   <int value="-2145472146" label="OfflinePagesResourceBasedSnapshot:disabled"/>
+  <int value="-2144796781" label="TurnOffStreamingMediaCachingAlways:enabled"/>
   <int value="-2143961262" label="D3DVsync:disabled"/>
   <int value="-2143681040" label="ViewsCastDialog:enabled"/>
   <int value="-2143328006"
@@ -40723,6 +40724,8 @@ from previous Chrome versions.
   <int value="-1677715989" label="UnifiedConsent:disabled"/>
   <int value="-1676256979"
       label="AutofillUpstreamUseGooglePayOnAndroidBranding:enabled"/>
+  <int value="-1675747412"
+      label="TurnOffStreamingMediaCachingOnBattery:enabled"/>
   <int value="-1674868343" label="DlcSettingsUi:enabled"/>
   <int value="-1672160462"
       label="SwapSideVolumeButtonsForOrientation:disabled"/>
@@ -40896,6 +40899,8 @@ from previous Chrome versions.
   <int value="-1497338981" label="disable-accelerated-overflow-scroll"/>
   <int value="-1496106797" label="IPH_PasswordsAccountStorage:enabled"/>
   <int value="-1492934655" label="TabSwitcherOnReturn:enabled"/>
+  <int value="-1492609320"
+      label="TurnOffStreamingMediaCachingOnBattery:disabled"/>
   <int value="-1492589689" label="ContentSuggestionsCategories:enabled"/>
   <int value="-1492211482" label="EnableWindowsGamingInputDataFetcher:enabled"/>
   <int value="-1491417046" label="enable-fullscreen-toolbar-reveal"/>
@@ -42254,6 +42259,7 @@ from previous Chrome versions.
   <int value="-109569254" label="QueryTilesInOmnibox:enabled"/>
   <int value="-108881882" label="NTPCondensedTileLayout:enabled"/>
   <int value="-108468535" label="ChromeColorsCustomColorPicker:disabled"/>
+  <int value="-106631643" label="TurnOffStreamingMediaCachingAlways:disabled"/>
   <int value="-106373261" label="PaintPreviewDemo:enabled"/>
   <int value="-102537270" label="extension-content-verification"/>
   <int value="-102227288" label="PasswordExport:disabled"/>
@@ -43612,7 +43618,6 @@ from previous Chrome versions.
   <int value="1331513360" label="SafetyCheckAndroid:disabled"/>
   <int value="1332120969" label="ChromeDuet:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
-  <int value="1334185492" label="TurnOffStreamingMediaCaching:disabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338864675" label="EnableTouchableAppContextMenu:disabled"/>
   <int value="1339191800" label="OmniboxMaxZeroSuggestMatches:disabled"/>
@@ -44125,7 +44130,6 @@ from previous Chrome versions.
   <int value="1880955305" label="enable-preconnect-to-search"/>
   <int value="1881036528" label="disable-multilingual-spellchecker"/>
   <int value="1881174782" label="disable-brotli"/>
-  <int value="1885368291" label="TurnOffStreamingMediaCaching:enabled"/>
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887882558" label="RTCUnifiedPlanByDefault:enabled"/>
   <int value="1888812860" label="ChromeModernAlternateCardLayout:enabled"/>

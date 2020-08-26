@@ -149,8 +149,11 @@ const base::Feature kUseRegistrableDomainInNetworkIsolationKey{
     "UseRegistrableDomainInNetworkIsolationKey",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kTurnOffStreamingMediaCaching{
-    "TurnOffStreamingMediaCaching", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kTurnOffStreamingMediaCachingOnBattery{
+    "TurnOffStreamingMediaCachingOnBattery", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kTurnOffStreamingMediaCachingAlways{
+    "TurnOffStreamingMediaCachingAlways", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kLegacyTLSEnforced{"LegacyTLSEnforced",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

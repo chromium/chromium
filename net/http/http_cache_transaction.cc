@@ -3601,13 +3601,17 @@ void HttpCache::Transaction::TransitionToState(State state) {
 bool HttpCache::Transaction::ShouldDisableCaching(
     const HttpResponseHeaders* headers) const {
   bool disable_caching = false;
-  if (base::FeatureList::IsEnabled(features::kTurnOffStreamingMediaCaching) &&
-      IsOnBatteryPower()) {
-    // If we're running on battery, and the acquired content is 'large' and
-    // not already cached, and we have a MIME type of audio or video, then
-    // disable the cache for this response. We based our initial definition of
-    // 'large' on the disk cache maximum block size of 16K, which we observed
-    // captures the majority of responses from various MSE implementations.
+  if (base::FeatureList::IsEnabled(
+          features::kTurnOffStreamingMediaCachingAlways) ||
+      (base::FeatureList::IsEnabled(
+           features::kTurnOffStreamingMediaCachingOnBattery) &&
+       IsOnBatteryPower())) {
+    // If the feature is always enabled or enabled while we're running on
+    // battery, and the acquired content is 'large' and not already cached, and
+    // we have a MIME type of audio or video, then disable the cache for this
+    // response. We based our initial definition of 'large' on the disk cache
+    // maximum block size of 16K, which we observed captures the majority of
+    // responses from various MSE implementations.
     static constexpr int kMaxContentSize = 4096 * 4;
     std::string mime_type;
     base::CompareCase insensitive_ascii = base::CompareCase::INSENSITIVE_ASCII;

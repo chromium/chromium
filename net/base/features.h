@@ -223,8 +223,11 @@ NET_EXPORT extern const base::Feature kAppendFrameOriginToNetworkIsolationKey;
 NET_EXPORT extern const base::Feature
     kUseRegistrableDomainInNetworkIsolationKey;
 
-// Turns off streaming media caching to disk.
-NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCaching;
+// Turns off streaming media caching to disk when on battery power.
+NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCachingOnBattery;
+
+// Turns off streaming media caching to disk always.
+NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCachingAlways;
 
 // When enabled, sites that use TLS versions below the |version_min_warn|
 // threshold are marked with the LEGACY_TLS CertStatus and return an

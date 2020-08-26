@@ -2385,9 +2385,15 @@ const char kTrySupportedChannelLayoutsDescription[] =
     "to do stereo to surround expansion if supported. May expose third party "
     "driver bugs, use with caution.";
 
-const char kTurnOffStreamingMediaCachingName[] =
+const char kTurnOffStreamingMediaCachingOnBatteryName[] =
+    "Turn off caching of streaming media to disk while on battery power.";
+const char kTurnOffStreamingMediaCachingOnBatteryDescription[] =
+    "Reduces disk activity during media playback, which can result in "
+    "power savings.";
+
+const char kTurnOffStreamingMediaCachingAlwaysName[] =
     "Turn off caching of streaming media to disk.";
-const char kTurnOffStreamingMediaCachingDescription[] =
+const char kTurnOffStreamingMediaCachingAlwaysDescription[] =
     "Reduces disk activity during media playback, which can result in "
     "power savings.";
 

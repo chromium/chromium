@@ -1376,8 +1376,11 @@ extern const char kTrustTokensDescription[];
 extern const char kTrySupportedChannelLayoutsName[];
 extern const char kTrySupportedChannelLayoutsDescription[];
 
-extern const char kTurnOffStreamingMediaCachingName[];
-extern const char kTurnOffStreamingMediaCachingDescription[];
+extern const char kTurnOffStreamingMediaCachingOnBatteryName[];
+extern const char kTurnOffStreamingMediaCachingOnBatteryDescription[];
+
+extern const char kTurnOffStreamingMediaCachingAlwaysName[];
+extern const char kTurnOffStreamingMediaCachingAlwaysDescription[];
 
 extern const char kUnsafeWebGPUName[];
 extern const char kUnsafeWebGPUDescription[];
