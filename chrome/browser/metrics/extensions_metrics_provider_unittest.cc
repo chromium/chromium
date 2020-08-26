@@ -98,7 +98,7 @@ class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
 
   // Override GetClientID() to return a specific value on which test
   // expectations are based.
-  uint64_t GetClientID() override { return 0x3f1bfee9; }
+  uint64_t GetClientID() const override { return 0x3f1bfee9; }
 };
 
 }  // namespace

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "components/metrics/metrics_provider.h"
@@ -39,6 +38,9 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
   // weak pointer.
   explicit ExtensionsMetricsProvider(
       metrics::MetricsStateManager* metrics_state_manager);
+  ExtensionsMetricsProvider(const ExtensionsMetricsProvider&) = delete;
+  ExtensionsMetricsProvider& operator=(const ExtensionsMetricsProvider&) =
+      delete;
   ~ExtensionsMetricsProvider() override;
 
   // metrics::MetricsProvider:
@@ -61,7 +63,7 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
       Profile* profile);
 
   // Retrieves the client ID.
-  virtual uint64_t GetClientID();
+  virtual uint64_t GetClientID() const;
 
   // Hashes the extension extension ID using the provided client key (which
   // must be less than kExtensionListClientKeys) and to produce an output value
@@ -89,8 +91,6 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
 
   // The time of our last recorded sample.
   base::Time last_sample_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_EXTENSIONS_METRICS_PROVIDER_H_

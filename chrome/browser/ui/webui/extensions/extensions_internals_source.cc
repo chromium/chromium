@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>

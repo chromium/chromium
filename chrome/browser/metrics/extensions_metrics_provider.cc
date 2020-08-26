@@ -382,7 +382,7 @@ ExtensionsMetricsProvider::GetInstalledExtensions(Profile* profile) {
   return std::unique_ptr<extensions::ExtensionSet>();
 }
 
-uint64_t ExtensionsMetricsProvider::GetClientID() {
+uint64_t ExtensionsMetricsProvider::GetClientID() const {
   // TODO(blundell): Create a MetricsLog::ClientIDAsInt() API and call it
   // here as well as in MetricsLog's population of the client_id field of
   // the uma_proto.
