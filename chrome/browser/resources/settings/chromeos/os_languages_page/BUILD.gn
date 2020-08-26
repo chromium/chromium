@@ -8,6 +8,7 @@ import("../os_settings.gni")
 
 js_type_check("closure_compile") {
   deps = [
+    ":change_device_language_dialog",
     ":input_method_options_page",
     ":input_method_util",
     ":input_page",
@@ -22,6 +23,9 @@ js_type_check("closure_compile") {
     "../../languages_page:languages_browser_proxy",
     "../../languages_page:languages_types",
   ]
+}
+
+js_library("change_device_language_dialog") {
 }
 
 js_library("input_method_options_page") {
@@ -139,6 +143,7 @@ js_library("smart_inputs_page") {
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
+    ":change_device_language_dialog.m",
     ":input_method_options_page.m",
     ":input_method_util.m",
     ":input_page.m",
@@ -150,6 +155,11 @@ js_type_check("closure_compile_module") {
     ":os_languages_section.m",
     ":smart_inputs_page.m",
   ]
+}
+
+js_library("change_device_language_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/change_device_language_dialog.m.js" ]
+  extra_deps = [ ":change_device_language_dialog_module" ]
 }
 
 js_library("input_method_util.m") {
@@ -282,6 +292,7 @@ import("//tools/polymer/polymer.gni")
 
 group("polymer3_elements") {
   public_deps = [
+    ":change_device_language_dialog_module",
     ":input_method_options_page_module",
     ":input_page_module",
     ":manage_input_methods_page_module",
@@ -294,6 +305,15 @@ group("polymer3_elements") {
     "../../languages_page:languages_module",
     "../../languages_page:modulize",
   ]
+}
+
+polymer_modulizer("change_device_language_dialog") {
+  js_file = "change_device_language_dialog.js"
+  html_file = "change_device_language_dialog.html"
+  html_type = "dom-module"
+  migrated_imports = settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
 }
 
 polymer_modulizer("manage_input_methods_page") {

@@ -89,6 +89,11 @@
            compress="false"
            preprocess="true"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_LANGUAGES_PAGE_CHANGE_DEVICE_LANGUAGE_DIALOG_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/os_languages_page/change_device_language_dialog.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_LANGUAGES_PAGE_OS_ADD_LANGUAGES_DIALOG_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/os_languages_page/os_add_languages_dialog.m.js"
            use_base_dir="false"

@@ -1,0 +1,22 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+
+<dom-module id="os-settings-change-device-language-dialog">
+  <template>
+    <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+      <div slot="title">$i18n{changeDeviceLanguageDialogTitle}</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelButtonTap_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onActionButtonTap_"
+            disabled="[[disableActionButton_]]">
+          $i18n{changeDeviceLanguageConfirmButtonLabel}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="change_device_language_dialog.js"></script>
+</dom-module>

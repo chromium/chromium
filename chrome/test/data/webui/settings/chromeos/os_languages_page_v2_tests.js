@@ -212,6 +212,17 @@ suite('languages page', () => {
     });
   });
 
+  suite('opens dialog', () => {
+    test('when clicking changeSystemLanguage', () => {
+      assertFalse(
+          !!languagesPage.$$('os-settings-change-device-language-dialog'));
+      languagesPage.$$('#changeSystemLanguage').click();
+      Polymer.dom.flush();
+      assertTrue(
+          !!languagesPage.$$('os-settings-change-device-language-dialog'));
+    });
+  });
+
   suite('records metrics', () => {
     test('when adding languages', async () => {
       languagesPage.$$('#addLanguages').click();

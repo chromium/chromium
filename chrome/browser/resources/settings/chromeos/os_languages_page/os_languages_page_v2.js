@@ -46,6 +46,12 @@ Polymer({
 
     /** @private */
     showAddLanguagesDialog_: Boolean,
+
+    /** @private */
+    showChangeDeviceLanguageDialog_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private {?settings.LanguagesMetricsProxy} */
@@ -68,7 +74,13 @@ Polymer({
 
   /** @private */
   onChangeSystemLanguageClick_() {
-    // TODO(crbug/1113439): Implement change system language dialog.
+    this.showChangeDeviceLanguageDialog_ = true;
+  },
+
+  /** @private */
+  onChangeDeviceLanguageDialogClose_() {
+    this.showChangeDeviceLanguageDialog_ = false;
+    cr.ui.focusWithoutInk(assert(this.$.changeSystemLanguage));
   },
 
   /**

@@ -11,6 +11,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
+<link rel="import" href="change_device_language_dialog.html">
 <link rel="import" href="languages_metrics_proxy.html">
 <link rel="import" href="os_add_languages_dialog.html">
 <link rel="import" href="../localized_link/localized_link.html">
@@ -127,6 +128,12 @@
         </template>
       </cr-lazy-render>
     </div>
+
+    <template is="dom-if" if="[[showChangeDeviceLanguageDialog_]]" restamp>
+      <os-settings-change-device-language-dialog
+          on-close="onChangeDeviceLanguageDialogClose_">
+      </os-settings-change-device-language-dialog>
+    </template>
 
     <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
       <os-settings-add-languages-dialog languages="{{languages}}"

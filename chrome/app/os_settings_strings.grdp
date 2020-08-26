@@ -262,6 +262,12 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_SYSTEM_LANGUAGE_BUTTON_DESCRIPTION" translateable="false" desc="The description read by screenreader for the button where users can change their display language. This language will be used for system surfaces (launcher, shelf, and notifications etc.) and the preferred application language if it’s provided by the application developer.">
     Change system language. Current language is <ph name="LANGUAGE">$1<ex>English</ex></ph>. System features like launcher, Settings and Files will appear in the language you choose.
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_TITLE" translateable="false" desc="Title for the dialog to change device language.">
+    Change device language
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_CONFIRM_BUTTON_LABEL" translateable="false" desc="Label for the button where users can confirm the selected language and restart the device.">
+    Confirm and restart
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE" translateable="false" desc="The label of the section in the language settings page where users can add languages they read to an ordered list. The web content languages will be served in the order of the list.">
     Languages you read
   </message>

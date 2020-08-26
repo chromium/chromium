@@ -261,6 +261,10 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_LABEL},
       {"offerTranslationSublabel",
        IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_SUBLABEL},
+      {"changeDeviceLanguageDialogTitle",
+       IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_DIALOG_TITLE},
+      {"changeDeviceLanguageConfirmButtonLabel",
+       IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_CONFIRM_BUTTON_LABEL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
