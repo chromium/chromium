@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/desktop_resizer.h"
+#include "remoting/host/desktop_resizer_x11.h"
 
 #include <string.h>
 
@@ -67,98 +67,42 @@ const int kDefaultDPI = 96;
 
 namespace remoting {
 
-// Wrapper class for the XRRScreenResources struct.
-class ScreenResources {
- public:
-  ScreenResources() = default;
+ScreenResources::ScreenResources() = default;
 
-  ~ScreenResources() = default;
+ScreenResources::~ScreenResources() = default;
 
-  bool Refresh(x11::RandR* randr, x11::Window window) {
-    resources_ = nullptr;
-    if (auto response = randr->GetScreenResourcesCurrent({window}).Sync())
-      resources_ = std::move(response.reply);
-    return resources_ != nullptr;
+bool ScreenResources::Refresh(x11::RandR* randr, x11::Window window) {
+  resources_ = nullptr;
+  if (auto response = randr->GetScreenResourcesCurrent({window}).Sync())
+    resources_ = std::move(response.reply);
+  return resources_ != nullptr;
+}
+
+x11::RandR::Mode ScreenResources::GetIdForMode(const std::string& name) {
+  CHECK(resources_);
+  const char* names = reinterpret_cast<const char*>(resources_->names.data());
+  for (const auto& mode_info : resources_->modes) {
+    std::string mode_name(names, mode_info.name_len);
+    names += mode_info.name_len;
+    if (name == mode_name)
+      return static_cast<x11::RandR::Mode>(mode_info.id);
   }
+  return kInvalidMode;
+}
 
-  x11::RandR::Mode GetIdForMode(const std::string& name) {
-    CHECK(resources_);
-    const char* names = reinterpret_cast<const char*>(resources_->names.data());
-    for (const auto& mode_info : resources_->modes) {
-      std::string mode_name(names, mode_info.name_len);
-      names += mode_info.name_len;
-      if (name == mode_name)
-        return static_cast<x11::RandR::Mode>(mode_info.id);
-    }
-    return kInvalidMode;
-  }
+x11::RandR::Output ScreenResources::GetOutput() {
+  CHECK(resources_);
+  return resources_->outputs[0];
+}
 
-  // For now, assume we're only ever interested in the first output.
-  x11::RandR::Output GetOutput() {
-    CHECK(resources_);
-    return resources_->outputs[0];
-  }
+x11::RandR::Crtc ScreenResources::GetCrtc() {
+  CHECK(resources_);
+  return resources_->crtcs[0];
+}
 
-  // For now, assume we're only ever interested in the first crtc.
-  x11::RandR::Crtc GetCrtc() {
-    CHECK(resources_);
-    return resources_->crtcs[0];
-  }
-
-  x11::RandR::GetScreenResourcesCurrentReply* get() { return resources_.get(); }
-
- private:
-  std::unique_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
-};
-
-class DesktopResizerX11 : public DesktopResizer,
-                          public x11::Connection::Delegate {
- public:
-  DesktopResizerX11();
-  ~DesktopResizerX11() override;
-
-  // DesktopResizer interface
-  ScreenResolution GetCurrentResolution() override;
-  std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred) override;
-  void SetResolution(const ScreenResolution& resolution) override;
-  void RestoreResolution(const ScreenResolution& original) override;
-
- private:
-  // x11::Connection::Delegate:
-  bool ShouldContinueStream() const override;
-  void DispatchXEvent(x11::Event* event) override;
-
-  // Add a mode matching the specified resolution and switch to it.
-  void SetResolutionNewMode(const ScreenResolution& resolution);
-
-  // Attempt to switch to an existing mode matching the specified resolution
-  // using RandR, if such a resolution exists. Otherwise, do nothing.
-  void SetResolutionExistingMode(const ScreenResolution& resolution);
-
-  // Create a mode, and attach it to the primary output. If the mode already
-  // exists, it is left unchanged.
-  void CreateMode(const char* name, int width, int height);
-
-  // Remove the specified mode from the primary output, and delete it. If the
-  // mode is in use, it is not deleted.
-  void DeleteMode(const char* name);
-
-  // Switch the primary output to the specified mode. If name is nullptr, the
-  // primary output is disabled instead, which is required before changing
-  // its resolution.
-  void SwitchToMode(const char* name);
-
-  x11::Connection connection_;
-  x11::RandR* const randr_ = nullptr;
-  const x11::Screen* const screen_ = nullptr;
-  x11::Window root_;
-  ScreenResources resources_;
-  bool exact_resize_;
-  bool has_randr_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopResizerX11);
-};
+x11::RandR::GetScreenResourcesCurrentReply* ScreenResources::get() {
+  return resources_.get();
+}
 
 DesktopResizerX11::DesktopResizerX11()
     : randr_(&connection_.randr()),
@@ -357,10 +301,6 @@ void DesktopResizerX11::SwitchToMode(const char* name) {
       .rotation = x11::RandR::Rotation::Rotate_0,
       .outputs = outputs,
   });
-}
-
-std::unique_ptr<DesktopResizer> DesktopResizer::Create() {
-  return base::WrapUnique(new DesktopResizerX11);
 }
 
 }  // namespace remoting

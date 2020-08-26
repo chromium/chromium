@@ -146,8 +146,10 @@ static_library("common") {
     "desktop_resizer.h",
     "desktop_resizer_mac.cc",
     "desktop_resizer_ozone.cc",
+    "desktop_resizer_ozone.h",
     "desktop_resizer_win.cc",
     "desktop_resizer_x11.cc",
+    "desktop_resizer_x11.h",
     "desktop_session.cc",
     "desktop_session.h",
     "desktop_session_agent.cc",
@@ -353,6 +355,7 @@ static_library("common") {
   }
 
   if (is_linux && !is_chromeos) {
+    sources += [ "desktop_resizer_linux.cc" ]
     public_deps += [ "//remoting/host/linux" ]
     libs += [ "pam" ]
   }
@@ -369,12 +372,16 @@ static_library("common") {
     sources -= [
       "clipboard_x11.cc",
       "desktop_resizer_x11.cc",
+      "desktop_resizer_x11.h",
       "input_injector_x11.cc",
     ]
   }
 
   if (!use_ozone) {
-    sources -= [ "desktop_resizer_ozone.cc" ]
+    sources -= [
+      "desktop_resizer_ozone.cc",
+      "desktop_resizer_ozone.h",
+    ]
   }
 
   if (is_chromeos) {
@@ -399,11 +406,15 @@ static_library("common") {
 
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
-      sources -= [ "desktop_resizer_ozone.cc" ]
+      sources -= [
+        "desktop_resizer_ozone.cc",
+        "desktop_resizer_ozone.h",
+      ]
     } else {
       sources -= [
         "clipboard_x11.cc",
         "desktop_resizer_x11.cc",
+        "desktop_resizer_x11.h",
         "input_injector_chromeos.cc",
         "input_injector_chromeos.h",
       ]
