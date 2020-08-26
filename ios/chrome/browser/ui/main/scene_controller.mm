@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
@@ -69,6 +70,7 @@
 #import "ios/chrome/browser/ui/util/multi_window_support.h"
 #import "ios/chrome/browser/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -293,7 +295,23 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   if (level == SceneActivationLevelForegroundActive) {
     if (![self presentSigninUpgradePromoIfPossible]) {
-      [self presentSignInAccountsViewControllerIfNecessary];
+      if (![self presentSignInAccountsViewControllerIfNecessary] &&
+          initializingUIInColdStart) {
+        // Show the Default Browser promo UI if the user's past behavior fits
+        // the categorization of potentially interested users or if the user is
+        // signed in. Do not show if it is determined that Chrome is already the
+        // default browser or if the user has already seen the promo UI.
+        BOOL isEligibleUser = IsLikelyInterestedDefaultBrowserUser() ||
+                              ios::GetChromeBrowserProvider()
+                                  ->GetChromeIdentityService()
+                                  ->HasIdentities();
+        if (!IsChromeLikelyDefaultBrowser() &&
+            !HasUserInteractedWithFullscreenPromoBefore() && isEligibleUser) {
+          [HandlerForProtocol(
+              self.currentInterface.browser->GetCommandDispatcher(),
+              WhatsNewCommands) showDefaultBrowserFullscreenPromo];
+        }
+      }
     }
     // Mitigation for crbug.com/1092326, where a nil browser state is passed
     // (presumably because mainInterface is nil as well).
@@ -424,13 +442,15 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   }
 }
 
-- (void)presentSignInAccountsViewControllerIfNecessary {
+- (BOOL)presentSignInAccountsViewControllerIfNecessary {
   ChromeBrowserState* browserState = self.currentInterface.browserState;
   DCHECK(browserState);
   if ([SignedInAccountsViewController
           shouldBePresentedForBrowserState:browserState]) {
     [self presentSignedInAccountsViewControllerForBrowserState:browserState];
+    return YES;
   }
+  return NO;
 }
 
 - (void)sceneState:(SceneState*)sceneState
