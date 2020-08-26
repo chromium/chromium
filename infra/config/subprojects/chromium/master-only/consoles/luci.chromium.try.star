@@ -6,6 +6,7 @@ luci.list_view(
     name = "luci.chromium.try",
     entries = [
         "try/android-cronet-arm-dbg",
+        "try/android-cronet-marshmallow-arm64-rel",
         "try/android-lollipop-arm-rel",
         "try/android-marshmallow-arm64-rel",
         "try/android-marshmallow-x86-rel",

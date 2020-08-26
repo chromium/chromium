@@ -712,6 +712,7 @@
       # TODO(crbug/597596): Switch this back to debug_trybot when cronet's
       # shared library loading is fixed.
       'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon',
+      'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
       'android-lollipop-arm-rel': 'android_release_trybot_webview_google',
       'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_resource_whitelisting_fastbuild_java_coverage',
       'android-marshmallow-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_resource_whitelisting_webview_google',
@@ -1184,6 +1185,10 @@
 
     'android_cronet_release_trybot_arm_no_neon': [
       'android', 'cronet_android', 'release_trybot', 'arm_no_neon',
+    ],
+
+    'android_cronet_release_trybot_arm64': [
+      'android', 'cronet_android', 'release_trybot', 'arm64', 'strip_debug_info',
     ],
 
     'android_debug_bot': [
