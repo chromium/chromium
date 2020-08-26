@@ -10,7 +10,7 @@
     RuntimeEnabled=WebCodecs,
     ImplementedAs=ImageDecoderExternal
 ] interface ImageDecoder {
-  [CallWith=ScriptState, RaisesException] constructor(ImageDecoderInit init);
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsImageDecoder] constructor(ImageDecoderInit init);
 
   // Returns true if ImageDecoder supports decoding of the given mime type.
   static boolean canDecodeType(USVString type);

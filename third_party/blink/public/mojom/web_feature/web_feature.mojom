@@ -2781,6 +2781,11 @@ enum WebFeature {
   kRTCPeerConnectionCreateOffer = 3453,
   kRTCPeerConnectionCreateAnswer = 3454,
   kV8AuthenticatorAttestationResponse_GetTransports_Method = 3455,
+  kWebCodecsAudioDecoder = 3456,
+  kWebCodecsVideoDecoder = 3457,
+  kWebCodecsVideoEncoder = 3458,
+  kWebCodecsVideoTrackReader= 3459,
+  kWebCodecsImageDecoder = 3460,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

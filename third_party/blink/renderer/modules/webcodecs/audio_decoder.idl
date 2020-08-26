@@ -13,7 +13,7 @@
   // construct a new decoder to recover.
   //
   // TODO(sandersd): Consider adding a state or last error attribute.
-  [CallWith=ScriptState, RaisesException] constructor(AudioDecoderInit init);
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsAudioDecoder] constructor(AudioDecoderInit init);
 
   // The number of pending decode requests. This does not include requests that
   // have been sent to the underlying codec.
