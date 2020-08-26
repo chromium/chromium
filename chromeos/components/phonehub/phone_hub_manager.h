@@ -5,23 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
-#include <memory>
-
-#include "base/callback_forward.h"
-#include "components/keyed_service/core/keyed_service.h"
-
-class PrefService;
-
 namespace chromeos {
-
-namespace device_sync {
-class DeviceSyncClient;
-}  // namespace device_sync
-
-namespace multidevice_setup {
-class MultiDeviceSetupClient;
-}  // namespace multidevice_setup
-
 namespace phonehub {
 
 class FeatureStatusProvider;
@@ -29,40 +13,25 @@ class NotificationAccessManager;
 class PhoneModel;
 class TetherController;
 
-// Implements the core logic of the Phone Hub feature and exposes interfaces via
-// its public API. Implemented as a KeyedService which is keyed by the primary
-// Profile; since there is only one primary Profile, the class is intended to be
-// a singleton.
-class PhoneHubManager : public KeyedService {
+// Responsible for the core logic of the Phone Hub feature and exposes
+// interfaces via its public API. This class is intended to be a singleton.
+class PhoneHubManager {
  public:
-  PhoneHubManager(
-      PrefService* pref_service,
-      device_sync::DeviceSyncClient* device_sync_client,
-      multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client);
+  virtual ~PhoneHubManager() = default;
+
   PhoneHubManager(const PhoneHubManager&) = delete;
   PhoneHubManager& operator=(const PhoneHubManager&) = delete;
-  ~PhoneHubManager() override;
 
-  FeatureStatusProvider* feature_status_provider() {
-    return feature_status_provider_.get();
-  }
+  virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;
 
-  NotificationAccessManager* notification_access_manager() {
-    return notification_access_manager_.get();
-  }
+  virtual NotificationAccessManager* GetNotificationAccessManager() = 0;
 
-  PhoneModel* phone_model() { return phone_model_.get(); }
+  virtual PhoneModel* GetPhoneModel() = 0;
 
-  TetherController* tether_controller() { return tether_controller_.get(); }
+  virtual TetherController* GetTetherController() = 0;
 
- private:
-  // KeyedService:
-  void Shutdown() override;
-
-  std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
-  std::unique_ptr<NotificationAccessManager> notification_access_manager_;
-  std::unique_ptr<PhoneModel> phone_model_;
-  std::unique_ptr<TetherController> tether_controller_;
+ protected:
+  PhoneHubManager() = default;
 };
 
 }  // namespace phonehub

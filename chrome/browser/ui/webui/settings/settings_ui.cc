@@ -423,8 +423,9 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
             profile->GetPrefs(),
             chromeos::multidevice_setup::MultiDeviceSetupClientFactory::
                 GetForProfile(profile),
-            phone_hub_manager ? phone_hub_manager->notification_access_manager()
-                              : nullptr,
+            phone_hub_manager
+                ? phone_hub_manager->GetNotificationAccessManager()
+                : nullptr,
             android_sms_service
                 ? android_sms_service->android_sms_pairing_state_tracker()
                 : nullptr,

@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/components/phonehub/phone_hub_manager_impl.h"
 
-#include "base/callback.h"
-#include "base/no_destructor.h"
 #include "chromeos/components/phonehub/feature_status_provider_impl.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
@@ -14,7 +12,7 @@
 namespace chromeos {
 namespace phonehub {
 
-PhoneHubManager::PhoneHubManager(
+PhoneHubManagerImpl::PhoneHubManagerImpl(
     PrefService* pref_service,
     device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
@@ -27,9 +25,25 @@ PhoneHubManager::PhoneHubManager(
       tether_controller_(
           std::make_unique<TetherControllerImpl>(multidevice_setup_client)) {}
 
-PhoneHubManager::~PhoneHubManager() = default;
+PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
-void PhoneHubManager::Shutdown() {
+FeatureStatusProvider* PhoneHubManagerImpl::GetFeatureStatusProvider() {
+  return feature_status_provider_.get();
+}
+
+NotificationAccessManager* PhoneHubManagerImpl::GetNotificationAccessManager() {
+  return notification_access_manager_.get();
+}
+
+PhoneModel* PhoneHubManagerImpl::GetPhoneModel() {
+  return phone_model_.get();
+}
+
+TetherController* PhoneHubManagerImpl::GetTetherController() {
+  return tether_controller_.get();
+}
+
+void PhoneHubManagerImpl::Shutdown() {
   tether_controller_.reset();
   phone_model_.reset();
   notification_access_manager_.reset();

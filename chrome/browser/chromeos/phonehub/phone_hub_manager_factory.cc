@@ -10,7 +10,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
-#include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/components/phonehub/phone_hub_manager_impl.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -41,7 +41,7 @@ bool IsLoggedInAsPrimaryUser(Profile* profile) {
 
 // static
 PhoneHubManager* PhoneHubManagerFactory::GetForProfile(Profile* profile) {
-  return static_cast<PhoneHubManager*>(
+  return static_cast<PhoneHubManagerImpl*>(
       PhoneHubManagerFactory::GetInstance()->GetServiceForBrowserContext(
           profile, /*create=*/true));
 }
@@ -75,7 +75,7 @@ KeyedService* PhoneHubManagerFactory::BuildServiceInstanceFor(
   if (IsProhibitedByPolicy(profile))
     return nullptr;
 
-  PhoneHubManager* phone_hub_manager = new PhoneHubManager(
+  PhoneHubManagerImpl* phone_hub_manager = new PhoneHubManagerImpl(
       profile->GetPrefs(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),
       multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(profile));
