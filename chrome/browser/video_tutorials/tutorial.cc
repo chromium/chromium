@@ -6,7 +6,7 @@
 
 namespace video_tutorials {
 
-Tutorial::Tutorial() = default;
+Tutorial::Tutorial() : feature(FeatureType::kInvalid), video_length(0) {}
 
 Tutorial::Tutorial(FeatureType feature,
                    const std::string& title,

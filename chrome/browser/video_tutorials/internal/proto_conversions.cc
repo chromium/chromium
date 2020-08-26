@@ -71,4 +71,25 @@ void TutorialFromProto(TutorialProto* proto, Tutorial* tutorial) {
   tutorial->video_length = proto->video_length();
 }
 
+void TutorialGroupToProto(TutorialGroup* group, TutorialGroupProto* proto) {
+  DCHECK(group);
+  DCHECK(proto);
+  proto->set_locale(group->locale);
+  proto->clear_tutorials();
+  for (auto& tutorial : group->tutorials)
+    TutorialToProto(&tutorial, proto->add_tutorials());
+}
+
+void TutorialGroupFromProto(TutorialGroupProto* proto, TutorialGroup* group) {
+  DCHECK(group);
+  DCHECK(proto);
+  group->locale = proto->locale();
+  group->tutorials.clear();
+  for (auto tutorial_proto : proto->tutorials()) {
+    Tutorial tutorial;
+    TutorialFromProto(&tutorial_proto, &tutorial);
+    group->tutorials.emplace_back(std::move(tutorial));
+  }
+}
+
 }  // namespace video_tutorials

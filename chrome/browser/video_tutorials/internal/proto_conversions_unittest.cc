@@ -17,6 +17,15 @@ void ResetTutorialEntry(Tutorial* entry) {
                     kTestURL, kTestURL, 60);
 }
 
+void ResetTutorialGroup(TutorialGroup* group) {
+  *group = TutorialGroup("cn");
+  group->tutorials.clear();
+  Tutorial entry1;
+  ResetTutorialEntry(&entry1);
+  group->tutorials.emplace_back(entry1);
+  group->tutorials.emplace_back(entry1);
+}
+
 // Verify round-way conversion of Tutorial struct.
 TEST(VideoTutorialsProtoConversionsTest, TutorialConversion) {
   Tutorial expected, actual;
@@ -24,6 +33,16 @@ TEST(VideoTutorialsProtoConversionsTest, TutorialConversion) {
   TutorialProto intermediate;
   TutorialToProto(&expected, &intermediate);
   TutorialFromProto(&intermediate, &actual);
+  EXPECT_EQ(expected, actual);
+}
+
+// Verify round-way conversion of TutorialGroup struct.
+TEST(VideoTutorialsProtoConversionsTest, TutorialGroupConversion) {
+  TutorialGroup expected, actual;
+  ResetTutorialGroup(&expected);
+  TutorialGroupProto intermediate;
+  TutorialGroupToProto(&expected, &intermediate);
+  TutorialGroupFromProto(&intermediate, &actual);
   EXPECT_EQ(expected, actual);
 }
 

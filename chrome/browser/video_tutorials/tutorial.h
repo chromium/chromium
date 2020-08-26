@@ -43,7 +43,7 @@ struct Tutorial {
   Tutorial& operator=(const Tutorial& other);
 
   // Type of feature where this video tutorial targeted.
-  FeatureType feature{FeatureType::kInvalid};
+  FeatureType feature;
 
   // The title of the video.
   std::string title;

@@ -11,6 +11,8 @@ source_set("internal") {
   sources = [
     "proto_conversions.cc",
     "proto_conversions.h",
+    "tutorial_group.cc",
+    "tutorial_group.h",
     "tutorial_service_impl.cc",
     "tutorial_service_impl.h",
   ]
@@ -74,7 +76,10 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "proto_conversions_unittest.cc" ]
+  sources = [
+    "proto_conversions_unittest.cc",
+    "tutorial_group_unittest.cc",
+  ]
 
   deps = [
     ":internal",
