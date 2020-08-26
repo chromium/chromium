@@ -584,7 +584,7 @@ try_.chromium_mac_ios_builder(
     branch_selector = branches.STANDARD_RELEASES,
     executable = "recipe:chromium_trybot",
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
     tryjob = try_.job(),
 )

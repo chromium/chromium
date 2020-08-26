@@ -134,8 +134,8 @@ xcode_cache = struct(
     x11e608c = xcode_enum("xcode_ios_11e608c", "xcode_ios_11e608c.app"),
     x11e608cwk = xcode_enum("xcode_ios_11e608cwk", "xcode_ios_11e608cwk.app"),
     x11e503a_xct12b1 = xcode_enum("xcode_ios_11e503a_xct12b1", "xcode_ios_11e503a_xct12b1.app"),
-    # xc12 beta 5
-    x12a8189h = xcode_enum("xcode_ios_12a8189h", "xcode_ios_12a8189h.app"),
+    # xc12 beta 6
+    x12a8189n = xcode_enum("xcode_ios_12a8189n", "xcode_ios_12a8189n.app"),
 )
 
 ################################################################################

@@ -679,7 +679,7 @@ def fyi_ios_builder(
         os = builders.os.MAC_10_15,
         **kwargs):
     if not caches:
-        caches = [builders.xcode_cache.x12a8189h]
+        caches = [builders.xcode_cache.x12a8189n]
 
     return fyi_builder(
         name = name,
@@ -842,10 +842,10 @@ def mac_ios_builder(
         properties = None,
         **kwargs):
     if not caches:
-        caches = [builders.xcode_cache.x12a8189h]
+        caches = [builders.xcode_cache.x12a8189n]
     if not properties:
         properties = {
-            "xcode_build_version": "12a8189h",
+            "xcode_build_version": "12a8189n",
         }
 
     return mac_builder(

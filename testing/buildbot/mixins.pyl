@@ -954,18 +954,18 @@
       ],
     },
   },
-  # xcode 12 beta 5
-  'xcode_12a8189h': {
+  # xcode 12 beta 6
+  'xcode_12a8189n': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '12a8189h'
+        '12a8189n'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_12a8189h',
+          'name': 'xcode_ios_12a8189n',
           'path': 'Xcode.app',
         },
       ],

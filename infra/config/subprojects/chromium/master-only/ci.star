@@ -1798,7 +1798,7 @@ ci.fyi_coverage_builder(
 
 ci.fyi_coverage_builder(
     name = "ios-simulator-code-coverage",
-    caches = [xcode_cache.x12a8189h],
+    caches = [xcode_cache.x12a8189n],
     console_view_entry = ci.console_view_entry(
         category = "code_coverage",
         short_name = "ios",
@@ -1809,7 +1809,7 @@ ci.fyi_coverage_builder(
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -1866,7 +1866,7 @@ ci.fyi_ios_builder(
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -1878,7 +1878,7 @@ ci.fyi_ios_builder(
     ),
     executable = "recipe:chromium",
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -1891,7 +1891,7 @@ ci.fyi_ios_builder(
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -1919,7 +1919,7 @@ ci.fyi_ios_builder(
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
     schedule = "0 0,12 * * *",
     triggered_by = [],
@@ -1931,11 +1931,11 @@ ci.fyi_ios_builder(
         category = "iOS|iOS13",
         short_name = "dev",
     ),
-    caches = [xcode_cache.x12a8189h],
+    caches = [xcode_cache.x12a8189n],
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -1945,11 +1945,11 @@ ci.fyi_ios_builder(
         category = "iOS|iOS13",
         short_name = "sdk13",
     ),
-    caches = [xcode_cache.x12a8189h],
+    caches = [xcode_cache.x12a8189n],
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
     schedule = "0 6,18 * * *",
     triggered_by = [],
@@ -1964,7 +1964,7 @@ ci.fyi_ios_builder(
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -1974,11 +1974,11 @@ ci.fyi_ios_builder(
         category = "iOS|iOS14",
         short_name = "sdk14",
     ),
-    caches = [xcode_cache.x12a8189h],
+    caches = [xcode_cache.x12a8189n],
     executable = "recipe:chromium",
     os = os.MAC_10_15,
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
 )
 
@@ -3038,7 +3038,7 @@ ci.mac_ios_builder(
 ci.mac_ios_builder(
     name = "ios-simulator-noncq",
     caches = [
-        xcode_cache.x12a8189h,
+        xcode_cache.x12a8189n,
     ],
     console_view_entry = ci.console_view_entry(
         category = "ios|default",
@@ -3048,7 +3048,7 @@ ci.mac_ios_builder(
     # is part of the main waterfall
     main_console_view = "main",
     properties = {
-        "xcode_build_version": "12a8189h",
+        "xcode_build_version": "12a8189n",
     },
 )
 
