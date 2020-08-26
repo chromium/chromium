@@ -102,8 +102,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/compositor/layouts/MockLayoutHost.java",
   "javatests/src/org/chromium/chrome/browser/compositor/layouts/MockResourcesForLayout.java",
   "javatests/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripTest.java",
-  "javatests/src/org/chromium/chrome/browser/contacts_picker/ContactDetailsTest.java",
-  "javatests/src/org/chromium/chrome/browser/contacts_picker/ContactsPickerDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/contextmenu/ContextMenuTest.java",
   "javatests/src/org/chromium/chrome/browser/contextmenu/RevampedContextMenuHeaderViewTest.java",
   "javatests/src/org/chromium/chrome/browser/contextmenu/RevampedContextMenuItemViewTest.java",

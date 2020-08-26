@@ -3256,46 +3256,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         <ph name="BEGIN_LINK">&lt;link&gt;</ph>Get help<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
 
-      <!-- Contacts Picker strings -->
-      <message name="IDS_CONTACTS_PICKER_SEARCH" desc="The hint text for the search box for contacts.">
-        Search your contacts
-      </message>
-      <message name="IDS_CONTACTS_PICKER_SELECT_CONTACTS" desc="The label at the top of the dialog that allows users to select contacts from their device and share the details with a web page.">
-        Select contacts
-      </message>
-      <message name="IDS_CONTACTS_PICKER_SELECT_CONTACT" desc="The label at the top of the dialog that allows users to select a single contact from their device and share the details with a web page.">
-        Select a contact
-      </message>
-      <message name="IDS_CONTACTS_PICKER_ALL_CONTACTS" desc="The label associated with the select all checkbox, indicating that all the contacts will be selected.">
-        All contacts
-      </message>
-      <message name="IDS_CONTACTS_PICKER_NO_CONTACTS_FOUND" desc="The label shown when no contacts are found (e.g. none exist on the device).">
-        No contacts found
-      </message>
-      <message name="IDS_TOP_VIEW_NAMES_FILTER_LABEL" desc="The label shown for the names filter toggle button (allowing the user to exclude names).">
-        Names
-      </message>
-      <message name="IDS_TOP_VIEW_ADDRESS_FILTER_LABEL" desc="The label shown for the address filter toggle button (allowing the user to exclude names).">
-        Addresses
-      </message>
-      <message name="IDS_TOP_VIEW_EMAIL_FILTER_LABEL" desc="The label shown for the email filter toggle button (allowing the user to exclude emails).">
-        Email addresses
-      </message>
-      <message name="IDS_TOP_VIEW_TELEPHONE_FILTER_LABEL" desc="The label shown for the telephone filter toggle button (allowing the user to exclude telephones).">
-        Phone numbers
-      </message>
-      <message name="IDS_TOP_VIEW_ICON_FILTER_LABEL" desc="The label shown for the icon filter toggle button (allowing the user to exclude icons).">
-        Profile photos
-      </message>
-      <message name="IDS_CONTACTS_PICKER_MORE_DETAILS" desc="Label describing that the user has one or more telephone/emails (used for either).">
-        {DETAIL_COUNT, plural,
-          =1 {(+ 1 more)}
-          other {(+ # more)}}
-      </message>
-      <message name="IDS_DISCLAIMER_SHARING_CONTACT_DETAILS" desc="Label describing what will happen with the contact details that are being shared.">
-        The contacts you select will be shared with <ph name="BEGIN_BOLD">&lt;b&gt;</ph><ph name="SITE">%1$s<ex>https://www.google.com</ex></ph><ph name="END_BOLD">&lt;/b&gt;</ph>.
-      </message>
-
       <!-- Special locale UI strings -->
       <message name="IDS_SEARCH_WITH_SOGOU" desc="Text telling the user that the search engine will be switched to Sogou.">
         Search with Sogou

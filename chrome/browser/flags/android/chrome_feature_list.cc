@@ -139,7 +139,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kChromeSmartSelection,
     &kCommandLineOnNonRooted,
     &kConditionalTabStripAndroid,
-    &kContactsPickerSelectAll,
     &kContentIndexingDownloadHome,
     &kContentIndexingNTP,
     &kContentSuggestionsScrollToLoad,
@@ -399,9 +398,6 @@ const base::Feature kChromeSmartSelection{"ChromeSmartSelection",
 
 const base::Feature kCommandLineOnNonRooted{"CommandLineOnNonRooted",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kContactsPickerSelectAll{"ContactsPickerSelectAll",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContentIndexingDownloadHome{
     "ContentIndexingDownloadHome", base::FEATURE_ENABLED_BY_DEFAULT};

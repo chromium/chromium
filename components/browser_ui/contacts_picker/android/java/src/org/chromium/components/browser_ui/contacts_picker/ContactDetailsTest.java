@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contacts_picker;
+package org.chromium.components.browser_ui.contacts_picker;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -16,13 +16,10 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.Arrays;
@@ -31,19 +28,13 @@ import java.util.List;
 /**
  * Tests for the ContactDetails class.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 public class ContactDetailsTest {
-    @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
-
     Context mContext;
 
     @Before
     public void setUp() throws Exception {
-        mContext = InstrumentationRegistry.getInstrumentation()
-                           .getTargetContext()
-                           .getApplicationContext();
+        mContext = InstrumentationRegistry.getTargetContext();
     }
 
     private void compareAbbreviatedContactDetails(ContactDetails.AbbreviatedContactDetails expected,

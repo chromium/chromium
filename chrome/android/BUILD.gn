@@ -350,6 +350,7 @@ android_library("chrome_java") {
     "//components/browser_ui/android/bottomsheet:manager_java",
     "//components/browser_ui/banners/android:java",
     "//components/browser_ui/client_certificate/android:java",
+    "//components/browser_ui/contacts_picker/android:java",
     "//components/browser_ui/display_cutout/android:java",
     "//components/browser_ui/http_auth/android:java",
     "//components/browser_ui/media/android:java",
@@ -538,7 +539,6 @@ android_library("chrome_java") {
     "//components/payments/content/android:method_strings_generated_srcjar",
     "//components/search_engines:search_engine_type_java",
     "//components/ui_metrics:ui_metrics_enums_java",
-    "//content/public/browser:contacts_picker_properties_requested_javagen",
     "//net:effective_connection_type_java",
   ]
 
@@ -1023,6 +1023,7 @@ android_library("chrome_test_java") {
     "//components/bookmarks/common/android:bookmarks_java",
     "//components/browser_ui/android/bottomsheet:java",
     "//components/browser_ui/android/bottomsheet/test:java",
+    "//components/browser_ui/contacts_picker/android:javatests",
     "//components/browser_ui/display_cutout/android:java",
     "//components/browser_ui/media/android:java",
     "//components/browser_ui/modaldialog/android:java",

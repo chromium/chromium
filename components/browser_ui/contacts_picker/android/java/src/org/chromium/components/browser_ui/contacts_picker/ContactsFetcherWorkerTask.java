@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contacts_picker;
+package org.chromium.components.browser_ui.contacts_picker;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -24,7 +24,8 @@ import java.util.Map;
  */
 class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
     private static final String[] PROJECTION = {
-            ContactsContract.Contacts._ID, ContactsContract.Contacts.LOOKUP_KEY,
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.LOOKUP_KEY,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contacts_picker;
+package org.chromium.components.browser_ui.contacts_picker;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -23,18 +24,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink.mojom.ContactIconBlob;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -42,35 +36,35 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.ui.ContactsPickerListener;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.vr.VrModeObserver;
 import org.chromium.ui.vr.VrModeProvider;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
  * Tests for the ContactsPickerDialog class.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.CONTACTS_PICKER_SELECT_ALL})
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class ContactsPickerDialogTest
+@RunWith(BaseJUnit4ClassRunner.class)
+public class ContactsPickerDialogTest extends DummyUiActivityTestCase
         implements ContactsPickerListener, SelectionObserver<ContactDetails> {
     @ClassRule
     public static DisableAnimationsTestRule mDisableAnimationsTestRule =
             new DisableAnimationsTestRule();
 
-    @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    private WindowAndroid mWindowAndroid;
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
 
     // The dialog we are testing.
     private ContactsPickerDialog mDialog;
@@ -114,13 +108,21 @@ public class ContactsPickerDialogTest
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return new ActivityWindowAndroid(getActivity()); });
+        FeatureList.setTestFeatures(Collections.singletonMap(
+                ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL, true));
         mIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(mIcon);
         canvas.drawColor(Color.BLUE);
         ContactViewHolder.setIconForTesting(mIcon);
         // Disable the async task since it tries to access contact icons which would fail in tests.
         CompressContactIconsWorkerTask.sDisableForTesting = true;
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
 
     // ContactsPickerDialog.ContactsPickerListener:
@@ -168,11 +170,19 @@ public class ContactsPickerDialogTest
                 TestThreadUtils.runOnUiThreadBlocking(new Callable<ContactsPickerDialog>() {
                     @Override
                     public ContactsPickerDialog call() {
-                        final ContactsPickerDialog dialog = new ContactsPickerDialog(
-                                mActivityTestRule.getActivity().getWindowAndroid(),
-                                new ChromePickerAdapter(), ContactsPickerDialogTest.this,
-                                multiselect, includeNames, includeEmails, includeTel,
-                                includeAddresses, includeIcons, "example.com",
+                        final ContactsPickerDialog dialog = new ContactsPickerDialog(mWindowAndroid,
+                                new PickerAdapter() {
+                                    @Override
+                                    protected String findOwnerEmail() {
+                                        return null;
+                                    }
+                                    @Override
+                                    protected void addOwnerInfoToContacts(
+                                            ArrayList<ContactDetails> contacts) {}
+                                },
+                                ContactsPickerDialogTest.this, multiselect, includeNames,
+                                includeEmails, includeTel, includeAddresses, includeIcons,
+                                "example.com",
                                 new VrModeProvider() {
                                     @Override
                                     public boolean isInVr() {
@@ -258,7 +268,7 @@ public class ContactsPickerDialogTest
         mLastActionRecorded = ContactsPickerAction.NUM_ENTRIES;
 
         PickerCategoryView categoryView = mDialog.getCategoryViewForTesting();
-        View cancel = new View(mActivityTestRule.getActivity());
+        View cancel = new View(getActivity());
         int callCount = onActionCallback.getCallCount();
         categoryView.onClick(cancel);
         onActionCallback.waitForCallback(callCount, 1);

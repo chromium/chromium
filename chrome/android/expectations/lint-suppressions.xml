@@ -34,7 +34,7 @@ Still reading?
   </issue>
   <issue id="ContentDescription">
     <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
-    <ignore regexp="chrome/android/java/res/layout/contacts_list_item_view.xml"/>
+    <ignore regexp="components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"/>
     <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->
     <ignore regexp="components/browser_ui/photo_picker/android/java/res/layout/photo_picker_dialog.xml"/>
     <!--TODO(crbug.com/1044658): This suppression was added blindly, and needs investigated.-->

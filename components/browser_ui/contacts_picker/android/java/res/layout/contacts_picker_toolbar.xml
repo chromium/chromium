@@ -5,7 +5,7 @@
     found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.contacts_picker.ContactsPickerToolbar
+<org.chromium.components.browser_ui.contacts_picker.ContactsPickerToolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -35,4 +35,4 @@
             android:text="@string/done"
             style="@style/TextButton" />
     </LinearLayout>
-</org.chromium.chrome.browser.contacts_picker.ContactsPickerToolbar>
+</org.chromium.components.browser_ui.contacts_picker.ContactsPickerToolbar>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contacts_picker;
+package org.chromium.components.browser_ui.contacts_picker;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contacts_picker;
+package org.chromium.components.browser_ui.contacts_picker;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.util.BitmapCache;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -171,8 +170,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         View root = LayoutInflater.from(context).inflate(R.layout.contacts_picker_dialog, this);
         mSelectableListLayout =
                 (SelectableListLayout<ContactDetails>) root.findViewById(R.id.selectable_list);
-        mSelectableListLayout.initializeEmptyView(
-                R.string.contacts_picker_no_contacts_found,
+        mSelectableListLayout.initializeEmptyView(R.string.contacts_picker_no_contacts_found,
                 R.string.contacts_picker_no_contacts_found);
 
         mPickerAdapter = adapter;

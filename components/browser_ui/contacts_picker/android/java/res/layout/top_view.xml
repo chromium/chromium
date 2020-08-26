@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.contacts_picker.TopView
+<org.chromium.components.browser_ui.contacts_picker.TopView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -72,4 +72,4 @@
 
         <include layout="@layout/checkbox_layout" />
     </LinearLayout>
-</org.chromium.chrome.browser.contacts_picker.TopView>
+</org.chromium.components.browser_ui.contacts_picker.TopView>

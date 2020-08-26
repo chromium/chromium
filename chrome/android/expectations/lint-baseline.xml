@@ -2053,7 +2053,7 @@
         errorLine1="                android:clickable=&quot;true&quot;"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/res/layout/contacts_list_item_view.xml"
+            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
             line="48"
             column="17"/>
     </issue>
@@ -2064,7 +2064,7 @@
         errorLine1="                android:clickable=&quot;true&quot;"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/res/layout/contacts_list_item_view.xml"
+            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
             line="72"
             column="17"/>
     </issue>
@@ -2075,7 +2075,7 @@
         errorLine1="                android:clickable=&quot;true&quot;"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/res/layout/contacts_list_item_view.xml"
+            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
             line="96"
             column="17"/>
     </issue>

@@ -1,6 +1,7 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 import("//build/config/android/rules.gni")
 
 android_library("java") {
@@ -53,11 +54,13 @@ android_resources("java_resources") {
     "java/res/drawable-xxhdpi/default_favicon.png",
     "java/res/drawable-xxxhdpi/chromelogo16.png",
     "java/res/drawable-xxxhdpi/default_favicon.png",
-    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
 
   create_srcjar = false
 
-  deps = [ "//ui/android:ui_java_resources" ]
+  deps = [
+    "//components/browser_ui/styles/android:java_resources",
+    "//ui/android:ui_java_resources",
+  ]
 }

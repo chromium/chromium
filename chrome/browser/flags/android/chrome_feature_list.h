@@ -48,7 +48,6 @@ extern const base::Feature kChromeSharingHubV15;
 extern const base::Feature kChromeSmartSelection;
 extern const base::Feature kCommandLineOnNonRooted;
 extern const base::Feature kConditionalTabStripAndroid;
-extern const base::Feature kContactsPickerSelectAll;
 extern const base::Feature kContentIndexingDownloadHome;
 extern const base::Feature kContentIndexingNTP;
 extern const base::Feature kContextMenuCopyImage;

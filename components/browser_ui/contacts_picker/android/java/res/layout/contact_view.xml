@@ -7,7 +7,7 @@
 
 <!-- Represents a single item in the Contacts Picker. -->
 
-<org.chromium.chrome.browser.contacts_picker.ContactView
+<org.chromium.components.browser_ui.contacts_picker.ContactView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
@@ -19,4 +19,4 @@
         <include layout="@layout/contacts_list_item_view" />
 
     </LinearLayout>
-</org.chromium.chrome.browser.contacts_picker.ContactView>
+</org.chromium.components.browser_ui.contacts_picker.ContactView>

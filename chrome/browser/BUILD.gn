@@ -2984,6 +2984,7 @@ static_library("browser") {
       "//chrome/common:non_code_constants",
       "//chrome/services/media_gallery_util/public/cpp",
       "//components/autofill_assistant/browser",
+      "//components/browser_ui/contacts_picker/android",
       "//components/browser_ui/photo_picker/android",
       "//components/browser_ui/site_settings/android",
       "//components/browser_ui/sms/android",
