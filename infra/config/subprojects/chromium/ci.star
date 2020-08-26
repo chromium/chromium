@@ -13,7 +13,6 @@ def main_console_if_on_branch():
 ci.set_defaults(
     settings,
     add_to_console_view = True,
-    bucketed_triggers = settings.is_master,
     main_console_view = None if settings.is_master else settings.main_console_name,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
 )
