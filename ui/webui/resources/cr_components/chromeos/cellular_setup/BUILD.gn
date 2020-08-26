@@ -129,12 +129,14 @@ js_type_check("closure_compile_module") {
     ":cellular_types.m",
 
     # ":cellular_setup.m",
+    # ":esim_flow_ui.m",
     ":final_page.m",
     ":mojo_interface_provider.m",
     ":provisioning_page.m",
 
     # ":psim_flow_ui.m",
     ":sim_detect_page.m",
+    ":subflow_behavior.m",
 
     # ":setup_selection_flow.m",
     ":webview_post_util.m",
@@ -203,16 +205,21 @@ js_library("provisioning_page.m") {
 js_library("button_bar.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/button_bar.m.js" ]
   deps = [
+    ":cellular_types.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
-    ":cellular_types.m",
   ]
   extra_deps = [ ":button_bar_module" ]
 }
 
 js_library("cellular_types.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_types.m.js" ]
-   deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("subflow_behavior.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/subflow_behavior.m.js" ]
+  deps = [ ":cellular_types.m" ]
   extra_deps = [ ":modulize" ]
 }
 
@@ -269,9 +276,10 @@ polymer_modulizer("provisioning_page") {
 
 js_modulizer("modulize") {
   input_files = [
+    "cellular_types.js",
     "mojo_interface_provider.js",
+    "subflow_behavior.js",
     "webview_post_util.js",
-    "cellular_types.js"
   ]
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
