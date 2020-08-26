@@ -629,9 +629,8 @@ Status DevToolsClientImpl::EnsureListenersNotifiedOfCommandResponse() {
         unnotified_cmd_response_listeners_.front();
     unnotified_cmd_response_listeners_.pop_front();
     Status status = listener->OnCommandSuccess(
-        this,
-        unnotified_cmd_response_info_->method,
-        *unnotified_cmd_response_info_->response.result.get(),
+        this, unnotified_cmd_response_info_->method,
+        unnotified_cmd_response_info_->response.result.get(),
         unnotified_cmd_response_info_->command_timeout);
     if (status.IsError())
       return status;

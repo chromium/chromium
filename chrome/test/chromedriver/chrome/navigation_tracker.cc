@@ -332,15 +332,14 @@ void NavigationTracker::clearFrameStates() {
   setCurrentFrameInvalid();
 }
 
-Status NavigationTracker::OnCommandSuccess(
-    DevToolsClient* client,
-    const std::string& method,
-    const base::DictionaryValue& result,
-    const Timeout& command_timeout) {
+Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
+                                           const std::string& method,
+                                           const base::DictionaryValue* result,
+                                           const Timeout& command_timeout) {
   // Check if Page.navigate has any error from top frame
   std::string error_text;
-  if (method == "Page.navigate" && result.GetString("errorText", &error_text) &&
-      isNetworkError(error_text))
+  if (method == "Page.navigate" && result &&
+      result->GetString("errorText", &error_text) && isNetworkError(error_text))
     return Status(kUnknownError, error_text);
 
   // Check for start of navigation. In some case response to navigate is delayed

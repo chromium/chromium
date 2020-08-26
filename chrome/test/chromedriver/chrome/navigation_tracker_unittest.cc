@@ -506,7 +506,7 @@ TEST(NavigationTracker, OnSuccessfulNavigate) {
   base::DictionaryValue result;
   result.SetString("frameId", client_ptr->GetId());
   web_view.nextEvaluateScript("loading", kOk);
-  tracker.OnCommandSuccess(client_ptr, "Page.navigate", result, Timeout());
+  tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout());
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
   web_view.nextEvaluateScript("complete", kOk);
   tracker.OnEvent(client_ptr, "Page.loadEventFired", params);
@@ -537,7 +537,7 @@ TEST(NavigationTracker, OnNetworkErroredNavigate) {
   web_view.nextEvaluateScript("loading", kOk);
   ASSERT_NE(
       kOk,
-      tracker.OnCommandSuccess(client_ptr, "Page.navigate", result, Timeout())
+      tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout())
           .code());
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, false));
 }
@@ -564,7 +564,7 @@ TEST(NavigationTracker, OnNonNetworkErroredNavigate) {
   result.SetString("frameId", client_ptr->GetId());
   result.SetString("errorText", "net::ERR_CERT_COMMON_NAME_INVALID");
   web_view.nextEvaluateScript("loading", kOk);
-  tracker.OnCommandSuccess(client_ptr, "Page.navigate", result, Timeout());
+  tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout());
   ASSERT_NO_FATAL_FAILURE(AssertPendingState(&tracker, true));
   web_view.nextEvaluateScript("complete", kOk);
   tracker.OnEvent(client_ptr, "Page.loadEventFired", params);
