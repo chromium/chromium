@@ -163,11 +163,15 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     occlusion_state = FrameOcclusionState::kUnknown;
   }
 
+  // An iframe's content is always pixel-snapped, even if the iframe element has
+  // non-pixel-aligned location.
+  gfx::Transform main_frame_gfx_transform =
+      TransformationMatrix::ToTransform(main_frame_transform_matrix);
+  main_frame_gfx_transform.RoundTranslationComponents();
   SetViewportIntersection(
       {viewport_intersection, mainframe_intersection, WebRect(),
        occlusion_state, frame.GetMainFrameViewportSize(),
-       frame.GetMainFrameScrollOffset(),
-       TransformationMatrix::ToTransform(main_frame_transform_matrix)});
+       frame.GetMainFrameScrollOffset(), main_frame_gfx_transform});
 
   UpdateFrameVisibility(!viewport_intersection.IsEmpty());
 

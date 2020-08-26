@@ -13387,6 +13387,50 @@ TEST_F(WebFrameSimTest, PageOrientation) {
   frame->PrintEnd();
 }
 
+class RemoteFrameIntersectionClient
+    : public frame_test_helpers::TestWebRemoteFrameClient {
+ public:
+  RemoteFrameIntersectionClient() = default;
+  ~RemoteFrameIntersectionClient() override = default;
+
+  void UpdateRemoteViewportIntersection(
+      const ViewportIntersectionState& intersection_state) override {
+    intersection_state_ = intersection_state;
+    frame_test_helpers::TestWebRemoteFrameClient::
+        UpdateRemoteViewportIntersection(intersection_state);
+  }
+
+  const ViewportIntersectionState& GetIntersectionState() const {
+    return intersection_state_;
+  }
+
+ private:
+  ViewportIntersectionState intersection_state_;
+};
+
+TEST_F(WebFrameSimTest, MainFrameTransformOffsetPixelSnapped) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <iframe id="iframe" style="position:absolute;top:7px;left:13.5px;border:none"></iframe>
+  )HTML");
+  RemoteFrameIntersectionClient client;
+  WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote(&client);
+  MainFrame().FirstChild()->Swap(remote_frame);
+  Compositor().BeginFrame();
+  RunPendingTasks();
+  EXPECT_TRUE(client.GetIntersectionState()
+                  .main_frame_transform.IsIdentityOrIntegerTranslation());
+  EXPECT_EQ(
+      client.GetIntersectionState().main_frame_transform.matrix().get(0, 3),
+      14.f);
+  EXPECT_EQ(
+      client.GetIntersectionState().main_frame_transform.matrix().get(1, 3),
+      7.f);
+  MainFrame().FirstChild()->Detach();
+}
+
 TEST_F(WebFrameTest, MediaQueriesInLocalFrameInsideRemote) {
   frame_test_helpers::WebViewHelper helper;
   helper.InitializeRemote();
