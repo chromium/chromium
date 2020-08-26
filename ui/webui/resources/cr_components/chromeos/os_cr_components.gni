@@ -14,11 +14,16 @@ cr_components_chromeos_namespace_rewrites = [
   "cellularSetup.Button|Button",
   "cellularSetup.ButtonBarState|ButtonBarState",
   "cellularSetup.CellularSetupPageName|CellularSetupPageName",
+  "cellularSetup.PSimPageName|PSimPageName",
+  "cellularSetup.PSimUIState|PSimUIState",
+  "cellularSetup.getTimeoutMsForPSimUIState|getTimeoutMsForPSimUIState",
 ]
 
 cr_components_chromeos_auto_imports = [
   "ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.html|CrPolicyIndicatorType",
   "ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_types.html|ButtonState,Button,ButtonBarState,CellularSetupPageName",
+  "ui/webui/resources/cr_components/chromeos/cellular_setup/subflow_behavior.html|SubflowBehavior",
+  "ui/webui/resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html|MojoInterfaceProviderImpl,MojoInterfaceProvider",
   "ui/webui/resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html|CrPolicyNetworkBehaviorMojo",
   "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
   "ui/webui/resources/cr_components/chromeos/network/network_listener_behavior.html|NetworkListenerBehavior",

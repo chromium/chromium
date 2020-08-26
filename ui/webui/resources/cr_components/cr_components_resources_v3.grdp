@@ -156,6 +156,14 @@
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/cellular_types.m.js"
            use_base_dir="false"
            type="BINDATA" />
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_SUBFLOW_BEHAVIOR_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/subflow_behavior.m.js"
+           use_base_dir="false"
+           type="BINDATA" />
+     <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_PSIM_FLOW_UI_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js"
+           use_base_dir="false"
+           type="BINDATA" />
   </if>
   <if expr="use_nss_certs">
     <include name="IDR_WEBUI_CA_TRUST_EDIT_DIALOG_JS"

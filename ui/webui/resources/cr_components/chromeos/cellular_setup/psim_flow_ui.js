@@ -52,306 +52,312 @@ cr.define('cellularSetup', function() {
     return null;
   }
 
+  /**
+   * Root element for the pSIM cellular setup flow. This element interacts with
+   * the CellularSetup service to carry out the psim activation flow. It
+   * contains navigation buttons and sub-pages corresponding to each step of the
+   * flow.
+   */
+  Polymer({
+    is: 'psim-flow-ui',
+
+    behaviors: [
+      I18nBehavior,
+      SubflowBehavior,
+    ],
+
+    properties: {
+      /**
+       * @type {!cellularSetup.PSimUIState}
+       * @private
+       */
+      state_: {
+        type: String,
+        value: PSimUIState.IDLE,
+      },
+
+      /**
+       * Element name of the current selected sub-page.
+       * @type {!cellularSetup.PSimPageName}
+       * @private
+       */
+      selectedPSimPageName_: {
+        type: String,
+        value: PSimPageName.SIM_DETECT,
+        notify: true,
+      },
+
+      /**
+       * DOM Element for the current selected sub-page.
+       * @private {!SimDetectPageElement|!ProvisioningPageElement|
+       *           !FinalPageElement}
+       */
+      selectedPage_: Object,
+
+      /**
+       * Whether error state should be shown for the current page.
+       * @private {boolean}
+       */
+      showError_: {type: Boolean, value: false},
+
+      /**
+       * Cellular metadata received via the onActivationStarted() callback. If
+       * that callback has not occurred, this field is null.
+       * @private {?chromeos.cellularSetup.mojom.CellularMetadata}
+       */
+      cellularMetadata_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * Whether try again should be shown in the button bar.
+       * @private {boolean}
+       */
+      showTryAgainButton_: {type: Boolean, value: false},
+
+      /**
+       * Whether finish button should be shown in the button bar.
+       * @private {boolean}
+       */
+      showFinishButton_: {type: Boolean, value: false},
+
+      /**
+       * Whether cancel button should be shown in the button bar.
+       * @private {boolean}
+       */
+      showCancelButton_: {type: Boolean, value: false}
+    },
+
+    observers: [
+      'updateShowError_(state_)',
+      'updateSelectedPage_(state_)',
+      'handlePSimUIStateChange_(state_)',
+    ],
+
+    /**
+     * Provides an interface to the CellularSetup Mojo service.
+     * @private {?cellular_setup.MojoInterfaceProvider}
+     */
+    mojoInterfaceProvider_: null,
+
+    /**
+     * Delegate responsible for routing activation started/finished events.
+     * @private {?chromeos.cellularSetup.mojom.ActivationDelegateReceiver}
+     */
+    activationDelegateReceiver_: null,
+
+    /**
+     * The timeout ID corresponding to a timeout for the current state. If no
+     * timeout is active, this value is null.
+     * @private {?number}
+     */
+    currentTimeoutId_: null,
+
+    /**
+     * Handler used to communicate state updates back to the CellularSetup
+     * service.
+     * @private {?chromeos.cellularSetup.mojom.CarrierPortalHandlerRemote}
+     */
+    carrierPortalHandler_: null,
+
+    /** @override */
+    created() {
+      this.mojoInterfaceProvider_ =
+          cellular_setup.MojoInterfaceProviderImpl.getInstance();
+    },
+
+    /**
+     * Overrides chromeos.cellularSetup.mojom.ActivationDelegateInterface.
+     * @param {!chromeos.cellularSetup.mojom.CellularMetadata} metadata
+     * @private
+     */
+    onActivationStarted(metadata) {
+      this.clearTimer_();
+      this.cellularMetadata_ = metadata;
+      this.state_ = PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
+    },
+
+    initSubflow() {
+      this.state_ = PSimUIState.STARTING_ACTIVATION;
+      this.set('buttonState', {
+        backward: cellularSetup.ButtonState.HIDDEN,
+        cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+        finish: cellularSetup.ButtonState.HIDDEN,
+        next: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+        tryAgain: cellularSetup.ButtonState.HIDDEN
+      });
+    },
+
+    /**
+     * Overrides chromeos.cellularSetup.mojom.ActivationDelegateInterface.
+     * @param {!chromeos.cellularSetup.mojom.ActivationResult} result
+     * @private
+     */
+    onActivationFinished(result) {
+      this.closeActivationConnection_();
+
+      const ActivationResult = chromeos.cellularSetup.mojom.ActivationResult;
+      switch (result) {
+        case ActivationResult.kSuccessfullyStartedActivation:
+          this.state_ = PSimUIState.ALREADY_ACTIVATED;
+          break;
+        case ActivationResult.kAlreadyActivated:
+          this.state_ = PSimUIState.ACTIVATION_SUCCESS;
+          break;
+        case ActivationResult.kFailedToActivate:
+          this.state_ = PSimUIState.ACTIVATION_FAILURE;
+          break;
+        default:
+          assertNotReached();
+      }
+    },
+
+    /** @private */
+    updateShowError_() {
+      switch (this.state_) {
+        case PSimUIState.TIMEOUT_START_ACTIVATION:
+        case PSimUIState.TIMEOUT_PORTAL_LOAD:
+        case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
+        case PSimUIState.ACTIVATION_FAILURE:
+          this.showError_ = true;
+          return;
+        default:
+          this.showError_ = false;
+          return;
+      }
+    },
+
+    /** @private */
+    updateSelectedPage_() {
+      switch (this.state_) {
+        case PSimUIState.IDLE:
+        case PSimUIState.STARTING_ACTIVATION:
+        case PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
+        case PSimUIState.TIMEOUT_START_ACTIVATION:
+          this.selectedPSimPageName_ = PSimPageName.SIM_DETECT;
+          return;
+        case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
+        case PSimUIState.TIMEOUT_PORTAL_LOAD:
+        case PSimUIState.WAITING_FOR_USER_PAYMENT:
+          this.selectedPSimPageName_ = PSimPageName.PROVISIONING;
+          return;
+        case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
+        case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
+        case PSimUIState.ACTIVATION_SUCCESS:
+        case PSimUIState.ALREADY_ACTIVATED:
+        case PSimUIState.ACTIVATION_FAILURE:
+          this.selectedPSimPageName_ = PSimPageName.FINAL;
+          return;
+        default:
+          assertNotReached();
+      }
+    },
+
+    /** @private */
+    handlePSimUIStateChange_() {
+      // Since the state has changed, the previous state did not time out, so
+      // clear any active timeout.
+      this.clearTimer_();
+
+      // If the new state has an associated timeout, set it.
+      const timeoutMs = getTimeoutMsForPSimUIState(this.state_);
+      if (timeoutMs !== null) {
+        this.currentTimeoutId_ =
+            setTimeout(this.onTimeout_.bind(this), timeoutMs);
+      }
+
+      if (this.state_ === PSimUIState.STARTING_ACTIVATION) {
+        this.startActivation_();
+        return;
+      }
+    },
+
+    /** @private */
+    onTimeout_() {
+      // The activation attempt failed, so close the connection to the service.
+      this.closeActivationConnection_();
+
+      switch (this.state_) {
+        case PSimUIState.STARTING_ACTIVATION:
+          this.state_ = PSimUIState.TIMEOUT_START_ACTIVATION;
+          return;
+        case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
+          this.state_ = PSimUIState.TIMEOUT_PORTAL_LOAD;
+          return;
+        case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
+          this.state_ = PSimUIState.TIMEOUT_FINISH_ACTIVATION;
+          return;
+        default:
+          // Only the above states are expected to time out.
+          assertNotReached();
+      }
+    },
+
+    /** @private */
+    startActivation_() {
+      assert(!this.activationDelegateReceiver_);
+      this.activationDelegateReceiver_ =
+          new chromeos.cellularSetup.mojom.ActivationDelegateReceiver(
+              /**
+               * @type {!chromeos.cellularSetup.mojom.ActivationDelegateInterface}
+               */
+              (this));
+
+      this.mojoInterfaceProvider_.getMojoServiceRemote()
+          .startActivation(
+              this.activationDelegateReceiver_.$.bindNewPipeAndPassRemote())
+          .then(
+              /**
+               * @param {!chromeos.cellularSetup.
+               *             mojom.CellularSetup_StartActivation_ResponseParams}
+               *                 params
+               */
+              (params) => {
+                this.carrierPortalHandler_ = params.observer;
+              });
+    },
+
+    /** @private */
+    closeActivationConnection_() {
+      assert(!!this.activationDelegateReceiver_);
+      this.activationDelegateReceiver_.$.close();
+      this.activationDelegateReceiver_ = null;
+      this.carrierPortalHandler_ = null;
+      this.cellularMetadata_ = null;
+    },
+
+    /** @private */
+    clearTimer_() {
+      if (this.currentTimeoutId_) {
+        clearTimeout(this.currentTimeoutId_);
+      }
+      this.currentTimeoutId_ = null;
+    },
+
+    /** @private */
+    onCarrierPortalLoaded_() {
+      this.state_ = PSimUIState.WAITING_FOR_USER_PAYMENT;
+      this.carrierPortalHandler_.onCarrierPortalStatusChange(
+          chromeos.cellularSetup.mojom.CarrierPortalStatus
+              .kPortalLoadedWithoutPaidUser);
+    },
+
+    /**
+     * @param {!CustomEvent<boolean>} event
+     * @private
+     */
+    onCarrierPortalResult_(event) {
+      const success = event.detail;
+      this.state_ = success ? PSimUIState.ACTIVATION_SUCCESS :
+                              PSimUIState.ACTIVATION_FAILURE;
+    },
+  });
+
+  // #cr_define_end
   return {
     PSimPageName: PSimPageName,
     PSimUIState: PSimUIState,
     getTimeoutMsForPSimUIState: getTimeoutMsForPSimUIState
   };
-});
-
-/**
- * Root element for the pSIM cellular setup flow. This element interacts with
- * the CellularSetup service to carry out the psim activation flow. It contains
- * navigation buttons and sub-pages corresponding to each step of the flow.
- */
-Polymer({
-  is: 'psim-flow-ui',
-
-  behaviors: [
-    I18nBehavior,
-    SubflowBehavior,
-  ],
-
-  properties: {
-    /** @private {!cellularSetup.PSimUIState} */
-    state_: {
-      type: String,
-      value: cellularSetup.PSimUIState.IDLE,
-    },
-
-    /**
-     * Element name of the current selected sub-page.
-     * @private {!cellularSetup.PSimPageName}
-     */
-    selectedPSimPageName_: {
-      type: String,
-      value: cellularSetup.PSimPageName.SIM_DETECT,
-      notify: true,
-    },
-
-    /**
-     * DOM Element for the current selected sub-page.
-     * @private {!SimDetectPageElement|!ProvisioningPageElement|
-     *           !FinalPageElement}
-     */
-    selectedPage_: Object,
-
-    /**
-     * Whether error state should be shown for the current page.
-     * @private {boolean}
-     */
-    showError_: {type: Boolean, value: false},
-
-    /**
-     * Cellular metadata received via the onActivationStarted() callback. If
-     * that callback has not occurred, this field is null.
-     * @private {?chromeos.cellularSetup.mojom.CellularMetadata}
-     */
-    cellularMetadata_: {
-      type: Object,
-      value: null,
-    },
-
-    /**
-     * Whether try again should be shown in the button bar.
-     * @private {boolean}
-     */
-    showTryAgainButton_: {type: Boolean, value: false},
-
-    /**
-     * Whether finish button should be shown in the button bar.
-     * @private {boolean}
-     */
-    showFinishButton_: {type: Boolean, value: false},
-
-    /**
-     * Whether cancel button should be shown in the button bar.
-     * @private {boolean}
-     */
-    showCancelButton_: {type: Boolean, value: false}
-  },
-
-  observers: [
-    'updateShowError_(state_)',
-    'updateSelectedPage_(state_)',
-    'handlePSimUIStateChange_(state_)',
-  ],
-
-  /**
-   * Provides an interface to the CellularSetup Mojo service.
-   * @private {?cellular_setup.MojoInterfaceProvider}
-   */
-  mojoInterfaceProvider_: null,
-
-  /**
-   * Delegate responsible for routing activation started/finished events.
-   * @private {?chromeos.cellularSetup.mojom.ActivationDelegateReceiver}
-   */
-  activationDelegateReceiver_: null,
-
-  /**
-   * The timeout ID corresponding to a timeout for the current state. If no
-   * timeout is active, this value is null.
-   * @private {?number}
-   */
-  currentTimeoutId_: null,
-
-  /**
-   * Handler used to communicate state updates back to the CellularSetup
-   * service.
-   * @private {?chromeos.cellularSetup.mojom.CarrierPortalHandlerRemote}
-   */
-  carrierPortalHandler_: null,
-
-  /** @override */
-  created() {
-    this.mojoInterfaceProvider_ =
-        cellular_setup.MojoInterfaceProviderImpl.getInstance();
-  },
-
-  /**
-   * Overrides chromeos.cellularSetup.mojom.ActivationDelegateInterface.
-   * @param {!chromeos.cellularSetup.mojom.CellularMetadata} metadata
-   * @private
-   */
-  onActivationStarted(metadata) {
-    this.clearTimer_();
-    this.cellularMetadata_ = metadata;
-    this.state_ = cellularSetup.PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
-  },
-
-  initSubflow() {
-    this.state_ = cellularSetup.PSimUIState.STARTING_ACTIVATION;
-    this.set('buttonState', {
-      backward: cellularSetup.ButtonState.HIDDEN,
-      cancel: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-      finish: cellularSetup.ButtonState.HIDDEN,
-      next: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
-      tryAgain: cellularSetup.ButtonState.HIDDEN
-    });
-  },
-
-  /**
-   * Overrides chromeos.cellularSetup.mojom.ActivationDelegateInterface.
-   * @param {!chromeos.cellularSetup.mojom.ActivationResult} result
-   * @private
-   */
-  onActivationFinished(result) {
-    this.closeActivationConnection_();
-
-    const ActivationResult = chromeos.cellularSetup.mojom.ActivationResult;
-    switch (result) {
-      case ActivationResult.kSuccessfullyStartedActivation:
-        this.state_ = cellularSetup.PSimUIState.ALREADY_ACTIVATED;
-        break;
-      case ActivationResult.kAlreadyActivated:
-        this.state_ = cellularSetup.PSimUIState.ACTIVATION_SUCCESS;
-        break;
-      case ActivationResult.kFailedToActivate:
-        this.state_ = cellularSetup.PSimUIState.ACTIVATION_FAILURE;
-        break;
-      default:
-        assertNotReached();
-    }
-  },
-
-  /** @private */
-  updateShowError_() {
-    switch (this.state_) {
-      case cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION:
-      case cellularSetup.PSimUIState.TIMEOUT_PORTAL_LOAD:
-      case cellularSetup.PSimUIState.TIMEOUT_FINISH_ACTIVATION:
-      case cellularSetup.PSimUIState.ACTIVATION_FAILURE:
-        this.showError_ = true;
-        return;
-      default:
-        this.showError_ = false;
-        return;
-    }
-  },
-
-  /** @private */
-  updateSelectedPage_() {
-    switch (this.state_) {
-      case cellularSetup.PSimUIState.IDLE:
-      case cellularSetup.PSimUIState.STARTING_ACTIVATION:
-      case cellularSetup.PSimUIState.WAITING_FOR_ACTIVATION_TO_START:
-      case cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION:
-        this.selectedPSimPageName_ = cellularSetup.PSimPageName.SIM_DETECT;
-        return;
-      case cellularSetup.PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
-      case cellularSetup.PSimUIState.TIMEOUT_PORTAL_LOAD:
-      case cellularSetup.PSimUIState.WAITING_FOR_USER_PAYMENT:
-        this.selectedPSimPageName_ = cellularSetup.PSimPageName.PROVISIONING;
-        return;
-      case cellularSetup.PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
-      case cellularSetup.PSimUIState.TIMEOUT_FINISH_ACTIVATION:
-      case cellularSetup.PSimUIState.ACTIVATION_SUCCESS:
-      case cellularSetup.PSimUIState.ALREADY_ACTIVATED:
-      case cellularSetup.PSimUIState.ACTIVATION_FAILURE:
-        this.selectedPSimPageName_ = cellularSetup.PSimPageName.FINAL;
-        return;
-      default:
-        assertNotReached();
-    }
-  },
-
-  /** @private */
-  handlePSimUIStateChange_() {
-    // Since the state has changed, the previous state did not time out, so
-    // clear any active timeout.
-    this.clearTimer_();
-
-    // If the new state has an associated timeout, set it.
-    const timeoutMs = cellularSetup.getTimeoutMsForPSimUIState(this.state_);
-    if (timeoutMs !== null) {
-      this.currentTimeoutId_ =
-          setTimeout(this.onTimeout_.bind(this), timeoutMs);
-    }
-
-    if (this.state_ === cellularSetup.PSimUIState.STARTING_ACTIVATION) {
-      this.startActivation_();
-      return;
-    }
-  },
-
-  /** @private */
-  onTimeout_() {
-    // The activation attempt failed, so close the connection to the service.
-    this.closeActivationConnection_();
-
-    switch (this.state_) {
-      case cellularSetup.PSimUIState.STARTING_ACTIVATION:
-        this.state_ = cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION;
-        return;
-      case cellularSetup.PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
-        this.state_ = cellularSetup.PSimUIState.TIMEOUT_PORTAL_LOAD;
-        return;
-      case cellularSetup.PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
-        this.state_ = cellularSetup.PSimUIState.TIMEOUT_FINISH_ACTIVATION;
-        return;
-      default:
-        // Only the above states are expected to time out.
-        assertNotReached();
-    }
-  },
-
-  /** @private */
-  startActivation_() {
-    assert(!this.activationDelegateReceiver_);
-    this.activationDelegateReceiver_ =
-        new chromeos.cellularSetup.mojom.ActivationDelegateReceiver(
-            /**
-             * @type {!chromeos.cellularSetup.mojom.ActivationDelegateInterface}
-             */
-            (this));
-
-    this.mojoInterfaceProvider_.getMojoServiceRemote()
-        .startActivation(
-            this.activationDelegateReceiver_.$.bindNewPipeAndPassRemote())
-        .then(
-            /**
-             * @param {!chromeos.cellularSetup.
-             *             mojom.CellularSetup_StartActivation_ResponseParams}
-             *                 params
-             */
-            (params) => {
-              this.carrierPortalHandler_ = params.observer;
-            });
-  },
-
-  /** @private */
-  closeActivationConnection_() {
-    assert(!!this.activationDelegateReceiver_);
-    this.activationDelegateReceiver_.$.close();
-    this.activationDelegateReceiver_ = null;
-    this.carrierPortalHandler_ = null;
-    this.cellularMetadata_ = null;
-  },
-
-  /** @private */
-  clearTimer_() {
-    if (this.currentTimeoutId_) {
-      clearTimeout(this.currentTimeoutId_);
-    }
-    this.currentTimeoutId_ = null;
-  },
-
-  /** @private */
-  onCarrierPortalLoaded_() {
-    this.state_ = cellularSetup.PSimUIState.WAITING_FOR_USER_PAYMENT;
-    this.carrierPortalHandler_.onCarrierPortalStatusChange(
-        chromeos.cellularSetup.mojom.CarrierPortalStatus
-            .kPortalLoadedWithoutPaidUser);
-  },
-
-  /**
-   * @param {!CustomEvent<boolean>} event
-   * @private
-   */
-  onCarrierPortalResult_(event) {
-    const success = event.detail;
-    this.state_ = success ? cellularSetup.PSimUIState.ACTIVATION_SUCCESS :
-                            cellularSetup.PSimUIState.ACTIVATION_FAILURE;
-  },
 });

@@ -2,16 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/resources/cr_components/chromeos/os_cr_components.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js_modulizer("modulize") {
   input_files = [
     "base_page_test.js",
     "button_bar_test.js",
     "final_page_test.js",
-    "sim_detect_page_test.js",
     "provisioning_page_test.js",
+    "psim_flow_ui_test.js",
+    "sim_detect_page_test.js",
   ]
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }
