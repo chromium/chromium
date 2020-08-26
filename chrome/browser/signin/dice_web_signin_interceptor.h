@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observer.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,6 +27,37 @@ class DiceSignedInProfileCreator;
 class DiceInterceptedSessionStartupHelper;
 class Profile;
 class ProfileAttributesStorage;
+
+// Outcome of the interception heuristic (decision whether the interception
+// bubble is shown or not).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SigninInterceptionHeuristicOutcome {
+  // Interception succeeded:
+  kInterceptProfileSwitch = 0,
+  kInterceptMultiUser = 1,
+  kInterceptEnterprise = 2,
+
+  // Interception aborted:
+  // This is a "Sync" sign in and not a "web" sign in.
+  kAbortSyncSignin = 3,
+  // Another interception is already in progress.
+  kAbortInterceptInProgress = 4,
+  // This is not a new account (reauth).
+  kAbortAccountNotNew = 5,
+  // New profile is not offered when there is only one account.
+  kAbortSingleAccount = 6,
+  // Extended account info could not be downloaded.
+  kAbortAccountInfoTimeout = 7,
+  // Account info not compatible with interception (e.g. same Gaia name).
+  kAbortAccountInfoNotCompatible = 8,
+  // Profile creation disallowed.
+  kAbortProfileCreationDisallowed = 9,
+  // The interceptor was shut down before the heuristic completed.
+  kAbortShutdown = 10,
+
+  kMaxValue = kAbortShutdown,
+};
 
 // Called after web signed in, after a successful token exchange through Dice.
 // The DiceWebSigninInterceptor may offer the user to create a new profile or
@@ -137,6 +169,9 @@ class DiceWebSigninInterceptor : public KeyedService,
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
+  // Called when the extended account info was not updated after a timeout.
+  void OnExtendedAccountInfoFetchTimeout();
+
   // Called after the user chose whether a new profile would be created.
   void OnProfileCreationChoice(bool create);
   // Called after the user chose whether the session should continue in a new
@@ -165,6 +200,10 @@ class DiceWebSigninInterceptor : public KeyedService,
   // is cancelled if the account info cannot be fetched quickly.
   base::CancelableOnceCallback<void()> on_account_info_update_timeout_;
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
+  // Used for metrics:
+  bool was_interception_ui_displayed_ = false;
+  base::TimeTicks account_info_fetch_start_time_;
+  base::TimeTicks profile_creation_start_time_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_H_

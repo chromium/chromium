@@ -64909,6 +64909,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="Undo">The sync was aborted with an undo button.</int>
 </enum>
 
+<enum name="SigninInterceptHeuristicOutcome">
+  <int value="0" label="Intercept: profile switch"/>
+  <int value="1" label="Intercept: multi-user"/>
+  <int value="2" label="Intercept: enterprise"/>
+  <int value="3" label="Abort: Sync signin"/>
+  <int value="4" label="Abort: intercept in progress"/>
+  <int value="5" label="Abort: account not new"/>
+  <int value="6" label="Abort: single account"/>
+  <int value="7" label="Abort: account info fetch timeout"/>
+  <int value="8" label="Abort: account info not compatible"/>
+  <int value="9" label="Abort: profile creation disallowed"/>
+  <int value="10" label="Abort: shut down"/>
+</enum>
+
 <enum name="SigninInterceptResult">
   <int value="0" label="Accepted"/>
   <int value="1" label="Declined"/>

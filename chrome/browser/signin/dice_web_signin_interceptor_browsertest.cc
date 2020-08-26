@@ -6,6 +6,7 @@
 
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -147,6 +148,7 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
 
 // Tests the complete interception flow including profile and browser creation.
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
+  base::HistogramTester histogram_tester;
   // Setup profile for interception.
   identity_test_env()->MakeAccountAvailable("alice@example.com");
   AccountInfo account_info =
@@ -211,4 +213,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
   EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
             intercepted_url);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptMultiUser, 1);
+  histogram_tester.ExpectTotalCount("Signin.Intercept.AccountInfoFetchDuration",
+                                    1);
+  histogram_tester.ExpectTotalCount("Signin.Intercept.ProfileCreationDuration",
+                                    1);
 }

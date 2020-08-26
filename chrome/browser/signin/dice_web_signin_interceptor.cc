@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -32,6 +33,11 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+void RecordSigninInterceptionHeuristicOutcome(
+    SigninInterceptionHeuristicOutcome outcome) {
+  base::UmaHistogramEnumeration("Signin.Intercept.HeuristicOutcome", outcome);
+}
 
 bool IsProfileCreationAllowed() {
   PrefService* service = g_browser_process->local_state();
@@ -93,16 +99,27 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   if (!base::FeatureList::IsEnabled(kDiceWebSigninInterceptionFeature))
     return;
 
-  // Do not intercept signins from the Sync startup flow. Note: |is_sync_signin|
-  // is an approximation, and in rare cases it may be true when in fact the
-  // signin was not a sync signin. In this case the interception is missed.
-  if (is_sync_signin)
+  if (is_sync_signin) {
+    // Do not intercept signins from the Sync startup flow.
+    // Note: |is_sync_signin| is an approximation, and in rare cases it may be
+    // true when in fact the signin was not a sync signin. In this case the
+    // interception is missed.
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortSyncSignin);
     return;
-
-  if (is_interception_in_progress_)
-    return;  // Multiple concurrent interceptions are not supported.
-  if (!is_new_account)
-    return;  // Do not intercept reauth.
+  }
+  if (is_interception_in_progress_) {
+    // Multiple concurrent interceptions are not supported.
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortInterceptInProgress);
+    return;
+  }
+  if (!is_new_account) {
+    // Do not intercept reauth.
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
+    return;
+  }
 
   account_id_ = account_id;
   is_interception_in_progress_ = true;
@@ -124,23 +141,34 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
         web_contents, bubble_parameters,
         base::BindOnce(&DiceWebSigninInterceptor::OnProfileSwitchChoice,
                        base::Unretained(this)));
-
+    was_interception_ui_displayed_ = true;
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
     return;
   }
 
-  if (identity_manager_->GetAccountsWithRefreshTokens().size() <= 1u ||
-      !IsProfileCreationAllowed()) {
+  if (identity_manager_->GetAccountsWithRefreshTokens().size() <= 1u) {
     // Enterprise and multi-user bubbles are only shown if there are multiple
-    // accounts and profile creation is allowed.
+    // accounts.
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortSingleAccount);
+    Reset();
+    return;
+  }
+  if (!IsProfileCreationAllowed()) {
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed);
     Reset();
     return;
   }
 
+  account_info_fetch_start_time_ = base::TimeTicks::Now();
   if (account_info->IsValid()) {
     OnExtendedAccountInfoUpdated(*account_info);
   } else {
     on_account_info_update_timeout_.Reset(base::BindOnce(
-        &DiceWebSigninInterceptor::Reset, base::Unretained(this)));
+        &DiceWebSigninInterceptor::OnExtendedAccountInfoFetchTimeout,
+        base::Unretained(this)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, on_account_info_update_timeout_.callback(),
         base::TimeDelta::FromSeconds(5));
@@ -161,6 +189,10 @@ void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
 }
 
 void DiceWebSigninInterceptor::Shutdown() {
+  if (is_interception_in_progress_ && !was_interception_ui_displayed_) {
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortShutdown);
+  }
   Reset();
 }
 
@@ -171,6 +203,9 @@ void DiceWebSigninInterceptor::Reset() {
   is_interception_in_progress_ = false;
   account_id_ = CoreAccountId();
   dice_signed_in_profile_creator_.reset();
+  was_interception_ui_displayed_ = false;
+  account_info_fetch_start_time_ = base::TimeTicks();
+  profile_creation_start_time_ = base::TimeTicks();
 }
 
 bool DiceWebSigninInterceptor::ShouldShowProfileSwitchBubble(
@@ -243,6 +278,9 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
 
   account_info_update_observer_.RemoveAll();
   on_account_info_update_timeout_.Cancel();
+  base::UmaHistogramTimes(
+      "Signin.Intercept.AccountInfoFetchDuration",
+      base::TimeTicks::Now() - account_info_fetch_start_time_);
 
   base::Optional<SigninInterceptionType> interception_type;
 
@@ -253,6 +291,8 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
 
   if (!interception_type) {
     // Signin should not be intercepted.
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
     Reset();
     return;
   }
@@ -263,6 +303,17 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
       web_contents(), bubble_parameters,
       base::BindOnce(&DiceWebSigninInterceptor::OnProfileCreationChoice,
                      base::Unretained(this)));
+  was_interception_ui_displayed_ = true;
+  RecordSigninInterceptionHeuristicOutcome(
+      *interception_type == SigninInterceptionType::kEnterprise
+          ? SigninInterceptionHeuristicOutcome::kInterceptEnterprise
+          : SigninInterceptionHeuristicOutcome::kInterceptMultiUser);
+}
+
+void DiceWebSigninInterceptor::OnExtendedAccountInfoFetchTimeout() {
+  RecordSigninInterceptionHeuristicOutcome(
+      SigninInterceptionHeuristicOutcome::kAbortAccountInfoTimeout);
+  Reset();
 }
 
 void DiceWebSigninInterceptor::OnProfileCreationChoice(bool create) {
@@ -271,6 +322,7 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(bool create) {
     return;
   }
 
+  profile_creation_start_time_ = base::TimeTicks::Now();
   base::string16 profile_name;
   base::Optional<AccountInfo> account_info =
       identity_manager_
@@ -310,6 +362,9 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
     Profile* new_profile) {
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
+  base::UmaHistogramTimes(
+      "Signin.Intercept.ProfileCreationDuration",
+      base::TimeTicks::Now() - profile_creation_start_time_);
 
   if (!new_profile) {
     Reset();
