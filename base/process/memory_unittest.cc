@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"
+#include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -129,9 +130,10 @@ class OutOfMemoryTest : public testing::Test {
  public:
   OutOfMemoryTest()
       : value_(nullptr),
-        // Make test size as large as possible minus a few pages so
-        // that alignment or other rounding doesn't make it wrap.
-        test_size_(std::numeric_limits<std::size_t>::max() - 12 * 1024),
+        // Make test size as large as possible minus a few pages so that
+        // alignment or other rounding doesn't make it wrap.
+        test_size_(std::numeric_limits<std::size_t>::max() -
+                   3 * base::GetPageSize()),
         // A test size that is > 2Gb and will cause the allocators to reject
         // the allocation due to security restrictions. See crbug.com/169327.
         insecure_test_size_(std::numeric_limits<int>::max()),
