@@ -43,7 +43,7 @@ const char kNetworkIsolationKeyKey[] = "network_isolation_key";
 const char kExpirationKey[] = "expiration";
 const char kTtlKey[] = "ttl";
 const char kNetworkChangesKey[] = "network_changes";
-const char kErrorKey[] = "error";
+const char kNetErrorKey[] = "net_error";
 const char kAddressesKey[] = "addresses";
 const char kTextRecordsKey[] = "text_records";
 const char kHostnameResultsKey[] = "hostname_results";
@@ -324,7 +324,7 @@ base::DictionaryValue HostCache::Entry::GetAsValue(
   }
 
   if (error() != OK) {
-    entry_dict.SetInteger(kErrorKey, error());
+    entry_dict.SetInteger(kNetErrorKey, error());
   } else {
     if (addresses()) {
       // Append all of the resolved addresses.
@@ -721,7 +721,7 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     const base::ListValue* text_records_value = nullptr;
     const base::ListValue* hostname_records_value = nullptr;
     const base::ListValue* host_ports_value = nullptr;
-    if (!entry_dict->GetInteger(kErrorKey, &error)) {
+    if (!entry_dict->GetInteger(kNetErrorKey, &error)) {
       entry_dict->GetList(kAddressesKey, &addresses_value);
       entry_dict->GetList(kTextRecordsKey, &text_records_value);
 
