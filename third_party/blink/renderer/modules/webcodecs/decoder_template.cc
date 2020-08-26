@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/decoder_template.h"
 
+#include <limits>
 #include <utility>
 #include <vector>
 
@@ -269,9 +270,10 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
 
   // Submit for decoding.
   //
-  // |pending_decode_id_| must not be zero because it is used as a key in a
-  // HeapHashMap (pending_decodes_).
+  // |pending_decode_id_| must not be 0 nor max because it HashMap reserves
+  // these values for "emtpy" and "deleted".
   while (++pending_decode_id_ == 0 ||
+         pending_decode_id_ == std::numeric_limits<uint32_t>::max() ||
          pending_decodes_.Contains(pending_decode_id_))
     ;
   pending_decodes_.Set(pending_decode_id_, request);

@@ -94,11 +94,11 @@ void DecoderSelector<StreamType>::SelectDecoder(
   // |impl_| will internally use this the |config| from our NullDemuxerStream.
   demuxer_stream_->Configure(config);
 
-  // Destroying |impl_| will cancel pending operations, so it's safe to use
-  // Unretained() with |select_decoder_cb|.
+  // media::DecoderSelector will call back with a null decoder if selection is
+  // in progress when it is destructed.
   impl_.SelectDecoder(
       WTF::Bind(&DecoderSelector<StreamType>::OnDecoderSelected,
-                WTF::Unretained(this), std::move(select_decoder_cb)),
+                weak_factory_.GetWeakPtr(), std::move(select_decoder_cb)),
       output_cb_);
 }
 

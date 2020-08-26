@@ -20,6 +20,7 @@
 #include "media/base/decode_status.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -31,7 +32,20 @@ class MediaAudioTaskWrapper;
 // AudioDecoderBroker, but we need to define it here to implement it below.
 class CrossThreadAudioDecoderClient {
  public:
+  struct DecoderDetails {
+    std::string display_name;
+    bool is_platform_decoder;
+    bool needs_bitstream_conversion;
+  };
+
+  virtual void OnInitialize(media::Status status,
+                            base::Optional<DecoderDetails> details) = 0;
+
+  virtual void OnDecodeDone(int cb_id, media::DecodeStatus status) = 0;
+
   virtual void OnDecodeOutput(scoped_refptr<media::AudioBuffer> buffer) = 0;
+
+  virtual void OnReset(int cb_id) = 0;
 };
 
 // This class brokers the connection between WebCodecs and an underlying
@@ -48,12 +62,6 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
                                           public CrossThreadAudioDecoderClient {
  public:
   static constexpr char kDefaultDisplayName[] = "EmptyWebCodecsAudioDecoder";
-
-  struct DecoderDetails {
-    std::string display_name;
-    bool is_platform_decoder;
-    bool needs_bitstream_conversion;
-  };
 
   explicit AudioDecoderBroker(ExecutionContext& execution_context);
   ~AudioDecoderBroker() override;
@@ -76,14 +84,26 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
   bool NeedsBitstreamConversion() const override;
 
  private:
-  void OnInitialize(InitCB init_cb,
-                    media::Status status,
-                    base::Optional<DecoderDetails> details);
-  void OnDecodeDone(DecodeCB decode_cb, media::DecodeStatus status);
-  void OnReset(base::OnceClosure reset_cb);
+  // Creates a new (incremented) callback ID from |last_callback_id_| for
+  // mapping in |pending_decode_cb_map_|.
+  int CreateCallbackId();
 
   // MediaAudioTaskWrapper::CrossThreadAudioDecoderClient
+  void OnInitialize(media::Status status,
+                    base::Optional<DecoderDetails> details) override;
+  void OnDecodeDone(int cb_id, media::DecodeStatus status) override;
   void OnDecodeOutput(scoped_refptr<media::AudioBuffer> buffer) override;
+  void OnReset(int cb_id) override;
+
+  // Holds the last key for callbacks in the map below. Incremented for each
+  // usage via CreateCallbackId().
+  uint32_t last_callback_id_ = 0;
+
+  // Maps a callback ID to pending Decode(). See CrossThreadVideoDecoderClient.
+  HashMap<int, DecodeCB> pending_decode_cb_map_;
+
+  // Maps a callback ID to pending Reset(). See CrossThreadVideoDecoderClient.
+  HashMap<int, base::OnceClosure> pending_reset_cb_map_;
 
   // Task runner for running codec work (traditionally the media thread).
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
@@ -93,6 +113,9 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
 
   // Wrapper state for GetDisplayName(), IsPlatformDecoder() and others.
   base::Optional<DecoderDetails> decoder_details_;
+
+  // Pending InitCB saved from the last call to Initialize();
+  InitCB init_cb_;
 
   // OutputCB saved from last call to Initialize().
   OutputCB output_cb_;

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_util.h"
 #include "media/filters/decoder_selector.h"
@@ -78,6 +79,8 @@ class DecoderSelector {
 
   // TODO(chcunningham): Route MEDIA_LOG for WebCodecs.
   media::NullMediaLog null_media_log_;
+
+  base::WeakPtrFactory<DecoderSelector<StreamType>> weak_factory_{this};
 };
 
 typedef DecoderSelector<media::DemuxerStream::VIDEO>
