@@ -25,7 +25,7 @@ constexpr base::char16 kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
 
 // Registry for DM token.
 constexpr base::char16 kRegKeyCompanyEnrollment[] =
-    COMPANY_POLICIES_KEY L"Enrollment\\";
+    COMPANY_KEY L"Enrollment\\";
 constexpr base::char16 kRegValueDmToken[] = L"dmtoken";
 
 class TokenService : public TokenServiceInterface {
