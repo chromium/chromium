@@ -203,6 +203,7 @@ viz_component("service") {
     "//services/tracing/public/cpp:cpp",
     "//services/viz/privileged/mojom",
     "//skia:skcms",
+    "//third_party/libyuv",
     "//ui/display/types",
   ]
 
