@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.contacts_picker;
+package org.chromium.chrome.browser.contacts_picker;
 
 import android.content.Context;
 import android.text.style.StyleSpan;
@@ -13,6 +13,8 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ChipView;
 
@@ -90,8 +92,7 @@ public class TopView extends RelativeLayout
         super.onFinishInflate();
 
         mCheckboxContainer = findViewById(R.id.content);
-        if (ContactsPickerFeatureList.isEnabled(
-                    ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
             mCheckboxContainer.setVisibility(View.VISIBLE);
         }
         mSelectAllBox = findViewById(R.id.checkbox);
@@ -259,8 +260,7 @@ public class TopView extends RelativeLayout
      * Toggles the Select All checkbox.
      */
     public void toggle() {
-        if (ContactsPickerFeatureList.isEnabled(
-                    ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTACTS_PICKER_SELECT_ALL)) {
             mSelectAllBox.setChecked(!mSelectAllBox.isChecked());
         }
     }
