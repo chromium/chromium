@@ -3461,17 +3461,14 @@ void PaintLayer::SetNeedsRepaint() {
 
   LocalFrameView* frame_view = GetLayoutObject().GetDocument().View();
   if (frame_view) {
-    // If you need repaint, then you might issue raster invalidations, and in
-    // Composite after Paint mode, we do these in PAC::Update().
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // If you need repaint, then you might do layerization and isue raster
+    // invalidations. In CompositeAfterPaint mode, and in CompositeSVG mode for
+    // SVG roots, we do these in PAC::Update(). TODO(paint-team): distinguish
+    // requirements for layerization and non-geometry raster invalidations.
+    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
+        (RuntimeEnabledFeatures::CompositeSVGEnabled() &&
+         GetLayoutObject().IsSVGRoot()))
       frame_view->SetPaintArtifactCompositorNeedsUpdate();
-    } else if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
-      // With GraphicsLayer layerization after paint, we also need to call
-      // PaintArtifactCompositor::Update for raster invalidations.
-      // TODO(pdr): Can we do a lighter-weight update that only does raster
-      // invalidation and skips the overlap test?
-      frame_view->SetPaintArtifactCompositorNeedsUpdate();
-    }
   }
 
   // Do this unconditionally to ensure container chain is marked when
