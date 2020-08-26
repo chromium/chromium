@@ -44,7 +44,6 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/half_float.h"
 #include "url/origin.h"
@@ -54,6 +53,7 @@
 #endif
 
 #if defined(USE_X11)
+#include "ui/base/ui_base_features.h"
 #include "ui/events/platform/platform_event_source.h"
 #endif
 
