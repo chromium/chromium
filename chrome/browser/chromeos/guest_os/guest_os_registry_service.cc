@@ -679,16 +679,6 @@ void GuestOsRegistryService::RequestIcon(
     std::move(callback).Run({});
     return;
   }
-  // First check to see if this request is in the retry list. If so return
-  // immediately with an empty icon.
-  const auto retry_iter = retry_icon_requests_.find(app_id);
-  if (retry_iter != retry_icon_requests_.end()) {
-    if (retry_iter->second & (1 << scale_factor)) {
-      // Icon request already setup to be retried when we are active.
-      std::move(callback).Run({});
-      return;
-    }
-  }
 
   // Coalesce calls to the container.
   auto& callbacks = active_icon_requests_[{app_id, scale_factor}];
