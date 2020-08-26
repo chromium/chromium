@@ -162,8 +162,10 @@ void WebTestBrowserMainRunner::Initialize() {
         switches::autoplay::kNoUserGestureRequiredPolicy);
   }
 
-  if (!command_line.HasSwitch(switches::kStableReleaseMode))
+  if (!command_line.HasSwitch(switches::kStableReleaseMode)) {
     command_line.AppendSwitch(switches::kEnableExperimentalWebPlatformFeatures);
+    command_line.AppendSwitch(switches::kEnableBlinkTestFeatures);
+  }
 
   if (!command_line.HasSwitch(switches::kEnableThreadedCompositing)) {
     command_line.AppendSwitch(switches::kDisableThreadedCompositing);
