@@ -34,7 +34,7 @@
 #include "media/filters/ffmpeg_video_decoder.h"
 #include "media/filters/vpx_video_decoder.h"
 #include "media/media_buildflags.h"
-#include "media/renderers/yuv_util.h"
+#include "media/renderers/video_frame_yuv_converter.h"
 #include "media/video/picture.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_errors.h"
@@ -513,8 +513,8 @@ void VideoDecoderShim::SendPictures() {
     gpu::MailboxHolder destination_holder;
     destination_holder.mailbox = texture_mailbox_map_[texture_id];
     destination_holder.texture_target = GL_TEXTURE_2D;
-    ConvertFromVideoFrameYUV(frame->video_frame.get(), context_provider_.get(),
-                             destination_holder);
+    media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+        frame->video_frame.get(), context_provider_.get(), destination_holder);
     host_->PictureReady(media::Picture(texture_id, frame->decode_id,
                                        frame->video_frame->visible_rect(),
                                        gfx::ColorSpace(), false));

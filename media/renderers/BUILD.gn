@@ -26,14 +26,14 @@ source_set("renderers") {
     "remote_playback_client_wrapper.h",
     "renderer_impl.cc",
     "renderer_impl.h",
+    "video_frame_yuv_converter.cc",
+    "video_frame_yuv_converter.h",
     "video_overlay_factory.cc",
     "video_overlay_factory.h",
     "video_renderer_impl.cc",
     "video_renderer_impl.h",
     "video_resource_updater.cc",
     "video_resource_updater.h",
-    "yuv_util.cc",
-    "yuv_util.h",
   ]
 
   deps = [

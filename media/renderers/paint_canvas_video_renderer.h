@@ -22,6 +22,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
+#include "media/renderers/video_frame_yuv_converter.h"
 
 namespace gfx {
 class RectF;
@@ -280,6 +281,10 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
 
     // The shared image backing the texture.
     gpu::Mailbox mailbox;
+
+    // Used to perform YUV->RGB conversion on video frames. Internally caches
+    // shared images that are created to upload CPU video frame data to the GPU.
+    VideoFrameYUVConverter yuv_converter;
 
     // A SyncToken after last usage, used for reusing or destroying texture and
     // shared image.

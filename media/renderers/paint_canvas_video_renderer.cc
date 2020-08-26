@@ -32,7 +32,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/data_buffer.h"
 #include "media/base/video_frame.h"
-#include "media/renderers/yuv_util.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageGenerator.h"
@@ -1414,7 +1413,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   dest_holder.mailbox = yuv_cache_.mailbox;
   dest_holder.texture_target = GL_TEXTURE_2D;
   dest_holder.sync_token = token;
-  ConvertFromVideoFrameYUV(&video_frame, raster_context_provider, dest_holder);
+  yuv_cache_.yuv_converter.ConvertYUVVideoFrame(
+      &video_frame, raster_context_provider, dest_holder);
 
   gpu::SyncToken post_conversion_sync_token;
   source_ri->GenUnverifiedSyncTokenCHROMIUM(
@@ -1632,8 +1632,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         } else {
           gpu::MailboxHolder dest_holder{cache_->source_mailbox,
                                          gpu::SyncToken(), GL_TEXTURE_2D};
-          ConvertFromVideoFrameYUV(video_frame.get(), raster_context_provider,
-                                   dest_holder);
+          VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+              video_frame.get(), raster_context_provider, dest_holder);
         }
         raster_context_provider->GrContext()->flushAndSubmit();
       }
@@ -1721,8 +1721,8 @@ bool PaintCanvasVideoRenderer::PrepareVideoFrame(
   // could cause problems since the pool of VideoFrames has a fixed size.
   if (video_frame->HasTextures()) {
     if (video_frame->NumTextures() > 1) {
-      ConvertFromVideoFrameYUV(video_frame.get(), raster_context_provider,
-                               dest_holder);
+      VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+          video_frame.get(), raster_context_provider, dest_holder);
     } else {
       // We don't support Android now.
       return false;
@@ -1746,6 +1746,8 @@ void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
   auto* sii = raster_context_provider->SharedImageInterface();
   sii->DestroySharedImage(sync_token, mailbox);
   mailbox.SetZero();
+
+  yuv_converter.ReleaseCachedData();
 
   // Kick off the GL work up to the OrderingBarrierCHROMIUM above as well as the
   // SharedImageInterface work, to ensure the shared image memory is released in

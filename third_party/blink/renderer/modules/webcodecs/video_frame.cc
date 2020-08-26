@@ -13,7 +13,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
-#include "media/renderers/yuv_util.h"
+#include "media/renderers/video_frame_yuv_converter.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
@@ -393,8 +393,8 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
       dest_holder.sync_token = shared_image_interface->GenUnverifiedSyncToken();
       dest_holder.texture_target = GL_TEXTURE_2D;
 
-      media::ConvertFromVideoFrameYUV(local_frame.get(),
-                                      raster_context_provider, dest_holder);
+      media::VideoFrameYUVConverter::ConvertYUVVideoFrameNoCaching(
+          local_frame.get(), raster_context_provider, dest_holder);
       gpu::SyncToken sync_token;
       raster_context_provider->RasterInterface()
           ->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
