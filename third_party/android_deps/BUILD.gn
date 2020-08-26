@@ -11,9 +11,6 @@ java_group("android_support_v4_java") {
     ":androidx_drawerlayout_drawerlayout_java",
     ":androidx_fragment_fragment_java",
     ":androidx_interpolator_interpolator_java",
-    ":androidx_legacy_legacy_support_core_ui_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
-    ":androidx_legacy_legacy_support_v4_java",
     ":androidx_lifecycle_lifecycle_common_java",
     ":androidx_lifecycle_lifecycle_viewmodel_java",
     ":androidx_media_media_java",
@@ -63,20 +60,6 @@ java_group("robolectric_all_java") {
     "//third_party/robolectric:android-all-8.1.0-robolectric-4611349_java",
     "//third_party/robolectric:android-all-9-robolectric-4913185-2_java",
   ]
-}
-
-# The dependencies below are used by chromecast internal.
-java_group("android_support_v7_preference_java") {
-  deps = [ ":androidx_preference_preference_java" ]
-}
-java_group("android_support_v14_preference_java") {
-  deps = [ ":androidx_legacy_legacy_preference_v14_java" ]
-}
-java_group("android_support_v17_leanback_java") {
-  deps = [ ":androidx_leanback_leanback_java" ]
-}
-java_group("android_support_v17_preference_java") {
-  deps = [ ":androidx_leanback_leanback_preference_java" ]
 }
 
 java_group("material_design_java") {
@@ -356,62 +339,6 @@ android_aar_prebuilt("androidx_leanback_leanback_preference_java") {
     ":androidx_legacy_legacy_preference_v14_java",
     ":androidx_preference_preference_java",
     ":androidx_recyclerview_recyclerview_java",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_legacy_legacy_support_core_ui_java") {
-  aar_path = "libs/androidx_legacy_legacy_support_core_ui/legacy-support-core-ui-1.0.0.aar"
-  info_path = "libs/androidx_legacy_legacy_support_core_ui/androidx_legacy_legacy_support_core_ui.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_asynclayoutinflater_asynclayoutinflater_java",
-    ":androidx_coordinatorlayout_coordinatorlayout_java",
-    ":androidx_core_core_java",
-    ":androidx_cursoradapter_cursoradapter_java",
-    ":androidx_customview_customview_java",
-    ":androidx_drawerlayout_drawerlayout_java",
-    ":androidx_interpolator_interpolator_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
-    ":androidx_slidingpanelayout_slidingpanelayout_java",
-    ":androidx_swiperefreshlayout_swiperefreshlayout_java",
-    ":androidx_viewpager_viewpager_java",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_legacy_legacy_support_core_utils_java") {
-  aar_path = "libs/androidx_legacy_legacy_support_core_utils/legacy-support-core-utils-1.0.0.aar"
-  info_path = "libs/androidx_legacy_legacy_support_core_utils/androidx_legacy_legacy_support_core_utils.info"
-  deps = [
-    ":androidx_annotation_annotation_java",
-    ":androidx_core_core_java",
-    ":androidx_documentfile_documentfile_java",
-    ":androidx_loader_loader_java",
-    ":androidx_localbroadcastmanager_localbroadcastmanager_java",
-    ":androidx_print_print_java",
-  ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_legacy_legacy_support_v13_java") {
-  aar_path =
-      "libs/androidx_legacy_legacy_support_v13/legacy-support-v13-1.0.0.aar"
-  info_path = "libs/androidx_legacy_legacy_support_v13/androidx_legacy_legacy_support_v13.info"
-  deps = [ ":androidx_legacy_legacy_support_v4_java" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-android_aar_prebuilt("androidx_legacy_legacy_support_v4_java") {
-  aar_path =
-      "libs/androidx_legacy_legacy_support_v4/legacy-support-v4-1.0.0.aar"
-  info_path = "libs/androidx_legacy_legacy_support_v4/androidx_legacy_legacy_support_v4.info"
-  deps = [
-    ":androidx_core_core_java",
-    ":androidx_fragment_fragment_java",
-    ":androidx_legacy_legacy_support_core_ui_java",
-    ":androidx_legacy_legacy_support_core_utils_java",
-    ":androidx_media_media_java",
   ]
 }
 
@@ -1898,6 +1825,48 @@ android_aar_prebuilt("androidx_legacy_legacy_preference_v14_java") {
   # //third_party/android_deps/build.gradle.
   visibility = [ ":*" ]
   deps = [ ":androidx_preference_preference_java" ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("androidx_legacy_legacy_support_core_ui_java") {
+  aar_path = "libs/androidx_legacy_legacy_support_core_ui/legacy-support-core-ui-1.0.0.aar"
+  info_path = "libs/androidx_legacy_legacy_support_core_ui/androidx_legacy_legacy_support_core_ui.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":androidx_annotation_annotation_java",
+    ":androidx_asynclayoutinflater_asynclayoutinflater_java",
+    ":androidx_coordinatorlayout_coordinatorlayout_java",
+    ":androidx_core_core_java",
+    ":androidx_cursoradapter_cursoradapter_java",
+    ":androidx_customview_customview_java",
+    ":androidx_drawerlayout_drawerlayout_java",
+    ":androidx_interpolator_interpolator_java",
+    ":androidx_legacy_legacy_support_core_utils_java",
+    ":androidx_slidingpanelayout_slidingpanelayout_java",
+    ":androidx_swiperefreshlayout_swiperefreshlayout_java",
+    ":androidx_viewpager_viewpager_java",
+  ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("androidx_legacy_legacy_support_core_utils_java") {
+  aar_path = "libs/androidx_legacy_legacy_support_core_utils/legacy-support-core-utils-1.0.0.aar"
+  info_path = "libs/androidx_legacy_legacy_support_core_utils/androidx_legacy_legacy_support_core_utils.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":androidx_annotation_annotation_java",
+    ":androidx_core_core_java",
+    ":androidx_documentfile_documentfile_java",
+    ":androidx_loader_loader_java",
+    ":androidx_localbroadcastmanager_localbroadcastmanager_java",
+    ":androidx_print_print_java",
+  ]
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
