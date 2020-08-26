@@ -1116,6 +1116,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WalletMaskedCreditCard& proto) {
   VISIT(bank_name);
   VISIT(nickname);
   VISIT(card_issuer);
+  VISIT(instrument_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WalletMetadataSpecifics& proto) {

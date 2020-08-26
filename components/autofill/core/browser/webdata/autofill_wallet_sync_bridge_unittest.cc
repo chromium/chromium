@@ -105,7 +105,9 @@ std::string WalletMaskedCreditCardSpecificsAsDebugString(
          << ", exp_year: " << specifics.masked_card().exp_year()
          << ", billing_address_id: "
          << specifics.masked_card().billing_address_id()
-         << ", bank_name: " << specifics.masked_card().bank_name() << "]";
+         << ", bank_name: " << specifics.masked_card().bank_name()
+         << ", instrument_id: " << specifics.masked_card().instrument_id()
+         << "]";
   return output.str();
 }
 
