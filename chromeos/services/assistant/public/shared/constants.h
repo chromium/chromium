@@ -26,6 +26,11 @@ extern const char kSampleServiceIdRequest[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
 extern const char kServiceIdRequestPayload[];
 
+COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
+extern const char kBloomScope[];
+COMPONENT_EXPORT(ASSISTANT_SERVICE_SHARED)
+extern const char kBloomServiceUrl[];
+
 }  // namespace assistant
 }  // namespace chromeos
 

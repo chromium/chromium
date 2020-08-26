@@ -14,5 +14,8 @@ const char kServiceIdEndpoint[] = "";
 const char kSampleServiceIdRequest[] = "";
 const char kServiceIdRequestPayload[] = "";
 
+const char kBloomScope[] = "https://fake/bloom/scope";
+const char kBloomServiceUrl[] = "https://fake.bloom.service.url";
+
 }  // namespace assistant
 }  // namespace chromeos
