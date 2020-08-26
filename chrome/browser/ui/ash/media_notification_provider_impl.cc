@@ -5,11 +5,23 @@
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
 
 #include "ash/public/cpp/media_notification_provider_observer.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/views/view.h"
 
-MediaNotificationProviderImpl::MediaNotificationProviderImpl() = default;
+MediaNotificationProviderImpl::MediaNotificationProviderImpl() {
+  session_manager::SessionManager::Get()->AddObserver(this);
+}
 
-MediaNotificationProviderImpl::~MediaNotificationProviderImpl() = default;
+MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {
+  if (session_manager::SessionManager::Get())
+    session_manager::SessionManager::Get()->RemoveObserver(this);
+
+  if (service_)
+    service_->RemoveObserver(this);
+}
 
 void MediaNotificationProviderImpl::AddObserver(
     ash::MediaNotificationProviderObserver* observer) {
@@ -22,11 +34,15 @@ void MediaNotificationProviderImpl::RemoveObserver(
 }
 
 bool MediaNotificationProviderImpl::HasActiveNotifications() {
-  return false;
+  if (!service_)
+    return false;
+  return service_->HasActiveNotifications();
 }
 
 bool MediaNotificationProviderImpl::HasFrozenNotifications() {
-  return false;
+  if (!service_)
+    return false;
+  return service_->HasFrozenNotifications();
 }
 
 std::unique_ptr<views::View>
@@ -37,4 +53,22 @@ MediaNotificationProviderImpl::GetMediaNotificationListView() {
 std::unique_ptr<views::View>
 MediaNotificationProviderImpl::GetActiveMediaNotificationView() {
   return std::make_unique<views::View>();
+}
+
+void MediaNotificationProviderImpl::OnNotificationListChanged() {
+  for (auto& observer : observers_)
+    observer.OnNotificationListChanged();
+}
+
+void MediaNotificationProviderImpl::OnUserProfileLoaded(
+    const AccountId& account_id) {
+  Profile* profile =
+      chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+
+  if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
+    service_ = MediaNotificationServiceFactory::GetForProfile(profile);
+    service_->AddObserver(this);
+  }
 }

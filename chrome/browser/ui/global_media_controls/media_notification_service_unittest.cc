@@ -136,7 +136,7 @@ class MediaNotificationServiceTest : public testing::Test {
   void SetUp() override {
     media_router::MediaRouterFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating(&media_router::MockMediaRouter::Create));
-    service_ = std::make_unique<MediaNotificationService>(&profile_);
+    service_ = std::make_unique<MediaNotificationService>(&profile_, false);
     service_->AddObserver(&observer_);
   }
 

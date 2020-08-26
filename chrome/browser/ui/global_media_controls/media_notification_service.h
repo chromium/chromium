@@ -47,7 +47,7 @@ class MediaNotificationService
       public media_message_center::MediaNotificationController,
       public MediaNotificationContainerObserver {
  public:
-  explicit MediaNotificationService(Profile* profile);
+  MediaNotificationService(Profile* profile, bool show_from_all_profiles);
   MediaNotificationService(const MediaNotificationService&) = delete;
   MediaNotificationService& operator=(const MediaNotificationService&) = delete;
   ~MediaNotificationService() override;

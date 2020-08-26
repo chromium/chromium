@@ -7,8 +7,15 @@
 
 #include "ash/public/cpp/media_notification_provider.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
-class MediaNotificationProviderImpl : public ash::MediaNotificationProvider {
+class MediaNotificationService;
+
+class MediaNotificationProviderImpl
+    : public ash::MediaNotificationProvider,
+      public MediaNotificationServiceObserver,
+      public session_manager::SessionManagerObserver {
  public:
   MediaNotificationProviderImpl();
   ~MediaNotificationProviderImpl() override;
@@ -22,8 +29,17 @@ class MediaNotificationProviderImpl : public ash::MediaNotificationProvider {
   std::unique_ptr<views::View> GetMediaNotificationListView() override;
   std::unique_ptr<views::View> GetActiveMediaNotificationView() override;
 
+  // MediaNotificationServiceObserver implementations.
+  void OnNotificationListChanged() override;
+  void OnMediaDialogOpenedOrClosed() override {}
+
+  // SessionManagerobserver implementation.
+  void OnUserProfileLoaded(const AccountId& account_id) override;
+
  private:
   base::ObserverList<ash::MediaNotificationProviderObserver> observers_;
+
+  MediaNotificationService* service_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MEDIA_NOTIFICATION_PROVIDER_IMPL_H_

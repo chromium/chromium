@@ -274,7 +274,8 @@ void MediaNotificationService::Session::MarkActiveIfNecessary() {
   owner_->OnSessionBecameActive(id_);
 }
 
-MediaNotificationService::MediaNotificationService(Profile* profile)
+MediaNotificationService::MediaNotificationService(Profile* profile,
+                                                   bool show_from_all_profiles)
     : overlay_media_notifications_manager_(this) {
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsForCast) &&
       media_router::MediaRouterEnabled(profile)) {
@@ -286,9 +287,6 @@ MediaNotificationService::MediaNotificationService(Profile* profile)
                 base::Unretained(this)));
   }
 
-  const base::UnguessableToken& source_id =
-      content::MediaSession::GetSourceId(profile);
-
   // Connect to the controller manager so we can create media controllers for
   // media sessions.
   content::GetMediaSessionService().BindMediaControllerManager(
@@ -297,13 +295,26 @@ MediaNotificationService::MediaNotificationService(Profile* profile)
   // Connect to receive audio focus events.
   content::GetMediaSessionService().BindAudioFocusManager(
       audio_focus_remote_.BindNewPipeAndPassReceiver());
-  audio_focus_remote_->AddSourceObserver(
-      source_id, audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
 
-  audio_focus_remote_->GetSourceFocusRequests(
-      source_id,
-      base::BindOnce(&MediaNotificationService::OnReceivedAudioFocusRequests,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (show_from_all_profiles) {
+    audio_focus_remote_->AddObserver(
+        audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
+
+    audio_focus_remote_->GetFocusRequests(
+        base::BindOnce(&MediaNotificationService::OnReceivedAudioFocusRequests,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    const base::UnguessableToken& source_id =
+        content::MediaSession::GetSourceId(profile);
+
+    audio_focus_remote_->AddSourceObserver(
+        source_id, audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
+
+    audio_focus_remote_->GetSourceFocusRequests(
+        source_id,
+        base::BindOnce(&MediaNotificationService::OnReceivedAudioFocusRequests,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 MediaNotificationService::~MediaNotificationService() {

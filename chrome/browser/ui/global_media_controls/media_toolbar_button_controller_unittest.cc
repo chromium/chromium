@@ -87,7 +87,7 @@ class MediaToolbarButtonControllerTest : public testing::Test {
   MediaToolbarButtonControllerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
                           base::test::TaskEnvironment::MainThreadType::UI),
-        service_(&profile_) {}
+        service_(&profile_, false) {}
   ~MediaToolbarButtonControllerTest() override = default;
 
   void SetUp() override {
