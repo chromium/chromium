@@ -613,8 +613,7 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
       discovery_factory(),
       GetAvailableTransports(render_frame_host_, request_delegate_.get(),
                              discovery_factory(), caller_origin_),
-      *ctap_make_credential_request_, *authenticator_selection_criteria_,
-      *make_credential_options_,
+      *ctap_make_credential_request_, *make_credential_options_,
       base::BindOnce(&AuthenticatorCommon::OnRegisterResponse,
                      weak_factory_.GetWeakPtr()));
 
@@ -631,7 +630,7 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
           request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
-  if (authenticator_selection_criteria_->require_resident_key()) {
+  if (make_credential_options_->require_resident_key) {
     request_delegate_->SetMightCreateResidentCredential(true);
   }
   request_->set_observer(request_delegate_.get());
@@ -788,9 +787,9 @@ void AuthenticatorCommon::MakeCredential(
     return;
   }
 
-  authenticator_selection_criteria_ =
+  device::AuthenticatorSelectionCriteria authenticator_selection_criteria =
       options->authenticator_selection
-          ? options->authenticator_selection
+          ? *options->authenticator_selection
           : device::AuthenticatorSelectionCriteria();
 
   // Reject any non-sensical credProtect extension values.
@@ -808,7 +807,7 @@ void AuthenticatorCommon::MakeCredential(
       // UV_REQUIRED only makes sense if UV is required overall.
       (options->protection_policy ==
            blink::mojom::ProtectionPolicy::UV_REQUIRED &&
-       authenticator_selection_criteria_->user_verification_requirement() !=
+       authenticator_selection_criteria.user_verification_requirement() !=
            device::UserVerificationRequirement::kRequired)) {
     InvokeCallbackAndCleanup(
         std::move(callback),
@@ -837,11 +836,13 @@ void AuthenticatorCommon::MakeCredential(
       break;
   }
 
-  make_credential_options_.emplace();
-  if (cred_protect_request) {
-    make_credential_options_->cred_protect_request.emplace(
-        *cred_protect_request, options->enforce_protection_policy);
-  }
+  make_credential_options_ =
+      cred_protect_request
+          ? device::MakeCredentialRequestHandler::Options(
+                authenticator_selection_criteria, *cred_protect_request,
+                options->enforce_protection_policy)
+          : device::MakeCredentialRequestHandler::Options(
+                authenticator_selection_criteria);
 
   DCHECK(make_credential_response_callback_.is_null());
   make_credential_response_callback_ = std::move(callback);

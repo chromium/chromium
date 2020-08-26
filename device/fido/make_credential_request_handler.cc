@@ -79,7 +79,7 @@ base::Optional<MakeCredentialStatus> ConvertDeviceResponseCode(
 // should even blink for a request.
 bool IsCandidateAuthenticatorPreTouch(
     FidoAuthenticator* authenticator,
-    const AuthenticatorSelectionCriteria& authenticator_selection_criteria) {
+    AuthenticatorAttachment requested_attachment) {
   const auto& opt_options = authenticator->Options();
   if (!opt_options) {
     // This authenticator doesn't know its capabilities yet, so we need
@@ -88,11 +88,9 @@ bool IsCandidateAuthenticatorPreTouch(
     return true;
   }
 
-  if ((authenticator_selection_criteria.authenticator_attachment() ==
-           AuthenticatorAttachment::kPlatform &&
+  if ((requested_attachment == AuthenticatorAttachment::kPlatform &&
        !opt_options->is_platform_device) ||
-      (authenticator_selection_criteria.authenticator_attachment() ==
-           AuthenticatorAttachment::kCrossPlatform &&
+      (requested_attachment == AuthenticatorAttachment::kCrossPlatform &&
        opt_options->is_platform_device)) {
     return false;
   }
@@ -106,7 +104,6 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     const CtapMakeCredentialRequest& request,
     FidoAuthenticator* authenticator,
     const MakeCredentialRequestHandler::Options& options,
-    const AuthenticatorSelectionCriteria& authenticator_selection_criteria,
     const FidoRequestHandlerBase::Observer* observer) {
   if (options.cred_protect_request && options.cred_protect_request->second &&
       !authenticator->SupportsCredProtectExtension()) {
@@ -121,8 +118,7 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     return MakeCredentialStatus::kSuccess;
   }
 
-  if (authenticator_selection_criteria.require_resident_key() &&
-      !auth_options->supports_resident_key) {
+  if (options.require_resident_key && !auth_options->supports_resident_key) {
     return MakeCredentialStatus::kAuthenticatorMissingResidentKeys;
   }
 
@@ -160,10 +156,8 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
 }
 
 base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
-    const AuthenticatorSelectionCriteria& authenticator_selection_criteria) {
-  const auto attachment_type =
-      authenticator_selection_criteria.authenticator_attachment();
-  switch (attachment_type) {
+    AuthenticatorAttachment authenticator_attachment) {
+  switch (authenticator_attachment) {
     case AuthenticatorAttachment::kPlatform:
       return {FidoTransportProtocol::kInternal};
     case AuthenticatorAttachment::kCrossPlatform:
@@ -329,23 +323,41 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
 MakeCredentialRequestHandler::Options::Options() = default;
 MakeCredentialRequestHandler::Options::~Options() = default;
 MakeCredentialRequestHandler::Options::Options(const Options&) = default;
+MakeCredentialRequestHandler::Options::Options(
+    const AuthenticatorSelectionCriteria& authenticator_selection_criteria)
+    : authenticator_attachment(
+          authenticator_selection_criteria.authenticator_attachment()),
+      require_resident_key(
+          authenticator_selection_criteria.require_resident_key()),
+      user_verification(
+          authenticator_selection_criteria.user_verification_requirement()) {}
+MakeCredentialRequestHandler::Options::Options(
+    const AuthenticatorSelectionCriteria& authenticator_selection_criteria,
+    CredProtectRequest cred_protect_request_,
+    bool enforce_cred_protect_policy)
+    : Options(authenticator_selection_criteria) {
+  cred_protect_request.emplace(std::move(cred_protect_request_),
+                               enforce_cred_protect_policy);
+}
+MakeCredentialRequestHandler::Options::Options(Options&&) = default;
+MakeCredentialRequestHandler::Options&
+MakeCredentialRequestHandler::Options::operator=(const Options&) = default;
+MakeCredentialRequestHandler::Options&
+MakeCredentialRequestHandler::Options::operator=(Options&&) = default;
 
 MakeCredentialRequestHandler::MakeCredentialRequestHandler(
     FidoDiscoveryFactory* fido_discovery_factory,
     const base::flat_set<FidoTransportProtocol>& supported_transports,
     CtapMakeCredentialRequest request,
-    AuthenticatorSelectionCriteria authenticator_selection_criteria,
     const Options& options,
     CompletionCallback completion_callback)
     : FidoRequestHandlerBase(
           fido_discovery_factory,
           base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
               supported_transports,
-              GetTransportsAllowedByRP(authenticator_selection_criteria))),
+              GetTransportsAllowedByRP(options.authenticator_attachment))),
       completion_callback_(std::move(completion_callback)),
       request_(std::move(request)),
-      authenticator_selection_criteria_(
-          std::move(authenticator_selection_criteria)),
       options_(options) {
   // These parts of the request should be filled in by
   // |SpecializeRequestForAuthenticator|.
@@ -357,19 +369,15 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
       FidoRequestHandlerBase::RequestType::kMakeCredential;
 
   // Set the rk, uv and attachment fields, which were only initialized to
-  // default values up to here.  TODO(martinkr): Initialize these fields earlier
-  // (in AuthenticatorImpl) and get rid of the separate
-  // AuthenticatorSelectionCriteriaParameter.
-  if (authenticator_selection_criteria_.require_resident_key()) {
+  // default values up to here.
+  if (options_.require_resident_key) {
     request_.resident_key_required = true;
     request_.user_verification = UserVerificationRequirement::kRequired;
   } else {
     request_.resident_key_required = false;
-    request_.user_verification =
-        authenticator_selection_criteria_.user_verification_requirement();
+    request_.user_verification = options_.user_verification;
   }
-  request_.authenticator_attachment =
-      authenticator_selection_criteria_.authenticator_attachment();
+  request_.authenticator_attachment = options_.authenticator_attachment;
 
   Start();
 }
@@ -382,7 +390,7 @@ void MakeCredentialRequestHandler::DispatchRequest(
 
   if (state_ != State::kWaitingForTouch ||
       !IsCandidateAuthenticatorPreTouch(authenticator,
-                                        authenticator_selection_criteria_)) {
+                                        options_.authenticator_attachment)) {
     return;
   }
 
@@ -391,7 +399,6 @@ void MakeCredentialRequestHandler::DispatchRequest(
   SpecializeRequestForAuthenticator(request.get(), authenticator);
 
   if (IsCandidateAuthenticatorPostTouch(*request.get(), authenticator, options_,
-                                        authenticator_selection_criteria_,
                                         observer()) !=
       MakeCredentialStatus::kSuccess) {
 #if defined(OS_WIN)
@@ -671,7 +678,6 @@ void MakeCredentialRequestHandler::HandleInapplicableAuthenticator(
   CancelActiveAuthenticators(authenticator->GetId());
   const MakeCredentialStatus capability_error =
       IsCandidateAuthenticatorPostTouch(*request.get(), authenticator, options_,
-                                        authenticator_selection_criteria_,
                                         observer());
   DCHECK_NE(capability_error, MakeCredentialStatus::kSuccess);
   std::move(completion_callback_).Run(capability_error, base::nullopt, nullptr);

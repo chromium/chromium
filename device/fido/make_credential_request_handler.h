@@ -76,24 +76,52 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   // |CtapMakeCredentialRequest|.
   struct COMPONENT_EXPORT(DEVICE_FIDO) Options {
     Options();
+    Options(
+        const AuthenticatorSelectionCriteria& authenticator_selection_criteria);
+    Options(
+        const AuthenticatorSelectionCriteria& authenticator_selection_criteria,
+        CredProtectRequest cred_protect_request,
+        bool enforce_cred_protect_policy);
     ~Options();
     Options(const Options&);
+    Options(Options&&);
+    Options& operator=(const Options&);
+    Options& operator=(Options&&);
 
-    bool allow_skipping_pin_touch = false;
-    base::Optional<AndroidClientDataExtensionInput> android_client_data_ext;
+    // authenticator_attachment is a constraint on the type of authenticator
+    // that a credential should be created on.
+    AuthenticatorAttachment authenticator_attachment =
+        AuthenticatorAttachment::kAny;
+
+    // require_resident_key indicates whether the request must result in the
+    // creation of a client-side discoverable credential (aka resident key).
+    bool require_resident_key = false;
+
+    // user_verification indicates whether the authenticator should (or must)
+    // perform user verficiation before creating the credential.
+    UserVerificationRequirement user_verification =
+        UserVerificationRequirement::kPreferred;
 
     // cred_protect_request extends |CredProtect| to include information that
     // applies at request-routing time. The second element is true if the
     // indicated protection level must be provided by the target authenticator
     // for the MakeCredential request to be sent.
     base::Optional<std::pair<CredProtectRequest, bool>> cred_protect_request;
+
+    // allow_skipping_pin_touch causes the handler to forego the first
+    // "touch-only" step to collect a PIN if exactly one authenticator is
+    // discovered.
+    bool allow_skipping_pin_touch = false;
+
+    // android_client_data_ext is a compatibility hack to support the Clank
+    // caBLEv2 authenticator.
+    base::Optional<AndroidClientDataExtensionInput> android_client_data_ext;
   };
 
   MakeCredentialRequestHandler(
       FidoDiscoveryFactory* fido_discovery_factory,
       const base::flat_set<FidoTransportProtocol>& supported_transports,
       CtapMakeCredentialRequest request_parameter,
-      AuthenticatorSelectionCriteria authenticator_criteria,
       const Options& options,
       CompletionCallback completion_callback);
   ~MakeCredentialRequestHandler() override;
@@ -176,7 +204,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   State state_ = State::kWaitingForTouch;
   CtapMakeCredentialRequest request_;
   base::Optional<base::RepeatingClosure> bio_enrollment_complete_barrier_;
-  AuthenticatorSelectionCriteria authenticator_selection_criteria_;
   const Options options_;
 
   // authenticator_ points to the authenticator that will be used for this

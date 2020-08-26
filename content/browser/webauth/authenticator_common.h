@@ -193,8 +193,6 @@ class CONTENT_EXPORT AuthenticatorCommon {
   scoped_refptr<WebAuthRequestSecurityChecker> security_checker_;
   std::unique_ptr<base::OneShotTimer> timer_ =
       std::make_unique<base::OneShotTimer>();
-  base::Optional<device::AuthenticatorSelectionCriteria>
-      authenticator_selection_criteria_;
   base::Optional<std::string> app_id_;
   base::Optional<device::CtapMakeCredentialRequest>
       ctap_make_credential_request_;
