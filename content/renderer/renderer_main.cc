@@ -13,6 +13,7 @@
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/pending_task.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -58,6 +59,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/system/core_scheduling.h"
+#include "content/renderer/performance_manager/mechanisms/userspace_swap_renderer_initialization_impl.h"
 #endif  // OS_CHROMEOS
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -128,6 +130,17 @@ int RendererMain(const MainFunctionParams& parameters) {
   // When we start the renderer on ChromeOS if the system has core scheduling
   // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
+
+  base::Optional<
+      performance_manager::mechanism::UserspaceSwapRendererInitializationImpl>
+      swap_init;
+  if (performance_manager::mechanism::UserspaceSwapRendererInitializationImpl::
+          UserspaceSwapSupportedAndEnabled()) {
+    swap_init.emplace();
+
+    PLOG_IF(ERROR, !swap_init->PreSandboxSetup())
+        << "Unable to complete presandbox userspace swap initialization";
+  }
 #endif
 
   InitializeSkia();
@@ -199,6 +212,19 @@ int RendererMain(const MainFunctionParams& parameters) {
     base::RunLoop run_loop;
     new RenderThreadImpl(run_loop.QuitClosure(),
                          std::move(main_thread_scheduler));
+
+#if defined(OS_CHROMEOS)
+    // Once the sandbox has been entered and initialization of render threads
+    // complete we will transfer FDs to the browser, or close them on failure.
+    // This should always be called because it will also transfer the errno that
+    // prevented the creation of the userfaultfd if applicable.
+    if (swap_init) {
+      swap_init->TransferFDsOrCleanup();
+
+      // No need to leave this around any further.
+      swap_init.reset();
+    }
+#endif
 
 #if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
     // Startup tracing is usually enabled earlier, but if we forked from a

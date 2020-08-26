@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module userspace_swap.mojom;
+
+// The UserspaceSwapInitialization interface is used for the renderer to
+// negotiate userspace swap with the browser.
+interface UserspaceSwapInitialization {
+  // TransferUserfaultFD is called from the renderer to hand over the
+  // userfaultfd it created or to provide an error for why a userfaultfd
+  // could not be created.
+  [Sync]
+  TransferUserfaultFD(uint64 error, handle<platform> uffd_handle) => ();
+};

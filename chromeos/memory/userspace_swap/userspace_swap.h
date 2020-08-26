@@ -120,6 +120,10 @@ struct CHROMEOS_EXPORT UserspaceSwapConfig {
 // the rendererer UserspaceSwapImpl.
 CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap();
 
+// Returns true if there is kernel support for userspace swap and the feature is
+// enabled.
+CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled();
+
 // A swap eligible VMA is one that meets the required swapping criteria,
 // which are:
 //   - RW protections

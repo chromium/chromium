@@ -60,6 +60,7 @@ include_rules = [
   "+components/web_cache/renderer",
   "+content/public/child",
   "+content/public/renderer",
+  "+chromeos/memory/userspace_swap",
   "+extensions/common",
   "+extensions/buildflags",
   "+extensions/renderer",

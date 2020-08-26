@@ -178,6 +178,12 @@ CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap() {
   return userfault_fd_supported && mremap_dontunmap_supported;
 }
 
+CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled() {
+  static bool enabled = UserspaceSwapConfig::Get().enabled;
+  static bool supported = KernelSupportsUserspaceSwap();
+  return supported && enabled;
+}
+
 CHROMEOS_EXPORT bool IsVMASwapEligible(
     const memory_instrumentation::mojom::VmRegionPtr& vma) {
   // We only conisder VMAs which are Private Anonymous

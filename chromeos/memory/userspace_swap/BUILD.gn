@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
@@ -12,8 +13,16 @@ config("chromeos_implementation") {
   defines = [ "CHROMEOS_IMPLEMENTATION" ]
 }
 
-component("memory") {
-  defines = [ "IS_CHROMEOS_MEMORY_IMPL" ]
+mojom("mojom") {
+  sources = [ "userspace_swap.mojom" ]
+
+  cpp_only = true
+  disable_variants = true
+
+  deps = [ "//mojo/public/mojom/base" ]
+}
+
+component("userspace_swap") {
   configs += [
     ":chromeos_implementation",
     "//build/config/linux/nss:system_nss_no_ssl_config",
@@ -21,24 +30,26 @@ component("memory") {
 
   public_deps = [ "//chromeos/constants" ]
   deps = [
+    ":mojom",
     "//base",
     "//base/util/memory_pressure",
     "//chromeos:chromeos_export",
     "//chromeos/dbus",
     "//chromeos/dbus/constants",
+    "//chromeos/memory",
+    "//crypto",
+    "//crypto:platform",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//third_party/zlib/google:compression_utils",
   ]
   sources = [
-    "kstaled.cc",
-    "kstaled.h",
-    "memory.cc",
-    "memory.h",
-    "pagemap.cc",
-    "pagemap.h",
-    "pressure/system_memory_pressure_evaluator.cc",
-    "pressure/system_memory_pressure_evaluator.h",
-    "swap_configuration.cc",
-    "swap_configuration.h",
+    "region.h",
+    "swap_storage.cc",
+    "swap_storage.h",
+    "userfaultfd.cc",
+    "userfaultfd.h",
+    "userspace_swap.cc",
+    "userspace_swap.h",
   ]
 }
 
@@ -46,9 +57,9 @@ source_set("unit_tests") {
   testonly = true
   configs += [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
   deps = [
-    ":memory",
+    ":mojom",
+    ":userspace_swap",
     "//base/test:test_support",
-    "//base/util/memory_pressure",
     "//chromeos:chromeos_buildflags",
     "//mojo/core/embedder",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
@@ -56,7 +67,8 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
-    "pagemap_unittest.cc",
-    "pressure/system_memory_pressure_evaluator_unittest.cc",
+    "swap_storage_unittest.cc",
+    "userfaultfd_unittest.cc",
+    "userspace_swap_unittest.cc",
   ]
 }

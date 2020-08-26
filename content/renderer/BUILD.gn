@@ -617,8 +617,14 @@ target(link_target_type, "renderer") {
   }
 
   if (is_chromeos) {
+    sources += [
+      "performance_manager/mechanisms/userspace_swap_renderer_initialization_impl.cc",
+      "performance_manager/mechanisms/userspace_swap_renderer_initialization_impl.h",
+    ]
     deps += [
       "//chromeos:chromeos_export",
+      "//chromeos/memory/userspace_swap",
+      "//chromeos/memory/userspace_swap:mojom",
       "//chromeos/system:system",
     ]
   }

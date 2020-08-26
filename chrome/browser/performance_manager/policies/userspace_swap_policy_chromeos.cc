@@ -4,7 +4,9 @@
 
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/mechanisms/userspace_swap_chromeos.h"
 #include "chromeos/memory/userspace_swap/swap_storage.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -49,7 +51,11 @@ constexpr base::TimeDelta kSwapDeviceAvailableSpaceCheckInterval =
 
 UserspaceSwapPolicy::UserspaceSwapPolicy(const UserspaceSwapConfig& config)
     : config_(config) {
-  DCHECK(config_.enabled);
+  // To avoid failures related to chromeos-linux, we validate that we're running
+  // on chromeos before enforcing the following check.
+  if (base::SysInfo::IsRunningOnChromeOS()) {
+    DCHECK(UserspaceSwapPolicy::UserspaceSwapSupportedAndEnabled());
+  }
 #ifndef NDEBUG
   if (!metrics_timer_->IsRunning()) {
     metrics_timer_->Start(
@@ -113,9 +119,9 @@ void UserspaceSwapPolicy::OnProcessNodeAdded(const ProcessNode* process_node) {
 
 bool UserspaceSwapPolicy::InitializeProcessNode(
     const ProcessNode* process_node) {
-  // TODO(bgeffon): This will be dispatched to the userspace swap mechanism when
-  // it's committed.
-  return false;
+  // TODO(bgeffon): Add policy specific initialization or remove once final CLs
+  // land.
+  return true;
 }
 
 void UserspaceSwapPolicy::OnProcessLifetimeChange(
@@ -131,6 +137,9 @@ void UserspaceSwapPolicy::OnProcessLifetimeChange(
 
     // If this fails we don't attempt swap ever.
     data->process_initialized_ = InitializeProcessNode(process_node);
+
+    LOG_IF(ERROR, !data->process_initialized_)
+        << "Unable to initialize process node";
   }
 }
 
@@ -267,7 +276,13 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
 
   auto* data = UserspaceSwapPolicyData::EnsureForProcess(process_node);
   if (!data->process_initialized_) {
-    LOG(ERROR) << "Process not initialized";
+    return false;
+  }
+
+  // Always check with the mechanism to make sure that it can still be swapped
+  // and that nothing unexpected has happened.
+  if (!performance_manager::mechanism::userspace_swap::IsEligibleToSwap(
+          process_node)) {
     return false;
   }
 
@@ -335,10 +350,7 @@ bool UserspaceSwapPolicy::IsEligibleToSwap(const ProcessNode* process_node,
 
 // Static
 bool UserspaceSwapPolicy::UserspaceSwapSupportedAndEnabled() {
-  static bool enabled = UserspaceSwapConfig::Get().enabled;
-  static bool supported =
-      chromeos::memory::userspace_swap::KernelSupportsUserspaceSwap();
-  return enabled && supported;
+  return chromeos::memory::userspace_swap::UserspaceSwapSupportedAndEnabled();
 }
 
 }  // namespace policies

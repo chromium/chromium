@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 
 #include "base/allocator/buildflags.h"
+#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -103,6 +104,10 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
   ~UserspaceSwapPolicyTest() override {}
 
   void SetUp() override {
+    if (!base::SysInfo::IsRunningOnChromeOS()) {
+      GTEST_SKIP() << "Skip test on chromeos-linux";
+    }
+
     CreateAndPassMockPolicy();
 
     // Create a simple graph.
