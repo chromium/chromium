@@ -40,6 +40,8 @@ const char* PolicyValueTypeToString(mojom::blink::PolicyValueType type) {
       return "Boolean";
     case mojom::blink::PolicyValueType::kDecDouble:
       return "Double";
+    case mojom::blink::PolicyValueType::kEnum:
+      return "Enum";
   }
 }
 

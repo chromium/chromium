@@ -24,6 +24,8 @@ struct BLINK_COMMON_EXPORT
         return blink::mojom::PolicyValueDataDataView::Tag::BOOL_VALUE;
       case blink::mojom::PolicyValueType::kDecDouble:
         return blink::mojom::PolicyValueDataDataView::Tag::DEC_DOUBLE_VALUE;
+      case blink::mojom::PolicyValueType::kEnum:
+        return blink::mojom::PolicyValueDataDataView::Tag::ENUM_VALUE;
     }
 
     NOTREACHED();
@@ -35,6 +37,9 @@ struct BLINK_COMMON_EXPORT
   }
   static double dec_double_value(const blink::PolicyValue& value) {
     return value.DoubleValue();
+  }
+  static int32_t enum_value(const blink::PolicyValue& value) {
+    return value.IntValue();
   }
   static bool Read(blink::mojom::PolicyValueDataDataView in,
                    blink::PolicyValue* out);

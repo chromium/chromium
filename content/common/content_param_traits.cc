@@ -100,6 +100,9 @@ void ParamTraits<blink::PolicyValue>::Write(base::Pickle* m,
     case blink::mojom::PolicyValueType::kDecDouble:
       WriteParam(m, p.DoubleValue());
       break;
+    case blink::mojom::PolicyValueType::kEnum:
+      WriteParam(m, p.IntValue());
+      break;
     case blink::mojom::PolicyValueType::kNull:
       break;
   }
@@ -157,7 +160,14 @@ bool ParamTraits<blink::PolicyValue>::Read(const base::Pickle* m,
       double d;
       if (!ReadParam(m, iter, &d))
         return false;
-      r->SetDoubleValue(d, type);
+      r->SetDoubleValue(d);
+      break;
+    }
+    case blink::mojom::PolicyValueType::kEnum: {
+      int32_t i;
+      if (!ReadParam(m, iter, &i))
+        return false;
+      r->SetIntValue(i);
       break;
     }
     case blink::mojom::PolicyValueType::kNull:

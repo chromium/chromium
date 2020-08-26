@@ -105,4 +105,38 @@ TEST_F(PolicyValueTest, TestCanCompareDoubleValues) {
   EXPECT_TRUE(high_value.IsCompatibleWith(high_value));
 }
 
+TEST_F(PolicyValueTest, TestCanCreateEnumValues) {
+  PolicyValue enum_value_a(1, blink::mojom::PolicyValueType::kEnum);
+  PolicyValue enum_value_b(2, blink::mojom::PolicyValueType::kEnum);
+  EXPECT_EQ(enum_value_a.IntValue(), 1);
+  EXPECT_EQ(enum_value_b.IntValue(), 2);
+}
+
+TEST_F(PolicyValueTest, TestCanModifyEnumValues) {
+  PolicyValue enum_value_a(1, blink::mojom::PolicyValueType::kEnum);
+  enum_value_a.SetIntValue(2);
+  EXPECT_EQ(enum_value_a.IntValue(), 2);
+}
+
+TEST_F(PolicyValueTest, TestCanCompareEnumValues) {
+  PolicyValue enum_value_a(1, blink::mojom::PolicyValueType::kEnum);
+  PolicyValue enum_value_b(2, blink::mojom::PolicyValueType::kEnum);
+
+  EXPECT_TRUE(enum_value_a == enum_value_a);
+  EXPECT_FALSE(enum_value_a != enum_value_a);
+  EXPECT_TRUE(enum_value_a.IsCompatibleWith(enum_value_a));
+
+  EXPECT_FALSE(enum_value_b == enum_value_a);
+  EXPECT_TRUE(enum_value_b != enum_value_a);
+  EXPECT_FALSE(enum_value_b.IsCompatibleWith(enum_value_a));
+
+  EXPECT_FALSE(enum_value_a == enum_value_b);
+  EXPECT_TRUE(enum_value_a != enum_value_b);
+  EXPECT_FALSE(enum_value_a.IsCompatibleWith(enum_value_b));
+
+  EXPECT_TRUE(enum_value_b == enum_value_b);
+  EXPECT_FALSE(enum_value_b != enum_value_b);
+  EXPECT_TRUE(enum_value_b.IsCompatibleWith(enum_value_b));
+}
+
 }  // namespace blink

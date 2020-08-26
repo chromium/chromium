@@ -16,11 +16,12 @@ using DocumentPolicyTest = ::testing::Test;
 // Helper function to convert literal to FeatureState.
 template <class T>
 DocumentPolicyFeatureState FeatureState(
-    std::vector<std::pair<int32_t, T>> literal) {
+    std::vector<std::pair<int32_t, T>> literal,
+    mojom::PolicyValueType value_type = mojom::PolicyValueType::kBool) {
   DocumentPolicyFeatureState result;
   for (const auto& entry : literal) {
     result.insert({static_cast<mojom::DocumentPolicyFeature>(entry.first),
-                   PolicyValue(entry.second)});
+                   PolicyValue(entry.second, value_type)});
   }
   return result;
 }
@@ -39,9 +40,21 @@ TEST_F(DocumentPolicyTest, MergeFeatureState) {
                                 {6, true}}));
   EXPECT_EQ(
       DocumentPolicy::MergeFeatureState(
-          FeatureState<double>({{1, 1.0}, {2, 1.0}, {3, 1.0}, {4, 0.5}}),
-          FeatureState<double>({{2, 0.5}, {3, 1.0}, {4, 1.0}, {5, 1.0}})),
-      FeatureState<double>({{1, 1.0}, {2, 0.5}, {3, 1.0}, {4, 0.5}, {5, 1.0}}));
+          FeatureState<double>({{1, 1.0}, {2, 1.0}, {3, 1.0}, {4, 0.5}},
+                               mojom::PolicyValueType::kDecDouble),
+          FeatureState<double>({{2, 0.5}, {3, 1.0}, {4, 1.0}, {5, 1.0}},
+                               mojom::PolicyValueType::kDecDouble)),
+      FeatureState<double>({{1, 1.0}, {2, 0.5}, {3, 1.0}, {4, 0.5}, {5, 1.0}},
+                           mojom::PolicyValueType::kDecDouble));
+
+  EXPECT_EQ(
+      DocumentPolicy::MergeFeatureState(
+          /* base_policy */ FeatureState<int32_t>(
+              {{1, 1}, {2, 1}, {3, 1}, {4, 2}}, mojom::PolicyValueType::kEnum),
+          /* override_policy */ FeatureState<int32_t>(
+              {{2, 2}, {3, 1}, {4, 1}, {5, 1}}, mojom::PolicyValueType::kEnum)),
+      FeatureState<int32_t>({{1, 1}, {2, 2}, {3, 1}, {4, 1}, {5, 1}},
+                            mojom::PolicyValueType::kEnum));
 }
 
 // IsPolicyCompatible should use default value for incoming policy when required

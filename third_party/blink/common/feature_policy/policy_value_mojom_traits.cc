@@ -17,6 +17,10 @@ bool UnionTraits<blink::mojom::PolicyValueDataDataView, blink::PolicyValue>::
       out->SetType(blink::mojom::PolicyValueType::kDecDouble);
       out->SetDoubleValue(in.dec_double_value());
       return true;
+    case blink::mojom::PolicyValueDataDataView::Tag::ENUM_VALUE:
+      out->SetType(blink::mojom::PolicyValueType::kEnum);
+      out->SetIntValue(in.enum_value());
+      return true;
     case blink::mojom::PolicyValueDataDataView::Tag::NULL_VALUE:
       break;
   }
