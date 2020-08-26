@@ -64,6 +64,11 @@ void ProfilePicker::Hide() {
     g_profile_picker_view->Clear();
 }
 
+// static
+bool ProfilePicker::IsOpen() {
+  return g_profile_picker_view;
+}
+
 ProfilePickerView::ProfilePickerView()
     : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
                   KeepAliveRestartOption::DISABLED) {
