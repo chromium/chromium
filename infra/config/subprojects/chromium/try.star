@@ -108,12 +108,14 @@ try_.chromium_builder(
     name = "win-official",
     branch_selector = branches.STANDARD_RELEASES,
     os = os.WINDOWS_DEFAULT,
+    cores = 32,
 )
 
 try_.chromium_builder(
     name = "win32-official",
     branch_selector = branches.STANDARD_RELEASES,
     os = os.WINDOWS_DEFAULT,
+    cores = 32,
 )
 
 try_.chromium_android_builder(
