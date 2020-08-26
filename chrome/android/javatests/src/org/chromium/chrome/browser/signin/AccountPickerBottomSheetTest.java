@@ -43,6 +43,7 @@ import org.mockito.Mock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -52,6 +53,7 @@ import org.chromium.chrome.browser.signin.account_picker.AccountPickerBottomShee
 import org.chromium.chrome.browser.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -72,6 +74,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+@Batch(Batch.PER_CLASS)
 public class AccountPickerBottomSheetTest {
     private static class CustomFakeProfileDataSource extends FakeProfileDataSource {
         int getNumberOfObservers() {
@@ -93,9 +96,13 @@ public class AccountPickerBottomSheetTest {
     public static final DisableAnimationsTestRule sNoAnimationsRule =
             new DisableAnimationsTestRule();
 
-    @Rule
-    public final ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
+    @ClassRule
+    public static final ChromeActivityTestRule<ChromeActivity> sActivityTestRule =
             new ChromeActivityTestRule<>(ChromeActivity.class);
+
+    @Rule
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private final CustomFakeProfileDataSource mFakeProfileDataSource =
             new CustomFakeProfileDataSource();
@@ -117,7 +124,6 @@ public class AccountPickerBottomSheetTest {
         initMocks(this);
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         mAccountManagerTestRule.addAccount(PROFILE_DATA2);
-        mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @Test
@@ -476,7 +482,7 @@ public class AccountPickerBottomSheetTest {
         onView(allOf(withId(R.id.account_selection_mark), withEffectiveVisibility(VISIBLE)))
                 .check(matches(isDisplayed()));
         String continueAsText =
-                mActivityTestRule.getActivity().getString(R.string.signin_promo_continue_as,
+                sActivityTestRule.getActivity().getString(R.string.signin_promo_continue_as,
                         profileData.getGivenName() != null ? profileData.getGivenName()
                                                            : profileData.getAccountName());
         onView(withText(continueAsText)).check(matches(isDisplayed()));
@@ -485,7 +491,7 @@ public class AccountPickerBottomSheetTest {
 
     private void buildAndShowCollapsedBottomSheet() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator = new AccountPickerBottomSheetCoordinator(mActivityTestRule.getActivity(),
+            mCoordinator = new AccountPickerBottomSheetCoordinator(sActivityTestRule.getActivity(),
                     getBottomSheetController(), mAccountPickerDelegateMock);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
@@ -498,7 +504,7 @@ public class AccountPickerBottomSheetTest {
     }
 
     private BottomSheetController getBottomSheetController() {
-        return mActivityTestRule.getActivity()
+        return sActivityTestRule.getActivity()
                 .getRootUiCoordinatorForTesting()
                 .getBottomSheetController();
     }
