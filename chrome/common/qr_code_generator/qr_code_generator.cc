@@ -234,6 +234,47 @@ const QRVersionInfo* GetVersionForDataSize(size_t num_data_bytes) {
   return nullptr;
 }
 
+// kMaxMask is the maximum masking function number. See table 10.
+constexpr uint8_t kMaxMask = 7;
+
+// The following functions implement the masks specified in table 10.
+
+uint8_t MaskFunction0(int x, int y) {
+  return (x + y) % 2 == 0;
+}
+uint8_t MaskFunction1(int x, int y) {
+  return y % 2 == 0;
+}
+uint8_t MaskFunction2(int x, int y) {
+  return x % 3 == 0;
+}
+uint8_t MaskFunction3(int x, int y) {
+  return (x + y) % 3 == 0;
+}
+uint8_t MaskFunction4(int x, int y) {
+  return ((y / 2) + (x / 3)) % 2 == 0;
+}
+uint8_t MaskFunction5(int x, int y) {
+  return ((x * y) % 2) + ((x * y) % 3) == 0;
+}
+uint8_t MaskFunction6(int x, int y) {
+  return (((x * y) % 2) + ((x * y) % 3)) % 2 == 0;
+}
+uint8_t MaskFunction7(int x, int y) {
+  return (((x + y) % 2) + ((x * y) % 3)) % 2 == 0;
+}
+
+static uint8_t (*const kMaskFunctions[kMaxMask + 1])(int x, int y) = {
+    MaskFunction0, MaskFunction1, MaskFunction2, MaskFunction3,
+    MaskFunction4, MaskFunction5, MaskFunction6, MaskFunction7,
+};
+
+// kFormatInformation is taken from table C.1 on page 80 and specifies the
+// format value for each masking function, assuming ECC level 'M'.
+static const uint16_t kFormatInformation[kMaxMask + 1] = {
+    0x5412, 0x5125, 0x5e7c, 0x5b4b, 0x45f9, 0x40ce, 0x4f97, 0x4aa0,
+};
+
 }  // namespace
 
 QRCodeGenerator::QRCodeGenerator() = default;
@@ -246,7 +287,10 @@ QRCodeGenerator::GeneratedCode::GeneratedCode(
 QRCodeGenerator::GeneratedCode::~GeneratedCode() = default;
 
 base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
-    base::span<const uint8_t> in) {
+    base::span<const uint8_t> in,
+    base::Optional<uint8_t> mask) {
+  CHECK(!mask || *mask <= kMaxMask);
+
   // We're currently using a minimal set of versions to shrink test surface.
   // When expanding, take care to validate across different platforms and
   // a selection of QR Scanner apps.
@@ -289,16 +333,6 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     }
   }
 
-  // kFormatInformation is the encoded formatting word for the QR code that
-  // this code generates. See tables 10 and 12.
-  //                  00 011
-  //                  --|---
-  // error correction M | Mask pattern 3
-  //
-  // It's translated into the following, 15-bit value using the table on page
-  // 80.
-  constexpr uint16_t kFormatInformation = 0x5b4b;
-  PutFormatBits(kFormatInformation);
   if (version_info_->encoded_version != 0) {
     PutVersionBlocks(version_info_->encoded_version);
   }
@@ -440,23 +474,41 @@ base::Optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   }
   DCHECK_EQ(k, total_bytes);
 
-  // The mask pattern is fixed for this implementation. A full implementation
-  // would generate QR codes with every mask pattern and evaluate a quality
-  // score, ultimately picking the optimal pattern. Here it's assumed that a
-  // different QR code will soon be generated so any random issues will be
-  // transient.
-  PutBits(interleaved_data, sizeof(interleaved_data), MaskFunction3);
+  uint8_t best_mask = mask.value_or(0);
+  base::Optional<unsigned> lowest_penalty;
+
+  // If |mask| was not specified, then evaluate each masking function to find
+  // the one with the lowest penalty score.
+  for (uint8_t mask_num = 0; !mask && mask_num <= kMaxMask; mask_num++) {
+    // kFormatInformation is the encoded formatting word for the QR code that
+    // this code generates. See tables 10 and 12. For example:
+    //                  00 011
+    //                  --|---
+    // error correction M | Mask pattern 3
+    //
+    // It's translated into a 15-bit value using the table on page 80, which is
+    // stored in |kFormatInformation|.
+    PutFormatBits(kFormatInformation[mask_num]);
+
+    PutBits(interleaved_data, sizeof(interleaved_data),
+            kMaskFunctions[mask_num]);
+
+    const unsigned penalty = CountPenaltyPoints();
+    if (!lowest_penalty || *lowest_penalty > penalty) {
+      lowest_penalty = penalty;
+      best_mask = mask_num;
+    }
+  }
+
+  // Repaint with the best mask function.
+  PutFormatBits(kFormatInformation[best_mask]);
+  PutBits(interleaved_data, sizeof(interleaved_data),
+          kMaskFunctions[best_mask]);
 
   GeneratedCode code;
   code.data = base::span<uint8_t>(&d_[0], version_info_->total_size());
   code.qr_size = version_info_->size;
   return code;
-}
-
-// MaskFunction3 implements one of the data-masking functions. See figure 21.
-// static
-uint8_t QRCodeGenerator::MaskFunction3(int x, int y) {
-  return (x + y) % 3 == 0;
 }
 
 // PutFinder paints a finder symbol at the given coordinates.
@@ -610,12 +662,12 @@ void QRCodeGenerator::PutBits(const uint8_t* data,
     uint8_t& right = at(x, y);
     // Test the current value in the QR code to avoid painting over any
     // existing structural elements.
-    if (right == 0) {
+    if ((right & 2) == 0) {
       right = stream.Next() ^ mask_func(x, y);
     }
 
     uint8_t& left = at(x - 1, y);
-    if (left == 0) {
+    if ((left & 2) == 0) {
       left = stream.Next() ^ mask_func(x - 1, y);
     }
 
@@ -800,4 +852,129 @@ void QRCodeGenerator::AddErrorCorrection(base::span<uint8_t> out,
   for (size_t i = 0; i < block_ec_bytes; i++) {
     out[block_data_bytes + i] = remainder[block_ec_bytes - 1 - i];
   }
+}
+
+unsigned QRCodeGenerator::CountPenaltyPoints() const {
+  const int size = version_info_->size;
+  unsigned penalty = 0;
+
+  // The spec penalises the pattern X.XXX.X with four unpainted tiles to
+  // the left or right. These are "finder-like" patterns. To catch them, a
+  // sliding window of 11 tiles is used.
+  static const unsigned k11Bits = 0x7ff;
+  static const unsigned kFinderLeft = 0b00001011101;
+  static const unsigned kFinderRight = 0b10111010000;
+
+  // Count:
+  //   * Horizontal runs of the same color, at least five tiles in a row.
+  //   * The number of horizontal finder-like patterns.
+  //   * Total number of painted tiles, which is used later.
+  unsigned current_run_length;
+  int current_color;
+  unsigned total_painted_tiles = 0;
+  unsigned window = 0;
+
+  size_t i = 0;
+  for (int y = 0; y < size; y++) {
+    current_color = d_[i++] & 1;
+    current_run_length = 0;
+    window = current_color;
+    total_painted_tiles += current_color;
+
+    for (int x = 1; x < size; x++) {
+      const int color = d_[i++] & 1;
+
+      window = k11Bits & ((window << 1) | color);
+      if (window == kFinderLeft || window == kFinderRight) {
+        penalty += 40;
+      }
+
+      total_painted_tiles += color;
+
+      if (color == current_color) {
+        current_run_length++;
+        continue;
+      }
+
+      if (current_run_length >= 5) {
+        penalty += current_run_length - 2;
+      }
+      current_run_length = 0;
+      current_color = color;
+    }
+
+    if (current_run_length >= 5) {
+      penalty += current_run_length - 2;
+    }
+
+    window = k11Bits & (window << 4);
+    if (window == kFinderRight) {
+      penalty += 40;
+    }
+  }
+  DCHECK_EQ(i, static_cast<size_t>(size * size));
+
+  // Count:
+  //   * Vertical runs of the same color, at least five tiles in a row.
+  //   * The number of vertical finder-like patterns.
+  for (int x = 0; x < size; x++) {
+    i = x;
+    current_run_length = 0;
+    current_color = d_[i] & 1;
+    i += size;
+    window = current_color;
+
+    for (int y = 1; y < size; y++, i += size) {
+      const int color = d_[i] & 1;
+      window = k11Bits & ((window << 1) | color);
+      if (window == kFinderLeft || window == kFinderRight) {
+        penalty += 40;
+      }
+
+      if (color == current_color) {
+        current_run_length++;
+        continue;
+      }
+
+      if (current_run_length >= 5) {
+        penalty += current_run_length - 2;
+      }
+      current_run_length = 0;
+      current_color = color;
+    }
+
+    if (current_run_length >= 5) {
+      penalty += current_run_length - 2;
+    }
+
+    window = k11Bits & (window << 4);
+    if (window == kFinderRight) {
+      penalty += 40;
+    }
+  }
+  DCHECK_EQ(i, static_cast<size_t>(size * size + size - 1));
+
+  // Count 2x2 blocks of the same color.
+  i = 0;
+  for (int y = 0; y < size - 1; y++) {
+    for (int x = 0; x < size - 1; x++) {
+      const int color = d_[i++] & 1;
+      if ((d_[i + 1] & 1) == color && (d_[i + size] & 1) == color &&
+          (d_[i + size + 1] & 1) == color) {
+        penalty += 3;
+      }
+    }
+  }
+
+  // Each deviation of 5% away from 50%-painted costs five points.
+  DCHECK_LE(total_painted_tiles, static_cast<unsigned>(size) * size);
+  double painted_fraction = static_cast<double>(total_painted_tiles) /
+                            (static_cast<double>(size) * size);
+  if (painted_fraction < 0.5) {
+    painted_fraction = 1.0 - painted_fraction;
+  }
+  const double deviation = (painted_fraction - 0.5) / 0.05;
+  penalty += 5 * static_cast<unsigned>(floor(deviation));
+
+  return penalty;
 }
