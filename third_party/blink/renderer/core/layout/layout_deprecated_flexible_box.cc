@@ -245,15 +245,9 @@ void LayoutDeprecatedFlexibleBox::UpdateBlockLayout(bool relayout_children) {
 
   UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxLayout);
 
-  if (StyleRef().BoxAlign() != ComputedStyleInitialValues::InitialBoxAlign())
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxAlignNotInitial);
-
   if (StyleRef().BoxDirection() !=
       ComputedStyleInitialValues::InitialBoxDirection())
     UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxDirectionNotInitial);
-
-  if (StyleRef().BoxPack() != ComputedStyleInitialValues::InitialBoxPack())
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxPackNotInitial);
 
   if (!FirstChildBox()) {
     UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxNoChildren);
@@ -396,37 +390,14 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
       // Now do a layout.
       child->LayoutIfNeeded();
 
-      // We can place the child now, using our value of box-align.
-      LayoutUnit child_x = BorderLeft() + PaddingLeft();
-      switch (StyleRef().BoxAlign()) {
-        case EBoxAlignment::kCenter:
-        case EBoxAlignment::kBaseline:  // Baseline just maps to center for
-                                        // vertical boxes
-          child_x += child->MarginLeft() +
-                     ((ContentWidth() -
-                       (child->Size().Width() + child->MarginWidth())) /
-                      2)
-                         .ClampNegativeToZero();
-          break;
-        case EBoxAlignment::kEnd:
-          if (!StyleRef().IsLeftToRightDirection()) {
-            child_x += child->MarginLeft();
-          } else {
-            child_x +=
-                ContentWidth() - child->MarginRight() - child->Size().Width();
-          }
-          break;
-        default:  // BSTART/BSTRETCH
-          if (StyleRef().IsLeftToRightDirection()) {
-            child_x += child->MarginLeft();
-          } else {
-            child_x +=
-                ContentWidth() - child->MarginRight() - child->Size().Width();
-          }
-          break;
-      }
-
       // Place the child.
+      LayoutUnit child_x = BorderLeft() + PaddingLeft();
+      if (StyleRef().IsLeftToRightDirection()) {
+        child_x += child->MarginLeft();
+      } else {
+        child_x +=
+            ContentWidth() - child->MarginRight() - child->Size().Width();
+      }
       PlaceChild(child, LayoutPoint(child_x, Size().Height()));
       SetHeight(Size().Height() + child->Size().Height() +
                 child->MarginBottom());
@@ -552,63 +523,6 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
         have_flex = false;
     }
   } while (have_flex);
-
-  if (StyleRef().BoxPack() != EBoxPack::kStart && remaining_space > 0) {
-    // Children must be repositioned.
-    LayoutUnit offset;
-    if (StyleRef().BoxPack() == EBoxPack::kJustify) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kWebkitBoxPackJustifyDoesSomething);
-      // Determine the total number of children.
-      int total_children = 0;
-      for (LayoutBox* child = FirstChildBox(); child;
-           child = child->NextSiblingBox()) {
-        if (child->IsOutOfFlowPositioned())
-          continue;
-
-        ++total_children;
-      }
-
-      // Iterate over the children and space them out according to the
-      // justification level.
-      if (total_children > 1) {
-        --total_children;
-        bool first_child = true;
-        for (LayoutBox* child = FirstChildBox(); child;
-             child = child->NextSiblingBox()) {
-          if (child->IsOutOfFlowPositioned())
-            continue;
-
-          if (first_child) {
-            first_child = false;
-            continue;
-          }
-
-          offset += remaining_space / total_children;
-          remaining_space -= (remaining_space / total_children);
-          --total_children;
-          PlaceChild(child,
-                     child->Location() + LayoutSize(LayoutUnit(), offset));
-        }
-      }
-    } else {
-      if (StyleRef().BoxPack() == EBoxPack::kCenter) {
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kWebkitBoxPackCenterDoesSomething);
-        offset += remaining_space / 2;
-      } else {  // END
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kWebkitBoxPackEndDoesSomething);
-        offset += remaining_space;
-      }
-      for (LayoutBox* child = FirstChildBox(); child;
-           child = child->NextSiblingBox()) {
-        if (child->IsOutOfFlowPositioned())
-          continue;
-        PlaceChild(child, child->Location() + LayoutSize(LayoutUnit(), offset));
-      }
-    }
-  }
 
   // So that the computeLogicalHeight in layoutBlock() knows to relayout
   // positioned objects because of a height change, we revert our height back
