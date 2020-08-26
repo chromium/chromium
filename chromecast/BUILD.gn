@@ -13,6 +13,10 @@ import("//tools/grit/repack.gni")
 import("//ui/ozone/ozone.gni")
 import("//v8/gni/v8.gni")
 
+if (chromecast_branding != "public") {
+  import("//chromecast/internal/chromecast_internal.gni")
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -411,10 +415,7 @@ cast_test_group_list("cast_test_lists") {
   test_groups = [ ":cast_tests" ]
 
   if (chromecast_branding != "public") {
-    test_groups += [
-      "//chromecast/internal:internal_cast_tests",
-      "//chromecast/internal/iot_services:iot_tests",
-    ]
+    test_groups += internal_cast_test_groups
   }
 }
 
