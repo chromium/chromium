@@ -160,8 +160,12 @@
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/subflow_behavior.m.js"
            use_base_dir="false"
            type="BINDATA" />
-     <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_PSIM_FLOW_UI_M_JS"
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_PSIM_FLOW_UI_M_JS"
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js"
+           use_base_dir="false"
+           type="BINDATA" />
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_ESIM_FLOW_UI_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js"
            use_base_dir="false"
            type="BINDATA" />
   </if>

@@ -130,7 +130,7 @@ js_type_check("closure_compile_module") {
     ":cellular_types.m",
 
     # ":cellular_setup.m",
-    # ":esim_flow_ui.m",
+    ":esim_flow_ui.m",
     ":final_page.m",
     ":mojo_interface_provider.m",
     ":provisioning_page.m",
@@ -241,10 +241,21 @@ js_library("psim_flow_ui.m") {
   extra_deps = [ ":psim_flow_ui_module" ]
 }
 
+js_library("esim_flow_ui.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js" ]
+  deps = [
+    ":cellular_types.m",
+    ":subflow_behavior.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":esim_flow_ui_module" ]
+}
+
 group("polymer3_elements") {
   public_deps = [
     ":base_page_module",
     ":button_bar_module",
+    ":esim_flow_ui_module",
     ":final_page_module",
     ":modulize",
     ":provisioning_page_module",
@@ -296,6 +307,14 @@ polymer_modulizer("provisioning_page") {
 polymer_modulizer("psim_flow_ui") {
   js_file = "psim_flow_ui.js"
   html_file = "psim_flow_ui.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("esim_flow_ui") {
+  js_file = "esim_flow_ui.js"
+  html_file = "esim_flow_ui.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports

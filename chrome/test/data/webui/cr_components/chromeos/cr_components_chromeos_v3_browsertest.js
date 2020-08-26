@@ -24,6 +24,7 @@ GEN('#include "chromeos/constants/chromeos_features.h"');
 
 [['BasePage', 'cellular_setup/base_page_test.m.js'],
  ['ButtonBar', 'cellular_setup/button_bar_test.m.js'],
+ ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.m.js'],
  ['FinalPage', 'cellular_setup/final_page_test.m.js'],
  ['ProvisioningPage', 'cellular_setup/provisioning_page_test.m.js'],
  ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.m.js'],
