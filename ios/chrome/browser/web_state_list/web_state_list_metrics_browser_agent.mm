@@ -7,8 +7,19 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/navigation_metrics/navigation_metrics.h"
+#include "components/profile_metrics/browser_profile_type.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/web/public/browser_state.h"
+#include "ios/web/public/navigation/navigation_context.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -94,6 +105,84 @@ void WebStateListMetricsBrowserAgent::ResetSessionMetrics() {
   detached_web_state_counter_ = 0;
   activated_web_state_counter_ = 0;
   metric_collection_paused_ = false;
+}
+
+// web::WebStateObserver
+void WebStateListMetricsBrowserAgent::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  // In order to avoid false positive in the crash loop detection, disable the
+  // counter as soon as an URL is loaded. This requires an user action and is a
+  // significant source of crashes. Ignore NTP as it is loaded by default after
+  // a crash.
+  if (navigation_context->GetUrl().host_piece() != kChromeUINewTabHost) {
+    static dispatch_once_t dispatch_once_token;
+    dispatch_once(&dispatch_once_token, ^{
+      crash_util::ResetFailedStartupAttemptCount();
+    });
+  }
+
+  DCHECK(web_state->GetNavigationManager());
+  web::NavigationItem* navigation_item =
+      web_state->GetNavigationManager()->GetPendingItem();
+
+  // TODO(crbug.com/676129): the pending item is not correctly set when the
+  // page is reloading, use the last committed item if pending item is null.
+  // Remove this once tracking bug is fixed.
+  if (!navigation_item) {
+    navigation_item = web_state->GetNavigationManager()->GetLastCommittedItem();
+  }
+
+  if (!navigation_item) {
+    // Pending item may not exist due to the bug in //ios/web layer.
+    // TODO(crbug.com/899827): remove this early return once GetPendingItem()
+    // always return valid object inside WebStateObserver::DidStartNavigation()
+    // callback.
+    //
+    // Note that GetLastCommittedItem() returns null if navigation manager does
+    // not have committed items (which is normal situation).
+    return;
+  }
+}
+
+void WebStateListMetricsBrowserAgent::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (!navigation_context->HasCommitted())
+    return;
+
+  if (!navigation_context->IsSameDocument() &&
+      !web_state->GetBrowserState()->IsOffTheRecord()) {
+    int tab_count = static_cast<int>(web_state_list_->count());
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerLoad", tab_count, 1, 200, 50);
+  }
+
+  web::NavigationItem* item =
+      web_state->GetNavigationManager()->GetLastCommittedItem();
+  navigation_metrics::RecordMainFrameNavigation(
+      item ? item->GetVirtualURL() : GURL::EmptyGURL(),
+      navigation_context->IsSameDocument(),
+      web_state->GetBrowserState()->IsOffTheRecord(),
+      GetBrowserStateType(web_state->GetBrowserState()));
+}
+
+void WebStateListMetricsBrowserAgent::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  switch ([[UIApplication sharedApplication] statusBarOrientation]) {
+    case UIInterfaceOrientationPortrait:
+    case UIInterfaceOrientationPortraitUpsideDown:
+      UMA_HISTOGRAM_BOOLEAN("Tab.PageLoadInPortrait", YES);
+      break;
+    case UIInterfaceOrientationLandscapeLeft:
+    case UIInterfaceOrientationLandscapeRight:
+      UMA_HISTOGRAM_BOOLEAN("Tab.PageLoadInPortrait", NO);
+      break;
+    case UIInterfaceOrientationUnknown:
+      // TODO(crbug.com/228832): Convert from a boolean histogram to an
+      // enumerated histogram and log this case as well.
+      break;
+  }
 }
 
 void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {

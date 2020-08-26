@@ -97,27 +97,9 @@ void CleanCertificatePolicyCache(
                  base::Unretained(web_state_list)));
 }
 
-// Records metrics for the interface's orientation.
-void RecordInterfaceOrientationMetric() {
-  switch ([[UIApplication sharedApplication] statusBarOrientation]) {
-    case UIInterfaceOrientationPortrait:
-    case UIInterfaceOrientationPortraitUpsideDown:
-      UMA_HISTOGRAM_BOOLEAN("Tab.PageLoadInPortrait", YES);
-      break;
-    case UIInterfaceOrientationLandscapeLeft:
-    case UIInterfaceOrientationLandscapeRight:
-      UMA_HISTOGRAM_BOOLEAN("Tab.PageLoadInPortrait", NO);
-      break;
-    case UIInterfaceOrientationUnknown:
-      // TODO(crbug.com/228832): Convert from a boolean histogram to an
-      // enumerated histogram and log this case as well.
-      break;
-  }
-}
-
 }  // anonymous namespace
 
-@interface TabModel () <CRWWebStateObserver> {
+@interface TabModel () {
   // Weak reference to the underlying shared model implementation.
   WebStateList* _webStateList;
 
@@ -260,83 +242,6 @@ void RecordInterfaceOrientationMetric() {
     SnapshotTabHelper::FromWebState(_webStateList->GetActiveWebState())
         ->SaveGreyInBackground();
   }
-}
-
-#pragma mark - CRWWebStateObserver
-
-- (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigation {
-  if (!navigation->HasCommitted())
-    return;
-
-  if (!navigation->IsSameDocument() && !self.browserState->IsOffTheRecord()) {
-    int tabCount = static_cast<int>(self.count);
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerLoad", tabCount, 1, 200, 50);
-  }
-
-  web::NavigationItem* item =
-      webState->GetNavigationManager()->GetLastCommittedItem();
-  navigation_metrics::RecordMainFrameNavigation(
-      item ? item->GetVirtualURL() : GURL::EmptyGURL(),
-      navigation->IsSameDocument(), self.browserState->IsOffTheRecord(),
-      GetBrowserStateType(webState->GetBrowserState()));
-}
-
-- (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigation {
-
-  // In order to avoid false positive in the crash loop detection, disable the
-  // counter as soon as an URL is loaded. This requires an user action and is a
-  // significant source of crashes. Ignore NTP as it is loaded by default after
-  // a crash.
-  if (navigation->GetUrl().host_piece() != kChromeUINewTabHost) {
-    static dispatch_once_t dispatch_once_token;
-    dispatch_once(&dispatch_once_token, ^{
-      crash_util::ResetFailedStartupAttemptCount();
-    });
-  }
-
-  DCHECK(webState->GetNavigationManager());
-  web::NavigationItem* navigationItem =
-      webState->GetNavigationManager()->GetPendingItem();
-
-  // TODO(crbug.com/676129): the pending item is not correctly set when the
-  // page is reloading, use the last committed item if pending item is null.
-  // Remove this once tracking bug is fixed.
-  if (!navigationItem) {
-    navigationItem = webState->GetNavigationManager()->GetLastCommittedItem();
-  }
-
-  if (!navigationItem) {
-    // Pending item may not exist due to the bug in //ios/web layer.
-    // TODO(crbug.com/899827): remove this early return once GetPendingItem()
-    // always return valid object inside WebStateObserver::DidStartNavigation()
-    // callback.
-    //
-    // Note that GetLastCommittedItem() returns null if navigation manager does
-    // not have committed items (which is normal situation).
-    return;
-  }
-
-  [[OmniboxGeolocationController sharedInstance]
-      addLocationToNavigationItem:navigationItem
-                     browserState:ChromeBrowserState::FromBrowserState(
-                                      webState->GetBrowserState())];
-}
-
-- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
-  RecordInterfaceOrientationMetric();
-
-  [[OmniboxGeolocationController sharedInstance]
-      finishPageLoadForWebState:webState
-                    loadSuccess:success];
-}
-
-- (void)webStateDestroyed:(web::WebState*)webState {
-  // The TabModel is removed from WebState's observer when the WebState is
-  // detached from WebStateList which happens before WebState destructor,
-  // so this method should never be called.
-  NOTREACHED();
 }
 
 @end

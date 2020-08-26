@@ -18,6 +18,7 @@ source_set("geolocation") {
     "omnibox_geolocation_config.mm",
     "omnibox_geolocation_local_state.h",
     "omnibox_geolocation_local_state.mm",
+    "omnibox_geolocation_tab_helper.h",
   ]
   deps = [
     "//base",
@@ -28,6 +29,7 @@ source_set("geolocation") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/util",
     "//ios/public/provider/chrome/browser",
+    "//ios/web/public",
     "//ui/base",
     "//url",
   ]
@@ -72,6 +74,7 @@ source_set("geolocation_internal") {
     "omnibox_geolocation_controller+Testing.h",
     "omnibox_geolocation_controller.h",
     "omnibox_geolocation_controller.mm",
+    "omnibox_geolocation_tab_helper.mm",
   ]
   deps = [
     ":geolocation",
@@ -79,8 +82,10 @@ source_set("geolocation_internal") {
     "//components/google/core/common",
     "//components/version_info",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/tabs",
     "//ios/web",
+    "//ios/web/public/navigation",
     "//ui/base",
     "//url",
   ]
