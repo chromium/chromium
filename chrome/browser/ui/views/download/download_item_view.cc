@@ -323,18 +323,19 @@ void DownloadItemView::Layout() {
     const int text_x =
         kStartPadding + kProgressIndicatorSize + kProgressTextPadding;
     const int text_end = dropdown_button_->GetVisible()
-                             ? dropdown_button_->bounds().right()
-                             : (dropdown_button_->x() - kEndPadding);
+                             ? (dropdown_button_->x() - kEndPadding)
+                             : dropdown_button_->bounds().right();
     const int text_width = text_end - text_x;
-    int text_height = file_name_label_->GetLineHeight();
+    const int file_name_height = file_name_label_->GetLineHeight();
+    int text_height = file_name_height;
     if (!status_label_->GetText().empty())
       text_height += status_label_->GetLineHeight();
 
     file_name_label_->SetBounds(text_x, CenterY(text_height), text_width,
-                                file_name_label_->GetPreferredSize().height());
-    status_label_->SetBounds(
-        text_x, file_name_label_->y() + file_name_label_->GetLineHeight(),
-        text_width, status_label_->GetPreferredSize().height());
+                                file_name_height);
+    status_label_->SetBounds(text_x, file_name_label_->bounds().bottom(),
+                             text_width,
+                             status_label_->GetPreferredSize().height());
   } else {
     auto* const label =
         (mode_ == Mode::kDeepScanning) ? deep_scanning_label_ : warning_label_;
@@ -514,10 +515,9 @@ void DownloadItemView::MaybeSubmitDownloadToFeedbackService(
 }
 
 gfx::Size DownloadItemView::CalculatePreferredSize() const {
-  int height,
-      width = dropdown_button_->GetVisible()
-                  ? (dropdown_button_->GetPreferredSize().width() + kEndPadding)
-                  : 0;
+  int height, width = dropdown_button_->GetVisible()
+                          ? (dropdown_button_->width() + kEndPadding)
+                          : 0;
 
   if (mode_ == Mode::kNormal) {
     int label_width =
