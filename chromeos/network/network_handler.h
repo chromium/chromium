@@ -64,6 +64,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // Must be called before pref services are shut down.
   void ShutdownPrefServices();
 
+  // Global network configuration services.
+  static bool HasUiProxyConfigService();
+  static UIProxyConfigService* GetUiProxyConfigService();
+
   // Returns the task runner for posting NetworkHandler calls from other
   // threads.
   base::SingleThreadTaskRunner* task_runner() { return task_runner_.get(); }
@@ -84,10 +88,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   NetworkSmsHandler* network_sms_handler();
   GeolocationHandler* geolocation_handler();
   ProhibitedTechnologiesHandler* prohibited_technologies_handler();
-
-  // Global network configuration services.
-  UIProxyConfigService* ui_proxy_config_service();
-  bool has_ui_proxy_config_service() { return ui_proxy_config_service_.get(); }
 
   void set_is_enterprise_managed(bool is_enterprise_managed) {
     is_enterprise_managed_ = is_enterprise_managed;

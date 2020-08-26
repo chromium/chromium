@@ -640,13 +640,14 @@ void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
   base::Value proxy_settings(base::Value::Type::DICTIONARY);
   // |ui_proxy_config_service| may be missing in tests. If the device is offline
   // (no network connected) the |DefaultNetwork| is null.
-  if (network_handler->has_ui_proxy_config_service() &&
+  if (chromeos::NetworkHandler::HasUiProxyConfigService() &&
       network_handler->network_state_handler()->DefaultNetwork()) {
     // Check if proxy is enforced by user policy, a forced install extension or
     // ONC policies. This will only read managed settings.
-    network_handler->ui_proxy_config_service()->MergeEnforcedProxyConfig(
-        network_handler->network_state_handler()->DefaultNetwork()->guid(),
-        &proxy_settings);
+    chromeos::NetworkHandler::GetUiProxyConfigService()
+        ->MergeEnforcedProxyConfig(
+            network_handler->network_state_handler()->DefaultNetwork()->guid(),
+            &proxy_settings);
   }
   if (!proxy_settings.DictEmpty()) {
     // Proxies can be specified by web server url, via a PAC script or via the

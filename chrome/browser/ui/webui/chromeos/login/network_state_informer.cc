@@ -48,16 +48,14 @@ NetworkStateInformer::State GetStateForDefaultNetwork() {
     // NetworkPortalDetector's state of current network is unknown.
     if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE ||
         (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN &&
-         !NetworkHandler::Get()
-              ->ui_proxy_config_service()
+         !NetworkHandler::GetUiProxyConfigService()
               ->HasDefaultNetworkProxyConfigured() &&
          network->connection_state() == shill::kStateOnline)) {
       return NetworkStateInformer::ONLINE;
     }
     if (status ==
             NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED &&
-        NetworkHandler::Get()
-            ->ui_proxy_config_service()
+        NetworkHandler::GetUiProxyConfigService()
             ->HasDefaultNetworkProxyConfigured()) {
       return NetworkStateInformer::PROXY_AUTH_REQUIRED;
     }

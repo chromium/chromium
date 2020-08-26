@@ -258,8 +258,8 @@ NetworkListView::UpdateNetworkListEntries() {
   int index = 0;
 
   const NetworkStateProperties* default_network = model()->default_network();
-  bool using_proxy = default_network &&
-                     default_network->proxy_mode == ProxyMode::kFixedServers;
+  bool using_proxy =
+      default_network && default_network->proxy_mode != ProxyMode::kDirect;
   // Show a warning that the connection might be monitored if connected to a VPN
   // or if the default network has a proxy installed.
   if (vpn_connected_ || using_proxy) {

@@ -312,17 +312,11 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
   result->priority = network->priority();
   result->prohibited_by_policy = network->blocked_by_policy();
   result->source = GetMojoOncSource(network);
-
-  // NetworkHandler and UIProxyConfigService may not exist in tests.
-  UIProxyConfigService* ui_proxy_config_service =
-      NetworkHandler::IsInitialized() &&
-              NetworkHandler::Get()->has_ui_proxy_config_service()
-          ? NetworkHandler::Get()->ui_proxy_config_service()
-          : nullptr;
   result->proxy_mode =
-      ui_proxy_config_service
+      NetworkHandler::HasUiProxyConfigService()
           ? mojom::ProxyMode(
-                ui_proxy_config_service->ProxyModeForNetwork(network))
+                NetworkHandler::GetUiProxyConfigService()->ProxyModeForNetwork(
+                    network))
           : mojom::ProxyMode::kDirect;
 
   const NetworkState::CaptivePortalProviderInfo* captive_portal_provider =

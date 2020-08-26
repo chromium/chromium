@@ -457,6 +457,9 @@ class CrosNetworkConfigTest : public testing::Test {
   }
   std::string wifi1_path() { return wifi1_path_; }
 
+ protected:
+  sync_preferences::TestingPrefServiceSyncable user_prefs_;
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
@@ -468,7 +471,6 @@ class CrosNetworkConfigTest : public testing::Test {
       managed_network_configuration_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<chromeos::UIProxyConfigService> ui_proxy_config_service_;
-  sync_preferences::TestingPrefServiceSyncable user_prefs_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<CrosNetworkConfigTestObserver> observer_;
@@ -1247,6 +1249,19 @@ TEST_F(CrosNetworkConfigTest, NetworkStateChanged) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, observer()->GetNetworkChangedCount("wifi1_guid"));
   EXPECT_EQ(0, observer()->GetNetworkChangedCount("wifi2_guid"));
+}
+
+TEST_F(CrosNetworkConfigTest, PolicyEnforcedProxyMode) {
+  // Proxies enforced by policy and/or extension are set in the kProxy
+  // preference.
+  base::Value policy_prefs_config = ProxyConfigDictionary::CreateAutoDetect();
+  user_prefs_.SetUserPref(
+      proxy_config::prefs::kProxy,
+      base::Value::ToUniquePtrValue(std::move(policy_prefs_config)));
+
+  mojom::NetworkStatePropertiesPtr network = GetNetworkState("wifi2_guid");
+  ASSERT_TRUE(network);
+  EXPECT_EQ(network->proxy_mode, mojom::ProxyMode::kAutoDetect);
 }
 
 }  // namespace network_config

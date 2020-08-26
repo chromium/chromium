@@ -86,7 +86,7 @@ class NetworkPrefStateObserverTest : public testing::Test {
 TEST_F(NetworkPrefStateObserverTest, LoginUser) {
   // UIProxyConfigService should exist with device PrefService.
   UIProxyConfigService* device_ui_proxy_config_service =
-      NetworkHandler::Get()->ui_proxy_config_service();
+      NetworkHandler::GetUiProxyConfigService();
   ASSERT_TRUE(device_ui_proxy_config_service);
   // There should be no proxy config available.
   base::Value ui_proxy_config(base::Value::Type::DICTIONARY);
@@ -97,7 +97,7 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
 
   // New UIProxyConfigService should be created with a profile PrefService.
   UIProxyConfigService* profile_ui_proxy_config_service =
-      NetworkHandler::Get()->ui_proxy_config_service();
+      NetworkHandler::GetUiProxyConfigService();
   ASSERT_TRUE(profile_ui_proxy_config_service);
   ASSERT_NE(device_ui_proxy_config_service, profile_ui_proxy_config_service);
   ui_proxy_config = base::Value(base::Value::Type::DICTIONARY);
@@ -114,9 +114,9 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
 
   // Mode should now be MODE_PAC_SCRIPT.
   ui_proxy_config = base::Value(base::Value::Type::DICTIONARY);
-  EXPECT_TRUE(NetworkHandler::Get()
-                  ->ui_proxy_config_service()
-                  ->MergeEnforcedProxyConfig(kNetworkId, &ui_proxy_config));
+  EXPECT_TRUE(
+      NetworkHandler::GetUiProxyConfigService()->MergeEnforcedProxyConfig(
+          kNetworkId, &ui_proxy_config));
   base::Value* mode = ui_proxy_config.FindPath(
       {::onc::network_config::kType, ::onc::kAugmentationActiveSetting});
   ASSERT_TRUE(mode);

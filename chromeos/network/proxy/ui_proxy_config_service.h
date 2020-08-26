@@ -64,7 +64,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) UIProxyConfigService {
   // with mode == MODE_FIXED_SERVERS.
   bool HasDefaultNetworkProxyConfigured();
 
-  // Returns the ProxyMode for |network| using |local_state_prefs_|
+  // Returns the ProxyMode for |network| by merging proxy configurations from
+  // different sources, including user set, policy and extensions. See
+  // |MergeEnforcedProxyConfig| for order of preference.
   ProxyPrefs::ProxyMode ProxyModeForNetwork(const NetworkState* network);
 
  private:
