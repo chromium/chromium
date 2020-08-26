@@ -1,0 +1,42 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+js_library("module_descriptor") {
+}
+
+js_library("modules") {
+  deps = [
+    ":module_registry",
+    "dummy:module",
+    "kaleidoscope:module",
+  ]
+}
+
+js_library("module_wrapper") {
+  deps = [
+    ":module_descriptor",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("module_registry") {
+  deps = [
+    ":module_descriptor",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+html_to_js("web_components_local") {
+  js_files = [ "module_wrapper.js" ]
+}
+
+group("web_components") {
+  public_deps = [
+    ":web_components_local",
+    "dummy:web_components",
+  ]
+}

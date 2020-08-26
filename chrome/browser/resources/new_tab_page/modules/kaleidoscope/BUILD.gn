@@ -1,5 +1,9 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("module") {
-  deps = [ "//chrome/browser/resources/new_tab_page:module_descriptor" ]
+  deps = [ "..:module_descriptor" ]
 }
