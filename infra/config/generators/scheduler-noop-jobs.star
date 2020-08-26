@@ -25,7 +25,7 @@ load("//project.star", "settings")
 # milestone project will use the same bucket names, so we create a no-op job for
 # the 'ci' bucket.
 _BRANCH_NOOP_CONFIG = struct(
-    buckets = ["ci-m84", "ci-m85"],
+    buckets = ["ci-m85"],
     fmt = "{bucket}-{builder}",
 ) if settings.is_master else struct(
     buckets = ["ci"],

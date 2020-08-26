@@ -49,8 +49,6 @@ def master_only_exec(f):
 # https://chromiumdash.appspot.com/branches
 # The 2 highest milestones will be the ones with active branches
 ACTIVE_BRANCH_NUMBERS = [
-    4103,
-    4147,
     4183,
     4240,
 ]
