@@ -600,8 +600,12 @@ void RenderWidgetHostViewAndroid::
 
 void RenderWidgetHostViewAndroid::OnRootScrollOffsetChanged(
     const gfx::Vector2dF& root_scroll_offset) {
-  if (gesture_listener_manager_)
-    gesture_listener_manager_->OnRootScrollOffsetChanged(root_scroll_offset);
+  if (!gesture_listener_manager_)
+    return;
+  gfx::Vector2dF root_scroll_offset_dip = root_scroll_offset;
+  if (IsUseZoomForDSFEnabled())
+    root_scroll_offset_dip.Scale(1 / view_.GetDipScale());
+  gesture_listener_manager_->OnRootScrollOffsetChanged(root_scroll_offset_dip);
 }
 
 void RenderWidgetHostViewAndroid::Focus() {
