@@ -120,7 +120,7 @@
         Your administrator doesn’t allow you to sign in with this account. Try a different account.
       </message>
       <message name="IDS_INVALID_EMAIL_DOMAIN" desc="">
-        You can sign in only with an email address that ends with the following: <ph name="EMAIL_DOMAINS">$1<ex>acme.com, acme2.com, acme3.com</ex></ph>. Try again using a work account.
+        This email isn't allowed to sign in. Try again with the account you use for work or school. If you still can't sign in, contact your administrator.
       </message>
       <message name="IDS_DISALLOWED_CONSUMER_EMAIL" desc="">
         Signing in with a personal account on this device is not allowed. Please login with a work account.
