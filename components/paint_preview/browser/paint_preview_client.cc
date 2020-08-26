@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "components/paint_preview/common/capture_result.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
+#include "components/paint_preview/common/version.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -283,8 +284,9 @@ void PaintPreviewClient::CapturePaintPreview(
   document_data.should_clean_up_files = true;
   document_data.persistence = params.persistence;
   document_data.root_dir = params.root_dir;
-  document_data.proto.mutable_metadata()->set_url(
-      render_frame_host->GetLastCommittedURL().spec());
+  auto* metadata = document_data.proto.mutable_metadata();
+  metadata->set_url(render_frame_host->GetLastCommittedURL().spec());
+  metadata->set_version(kPaintPreviewVersion);
   document_data.callback = std::move(callback);
   document_data.source_id =
       ukm::GetSourceIdForWebContentsDocument(web_contents());

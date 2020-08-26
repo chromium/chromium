@@ -18,6 +18,7 @@
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/test_utils.h"
+#include "components/paint_preview/common/version.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -161,7 +162,9 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   response->scroll_offsets = gfx::Size(5, 10);
 
   PaintPreviewProto expected_proto;
-  expected_proto.mutable_metadata()->set_url(expected_url.spec());
+  auto* metadata = expected_proto.mutable_metadata();
+  metadata->set_url(expected_url.spec());
+  metadata->set_version(kPaintPreviewVersion);
   PaintPreviewFrameProto* main_frame = expected_proto.mutable_root_frame();
   main_frame->set_is_main_frame(true);
   main_frame->set_scroll_offset_x(5);

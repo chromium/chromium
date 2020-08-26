@@ -69358,6 +69358,8 @@ would be helpful to identify which type is being sent.
   <int value="5" label="Compositor Deserialization Error"/>
   <int value="6" label="Invalid Root Frame SKP"/>
   <int value="7" label="Invalid Request"/>
+  <int value="8" label="Old Version"/>
+  <int value="9" label="Unexpected Version"/>
 </enum>
 
 <enum name="TabbedPaintPreviewExitCause">

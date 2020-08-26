@@ -61,6 +61,8 @@ class PlayerCompositorDelegate {
 
  protected:
   base::OnceCallback<void(int)> compositor_error_;
+  PaintPreviewBaseService* paint_preview_service_;
+  DirectoryKey key_;
 
  private:
   void OnCompositorReadyStatusAdapter(
@@ -78,8 +80,6 @@ class PlayerCompositorDelegate {
   void SendCompositeRequest(
       mojom::PaintPreviewBeginCompositeRequestPtr begin_composite_request);
 
-  PaintPreviewBaseService* paint_preview_service_;
-  DirectoryKey key_;
   bool compress_on_close_;
   std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
       paint_preview_compositor_service_;

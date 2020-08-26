@@ -18,6 +18,7 @@
 #include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/file_utils.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "components/paint_preview/common/version.h"
 #include "components/paint_preview/player/android/javatests_jni_headers/PaintPreviewTestService_jni.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -237,6 +238,7 @@ jboolean PaintPreviewTestService::SerializeFrames(
   PaintPreviewProto paint_preview;
   auto* metadata = paint_preview.mutable_metadata();
   metadata->set_url(base::android::ConvertJavaStringToUTF8(env, j_url));
+  metadata->set_version(kPaintPreviewVersion);
 
   auto skp_path =
       path.AppendASCII(base::StrCat({root_it->second.guid.ToString(), ".skp"}));

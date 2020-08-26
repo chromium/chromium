@@ -7,6 +7,9 @@
 
 namespace paint_preview {
 
+// IMPORTANT: if CompositorStatus is updated, please update the corresponding
+// entry for TabbedPaintPreviewCompositorFailureReason in enums.xml.
+
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.components.paintpreview.player)
 enum class CompositorStatus : int {
@@ -18,6 +21,8 @@ enum class CompositorStatus : int {
   COMPOSITOR_DESERIALIZATION_ERROR,
   INVALID_ROOT_FRAME_SKP,
   INVALID_REQUEST,
+  OLD_VERSION,
+  UNEXPECTED_VERSION,
   COUNT,
 };
 

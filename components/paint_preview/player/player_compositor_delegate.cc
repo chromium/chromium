@@ -26,6 +26,7 @@
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/recording_map.h"
 #include "components/paint_preview/common/serialized_recording.h"
+#include "components/paint_preview/common/version.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
@@ -189,6 +190,23 @@ void PlayerCompositorDelegate::OnProtoAvailable(
     // TODO(crbug.com/1021590): Handle initialization errors.
     OnCompositorReady(CompositorStatus::PROTOBUF_DESERIALIZATION_ERROR,
                       nullptr);
+    return;
+  }
+
+  const uint32_t version = proto->metadata().version();
+  if (version < kPaintPreviewVersion) {
+    // If the version is old there was a breaking change to either;
+    // - The SkPicture encoding format
+    // - The storage structure
+    // In either case, the new code is likely unable to deserialize the result
+    // so we should early abort.
+    OnCompositorReady(CompositorStatus::OLD_VERSION, nullptr);
+    return;
+  } else if (version > kPaintPreviewVersion) {
+    // This shouldn't happen hence NOTREACHED(). However, in release we should
+    // treat this as a new failure type to catch any possible regressions.
+    OnCompositorReady(CompositorStatus::UNEXPECTED_VERSION, nullptr);
+    NOTREACHED();
     return;
   }
 

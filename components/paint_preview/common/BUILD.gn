@@ -25,6 +25,8 @@ if (!is_ios) {
       "serialized_recording.h",
       "subset_font.cc",
       "subset_font.h",
+      "version.cc",
+      "version.h",
     ]
 
     deps = [

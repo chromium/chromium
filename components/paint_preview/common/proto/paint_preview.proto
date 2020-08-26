@@ -60,10 +60,15 @@ message PaintPreviewFrameProto {
 }
 
 // Metadata for the capture.
-// NEXT_TAG = 2
+// NEXT_TAG = 3
 message MetadataProto {
   // URL of the root frame.
   required string url = 1;
+
+  // Records the version number of the recording. Should be incremented if there
+  // is a breaking change to the custorm SkPicture deserialization or storage
+  // system.
+  optional uint64 version = 2;
 }
 
 // A paint preview of the entire page.

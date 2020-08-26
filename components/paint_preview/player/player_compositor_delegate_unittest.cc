@@ -18,6 +18,7 @@
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "components/paint_preview/common/version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -35,7 +36,9 @@ TEST(PlayerCompositorDelegate, OnClick) {
 
   GURL url("www.example.com");
   PaintPreviewProto proto;
-  proto.mutable_metadata()->set_url(url.spec());
+  auto* metadata = proto.mutable_metadata();
+  metadata->set_url(url.spec());
+  metadata->set_version(kPaintPreviewVersion);
 
   GURL root_frame_link("www.chromium.org");
   auto root_frame_id = base::UnguessableToken::Create();
