@@ -43,6 +43,7 @@ source_set("unit_tests") {
     ":chinese_script_classifier",
     ":language_detection",
     "//base",
+    "//base/test:test_support",
     "//components/translate/core/common",
     "//testing/gtest",
     "//third_party/icu",
