@@ -1549,8 +1549,11 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(StyleResolverState& state,
       return StyleColor::CurrentColor();
     if (StyleColor::IsSystemColor(value_id)) {
       CountSystemColorComputeToSelfUsage(state);
-      if (RuntimeEnabledFeatures::CSSSystemColorComputeToSelfEnabled())
-        return StyleColor(value_id);
+      return StyleColor(
+          state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
+              value, Color(), state.Style()->UsedColorScheme(),
+              for_visited_link),
+          value_id);
     }
   }
   return StyleColor(state.GetDocument().GetTextLinkColors().ColorFromCSSValue(
