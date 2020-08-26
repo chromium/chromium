@@ -9034,7 +9034,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.NativeBridge" enum="ArcNativeBridgeType"
-    expires_after="2020-09-06">
+    expires_after="2021-09-06">
   <owner>elijahtaylor@google.com</owner>
   <owner>levarum@google.com</owner>
   <summary>
