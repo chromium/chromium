@@ -9,7 +9,11 @@
 Polymer({
   is: 'settings-personalization-page',
 
-  behaviors: [I18nBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    I18nBehavior,
+    settings.RouteObserverBehavior,
+  ],
 
   properties: {
     /**
@@ -46,6 +50,15 @@ Polymer({
         return map;
       }
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([chromeos.settings.mojom.Setting.kOpenWallpaper]),
+    },
   },
 
   /** @private {?settings.WallpaperBrowserProxy} */
@@ -66,6 +79,19 @@ Polymer({
         isPolicyControlled => {
           this.isWallpaperPolicyControlled_ = isPolicyControlled;
         });
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.PERSONALIZATION) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**

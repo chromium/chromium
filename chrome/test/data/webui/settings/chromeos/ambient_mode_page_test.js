@@ -5,10 +5,12 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {AmbientModeTopicSource, AmbientModeTemperatureUnit, AmbientModeBrowserProxyImpl, CrSettingsPrefs, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {AmbientModeTopicSource, AmbientModeTemperatureUnit, AmbientModeBrowserProxyImpl, CrSettingsPrefs, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 /**
@@ -92,6 +94,7 @@ suite('AmbientModeHandler', function() {
   teardown(function() {
     ambientModePage.remove();
     ambientModePhotosPage.remove();
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   test('toggleAmbientMode', function() {
@@ -154,6 +157,23 @@ suite('AmbientModeHandler', function() {
     const ironList = topicSourceListElement.$$('iron-list');
     const topicSourceItems = ironList.querySelectorAll('topic-source-item');
     assertEquals(2, topicSourceItems.length);
+  });
+
+  test('Deep link to topic sources', async () => {
+    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+    const params = new URLSearchParams;
+    params.append('settingId', '502');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.AMBIENT_MODE, params);
+
+    const deepLinkElement =
+        ambientModePage.$$('topic-source-list').$$('topic-source-item');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Topic sources row should be focused for settingId=502.');
   });
 
   test('hasAlbums', function() {

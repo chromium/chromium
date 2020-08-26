@@ -32,6 +32,7 @@ js_library("ambient_mode_page") {
   deps = [
     ":ambient_mode_browser_proxy",
     ":constants",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "../../prefs:prefs_behavior",
@@ -119,6 +120,7 @@ js_library("ambient_mode_page.m") {
   deps = [
     ":ambient_mode_browser_proxy.m",
     ":constants.m",
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
     "../../prefs:prefs_behavior.m",
