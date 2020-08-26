@@ -190,6 +190,7 @@ jinja_template("trichrome_webview_manifest") {
   variables = trichrome_jinja_variables + _webview_jinja_variables
   if (android_64bit_target_cpu) {
     variables += [
+      "use32bitAbi=",
       "library=libmonochrome_64.so",
       "trichrome_version=$trichrome_64_32_version_code",
     ]
