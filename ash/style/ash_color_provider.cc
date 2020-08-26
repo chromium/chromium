@@ -6,11 +6,9 @@
 
 #include <math.h>
 
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/chromeos/colors/cros_colors.h"
@@ -57,34 +55,11 @@ constexpr SkColor kBackgroundColorDefaultDark = gfx::kGoogleGrey900;
 // The spacing between a pill button's icon and label, if it has both.
 constexpr int kPillButtonImageLabelSpacingDp = 8;
 
-// Gets the color mode value from feature flag "--ash-color-mode".
-AshColorProvider::AshColorMode GetColorModeFromCommandLine() {
-  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-
-  if (!cl->HasSwitch(switches::kAshColorMode))
-    return AshColorProvider::AshColorMode::kDefault;
-
-  const std::string switch_value =
-      cl->GetSwitchValueASCII(switches::kAshColorMode);
-  if (switch_value == switches::kAshColorModeDark)
-    return AshColorProvider::AshColorMode::kDark;
-
-  if (switch_value == switches::kAshColorModeLight)
-    return AshColorProvider::AshColorMode::kLight;
-
-  return AshColorProvider::AshColorMode::kDefault;
-}
-
 bool IsLightMode(AshColorProvider::AshColorMode color_mode) {
   return color_mode == AshColorProvider::AshColorMode::kLight;
 }
 
 }  // namespace
-
-AshColorProvider::AshColorProvider()
-    : color_mode_(GetColorModeFromCommandLine()) {}
-
-AshColorProvider::~AshColorProvider() = default;
 
 // static
 AshColorProvider* AshColorProvider::Get() {

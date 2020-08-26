@@ -6,7 +6,6 @@
 #define ASH_STYLE_ASH_COLOR_PROVIDER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -143,8 +142,10 @@ class ASH_EXPORT AshColorProvider {
     const float highlight_opacity;
   };
 
-  AshColorProvider();
-  ~AshColorProvider();
+  AshColorProvider() = default;
+  AshColorProvider(const AshColorProvider& other) = delete;
+  AshColorProvider operator=(const AshColorProvider& other) = delete;
+  ~AshColorProvider() = default;
 
   static AshColorProvider* Get();
 
@@ -255,8 +256,6 @@ class ASH_EXPORT AshColorProvider {
   // Whether the system color mode is themed, by default is true. If true, the
   // background color will be calculated based on extracted wallpaper color.
   bool is_themed_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(AshColorProvider);
 };
 
 }  // namespace ash

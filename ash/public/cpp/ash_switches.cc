@@ -20,11 +20,6 @@ constexpr base::TimeDelta kAshContextualNudgesMaxInterval =
 namespace ash {
 namespace switches {
 
-// Indicates the current color mode of ash.
-const char kAshColorMode[] = "ash-color-mode";
-const char kAshColorModeDark[] = "dark";
-const char kAshColorModeLight[] = "light";
-
 // Force the pointer (cursor) position to be kept inside root windows.
 const char kAshConstrainPointerToRoot[] = "ash-constrain-pointer-to-root";
 
