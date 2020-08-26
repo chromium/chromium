@@ -1699,11 +1699,6 @@ var OSSettingsSwitchAccessSubpageTest = class extends OSSettingsBrowserTest {
   }
 
   /** @override */
-  get commandLineSwitches() {
-    return ['enable-experimental-accessibility-switch-access'];
-  }
-
-  /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',

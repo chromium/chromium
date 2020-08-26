@@ -18,7 +18,6 @@ SwitchAccessE2ETest = class extends E2ETestBase {
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ash/keyboard/ui/keyboard_util.h"
     `);
   }
@@ -30,8 +29,6 @@ SwitchAccessE2ETest = class extends E2ETestBase {
       base::Bind(&chromeos::AccessibilityManager::SetSwitchAccessEnabled,
           base::Unretained(chromeos::AccessibilityManager::Get()),
           true);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableExperimentalAccessibilitySwitchAccess);
   chromeos::AccessibilityManager::Get()->SetSwitchAccessEnabled(true);
   WaitForExtension(extension_misc::kSwitchAccessExtensionId, load_cb);
     `);

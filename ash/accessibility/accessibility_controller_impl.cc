@@ -42,7 +42,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string16.h"
@@ -928,9 +927,7 @@ bool AccessibilityControllerImpl::IsPrimarySettingsViewVisibleInTray() {
           IsDockedMagnifierSettingVisibleInTray() ||
           IsAutoclickSettingVisibleInTray() ||
           IsVirtualKeyboardSettingVisibleInTray() ||
-          (base::CommandLine::ForCurrentProcess()->HasSwitch(
-               switches::kEnableExperimentalAccessibilitySwitchAccess) &&
-           IsSwitchAccessSettingVisibleInTray()));
+          IsSwitchAccessSettingVisibleInTray());
 }
 
 bool AccessibilityControllerImpl::IsAdditionalSettingsViewVisibleInTray() {
@@ -1769,12 +1766,8 @@ void AccessibilityControllerImpl::MaybeCreateSelectToSpeakEventHandler() {
 
 void AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref(
     SwitchAccessCommand command) {
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableExperimentalAccessibilitySwitchAccess)) {
+  if (!active_user_prefs_)
     return;
-  }
-
-  DCHECK(active_user_prefs_);
 
   SyncSwitchAccessPrefsToSignInProfile();
 
