@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
@@ -129,6 +130,9 @@ class FakeCrosHealthdService final
   // ProbeProcessInfo IPCs received.
   void SetProbeProcessInfoResponseForTesting(mojom::ProcessResultPtr& result);
 
+  // Adds a delay before the passed callback is called.
+  void SetCallbackDelay(base::TimeDelta delay);
+
   // Calls the power event OnAcInserted for all registered power observers.
   void EmitAcInsertedEventForTesting();
 
@@ -185,6 +189,8 @@ class FakeCrosHealthdService final
   // interface.
   mojo::Remote<chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
       network_diagnostics_routines_;
+
+  base::TimeDelta callback_delay_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeCrosHealthdService);
 };
