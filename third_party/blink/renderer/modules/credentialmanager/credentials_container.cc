@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/sms/sms_receiver_outcome.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/payments/payment_credential.mojom-blink.h"
 #include "third_party/blink/public/mojom/sms/sms_receiver.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -21,8 +22,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_otp_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_creation_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -43,6 +47,7 @@
 #include "third_party/blink/renderer/modules/credentialmanager/federated_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/otp_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/password_credential.h"
+#include "third_party/blink/renderer/modules/credentialmanager/payment_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/scoped_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -71,9 +76,14 @@ using mojom::blink::MakeCredentialAuthenticatorResponsePtr;
 using MojoPublicKeyCredentialRequestOptions =
     mojom::blink::PublicKeyCredentialRequestOptions;
 using mojom::blink::GetAssertionAuthenticatorResponsePtr;
+using payments::mojom::blink::PaymentCredentialCreationStatus;
+using payments::mojom::blink::PaymentCredentialInstrument;
 
 constexpr char kCryptotokenOrigin[] =
     "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
+
+static constexpr int kCoseEs256 = -7;
+static constexpr int kCoseRs256 = -257;
 
 // RequiredOriginType enumerates the requirements on the environment to perform
 // an operation.
@@ -520,6 +530,209 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
   resolver->Resolve(MakeGarbageCollected<OTPCredential>(otp));
 }
 
+void OnPaymentCredentialCreationComplete(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    MakeCredentialAuthenticatorResponsePtr credential,
+    PaymentCredentialCreationStatus status) {
+  auto* resolver = scoped_resolver->Release();
+
+  if (status == PaymentCredentialCreationStatus::FAILED_TO_DOWNLOAD_ICON) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNetworkError,
+        "Unable to download payment instrument icon."));
+    return;
+  } else if (status ==
+             PaymentCredentialCreationStatus::FAILED_TO_STORE_INSTRUMENT) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kUnknownError,
+        "Failed to store payment instrument."));
+    return;
+  } else {
+    DCHECK(status == PaymentCredentialCreationStatus::SUCCESS);
+  }
+
+  DOMArrayBuffer* client_data_buffer =
+      VectorToDOMArrayBuffer(std::move(credential->info->client_data_json));
+  DOMArrayBuffer* raw_id =
+      VectorToDOMArrayBuffer(std::move(credential->info->raw_id));
+  DOMArrayBuffer* attestation_buffer =
+      VectorToDOMArrayBuffer(std::move(credential->attestation_object));
+  DOMArrayBuffer* authenticator_data =
+      VectorToDOMArrayBuffer(std::move(credential->info->authenticator_data));
+  DOMArrayBuffer* public_key_der = nullptr;
+  if (credential->public_key_der) {
+    public_key_der =
+        VectorToDOMArrayBuffer(std::move(credential->public_key_der.value()));
+  }
+  auto* authenticator_response =
+      MakeGarbageCollected<AuthenticatorAttestationResponse>(
+          client_data_buffer, attestation_buffer, credential->transports,
+          authenticator_data, public_key_der, credential->public_key_algo);
+
+  resolver->Resolve(MakeGarbageCollected<PaymentCredential>(
+      credential->info->id, raw_id, authenticator_response,
+      AuthenticationExtensionsClientOutputs::Create()));
+}
+
+void OnMakePublicKeyCredentialForPaymentComplete(
+    std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
+    const PaymentCredentialCreationOptions* options,
+    AuthenticatorStatus status,
+    MakeCredentialAuthenticatorResponsePtr credential) {
+  auto* resolver = scoped_resolver->Release();
+  const auto required_origin_type = RequiredOriginType::kSecure;
+
+  AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
+  if (status == AuthenticatorStatus::SUCCESS) {
+    DCHECK(credential);
+    DCHECK(!credential->info->client_data_json.IsEmpty());
+    DCHECK(!credential->attestation_object.IsEmpty());
+
+    auto payment_instrument = PaymentCredentialInstrument::New();
+    payment_instrument->display_name = options->instrument()->displayName();
+    payment_instrument->icon = KURL(options->instrument()->icon());
+
+    auto* payment_credential_remote =
+        CredentialManagerProxy::From(resolver->GetScriptState())
+            ->PaymentCredential();
+    payment_credential_remote->StorePaymentCredential(
+        std::move(payment_instrument), credential->info->raw_id,
+        options->rp()->id(),
+        WTF::Bind(
+            &OnPaymentCredentialCreationComplete,
+            WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
+            std::move(credential)));
+  } else {
+    DCHECK(!credential);
+    resolver->Reject(CredentialManagerErrorToDOMException(
+        mojo::ConvertTo<CredentialManagerError>(status)));
+  }
+}
+
+void CreatePublicKeyCredentialForPaymentCredential(
+    const PaymentCredentialCreationOptions* options,
+    ScriptPromiseResolver* resolver) {
+  // TODO(kenrb): Much of this could eventually be deduplicated with the
+  // PublicKeyCredential handling code in CredentialsContainer::create(), but
+  // it is preferable to keep these separate during the experimentation stage
+  // for SecurePaymentConfirmation because this is subject to a lot of change
+  // and possibly removal.
+
+  if (!options->rp() || !options->instrument() ||
+      !options->instrument()->displayName() || !options->instrument()->icon()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Required parameters missing in `options.payment`."));
+    return;
+  }
+
+  auto mojo_options = mojom::blink::PublicKeyCredentialCreationOptions::New();
+  mojo_options->relying_party =
+      mojom::blink::PublicKeyCredentialRpEntity::From(*options->rp());
+  mojo_options->challenge =
+      mojo::ConvertTo<Vector<uint8_t>>(options->challenge());
+
+  // PaymentCredentials is only supported with user-verifying authenticators.
+  auto selection_criteria = mojom::blink::AuthenticatorSelectionCriteria::New();
+  selection_criteria->authenticator_attachment =
+      mojom::blink::AuthenticatorAttachment::PLATFORM;
+  selection_criteria->require_resident_key = false;
+  selection_criteria->user_verification =
+      mojom::blink::UserVerificationRequirement::REQUIRED;
+  mojo_options->authenticator_selection = std::move(selection_criteria);
+
+  Vector<mojom::blink::PublicKeyCredentialParametersPtr> parameters;
+  if (options->pubKeyCredParams().size() == 0) {
+    auto es256 = mojom::blink::PublicKeyCredentialParameters::New();
+    es256->type = mojom::blink::PublicKeyCredentialType::PUBLIC_KEY;
+    es256->algorithm_identifier = kCoseEs256;
+    auto rs256 = mojom::blink::PublicKeyCredentialParameters::New();
+    rs256->type = mojom::blink::PublicKeyCredentialType::PUBLIC_KEY;
+    rs256->algorithm_identifier = kCoseRs256;
+    parameters.push_back(std::move(es256));
+    parameters.push_back(std::move(rs256));
+  } else {
+    for (auto& parameter : options->pubKeyCredParams()) {
+      mojom::blink::PublicKeyCredentialParametersPtr normalized_parameter =
+          mojom::blink::PublicKeyCredentialParameters::From(*parameter);
+      if (normalized_parameter) {
+        parameters.push_back(std::move(normalized_parameter));
+      }
+    }
+    if (parameters.IsEmpty()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Required parameters missing in `options.pubKeyCredParams`."));
+      return;
+    }
+  }
+  mojo_options->public_key_parameters = std::move(parameters);
+
+  if (options->hasTimeout()) {
+    mojo_options->timeout =
+        base::TimeDelta::FromMilliseconds(options->timeout());
+  }
+
+  mojo_options->user = mojom::blink::PublicKeyCredentialUserEntity::New();
+  mojo_options->user->name = options->instrument()->displayName();
+
+  // There isn't explicity a WebAuthn 'user ID', so just convert the
+  // instrument display name into a byte array and use that.
+  const uint8_t* display_name_bytes =
+      static_cast<const uint8_t*>(options->instrument()->displayName().Bytes());
+  mojo_options->user->id = Vector<uint8_t>();
+  mojo_options->user->id.AppendRange(
+      display_name_bytes,
+      display_name_bytes +
+          options->instrument()->displayName().CharactersSizeInBytes());
+  mojo_options->user->display_name = options->instrument()->displayName();
+  mojo_options->user->icon = KURL(options->instrument()->icon());
+
+  if (!mojo_options->relying_party) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Required parameters missing in `options.payment`."));
+    return;
+  }
+  if (mojo_options->user->id.size() > 64) {
+    // https://www.w3.org/TR/webauthn/#user-handle
+    v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        isolate, "User handle exceeds 64 bytes."));
+    return;
+  }
+  if (!mojo_options->relying_party->id) {
+    mojo_options->relying_party->id = resolver->GetFrame()
+                                          ->GetSecurityContext()
+                                          ->GetSecurityOrigin()
+                                          ->Domain();
+  }
+
+  if (mojo_options->relying_party->icon &&
+      !IsIconURLNullOrSecure(mojo_options->relying_party->icon.value())) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kSecurityError,
+        "'rp.user.icon' should be a secure URL"));
+    return;
+  }
+
+  if (mojo_options->user->icon &&
+      !IsIconURLNullOrSecure(mojo_options->user->icon.value())) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kSecurityError,
+        "'instrument.icon' should be a secure URL"));
+    return;
+  }
+
+  auto* authenticator =
+      CredentialManagerProxy::From(resolver->GetScriptState())->Authenticator();
+  authenticator->MakeCredential(
+      std::move(mojo_options),
+      WTF::Bind(&OnMakePublicKeyCredentialForPaymentComplete,
+                WTF::Passed(std::make_unique<ScopedPromiseResolver>(resolver)),
+                WrapPersistent(options)));
+}
+
 }  // namespace
 
 CredentialsContainer::CredentialsContainer() = default;
@@ -751,7 +964,7 @@ ScriptPromise CredentialsContainer::create(
   }
 
   if ((options->hasPassword() + options->hasFederated() +
-       options->hasPublicKey()) != 1) {
+       options->hasPublicKey() + options->hasPayment()) != 1) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Only exactly one of 'password', 'federated', and 'publicKey' "
@@ -770,6 +983,17 @@ ScriptPromise CredentialsContainer::create(
   } else if (options->hasFederated()) {
     resolver->Resolve(
         FederatedCredential::Create(options->federated(), exception_state));
+  } else if (options->hasPayment()) {
+    if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+            resolver->GetExecutionContext())) {
+      CreatePublicKeyCredentialForPaymentCredential(options->payment(),
+                                                    resolver);
+    } else {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "PaymentCredentialCreationOptions are not enabled."));
+    }
+    return promise;
   } else {
     DCHECK(options->hasPublicKey());
     auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));

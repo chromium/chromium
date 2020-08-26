@@ -18,7 +18,7 @@ class AuthenticatorResponse;
 class ScriptPromise;
 class ScriptState;
 
-class MODULES_EXPORT PublicKeyCredential final : public Credential {
+class MODULES_EXPORT PublicKeyCredential : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -26,7 +26,8 @@ class MODULES_EXPORT PublicKeyCredential final : public Credential {
       const String& id,
       DOMArrayBuffer* raw_id,
       AuthenticatorResponse*,
-      const AuthenticationExtensionsClientOutputs* extension_outputs);
+      const AuthenticationExtensionsClientOutputs* extension_outputs,
+      const String& type = "");
 
   DOMArrayBuffer* rawId() const { return raw_id_.Get(); }
   AuthenticatorResponse* response() const { return response_.Get(); }

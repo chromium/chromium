@@ -119,6 +119,7 @@ mojom("mojom_platform") {
     "page/record_content_to_visible_time_request.mojom",
     "page/widget.mojom",
     "payments/payment_app.mojom",
+    "payments/payment_credential.mojom",
     "peerconnection/peer_connection_tracker.mojom",
     "performance_manager/v8_per_frame_memory.mojom",
     "permissions/permission.mojom",

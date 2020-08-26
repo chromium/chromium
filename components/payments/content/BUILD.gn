@@ -85,6 +85,8 @@ static_library("content") {
   } else {
     sources += [
       "content_payment_request_delegate.h",
+      "payment_credential.cc",
+      "payment_credential.h",
       "payment_request.cc",
       "payment_request.h",
       "payment_request_dialog.h",

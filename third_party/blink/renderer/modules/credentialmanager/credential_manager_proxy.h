@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGER_CREDENTIAL_MANAGER_PROXY_H_
 
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/payments/payment_credential.mojom-blink.h"
 #include "third_party/blink/public/mojom/sms/sms_receiver.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -47,6 +48,8 @@ class MODULES_EXPORT CredentialManagerProxy
 
   mojom::blink::SmsReceiver* SmsReceiver();
 
+  payments::mojom::blink::PaymentCredential* PaymentCredential();
+
   void FlushCredentialManagerConnectionForTesting() {
     credential_manager_.FlushForTesting();
   }
@@ -67,6 +70,9 @@ class MODULES_EXPORT CredentialManagerProxy
   HeapMojoRemote<mojom::blink::SmsReceiver,
                  HeapMojoWrapperMode::kForceWithoutContextObserver>
       sms_receiver_;
+  HeapMojoRemote<payments::mojom::blink::PaymentCredential,
+                 HeapMojoWrapperMode::kForceWithoutContextObserver>
+      payment_credential_;
 };
 
 }  // namespace blink

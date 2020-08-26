@@ -42,6 +42,7 @@ source_set("browsertests") {
     "//components/payments/core",
     "//components/payments/core:test_support",
     "//components/ukm:test_support",
+    "//device/fido:test_support",
   ]
 
   if (is_android) {
