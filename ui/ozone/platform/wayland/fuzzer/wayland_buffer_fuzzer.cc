@@ -126,7 +126,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // real system so here is a hard limit of 500.
   const uint32_t kPlaneCount = data_provider.ConsumeIntegralInRange(1U, 500U);
   const uint32_t kFormat = known_fourccs[data_provider.ConsumeIntegralInRange(
-      0UL, known_fourccs.size() - 1)];
+      0UL, static_cast<unsigned long>(known_fourccs.size() - 1))];
 
   std::vector<uint32_t> strides(kPlaneCount);
   std::vector<uint32_t> offsets(kPlaneCount);

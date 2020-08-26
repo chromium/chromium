@@ -138,7 +138,6 @@ if (!use_system_libwayland) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
-      "//build/config/linux/libffi",
       ":wayland_scanner_config",
     ]
   }
