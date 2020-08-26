@@ -90,19 +90,24 @@ UntrustedSource::~UntrustedSource() = default;
 
 std::string UntrustedSource::GetContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive) {
-  if (directive == network::mojom::CSPDirectiveName::ScriptSrc) {
-    return "script-src 'self' 'unsafe-inline' https:;";
-  } else if (directive == network::mojom::CSPDirectiveName::ChildSrc) {
-    return "child-src https:;";
-  } else if (directive == network::mojom::CSPDirectiveName::DefaultSrc) {
-    // TODO(https://crbug.com/1085325): Audit and tighten CSP.
-    return std::string();
-  } else if (directive == network::mojom::CSPDirectiveName::FrameAncestors) {
-    return base::StringPrintf("frame-ancestors %s",
-                              chrome::kChromeUINewTabPageURL);
+  switch (directive) {
+    case network::mojom::CSPDirectiveName::ScriptSrc:
+      return "script-src 'self' 'unsafe-inline' https:;";
+    case network::mojom::CSPDirectiveName::ChildSrc:
+      return "child-src https:;";
+    case network::mojom::CSPDirectiveName::DefaultSrc:
+      // TODO(https://crbug.com/1085325): Audit and tighten CSP.
+      return std::string();
+    case network::mojom::CSPDirectiveName::FrameAncestors:
+      return base::StringPrintf("frame-ancestors %s",
+                                chrome::kChromeUINewTabPageURL);
+    case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:
+      return std::string();
+    case network::mojom::CSPDirectiveName::TrustedTypes:
+      return std::string();
+    default:
+      return content::URLDataSource::GetContentSecurityPolicy(directive);
   }
-
-  return content::URLDataSource::GetContentSecurityPolicy(directive);
 }
 
 std::string UntrustedSource::GetSource() {
