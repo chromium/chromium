@@ -423,7 +423,7 @@ struct AutocompleteMatch {
   // Upgrades this match by absorbing the best properties from
   // |duplicate_match|. For instance: if |duplicate_match| has a higher
   // relevance score, this match's own relevance score will be upgraded.
-  void UpgradeMatchWithPropertiesFrom(const AutocompleteMatch& duplicate_match);
+  void UpgradeMatchWithPropertiesFrom(AutocompleteMatch& duplicate_match);
 
   // Called for navigation suggestions whose URLs cannot be inline autocompleted
   // (e.g. because the input is not a prefix of the URL), to check if |title|

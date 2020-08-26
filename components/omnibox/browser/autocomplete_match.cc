@@ -1104,7 +1104,7 @@ size_t AutocompleteMatch::EstimateMemoryUsage() const {
 }
 
 void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
-    const AutocompleteMatch& duplicate_match) {
+    AutocompleteMatch& duplicate_match) {
   // For Entity Matches, absorb the duplicate match's |allowed_to_be_default|
   // and |inline_autocomplete| properties.
   if (type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
@@ -1136,6 +1136,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
   // Take the |pedal|, if any, so that it will be presented instead of buried.
   if (!pedal && duplicate_match.pedal) {
     pedal = duplicate_match.pedal;
+    duplicate_match.pedal = nullptr;
   }
 }
 
