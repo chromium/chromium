@@ -9,9 +9,11 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chrome/services/machine_learning/metrics.h"
 #include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
 #include "chrome/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/service_process_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -25,13 +27,14 @@ namespace {
 constexpr base::TimeDelta kServiceProcessIdleTimeout{
     base::TimeDelta::FromSeconds(30)};
 
-// Actual implementation of |ServiceConnection|
-// TODO(crbug/1102425): Add a browser test to actually test the implementation
-// after hooked to Optimization Guide.
-class ServiceConnectionImpl : public ServiceConnection {
+// Actual implementation of `ServiceConnection`. Also inherits from
+// `content::ServiceProcessHost::Observer` to log lifetime events of the service
+// process.
+class ServiceConnectionImpl : public ServiceConnection,
+                              public content::ServiceProcessHost::Observer {
  public:
   ServiceConnectionImpl();
-  ~ServiceConnectionImpl() override = default;
+  ~ServiceConnectionImpl() override;
 
   ServiceConnectionImpl(const ServiceConnectionImpl&) = delete;
   ServiceConnectionImpl& operator=(const ServiceConnectionImpl&) = delete;
@@ -46,14 +49,28 @@ class ServiceConnectionImpl : public ServiceConnection {
 
   void ResetServiceForTesting() override;
 
+  // `content::ServiceProcessHost::Observer` implementations.
+  void OnServiceProcessLaunched(
+      const content::ServiceProcessInfo& info) override;
+  void OnServiceProcessTerminatedNormally(
+      const content::ServiceProcessInfo& info) override;
+  void OnServiceProcessCrashed(
+      const content::ServiceProcessInfo& info) override;
+
  private:
   mojo::Remote<mojom::MachineLearningService> machine_learning_service_;
+  base::Optional<base::TimeTicks> last_launched_time_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 ServiceConnectionImpl::ServiceConnectionImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  content::ServiceProcessHost::AddObserver(this);
+}
+
+ServiceConnectionImpl::~ServiceConnectionImpl() {
+  content::ServiceProcessHost::RemoveObserver(this);
 }
 
 void ServiceConnectionImpl::LoadDecisionTreeModel(
@@ -68,6 +85,8 @@ void ServiceConnectionImpl::LoadDecisionTreeModel(
 mojom::MachineLearningService* ServiceConnectionImpl::GetService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!machine_learning_service_) {
+    metrics::LogServiceRequested(
+        metrics::MLServiceRequestStatus::kRequestedServiceNotLaunched);
     content::ServiceProcessHost::Launch(
         machine_learning_service_.BindNewPipeAndPassReceiver(),
         content::ServiceProcessHost::Options()
@@ -76,7 +95,11 @@ mojom::MachineLearningService* ServiceConnectionImpl::GetService() {
 
     machine_learning_service_.reset_on_disconnect();
     machine_learning_service_.reset_on_idle_timeout(kServiceProcessIdleTimeout);
+  } else {
+    metrics::LogServiceRequested(
+        metrics::MLServiceRequestStatus::kRequestedServiceLaunched);
   }
+
   return machine_learning_service_.get();
 }
 
@@ -86,6 +109,38 @@ void ServiceConnectionImpl::ResetServiceForTesting() {
 }
 
 static ServiceConnection* g_fake_service_connection = nullptr;
+
+void ServiceConnectionImpl::OnServiceProcessLaunched(
+    const content::ServiceProcessInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  last_launched_time_ = base::TimeTicks::Now();
+  metrics::LogServiceLaunch();
+}
+
+void ServiceConnectionImpl::OnServiceProcessTerminatedNormally(
+    const content::ServiceProcessInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (last_launched_time_) {
+    metrics::LogServiceAliveDuration(base::TimeTicks::Now() -
+                                     *last_launched_time_);
+    last_launched_time_.reset();
+  }
+
+  metrics::LogServiceNormalTermination();
+}
+
+void ServiceConnectionImpl::OnServiceProcessCrashed(
+    const content::ServiceProcessInfo& info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (last_launched_time_) {
+    metrics::LogServiceAliveDuration(base::TimeTicks::Now() -
+                                     *last_launched_time_);
+    last_launched_time_.reset();
+  }
+
+  metrics::LogServiceCrash();
+}
 
 }  // namespace
 

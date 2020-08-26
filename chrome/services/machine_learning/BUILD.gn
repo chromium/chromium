@@ -11,6 +11,7 @@ source_set("machine_learning") {
   ]
 
   deps = [
+    ":metrics",
     "//base",
     "//chrome:strings",
     "//mojo/public/cpp/bindings",
@@ -39,6 +40,15 @@ source_set("machine_learning") {
   ]
 }
 
+source_set("metrics") {
+  sources = [
+    "metrics.cc",
+    "metrics.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
@@ -57,6 +67,7 @@ source_set("unit_tests") {
 
   deps = [
     ":machine_learning",
+    ":metrics",
     "//base",
     "//base/test:test_support",
     "//chrome/services/machine_learning/public/cpp:cpp",

@@ -35,7 +35,10 @@ source_set("cpp") {
     "//chrome/services/machine_learning/public/mojom",
   ]
 
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//chrome/services/machine_learning:metrics",
+    "//content/public/browser",
+  ]
 }
 
 source_set("test_support") {

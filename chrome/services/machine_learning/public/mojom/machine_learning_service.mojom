@@ -9,6 +9,10 @@ module machine_learning.mojom;
 import "chrome/services/machine_learning/public/mojom/decision_tree.mojom";
 
 // Model loading status values.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Should be kept in sync with the enum ChromeMLServiceLoadModelResult in
+// //tools/metrics/histograms/enums.xml.
 enum LoadModelResult {
   // Loading is successful.
   kOk = 0,

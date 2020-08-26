@@ -26616,6 +26616,88 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram base="true" name="ChromeMLService.EvaluationLatency" units="ms"
+    expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Measures the model evaluation latency in the Chrome ML Service. This will be
+    recorded whenever a model evaluation call is invoked on a valid model,
+    regardless of whether the evaluation result is valid or not.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeMLService.LoadModelResult"
+    enum="ChromeMLServiceLoadModelResult" expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the model loading result status from the Chrome ML Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeMLService.PredictionResult.DecisionTreeModel"
+    enum="ChromeMLServiceDecisionTreePredictionResult"
+    expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the decision model prediction result from the Chrome ML Service.
+  </summary>
+</histogram>
+
+<histogram name="ChromeMLService.ServiceAliveDuration" units="ms"
+    expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Measures the duration in which the Chrome ML Service is alive. This is
+    monitored by a service observer in the browser process, and should be
+    recorded correctly when the service exits either gracefully or unexpectedly.
+  </summary>
+</histogram>
+
+<histogram name="ChromeMLService.ServiceCrash" enum="Boolean"
+    expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>Records if the Chrome ML Service crashed.</summary>
+</histogram>
+
+<histogram name="ChromeMLService.ServiceLaunch" enum="Boolean"
+    expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>Records if the Chrome ML Service launched successfully.</summary>
+</histogram>
+
+<histogram name="ChromeMLService.ServiceNormalTermination" enum="Boolean"
+    expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>Records if the Chrome ML Service terminated normally.</summary>
+</histogram>
+
+<histogram name="ChromeMLService.ServiceStatusWhenRequested"
+    enum="ChromeMLServiceRequestStatus" expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Whether the ML Service is already running when it is requested.
+  </summary>
+</histogram>
+
+<histogram base="true" name="ChromeMLService.ValidationLatency" units="ms"
+    expires_after="2021-02-27">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Measures the model validation latency in the Chrome ML Service. This is
+    recorded when the ML service receives a model and evaluates it, regardless
+    of whether the model turns out to be valid or not.
+  </summary>
+</histogram>
+
 <histogram name="ChromeNotifierService.Actions"
     enum="ChromeNotifierServiceActionType" expires_after="2016-04-29">
   <obsolete>
@@ -201317,6 +201399,13 @@ regressions. -->
       label="Custom histogram for the Google Search results page"/>
   <affected-histogram
       name="ServiceWorker.ActivatedWorkerPreparationForMainFrame.Type"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="ChromeMLService.ModelType" separator=".">
+  <suffix name="DecisionTreeModel" label="Decision tree model"/>
+  <affected-histogram name="ChromeMLService.EvaluationLatency"/>
+  <affected-histogram name="ChromeMLService.LoadModelResult"/>
+  <affected-histogram name="ChromeMLService.ValidationLatency"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ChromeOS.Camera.JpegProcessMethod" separator=".">

@@ -10,7 +10,9 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chrome/services/machine_learning/metrics.h"
 #include "chrome/services/machine_learning/public/cpp/decision_tree_model.h"
 #include "chrome/services/machine_learning/public/cpp/test_support/machine_learning_test_utils.h"
 #include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"
@@ -41,6 +43,8 @@ TEST_F(DecisionTreePredictorTest, InstantiateValidPredictor) {
 }
 
 TEST_F(DecisionTreePredictorTest, ValidPredictorFromModelSpec) {
+  base::HistogramTester histogram_tester;
+
   auto model_proto = testing::GetModelProtoForPredictionResult(
       mojom::DecisionTreePredictionResult::kTrue);
   std::string model_string = model_proto->SerializeAsString();
@@ -48,6 +52,8 @@ TEST_F(DecisionTreePredictorTest, ValidPredictorFromModelSpec) {
       mojom::DecisionTreeModelSpec::New(model_string));
 
   EXPECT_TRUE(predictor->IsValid());
+  histogram_tester.ExpectTotalCount(
+      metrics::kDecisionTreeModelValidationLatency, 1);
 }
 
 TEST_F(DecisionTreePredictorTest, InvalidPredictorFromModelSpec) {
@@ -61,6 +67,8 @@ TEST_F(DecisionTreePredictorTest, InvalidPredictorFromModelSpec) {
 }
 
 TEST_F(DecisionTreePredictorTest, ModelPrediction) {
+  base::HistogramTester histogram_tester;
+
   mojom::DecisionTreePredictionResult result;
   double score;
 
@@ -78,6 +86,12 @@ TEST_F(DecisionTreePredictorTest, ModelPrediction) {
                 *p_score = score;
               },
               &result, &score));
+
+  histogram_tester.ExpectTotalCount(
+      metrics::kDecisionTreeModelEvaluationLatency, 1);
+  histogram_tester.ExpectUniqueSample(
+      metrics::kDecisionTreeModelPredictionResult,
+      mojom::DecisionTreePredictionResult::kTrue, 1);
 
   EXPECT_EQ(mojom::DecisionTreePredictionResult::kTrue, result);
   EXPECT_GT(score, testing::kModelThreshold);

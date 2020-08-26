@@ -9293,6 +9293,24 @@ histogram as enum -->
   <int value="2" label="Startup"/>
 </enum>
 
+<enum name="ChromeMLServiceDecisionTreePredictionResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="True"/>
+  <int value="2" label="False"/>
+</enum>
+
+<enum name="ChromeMLServiceLoadModelResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Model spec error"/>
+  <int value="2" label="Load model error"/>
+  <int value="3" label="Feature not supported"/>
+</enum>
+
+<enum name="ChromeMLServiceRequestStatus">
+  <int value="0" label="Requested Service Launched"/>
+  <int value="1" label="Requested Service Not Launched"/>
+</enum>
+
 <enum name="ChromeNotifierServiceActionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="First service enabled"/>

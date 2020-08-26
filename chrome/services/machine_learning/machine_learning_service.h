@@ -5,7 +5,6 @@
 #ifndef CHROME_SERVICES_MACHINE_LEARNING_MACHINE_LEARNING_SERVICE_H_
 #define CHROME_SERVICES_MACHINE_LEARNING_MACHINE_LEARNING_SERVICE_H_
 
-#include "base/macros.h"
 #include "chrome/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

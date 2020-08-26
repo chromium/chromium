@@ -8,6 +8,10 @@
 module machine_learning.mojom;
 
 // Decision tree prediction result values.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Should be kept in sync with ChromeMLServiceDecisionTreePredictionResult enum
+// in //tools/metrics/histograms/enums.xml.
 enum DecisionTreePredictionResult {
   // Result unknown due to invalid model/features.
   kUnknown = 0,
