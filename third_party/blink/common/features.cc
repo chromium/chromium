@@ -650,11 +650,13 @@ const base::FeatureParam<AlignFontDisplayAutoTimeoutWithLCPGoalMode>
         &align_font_display_auto_timeout_with_lcp_goal_modes};
 
 // Enable throttling of fetch() requests from service workers in the
-// installing state.
+// installing state.  The limit of 3 was chosen to match the limit
+// in background main frames.  In addition, trials showed that this
+// did not cause excessive install delays or timeouts.
 const base::Feature kThrottleInstallingServiceWorker{
-    "ThrottleInstallingServiceWorker", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ThrottleInstallingServiceWorker", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::FeatureParam<int> kInstallingServiceWorkerOutstandingThrottledLimit{
-    &kThrottleInstallingServiceWorker, "limit", 5};
+    &kThrottleInstallingServiceWorker, "limit", 3};
 
 const base::Feature kInputPredictorTypeChoice{
     "InputPredictorTypeChoice", base::FEATURE_DISABLED_BY_DEFAULT};
