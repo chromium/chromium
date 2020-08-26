@@ -10,11 +10,7 @@ PrerenderManagerDelegate::PrerenderManagerDelegate() = default;
 
 void PrerenderManagerDelegate::MaybePreconnect(const GURL& url) {}
 
-bool PrerenderManagerDelegate::IsPredictionEnabled(Origin origin) {
-  return true;
-}
-
-bool PrerenderManagerDelegate::IsPredictionEnabled() {
+bool PrerenderManagerDelegate::IsNetworkPredictionPreferenceEnabled() {
   return true;
 }
 

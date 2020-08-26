@@ -7,7 +7,10 @@
 #include "components/prerender/browser/prerender_contents_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/cookie_settings_factory.h"
+#include "weblayer/browser/profile_impl.h"
+#include "weblayer/public/profile.h"
 
 namespace weblayer {
 
@@ -25,6 +28,18 @@ PrerenderManagerDelegateImpl::GetCookieSettings() {
 std::unique_ptr<prerender::PrerenderContentsDelegate>
 PrerenderManagerDelegateImpl::GetPrerenderContentsDelegate() {
   return std::make_unique<prerender::PrerenderContentsDelegate>();
+}
+
+bool PrerenderManagerDelegateImpl::IsNetworkPredictionPreferenceEnabled() {
+  auto* profile = ProfileImpl::FromBrowserContext(browser_context_);
+  DCHECK(profile);
+
+  return profile->GetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED);
+}
+
+std::string PrerenderManagerDelegateImpl::GetReasonForDisablingPrediction() {
+  return IsNetworkPredictionPreferenceEnabled() ? ""
+                                                : "Disabled by user setting";
 }
 
 }  // namespace weblayer

@@ -7,6 +7,7 @@
 
 #include "chrome/browser/net/prediction_options.h"
 #include "components/prerender/browser/prerender_manager_delegate.h"
+#include "components/prerender/common/prerender_origin.h"
 
 class Profile;
 
@@ -26,15 +27,12 @@ class ChromePrerenderManagerDelegate : public PrerenderManagerDelegate {
   void MaybePreconnect(const GURL& url) override;
   std::unique_ptr<PrerenderContentsDelegate> GetPrerenderContentsDelegate()
       override;
-  bool IsPredictionEnabled(Origin origin) override;
-  bool IsPredictionEnabled() override;
+  bool IsNetworkPredictionPreferenceEnabled() override;
   bool IsPredictionDisabledDueToNetwork(Origin origin) override;
   std::string GetReasonForDisablingPrediction() override;
 
  private:
   chrome_browser_net::NetworkPredictionStatus GetPredictionStatus() const;
-  chrome_browser_net::NetworkPredictionStatus GetPredictionStatusForOrigin(
-      Origin origin) const;
   Profile* profile_;
 };
 

@@ -611,6 +611,8 @@ void ProfileImpl::SetBooleanSetting(SettingType type, bool value) {
           value);
 #endif
       break;
+    case SettingType::NETWORK_PREDICTION_ENABLED:
+      pref_service->SetBoolean(prefs::kNoStatePrefetchEnabled, value);
   }
 }
 
@@ -636,6 +638,8 @@ bool ProfileImpl::GetBooleanSetting(SettingType type) {
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 #endif
       return false;
+    case SettingType::NETWORK_PREDICTION_ENABLED:
+      return pref_service->GetBoolean(prefs::kNoStatePrefetchEnabled);
   }
   NOTREACHED();
 }
