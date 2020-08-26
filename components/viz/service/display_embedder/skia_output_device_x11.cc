@@ -85,20 +85,21 @@ void SkiaOutputDeviceX11::PostSubBuffer(
     BufferPresentedCallback feedback,
     std::vector<ui::LatencyInfo> latency_info) {
   StartSwapBuffers(std::move(feedback));
+  if (!rect.IsEmpty()) {
+    auto ii =
+        SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType);
+    DCHECK_GE(pixels_->size(), ii.computeMinByteSize());
+    SkPixmap sk_pixmap(ii, pixels_->data(), ii.minRowBytes());
+    bool result = sk_surface_->readPixels(sk_pixmap, rect.x(), rect.y());
+    LOG_IF(FATAL, !result) << "Failed to read pixels from offscreen SkSurface.";
 
-  auto ii =
-      SkImageInfo::MakeN32(rect.width(), rect.height(), kOpaque_SkAlphaType);
-  DCHECK_GE(pixels_->size(), ii.computeMinByteSize());
-  SkPixmap sk_pixmap(ii, pixels_->data(), ii.minRowBytes());
-  bool result = sk_surface_->readPixels(sk_pixmap, rect.x(), rect.y());
-  LOG_IF(FATAL, !result) << "Failed to read pixels from offscreen SkSurface.";
+    // TODO(penghuang): Switch to XShmPutImage.
+    ui::DrawPixmap(x11::Connection::Get(), visual_, window_, gc_, sk_pixmap,
+                   0 /* src_x */, 0 /* src_y */, rect.x() /* dst_x */,
+                   rect.y() /* dst_y */, rect.width(), rect.height());
 
-  // TODO(penghuang): Switch to XShmPutImage.
-  ui::DrawPixmap(x11::Connection::Get(), visual_, window_, gc_, sk_pixmap,
-                 0 /* src_x */, 0 /* src_y */, rect.x() /* dst_x */,
-                 rect.y() /* dst_y */, rect.width(), rect.height());
-
-  connection_->Flush();
+    connection_->Flush();
+  }
   FinishSwapBuffers(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK),
                     gfx::Size(sk_surface_->width(), sk_surface_->height()),
                     std::move(latency_info));
