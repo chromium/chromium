@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "build/build_config.h"
 #include "chrome/browser/engagement/site_engagement_score.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -768,12 +769,19 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                            custom_test_server.GetURL("googlé.com", "/"));
 }
 
+// TODO(https://crbug.com/1122078): Enable test when MacOS flake is fixed.
+#if defined(OS_MAC)
+#define MAYBE_Idn_SiteEngagement_Match DISABLED_Idn_SiteEngagement_Match
+#else
+#define MAYBE_Idn_SiteEngagement_Match Idn_SiteEngagement_Match
+#endif
+
 // Navigate to a domain whose visual representation looks like a domain with a
 // site engagement score above a certain threshold. This should record metrics.
 // It should also show lookalike warning interstitial if configured via
 // a feature param.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
-                       Idn_SiteEngagement_Match) {
+                       MAYBE_Idn_SiteEngagement_Match) {
   const char* const kEngagedSites[] = {
       "http://site1.com", "http://www.site2.com", "http://sité3.com",
       "http://www.sité4.com"};
