@@ -9079,6 +9079,12 @@ histogram as enum -->
   <int value="9" label="Ignored Locally Trusted Leaf Cert"/>
 </enum>
 
+<enum name="ChangePasswordUrlFetchResult">
+  <int value="0" label="Fetch succeeded"/>
+  <int value="1" label="Fetch failed"/>
+  <int value="2" label="Response is malformed"/>
+</enum>
+
 <enum name="ChannelLayout">
   <int value="0" label="CHANNEL_LAYOUT_NONE"/>
   <int value="1" label="CHANNEL_LAYOUT_UNSUPPORTED"/>
@@ -33160,6 +33166,12 @@ Called by update_feature_policy_enum.py.-->
   <int value="25" label="kSetAccountsInCookieFailure"/>
   <int value="26" label="kInvalidConsentResult"/>
   <int value="27" label="kCanceled"/>
+</enum>
+
+<enum name="GetChangePasswordUrlMetric">
+  <int value="0" label="Gstatic file was not fetched yet"/>
+  <int value="1" label="Url override was available and used"/>
+  <int value="2" label="No url override was available"/>
 </enum>
 
 <enum name="GetEncryptionKeyAction">

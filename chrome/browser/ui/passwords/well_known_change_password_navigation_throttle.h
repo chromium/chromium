@@ -18,7 +18,6 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-
 namespace password_manager {
 class ChangePasswordUrlService;
 }  // namespace password_manager
