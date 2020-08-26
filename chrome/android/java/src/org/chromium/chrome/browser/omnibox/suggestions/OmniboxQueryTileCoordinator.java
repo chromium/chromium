@@ -107,9 +107,7 @@ public class OmniboxQueryTileCoordinator {
             mImageFetcher = null;
         }
 
-        mImageFetcher = ImageFetcherFactory.createImageFetcher(
-                ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE, profile,
-                GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
+        mImageFetcher = createImageFetcher(profile);
     }
 
     /** @return A {@link ImageTileCoordinator} instance. Creates if it doesn't exist yet. */
@@ -142,7 +140,26 @@ public class OmniboxQueryTileCoordinator {
         ImageFetcher.Params params = ImageFetcher.Params.createWithExpirationInterval(
                 queryTile.urls.get(0), ImageFetcher.QUERY_TILE_UMA_CLIENT_NAME, mTileWidth,
                 mTileWidth, QueryTileConstants.IMAGE_EXPIRATION_INTERVAL_MINUTES);
-        mImageFetcher.fetchImage(params, bitmap -> callback.onResult(Arrays.asList(bitmap)));
+        getImageFetcher().fetchImage(params, bitmap -> callback.onResult(Arrays.asList(bitmap)));
+    }
+
+    /** @return {@link ImageFetcher} instance. Only creates if needed. */
+    private ImageFetcher getImageFetcher() {
+        if (mImageFetcher == null) {
+            // This will be called only if there is no tab. Using regular profile is safe, since
+            // mImageFetcher is updated, when switching to incognito mode.
+            mImageFetcher = createImageFetcher(Profile.getLastUsedRegularProfile());
+        }
+        return mImageFetcher;
+    }
+
+    /**
+     * @param profile The profile to create image fetcher.
+     * @return an {@link ImageFetcher} instance for given profile.
+     */
+    private ImageFetcher createImageFetcher(Profile profile) {
+        return ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                profile, GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
     }
 
     private void onTileClicked(ImageTile tile) {
