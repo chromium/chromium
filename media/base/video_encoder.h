@@ -44,7 +44,6 @@ class MEDIA_EXPORT VideoEncoder {
     int width = 0;
     int height = 0;
 
-    base::Optional<int> threads;
     base::Optional<int> keyframe_interval = 10000;
   };
 

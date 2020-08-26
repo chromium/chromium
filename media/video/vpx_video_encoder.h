@@ -36,6 +36,7 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
   void DrainOutputs();
 
   vpx_codec_ctx_t* codec_ = nullptr;
+  bool is_vp9_ = false;
   vpx_codec_enc_cfg_t codec_config_ = {};
   vpx_image_t* vpx_image_ = nullptr;
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;

@@ -473,15 +473,11 @@ void VideoEncoder::ProcessConfigure(Request* request) {
     self->ProcessRequests();
   };
 
-  // TODO(https://crbug.com/1116771): Let the encoder figure out its thread
-  // count (it knows better).
-  config->options.threads = 1;
-
   stall_request_processing_ = true;
   media_encoder_->Initialize(config->profile, config->options, output_cb,
                              WTF::Bind(done_callback, WrapWeakPersistent(this),
                                        WrapPersistent(request)));
-}  // namespace blink
+}
 
 void VideoEncoder::ProcessFlush(Request* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

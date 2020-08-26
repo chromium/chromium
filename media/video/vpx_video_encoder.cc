@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "media/video/vpx_video_encoder.h"
+
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/video_frame.h"
@@ -13,6 +15,28 @@
 namespace media {
 
 namespace {
+
+// Returns the number of threads.
+int GetNumberOfThreads(int width) {
+  // Default to 1 thread for less than VGA.
+  int desired_threads = 1;
+
+  if (width >= 3840)
+    desired_threads = 16;
+  else if (width >= 2560)
+    desired_threads = 8;
+  else if (width >= 1280)
+    desired_threads = 4;
+  else if (width >= 640)
+    desired_threads = 2;
+
+  // Clamp to the number of available logical processors/cores.
+  desired_threads =
+      std::min(desired_threads, base::SysInfo::NumberOfProcessors());
+
+  return desired_threads;
+}
+
 Status SetUpVpxConfig(const VideoEncoder::Options& opts,
                       vpx_codec_enc_cfg_t* config) {
   if (opts.width <= 0 || opts.height <= 0)
@@ -26,8 +50,8 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
   config->g_timebase.num = 1;
   config->g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
-  if (opts.threads.has_value())
-    config->g_threads = opts.threads.value();
+  // Set the number of threads based on the image width and num of cores.
+  config->g_threads = GetNumberOfThreads(opts.width);
 
   // Insert keyframes at will with a given max interval
   if (opts.keyframe_interval.has_value()) {
@@ -51,6 +75,7 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
 
   return Status();
 }
+
 }  // namespace
 
 VpxVideoEncoder::VpxVideoEncoder() = default;
@@ -73,6 +98,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
   } else if (profile == media::VP9PROFILE_PROFILE0 ||
              profile == media::VP9PROFILE_PROFILE2) {
     // TODO(https://crbug.com/1116617): Consider support for profiles 1 and 3.
+    is_vp9_ = true;
     iface = vpx_codec_vp9_cx();
   } else {
     auto status = Status(StatusCode::kEncoderUnsupportedProfile)
@@ -149,6 +175,18 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     status = Status(StatusCode::kEncoderInitializationError, msg);
     std::move(done_cb).Run(status);
     return;
+  }
+
+  if (is_vp9_) {
+    // Set the number of column tiles in encoding an input frame, with number of
+    // tile columns (in Log2 unit) as the parameter.
+    // The minimum width of a tile column is 256 pixels, the maximum is 4096.
+    int log2_tile_columns =
+        static_cast<int>(std::log2(codec_config_.g_w / 256));
+    vpx_codec_control(codec_, VP9E_SET_TILE_COLUMNS, log2_tile_columns);
+
+    // Turn on row level multi-threading.
+    vpx_codec_control(codec_, VP9E_SET_ROW_MT, 1);
   }
 
   options_ = options;
