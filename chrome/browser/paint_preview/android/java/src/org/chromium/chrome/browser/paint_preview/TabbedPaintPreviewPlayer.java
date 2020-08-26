@@ -149,6 +149,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         // Check if a capture exists. This is a quick check using a cache.
         boolean hasCapture = mPaintPreviewTabService.hasCaptureForTab(mTab.getId());
         mInitializing = hasCapture;
+        mMetricsHelper.recordHadCapture(hasCapture);
         if (!hasCapture) return false;
 
         mPlayerManager = new PlayerManager(mTab.getUrl(), mTab.getContext(),

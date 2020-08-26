@@ -84,6 +84,11 @@ public class TabbedPaintPreviewMetricsHelper {
                 CompositorStatus.COUNT);
     }
 
+    void recordHadCapture(boolean hadCapture) {
+        RecordHistogram.recordBooleanHistogram(
+                "Browser.PaintPreview.TabbedPlayer.HadCapture", hadCapture);
+    }
+
     void recordExitMetrics(int exitCause, int snackbarShownCount) {
         if (exitCause == ExitCause.SNACK_BAR_ACTION) {
             RecordUserAction.record("PaintPreview.TabbedPlayer.Actionbar.Action");
