@@ -81,8 +81,13 @@ void UsbPrinterNotification::Click(
     // Body of notification clicked.
     visible_ = false;
     if (type_ == Type::kConfigurationRequired) {
+      // If we are in guest mode then we need to use the OffTheRecord profile to
+      // open the Settings page. There is a check in Browser::Browser that only
+      // OffTheRecord profiles can open browser windows in guest mode.
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile_, chromeos::settings::mojom::kPrintingDetailsSubpagePath);
+          profile_->IsGuestSession() ? profile_->GetPrimaryOTRProfile()
+                                     : profile_,
+          chromeos::settings::mojom::kPrintingDetailsSubpagePath);
     }
     return;
   }
