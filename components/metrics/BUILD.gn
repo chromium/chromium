@@ -517,10 +517,14 @@ source_set("unit_tests") {
     sources -= [ "child_call_stack_profile_collector_unittest.cc" ]
     deps += [ "//ios/web/public/test" ]
   } else {
-    sources += [ "content/subprocess_metrics_provider_unittest.cc" ]
+    sources += [
+      "content/content_stability_metrics_provider_unittest.cc",
+      "content/subprocess_metrics_provider_unittest.cc",
+    ]
     deps += [
       ":content",
       "//content/test:test_support",
+      "//extensions/buildflags",
     ]
   }
 }

@@ -4,13 +4,9 @@
 
 #include "components/metrics/content/content_stability_metrics_provider.h"
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "components/metrics/content/extensions_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -26,37 +22,58 @@
 #include "content/public/common/process_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/process_map.h"
-#endif
+namespace metrics {
 
 namespace {
 
 const char kTestGpuProcessName[] = "content_gpu";
 const char kTestUtilityProcessName[] = "test_utility_process";
 
+class MockExtensionsHelper : public ExtensionsHelper {
+ public:
+  MockExtensionsHelper() = default;
+  MockExtensionsHelper(const MockExtensionsHelper&) = delete;
+  MockExtensionsHelper& operator=(const MockExtensionsHelper&) = delete;
+  ~MockExtensionsHelper() override = default;
+
+  void set_extension_host(content::RenderProcessHost* host) { host_ = host; }
+  // ExtensionsHelper:
+  bool IsExtensionProcess(
+      content::RenderProcessHost* render_process_host) override {
+    return render_process_host == host_;
+  }
+
+ private:
+  content::RenderProcessHost* host_ = nullptr;
+};
+
 }  // namespace
 
-class ChromeStabilityMetricsProviderTest : public testing::Test {
+class ContentStabilityMetricsProviderTest : public testing::Test {
  protected:
-  ChromeStabilityMetricsProviderTest() : prefs_(new TestingPrefServiceSimple) {
+  ContentStabilityMetricsProviderTest()
+      : prefs_(std::make_unique<TestingPrefServiceSimple>()) {
     metrics::StabilityMetricsHelper::RegisterPrefs(prefs()->registry());
   }
+  ContentStabilityMetricsProviderTest(
+      const ContentStabilityMetricsProviderTest&) = delete;
+  ContentStabilityMetricsProviderTest& operator=(
+      const ContentStabilityMetricsProviderTest&) = delete;
+  ~ContentStabilityMetricsProviderTest() override = default;
 
   TestingPrefServiceSimple* prefs() { return prefs_.get(); }
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeStabilityMetricsProviderTest);
 };
 
-TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverGpu) {
+TEST_F(ContentStabilityMetricsProviderTest, BrowserChildProcessObserverGpu) {
   base::HistogramTester histogram_tester;
   metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
 
@@ -88,7 +105,8 @@ TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverGpu) {
       histogram_tester.GetTotalCountsForPrefix("ChildProcess.").empty());
 }
 
-TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverUtility) {
+TEST_F(ContentStabilityMetricsProviderTest,
+       BrowserChildProcessObserverUtility) {
   base::HistogramTester histogram_tester;
   metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
 
@@ -130,26 +148,16 @@ TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverUtility) {
       "ChildProcess.Crashed.UtilityProcessExitCode", kExitCode, 2);
 }
 
-TEST_F(ChromeStabilityMetricsProviderTest, NotificationObserver) {
-  base::HistogramTester histogram_tester;
-  metrics::ContentStabilityMetricsProvider provider(
-      prefs(), std::make_unique<ChromeMetricsExtensionsHelper>());
-  std::unique_ptr<TestingProfileManager> profile_manager(
-      new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
-  EXPECT_TRUE(profile_manager->SetUp());
-
-  // Owned by profile_manager.
-  TestingProfile* profile(
-      profile_manager->CreateTestingProfile("StabilityTestProfile"));
-
-  std::unique_ptr<content::MockRenderProcessHostFactory> rph_factory(
-      new content::MockRenderProcessHostFactory());
+TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
+  metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
+  content::TestBrowserContext browser_context;
+  content::MockRenderProcessHostFactory rph_factory;
   scoped_refptr<content::SiteInstance> site_instance(
-      content::SiteInstance::Create(profile));
+      content::SiteInstance::Create(&browser_context));
 
   // Owned by rph_factory.
-  content::RenderProcessHost* host(
-      rph_factory->CreateRenderProcessHost(profile, site_instance.get()));
+  content::RenderProcessHost* host(rph_factory.CreateRenderProcessHost(
+      &browser_context, site_instance.get()));
 
   // Crash and abnormal termination should increment renderer crash count.
   content::ChildProcessTerminationInfo crash_details;
@@ -192,47 +200,57 @@ TEST_F(ChromeStabilityMetricsProviderTest, NotificationObserver) {
   // be executed immediately.
   provider.ProvideStabilityMetrics(&system_profile);
 
-#if defined(OS_ANDROID)
-  EXPECT_EQ(
-      2u,
-      histogram_tester.GetAllSamples("Stability.Android.RendererCrash").size());
-#else
   EXPECT_EQ(2, system_profile.stability().renderer_crash_count());
-#endif
   EXPECT_EQ(1, system_profile.stability().renderer_failed_launch_count());
   EXPECT_EQ(0, system_profile.stability().extension_renderer_crash_count());
+}
 
+// Assertions for an extension related crash.
+// This test only works if extensions are enabled as there is a DCHECK in
+// StabilityMetricsHelper that it is only called with a value of true for
+// extension process if extensions are enabled.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  provider.ClearSavedStabilityMetrics();
+TEST_F(ContentStabilityMetricsProviderTest, ExtensionsNotificationObserver) {
+  content::TestBrowserContext browser_context;
+  content::MockRenderProcessHostFactory rph_factory;
+  scoped_refptr<content::SiteInstance> site_instance(
+      content::SiteInstance::Create(&browser_context));
 
   // Owned by rph_factory.
-  content::RenderProcessHost* extension_host(
-      rph_factory->CreateRenderProcessHost(profile, site_instance.get()));
-
-  // Make the rph an extension rph.
-  extensions::ProcessMap::Get(profile)
-      ->Insert("1", extension_host->GetID(), site_instance->GetId());
+  content::RenderProcessHost* extension_host =
+      rph_factory.CreateRenderProcessHost(&browser_context,
+                                          site_instance.get());
+  auto extensions_helper = std::make_unique<MockExtensionsHelper>();
+  extensions_helper->set_extension_host(extension_host);
+  metrics::ContentStabilityMetricsProvider provider(
+      prefs(), std::move(extensions_helper));
 
   // Crash and abnormal termination should increment extension crash count.
+  content::ChildProcessTerminationInfo crash_details;
+  crash_details.status = base::TERMINATION_STATUS_PROCESS_CRASHED;
+  crash_details.exit_code = 1;
   provider.Observe(
       content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
       content::Source<content::RenderProcessHost>(extension_host),
       content::Details<content::ChildProcessTerminationInfo>(&crash_details));
 
   // Failed launch increments failed launch count.
+  content::ChildProcessTerminationInfo failed_launch_details;
+  failed_launch_details.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
+  failed_launch_details.exit_code = 1;
   provider.Observe(content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
                    content::Source<content::RenderProcessHost>(extension_host),
                    content::Details<content::ChildProcessTerminationInfo>(
                        &failed_launch_details));
 
-  system_profile.Clear();
+  metrics::SystemProfileProto system_profile;
   provider.ProvideStabilityMetrics(&system_profile);
 
   EXPECT_EQ(0, system_profile.stability().renderer_crash_count());
   EXPECT_EQ(1, system_profile.stability().extension_renderer_crash_count());
   EXPECT_EQ(
       1, system_profile.stability().extension_renderer_failed_launch_count());
+}
 #endif
 
-  profile_manager->DeleteAllTestingProfiles();
-}
+}  // namespace metrics

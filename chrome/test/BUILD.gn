@@ -3335,6 +3335,7 @@ test("unit_tests") {
     "../browser/media/webrtc/media_stream_device_permission_context_unittest.cc",
     "../browser/metrics/antivirus_metrics_provider_win_unittest.cc",
     "../browser/metrics/chrome_browser_main_extra_parts_metrics_unittest.cc",
+    "../browser/metrics/chrome_metrics_extensions_helper_unittest.cc",
     "../browser/metrics/chrome_metrics_service_accessor_unittest.cc",
     "../browser/metrics/chrome_metrics_service_client_unittest.cc",
     "../browser/metrics/chrome_metrics_services_manager_client_unittest.cc",
@@ -5364,7 +5365,6 @@ test("unit_tests") {
   if (enable_plugins) {
     sources += [
       "../browser/component_updater/component_installers_unittest.cc",
-      "../browser/metrics/chrome_stability_metrics_provider_unittest.cc",
       "../browser/metrics/plugin_metrics_provider_unittest.cc",
       "../browser/plugins/chrome_plugin_service_filter_unittest.cc",
       "../browser/plugins/flash_download_interception_unittest.cc",

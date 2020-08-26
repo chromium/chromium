@@ -22,12 +22,6 @@
 
 class PrefService;
 
-FORWARD_DECLARE_TEST(ChromeStabilityMetricsProviderTest,
-                     BrowserChildProcessObserverGpu);
-FORWARD_DECLARE_TEST(ChromeStabilityMetricsProviderTest,
-                     BrowserChildProcessObserverUtility);
-FORWARD_DECLARE_TEST(ChromeStabilityMetricsProviderTest, NotificationObserver);
-
 namespace metrics {
 
 class ExtensionsHelper;
@@ -62,12 +56,14 @@ class ContentStabilityMetricsProvider
   void ClearSavedStabilityMetrics() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(::ChromeStabilityMetricsProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            BrowserChildProcessObserverGpu);
-  FRIEND_TEST_ALL_PREFIXES(::ChromeStabilityMetricsProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            BrowserChildProcessObserverUtility);
-  FRIEND_TEST_ALL_PREFIXES(::ChromeStabilityMetricsProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
                            NotificationObserver);
+  FRIEND_TEST_ALL_PREFIXES(ContentStabilityMetricsProviderTest,
+                           ExtensionsNotificationObserver);
 
   // content::NotificationObserver:
   void Observe(int type,
