@@ -10,6 +10,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
+#include "chrome/browser/privacy_budget/sampled_surface_tracker.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
@@ -29,6 +30,12 @@ class InspectableIdentifiabilityStudyState;
 //   but was demoted due to some reason. Typically this happens if an active
 //   surface is blocked by a settings change. These are kept around in order to
 //   minimize the total number of surfaces that we record per client.
+//
+// * Which identifiable surfaces are "tracked". I.e. we record whether a site
+//   measured this surface. This restriction is primarily to limit the amount
+//   of data that gets sent to UKM.  Note that this is independent of what
+//   surfaces are considered "active". This set is reset periodically to ensure
+//   we get a variety of different measurements.
 //
 // * The PRNG seed that we use for various pseudo-random operations.
 //
@@ -58,6 +65,19 @@ class IdentifiabilityStudyState {
   //
   // Calling this method may alter the state of the study settings.
   bool ShouldSampleSurface(blink::IdentifiableSurface surface);
+
+  // Should be called from unit-tests if multiple IdentifiabilityStudyState
+  // instances are to be constructed.
+  static void ResetStateForTesting();
+
+  // Returns true if tracking metrics should be recorded for this
+  // source_id/surface combination.
+  bool ShouldRecordSurface(uint64_t source_id,
+                           blink::IdentifiableSurface surface);
+
+  // Clear the sampled surface state from the state tracker. Ideally this would
+  // be called each time a UKM report generated.
+  void ResetRecordedSurfaces();
 
   // A knob that we can use to split data sets from different versions of the
   // implementation where the differences could have material effects on the
@@ -197,6 +217,19 @@ class IdentifiabilityStudyState {
   //
   //   * max_active_surfaces_ ≤ kIdentifiabilityStudyMaxSurfaces.
   const size_t max_active_surfaces_;
+
+  // Set of identifiable surfaces for which we record when the site makes
+  // measurement surfaces. This set is
+  // updated as we go unless it is already saturated, and resets itself
+  // periodically.
+  //
+  // Invariants:
+  //
+  //   * tracked_surfaces_ ∩ settings_.blocked_surfaces() = Ø.
+  //
+  //   * tracked_surfaces_.GetType() ∩ settings_.blocked_types() = Ø.
+  //
+  SampledSurfaceTracker tracked_surfaces_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

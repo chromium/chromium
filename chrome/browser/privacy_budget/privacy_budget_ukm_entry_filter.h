@@ -27,6 +27,7 @@ class PrivacyBudgetUkmEntryFilter : public ukm::UkmEntryFilter {
   bool FilterEntry(
       ukm::mojom::UkmEntry* entry,
       base::flat_set<uint64_t>* removed_metric_hashes) const override;
+  void OnStoreRecordingsInReport() const override;
 
  private:
   IdentifiabilityStudyState* const identifiability_study_state_;

@@ -13,6 +13,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace {
 
@@ -90,6 +91,12 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, BlockListedMetrics) {
 
   base::flat_map<uint64_t, int64_t> metrics = {{kBlockedSurface, 1},
                                                {kUnblockedSurface, 2}};
+  base::flat_map<uint64_t, int64_t> expected_metrics = {
+      {kUnblockedSurface, 2},
+      {blink::IdentifiableSurface::FromTypeAndInput(
+           blink::IdentifiableSurface::Type::kMeasuredSurface, 0)
+           .ToUkmMetricHash(),
+       static_cast<int64_t>(kUnblockedSurface)}};
   ukm::mojom::UkmEntryPtr x(base::in_place, 1,
                             ukm::builders::Identifiability::kEntryNameHash,
                             metrics);
@@ -98,6 +105,5 @@ TEST(PrivacyBudgetUkmEntryFilterStandaloneTest, BlockListedMetrics) {
   base::flat_set<uint64_t> filtered;
   EXPECT_TRUE(filter->FilterEntry(x.get(), &filtered));
   EXPECT_TRUE(filtered.empty());
-  ASSERT_EQ(1u, x->metrics.size());
-  EXPECT_EQ(kUnblockedSurface, x->metrics.begin()->first);
+  EXPECT_EQ(expected_metrics, x->metrics);
 }

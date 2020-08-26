@@ -97,6 +97,10 @@ class IdentifiableSurface {
     // Extension running content-script.
     kExtensionContentScript = 6,
 
+    // Represents making a measurement of one of the above surfacess. This
+    // metric is retained even if filtering discards the surface.
+    kMeasuredSurface = 7,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };
