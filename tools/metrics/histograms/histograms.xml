@@ -175452,7 +175452,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.BackendInitializeFirstTime" units="ms"
-    expires_after="2021-01-17">
+    expires_after="2021-09-01">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -175461,7 +175461,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.BackendInitializeFirstTimeSuccess" enum="BooleanSuccess"
-    expires_after="2020-09-01">
+    expires_after="2021-09-01">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -175482,7 +175482,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.BackendInitializeRestoreSuccess" enum="BooleanSuccess"
-    expires_after="2020-09-01">
+    expires_after="2021-09-01">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -175492,7 +175492,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.BackendInitializeRestoreTime" units="ms"
-    expires_after="2020-09-01">
+    expires_after="2021-09-01">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
