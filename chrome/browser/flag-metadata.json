@@ -4523,6 +4523,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "videotoolbox-vp9-decoding",
+    "owners": [ "dalecurtis", "videostack-eng" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "wallet-service-use-sandbox",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     // This flag is used by testing teams to run Google Payments calls against
