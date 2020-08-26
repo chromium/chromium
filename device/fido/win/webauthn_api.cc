@@ -14,6 +14,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/win/logging.h"
 #include "device/fido/win/type_conversions.h"
@@ -34,8 +35,13 @@ constexpr uint32_t kWinWebAuthnTimeoutMilliseconds = 1000 * 60 * 5;
 class WinWebAuthnApiImpl : public WinWebAuthnApi {
  public:
   WinWebAuthnApiImpl() : WinWebAuthnApi(), is_bound_(false) {
-    webauthn_dll_ =
-        LoadLibraryExA("webauthn.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    {
+      // Mitigate the issues caused by loading DLLs on a background thread
+      // (http://crbug/973868).
+      SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+      webauthn_dll_ =
+          LoadLibraryExA("webauthn.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    }
     if (!webauthn_dll_) {
       return;
     }
