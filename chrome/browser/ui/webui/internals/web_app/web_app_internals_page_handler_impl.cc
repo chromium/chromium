@@ -23,6 +23,7 @@ WebAppInternalsPageHandlerImpl::~WebAppInternalsPageHandlerImpl() = default;
 
 void WebAppInternalsPageHandlerImpl::AddPageResources(
     content::WebUIDataSource* source) {
+  source->DisableTrustedTypesCSP();
   source->AddResourcePath("web_app_internals.mojom-lite.js",
                           IDR_WEB_APP_INTERNALS_MOJOM_LITE_JS);
   source->AddResourcePath("web_app_internals.js", IDR_WEB_APP_INTERNALS_JS);
