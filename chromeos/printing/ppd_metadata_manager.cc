@@ -38,6 +38,10 @@ const char kMetadataParentDirectory[] = "metadata_v3";
 // Defines the number of shards of sharded metadata.
 constexpr int kNumShards = 20;
 
+// Defines the magic maximal number for USB vendor IDs and product IDs
+// (restricted to 16 bits).
+constexpr int kSixteenBitsMaximum = 0xffff;
+
 // Convenience struct containing parsed metadata of type T.
 template <typename T>
 struct ParsedMetadataWithTimestamp {
@@ -345,17 +349,24 @@ struct PpdMetadataPathSpecifier {
   PpdMetadataType type;
 
   // Used in two different ways as needed:
-  // 1. if |type| == PRINTERS, caller should populate this with the full
-  //    basename of the target printers metadata file. Or,
-  // 2. if |type| is locale-sensitive and != PRINTERS, caller
-  //    should populate this with the two-letter target locale (as
-  //    previously advertised by the serving root).
+  // 1. if |type| == PRINTERS,
+  //    then caller should populate this with the full basename of the
+  //    target printers metadata file. Or,
+  // 2. if |type| is locale-sensitive and != PRINTERS,
+  //    then caller should populate this with the two-letter target
+  //    locale (as previously advertised by the serving root).
   //
   // This member is a const char* rather than std::string or StringPiece
   // for compatibility with base::StringPrintf().
   const char* optional_tag;
 
-  // Numerical shard of target metadata basename, if needed.
+  // Used in two different ways as needed:
+  // 1. if |type| != USB_INDEX,
+  //    then this is the numerical shard of the target metadata
+  //    basename, if needed. Or,
+  // 2. if |type| == USB_INDEX,
+  //    then this is the vendor ID of the the device manufacturer being
+  //    sought.
   int optional_shard;
 };
 
@@ -399,7 +410,7 @@ std::string PpdMetadataPathInServingRoot(
 
     case PpdMetadataType::USB_INDEX:
       DCHECK(options.optional_shard >= 0 &&
-             options.optional_shard < kNumShards);
+             options.optional_shard <= kSixteenBitsMaximum);
       return base::StringPrintf("%s/usb-%04x.json", kMetadataParentDirectory,
                                 options.optional_shard);
   }
@@ -520,6 +531,37 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
 
     // If we're not the prime movers, then a search is already ongoing
     // and we need not provide extra impetus.
+  }
+
+  void FindDeviceInUsbIndex(int vendor_id,
+                            int product_id,
+                            base::TimeDelta age,
+                            FindDeviceInUsbIndexCallback cb) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Fails the |cb| immediately if the |vendor_id| or |product_id| are
+    // obviously out of range.
+    if (vendor_id < 0 || vendor_id > kSixteenBitsMaximum || product_id < 0 ||
+        product_id > kSixteenBitsMaximum) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(cb), std::string()));
+      return;
+    }
+
+    const PpdMetadataPathSpecifier options = {PpdMetadataType::USB_INDEX,
+                                              nullptr, vendor_id};
+    const std::string metadata_name = PpdMetadataPathInServingRoot(options);
+
+    if (MapHasValueFresherThan(cached_usb_indices_, metadata_name,
+                               clock_->Now() - age)) {
+      OnUsbIndexAvailable(metadata_name, product_id, std::move(cb));
+      return;
+    }
+
+    auto callback = base::BindOnce(&PpdMetadataManagerImpl::OnUsbIndexFetched,
+                                   weak_factory_.GetWeakPtr(), metadata_name,
+                                   product_id, std::move(cb));
+    config_cache_->Fetch(metadata_name, age, std::move(callback));
   }
 
   void SplitMakeAndModel(base::StringPiece effective_make_and_model,
@@ -869,6 +911,59 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   }
 
   // Called by one of
+  // *  FindDeviceInUsbIndex() or
+  // *  OnUsbIndexFetched().
+  // Searches the now-available USB index metadata with |metadata_name|
+  // for a device with given |product_id|, calling |cb| appropriately.
+  void OnUsbIndexAvailable(base::StringPiece metadata_name,
+                           int product_id,
+                           FindDeviceInUsbIndexCallback cb) {
+    DCHECK(cached_usb_indices_.contains(metadata_name));
+
+    const ParsedUsbIndex& usb_index =
+        cached_usb_indices_.at(metadata_name).value;
+    const auto& iter = usb_index.find(product_id);
+    std::string effective_make_and_model;
+    if (iter != usb_index.end()) {
+      effective_make_and_model = iter->second;
+    }
+
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(cb), std::move(effective_make_and_model)));
+  }
+
+  // Called by |config_cache_|.Fetch().
+  // Continues a prior call to FindDeviceInUsbIndex().
+  //
+  // Parses and updates our cached map of USB index metadata if |result|
+  // indicates a successful fetch.
+  void OnUsbIndexFetched(std::string metadata_name,
+                         int product_id,
+                         FindDeviceInUsbIndexCallback cb,
+                         const PrinterConfigCache::FetchResult& fetch_result) {
+    if (!fetch_result.succeeded) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(cb), std::string()));
+      return;
+    }
+
+    base::Optional<ParsedUsbIndex> parsed =
+        ParseUsbIndex(fetch_result.contents);
+    if (!parsed.has_value()) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(cb), std::string()));
+      return;
+    }
+
+    DCHECK(fetch_result.key == metadata_name);
+    ParsedMetadataWithTimestamp<ParsedUsbIndex> value = {clock_->Now(),
+                                                         parsed.value()};
+    cached_usb_indices_.insert_or_assign(fetch_result.key, value);
+    OnUsbIndexAvailable(fetch_result.key, product_id, std::move(cb));
+  }
+
+  // Called by one of
   // *  SplitMakeAndModel() or
   // *  OnReverseIndexFetched().
   // Continues a prior call to SplitMakeAndModel().
@@ -950,6 +1045,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   CachedParsedMetadataMap<ParsedManufacturers> cached_manufacturers_;
   CachedParsedMetadataMap<ParsedPrinters> cached_printers_;
   CachedParsedMetadataMap<ParsedIndex> cached_forward_indices_;
+  CachedParsedMetadataMap<ParsedUsbIndex> cached_usb_indices_;
   CachedParsedMetadataMap<ParsedReverseIndex> cached_reverse_indices_;
 
   // Processing queue for FindAllEmmsAvailableInIndex().

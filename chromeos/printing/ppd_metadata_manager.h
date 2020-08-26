@@ -47,6 +47,14 @@ class CHROMEOS_EXPORT PpdMetadataManager {
   using FindAllEmmsAvailableInIndexCallback = base::OnceCallback<void(
       const base::flat_map<std::string, ParsedIndexValues>&)>;
 
+  // Used by FindDeviceInUsbIndex().
+  // *  Contains the effective-make-and-model string corresponding to
+  //    the vendor id / product id pair originally provided by caller.
+  // *  The argument is empty if no appropriate effective-make-and-model
+  //    string was found.
+  using FindDeviceInUsbIndexCallback =
+      base::OnceCallback<void(const std::string&)>;
+
   // Assumes ownership of |config_cache|.
   static std::unique_ptr<PpdMetadataManager> Create(
       base::StringPiece browser_locale,
@@ -98,6 +106,17 @@ class CHROMEOS_EXPORT PpdMetadataManager {
       const std::vector<std::string>& emms,
       base::TimeDelta age,
       FindAllEmmsAvailableInIndexCallback cb) = 0;
+
+  // Searches USB index metadata for a printer with the given
+  // |vendor_id| and |product_id|, calling |cb| with the appropriate
+  // effective-make-and-model string if one is found.
+  // *  Does not rely on prior call to GetLocale().
+  // *  During operation, operates with metadata no older than |age|.
+  // *  On failure, calls |cb| with an empty string.
+  virtual void FindDeviceInUsbIndex(int vendor_id,
+                                    int product_id,
+                                    base::TimeDelta age,
+                                    FindDeviceInUsbIndexCallback cb) = 0;
 
   // Calls |cb| with the make and model of
   // |effective_make_and_model|.

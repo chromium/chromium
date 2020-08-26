@@ -96,6 +96,16 @@ class PpdMetadataManagerTest : public ::testing::Test {
   }
 
   // Callback method appropriate for passing to
+  // PpdMetadataManager::FindDeviceInUsbIndex().
+  void CatchFindDeviceInUsbIndex(base::RepeatingClosure quit_closure,
+                                 const std::string& value) {
+    results_.effective_make_and_model_string_from_usb_index = value;
+    if (quit_closure) {
+      quit_closure.Run();
+    }
+  }
+
+  // Callback method appropriate for passing to
   // PpdMetadataManager::SplitMakeAndModel().
   void CatchSplitMakeAndModel(base::RepeatingClosure quit_closure,
                               PpdProvider::CallbackResultCode code,
@@ -131,6 +141,10 @@ class PpdMetadataManagerTest : public ::testing::Test {
     // PpdMetadataManager::FindAllEmmsAvailableInIndex().
     base::flat_map<std::string, ParsedIndexValues>
         available_effective_make_and_model_strings;
+
+    // Landing area for
+    // PpdMetadataManager::FindDeviceInUsbIndex().
+    std::string effective_make_and_model_string_from_usb_index;
 
     // Landing area for PpdMetadataManager::SplitMakeAndModel().
     PpdProvider::CallbackResultCode split_make_and_model_code;
@@ -1036,6 +1050,187 @@ TEST_F(PpdMetadataManagerTest, CanFindAllAvailableEmmsInIndexTimeSensitive) {
       UnorderedElementsAre(ParsedIndexEntryLike(
           "some printer c", UnorderedElementsAre(ParsedIndexLeafWithPpdBasename(
                                 "some-ppd-basename-c.ppd.gz")))));
+}
+
+// Verifies that the manager can find a USB device by fetching and
+// parsing USB index metadata.
+TEST_F(PpdMetadataManagerTest, CanFindDeviceInUsbIndex) {
+  // Known interaction: hex(1138) == 0x472. To fetch USB index metadata
+  // for a manufacturer with vendor ID 1138, the manager will fetch
+  // the metadata with the following name.
+  //
+  // This USB index describes one product for vendor ID 1138; its
+  // product ID is 13.
+  GetFakeCache()->SetFetchResponseForTesting("metadata_v3/usb-0472.json", R"({
+  "usbIndex": {
+    "13": {
+      "effectiveMakeAndModel": "some printer a"
+    }
+  }
+})");
+
+  base::RunLoop loop;
+  auto callback =
+      base::BindOnce(&PpdMetadataManagerTest::CatchFindDeviceInUsbIndex,
+                     base::Unretained(this), loop.QuitClosure());
+  manager_->FindDeviceInUsbIndex(1138, 13, kArbitraryTimeDelta,
+                                 std::move(callback));
+  loop.Run();
+
+  EXPECT_THAT(results_.effective_make_and_model_string_from_usb_index,
+              StrEq("some printer a"));
+}
+
+// Verifies that the manager invokes the FindDeviceInUsbIndexCallback
+// with an empty argument if it fails to fetch the appropriate USB
+// index.
+TEST_F(PpdMetadataManagerTest, FailsToFindDeviceInUsbIndexOnFetchFailure) {
+  // Known interaction: hex(1138) == 0x472. To fetch USB index metadata
+  // for a manufacturer with vendor ID 1138, the manager will fetch
+  // the metadata with the following name.
+  //
+  // We populate nothing in the fake serving root, so any fetch request
+  // from the manager will fail.
+
+  // Jams the landing area to have a non-empty string. We expect the
+  // callback to fire with an empty string, which should empty this.
+  results_.effective_make_and_model_string_from_usb_index =
+      "non-empty string that will fail this test if it persists";
+
+  base::RunLoop loop;
+  auto callback =
+      base::BindOnce(&PpdMetadataManagerTest::CatchFindDeviceInUsbIndex,
+                     base::Unretained(this), loop.QuitClosure());
+  manager_->FindDeviceInUsbIndex(1138, 13, kArbitraryTimeDelta,
+                                 std::move(callback));
+  loop.Run();
+
+  EXPECT_TRUE(results_.effective_make_and_model_string_from_usb_index.empty());
+}
+
+// Verifies that the manager invokes the FindDeviceInUsbIndexCallback
+// with an empty argument if it fails to parse the appropriate USB
+// index.
+TEST_F(PpdMetadataManagerTest, FailsToFindDeviceInUsbIndexOnParseFailure) {
+  // Known interaction: hex(1138) == 0x472. To fetch USB index metadata
+  // for a manufacturer with vendor ID 1138, the manager will fetch
+  // the metadata with the following name.
+  //
+  // We populate the fake serving root with invalid JSON for the USB
+  // index metadata that the manager will fetch and fail to parse.
+  GetFakeCache()->SetFetchResponseForTesting("metadata_v3/usb-0472.json",
+                                             kInvalidJson);
+
+  // Jams the landing area to have a non-empty string. We expect the
+  // callback to fire with an empty string, which should empty this.
+  results_.effective_make_and_model_string_from_usb_index =
+      "non-empty string that will fail this test if it persists";
+
+  base::RunLoop loop;
+  auto callback =
+      base::BindOnce(&PpdMetadataManagerTest::CatchFindDeviceInUsbIndex,
+                     base::Unretained(this), loop.QuitClosure());
+  manager_->FindDeviceInUsbIndex(1138, 13, kArbitraryTimeDelta,
+                                 std::move(callback));
+  loop.Run();
+
+  EXPECT_TRUE(results_.effective_make_and_model_string_from_usb_index.empty());
+}
+
+// Verifies that the manager fetches USB index metadata anew when caller
+// asks it for metadata fresher than what it has cached.
+TEST_F(PpdMetadataManagerTest, CanFindDeviceInUsbIndexTimeSensitive) {
+  // Known interaction: hex(1138) == 0x472. To fetch USB index metadata
+  // for a manufacturer with vendor ID 1138, the manager will fetch
+  // the metadata with the following name.
+  //
+  // This USB index describes one product for vendor ID 1138; its
+  // product ID is 13.
+  GetFakeCache()->SetFetchResponseForTesting("metadata_v3/usb-0472.json", R"({
+  "usbIndex": {
+    "13": {
+      "effectiveMakeAndModel": "some printer a"
+    }
+  }
+})");
+
+  base::RunLoop loop;
+  auto callback =
+      base::BindOnce(&PpdMetadataManagerTest::CatchFindDeviceInUsbIndex,
+                     base::Unretained(this), loop.QuitClosure());
+
+  // t = 0s: caller requests |manager_| to name a device with vendor ID
+  // 1138 and product ID 13. |manager_| fetches, parses, and caches
+  // the appropriate USB index metadata.
+  manager_->FindDeviceInUsbIndex(1138, 13, kArbitraryTimeDelta,
+                                 std::move(callback));
+  loop.Run();
+
+  EXPECT_THAT(results_.effective_make_and_model_string_from_usb_index,
+              StrEq("some printer a"));
+
+  // Sets the serving root to mutate the served USB index metadata; the
+  // device with product ID 13 now has the effective-make-and-model
+  // string "some printer b." If the |manager_| fetches this metadata
+  // anew, then it will observe the changed effective-make-and-model
+  // string.
+  GetFakeCache()->SetFetchResponseForTesting("metadata_v3/usb-0472.json", R"({
+  "usbIndex": {
+    "13": {
+      "effectiveMakeAndModel": "some printer b"
+    }
+  }
+})");
+
+  // Jams the landing area to hold a test-failing string. We expect
+  // the successful callback to overwrite this.
+  results_.effective_make_and_model_string_from_usb_index =
+      "non-empty string that will fail this test if it persists";
+
+  base::RunLoop second_loop;
+  auto second_callback =
+      base::BindOnce(&PpdMetadataManagerTest::CatchFindDeviceInUsbIndex,
+                     base::Unretained(this), second_loop.QuitClosure());
+
+  // t = 0s: caller requests |manager_| to name a device with vendor ID
+  // 1138 and product ID 13. It asks that |manager_| do so with metadata
+  // parsed within the last 30 seconds. |manager_| responds with the
+  // cached USB index metadata without incurring a live fetch.
+  manager_->FindDeviceInUsbIndex(1138, 13, base::TimeDelta::FromSeconds(30),
+                                 std::move(second_callback));
+  second_loop.Run();
+
+  // The manager will have responded with the cached
+  // effective-make-and-model string "some printer a."
+  EXPECT_THAT(results_.effective_make_and_model_string_from_usb_index,
+              StrEq("some printer a"));
+
+  // t = 31s
+  clock_.Advance(base::TimeDelta::FromSeconds(31));
+
+  // Jams the landing area to hold a test-failing string. We expect
+  // the successful callback to overwrite this.
+  results_.effective_make_and_model_string_from_usb_index =
+      "non-empty string that will fail this test if it persists";
+
+  base::RunLoop third_loop;
+  auto third_callback =
+      base::BindOnce(&PpdMetadataManagerTest::CatchFindDeviceInUsbIndex,
+                     base::Unretained(this), third_loop.QuitClosure());
+
+  // t = 31s: caller requests |manager_| to name a device with vendor ID
+  // 1138 and product ID 13. It asks that |manager_| do so with metadata
+  // parsed within the last 30 seconds. |manager_| sees that the cached
+  // USB index metadata is too stale, and so incurs a live fetch. The
+  // fetch exposes the changed metadata.
+  manager_->FindDeviceInUsbIndex(1138, 13, base::TimeDelta::FromSeconds(30),
+                                 std::move(third_callback));
+  third_loop.Run();
+
+  // The manager will have responded with the new and changed
+  // effective-make-and-model string "some printer b."
+  EXPECT_THAT(results_.effective_make_and_model_string_from_usb_index,
+              StrEq("some printer b"));
 }
 
 // Verifies that the manager can split an effective-make-and-model
