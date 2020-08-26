@@ -140832,8 +140832,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.InitializationTime" units="ms"
-    expires_after="2020-08-30">
+    expires_after="never">
+<!-- expires-never: Monitors printing system health. -->
+
   <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
   <summary>
     Time from when print preview is initiated until the preview PDF generation
     is started.
@@ -141128,8 +141131,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.RenderAndGeneratePDFTime" units="ms"
-    expires_after="2020-08-31">
+    expires_after="never">
+<!-- expires-never: Monitors printing system health. -->
+
   <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
   <summary>
     Time taken to render and generate PDF for print preview. (Includes time to
     reflow the page back to normal, but not the time to reflow the page to
@@ -141138,8 +141144,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.RenderAndGeneratePDFTimeAvgPerPage" units="ms"
-    expires_after="2020-08-31">
+    expires_after="never">
+<!-- expires-never: Monitors printing system health. -->
+
   <owner>thestig@chromium.org</owner>
+  <owner>dhoss@chromium.org</owner>
   <summary>
     Time taken to render and generate PDF for print preview divided by the
     number of pages. (Includes time to reflow the page back to normal, but not
