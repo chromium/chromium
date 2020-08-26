@@ -16,5 +16,6 @@ android_library("android_swipe_refresh_java") {
   deps = [
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_interpolator_interpolator_java",
+    "//third_party/android_deps:androidx_legacy_legacy_support_core_ui_java",
   ]
 }

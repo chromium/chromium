@@ -51,6 +51,10 @@ dependencies {
     def androidXSupportLibVersion = '1.0.0'
     compile "androidx.core:core:1.1.0"
     compile "androidx.activity:activity:1.1.0"
+    compile "androidx.legacy:legacy-support-core-ui:${androidXSupportLibVersion}"
+    compile "androidx.legacy:legacy-support-core-utils:${androidXSupportLibVersion}"
+    compile "androidx.legacy:legacy-support-v4:${androidXSupportLibVersion}"
+    compile "androidx.legacy:legacy-support-v13:${androidXSupportLibVersion}"
     compile "androidx.annotation:annotation:1.1.0"
     compile "androidx.appcompat:appcompat:1.2.0-beta01"
     compile "androidx.appcompat:appcompat-resources:1.2.0-beta01"

@@ -33,6 +33,8 @@
     "libs/androidx_legacy_legacy_preference_v14",
     "libs/androidx_legacy_legacy_support_core_ui",
     "libs/androidx_legacy_legacy_support_core_utils",
+    "libs/androidx_legacy_legacy_support_v13",
+    "libs/androidx_legacy_legacy_support_v4",
     "libs/androidx_lifecycle_lifecycle_common",
     "libs/androidx_lifecycle_lifecycle_common_java8",
     "libs/androidx_lifecycle_lifecycle_livedata",
