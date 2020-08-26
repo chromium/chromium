@@ -1031,14 +1031,6 @@ bool RenderViewImpl::AutoResizeMode() {
   return GetWebView()->AutoResizeMode();
 }
 
-void RenderViewImpl::ScrollFocusedNodeIntoViewForWidget() {
-  if (WebLocalFrame* focused_frame = GetWebView()->FocusedFrame()) {
-    blink::WebFrameWidget* frame_widget =
-        focused_frame->LocalRoot()->FrameWidget();
-    frame_widget->ScrollFocusedEditableElementIntoView();
-  }
-}
-
 void RenderViewImpl::DidReceiveSetFocusEventForWidget() {
   // This message must always be received when the main frame is a
   // WebLocalFrame.

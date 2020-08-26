@@ -517,13 +517,6 @@ void RenderWidget::UpdateVisualProperties(
     }
   }
 
-  // TODO(crbug.com/939118): ScrollFocusedNodeIntoViewForWidget does not work
-  // when the focused node is inside an OOPIF. This code path where
-  // scroll_focused_node_into_view is set is used only for WebView, crbug
-  // 939118 tracks fixing webviews to not use scroll_focused_node_into_view.
-  if (delegate() && visual_properties.scroll_focused_node_into_view)
-    delegate()->ScrollFocusedNodeIntoViewForWidget();
-
   AfterUpdateVisualProperties();
 }
 
