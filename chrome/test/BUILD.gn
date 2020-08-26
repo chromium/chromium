@@ -1613,6 +1613,7 @@ if (!is_android) {
         "../browser/policy/suggested_content_policy_browsertest.cc",
         "../browser/policy/system_features_policy_browsertest.cc",
         "../browser/renderer_context_menu/quick_answers_menu_observer_browsertest.cc",
+        "../browser/ui/ash/holding_space/holding_space_client_impl_browsertest.cc",
       ]
     }
 
@@ -5645,8 +5646,8 @@ test("unit_tests") {
       "../browser/ui/views/frame/test_with_browser_view.h",
       "../browser/ui/views/frame/web_contents_close_handler_unittest.cc",
       "../browser/ui/views/fullscreen_control/fullscreen_control_popup_unittest.cc",
-      "../browser/ui/views/global_media_controls/media_notification_device_selector_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_container_impl_view_unittest.cc",
+      "../browser/ui/views/global_media_controls/media_notification_device_selector_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_notification_list_view_unittest.cc",
       "../browser/ui/views/global_media_controls/overlay_media_notification_view_unittest.cc",
       "../browser/ui/views/hover_button_unittest.cc",

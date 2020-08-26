@@ -33,11 +33,12 @@ constexpr char HoldingSpaceKeyedService::kPersistencePath[];
 HoldingSpaceKeyedService::HoldingSpaceKeyedService(
     content::BrowserContext* context,
     const AccountId& account_id)
-    : browser_context_(context) {
+    : browser_context_(context),
+      holding_space_client_(Profile::FromBrowserContext(context)) {
   RestoreModel();
   holding_space_model_observer_.Add(&holding_space_model_);
-  HoldingSpaceController::Get()->RegisterModelForUser(account_id,
-                                                      &holding_space_model_);
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      account_id, &holding_space_client_, &holding_space_model_);
 }
 
 HoldingSpaceKeyedService::~HoldingSpaceKeyedService() = default;

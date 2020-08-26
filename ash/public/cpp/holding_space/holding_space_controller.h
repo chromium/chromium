@@ -12,6 +12,7 @@
 
 namespace ash {
 
+class HoldingSpaceClient;
 class HoldingSpaceControllerObserver;
 class HoldingSpaceModel;
 
@@ -36,27 +37,33 @@ class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
   void AddObserver(HoldingSpaceControllerObserver* observer);
   void RemoveObserver(HoldingSpaceControllerObserver* observer);
 
-  // Adds a model to it's corresponding user account id in a map.
-  void RegisterModelForUser(const AccountId& account_id,
-                            HoldingSpaceModel* model);
+  // Adds a client and model to it's corresponding user account id in a map.
+  void RegisterClientAndModelForUser(const AccountId& account_id,
+                                     HoldingSpaceClient* client,
+                                     HoldingSpaceModel* model);
 
-  // Sets the active model - the caller is expected to maintain the ownership.
-  void SetModel(HoldingSpaceModel* model);
+  HoldingSpaceClient* client() { return client_; }
 
   HoldingSpaceModel* model() { return model_; }
 
+ private:
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
- private:
-  // The currently active holding space model, set by SetModel(). The client
-  // that sets the model is expected to maintain the model ownership.
+  void SetClient(HoldingSpaceClient* client);
+  void SetModel(HoldingSpaceModel* model);
+
+  // The currently active holding space client, set by `SetClient()`.
+  HoldingSpaceClient* client_ = nullptr;
+
+  // The currently active holding space model, set by `SetModel()`.
   HoldingSpaceModel* model_ = nullptr;
 
   // The currently active user account id.
   AccountId active_user_account_id_;
 
-  std::map<const AccountId, HoldingSpaceModel*> models_by_account_id_;
+  using ClientAndModel = std::pair<HoldingSpaceClient*, HoldingSpaceModel*>;
+  std::map<const AccountId, ClientAndModel> clients_and_models_by_account_id_;
 
   base::ObserverList<HoldingSpaceControllerObserver> observers_;
 };

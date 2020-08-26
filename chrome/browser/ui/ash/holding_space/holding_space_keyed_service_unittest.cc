@@ -315,13 +315,17 @@ TEST_F(HoldingSpaceKeyedServiceTest, SecondaryUserProfile) {
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
           second_profile);
 
-  // Just creating a secondary profile should not change the active model.
+  // Just creating a secondary profile shouldn't change the active client/model.
+  EXPECT_EQ(HoldingSpaceController::Get()->client(),
+            primary_holding_space_service->client_for_testing());
   EXPECT_EQ(HoldingSpaceController::Get()->model(),
             primary_holding_space_service->model_for_testing());
 
-  // Switching the active user should change the active model (multi user
-  // support)
+  // Switching the active user should change the active client/model (multi-user
+  // support).
   ActivateSecondaryProfile();
+  EXPECT_EQ(HoldingSpaceController::Get()->client(),
+            secondary_holding_space_service->client_for_testing());
   EXPECT_EQ(HoldingSpaceController::Get()->model(),
             secondary_holding_space_service->model_for_testing());
 }

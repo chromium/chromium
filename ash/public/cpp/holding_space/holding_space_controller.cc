@@ -26,6 +26,7 @@ HoldingSpaceController::HoldingSpaceController() {
 HoldingSpaceController::~HoldingSpaceController() {
   CHECK_EQ(g_instance, this);
 
+  SetClient(nullptr);
   SetModel(nullptr);
   g_instance = nullptr;
 
@@ -47,11 +48,34 @@ void HoldingSpaceController::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void HoldingSpaceController::RegisterModelForUser(const AccountId& account_id,
-                                                  HoldingSpaceModel* model) {
-  models_by_account_id_[account_id] = model;
-  if (account_id == active_user_account_id_)
+void HoldingSpaceController::RegisterClientAndModelForUser(
+    const AccountId& account_id,
+    HoldingSpaceClient* client,
+    HoldingSpaceModel* model) {
+  clients_and_models_by_account_id_[account_id] = std::make_pair(client, model);
+  if (account_id == active_user_account_id_) {
+    SetClient(client);
     SetModel(model);
+  }
+}
+
+void HoldingSpaceController::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  active_user_account_id_ = account_id;
+
+  auto client_and_model_it = clients_and_models_by_account_id_.find(account_id);
+  if (client_and_model_it == clients_and_models_by_account_id_.end()) {
+    SetClient(nullptr);
+    SetModel(nullptr);
+    return;
+  }
+
+  SetClient(client_and_model_it->second.first);
+  SetModel(client_and_model_it->second.second);
+}
+
+void HoldingSpaceController::SetClient(HoldingSpaceClient* client) {
+  client_ = client;
 }
 
 void HoldingSpaceController::SetModel(HoldingSpaceModel* model) {
@@ -66,18 +90,6 @@ void HoldingSpaceController::SetModel(HoldingSpaceModel* model) {
     for (auto& observer : observers_)
       observer.OnHoldingSpaceModelAttached(model_);
   }
-}
-
-void HoldingSpaceController::OnActiveUserSessionChanged(
-    const AccountId& account_id) {
-  active_user_account_id_ = account_id;
-
-  auto model_it = models_by_account_id_.find(account_id);
-  if (model_it == models_by_account_id_.end()) {
-    SetModel(nullptr);
-    return;
-  }
-  SetModel(model_it->second);
 }
 
 }  // namespace ash

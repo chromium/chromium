@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -58,6 +59,10 @@ class HoldingSpaceKeyedService : public KeyedService,
   void AddScreenshot(const base::FilePath& screenshot_path,
                      const gfx::ImageSkia& image);
 
+  const HoldingSpaceClient* client_for_testing() const {
+    return &holding_space_client_;
+  }
+
   const HoldingSpaceModel* model_for_testing() const {
     return &holding_space_model_;
   }
@@ -75,6 +80,7 @@ class HoldingSpaceKeyedService : public KeyedService,
   gfx::ImageSkia ResolveImage(const base::FilePath& file_path) const;
 
   content::BrowserContext* const browser_context_;
+  HoldingSpaceClientImpl holding_space_client_;
   HoldingSpaceModel holding_space_model_;
 
   ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver>
