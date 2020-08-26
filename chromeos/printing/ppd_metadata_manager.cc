@@ -336,6 +336,7 @@ enum class PpdMetadataType {
   kForwardIndex,
   kReverseIndex,  // locale-sensitive
   kUsbIndex,
+  kUsbVendorIds,
 };
 
 // Control argument that fully specifies the basename and containing
@@ -413,6 +414,10 @@ std::string PpdMetadataPathInServingRoot(
              options.optional_shard <= kSixteenBitsMaximum);
       return base::StringPrintf("%s/usb-%04x.json", kMetadataParentDirectory,
                                 options.optional_shard);
+
+    case PpdMetadataType::kUsbVendorIds:
+      return base::StringPrintf("%s/usb_vendor_ids.json",
+                                kMetadataParentDirectory);
   }
 
   // This function cannot fail except by maintainer error.
@@ -562,6 +567,24 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
                                    weak_factory_.GetWeakPtr(), metadata_name,
                                    product_id, std::move(cb));
     config_cache_->Fetch(metadata_name, age, std::move(callback));
+  }
+
+  void GetUsbManufacturerName(int vendor_id,
+                              base::TimeDelta age,
+                              GetUsbManufacturerNameCallback cb) override {
+    const PpdMetadataPathSpecifier options = {PpdMetadataType::kUsbVendorIds};
+    const std::string metadata_name = PpdMetadataPathInServingRoot(options);
+
+    if (MapHasValueFresherThan(cached_usb_vendor_id_map_, metadata_name,
+                               clock_->Now() - age)) {
+      OnUsbVendorIdMapAvailable(metadata_name, vendor_id, std::move(cb));
+      return;
+    }
+
+    auto fetch_cb =
+        base::BindOnce(&PpdMetadataManagerImpl::OnUsbVendorIdMapFetched,
+                       weak_factory_.GetWeakPtr(), vendor_id, std::move(cb));
+    config_cache_->Fetch(metadata_name, age, std::move(fetch_cb));
   }
 
   void SplitMakeAndModel(base::StringPiece effective_make_and_model,
@@ -965,6 +988,63 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   }
 
   // Called by one of
+  // *  GetUsbManufacturerName() or
+  // *  OnUsbVendorIdMapFetched().
+  //
+  // Searches the available USB vendor ID map (named by |metadata_name|)
+  // for |vendor_id| and invokes |cb| accordingly.
+  void OnUsbVendorIdMapAvailable(base::StringPiece metadata_name,
+                                 int vendor_id,
+                                 GetUsbManufacturerNameCallback cb) {
+    DCHECK(cached_usb_vendor_id_map_.contains(metadata_name));
+    ParsedUsbVendorIdMap usb_vendor_id_map =
+        cached_usb_vendor_id_map_.at(metadata_name).value;
+
+    std::string manufacturer_name;
+    const auto& iter = usb_vendor_id_map.find(vendor_id);
+    if (iter != usb_vendor_id_map.end()) {
+      manufacturer_name = iter->second;
+    }
+
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(cb), manufacturer_name));
+  }
+
+  // Called by |config_cache_|->Fetch().
+  // Continues a prior call to GetUsbManufacturerName.
+  //
+  // Parses and updates our cached map of USB vendor IDs if |result|
+  // indicates a successful fetch.
+  //
+  // If we're haggling over bits, it is wasteful to have a map that
+  // only ever has at most one key-value pair. We willfully accept this
+  // inefficiency to maintain consistency with other metadata
+  // operations.
+  void OnUsbVendorIdMapFetched(
+      int vendor_id,
+      GetUsbManufacturerNameCallback cb,
+      const PrinterConfigCache::FetchResult& fetch_result) {
+    if (!fetch_result.succeeded) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(cb), std::string()));
+      return;
+    }
+
+    const base::Optional<ParsedUsbVendorIdMap> parsed =
+        ParseUsbVendorIdMap(fetch_result.contents);
+    if (!parsed.has_value()) {
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(cb), std::string()));
+      return;
+    }
+
+    ParsedMetadataWithTimestamp<ParsedUsbVendorIdMap> value = {clock_->Now(),
+                                                               parsed.value()};
+    cached_usb_vendor_id_map_.insert_or_assign(fetch_result.key, value);
+    OnUsbVendorIdMapAvailable(fetch_result.key, vendor_id, std::move(cb));
+  }
+
+  // Called by one of
   // *  SplitMakeAndModel() or
   // *  OnReverseIndexFetched().
   // Continues a prior call to SplitMakeAndModel().
@@ -1047,6 +1127,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
   CachedParsedMetadataMap<ParsedPrinters> cached_printers_;
   CachedParsedMetadataMap<ParsedIndex> cached_forward_indices_;
   CachedParsedMetadataMap<ParsedUsbIndex> cached_usb_indices_;
+  CachedParsedMetadataMap<ParsedUsbVendorIdMap> cached_usb_vendor_id_map_;
   CachedParsedMetadataMap<ParsedReverseIndex> cached_reverse_indices_;
 
   // Processing queue for FindAllEmmsAvailableInIndex().

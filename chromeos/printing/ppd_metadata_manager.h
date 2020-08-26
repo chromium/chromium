@@ -55,6 +55,13 @@ class CHROMEOS_EXPORT PpdMetadataManager {
   using FindDeviceInUsbIndexCallback =
       base::OnceCallback<void(const std::string&)>;
 
+  // Used by GetUsbManufacturerName().
+  // *  Contains the unlocalized manufacturer name corresponding to the
+  //    vendor id originally provided by caller.
+  // *  The argument is empty if the manufacturer name is not found.
+  using GetUsbManufacturerNameCallback =
+      base::OnceCallback<void(const std::string&)>;
+
   // Assumes ownership of |config_cache|.
   static std::unique_ptr<PpdMetadataManager> Create(
       base::StringPiece browser_locale,
@@ -117,6 +124,15 @@ class CHROMEOS_EXPORT PpdMetadataManager {
                                     int product_id,
                                     base::TimeDelta age,
                                     FindDeviceInUsbIndexCallback cb) = 0;
+
+  // Searches the USB vendor ID map for a manufacturer with the given
+  // |vendor_id|, calling |cb| with the name found (if any).
+  // *  Does not rely on prior call to GetLocale().
+  // *  During operation, operates with metadata no older than |age|.
+  // *  On failure, calls |cb| with an empty string.
+  virtual void GetUsbManufacturerName(int vendor_id,
+                                      base::TimeDelta age,
+                                      GetUsbManufacturerNameCallback cb) = 0;
 
   // Calls |cb| with the make and model of
   // |effective_make_and_model|.
