@@ -213,6 +213,15 @@ int WontCompile() {
   constexpr auto made_span = make_span<2>(str);
 }
 
+#elif defined(NCTEST_EXTENT_NO_DYNAMIC_EXTENT)  // [r"EXTENT should only be used for containers with a static extent"]
+
+// EXTENT should not result in |dynamic_extent|, it should be a compile-time
+// error.
+void WontCompile() {
+  std::vector<uint8_t> vector;
+  static_assert(EXTENT(vector) == 0, "Should not compile");
+}
+
 #endif
 
 }  // namespace base

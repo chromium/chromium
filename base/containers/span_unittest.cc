@@ -1438,12 +1438,6 @@ TEST(SpanTest, ExtentMacro) {
 
   uint8_t plain_array[kSize] = {0};
   static_assert(EXTENT(plain_array) == kSize, "EXTENT broken for plain arrays");
-
-  // EXTENT should not result in |dynamic_extent|, it should be a compile-time
-  // error. However, we don't have compile-failure tests.
-  //
-  // std::vector<uint8_t> vector;
-  // static_assert(EXTENT(vector) == dynamic_extent, "Should not compile");
 }
 
 }  // namespace base
