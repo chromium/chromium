@@ -670,6 +670,13 @@ void IconLoadingPipeline::LoadExtensionIcon(
 void IconLoadingPipeline::LoadCompressedIconFromFile(
     const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // For the compressed icon, MaybeApplyEffectsAndComplete() uses
+  // |icon_scale_for_compressed_response_| to apps::EncodeImageToPngBytes(). So
+  // set |icon_scale_for_compressed_response_| to match |icon_scale_|, which is
+  // used to decode the icon.
+  icon_scale_for_compressed_response_ = icon_scale_;
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ReadFileAsCompressedData, path),
