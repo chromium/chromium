@@ -77,6 +77,7 @@ crbug.com/1020018 [ Linux ] external/wpt/webdriver/tests/get_active_element/get.
 crbug.com/1020018 [ Linux ] external/wpt/webdriver/tests/get_active_element/get.py>>test_sucess_input_non_interactable [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_title/iframe.py>>test_origin[cross_origin] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/get_current_url/iframe.py>>test_origin[cross_origin] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer_tripleclick.py>>test_tripleclick_at_coordinates [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/minimize_window/minimize.py>>test_fully_exit_fullscreen [ Failure ]

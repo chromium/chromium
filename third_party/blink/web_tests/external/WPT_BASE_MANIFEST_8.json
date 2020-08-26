@@ -593,6 +593,13 @@
          null,
          {}
         ]
+       ],
+       "second-legend-becomes-rendered-legend-crash.html": [
+        "6e36b3bb5aed7550b12bcbdf7a94d9f8fd372687",
+        [
+         null,
+         {}
+        ]
        ]
       }
      },
@@ -2562,6 +2569,15 @@
      ],
      "background-attachment-local.html": [
       "821c1c5445f1da1420398769381eae09493f4e08",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
+    "css-cascade": {
+     "important-transition-manual.html": [
+      "b9abed469f3ff123f4639095e78c65ce0ec18ba0",
       [
        null,
        {}
@@ -426632,7 +426648,14 @@
      },
      "get_title": {
       "get.py": [
-       "f0e58acbe9988e5e818b2f25ca958b69d3ca9887",
+       "7bb83c3f9cdb94be5189e9230e1f22a3e12b63b6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "iframe.py": [
+       "5991bf3590691f69cacba4e45fd23a3595d1fb99",
        [
         null,
         {}
