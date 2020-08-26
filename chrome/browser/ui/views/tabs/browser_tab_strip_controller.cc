@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -37,13 +38,17 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/in_product_help/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
-#include "chrome/browser/ui/views/tabs/tab_groups_iph_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/prefs/pref_service.h"
@@ -103,12 +108,22 @@ class BrowserTabStripController::TabContextMenuContents
  public:
   TabContextMenuContents(Tab* tab,
                          BrowserTabStripController* controller,
-                         TabGroupsIPHController* tab_groups_iph_controller)
+                         FeaturePromoController* feature_promo_controller)
       : tab_(tab),
         controller_(controller),
-        tab_groups_iph_controller_(tab_groups_iph_controller) {
+        feature_promo_controller_(feature_promo_controller) {
     model_ = controller_->menu_model_factory_->Create(
         this, controller->model_, controller->tabstrip_->GetModelIndexOf(tab));
+
+    // If IPH is showing, continue into the menu. IsCommandIdAlerted()
+    // is called on |menu_runner_| construction, and we check
+    // |tab_groups_promo_handle_| there. So we must do this first.
+    if (feature_promo_controller_->BubbleIsShowing(
+            feature_engagement::kIPHDesktopTabGroupsNewGroupFeature)) {
+      tab_groups_promo_handle_ =
+          feature_promo_controller_->CloseBubbleAndContinuePromo(
+              feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+    }
 
     // Because we use "new" badging for feature promos, we cannot use system-
     // native context menus. (See crbug.com/1109256.)
@@ -122,7 +137,6 @@ class BrowserTabStripController::TabContextMenuContents
   void Cancel() { controller_ = nullptr; }
 
   void RunMenuAt(const gfx::Point& point, ui::MenuSourceType source_type) {
-    tab_groups_iph_controller_->TabContextMenuOpened();
     menu_runner_->RunMenuAt(tab_->GetWidget(), nullptr,
                             gfx::Rect(point, gfx::Size()),
                             views::MenuAnchorPosition::kTopLeft, source_type);
@@ -138,12 +152,11 @@ class BrowserTabStripController::TabContextMenuContents
 
   bool IsCommandIdAlerted(int command_id) const override {
     return command_id == TabStripModel::CommandAddToNewGroup &&
-           tab_groups_iph_controller_ &&
-           tab_groups_iph_controller_->ShouldHighlightContextMenuItem();
+           tab_groups_promo_handle_;
   }
 
   void MenuClosed(ui::SimpleMenuModel*) override {
-    tab_groups_iph_controller_->TabContextMenuClosed();
+    tab_groups_promo_handle_.reset();
   }
 
   bool GetAcceleratorForCommandId(int command_id,
@@ -178,7 +191,10 @@ class BrowserTabStripController::TabContextMenuContents
   // A pointer back to our hosting controller, for command state information.
   BrowserTabStripController* controller_;
 
-  TabGroupsIPHController* const tab_groups_iph_controller_;
+  FeaturePromoController* const feature_promo_controller_;
+
+  // Handle we keep if showing menu IPH for tab groups.
+  base::Optional<FeaturePromoController::PromoHandle> tab_groups_promo_handle_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -191,6 +207,9 @@ BrowserTabStripController::BrowserTabStripController(
     : model_(model),
       tabstrip_(nullptr),
       browser_view_(browser_view),
+      feature_engagement_tracker_(
+          feature_engagement::TrackerFactory::GetForBrowserContext(
+              browser_view_->browser()->profile())),
       hover_tab_selector_(model),
       menu_model_factory_(std::move(menu_model_factory_override)) {
   if (!menu_model_factory_) {
@@ -418,7 +437,7 @@ void BrowserTabStripController::ShowContextMenuForTab(
     const gfx::Point& p,
     ui::MenuSourceType source_type) {
   context_menu_contents_ = std::make_unique<TabContextMenuContents>(
-      tab, this, browser_view_->tab_groups_iph_controller());
+      tab, this, browser_view_->feature_promo_controller());
   context_menu_contents_->RunMenuAt(p, source_type);
 }
 
@@ -662,6 +681,8 @@ void BrowserTabStripController::OnTabGroupChanged(
   switch (change.type) {
     case TabGroupChange::kCreated: {
       tabstrip_->OnGroupCreated(change.group);
+      feature_engagement_tracker_->NotifyEvent(
+          feature_engagement::events::kTabGroupCreated);
       break;
     }
     case TabGroupChange::kEditorOpened: {
@@ -740,6 +761,15 @@ void BrowserTabStripController::AddTab(WebContents* contents,
 
   tabstrip_->AddTabAt(index, TabRendererData::FromTabInModel(model_, index),
                       is_active);
+
+  // Try to show tab groups IPH if needed.
+  if (tabstrip_->tab_count() >= 6) {
+    feature_engagement_tracker_->NotifyEvent(
+        feature_engagement::events::kSixthTabOpened);
+
+    browser_view_->feature_promo_controller()->MaybeShowPromo(
+        feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+  }
 }
 
 void BrowserTabStripController::UpdateStackedLayout() {

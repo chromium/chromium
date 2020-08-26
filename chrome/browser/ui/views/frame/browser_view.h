@@ -65,7 +65,6 @@ class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
 class StatusBubbleViews;
-class TabGroupsIPHController;
 class TabStrip;
 class TabStripRegionView;
 class ToolbarButtonProvider;
@@ -304,10 +303,6 @@ class BrowserView : public BrowserWindow,
   void SetToolbarButtonProvider(ToolbarButtonProvider* provider);
   ToolbarButtonProvider* toolbar_button_provider() {
     return toolbar_button_provider_;
-  }
-
-  TabGroupsIPHController* tab_groups_iph_controller() {
-    return tab_groups_iph_controller_.get();
   }
 
   FeaturePromoControllerViews* feature_promo_controller() {
@@ -918,7 +913,6 @@ class BrowserView : public BrowserWindow,
 
   std::unique_ptr<AccessibilityFocusHighlight> accessibility_focus_highlight_;
 
-  std::unique_ptr<TabGroupsIPHController> tab_groups_iph_controller_;
   std::unique_ptr<FeaturePromoControllerViews> feature_promo_controller_;
 
 #if defined(OS_CHROMEOS)

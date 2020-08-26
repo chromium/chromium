@@ -122,7 +122,6 @@
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_groups_iph_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -560,12 +559,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   feature_promo_controller_ =
       std::make_unique<FeaturePromoControllerViews>(this);
 
-  // Must be destroyed before the tab strip and |feature_promo_controller_|.
-  tab_groups_iph_controller_ = std::make_unique<TabGroupsIPHController>(
-      browser_.get(), feature_promo_controller_.get(),
-      base::BindRepeating(&TabStrip::GetTabViewForPromoAnchor,
-                          base::Unretained(tabstrip_)));
-
   // Create WebViews early so |webui_tab_strip_| can observe their size.
   auto devtools_web_view =
       std::make_unique<views::WebView>(browser_->profile());
@@ -643,9 +636,6 @@ BrowserView::~BrowserView() {
   if (global_registry->registry_for_active_window() ==
           extension_keybinding_registry_.get())
     global_registry->set_registry_for_active_window(nullptr);
-
-  // This has a reference to |tabstrip_| so destroy it first.
-  tab_groups_iph_controller_.reset();
 
   // The TabStrip attaches a listener to the model. Make sure we shut down the
   // TabStrip first so that it can cleanly remove the listener.
