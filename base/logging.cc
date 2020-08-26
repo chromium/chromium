@@ -116,6 +116,7 @@ typedef FILE* FileHandle;
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/threading/platform_thread.h"
 #include "base/vlog.h"
 
@@ -153,6 +154,12 @@ int g_min_log_level = 0;
 // Specifies the process' logging sink(s), represented as a combination of
 // LoggingDestination values joined by bitwise OR.
 int g_logging_destination = LOG_DEFAULT;
+
+#if defined(OS_CHROMEOS)
+// Specifies the format of log header. If set to LOG_FORMAT_SYSLOG, each
+// LogMessage will generate a syslog-like log header.
+LogFormat g_log_format = LogFormat::LOG_FORMAT_CHROME;
+#endif
 
 // For LOG_ERROR and above, always print to stderr.
 const int kAlwaysPrintErrorLevel = LOG_ERROR;
@@ -403,6 +410,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   CloseLogFileUnlocked();
 
 #if defined(OS_CHROMEOS)
+  g_log_format = settings.log_format;
   if (settings.log_file) {
     DCHECK(!settings.log_file_path);
     g_log_file = settings.log_file;
@@ -882,60 +890,66 @@ void LogMessage::Init(const char* file, int line) {
   // Stores the base name as the null-terminated suffix substring of |filename|.
   file_basename_ = filename.data();
 
-  // TODO(darin): It might be nice if the columns were fixed width.
-
-  stream_ <<  '[';
-  if (g_log_prefix)
-    stream_ << g_log_prefix << ':';
-  if (g_log_process_id)
-    stream_ << base::GetUniqueIdForProcess() << ':';
-  if (g_log_thread_id)
-    stream_ << base::PlatformThread::CurrentId() << ':';
-  if (g_log_timestamp) {
+#if defined(OS_CHROMEOS)
+  if (g_log_format == LogFormat::LOG_FORMAT_SYSLOG) {
+    InitWithSyslogPrefix(
+        filename, line, TickCount(), log_severity_name(severity_), g_log_prefix,
+        g_log_process_id, g_log_thread_id, g_log_timestamp, g_log_tickcount);
+  } else
+#endif  // defined(OS_CHROMEOS)
+  {
+    // TODO(darin): It might be nice if the columns were fixed width.
+    stream_ << '[';
+    if (g_log_prefix)
+      stream_ << g_log_prefix << ':';
+    if (g_log_process_id)
+      stream_ << base::GetUniqueIdForProcess() << ':';
+    if (g_log_thread_id)
+      stream_ << base::PlatformThread::CurrentId() << ':';
+    if (g_log_timestamp) {
 #if defined(OS_WIN)
-    SYSTEMTIME local_time;
-    GetLocalTime(&local_time);
-    stream_ << std::setfill('0')
-            << std::setw(2) << local_time.wMonth
-            << std::setw(2) << local_time.wDay
-            << '/'
-            << std::setw(2) << local_time.wHour
-            << std::setw(2) << local_time.wMinute
-            << std::setw(2) << local_time.wSecond
-            << '.'
-            << std::setw(3)
-            << local_time.wMilliseconds
-            << ':';
+      SYSTEMTIME local_time;
+      GetLocalTime(&local_time);
+      stream_ << std::setfill('0')
+              << std::setw(2) << local_time.wMonth
+              << std::setw(2) << local_time.wDay
+              << '/'
+              << std::setw(2) << local_time.wHour
+              << std::setw(2) << local_time.wMinute
+              << std::setw(2) << local_time.wSecond
+              << '.'
+              << std::setw(3) << local_time.wMilliseconds
+              << ':';
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-    timeval tv;
-    gettimeofday(&tv, nullptr);
-    time_t t = tv.tv_sec;
-    struct tm local_time;
-    localtime_r(&t, &local_time);
-    struct tm* tm_time = &local_time;
-    stream_ << std::setfill('0')
-            << std::setw(2) << 1 + tm_time->tm_mon
-            << std::setw(2) << tm_time->tm_mday
-            << '/'
-            << std::setw(2) << tm_time->tm_hour
-            << std::setw(2) << tm_time->tm_min
-            << std::setw(2) << tm_time->tm_sec
-            << '.'
-            << std::setw(6) << tv.tv_usec
-            << ':';
+      timeval tv;
+      gettimeofday(&tv, nullptr);
+      time_t t = tv.tv_sec;
+      struct tm local_time;
+      localtime_r(&t, &local_time);
+      struct tm* tm_time = &local_time;
+      stream_ << std::setfill('0')
+              << std::setw(2) << 1 + tm_time->tm_mon
+              << std::setw(2) << tm_time->tm_mday
+              << '/'
+              << std::setw(2) << tm_time->tm_hour
+              << std::setw(2) << tm_time->tm_min
+              << std::setw(2) << tm_time->tm_sec
+              << '.'
+              << std::setw(6) << tv.tv_usec
+              << ':';
 #else
 #error Unsupported platform
 #endif
+    }
+    if (g_log_tickcount)
+      stream_ << TickCount() << ':';
+    if (severity_ >= 0) {
+      stream_ << log_severity_name(severity_);
+    } else {
+      stream_ << "VERBOSE" << -severity_;
+    }
+    stream_ << ":" << filename << "(" << line << ")] ";
   }
-  if (g_log_tickcount)
-    stream_ << TickCount() << ':';
-  if (severity_ >= 0)
-    stream_ << log_severity_name(severity_);
-  else
-    stream_ << "VERBOSE" << -severity_;
-
-  stream_ << ":" << filename << "(" << line << ")] ";
-
   message_start_ = stream_.str().length();
 }
 
@@ -1030,6 +1044,38 @@ FILE* DuplicateLogFILE() {
   return duplicate;
 }
 #endif
+
+// Used for testing. Declared in test/scoped_logging_settings.h.
+ScopedLoggingSettings::ScopedLoggingSettings()
+    : enable_process_id_(g_log_process_id),
+      enable_thread_id_(g_log_thread_id),
+      enable_timestamp_(g_log_timestamp),
+      enable_tickcount_(g_log_tickcount),
+      min_log_level_(GetMinLogLevel()),
+      message_handler_(GetLogMessageHandler()) {
+#if defined(OS_CHROMEOS)
+  log_format_ = g_log_format;
+#endif  // defined(OS_CHROMEOS)
+}
+
+ScopedLoggingSettings::~ScopedLoggingSettings() {
+  g_log_process_id = enable_process_id_;
+  g_log_thread_id = enable_thread_id_;
+  g_log_timestamp = enable_timestamp_;
+  g_log_tickcount = enable_tickcount_;
+  SetMinLogLevel(min_log_level_);
+  SetLogMessageHandler(message_handler_);
+
+#if defined(OS_CHROMEOS)
+  g_log_format = log_format_;
+#endif  // defined(OS_CHROMEOS)
+}
+
+#if defined(OS_CHROMEOS)
+void ScopedLoggingSettings::SetLogFormat(LogFormat log_format) const {
+  g_log_format = log_format;
+}
+#endif  // defined(OS_CHROMEOS)
 
 void RawLog(int level, const char* message) {
   if (level >= g_min_log_level && message) {

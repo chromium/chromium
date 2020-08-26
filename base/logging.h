@@ -147,7 +147,7 @@
 // There is the special severity of DFATAL, which logs FATAL in debug mode,
 // ERROR in normal mode.
 //
-// Output is of the format, for example:
+// Output is formatted as per the following example, except on Chrome OS.
 // [3816:3877:0812/234555.406952:VERBOSE1:drm_device_handle.cc(90)] Succeeded
 // authenticating /dev/dri/card0 in 0 ms with 1 attempt(s)
 //
@@ -158,6 +158,9 @@
 // 3. The date/time of the log message, in MMDD/HHMMSS.Milliseconds format
 // 4. The log level
 // 5. The filename and line number where the log was instantiated
+//
+// Output for Chrome OS can be switched to syslog-like format. See
+// InitWithSyslogPrefix() in logging_chromeos.h for details.
 //
 // Note that the visibility can be changed by setting preferences in
 // SetLogItems()
@@ -214,6 +217,12 @@ enum LogLockingState { LOCK_LOG_FILE, DONT_LOCK_LOG_FILE };
 // Defaults to APPEND_TO_OLD_LOG_FILE.
 enum OldFileDeletionState { DELETE_OLD_LOG_FILE, APPEND_TO_OLD_LOG_FILE };
 
+#if defined(OS_CHROMEOS)
+// Used to set log format for Chrome OS. It is set to LOG_FORMAT_CHROME by
+// default which is the traditional Chrome log format.
+enum class BASE_EXPORT LogFormat { LOG_FORMAT_CHROME, LOG_FORMAT_SYSLOG };
+#endif
+
 struct BASE_EXPORT LoggingSettings {
   // Equivalent to logging destination enum, but allows for multiple
   // destinations.
@@ -230,6 +239,9 @@ struct BASE_EXPORT LoggingSettings {
   // of the FILE. If there's an error writing to this file, no fallback paths
   // will be opened.
   FILE* log_file = nullptr;
+  // Setting this to LogFormat::LOG_FORMAT_SYSLOG makes logging generate header
+  // in syslog-compatible format.
+  LogFormat log_format = LogFormat::LOG_FORMAT_CHROME;
 #endif
 };
 
@@ -592,6 +604,18 @@ class BASE_EXPORT LogMessage {
   // that will lose the value of GLE and the code that called the log function
   // will have lost the thread error value when the log call returns.
   base::ScopedClearLastError last_error_;
+
+#if defined(OS_CHROMEOS)
+  void InitWithSyslogPrefix(base::StringPiece filename,
+                            int line,
+                            uint64_t tick_count,
+                            const char* log_severity_name_c_str,
+                            const char* log_prefix,
+                            bool enable_process_id,
+                            bool enable_thread_id,
+                            bool enable_timestamp,
+                            bool enable_tickcount);
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(LogMessage);
 };

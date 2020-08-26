@@ -715,6 +715,7 @@ component("base") {
     "task_runner_util.h",
     "template_util.h",
     "test/malloc_wrapper.h",
+    "test/scoped_logging_settings.h",
     "test/spin_wait.h",
     "third_party/cityhash/city.cc",
     "third_party/cityhash/city.h",
@@ -1514,6 +1515,7 @@ component("base") {
   # Chromeos.
   if (is_chromeos) {
     sources += [
+      "logging_chromeos.cc",
       "power_monitor/power_monitor_device_source_chromeos.cc",
       "system/sys_info_chromeos.cc",
     ]
@@ -2876,6 +2878,7 @@ test("base_unittests") {
     "test/metrics/user_action_tester_unittest.cc",
     "test/mock_callback_unittest.cc",
     "test/scoped_feature_list_unittest.cc",
+    "test/scoped_logging_settings.h",
     "test/scoped_mock_clock_override_unittest.cc",
     "test/scoped_mock_time_message_loop_task_runner_unittest.cc",
     "test/scoped_run_loop_timeout_unittest.cc",

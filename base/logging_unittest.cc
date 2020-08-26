@@ -11,11 +11,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 
@@ -64,27 +66,16 @@ namespace {
 using ::testing::Return;
 using ::testing::_;
 
-// Class to make sure any manipulations we do to the min log level are
-// contained (i.e., do not affect other unit tests).
-class LogStateSaver {
- public:
-  LogStateSaver() : old_min_log_level_(GetMinLogLevel()) {}
-
-  ~LogStateSaver() {
-    SetMinLogLevel(old_min_log_level_);
+class LoggingTest : public testing::Test {
+ protected:
+  const ScopedLoggingSettings& scoped_logging_settings() {
+    return scoped_logging_settings_;
   }
 
  private:
-  int old_min_log_level_;
-
-  DISALLOW_COPY_AND_ASSIGN(LogStateSaver);
-};
-
-class LoggingTest : public testing::Test {
- private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
-  LogStateSaver log_state_saver_;
+  ScopedLoggingSettings scoped_logging_settings_;
 };
 
 class MockLogSource {
@@ -818,34 +809,100 @@ TEST_F(LoggingTest, FuchsiaLogging) {
 #endif  // defined(OS_FUCHSIA)
 
 TEST_F(LoggingTest, LogPrefix) {
-  // Set up a callback function to capture the log output string.
-  auto old_log_message_handler = GetLogMessageHandler();
   // Use a static because only captureless lambdas can be converted to a
   // function pointer for SetLogMessageHandler().
-  static std::string* log_string_ptr = nullptr;
-  std::string log_string;
-  log_string_ptr = &log_string;
+  static base::NoDestructor<std::string> log_string;
   SetLogMessageHandler([](int severity, const char* file, int line,
                           size_t start, const std::string& str) -> bool {
-    *log_string_ptr = str;
+    *log_string = str;
     return true;
   });
 
-  // Logging with a prefix includes the prefix string after the opening '['.
+  // Logging with a prefix includes the prefix string.
   const char kPrefix[] = "prefix";
   SetLogPrefix(kPrefix);
   LOG(ERROR) << "test";  // Writes into |log_string|.
-  EXPECT_EQ(1u, log_string.find(kPrefix));
-
+  EXPECT_NE(std::string::npos, log_string->find(kPrefix));
   // Logging without a prefix does not include the prefix string.
   SetLogPrefix(nullptr);
   LOG(ERROR) << "test";  // Writes into |log_string|.
-  EXPECT_EQ(std::string::npos, log_string.find(kPrefix));
-
-  // Clean up.
-  SetLogMessageHandler(old_log_message_handler);
-  log_string_ptr = nullptr;
+  EXPECT_EQ(std::string::npos, log_string->find(kPrefix));
 }
+
+#if defined(OS_CHROMEOS)
+TEST_F(LoggingTest, LogCrosSyslogFormat) {
+  // Set log format to syslog format.
+  scoped_logging_settings().SetLogFormat(LogFormat::LOG_FORMAT_SYSLOG);
+
+  const char* kTimestampPattern = R"(\d\d\d\d\-\d\d\-\d\d)"             // date
+                                  R"(T\d\d\:\d\d\:\d\d\.\d\d\d\d\d\d)"  // time
+                                  R"(Z.+\n)";  // timezone
+
+  // Use a static because only captureless lambdas can be converted to a
+  // function pointer for SetLogMessageHandler().
+  static base::NoDestructor<std::string> log_string;
+  SetLogMessageHandler([](int severity, const char* file, int line,
+                          size_t start, const std::string& str) -> bool {
+    *log_string = str;
+    return true;
+  });
+
+  {
+    // All flags are true.
+    SetLogItems(true, true, true, true);
+    const char* kExpected =
+        R"(\S+ \d+ ERROR \S+\[\d+:\d+\]\: \[\S+\] message\n)";
+
+    LOG(ERROR) << "message";
+
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kTimestampPattern));
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kExpected));
+  }
+
+  {
+    // Timestamp is true.
+    SetLogItems(false, false, true, false);
+    const char* kExpected = R"(\S+ ERROR \S+\: \[\S+\] message\n)";
+
+    LOG(ERROR) << "message";
+
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kTimestampPattern));
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kExpected));
+  }
+
+  {
+    // PID and timestamp are true.
+    SetLogItems(true, false, true, false);
+    const char* kExpected = R"(\S+ ERROR \S+\[\d+\]: \[\S+\] message\n)";
+
+    LOG(ERROR) << "message";
+
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kTimestampPattern));
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kExpected));
+  }
+
+  {
+    // ThreadID and timestamp are true.
+    SetLogItems(false, true, true, false);
+    const char* kExpected = R"(\S+ ERROR \S+\[:\d+\]: \[\S+\] message\n)";
+
+    LOG(ERROR) << "message";
+
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kTimestampPattern));
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kExpected));
+  }
+
+  {
+    // All flags are false.
+    SetLogItems(false, false, false, false);
+    const char* kExpected = R"(ERROR \S+: \[\S+\] message\n)";
+
+    LOG(ERROR) << "message";
+
+    EXPECT_THAT(*log_string, ::testing::MatchesRegex(kExpected));
+  }
+}
+#endif  // defined(OS_CHROMEOS)
 
 #if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
     !BUILDFLAG(IS_HWASAN)
