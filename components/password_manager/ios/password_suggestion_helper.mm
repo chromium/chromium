@@ -7,6 +7,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
@@ -69,9 +70,11 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
     for (const auto& usernameAndRealm : usernameAndRealms) {
       NSString* username = SysUTF16ToNSString(usernameAndRealm.username);
-      NSString* realm = usernameAndRealm.realm.empty()
-                            ? nil
-                            : SysUTF8ToNSString(usernameAndRealm.realm);
+      NSString* realm = nil;
+      if (!usernameAndRealm.realm.empty()) {
+        url::Origin origin = url::Origin::Create(GURL(usernameAndRealm.realm));
+        realm = SysUTF8ToNSString(password_manager::GetShownOrigin(origin));
+      }
       [results addObject:[FormSuggestion suggestionWithValue:username
                                           displayDescription:realm
                                                         icon:nil
