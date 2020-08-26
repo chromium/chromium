@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {CloudOrigins, Destination, DestinationOrigin} from './destination.js';
+import {CloudOrigins, Destination, DestinationOrigin, RecentDestination} from './destination.js';
 
 /**
  * Printer types for capabilities and printer list requests.
@@ -38,8 +38,8 @@ export const originToType = function(origin) {
 };
 
 /**
- * @param {!Destination} destination The destination to figure
- *     out the printer type of.
+ * @param {!Destination|!RecentDestination} destination The destination to
+ *     figure out the printer type of.
  * @return {!PrinterType} Map the destination to a PrinterType.
  */
 export function getPrinterTypeForDestination(destination) {

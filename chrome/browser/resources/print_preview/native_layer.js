@@ -320,11 +320,7 @@ export class NativeLayerImpl {
 
   /** @override */
   getPrinterCapabilities(destinationId, type) {
-    return sendWithPromise(
-        'getPrinterCapabilities', destinationId,
-        destinationId === Destination.GooglePromotedId.SAVE_AS_PDF ?
-            PrinterType.PDF_PRINTER :
-            type);
+    return sendWithPromise('getPrinterCapabilities', destinationId, type);
   }
 
   // <if expr="chromeos">

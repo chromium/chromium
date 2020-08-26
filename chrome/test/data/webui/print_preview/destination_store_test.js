@@ -463,7 +463,7 @@ suite(destination_store_test.suiteName, function() {
             .then(function(args) {
               assertEquals(
                   Destination.GooglePromotedId.SAVE_AS_PDF, args.destinationId);
-              assertEquals(PrinterType.LOCAL_PRINTER, args.printerType);
+              assertEquals(PrinterType.PDF_PRINTER, args.printerType);
               assertEquals(
                   Destination.GooglePromotedId.SAVE_AS_PDF,
                   destinationStore.selectedDestination.id);
