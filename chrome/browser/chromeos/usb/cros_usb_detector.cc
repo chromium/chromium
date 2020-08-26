@@ -465,8 +465,11 @@ void CrosUsbDetector::ConnectSharedDevicesOnVmStartup(
     const std::string& vm_name) {
   // Reattach shared devices when the VM becomes available.
   for (auto& device : usb_devices_) {
-    for (const auto& sharing_pair : device.vm_sharing_info) {
+    for (auto& sharing_pair : device.vm_sharing_info) {
       if (sharing_pair.second.shared && sharing_pair.first == vm_name) {
+        VLOG(1) << "Connecting " << device.label << " to " << vm_name;
+        // Clear any older guest_port setting.
+        sharing_pair.second.guest_port = base::nullopt;
         AttachUsbDeviceToVm(vm_name, device.guid, base::DoNothing());
       }
     }
@@ -572,6 +575,7 @@ void CrosUsbDetector::OnAttachUsbDeviceOpened(
     if (device.guid == device_info->guid) {
       const auto it = device.vm_sharing_info.find(vm_name);
       if (it != device.vm_sharing_info.end() && it->second.guest_port) {
+        LOG(ERROR) << "Device " << device.label << " is already shared";
         // The device is already attached.
         std::move(callback).Run(/*success=*/true);
         return;
