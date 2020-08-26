@@ -5,18 +5,14 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of Chrome histograms along
-with a detailed description for each histogram.
+This file is used to store a list of obsolete Chrome histograms along with a detailed
+description for each histogram.
 
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
 For brief details on how to modify this file to add your description, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/one-pager.md
-
-Please pretty-print and validate your edits by running the pretty_print.py
-and validate_format.py scripts in the same directory as this file before
-uploading your change for review.
 
 Please send CLs to chromium-metrics-reviews@google.com rather than to specific
 individuals. These CLs will be automatically reassigned to a reviewer within
