@@ -125,17 +125,19 @@ void NavigationControllerImpl::SetNavigationControllerImpl(
 }
 
 void NavigationControllerImpl::Navigate(JNIEnv* env,
-                                        const JavaParamRef<jstring>& url) {
-  Navigate(GURL(base::android::ConvertJavaStringToUTF8(env, url)));
-}
-
-void NavigationControllerImpl::NavigateWithParams(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& url,
-    jboolean should_replace_current_entry) {
+                                        const JavaParamRef<jstring>& url,
+                                        jboolean should_replace_current_entry,
+                                        jboolean disable_intent_processing) {
   auto params = std::make_unique<content::NavigationController::LoadURLParams>(
       GURL(base::android::ConvertJavaStringToUTF8(env, url)));
   params->should_replace_current_entry = should_replace_current_entry;
+  // On android, the transition type largely dictates whether intent processing
+  // happens. PAGE_TRANSITION_TYPED does not process intents, where as
+  // PAGE_TRANSITION_LINK will (with the caveat that even links may not trigger
+  // intent processing under some circumstances).
+  params->transition_type = disable_intent_processing
+                                ? ui::PAGE_TRANSITION_TYPED
+                                : ui::PAGE_TRANSITION_LINK;
   DoNavigate(std::move(params));
 }
 
@@ -465,11 +467,6 @@ void NavigationControllerImpl::DoNavigate(
     return;
   }
 
-  // For WebLayer's production use cases, navigations from the embedder are most
-  // appropriately viewed as being from links with user gestures. In particular,
-  // this ensures that intents resulting from these navigations get launched as
-  // the embedder expects.
-  params->transition_type = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK);
   params->has_user_gesture = true;
   web_contents()->GetController().LoadURLWithParams(*params);
   // So that if the user had entered the UI in a bar it stops flashing the

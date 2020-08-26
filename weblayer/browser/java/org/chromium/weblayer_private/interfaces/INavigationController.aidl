@@ -36,4 +36,9 @@ interface INavigationController {
 
   // Added in 85.
   boolean isNavigationEntrySkippable(int index) = 13;
+
+  // Added in 87.
+  void navigate2(in String uri,
+                 in boolean shouldReplaceEntry,
+                 in boolean disableIntentProcessing) = 14;
 }
