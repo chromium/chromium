@@ -74,7 +74,6 @@ void GaiaScreen::ShowImpl() {
 
 void GaiaScreen::HideImpl() {
   view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
-  view_->LoadGaiaAsync(EmptyAccountId());
   view_->Hide();
 }
 
