@@ -6443,6 +6443,9 @@ crbug.com/1112304 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-
 # Flaky test
 crbug.com/1112778 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/alpha/base-url-worker.sub.html [ Pass Failure ]
 
+# Flaky timeout
+crbug.com/1092048 external/wpt/FileAPI/blob/Blob-stream.any.html [ Pass Timeout ]
+
 # Sheriff 2020-08-04: New wpt tests are failing
 crbug.com/1112771 external/wpt/webhid/idlharness.https.window.html [ Failure ]
 
