@@ -4,11 +4,18 @@
 
 #include "base/win/core_winrt_util.h"
 
+#include "base/threading/scoped_thread_priority.h"
+
 namespace {
 
 FARPROC LoadComBaseFunction(const char* function_name) {
-  static HMODULE const handle =
-      ::LoadLibraryEx(L"combase.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+  static HMODULE const handle = []() {
+    // Mitigate the issues caused by loading DLLs on a background thread
+    // (http://crbug/973868).
+    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+    return ::LoadLibraryEx(L"combase.dll", nullptr,
+                           LOAD_LIBRARY_SEARCH_SYSTEM32);
+  }();
   return handle ? ::GetProcAddress(handle, function_name) : nullptr;
 }
 
