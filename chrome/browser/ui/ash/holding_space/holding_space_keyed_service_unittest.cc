@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -405,11 +406,8 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
           const base::FilePath file = CreateArbitraryFile(downloads_mount);
           const GURL file_system_url = GetFileSystemUrl(GetProfile(), file);
 
-          // NOTE: We use an empty `gfx::ImageSkia` here because the logic
-          // to restore holding space item images from persistence has not yet
-          // been implemented in `HoldingSpaceKeyedService`.
           auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
-              type, file, file_system_url, gfx::ImageSkia());
+              type, file, file_system_url, GetIconForPath(file));
 
           serialized_holding_space_items->Append(
               holding_space_item->Serialize());

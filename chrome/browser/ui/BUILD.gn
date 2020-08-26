@@ -1725,8 +1725,6 @@ static_library("ui") {
       "app_list/search/assistant_search_provider.h",
       "app_list/search/chrome_search_result.cc",
       "app_list/search/chrome_search_result.h",
-      "app_list/search/common/file_icon_util.cc",
-      "app_list/search/common/file_icon_util.h",
       "app_list/search/common/url_icon_source.cc",
       "app_list/search/common/url_icon_source.h",
       "app_list/search/cros_action_history/cros_action_recorder.cc",

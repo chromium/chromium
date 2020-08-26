@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
+#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/files/file_path.h"
@@ -113,10 +114,10 @@ GURL HoldingSpaceKeyedService::ResolveFileSystemUrl(
   return file_system_url;
 }
 
-// TODO(dmblack): Implement.
+// TODO(dmblack): Use thumbnail service to asynchronously replace placeholders.
 gfx::ImageSkia HoldingSpaceKeyedService::ResolveImage(
     const base::FilePath& file_path) const {
-  return gfx::ImageSkia();
+  return GetIconForPath(file_path);
 }
 
 }  // namespace ash

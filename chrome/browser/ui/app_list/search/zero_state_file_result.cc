@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/file_icon_util.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
@@ -16,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/app_list/search/common/file_icon_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -62,8 +62,8 @@ ZeroStateFileResult::ZeroStateFileResult(const base::FilePath& filepath,
       l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), true);
   base::i18n::SanitizeUserSuppliedString(&sanitized_name);
   SetDetails(sanitized_name);
-  SetIcon(GetIconForPath(filepath));
-  SetChipIcon(GetChipIconForPath(filepath));
+  SetIcon(ash::GetIconForPath(filepath));
+  SetChipIcon(ash::GetChipIconForPath(filepath));
 }
 
 ZeroStateFileResult::~ZeroStateFileResult() = default;

@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/common/file_icon_util.h"
+#include "ash/public/cpp/file_icon_util.h"
 
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
-#include "ui/file_manager/file_manager_resource_util.h"
-#include "ui/file_manager/grit/file_manager_resources.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -40,7 +37,7 @@ constexpr int kIconDipSize = 20;
 
 }  // namespace
 
-namespace app_list {
+namespace ash {
 namespace internal {
 
 IconType GetIconTypeForPath(const base::FilePath& filepath) {
@@ -49,95 +46,95 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
       // ui/file_manager/file_manager/common/js/file_type.js.
       extension_to_icon({
           // Image
-          {".JPEG", IconType::IMAGE},
-          {".JPG", IconType::IMAGE},
-          {".BMP", IconType::IMAGE},
-          {".GIF", IconType::IMAGE},
-          {".ICO", IconType::IMAGE},
-          {".PNG", IconType::IMAGE},
-          {".WEBP", IconType::IMAGE},
-          {".TIFF", IconType::IMAGE},
-          {".TIF", IconType::IMAGE},
-          {".SVG", IconType::IMAGE},
+          {".JPEG", IconType::kImage},
+          {".JPG", IconType::kImage},
+          {".BMP", IconType::kImage},
+          {".GIF", IconType::kImage},
+          {".ICO", IconType::kImage},
+          {".PNG", IconType::kImage},
+          {".WEBP", IconType::kImage},
+          {".TIFF", IconType::kImage},
+          {".TIF", IconType::kImage},
+          {".SVG", IconType::kImage},
 
           // Raw
-          {".ARW", IconType::IMAGE},
-          {".CR2", IconType::IMAGE},
-          {".DNG", IconType::IMAGE},
-          {".NEF", IconType::IMAGE},
-          {".NRW", IconType::IMAGE},
-          {".ORF", IconType::IMAGE},
-          {".RAF", IconType::IMAGE},
-          {".RW2", IconType::IMAGE},
+          {".ARW", IconType::kImage},
+          {".CR2", IconType::kImage},
+          {".DNG", IconType::kImage},
+          {".NEF", IconType::kImage},
+          {".NRW", IconType::kImage},
+          {".ORF", IconType::kImage},
+          {".RAF", IconType::kImage},
+          {".RW2", IconType::kImage},
 
           // Video
-          {".3GP", IconType::VIDEO},
-          {".3GPP", IconType::VIDEO},
-          {".AVI", IconType::VIDEO},
-          {".MOV", IconType::VIDEO},
-          {".MKV", IconType::VIDEO},
-          {".MP4", IconType::VIDEO},
-          {".M4V", IconType::VIDEO},
-          {".MPG", IconType::VIDEO},
-          {".MPEG", IconType::VIDEO},
-          {".MPG4", IconType::VIDEO},
-          {".MPEG4", IconType::VIDEO},
-          {".OGM", IconType::VIDEO},
-          {".OGV", IconType::VIDEO},
-          {".OGX", IconType::VIDEO},
-          {".WEBM", IconType::VIDEO},
+          {".3GP", IconType::kVideo},
+          {".3GPP", IconType::kVideo},
+          {".AVI", IconType::kVideo},
+          {".MOV", IconType::kVideo},
+          {".MKV", IconType::kVideo},
+          {".MP4", IconType::kVideo},
+          {".M4V", IconType::kVideo},
+          {".MPG", IconType::kVideo},
+          {".MPEG", IconType::kVideo},
+          {".MPG4", IconType::kVideo},
+          {".MPEG4", IconType::kVideo},
+          {".OGM", IconType::kVideo},
+          {".OGV", IconType::kVideo},
+          {".OGX", IconType::kVideo},
+          {".WEBM", IconType::kVideo},
 
           // Audio
-          {".AMR", IconType::AUDIO},
-          {".FLAC", IconType::AUDIO},
-          {".MP3", IconType::AUDIO},
-          {".M4A", IconType::AUDIO},
-          {".OGA", IconType::AUDIO},
-          {".OGG", IconType::AUDIO},
-          {".WAV", IconType::AUDIO},
+          {".AMR", IconType::kAudio},
+          {".FLAC", IconType::kAudio},
+          {".MP3", IconType::kAudio},
+          {".M4A", IconType::kAudio},
+          {".OGA", IconType::kAudio},
+          {".OGG", IconType::kAudio},
+          {".WAV", IconType::kAudio},
 
           // Text
-          {".TXT", IconType::GENERIC},
+          {".TXT", IconType::kGeneric},
 
           // Archive
-          {".ZIP", IconType::ARCHIVE},
-          {".RAR", IconType::ARCHIVE},
-          {".TAR", IconType::ARCHIVE},
-          {".TAR.BZ2", IconType::ARCHIVE},
-          {".TBZ", IconType::ARCHIVE},
-          {".TBZ2", IconType::ARCHIVE},
-          {".TAR.GZ", IconType::ARCHIVE},
-          {".TGZ", IconType::ARCHIVE},
+          {".ZIP", IconType::kArchive},
+          {".RAR", IconType::kArchive},
+          {".TAR", IconType::kArchive},
+          {".TAR.BZ2", IconType::kArchive},
+          {".TBZ", IconType::kArchive},
+          {".TBZ2", IconType::kArchive},
+          {".TAR.GZ", IconType::kArchive},
+          {".TGZ", IconType::kArchive},
 
           // Hosted doc
-          {".GDOC", IconType::GDOC},
-          {".GSHEET", IconType::GSHEET},
-          {".GSLIDES", IconType::GSLIDE},
-          {".GDRAW", IconType::GDRAW},
-          {".GTABLE", IconType::GTABLE},
-          {".GLINK", IconType::GENERIC},
-          {".GFORM", IconType::GFORM},
-          {".GMAPS", IconType::GMAP},
-          {".GSITE", IconType::GSITE},
+          {".GDOC", IconType::kGdoc},
+          {".GSHEET", IconType::kGsheet},
+          {".GSLIDES", IconType::kGslide},
+          {".GDRAW", IconType::kGdraw},
+          {".GTABLE", IconType::kGtable},
+          {".GLINK", IconType::kGeneric},
+          {".GFORM", IconType::kGform},
+          {".GMAPS", IconType::kGmap},
+          {".GSITE", IconType::kGsite},
 
           // Other
-          {".PDF", IconType::PDF},
-          {".HTM", IconType::GENERIC},
-          {".HTML", IconType::GENERIC},
-          {".MHT", IconType::GENERIC},
-          {".MHTM", IconType::GENERIC},
-          {".MHTML", IconType::GENERIC},
-          {".SHTML", IconType::GENERIC},
-          {".XHT", IconType::GENERIC},
-          {".XHTM", IconType::GENERIC},
-          {".XHTML", IconType::GENERIC},
-          {".DOC", IconType::WORD},
-          {".DOCX", IconType::WORD},
-          {".PPT", IconType::PPT},
-          {".PPTX", IconType::PPT},
-          {".XLS", IconType::EXCEL},
-          {".XLSX", IconType::EXCEL},
-          {".TINI", IconType::TINI},
+          {".PDF", IconType::kPdf},
+          {".HTM", IconType::kGeneric},
+          {".HTML", IconType::kGeneric},
+          {".MHT", IconType::kGeneric},
+          {".MHTM", IconType::kGeneric},
+          {".MHTML", IconType::kGeneric},
+          {".SHTML", IconType::kGeneric},
+          {".XHT", IconType::kGeneric},
+          {".XHTM", IconType::kGeneric},
+          {".XHTML", IconType::kGeneric},
+          {".DOC", IconType::kWord},
+          {".DOCX", IconType::kWord},
+          {".PPT", IconType::kPpt},
+          {".PPTX", IconType::kPpt},
+          {".XLS", IconType::kExcel},
+          {".XLSX", IconType::kExcel},
+          {".TINI", IconType::kTini},
       });
 
   const auto& icon_it =
@@ -145,42 +142,42 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
   if (icon_it != extension_to_icon->end()) {
     return icon_it->second;
   } else {
-    return IconType::GENERIC;
+    return IconType::kGeneric;
   }
 }
 
 IconType GetIconTypeFromString(const std::string& icon_type_string) {
   static const base::NoDestructor<std::map<std::string, IconType>>
-      type_string_to_icon_type({{"archive", IconType::ARCHIVE},
-                                {"audio", IconType::AUDIO},
-                                {"chart", IconType::CHART},
-                                {"excel", IconType::EXCEL},
-                                {"drive", IconType::DRIVE},
-                                {"folder", IconType::FOLDER},
-                                {"gdoc", IconType::GDOC},
-                                {"gdraw", IconType::GDRAW},
-                                {"generic", IconType::GENERIC},
-                                {"gform", IconType::GFORM},
-                                {"gmap", IconType::GMAP},
-                                {"gsheet", IconType::GSHEET},
-                                {"gsite", IconType::GSITE},
-                                {"gslides", IconType::GSLIDE},
-                                {"gtable", IconType::GTABLE},
-                                {"image", IconType::IMAGE},
-                                {"linux", IconType::LINUX},
-                                {"pdf", IconType::PDF},
-                                {"ppt", IconType::PPT},
-                                {"script", IconType::SCRIPT},
-                                {"shared", IconType::FOLDER_SHARED},
-                                {"sites", IconType::SITES},
-                                {"tini", IconType::TINI},
-                                {"video", IconType::VIDEO},
-                                {"word", IconType::WORD}});
+      type_string_to_icon_type({{"archive", IconType::kArchive},
+                                {"audio", IconType::kAudio},
+                                {"chart", IconType::kChart},
+                                {"excel", IconType::kExcel},
+                                {"drive", IconType::kDrive},
+                                {"folder", IconType::kFolder},
+                                {"gdoc", IconType::kGdoc},
+                                {"gdraw", IconType::kGdraw},
+                                {"generic", IconType::kGeneric},
+                                {"gform", IconType::kGform},
+                                {"gmap", IconType::kGmap},
+                                {"gsheet", IconType::kGsheet},
+                                {"gsite", IconType::kGsite},
+                                {"gslides", IconType::kGslide},
+                                {"gtable", IconType::kGtable},
+                                {"image", IconType::kImage},
+                                {"linux", IconType::kLinux},
+                                {"pdf", IconType::kPdf},
+                                {"ppt", IconType::kPpt},
+                                {"script", IconType::kScript},
+                                {"shared", IconType::kFolderShared},
+                                {"sites", IconType::kSites},
+                                {"tini", IconType::kTini},
+                                {"video", IconType::kVideo},
+                                {"word", IconType::kWord}});
 
   const auto& icon_it = type_string_to_icon_type->find(icon_type_string);
   if (icon_it != type_string_to_icon_type->end())
     return icon_it->second;
-  return IconType::GENERIC;
+  return IconType::kGeneric;
 }
 
 gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
@@ -188,79 +185,79 @@ gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool is_chip_icon) {
   // ui/file_manager/file_manager/common/js/file_type.js.
   static const base::NoDestructor<std::map<IconType, gfx::IconDescription>>
       icon_type_to_icon_description(
-          {{IconType::ARCHIVE,
+          {{IconType::kArchive,
             gfx::IconDescription(ash::kFiletypeArchiveIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
-           {IconType::AUDIO,
+           {IconType::kAudio,
             gfx::IconDescription(ash::kFiletypeAudioIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
-           {IconType::CHART,
+           {IconType::kChart,
             gfx::IconDescription(ash::kFiletypeChartIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
-           {IconType::DRIVE,
+           {IconType::kDrive,
             gfx::IconDescription(ash::kFiletypeTeamDriveIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
-           {IconType::EXCEL,
+           {IconType::kExcel,
             gfx::IconDescription(ash::kFiletypeExcelIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
-           {IconType::FOLDER,
+           {IconType::kFolder,
             gfx::IconDescription(ash::kFiletypeFolderIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
-           {IconType::FOLDER_SHARED,
+           {IconType::kFolderShared,
             gfx::IconDescription(ash::kFiletypeSharedIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
-           {IconType::GDOC,
+           {IconType::kGdoc,
             gfx::IconDescription(ash::kFiletypeGdocIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)},
-           {IconType::GDRAW,
+           {IconType::kGdraw,
             gfx::IconDescription(ash::kFiletypeGdrawIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
-           {IconType::GENERIC,
+           {IconType::kGeneric,
             gfx::IconDescription(ash::kFiletypeGenericIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
-           {IconType::GFORM,
+           {IconType::kGform,
             gfx::IconDescription(ash::kFiletypeGformIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
-           {IconType::GMAP,
+           {IconType::kGmap,
             gfx::IconDescription(ash::kFiletypeGmapIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
-           {IconType::GSHEET,
+           {IconType::kGsheet,
             gfx::IconDescription(ash::kFiletypeGsheetIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
-           {IconType::GSITE,
+           {IconType::kGsite,
             gfx::IconDescription(ash::kFiletypeGsiteIcon, kIconDipSize,
                                  kFiletypeGsiteColor)},
-           {IconType::GSLIDE,
+           {IconType::kGslide,
             gfx::IconDescription(ash::kFiletypeGslidesIcon, kIconDipSize,
                                  gfx::kGoogleYellow500)},
-           {IconType::GTABLE,
+           {IconType::kGtable,
             gfx::IconDescription(ash::kFiletypeGtableIcon, kIconDipSize,
                                  gfx::kGoogleGreen500)},
-           {IconType::IMAGE,
+           {IconType::kImage,
             gfx::IconDescription(ash::kFiletypeImageIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
-           {IconType::LINUX,
+           {IconType::kLinux,
             gfx::IconDescription(ash::kFiletypeLinuxIcon, kIconDipSize,
                                  gfx::kGoogleGrey700)},
-           {IconType::PDF,
+           {IconType::kPdf,
             gfx::IconDescription(ash::kFiletypePdfIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
-           {IconType::PPT,
+           {IconType::kPpt,
             gfx::IconDescription(ash::kFiletypePptIcon, kIconDipSize,
                                  kFiletypePptColor)},
-           {IconType::SCRIPT,
+           {IconType::kScript,
             gfx::IconDescription(ash::kFiletypeScriptIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)},
-           {IconType::SITES,
+           {IconType::kSites,
             gfx::IconDescription(ash::kFiletypeSitesIcon, kIconDipSize,
                                  kFiletypeSitesColor)},
-           {IconType::TINI,
+           {IconType::kTini,
             gfx::IconDescription(ash::kFiletypeTiniIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)},
-           {IconType::VIDEO,
+           {IconType::kVideo,
             gfx::IconDescription(ash::kFiletypeVideoIcon, kIconDipSize,
                                  gfx::kGoogleRed500)},
-           {IconType::WORD,
+           {IconType::kWord,
             gfx::IconDescription(ash::kFiletypeWordIcon, kIconDipSize,
                                  gfx::kGoogleBlue500)}});
 
@@ -294,4 +291,4 @@ gfx::ImageSkia GetIconFromType(const std::string& icon_type) {
   return GetVectorIconFromIconType(internal::GetIconTypeFromString(icon_type));
 }
 
-}  // namespace app_list
+}  // namespace ash

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/search/common/file_icon_util.h"
+#include "ash/public/cpp/file_icon_util.h"
 
 #include <string>
 #include <utility>
@@ -12,23 +12,20 @@
 #include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/profiles/profile.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
-#include "ui/file_manager/grit/file_manager_resources.h"
 
-namespace app_list {
+namespace ash {
 
-TEST(AppListFileIconUtilTest, GetIconTypeForPath) {
+TEST(FileIconUtilTest, GetIconTypeForPath) {
   const std::vector<std::pair<std::string, internal::IconType>>
       file_path_to_icon_type = {
-          {"/my/test/file.pdf", internal::IconType::PDF},
-          {"/my/test/file.Pdf", internal::IconType::PDF},
-          {"/my/test/file.tar.gz", internal::IconType::ARCHIVE},
-          {"/my/test/.gslides", internal::IconType::GSLIDE},
-          {"/my/test/noextension", internal::IconType::GENERIC},
-          {"/my/test/file.missing", internal::IconType::GENERIC}};
+          {"/my/test/file.pdf", internal::IconType::kPdf},
+          {"/my/test/file.Pdf", internal::IconType::kPdf},
+          {"/my/test/file.tar.gz", internal::IconType::kArchive},
+          {"/my/test/.gslides", internal::IconType::kGslide},
+          {"/my/test/noextension", internal::IconType::kGeneric},
+          {"/my/test/file.missing", internal::IconType::kGeneric}};
 
   for (const auto& pair : file_path_to_icon_type) {
     EXPECT_EQ(internal::GetIconTypeForPath(base::FilePath(pair.first)),
@@ -36,4 +33,4 @@ TEST(AppListFileIconUtilTest, GetIconTypeForPath) {
   }
 }
 
-}  // namespace app_list
+}  // namespace ash

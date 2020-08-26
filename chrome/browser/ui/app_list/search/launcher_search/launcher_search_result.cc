@@ -8,10 +8,10 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/file_icon_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/launcher_search_provider/launcher_search_provider_service.h"
-#include "chrome/browser/ui/app_list/search/common/file_icon_util.h"
 
 using chromeos::launcher_search_provider::Service;
 
@@ -79,7 +79,7 @@ void LauncherSearchResult::Initialize() {
   SetResultType(ResultType::kLauncher);
   SetMetricsType(ash::LAUNCHER_SEARCH_PROVIDER_RESULT);
 
-  SetIcon(GetIconFromType(icon_type_));
+  SetIcon(ash::GetIconFromType(icon_type_));
 }
 
 std::string LauncherSearchResult::GetSearchResultId() {
