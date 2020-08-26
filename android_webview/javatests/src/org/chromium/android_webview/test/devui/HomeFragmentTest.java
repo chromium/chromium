@@ -4,21 +4,20 @@
 
 package org.chromium.android_webview.test.devui;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.longClick;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.getClipBoardTextOnUiThread;
 import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withCount;
-import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withSubtitle;
-import static org.chromium.android_webview.test.devui.DeveloperUiTestUtils.withTitle;
 
 import android.content.Context;
 import android.content.Intent;
@@ -74,14 +73,25 @@ public class HomeFragmentTest {
         String expectedWebViewPackageInfo =
                 String.format(Locale.US, "%s (%s/%s)", currentWebViewPackage.packageName,
                         currentWebViewPackage.versionName, currentWebViewPackage.versionCode);
-        onView(withTitle("WebView package"))
-                .check(matches(withSubtitle(expectedWebViewPackageInfo)));
-
-        onView(withTitle("DevTools package")).check(doesNotExist());
+        onData(anything())
+                .atPosition(0)
+                .onChildView(withId(android.R.id.text1))
+                .check(matches(withText("WebView package")));
+        onData(anything())
+                .atPosition(0)
+                .onChildView(withId(android.R.id.text2))
+                .check(matches(withText(expectedWebViewPackageInfo)));
 
         String expectedDeviceInfo =
                 String.format(Locale.US, "%s - %s", Build.MODEL, Build.FINGERPRINT);
-        onView(withTitle("Device info")).check(matches(withSubtitle(expectedDeviceInfo)));
+        onData(anything())
+                .atPosition(1)
+                .onChildView(withId(android.R.id.text1))
+                .check(matches(withText("Device info")));
+        onData(anything())
+                .atPosition(1)
+                .onChildView(withId(android.R.id.text2))
+                .check(matches(withText(expectedDeviceInfo)));
     }
 
     @Test
@@ -105,17 +115,37 @@ public class HomeFragmentTest {
         String expectedWebViewPackageInfo =
                 String.format(Locale.US, "%s (%s/%s)", dummyTestPackage.packageName,
                         dummyTestPackage.versionName, dummyTestPackage.versionCode);
-        onView(withTitle("WebView package"))
-                .check(matches(withSubtitle(expectedWebViewPackageInfo)));
+        onData(anything())
+                .atPosition(0)
+                .onChildView(withId(android.R.id.text1))
+                .check(matches(withText("WebView package")));
+        onData(anything())
+                .atPosition(0)
+                .onChildView(withId(android.R.id.text2))
+                .check(matches(withText(expectedWebViewPackageInfo)));
 
         PackageInfo devUiPackage = WebViewPackageHelper.getContextPackageInfo(context);
         String expectedDevUiInfo = String.format(Locale.US, "%s (%s/%s)", devUiPackage.packageName,
                 devUiPackage.versionName, devUiPackage.versionCode);
-        onView(withTitle("DevTools package")).check(matches(withSubtitle(expectedDevUiInfo)));
+        onData(anything())
+                .atPosition(1)
+                .onChildView(withId(android.R.id.text1))
+                .check(matches(withText("DevTools package")));
+        onData(anything())
+                .atPosition(1)
+                .onChildView(withId(android.R.id.text2))
+                .check(matches(withText(expectedDevUiInfo)));
 
         String expectedDeviceInfo =
                 String.format(Locale.US, "%s - %s", Build.MODEL, Build.FINGERPRINT);
-        onView(withTitle("Device info")).check(matches(withSubtitle(expectedDeviceInfo)));
+        onData(anything())
+                .atPosition(2)
+                .onChildView(withId(android.R.id.text1))
+                .check(matches(withText("Device info")));
+        onData(anything())
+                .atPosition(2)
+                .onChildView(withId(android.R.id.text2))
+                .check(matches(withText(expectedDeviceInfo)));
     }
 
     @Test
