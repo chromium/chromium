@@ -33,6 +33,21 @@ struct ReadbackTestConfig {
   TestReadBackType readback_type;
 };
 
+// Provides a test readback suffix appropriate for |type|.
+const char* ReadbackTypeTestSuffix(TestReadBackType type) {
+  switch (type) {
+    case TestReadBackType::kTexture:
+      return "Texture";
+    case TestReadBackType::kBitmap:
+      return "Bitmap";
+  }
+}
+
+void PrintTo(const ReadbackTestConfig& config, std::ostream* os) {
+  PrintTo(config.renderer_type, os);
+  *os << '_' << ReadbackTypeTestSuffix(config.readback_type);
+}
+
 class LayerTreeHostReadbackPixelTest
     : public LayerTreePixelTest,
       public testing::WithParamInterface<ReadbackTestConfig> {
@@ -432,7 +447,8 @@ ReadbackTestConfig const kTestConfigs[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostReadbackPixelTest,
-                         ::testing::ValuesIn(kTestConfigs));
+                         ::testing::ValuesIn(kTestConfigs),
+                         ::testing::PrintToStringParamName());
 
 // TODO(crbug.com/974283): These tests are crashing with vulkan when TSan or
 // MSan are used.
@@ -453,7 +469,8 @@ ReadbackTestConfig const kMaybeVulkanTestConfigs[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostReadbackPixelTestMaybeVulkan,
-                         ::testing::ValuesIn(kMaybeVulkanTestConfigs));
+                         ::testing::ValuesIn(kMaybeVulkanTestConfigs),
+                         ::testing::PrintToStringParamName());
 
 class LayerTreeHostReadbackDeviceScalePixelTest
     : public LayerTreeHostReadbackPixelTest {
@@ -537,7 +554,8 @@ TEST_P(LayerTreeHostReadbackDeviceScalePixelTest, ReadbackNonRootLayerSubrect) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostReadbackDeviceScalePixelTest,
-                         ::testing::ValuesIn(kTestConfigs));
+                         ::testing::ValuesIn(kTestConfigs),
+                         ::testing::PrintToStringParamName());
 
 class LayerTreeHostReadbackColorSpacePixelTest
     : public LayerTreeHostReadbackPixelTest {
@@ -577,7 +595,8 @@ TEST_P(LayerTreeHostReadbackColorSpacePixelTest, Readback) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostReadbackColorSpacePixelTest,
-                         ::testing::ValuesIn(kTestConfigs));
+                         ::testing::ValuesIn(kTestConfigs),
+                         ::testing::PrintToStringParamName());
 
 }  // namespace
 }  // namespace cc

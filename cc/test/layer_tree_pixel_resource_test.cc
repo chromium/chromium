@@ -18,9 +18,9 @@
 namespace cc {
 
 LayerTreeHostPixelResourceTest::LayerTreeHostPixelResourceTest(
-    PixelResourceTestCase test_case)
-    : LayerTreePixelTest(test_case.renderer_type), test_case_(test_case) {
-  set_raster_type(test_case_.raster_type);
+    RasterTestConfig test_config)
+    : LayerTreePixelTest(test_config.renderer_type), test_config_(test_config) {
+  set_raster_type(test_config_.raster_type);
 }
 
 const char* LayerTreeHostPixelResourceTest::GetRendererSuffix() const {

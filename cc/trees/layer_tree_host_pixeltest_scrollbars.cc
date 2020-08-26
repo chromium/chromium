@@ -86,7 +86,8 @@ TestRendererType const kRendererTypes[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostScrollbarsPixelTest,
-                         ::testing::ValuesIn(kRendererTypes));
+                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostScrollbarsPixelTest, NoScale) {
   scoped_refptr<SolidColorLayer> background =
@@ -257,7 +258,8 @@ class PaintedOverlayScrollbar : public FakeScrollbar {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostOverlayScrollbarsPixelTest,
-                         ::testing::ValuesIn(kRendererTypes));
+                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::PrintToStringParamName());
 
 // Simulate increasing the thickness of a painted overlay scrollbar. Ensure that
 // the scrollbar border remains crisp.

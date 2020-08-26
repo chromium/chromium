@@ -567,6 +567,8 @@ cc_test_static_library("test_support") {
     "test/test_tile_priorities.h",
     "test/test_tile_task_runner.cc",
     "test/test_tile_task_runner.h",
+    "test/test_types.cc",
+    "test/test_types.h",
     "test/test_ukm_recorder_factory.cc",
     "test/test_ukm_recorder_factory.h",
     "test/transfer_cache_test_helper.cc",

@@ -17,6 +17,7 @@
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/test/test_hooks.h"
 #include "cc/test/test_task_graph_runner.h"
+#include "cc/test/test_types.h"
 #include "cc/trees/compositor_mode.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -37,16 +38,6 @@ class TestContextProvider;
 }
 
 namespace cc {
-
-enum TestRendererType {
-  kGL,
-  kSkiaGL,
-  kSkiaVk,
-  // SkiaRenderer with the Dawn backend will be used; on Linux this will
-  // initialize Vulkan, and on Windows this will initialize D3D12.
-  kSkiaDawn,
-  kSoftware,
-};
 
 class Animation;
 class AnimationHost;

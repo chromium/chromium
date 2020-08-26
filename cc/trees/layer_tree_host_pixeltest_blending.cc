@@ -68,7 +68,7 @@ const uint32_t kForceShaders = 1 << 3;
 class LayerTreeHostBlendingPixelTest
     : public LayerTreeHostPixelResourceTest,
       public ::testing::WithParamInterface<
-          ::testing::tuple<PixelResourceTestCase, SkBlendMode>> {
+          ::testing::tuple<RasterTestConfig, SkBlendMode>> {
  public:
   LayerTreeHostBlendingPixelTest()
       : LayerTreeHostPixelResourceTest(resource_type()),
@@ -77,7 +77,7 @@ class LayerTreeHostBlendingPixelTest
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
   }
 
-  PixelResourceTestCase resource_type() const {
+  RasterTestConfig resource_type() const {
     return ::testing::get<0>(GetParam());
   }
   SkBlendMode current_blend_mode() const {
@@ -259,7 +259,7 @@ class LayerTreeHostBlendingPixelTest
   SkColor misc_opaque_color_ = 0xffc86464;
 };
 
-std::vector<PixelResourceTestCase> const kTestCases = {
+std::vector<RasterTestConfig> const kTestCases = {
     {TestRendererType::kSoftware, TestRasterType::kBitmap},
     {TestRendererType::kGL, TestRasterType::kZeroCopy},
     {TestRendererType::kSkiaGL, TestRasterType::kGpu},

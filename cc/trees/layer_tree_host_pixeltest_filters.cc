@@ -85,7 +85,8 @@ TestRendererType const kRendererTypes[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersPixelTest,
-                         ::testing::ValuesIn(kRendererTypes));
+                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::PrintToStringParamName());
 
 using LayerTreeHostFiltersPixelTestGPU = LayerTreeHostFiltersPixelTest;
 
@@ -102,7 +103,8 @@ TestRendererType const kRendererTypesGpu[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersPixelTestGPU,
-                         ::testing::ValuesIn(kRendererTypesGpu));
+                         ::testing::ValuesIn(kRendererTypesGpu),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   scoped_refptr<SolidColorLayer> background = CreateSolidColorLayer(
@@ -392,7 +394,8 @@ TestRendererType const kRendererTypesGpuNonDawn[] = {
 
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostBlurFiltersPixelTestGPULayerList,
-                         ::testing::ValuesIn(kRendererTypesGpuNonDawn));
+                         ::testing::ValuesIn(kRendererTypesGpuNonDawn),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
        BackdropFilterBlurOffAxis) {
@@ -492,7 +495,8 @@ class LayerTreeHostFiltersScaledPixelTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersScaledPixelTest,
-                         ::testing::ValuesIn(kRendererTypes));
+                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostFiltersScaledPixelTest, StandardDpi) {
   RunPixelTestType(100, 1.f);
@@ -766,7 +770,8 @@ TestRendererType const kRendererTypesNonDawn[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostFiltersPixelTestNonDawn,
-                         ::testing::ValuesIn(kRendererTypesNonDawn));
+                         ::testing::ValuesIn(kRendererTypesNonDawn),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostFiltersPixelTestNonDawn, ZoomFilter) {
   scoped_refptr<SolidColorLayer> root =
@@ -1192,7 +1197,8 @@ class BackdropFilterOffsetTest : public LayerTreeHostFiltersPixelTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          BackdropFilterOffsetTest,
-                         ::testing::ValuesIn(kRendererTypes));
+                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(BackdropFilterOffsetTest, StandardDpi) {
   RunPixelTestType(1.f);
@@ -1251,7 +1257,8 @@ class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          BackdropFilterInvertTest,
-                         ::testing::ValuesIn(kRendererTypes));
+                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(BackdropFilterInvertTest, StandardDpi) {
   RunPixelTestType(1.f);

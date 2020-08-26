@@ -20,14 +20,9 @@
 namespace cc {
 namespace {
 
-struct TilesTestConfig {
-  TestRendererType renderer_type;
-  TestRasterType raster_type;
-};
-
 class LayerTreeHostTilesPixelTest
     : public LayerTreePixelTest,
-      public ::testing::WithParamInterface<TilesTestConfig> {
+      public ::testing::WithParamInterface<RasterTestConfig> {
  protected:
   LayerTreeHostTilesPixelTest() : LayerTreePixelTest(renderer_type()) {
     set_raster_type(GetParam().raster_type);
@@ -152,7 +147,7 @@ class LayerTreeHostTilesTestPartialInvalidation
   scoped_refptr<PictureLayer> picture_layer_;
 };
 
-std::vector<TilesTestConfig> const kTestCases = {
+std::vector<RasterTestConfig> const kTestCases = {
     {TestRendererType::kSoftware, TestRasterType::kBitmap},
     {TestRendererType::kGL, TestRasterType::kOneCopy},
     {TestRendererType::kGL, TestRasterType::kGpu},
@@ -168,7 +163,8 @@ std::vector<TilesTestConfig> const kTestCases = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostTilesTestPartialInvalidation,
-                         ::testing::ValuesIn(kTestCases));
+                         ::testing::ValuesIn(kTestCases),
+                         ::testing::PrintToStringParamName());
 
 #if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
 // Flaky on Windows ASAN https://crbug.com/1045521
@@ -190,7 +186,7 @@ TEST_P(LayerTreeHostTilesTestPartialInvalidation, FullRaster) {
       base::FilePath(FILE_PATH_LITERAL("blue_yellow_flipped.png")));
 }
 
-std::vector<TilesTestConfig> const kTestCasesMultiThread = {
+std::vector<RasterTestConfig> const kTestCasesMultiThread = {
     {TestRendererType::kGL, TestRasterType::kOneCopy},
     {TestRendererType::kSkiaGL, TestRasterType::kOneCopy},
 #if defined(ENABLE_CC_VULKAN_TESTS)
@@ -208,7 +204,8 @@ using LayerTreeHostTilesTestPartialInvalidationMultiThread =
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostTilesTestPartialInvalidationMultiThread,
-                         ::testing::ValuesIn(kTestCasesMultiThread));
+                         ::testing::ValuesIn(kTestCasesMultiThread),
+                         ::testing::PrintToStringParamName());
 
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
 // Flaky on Linux TSAN. https://crbug.com/707711
@@ -250,8 +247,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     LayerTreeHostTilesTestPartialInvalidationLowBitDepth,
     ::testing::Values(
-        TilesTestConfig{TestRendererType::kSkiaGL, TestRasterType::kGpu},
-        TilesTestConfig{TestRendererType::kGL, TestRasterType::kGpu}));
+        RasterTestConfig{TestRendererType::kSkiaGL, TestRasterType::kGpu},
+        RasterTestConfig{TestRendererType::kGL, TestRasterType::kGpu}),
+    ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostTilesTestPartialInvalidationLowBitDepth, PartialRaster) {
   use_partial_raster_ = true;

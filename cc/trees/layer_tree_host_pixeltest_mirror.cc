@@ -37,7 +37,8 @@ const TestRendererType kRendererTypes[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostMirrorPixelTest,
-                         ::testing::ValuesIn(kRendererTypes));
+                         ::testing::ValuesIn(kRendererTypes),
+                         ::testing::PrintToStringParamName());
 
 // Verifies that a mirror layer with a scale mirrors another layer correctly.
 TEST_P(LayerTreeHostMirrorPixelTest, MirrorLayer) {

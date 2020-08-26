@@ -12,16 +12,11 @@
 
 namespace cc {
 
-struct PixelResourceTestCase {
-  TestRendererType renderer_type;
-  TestRasterType raster_type;
-};
-
 class LayerTreeHostPixelResourceTest : public LayerTreePixelTest {
  public:
-  explicit LayerTreeHostPixelResourceTest(PixelResourceTestCase test_case);
+  explicit LayerTreeHostPixelResourceTest(RasterTestConfig test_config);
 
-  TestRendererType renderer_type() const { return test_case_.renderer_type; }
+  TestRendererType renderer_type() const { return test_config_.renderer_type; }
 
   const char* GetRendererSuffix() const;
 
@@ -36,12 +31,12 @@ class LayerTreeHostPixelResourceTest : public LayerTreePixelTest {
   void RunPixelResourceTestWithLayerList(base::FilePath file_name);
 
  protected:
-  const PixelResourceTestCase test_case_;
+  const RasterTestConfig test_config_;
 };
 
 class ParameterizedPixelResourceTest
     : public LayerTreeHostPixelResourceTest,
-      public ::testing::WithParamInterface<PixelResourceTestCase> {
+      public ::testing::WithParamInterface<RasterTestConfig> {
  public:
   ParameterizedPixelResourceTest();
 };

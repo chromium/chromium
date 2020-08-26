@@ -63,7 +63,8 @@ TestRendererType const kRendererTypesGpu[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostSynchronousPixelTest,
-                         ::testing::ValuesIn(kRendererTypesGpu));
+                         ::testing::ValuesIn(kRendererTypesGpu),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostSynchronousPixelTest, OneContentLayerZeroCopy) {
   set_raster_type(TestRasterType::kZeroCopy);

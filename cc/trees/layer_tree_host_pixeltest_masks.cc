@@ -28,7 +28,7 @@ namespace {
 
 // TODO(penghuang): Fix vulkan with one copy or zero copy
 // https://crbug.com/979703
-std::vector<PixelResourceTestCase> const kTestCases = {
+std::vector<RasterTestConfig> const kTestCases = {
     {TestRendererType::kSoftware, TestRasterType::kBitmap},
     {TestRendererType::kGL, TestRasterType::kGpu},
     {TestRendererType::kGL, TestRasterType::kOneCopy},
@@ -46,7 +46,8 @@ using LayerTreeHostMasksPixelTest = ParameterizedPixelResourceTest;
 
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostMasksPixelTest,
-                         ::testing::ValuesIn(kTestCases));
+                         ::testing::ValuesIn(kTestCases),
+                         ::testing::PrintToStringParamName());
 
 class MaskContentLayerClient : public ContentLayerClient {
  public:
@@ -157,7 +158,8 @@ class LayerTreeHostMaskPixelTestWithLayerList
 
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostMaskPixelTestWithLayerList,
-                         ::testing::ValuesIn(kTestCases));
+                         ::testing::ValuesIn(kTestCases),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostMaskPixelTestWithLayerList, MaskWithEffect) {
   MaskContentLayerClient client(mask_bounds_);
@@ -230,7 +232,8 @@ class LayerTreeHostMaskPixelTest_SolidColorEmptyMaskWithEffectAndRenderSurface
 INSTANTIATE_TEST_SUITE_P(
     PixelResourceTest,
     LayerTreeHostMaskPixelTest_SolidColorEmptyMaskWithEffectAndRenderSurface,
-    ::testing::ValuesIn(kTestCases));
+    ::testing::ValuesIn(kTestCases),
+    ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostMaskPixelTest_SolidColorEmptyMaskWithEffectAndRenderSurface,
        Test) {
@@ -265,7 +268,8 @@ class LayerTreeHostMaskPixelTest_MaskWithEffectNoContentToMask
 INSTANTIATE_TEST_SUITE_P(
     PixelResourceTest,
     LayerTreeHostMaskPixelTest_MaskWithEffectNoContentToMask,
-    ::testing::ValuesIn(kTestCases));
+    ::testing::ValuesIn(kTestCases),
+    ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostMaskPixelTest_MaskWithEffectNoContentToMask, Test) {
   MaskContentLayerClient client(mask_bounds_);
@@ -290,7 +294,8 @@ class LayerTreeHostMaskPixelTest_ScaledMaskWithEffect
 
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostMaskPixelTest_ScaledMaskWithEffect,
-                         ::testing::ValuesIn(kTestCases));
+                         ::testing::ValuesIn(kTestCases),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostMaskPixelTest_ScaledMaskWithEffect, Test) {
   MaskContentLayerClient client(mask_bounds_);
@@ -572,7 +577,8 @@ class LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList
 INSTANTIATE_TEST_SUITE_P(
     PixelResourceTest,
     LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList,
-    ::testing::ValuesIn(kTestCases));
+    ::testing::ValuesIn(kTestCases),
+    ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList, Test) {
   base::FilePath image_name =
@@ -603,7 +609,8 @@ using LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerTree =
 INSTANTIATE_TEST_SUITE_P(
     PixelResourceTest,
     LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerTree,
-    ::testing::ValuesIn(kTestCases));
+    ::testing::ValuesIn(kTestCases),
+    ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerTree, Test) {
   scoped_refptr<SolidColorLayer> background =
@@ -734,16 +741,21 @@ constexpr uint32_t kUseAntialiasing = 1 << 0;
 constexpr uint32_t kForceShaders = 1 << 1;
 
 struct MaskTestConfig {
-  PixelResourceTestCase test_case;
+  RasterTestConfig test_config;
   uint32_t flags;
 };
+
+void PrintTo(const MaskTestConfig& config, std::ostream* os) {
+  PrintTo(config.test_config, os);
+  *os << '_' << config.flags;
+}
 
 class LayerTreeHostMaskAsBlendingPixelTest
     : public LayerTreeHostPixelResourceTest,
       public ::testing::WithParamInterface<MaskTestConfig> {
  public:
   LayerTreeHostMaskAsBlendingPixelTest()
-      : LayerTreeHostPixelResourceTest(GetParam().test_case),
+      : LayerTreeHostPixelResourceTest(GetParam().test_config),
         use_antialiasing_(GetParam().flags & kUseAntialiasing),
         force_shaders_(GetParam().flags & kForceShaders) {
     float percentage_pixels_error = 0.f;
@@ -888,7 +900,8 @@ MaskTestConfig const kTestConfigs[] = {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostMaskAsBlendingPixelTest,
-                         ::testing::ValuesIn(kTestConfigs));
+                         ::testing::ValuesIn(kTestConfigs),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostMaskAsBlendingPixelTest, PixelAlignedNoop) {
   // This test verifies the degenerate case of a no-op mask doesn't affect
@@ -1133,7 +1146,8 @@ class LayerTreeHostMasksForBackdropFiltersAndBlendPixelTest
 
 INSTANTIATE_TEST_SUITE_P(PixelResourceTest,
                          LayerTreeHostMasksForBackdropFiltersAndBlendPixelTest,
-                         ::testing::ValuesIn(kTestCases));
+                         ::testing::ValuesIn(kTestCases),
+                         ::testing::PrintToStringParamName());
 
 TEST_P(LayerTreeHostMasksForBackdropFiltersAndBlendPixelTest, Test) {
   base::FilePath result_path(
