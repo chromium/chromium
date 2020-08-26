@@ -2080,7 +2080,6 @@ crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canv
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-drawImage-offscreenCanvas.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-getImageData-e_srgb.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/imageData-colorManagedBehavior.html [ Failure ]
-crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/imageData-colorSpace.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/manual/wide-gamut-canvas/transferFromImageBitmap.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/path-objects/2d.path.stroke.prune.arc.html [ Failure ]
 crbug.com/1050754 external/wpt/html/canvas/element/path-objects/2d.path.stroke.prune.closed.html [ Failure ]

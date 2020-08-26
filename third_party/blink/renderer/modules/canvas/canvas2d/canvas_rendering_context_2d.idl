@@ -133,7 +133,6 @@ interface CanvasRenderingContext2D {
 
     // https://github.com/WICG/canvas-color-space/blob/master/CanvasColorSpaceProposal.md
     [RuntimeEnabled=CanvasColorManagement, RaisesException] ImageData createImageData(unsigned long sw, unsigned long sh, ImageDataColorSettings imageDataColorSettings);
-    [RuntimeEnabled=CanvasColorManagement, RaisesException] ImageData createImageData(ImageDataArray data, unsigned long sw, unsigned long sh, optional ImageDataColorSettings imageDataColorSettings = {});
 
     // Context state
     // Should be merged with WebGL counterpart in CanvasRenderingContext, once no-longer experimental

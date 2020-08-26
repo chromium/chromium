@@ -353,47 +353,4 @@ for (var i = 0; i < canvasColorSettingsSet.length; i++) {
 
 generate_tests(runTestCreateImageDataWHC, testScenariosCreateImageDataWHC);
 
-////////////////////////////////////////////////////////////////////////////////
-
-// *ImageData ctx.createImageData(data, width, height, imageDataColorSettings);
-// No color conversion to the color settings of the canvas. ImageData is created
-// from param "data" with proper storage format and is tagged with the
-// CanvasColorSpace which is given in imageDataColorSettings.
-
-function runTestCreateImageDataDWHC(canvasColorSettings, imageData) {
-  var data = imageData.dataUnion;
-  width = xWidth;
-  height = xHeight;
-  var colorSettings = imageData.getColorSettings();
-
-  var canvas = initializeColorManagedCanvas(canvasColorSettings);
-  var ctx = canvas.getContext('2d');
-  var newImageData = ctx.createImageData(data, width, height, colorSettings);
-  var newColorSettings = newImageData.getColorSettings();
-  assert_equals(newColorSettings.colorSpace,
-                colorSettings.colorSpace,
-                "colorSpace should match");
-  assert_equals(newColorSettings.storageFormat,
-                colorSettings.storageFormat,
-                "storageFormat should match");
-  assert_array_equals(newImageData.dataUnion, imageData.dataUnion,
-                      "ImageData should be transparent black");
-}
-
-var testScenariosCreateImageDataDWHC = [];
-for (var i = 0; i < canvasColorSettingsSet.length; i++) {
-  for (var j = 0; j < imageDataColorSettingsSet.length; j++) {
-    message = "Test createImageData(data, width, height, imageDataColorSettings): " +
-              canvasColorSettingsSet[i].name + " canvas, " +
-              imageDataColorSettingsSet[j].name + " ImageData";
-    testScenariosCreateImageDataDWHC.
-        push([message, canvasColorSettingsSet[i].colorSettings,
-              imageDataColorSettingsSet[j].imageData]);
-  }
-}
-
-generate_tests(runTestCreateImageDataDWHC, testScenariosCreateImageDataDWHC);
-
-////////////////////////////////////////////////////////////////////////////////
-
 </script>

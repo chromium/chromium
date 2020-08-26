@@ -188,15 +188,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                              unsigned,
                              ImageDataColorSettings*,
                              ExceptionState&) const;
-  ImageData* createImageData(ImageDataArray&,
-                             unsigned,
-                             unsigned,
-                             ExceptionState&) const;
-  ImageData* createImageData(ImageDataArray&,
-                             unsigned,
-                             unsigned,
-                             ImageDataColorSettings*,
-                             ExceptionState&) const;
 
   // For deferred canvases this will have the side effect of drawing recorded
   // commands in order to finalize the frame
