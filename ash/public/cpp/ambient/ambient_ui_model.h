@@ -19,10 +19,12 @@ enum class AmbientUiVisibility {
   kClosed,
 };
 
-// Enumeration of ambient UI modes.
+// Enumeration of ambient UI modes. This is used for metrics reporting and
+// values should not be re-ordered or removed.
 enum class AmbientUiMode {
-  kLockScreenUi,
-  kInSessionUi,
+  kLockScreenUi = 0,
+  kInSessionUi = 1,
+  kMaxValue = kInSessionUi,
 };
 
 // A checked observer which receives notification of changes to the Ambient Mode

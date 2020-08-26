@@ -9694,6 +9694,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.AmbientMode.Activation.{TabletOrClamshell}"
+    enum="AmbientUiMode" expires_after="2021-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Recorded whenever Ambient mode is entered from {TabletOrClamshell}.
+    AmbientUiMode indicates whether the user entered Ambient mode from the lock
+    screen or from screen idle.
+  </summary>
+  <token key="TabletOrClamshell">
+    <variant name="ClamshellMode" label="Clamshell mode"/>
+    <variant name="TabletMode" label="Tablet mode"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.AmbientMode.AnimationSmoothness.PhotoTransition" units="%"
     expires_after="2021-05-01">
   <owner>wutao@chromium.org</owner>
