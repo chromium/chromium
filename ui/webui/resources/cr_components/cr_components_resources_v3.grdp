@@ -168,6 +168,10 @@
            file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js"
            use_base_dir="false"
            type="BINDATA" />
+    <include name="IDR_WEBUI_CHROMEOS_CELLULAR_SETUP_SETUP_SELECTION_FLOW_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/cr_components/chromeos/cellular_setup/setup_selection_flow.m.js"
+           use_base_dir="false"
+           type="BINDATA" />
   </if>
   <if expr="use_nss_certs">
     <include name="IDR_WEBUI_CA_TRUST_EDIT_DIALOG_JS"

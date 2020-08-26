@@ -138,7 +138,7 @@ js_type_check("closure_compile_module") {
     ":sim_detect_page.m",
     ":subflow_behavior.m",
 
-    # ":setup_selection_flow.m",
+    ":setup_selection_flow.m",
     ":webview_post_util.m",
   ]
 }
@@ -251,6 +251,17 @@ js_library("esim_flow_ui.m") {
   extra_deps = [ ":esim_flow_ui_module" ]
 }
 
+js_library("setup_selection_flow.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/setup_selection_flow.m.js" ]
+  deps = [
+    ":cellular_types.m",
+    ":subflow_behavior.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+   extra_deps = [ ":setup_selection_flow_module" ]
+}
+
+
 group("polymer3_elements") {
   public_deps = [
     ":base_page_module",
@@ -260,6 +271,7 @@ group("polymer3_elements") {
     ":modulize",
     ":provisioning_page_module",
     ":psim_flow_ui_module",
+    ":setup_selection_flow_module",
     ":sim_detect_page_module",
   ]
 }
@@ -315,6 +327,14 @@ polymer_modulizer("psim_flow_ui") {
 polymer_modulizer("esim_flow_ui") {
   js_file = "esim_flow_ui.js"
   html_file = "esim_flow_ui.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("setup_selection_flow") {
+  js_file = "setup_selection_flow.js"
+  html_file = "setup_selection_flow.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports

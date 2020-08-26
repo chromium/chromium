@@ -48,6 +48,7 @@ GEN('#include "content/public/test/browser_test.h"');
   ['FinalPage', 'cellular_setup/final_page_test.js', []],
   ['ProvisioningPage', 'cellular_setup/provisioning_page_test.js',[]],
   ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.js',[]],
+  ['SetupSelectionFlow', 'cellular_setup/setup_selection_flow_test.js',[]],
   ['SimDetectPage', 'cellular_setup/sim_detect_page_test.js', []],
 ].forEach(test => registerTest('CellularSetup', 'cellular-setup', ...test));
 // clang-format on

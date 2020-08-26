@@ -13,6 +13,7 @@ js_modulizer("modulize") {
     "final_page_test.js",
     "provisioning_page_test.js",
     "psim_flow_ui_test.js",
+    "setup_selection_flow_test.js",
     "sim_detect_page_test.js",
   ]
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
