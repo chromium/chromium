@@ -633,3 +633,17 @@ TEST_F(AccessContextAuditServiceTest, OnOriginDataCleared) {
   records = GetAllAccessRecords();
   ASSERT_EQ(0U, records.size());
 }
+
+TEST_F(AccessContextAuditServiceTest, OpaqueOrigins) {
+  // Check that records which have opaque top frame origins are not recorded.
+  auto test_cookie = net::CanonicalCookie::Create(
+      GURL("https://example.com"), "test_1=1; max-age=3600", base::Time::Now(),
+      base::nullopt /* server_time */);
+  service()->RecordCookieAccess({*test_cookie}, url::Origin());
+  service()->RecordStorageAPIAccess(
+      url::Origin::Create(GURL("https://example.com")),
+      AccessContextAuditDatabase::StorageAPIType::kWebDatabase, url::Origin());
+
+  auto records = GetAllAccessRecords();
+  ASSERT_EQ(0U, records.size());
+}
