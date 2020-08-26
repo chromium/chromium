@@ -20,11 +20,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/buffer.h"
 
-namespace blink {
-class WebLocalFrame;
-}
-
 namespace content {
+class RenderFrame;
 
 class GamepadController : public base::SupportsWeakPtr<GamepadController> {
  public:
@@ -32,7 +29,7 @@ class GamepadController : public base::SupportsWeakPtr<GamepadController> {
   ~GamepadController();
 
   void Reset();
-  void Install(blink::WebLocalFrame* frame);
+  void Install(RenderFrame* frame);
 
  private:
   class MonitorImpl : public device::mojom::GamepadMonitor {
@@ -95,7 +92,7 @@ class GamepadController : public base::SupportsWeakPtr<GamepadController> {
   base::ReadOnlySharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
 
-  device::GamepadHardwareBuffer* gamepads_;
+  device::GamepadHardwareBuffer* gamepads_ = nullptr;
 
   base::WeakPtrFactory<GamepadController> weak_factory_{this};
 

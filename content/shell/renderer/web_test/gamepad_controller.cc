@@ -241,10 +241,18 @@ GamepadController::GamepadController() {
   shared_memory_mapping_ = writable_region.Map();
   shared_memory_region_ = base::WritableSharedMemoryRegion::ConvertToReadOnly(
       std::move(writable_region));
-  CHECK(shared_memory_region_.IsValid());
-  CHECK(shared_memory_mapping_.IsValid());
-  gamepads_ =
-      new (shared_memory_mapping_.memory()) device::GamepadHardwareBuffer();
+  if (!shared_memory_region_.IsValid()) {
+    // Log an error instead of crashing, as this can flakily happen in
+    // clusterfuzz. If it happened in the wild, the test would be retried.
+    LOG(ERROR) << "GamepadController shared memory region is not valid";
+  } else if (!shared_memory_mapping_.IsValid()) {
+    // Log an error instead of crashing, as this can flakily happen in
+    // clusterfuzz. If it happened in the wild, the test would be retried.
+    LOG(ERROR) << "GamepadController shared memory mapping is not valid";
+  } else {
+    gamepads_ =
+        new (shared_memory_mapping_.memory()) device::GamepadHardwareBuffer();
+  }
 
   Reset();
 }
@@ -252,22 +260,24 @@ GamepadController::GamepadController() {
 GamepadController::~GamepadController() = default;
 
 void GamepadController::Reset() {
+  if (!gamepads_)
+    return;  // Shared memory failed.
+
   memset(gamepads_, 0, sizeof(*gamepads_));
   for (auto& monitor : monitors_)
     monitor->Reset();
 }
 
-void GamepadController::Install(blink::WebLocalFrame* frame) {
-  content::RenderFrame* render_frame =
-      content::RenderFrame::FromWebFrame(frame);
-  if (!render_frame)
-    return;
+void GamepadController::Install(RenderFrame* frame) {
+  if (!gamepads_)
+    return;  // Shared memory failed.
 
-  render_frame->GetBrowserInterfaceBroker()->SetBinderForTesting(
+  frame->GetBrowserInterfaceBroker()->SetBinderForTesting(
       device::mojom::GamepadMonitor::Name_,
       base::BindRepeating(&GamepadController::OnInterfaceRequest,
                           base::Unretained(this)));
-  GamepadControllerBindings::Install(weak_factory_.GetWeakPtr(), frame);
+  GamepadControllerBindings::Install(weak_factory_.GetWeakPtr(),
+                                     frame->GetWebFrame());
 }
 
 void GamepadController::OnInterfaceRequest(

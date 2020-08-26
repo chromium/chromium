@@ -2213,7 +2213,7 @@ void TestRunner::Install(WebFrameTestProxy* frame,
                               IsWebPlatformTestsMode(), is_main_test_window);
   mock_screen_orientation_client_.OverrideAssociatedInterfaceProviderForFrame(
       frame->GetWebFrame());
-  gamepad_controller_.Install(frame->GetWebFrame());
+  gamepad_controller_.Install(frame);
   frame->GetWebViewTestProxy()
       ->GetWebView()
       ->SetScreenOrientationOverrideForTesting(
