@@ -1103,6 +1103,7 @@ android_library("chrome_test_java") {
     "//components/sync/protocol:protocol_java",
     "//components/translate/content/android:javatests",
     "//components/url_formatter/android:url_formatter_java",
+    "//components/url_formatter/android:url_formatter_javatests",
     "//components/user_prefs/android:java",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",

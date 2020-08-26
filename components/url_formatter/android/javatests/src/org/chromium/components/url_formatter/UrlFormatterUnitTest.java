@@ -4,10 +4,16 @@
 
 package org.chromium.components.url_formatter;
 
-import org.junit.Assert;
+import androidx.test.filters.SmallTest;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeJavaTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
  * Unit tests for {@link UrlFormatter}.
@@ -15,11 +21,16 @@ import org.chromium.base.annotations.CalledByNativeJavaTest;
  * These tests are basic sanity checks to ensure the plumbing is working correctly. The wrapped
  * functions are tested much more thoroughly elsewhere.
  */
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class UrlFormatterUnitTest {
-    @CalledByNative
-    private UrlFormatterUnitTest() {}
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testFixupUrl() {
         Assert.assertEquals("http://google.com/", UrlFormatter.fixupUrl("google.com").getSpec());
         Assert.assertEquals("chrome://version/", UrlFormatter.fixupUrl("about:").getSpec());
@@ -28,7 +39,8 @@ public class UrlFormatterUnitTest {
         Assert.assertFalse(UrlFormatter.fixupUrl("0x100.0").isValid());
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testFormatUrlForDisplayOmitUsernamePassword() {
         Assert.assertEquals("http://google.com/path",
                 UrlFormatter.formatUrlForDisplayOmitUsernamePassword("http://google.com/path"));

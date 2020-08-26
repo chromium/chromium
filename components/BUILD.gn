@@ -352,7 +352,6 @@ test("components_unittests") {
       "//components/signin/core/browser/android:java",
       "//components/signin/public/android:java",
       "//components/spellcheck/browser/android:java",
-      "//components/url_formatter/android:native_java_unittests_java",
       "//components/variations/android:variations_java",
       "//content/public/android:content_java",
       "//content/public/browser",

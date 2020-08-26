@@ -87,12 +87,4 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (is_android) {
-    sources += [ "url_formatter_android_unittest.cc" ]
-    deps += [
-      "android:native_j_unittests_jni_headers",
-      "android:native_java_unittests_java",
-    ]
-  }
 }
