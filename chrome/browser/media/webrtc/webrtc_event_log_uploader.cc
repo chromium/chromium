@@ -36,12 +36,12 @@ constexpr size_t kExpectedMimeOverheadBytes = 1000;  // Intentional overshot.
 const char kProduct[] = "Chrome";
 #elif defined(OS_MAC)
 const char kProduct[] = "Chrome_Mac";
+#elif defined(OS_CHROMEOS)
+const char kProduct[] = "Chrome_ChromeOS";
 #elif defined(OS_LINUX)
 const char kProduct[] = "Chrome_Linux";
 #elif defined(OS_ANDROID)
 const char kProduct[] = "Chrome_Android";
-#elif defined(OS_CHROMEOS)
-const char kProduct[] = "Chrome_ChromeOS";
 #else
 #error Platform not supported.
 #endif
