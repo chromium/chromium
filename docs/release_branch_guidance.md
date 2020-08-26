@@ -4,8 +4,8 @@
     etc) just before branch due to the risk of reverts. If you modify data that
     will be synced, this change should be forward compatible for up to four
     milestones (as stable and canary are at times four milestones apart and it's
-    easonable to assume that somebody runs stable on chromeos and canary on mac,
-    both syncing to the same account).
+    reasonable to assume that somebody runs stable on chromeos and canary on
+    mac, both syncing to the same account).
 *   Two weeks prior to the branch point, avoid committing big and risky changes
     or enabling non-trivial features.
 *   Pay more attention to complexity and structure of CLs around branch points,
