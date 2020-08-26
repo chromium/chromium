@@ -24,11 +24,6 @@ void IOBuffer::AssertValidBufferSize(int size) {
 
 IOBuffer::IOBuffer() : data_(nullptr) {}
 
-IOBuffer::IOBuffer(int buffer_size) {
-  AssertValidBufferSize(buffer_size);
-  data_ = new char[buffer_size];
-}
-
 IOBuffer::IOBuffer(size_t buffer_size) {
   AssertValidBufferSize(buffer_size);
   data_ = new char[buffer_size];

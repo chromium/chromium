@@ -77,8 +77,6 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
  public:
   IOBuffer();
 
-  // TODO(eroman): Deprecated. Use the size_t flavor instead. crbug.com/488553
-  explicit IOBuffer(int buffer_size);
   explicit IOBuffer(size_t buffer_size);
 
   char* data() const { return data_; }
