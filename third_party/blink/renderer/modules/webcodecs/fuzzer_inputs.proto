@@ -13,6 +13,26 @@ message ConfigureVideoDecoder {
   optional bytes description = 2;
 }
 
+message ConfigureVideoEncoder {
+  // String describing codec (e.g. "vp09.00.10.08")
+  optional string codec = 1;
+
+  enum EncoderAccelerationPreference {
+    ALLOW = 0;
+    DENY = 1;
+    REQUIRE = 2;
+  }
+  optional EncoderAccelerationPreference acceleration = 2;
+
+  optional uint64 bitrate = 3;
+
+  optional double framerate = 4;
+
+  optional uint32 width = 5;
+
+  optional uint32 height = 6;
+}
+
 message ConfigureAudioDecoder {
   // String describing codec (e.g. "opus")
   optional string codec = 1;
@@ -45,6 +65,25 @@ message EncodedAudioChunk {
   optional uint64 timestamp = 2;
 
   optional bytes data = 4;
+}
+
+// Mix of args to VideoFrame constructor.
+// TODO(sandersd): Define a new Init type  when PlanesInit constructor lands.
+message VideoFrameBitmapInit {
+  optional uint64 timestamp = 1;
+
+  optional uint64 duration = 2;
+
+  optional uint32 bitmap_width = 3;
+
+  optional bytes rgb_bitmap = 4;
+}
+
+message EncodeVideo {
+  optional VideoFrameBitmapInit frame = 1;
+
+  message EncodeOptions { optional bool key_frame = 1; }
+  optional EncodeOptions options = 2;
 }
 
 message DecodeVideo {
@@ -89,4 +128,18 @@ message AudioDecoderApiInvocation {
 
 message AudioDecoderApiInvocationSequence {
   repeated AudioDecoderApiInvocation invocations = 1;
+}
+
+message VideoEncoderApiInvocation {
+  oneof Api {
+    ConfigureVideoEncoder configure = 1;
+    EncodeVideo encode = 2;
+    Flush flush = 3;
+    Reset reset = 4;
+    Close close = 5;
+  }
+}
+
+message VideoEncoderApiInvocationSequence {
+  repeated VideoEncoderApiInvocation invocations = 1;
 }

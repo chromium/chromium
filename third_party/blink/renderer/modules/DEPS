@@ -27,11 +27,12 @@ specific_include_rules = {
         "+testing/libfuzzer/proto/lpm_interface.h",
         "+third_party/protobuf/src/google/protobuf/repeated_field.h",
     ],
-    "audio_decoder_fuzzer.cc": [
+    ".*_decoder_fuzzer.cc": [
         "+base/run_loop.h",
         "+testing/libfuzzer/proto/lpm_interface.h",
     ],
-    "video_decoder_fuzzer.cc": [
+    "video_encoder_fuzzer.cc": [
+        "+base/at_exit.h",
         "+base/run_loop.h",
         "+testing/libfuzzer/proto/lpm_interface.h",
     ],
