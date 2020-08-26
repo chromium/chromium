@@ -13,8 +13,6 @@
 
 namespace {
 
-const char kDeviceIdPrefix[] = "users/me/devices/";
-
 void RecordContactChangeCheckResultMetrics(NearbyShareHttpResult result) {
   // TODO(https://crbug.com/1105579): Record a histogram value for each result.
 }
@@ -149,7 +147,6 @@ void NearbyShareContactDownloaderImpl::CallListContactPeople(
           base::Unretained(this)));
 
   nearbyshare::proto::ListContactPeopleRequest request;
-  request.set_parent(kDeviceIdPrefix + device_id());
   if (next_page_token)
     request.set_page_token(*next_page_token);
 

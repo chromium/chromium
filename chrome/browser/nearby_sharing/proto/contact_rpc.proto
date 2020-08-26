@@ -4,7 +4,7 @@
 
 // Keep in sync with
 // http://google3/google/internal/location/nearby/sharing/v1/rpcs/contacts.proto
-// Messages not used in Chrome have been omitted. Last copied at cl/2228987.
+// Messages not used in Chrome have been omitted. Last copied at cl/324307508.
 
 syntax = "proto3";
 
@@ -18,12 +18,9 @@ import "rpc_resources.proto";
 message CheckContactsReachabilityRequest {
   message ReachableContact {
     string contact_id = 1;
-
     repeated string phone_numbers = 2;
-
     repeated string emails = 3;
   }
-
   repeated ReachableContact contacts = 1;
 }
 
@@ -38,18 +35,13 @@ message CheckContactsReachabilityResponse {
 
 // Request to list ContactRecord of a user.
 message ListContactPeopleRequest {
-  // Required. The resource name determines which contact records to list.
-  // The special prefix "users/me" lists the requester's own contacts. This
-  // is of the format "users/*/devices/*".
-  string parent = 1;
-
   // Optional limit on the number of ContactRecord in
-  // [ListContactPeopleResponse.contact_records]. Defaults to 2000 if not set.
-  int32 page_size = 2;
+  // [ListContactPeopleResponse.contact_records]. Defaults to 500 if not set.
+  int32 page_size = 1;
 
   // Optional pagination token, returned earlier via
   // [ListContactPeopleResponse.next_page_token]
-  string page_token = 3;
+  string page_token = 2;
 }
 
 // Response from a ListContactPeopleRequest.

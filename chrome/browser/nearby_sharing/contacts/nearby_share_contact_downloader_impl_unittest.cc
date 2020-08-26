@@ -20,7 +20,6 @@
 
 namespace {
 
-const char kDeviceIdPrefix[] = "users/me/devices/";
 const char kTestDeviceId[] = "test_device_id";
 const char kTestContactRecordId1[] = "contact_id_1";
 const char kTestContactRecordId2[] = "contact_id_2";
@@ -150,7 +149,6 @@ class NearbyShareContactDownloaderImplTest : public ::testing::Test {
 
     const nearbyshare::proto::ListContactPeopleRequest& request =
         client->list_contact_people_requests()[0].request;
-    EXPECT_EQ(std::string(kDeviceIdPrefix) + kTestDeviceId, request.parent());
     EXPECT_EQ(expected_page_token.value_or(std::string()),
               request.page_token());
   }

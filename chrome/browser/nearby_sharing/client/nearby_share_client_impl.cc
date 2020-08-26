@@ -36,10 +36,8 @@ const char kDefaultNearbyShareV1HTTPHost[] =
 const char kNearbyShareV1Path[] = "v1/";
 
 const char kCheckContactsReachabilityPath[] = "contactsReachability:check";
-const char kListContactPeoplePathSeg1[] = "users/me/devices/";
-const char kListContactPeoplePathSeg2[] = "/contactRecords";
-const char kListPublicCertificatesPathSeg1[] = "users/me/devices/";
-const char kListPublicCertificatesPathSeg2[] = "/publicCertificates";
+const char kListContactPeoplePath[] = "contactRecords";
+const char kListPublicCertificatesPath[] = "publicCertificates";
 
 const char kPageSize[] = "page_size";
 const char kPageToken[] = "page_token";
@@ -259,10 +257,8 @@ void NearbyShareClientImpl::ListContactPeople(
     ListContactPeopleCallback&& callback,
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);
-  // TODO(cclem): Use correct identifier in URL
-  MakeApiCall(CreateV1RequestUrl(kListContactPeoplePathSeg1 + request.parent() +
-                                 kListContactPeoplePathSeg2),
-              RequestType::kGet, /*serialized_request=*/base::nullopt,
+  MakeApiCall(CreateV1RequestUrl(kListContactPeoplePath), RequestType::kGet,
+              /*serialized_request=*/base::nullopt,
               ListContactPeopleRequestToQueryParameters(request),
               std::move(callback), std::move(error_callback),
               GetContactsAnnotation());
@@ -273,10 +269,8 @@ void NearbyShareClientImpl::ListPublicCertificates(
     ListPublicCertificatesCallback&& callback,
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);
-  // TODO(cclem): Use correct identifier in URL
   MakeApiCall(
-      CreateV1RequestUrl(kListPublicCertificatesPathSeg1 + request.parent() +
-                         kListPublicCertificatesPathSeg2),
+      CreateV1RequestUrl(request.parent() + "/" + kListPublicCertificatesPath),
       RequestType::kGet, /*serialized_request=*/base::nullopt,
       ListPublicCertificatesRequestToQueryParameters(request),
       std::move(callback), std::move(error_callback),

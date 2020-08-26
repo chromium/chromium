@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors.All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,7 +142,6 @@ base::Value ResultToReadableDictionary(
 base::Value ListContactPeopleRequestToReadableDictionary(
     const nearbyshare::proto::ListContactPeopleRequest& request) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("parent", request.parent());
   dict.SetIntKey("page_size", request.page_size());
   dict.SetStringKey("page_token", request.page_token());
   return dict;
