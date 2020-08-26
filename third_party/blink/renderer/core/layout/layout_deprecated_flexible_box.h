@@ -27,8 +27,6 @@
 
 namespace blink {
 
-class FlexBoxIterator;
-
 // Handles layout for 'webkit-box' and 'webkit-inline-box'. This class will
 // eventually be replaced by LayoutFlexibleBox.
 class LayoutDeprecatedFlexibleBox final : public LayoutBlock {
@@ -54,7 +52,7 @@ class LayoutDeprecatedFlexibleBox final : public LayoutBlock {
 
   LayoutUnit AllowedChildFlex(LayoutBox* child, bool expanding);
 
-  void ApplyLineClamp(FlexBoxIterator&, bool relayout_children);
+  void ApplyLineClamp(bool relayout_children);
   void ClearLineClamp();
 };
 

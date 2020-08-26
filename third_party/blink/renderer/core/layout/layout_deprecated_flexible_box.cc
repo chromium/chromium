@@ -39,109 +39,6 @@
 
 namespace blink {
 
-class FlexBoxIterator {
-  STACK_ALLOCATED();
-
- public:
-  FlexBoxIterator(LayoutDeprecatedFlexibleBox* parent)
-      : box_(parent), largest_ordinal_(1) {
-    forward_ = box_->StyleRef().BoxDirection() == EBoxDirection::kNormal;
-    if (!forward_) {
-      // No choice, since we're going backwards, we have to find out the highest
-      // ordinal up front.
-      LayoutBox* child = box_->FirstChildBox();
-      while (child) {
-        if (child->StyleRef().BoxOrdinalGroup() > largest_ordinal_)
-          largest_ordinal_ = child->StyleRef().BoxOrdinalGroup();
-        child = child->NextSiblingBox();
-      }
-    }
-
-    Reset();
-  }
-
-  void Reset() {
-    current_child_ = nullptr;
-    natural_current_child_ = nullptr;
-    ordinal_iteration_ = -1;
-  }
-
-  LayoutBox* First() {
-    Reset();
-    return Next();
-  }
-
-  LayoutBox* Next() {
-    do {
-      if (!current_child_) {
-        ++ordinal_iteration_;
-
-        if (!ordinal_iteration_) {
-          current_ordinal_ = forward_ ? 1 : largest_ordinal_;
-        } else {
-          if (static_cast<size_t>(ordinal_iteration_) >=
-              ordinal_values_.size() + 1)
-            return nullptr;
-
-          // Only copy+sort the values once per layout even if the iterator is
-          // reset.
-          if (ordinal_values_.size() != sorted_ordinal_values_.size()) {
-            CopyToVector(ordinal_values_, sorted_ordinal_values_);
-            std::sort(sorted_ordinal_values_.begin(),
-                      sorted_ordinal_values_.end());
-          }
-          current_ordinal_ =
-              forward_ ? sorted_ordinal_values_[ordinal_iteration_ - 1]
-                       : sorted_ordinal_values_[sorted_ordinal_values_.size() -
-                                                ordinal_iteration_];
-        }
-
-        current_child_ =
-            forward_ ? box_->FirstChildBox() : box_->LastChildBox();
-      } else {
-        current_child_ = forward_ ? current_child_->NextSiblingBox()
-                                  : current_child_->PreviousSiblingBox();
-      }
-
-      if (current_child_ && NotFirstOrdinalValue())
-        ordinal_values_.insert(current_child_->StyleRef().BoxOrdinalGroup());
-    } while (!current_child_ || (!current_child_->IsAnonymous() &&
-                                 current_child_->StyleRef().BoxOrdinalGroup() !=
-                                     current_ordinal_));
-
-    // This peice of code just exists for detecting if this iterator actually
-    // does something other than returning the default order.
-    if (!natural_current_child_)
-      natural_current_child_ = box_->FirstChildBox();
-    else
-      natural_current_child_ = natural_current_child_->NextSiblingBox();
-
-    if (natural_current_child_ != current_child_) {
-      UseCounter::Count(box_->GetDocument(),
-                        WebFeature::kWebkitBoxNotDefaultOrder);
-    }
-
-    return current_child_;
-  }
-
- private:
-  bool NotFirstOrdinalValue() {
-    unsigned first_ordinal_value = forward_ ? 1 : largest_ordinal_;
-    return current_ordinal_ == first_ordinal_value &&
-           current_child_->StyleRef().BoxOrdinalGroup() != first_ordinal_value;
-  }
-
-  LayoutDeprecatedFlexibleBox* box_;
-  LayoutBox* current_child_;
-  LayoutBox* natural_current_child_;
-  bool forward_;
-  unsigned current_ordinal_;
-  unsigned largest_ordinal_;
-  HashSet<unsigned> ordinal_values_;
-  Vector<unsigned> sorted_ordinal_values_;
-  int ordinal_iteration_;
-};
-
 // Helper methods for obtaining the last line, computing line counts and heights
 // for line counts
 // (crawling into blocks).
@@ -411,20 +308,15 @@ void LayoutDeprecatedFlexibleBox::UpdateBlockLayout(bool relayout_children) {
 }
 
 // The first walk over our kids is to find out if we have any flexible children.
-static void GatherFlexChildrenInfo(FlexBoxIterator& iterator,
+static void GatherFlexChildrenInfo(LayoutBox* first_child_box,
                                    Document& document,
                                    bool relayout_children,
                                    bool& have_flex) {
-  for (LayoutBox* child = iterator.First(); child; child = iterator.Next()) {
+  for (LayoutBox* child = first_child_box; child;
+       child = child->NextSiblingBox()) {
     if (child->StyleRef().BoxFlex() !=
         ComputedStyleInitialValues::InitialBoxFlex())
       UseCounter::Count(document, WebFeature::kWebkitBoxChildFlexNotInitial);
-
-    if (child->StyleRef().BoxOrdinalGroup() !=
-        ComputedStyleInitialValues::InitialBoxOrdinalGroup()) {
-      UseCounter::Count(document,
-                        WebFeature::kWebkitBoxChildOrdinalGroupNotInitial);
-    }
 
     // Check to see if this child flexes.
     if (!child->IsOutOfFlowPositioned() && child->StyleRef().BoxFlex() > 0.0f) {
@@ -449,15 +341,15 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
 
   LayoutUnit remaining_space;
 
-  FlexBoxIterator iterator(this);
   bool have_flex = false, flexing_children = false;
-  GatherFlexChildrenInfo(iterator, GetDocument(), relayout_children, have_flex);
+  GatherFlexChildrenInfo(FirstChildBox(), GetDocument(), relayout_children,
+                         have_flex);
 
   // We confine the line clamp ugliness to vertical flexible boxes (thus keeping
   // it out of
   // mainstream block layout); this is not really part of the XUL box model.
   if (StyleRef().HasLineClamp())
-    ApplyLineClamp(iterator, relayout_children);
+    ApplyLineClamp(relayout_children);
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
@@ -469,7 +361,8 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
     SetHeight(BorderTop() + PaddingTop());
     LayoutUnit min_height = Size().Height() + to_add;
 
-    for (LayoutBox* child = iterator.First(); child; child = iterator.Next()) {
+    for (LayoutBox* child = FirstChildBox(); child;
+         child = child->NextSiblingBox()) {
       if (child->IsOutOfFlowPositioned()) {
         child->ContainingBlock()->InsertPositionedObject(child);
         PaintLayer* child_layer = child->Layer();
@@ -544,7 +437,7 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
 
     y_pos = Size().Height();
 
-    if (!iterator.First() && HasLineIfEmpty()) {
+    if (!FirstChildBox() && HasLineIfEmpty()) {
       SetHeight(Size().Height() +
                 LineHeight(true,
                            StyleRef().IsHorizontalWritingMode()
@@ -590,14 +483,14 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
         // totalFlex recomputation).
         LayoutUnit remaining_space_at_beginning = remaining_space;
         float total_flex = 0.0f;
-        for (LayoutBox* child = iterator.First(); child;
-             child = iterator.Next()) {
+        for (LayoutBox* child = FirstChildBox(); child;
+             child = child->NextSiblingBox()) {
           if (AllowedChildFlex(child, expanding))
             total_flex += child->StyleRef().BoxFlex();
         }
         LayoutUnit space_available_this_pass = remaining_space;
-        for (LayoutBox* child = iterator.First(); child;
-             child = iterator.Next()) {
+        for (LayoutBox* child = FirstChildBox(); child;
+             child = child->NextSiblingBox()) {
           LayoutUnit allowed_flex = AllowedChildFlex(child, expanding);
           if (allowed_flex) {
             LayoutUnit projected_flex =
@@ -617,9 +510,9 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
           break;
 
         // Now distribute the space to objects.
-        for (LayoutBox* child = iterator.First();
+        for (LayoutBox* child = FirstChildBox();
              child && space_available_this_pass && total_flex;
-             child = iterator.Next()) {
+             child = child->NextSiblingBox()) {
           if (AllowedChildFlex(child, expanding)) {
             LayoutUnit space_add = static_cast<LayoutUnit>(
                 space_available_this_pass *
@@ -641,8 +534,8 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
           // This is not advancing, avoid getting stuck by distributing the
           // remaining pixels.
           LayoutUnit space_add = LayoutUnit(remaining_space > 0 ? 1 : -1);
-          for (LayoutBox* child = iterator.First(); child && remaining_space;
-               child = iterator.Next()) {
+          for (LayoutBox* child = FirstChildBox(); child && remaining_space;
+               child = child->NextSiblingBox()) {
             if (AllowedChildFlex(child, expanding)) {
               child->SetOverrideLogicalHeight(HeightForChild(child) +
                                               space_add);
@@ -668,8 +561,8 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
                         WebFeature::kWebkitBoxPackJustifyDoesSomething);
       // Determine the total number of children.
       int total_children = 0;
-      for (LayoutBox* child = iterator.First(); child;
-           child = iterator.Next()) {
+      for (LayoutBox* child = FirstChildBox(); child;
+           child = child->NextSiblingBox()) {
         if (child->IsOutOfFlowPositioned())
           continue;
 
@@ -681,8 +574,8 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
       if (total_children > 1) {
         --total_children;
         bool first_child = true;
-        for (LayoutBox* child = iterator.First(); child;
-             child = iterator.Next()) {
+        for (LayoutBox* child = FirstChildBox(); child;
+             child = child->NextSiblingBox()) {
           if (child->IsOutOfFlowPositioned())
             continue;
 
@@ -708,8 +601,8 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
                           WebFeature::kWebkitBoxPackEndDoesSomething);
         offset += remaining_space;
       }
-      for (LayoutBox* child = iterator.First(); child;
-           child = iterator.Next()) {
+      for (LayoutBox* child = FirstChildBox(); child;
+           child = child->NextSiblingBox()) {
         if (child->IsOutOfFlowPositioned())
           continue;
         PlaceChild(child, child->Location() + LayoutSize(LayoutUnit(), offset));
@@ -724,8 +617,7 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
     SetHeight(old_height);
 }
 
-void LayoutDeprecatedFlexibleBox::ApplyLineClamp(FlexBoxIterator& iterator,
-                                                 bool relayout_children) {
+void LayoutDeprecatedFlexibleBox::ApplyLineClamp(bool relayout_children) {
   UseCounter::Count(GetDocument(), WebFeature::kLineClamp);
   UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxLineClamp);
 
@@ -747,7 +639,8 @@ void LayoutDeprecatedFlexibleBox::ApplyLineClamp(FlexBoxIterator& iterator,
   }
 
   int max_line_count = 0;
-  for (LayoutBox* child = iterator.First(); child; child = iterator.Next()) {
+  for (LayoutBox* child = FirstChildBox(); child;
+       child = child->NextSiblingBox()) {
     if (child->IsOutOfFlowPositioned())
       continue;
 
@@ -782,7 +675,8 @@ void LayoutDeprecatedFlexibleBox::ApplyLineClamp(FlexBoxIterator& iterator,
   if (num_visible_lines >= max_line_count)
     return;
 
-  for (LayoutBox* child = iterator.First(); child; child = iterator.Next()) {
+  for (LayoutBox* child = FirstChildBox(); child;
+       child = child->NextSiblingBox()) {
     auto* block_child = DynamicTo<LayoutBlockFlow>(child);
     if (child->IsOutOfFlowPositioned() ||
         !child->StyleRef().Height().IsAuto() || !block_child)
@@ -861,8 +755,8 @@ void LayoutDeprecatedFlexibleBox::ApplyLineClamp(FlexBoxIterator& iterator,
 }
 
 void LayoutDeprecatedFlexibleBox::ClearLineClamp() {
-  FlexBoxIterator iterator(this);
-  for (LayoutBox* child = iterator.First(); child; child = iterator.Next()) {
+  for (LayoutBox* child = FirstChildBox(); child;
+       child = child->NextSiblingBox()) {
     if (child->IsOutOfFlowPositioned())
       continue;
 
