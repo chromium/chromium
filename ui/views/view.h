@@ -254,7 +254,7 @@ enum PropertyEffects {
 //   namespace in which the class resides.
 //
 //   BEGIN_METADATA(View, ParentView)
-//   ADD_PROPERTY_METADATA(View, bool, Frobble)
+//   ADD_PROPERTY_METADATA(bool, Frobble)
 //   END_METADATA()
 //
 //   For each property, add a definition using ADD_PROPERTY_METADATA() between
@@ -263,7 +263,7 @@ enum PropertyEffects {
 //   Descendant classes must specify the parent class as a macro parameter.
 //
 //   BEGIN_METADATA(MyView, views::View)
-//   ADD_PROPERTY_METADATA(MyView, int, Bobble)
+//   ADD_PROPERTY_METADATA(int, Bobble)
 //   END_METADATA()
 /////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT View : public ui::LayerDelegate,

@@ -3005,15 +3005,15 @@ DEFINE_ENUM_CONVERTERS(View::FocusBehavior,
 // This block requires the existence of METADATA_HEADER(View) in the class
 // declaration for View.
 BEGIN_METADATA_BASE(View)
-ADD_READONLY_PROPERTY_METADATA(View, const char*, ClassName)
-ADD_PROPERTY_METADATA(View, bool, Enabled)
-ADD_PROPERTY_METADATA(View, View::FocusBehavior, FocusBehavior)
-ADD_PROPERTY_METADATA(View, int, Group)
-ADD_PROPERTY_METADATA(View, int, ID)
-ADD_READONLY_PROPERTY_METADATA(View, gfx::Size, MaximumSize)
-ADD_READONLY_PROPERTY_METADATA(View, gfx::Size, MinimumSize)
-ADD_PROPERTY_METADATA(View, bool, Mirrored)
-ADD_PROPERTY_METADATA(View, bool, Visible)
+ADD_READONLY_PROPERTY_METADATA(const char*, ClassName)
+ADD_PROPERTY_METADATA(bool, Enabled)
+ADD_PROPERTY_METADATA(View::FocusBehavior, FocusBehavior)
+ADD_PROPERTY_METADATA(int, Group)
+ADD_PROPERTY_METADATA(int, ID)
+ADD_READONLY_PROPERTY_METADATA(gfx::Size, MaximumSize)
+ADD_READONLY_PROPERTY_METADATA(gfx::Size, MinimumSize)
+ADD_PROPERTY_METADATA(bool, Mirrored)
+ADD_PROPERTY_METADATA(bool, Visible)
 END_METADATA()
 
 }  // namespace views

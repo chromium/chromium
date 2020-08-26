@@ -461,9 +461,9 @@ base::Optional<int> ScrollBar::GetDesiredScrollOffset(ScrollAmount amount) {
 }
 
 BEGIN_METADATA(ScrollBar, View)
-ADD_READONLY_PROPERTY_METADATA(ScrollBar, int, MaxPosition)
-ADD_READONLY_PROPERTY_METADATA(ScrollBar, int, MinPosition)
-ADD_READONLY_PROPERTY_METADATA(ScrollBar, int, Position)
+ADD_READONLY_PROPERTY_METADATA(int, MaxPosition)
+ADD_READONLY_PROPERTY_METADATA(int, MinPosition)
+ADD_READONLY_PROPERTY_METADATA(int, Position)
 END_METADATA()
 
 }  // namespace views

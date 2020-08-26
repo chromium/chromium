@@ -82,8 +82,8 @@ class NamedTestView : public views::View {
 };
 
 BEGIN_METADATA(NamedTestView, views::View)
-ADD_PROPERTY_METADATA(NamedTestView, bool, BoolProperty)
-ADD_PROPERTY_METADATA(NamedTestView, SkColor, ColorProperty)
+ADD_PROPERTY_METADATA(bool, BoolProperty)
+ADD_PROPERTY_METADATA(SkColor, ColorProperty)
 END_METADATA()
 
 class ViewElementTest : public views::ViewsTestBase {

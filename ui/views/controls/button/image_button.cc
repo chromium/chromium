@@ -315,11 +315,9 @@ DEFINE_ENUM_CONVERTERS(ImageButton::VerticalAlignment,
                         base::ASCIIToUTF16("ALIGN_BOTTOM")})
 
 BEGIN_METADATA(ImageButton, Button)
-ADD_PROPERTY_METADATA(ImageButton,
-                      HorizontalAlignment,
-                      ImageHorizontalAlignment)
-ADD_PROPERTY_METADATA(ImageButton, VerticalAlignment, ImageVerticalAlignment)
-ADD_PROPERTY_METADATA(ImageButton, gfx::Size, MinimumImageSize)
+ADD_PROPERTY_METADATA(HorizontalAlignment, ImageHorizontalAlignment)
+ADD_PROPERTY_METADATA(VerticalAlignment, ImageVerticalAlignment)
+ADD_PROPERTY_METADATA(gfx::Size, MinimumImageSize)
 END_METADATA()
 
 }  // namespace views

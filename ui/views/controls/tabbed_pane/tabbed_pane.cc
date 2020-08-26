@@ -487,9 +487,9 @@ DEFINE_ENUM_CONVERTERS(TabbedPane::TabStripStyle,
                         base::ASCIIToUTF16("HIGHLIGHT")})
 
 BEGIN_METADATA(TabStrip, View)
-ADD_READONLY_PROPERTY_METADATA(TabStrip, int, SelectedTabIndex)
-ADD_READONLY_PROPERTY_METADATA(TabStrip, TabbedPane::Orientation, Orientation)
-ADD_READONLY_PROPERTY_METADATA(TabStrip, TabbedPane::TabStripStyle, Style)
+ADD_READONLY_PROPERTY_METADATA(int, SelectedTabIndex)
+ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
+ADD_READONLY_PROPERTY_METADATA(TabbedPane::TabStripStyle, Style)
 END_METADATA()
 
 TabbedPane::TabbedPane(TabbedPane::Orientation orientation,

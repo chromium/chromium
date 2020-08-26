@@ -26,7 +26,7 @@
 
 // This will fail to compile if the property accessors aren't in the form of
 // SetXXXX and GetXXXX.
-#define ADD_PROPERTY_METADATA(class_name, property_type, property_name)        \
+#define ADD_PROPERTY_METADATA(property_type, property_name)                    \
   std::unique_ptr<METADATA_PROPERTY_TYPE_INTERNAL(property_type,               \
                                                   property_name)>              \
       property_name##_prop = std::make_unique<METADATA_PROPERTY_TYPE_INTERNAL( \
@@ -37,8 +37,7 @@
 
 // This will fail to compile if the property accessor isn't in the form of
 // GetXXXX.
-#define ADD_READONLY_PROPERTY_METADATA(class_name, property_type,          \
-                                       property_name)                      \
+#define ADD_READONLY_PROPERTY_METADATA(property_type, property_name)       \
   std::unique_ptr<METADATA_READONLY_PROPERTY_TYPE_INTERNAL(property_type,  \
                                                            property_name)> \
       property_name##_prop =                                               \

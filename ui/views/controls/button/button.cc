@@ -585,7 +585,7 @@ DEFINE_ENUM_CONVERTERS(
     {Button::STATE_DISABLED, base::ASCIIToUTF16("STATE_DISABLED")})
 
 BEGIN_METADATA(Button, InkDropHostView)
-ADD_PROPERTY_METADATA(Button, ButtonState, State)
+ADD_PROPERTY_METADATA(ButtonState, State)
 END_METADATA()
 
 }  // namespace views

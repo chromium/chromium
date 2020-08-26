@@ -268,9 +268,9 @@ DEFINE_ENUM_CONVERTERS(
     {ImageView::Alignment::kTrailing, base::ASCIIToUTF16("kTrailing")})
 
 BEGIN_METADATA(ImageView, View)
-ADD_PROPERTY_METADATA(ImageView, Alignment, HorizontalAlignment)
-ADD_PROPERTY_METADATA(ImageView, Alignment, VerticalAlignment)
-ADD_PROPERTY_METADATA(ImageView, base::string16, AccessibleName)
+ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)
+ADD_PROPERTY_METADATA(Alignment, VerticalAlignment)
+ADD_PROPERTY_METADATA(base::string16, AccessibleName)
 END_METADATA()
 
 }  // namespace views

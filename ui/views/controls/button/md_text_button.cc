@@ -287,9 +287,9 @@ void MdTextButton::UpdateColors() {
 }
 
 BEGIN_METADATA(MdTextButton, LabelButton)
-ADD_PROPERTY_METADATA(MdTextButton, bool, Prominent)
-ADD_PROPERTY_METADATA(MdTextButton, float, CornerRadius)
-ADD_PROPERTY_METADATA(MdTextButton, base::Optional<SkColor>, BgColorOverride)
+ADD_PROPERTY_METADATA(bool, Prominent)
+ADD_PROPERTY_METADATA(float, CornerRadius)
+ADD_PROPERTY_METADATA(base::Optional<SkColor>, BgColorOverride)
 END_METADATA()
 
 }  // namespace views

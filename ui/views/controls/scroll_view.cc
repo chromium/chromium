@@ -1025,15 +1025,14 @@ void ScrollView::UpdateOverflowIndicatorVisibility(
 }
 
 BEGIN_METADATA(ScrollView, View)
-ADD_READONLY_PROPERTY_METADATA(ScrollView, int, MinHeight)
-ADD_READONLY_PROPERTY_METADATA(ScrollView, int, MaxHeight)
-ADD_PROPERTY_METADATA(ScrollView, base::Optional<SkColor>, BackgroundColor)
-ADD_PROPERTY_METADATA(ScrollView,
-                      base::Optional<ui::NativeTheme::ColorId>,
+ADD_READONLY_PROPERTY_METADATA(int, MinHeight)
+ADD_READONLY_PROPERTY_METADATA(int, MaxHeight)
+ADD_PROPERTY_METADATA(base::Optional<SkColor>, BackgroundColor)
+ADD_PROPERTY_METADATA(base::Optional<ui::NativeTheme::ColorId>,
                       BackgroundThemeColorId)
-ADD_PROPERTY_METADATA(ScrollView, bool, DrawOverflowIndicator)
-ADD_PROPERTY_METADATA(ScrollView, bool, HasFocusIndicator)
-ADD_PROPERTY_METADATA(ScrollView, bool, HideHorizontalScrollBar)
+ADD_PROPERTY_METADATA(bool, DrawOverflowIndicator)
+ADD_PROPERTY_METADATA(bool, HasFocusIndicator)
+ADD_PROPERTY_METADATA(bool, HideHorizontalScrollBar)
 END_METADATA()
 
 // VariableRowHeightScrollHelper ----------------------------------------------

@@ -584,14 +584,12 @@ void StyledLabel::RemoveOrDeleteAllChildViews() {
 }
 
 BEGIN_METADATA(StyledLabel, View)
-ADD_PROPERTY_METADATA(StyledLabel, base::string16, Text)
-ADD_PROPERTY_METADATA(StyledLabel, int, TextContext)
-ADD_PROPERTY_METADATA(StyledLabel, int, DefaultTextStyle)
-ADD_PROPERTY_METADATA(StyledLabel, int, LineHeight)
-ADD_PROPERTY_METADATA(StyledLabel, bool, AutoColorReadabilityEnabled)
-ADD_PROPERTY_METADATA(StyledLabel,
-                      base::Optional<SkColor>,
-                      DisplayedOnBackgroundColor)
+ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(int, TextContext)
+ADD_PROPERTY_METADATA(int, DefaultTextStyle)
+ADD_PROPERTY_METADATA(int, LineHeight)
+ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
+ADD_PROPERTY_METADATA(base::Optional<SkColor>, DisplayedOnBackgroundColor)
 END_METADATA()
 
 }  // namespace views

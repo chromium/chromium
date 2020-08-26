@@ -604,15 +604,13 @@ Button::ButtonState LabelButton::ImageStateForState(
 }
 
 BEGIN_METADATA(LabelButton, Button)
-ADD_PROPERTY_METADATA(LabelButton, base::string16, Text)
-ADD_PROPERTY_METADATA(LabelButton,
-                      gfx::HorizontalAlignment,
-                      HorizontalAlignment)
-ADD_PROPERTY_METADATA(LabelButton, gfx::Size, MinSize)
-ADD_PROPERTY_METADATA(LabelButton, gfx::Size, MaxSize)
-ADD_PROPERTY_METADATA(LabelButton, bool, IsDefault)
-ADD_PROPERTY_METADATA(LabelButton, int, ImageLabelSpacing)
-ADD_PROPERTY_METADATA(LabelButton, bool, ImageCentered)
+ADD_PROPERTY_METADATA(base::string16, Text)
+ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
+ADD_PROPERTY_METADATA(gfx::Size, MinSize)
+ADD_PROPERTY_METADATA(gfx::Size, MaxSize)
+ADD_PROPERTY_METADATA(bool, IsDefault)
+ADD_PROPERTY_METADATA(int, ImageLabelSpacing)
+ADD_PROPERTY_METADATA(bool, ImageCentered)
 END_METADATA()
 
 }  // namespace views

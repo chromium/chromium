@@ -706,9 +706,9 @@ PrefixSelector* Combobox::GetPrefixSelector() {
 }
 
 BEGIN_METADATA(Combobox, View)
-ADD_PROPERTY_METADATA(Combobox, int, SelectedIndex)
-ADD_PROPERTY_METADATA(Combobox, bool, Invalid)
-ADD_PROPERTY_METADATA(Combobox, base::string16, AccessibleName)
+ADD_PROPERTY_METADATA(int, SelectedIndex)
+ADD_PROPERTY_METADATA(bool, Invalid)
+ADD_PROPERTY_METADATA(base::string16, AccessibleName)
 END_METADATA()
 
 }  // namespace views

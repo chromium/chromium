@@ -90,7 +90,7 @@ bool Throbber::IsRunning() const {
 }
 
 BEGIN_METADATA(Throbber, View)
-ADD_PROPERTY_METADATA(Throbber, bool, Checked)
+ADD_PROPERTY_METADATA(bool, Checked)
 END_METADATA()
 
 // Smoothed throbber ---------------------------------------------------------
@@ -150,8 +150,8 @@ void SmoothedThrobber::StopDelayOver() {
 }
 
 BEGIN_METADATA(SmoothedThrobber, Throbber)
-ADD_PROPERTY_METADATA(SmoothedThrobber, base::TimeDelta, StartDelay)
-ADD_PROPERTY_METADATA(SmoothedThrobber, base::TimeDelta, StopDelay)
+ADD_PROPERTY_METADATA(base::TimeDelta, StartDelay)
+ADD_PROPERTY_METADATA(base::TimeDelta, StopDelay)
 END_METADATA()
 
 }  // namespace views

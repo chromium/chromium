@@ -351,12 +351,12 @@ void ToggleButton::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 BEGIN_METADATA(ToggleButton, Button)
-ADD_PROPERTY_METADATA(ToggleButton, bool, IsOn)
-ADD_PROPERTY_METADATA(ToggleButton, bool, AcceptsEvents)
-ADD_PROPERTY_METADATA(ToggleButton, base::Optional<SkColor>, ThumbOnColor)
-ADD_PROPERTY_METADATA(ToggleButton, base::Optional<SkColor>, ThumbOffColor)
-ADD_PROPERTY_METADATA(ToggleButton, base::Optional<SkColor>, TrackOnColor)
-ADD_PROPERTY_METADATA(ToggleButton, base::Optional<SkColor>, TrackOffColor)
+ADD_PROPERTY_METADATA(bool, IsOn)
+ADD_PROPERTY_METADATA(bool, AcceptsEvents)
+ADD_PROPERTY_METADATA(base::Optional<SkColor>, ThumbOnColor)
+ADD_PROPERTY_METADATA(base::Optional<SkColor>, ThumbOffColor)
+ADD_PROPERTY_METADATA(base::Optional<SkColor>, TrackOnColor)
+ADD_PROPERTY_METADATA(base::Optional<SkColor>, TrackOffColor)
 END_METADATA()
 
 }  // namespace views
