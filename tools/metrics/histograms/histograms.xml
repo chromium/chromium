@@ -142,6 +142,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ChromeVox.PerformGestureType"
+    enum="ChromeVoxGestureType" expires_after="M90">
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    A user can control ChromeVox via a variety of gestures on the touch screen.
+    For example, swiping right with one finger causes ChromeVox to navigate to
+    the next object. Track all possible gestures here.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosAlwaysShowA11yMenu" enum="BooleanEnabled"
     expires_after="M90">
   <owner>dmazzoni@chromium.org</owner>

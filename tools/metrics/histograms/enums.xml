@@ -9751,6 +9751,30 @@ histogram as enum -->
   <int value="1" label="A hash is saved"/>
 </enum>
 
+<enum name="ChromeVoxGestureType">
+  <int value="1" label="click"/>
+  <int value="2" label="swipeDown1"/>
+  <int value="3" label="swipeDown2"/>
+  <int value="4" label="swipeDown3"/>
+  <int value="5" label="swipeDown4"/>
+  <int value="6" label="swipeLeft1"/>
+  <int value="7" label="swipeLeft2"/>
+  <int value="8" label="swipeLeft3"/>
+  <int value="9" label="swipeLeft4"/>
+  <int value="10" label="swipeRight1"/>
+  <int value="11" label="swipeRight2"/>
+  <int value="12" label="swipeRight3"/>
+  <int value="13" label="swipeRight4"/>
+  <int value="14" label="swipeUp1"/>
+  <int value="15" label="swipeUp2"/>
+  <int value="16" label="swipeUp3"/>
+  <int value="17" label="swipeUp4"/>
+  <int value="18" label="tap2"/>
+  <int value="19" label="tap3"/>
+  <int value="20" label="tap4"/>
+  <int value="21" label="touchExplore"/>
+</enum>
+
 <enum name="ChromiumAndroidLinkerBrowserState">
   <obsolete>
     Deprecated as of 06/2019.

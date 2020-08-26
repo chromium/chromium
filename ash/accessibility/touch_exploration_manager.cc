@@ -17,10 +17,12 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/audio/chromeos_sounds.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "extensions/common/constants.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/public/activation_client.h"
@@ -128,6 +130,8 @@ void TouchExplorationManager::PlayEnterScreenEarcon() {
 void TouchExplorationManager::HandleAccessibilityGesture(
     ax::mojom::Gesture gesture,
     gfx::PointF location) {
+  base::UmaHistogramEnumeration("Accessibility.ChromeVox.PerformGestureType",
+                                gesture);
   GetA11yController()->HandleAccessibilityGesture(gesture, location);
 }
 
