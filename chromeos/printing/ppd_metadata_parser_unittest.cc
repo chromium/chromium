@@ -645,6 +645,73 @@ TEST(PpdMetadataParserTest, ParseUsbIndexFailsGracefully) {
   EXPECT_THAT(ParseUsbIndex(kInvalidJson), Eq(base::nullopt));
 }
 
+// Verifies that ParseUsbvendorIdMap() can parse USB vendor ID maps.
+TEST(PpdMetadataParserTest, CanParseUsbVendorIdMap) {
+  constexpr base::StringPiece kJsonUsbVendorIdMap = R"({
+  "entries": [ {
+    "vendorId": 1111,
+    "vendorName": "One One One One"
+  }, {
+    "vendorId": 2222,
+    "vendorName": "Two Two Two Two"
+  }, {
+    "vendorId": 3333,
+    "vendorName": "Three Three Three Three"
+  } ]
+})";
+
+  EXPECT_THAT(ParseUsbVendorIdMap(kJsonUsbVendorIdMap),
+              Optional(UnorderedElementsAre(
+                  Pair(1111, StrEq("One One One One")),
+                  Pair(2222, StrEq("Two Two Two Two")),
+                  Pair(3333, StrEq("Three Three Three Three")))));
+}
+
+// Verifies that ParseUsbvendorIdMap() can parse USB vendor ID maps and
+// return partial results even when it encounters garbage values.
+TEST(PpdMetadataParserTest, CanPartiallyParseUsbVendorIdMap) {
+  // This USB vendor ID map has garbage values in it.
+  // ParseUsbVendorIdMap() shall ignore these.
+  constexpr base::StringPiece kJsonUsbVendorIdMap = R"({
+  "garbage key": "garbage value",
+  "entries": [
+    "garbage value",
+  {
+    "vendorId": 1111,
+    "garbage key": "garbage value",
+    "vendorName": "One One One One"
+  }, {
+    "vendorId": 2222,
+    "vendorName": "Two Two Two Two"
+  }, {
+    "vendorId": 3333,
+    "vendorName": "Three Three Three Three"
+  } ]
+})";
+
+  EXPECT_THAT(ParseUsbVendorIdMap(kJsonUsbVendorIdMap),
+              Optional(UnorderedElementsAre(
+                  Pair(1111, StrEq("One One One One")),
+                  Pair(2222, StrEq("Two Two Two Two")),
+                  Pair(3333, StrEq("Three Three Three Three")))));
+}
+
+// Verifies that ParseUsbvendorIdMap() returns base::nullopt rather
+// than an empty container.
+TEST(PpdMetadataParserTest, ParseUsbVendorIdMapDoesNotReturnEmptyContainer) {
+  // Defines a USB vendor ID map that is empty; it's valid JSON, but
+  // has no values worth returning.
+  constexpr base::StringPiece kJsonUsbVendorIdMap = "{}";
+
+  EXPECT_THAT(ParseUsbVendorIdMap(kJsonUsbVendorIdMap), Eq(base::nullopt));
+}
+
+// Verifies that ParseUsbvendorIdMap() returns base::nullopt on
+// irrecoverable parse error.
+TEST(PpdMetadataParserTest, ParseUsbVendorIdMapFailsGracefully) {
+  EXPECT_THAT(ParseUsbVendorIdMap(kInvalidJson), Eq(base::nullopt));
+}
+
 // Verifies that ParseReverseIndex() can parse reverse index metadata.
 TEST(PpdMetadataParserTest, CanParseReverseIndex) {
   constexpr base::StringPiece kReverseIndexJson = R"(

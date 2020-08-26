@@ -83,6 +83,9 @@ using ParsedIndex = base::flat_map<std::string, ParsedIndexValues>;
 // Maps USB product IDs to effective-make-and-model strings.
 using ParsedUsbIndex = base::flat_map<int, std::string>;
 
+// Maps USB vendor IDs to manufacturer names.
+using ParsedUsbVendorIdMap = base::flat_map<int, std::string>;
+
 // Keyed on effective-make-and-model strings.
 using ParsedReverseIndex = base::flat_map<std::string, ReverseIndexLeaf>;
 
@@ -106,6 +109,11 @@ CHROMEOS_EXPORT base::Optional<ParsedIndex> ParseForwardIndex(
 // effective-make-and-model strings.
 CHROMEOS_EXPORT base::Optional<ParsedUsbIndex> ParseUsbIndex(
     base::StringPiece usb_index_json);
+
+// Parses |usb_vendor_id_map_json| and returns a map of USB vendor IDs
+// to manufacturer names.
+CHROMEOS_EXPORT base::Optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
+    base::StringPiece usb_vendor_id_map_json);
 
 // Parses |reverse_index_json| and returns the parsed map type.
 CHROMEOS_EXPORT base::Optional<ParsedReverseIndex> ParseReverseIndex(

@@ -283,6 +283,36 @@ base::Optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
   return parsed_usb_index;
 }
 
+base::Optional<ParsedUsbVendorIdMap> ParseUsbVendorIdMap(
+    base::StringPiece usb_vendor_id_map_json) {
+  base::Optional<base::Value> as_value = ParseJsonAndUnnestKey(
+      usb_vendor_id_map_json, "entries", base::Value::Type::LIST);
+  if (!as_value.has_value() || as_value->GetList().empty()) {
+    return base::nullopt;
+  }
+
+  ParsedUsbVendorIdMap usb_vendor_ids;
+  for (const auto& usb_vendor_description : as_value->GetList()) {
+    if (!usb_vendor_description.is_dict()) {
+      continue;
+    }
+
+    base::Optional<int> vendor_id =
+        usb_vendor_description.FindIntKey("vendorId");
+    const std::string* const vendor_name =
+        usb_vendor_description.FindStringKey("vendorName");
+    if (!vendor_id.has_value() || !vendor_name || vendor_name->empty()) {
+      continue;
+    }
+    usb_vendor_ids.insert_or_assign(vendor_id.value(), *vendor_name);
+  }
+
+  if (usb_vendor_ids.empty()) {
+    return base::nullopt;
+  }
+  return usb_vendor_ids;
+}
+
 base::Optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
   const auto as_value =
       ParseJsonAndUnnestKey(printers_json, "printers", base::Value::Type::LIST);
