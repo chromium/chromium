@@ -97,7 +97,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
     // Layouts
     /** A {@link Layout} used for showing a normal web page. */
-    protected final StaticLayout mStaticLayout;
+    protected StaticLayout mStaticLayout;
 
     private final ViewGroup mContentContainer;
 
@@ -265,17 +265,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         mOverlayPanelManager = new OverlayPanelManager();
 
         mFrameRequestSupplier = new CompositorModelChangeProcessor.FrameRequestSupplier(this);
-
-        // TODO(crbug.com/1070281): Move this to #init.
-        // Build Layouts
-        mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                mTabModelSelectorSupplier, mTabContentManagerSupplier,
-                mBrowserControlsStateProviderSupplier);
-
-        // Set up layout parameters
-        mStaticLayout.setLayoutHandlesTabLifecycles(true);
-
-        setNextLayout(null);
     }
 
     /**
@@ -426,6 +415,16 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             DynamicResourceLoader dynamicResourceLoader) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
         mCurrentTabSupplier.set(selector.getCurrentTab());
+
+        // Build Layouts
+        mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
+                mTabModelSelectorSupplier, mTabContentManagerSupplier,
+                mBrowserControlsStateProviderSupplier);
+
+        // Set up layout parameters
+        mStaticLayout.setLayoutHandlesTabLifecycles(true);
+
+        setNextLayout(null);
 
         // If fullscreen is disabled, don't bother creating this overlay; only the android view will
         // ever be shown.

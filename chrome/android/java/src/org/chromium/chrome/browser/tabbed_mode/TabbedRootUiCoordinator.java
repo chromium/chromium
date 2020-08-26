@@ -74,6 +74,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
     private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
+    private LayoutManager mLayoutManager;
 
     /**
      * Construct a new TabbedRootUiCoordinator.
@@ -194,6 +195,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
 
     @Override
     public void onFinishNativeInitialization() {
+        assert mLayoutManager != null;
+        // clang-format off
+        mHistoryNavigationCoordinator = HistoryNavigationCoordinator.create(
+                mActivity.getWindowAndroid(), mActivity.getLifecycleDispatcher(),
+                mActivity.getCompositorViewHolder(), mActivity.getActivityTabProvider(),
+                mActivity.getInsetObserverView(), mActivity::backShouldCloseTab,
+                mActivity::onBackPressed, mLayoutManager,
+                tab -> HistoryManagerUtils.showHistoryManager(mActivity, tab),
+                mActivity.getResources().getString(R.string.show_full_history),
+                () -> mActivity.isActivityFinishingOrDestroyed() ? null
+                        : getBottomSheetController());
+        // clang-format on
+
         // TODO(twellington): Supply TabModelSelector as well and move initialization earlier.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             AppMenuHandler appMenuHandler =
@@ -223,18 +237,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator implements Native
         super.onLayoutManagerAvailable(layoutManager);
 
         initStatusIndicatorCoordinator(layoutManager);
-
-        // clang-format off
-        mHistoryNavigationCoordinator = HistoryNavigationCoordinator.create(
-                mActivity.getWindowAndroid(), mActivity.getLifecycleDispatcher(),
-                mActivity.getCompositorViewHolder(), mActivity.getActivityTabProvider(),
-                mActivity.getInsetObserverView(), mActivity::backShouldCloseTab,
-                mActivity::onBackPressed, layoutManager,
-                tab -> HistoryManagerUtils.showHistoryManager(mActivity, tab),
-                mActivity.getResources().getString(R.string.show_full_history),
-                () -> mActivity.isActivityFinishingOrDestroyed() ? null
-                                                                 : getBottomSheetController());
-        // clang-format on
+        mLayoutManager = layoutManager;
     }
 
     @Override

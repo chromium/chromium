@@ -52,11 +52,11 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         // Build Layouts
         mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
 
-        // Set up layout parameters
-        mStaticLayout.setLayoutHandlesTabLifecycles(false);
-
         super.init(selector, creator, content, controlContainer, contextualSearchDelegate,
                 dynamicResourceLoader);
+
+        // Set up layout parameters
+        mStaticLayout.setLayoutHandlesTabLifecycles(false);
 
         mToolbarSwipeLayout.setMovesToolbar(true);
 
