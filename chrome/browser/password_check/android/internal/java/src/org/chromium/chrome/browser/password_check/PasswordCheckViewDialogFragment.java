@@ -13,6 +13,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.chrome.browser.password_check.internal.R;
+import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
+import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 
 /**
  * Shows the dialog that allows the user to see the compromised credential.
@@ -43,5 +45,15 @@ public class PasswordCheckViewDialogFragment extends PasswordCheckDialogFragment
                                          .setView(dialogContent)
                                          .create();
         return viewDialog;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!ReauthenticationManager.authenticationStillValid(ReauthScope.ONE_AT_A_TIME)) {
+            // If the page was idle (e.g. screenlocked for a few minutes), close the dialog to
+            // ensure the user goes through reauth again.
+            dismiss();
+        }
     }
 }

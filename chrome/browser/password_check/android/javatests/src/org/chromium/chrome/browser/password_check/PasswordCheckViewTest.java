@@ -42,6 +42,7 @@ import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.E
 import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.ERROR_UNKNOWN;
 import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.IDLE;
 import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.RUNNING;
+import static org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.VALID_REAUTHENTICATION_TIME_INTERVAL_MILLIS;
 import static org.chromium.content_public.browser.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
@@ -76,6 +77,8 @@ import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties;
 import org.chromium.chrome.browser.password_check.internal.R;
+import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager;
+import org.chromium.chrome.browser.password_manager.settings.ReauthenticationManager.ReauthScope;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -614,6 +617,9 @@ public class PasswordCheckViewTest {
                         recordedClosure.incrementAndGet();
                     }
                 };
+        ReauthenticationManager.recordLastReauth(
+                System.currentTimeMillis(), ReauthScope.ONE_AT_A_TIME);
+
         mModel.set(VIEW_CREDENTIAL, ANA);
         runOnUiThreadBlocking(() -> mModel.set(VIEW_DIALOG_HANDLER, fakeHandler));
 
@@ -623,6 +629,35 @@ public class PasswordCheckViewTest {
                 .perform(click());
 
         assertThat(recordedClosure.get(), is(1));
+    }
+
+    @Test
+    @MediumTest
+    public void testOnResumeViewDialogReauthenticationNeeded() {
+        final AtomicInteger recordedDismiss = new AtomicInteger(0);
+        PasswordCheckDeletionDialogFragment.Handler fakeHandler =
+                new PasswordCheckDeletionDialogFragment.Handler() {
+                    @Override
+                    public void onDismiss() {
+                        recordedDismiss.incrementAndGet();
+                    }
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {}
+                };
+        ReauthenticationManager.recordLastReauth(
+                System.currentTimeMillis(), ReauthScope.ONE_AT_A_TIME);
+
+        mModel.set(VIEW_CREDENTIAL, ANA);
+        runOnUiThreadBlocking(() -> mModel.set(VIEW_DIALOG_HANDLER, fakeHandler));
+
+        ReauthenticationManager.recordLastReauth(
+                System.currentTimeMillis() - VALID_REAUTHENTICATION_TIME_INTERVAL_MILLIS,
+                ReauthScope.ONE_AT_A_TIME);
+
+        mTestRule.getFragment().onStop();
+        mTestRule.getFragment().onResume();
+
+        CriteriaHelper.pollInstrumentationThread(() -> recordedDismiss.get() == 1);
     }
 
     private MVCListAdapter.ListItem buildHeader(@PasswordCheckUIStatus int status,
