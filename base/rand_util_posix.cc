@@ -16,14 +16,24 @@
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 
-#if defined(OS_MAC)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "third_party/lss/linux_syscall_support.h"
+#endif
+
+#if !defined(OS_IOS) && !defined(OS_NACL)
 // TODO(crbug.com/995996): Waiting for this header to appear in the iOS SDK.
-// (See below.) We'll also use this on other POSIX platforms in the future (and
-// change the #if condition then).
+// (See below.)
 #include <sys/random.h>
 #endif
 
 namespace {
+
+#if defined(OS_AIX)
+// AIX has no 64-bit support for O_CLOEXEC.
+static constexpr int kOpenFlags = O_RDONLY;
+#else
+static constexpr int kOpenFlags = O_RDONLY | O_CLOEXEC;
+#endif
 
 // We keep the file descriptor for /dev/urandom around so we don't need to
 // reopen it (which is expensive), and since we may not even be able to reopen
@@ -31,17 +41,9 @@ namespace {
 // we can use a static-local variable to handle opening it on the first access.
 class URandomFd {
  public:
-#if defined(OS_AIX)
-  // AIX has no 64-bit support for open falgs such as -
-  //  O_CLOEXEC, O_NOFOLLOW and O_TTY_INIT
-  URandomFd() : fd_(HANDLE_EINTR(open("/dev/urandom", O_RDONLY))) {
-    DPCHECK(fd_ >= 0) << "Cannot open /dev/urandom";
+  URandomFd() : fd_(HANDLE_EINTR(open("/dev/urandom", kOpenFlags))) {
+    CHECK(fd_ >= 0) << "Cannot open /dev/urandom";
   }
-#else
-  URandomFd() : fd_(HANDLE_EINTR(open("/dev/urandom", O_RDONLY | O_CLOEXEC))) {
-    DPCHECK(fd_ >= 0) << "Cannot open /dev/urandom";
-  }
-#endif
 
   ~URandomFd() { close(fd_); }
 
@@ -55,8 +57,24 @@ class URandomFd {
 
 namespace base {
 
+// NOTE: In an ideal future, all implementations of this function will just
+// wrap BoringSSL's `RAND_bytes`. TODO(crbug.com/995996): Figure out the
+// build/test/performance issues with dcheng's CL
+// (https://chromium-review.googlesource.com/c/chromium/src/+/1545096) and land
+// it or some form of it.
 void RandBytes(void* output, size_t output_length) {
-#if defined(OS_MAC)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_NACL)
+  // We have to call `getrandom` via Linux Syscall Support, rather than through
+  // the libc wrapper, because we might not have an up-to-date libc (e.g. on
+  // some bots).
+  const ssize_t r = HANDLE_EINTR(sys_getrandom(output, output_length, 0));
+
+  // Return success only on total success. In case errno == ENOSYS (or any other
+  // error), we'll fall through to reading from urandom below.
+  if (output_length == static_cast<size_t>(r)) {
+    return;
+  }
+#elif defined(OS_MAC)
   // TODO(crbug.com/995996): Enable this on iOS too, when sys/random.h arrives
   // in its SDK.
   if (__builtin_available(macOS 10.12, *)) {
@@ -64,9 +82,13 @@ void RandBytes(void* output, size_t output_length) {
       return;
     }
   }
-  // Fall through to reading from urandom on < 10.12:
 #endif
 
+  // If the OS-specific mechanisms didn't work, fall through to reading from
+  // urandom.
+  //
+  // TODO(crbug.com/995996): When we no longer need to support old Linux
+  // kernels, we can get rid of this /dev/urandom branch altogether.
   const int urandom_fd = GetUrandomFD();
   const bool success =
       ReadFromFD(urandom_fd, static_cast<char*>(output), output_length);
