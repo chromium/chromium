@@ -329,11 +329,11 @@ TEST_F(EmojiSuggesterTest, DoesNotShowIndicesWhenFirstSuggesting) {
   engine_->VerifyShowIndices(false);
 }
 
-TEST_F(EmojiSuggesterTest, ShowsIndexAfterPressingDown) {
+TEST_F(EmojiSuggesterTest, DoesNotShowIndexAfterPressingDown) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
   Press("Down");
 
-  engine_->VerifyShowIndices(true);
+  engine_->VerifyShowIndices(false);
 }
 
 TEST_F(EmojiSuggesterTest, DoesNotShowIndicesAfterGettingSuggestionsTwice) {

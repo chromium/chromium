@@ -163,7 +163,6 @@ SuggestionStatus EmojiSuggester::HandleKeyEvent(
   if (highlighted_index_ == kNoneHighlighted && buttons_.size() > 0) {
     if (event.key == "Down" || event.key == "Up") {
       highlighted_index_ = event.key == "Down" ? 0 : buttons_.size() - 1;
-      ShowSuggestionWindowWithIndices(true);
       SetButtonHighlighted(buttons_[highlighted_index_], true);
       return SuggestionStatus::kBrowsing;
     }
@@ -243,7 +242,7 @@ void EmojiSuggester::ShowSuggestion(const std::string& text) {
       kEmojiSuggesterShowSettingMaxCount;
   IncrementPrefValueTilCapped(kEmojiSuggesterShowSettingCount,
                               kEmojiSuggesterShowSettingMaxCount);
-  ShowSuggestionWindowWithIndices(false);
+  ShowSuggestionWindow();
   session_start_ = base::TimeTicks::Now();
 
   buttons_.clear();
@@ -259,8 +258,7 @@ void EmojiSuggester::ShowSuggestion(const std::string& text) {
   }
 }
 
-void EmojiSuggester::ShowSuggestionWindowWithIndices(bool show_indices) {
-  properties_.show_indices = show_indices;
+void EmojiSuggester::ShowSuggestionWindow() {
   std::string error;
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties_,
                                                     &error);
