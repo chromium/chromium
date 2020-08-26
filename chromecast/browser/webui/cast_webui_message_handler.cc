@@ -12,12 +12,7 @@ CastWebUIMessageHandler::CastWebUIMessageHandler() = default;
 
 CastWebUIMessageHandler::~CastWebUIMessageHandler() = default;
 
-void CastWebUIMessageHandler::RegisterMessages() {
-  // This must be called here, since web_ui() is set just before
-  // RegisterMessages() is called. AllowJavascript() will DCHECK() if web_ui()
-  // is not valid.
-  AllowJavascript();
-}
+void CastWebUIMessageHandler::RegisterMessages() {}
 
 void CastWebUIMessageHandler::OnJavascriptDisallowed() {
   if (javascript_called_) {
