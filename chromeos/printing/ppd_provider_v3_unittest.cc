@@ -270,48 +270,90 @@ class PpdProviderTest : public ::testing::Test {
                   "emm": "printer_c_ref"
                 } ]
                })"},
-            {"metadata_v2/index-01.json",
-             R"([
-             ["printer_a_ref", "printer_a.ppd", {"license": "fake_license"}]
-            ])"},
-            {"metadata_v2/index-02.json",
-             R"([
-             ["printer_b_ref", "printer_b.ppd"]
-            ])"},
-            {"metadata_v2/index-03.json",
-             R"([
-             ["printer_c_ref", "printer_c.ppd"]
-            ])"},
-            {"metadata_v2/index-04.json",
-             R"([
-             ["printer_d_ref", "printer_d.ppd"]
-            ])"},
-            {"metadata_v2/index-05.json",
-             R"([
-             ["printer_e_ref", "printer_e.ppd"]
-            ])"},
-            {"metadata_v2/index-13.json",
-             R"([
-            ])"},
-            {"metadata_v2/usb-031f.json",
-             R"([
-             [1592, "Some canonical reference"],
-             [6535, "Some other canonical reference"]
-            ])"},
-            {"metadata_v2/usb-03f0.json", ""},
-            {"metadata_v2/usb-1234.json", ""},
-            {"metadata_v2/reverse_index-en-01.json",
-             R"([
-             ["printer_a_ref", "manufacturer_a_en", "printer_a"]
-             ])"},
-            {"metadata_v2/reverse_index-en-19.json",
-             R"([
-             ])"},
-            {"ppds/printer_a.ppd", kCupsFilterPpdContents},
-            {"ppds/printer_b.ppd", kCupsFilter2PpdContents},
-            {"ppds/printer_c.ppd", "c"},
-            {"ppds/printer_d.ppd", "d"},
-            {"ppds/printer_e.ppd", "e"},
+            {"metadata_v3/index-01.json",
+             R"({
+                "ppdIndex": {
+                  "printer_a_ref": {
+                    "ppdMetadata": [ {
+                      "name": "printer_a.ppd",
+                      "license": "fake_license"
+                    } ]
+                  }
+                }
+            })"},
+            {"metadata_v3/index-02.json",
+             R"({
+                "ppdIndex": {
+                  "printer_b_ref": {
+                    "ppdMetadata": [ {
+                      "name": "printer_b.ppd"
+                    } ]
+                  }
+                }
+            })"},
+            {"metadata_v3/index-03.json",
+             R"({
+                "ppdIndex": {
+                  "printer_c_ref": {
+                    "ppdMetadata": [ {
+                      "name": "printer_c.ppd"
+                    } ]
+                  }
+                }
+            })"},
+            {"metadata_v3/index-04.json",
+             R"({
+                "ppdIndex": {
+                  "printer_d_ref": {
+                    "ppdMetadata": [ {
+                      "name": "printer_d.ppd"
+                    } ]
+                  }
+                }
+            })"},
+            {"metadata_v3/index-05.json",
+             R"({
+                "ppdIndex": {
+                  "printer_e_ref": {
+                    "ppdMetadata": [ {
+                      "name": "printer_e.ppd"
+                    } ]
+                  }
+                }
+            })"},
+            {"metadata_v3/index-13.json",
+             R"({
+            })"},
+            {"metadata_v3/usb-031f.json",
+             R"({
+                "usbIndex": {
+                  "1592": {
+                    "effectiveMakeAndModel": "Some canonical reference"
+                  },
+                  "6535": {
+                    "effectiveMakeAndModel": "Some other canonical reference"
+                  }
+                }
+            })"},
+            {"metadata_v3/usb-03f0.json", ""},
+            {"metadata_v3/usb-1234.json", ""},
+            {"metadata_v3/reverse_index-en-01.json",
+             R"({
+                "reverseIndex": {
+                  "printer_a_ref": {
+                    "manufacturer": "manufacturer_a_en",
+                    "model": "printer_a"
+                  }
+                }
+             })"},
+            {"metadata_v3/reverse_index-en-19.json",
+             R"({
+             })"},
+            {"ppds_for_metadata_v3/printer_a.ppd", kCupsFilterPpdContents},
+            {"ppds_for_metadata_v3/printer_b.ppd", kCupsFilter2PpdContents},
+            {"ppds_for_metadata_v3/printer_c.ppd", "c"},
+            {"ppds_for_metadata_v3/printer_d.ppd", "d"},
+            {"ppds_for_metadata_v3/printer_e.ppd", "e"},
             {"user_supplied_ppd_directory/user_supplied.ppd", "u"}};
   }
 
