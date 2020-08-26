@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
@@ -16,7 +17,10 @@ namespace reporting {
 
 class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
  public:
-  EncryptionModule() = default;
+  // Feature to enable/disable encryption.
+  // By default encryption is disabled, until server can support decryption.
+  static const char kEncryptedReporting[];
+  EncryptionModule();
 
   EncryptionModule(const EncryptionModule& other) = delete;
   EncryptionModule& operator=(const EncryptionModule& other) = delete;
@@ -29,11 +33,19 @@ class EncryptionModule : public base::RefCountedThreadSafe<EncryptionModule> {
       base::StringPiece record,
       base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) const;
 
+  // Records current public asymmetric key.
+  virtual void UpdateAsymmetricKey(
+      base::StringPiece new_key,
+      base::OnceCallback<void(Status)> response_cb);
+
  protected:
-  virtual ~EncryptionModule() = default;
+  virtual ~EncryptionModule();
 
  private:
   friend base::RefCountedThreadSafe<EncryptionModule>;
+
+  // Encryptor.
+  scoped_refptr<Encryptor> encryptor_;
 };
 
 }  // namespace reporting

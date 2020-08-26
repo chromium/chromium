@@ -26,6 +26,14 @@ TestEncryptionModule::TestEncryptionModule() {
           }));
 }
 
+void TestEncryptionModule::UpdateAsymmetricKey(
+    base::StringPiece new_key,
+    base::OnceCallback<void(Status)> response_cb) {
+  std::move(response_cb)
+      .Run(Status(error::UNIMPLEMENTED,
+                  "Test Encryption Module does not accept any keys"));
+}
+
 TestEncryptionModule::~TestEncryptionModule() = default;
 
 }  // namespace test

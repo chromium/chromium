@@ -3454,6 +3454,7 @@ test("unit_tests") {
     "../browser/policy/javascript_policy_handler_unittest.cc",
     "../browser/policy/messaging_layer/encryption/decryption.cc",
     "../browser/policy/messaging_layer/encryption/decryption.h",
+    "../browser/policy/messaging_layer/encryption/encryption_module_unittest.cc",
     "../browser/policy/messaging_layer/encryption/encryption_unittest.cc",
     "../browser/policy/messaging_layer/encryption/test_encryption_module.cc",
     "../browser/policy/messaging_layer/encryption/test_encryption_module.h",

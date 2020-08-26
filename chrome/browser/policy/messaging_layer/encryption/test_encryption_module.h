@@ -27,6 +27,10 @@ class TestEncryptionModule : public EncryptionModule {
                base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb),
               (const override));
 
+  void UpdateAsymmetricKey(
+      base::StringPiece new_key,
+      base::OnceCallback<void(Status)> response_cb) override;
+
  protected:
   ~TestEncryptionModule() override;
 };
