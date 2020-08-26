@@ -3108,8 +3108,7 @@ void Document::Shutdown() {
   GetViewportData().Shutdown();
 
   View()->Dispose();
-  // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
-  CHECK(!View()->IsAttached());
+  DCHECK(!View()->IsAttached());
 
   // If the EmbeddedContentView of the document's frame owner doesn't match
   // view() then LocalFrameView::Dispose() didn't clear the owner's
@@ -3170,8 +3169,7 @@ void Document::Shutdown() {
 
   layout_view_ = nullptr;
   DetachLayoutTree();
-  // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
-  CHECK(!View()->IsAttached());
+  DCHECK(!View()->IsAttached());
 
   if (this != &AXObjectCacheOwner()) {
     if (AXObjectCache* cache = ExistingAXObjectCache()) {
@@ -3211,8 +3209,7 @@ void Document::Shutdown() {
     media_query_matcher_->DocumentDetached();
 
   lifecycle_.AdvanceTo(DocumentLifecycle::kStopped);
-  // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
-  CHECK(!View()->IsAttached());
+  DCHECK(!View()->IsAttached());
 
   needs_to_record_ukm_outlive_time_ = IsInMainFrame();
   if (needs_to_record_ukm_outlive_time_) {

@@ -470,11 +470,8 @@ void HTMLFrameOwnerElement::SetEmbeddedContentView(
   layout_embedded_content->UpdateOnEmbeddedContentViewChange();
 
   if (embedded_content_view_) {
-    // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout
-    // crashes.  Perhaps view is getting reattached while document is shutting
-    // down.
     if (doc) {
-      CHECK_NE(doc->Lifecycle().GetState(), DocumentLifecycle::kStopping);
+      DCHECK_NE(doc->Lifecycle().GetState(), DocumentLifecycle::kStopping);
     }
 
     DCHECK_EQ(GetDocument().View(), layout_embedded_content->GetFrameView());

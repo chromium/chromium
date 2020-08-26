@@ -563,15 +563,13 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
     content_capture_manager_ = nullptr;
   }
 
-  // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
-  // It seems to crash because Frame is detached before LocalFrameView.
   // Verify here that any LocalFrameView has been detached by now.
   if (view_ && view_->IsAttached()) {
-    CHECK(DeprecatedLocalOwner());
-    CHECK(DeprecatedLocalOwner()->OwnedEmbeddedContentView());
-    CHECK_EQ(view_, DeprecatedLocalOwner()->OwnedEmbeddedContentView());
+    DCHECK(DeprecatedLocalOwner());
+    DCHECK(DeprecatedLocalOwner()->OwnedEmbeddedContentView());
+    DCHECK_EQ(view_, DeprecatedLocalOwner()->OwnedEmbeddedContentView());
   }
-  CHECK(!view_ || !view_->IsAttached());
+  DCHECK(!view_ || !view_->IsAttached());
 
   // This is the earliest that scripting can be disabled:
   // - FrameLoader::Detach() can fire XHR abort events
@@ -588,15 +586,13 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   DCHECK(!IsDetached());
 
-  // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
-  CHECK(!view_->IsAttached());
+  DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();
   // Notify ScriptController that the frame is closing, since its cleanup ends
   // up calling back to LocalFrameClient via WindowProxy.
   GetScriptController().ClearForClose();
 
-  // TODO(crbug.com/729196): Trace why LocalFrameView::DetachFromLayout crashes.
-  CHECK(!view_->IsAttached());
+  DCHECK(!view_->IsAttached());
   SetView(nullptr);
 
   GetEventHandlerRegistry().DidRemoveAllEventHandlers(*DomWindow());
