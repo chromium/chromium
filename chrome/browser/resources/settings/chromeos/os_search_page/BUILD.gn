@@ -10,6 +10,7 @@ js_type_check("closure_compile") {
 
 js_library("os_search_page") {
   deps = [
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "../../prefs",

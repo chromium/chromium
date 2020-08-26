@@ -9,7 +9,11 @@
 Polymer({
   is: 'os-settings-search-page',
 
-  behaviors: [I18nBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    I18nBehavior,
+    settings.RouteObserverBehavior,
+  ],
 
   properties: {
     prefs: Object,
@@ -38,6 +42,16 @@ Polymer({
         return loadTimeData.getBoolean('isAssistantAllowed');
       },
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () =>
+          new Set([chromeos.settings.mojom.Setting.kPreferredSearchEngine]),
+    },
   },
 
   /** @private {?settings.SearchEnginesBrowserProxy} */
@@ -61,6 +75,19 @@ Polymer({
       this.focusConfig_.set(
           settings.routes.GOOGLE_ASSISTANT.path, '#assistantSubpageTrigger');
     }
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.OS_SEARCH) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /** @private */

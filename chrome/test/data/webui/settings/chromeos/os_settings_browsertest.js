@@ -703,6 +703,7 @@ var OSSettingsGoogleAssistantPageTest = class extends OSSettingsBrowserTest {
     return super.extraLibraries.concat([
       '//ui/webui/resources/js/promise_resolver.js',
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'google_assistant_page_test.js',
     ]);
   }
@@ -1635,6 +1636,7 @@ var OSSettingsSearchPageTest = class extends OSSettingsBrowserTest {
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       BROWSER_SETTINGS_PATH + 'test_search_engines_browser_proxy.js',
       'os_search_page_test.js',
     ]);

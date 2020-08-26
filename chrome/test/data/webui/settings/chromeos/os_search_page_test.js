@@ -43,6 +43,7 @@ cr.define('os_settings_search_page', function() {
 
     teardown(function() {
       page.remove();
+      settings.Router.getInstance().resetRouteForTesting();
     });
 
     // Tests that the page is querying and displaying search engine info on
@@ -117,6 +118,22 @@ cr.define('os_settings_search_page', function() {
       assertTrue(selectElement.disabled);
       assertFalse(!!page.$$('extension-controlled-indicator'));
       assertTrue(!!page.$$('cr-policy-pref-indicator'));
+    });
+
+    test('Deep link to preferred search engine', async () => {
+      loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+      assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+      const params = new URLSearchParams;
+      params.append('settingId', '600');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.OS_SEARCH, params);
+
+      const deepLinkElement = page.$$('select');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Preferred search dropdown should be focused for settingId=600.');
     });
   });
 });

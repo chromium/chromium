@@ -14,7 +14,10 @@
 <link rel="import" href="../../prefs/prefs_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../prefs/pref_util.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../metrics_recorder.html">
+<link rel="import" href="../os_route.html">
+<link rel="import" href="../../router.html">
 
 <dom-module id="settings-google-assistant-page">
   <template>
@@ -44,7 +47,8 @@
         pref="{{prefs.settings.voice_interaction.enabled}}"
         label="[[getAssistantOnOffLabel_(
             prefs.settings.voice_interaction.enabled.value)]]"
-        disabled="{{prefs.settings.assistant.disabled_by_policy.value}}">
+        disabled="{{prefs.settings.assistant.disabled_by_policy.value}}"
+        deep-link-focus-id$="[[Setting.kAssistantOnOff]]">
     </settings-toggle-button>
     <template is="dom-if"
         if="[[prefs.settings.voice_interaction.enabled.value]]">
@@ -52,7 +56,8 @@
           class="hr"
           pref="{{prefs.settings.voice_interaction.context.enabled}}"
           label="$i18n{googleAssistantEnableContext}"
-          sub-label="$i18n{googleAssistantEnableContextDescription}">
+          sub-label="$i18n{googleAssistantEnableContextDescription}"
+          deep-link-focus-id$="[[Setting.kAssistantRelatedInfo]]">
       </settings-toggle-button>
       <template is="dom-if" if="[[quickAnswersAvailable_]]">
         <div class="settings-box continuation embedded"
@@ -61,7 +66,8 @@
               id="google-assistant-quick-answers-enable"
               pref="{{prefs.settings.voice_interaction.quick_answers.enabled}}"
               label="$i18n{googleAssistantEnableQuickAnswers}"
-              sub-label="$i18n{googleAssistantEnableQuickAnswersDescription}">
+              sub-label="$i18n{googleAssistantEnableQuickAnswersDescription}"
+              deep-link-focus-id$="[[Setting.kAssistantQuickAnswers]]">
           </settings-toggle-button>
         </div>
       </template>
@@ -71,7 +77,8 @@
           label="$i18n{googleAssistantEnableHotword}"
           sub-label="$i18n{googleAssistantEnableHotwordDescription}"
           on-settings-boolean-control-change="onEnableHotwordChange_"
-          hidden="[[!hotwordDspAvailable_]]">
+          hidden="[[!hotwordDspAvailable_]]"
+          deep-link-focus-id$="[[Setting.kAssistantOkGoogle]]">
       </settings-toggle-button>
       <div class="settings-box" id="dsp-hotword-container"
           hidden="[[hotwordDspAvailable_]]">
@@ -119,7 +126,8 @@
           <controlled-button id="retrain-voice-model"
               on-click="onRetrainVoiceModelTapped_"
               label="$i18n{googleAssistantVoiceSettingsRetrainButton}"
-              pref="{{prefs.settings.voice_interaction.hotword.enabled}}">
+              pref="{{prefs.settings.voice_interaction.hotword.enabled}}"
+              deep-link-focus-id$="[[Setting.kTrainAssistantVoiceModel]]">
           </controlled-button>
         </div>
       </template>
@@ -127,13 +135,15 @@
           class="hr"
           pref="{{prefs.settings.voice_interaction.notification.enabled}}"
           label="$i18n{googleAssistantEnableNotification}"
-          sub-label="$i18n{googleAssistantEnableNotificationDescription}">
+          sub-label="$i18n{googleAssistantEnableNotificationDescription}"
+          deep-link-focus-id$="[[Setting.kAssistantNotifications]]">
       </settings-toggle-button>
       <settings-toggle-button id="google-assistant-launch-with-mic-open"
           class="hr"
           pref="{{prefs.settings.voice_interaction.launch_with_mic_open}}"
           label="$i18n{googleAssistantLaunchWithMicOpen}"
-          sub-label="$i18n{googleAssistantLaunchWithMicOpenDescription}">
+          sub-label="$i18n{googleAssistantLaunchWithMicOpenDescription}"
+          deep-link-focus-id$="[[Setting.kAssistantVoiceInput]]">
       </settings-toggle-button>
       <cr-link-row id="google-assistant-settings" class="hr"
           on-click="onGoogleAssistantSettingsTapped_"

@@ -13,6 +13,7 @@
 <link rel="import" href="../../controls/extension_controlled_indicator.html">
 <link rel="import" href="../google_assistant_page/google_assistant_page.html">
 <link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../search_engines_page/search_engines_browser_proxy.html">
@@ -68,7 +69,8 @@
             <select class="md-select" on-change="onChange_"
                 aria-labelledby="searchExplanation"
                 disabled$="[[isDefaultSearchEngineEnforced_(
-                    prefs.default_search_provider_data.template_url_data)]]">
+                    prefs.default_search_provider_data.template_url_data)]]"
+                deep-link-focus-id$="[[Setting.kPreferredSearchEngine]]">
               <template is="dom-repeat" items="[[searchEngines_]]">
                 <option selected="[[item.default]]">[[item.name]]</option>
               </template>

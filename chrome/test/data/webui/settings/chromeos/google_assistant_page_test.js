@@ -241,6 +241,29 @@ suite('GoogleAssistantHandler', function() {
     assertTrue(!!button);
   });
 
+  test('Deep link to retrain voice model', async () => {
+    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+    page.setPrefValue('settings.voice_interaction.enabled', true);
+    page.setPrefValue('settings.voice_interaction.hotword.enabled', true);
+    page.setPrefValue(
+        'settings.voice_interaction.activity_control.consent_status',
+        ConsentStatus.kActivityControlAccepted);
+    Polymer.dom.flush();
+
+    const params = new URLSearchParams;
+    params.append('settingId', '607');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.GOOGLE_ASSISTANT, params);
+
+    const deepLinkElement = page.$$('#retrain-voice-model').$$('cr-button');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Retrain model button should be focused for settingId=607.');
+  });
+
   test('toggleAssistantNotification', function() {
     let button = page.$$('#google-assistant-notification-enable');
     assertFalse(!!button);

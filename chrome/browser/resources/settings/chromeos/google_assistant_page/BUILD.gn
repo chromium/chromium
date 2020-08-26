@@ -19,7 +19,9 @@ js_library("google_assistant_browser_proxy") {
 js_library("google_assistant_page") {
   deps = [
     ":google_assistant_browser_proxy",
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
+    "..:os_route",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:i18n_behavior",
