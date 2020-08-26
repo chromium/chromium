@@ -30132,7 +30132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>marcheu@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
-    DisplayResolution of the mode for the external display we're about to
+    DisplayResolution of the mode for the internal display we're about to
     modeset. 0 means the display was powered off. This is recorded every time
     the internal display is powered on/off, or when an external monitor is
     plugged in.
