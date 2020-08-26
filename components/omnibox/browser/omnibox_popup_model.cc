@@ -181,6 +181,7 @@ void OmniboxPopupModel::SetSelection(Selection new_selection,
                                     base::string16());
   } else if (old_selection.line != selection_.line ||
              (old_selection.IsButtonFocused() &&
+              !new_selection.IsButtonFocused() &&
               new_selection.state != KEYWORD_MODE)) {
     // Otherwise, only update the edit model for line number changes, or
     // when the old selection was a button and we're not entering keyword mode.

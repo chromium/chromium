@@ -32,6 +32,8 @@ class OmniboxSuggestionButtonRowView : public views::View,
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  views::Button* GetActiveButton() const;
+
  private:
   // Get the popup model from the view.
   const OmniboxPopupModel* model() const;
