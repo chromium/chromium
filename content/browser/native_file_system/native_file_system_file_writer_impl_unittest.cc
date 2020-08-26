@@ -749,7 +749,7 @@ TEST_F(NativeFileSystemFileWriterAfterWriteChecksTest,
   base::RunLoop move_loop;
   test_file_system_backend_->SetOperationCreatedCallback(
       base::BindLambdaForTesting([&](const storage::FileSystemURL& url) {
-        EXPECT_EQ(url, test_file_url_);
+        EXPECT_EQ(url, test_swap_url_);
         move_loop.Quit();
       }));
   move_loop.Run();

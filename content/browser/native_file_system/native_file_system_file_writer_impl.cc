@@ -558,8 +558,8 @@ void NativeFileSystemFileWriterImpl::DidPassAfterWriteCheck(
         weak_factory_.GetWeakPtr(), std::move(callback));
   }
   DoFileSystemOperation(
-      FROM_HERE, &FileSystemOperationRunner::Move, std::move(result_callback),
-      swap_url(), url(),
+      FROM_HERE, &FileSystemOperationRunner::MoveFileLocal,
+      std::move(result_callback), swap_url(), url(),
       storage::FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED);
 }
 
