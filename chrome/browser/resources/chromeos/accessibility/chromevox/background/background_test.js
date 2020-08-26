@@ -2904,3 +2904,42 @@ TEST_F('ChromeVoxBackgroundTest', 'InlineLineNavigation', function() {
             .replay();
       });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'AudioVideo', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
+    <button></button>
+    <button></button>
+  `,
+      function(root) {
+        const [audio, video] = root.findAll({role: RoleType.BUTTON});
+
+        assertNotNullNorUndefined(audio);
+        assertNotNullNorUndefined(video);
+
+        assertEquals('', audio.name);
+        assertEquals('', video.name);
+        assertEquals(undefined, audio.firstChild);
+        assertEquals(undefined, video.firstChild);
+
+        // Fake the roles.
+        Object.defineProperty(audio, 'role', {
+          get() {
+            return chrome.automation.RoleType.AUDIO;
+          }
+        });
+
+        Object.defineProperty(video, 'role', {
+          get() {
+            return chrome.automation.RoleType.VIDEO;
+          }
+        });
+
+        mockFeedback.call(doCmd('nextObject'))
+            .expectSpeech('Video')
+            .call(doCmd('previousObject'))
+            .expectSpeech('Audio')
+            .replay();
+      });
+});

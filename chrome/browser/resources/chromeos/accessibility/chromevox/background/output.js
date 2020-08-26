@@ -2169,6 +2169,7 @@ Output.ROLE_INFO_ = {
   alertDialog: {msgId: 'role_alertdialog', outputContextFirst: true},
   article: {msgId: 'role_article', inherits: 'abstractItem'},
   application: {msgId: 'role_application', inherits: 'abstractContainer'},
+  audio: {msgId: 'tag_audio', inherits: 'abstractContainer'},
   banner: {msgId: 'role_banner', inherits: 'abstractContainer'},
   button: {msgId: 'role_button', earconId: 'BUTTON', inherits: 'button'},
   buttonDropDown: {msgId: 'role_button', earconId: 'BUTTON'},
@@ -2321,6 +2322,7 @@ Output.ROLE_INFO_ = {
   toggleButton: {msgId: 'role_toggle_button', inherits: 'checkBox'},
   tree: {msgId: 'role_tree'},
   treeItem: {msgId: 'role_treeitem'},
+  video: {msgId: 'tag_video', inherits: 'abstractContainer'},
   window: {ignoreAncestry: true}
 };
 
