@@ -574,77 +574,74 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_reset_webview:
-                if (mWebView != null) {
-                    ViewGroup container = getContainer();
-                    container.removeView(mWebView);
-                    mWebView.destroy();
-                    mWebView = null;
-                }
-                createAndInitializeWebView();
-                return true;
-            case R.id.menu_clear_cache:
-                if (mWebView != null) {
-                    mWebView.clearCache(true);
-                }
-                return true;
-            case R.id.menu_enable_tracing:
-                mEnableTracing = !mEnableTracing;
-                item.setChecked(mEnableTracing);
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_reset_webview) {
+            if (mWebView != null) {
+                ViewGroup container = getContainer();
+                container.removeView(mWebView);
+                mWebView.destroy();
+                mWebView = null;
+            }
+            createAndInitializeWebView();
+            return true;
+        } else if (itemId == R.id.menu_clear_cache) {
+            if (mWebView != null) {
+                mWebView.clearCache(true);
+            }
+            return true;
+        } else if (itemId == R.id.menu_enable_tracing) {
+            mEnableTracing = !mEnableTracing;
+            item.setChecked(mEnableTracing);
 
-                TracingController tracingController = TracingController.getInstance();
-                if (mEnableTracing) {
-                    tracingController.start(
-                            new TracingConfig.Builder()
-                                    .addCategories(TracingConfig.CATEGORIES_WEB_DEVELOPER)
-                                    .setTracingMode(TracingConfig.RECORD_CONTINUOUSLY)
-                                    .build());
-                } else {
-                    try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                        String outFileName = getFilesDir() + "/webview_tracing.json";
-                        try {
-                            tracingController.stop(new TracingLogger(outFileName, this),
-                                    Executors.newSingleThreadExecutor());
-                        } catch (FileNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
+            TracingController tracingController = TracingController.getInstance();
+            if (mEnableTracing) {
+                tracingController.start(
+                        new TracingConfig.Builder()
+                                .addCategories(TracingConfig.CATEGORIES_WEB_DEVELOPER)
+                                .setTracingMode(TracingConfig.RECORD_CONTINUOUSLY)
+                                .build());
+            } else {
+                try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
+                    String outFileName = getFilesDir() + "/webview_tracing.json";
+                    try {
+                        tracingController.stop(new TracingLogger(outFileName, this),
+                                Executors.newSingleThreadExecutor());
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
                 }
-                return true;
-            case R.id.menu_force_dark_off:
-                WebSettingsCompat.setForceDark(
-                        mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_OFF);
-                item.setChecked(true);
-                return true;
-            case R.id.menu_force_dark_auto:
-                WebSettingsCompat.setForceDark(
-                        mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_AUTO);
-                item.setChecked(true);
-                return true;
-            case R.id.menu_force_dark_on:
-                WebSettingsCompat.setForceDark(
-                        mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_ON);
-                item.setChecked(true);
-                return true;
-            case R.id.start_animation_activity:
-                startActivity(new Intent(this, WebViewAnimationTestActivity.class));
-                return true;
-            case R.id.menu_print:
-                PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
-                String jobName = "WebViewShell document";
-                PrintDocumentAdapter printAdapter = mWebView.createPrintDocumentAdapter(jobName);
-                printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
-                return true;
-            case R.id.menu_about:
-                about();
-                hideKeyboard(mUrlBar);
-                return true;
-            case R.id.menu_devui:
-                launchWebViewDevUI();
-                return true;
-            default:
-                break;
+            }
+            return true;
+        } else if (itemId == R.id.menu_force_dark_off) {
+            WebSettingsCompat.setForceDark(
+                    mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_OFF);
+            item.setChecked(true);
+            return true;
+        } else if (itemId == R.id.menu_force_dark_auto) {
+            WebSettingsCompat.setForceDark(
+                    mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_AUTO);
+            item.setChecked(true);
+            return true;
+        } else if (itemId == R.id.menu_force_dark_on) {
+            WebSettingsCompat.setForceDark(mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_ON);
+            item.setChecked(true);
+            return true;
+        } else if (itemId == R.id.start_animation_activity) {
+            startActivity(new Intent(this, WebViewAnimationTestActivity.class));
+            return true;
+        } else if (itemId == R.id.menu_print) {
+            PrintManager printManager = (PrintManager) getSystemService(Context.PRINT_SERVICE);
+            String jobName = "WebViewShell document";
+            PrintDocumentAdapter printAdapter = mWebView.createPrintDocumentAdapter(jobName);
+            printManager.print(jobName, printAdapter, new PrintAttributes.Builder().build());
+            return true;
+        } else if (itemId == R.id.menu_about) {
+            about();
+            hideKeyboard(mUrlBar);
+            return true;
+        } else if (itemId == R.id.menu_devui) {
+            launchWebViewDevUI();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

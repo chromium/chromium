@@ -29,6 +29,16 @@ system_webview_shell_android_manifest =
 
 android_apk("system_webview_shell_apk") {
   apk_name = "SystemWebViewShell"
+  android_manifest = system_webview_shell_android_manifest
+  android_manifest_dep = ":system_webview_shell_manifest"
+  deps = [
+    ":system_webview_shell_apk_java",
+    ":system_webview_shell_apk_resources",
+  ]
+}
+
+android_library("system_webview_shell_apk_java") {
+  testonly = true
   sources = [
     "apk/src/org/chromium/webview_shell/JankActivity.java",
     "apk/src/org/chromium/webview_shell/PageCyclerTestActivity.java",
@@ -46,8 +56,6 @@ android_apk("system_webview_shell_apk") {
     "apk/src/org/chromium/webview_shell/WebViewTracingActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewWithClipPath.java",
   ]
-  android_manifest = system_webview_shell_android_manifest
-  android_manifest_dep = ":system_webview_shell_manifest"
   deps = [
     ":system_webview_shell_apk_resources",
     "//base:base_java",
@@ -58,6 +66,7 @@ android_apk("system_webview_shell_apk") {
     "//third_party/android_deps:androidx_webkit_webkit_java",
     "//third_party/guava:guava_android_java",
   ]
+  resources_package = "org.chromium.webview_shell"
 }
 
 jinja_template("system_webview_shell_manifest") {
@@ -85,7 +94,6 @@ android_resources("system_webview_shell_apk_resources") {
     "apk/res/values/styles.xml",
     "apk/res/xml/network_security_config.xml",
   ]
-  custom_package = "org.chromium.webview_shell"
   create_srcjar = false
   deps = [ "//third_party/android_deps:android_support_v7_appcompat_java" ]
 }
@@ -96,6 +104,7 @@ instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
   android_manifest = "page_cycler/AndroidManifest.xml"
   sources = [ "page_cycler/src/org/chromium/webview_shell/page_cycler/PageCyclerTest.java" ]
   deps = [
+    ":system_webview_shell_apk_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/android:content_java",
@@ -118,6 +127,7 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
     "layout_tests/src/org/chromium/webview_shell/test/WebViewThreadTest.java",
   ]
   deps = [
+    ":system_webview_shell_apk_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//testing/android/reporter:reporter_java",

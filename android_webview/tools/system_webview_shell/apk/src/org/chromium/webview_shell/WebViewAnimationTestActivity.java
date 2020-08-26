@@ -82,16 +82,13 @@ public class WebViewAnimationTestActivity extends Activity {
         mWebView.setBackgroundColor(0);
         mWebView.loadDataWithBaseURL("http://foo.bar", HTML, "text/html", null, "http://foo.bar");
         OnClickListener onClickListner = (View v) -> {
-            switch (v.getId()) {
-                case R.id.translate:
-                    runTranslate();
-                    break;
-                case R.id.scale:
-                    runScale();
-                    break;
-                case R.id.rotate:
-                    runRotate();
-                    break;
+            int viewId = v.getId();
+            if (viewId == R.id.translate) {
+                runTranslate();
+            } else if (viewId == R.id.scale) {
+                runScale();
+            } else if (viewId == R.id.rotate) {
+                runRotate();
             }
         };
         findViewById(R.id.scale).setOnClickListener(onClickListner);
@@ -101,10 +98,8 @@ public class WebViewAnimationTestActivity extends Activity {
                 .setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar view, int progress, boolean fromUser) {
-                        switch (view.getId()) {
-                            case R.id.view_alpha:
-                                mWebView.setAlpha(progress / 100f);
-                                break;
+                        if (view.getId() == R.id.view_alpha) {
+                            mWebView.setAlpha(progress / 100f);
                         }
                     }
 
