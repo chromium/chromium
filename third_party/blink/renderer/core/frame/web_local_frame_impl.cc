@@ -1781,9 +1781,9 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
   Page& page = *static_cast<WebViewImpl*>(web_view)->GetPage();
   DCHECK(!page.MainFrame());
   frame->InitializeCoreFrame(
-      page, nullptr, name,
-      opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr, opener,
-      sandbox_flags, opener_feature_state);
+      page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
+      name, opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
+      opener, sandbox_flags, opener_feature_state);
   return frame;
 }
 
@@ -1803,7 +1803,6 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
           ? mojom::blink::TreeScopeType::kShadow
           : mojom::blink::TreeScopeType::kDocument,
       client, interface_registry, frame_token);
-  web_frame->SetParent(previous_web_frame->Parent());
   network::mojom::blink::WebSandboxFlags sandbox_flags =
       network::mojom::blink::WebSandboxFlags::kNone;
   FeaturePolicyFeatureState feature_state;
@@ -1828,7 +1827,9 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
   // observable, it will have the real FrameOwner, and any subsequent real
   // documents will correctly inherit sandbox flags from the owner.
   web_frame->InitializeCoreFrame(
-      *previous_frame->GetPage(), MakeGarbageCollected<DummyFrameOwner>(), name,
+      *previous_frame->GetPage(), MakeGarbageCollected<DummyFrameOwner>(),
+      previous_web_frame->Parent(), nullptr, FrameInsertType::kInsertLater,
+      name,
       frame_policy.disallow_document_access
           ? nullptr
           : &ToCoreFrame(*previous_web_frame)->window_agent_factory(),
@@ -1852,7 +1853,6 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateLocalChild(
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       util::PassKey<WebLocalFrameImpl>(), scope, client, interface_registry,
       frame_token);
-  AppendChild(frame);
   return frame;
 }
 
@@ -1903,7 +1903,6 @@ void WebLocalFrameImpl::Trace(Visitor* visitor) const {
   visitor->Trace(frame_widget_);
   visitor->Trace(print_context_);
   visitor->Trace(input_method_controller_);
-  WebFrame::TraceFrames(visitor, this);
 }
 
 void WebLocalFrameImpl::SetCoreFrame(LocalFrame* frame) {
@@ -1913,13 +1912,20 @@ void WebLocalFrameImpl::SetCoreFrame(LocalFrame* frame) {
 void WebLocalFrameImpl::InitializeCoreFrame(
     Page& page,
     FrameOwner* owner,
+    WebFrame* parent,
+    WebFrame* previous_sibling,
+    FrameInsertType insert_type,
     const AtomicString& name,
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const FeaturePolicyFeatureState& opener_feature_state) {
+  Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
+  Frame* previous_sibling_frame =
+      previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
   SetCoreFrame(MakeGarbageCollected<LocalFrame>(
-      local_frame_client_.Get(), page, owner, GetFrameToken(),
+      local_frame_client_.Get(), page, owner, parent_frame,
+      previous_sibling_frame, insert_type, GetFrameToken(),
       window_agent_factory, interface_registry_));
   frame_->Tree().SetName(name);
   if (RuntimeEnabledFeatures::FeaturePolicyForSandboxEnabled())
@@ -1974,7 +1980,8 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
     return nullptr;
 
   webframe_child->InitializeCoreFrame(
-      *GetFrame()->GetPage(), owner_element, name,
+      *GetFrame()->GetPage(), owner_element, this, LastChild(),
+      FrameInsertType::kInsertInConstructor, name,
       owner_element->GetFramePolicy().disallow_document_access
           ? nullptr
           : &GetFrame()->window_agent_factory(),

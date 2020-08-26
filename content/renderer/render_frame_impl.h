@@ -312,7 +312,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // depend on the frame being at its proper spot.
   //
   // Virtual for web tests to inject their own behaviour into the WebLocalFrame.
-  virtual void Initialize();
+  virtual void Initialize(blink::WebFrame* parent);
 
   // Notifications from RenderWidget.
   void WasHidden();

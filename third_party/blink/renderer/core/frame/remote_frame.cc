@@ -92,6 +92,9 @@ RemoteFrame::RemoteFrame(
     RemoteFrameClient* client,
     Page& page,
     FrameOwner* owner,
+    Frame* parent,
+    Frame* previous_sibling,
+    FrameInsertType insert_type,
     const base::UnguessableToken& frame_token,
     WindowAgentFactory* inheriting_agent_factory,
     InterfaceRegistry* interface_registry,
@@ -99,6 +102,9 @@ RemoteFrame::RemoteFrame(
     : Frame(client,
             page,
             owner,
+            parent,
+            previous_sibling,
+            insert_type,
             frame_token,
             MakeGarbageCollected<RemoteWindowProxyManager>(*this),
             inheriting_agent_factory),
@@ -194,7 +200,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   bool initiator_frame_is_ad = false;
 
   if (window) {
-    is_opener_navigation = window->GetFrame()->Client()->Opener() == this;
+    is_opener_navigation = window->GetFrame()->Opener() == this;
     initiator_frame_has_download_sandbox_flag =
         window->IsSandboxed(network::mojom::blink::WebSandboxFlags::kDownloads);
     initiator_frame_is_ad = window->GetFrame()->IsAdSubframe();
@@ -524,7 +530,7 @@ void RemoteFrame::SetNeedsOcclusionTracking(bool needs_tracking) {
 
 void RemoteFrame::BubbleLogicalScroll(mojom::blink::ScrollDirection direction,
                                       ui::ScrollGranularity granularity) {
-  Frame* parent_frame = Client()->Parent();
+  Frame* parent_frame = Parent();
   DCHECK(parent_frame);
   DCHECK(parent_frame->IsLocalFrame());
 
@@ -801,7 +807,7 @@ void RemoteFrame::DetachChildren() {
 
 void RemoteFrame::ApplyReplicatedFeaturePolicyHeader() {
   const FeaturePolicy* parent_feature_policy = nullptr;
-  if (Frame* parent_frame = Client()->Parent()) {
+  if (Frame* parent_frame = Parent()) {
     parent_feature_policy =
         parent_frame->GetSecurityContext()->GetFeaturePolicy();
   }

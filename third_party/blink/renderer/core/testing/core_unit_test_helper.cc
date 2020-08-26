@@ -19,24 +19,23 @@ namespace blink {
 LocalFrame* SingleChildLocalFrameClient::CreateFrame(
     const AtomicString& name,
     HTMLFrameOwnerElement* owner_element) {
-  DCHECK(!child_) << "This test helper only supports one child frame.";
 
   LocalFrame* parent_frame = owner_element->GetDocument().GetFrame();
   auto* child_client =
       MakeGarbageCollected<LocalFrameClientWithParent>(parent_frame);
-  child_ = MakeGarbageCollected<LocalFrame>(
-      child_client, *parent_frame->GetPage(), owner_element,
+  LocalFrame* child = MakeGarbageCollected<LocalFrame>(
+      child_client, *parent_frame->GetPage(), owner_element, parent_frame,
+      nullptr, FrameInsertType::kInsertInConstructor,
       base::UnguessableToken::Create(), &parent_frame->window_agent_factory(),
       nullptr);
-  child_->CreateView(IntSize(500, 500), Color::kTransparent);
-  child_->Init(nullptr);
+  child->CreateView(IntSize(500, 500), Color::kTransparent);
+  child->Init(nullptr);
 
-  return child_.Get();
+  return child;
 }
 
 void LocalFrameClientWithParent::Detached(FrameDetachType) {
-  static_cast<SingleChildLocalFrameClient*>(Parent()->Client())
-      ->DidDetachChild();
+  parent_->RemoveChild(parent_->FirstChild());
 }
 
 void RenderingTestChromeClient::InjectGestureScrollEvent(

@@ -13,7 +13,6 @@
 
 namespace blink {
 
-class Frame;
 class LocalFrame;
 enum class FrameDetachType;
 
@@ -22,14 +21,6 @@ class CORE_EXPORT FrameClient : public GarbageCollected<FrameClient> {
   virtual bool InShadowTree() const = 0;
 
   virtual void Detached(FrameDetachType) = 0;
-
-  // TODO(https://crbug.com/1051144): Move this getter to the Frame class.
-  virtual Frame* Opener() const = 0;
-
-  virtual Frame* Parent() const = 0;
-  virtual Frame* Top() const = 0;
-  virtual Frame* NextSibling() const = 0;
-  virtual Frame* FirstChild() const = 0;
 
   virtual unsigned BackForwardLength() = 0;
 

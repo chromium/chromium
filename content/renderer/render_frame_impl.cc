@@ -1573,7 +1573,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   render_frame->render_widget_ = render_widget.get();
   render_frame->owned_render_widget_ = std::move(render_widget);
   render_frame->in_frame_tree_ = true;
-  render_frame->Initialize();
+  render_frame->Initialize(nullptr);
 
   return render_frame;
 }
@@ -1788,7 +1788,7 @@ void RenderFrameImpl::CreateFrame(
   if (has_committed_real_load)
     render_frame->frame_->SetCommittedFirstRealLoad();
 
-  render_frame->Initialize();
+  render_frame->Initialize(web_frame->Parent());
 }
 
 // static
@@ -2014,17 +2014,22 @@ RenderFrameImpl::~RenderFrameImpl() {
   RenderThread::Get()->RemoveRoute(routing_id_);
 }
 
-void RenderFrameImpl::Initialize() {
-  is_main_frame_ = !frame_->Parent();
+void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
+  is_main_frame_ = !parent;
 
-  GetLocalRootRenderWidget()->RegisterRenderFrame(this);
+  WebFrame* local_root = frame_;
+  if (parent && parent->IsWebLocalFrame()) {
+    local_root = parent->ToWebLocalFrame()->LocalRoot();
+  }
+  RenderFrameImpl::FromWebFrame(local_root)
+      ->render_widget_->RegisterRenderFrame(this);
 
   bool is_tracing_rail = false;
   bool is_tracing_navigation = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("navigation", &is_tracing_navigation);
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("rail", &is_tracing_rail);
   if (is_tracing_rail || is_tracing_navigation) {
-    int parent_id = RenderFrame::GetRoutingIdForWebFrame(frame_->Parent());
+    int parent_id = RenderFrame::GetRoutingIdForWebFrame(parent);
     TRACE_EVENT2("navigation,rail", "RenderFrameImpl::Initialize",
                  "id", routing_id_,
                  "parent", parent_id);
@@ -4096,7 +4101,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       params_reply.frame_token);
 
   child_render_frame->in_frame_tree_ = true;
-  child_render_frame->Initialize();
+  child_render_frame->Initialize(parent);
 
   return web_frame;
 }

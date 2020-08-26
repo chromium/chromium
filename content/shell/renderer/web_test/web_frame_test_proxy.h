@@ -39,7 +39,7 @@ class WebFrameTestProxy : public RenderFrameImpl,
   ~WebFrameTestProxy() override;
 
   // RenderFrameImpl overrides.
-  void Initialize() override;
+  void Initialize(blink::WebFrame* parent) override;
 
   // Reset state between tests.
   void Reset();

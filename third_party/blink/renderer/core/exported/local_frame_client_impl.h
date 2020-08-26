@@ -85,11 +85,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
 
   bool HasWebView() const override;
   bool InShadowTree() const override;
-  Frame* Opener() const override;
-  Frame* Parent() const override;
-  Frame* Top() const override;
-  Frame* NextSibling() const override;
-  Frame* FirstChild() const override;
   void WillBeDetached() override;
   void Detached(FrameDetachType) override;
   void DispatchWillSendRequest(ResourceRequest&) override;

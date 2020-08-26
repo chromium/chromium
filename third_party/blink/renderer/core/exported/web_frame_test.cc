@@ -389,10 +389,6 @@ class WebFrameTest : public testing::Test {
         DocumentUpdateReason::kTest);
   }
 
-  WebFrame* LastChild(WebFrame* frame) { return frame->last_child_; }
-  WebFrame* PreviousSibling(WebFrame* frame) {
-    return frame->previous_sibling_;
-  }
   void SwapAndVerifyFirstChildConsistency(const char* const message,
                                           WebFrame* parent,
                                           WebFrame* new_child);
@@ -9035,8 +9031,8 @@ void WebFrameTest::SwapAndVerifyFirstChildConsistency(const char* const message,
   EXPECT_EQ(new_child, parent->FirstChild());
   EXPECT_EQ(new_child->Parent(), parent);
   EXPECT_EQ(new_child,
-            parent->last_child_->previous_sibling_->previous_sibling_);
-  EXPECT_EQ(new_child->NextSibling(), parent->last_child_->previous_sibling_);
+            parent->LastChild()->PreviousSibling()->PreviousSibling());
+  EXPECT_EQ(new_child->NextSibling(), parent->LastChild()->PreviousSibling());
 }
 
 TEST_F(WebFrameSwapTest, SwapFirstChild) {
@@ -9085,13 +9081,16 @@ void WebFrameTest::SwapAndVerifyMiddleChildConsistency(
   SCOPED_TRACE(message);
   parent->FirstChild()->NextSibling()->Swap(new_child);
 
-  EXPECT_EQ(new_child, parent->FirstChild()->NextSibling());
-  EXPECT_EQ(new_child, parent->last_child_->previous_sibling_);
-  EXPECT_EQ(new_child->Parent(), parent);
-  EXPECT_EQ(new_child, parent->FirstChild()->NextSibling());
-  EXPECT_EQ(new_child->previous_sibling_, parent->FirstChild());
-  EXPECT_EQ(new_child, parent->last_child_->previous_sibling_);
-  EXPECT_EQ(new_child->NextSibling(), parent->last_child_);
+  Frame* parent_frame = WebFrame::ToCoreFrame(*parent);
+  Frame* new_child_frame = WebFrame::ToCoreFrame(*new_child);
+
+  EXPECT_EQ(new_child_frame, parent_frame->FirstChild()->NextSibling());
+  EXPECT_EQ(new_child_frame, parent_frame->LastChild()->PreviousSibling());
+  EXPECT_EQ(new_child_frame->Parent(), parent_frame);
+  EXPECT_EQ(new_child_frame, parent_frame->FirstChild()->NextSibling());
+  EXPECT_EQ(new_child_frame->PreviousSibling(), parent_frame->FirstChild());
+  EXPECT_EQ(new_child_frame, parent_frame->LastChild()->PreviousSibling());
+  EXPECT_EQ(new_child_frame->NextSibling(), parent_frame->LastChild());
 }
 
 TEST_F(WebFrameSwapTest, SwapMiddleChild) {
@@ -9118,12 +9117,13 @@ void WebFrameTest::SwapAndVerifyLastChildConsistency(const char* const message,
                                                      WebFrame* parent,
                                                      WebFrame* new_child) {
   SCOPED_TRACE(message);
-  LastChild(parent)->Swap(new_child);
+  parent->LastChild()->Swap(new_child);
 
-  EXPECT_EQ(new_child, LastChild(parent));
+  EXPECT_EQ(new_child, parent->LastChild());
   EXPECT_EQ(new_child->Parent(), parent);
+  EXPECT_EQ(new_child, parent->LastChild()->PreviousSibling()->NextSibling());
   EXPECT_EQ(new_child, parent->FirstChild()->NextSibling()->NextSibling());
-  EXPECT_EQ(new_child->previous_sibling_, parent->FirstChild()->NextSibling());
+  EXPECT_EQ(new_child->PreviousSibling(), parent->FirstChild()->NextSibling());
 }
 
 TEST_F(WebFrameSwapTest, SwapLastChild) {
@@ -9178,7 +9178,7 @@ void WebFrameTest::SwapAndVerifySubframeConsistency(const char* const message,
   old_frame->Swap(new_frame);
 
   EXPECT_FALSE(new_frame->FirstChild());
-  EXPECT_FALSE(new_frame->last_child_);
+  EXPECT_FALSE(new_frame->LastChild());
 }
 
 TEST_F(WebFrameSwapTest, EventsOnDisconnectedSubDocumentSkipped) {
@@ -9339,7 +9339,7 @@ TEST_F(WebFrameSwapTest, SwapInitializesGlobal) {
   ASSERT_TRUE(last_child->IsObject());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  WebFrameTest::LastChild(MainFrame())->Swap(remote_frame);
+  MainFrame()->LastChild()->Swap(remote_frame);
   v8::Local<v8::Value> remote_window_top =
       MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource("saved.top"));
   EXPECT_TRUE(remote_window_top->IsObject());
@@ -9358,7 +9358,7 @@ TEST_F(WebFrameSwapTest, RemoteFramesAreIndexable) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  LastChild(MainFrame())->Swap(remote_frame);
+  MainFrame()->LastChild()->Swap(remote_frame);
   v8::Local<v8::Value> remote_window =
       MainFrame()->ExecuteScriptAndReturnValue(WebScriptSource("window[2]"));
   EXPECT_TRUE(remote_window->IsObject());
@@ -9372,7 +9372,7 @@ TEST_F(WebFrameSwapTest, RemoteFrameLengthAccess) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  LastChild(MainFrame())->Swap(remote_frame);
+  MainFrame()->LastChild()->Swap(remote_frame);
   v8::Local<v8::Value> remote_window_length =
       MainFrame()->ExecuteScriptAndReturnValue(
           WebScriptSource("window[2].length"));
@@ -9387,7 +9387,7 @@ TEST_F(WebFrameSwapTest, RemoteWindowNamedAccess) {
   // named window access on a remote window works. For now, just test that
   // accessing a named property doesn't crash.
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  LastChild(MainFrame())->Swap(remote_frame);
+  MainFrame()->LastChild()->Swap(remote_frame);
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
   v8::Local<v8::Value> remote_window_property =
@@ -9401,7 +9401,7 @@ TEST_F(WebFrameSwapTest, RemoteWindowToString) {
   v8::HandleScope scope(isolate);
 
   WebRemoteFrame* remote_frame = frame_test_helpers::CreateRemote();
-  LastChild(MainFrame())->Swap(remote_frame);
+  MainFrame()->LastChild()->Swap(remote_frame);
   v8::Local<v8::Value> to_string_result =
       MainFrame()->ExecuteScriptAndReturnValue(
           WebScriptSource("Object.prototype.toString.call(window[2])"));
@@ -9964,18 +9964,18 @@ TEST_F(WebFrameTest, CreateLocalChildWithPreviousSibling) {
       frame_test_helpers::CreateLocalChild(*parent, "name1"));
 
   EXPECT_EQ(first_frame, parent->FirstChild());
-  EXPECT_EQ(nullptr, PreviousSibling(first_frame));
+  EXPECT_EQ(nullptr, first_frame->PreviousSibling());
   EXPECT_EQ(second_frame, first_frame->NextSibling());
 
-  EXPECT_EQ(first_frame, PreviousSibling(second_frame));
+  EXPECT_EQ(first_frame, second_frame->PreviousSibling());
   EXPECT_EQ(third_frame, second_frame->NextSibling());
 
-  EXPECT_EQ(second_frame, PreviousSibling(third_frame));
+  EXPECT_EQ(second_frame, third_frame->PreviousSibling());
   EXPECT_EQ(fourth_frame, third_frame->NextSibling());
 
-  EXPECT_EQ(third_frame, PreviousSibling(fourth_frame));
+  EXPECT_EQ(third_frame, fourth_frame->PreviousSibling());
   EXPECT_EQ(nullptr, fourth_frame->NextSibling());
-  EXPECT_EQ(fourth_frame, LastChild(parent));
+  EXPECT_EQ(fourth_frame, parent->LastChild());
 
   EXPECT_EQ(parent, first_frame->Parent());
   EXPECT_EQ(parent, second_frame->Parent());
@@ -10825,7 +10825,7 @@ class WebRemoteFrameVisibilityChangeTest : public WebFrameTest {
   }
 
   void SwapLocalFrameToRemoteFrame() {
-    LastChild(MainFrame())->Swap(RemoteFrame());
+    MainFrame()->LastChild()->Swap(RemoteFrame());
   }
 
   WebLocalFrame* MainFrame() { return frame_; }

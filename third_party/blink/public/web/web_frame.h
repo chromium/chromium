@@ -44,7 +44,6 @@
 namespace blink {
 
 class Frame;
-class Visitor;
 class WebLocalFrame;
 class WebRemoteFrame;
 class WebSecurityOrigin;
@@ -128,8 +127,14 @@ class BLINK_EXPORT WebFrame {
   // Returns the first child frame.
   WebFrame* FirstChild() const;
 
+  // Returns the last child frame.
+  WebFrame* LastChild() const;
+
   // Returns the next sibling frame.
   WebFrame* NextSibling() const;
+
+  // Returns the previous sibling frame.
+  WebFrame* PreviousSibling() const;
 
   // Returns the next frame in "frame traversal order".
   WebFrame* TraverseNext() const;
@@ -167,11 +172,6 @@ class BLINK_EXPORT WebFrame {
   static Frame* ToCoreFrame(const WebFrame&);
 
   bool InShadowTree() const { return scope_ == mojom::TreeScopeType::kShadow; }
-
-  static void TraceFrames(Visitor*, const WebFrame*);
-
-  // Detaches a frame from its parent frame if it has one.
-  void DetachFromParent();
 #endif
 
  protected:
@@ -179,29 +179,7 @@ class BLINK_EXPORT WebFrame {
                     const base::UnguessableToken& frame_token);
   virtual ~WebFrame() = default;
 
-  // Sets the parent WITHOUT fulling adding it to the frame tree.
-  // Used to lie to a local frame that is replacing a remote frame,
-  // so it can properly start a navigation but wait to swap until
-  // commit-time.
-  void SetParent(WebFrame*);
-
-  // Inserts the given frame as a child of this frame, so that it is the next
-  // child after |previousSibling|, or first child if |previousSibling| is null.
-  void InsertAfter(WebFrame* child, WebFrame* previous_sibling);
-
-  // Adds the given frame as a child of this frame.
-  void AppendChild(WebFrame*);
-
  private:
-#if INSIDE_BLINK
-  friend class WebFrameTest;
-
-  static void TraceFrame(Visitor*, const WebFrame*);
-#endif
-
-  // Removes the given child from this frame.
-  void RemoveChild(WebFrame*);
-
   const mojom::TreeScopeType scope_;
 
   // See blink::Frame::frame_token_ for comments.
@@ -209,14 +187,6 @@ class BLINK_EXPORT WebFrame {
   // because a WebRemote's core frame is created inside the bowels of the Swap
   // call.
   const base::UnguessableToken frame_token_;
-
-  WebFrame* parent_;
-  WebFrame* previous_sibling_;
-  WebFrame* next_sibling_;
-  WebFrame* first_child_;
-  WebFrame* last_child_;
-
-  WebFrame* opener_;
 };
 
 }  // namespace blink

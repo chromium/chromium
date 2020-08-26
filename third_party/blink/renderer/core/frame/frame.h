@@ -78,8 +78,13 @@ class WindowProxy;
 class WindowProxyManager;
 struct FrameLoadRequest;
 class WindowAgentFactory;
+class WebFrame;
 
 enum class FrameDetachType { kRemove, kSwap };
+
+// kInsertLater will create a provisional frame, i.e. it will have a parent
+// frame but not be inserted into the frame tree.
+enum class FrameInsertType { kInsertInConstructor, kInsertLater };
 
 // Frame is the base class of LocalFrame and RemoteFrame and should only contain
 // functionality shared between both. In particular, any method related to
@@ -318,11 +323,34 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   void SetOpenerDoNotNotify(Frame* opener);
 
+  // Returns the frame that opened this frame or null if there is none.
   Frame* Opener() const { return opener_; }
 
-  const OpenedFrameTracker& GetOpenedFrameTracker() const {
-    return opened_frame_tracker_;
-  }
+  // Returns the parent frame or null if this is the top-most frame.
+  Frame* Parent() const { return parent_; }
+
+  // Returns the top-most frame in the hierarchy containing this frame.
+  Frame* Top();
+
+  // Returns the first child frame.
+  Frame* FirstChild() const { return first_child_; }
+
+  // Returns the previous sibling frame.
+  Frame* PreviousSibling() const { return previous_sibling_; }
+
+  // Returns the next sibling frame.
+  Frame* NextSibling() const { return next_sibling_; }
+
+  // Returns the last child frame.
+  Frame* LastChild() const { return last_child_; }
+
+  // Detaches a frame from its parent frame if it has one.
+  void DetachFromParent();
+
+  bool Swap(WebFrame*);
+
+  // Removes the given child from this frame.
+  void RemoveChild(Frame* child);
 
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or
@@ -333,6 +361,9 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Frame(FrameClient*,
         Page&,
         FrameOwner*,
+        Frame* parent,
+        Frame* previous_sibling,
+        FrameInsertType insert_type,
         const base::UnguessableToken& frame_token,
         WindowProxyManager*,
         WindowAgentFactory* inheriting_agent_factory);
@@ -386,9 +417,21 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   mojom::blink::AdFrameType ad_frame_type_;
 
  private:
+  // Inserts the given frame as a child of this frame, so that it is the next
+  // child after |previous_sibling|, or first child if |previous_sibling| is
+  // null. The child frame's parent must be set in the constructor.
+  void InsertAfter(Frame* new_child, Frame* previous_sibling);
+
   Member<FrameClient> client_;
   const Member<WindowProxyManager> window_proxy_manager_;
   FrameLifecycle lifecycle_;
+
+  Member<Frame> opener_;
+  Member<Frame> parent_;
+  Member<Frame> previous_sibling_;
+  Member<Frame> next_sibling_;
+  Member<Frame> first_child_;
+  Member<Frame> last_child_;
 
   NavigationRateLimiter navigation_rate_limiter_;
 
@@ -444,8 +487,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   TaskHandle form_submit_navigation_task_;
 
   OpenedFrameTracker opened_frame_tracker_;
-
-  Member<Frame> opener_;
 };
 
 inline FrameClient* Frame::Client() const {

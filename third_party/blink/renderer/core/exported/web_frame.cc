@@ -30,129 +30,7 @@
 namespace blink {
 
 bool WebFrame::Swap(WebFrame* frame) {
-  using std::swap;
-  Frame* old_frame = ToCoreFrame(*this);
-  if (!old_frame->IsAttached())
-    return false;
-  FrameOwner* owner = old_frame->Owner();
-  FrameSwapScope frame_swap_scope(owner);
-
-  // Unload the current Document in this frame: this calls unload handlers,
-  // detaches child frames, etc. Since this runs script, make sure this frame
-  // wasn't detached before continuing with the swap.
-  // FIXME: There is no unit test for this condition, so one needs to be
-  // written.
-  if (!old_frame->DetachDocument()) {
-    // If the Swap() fails, it should be because the frame has been detached
-    // already. Otherwise the caller will not detach the frame when we return
-    // false, and the browser and renderer will disagree about the destruction
-    // of |old_frame|.
-    CHECK(!old_frame->IsAttached());
-    return false;
-  }
-
-  // If there is a local parent, it might incorrectly declare itself complete
-  // during the detach phase of this swap. Suppress its completion until swap is
-  // over, at which point its completion will be correctly dependent on its
-  // newly swapped-in child.
-  auto* parent_web_local_frame = DynamicTo<WebLocalFrameImpl>(parent_);
-  std::unique_ptr<IncrementLoadEventDelayCount> delay_parent_load =
-      parent_web_local_frame
-          ? std::make_unique<IncrementLoadEventDelayCount>(
-                *parent_web_local_frame->GetFrame()->GetDocument())
-          : nullptr;
-
-  if (parent_) {
-    if (parent_->first_child_ == this)
-      parent_->first_child_ = frame;
-    if (parent_->last_child_ == this)
-      parent_->last_child_ = frame;
-    // FIXME: This is due to the fact that the |frame| may be a provisional
-    // local frame, because we don't know if the navigation will result in
-    // an actual page or something else, like a download. The PlzNavigate
-    // project will remove the need for provisional local frames.
-    frame->parent_ = parent_;
-  }
-
-  if (previous_sibling_) {
-    previous_sibling_->next_sibling_ = frame;
-    swap(previous_sibling_, frame->previous_sibling_);
-  }
-  if (next_sibling_) {
-    next_sibling_->previous_sibling_ = frame;
-    swap(next_sibling_, frame->next_sibling_);
-  }
-
-  Page* page = old_frame->GetPage();
-  AtomicString name = old_frame->Tree().GetName();
-
-  Frame* old_frame_opener = old_frame->Opener();
-  // Opener needs to be cleared here so Detach() would not call
-  // DidChangeOpener().
-  if (old_frame_opener) {
-    old_frame->SetOpenerDoNotNotify(nullptr);
-  }
-
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  WindowProxyManager::GlobalProxyVector global_proxies;
-  old_frame->GetWindowProxyManager()->ClearForSwap();
-  old_frame->GetWindowProxyManager()->ReleaseGlobalProxies(global_proxies);
-
-  // Although the Document in this frame is now unloaded, many resources
-  // associated with the frame itself have not yet been freed yet.
-  old_frame->Detach(FrameDetachType::kSwap);
-
-  // Clone the state of the current Frame into the one being swapped in.
-  // FIXME: This is a bit clunky; this results in pointless decrements and
-  // increments of connected subframes.
-  if (auto* web_local_frame = DynamicTo<WebLocalFrameImpl>(frame)) {
-    // TODO(dcheng): in an ideal world, both branches would just use
-    // WebFrame's initializeCoreFrame() helper. However, Blink
-    // currently requires a 'provisional' local frame to serve as a
-    // placeholder for loading state when swapping to a local frame.
-    // In this case, the core LocalFrame is already initialized, so just
-    // update a bit of state.
-    LocalFrame& local_frame = *web_local_frame->GetFrame();
-    DCHECK_EQ(owner, local_frame.Owner());
-    if (owner) {
-      owner->SetContentFrame(local_frame);
-
-      if (auto* frame_owner_element = DynamicTo<HTMLFrameOwnerElement>(owner)) {
-        frame_owner_element->SetEmbeddedContentView(local_frame.View());
-      }
-    } else {
-      Page* other_page = local_frame.GetPage();
-      other_page->SetMainFrame(&local_frame);
-      // This trace event is needed to detect the main frame of the
-      // renderer in telemetry metrics. See crbug.com/692112#c11.
-      TRACE_EVENT_INSTANT1("loading", "markAsMainFrame",
-                           TRACE_EVENT_SCOPE_THREAD, "frame",
-                           ToTraceValue(&local_frame));
-    }
-  } else {
-    To<WebRemoteFrameImpl>(frame)->InitializeCoreFrame(
-        *page, owner, name, &old_frame->window_agent_factory());
-  }
-
-  Frame* new_frame = ToCoreFrame(*frame);
-
-  if (old_frame_opener)
-    new_frame->SetOpenerDoNotNotify(old_frame_opener);
-  old_frame->GetOpenedFrameTracker().TransferTo(new_frame);
-
-  new_frame->GetWindowProxyManager()->SetGlobalProxies(global_proxies);
-
-  parent_ = nullptr;
-
-  if (auto* frame_owner_element = DynamicTo<HTMLFrameOwnerElement>(owner)) {
-    if (auto* new_local_frame = DynamicTo<LocalFrame>(new_frame)) {
-      probe::FrameOwnerContentUpdated(new_local_frame, frame_owner_element);
-    } else if (auto* old_local_frame = DynamicTo<LocalFrame>(old_frame)) {
-      probe::FrameOwnerContentUpdated(old_local_frame, frame_owner_element);
-    }
-  }
-
-  return true;
+  return ToCoreFrame(*this)->Swap(frame);
 }
 
 void WebFrame::Detach() {
@@ -175,87 +53,47 @@ WebVector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
 }
 
 WebFrame* WebFrame::Opener() const {
-  CHECK(ToCoreFrame(*this));
   return FromFrame(ToCoreFrame(*this)->Opener());
 }
 
 void WebFrame::ClearOpener() {
-  CHECK(ToCoreFrame(*this));
   ToCoreFrame(*this)->SetOpenerDoNotNotify(nullptr);
 }
 
-void WebFrame::InsertAfter(WebFrame* new_child, WebFrame* previous_sibling) {
-  new_child->parent_ = this;
-
-  WebFrame* next;
-  if (!previous_sibling) {
-    // Insert at the beginning if no previous sibling is specified.
-    next = first_child_;
-    first_child_ = new_child;
-  } else {
-    DCHECK_EQ(previous_sibling->parent_, this);
-    next = previous_sibling->next_sibling_;
-    previous_sibling->next_sibling_ = new_child;
-    new_child->previous_sibling_ = previous_sibling;
-  }
-
-  if (next) {
-    new_child->next_sibling_ = next;
-    next->previous_sibling_ = new_child;
-  } else {
-    last_child_ = new_child;
-  }
-
-  ToCoreFrame(*this)->Tree().InvalidateScopedChildCount();
-  ToCoreFrame(*this)->GetPage()->IncrementSubframeCount();
-}
-
-void WebFrame::AppendChild(WebFrame* child) {
-  // TODO(dcheng): Original code asserts that the frames have the same Page.
-  // We should add an equivalent check... figure out what.
-  InsertAfter(child, last_child_);
-}
-
-void WebFrame::RemoveChild(WebFrame* child) {
-  child->parent_ = nullptr;
-
-  if (first_child_ == child)
-    first_child_ = child->next_sibling_;
-  else
-    child->previous_sibling_->next_sibling_ = child->next_sibling_;
-
-  if (last_child_ == child)
-    last_child_ = child->previous_sibling_;
-  else
-    child->next_sibling_->previous_sibling_ = child->previous_sibling_;
-
-  child->previous_sibling_ = child->next_sibling_ = nullptr;
-
-  ToCoreFrame(*this)->Tree().InvalidateScopedChildCount();
-  ToCoreFrame(*this)->GetPage()->DecrementSubframeCount();
-}
-
-void WebFrame::SetParent(WebFrame* parent) {
-  parent_ = parent;
-}
-
 WebFrame* WebFrame::Parent() const {
-  return parent_;
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return FromFrame(core_frame->Parent());
 }
 
 WebFrame* WebFrame::Top() const {
-  WebFrame* frame = const_cast<WebFrame*>(this);
-  for (WebFrame* parent = frame; parent; parent = parent->parent_)
-    frame = parent;
-  return frame;
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return FromFrame(core_frame->Top());
 }
 
 WebFrame* WebFrame::FirstChild() const {
-  return first_child_;
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return FromFrame(core_frame->FirstChild());
+}
+
+WebFrame* WebFrame::LastChild() const {
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return FromFrame(core_frame->LastChild());
 }
 
 WebFrame* WebFrame::NextSibling() const {
-  return next_sibling_;
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return FromFrame(core_frame->NextSibling());
+}
+
+WebFrame* WebFrame::PreviousSibling() const {
+  Frame* core_frame = ToCoreFrame(*this);
+  CHECK(core_frame);
+  return FromFrame(core_frame->PreviousSibling());
 }
 
 WebFrame* WebFrame::TraverseNext() const {
@@ -289,50 +127,11 @@ WebFrame* WebFrame::FromFrame(Frame* frame) {
 
 WebFrame::WebFrame(mojom::blink::TreeScopeType scope,
                    const base::UnguessableToken& frame_token)
-    : scope_(scope),
-      frame_token_(frame_token),
-      parent_(nullptr),
-      previous_sibling_(nullptr),
-      next_sibling_(nullptr),
-      first_child_(nullptr),
-      last_child_(nullptr),
-      opener_(nullptr) {
+    : scope_(scope), frame_token_(frame_token) {
   DCHECK(frame_token_);
 }
 
-void WebFrame::TraceFrame(Visitor* visitor, const WebFrame* frame) {
-  if (!frame)
-    return;
-
-  if (frame->IsWebLocalFrame()) {
-    visitor->Trace(To<WebLocalFrameImpl>(frame));
-  } else {
-    visitor->Trace(To<WebRemoteFrameImpl>(frame));
-  }
-}
-
-void WebFrame::TraceFrames(Visitor* visitor, const WebFrame* frame) {
-  DCHECK(frame);
-  TraceFrame(visitor, frame->parent_);
-  for (const WebFrame* child = frame->FirstChild(); child;
-       child = child->NextSibling())
-    TraceFrame(visitor, child);
-}
-
 void WebFrame::Close() {
-}
-
-void WebFrame::DetachFromParent() {
-  if (!Parent())
-    return;
-
-  // TODO(dcheng): This should really just check if there's a parent, and call
-  // RemoveChild() if so. Once provisional frames are removed, this check can be
-  // simplified to just check Parent(). See https://crbug.com/578349.
-  if (IsWebLocalFrame() && ToWebLocalFrame()->IsProvisional())
-    return;
-
-  Parent()->RemoveChild(this);
 }
 
 Frame* WebFrame::ToCoreFrame(const WebFrame& frame) {

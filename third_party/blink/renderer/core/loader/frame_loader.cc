@@ -429,7 +429,7 @@ void FrameLoader::DidFinishNavigation(NavigationFinishState state) {
 }
 
 Frame* FrameLoader::Opener() {
-  return Client() ? Client()->Opener() : nullptr;
+  return frame_->Opener();
 }
 
 void FrameLoader::SetOpener(LocalFrame* opener) {
@@ -1704,8 +1704,7 @@ inline void FrameLoader::TakeObjectSnapshot() const {
 ContentSecurityPolicy* FrameLoader::CreateCSPForInitialEmptyDocument() const {
   ContentSecurityPolicy* csp = MakeGarbageCollected<ContentSecurityPolicy>();
 
-  Frame* owner_frame = frame_->Tree().Parent() ? frame_->Tree().Parent()
-                                               : frame_->Client()->Opener();
+  Frame* owner_frame = frame_->Parent() ? frame_->Parent() : frame_->Opener();
   if (owner_frame) {
     ContentSecurityPolicy* owner_csp =
         owner_frame->GetSecurityContext()->GetContentSecurityPolicy();
@@ -1770,8 +1769,7 @@ ContentSecurityPolicy* FrameLoader::CreateCSP(
   DocumentInit::Type document_type =
       DocumentInit::ComputeDocumentType(frame_, url, response.MimeType());
   if (document_type == DocumentInit::Type::kPlugin) {
-    Frame* owner_frame = frame_->Tree().Parent() ? frame_->Tree().Parent()
-                                                 : frame_->Client()->Opener();
+    Frame* owner_frame = frame_->Parent() ? frame_->Parent() : frame_->Opener();
     ContentSecurityPolicy* owner_csp =
         owner_frame
             ? owner_frame->GetSecurityContext()->GetContentSecurityPolicy()

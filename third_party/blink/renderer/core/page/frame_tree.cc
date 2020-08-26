@@ -119,31 +119,19 @@ void FrameTree::SetName(const AtomicString& name,
 
 DISABLE_CFI_PERF
 Frame* FrameTree::Parent() const {
-  if (!this_frame_->Client())
-    return nullptr;
-  return this_frame_->Client()->Parent();
+  return this_frame_->Parent();
 }
 
 Frame& FrameTree::Top() const {
-  // FIXME: top() should never return null, so here are some hacks to deal
-  // with EmptyLocalFrameClient and cases where the frame is detached
-  // already...
-  if (!this_frame_->Client())
-    return *this_frame_;
-  Frame* candidate = this_frame_->Client()->Top();
-  return candidate ? *candidate : *this_frame_;
+  return *this_frame_->Top();
 }
 
 Frame* FrameTree::NextSibling() const {
-  if (!this_frame_->Client())
-    return nullptr;
-  return this_frame_->Client()->NextSibling();
+  return this_frame_->NextSibling();
 }
 
 Frame* FrameTree::FirstChild() const {
-  if (!this_frame_->Client())
-    return nullptr;
-  return this_frame_->Client()->FirstChild();
+  return this_frame_->FirstChild();
 }
 
 Frame* FrameTree::ScopedChild(unsigned index) const {

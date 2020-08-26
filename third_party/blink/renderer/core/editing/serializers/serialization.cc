@@ -786,7 +786,9 @@ static Document* CreateStagingDocumentForMarkupSanitization() {
   LocalFrame* frame = MakeGarbageCollected<LocalFrame>(
       MakeGarbageCollected<EmptyLocalFrameClient>(), *page,
       nullptr,  // FrameOwner*
-      base::UnguessableToken::Create(),
+      nullptr,  // Frame* parent
+      nullptr,  // Frame* previous_sibling
+      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
       nullptr,  // WindowAgentFactory*
       nullptr   // InterfaceRegistry*
   );

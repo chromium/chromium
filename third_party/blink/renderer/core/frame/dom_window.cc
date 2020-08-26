@@ -117,7 +117,7 @@ DOMWindow* DOMWindow::opener() const {
   if (!GetFrame() || !GetFrame()->Client())
     return nullptr;
 
-  Frame* opener = GetFrame()->Client()->Opener();
+  Frame* opener = GetFrame()->Opener();
   return opener ? opener->DomWindow() : nullptr;
 }
 

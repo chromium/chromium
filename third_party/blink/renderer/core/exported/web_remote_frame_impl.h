@@ -111,9 +111,11 @@ class CORE_EXPORT WebRemoteFrameImpl final
   v8::Local<v8::Object> GlobalProxy() const override;
   WebRect GetCompositingRect() override;
   WebString UniqueName() const override;
-
   void InitializeCoreFrame(Page&,
                            FrameOwner*,
+                           WebFrame* parent,
+                           WebFrame* previous_sibling,
+                           FrameInsertType,
                            const AtomicString& name,
                            WindowAgentFactory*);
   RemoteFrame* GetFrame() const { return frame_.Get(); }

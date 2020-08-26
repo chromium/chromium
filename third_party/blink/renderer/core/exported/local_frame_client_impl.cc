@@ -431,26 +431,6 @@ bool LocalFrameClientImpl::InShadowTree() const {
   return web_frame_->InShadowTree();
 }
 
-Frame* LocalFrameClientImpl::Opener() const {
-  return ToCoreFrame(web_frame_->Opener());
-}
-
-Frame* LocalFrameClientImpl::Parent() const {
-  return ToCoreFrame(web_frame_->Parent());
-}
-
-Frame* LocalFrameClientImpl::Top() const {
-  return ToCoreFrame(web_frame_->Top());
-}
-
-Frame* LocalFrameClientImpl::NextSibling() const {
-  return ToCoreFrame(web_frame_->NextSibling());
-}
-
-Frame* LocalFrameClientImpl::FirstChild() const {
-  return ToCoreFrame(web_frame_->FirstChild());
-}
-
 void LocalFrameClientImpl::WillBeDetached() {
   web_frame_->WillBeDetached();
 }
@@ -478,7 +458,7 @@ void LocalFrameClientImpl::Detached(FrameDetachType type) {
   client->FrameDetached();
 
   if (type == FrameDetachType::kRemove)
-    web_frame_->DetachFromParent();
+    ToCoreFrame(web_frame_)->DetachFromParent();
 
   // Clear our reference to LocalFrame at the very end, in case the client
   // refers to it.
@@ -658,7 +638,7 @@ void LocalFrameClientImpl::BeginNavigation(
   LocalFrame* frame = origin_window ? origin_window->GetFrame() : nullptr;
   if (frame) {
     navigation_info->is_opener_navigation =
-        frame->Client()->Opener() == ToCoreFrame(web_frame_);
+        frame->Opener() == ToCoreFrame(web_frame_);
     navigation_info->initiator_frame_has_download_sandbox_flag =
         origin_window->IsSandboxed(
             network::mojom::blink::WebSandboxFlags::kDownloads);

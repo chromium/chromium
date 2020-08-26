@@ -852,9 +852,10 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     TRACE_EVENT0("blink", "SVGImage::dataChanged::createFrame");
     DCHECK(!frame_client_);
     frame_client_ = MakeGarbageCollected<SVGImageLocalFrameClient>(this);
-    frame = MakeGarbageCollected<LocalFrame>(frame_client_, *page, nullptr,
-                                             base::UnguessableToken::Create(),
-                                             nullptr, nullptr);
+    frame = MakeGarbageCollected<LocalFrame>(
+        frame_client_, *page, nullptr, nullptr, nullptr,
+        FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
+        nullptr, nullptr);
     frame->SetView(MakeGarbageCollected<LocalFrameView>(*frame));
     frame->Init(nullptr);
   }

@@ -33,22 +33,6 @@ namespace {
 const char* const kAutoplayMetric = "WebAudio.Autoplay";
 const char* const kAutoplayCrossOriginMetric = "WebAudio.Autoplay.CrossOrigin";
 
-class MockCrossOriginLocalFrameClient final : public EmptyLocalFrameClient {
- public:
-  explicit MockCrossOriginLocalFrameClient(Frame* parent) : parent_(parent) {}
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(parent_);
-    EmptyLocalFrameClient::Trace(visitor);
-  }
-
-  Frame* Parent() const override { return parent_.Get(); }
-  Frame* Top() const override { return parent_.Get(); }
-
- private:
-  Member<Frame> parent_;
-};
-
 class MockWebAudioDeviceForAutoplayTest : public WebAudioDevice {
  public:
   explicit MockWebAudioDeviceForAutoplayTest(double sample_rate,

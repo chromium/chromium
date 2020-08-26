@@ -278,10 +278,7 @@ TEST_F(RenderFrameImplTest, LocalChildFrameWasShown) {
       grandchild->blink_interface_registry_.get(),
       base::UnguessableToken::Create());
   grandchild->in_frame_tree_ = true;
-  grandchild->Initialize();
-
-  EXPECT_EQ(grandchild->GetLocalRootRenderWidget(),
-            frame()->GetLocalRootRenderWidget());
+  grandchild->Initialize(parent_web_frame);
 
   RenderFrameTestObserver observer(grandchild);
 

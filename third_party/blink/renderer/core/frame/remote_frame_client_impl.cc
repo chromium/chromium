@@ -25,20 +25,6 @@
 
 namespace blink {
 
-namespace {
-
-// Convenience helper for frame tree helpers in FrameClient to reduce the amount
-// of null-checking boilerplate code. Since the frame tree is maintained in the
-// web/ layer, the frame tree helpers often have to deal with null WebFrames:
-// for example, a frame with no parent will return null for WebFrame::parent().
-// TODO(dcheng): Remove duplication between LocalFrameClientImpl and
-// RemoteFrameClientImpl somehow...
-Frame* ToCoreFrame(WebFrame* frame) {
-  return frame ? WebFrame::ToCoreFrame(*frame) : nullptr;
-}
-
-}  // namespace
-
 RemoteFrameClientImpl::RemoteFrameClientImpl(WebRemoteFrameImpl* web_frame)
     : web_frame_(web_frame) {}
 
@@ -66,7 +52,7 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
 
   if (web_frame_->Parent()) {
     if (type == FrameDetachType::kRemove)
-      web_frame_->DetachFromParent();
+      WebFrame::ToCoreFrame(*web_frame_)->DetachFromParent();
   } else if (web_frame_->View()) {
     // If the RemoteFrame being detached is also the main frame in the renderer
     // process, we need to notify the webview to allow it to clean things up.
@@ -76,26 +62,6 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
   // Clear our reference to RemoteFrame at the very end, in case the client
   // refers to it.
   web_frame_->SetCoreFrame(nullptr);
-}
-
-Frame* RemoteFrameClientImpl::Opener() const {
-  return ToCoreFrame(web_frame_->Opener());
-}
-
-Frame* RemoteFrameClientImpl::Parent() const {
-  return ToCoreFrame(web_frame_->Parent());
-}
-
-Frame* RemoteFrameClientImpl::Top() const {
-  return ToCoreFrame(web_frame_->Top());
-}
-
-Frame* RemoteFrameClientImpl::NextSibling() const {
-  return ToCoreFrame(web_frame_->NextSibling());
-}
-
-Frame* RemoteFrameClientImpl::FirstChild() const {
-  return ToCoreFrame(web_frame_->FirstChild());
 }
 
 base::UnguessableToken RemoteFrameClientImpl::GetDevToolsFrameToken() const {

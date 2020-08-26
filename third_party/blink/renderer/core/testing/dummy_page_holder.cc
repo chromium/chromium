@@ -86,7 +86,9 @@ DummyPageHolder::DummyPageHolder(
   // Create new WindowAgentFactory as this page will be isolated from others.
   frame_ = MakeGarbageCollected<LocalFrame>(
       local_frame_client_.Get(), *page_,
-      /* FrameOwner* */ nullptr, base::UnguessableToken::Create(),
+      /* FrameOwner* */ nullptr, /* Frame* parent */ nullptr,
+      /* Frame* previous_sibling */ nullptr,
+      FrameInsertType::kInsertInConstructor, base::UnguessableToken::Create(),
       /* WindowAgentFactory* */ nullptr,
       /* InterfaceRegistry* */ nullptr, clock);
   frame_->SetView(

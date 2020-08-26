@@ -99,7 +99,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
   // TODO(dcheng): Remove the need for this and strongly enforce this condition
   // with a DCHECK.
   frame->InitializeCoreFrame(
-      page, nullptr, g_null_atom,
+      page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
+      g_null_atom,
       opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr);
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
   ToCoreFrame(*frame)->SetOpenerDoNotNotify(opener_frame);
@@ -123,7 +124,8 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortal(
       RuntimeEnabledFeatures::PortalsEnabled(element->GetExecutionContext()));
   HTMLPortalElement* portal = static_cast<HTMLPortalElement*>(element);
   LocalFrame* host_frame = portal->GetDocument().GetFrame();
-  frame->InitializeCoreFrame(*host_frame->GetPage(), portal, g_null_atom,
+  frame->InitializeCoreFrame(*host_frame->GetPage(), portal, nullptr, nullptr,
+                             FrameInsertType::kInsertInConstructor, g_null_atom,
                              &host_frame->window_agent_factory());
 
   return frame;
@@ -134,7 +136,6 @@ WebRemoteFrameImpl::~WebRemoteFrameImpl() = default;
 void WebRemoteFrameImpl::Trace(Visitor* visitor) const {
   visitor->Trace(frame_client_);
   visitor->Trace(frame_);
-  WebFrame::TraceFrames(visitor, this);
 }
 
 bool WebRemoteFrameImpl::IsWebLocalFrame() const {
@@ -182,7 +183,6 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
       util::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
       frame_token);
-  InsertAfter(child, previous_sibling);
   auto* owner = MakeGarbageCollected<RemoteFrameOwner>(
       frame_policy, frame_owner_properties, frame_owner_element_type);
 
@@ -193,7 +193,9 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     window_agent_factory = &GetFrame()->window_agent_factory();
   }
 
-  child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, name,
+  child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, this,
+                             previous_sibling,
+                             FrameInsertType::kInsertInConstructor, name,
                              window_agent_factory, opener);
   DCHECK(child->GetFrame());
   return child;
@@ -202,11 +204,18 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
 void WebRemoteFrameImpl::InitializeCoreFrame(
     Page& page,
     FrameOwner* owner,
+    WebFrame* parent,
+    WebFrame* previous_sibling,
+    FrameInsertType insert_type,
     const AtomicString& name,
     WindowAgentFactory* window_agent_factory) {
+  Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
+  Frame* previous_sibling_frame =
+      previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
-      frame_client_.Get(), page, owner, GetFrameToken(), window_agent_factory,
-      interface_registry_, associated_interface_provider_));
+      frame_client_.Get(), page, owner, parent_frame, previous_sibling_frame,
+      insert_type, GetFrameToken(), window_agent_factory, interface_registry_,
+      associated_interface_provider_));
   GetFrame()->CreateView();
   frame_->Tree().SetName(name);
 }
@@ -224,7 +233,6 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
   auto* child = MakeGarbageCollected<WebRemoteFrameImpl>(
       scope, client, interface_registry, associated_interface_provider,
       frame_token);
-  AppendChild(child);
   auto* owner = MakeGarbageCollected<RemoteFrameOwner>(
       frame_policy, WebFrameOwnerProperties(), frame_owner_element_type);
   WindowAgentFactory* window_agent_factory = nullptr;
@@ -234,7 +242,8 @@ WebRemoteFrame* WebRemoteFrameImpl::CreateRemoteChild(
     window_agent_factory = &GetFrame()->window_agent_factory();
   }
 
-  child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, name,
+  child->InitializeCoreFrame(*GetFrame()->GetPage(), owner, this, LastChild(),
+                             FrameInsertType::kInsertInConstructor, name,
                              window_agent_factory);
   Frame* opener_frame = opener ? ToCoreFrame(*opener) : nullptr;
   ToCoreFrame(*child)->SetOpenerDoNotNotify(opener_frame);

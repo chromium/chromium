@@ -230,8 +230,8 @@ WebFrameTestProxy::~WebFrameTestProxy() {
     test_runner->RemoveMainFrame(this);
 }
 
-void WebFrameTestProxy::Initialize() {
-  RenderFrameImpl::Initialize();
+void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
+  RenderFrameImpl::Initialize(parent);
 
   TestRunner* test_runner = web_view_test_proxy_->GetTestRunner();
   if (IsMainFrame())

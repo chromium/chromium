@@ -336,6 +336,9 @@ class CORE_EXPORT WebLocalFrameImpl final
   void InitializeCoreFrame(
       Page&,
       FrameOwner*,
+      WebFrame* parent,
+      WebFrame* previous_sibling,
+      FrameInsertType,
       const AtomicString& name,
       WindowAgentFactory*,
       WebFrame* opener,

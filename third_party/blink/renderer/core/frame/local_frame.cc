@@ -1285,6 +1285,9 @@ bool LocalFrame::ShouldThrottleRendering() const {
 LocalFrame::LocalFrame(LocalFrameClient* client,
                        Page& page,
                        FrameOwner* owner,
+                       Frame* parent,
+                       Frame* previous_sibling,
+                       FrameInsertType insert_type,
                        const base::UnguessableToken& frame_token,
                        WindowAgentFactory* inheriting_agent_factory,
                        InterfaceRegistry* interface_registry,
@@ -1292,6 +1295,9 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
     : Frame(client,
             page,
             owner,
+            parent,
+            previous_sibling,
+            insert_type,
             frame_token,
             MakeGarbageCollected<LocalWindowProxyManager>(*this),
             inheriting_agent_factory),
@@ -1421,7 +1427,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
 
   // Navigating window.opener cross origin, without user activation. See
   // https://crbug.com/813643.
-  if (Client()->Opener() == target_frame && !HasTransientUserActivation(this) &&
+  if (Opener() == target_frame && !HasTransientUserActivation(this) &&
       !target_frame.GetSecurityContext()->GetSecurityOrigin()->CanAccess(
           SecurityOrigin::Create(destination_url).get())) {
     UseCounter::Count(GetDocument(),
@@ -1458,7 +1464,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
                 kPropagatesToAuxiliaryBrowsingContexts) &&
         (GetSecurityContext()->IsSandboxed(
              network::mojom::blink::WebSandboxFlags::kPopups) ||
-         target_frame.Client()->Opener() != this)) {
+         target_frame.Opener() != this)) {
       PrintNavigationErrorMessage(
           target_frame,
           "The frame attempting navigation is sandboxed and is trying "
@@ -1531,9 +1537,9 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
   // and/or "parent" relation). Requiring some sort of relation prevents a
   // document from navigating arbitrary, unrelated top-level frames.
   if (!target_frame.Tree().Parent()) {
-    if (target_frame == Client()->Opener())
+    if (target_frame == Opener())
       return true;
-    if (CanAccessAncestor(origin, target_frame.Client()->Opener()))
+    if (CanAccessAncestor(origin, target_frame.Opener()))
       return true;
   }
 
