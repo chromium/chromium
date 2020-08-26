@@ -293,8 +293,10 @@ class TranslateLanguageBrowserTestWithTranslateRecentTarget
   base::test::ScopedFeatureList feature_list_;
 };
 
+// The test is flakily crahing on Linux, Windows, and ChromeOS:
+// crbug.com/1122170
 IN_PROC_BROWSER_TEST_F(TranslateLanguageBrowserTestWithTranslateRecentTarget,
-                       RecentTargetLanguage) {
+                       DISABLED_RecentTargetLanguage) {
   InitInIncognitoMode(false);
 
   // Before browsing: set auto translate from French to Chinese.
