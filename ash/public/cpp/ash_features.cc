@@ -44,6 +44,9 @@ const base::Feature kCaptureMode{"CaptureMode",
 const base::Feature kContextualNudges{"ContextualNudges",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kDarkLightMode{"DarkLightMode",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDisplayAlignAssist{"DisplayAlignAssist",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -172,6 +175,10 @@ bool IsAutoNightLightEnabled() {
 
 bool IsCaptureModeEnabled() {
   return base::FeatureList::IsEnabled(kCaptureMode);
+}
+
+bool IsDarkLightModeEnabled() {
+  return base::FeatureList::IsEnabled(kDarkLightMode);
 }
 
 bool IsHideArcMediaNotificationsEnabled() {

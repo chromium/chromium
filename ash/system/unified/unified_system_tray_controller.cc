@@ -22,6 +22,7 @@
 #include "ash/system/cast/cast_feature_pod_controller.h"
 #include "ash/system/cast/unified_cast_detailed_view_controller.h"
 #include "ash/system/dark_mode/dark_mode_detailed_view_controller.h"
+#include "ash/system/dark_mode/dark_mode_feature_pod_controller.h"
 #include "ash/system/ime/ime_feature_pod_controller.h"
 #include "ash/system/ime/unified_ime_detailed_view_controller.h"
 #include "ash/system/locale/locale_feature_pod_controller.h"
@@ -420,6 +421,8 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<LocaleFeaturePodController>(this));
   if (features::IsCaptureModeEnabled())
     AddFeaturePodItem(std::make_unique<CaptureModeFeaturePodController>());
+  if (features::IsDarkLightModeEnabled())
+    AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
 
   // If you want to add a new feature pod item, add here.
 

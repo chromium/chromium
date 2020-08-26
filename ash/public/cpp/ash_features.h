@@ -28,6 +28,9 @@ ASH_PUBLIC_EXPORT extern const base::Feature kCaptureMode;
 // Enables contextual nudges for gesture education.
 ASH_PUBLIC_EXPORT extern const base::Feature kContextualNudges;
 
+// Enables dark/light mode feature.
+ASH_PUBLIC_EXPORT extern const base::Feature kDarkLightMode;
+
 // Enables indicators to hint where displays are connected.
 ASH_PUBLIC_EXPORT extern const base::Feature kDisplayAlignAssist;
 
@@ -180,6 +183,8 @@ ASH_PUBLIC_EXPORT bool IsPerDeskShelfEnabled();
 ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
 
 ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
+
+ASH_PUBLIC_EXPORT bool IsDarkLightModeEnabled();
 
 ASH_PUBLIC_EXPORT bool IsHideArcMediaNotificationsEnabled();
 
