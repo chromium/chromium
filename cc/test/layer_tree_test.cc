@@ -666,7 +666,7 @@ LayerTreeTest::LayerTreeTest(TestRendererType renderer_type)
     init_vulkan = true;
   } else if (renderer_type_ == TestRendererType::kSkiaDawn) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaDawn);
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     init_vulkan = true;
 #elif defined(OS_WIN)
     // TODO(sgilhuly): Initialize D3D12 for Windows.

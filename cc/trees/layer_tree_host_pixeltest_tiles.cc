@@ -210,7 +210,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          LayerTreeHostTilesTestPartialInvalidationMultiThread,
                          ::testing::ValuesIn(kTestCasesMultiThread));
 
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
 // Flaky on Linux TSAN. https://crbug.com/707711
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #elif defined(OS_WIN) && defined(ADDRESS_SANITIZER)
