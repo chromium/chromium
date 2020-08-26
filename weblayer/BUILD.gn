@@ -386,6 +386,7 @@ source_set("weblayer_lib_base") {
     "//components/keyed_service/content",
     "//components/language/core/browser",
     "//components/metrics",
+    "//components/metrics:content",
     "//components/network_time",
     "//components/omnibox/browser:location_bar",
     "//components/page_info",
