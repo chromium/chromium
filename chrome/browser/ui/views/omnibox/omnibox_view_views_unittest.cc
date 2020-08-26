@@ -2675,6 +2675,42 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
       gfx::Range(0, kSimplifiedDomainDisplayUrl.size())));
 }
 
+// Tests that in the simplified domain field trials, non-http/https and
+// localhost URLs are not elided.
+TEST_P(OmniboxViewViewsRevealOnHoverTest, UrlsNotEligibleForEliding) {
+  const base::string16 kTestCases[] = {
+      // Various URLs that aren't eligible for simplified domain eliding.
+      base::ASCIIToUTF16("ftp://foo.bar.test/baz"),
+      base::ASCIIToUTF16("javascript:alert(1)"),
+      base::ASCIIToUTF16("data:text/html,hello"),
+      base::ASCIIToUTF16("http://localhost:4000/foo"),
+      // A smoke test to check that the test code results in
+      // the URL being elided properly when eligible.
+      kSimplifiedDomainDisplayUrl,
+  };
+
+  for (const auto& test_case : kTestCases) {
+    UpdateDisplayURL(test_case);
+    omnibox_view()->OnThemeChanged();
+
+    if (test_case == kSimplifiedDomainDisplayUrl) {
+      // This case is the smoke test to check that the test setup does properly
+      // elide URLs that are eligible for eliding.
+      ASSERT_NO_FATAL_FAILURE(ExpectElidedToSimplifiedDomain(
+          omnibox_view(), kSimplifiedDomainDisplayUrlScheme,
+          kSimplifiedDomainDisplayUrlSubdomain,
+          kSimplifiedDomainDisplayUrlHostnameAndScheme,
+          kSimplifiedDomainDisplayUrlPath, ShouldElideToRegistrableDomain()));
+    } else {
+      EXPECT_EQ(gfx::ELIDE_TAIL,
+                omnibox_view()->GetRenderText()->elide_behavior());
+      EXPECT_EQ(test_case, omnibox_view()->GetRenderText()->GetDisplayText());
+      EXPECT_EQ(0,
+                omnibox_view()->GetRenderText()->GetUpdatedDisplayOffset().x());
+    }
+  }
+}
+
 // Tests that in the hide-on-interaction field trial, when the path changes
 // while being elided, the animation is stopped.
 TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,

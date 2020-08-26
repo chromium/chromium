@@ -495,7 +495,9 @@ class OmniboxViewViews : public OmniboxView,
   // simplified domain. This takes into account the omnibox's current state
   // (e.g. the URL shouldn't be elided if the user is currently editing it) as
   // well as properties of the current text (e.g. extension URLs or non-URLs
-  // shouldn't be elided because they may not have simplified domains).
+  // shouldn't be elided because they may not have simplified domains; localhost
+  // URLs shouldn't be elided because they are used in development workflows
+  // where the full URL is useful).
   //
   // This method does NOT take field trials into account or the "Always show
   // full URLs" option. Calling code should check field trial state and

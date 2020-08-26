@@ -61,6 +61,7 @@
 #include "extensions/common/constants.h"
 #include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -2503,7 +2504,9 @@ bool OmniboxViewViews::IsURLEligibleForSimplifiedDomainEliding() {
   // chrome:, etc.
   return (url_scheme == base::UTF8ToUTF16(url::kHttpScheme) ||
           url_scheme == base::UTF8ToUTF16(url::kHttpsScheme)) &&
-         host.is_nonempty();
+         host.is_nonempty() &&
+         !net::HostStringIsLocalhost(
+             base::UTF16ToUTF8(text.substr(host.begin, host.len)));
 }
 
 void OmniboxViewViews::ResetToHideOnInteraction() {
