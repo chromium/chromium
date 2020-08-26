@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
+<title>Test that CSS selector queries on duplicate Ids respect scope.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 </head>
 <body>
     <span id="duplicateId1"></span>
@@ -15,15 +17,16 @@
         <span id="duplicateId1"></span>
     </div>
     <script>
-        description("Test that CSS selector queries on duplicate Ids respect scope.");
+      setup({ single_test: true });
 
-        shouldBe("document.querySelectorAll('#duplicateId1').length", "6");
-        shouldBe("document.querySelectorAll('#duplicateId2').length", "2");
+      assert_equals(document.querySelectorAll('#duplicateId1').length, 6);
+      assert_equals(document.querySelectorAll('#duplicateId2').length, 2);
 
-        scopeDiv = document.getElementById("scopeDiv");
-        shouldBe("scopeDiv.querySelectorAll('#duplicateId1').length", "4");
-        shouldBeNull("scopeDiv.querySelector('#duplicateId2')");
-        shouldBe("scopeDiv.querySelectorAll('#duplicateId2').length", "0");
-    </script>
+      scopeDiv = document.getElementById("scopeDiv");
+      assert_equals(scopeDiv.querySelectorAll('#duplicateId1').length, 4);
+      assert_equals(scopeDiv.querySelector('#duplicateId2'), null);
+      assert_equals(scopeDiv.querySelectorAll('#duplicateId2').length, 0);
+      done();
+</script>
 </body>
 </html>
