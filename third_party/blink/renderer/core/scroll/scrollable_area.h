@@ -551,6 +551,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     vertical_scrollbar_needs_paint_invalidation_ = false;
     scroll_corner_needs_paint_invalidation_ = false;
   }
+
   void ShowNonMacOverlayScrollbars();
 
   // Called when scrollbar hides/shows for overlay scrollbars. This callback

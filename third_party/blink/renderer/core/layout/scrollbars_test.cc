@@ -1578,6 +1578,59 @@ TEST_F(ScrollbarsTestWithVirtualTimer, TestNonCompositedOverlayScrollbarsFade) {
   mock_overlay_theme.SetOverlayScrollbarFadeOutDelay(base::TimeDelta());
 }
 
+TEST_F(ScrollbarsTestWithVirtualTimer, TestCompositedOverlayScrollbarsNoFade) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameWidget()->Resize(WebSize(640, 480));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #space {
+        width: 1000px;
+        height: 1000px;
+      }
+      #container {
+        /* Force composited scrolling */
+        will-change: transform;
+        width: 200px;
+        height: 200px;
+        overflow: scroll;
+      }
+      div { height:1000px; width: 200px; }
+    </style>
+    <div id='container'>
+      <div id='space'></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Document& document = GetDocument();
+  Element* container = document.getElementById("container");
+  ScrollableArea* scrollable_area =
+      ToLayoutBox(container->GetLayoutObject())->GetScrollableArea();
+
+  DCHECK(scrollable_area->UsesCompositedScrolling());
+  EXPECT_TRUE(scrollable_area->HasOverlayScrollbars());
+
+  EXPECT_TRUE(scrollable_area->HasLayerForVerticalScrollbar());
+  Scrollbar* vertical_scrollbar = scrollable_area->VerticalScrollbar();
+
+  scrollable_area->MouseEnteredScrollbar(*vertical_scrollbar);
+  EXPECT_FALSE(scrollable_area->NeedsShowScrollbarLayers());
+
+  scrollable_area->MouseExitedScrollbar(*vertical_scrollbar);
+  EXPECT_FALSE(scrollable_area->NeedsShowScrollbarLayers());
+
+  scrollable_area->MouseCapturedScrollbar();
+  EXPECT_FALSE(scrollable_area->NeedsShowScrollbarLayers());
+
+  scrollable_area->MouseReleasedScrollbar();
+  EXPECT_FALSE(scrollable_area->NeedsShowScrollbarLayers());
+}
+
 class ScrollbarAppearanceTest
     : public ScrollbarsTest,
       public testing::WithParamInterface</*use_overlay_scrollbars=*/bool> {};

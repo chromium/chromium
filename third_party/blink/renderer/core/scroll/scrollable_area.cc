@@ -740,6 +740,11 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
       !GetPageScrollbarTheme().BlinkControlsOverlayVisibility())
     return;
 
+  // Don't do this for composited scrollbars. These scrollbars are handled
+  // by separate code in cc::ScrollbarAnimationController.
+  if (LayerForVerticalScrollbar() || LayerForHorizontalScrollbar())
+    return;
+
   SetScrollbarsHiddenIfOverlay(false);
   needs_show_scrollbar_layers_ = true;
 
