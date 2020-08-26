@@ -16,14 +16,12 @@ class AudioDeviceEntryView;
 }  // anonymous namespace
 
 class MediaNotificationAudioDeviceSelectorViewDelegate;
-class MediaNotificationService;
 
 class MediaNotificationAudioDeviceSelectorView : public views::View,
                                                  public views::ButtonListener {
  public:
   MediaNotificationAudioDeviceSelectorView(
       MediaNotificationAudioDeviceSelectorViewDelegate* delegate,
-      MediaNotificationService* service,
       const std::string& current_device_id,
       const SkColor& foreground_color,
       const SkColor& background_color);

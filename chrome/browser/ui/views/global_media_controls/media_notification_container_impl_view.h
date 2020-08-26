@@ -96,6 +96,11 @@ class MediaNotificationContainerImplView
   // Called when an audio device has been selected for output.
   void OnAudioSinkChosen(const std::string& sink_id) override;
   void OnAudioDeviceSelectorViewSizeChanged() override;
+  std::unique_ptr<MediaNotificationDeviceProvider::
+                      GetOutputDevicesCallbackList::Subscription>
+  RegisterAudioOutputDeviceDescriptionsCallback(
+      MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
+          CallbackType callback) override;
 
   // Sets up the notification to be ready to display in an overlay instead of
   // the dialog.

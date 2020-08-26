@@ -125,8 +125,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
       !is_cast_notification) {
     auto audio_device_selector_view =
         std::make_unique<MediaNotificationAudioDeviceSelectorView>(
-            this, service_, audio_sink_id_, foreground_color_,
-            background_color_);
+            this, audio_sink_id_, foreground_color_, background_color_);
     audio_device_selector_view_ =
         AddChildView(std::move(audio_device_selector_view));
     view_->UpdateCornerRadius(message_center::kNotificationCornerRadius, 0);
@@ -352,6 +351,16 @@ void MediaNotificationContainerImplView::OnAudioSinkChosen(
 void MediaNotificationContainerImplView::
     OnAudioDeviceSelectorViewSizeChanged() {
   OnSizeChanged();
+}
+
+std::unique_ptr<
+    MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::Subscription>
+MediaNotificationContainerImplView::
+    RegisterAudioOutputDeviceDescriptionsCallback(
+        MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
+            CallbackType callback) {
+  return service_->RegisterAudioOutputDeviceDescriptionsCallback(
+      std::move(callback));
 }
 
 ui::Layer* MediaNotificationContainerImplView::GetSlideOutLayer() {

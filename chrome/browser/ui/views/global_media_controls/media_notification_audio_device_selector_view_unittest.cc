@@ -7,14 +7,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/util/ranges/algorithm.h"
-#include "chrome/browser/media/router/media_router_factory.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_audio_device_selector_view_delegate.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "media/audio/audio_device_description.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
 
@@ -61,11 +59,29 @@ class MockMediaNotificationDeviceProvider
 class MockMediaNotificationAudioDeviceSelectorViewDelegate
     : public MediaNotificationAudioDeviceSelectorViewDelegate {
  public:
+  MockMediaNotificationAudioDeviceSelectorViewDelegate() {
+    provider_ = std::make_unique<MockMediaNotificationDeviceProvider>();
+  }
+
   MOCK_METHOD(void,
               OnAudioSinkChosen,
               (const std::string& sink_id),
               (override));
   MOCK_METHOD(void, OnAudioDeviceSelectorViewSizeChanged, (), (override));
+
+  std::unique_ptr<MediaNotificationDeviceProvider::
+                      GetOutputDevicesCallbackList::Subscription>
+  RegisterAudioOutputDeviceDescriptionsCallback(
+      MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
+          CallbackType callback) override {
+    return provider_->RegisterOutputDeviceDescriptionsCallback(
+        std::move(callback));
+  }
+
+  MockMediaNotificationDeviceProvider* GetProvider() { return provider_.get(); }
+
+ private:
+  std::unique_ptr<MockMediaNotificationDeviceProvider> provider_;
 };
 
 }  // anonymous namespace
@@ -77,18 +93,10 @@ class MediaNotificationAudioDeviceSelectorViewTest
   ~MediaNotificationAudioDeviceSelectorViewTest() override = default;
 
   // ChromeViewsTestBase
-  void SetUp() override {
-    ChromeViewsTestBase::SetUp();
-    provider_ = std::make_unique<MockMediaNotificationDeviceProvider>();
-    media_router::MediaRouterFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating(&media_router::MockMediaRouter::Create));
-    service_ = std::make_unique<MediaNotificationService>(&profile_);
-  }
+  void SetUp() override { ChromeViewsTestBase::SetUp(); }
 
   void TearDown() override {
     view_.reset();
-    service_.reset();
-    provider_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -113,23 +121,19 @@ class MediaNotificationAudioDeviceSelectorViewTest
     return base::UTF16ToUTF8(static_cast<views::LabelButton*>(view)->GetText());
   }
 
-  TestingProfile profile_;
-  std::unique_ptr<MockMediaNotificationDeviceProvider> provider_;
-  std::unique_ptr<MediaNotificationService> service_;
   std::unique_ptr<MediaNotificationAudioDeviceSelectorView> view_;
 };
 
 TEST_F(MediaNotificationAudioDeviceSelectorViewTest, DeviceButtonsCreated) {
   // Buttons should be created for every device reported by the provider
-  provider_->AddDevice("Speaker", "1");
-  provider_->AddDevice("Headphones", "2");
-  provider_->AddDevice("Earbuds", "3");
-  service_->set_device_provider_for_testing(std::move(provider_));
-
   MockMediaNotificationAudioDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+
   view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
-      &delegate, service_.get(), "1", gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor);
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   ASSERT_TRUE(view_->audio_device_entries_container_ != nullptr);
 
@@ -143,12 +147,14 @@ TEST_F(MediaNotificationAudioDeviceSelectorViewTest, DeviceButtonsCreated) {
 
 TEST_F(MediaNotificationAudioDeviceSelectorViewTest,
        ExpandButtonOpensEntryContainer) {
-  provider_->AddDevice("Speaker", "1");
-  service_->set_device_provider_for_testing(std::move(provider_));
   MockMediaNotificationAudioDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+
   view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
-      &delegate, service_.get(), "1", gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor);
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   ASSERT_TRUE(view_->expand_button_);
   EXPECT_FALSE(view_->audio_device_entries_container_->GetVisible());
@@ -160,19 +166,18 @@ TEST_F(MediaNotificationAudioDeviceSelectorViewTest,
        DeviceButtonClickNotifiesContainer) {
   // When buttons are clicked the media notification delegate should be
   // informed.
-  provider_->AddDevice("Speaker", "1");
-  provider_->AddDevice("Headphones", "2");
-  provider_->AddDevice("Earbuds", "3");
-  service_->set_device_provider_for_testing(std::move(provider_));
-
   MockMediaNotificationAudioDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+
+  view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+
   EXPECT_CALL(delegate, OnAudioSinkChosen("1")).Times(1);
   EXPECT_CALL(delegate, OnAudioSinkChosen("2")).Times(1);
   EXPECT_CALL(delegate, OnAudioSinkChosen("3")).Times(1);
-
-  view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
-      &delegate, service_.get(), "1", gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor);
 
   for (views::View* child :
        view_->audio_device_entries_container_->children()) {
@@ -183,15 +188,14 @@ TEST_F(MediaNotificationAudioDeviceSelectorViewTest,
 TEST_F(MediaNotificationAudioDeviceSelectorViewTest, CurrentDeviceHighlighted) {
   // The 'current' audio device should be highlighted in the UI and appear
   // before other devices.
-  provider_->AddDevice("Speaker", "1");
-  provider_->AddDevice("Headphones", "2");
-  provider_->AddDevice("Earbuds", "3");
-  service_->set_device_provider_for_testing(std::move(provider_));
-
   MockMediaNotificationAudioDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+
   view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
-      &delegate, service_.get(), "3", gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor);
+      &delegate, "3", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   auto* first_entry =
       view_->audio_device_entries_container_->children().front();
@@ -202,15 +206,14 @@ TEST_F(MediaNotificationAudioDeviceSelectorViewTest, CurrentDeviceHighlighted) {
 TEST_F(MediaNotificationAudioDeviceSelectorViewTest,
        DeviceHighlightedOnChange) {
   // When the audio output device changes, the UI should highlight that one.
-  provider_->AddDevice("Speaker", "1");
-  provider_->AddDevice("Headphones", "2");
-  provider_->AddDevice("Earbuds", "3");
-  service_->set_device_provider_for_testing(std::move(provider_));
-
   MockMediaNotificationAudioDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+
   view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
-      &delegate, service_.get(), "1", gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor);
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   auto& container_children = view_->audio_device_entries_container_->children();
 
@@ -234,16 +237,14 @@ TEST_F(MediaNotificationAudioDeviceSelectorViewTest,
 TEST_F(MediaNotificationAudioDeviceSelectorViewTest, DeviceButtonsChange) {
   // If the device provider reports a change in connect audio devices, the UI
   // should update accordingly.
-  provider_->AddDevice("Speaker", "1");
-  provider_->AddDevice("Headphones", "2");
-  provider_->AddDevice("Earbuds", "3");
-  auto* provider = provider_.get();
-  service_->set_device_provider_for_testing(std::move(provider_));
-
   MockMediaNotificationAudioDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+
   view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
-      &delegate, service_.get(), "1", gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor);
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
 
   provider->ResetDevices();
   // Make "Monitor" the default device.
@@ -264,17 +265,18 @@ TEST_F(MediaNotificationAudioDeviceSelectorViewTest, DeviceButtonsChange) {
 TEST_F(MediaNotificationAudioDeviceSelectorViewTest, VisibilityChanges) {
   // The audio device selector view should become hidden when there is only one
   // unique device.
-  provider_->AddDevice("Speaker", "1");
-  provider_->AddDevice(media::AudioDeviceDescription::GetDefaultDeviceName(),
-                       media::AudioDeviceDescription::kDefaultDeviceId);
-  auto* provider = provider_.get();
-  service_->set_device_provider_for_testing(std::move(provider_));
-
   MockMediaNotificationAudioDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice(media::AudioDeviceDescription::GetDefaultDeviceName(),
+                      media::AudioDeviceDescription::kDefaultDeviceId);
+
+  view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+
   EXPECT_CALL(delegate, OnAudioDeviceSelectorViewSizeChanged).Times(1);
   view_ = std::make_unique<MediaNotificationAudioDeviceSelectorView>(
-      &delegate, service_.get(), "1", gfx::kPlaceholderColor,
-      gfx::kPlaceholderColor);
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
   EXPECT_FALSE(view_->GetVisible());
 
   testing::Mock::VerifyAndClearExpectations(&delegate);

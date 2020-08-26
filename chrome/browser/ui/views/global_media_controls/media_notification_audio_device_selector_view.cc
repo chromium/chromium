@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/util/ranges/algorithm.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
-#include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_audio_device_selector_view_delegate.h"
 #include "chrome/grit/chromium_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -165,7 +164,6 @@ void AudioDeviceEntryView::OnColorsChanged(const SkColor& foreground_color,
 MediaNotificationAudioDeviceSelectorView::
     MediaNotificationAudioDeviceSelectorView(
         MediaNotificationAudioDeviceSelectorViewDelegate* delegate,
-        MediaNotificationService* service,
         const std::string& current_device_id,
         const SkColor& foreground_color,
         const SkColor& background_color)
@@ -218,7 +216,7 @@ MediaNotificationAudioDeviceSelectorView::
 
   // Get a list of the connected audio output devices
   audio_device_subscription_ =
-      service->RegisterAudioOutputDeviceDescriptionsCallback(
+      delegate->RegisterAudioOutputDeviceDescriptionsCallback(
           base::BindRepeating(&MediaNotificationAudioDeviceSelectorView::
                                   UpdateAvailableAudioDevices,
                               weak_ptr_factory_.GetWeakPtr()));
