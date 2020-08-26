@@ -11,9 +11,6 @@ namespace switches {
 // to fetch configuration policies and perform other device tasks.
 const char kDeviceManagementUrl[]           = "device-management-url";
 
-// Disables fetching and storing cloud policy for components.
-const char kDisableComponentCloudPolicy[]   = "disable-component-cloud-policy";
-
 // Specifies the URL at which to upload real-time reports.
 const char kRealtimeReportingUrl[] = "realtime-reporting-url";
 

@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/authpolicy/authpolicy_helper.h"
@@ -21,7 +20,6 @@
 #include "components/policy/core/common/cloud/component_cloud_policy_store.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_namespace.h"
-#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -41,11 +39,6 @@ constexpr base::TimeDelta kFetchInterval = base::TimeDelta::FromMinutes(90);
 void RunRefreshCallback(base::OnceCallback<void(bool success)> callback,
                         authpolicy::ErrorType error) {
   std::move(callback).Run(error == authpolicy::ERROR_NONE);
-}
-
-bool IsComponentPolicyDisabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableComponentCloudPolicy);
 }
 
 }  // namespace
@@ -97,7 +90,7 @@ bool ActiveDirectoryPolicyManager::IsInitializationComplete(
     PolicyDomain domain) const {
   if (domain == POLICY_DOMAIN_CHROME)
     return store_->is_initialized();
-  if (domain == extension_policy_domain_ && !IsComponentPolicyDisabled()) {
+  if (domain == extension_policy_domain_) {
     return extension_policy_service_ &&
            extension_policy_service_->policy() != nullptr;
   }
@@ -177,9 +170,6 @@ void ActiveDirectoryPolicyManager::CreateExtensionPolicyService(
     login_manager::PolicyAccountType account_type,
     const AccountId& account_id,
     SchemaRegistry* schema_registry) {
-  if (IsComponentPolicyDisabled())
-    return;
-
   std::string cryptohome_id;
   if (!account_id.empty())
     cryptohome_id = cryptohome::Identification(account_id).id();
