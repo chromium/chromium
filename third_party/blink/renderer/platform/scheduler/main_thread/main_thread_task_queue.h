@@ -92,6 +92,18 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // the entire main thread.
   static bool IsPerFrameTaskQueue(QueueType);
 
+  // High-level category used by MainThreadScheduler to make scheduling
+  // decisions.
+  enum class QueueClass {
+    kNone = 0,
+    kLoading = 1,
+    kCompositor = 4,
+
+    kCount = 5,
+  };
+
+  static QueueClass QueueClassForQueueType(QueueType type);
+
   using QueueTraitsKeyType = int;
 
   // QueueTraits represent the deferrable, throttleable, pausable, and freezable
@@ -326,6 +338,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   QueueType queue_type() const { return queue_type_; }
 
+  QueueClass queue_class() const { return queue_class_; }
+
   base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
   FixedPriority() const {
     return fixed_priority_;
@@ -417,6 +431,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void ClearReferencesToSchedulers();
 
   const QueueType queue_type_;
+  const QueueClass queue_class_;
   const base::Optional<base::sequence_manager::TaskQueue::QueuePriority>
       fixed_priority_;
   const QueueTraits queue_traits_;

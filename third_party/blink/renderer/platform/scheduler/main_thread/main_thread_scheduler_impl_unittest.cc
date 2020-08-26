@@ -3379,12 +3379,12 @@ TEST_F(MainThreadSchedulerImplTest, PauseTimersForAndroidWebView) {
   scheduler_->PauseTimersForAndroidWebView();
   EnableIdleTasks();
   test_task_runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_THAT(run_order, testing::ElementsAre("D1", "C1", "I1"));
+  EXPECT_THAT(run_order, testing::ElementsAre("D1", "C1", "L1", "I1"));
   // The rest queued tasks fire when the throttleable queues are resumed.
   run_order.clear();
   scheduler_->ResumeTimersForAndroidWebView();
   test_task_runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_THAT(run_order, testing::ElementsAre("L1", "T1"));
+  EXPECT_THAT(run_order, testing::ElementsAre("T1"));
 }
 #endif  // defined(OS_ANDROID)
 
