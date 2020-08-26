@@ -11,6 +11,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1056775291175587022">Không có mạng</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Thiết bị di động: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">Tôi chán quá</translation>
 <translation id="1104084341931202936">Hiển thị các tùy chọn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="1104621072296271835">Các thiết bị của bạn hoạt động hiệu quả hơn khi kết nối với nhau</translation>
@@ -71,6 +72,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1677472565718498478">Còn <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Đồng hồ hẹn giờ <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Địa chỉ IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Không gian làm việc: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Cài đặt mạng</translation>
 <translation id="1743570585616704562">Không nhận dạng được</translation>
 <translation id="1746730358044914197">Các phương thức nhập do quản trị viên của bạn định cấu hình.</translation>
@@ -107,6 +109,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2018630726571919839">Kể truyện cười cho tôi</translation>
 <translation id="2050339315714019657">Khổ dọc</translation>
 <translation id="2067602449040652523">Độ sáng bàn phím</translation>
+<translation id="2083190527011054446">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Chưa kết nối với mạng</translation>
 <translation id="2126242104232412123">Không gian làm việc mới</translation>
 <translation id="2127372758936585790">Bộ sạc công suất thấp</translation>
@@ -185,6 +188,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3009178788565917040">Thiết bị ra</translation>
 <translation id="3033545621352269033">Đang bật</translation>
 <translation id="3038571455154067151">Để đăng nhập, hãy nhập mã truy cập dành cho cha mẹ của Family Link</translation>
+<translation id="3045488863354895414">Xin chào!</translation>
 <translation id="3051128274746680507">Hồ sơ người dùng được giám sát của bạn sẽ sớm bị xóa. Đăng nhập để tìm hiểu thêm.</translation>
 <translation id="3055162170959710888">Bạn đã dùng thiết bị này trong <ph name="USED_TIME" /> hôm nay</translation>
 <translation id="3076778413190775903">Khay trạng thái, thời gian <ph name="TIME" />,
@@ -304,6 +308,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4261870227682513959">Hiển thị các tùy chọn cài đặt thông báo. Thông báo hiện đang tắt</translation>
 <translation id="4269883910223712419">Quản trị viên của thiết bị này có thể:</translation>
 <translation id="4279490309300973883">Đang phản chiếu</translation>
+<translation id="4294319844246081198">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Xóa tất cả <ph name="COUNT" /> thông báo</translation>
 <translation id="4303223480529385476">Mở rộng khu vực trạng thái</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4421231901400348175">Chia sẻ quyền kiểm soát màn hình của bạn với <ph name="HELPER_NAME" /> qua Trợ giúp từ xa.</translation>
 <translation id="4430019312045809116">Âm lượng</translation>
 <translation id="4450893287417543264">Không hiển thị lại</translation>
+<translation id="445864333228800152">Xin chào!</translation>
 <translation id="4458688154122353284">Dừng ghi màn hình</translation>
 <translation id="4477350412780666475">Bản nhạc tiếp theo</translation>
 <translation id="4477892968187500306">Thiết bị này có thể chứa những ứng dụng mà Google chưa xác minh.</translation>
@@ -430,6 +436,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5887866489674258948">Chế độ tối</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">Không gian làm việc không hoạt động.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5920710855273935292">Micrô đang tắt.</translation>
@@ -561,8 +568,10 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7405710164030118432">Để mở khóa thiết bị này, hãy nhập mã truy cập Family Link dành cho cha mẹ của bạn</translation>
 <translation id="741244894080940828">chuyển đổi</translation>
 <translation id="742594950370306541">Máy ảnh đang được sử dụng.</translation>
+<translation id="742608627846767349">Xin chào!</translation>
 <translation id="743058460480092004">Máy ảnh và micrô đang được sử dụng.</translation>
 <translation id="7466449121337984263">Vui lòng chạm vào cảm biến</translation>
+<translation id="7477793887173910789">Điều khiển nhạc, video và nhiều nội dung khác</translation>
 <translation id="7497767806359279797">Chọn ngôn ngữ và bàn phím</translation>
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8351131234907093545">Tạo ghi chú</translation>
 <translation id="8371779926711439835">Tiến một ký tự</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> này và điện thoại của bạn sẽ tự động kết nối</translation>
+<translation id="8380784334203145311">Xin chào!</translation>
 <translation id="8388750414311082622">Không thể xóa không gian làm việc gần đây nhất.</translation>
 <translation id="8392451568018454956">Menu tùy chọn dành cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Cha mẹ của bạn đã khóa thiết bị này</translation>
 <translation id="8412677897383510995">Hiển thị các tùy chọn cài đặt màn hình</translation>
 <translation id="8425213833346101688">Thay đổi</translation>
+<translation id="8426708595819210923">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="8427213022735114808">Tính năng nhập bằng giọng nói gửi giọng nói của bạn tới Google để cho phép nhập liệu bằng giọng nói vào bất kỳ trường văn bản nào.</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8433186206711564395">Cài đặt mạng</translation>

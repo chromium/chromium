@@ -361,6 +361,12 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1561967320164410511">U2F più estensioni per singola attestazione</translation>
 <translation id="1575015449587326319">Criterio di configurazione per il connettore OnFileDownloaded di Chrome Enterprise</translation>
 <translation id="1583248206450240930">Utilizza <ph name="PRODUCT_FRAME_NAME" /> per impostazione predefinita</translation>
+<translation id="1587671452159346389">Consente di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" /> sono disponibili agli utenti.
+
+      Determina quale criterio di accesso utilizzare per la configurazione collettiva delle stampanti. Se viene selezionata l'opzione <ph name="PRINTERS_ALLOW_ALL" />, vengono mostrate tutte le stampanti. Se viene selezionata l'opzione <ph name="PRINTERS_BLOCKLIST" />, viene utilizzato <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> per limitare l'accesso a stampanti specifiche. Se viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> stabilisce soltanto le stampanti selezionabili.
+
+      Se questo criterio non viene impostato, viene utilizzata l'opzione <ph name="PRINTERS_ALLOW_ALL" />.
+      </translation>
 <translation id="1588240398285670601">Impostazioni del browser</translation>
 <translation id="1588456836529393506">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Affinché il criterio sia valido, ogni elemento dell'elenco deve contenere sia dispositivi sia URL. Ogni elemento nei dispositivi può contenere un campo ID fornitore e un campo ID prodotto. Gli eventuali ID omessi verranno considerati caratteri jolly con l'eccezione che non è possibile specificare un ID prodotto senza specificare anche un ID fornitore. In caso contrario, il criterio non sarà valido.
 
@@ -1086,6 +1092,22 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Se il criterio viene impostato su Disattivato, viene impedita la visualizzazione degli avvisi di sicurezza quando Chrome viene avviato con flag della riga di comando potenzialmente pericolosi.
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
+<translation id="2621383458880689826">Consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi.
+
+      Questo criterio consente di fornire configurazioni delle stampanti ai dispositivi <ph name="PRODUCT_OS_NAME" />.  Il formato corrisponde a quello del dizionario NativePrinters, con un campo "id" o "guid" aggiuntivo obbligatorio per ciascuna stampante ai fini dell'autorizzazione o del blocco della stessa.
+
+      La dimensione del file non deve superare 5 MB e deve essere codificata in JSON.  È stato stimato che un file contenente circa 21.000 stampanti viene codificato come file di 5 MB.  L'hash di crittografia viene utilizzato per verificare l'integrità del download.
+
+      Il file viene scaricato e memorizzato nella cache. Verrà scaricato nuovamente ogni volta che l'URL o l'hash cambiano.
+
+      Se il criterio è impostato, <ph name="PRODUCT_OS_NAME" /> scaricherà il file per le configurazioni delle stampanti e renderà disponibili le stampanti in base a <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> e <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
+
+      Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.  È supplementare alla configurazione delle stampanti da parte dei singoli utenti.
+
+      Si tratta di un criterio aggiuntivo rispetto al criterio <ph name="BULK_PRINTERS_POLICY_NAME" />.
+
+      Se il criterio non viene impostato, non ci saranno stampanti per i dispositivi e gli altri criteri <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> verranno ignorati.
+      </translation>
 <translation id="2623014935069176671">Attesa dell'attività iniziale dell'utente</translation>
 <translation id="262740370354162807">Attiva l'invio di documenti a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Se il criterio viene configurato, puoi elencare i pattern URL che specificano i siti che possono chiedere agli utenti l'autorizzazione di accesso a un dispositivo USB.
@@ -1112,6 +1134,7 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
       Se questa norma non viene impostata, per impostazione predefinita non sarà disponibile per gli utenti gestiti, mentre lo sarà invece per gli utenti non gestiti.</translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
+<translation id="2664682171745499686">Elimina gli avvisi di domini simili dai domini</translation>
 <translation id="2665422249821137126">Attiva il puntatore grande nella schermata di accesso</translation>
 <translation id="2672012807430078509">Controlla l'attivazione del protocollo di autenticazione NTLM per i montaggi SMB</translation>
 <translation id="2678503605767349615">Certificati client a livello di dispositivo richiesti</translation>
@@ -1251,6 +1274,12 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
       Se attivi questa impostazione, in Anteprima di stampa viene usata la stampante predefinita del sistema operativo come destinazione predefinita.</translation>
 <translation id="285627849510728211">Imposta la configurazione giornaliera per la modalità di ricarica avanzata della batteria</translation>
 <translation id="2856674246949497058">Esegui il rollback e rimani nella versione target se la versione del sistema operativo è più recente di quella target. Esegui un powerwash durante la procedura.</translation>
+<translation id="2869140260739354012">Consente di stabilire quali stampanti del criterio <ph name="DEVICE_PRINTERS_POLICY" /> sono disponibili agli utenti.
+
+      Determina quale criterio di accesso utilizzare per la configurazione collettiva delle stampanti. Se viene selezionata l'opzione <ph name="PRINTERS_ALLOW_ALL" />, vengono mostrate tutte le stampanti. Se viene selezionata l'opzione <ph name="PRINTERS_BLACKLIST" />, viene utilizzato <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> per limitare l'accesso a stampanti specifiche. Se viene selezionata l'opzione <ph name="PRINTERS_WHITELIST" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> stabilisce soltanto le stampanti selezionabili.
+
+      Se questo criterio non viene impostato, viene utilizzata l'opzione <ph name="PRINTERS_ALLOW_ALL" />.
+      </translation>
 <translation id="2869762730352628426">Attiva la funzione di clic automatico nella schermata di accesso</translation>
 <translation id="2872961005593481000">Spegni</translation>
 <translation id="2874209944580848064">Nota per i dispositivi <ph name="PRODUCT_OS_NAME" /> che supportano le app Android:</translation>
@@ -1293,11 +1322,6 @@ Se questa norma non viene impostata, l'utente potrà scegliere se utilizzare o m
 
       Nota: questo criterio rimanda a un file XML nello stesso formato del criterio <ph name="IEEM_SITELIST_POLICY" /> di <ph name="IE_PRODUCT_NAME" />. Se viene impostato, le regole vengono caricate da un file XML senza essere condivise con <ph name="IE_PRODUCT_NAME" />. Leggi ulteriori informazioni sul criterio <ph name="IEEM_SITELIST_POLICY" /> di <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
 <translation id="2952347049958405264">Limitazioni:</translation>
-<translation id="2956777931324644324">Questa norma è stata ritirata a partire dalla versione 36 di <ph name="PRODUCT_NAME" />.
-
-      Consente di specificare se attivare o meno l'estensione di certificati associati al dominio TLS.
-
-      Questa impostazione viene utilizzata per attivare l'estensione di certificati associati al dominio TLS per l'esecuzione di test. Questa impostazione sperimentale verrà rimossa in futuro.</translation>
 <translation id="2957047180944828740">Consente di specificare se consentire ai siti web non sicuri di effettuare richieste agli endpoint di rete con un livello di protezione più alto</translation>
 <translation id="2957506574938329824">Non consentire ad alcun sito di richiedere l'accesso ai dispositivi Bluetooth tramite l'API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo di account per l'autenticazione <ph name="HTTP_NEGOTIATE" /></translation>
@@ -1838,7 +1862,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="3803171355925844705">Non consentire il caricamento di contenuti misti in nessun sito</translation>
-<translation id="3805659594028420438">Attiva estensione di certificati associati al dominio TLS (obsoleta)</translation>
 <translation id="3808945828600697669">Specifica un elenco dei plug-in disattivati</translation>
 <translation id="3810642039169532482">Consente di attivare la funzione di accessibilità di dettatura nella schermata di accesso.
 
@@ -1868,6 +1891,12 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
+<translation id="3848118497246496090">Consente di specificare le stampanti non utilizzabili da un utente.
+
+      Questo criterio viene utilizzato soltanto se l'opzione <ph name="PRINTERS_BLACKLIST" /> è selezionata per <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
+
+      Se viene utilizzato questo criterio, l'utente avrà a disposizione tutte le stampanti tranne quelle i cui ID sono elencati in questo criterio. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY" />.
+      </translation>
 <translation id="3851039766298741586">Consente di segnalare informazioni sulla sessione kiosk attiva, ad esempio l'ID e la versione dell'applicazione.
 
       Se la norma viene impostata su false, le informazioni relative alla sessione kiosk non verranno segnalate. Se viene impostata su true o non viene impostata, tali informazioni verranno segnalate.</translation>
@@ -2005,6 +2034,12 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3965339130942650562">Timeout fino a esecuzione uscita utente non attivo</translation>
 <translation id="3973371701361892765">Non nascondere mai automaticamente lo shelf</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
+<translation id="3980024487013511975">Consente di specificare le stampanti non utilizzabili da un utente.
+
+      Questo criterio viene utilizzato soltanto se l'opzione <ph name="PRINTERS_BLOCKLIST" /> è selezionata per <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+
+      Se viene utilizzato questo criterio, l'utente avrà a disposizione tutte le stampanti tranne quelle i cui ID sono elencati in questo criterio. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      </translation>
 <translation id="3984028218719007910">Consente di stabilire se tenere o meno memorizzati in <ph name="PRODUCT_OS_NAME" /> i dati degli account locali dopo l'uscita. Se la norma viene impostata su true, in <ph name="PRODUCT_OS_NAME" /> non verranno conservati gli account persistenti e tutti i dati della sessione utente verranno eliminati dopo l'uscita. Se la norma viene impostata su false o non viene configurata, il dispositivo potrebbe conservare i dati utente locali (criptati).</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
 
@@ -2212,6 +2247,12 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="4285674129118156176">Consenti agli utenti non affiliati di usare ARC</translation>
+<translation id="4309562700894844665">Consente di specificare le stampanti utilizzabili da un utente.
+
+      Questo criterio viene utilizzato soltanto se viene selezionata l'opzione <ph name="PRINTERS_WHITELIST" /> per <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
+
+      Se viene utilizzato questo criterio, solo le stampanti con ID corrispondenti ai valori del criterio saranno disponibili per l'utente. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY" />.
+      </translation>
 <translation id="4311195029067684288">Full</translation>
 <translation id="4313767483634435271">Indirizzo MAC designato del dock del dispositivo</translation>
 <translation id="4322842393287974810">Consenti all'app kiosk avviata automaticamente senza ritardo di controllare la versione di <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2545,11 +2586,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> si connetterà ai dispositivi di trasmissione solo su indirizzi RFC1918/RFC4193, a meno che la funzionalità CastAllowAllIPs non sia attivata.</translation>
 <translation id="489803897780524242">Parametro di controllo sostituzione termini di ricerca per fornitore ricerca predefinito</translation>
 <translation id="4899708173828500852">Consenti Navigazione sicura</translation>
-<translation id="4902163780937592202">Consente di unire i criteri relativi all'elenco di installazione delle estensioni <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> e <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.
-
-      Se questa impostazione viene attivata, i valori dei criteri relativi alla piattaforma della macchina, al cloud della macchina e alla piattaforma dell'utente vengono uniti in un unico elenco e usati in toto invece di usare soltanto i valori della singola origine con la massima priorità.
-
-      Se questa impostazione viene disattivata o se non viene configurata, vengono recuperate soltanto le voci dell'elenco dell'origine con la massima priorità e tutte le altre origini vengono mostrate come in conflitto, ma ignorate.</translation>
 <translation id="4906194810004762807">Frequenza di aggiornamento per norma dispositivo</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4919122295221518724">Attiva trattamento più restrittivo per i contenuti misti</translation>
@@ -2859,6 +2895,22 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
       Se il criterio viene impostato su "Forza accesso al browser", all'utente verrà mostrata una finestra di dialogo di selezione dell'account, da cui dovrà scegliere un account a cui accedere per usare il browser. Questa misura garantisce l'applicazione, nell'ambito degli account gestiti, dei criteri associati all'account. La funzione Sincronizzazione Chrome viene attivata per impostazione predefinita per l'account, ad eccezione del caso in cui la sincronizzazione sia stata disattivata dall'amministratore di dominio o tramite il criterio "SyncDisabled". Il valore predefinito del criterio BrowserGuestModeEnabled sarà falso. Tieni presente che i profili esistenti a cui non viene eseguito l'accesso saranno bloccati e inaccessibili dopo l'attivazione di questo criterio. Per ulteriori informazioni, leggi il seguente articolo del Centro assistenza: https://support.google.com/chrome/a/answer/7572556. Questa opzione non supporta Linux e Android e, se utilizzata in tali ambienti, imposterà "Attiva accesso al browser".
 
       Se questo criterio non è impostato, l'utente potrà decidere se attivare o meno l'opzione di accesso al browser e di usarla in base alle necessità.</translation>
+<translation id="5327325901414715560">Consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi.
+
+      Questo criterio consente di fornire configurazioni delle stampanti ai dispositivi <ph name="PRODUCT_OS_NAME" />.  Il formato corrisponde a quello del dizionario NativePrinters, con un campo "id" o "guid" aggiuntivo obbligatorio per ciascuna stampante ai fini dell'autorizzazione o del blocco della stessa.
+
+      La dimensione del file non deve superare 5 MB e deve essere codificata in JSON.  È stato stimato che un file contenente circa 21.000 stampanti viene codificato come file di 5 MB.  L'hash di crittografia viene utilizzato per verificare l'integrità del download.
+
+      Il file viene scaricato e memorizzato nella cache. Verrà scaricato nuovamente ogni volta che l'URL o l'hash cambiano.
+
+      Se il criterio è impostato, <ph name="PRODUCT_OS_NAME" /> scaricherà il file per le configurazioni delle stampanti e renderà disponibili le stampanti in base a <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+
+      Questo criterio non influisce sulla possibilità per gli utenti di configurare le stampanti su singoli dispositivi.  È supplementare alla configurazione delle stampanti da parte dei singoli utenti.
+
+      Si tratta di un criterio aggiuntivo rispetto al criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
+
+      Se il criterio non viene impostato, non ci saranno stampanti per i dispositivi e gli altri criteri <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> verranno ignorati.
+      </translation>
 <translation id="532848608876725157">Attiva DNS over HTTPS con fallback non sicuro</translation>
 <translation id="5329007337159326804">Attenzione: la norma Versione TLS massima verrà interamente rimossa da <ph name="PRODUCT_NAME" /> con la versione 75 (orientativamente giugno 2019).
 
@@ -2996,7 +3048,6 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Se il criterio viene impostato su false, <ph name="PRODUCT_NAME" /> non può mostrare le informazioni sul prodotto come contenuti a scheda intera.
 
       La configurazione del criterio consente di controllare la presentazione delle pagine di benvenuto che aiutano gli utenti ad accedere a <ph name="PRODUCT_NAME" />, di impostare <ph name="PRODUCT_NAME" /> come browser predefinito degli utenti oppure di fornire informazioni sulle caratteristiche del prodotto.</translation>
-<translation id="5447306928176905178">Attiva le informazioni relative ai rapporti sulla memoria (dimensioni heap JS) per la pagina (obsoleto)</translation>
 <translation id="5450893456912604446">Consente di configurare l'URL predefinito della home page di <ph name="PRODUCT_NAME" /> e di impedire agli utenti di modificarlo.
 
           La home page è la pagina che viene aperta facendo clic sul pulsante Home. Sui computer desktop, le pagine che si aprono all'avvio vengono stabilite dai criteri RestoreOnStartup.
@@ -3420,6 +3471,12 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       <ph name="PRODUCT_NAME" /> gestisce i contenuti della directory principale di un volume. Per prevenire la perdita di dati o altri errori, non impostare questo criterio nella directory principale né sulle directory utilizzate per altri scopi. Vedi le variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="6083631234867522991">Windows (client Windows):</translation>
+<translation id="6086225644749063677">Consente di specificare le stampanti utilizzabili da un utente.
+
+      Questo criterio viene utilizzato soltanto se viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" /> per <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+
+      Se viene utilizzato questo criterio, solo le stampanti con ID corrispondenti ai valori del criterio saranno disponibili per l'utente. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      </translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
 <translation id="6091233616732024397">Obbliga gli utenti ad eseguire l'accesso per poter usare il browser</translation>
@@ -3908,6 +3965,11 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Tieni presente che gli utenti potranno accedere ai servizi Google in uno stato non autenticato bloccando i loro cookie.</translation>
 <translation id="6843296367238757293">Questa norma è obsoleta. Ne sconsigliamo l'utilizzo. Leggi ulteriori informazioni all'indirizzo https://support.google.com/chrome/a/answer/7643500</translation>
+<translation id="6846126863870444592">Questo criterio specifica le estensioni consentite per ignorare la finestra di dialogo di conferma del processo di stampa utilizzando la funzione<ph name="SUBMIT_JOB_FUNCTION" /> di <ph name="PRINTING_API" /> per l'invio di un processo di stampa.
+
+      Se un'estensione non è presente nell'elenco o non è configurato alcun elenco, la finestra di dialogo di conferma del processo di stampa verrà visualizzata dall'utente per ogni chiamata funzione <ph name="SUBMIT_JOB_FUNCTION" />.
+
+      Questo criterio è deprecato, al suo posto utilizza <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="684856667300805181">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_GLS_POLICY_NAME" />.</translation>
 <translation id="6851199885688265233">Attiva la funzione di accessibilità di evidenziazione del cursore</translation>
 <translation id="6851315055469993882">Attiva cache di autenticazione HTTP con ambito globale</translation>
@@ -3927,11 +3989,6 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="6864244339257535116">Consenti sia caricamenti sia download di file protetti da password</translation>
-<translation id="687046793986382807">Questa norma è stata ritirata a partire dalla versione 35 di <ph name="PRODUCT_NAME" />.
-
-      Le informazioni sulla memoria sono comunque riportate sulla pagina, indipendentemente dal valore opzione, ma le dimensioni segnalate presentano
-      restrizioni e la frequenza di aggiornamento è stata limitata per motivi di sicurezza. Per acquisire dati precisi in tempo reale,
-      utilizza strumenti come Telemetry.</translation>
 <translation id="68798513449385583">Ritarda download finché il risultato dell'analisi non viene reso noto</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
@@ -3964,6 +4021,13 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6907778402784621686">Blocca contenuti non sicuri su questi siti</translation>
 <translation id="6908640907898649429">Configura il provider di ricerca predefinito. Puoi specificare il provider di ricerca predefinito che l'utente utilizzerà oppure scegliere di disattivare la ricerca predefinita.</translation>
 <translation id="6913068954484253496">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi Cast su tutti gli indirizzi IP.</translation>
+<translation id="6916817094593836501">Questo criterio impedisce la visualizzazione di avvisi di URL simili sui siti elencati. Questi avvisi sono solitamente mostrati sui siti in cui <ph name="PRODUCT_NAME" /> crede che sia in atto un tentativo di spoofing di un altro sito noto all'utente.
+
+       Se il criterio non viene attivato e viene impostato su uno o più domini, non verrà visualizzata alcuna pagina di avviso di somiglianza quando l'utente visita le pagine di quel dominio.
+
+       Se il criterio è disattivato, non impostato o impostato su un elenco vuoto, gli avvisi potrebbero essere visualizzati su qualunque sito visitato dall'utente.
+
+       Un nome host può essere consentito nel caso di una completa corrispondenza del nome host o della corrispondenza con un qualsiasi dominio. Ad esempio, gli avvisi per un URL come "https://foo.example.com/bar" potrebbero essere eliminati se l'elenco include "foo.example.com" o "example.com".</translation>
 <translation id="6922884955650325312">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="6923731550900440989">Attiva l'evidenziazione del cursore del testo nella schermata di accesso</translation>
 <translation id="6924223708804692571">Forza la disattivazione delle lingue per correttore ortografico. Le lingue non riconosciute di quell'elenco verranno ignorate.
@@ -4715,7 +4779,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="793134539373873765">Consente di specificare se p2p deve essere utilizzato per i payload di aggiornamento del sistema operativo. Se questa norma viene impostata su True, i dispositivi condivideranno e proveranno a consumare i payload di aggiornamento sulla LAN, riducendo potenzialmente l'utilizzo e la congestione della larghezza di banda Internet. Se il payload di aggiornamento non è disponibile sulla LAN, il dispositivo ripiegherà sul download da un server di aggiornamento. Se la norma viene impostata su False o non viene configurata, non verrà utilizzato p2p.</translation>
 <translation id="7933141401888114454">Attivazione della creazione di utenti controllati</translation>
 <translation id="793473937901685727">Imposta la disponibilità dei certificati per le app ARC</translation>
-<translation id="7937491150792971922">Unisci norme di più fonti relative all'elenco di installazione delle estensioni</translation>
 <translation id="7937766917976512374">Consenti o nega acquisizione video</translation>
 <translation id="7941975817681987555">Non prevedere le azioni di rete su qualsiasi connessione di rete</translation>
 <translation id="7951605113561734721">Consente di specificare i certificati client a livello di dispositivo che dovrebbero essere registrati usando il protocollo di gestione del dispositivo.</translation>
@@ -4736,6 +4799,9 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7953256619080733119">Host delle eccezioni manuali per gli utenti gestiti</translation>
 <translation id="7956210013490975468">Configura il servizio proxy di sistema per <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7958537754689366707">Richiedi inserimento della password ogni dodici ore</translation>
+<translation id="7960293328203000385">Determina l'elenco di utenti autorizzati ad accedere al dispositivo. Le voci sono nel formato <ph name="USER_ALLOWLIST_ENTRY_FORMAT" />, ad esempio <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />. Per autorizzare utenti arbitrari su un dominio, le voci devono essere nel formato <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+
+      Se questo criterio non viene configurato, non ci sono limitazioni in termini di utenti autorizzati ad accedere. Tieni presente che la creazione di nuovi utenti richiede comunque la corretta configurazione del criterio <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.</translation>
 <translation id="7961779417826583251">Disattiva l'applicazione di Certificate Transparency per un elenco di autorità di certificazione precedenti</translation>
 <translation id="7973609468423251675">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 

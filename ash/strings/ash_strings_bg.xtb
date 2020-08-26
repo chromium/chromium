@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Мобилно устройство: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Добър ден, <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">„I’m bored“ („Скучно ми е“)</translation>
 <translation id="1104084341931202936">Показване на настройките за достъпност</translation>
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Таймер за <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 адрес: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Работен кът: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Настройки за мрежата</translation>
 <translation id="1743570585616704562">Не е разпознато</translation>
 <translation id="1746730358044914197">Методите на въвеждане са конфигурирани от администратора ви.</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
+<translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">Изход</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3038571455154067151">За да влезете в профила си, въведете кода си за достъп на родител от Family Link</translation>
+<translation id="3045488863354895414">Добър ден,</translation>
 <translation id="3051128274746680507">Профилът ви на контролиран потребител скоро ще бъде премахнат. Влезте в профила си, за да научите повече.</translation>
 <translation id="3055162170959710888">Днес използвахте това устройство <ph name="USED_TIME" /></translation>
 <translation id="3076778413190775903">Лента на състоянието, часът е <ph name="TIME" />,
@@ -304,6 +308,7 @@
 <translation id="4261870227682513959">Показване на настройките за известия. Известията са изключени</translation>
 <translation id="4269883910223712419">Администраторът на това устройство може:</translation>
 <translation id="4279490309300973883">Дублиране</translation>
+<translation id="4294319844246081198">Добро утро, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Изчистване на всичките <ph name="COUNT" /> известия</translation>
 <translation id="4303223480529385476">Разгъване на лентата на състоянието</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@
 <translation id="4421231901400348175">Споделяте с/ъс <ph name="HELPER_NAME" /> контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="4430019312045809116">Звук</translation>
 <translation id="4450893287417543264">Да не се показва отново</translation>
+<translation id="445864333228800152">Добър вечер</translation>
 <translation id="4458688154122353284">Спиране на записа на екрана</translation>
 <translation id="4477350412780666475">Следващ запис</translation>
 <translation id="4477892968187500306">На това устройство може да са инсталирани приложения, които не са потвърдени от Google.</translation>
@@ -430,6 +436,7 @@
 <translation id="5887866489674258948">Тъмен режим</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
+<translation id="5909862606227538307">Неактивен работен кът.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5920710855273935292">Микрофонът е заглушен.</translation>
@@ -561,8 +568,10 @@
 <translation id="7405710164030118432">За да отключите устройството, въведете кода си за достъп на родител от Family Link</translation>
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="742594950370306541">Камерата се използва.</translation>
+<translation id="742608627846767349">Добро утро</translation>
 <translation id="743058460480092004">Камерата и микрофонът се използват.</translation>
 <translation id="7466449121337984263">Моля, докоснете сензора</translation>
+<translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@
 <translation id="8351131234907093545">Създаване на бележка</translation>
 <translation id="8371779926711439835">Придвижване напред с една буква</translation>
 <translation id="8375916635258623388">Това устройство <ph name="DEVICE_NAME" /> и телефонът ви ще се свържат автоматично</translation>
+<translation id="8380784334203145311">Добър вечер,</translation>
 <translation id="8388750414311082622">Последният работен кът не може да бъде премахнат.</translation>
 <translation id="8392451568018454956">Меню с опции за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Родителят ви заключи това устройство</translation>
 <translation id="8412677897383510995">Показване на настройките за екрана</translation>
 <translation id="8425213833346101688">Промяна</translation>
+<translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" /></translation>
 <translation id="8427213022735114808">Функцията за диктуване изпраща гласа ви до Google, за да даде възможност за гласово въвеждане във всяко текстово поле.</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8433186206711564395">Настройки на мрежата</translation>

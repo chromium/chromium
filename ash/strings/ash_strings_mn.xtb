@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">Сүлжээ алга</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Үүрэн холбоо: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Өдрийн мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Би уйдаж байна</translation>
 <translation id="1104084341931202936">Нэвтрэлтийн тохиргоог харуулах</translation>
 <translation id="1104621072296271835">Таны төхөөрөмжүүд хамтдаа илүү сайн ажилладаг</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> цаг хэмжигч · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 хаяг: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Дэлгэц: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Сүлжээний тохиргоо</translation>
 <translation id="1743570585616704562">Танихгүй байна</translation>
 <translation id="1746730358044914197">Оролтын аргыг таны админ тохируулсан.</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">Надад онигоо ярьж өгөөч</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2067602449040652523">Гарын гэрэлтүүлэг</translation>
+<translation id="2083190527011054446">Сайхан амраарай <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="2126242104232412123">Шинэ ширээ</translation>
 <translation id="2127372758936585790">Бага эрчим хүчээр цэнэглэгч</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">Гаралт</translation>
 <translation id="3033545621352269033">Асаалттай</translation>
 <translation id="3038571455154067151">Нэвтрэхийн тулд Family Link-н эцэг эхийн хандалтын кодоо оруулна уу</translation>
+<translation id="3045488863354895414">Өдрийн мэнд,</translation>
 <translation id="3051128274746680507">Таны хяналттай хэрэглэгчийн профайлыг удахгүй устгана. Нэмэлт мэдээлэл авахын тулд нэвтэрнэ үү.</translation>
 <translation id="3055162170959710888">Та энэ төхөөрөмжийг өнөөдөр <ph name="USED_TIME" /> ашигласан</translation>
 <translation id="3076778413190775903">Төлөвийн мэдээллийн хэсэг, цаг <ph name="TIME" />,
@@ -305,6 +309,7 @@
 <translation id="4261870227682513959">Мэдэгдлийн тохиргоог харуулна уу. Мэдэгдлийг унтраасан байна</translation>
 <translation id="4269883910223712419">Энэ төхөөрөмжийн админ дараах зүйлсийг хийх боломжтой:</translation>
 <translation id="4279490309300973883">Толин тусгал үүсгэх</translation>
+<translation id="4294319844246081198">Өглөөний мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Бүх <ph name="COUNT" /> мэдэгдлийг устгах</translation>
 <translation id="4303223480529385476">Төлөв байдал илэрхийлэгчийг дэлгэх</translation>
 <translation id="4321179778687042513">Ctrl</translation>
@@ -321,6 +326,7 @@
 <translation id="4421231901400348175">Remote Assistance ашиглан <ph name="HELPER_NAME" /> -тэй хамт өөрийн дэлгэцийн хяналтыг хуваалцах.</translation>
 <translation id="4430019312045809116">Хэмжээ</translation>
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
+<translation id="445864333228800152">Оройн мэнд,</translation>
 <translation id="4458688154122353284">Дэлгэцийн үйлдэл бичихийг зогсоох</translation>
 <translation id="4477350412780666475">Дараагийн бичлэг</translation>
 <translation id="4477892968187500306">Энэ төхөөрөмж нь Google-н баталгаажуулаагүй аппыг агуулж болзошгүй.</translation>
@@ -431,6 +437,7 @@
 <translation id="5887866489674258948">Бараан горим</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">Идэвхгүй дэлгэц.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5920710855273935292">Микрофоны дууг хаасан.</translation>
@@ -562,8 +569,10 @@
 <translation id="7405710164030118432">Энэ төхөөрөмжийн түгжээг тайлахын тулд Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу</translation>
 <translation id="741244894080940828">хөрвүүлэлт</translation>
 <translation id="742594950370306541">Камерыг ашиглаж байна.</translation>
+<translation id="742608627846767349">Өглөөний мэнд,</translation>
 <translation id="743058460480092004">Камер болон микрофоныг ашиглаж байна.</translation>
 <translation id="7466449121337984263">Мэдрэгчид хүрнэ үү</translation>
+<translation id="7477793887173910789">Хөгжим, видео болон бусад зүйлээ хянах</translation>
 <translation id="7497767806359279797">Хэл болон гарыг сонгох</translation>
 <translation id="7526573455193969409">Сүлжээг хянаж байж болзошгүй</translation>
 <translation id="7536035074519304529">IP хаяг: <ph name="ADDRESS" /></translation>
@@ -648,11 +657,13 @@
 <translation id="8351131234907093545">Тэмдэглэл үүсгэх</translation>
 <translation id="8371779926711439835">Нэг үсгээр урагшлуулах</translation>
 <translation id="8375916635258623388">Энэ <ph name="DEVICE_NAME" /> болон таны утас автоматаар холбогдоно</translation>
+<translation id="8380784334203145311">Сайхан амраарай,</translation>
 <translation id="8388750414311082622">Сүүлийн дэлгэцийг устгах боломжгүй байна.</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" />-ын сонголтын цэс</translation>
 <translation id="8394567579869570560">Таны эцэг эх энэ төхөөрөмжийг түгжсэн</translation>
 <translation id="8412677897383510995">Дэлгэцийн тохиргоог харуулах</translation>
 <translation id="8425213833346101688">Өөрчлөлт</translation>
+<translation id="8426708595819210923">Оройн мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Диктафон дуу хоолойгоор дурын текстийн талбарт бичихийг зөвшөөрөхийн тулд таны дуу хоолойг Google-д илгээдэг.</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8433186206711564395">Сүлжээний тохиргоо</translation>

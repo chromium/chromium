@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Det innledende synkroniseringsoppsettet er ikke fullført</translation>
 <translation id="1821253160463689938">Bruker informasjonskapsler til å huske preferansene dine, selv om du ikke går til de sidene</translation>
 <translation id="1829244130665387512">Finn på side</translation>
+<translation id="1843805151597803366">For å få bedre oversettelser, la Google Søk bruke den nåværende siden</translation>
 <translation id="1853692000353488670">Ny inkognitofane</translation>
 <translation id="1856325424225101786">Vil du tilbakestille forenklet modus?</translation>
 <translation id="1868024384445905608">Chrome laster ned filer raskere nå</translation>
@@ -477,6 +478,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 
 For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkroniseringen<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Navn som er oppført på kortet</translation>
+<translation id="4818017973810341238">Verifisering av linker til digitale ressurser mislyktes på <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Vil du avbryte synkroniseringen?</translation>
 <translation id="4835385943915508971">Chrome har ikke tilgang til den forespurte ressursen.</translation>
 <translation id="4837753911714442426">Åpne alternativene for å skrive ut siden</translation>
@@ -911,6 +913,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7981313251711023384">Last inn sider på forhånd for raskere nettlesing og søk</translation>
 <translation id="79859296434321399">Du må installere ARCore for å se innhold med utvidet virkelighet</translation>
 <translation id="7986741934819883144">Velg en kontakt</translation>
+<translation id="799806351373751710">Avbryt konfigurering av synkronisering</translation>
 <translation id="7998918019931843664">Åpne lukkede faner igjen</translation>
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8013372441983637696">Fjern også Chrome-dataene dine fra denne enheten</translation>

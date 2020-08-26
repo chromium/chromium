@@ -522,7 +522,6 @@
 <translation id="1608668830839595724">තේරූ අයිතම සඳහා වැඩිදුර ක්‍රියා</translation>
 <translation id="161042844686301425">සියන්</translation>
 <translation id="1611432201750675208">ඔබේ උපාංගය අගුලු වැටී ඇත</translation>
-<translation id="1611584202130317952">ප්‍රතිපාදන ප්‍රවාහයට බාධා විය. නැවත උත්සාහ කරන්න හෝ ඔබේ උපාංගයේ හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="1614511179807650956">ඔබ ඔබේ ජංගම දත්ත ප්‍රමාණය භාවිත කර අවසන්ව විය හැක. <ph name="NAME" /> සක්‍රීයකරණ ද්වාරයට ගොස් දත්ත මිලදී ගන්න.</translation>
 <translation id="161460670679785907">ඔබේ දුරකථනය හඳුනා ගත නොහැකිය</translation>
 <translation id="1616206807336925449">මෙම දිගුවට කිසිඳු විශේෂිත බලතලයක් අවශ්‍ය නොවේ.</translation>
@@ -964,6 +963,7 @@
 <translation id="2148219725039824548">කොටස නැංවීමේ දෝෂයකි. විශේෂිත කොටස ජාලයෙහි සොයා ගත නොහැකි විය.</translation>
 <translation id="2148756636027685713">ආකෘතිගත කිරීම නිමයි</translation>
 <translation id="2148892889047469596">විකාශ පටිත්ත</translation>
+<translation id="2149973817440762519">පිටු සලකුණු සංස්කරණය කරන්න</translation>
 <translation id="2150139952286079145">ගමනාන්ත සොයන්න</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" එක්කරන්නද?</translation>
 <translation id="2151576029659734873">වැරදි ටැබ් දර්ශකය ඇතුළු කරන ලදි.</translation>
@@ -5984,6 +5984,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8288032458496410887"><ph name="APP" /> අස්ථාපනය කරමින්...</translation>
 <translation id="8289128870594824098">තැටි ප්‍රමාණය</translation>
 <translation id="8291967909914612644">නිවෙස් සපයන්නාගේ රට</translation>
+<translation id="8293206222192510085">පිටුසන එක් කරන්න</translation>
 <translation id="8294431847097064396">මූලාශ්‍රය</translation>
 <translation id="8297006494302853456">දුර්වලයි</translation>
 <translation id="8299319456683969623">ඔබ දැනට නොබැඳි</translation>

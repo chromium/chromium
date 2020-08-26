@@ -523,7 +523,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1608668830839595724">Izenzo eziningi zezinto ezikhethiwe</translation>
 <translation id="161042844686301425">I-Cyan</translation>
 <translation id="1611432201750675208">Idivayisi yakho ikhiyiwe</translation>
-<translation id="1611584202130317952">Ukugeleza kokunikezwa kuphazanyisiwe. Sicela uzame futhi noma uxhumane nomnikazi wedivayisi yakho.</translation>
 <translation id="1614511179807650956">Kungenzeka ukuthi usebenzise konke ukuvunyelwa kwakho kwedatha yeselula. Vakashela ku-<ph name="NAME" /> kwephothali yokwenza kusebenze ukuze uthenge idatha eningi.</translation>
 <translation id="161460670679785907">Ayikwazi ukuthola ifoni yakho</translation>
 <translation id="1616206807336925449">Lesi sandiso asidingi izimvume ezibalulekile.</translation>
@@ -965,6 +964,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2148219725039824548">Iphutha ukukhweza ukwabelana. Ukwabelane okucacisiwe akutholakele kunethiwekhi.</translation>
 <translation id="2148756636027685713">Ukufometha kuqediwe</translation>
 <translation id="2148892889047469596">Ithebhu yokusakaza</translation>
+<translation id="2149973817440762519">Hlela ibhukhimakhi</translation>
 <translation id="2150139952286079145">Sesha izindawo</translation>
 <translation id="2150661552845026580">Engeza i-"<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Kufakwe inkomba yethebhu engavumelekile.</translation>
@@ -5988,6 +5988,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8288032458496410887">Ikhipha i-<ph name="APP" />...</translation>
 <translation id="8289128870594824098">Usayizi wediski</translation>
 <translation id="8291967909914612644">Izwe lasekhaya lomhlinzeki</translation>
+<translation id="8293206222192510085">Engeza ibhukhimakhi</translation>
 <translation id="8294431847097064396">Umthombo</translation>
 <translation id="8297006494302853456">Buthakathaka</translation>
 <translation id="8299319456683969623">Okwamanje awuxhunyiwe ku-inthanethi</translation>

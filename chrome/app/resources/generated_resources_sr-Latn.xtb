@@ -522,7 +522,6 @@
 <translation id="1608668830839595724">Još radnji za izabrane stavke</translation>
 <translation id="161042844686301425">Plavozelena</translation>
 <translation id="1611432201750675208">Uređaj je zaključan</translation>
-<translation id="1611584202130317952">Tok dodele je prekinut. Probajte ponovo ili kontaktirajte vlasnika ili administratora uređaja.</translation>
 <translation id="1614511179807650956">Možda ste iskoristili dozvoljenu količinu podataka za mobilne uređaje. Posetite portal za aktivaciju <ph name="NAME" /> da biste kupili još podataka</translation>
 <translation id="161460670679785907">Nismo uspeli da otkrijemo telefon</translation>
 <translation id="1616206807336925449">Ovaj dodatak ne zahteva nikakve specijalne dozvole.</translation>
@@ -964,6 +963,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2148219725039824548">Greška pri učitavanju deljene datoteke. Navedena deljena datoteka nije pronađena na mreži.</translation>
 <translation id="2148756636027685713">Formatiranje je završeno</translation>
 <translation id="2148892889047469596">Prebacite karticu</translation>
+<translation id="2149973817440762519">Izmenite obeleživač</translation>
 <translation id="2150139952286079145">Pretražite odredišta</translation>
 <translation id="2150661552845026580">Želite li da dodate „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2151576029659734873">Unet je nevažeći indeks kartice.</translation>
@@ -5987,6 +5987,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8288032458496410887">Deinstaliraj: <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Veličina diska</translation>
 <translation id="8291967909914612644">Zemlja dobavljača za Home</translation>
+<translation id="8293206222192510085">Dodavanje obeleživača</translation>
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8299319456683969623">Trenutno ste oflajn.</translation>

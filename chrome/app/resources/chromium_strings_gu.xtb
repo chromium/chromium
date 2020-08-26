@@ -5,10 +5,12 @@
 <translation id="1065672644894730302">તમારી પસંદગીઓને વાંચી શકાતી નથી.
 
 કેટલીક સુવિધાઓ ઉપલબ્ધ હોઈ શકે છે અને પસંદગીઓ પરના ફેરફારોને સાચવવામાં આવશે નહીં.</translation>
+<translation id="107513968719897256">વ્યક્તિગત અને <ph name="NEW_USER" /> બ્રાઉઝિંગને અલગ પાડવા માટે, Chromiumમાં નવી પ્રોફાઇલ બનાવો</translation>
 <translation id="1098170124587656448">Chromium તમને ડેટા ઉલ્લંઘન, ખરાબ એક્સ્ટેંશન અને બીજી ઘણી બાબતોથી સુરક્ષિત રાખી શકે છે</translation>
 <translation id="1104942323762546749">Chromium તમારા પાસવર્ડની નિકાસ કરવા માગે છે. આને મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="113122355610423240">Chromium તમારું ડિફૉલ્ટ બ્રાઉઝર છે</translation>
 <translation id="1185134272377778587">Chromium વિશે</translation>
+<translation id="1315551408014407711">તમારી નવી Chromium પ્રોફાઇલ સેટઅપ કરો</translation>
 <translation id="1396446129537741364">Chromium પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="1414495520565016063">તમે Chromium માં સાઇન ઇન કર્યું છે!</translation>
 <translation id="151962892725702025">Chromium OS તમારા ડેટાને સિંક કરી શક્યું નથી, કારણ કે તમારા ડોમેન માટે સિંક ઉપલબ્ધ નથી.</translation>
@@ -44,6 +46,7 @@
 <translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: 1 મિનિટ પહેલાં.}one{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_MINS} મિનિટ પહેલાં.}other{Chromium વણજોઈતા સૉફ્ટવેર શોધવા માટે અઠવાડિયામાં એક વાર ચેક કરે છે. છેલ્લે ચેક કર્યું: {NUM_MINS} મિનિટ પહેલાં.}}</translation>
 <translation id="2799223571221894425">ફરીથી લોંચ કરો</translation>
 <translation id="2847479871509788944">Chromium માંથી દૂર કરો...</translation>
+<translation id="2853765747879685679">હું Chromium ખોલું ત્યારે પૂછો</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2910007522516064972">&amp;Chromium વિશે</translation>
 <translation id="2977470724722393594">Chromium અપ ટૂ ડેટ છે</translation>
@@ -104,9 +107,11 @@
 <translation id="4788777615168560705">Chromium તમારા પાસવર્ડ ચેક કરી શકતું નથી. 24 કલાક પછી ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">આ પણ Google શોધમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બ્રાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે. તમે સેટિંગમાં આ વર્તણૂકને હંમેશાં બદલી શકો છો.</translation>
 <translation id="4888717733111232871">mDNS ટ્રાફિકને મંજૂરી આપવા Chromium માટે ઇનબાઉન્ડ નિયમ.</translation>
+<translation id="4893632094755846570">આ તમારો બ્રાઉઝિંગ ડેટા આ ડિવાઇસમાંથી હંમેશ માટે ડિલીટ કરશે. આ ડેટા પાછો મેળવવા માટે, Chromiumમાં આ તરીકે સાઇન ઇન કરો</translation>
 <translation id="4943838377383847465">Chromium પૃષ્ઠભૂમિ મોડમાં છે.</translation>
 <translation id="4987820182225656817">અતિથિઓ કંઈપણ પાછળ છોડ્યાં વિના Chromium નો ઉપયોગ કરી શકે છે.</translation>
 <translation id="4994636714258228724">સ્વયંને Chromium માં ઉમેરો</translation>
+<translation id="5080135079858647714">Chromiumમાં તમારી પોતાની પ્રોફાઇલ બનાવવી છે?</translation>
 <translation id="5224391634244552924">કોઈ સાચવેલા પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chromium તેને ચેક કરી શકે છે.</translation>
 <translation id="5277894862589591112">તમારા ફેરફારો લાગુ કરવા માટે, Chromiumને ફરી લૉન્ચ કરો</translation>
 <translation id="5358375970380395591">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Chromium પ્રોફાઇલ પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો Chromium ડેટા, જેમ કે ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" /> થી બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. <ph name="LEARN_MORE" /></translation>
@@ -165,6 +170,7 @@
 કેટલીક સુવિધાઓ ઉપલબ્ધ થઈ શકે છે. કૃપા કરીને અલગ પ્રોફાઇલ ડિરેક્ટરીનો ઉલ્લેખ કરો અથવા Chromiumના નવા વર્ઝનનો ઉપયોગ કરો.</translation>
 <translation id="6734080038664603509">&amp;Chromium ને અપડેટ કરો</translation>
 <translation id="6734291798041940871">Chromium, તમારા કમ્પ્યુટર પર તમામ વપરાશકર્તાઓ માટે પહેલાંથી ઇન્સ્ટૉલ કરેલ છે.</translation>
+<translation id="6762551859069255163">ઑફિસ માટેનું અને વ્યક્તિગત બ્રાઉઝિંગ અલગ પાડવા અથવા આ ડિવાઇસનો ઉપયોગ કરતા વિવિધ લોકો માટે, Chromiumમાં ભિન્ન પ્રોફાઇલનો ઉપયોગ કરો</translation>
 <translation id="6774082503108938489">તમારા માતાપિતાએ Chromium માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>
 <translation id="6847869444787758381">Chromium વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -253,5 +259,6 @@ Chromium તમારી સેટિંગ્સને પુનઃપ્રા
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium યોગ્ય રીતે કાર્ય ન કરે તેવું બની શકે કારણ કે તે હવેથી Windows XP અથવા Windows Vista પર સમર્થિત નથી</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> માટે જરૂરી છે કે તમે આ ડિવાઇસનો ઉપયોગ કરતાં પહેલાં નીચેની સેવાની શરતોને વાંચો અને સ્વીકારો. આ શરતો Chromium OS શરતોને વિસ્તૃત, સંશોધિત અથવા મર્યાદિત કરતી નથી.</translation>
+<translation id="965162752251293939">કોણ Chromiumનો ઉપયોગ કરે છે?</translation>
 <translation id="985602178874221306">Chromium લેખકો</translation>
 </translationbundle>

@@ -11,6 +11,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Cellular: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Magandang hapon <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Naiinip ako</translation>
 <translation id="1104084341931202936">Ipakita ang mga setting ng pagiging naa-access</translation>
 <translation id="1104621072296271835">Gagana nang mas maayos ang iyong mga device kung magkakasama</translation>
@@ -71,6 +72,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> na lang ang natitira</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 address: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Desk: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Mga Network Setting</translation>
 <translation id="1743570585616704562">Hindi nakilala</translation>
 <translation id="1746730358044914197">Isinasaayos ng iyong administrator ang mga pamamaraan sa pag-input.</translation>
@@ -107,6 +109,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2018630726571919839">Pahingi ng joke</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
+<translation id="2083190527011054446">Magandang gabi <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Hindi nakakonekta sa network</translation>
 <translation id="2126242104232412123">Bagong desk</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
@@ -185,6 +188,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3033545621352269033">Naka-on</translation>
 <translation id="3038571455154067151">Para mag-sign in, ilagay ang iyong access code ng magulang sa Family Link</translation>
+<translation id="3045488863354895414">Magandang hapon,</translation>
 <translation id="3051128274746680507">Malapit nang alisin ang iyong profile ng pinangangasiwaang user. Mag-sign in para matuto pa.</translation>
 <translation id="3055162170959710888">Ginamit mo ang device na ito nang <ph name="USED_TIME" /> ngayong araw</translation>
 <translation id="3076778413190775903">Status tray, oras <ph name="TIME" />,
@@ -304,6 +308,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4261870227682513959">Ipakita ang mga setting ng notification. Naka-off ang mga notification</translation>
 <translation id="4269883910223712419">May kakayahan ang admin ng device na ito na:</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
+<translation id="4294319844246081198">Magandang umaga <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">I-clear ang lahat ng <ph name="COUNT" /> (na) notification</translation>
 <translation id="4303223480529385476">I-expand ang lugar ng status</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4421231901400348175">Pagbabahagi ng kontrol sa iyong screen gamit ang <ph name="HELPER_NAME" /> sa pamamagitan ng Remote Assistance.</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
+<translation id="445864333228800152">Magandang gabi,</translation>
 <translation id="4458688154122353284">Ihinto ang pag-record ng screen</translation>
 <translation id="4477350412780666475">Susunod na Track</translation>
 <translation id="4477892968187500306">Posibleng naglalaman ang device na ito ng mga app na hindi pa nave-verify ng Google.</translation>
@@ -430,6 +436,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5887866489674258948">Dark Mode</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">Hindi aktibong desk.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5920710855273935292">Naka-mute ang mikropono.</translation>
@@ -561,8 +568,10 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7405710164030118432">Para i-unlock ang device, ilagay ang iyong access code ng magulang sa Family Link</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="742594950370306541">Ginagamit ang camera.</translation>
+<translation id="742608627846767349">Magandang umaga,</translation>
 <translation id="743058460480092004">Ginagamit ang camera at mikropono.</translation>
 <translation id="7466449121337984263">Pakipindot ang sensor</translation>
+<translation id="7477793887173910789">Kontrolin ang iyong musika, mga video, at higit pa</translation>
 <translation id="7497767806359279797">Pumili ng wika at keyboard</translation>
 <translation id="7526573455193969409">Maaaring sinusubaybayan ang network</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8351131234907093545">Gumawa ng tala</translation>
 <translation id="8371779926711439835">Sumulong nang paisa-isang titik</translation>
 <translation id="8375916635258623388">Awtomatikong kokonekta ang <ph name="DEVICE_NAME" /> na ito at ang iyong telepono</translation>
+<translation id="8380784334203145311">Magandang gabi,</translation>
 <translation id="8388750414311082622">Hindi puwedeng alisin ang huling desk.</translation>
 <translation id="8392451568018454956">Menu ng mga pagpipilian para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Ni-lock ng iyong magulang ang device na ito</translation>
 <translation id="8412677897383510995">Ipakita ang mga setting ng display</translation>
 <translation id="8425213833346101688">Baguhin</translation>
+<translation id="8426708595819210923">Magandang gabi <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Ipinapadala ng Dictation ang iyong boses sa Google para mabigyang-daan ang voice-typing sa anumang field ng text.</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8433186206711564395">Mga setting ng network</translation>

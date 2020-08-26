@@ -22,6 +22,13 @@
 
       目前支持的语言包括：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="1019101089073227242">设置用户数据目录</translation>
+<translation id="1021843807738753764"> 请注意，此政策已被弃用，并将从 <ph name="PRODUCT_OS_NAME" /> 89 版中移除。请改用 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> 来配置受管理访客会话的隐私权警告。
+
+      此政策旨在控制 <ph name="PRODUCT_OS_NAME" />上受管理访客会话的自动启动通知。
+
+      如果此政策设为 True，系统会在隐私权警告通知显示了数秒后关闭它。
+
+      如果此政策设为 False 或未设置，系统则会将隐私权警告通知固定在屏幕上，直到用户关闭它为止。</translation>
 <translation id="1022361784792428773">应禁止用户安装的扩展程序的 ID（或者用“*”表示禁止安装所有扩展程序）</translation>
 <translation id="102492767056134033">设置屏幕键盘在登录屏幕上的默认状态</translation>
 <translation id="1027000705181149370">指定在用户登录期间由 SAML IdP 设置的身份验证 Cookie 是否应转移到用户的个人资料中。
@@ -267,6 +274,20 @@
 
 如果您启用了此政策或不配置此政策，系统将会根据网址将网页滚动至特定文本片段所在的位置。
 如果您停用了此政策，系统便不会根据网址将网页滚动至特定文本片段所在的位置。</translation>
+<translation id="1469072784237350146">此政策旨在控制是否允许不安全网站向更专用网络上的端点发送请求。
+
+          此政策与 CORS-RFC1918 规范相关。如需了解详情，请参阅 https://wicg.github.io/cors-rfc1918。
+
+          在以下情况下，某个网络上的端点会比另一个网络上的端点更专用：
+          1) 该端点的 IP 地址是 localhost，另一个端点的 IP 地址不是 localhost。
+          2) 该端点的 IP 地址是专用的，另一个端点的 IP 地址是公开的。
+          日后，此政策可能会应用于针对专用 IP 或 localhost 发出的所有跨源请求，具体取决于相关规范的演变情况。
+
+          如果某个网站符合 https://developer.mozilla.org/zh-CN/docs/Web/Security/Secure_Contexts 中所述的安全情境的定义，即会被视为安全网站。否则，便会被视为不安全情境。
+
+          如果此政策未设置或设为 false，对于从不安全情境向更专用网络上的端点发送的请求，其默认行为将取决于用户针对 <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" /> 功能（此功能可通过现场试验来设置，也可在命令行中设置）指定的个人配置。
+
+          如果此政策设为 true，系统将允许不安全网站向任意网络上的端点发送请求，但这些网站会受到其他跨源检查机制的约束。</translation>
 <translation id="1474273443907024088">停用 TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">通过设置此政策，您可以指定一个 USB 设备列表，在其中列出用户可从内核驱动程序分离以便直接在 Web 应用内通过 chrome.usb API 使用的 USB 设备。列表中的条目是成对的用于标识特定硬件的 USB 供应商标识符和产品标识符。
@@ -1262,11 +1283,7 @@
 
       注意：此政策指向一个与 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策采用相同格式的 XML 文件。此政策会加载 XML 文件中的规则，但不会与 <ph name="IE_PRODUCT_NAME" /> 共享这些规则。如需详细了解 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策，请访问 https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="2952347049958405264">限制：</translation>
-<translation id="2956777931324644324">此政策自36版<ph name="PRODUCT_NAME" />起已停止使用。
-
-      用于指定是否启用TLS网域绑定证书扩展程序。
-
-      此政策用于启用TLS网域绑定证书扩展程序，以便进行测试。这一实验性政策日后将会弃用。</translation>
+<translation id="2957047180944828740">指定是否允许不安全网站向更专用网络上的端点发送请求</translation>
 <translation id="2957506574938329824">不允许任何网站通过 Web Bluetooth API 请求访问蓝牙设备</translation>
 <translation id="2957513448235202597">进行 <ph name="HTTP_NEGOTIATE" />身份验证时使用的帐号类型</translation>
 <translation id="2959469725686993410">解析时区时一律将 Wi-Fi 接入点发送给服务器</translation>
@@ -1798,7 +1815,6 @@
 
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
 <translation id="3803171355925844705">不允许任何网站加载混合内容</translation>
-<translation id="3805659594028420438">启用TLS网域绑定证书扩展程序（已弃用）</translation>
 <translation id="3808945828600697669">指定已停用插件的列表</translation>
 <translation id="3810642039169532482">在登录屏幕上启用“语音输入”无障碍功能。
 
@@ -2502,11 +2518,6 @@
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 将会只连接到位于 RFC1918/RFC4193 的投射设备，除非 CastAllowAllIPs 功能已开启。</translation>
 <translation id="489803897780524242">此参数可控制是否为默认搜索服务提供商替换搜索字词</translation>
 <translation id="4899708173828500852">启用安全浏览</translation>
-<translation id="4902163780937592202">允许合并扩展程序安装列表政策 <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> 和 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />。
-
-      如果您启用了此设置，系统会将机器平台政策、机器云政策和用户平台政策的值合并到同一个列表内，并会将其作为一个整体使用（而不是仅使用优先级最高的那个来源中的值）。
-
-      如果您停用了或未指定此设置，系统仅会从优先级最高的那个来源中获取列表条目；所有其他来源都会显示为与该来源冲突，但会被忽略。</translation>
 <translation id="4906194810004762807">设备策略的更新频率</translation>
 <translation id="4917385247580444890">强</translation>
 <translation id="4919122295221518724">为混合内容启用更严格的处理方式</translation>
@@ -2945,7 +2956,6 @@
       如果此政策设为 False，则 <ph name="PRODUCT_NAME" /> 不会使用整个标签页显示产品信息。
 
       此政策的设置将控制欢迎页面的展示方式，欢迎页面会帮助用户登录 <ph name="PRODUCT_NAME" />、将 <ph name="PRODUCT_NAME" /> 设置为用户的默认浏览器或向用户介绍产品功能。</translation>
-<translation id="5447306928176905178">向网页报告内存信息（JS堆内存大小）（已停止使用）</translation>
 <translation id="5450893456912604446">配置 <ph name="PRODUCT_NAME" /> 中的默认主页网址，并禁止用户更改此配置。
 
           主页是由“主页”按钮打开的网页。在桌面设备上，启动时打开的网页是由 RestoreOnStartup 政策控制的。
@@ -3116,6 +3126,9 @@
       如果您不设置此政策，该键盘会处于关闭状态，但用户可以更改它。
 
        注意：您也可考虑使用启发法来确定何时显示该键盘。</translation>
+<translation id="5657752663637568277">此政策旨在控制是否在打印预览对话框或设置页面内向用户显示 <ph name="CLOUD_PRINT_NAME" />弃用警告。
+      如果此政策设为 True，系统会隐藏弃用警告。
+      如果此政策设为 False 或未设置，系统会显示弃用警告。</translation>
 <translation id="5666457529647159548">允许用户管理已安装的客户端证书。</translation>
 <translation id="567377007899266033">如果此政策设为 True，系统便会向 Google 报告由政策触发的主要扩展程序安装事件。将此政策设为 False 意味着系统不会记录任何事件。如果此政策未设置，系统会将默认值设为 True。</translation>
 <translation id="5676740747107495269">在登录屏幕的系统任务栏菜单中显示无障碍选项</translation>
@@ -3336,6 +3349,12 @@
 
       停用此政策会对 Chrome 的安全性和稳定性产生不利影响，因为在这种情况下，系统会允许未知的潜在恶意代码在 Chrome 的渲染程序进程中加载。如需了解详情，请参阅 https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies。</translation>
 <translation id="6048199181629830227">启用用电高峰转移电源管理</translation>
+<translation id="6054485492411959335">此政策旨在指定用户可以使用的打印机。
+
+      仅当为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" /> 时，才会用到此政策。
+
+      如果您设置了此政策，用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的“id”或“guid”字段相符。
+      </translation>
 <translation id="6066761914755798079">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> 来指定用于提供搜索建议的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。
 
       您可按以下格式指定 Google 的搜索网址：<ph name="GOOGLE_SUGGEST_SEARCH_URL" />。</translation>
@@ -3867,12 +3886,10 @@
 
       如果您不设置此政策，默认情况下，受企业管理的用户和不受管理的用户都能选择启用“附近分享”功能。</translation>
 <translation id="6864244339257535116">允许上传和下载受密码保护的文件</translation>
-<translation id="687046793986382807">此政策自35版<ph name="PRODUCT_NAME" />起已停止使用。
-
-      无论选项值是什么，系统都会向网页报告内存信息，但出于安全考虑，系统会限制所报告的内存大小，并会限制更新率。要获取准确的实时数据，请使用遥测等工具。</translation>
 <translation id="68798513449385583">延迟交付下载内容，直到获悉扫描结果</translation>
 <translation id="6889123056995503704">由用户决定版本降级行为</translation>
 <translation id="6894178810167845842">在新标签页中打开的页面网址</translation>
+<translation id="6897730193187922386">禁止显示 <ph name="CLOUD_PRINT_NAME" />弃用消息</translation>
 <translation id="6899705656741990703">自动检测代理设置</translation>
 <translation id="6902561336084511004">提供可用打印服务器的配置。
 
@@ -4649,7 +4666,6 @@
 <translation id="793134539373873765">指定是否对操作系统更新有效负荷使用 p2p。如果设置为 True，设备将共享并试图消耗局域网中的更新有效负荷，从而可能会减少互联网带宽使用量和拥堵。如果局域网中没有更新有效负荷，设备将回退到从更新服务器下载。如果设置为 False 或未配置，则不会使用 p2p。</translation>
 <translation id="7933141401888114454">允许创建受监管用户</translation>
 <translation id="793473937901685727">为 ARC 应用设置证书可用性</translation>
-<translation id="7937491150792971922">合并来自多个来源的扩展程序安装列表政策</translation>
 <translation id="7937766917976512374">是否允许视频捕获</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
 <translation id="7951605113561734721">指定应使用设备管理协议注册的设备级客户端证书。</translation>
@@ -5056,6 +5072,14 @@
       此政策旨在让企业能够使现有服务器迁移到 HTTP/0.9 以外的协议版本，日后会被移除。
 
       如果未设置此政策，非默认端口上将会停用 HTTP/0.9。</translation>
+<translation id="8504725006737796967">此政策旨在指定用户可以使用的打印机。
+
+      仅当为 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_WHITELIST" /> 时，才会用到此政策。
+
+      如果您设置了此政策，用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="BULK_PRINTERS_POLICY_NAME" /> 所指定文件内的“id”或“guid”字段相符。
+
+      此政策已被弃用，请改用 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />。
+      </translation>
 <translation id="8507835864888987300">为自动更新设定目标版本。
 
       指定 <ph name="PRODUCT_OS_NAME" />应更新到的目标版本的前缀。如果相应设备所运行的版本早于指定的前缀，该设备便会更新到采用指定前缀的最新版本。如果相应设备所运行的版本已是较新版本，此政策的效果将会取决于 <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" /> 的值。前缀格式需按部分逐一指定，如下例所示： 

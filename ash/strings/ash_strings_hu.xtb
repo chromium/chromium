@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">Nincs hálózat</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Jó napot, <ph name="GIVEN_NAME" />!</translation>
 <translation id="109942774857561566">Unatkozom</translation>
 <translation id="1104084341931202936">A kisegítő lehetőségekhez tartozó beállítások megjelenítése</translation>
 <translation id="1104621072296271835">Eszközei együtt még jobban működnek</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> van hátra</translation>
 <translation id="1698080062160024910">Időzítő a következő időtartamra: <ph name="TOTAL_TIME" />   <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-cím: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Asztal: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Hálózati beállítások</translation>
 <translation id="1743570585616704562">Nem sikerült felismerni</translation>
 <translation id="1746730358044914197">A rendszergazda állította be a beviteli módszereket.</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">Mondj egy viccet</translation>
 <translation id="2050339315714019657">Álló</translation>
 <translation id="2067602449040652523">Billentyűzet világossága</translation>
+<translation id="2083190527011054446">Jó éjszakát, <ph name="GIVEN_NAME" />!</translation>
 <translation id="209965399369889474">Nincs hálózati kapcsolat</translation>
 <translation id="2126242104232412123">Új asztal</translation>
 <translation id="2127372758936585790">Kis teljesítményű töltő</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">Kimenet</translation>
 <translation id="3033545621352269033">Be</translation>
 <translation id="3038571455154067151">A bejelentkezéshez adja meg a Family Link szülői hozzáférési kódot</translation>
+<translation id="3045488863354895414">Jó napot!</translation>
 <translation id="3051128274746680507">Az Ön által felügyelt felhasználói profil hamarosan eltávolításra kerül. További információért jelentkezzen be.</translation>
 <translation id="3055162170959710888">Az eszköz mai használatának teljes időtartama: <ph name="USED_TIME" /></translation>
 <translation id="3076778413190775903">Állapottálca, idő <ph name="TIME" />,
@@ -305,6 +309,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4261870227682513959">Az értesítési beállítások megjelenítése. Az értesítések ki vannak kapcsolva</translation>
 <translation id="4269883910223712419">Az eszköz rendszergazdája a következőket végezheti el:</translation>
 <translation id="4279490309300973883">Tükrözés</translation>
+<translation id="4294319844246081198">Jó reggelt, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Az összes (<ph name="COUNT" />) értesítés törlése</translation>
 <translation id="4303223480529385476">Állapotsor kibontása</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -321,6 +326,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4421231901400348175">A képernyő irányításának megosztása <ph name="HELPER_NAME" /> segítővel a Távsegítség szolgáltatás keretein belül.</translation>
 <translation id="4430019312045809116">Hangerő</translation>
 <translation id="4450893287417543264">Ne jelenjen meg többé</translation>
+<translation id="445864333228800152">Jó estét!</translation>
 <translation id="4458688154122353284">Képernyőfelvétel leállítása</translation>
 <translation id="4477350412780666475">Következő szám</translation>
 <translation id="4477892968187500306">Ez az eszköz olyan alkalmazásokat tartalmazhat, amelyeket nem hagyott jóvá a Google.</translation>
@@ -431,6 +437,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5887866489674258948">Sötét mód</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">Inaktív asztal.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5920710855273935292">A mikrofon le van némítva.</translation>
@@ -562,8 +569,10 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="7405710164030118432">Az eszköz zárolásának feloldásához adja meg a Family Link szülői hozzáférési kódot</translation>
 <translation id="741244894080940828">Átváltás</translation>
 <translation id="742594950370306541">A kamera épp használatban van.</translation>
+<translation id="742608627846767349">Jó reggelt!</translation>
 <translation id="743058460480092004">A kamera és a mikrofon épp használatban van.</translation>
 <translation id="7466449121337984263">Érintse meg az érzékelőt</translation>
+<translation id="7477793887173910789">Zeneszámok, videók és további tartalmak vezérlése</translation>
 <translation id="7497767806359279797">Nyelv és billentyűzet kiválasztása</translation>
 <translation id="7526573455193969409">Elképzelhető, hogy figyelik a hálózatot</translation>
 <translation id="7536035074519304529">IP-cím: <ph name="ADDRESS" /></translation>
@@ -648,11 +657,13 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="8351131234907093545">Jegyzet létrehozása</translation>
 <translation id="8371779926711439835">Előrelépés betűnként</translation>
 <translation id="8375916635258623388">A(z) <ph name="DEVICE_NAME" /> eszköz és a telefon automatikusan csatlakozik majd egymáshoz</translation>
+<translation id="8380784334203145311">Jó éjszakát!</translation>
 <translation id="8388750414311082622">Nem lehetséges a legutóbbi asztal eltávolítása.</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> beállításainak menüje</translation>
 <translation id="8394567579869570560">A szülőd zárolta az eszközt</translation>
 <translation id="8412677897383510995">Kijelzőbeállítások megjelenítése</translation>
 <translation id="8425213833346101688">Módosítás</translation>
+<translation id="8426708595819210923">Jó estét, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8427213022735114808">A diktálás elküldi a hangját a Google számára, hogy bármely szövegmezőbe írhasson hangvezérléssel.</translation>
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8433186206711564395">Hálózati beállítások</translation>

@@ -11,6 +11,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1056775291175587022">Engin net</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Farsímakerfi: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Góðan dag <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Mér leiðist</translation>
 <translation id="1104084341931202936">Sýna aðgengisstillingar</translation>
 <translation id="1104621072296271835">Tækin þín virka enn betur saman</translation>
@@ -71,6 +72,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> teljari · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-vistfang: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Skjár: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Netkerfisstillingar</translation>
 <translation id="1743570585616704562">Þekktist ekki</translation>
 <translation id="1746730358044914197">Kerfisstjóri stillti innfærsluaðferðir.</translation>
@@ -107,6 +109,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2018630726571919839">Segðu mér brandara</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
 <translation id="2067602449040652523">Birtustig lyklaborðs</translation>
+<translation id="2083190527011054446">Góða nótt <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Engin nettenging</translation>
 <translation id="2126242104232412123">Nýtt svæði</translation>
 <translation id="2127372758936585790">Afllítið hleðslutæki</translation>
@@ -185,6 +188,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3009178788565917040">Úttak</translation>
 <translation id="3033545621352269033">Kveikt</translation>
 <translation id="3038571455154067151">Til að skrá þig inn skaltu slá inn aðgangskóða foreldris fyrir Family Link</translation>
+<translation id="3045488863354895414">Góðan dag,</translation>
 <translation id="3051128274746680507">Prófíll stýrða notandans þíns verður brátt fjarlægður. Skráðu þig inn til að fá frekari upplýsingar.</translation>
 <translation id="3055162170959710888">Þú hefur notað þetta tæki í <ph name="USED_TIME" /> í dag</translation>
 <translation id="3076778413190775903">Stöðubakki, klukkan er <ph name="TIME" />,
@@ -304,6 +308,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4261870227682513959">Sýna tilkynningastillingar. Slökkt er á tilkynningum</translation>
 <translation id="4269883910223712419">Stjórnandi þessa tækis getur:</translation>
 <translation id="4279490309300973883">Speglun</translation>
+<translation id="4294319844246081198">Góðan dag <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Hreinsa <ph name="COUNT" /> tilkynningar</translation>
 <translation id="4303223480529385476">Stækka stöðusvæði</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> deilir stjórn yfir skjánum þínum í gegnum fjaraðstoð.</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
 <translation id="4450893287417543264">Ekki sýna þetta aftur</translation>
+<translation id="445864333228800152">Gott kvöld,</translation>
 <translation id="4458688154122353284">Stöðva skjáupptöku</translation>
 <translation id="4477350412780666475">Næsta lag</translation>
 <translation id="4477892968187500306">Þetta tæki kann að innihalda forrit sem hafa ekki verið staðfest af Google.</translation>
@@ -430,6 +436,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5887866489674258948">Dökk stilling</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">Óvirkur skjár.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5920710855273935292">Slökkt er á hljóðnemanum.</translation>
@@ -561,8 +568,10 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7405710164030118432">Til að opna tækið skaltu slá inn aðgangskóða foreldris fyrir Family Link</translation>
 <translation id="741244894080940828">umreikningur</translation>
 <translation id="742594950370306541">Myndavélin er í notkun.</translation>
+<translation id="742608627846767349">Góðan dag,</translation>
 <translation id="743058460480092004">Myndavél og hljóðnemi eru í notkun.</translation>
 <translation id="7466449121337984263">Snertu fingrafaralesarann</translation>
+<translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="8351131234907093545">Búa til glósu</translation>
 <translation id="8371779926711439835">Áfram um staf</translation>
 <translation id="8375916635258623388">Þetta <ph name="DEVICE_NAME" /> og síminn þinn tengjast sjálfkrafa</translation>
+<translation id="8380784334203145311">Gott kvöld,</translation>
 <translation id="8388750414311082622">Ekki er hægt að fjarlægja fyrra skjáborð.</translation>
 <translation id="8392451568018454956">Valmynd valkosta fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Foreldri þitt læsti þessu tæki</translation>
 <translation id="8412677897383510995">Sýna skjástillingar</translation>
 <translation id="8425213833346101688">Breyta</translation>
+<translation id="8426708595819210923">Gott kvöld <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Upplestur sendir rödd þína til Google til að gera raddinnslátt mögulegan í hvaða textareit sem er.</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8433186206711564395">Netstillingar</translation>

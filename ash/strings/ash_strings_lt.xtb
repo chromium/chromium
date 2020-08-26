@@ -11,6 +11,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1056775291175587022">Nėra tinklų</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilusis: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Laba diena, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">„I’m bored“ (Man nuobodu)</translation>
 <translation id="1104084341931202936">Rodyti pritaikymo neįgaliesiems nustatymus</translation>
 <translation id="1104621072296271835">Jūsų įrenginiai kartu veikia dar geriau</translation>
@@ -71,6 +72,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1677472565718498478">Liko <ph name="TIME" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> laikmatis · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">„IPv6“ adresas: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Darbalaukis: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Tinklo nustatymai</translation>
 <translation id="1743570585616704562">Neatpažinta</translation>
 <translation id="1746730358044914197">Įvesties metodus konfigūruoja jūsų administratorius.</translation>
@@ -107,6 +109,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2018630726571919839">Papasakok pokštą</translation>
 <translation id="2050339315714019657">Stačias</translation>
 <translation id="2067602449040652523">Klaviatūros šviesumas</translation>
+<translation id="2083190527011054446">Labanakt, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Neprisijungta prie tinklo</translation>
 <translation id="2126242104232412123">Naujas darbalaukis</translation>
 <translation id="2127372758936585790">Mažos galios įkroviklis</translation>
@@ -185,6 +188,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3009178788565917040">Išvestis</translation>
 <translation id="3033545621352269033">Įjungta</translation>
 <translation id="3038571455154067151">Norėdami prisijungti, įveskite „Family Link“ tėvų prieigos kodą.</translation>
+<translation id="3045488863354895414">Laba diena,</translation>
 <translation id="3051128274746680507">Jūsų prižiūrimo naudotojo profilis netrukus bus pašalintas. Prisijunkite, kad sužinotumėte daugiau.</translation>
 <translation id="3055162170959710888">Šį įrenginį šiandien naudojote <ph name="USED_TIME" /></translation>
 <translation id="3076778413190775903">Būsenos dėklas, laikas <ph name="TIME" />,
@@ -304,6 +308,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4261870227682513959">Rodyti pranešimų nustatymus. Pranešimai išjungti</translation>
 <translation id="4269883910223712419">Šio įrenginio administratorius gali atlikti nurodytus veiksmus.</translation>
 <translation id="4279490309300973883">Dubliuojama</translation>
+<translation id="4294319844246081198">Labas rytas, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Išvalykite visus pranešimus (<ph name="COUNT" />)</translation>
 <translation id="4303223480529385476">Išskleisti būsenos sritį</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> gali valdyti jūsų ekraną naudodamas (-a) Nuotolinę pagalbą.</translation>
 <translation id="4430019312045809116">Apimtis</translation>
 <translation id="4450893287417543264">Daugiau neberodyti</translation>
+<translation id="445864333228800152">Labas vakaras,</translation>
 <translation id="4458688154122353284">Sustabdyti ekrano įrašymą</translation>
 <translation id="4477350412780666475">Kitas takelis</translation>
 <translation id="4477892968187500306">Šiame įrenginyje gali būti programų, kurių „Google“ nepatvirtino.</translation>
@@ -430,6 +436,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5887866489674258948">Tamsus režimas</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5901316534475909376">„Shift“ + „Esc“</translation>
+<translation id="5909862606227538307">Neaktyvus darbalaukis.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5920710855273935292">Mikrofonas nutildytas.</translation>
@@ -561,8 +568,10 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7405710164030118432">Jei norite atrakinti įrenginį, įveskite „Family Link“ tėvų prieigos kodą</translation>
 <translation id="741244894080940828">konversija</translation>
 <translation id="742594950370306541">Kamera naudojama.</translation>
+<translation id="742608627846767349">Labas rytas,</translation>
 <translation id="743058460480092004">Kamera ir mikrofonas naudojami.</translation>
 <translation id="7466449121337984263">Palieskite jutiklį</translation>
+<translation id="7477793887173910789">Valdykite savo muziką, vaizdo įrašus ir žaidimus</translation>
 <translation id="7497767806359279797">Pasirinkti kalbą ir klaviatūros išdėstymą</translation>
 <translation id="7526573455193969409">Tinklas gali būti stebimas</translation>
 <translation id="7536035074519304529">IP adresas: <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="8351131234907093545">Sukurti užrašą</translation>
 <translation id="8371779926711439835">Eiti pirmyn per vieną raidę</translation>
 <translation id="8375916635258623388">Šis „<ph name="DEVICE_NAME" />“ įrenginys ir telefonas bus susieti automatiškai</translation>
+<translation id="8380784334203145311">Labanakt,</translation>
 <translation id="8388750414311082622">Negalima pašalinti paskutinio pulto.</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> skirtų parinkčių meniu</translation>
 <translation id="8394567579869570560">Vienas iš tėvų užrakino šį įrenginį</translation>
 <translation id="8412677897383510995">Rodyti ekrano nustatymus</translation>
 <translation id="8425213833346101688">Keisti</translation>
+<translation id="8426708595819210923">Labas vakaras, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Naudojant diktavimo funkciją balsas siunčiamas į sistemą „Google“, kad bet kuriame teksto lauke būtų galima rašyti balsu.</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8433186206711564395">Tinklo nustatymai</translation>

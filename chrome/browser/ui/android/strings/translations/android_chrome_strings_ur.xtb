@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">مطابقت پذیر بنانے کا ابتدائی سیٹ اپ مکمل نہیں ہوا</translation>
 <translation id="1821253160463689938">چاہے آپ وہ صفحات ملاحظہ نہ کریں، تب بھی آپ کی ترجیحات یاد رکھنے کے لیے کوکیز استعمال کرتی ہے</translation>
 <translation id="1829244130665387512">صفحہ پر تلاش کریں</translation>
+<translation id="1843805151597803366">‏بہتر ترجمے حاصل کرنے کے لیے، Google تلاش کو موجودہ صفحہ استعمال کرنے دیں</translation>
 <translation id="1853692000353488670">نیا پوشیدگی ٹیب</translation>
 <translation id="1856325424225101786">لائٹ موڈ ری سیٹ کریں؟</translation>
 <translation id="1868024384445905608">‏Chrome اب فائلز کو مزید تیزی سے ڈاؤن لوڈ کرتا ہے</translation>
@@ -477,6 +478,7 @@
 
 اس ترتیب کو تبدیل کرنے کیلئے، <ph name="BEGIN_LINK" />مطابقت پذیری کو دوبارہ ترتیب دیں<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">کارڈ پر نام</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> پر ڈیجیٹل اثاثہ لنکس کی توثیق ناکام ہوگئی</translation>
 <translation id="4824958205181053313">مطابقت پذیری منسوخ کریں؟</translation>
 <translation id="4835385943915508971">‏Chrome کو درخواست کردہ وسیلہ تک رسائی حاصل نہیں ہے۔</translation>
 <translation id="4837753911714442426">صفحہ پرنٹ کرنے کیلئے اختیارات کھولیں</translation>
@@ -911,6 +913,7 @@
 <translation id="7981313251711023384">زیادہ تیز براؤزنگ اور تلاش کرنے کے لیے صفحات پہلے سے لوڈ کر لیں</translation>
 <translation id="79859296434321399">‏افزودہ حقیقت کا مواد دیکھنے کیلئے، ARCore کو انسٹال کریں</translation>
 <translation id="7986741934819883144">رابطہ منتخب کریں</translation>
+<translation id="799806351373751710">مطابقت پذیری کا سیٹ اپ منسوخ کریں</translation>
 <translation id="7998918019931843664">بند ٹیب دوبارہ کھولیں</translation>
 <translation id="8004582292198964060">براؤزر</translation>
 <translation id="8013372441983637696">‏اس آلہ سے اپنا Chrome ڈیٹا بھی صاف کریں</translation>

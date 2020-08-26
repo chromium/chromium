@@ -11,6 +11,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilní telefon: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Dobré odpoledne, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Nudím se</translation>
 <translation id="1104084341931202936">Zobrazit nastavení přístupnosti</translation>
 <translation id="1104621072296271835">Společně budou vaše zařízení fungovat ještě lépe</translation>
@@ -71,6 +72,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
 <translation id="1698080062160024910">Časovač na <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Adresa IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Plocha: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nastavení sítě</translation>
 <translation id="1743570585616704562">Nerozpoznáno</translation>
 <translation id="1746730358044914197">Metody zadávání nastavuje váš administrátor.</translation>
@@ -107,6 +109,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2018630726571919839">Řekni mi vtip</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
+<translation id="2083190527011054446">Dobrou noc, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nejste připojeni k síti</translation>
 <translation id="2126242104232412123">Nová plocha</translation>
 <translation id="2127372758936585790">Nabíječka má příliš nízký výkon</translation>
@@ -185,6 +188,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3009178788565917040">Výstup</translation>
 <translation id="3033545621352269033">Zapnuto</translation>
 <translation id="3038571455154067151">Pokud se chcete přihlásit, zadejte rodičovský přístupový kód Family Link</translation>
+<translation id="3045488863354895414">Dobré odpoledne,</translation>
 <translation id="3051128274746680507">Váš dozorovaný uživatelský profil bude brzy odstraněn. Chcete-li se dozvědět více, přihlaste se.</translation>
 <translation id="3055162170959710888">Toto zařízení jsi dnes používal(a) <ph name="USED_TIME" /></translation>
 <translation id="3076778413190775903">Stavový panel, čas <ph name="TIME" />,
@@ -304,6 +308,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4261870227682513959">Zobrazit nastavení oznámení. Oznámení jsou vypnutá</translation>
 <translation id="4269883910223712419">Administrátor zařízení má následující možnosti:</translation>
 <translation id="4279490309300973883">Zrcadlení</translation>
+<translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Vymazat všechna oznámení (<ph name="COUNT" />)</translation>
 <translation id="4303223480529385476">Rozbalit stavovou oblast</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4421231901400348175">Ovládání obrazovky je prostřednictvím Vzdálené pomoci sdíleno s uživatelem <ph name="HELPER_NAME" />.</translation>
 <translation id="4430019312045809116">Hlasitost</translation>
 <translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
+<translation id="445864333228800152">Dobrý večer,</translation>
 <translation id="4458688154122353284">Zastavit nahrávání obrazovky</translation>
 <translation id="4477350412780666475">Další skladba</translation>
 <translation id="4477892968187500306">Toto zařízení může obsahovat aplikace, které nebyly ověřeny Googlem.</translation>
@@ -430,6 +436,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5887866489674258948">Tmavý režim</translation>
 <translation id="5895138241574237353">Restartovat</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">Neaktivní plocha.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> <ph name="MAIL" /></translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5920710855273935292">Mikrofon je ztlumen.</translation>
@@ -561,8 +568,10 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7405710164030118432">Chcete-li zařízení odemknout, zadejte svůj rodičovský přístupový kód služby Family Link</translation>
 <translation id="741244894080940828">převod</translation>
 <translation id="742594950370306541">Kamera je používána.</translation>
+<translation id="742608627846767349">Dobré ráno,</translation>
 <translation id="743058460480092004">Kamera a mikrofon jsou používány.</translation>
 <translation id="7466449121337984263">Dotkněte se senzoru</translation>
+<translation id="7477793887173910789">Ovládejte hudbu, videa a další obsah</translation>
 <translation id="7497767806359279797">Vybrat jazyk a klávesnici</translation>
 <translation id="7526573455193969409">Síť může být sledována</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8351131234907093545">Vytvořit poznámku</translation>
 <translation id="8371779926711439835">Dopředu o písmeno</translation>
 <translation id="8375916635258623388">Toto zařízení <ph name="DEVICE_NAME" />a váš telefon se automaticky spojí</translation>
+<translation id="8380784334203145311">Dobrou noc,</translation>
 <translation id="8388750414311082622">Poslední plochu nelze odstranit.</translation>
 <translation id="8392451568018454956">Nabídka možností pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Rodič toto zařízení uzamkl</translation>
 <translation id="8412677897383510995">Zobrazit nastavení displeje</translation>
 <translation id="8425213833346101688">Změnit</translation>
+<translation id="8426708595819210923">Dobrý večer, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Diktování odesílá váš hlas do Googlu, aby bylo možné hlasově zadávat do libovolného textového pole.</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8433186206711564395">Nastavení sítě</translation>

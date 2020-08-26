@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Eerste synchronisatieconfiguratie niet voltooid</translation>
 <translation id="1821253160463689938">Maakt gebruik van cookies om je voorkeuren te onthouden, zelfs als je deze pagina's niet bezoekt</translation>
 <translation id="1829244130665387512">Zoeken op pagina</translation>
+<translation id="1843805151597803366">Sta Google Zoeken toe de huidige pagina te gebruiken om betere vertalingen te krijgen</translation>
 <translation id="1853692000353488670">Nieuw incognitotabblad</translation>
 <translation id="1856325424225101786">Lite-versie resetten?</translation>
 <translation id="1868024384445905608">Chrome downloadt bestanden nu sneller</translation>
@@ -477,6 +478,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 
 <ph name="BEGIN_LINK" />Reset de synchronisatie<ph name="END_LINK" /> als je deze instelling wilt wijzigen.</translation>
 <translation id="4807098396393229769">Naam op pas</translation>
+<translation id="4818017973810341238">Verificatie van Digital Asset Links mislukt voor <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Synchronisatie annuleren?</translation>
 <translation id="4835385943915508971">Chrome heeft geen toegang tot de gevraagde bron.</translation>
 <translation id="4837753911714442426">Afdrukopties voor de pagina openen</translation>
@@ -911,6 +913,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties weer te gev
 <translation id="7981313251711023384">Pagina's vooraf laden voor sneller browsen en zoeken</translation>
 <translation id="79859296434321399">Installeer ARCore om augmented reality-content te bekijken</translation>
 <translation id="7986741934819883144">Een contact selecteren</translation>
+<translation id="799806351373751710">Synchronisatie instellen annuleren</translation>
 <translation id="7998918019931843664">Gesloten tabblad opnieuw openen</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Je Chrome-gegevens ook wissen op dit apparaat</translation>

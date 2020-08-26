@@ -523,7 +523,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1608668830839595724">Tanlangan elementlar uchun yana boshqa amallar</translation>
 <translation id="161042844686301425">Havorang</translation>
 <translation id="1611432201750675208">Qurilmangiz qulflangan</translation>
-<translation id="1611584202130317952">Tekshiruv vaqtida xatolik yuz berdi. Qayta urinib ko‘ring yoki administrator bilan bog‘laning.</translation>
 <translation id="1614511179807650956">Siz belgilangan trafik miqdorini tugatdingiz shekilli. Yana trafik sotib olish uchun <ph name="NAME" /> portaliga tashrif buyuring.</translation>
 <translation id="161460670679785907">Telefoningiz topilmadi</translation>
 <translation id="1616206807336925449">Bu kengaytmaga maxsus ruxsatlarni talab qilmaydi.</translation>
@@ -965,6 +964,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2148219725039824548">Umumiy ruxsat berishda xatolik yuz berdi. Ko‘rsatilgan qurilma tarmoqda emas.</translation>
 <translation id="2148756636027685713">Formatlash yakunlandi</translation>
 <translation id="2148892889047469596">Tab translatsiyasi</translation>
+<translation id="2149973817440762519">Xatcho‘p tahriri</translation>
 <translation id="2150139952286079145">Belgilangan manzillarni qidirish</translation>
 <translation id="2150661552845026580">“<ph name="EXTENSION_NAME" />” o‘rnatilsinmi?</translation>
 <translation id="2151576029659734873">Ichki oyna indeksi noto‘g‘ri kiritildi.</translation>
@@ -5985,6 +5985,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8288032458496410887"><ph name="APP" /> o‘chirilmoqda...</translation>
 <translation id="8289128870594824098">Disk hajmi</translation>
 <translation id="8291967909914612644">Mahalliy ta’minotchi mamlakati</translation>
+<translation id="8293206222192510085">Xatcho‘p qo‘shish</translation>
 <translation id="8294431847097064396">Manba</translation>
 <translation id="8297006494302853456">Zaif</translation>
 <translation id="8299319456683969623">Ayni vaqtda siz internetsiz rejimda ishlayapsiz.</translation>

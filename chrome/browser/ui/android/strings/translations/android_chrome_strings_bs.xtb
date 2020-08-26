@@ -102,7 +102,7 @@
 <translation id="1810845389119482123">Početno postavljanje sinhronizacije nije završeno</translation>
 <translation id="1821253160463689938">Kolačići se koriste kako bi se zapamtile vaše postavke čak i ako ne posjećujete te stranice</translation>
 <translation id="1829244130665387512">Pronađi na stranici</translation>
-<translation id="1843805151597803366">Omogućite Googleu da upotrebljava trenutačnu stranicu radi boljih prijevoda</translation>
+<translation id="1843805151597803366">Da dobijete bolje prijevode, omogućite Google Pretraživanju da koristi trenutnu stranicu</translation>
 <translation id="1853692000353488670">Nova anonimna kartica</translation>
 <translation id="1856325424225101786">Želite li poništiti Jednostavni način?</translation>
 <translation id="1868024384445905608">Chrome sada brže preuzima fajlove</translation>
@@ -478,7 +478,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 
 Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizaciju<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Ime i prezime na kartici</translation>
-<translation id="4818017973810341238">Potvrda veze na digitalne materijale nije uspjela za <ph name="VIOLATED_URL" /></translation>
+<translation id="4818017973810341238">Potvrda linkova za digitalne materijale nije uspjela za <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Otkazati sinhroniziranje?</translation>
 <translation id="4835385943915508971">Chrome nema pristup traženom resursu.</translation>
 <translation id="4837753911714442426">Otvorite opcije za štampanje stranice</translation>
@@ -913,7 +913,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7981313251711023384">Prethodno učitaj stranice za brže pregledavanje i pretraživanje</translation>
 <translation id="79859296434321399">Instalirajte ARCore da vidite sadržaj proširene realnosti</translation>
 <translation id="7986741934819883144">Odaberite kontakt</translation>
-<translation id="799806351373751710">Otkaži postavljanje sinkronizacije</translation>
+<translation id="799806351373751710">Otkaži postavljanje sinhronizacije</translation>
 <translation id="7998918019931843664">Ponovono otvaranje zatvorenih kartica</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8013372441983637696">Također obriši Chrome podatke s ovog uređaja</translation>

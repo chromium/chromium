@@ -522,7 +522,6 @@
 <translation id="1608668830839595724">Још радњи за изабране ставке</translation>
 <translation id="161042844686301425">Плавозелена</translation>
 <translation id="1611432201750675208">Уређај је закључан</translation>
-<translation id="1611584202130317952">Ток доделе је прекинут. Пробајте поново или контактирајте власника или администратора уређаја.</translation>
 <translation id="1614511179807650956">Можда сте искористили дозвољену количину података за мобилне уређаје. Посетите портал за активацију <ph name="NAME" /> да бисте купили још података</translation>
 <translation id="161460670679785907">Нисмо успели да откријемо телефон</translation>
 <translation id="1616206807336925449">Овај додатак не захтева никакве специјалне дозволе.</translation>
@@ -964,6 +963,7 @@
 <translation id="2148219725039824548">Грешка при учитавању дељене датотеке. Наведена дељена датотека није пронађена на мрежи.</translation>
 <translation id="2148756636027685713">Форматирање је завршено</translation>
 <translation id="2148892889047469596">Пребаците картицу</translation>
+<translation id="2149973817440762519">Измените обележивач</translation>
 <translation id="2150139952286079145">Претражите одредишта</translation>
 <translation id="2150661552845026580">Желите ли да додате „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2151576029659734873">Унет је неважећи индекс картице.</translation>
@@ -5987,6 +5987,7 @@
 <translation id="8288032458496410887">Деинсталирај: <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Величина диска</translation>
 <translation id="8291967909914612644">Земља добављача за Home</translation>
+<translation id="8293206222192510085">Додавање обележивача</translation>
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8299319456683969623">Тренутно сте офлајн.</translation>

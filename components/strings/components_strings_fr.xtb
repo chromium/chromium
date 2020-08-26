@@ -642,6 +642,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="362276910939193118">Afficher l'historique complet</translation>
 <translation id="3630155396527302611">S'il est déjà répertorié en tant que programme autorisé à accéder au réseau,
     essayez de le supprimer de la liste, puis de le rajouter.</translation>
+<translation id="3630699740441428070">Les administrateurs de cet appareil ont configuré votre connexion réseau grâce à laquelle ils ont la possibilité d'afficher le trafic de votre réseau, y compris les sites Web que vous consultez.</translation>
 <translation id="3631244953324577188">Biométrie</translation>
 <translation id="3633738897356909127">Bouton "Mise à jour de Chrome" : appuyer sur Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>
 <translation id="3634530185120165534">Bac 5</translation>

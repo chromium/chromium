@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Konfigurimi i sinkronizimit fillestar nuk ka përfunduar</translation>
 <translation id="1821253160463689938">Përdor kuki për të kujtuar preferencat e tua, edhe nëse nuk i viziton ato faqe</translation>
 <translation id="1829244130665387512">Gjej në faqe</translation>
+<translation id="1843805151597803366">Për të marrë përkthime më të mira, lejo që "Kërko në Google" të përdorë faqen aktuale</translation>
 <translation id="1853692000353488670">Skedë e re e fshehtë</translation>
 <translation id="1856325424225101786">Të rivendoset "Modaliteti i lehtë"?</translation>
 <translation id="1868024384445905608">Chrome tani i shkarkon skedarët më shpejt</translation>
@@ -477,6 +478,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 
 Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizimin<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Emri në kartë</translation>
+<translation id="4818017973810341238">Dështoi verifikimi i Digital Asset Links në <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Të anulohet sinkronizimi?</translation>
 <translation id="4835385943915508971">Chrome nuk ka qasje te burimi i kërkuar.</translation>
 <translation id="4837753911714442426">Hap opsionet për të printuar faqen</translation>
@@ -911,6 +913,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7981313251711023384">Ngarkoji paraprakisht faqet për shfletim dhe kërkim më të shpejtë</translation>
 <translation id="79859296434321399">Për të parë përmbajtje realiteti të zgjeruar, instalo ARCore</translation>
 <translation id="7986741934819883144">Zgjidh një kontakt</translation>
+<translation id="799806351373751710">Anulo konfigurimin e sinkronizimit</translation>
 <translation id="7998918019931843664">Rihap skedën e mbyllur</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="8013372441983637696">Pastro po ashtu të dhënat e tua të Chrome nga kjo pajisje</translation>

@@ -525,7 +525,6 @@
 <translation id="1608668830839595724">Meer handelinge vir geselekteerde items</translation>
 <translation id="161042844686301425">Siaanblou</translation>
 <translation id="1611432201750675208">Jou toestel is gesluit</translation>
-<translation id="1611584202130317952">Voorsieningvloei is onderbreek. Probeer asseblief weer of kontak jou toesteleienaar of -administrateur.</translation>
 <translation id="1614511179807650956">Jy het dalk jou beskikbare mobiele data opgebruik. Besoek die <ph name="NAME" />-aktiveringportaal om nog data te koop</translation>
 <translation id="161460670679785907">Kan nie jou foon bespeur nie</translation>
 <translation id="1616206807336925449">Hierdie uitbreiding vereis geen spesiale toestemmings nie.</translation>
@@ -967,6 +966,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2148219725039824548">Kon nie deling monteer nie. Die gespesifiseerde deling is nie in die netwerk gevind nie.</translation>
 <translation id="2148756636027685713">Formatering afgehandel</translation>
 <translation id="2148892889047469596">Saai oortjie uit</translation>
+<translation id="2149973817440762519">Wysig boekmerk</translation>
 <translation id="2150139952286079145">Soekbestemmings</translation>
 <translation id="2150661552845026580">Voeg "<ph name="EXTENSION_NAME" />" by?</translation>
 <translation id="2151576029659734873">Ongeldige oortjie-indeks ingevoer.</translation>
@@ -5989,6 +5989,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8288032458496410887">Deïnstalleer tans <ph name="APP" /> …</translation>
 <translation id="8289128870594824098">Skyfgrootte</translation>
 <translation id="8291967909914612644">Tuisverskafferland</translation>
+<translation id="8293206222192510085">Voeg boekmerk by</translation>
 <translation id="8294431847097064396">Bron</translation>
 <translation id="8297006494302853456">Swak</translation>
 <translation id="8299319456683969623">Jy is tans vanlyn.</translation>

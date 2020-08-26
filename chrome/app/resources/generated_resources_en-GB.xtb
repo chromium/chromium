@@ -525,7 +525,6 @@
 <translation id="1608668830839595724">More actions for selected items</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611432201750675208">Your device is locked</translation>
-<translation id="1611584202130317952">Provisioning flow was interrupted. Please try again or contact your device owner or administrator.</translation>
 <translation id="1614511179807650956">You may have used up your mobile data allowance. Visit the <ph name="NAME" /> activation portal to buy more data</translation>
 <translation id="161460670679785907">Unable to detect your phone</translation>
 <translation id="1616206807336925449">This extension requires no special permissions.</translation>
@@ -967,6 +966,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2148219725039824548">Error mounting share. The specified share was not found on the network.</translation>
 <translation id="2148756636027685713">Formatting finished</translation>
 <translation id="2148892889047469596">Cast tab</translation>
+<translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2150139952286079145">Search destinations</translation>
 <translation id="2150661552845026580">Add "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Invalid tab index entered.</translation>
@@ -5989,6 +5989,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8288032458496410887">Uninstall <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Disk size</translation>
 <translation id="8291967909914612644">Home provider country</translation>
+<translation id="8293206222192510085">Add Bookmark</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297006494302853456">Weak</translation>
 <translation id="8299319456683969623">You are currently offline.</translation>

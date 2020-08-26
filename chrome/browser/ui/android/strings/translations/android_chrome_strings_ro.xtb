@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Configurarea inițială a sincronizării nu este finalizată</translation>
 <translation id="1821253160463689938">Folosește cookie-uri pentru a-ți reține preferințele, chiar dacă nu accesezi paginile respective</translation>
 <translation id="1829244130665387512">Găsește în pagină</translation>
+<translation id="1843805151597803366">Pentru traduceri mai bune, lasă Căutarea Google să folosească pagina actuală</translation>
 <translation id="1853692000353488670">Filă incognito nouă</translation>
 <translation id="1856325424225101786">Resetezi modul Lite?</translation>
 <translation id="1868024384445905608">Acum Chrome descarcă mai rapid fișierele</translation>
@@ -477,6 +478,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 
 Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincronizarea<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Numele de pe card</translation>
+<translation id="4818017973810341238">Nu s-a verificat Digital Asset Links pentru <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Anulezi sincronizarea?</translation>
 <translation id="4835385943915508971">Chrome nu are acces la resursa solicitată.</translation>
 <translation id="4837753911714442426">Deschide opțiunile pentru a printa pagina</translation>
@@ -911,6 +913,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7981313251711023384">Preîncarcă paginile pentru navigare și căutare mai rapide</translation>
 <translation id="79859296434321399">Pentru a vedea conținut din realitatea augmentată, instalează ARCore</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
+<translation id="799806351373751710">Anulează configurarea sincronizării</translation>
 <translation id="7998918019931843664">Redeschideți fila închisă</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Șterge și datele Chrome de pe acest dispozitiv</translation>

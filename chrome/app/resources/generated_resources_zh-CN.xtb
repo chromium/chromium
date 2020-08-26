@@ -329,6 +329,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1386387014181100145">您好！</translation>
 <translation id="1386791642444521222">激活实体 SIM 卡</translation>
+<translation id="1387519831959169718">若要将您的浏览数据与 <ph name="NEW_USER" /> 的浏览数据分隔开来，您可为该用户创建一份新的个人资料</translation>
 <translation id="138784436342154190">要恢复默认启动页吗？</translation>
 <translation id="1388728792929436380">待更新完毕后，<ph name="DEVICE_TYPE" /> 将会重启。</translation>
 <translation id="1390548061267426325">在常规标签页中打开</translation>
@@ -343,6 +344,7 @@
 <translation id="139911022479327130">解锁您的手机并证实您的身份</translation>
 <translation id="1399511500114202393">不使用任何用户证书</translation>
 <translation id="1401308693935339022">使用位置信息。允许具有位置权限的应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
+<translation id="1403222014593521787">无法连接到代理</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" />（受监管用户）</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
 <translation id="1406500794671479665">正在验证...</translation>
@@ -476,6 +478,7 @@
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
 <translation id="155865706765934889">触控板</translation>
+<translation id="1563702743503072935">登录后，您在此设备上也能获取您 Google 帐号中保存的密码</translation>
 <translation id="1566049601598938765">网站</translation>
 <translation id="15662109988763471">所选打印机无法使用或未正确安装。请检查打印机，或尝试选择其他打印机。</translation>
 <translation id="1567387640189251553">自从您上次输入密码后，所连接的键盘已被更换。当前连接的键盘可能会试图窃取您的击键操作。</translation>
@@ -518,7 +521,6 @@
 <translation id="1608668830839595724">可对所选项执行的更多操作</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的设备已锁定</translation>
-<translation id="1611584202130317952">配置流程中断了。请重试，或与您的设备所有者/管理员联系。</translation>
 <translation id="1614511179807650956">您的移动数据流量配额可能已经用完。若想购买更多流量，请前往“<ph name="NAME" />”激活门户网站</translation>
 <translation id="161460670679785907">检测不到您的手机</translation>
 <translation id="1616206807336925449">此扩展程序无需任何特殊权限。</translation>
@@ -903,6 +905,7 @@
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2081816110395725788">使用电池时让电源闲置</translation>
 <translation id="2082187087049518845">为标签页建组</translation>
+<translation id="2082510809738716738">选择一种主题背景颜色</translation>
 <translation id="2087822576218954668">打印：<ph name="PRINT_NAME" /></translation>
 <translation id="2088690981887365033">VPN 网络</translation>
 <translation id="208928984520943006">从屏幕底部向上滑动即可随时回到主屏幕。</translation>
@@ -957,6 +960,7 @@
 <translation id="2148219725039824548">装载共享资源时出错。在网络上找不到所指定的共享资源。</translation>
 <translation id="2148756636027685713">格式化已完成</translation>
 <translation id="2148892889047469596">投射标签页</translation>
+<translation id="2149973817440762519">修改书签</translation>
 <translation id="2150139952286079145">搜索目标打印机</translation>
 <translation id="2150661552845026580">要添加“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="2151576029659734873">输入的标签页索引无效。</translation>
@@ -1053,6 +1057,7 @@
 <translation id="2256115617011615191">立即重新启动</translation>
 <translation id="225614027745146050">欢迎</translation>
 <translation id="225692081236532131">激活状态</translation>
+<translation id="2257053455312861282">您只需添加一个学校帐号，便能以学生身份轻松登录网站、扩展程序和应用，同时仍在家长控制下执行操作。</translation>
 <translation id="2261323523305321874">您的管理员做出了一项系统级更改，致使一些旧个人资料遭到停用。</translation>
 <translation id="2262332168014443534">现在，精简模式可使所有网页（包括 HTTPS 网页）以更快的速度加载。</translation>
 <translation id="2262477216570151239">重复前的延迟时间</translation>
@@ -1966,6 +1971,7 @@
 <translation id="3396800784455899911">点击“接受并继续”按钮，即表示您同意上述针对这些 Google 服务的处理方式。</translation>
 <translation id="3399432415385675819">通知将被停用</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> 赫兹） - 交错</translation>
+<translation id="3402255108239926910">选择头像</translation>
 <translation id="3402585168444815892">正在注册演示模式</translation>
 <translation id="340282674066624">已下载 <ph name="DOWNLOAD_RECEIVED" />，还需 <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">未保存任何用于登录此网站的密码</translation>
@@ -1993,6 +1999,7 @@
 <translation id="3428747202529429621">保护您在 Chrome 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="3428800329481094896">正在提取 Linux 容器 SSH 密钥</translation>
 <translation id="3429275422858276529">为此网页添加书签，以便日后查找</translation>
+<translation id="3431370546335300761">登录即可连接到代理</translation>
 <translation id="3432227430032737297">移除显示的所有 Cookie</translation>
 <translation id="3432757130254800023">向本地网络上的显示屏发送音频和视频</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -2374,6 +2381,7 @@
 <translation id="3841964634449506551">密码无效</translation>
 <translation id="3842552989725514455">Serif 字体</translation>
 <translation id="3843464315703645664">已列入内部许可名单</translation>
+<translation id="3844888638014364087">已插入表情符号</translation>
 <translation id="3846116211488856547">获取用于开发网站、Android 应用等内容的工具。安装 Linux 会使系统下载 <ph name="DOWNLOAD_SIZE" /> 的数据。</translation>
 <translation id="3847319713229060696">帮助我们为所有人改善网络安全环境</translation>
 <translation id="385051799172605136">返回</translation>
@@ -2676,6 +2684,7 @@
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4235200303672858594">整个屏幕</translation>
 <translation id="4235965441080806197">取消登录</translation>
+<translation id="4237773362828263530">带有“*”通配符的设置已不再受支持。如需<ph name="BEGIN_LINK" />更改这些设置<ph name="END_LINK" />，请与您的管理员联系。</translation>
 <translation id="4242145785130247982">有多个客户端证书不受支持</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4242577469625748426">无法在设备上安装策略设置：<ph name="VALIDATION_ERROR" />。</translation>
@@ -2786,6 +2795,7 @@
 <translation id="4384312707950789900">添加到首选网络列表</translation>
 <translation id="4384652540891215547">激活该扩展程序</translation>
 <translation id="438503109373656455">小马</translation>
+<translation id="4385040356362222432">若要将 <ph name="NEW_USER" /> 的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来，请创建一份新的个人资料</translation>
 <translation id="4387004326333427325">身份验证证书遭到远程拒绝</translation>
 <translation id="4387890294700445764">已泄露的密码</translation>
 <translation id="4389091756366370506">用户 <ph name="VALUE" /></translation>
@@ -2893,6 +2903,7 @@
 <translation id="4522570452068850558">详细信息</translation>
 <translation id="4522600456902129422">继续允许此网站查看剪贴板</translation>
 <translation id="4524832533047962394">此版本的操作系统不支持所提供的注册模式。请确保您运行的是最新版本。</translation>
+<translation id="4527186207340858212">创建一份新的工作资料？</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
 <translation id="4530494379350999373">来源</translation>
 <translation id="4532646538815530781">此网站正在使用动态传感器。</translation>
@@ -2943,6 +2954,9 @@
 <translation id="4573515936045019911">必须建立网络连接，才能升级 Linux。请连接到互联网，然后重试。</translation>
 <translation id="457386861538956877">更多...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
+<translation id="457564749856982089">只要您向个人资料添加一个学校帐号，孩子便能以学生身份轻松登录网站、扩展程序和应用，同时仍在家长控制下执行操作。此操作不会授权孩子访问与学校帐号同步的书签、密码或其他浏览器数据。&lt;br&gt;&lt;br&gt;
+    如果您的孩子在校时使用 Chromebook，并且您希望在家中复制同样的在校使用体验，确保孩子能够获取所有必要的学校作业，请退出此 Family Link 帐号，然后从 Chrome 操作系统帐号页面登录学校帐号（注意：Family Link 家长控制将不适用）。&lt;br&gt;&lt;br&gt;
+    如果您的孩子在校时不使用 Chromebook，或者您更愿意借助 Family Link 管理孩子的在家使用体验，请点击下方的“下一步”按钮向这份个人资料添加学校帐号。</translation>
 <translation id="4576541033847873020">配对蓝牙设备</translation>
 <translation id="4579453506923101210">移除已连接的手机</translation>
 <translation id="4579581181964204535">无法投射 <ph name="HOST_NAME" />。</translation>
@@ -3080,6 +3094,7 @@
 <translation id="4763408175235639573">以下 Cookie 是系统在您查看此网页时设置的</translation>
 <translation id="4765582662863429759">允许 Android 信息将短信从手机转送到 Chromebook</translation>
 <translation id="4768332406694066911">您有以下组织发给您的身份证书</translation>
+<translation id="477647109558161443">创建桌面快捷方式</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密码</translation>
 <translation id="4777825441726637019">Play 商店</translation>
 <translation id="4777943778632837590">配置网络域名服务器</translation>
@@ -3451,6 +3466,7 @@
 <translation id="5249624017678798539">浏览器崩溃了，下载还未完成。</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 会使用您的位置信息为您提供本地内容。您可以在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
 <translation id="5252456968953390977">漫游</translation>
+<translation id="5252496130205799136">使用您的 Google 帐号保存和填充密码？</translation>
 <translation id="5252653240322147470">PIN 码必须少于 <ph name="MAXIMUM" /> 位数</translation>
 <translation id="5254368820972107711">显示将被移除的文件</translation>
 <translation id="52550593576409946">无法启动自助服务终端应用。</translation>
@@ -3715,6 +3731,7 @@
 <translation id="5565735124758917034">主动</translation>
 <translation id="5567989639534621706">应用缓存</translation>
 <translation id="5568069709869097550">无法登录</translation>
+<translation id="5571832155627049070">自定义您的个人资料</translation>
 <translation id="5572851009514199876">请启动并登录 Chrome，以便 Chrome 能够检查您是否可以访问此网站。</translation>
 <translation id="5575473780076478375">隐身模式下使用的应用...<ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">请求注册演示模式时出问题了。</translation>
@@ -4290,6 +4307,7 @@
 <translation id="6270770586500173387">发送<ph name="BEGIN_LINK1" />系统和应用信息<ph name="END_LINK1" />以及<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
 <translation id="6272643420381259437">下载该插件时出现错误 (<ph name="ERROR" />)</translation>
 <translation id="6273677812470008672">打印质量</translation>
+<translation id="6276210637549544171">代理 <ph name="PROXY_SERVER" /> 要求提供用户名和密码。</translation>
 <translation id="6277105963844135994">网络超时</translation>
 <translation id="6277518330158259200">屏幕截图(&amp;A)</translation>
 <translation id="6278057325678116358">使用 GTK+</translation>
@@ -4310,6 +4328,7 @@
 <translation id="6298962879096096191">使用 Google Play 安装 Android 应用</translation>
 <translation id="630065524203833229">退出(&amp;X)</translation>
 <translation id="6300718114348072351">无法自动配置<ph name="PRINTER_NAME" />。请指定高级打印机详细信息。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="6301076166764763868">若要将个人的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来，请为 <ph name="NEW_USER" /> 创建一份新的个人资料</translation>
 <translation id="630292539633944562">个人信息建议</translation>
 <translation id="6305607932814307878">全局政策：</translation>
 <translation id="6307990684951724544">系统繁忙</translation>
@@ -4513,6 +4532,7 @@
 <translation id="6556866813142980365">重做</translation>
 <translation id="6556903358015358733">主题背景和壁纸</translation>
 <translation id="6557290421156335491">我的快捷方式</translation>
+<translation id="6560151649238390891">已插入建议</translation>
 <translation id="6561560012278703671">改用静态指示方式（禁止网站发送通知，以免干扰）</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">将系统日志存储到“下载内容”目录中。</translation>
@@ -5162,6 +5182,7 @@
 <translation id="7385854874724088939">尝试打印时出现错误。请检查您的打印机，然后重试。</translation>
 <translation id="7385896526023870365">此扩展程序无权访问其他网站。</translation>
 <translation id="7388044238629873883">即将终结！</translation>
+<translation id="7388209873137778229">系统仅会显示受支持的设备。</translation>
 <translation id="7392118418926456391">病毒扫描失败</translation>
 <translation id="7392915005464253525">重新打开关闭的窗口(&amp;E)</translation>
 <translation id="7396017167185131589">共享文件夹将会显示在此处</translation>
@@ -5185,6 +5206,7 @@
 <translation id="7415454883318062233">设置已完成</translation>
 <translation id="7416362041876611053">未知网络错误。</translation>
 <translation id="741906494724992817">此应用不需要任何特殊权限。</translation>
+<translation id="7420817660256886596">代理 <ph name="PROXY" /> 要求您使用用户名和密码验证身份</translation>
 <translation id="742130257665691897">书签已移除</translation>
 <translation id="7421925624202799674">显示网页源代码(&amp;V)</translation>
 <translation id="7422192691352527311">偏好设置...</translation>
@@ -5444,6 +5466,7 @@
 <translation id="7737115349420013392">正在与“<ph name="DEVICE_NAME" />”配对…</translation>
 <translation id="7737238973539693982">删除 Linux（测试版）</translation>
 <translation id="7740996059027112821">标准</translation>
+<translation id="7741721175294046818">无法连接到代理，请重试</translation>
 <translation id="774377079771918250">选择所需的保存位置</translation>
 <translation id="7744047395460924128">查看您的打印记录</translation>
 <translation id="7744192722284567281">遭遇了数据泄露</translation>
@@ -5688,6 +5711,7 @@
 <translation id="8002670234429879764">“<ph name="PRINTER_NAME" />”已断开连接</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8005600846065423578">始终允许 <ph name="HOST" /> 查看剪贴板</translation>
+<translation id="8006143138282906848">移除这份个人资料</translation>
 <translation id="8008356846765065031">网络已断开，请检查您的互联网连接是否正常。</translation>
 <translation id="8009225694047762179">管理密码</translation>
 <translation id="8012647001091218357">我们暂时无法与您父母取得联系，请重试。</translation>
@@ -5754,9 +5778,11 @@
 <translation id="8084114998886531721">保存的密码</translation>
 <translation id="8086015605808120405">正在配置<ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">设置<ph name="PRINTER_NAME" /></translation>
+<translation id="8086550884324762001">示例：“工作”、“个人”、“孩子”或某个名字</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{这个文件已加密。请让它的所有者进行解密。}other{这些文件中的部分文件已加密。请让它们的所有者进行解密。}}</translation>
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8090234456044969073">读取您最常访问的网站列表</translation>
+<translation id="8092681102116274204">带有“*”通配符的设置已不再受支持。如需<ph name="BEGIN_LINK" />更改这些设置<ph name="END_LINK" />，请与扩展程序开发者或您的管理员联系。</translation>
 <translation id="8093359998839330381">“<ph name="PLUGIN_NAME" />”没有响应</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />备份到 Google 云端硬盘。您随时都能轻松地恢复数据或更换设备。您的备份内容会包含应用数据。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您的备份内容会上传到 Google 并会使用您的 Google 帐号密码进行加密。<ph name="END_PARAGRAPH2" />
@@ -5808,6 +5834,7 @@
 <translation id="8146177459103116374">如果您已在此设备上注册，就能<ph name="LINK2_START" />以现有用户的身份登录<ph name="LINK2_END" />。</translation>
 <translation id="8146793085009540321">登录失败，请与管理员联系或重试。</translation>
 <translation id="8148760431881541277">限制登录</translation>
+<translation id="8151579390896831136">自定义您的个人资料，包括其名称</translation>
 <translation id="8151638057146502721">配置</translation>
 <translation id="8152091997436726702">打印机注册已超时。要注册打印机，您必须在该打印机上确认注册。</translation>
 <translation id="8154790740888707867">未发现文件</translation>
@@ -5926,6 +5953,7 @@
 <translation id="8288032458496410887">卸载<ph name="APP" />…</translation>
 <translation id="8289128870594824098">磁盘大小</translation>
 <translation id="8291967909914612644">家用移动网络提供商所属国家/地区</translation>
+<translation id="8293206222192510085">添加书签</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8297006494302853456">弱</translation>
 <translation id="8299319456683969623">您目前处于离线状态。</translation>
@@ -6531,6 +6559,7 @@
 <translation id="9031549947500880805">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。您的备份内容包含应用数据。</translation>
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
+<translation id="9037818663270399707">您的连接无法确保所有网络流量的私密性</translation>
 <translation id="9037965129289936994">显示原始网页</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{您还剩 1 次尝试机会。}other{您还剩 # 次尝试机会。}}</translation>
 <translation id="9039663905644212491">PEAP</translation>

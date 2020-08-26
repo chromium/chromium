@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">尚未完成初始同步處理設定</translation>
 <translation id="1821253160463689938">使用 Cookie 記住你的偏好設定 (即使你沒有造訪這些網頁)</translation>
 <translation id="1829244130665387512">在網頁中尋找</translation>
+<translation id="1843805151597803366">如要取得更佳的翻譯，請允許 Google 搜尋使用目前的網頁</translation>
 <translation id="1853692000353488670">新增無痕式分頁</translation>
 <translation id="1856325424225101786">要重設精簡模式嗎？</translation>
 <translation id="1868024384445905608">Chrome 現在的檔案下載速度更快了</translation>
@@ -477,6 +478,7 @@
 
 如要變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> 上的 Digital Asset Links 驗證失敗</translation>
 <translation id="4824958205181053313">取消同步處理？</translation>
 <translation id="4835385943915508971">Chrome 無法存取要求的資源。</translation>
 <translation id="4837753911714442426">開啟列印網頁的選項</translation>
@@ -911,6 +913,7 @@
 <translation id="7981313251711023384">預先載入網頁，以加快瀏覽及搜尋速度</translation>
 <translation id="79859296434321399">如要查看擴增實境內容，請安裝 ARCore</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
+<translation id="799806351373751710">取消同步處理設定</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8013372441983637696">一併清除你在這個裝置上的 Chrome 資料</translation>

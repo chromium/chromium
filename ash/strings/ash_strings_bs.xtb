@@ -11,7 +11,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1056775291175587022">Nema mreže</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobilna mreža: <ph name="ADDRESS" /></translation>
-<translation id="1087110696012418426">Dobar dan, <ph name="GIVEN_NAME" /></translation>
+<translation id="1087110696012418426">Dobar dan <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Prikaži postavke pristupačnosti</translation>
 <translation id="1104621072296271835">Uređaji još bolje rade zajedno</translation>
@@ -109,7 +109,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2018630726571919839">Ispričaj mi vic</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2067602449040652523">Svjetlina tipkovnice</translation>
-<translation id="2083190527011054446">Laku noć, <ph name="GIVEN_NAME" /></translation>
+<translation id="2083190527011054446">Laku noć <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Niste povezani na mrežu</translation>
 <translation id="2126242104232412123">Novi sto</translation>
 <translation id="2127372758936585790">Punjač niskog napona</translation>
@@ -308,7 +308,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4261870227682513959">Prikaz postavki obavještenja. Obavještenja su isključena</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
-<translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" /></translation>
+<translation id="4294319844246081198">Dobro jutro <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Brisanje svih obavijesti (<ph name="COUNT" />)</translation>
 <translation id="4303223480529385476">Proširi područje statusa</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -325,7 +325,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4421231901400348175">Dijeljenje kontrole nad vašim ekranom s pomoćnikom <ph name="HELPER_NAME" /> putem pomoći na daljinu.</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
-<translation id="445864333228800152">Dobra večer,</translation>
+<translation id="445864333228800152">Dobro veče,</translation>
 <translation id="4458688154122353284">Zaustavljanje snimanja ekrana</translation>
 <translation id="4477350412780666475">Sljedeća numera</translation>
 <translation id="4477892968187500306">Ovaj uređaj može sadržavati aplikacije koje Google nije potvrdio.</translation>
@@ -571,6 +571,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera i mikrofon su u upotrebi.</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
+<translation id="7477793887173910789">Kontrolirajte muziku, videozapise i drugi sadržaj</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
 <translation id="7526573455193969409">Mreža može biti nadzirana</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
@@ -655,13 +656,13 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="8351131234907093545">Napravite bilješku</translation>
 <translation id="8371779926711439835">Slovo unaprijed</translation>
 <translation id="8375916635258623388">Uređaj <ph name="DEVICE_NAME" /> i vaš telefon će se povezati automatski</translation>
-<translation id="8380784334203145311">Laku noć</translation>
+<translation id="8380784334203145311">Laku noć,</translation>
 <translation id="8388750414311082622">Nije moguće ukloniti posljednju radnu površinu.</translation>
 <translation id="8392451568018454956">Opcije menija za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Roditelj je zaključao uređaj</translation>
 <translation id="8412677897383510995">Prikaz postavki ekrana</translation>
 <translation id="8425213833346101688">Izmijeni</translation>
-<translation id="8426708595819210923">Dobra večer, <ph name="GIVEN_NAME" /></translation>
+<translation id="8426708595819210923">Dobro veče <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Diktiranje šalje vaš glas Googleu kako bi se omogućilo pisanje glasom u bilo kojoj rubrici za tekst.</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8433186206711564395">Postavke mreže</translation>

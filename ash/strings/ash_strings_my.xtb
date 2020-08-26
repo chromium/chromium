@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">ကွန်ရက် မရှိပါ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />− <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">ဆယ်လူလာ− <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">မင်္ဂလာ နေ့လယ်ခင်းပါ <ph name="GIVEN_NAME" />၊</translation>
 <translation id="109942774857561566">ပျင်းနေတယ်</translation>
 <translation id="1104084341931202936">အများသုံးစွဲနိုင်မှု ဆက်တင်များကို ပြရန်</translation>
 <translation id="1104621072296271835">သင်၏စက်ပစ္စည်းများကို အတူတကွအသုံးပြုလျှင် ပိုမိုကောင်းမွန်ပါသည်</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> ကျန်ပါသည်</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> တိုင်မာ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 လိပ်စာ− <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">မျက်နှာပြင်နေရာ - <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ကွန်ရက်ဆက်တင်များ</translation>
 <translation id="1743570585616704562">မသိပါ</translation>
 <translation id="1746730358044914197">ထည့်သွင်းရန်နည်းလမ်းများကို သင်၏ စီမံခန့်ခွဲသူက စီစဉ်သတ်မှတ်ထားခြင်းဖြစ်သည်။</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">ဟာသတစ်ခု ပြောပါ</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
 <translation id="2067602449040652523">ကီးဘုတ် တောက်ပမှု</translation>
+<translation id="2083190527011054446">မင်္ဂလာ ညချမ်းပါ <ph name="GIVEN_NAME" />၊</translation>
 <translation id="209965399369889474">ကွန်ရက်ချိတ်ဆက်မထားပါ</translation>
 <translation id="2126242104232412123">မျက်နှာပြင်နေရာ အသစ်</translation>
 <translation id="2127372758936585790">ပါဝါနိမ့် အားသွင်းစက်</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">အထွက်</translation>
 <translation id="3033545621352269033">ဖွင့်ရန်</translation>
 <translation id="3038571455154067151">လက်မှတ်ထိုးဝင်ရန် သင့် Family Link မိဘသုံးကုဒ် ထည့်ပါ</translation>
+<translation id="3045488863354895414">မင်္ဂလာ နေ့လယ်ခင်းပါ၊</translation>
 <translation id="3051128274746680507">သင်၏ ကြီးကြပ်ခံအသုံးပြုသူပရိုဖိုင်ကို မကြာမီ ဖယ်ရှားလိုက်ပါမည်။ ပိုမိုလေ့လာရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="3055162170959710888">သင်သည် ယနေ့အဖို့ ဤစက်ကို <ph name="USED_TIME" /> သုံးထားပါသည်</translation>
 <translation id="3076778413190775903">အခြေအနေပြ ဗန်း၊ အချိန် <ph name="TIME" />၊
@@ -304,6 +308,7 @@
 <translation id="4261870227682513959">အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အကြောင်းကြားချက်များကို ပိတ်ထားသည်</translation>
 <translation id="4269883910223712419">ဤစက်ပစ္စည်း၏ စီမံခန့်ခွဲသူသည် အောက်ပါတို့ကို လုပ်နိုင်သည်−</translation>
 <translation id="4279490309300973883">ထင်ဟပ်ပေးနေ</translation>
+<translation id="4294319844246081198">မင်္ဂလာ နံနက်ခင်းပါ <ph name="GIVEN_NAME" />၊</translation>
 <translation id="4296136865091727875">သတိပေးချက် <ph name="COUNT" /> ခုလုံးကို ဖယ်ရှားပါ</translation>
 <translation id="4303223480529385476">အခြေအနေပြ နေရာကို ချဲ့ရန်</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@
 <translation id="4421231901400348175">အဝေးမှ ထောက်ကူခြင်း ဆိုသည်မှ တဆင့် သင့်ဖန်သားပြင်အား <ph name="HELPER_NAME" /> နှင့် မျှဝေသုံးစွဲခြင်း။</translation>
 <translation id="4430019312045809116">ပမာဏ</translation>
 <translation id="4450893287417543264">ထပ်မပြပါနှင့်</translation>
+<translation id="445864333228800152">မင်္ဂလာ ညနေခင်းပါ၊</translation>
 <translation id="4458688154122353284">ဖန်သားပြင်ရိုက်ကူးမှု ရပ်ရန်</translation>
 <translation id="4477350412780666475">နောက်တစ်ပုဒ်</translation>
 <translation id="4477892968187500306">ဤစက်တွင် Google က အတည်ပြုမထားသော အက်ပ်များ ပါဝင်နိုင်သည်။</translation>
@@ -430,6 +436,7 @@
 <translation id="5887866489674258948">အမှောင်မုဒ်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">အသုံးမပြုသော မျက်နှာပြင်နေရာ။</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5920710855273935292">မိုက်ပိတ်ထားသည်။</translation>
@@ -561,8 +568,10 @@
 <translation id="7405710164030118432">စက်ပစ္စည်းကို လော့ခ်ဖွင့်ရန် သင်၏ Family Link မိဘသုံးခွင့်ကုဒ်ကို ထည့်ပါ</translation>
 <translation id="741244894080940828">ပြောင်းလဲခြင်း</translation>
 <translation id="742594950370306541">ကင်မရာကို အသုံးပြုနေသည်။</translation>
+<translation id="742608627846767349">မင်္ဂလာ နံနက်ခင်းပါ၊</translation>
 <translation id="743058460480092004">ကင်မရာ နှင့် မိုက်ခရိုဖုန်းကို အသုံးပြုနေသည်။</translation>
 <translation id="7466449121337984263">အာရုံခံကိရိယာကို ထိပါ</translation>
+<translation id="7477793887173910789">သင့်သီချင်း၊ ဗီဒီယိုနှင့် အခြားအရာများ ထိန်းချုပ်ရန်</translation>
 <translation id="7497767806359279797">ဘာသာစကားနှင့် ကီးဘုတ်ကို ရွေးရန်</translation>
 <translation id="7526573455193969409">ကွန်ရက်ကို စောင့်ကြည့်နိုင်ပါသည်</translation>
 <translation id="7536035074519304529">အိုင်ပီလိပ်စာ− <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="8371779926711439835">အက္ခရာအလိုက် ရှေ့သို့သွားရန်</translation>
 <translation id="8375916635258623388">ဤ <ph name="DEVICE_NAME" /> နှင့် သင့်ဖုန်းတို့ အလိုအလျောက် ချိတ်ဆက်ပါမည်</translation>
+<translation id="8380784334203145311">မင်္ဂလာ ညချမ်းပါ၊</translation>
 <translation id="8388750414311082622">နောက်ဆုံးစားပွဲကို ဖယ်ရှား၍မရပါ။</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> အတွက် မီနျူး ရွေးချယ်စရာများ</translation>
 <translation id="8394567579869570560">ဤစက်ကို သင့်မိဘက လော့ခ်ချထားသည်</translation>
 <translation id="8412677897383510995">ဖန်သားပြင်ပြသမှုဆက်တင်များကို ပြရန်</translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
+<translation id="8426708595819210923">မင်္ဂလာ ညနေခင်းပါ <ph name="GIVEN_NAME" />၊</translation>
 <translation id="8427213022735114808">စာရိုက်ရန်အကွက်များတွင် စကားသံဖြင့်စာရိုက်ခြင်းကို ခွင့်ပြုရန် Dictation သည် သင့်အသံကို Google သို့ ပို့သည်။</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8433186206711564395">ကွန်ရက် ဆက်တင်များ</translation>

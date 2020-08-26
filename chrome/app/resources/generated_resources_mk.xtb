@@ -493,7 +493,7 @@
 <translation id="1572876035008611720">Внесете ја вашата е-пошта</translation>
 <translation id="1576594961618857597">Стандарден бел аватар</translation>
 <translation id="1578558981922970608">Затвори присилно</translation>
-<translation id="1578784163189013834">Изберете ја заднината со заштитник на екранот</translation>
+<translation id="1578784163189013834">Изберете заднина за заштитникот на екранот</translation>
 <translation id="1580772913177567930">Контактирајте со администраторот</translation>
 <translation id="1581962803218266616">Прикажи во Наоѓач</translation>
 <translation id="1582955169539260415">избриши [<ph name="FINGERPRINT_NAME" />]</translation>
@@ -525,7 +525,6 @@
 <translation id="1608668830839595724">Повеќе дејства за избраните ставки</translation>
 <translation id="161042844686301425">Тиркизна</translation>
 <translation id="1611432201750675208">Уредот е заклучен</translation>
-<translation id="1611584202130317952">Текот на обезбедување е прекинат. Обидете се повторно или контактирајте со сопственикот или администраторот на уредот.</translation>
 <translation id="1614511179807650956">Можно е да сте го искористиле доделениот мобилен интернет. Посетете го порталот за активација на <ph name="NAME" /> за да купите уште мобилен интернет</translation>
 <translation id="161460670679785907">Не може да се открие вашиот телефон</translation>
 <translation id="1616206807336925449">Оваа наставка не бара специјални дозволи.</translation>
@@ -967,6 +966,7 @@
 <translation id="2148219725039824548">Грешка при монтирање на споделувањето. Наведеното споделување не е најдено на мрежата.</translation>
 <translation id="2148756636027685713">Форматирањето заврши</translation>
 <translation id="2148892889047469596">Картичка за емитување</translation>
+<translation id="2149973817440762519">Измени Обележувач</translation>
 <translation id="2150139952286079145">Пребарај дестинации</translation>
 <translation id="2150661552845026580">Додај „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="2151576029659734873">Внесен е неважечки индекс на картичката.</translation>
@@ -1634,7 +1634,7 @@
 <translation id="2932483646085333864">Одјавете се, па повторно најавете се за да започнете со синхронизација</translation>
 <translation id="2932883381142163287">Пријави злоупотреба</translation>
 <translation id="2933632078076743449">Последно ажурирање</translation>
-<translation id="2934999512438267372">Целосната контрола врз MIDI-уредите е дозволена</translation>
+<translation id="2934999512438267372">Дозволена е целосна контрола врз MIDI-уредите</translation>
 <translation id="2936851848721175671">Бекап и обнова</translation>
 <translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
 <translation id="2938845886082362843">Прегледајте ги и избришете ги податоците за најавување складирани во вашиот безбедносен клуч</translation>
@@ -2598,7 +2598,7 @@
 <translation id="4087089424473531098">Ја креираше наставката:
 
 <ph name="EXTENSION_FILE" /></translation>
-<translation id="408721682677442104">Целосната контрола врз MIDI-уредите е одбиена</translation>
+<translation id="408721682677442104">Не е дозволена целосна контрола врз MIDI-уредите</translation>
 <translation id="4088095054444612037">Прифати за групата</translation>
 <translation id="4089235344645910861">Поставките се зачувани. Синхронизацијата започна.</translation>
 <translation id="4090103403438682346">Овозможи потврден пристап</translation>
@@ -4585,7 +4585,7 @@
 <translation id="6590458744723262880">Преименувај папка</translation>
 <translation id="6592267180249644460">Дневникот WebRTC е зачуван во <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Вашиот отпечаток е снимен</translation>
-<translation id="6595187330192059106">Секогаш блокирај ја можноста <ph name="HOST" /> да има целосна контрола врз MIDI-уредите.</translation>
+<translation id="6595187330192059106">Не дозволувај <ph name="HOST" /> да има целосна контрола врз MIDI-уредите.</translation>
 <translation id="6596325263575161958">Опции за шифрирање</translation>
 <translation id="6596816719288285829">IP-адреса</translation>
 <translation id="6597017209724497268">Примероци</translation>
@@ -5834,7 +5834,7 @@
 <translation id="810728361871746125">Резолуција на екранот</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Нема колачиња од трети страни}=1{Блокирано е 1 колаче од трета страна}one{Блокирано е # колаче од трети страни}other{Блокирани се # колачиња од трети страни}}</translation>
 <translation id="810875025413331850">Не се најдени уреди во близина.</translation>
-<translation id="8113476325385351118">Продолжи да ја блокираш можноста сајтов да има целосна контрола врз MIDI-уредите</translation>
+<translation id="8113476325385351118">Не дозволувај сајтов да има целосна контрола врз MIDI-уредите</translation>
 <translation id="8114199541033039755">Одете на почетен екран, вратете се назад и префрлајте меѓу апликации со копчиња во режим на таблет. Се вклучува кога ќе се овозможи ChromeVox или „Автоматско кликнување“.</translation>
 <translation id="8114875720387900039">Подели хоризонтално</translation>
 <translation id="8116972784401310538">&amp;Управник со обележувачи</translation>
@@ -5991,6 +5991,7 @@
 <translation id="8288032458496410887">Деинсталирајте ја <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Големина на диск</translation>
 <translation id="8291967909914612644">Земја на оператор на почетна страница</translation>
+<translation id="8293206222192510085">Додај обележувач</translation>
 <translation id="8294431847097064396">Извор</translation>
 <translation id="8297006494302853456">Слаб</translation>
 <translation id="8299319456683969623">Во моментов сте исклучени.</translation>

@@ -525,7 +525,6 @@
 <translation id="1608668830839595724">Rohkem toiminguid valitud üksuste jaoks</translation>
 <translation id="161042844686301425">Tsüaan</translation>
 <translation id="1611432201750675208">Teie seade on lukustatud</translation>
-<translation id="1611584202130317952">Ettevalmistusvoog katkestati. Proovige uuesti või võtke ühendust oma seadme omaniku või administraatoriga.</translation>
 <translation id="1614511179807650956">Võimalik, et olete oma mobiilse andmeside mahu ära kasutanud. Andmesidemahtu saab juurde osta aktiveerimisportaalis <ph name="NAME" />.</translation>
 <translation id="161460670679785907">Teie telefoni ei saa tuvastada</translation>
 <translation id="1616206807336925449">Selle laienduse jaoks pole erilube vaja.</translation>
@@ -967,6 +966,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2148219725039824548">Viga jagatava üksuse ühendamisel. Jagatavat üksust võrgust ei leitud.</translation>
 <translation id="2148756636027685713">Vormindamine on lõpetatud</translation>
 <translation id="2148892889047469596">Vahelehe ülekandmine</translation>
+<translation id="2149973817440762519">Muuda järjehoidjat</translation>
 <translation id="2150139952286079145">Otsige sihtkohti</translation>
 <translation id="2150661552845026580">Kas lisada „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2151576029659734873">Sisestati vale vahelehe register.</translation>
@@ -5989,6 +5989,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8288032458496410887">Rakenduse <ph name="APP" /> desinstallimine …</translation>
 <translation id="8289128870594824098">Ketta maht</translation>
 <translation id="8291967909914612644">Koduteenuse pakkuja riik</translation>
+<translation id="8293206222192510085">Lisa järjehoidja</translation>
 <translation id="8294431847097064396">Allikas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
 <translation id="8299319456683969623">Võrguühendus puudub.</translation>

@@ -7,6 +7,7 @@
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> ઉમેરી રહ્યાં છીએ…</translation>
 <translation id="1041308826830691739">વેબસાઇટ પરથી</translation>
 <translation id="1045899828449635435">આ સાઇટમાંથી પણ ડેટા સાફ કરીએ?</translation>
+<translation id="1047303875618851375">Chrome તમારી માહિતી ચકાસી શક્યું નથી</translation>
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="10614374240317010">ક્યારેય ન સચવાયેલું</translation>
 <translation id="1067922213147265141">અન્ય Google સેવાઓ</translation>
@@ -449,6 +450,7 @@
 <translation id="4650364565596261010">સિસ્ટમ ડિફૉલ્ટ</translation>
 <translation id="465657074423018424">Safe Browsing તમારું છેતરામણી વેબસાઇટથી રક્ષણ કરે છે. જો તમે તેને બંધ કરો, તો બ્રાઉઝ કરતી વખતે વધુ સાવધાન રહેજો, ખાસ કરીને પાસવર્ડ દાખલ કરતા પહેલાં.</translation>
 <translation id="4662373422909645029">ઉપનામમાં સંખ્યા ન હોઈ શકે</translation>
+<translation id="4663499661119906179">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ અને સ્ટોરી જુઓ</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> બુકમાર્ક્સ કાઢી નાખ્યાં</translation>
 <translation id="4665282149850138822"><ph name="NAME" /> ને તમારા હોમ સ્ક્રીન પર ઉમેરવામાં આવ્યું હતું</translation>
 <translation id="4668347365065281350">સાઇટ દ્વારા સ્ટોર કરવામાં આવેલો બધો ડેટા, જેમાં કુકી અને સ્થાનિક સ્તરે સ્ટોર થયેલા અન્ય ડેટાનો સમાવેશ થાય છે</translation>
@@ -461,6 +463,7 @@
 <translation id="4719927025381752090">અનુવાદ કરવાની ઑફર કરો</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> માં ખોલો</translation>
 <translation id="4720982865791209136">Chromeને બહેતર બનાવવામાં સહાય કરો. <ph name="BEGIN_LINK" />સર્વેક્ષણમાં ભાગ લો<ph name="END_LINK" /></translation>
+<translation id="47217992755561375">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ જુઓ</translation>
 <translation id="4732120983431207637">સ્ટૅક અનવાઇન્ડર</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4738836084190194332">છેલ્લે સમન્વયિત: <ph name="WHEN" /></translation>
@@ -558,6 +561,7 @@
 <translation id="5433691172869980887">વપરાશકર્તાનામ કૉપિ કર્યું</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> ફાઇલ (<ph name="MEGABYTES" />) ડાઉનલોડ કરી રહ્યાં છીએ.</translation>
 <translation id="5441522332038954058">સરનામાં બાર પર જાઓ</translation>
+<translation id="544776284582297024">ટૅબ ખોલી અને વિવિધ પેજની એક સાથે મુલાકાત લેવા માટે, ટૅબ ખોલો બટન પર ટૅપ કરો</translation>
 <translation id="545042621069398927">તમારા ડાઉનલોડની ગતિ વધારી રહ્યાં છીએ.</translation>
 <translation id="5456381639095306749">પૃષ્ઠ ડાઉનલોડ કરો</translation>
 <translation id="548278423535722844">નકશા અ‍ૅપ્લિકેશનમાં ખોલો</translation>
@@ -633,6 +637,7 @@
 <translation id="5942872142862698679">શોધ માટે Google નો ઉપયોગ કરી રહ્યાં છે</translation>
 <translation id="5952764234151283551">તમે જેના પર પહોંચવાનો પ્રયાસ કરતા હોય તે પેજનું URL Googleને મોકલાવે છે</translation>
 <translation id="5956665950594638604">Chrome સહાયતા કેન્દ્રમાં એક નવું ટૅબ ખોલો</translation>
+<translation id="5957442310066583693">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ જોવા માટે હોમ બટન પર ટૅપ કરો</translation>
 <translation id="5958275228015807058">ડાઉનલોડ કરેલમાંથી તમારી ફાઇલો અને પેજ શોધો</translation>
 <translation id="5962718611393537961">સંકુચિત કરવા માટે ટૅપ કરો</translation>
 <translation id="5964805880140440652">આ પેજને બીજા ડિવાઇસ પર શેર કરવા માટે, Chrome સેટિંગમાં સિંક ચાલુ કરો</translation>
@@ -724,10 +729,12 @@
 <translation id="6583199322650523874">વર્તમાન પૃષ્ઠને બુકમાર્ક કરો</translation>
 <translation id="6588043302623806746">સુરક્ષિત DNSનો ઉપયોગ કરો</translation>
 <translation id="6590471736817333463">60% જેટલો ડેટા બચાવો</translation>
+<translation id="6590680911007613645">તમે સાચવી રહ્યા છો તે પાસવર્ડ <ph name="SITE" /> માટેના તમારા પાસવર્ડ સાથે મેળ ખાતો હોવાની ખાતરી કરો</translation>
 <translation id="6593061639179217415">ડેસ્કટૉપ સાઇટ</translation>
 <translation id="6597891566292541626">QR/બારકોડને આ ફ્રેમમાં મૂકો.</translation>
 <translation id="6600954340915313787">Chrome માં કોપી કરાયું</translation>
 <translation id="661266467055912436">વેબ પર તમારા માટે તેમજ પ્રત્યેક માટે સુરક્ષાને બહેતર બનાવે છે.</translation>
+<translation id="6618554661997243500">તમારા માટે શ્રેષ્ઠ હોય તેવી સાઇટ અને સ્ટોરી જોવા માટે હોમ બટન પર ટૅપ કરો</translation>
 <translation id="6627583120233659107">ફોલ્ડરમાં ફેરફાર કરો</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6643649862576733715">બચાવાયેલ ડેટાના પ્રમાણ અનુસાર સૉર્ટ કરો</translation>
@@ -788,6 +795,7 @@
 <translation id="7077143737582773186">SD કાર્ડ</translation>
 <translation id="7080806333218412752">URLs ચેક કરવા માટે તેમને Safe Browsing પર મોકલે છે. નવા જોખમો શોધવામાં સહાય કરવા માટે પેજના નાના નમૂના, ડાઉનલોડ, એક્સ્ટેન્શનની પ્રવૃત્તિ અને સિસ્ટમની માહિતી પણ મોકલે છે. તમે સાઇન ઇન કરેલું હોય ત્યારે સમગ્ર Google ઍપ પર તમારું રક્ષણ કરવા માટે, આ ડેટાને હંગામી રૂપે તમારા Google એકાઉન્ટ સાથે લિંક કરે છે.</translation>
 <translation id="7088681679121566888">Chrome અપ ટૂ ડેટ છે</translation>
+<translation id="7106762743910369165">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="7121362699166175603">ઍડ્રેસ બારમાં ઇતિહાસ અને ઑટોમૅટિક રીતે પૂર્ણતા સાફ કરે છે. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="7128355412245153445">જ્યારે પણ તમે હોમ બટન પર ટૅપ કરો ત્યારે તમારી શ્રેષ્ઠ અને એકદમ નવી સ્ટોરી જુઓ</translation>
 <translation id="7138678301420049075">અન્ય</translation>
@@ -1030,6 +1038,7 @@
 <translation id="8993760627012879038">છુપા મોડમાં એક નવું ટૅબ ખોલો</translation>
 <translation id="8996847606757455498">કોઈ અન્ય પ્રદાતા પસંદ કરો</translation>
 <translation id="8998729206196772491">તમે <ph name="MANAGED_DOMAIN" /> દ્વારા મેનેજ એકાઉન્ટમાં સાઇન ઇન કરી રહ્યાં છો અને તમારા Chrome ડેટા પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો ડેટા આ એકાઉન્ટ સાથે કાયમીરૂપે જોડાયેલું રહેશે. Chromeમાંથી સાઇન આઉટ કરવું આ ડિવાઇસ પરથી તમારો ડેટા ડિલીટ કરશે, પરંતુ એ તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
+<translation id="9022774213089566801">વારંવાર મુલાકાત લેવાયેલ</translation>
 <translation id="9028914725102941583">બધા ડિવાઇસ પર શેર કરવા માટે 'સિંક કરો'ની સુવિધા ચાલુ કરો</translation>
 <translation id="9040142327097499898">નોટિફિકેશનની મંજૂરી છે. આ ઉપકરણ માટે સ્થાન ઍક્સેસ બંધ છે.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# વીડિયો}one{# વીડિયો}other{# વીડિયો}}</translation>

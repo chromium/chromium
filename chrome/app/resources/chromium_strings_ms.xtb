@@ -3,7 +3,7 @@
 <translationbundle lang="ms">
 <translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium menyemak perisian yang tidak diingini seminggu sekali. Terakhir disemak: 1 jam yang lalu.}other{Chromium menyemak perisian yang tidak diingini seminggu sekali. Terakhir disemak: {NUM_HOURS} jam yang lalu.}}</translation>
 <translation id="1065672644894730302">Pilihan anda tidak dapat dibaca. Beberapa ciri mungkin tidak tersedia dan perubahan terhadap pilihan tidak akan disimpan.</translation>
-<translation id="107513968719897256">Untuk memisahkan penyemakan imbas peribadi dan <ph name="NEW_USER" />, cipta profil baharu di Chromium</translation>
+<translation id="107513968719897256">Untuk memisahkan penyemakan imbas peribadi dan <ph name="NEW_USER" />, buat profil baharu pada Chromium</translation>
 <translation id="1098170124587656448">Chromium dapat membantu untuk memastikan anda selamat daripada pelanggaran data, sambungan tidak elok dan pelbagai lagi</translation>
 <translation id="1104942323762546749">Chromium mahu mengeksport kata laluan anda. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="113122355610423240">Chromium ialah penyemak imbas lalai anda</translation>
@@ -109,7 +109,7 @@
 <translation id="4943838377383847465">Chromium dalam mod latar belakang.</translation>
 <translation id="4987820182225656817">Tetamu boleh menggunakan Chromium tanpa meninggalkan apa-apa.</translation>
 <translation id="4994636714258228724">Tambahkan diri anda kepada Chromium</translation>
-<translation id="5080135079858647714">Cipta profil anda sendiri di Chromium?</translation>
+<translation id="5080135079858647714">Buat profil anda sendiri pada Chromium?</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="5277894862589591112">Untuk menggunakan perubahan anda, mulakan semula Chromium</translation>
 <translation id="5358375970380395591">Anda log masuk menggunakan akaun yang terurus dan memberikan pentadbirnya kawalan ke atas profil Chromium anda. Data Chromium anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Akaun Google, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. <ph name="LEARN_MORE" /></translation>
@@ -168,7 +168,7 @@
 Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbeza atau gunakan versi Chromium yang lebih baharu.</translation>
 <translation id="6734080038664603509">Kemas kini &amp;Chromium</translation>
 <translation id="6734291798041940871">Chromium telah dipasang untuk semua pengguna pada komputer anda.</translation>
-<translation id="6762551859069255163">Gunakan profil yang berlainan di Chromium untuk memisahkan penyemakan imbas kerja dan peribadi atau untuk orang berbeza yang menggunakan peranti ini</translation>
+<translation id="6762551859069255163">Gunakan profil yang berlainan pada Chromium untuk memisahkan penyemakan imbas kerja dan peribadi atau untuk orang berbeza yang menggunakan peranti ini</translation>
 <translation id="6774082503108938489">Ibu/bapa anda telah mematikan "Kebenaran untuk tapak web, apl dan sambungan" untuk Chromium. Tindakan mendayakan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak dibenarkan.</translation>
 <translation id="6847869444787758381">Chromium akan memberitahu anda sekiranya kata laluan anda terjejas</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>

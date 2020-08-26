@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">همگام‌سازی اولیه کامل نشد</translation>
 <translation id="1821253160463689938">از کوکی‌ها برای به خاطر سپردن تنظیمات برگزیده‌تان استفاده می‌کند، حتی اگر از آن صفحه‌ها بازدید نکنید</translation>
 <translation id="1829244130665387512">یافتن در صفحه</translation>
+<translation id="1843805151597803366">‏برای دریافت ترجمه‌های بهتر، به «جستجوی Google» اجازه دهید از صفحه کنونی استفاده کند</translation>
 <translation id="1853692000353488670">برگه جدید ناشناس</translation>
 <translation id="1856325424225101786">«حالت ساده» بازنشانی شود؟</translation>
 <translation id="1868024384445905608">‏اکنون Chrome فایل‌ها را سریع‌تر بارگیری می‌کند</translation>
@@ -477,6 +478,7 @@
 
 برای تغییر این تنظیم، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">نام روی کارت</translation>
+<translation id="4818017973810341238">راستی‌آزمایی پیوندهای دارایی دیجیتال در <ph name="VIOLATED_URL" /> انجام نشد</translation>
 <translation id="4824958205181053313">همگام‌سازی لغو شود؟</translation>
 <translation id="4835385943915508971">‏Chrome به منبع درخواستی دسترسی ندارد.</translation>
 <translation id="4837753911714442426">باز کردن گزینه‌های چاپ صفحه</translation>
@@ -911,6 +913,7 @@
 <translation id="7981313251711023384">پیش‌بارگیری صفحه‌ها برای مرور و جستجوی سریع‌تر</translation>
 <translation id="79859296434321399">‏برای مشاهده محتوای واقعیت افزوده، ARCore را نصب کنید</translation>
 <translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
+<translation id="799806351373751710">لغو راه‌اندازی همگام‌سازی</translation>
 <translation id="7998918019931843664">بازکردن مجدد برگه‌های بسته شده</translation>
 <translation id="8004582292198964060">مرورگر</translation>
 <translation id="8013372441983637696">‏داده‌های این Chrome هم از این دستگاه پاک شود</translation>

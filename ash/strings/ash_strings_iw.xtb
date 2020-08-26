@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">אין רשתות</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">סלולרי: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">אחה"צ טובים <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">משעמם לי</translation>
 <translation id="1104084341931202936">צפייה בהגדרות הנגישות</translation>
 <translation id="1104621072296271835">ביחד, המכשירים שלך יוכלו לעבוד עוד יותר טוב</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
 <translation id="1698080062160024910">טיימר של <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">‏כתובת IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">שולחן עבודה וירטואלי: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">הגדרות רשת</translation>
 <translation id="1743570585616704562">לא מזוהה</translation>
 <translation id="1746730358044914197">מנהל המערכת שלך מגדיר את שיטות הקלט.</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">אני רוצה לשמוע בדיחה</translation>
 <translation id="2050339315714019657">לאורך</translation>
 <translation id="2067602449040652523">בהירות מקלדת</translation>
+<translation id="2083190527011054446">לילה טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">לא מחובר לרשת</translation>
 <translation id="2126242104232412123">שולחן עבודה חדש</translation>
 <translation id="2127372758936585790">מטען בעל מתח נמוך</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">פלט</translation>
 <translation id="3033545621352269033">מופעל</translation>
 <translation id="3038571455154067151">‏כדי להיכנס יש להזין את קוד הגישה להורים (הקוד מ-Family Link)</translation>
+<translation id="3045488863354895414">אחה"צ טובים,</translation>
 <translation id="3051128274746680507">פרופיל המשתמש בפיקוח שלך יוסר בקרוב. יש להיכנס לחשבון כדי לקבל מידע נוסף.</translation>
 <translation id="3055162170959710888">השתמשת היום במכשיר הזה במשך <ph name="USED_TIME" /></translation>
 <translation id="3076778413190775903">מגש סטטוס, זמן <ph name="TIME" />,‏
@@ -304,6 +308,7 @@
 <translation id="4261870227682513959">צפייה בהגדרות של הודעות. ההודעות מושבתות</translation>
 <translation id="4269883910223712419">מנהל המכשיר הזה יכול:</translation>
 <translation id="4279490309300973883">שיקוף</translation>
+<translation id="4294319844246081198">בוקר טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ניקוי כל <ph name="COUNT" /> ההתראות</translation>
 <translation id="4303223480529385476">הרחבה של אזור הסטטוס</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@
 <translation id="4421231901400348175">שיתוף השליטה במסך עם <ph name="HELPER_NAME" /> דרך סיוע מרחוק.</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
+<translation id="445864333228800152">ערב טוב,</translation>
 <translation id="4458688154122353284">הפסקה של הקלטת המסך</translation>
 <translation id="4477350412780666475">הטראק הבא</translation>
 <translation id="4477892968187500306">‏המכשיר הזה עשוי להכיל אפליקציות שלא אומתו על-ידי Google.</translation>
@@ -430,6 +436,7 @@
 <translation id="5887866489674258948">מצב כהה</translation>
 <translation id="5895138241574237353">הפעל מחדש</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">שולחן עבודה וירטואלי לא פעיל.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5920710855273935292">המיקרופון מושתק.</translation>
@@ -561,8 +568,10 @@
 <translation id="7405710164030118432">‏כדי לבטל את נעילת המכשיר, יש להזין את קוד גישת ההורה של Family Link</translation>
 <translation id="741244894080940828">המרה</translation>
 <translation id="742594950370306541">המצלמה נמצאת בשימוש.</translation>
+<translation id="742608627846767349">בוקר טוב,</translation>
 <translation id="743058460480092004">המצלמה והמיקרופון נמצאים בשימוש.</translation>
 <translation id="7466449121337984263">יש לגעת בחיישן</translation>
+<translation id="7477793887173910789">שליטה במוזיקה, בסרטונים ועוד</translation>
 <translation id="7497767806359279797">בחירת שפה ומקלדת</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
 <translation id="7536035074519304529">‏כתובת IP: <ph name="ADDRESS" /></translation>
@@ -649,11 +658,13 @@
 <translation id="8351131234907093545">יצירת הערה</translation>
 <translation id="8371779926711439835">אות אחת קדימה</translation>
 <translation id="8375916635258623388">מכשיר <ph name="DEVICE_NAME" /> זה והטלפון יחוברו באופן אוטומטי</translation>
+<translation id="8380784334203145311">לילה טוב,</translation>
 <translation id="8388750414311082622">לא ניתן להסיר את שולחן העבודה האחרון.</translation>
 <translation id="8392451568018454956">תפריט אפשרויות עבור <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">הורה נעל את המכשיר הזה</translation>
 <translation id="8412677897383510995">הצגת הגדרות התצוגה</translation>
 <translation id="8425213833346101688">שנה</translation>
+<translation id="8426708595819210923">ערב טוב <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">‏הכתבה שולחת הקלטה של הקול שלך אל Google כדי לאפשר הקלדה קולית בתיבת טקסט כלשהי.</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>

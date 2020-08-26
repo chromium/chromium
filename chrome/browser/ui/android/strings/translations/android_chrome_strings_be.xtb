@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Першапачатковая наладка сінхранізацыі не завершана</translation>
 <translation id="1821253160463689938">Выкарыстоўваць файлы cookie для захавання параметраў, нават калі вы не адкрываеце гэтыя старонкі</translation>
 <translation id="1829244130665387512">Пошук на старонцы</translation>
+<translation id="1843805151597803366">Дазвольце Google Пошуку выкарыстаць бягучую старонку для паляпшэння перакладу</translation>
 <translation id="1853692000353488670">Новая ўкладка інкогніта</translation>
 <translation id="1856325424225101786">Скінуць налады лёгкага рэжыму?</translation>
 <translation id="1868024384445905608">Chrome цяпер спампоўвае файлы хутчэй</translation>
@@ -477,6 +478,7 @@
 
 Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />скіньце налады сінхранізацыі<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Імя на картцы</translation>
+<translation id="4818017973810341238">Памылка праверкі Digital Asset Links па адрасе <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Скасаваць сінхранізацыю?</translation>
 <translation id="4835385943915508971">Chrome не мае доступу да запытанай крыніцы.</translation>
 <translation id="4837753911714442426">Адкрыць параметры друку старонкі</translation>
@@ -911,6 +913,7 @@
 <translation id="7981313251711023384">Папярэдне загружаць старонкі для больш хуткага прагляду і пошуку</translation>
 <translation id="79859296434321399">Каб праглядаць змесціва ў рэжыме дапоўненай рэальнасці, усталюйце ARCore</translation>
 <translation id="7986741934819883144">Выберыце кантакт</translation>
+<translation id="799806351373751710">Скасаваць наладжванне сінхранізацыі</translation>
 <translation id="7998918019931843664">Паўторна адкрыць закрытую ўкладку</translation>
 <translation id="8004582292198964060">Браўзер</translation>
 <translation id="8013372441983637696">Таксама выдаліць даныя Chrome з гэтай прылады</translation>

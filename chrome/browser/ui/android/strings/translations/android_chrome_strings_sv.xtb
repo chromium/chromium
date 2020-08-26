@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Konfigurationen av synkronisering har inte slutförts</translation>
 <translation id="1821253160463689938">Kommer ihåg med hjälp av cookies vad du brukar välja även om du inte besöker sidorna i fråga</translation>
 <translation id="1829244130665387512">Hitta på sida</translation>
+<translation id="1843805151597803366">Låt Google Sök använda den aktuella sidan så att du får bättre översättningar</translation>
 <translation id="1853692000353488670">Ny inkognitoflik</translation>
 <translation id="1856325424225101786">Vill du återställa begränsat läge?</translation>
 <translation id="1868024384445905608">Nu laddas filer ned snabbare i Chrome</translation>
@@ -477,6 +478,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 
 <ph name="BEGIN_LINK" />Återställ synkroniseringen<ph name="END_LINK" /> om du vill ändra den här inställningen.</translation>
 <translation id="4807098396393229769">Namn på kort</translation>
+<translation id="4818017973810341238">Verifieringen av länkar till digitala tillgångar misslyckades för <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Vill du avbryta synkroniseringen?</translation>
 <translation id="4835385943915508971">Chrome har inte tillgång till den begärda resursen.</translation>
 <translation id="4837753911714442426">Öppna utskriftsalternativ</translation>
@@ -911,6 +913,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7981313251711023384">Läs in sidor i förväg så att det går snabbare att surfa och söka</translation>
 <translation id="79859296434321399">Installera ARCore om du vill visa innehåll med förstärkt verklighet</translation>
 <translation id="7986741934819883144">Välj en kontakt</translation>
+<translation id="799806351373751710">Avbryt och konfigurera inte synkronisering</translation>
 <translation id="7998918019931843664">Öppna en stängd flik på nytt</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8013372441983637696">Rensa även Chrome-data från enheten</translation>

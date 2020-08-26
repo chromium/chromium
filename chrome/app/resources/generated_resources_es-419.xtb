@@ -521,7 +521,6 @@
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
-<translation id="1611584202130317952">Se interrumpió el flujo de aprovisionamiento. Vuelve a intentarlo o comunícate con el administrador o propietario de tu dispositivo.</translation>
 <translation id="1614511179807650956">Es posible que hayas agotado los datos móviles. Accede al portal de activación de <ph name="NAME" /> para comprar más datos.</translation>
 <translation id="161460670679785907">No se puede detectar tu teléfono</translation>
 <translation id="1616206807336925449">Esta extensión no requiere permisos especiales.</translation>
@@ -961,6 +960,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2148219725039824548">Se produjo un error al activar el recurso compartido porque no se lo encontró en la red.</translation>
 <translation id="2148756636027685713">Formato terminado</translation>
 <translation id="2148892889047469596">Transmitir pestaña</translation>
+<translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2150139952286079145">Buscar destinos</translation>
 <translation id="2150661552845026580">¿Quieres instalar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Se ingresó un índice de pestaña no válido.</translation>
@@ -5956,6 +5956,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8288032458496410887">Desinstalar <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Tamaño del disco</translation>
 <translation id="8291967909914612644">País del proveedor de origen</translation>
+<translation id="8293206222192510085">Agregar Marcador</translation>
 <translation id="8294431847097064396">Fuente</translation>
 <translation id="8297006494302853456">Débil</translation>
 <translation id="8299319456683969623">Actualmente, no tienes conexión.</translation>

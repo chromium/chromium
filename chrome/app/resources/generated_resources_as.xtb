@@ -521,7 +521,6 @@
 <translation id="1608668830839595724">বাছনি কৰা বস্তুবোৰৰ বাবে অধিক কাৰ্য</translation>
 <translation id="161042844686301425">চাইয়ান</translation>
 <translation id="1611432201750675208">আপোনাৰ ডিভাইচটো লক হৈ আছে</translation>
-<translation id="1611584202130317952">প্ৰ’ভিজনিং ফ্ল’ বাধাপ্ৰাপ্ত হৈছে। অনুগ্ৰহ কৰি আকৌ চেষ্টা কৰক বা আপোনাৰ ডিভাইচৰ গৰাকী বা প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="1614511179807650956">আপুনি ব্যৱহাৰৰ অনুমতি থকা সকলো ম’বাইল ডেটা চাগে ব্যৱহাৰ কৰিলে। অধিক ডেটা ক্ৰয় কৰিবলৈ <ph name="NAME" /> সক্ৰিয়কৰণৰ প’ৰ্টেললৈ যাওক</translation>
 <translation id="161460670679785907">আপোনাৰ ফ’ন চিনাক্ত কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="1616206807336925449">এই এক্সটেনশ্বনটোৰ বাবে কোনো বিশেষ অনুমতি ল'ব নালাগে।</translation>
@@ -961,6 +960,7 @@
 <translation id="2148219725039824548">শ্বেয়াৰ মাউণ্ট কৰোঁতে আসোঁৱাহ হ’ল। নেটৱর্কত নির্দিষ্ট কৰা শ্বেয়াৰ কৰা কার্যটো বিচাৰি পোৱ নগ’ল।</translation>
 <translation id="2148756636027685713">ফৰ্মেট কৰা সম্পূৰ্ণ হ’ল</translation>
 <translation id="2148892889047469596">টেব কাষ্ট কৰক</translation>
+<translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
 <translation id="2150139952286079145">লক্ষ্যস্থান সন্ধান কৰক</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" যোগ কৰিবনে?</translation>
 <translation id="2151576029659734873">অমান্য টেব ইণ্ডেক্স দিয়া হৈছে।</translation>
@@ -5943,6 +5943,7 @@
 <translation id="8288032458496410887"><ph name="APP" /> আনইনষ্টল কৰক ...</translation>
 <translation id="8289128870594824098">ডিস্কৰ আকাৰ</translation>
 <translation id="8291967909914612644">গৃহ প্ৰদানকাৰী দেশ</translation>
+<translation id="8293206222192510085">বুকমাৰ্ক যোগ কৰক</translation>
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8297006494302853456">দুৰ্বল</translation>
 <translation id="8299319456683969623">আপুনি বর্তমান অফলাইন হৈ আছে।</translation>

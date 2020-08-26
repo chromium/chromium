@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">La configuración de sincronización inicial no ha terminado</translation>
 <translation id="1821253160463689938">Usa cookies para recordar tus preferencias aunque no visites esas páginas</translation>
 <translation id="1829244130665387512">Buscar en la página</translation>
+<translation id="1843805151597803366">Para obtener mejores traducciones, permite que la Búsqueda de Google use la página actual</translation>
 <translation id="1853692000353488670">Nueva pestaña de incógnito</translation>
 <translation id="1856325424225101786">¿Restablecer el modo básico?</translation>
 <translation id="1868024384445905608">Ahora Chrome descarga los archivos más rápido</translation>
@@ -477,6 +478,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 
 Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Titular de la tarjeta</translation>
+<translation id="4818017973810341238">No se han podido verificar Digital Asset Links en <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">¿Quieres cancelar la sincronización?</translation>
 <translation id="4835385943915508971">Chrome no tiene acceso al recurso solicitado.</translation>
 <translation id="4837753911714442426">Abre las opciones para imprimir la página</translation>
@@ -911,6 +913,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7981313251711023384">Cargar previamente las páginas para que la navegación y las búsquedas sean más rápidas</translation>
 <translation id="79859296434321399">Instala ARCore para visualizar contenido de realidad aumentada</translation>
 <translation id="7986741934819883144">Selecciona un contacto</translation>
+<translation id="799806351373751710">Cancelar configuración de sincronización</translation>
 <translation id="7998918019931843664">Volver a abrir pestaña cerrada</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8013372441983637696">Borrar también los datos de Chrome de este dispositivo</translation>

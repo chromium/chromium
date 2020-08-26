@@ -8,13 +8,16 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> পূর্বে Chrome ব্যবহার করছিলেন</translation>
 <translation id="1097330777386562916">Chrome বন্ধ করার সময় কুকি ও সাইটের ডেটা মুছে দিন</translation>
 <translation id="110877069173485804">এটি হল আপনার Chrome</translation>
+<translation id="1125124144982679672">Chrome কে ব্যবহার করছেন?</translation>
 <translation id="1142745911746664600">Chrome আপডেট করা যাচ্ছে না</translation>
 <translation id="1154147086299354128">&amp;Chrome এ খুলুন</translation>
 <translation id="123620459398936149">Chrome OS আপনার ডেটা সিঙ্ক করতে পারেনি৷ দয়া করে আপনার সিঙ্ক পাসফ্রেজ আপডেট করুন৷</translation>
 <translation id="1302523850133262269">Chrome যখন সাম্প্রতিক সিস্টেম আপডেটগুলিকে ইনস্টল করে তখন দয়া করে অপেক্ষা করুন৷</translation>
+<translation id="1355000804395496115">অফিস ও ব্যক্তিগত ব্রাউজিং আলাদা রাখতে অথবা একাধিক ব্যবহারকারী এই ডিভাইস ব্যবহার করলে, প্রত্যেকের জন্য Chrome-এ আলাদা প্রোফাইল তৈরি করুন</translation>
 <translation id="137466361146087520">Google Chrome বিটা</translation>
 <translation id="1399397803214730675">এই কম্পিউটারটিতে ইতিমধ্যে Google Chrome-এর অতি সাম্প্রতিক ভার্সন রয়েছে৷ যদি সফ্টওয়্যারটি কাজ না করে তবে দয়া করে Google Chrome আনইনস্টল করুন এবং এটি আবার ডাউনলোড করুন৷</translation>
 <translation id="1434626383986940139">Chrome Canary অ্যাপ্লিকেশানগুলি</translation>
+<translation id="1513277449617685876">ব্যক্তিগত ব্রাউজিং থেকে <ph name="NEW_USER" /> হিসেবে ব্রাউজিংকে আলাদা রাখতে Chrome-এ নতুন প্রোফাইল তৈরি করুন</translation>
 <translation id="1553358976309200471">Chrome আপডেট করুন</translation>
 <translation id="1587223624401073077">Google Chrome আপনার ক্যামেরা ব্যবহার করছে৷</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> বিপজ্জনক, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
@@ -104,6 +107,7 @@
 <translation id="3889417619312448367">Google Chrome আনইনস্টল করুন</translation>
 <translation id="4050175100176540509">গুরুত্বপূর্ণ নিরাপত্তা উন্নতি এবং নতুন বৈশিষ্ট্যগুলি সর্বশেষ ভার্সনে উপলভ্য।</translation>
 <translation id="4053720452172726777">Google Chrome কাস্টমাইজ ও নিয়ন্ত্রণ করুন</translation>
+<translation id="4110895483821904099">আপনার নতুন Chrome প্রোফাইল সেট আপ করুন</translation>
 <translation id="4143243756087420366">Chrome এর নাম এবং ছবি</translation>
 <translation id="4147555960264124640">আপনি একটি পরিচালিত অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Google Chrome প্রোফাইলের উপরে নিয়ন্ত্রণ দিচ্ছেন৷ আপনার Chrome ডেটা, যেমন অ্যাপগুলি, বুকমার্কগুলি, ইতিহাস, পাসওয়ার্ডগুলি এবং অন্যান্য সেটিংস <ph name="USER_NAME" /> এতে স্থায়ীভাবে সম্পৃক্ত হবে৷ আপনি Google অ্যাকাউন্টের ড্যাশবোর্ডের মাধ্যমে এই ডেটাগুলি মুছতে পারবেন, কিন্তু আপনি অন্য একটি অ্যাকাউন্টের সাথে এই ডেটা সংশ্লিষ্ট করতে পারবেন না৷ <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">ইনস্টলারটি আর্কাইভ আনকমপ্রেস করা যায়নি৷ অনুগ্রহ করে আবার Google Chrome ডাউনলোড করুন৷</translation>
@@ -155,6 +159,7 @@
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
 <translation id="556024056938947818">Google Chrome পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে৷</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5633355459292055250">আমি Chrome খুললে জিজ্ঞাসা করো</translation>
 <translation id="5657226924540934362">এই পৃষ্ঠাতে কোনও একটি সেটিং দেখা না গেলে, আপনার <ph name="LINK_BEGIN" />
       Chrome OS সেটিংস<ph name="LINK_END" /> বিকল্পটি দেখুন</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
@@ -208,6 +213,7 @@
 <translation id="7398801000654795464">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসাবে Chrome-এ প্রবেশ করেছেন৷ আবার সাইন-ইন করতে একই অ্যাকাউন্ট ব্যবহার করুন৷</translation>
 <translation id="7408085963519505752">Chrome OS শর্তাবলী</translation>
 <translation id="7419046106786626209">আপনার ডোমেনে সিঙ্ক উপলভ্য না থাকার কারণে Chrome OS আপনার ডেটা সিঙ্ক করতে পারেনি৷</translation>
+<translation id="7423733001651488593">এটি এই ডিভাইস থেকে আপনার ব্রাউজিং ডেটা স্থায়ীভাবে মুছে দেবে। ডেটা ফিরিয়ে আনতে, Chrome-এ এই ইমেল আইডি ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="7486227612705979895">অ্যাড্রেস বারে সাজেশন দেওয়ার জন্য Chrome আপনার ড্রাইভ অ্যাক্সেস করবে</translation>
 <translation id="7535429826459677826">Google Chrome ডেভেলপার</translation>
 <translation id="7573289029918943991">আপনার ডিভাইস আপ-টু-ডেট আছে কিনা তা দেখতে <ph name="LINK_BEGIN" />Chrome OS সেটিংস<ph name="LINK_END" /> বিকল্পে যান</translation>
@@ -255,6 +261,7 @@
 <translation id="8681614230122836773">Chrome আপনার কম্পিউটারে ক্ষতিকর সফ্টওয়্যার খুঁজে পেয়েছে</translation>
 <translation id="870251953148363156">&amp;Google Chrome আপডেট</translation>
 <translation id="873133009373065397">Google Chrome ডিফল্ট ব্রাউজার নির্ধারণ বা সেট করতে পারছে না</translation>
+<translation id="8748242232968346981">Chrome-এ আপনার প্রোফাইল তৈরি করতে চান?</translation>
 <translation id="8823341990149967727">Chrome পুরানো হয়ে গেছে</translation>
 <translation id="8834965163890861871">Google Chrome আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে। অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="884296878221830158">আপনি Chrome শুরু করলে বা হোম বোতামটি ক্লিক করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>

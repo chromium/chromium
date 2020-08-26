@@ -3,10 +3,12 @@
 <translationbundle lang="zh-CN">
 <translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium 会以每周 1 次的频率检查是否有垃圾软件。上次检查时间：1 小时前。}other{Chromium 会以每周 1 次的频率检查是否有垃圾软件。上次检查时间：{NUM_HOURS} 小时前。}}</translation>
 <translation id="1065672644894730302">系统无法读取您的偏好设置。某些功能可能无法使用，并且对偏好设置所做的更改不会保存。</translation>
+<translation id="107513968719897256">若要将个人的浏览数据与 <ph name="NEW_USER" /> 的浏览数据分隔开来，请在 Chromium 中创建一份新的个人资料</translation>
 <translation id="1098170124587656448">Chromium 有助于保护您免受数据泄露、不良扩展程序等问题的影响</translation>
 <translation id="1104942323762546749">Chromium 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="113122355610423240">Chromium 是您的默认浏览器</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
+<translation id="1315551408014407711">设置您的新 Chromium 个人资料</translation>
 <translation id="1396446129537741364">Chromium 正尝试显示密码。</translation>
 <translation id="1414495520565016063">您已登录 Chromium！</translation>
 <translation id="151962892725702025">由于您的网域停用了同步功能，Chromium操作系统无法同步您的数据。</translation>
@@ -42,6 +44,7 @@
 <translation id="2797461000988640326">{NUM_MINS,plural, =1{Chromium 会以每周 1 次的频率检查是否有垃圾软件。上次检查时间：1 分钟前。}other{Chromium 会以每周 1 次的频率检查是否有垃圾软件。上次检查时间：{NUM_MINS} 分钟前。}}</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2847479871509788944">从Chromium中移除…</translation>
+<translation id="2853765747879685679">在我打开 Chromium 时询问</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2910007522516064972">关于 Chromium(&amp;C)</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
@@ -102,9 +105,11 @@
 <translation id="4788777615168560705">Chromium 无法检查您的密码。请过 24 小时再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="479167709087336770">这项服务会使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。您随时可在“设置”中更改此行为。</translation>
 <translation id="4888717733111232871">Chromium的入站规则，允许mDNS流量。</translation>
+<translation id="4893632094755846570">此操作会将您的浏览数据从这部设备上永久删除。若要恢复这些数据，请使用以下身份登录 Chromium：</translation>
 <translation id="4943838377383847465">Chromium处于后台运行模式。</translation>
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
+<translation id="5080135079858647714">在 Chromium 中创建您自己的个人资料？</translation>
 <translation id="5224391634244552924">尚未保存任何密码。您需要先保存密码才能使用 Chromium 的密码检查功能。</translation>
 <translation id="5277894862589591112">要想应用您的更改，请重新启动 Chromium</translation>
 <translation id="5358375970380395591">您目前登录的帐号是一个托管帐号，该帐号的管理员将能够控制您的 Chromium 个人资料。您的 Chromium 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 帐号信息中心删除这些数据，但无法将这些数据与其他帐号相关联。<ph name="LEARN_MORE" /></translation>
@@ -163,6 +168,7 @@
 某些功能可能会无法使用。请指定其他个人资料目录或使用更高版本的 Chromium。</translation>
 <translation id="6734080038664603509">更新 Chromium(&amp;C)</translation>
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
+<translation id="6762551859069255163">在 Chromium 中使用不同的个人资料将工作上的浏览数据和个人的浏览数据分隔开来，或者为此设备的不同用户使用不同的个人资料</translation>
 <translation id="6774082503108938489">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -251,5 +257,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium 可能无法正常运行，因为它不再支持 Windows XP 和 Windows Vista</translation>
 <translation id="95514773681268843"><ph name="DOMAIN" /> 要求您必须先阅读并接受以下服务条款，才能使用此设备。这些条款不会扩大、修改或限制 Chromium 操作系统条款。</translation>
+<translation id="965162752251293939">谁在使用 Chromium？</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

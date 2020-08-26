@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">सुरुवातीचे सिंक सेट करणे पूर्ण झाले नाही</translation>
 <translation id="1821253160463689938">तुम्ही त्या पेजना भेट दिली नसली तरीही, तुमची प्राधान्ये लक्षात ठेवण्यासाठी कुकीचा वापर करते</translation>
 <translation id="1829244130665387512">या पृष्ठामध्ये शोधा</translation>
+<translation id="1843805151597803366">आणखी चांगली भाषांतरे मिळवण्यासाठी, Google Search ला सध्याचे पेज वापरू द्या</translation>
 <translation id="1853692000353488670">नवीन गुप्त टॅब</translation>
 <translation id="1856325424225101786">लाइट मोड रीसेट करायचा?</translation>
 <translation id="1868024384445905608">Chrome आता फाइल वेगाने डाउनलोड करते</translation>
@@ -477,6 +478,7 @@
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">कार्डवरील नाव</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> वर डिजिटल मालमत्तेची पडताळणी करता आली नाही</translation>
 <translation id="4824958205181053313">सिंक रद्द करायचे?</translation>
 <translation id="4835385943915508971">Chrome ला विनंती केलेल्या संसाधनांचा ॲक्सेस नाही.</translation>
 <translation id="4837753911714442426">पेज प्रिंट करण्‍यासाठी पर्याय उघडा</translation>
@@ -911,6 +913,7 @@
 <translation id="7981313251711023384">जलद ब्राउझिंग आणि शोधाकरता पेज आधीच लोड करा</translation>
 <translation id="79859296434321399">ऑगमेंटेड रीअ‍ॅलिटी आशय पाहण्यासाठी, ARCore इंस्टॉल करा</translation>
 <translation id="7986741934819883144">संपर्क निवडा</translation>
+<translation id="799806351373751710">सिंक सेटअप रद्द करा</translation>
 <translation id="7998918019931843664">बंद केलेले टॅब पुन्हा उघडा</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8013372441983637696">तुमचा या डिव्हाइसवरील Chrome डेटा देखील साफ करा</translation>

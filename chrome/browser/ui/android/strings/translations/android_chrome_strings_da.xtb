@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Indledende konfiguration af synkronisering er ikke afsluttet</translation>
 <translation id="1821253160463689938">Anvender cookies til at huske dine præferencer, også selvom du ikke besøger siderne</translation>
 <translation id="1829244130665387512">Find på siden</translation>
+<translation id="1843805151597803366">Du kan få bedre oversættelser ved at lade Google Søgning bruge den aktuelle side</translation>
 <translation id="1853692000353488670">Ny inkognitofane</translation>
 <translation id="1856325424225101786">Vil du nulstille Lite-tilstand?</translation>
 <translation id="1868024384445905608">Chrome downloader nu filer endnu hurtigere</translation>
@@ -477,6 +478,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Navn på kort</translation>
+<translation id="4818017973810341238">Digital Asset Links kunne ikke bekræftes på <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Vil du annullere synkroniseringen?</translation>
 <translation id="4835385943915508971">Chrome har ikke adgang til den ressource, du anmoder om.</translation>
 <translation id="4837753911714442426">Åbn valgmuligheder for udskrivning af siden</translation>
@@ -911,6 +913,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7981313251711023384">Forudindlæs sider, så du kan browse og søge hurtigere</translation>
 <translation id="79859296434321399">Installer ARCore for at se augmented reality-indhold</translation>
 <translation id="7986741934819883144">Vælg en kontakt</translation>
+<translation id="799806351373751710">Annuller konfigurationen af synkronisering</translation>
 <translation id="7998918019931843664">Åbn lukket fane igen</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Ryd også dine Chrome-data fra enheden</translation>

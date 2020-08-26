@@ -11,6 +11,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Cellulare: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Buon pomeriggio <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Mi annoio</translation>
 <translation id="1104084341931202936">Mostra impostazioni di accessibilità</translation>
 <translation id="1104621072296271835">I tuoi dispositivi funzionano ancora meglio insieme</translation>
@@ -71,6 +72,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">Indirizzo IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Scrivania: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Impostazioni di rete</translation>
 <translation id="1743570585616704562">Non riconosciuta</translation>
 <translation id="1746730358044914197">I metodi di immissione vengono configurati dall'amministratore.</translation>
@@ -107,6 +109,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2018630726571919839">Raccontami una barzelletta</translation>
 <translation id="2050339315714019657">Verticale</translation>
 <translation id="2067602449040652523">Luminosità della tastiera</translation>
+<translation id="2083190527011054446">Buona notte <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Nessuna connessione alla rete</translation>
 <translation id="2126242104232412123">Nuova scrivania</translation>
 <translation id="2127372758936585790">Caricabatterie a basso consumo</translation>
@@ -185,6 +188,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3009178788565917040">Uscita</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3038571455154067151">Per accedere, inserisci il codice accesso genitori di Family Link</translation>
+<translation id="3045488863354895414">Buon pomeriggio,</translation>
 <translation id="3051128274746680507">Il profilo dell'utente supervisionato verrà rimosso a breve. Accedi per avere ulteriori informazioni.</translation>
 <translation id="3055162170959710888">Oggi hai utilizzato questo dispositivo per <ph name="USED_TIME" /></translation>
 <translation id="3076778413190775903">Barra di stato, ora <ph name="TIME" />,
@@ -305,6 +309,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4261870227682513959">Mostra impostazioni di notifica. Le notifiche sono disattivate</translation>
 <translation id="4269883910223712419">L'amministratore di questo dispositivo ha la possibilità di:</translation>
 <translation id="4279490309300973883">Mirroring</translation>
+<translation id="4294319844246081198">Buongiorno <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Cancella tutte e <ph name="COUNT" /> le notifiche</translation>
 <translation id="4303223480529385476">Espandi area di stato</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -321,6 +326,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4421231901400348175">Condividi il controllo dello schermo con <ph name="HELPER_NAME" /> tramite Assistenza remota.</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4450893287417543264">Non mostrare più</translation>
+<translation id="445864333228800152">Buona sera,</translation>
 <translation id="4458688154122353284">Interrompi registrazione dello schermo</translation>
 <translation id="4477350412780666475">Traccia successiva</translation>
 <translation id="4477892968187500306">Questo dispositivo potrebbe contenere app che non sono state verificate da Google.</translation>
@@ -431,6 +437,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5887866489674258948">Modalità Buio</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5901316534475909376">MAIUSC+ESC</translation>
+<translation id="5909862606227538307">Scrivania inattiva.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">L'audio del microfono è disattivato.</translation>
@@ -562,8 +569,10 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7405710164030118432">Per sbloccare il dispositivo, inserisci il codice di accesso genitore di Family Link</translation>
 <translation id="741244894080940828">conversione</translation>
 <translation id="742594950370306541">La videocamera è in uso.</translation>
+<translation id="742608627846767349">Buongiorno,</translation>
 <translation id="743058460480092004">Videocamera e microfono sono in uso.</translation>
 <translation id="7466449121337984263">Tocca il sensore</translation>
+<translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
@@ -648,11 +657,13 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8351131234907093545">Crea nota</translation>
 <translation id="8371779926711439835">Avanti per lettera</translation>
 <translation id="8375916635258623388">Questo dispositivo <ph name="DEVICE_NAME" /> e il telefono si connetteranno automaticamente</translation>
+<translation id="8380784334203145311">Buonanotte,</translation>
 <translation id="8388750414311082622">Impossibile rimuovere l'ultima scrivania.</translation>
 <translation id="8392451568018454956">Menu Opzioni per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Uno dei tuoi genitori ha bloccato questo dispositivo</translation>
 <translation id="8412677897383510995">Mostra impostazioni di visualizzazione</translation>
 <translation id="8425213833346101688">Cambia</translation>
+<translation id="8426708595819210923">Buona sera <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">La dettatura invia i tuoi dati audio a Google per consentire la digitazione vocale in tutti i campi di testo.</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>

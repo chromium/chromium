@@ -22,6 +22,13 @@
 
       Actuellement, les langues compatibles sont les suivantes : af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk et vi.</translation>
 <translation id="1019101089073227242">Définir le répertoire de données utilisateur</translation>
+<translation id="1021843807738753764"> Cette règle étant obsolète, elle sera supprimée dans la version 89 de <ph name="PRODUCT_OS_NAME" />. Veuillez utiliser à la place la règle <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> pour configurer les avertissements concernant la confidentialité des sessions Invité gérées.
+
+      Contrôlez les notifications de lancement automatique des sessions Invité gérées sur <ph name="PRODUCT_OS_NAME" />.
+
+      Si cette règle est définie sur "True", les avertissements concernant la confidentialité se ferment après quelques secondes.
+
+      Si cette règle est définie sur "False" ou n'est pas configurée, les avertissements concernant la confidentialité restent épinglés jusqu'à ce que l'utilisateur les ferme.</translation>
 <translation id="1022361784792428773">Identifiants d'extension que l'utilisateur ne doit pas être autorisé à installer (ou * pour tous)</translation>
 <translation id="102492767056134033">Définir l'état par défaut du clavier à l'écran sur l'écran de connexion</translation>
 <translation id="1027000705181149370">Spécifie si des cookies d'authentification définis par un fournisseur d'identité SAML lors de la connexion doivent être transférés au profil de l'utilisateur.
@@ -271,6 +278,20 @@
 Si vous activez cette règle ou ne la configurez pas, le défilement des pages Web vers des fragments de texte spécifiques via URL sera activé.
 
 Si vous la désactivez, le défilement des pages Web vers des fragments de texte spécifiques via URL sera désactivé.</translation>
+<translation id="1469072784237350146">Permet de contrôler si les sites Web non sécurisés sont autorisés à envoyer des requêtes à d'autres points de terminaison plus privés du réseau.
+
+          Cette règle se rapporte à la spécification CORS-RFC1918. Pour en savoir plus, consultez la page https://wicg.github.io/cors-rfc1918.
+
+          Un point de terminaison de réseau est plus privé qu'un autre si :
+          1) Son adresse IP est un localhost et celle de l'autre ne l'est pas.
+          2) Son adresse IP est privée et celle de l'autre est publique.
+          Selon l'évolution des spécifications, cette règle pourrait s'appliquer à l'avenir à toutes les requêtes dirigées vers des IP privés ou un localhost, quelle que soit leur origine.
+
+          Un site Web est considéré comment sécurisé s'il correspond à un contexte sécurisé tel que défini dans l'article https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts. Sinon, il sera traité comme un contexte non sécurisé.
+
+          Si cette règle n'est pas configurée ou est définie sur "False", le comportement par défaut des requêtes envoyées depuis des contextes non sécurisés vers des points de terminaison plus privés du réseau dépend de la configuration personnelle de l'utilisateur concernant la fonctionnalité <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, qui peut être définie lors d'un test ou via une ligne de commande.
+
+          Si cette règle est définie sur "True", les sites Web non sécurisés sont autorisés à envoyer des requêtes à n'importe quel point de terminaison du réseau (d'autres vérifications inter-URL peuvent être réalisées).</translation>
 <translation id="1474273443907024088">Désactiver TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Permet d'établir la liste des appareils USB que les utilisateurs peuvent dissocier de leur pilote de noyau pour les employer via l'API chrome.usb directement au sein d'une application Web. Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un identifiant produit associé à un appareil spécifique.
@@ -354,6 +375,12 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1561967320164410511">U2F plus extensions pour chaque attestation</translation>
 <translation id="1575015449587326319">Règle de configuration du connecteur Chrome Enterprise OnFileDownloaded</translation>
 <translation id="1583248206450240930">Utiliser <ph name="PRODUCT_FRAME_NAME" /> par défaut</translation>
+<translation id="1587671452159346389">Permet de déterminer quelles imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" /> sont accessibles aux utilisateurs.
+
+      Vous pouvez indiquer la règle d'accès utilisée pour la configuration groupée des imprimantes. Si <ph name="PRINTERS_ALLOW_ALL" /> est sélectionné, toutes les imprimantes sont affichées. Si <ph name="PRINTERS_BLOCKLIST" /> est sélectionné, la règle <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> est utilisée pour limiter l'accès aux imprimantes spécifiées.  Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionnée, la règle <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> indique uniquement les imprimantes qui peuvent être choisies.
+
+      Si cette règle n'est pas configurée, la règle <ph name="PRINTERS_ALLOW_ALL" /> s'applique.
+      </translation>
 <translation id="1588240398285670601">Paramètres du navigateur</translation>
 <translation id="1588456836529393506">Permet d'établir une liste de formats d'URL indiquant les sites automatiquement autorisés à accéder à un appareil USB avec le fournisseur et les ID produit indiqués. Chaque élément de la liste doit contenir des appareils et des URL pour que la règle soit valide. Chaque élément des appareils peut disposer d'un champ d'ID produit et d'ID de fournisseur. Les ID que vous omettez sont traités comme des caractères génériques, à une exception près : vous ne pouvez pas spécifier un ID produit sans définir un ID de fournisseur. Si vous ne respectez pas cette condition, la règle ne sera pas valide.
 
@@ -1092,6 +1119,22 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée, ces avertissements ne s'affichent pas lorsque Chrome est lancé à l'aide d'options de ligne de commande potentiellement dangereuses.
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la gestion cloud du navigateur Chrome. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
+<translation id="2621383458880689826">Fournit les configurations des imprimantes d'entreprise associées à des appareils.
+
+      Cette règle vous permet de communiquer les configurations des imprimantes aux appareils <ph name="PRODUCT_OS_NAME" />.  Le format est le même que celui du dictionnaire NativePrinters, à l'exception d'un champ supplémentaire "id" ou "guid" obligatoire pour chaque imprimante à ajouter à la liste blanche ou noire.
+
+      Le fichier, qui doit être encodé au format JSON, ne doit pas dépasser 5 Mo.  Habituellement, un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes.  Le hachage cryptographique permet de vérifier l'intégrité du fichier téléchargé.
+
+      Le fichier est téléchargé et mis en cache. Il sera de nouveau téléchargé à chaque modification de l'URL ou du hachage.
+
+      Si cette règle est configurée, <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimantes et rend les imprimantes accessibles conformément aux règles <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />, <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> et <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST_POLICY_NAME" />.
+
+      Elle n'a aucune incidence pour les utilisateurs en ce qui concerne la possibilité ou non de configurer des imprimantes sur différents appareils.  Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.
+
+      Elle vient en complément de la règle <ph name="BULK_PRINTERS_POLICY_NAME" />.
+
+      Si cette règle n'est pas configurée, aucune imprimante associée à un appareil n'est affichée, et les autres règles <ph name="DEVICE_NATIVE_PRINTERS_POLICY_PATTERN" /> sont ignorées.
+      </translation>
 <translation id="2623014935069176671">Attendre l'activité utilisateur initiale</translation>
 <translation id="262740370354162807">Activer l'envoi de documents à <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2632538643061793322">Permet de répertorier les formats d'URL indiquant les sites autorisés à demander aux utilisateurs d'accéder aux appareils USB.
@@ -1118,6 +1161,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si vous ne configurez pas cette règle, le paramètre sera désactivé par défaut pour les utilisateurs gérés et activé par défaut pour les utilisateurs non gérés.</translation>
 <translation id="2660846099862559570">Ne jamais utiliser de proxy</translation>
+<translation id="2664682171745499686">Supprimer les avertissements concernant des domaines similaires</translation>
 <translation id="2665422249821137126">Activer le grand curseur sur l'écran de connexion</translation>
 <translation id="2672012807430078509">Contrôle l'activation du protocole d'authentification NTLM pour les installations SMB</translation>
 <translation id="2678503605767349615">Certificats clients requis au niveau de l'appareil</translation>
@@ -1257,6 +1301,12 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si vous activez ce paramètre, l'aperçu avant impression utilisera l'imprimante par défaut du système d'exploitation.</translation>
 <translation id="285627849510728211">Définir le jour de recharge de la batterie en mode avancé</translation>
 <translation id="2856674246949497058">Rétablissez et conservez la version cible si elle est antérieure à la version de l'OS. Effectuez un Powerwash pendant le processus.</translation>
+<translation id="2869140260739354012">Permet de déterminer quelles imprimantes soumises à la règle <ph name="DEVICE_PRINTERS_POLICY" /> sont accessibles aux utilisateurs.
+
+      Vous pouvez indiquer la règle d'accès utilisée pour la configuration groupée des imprimantes. Si <ph name="PRINTERS_ALLOW_ALL" /> est sélectionné, toutes les imprimantes sont affichées. Si <ph name="PRINTERS_BLACKLIST" /> est sélectionné, la règle <ph name="DEVICE_NATIVE_PRINTERS_BLACKLIST" /> est utilisée pour limiter l'accès aux imprimantes spécifiées.  Si <ph name="PRINTERS_WHITELIST" /> est sélectionnée, la règle <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST" /> indique uniquement les imprimantes qui peuvent être choisies.
+
+      Si cette règle n'est pas configurée, la règle <ph name="PRINTERS_ALLOW_ALL" /> s'applique.
+      </translation>
 <translation id="2869762730352628426">Activer le clic automatique sur l'écran de connexion</translation>
 <translation id="2872961005593481000">Éteindre</translation>
 <translation id="2874209944580848064">Remarque concernant les appareils <ph name="PRODUCT_OS_NAME" /> compatibles avec les applications Android :</translation>
@@ -1299,11 +1349,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Remarque : Cette règle renvoie vers un fichier XML au même format que celui de la règle <ph name="IEEM_SITELIST_POLICY" /> d'<ph name="IE_PRODUCT_NAME" />. Les instructions sont ainsi chargées à partir d'un fichier XML, sans être partagées avec <ph name="IE_PRODUCT_NAME" />. Pour en savoir plus sur la règle <ph name="IEEM_SITELIST_POLICY" /> d'<ph name="IE_PRODUCT_NAME" />, consultez la page https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
 <translation id="2952347049958405264">Restrictions :</translation>
-<translation id="2956777931324644324">Cette règle a été supprimée dès la version 36 de <ph name="PRODUCT_NAME" />.
-
-      Elle indique si l'extension des certificats TLS liés au domaine doit être activée.
-
-      Ce paramètre permet d'activer ces certificats à des fins de test. Ce paramètre expérimental sera supprimé à l'avenir.</translation>
+<translation id="2957047180944828740">Permet de spécifier si les sites Web non sécurisés sont autorisés à envoyer des requêtes à des points de terminaison plus privés du réseau</translation>
 <translation id="2957506574938329824">Interdire à tous les sites de demander l'accès à des appareils Bluetooth via l'API Web Bluetooth</translation>
 <translation id="2957513448235202597">Type de compte pour l'authentification <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Toujours transmettre les points d'accès Wi-Fi au serveur tout en mettant à jour le fuseau horaire</translation>
@@ -1836,7 +1882,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas définie, le paramètre sera désactivé par défaut pour les utilisateurs gérés par une entreprise et activé par défaut pour les utilisateurs non gérés.</translation>
 <translation id="3803171355925844705">Interdire à tous les sites de charger un contenu mixte</translation>
-<translation id="3805659594028420438">Activer l'extension des certificats TLS liés au domaine (obsolète)</translation>
 <translation id="3808945828600697669">Répertorier les plug-ins désactivés</translation>
 <translation id="3810642039169532482">Permet d'activer la fonctionnalité d'accessibilité de dictée sur l'écran de connexion.
 
@@ -1866,6 +1911,12 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3838094946886335701">Cette règle (recommandation uniquement) permet d'enregistrer une liste de gestionnaires de protocoles combinée à ceux enregistrés par l'utilisateur, afin que les deux ensembles s'appliquent. Définissez la propriété "protocole" sur le schéma (par exemple, "mailto") et la propriété "URL" sur le format d'URL de l'application qui gère le schéma spécifié dans le champ "protocole". Le schéma peut inclure un espace réservé "%s" remplacé par l'URL gérée.
 
       Les utilisateurs ne peuvent pas supprimer un gestionnaire de protocoles enregistré par une règle. Toutefois, l'installation d'un nouveau gestionnaire par défaut leur permet de modifier les gestionnaires de protocoles installés par une règle.</translation>
+<translation id="3848118497246496090">Permet de spécifier les imprimantes auxquelles les utilisateurs n'ont pas accès.
+
+      Cette règle n'est utilisée que si <ph name="PRINTERS_BLACKLIST" /> est sélectionné dans la règle <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
+
+      Si cette règle est appliquée, toutes les imprimantes sont proposées aux utilisateurs, sauf pour les ID répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs "id" ou "guid" du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY" />.
+      </translation>
 <translation id="3851039766298741586">Cette règle permet de transmettre des informations sur la session kiosque active,
       telles que l'ID et la version de l'application.
 
@@ -2006,6 +2057,12 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="3965339130942650562">Délai avant exécution de la déconnexion de l'utilisateur en cas d'inactivité</translation>
 <translation id="3973371701361892765">Ne jamais masquer automatiquement l'étagère</translation>
 <translation id="3979738908158213640">URL autorisées à procéder à l'attestation de l'identité de l'appareil lors de l'authentification SAML</translation>
+<translation id="3980024487013511975">Permet de spécifier les imprimantes auxquelles les utilisateurs n'ont pas accès.
+
+      Cette règle n'est utilisée que si <ph name="PRINTERS_BLOCKLIST" /> est sélectionné dans la règle <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+
+      Si cette règle est appliquée, toutes les imprimantes sont proposées aux utilisateurs, sauf pour les ID répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs "id" ou "guid" du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      </translation>
 <translation id="3984028218719007910">Détermine si <ph name="PRODUCT_OS_NAME" /> doit conserver les données locales des comptes après la déconnexion. Si cette règle est définie sur "true", aucun compte persistant n'est conservé par <ph name="PRODUCT_OS_NAME" />. Par ailleurs, toutes les données de la session utilisateur sont supprimées après la déconnexion. Si cette règle est définie sur "false" ou si elle n'est pas configurée, l'appareil peut conserver des données utilisateur locales (chiffrées).</translation>
 <translation id="398884292557092447">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent contrôler les suggestions de saisie automatique pour les cartes de crédit dans l'interface utilisateur.
 
@@ -2213,6 +2270,12 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="4285674129118156176">Autoriser les utilisateurs non affiliés à utiliser ARC</translation>
+<translation id="4309562700894844665">Permet de spécifier les imprimantes auxquelles les utilisateurs ont accès.
+
+      Cette règle est utilisée uniquement si <ph name="PRINTERS_WHITELIST" /> est sélectionné pour <ph name="DEVICE_NATIVE_PRINTERS_ACCESS_MODE" />.
+
+      Si cette règle est appliquée, seules les imprimantes dont l'ID correspond aux valeurs de la règle sont à la disposition de l'utilisateur. Les ID doivent correspondre aux champs "id" ou "guid" du fichier spécifié dans <ph name="DEVICE_PRINTERS_POLICY" />.
+      </translation>
 <translation id="4311195029067684288">Complet</translation>
 <translation id="4313767483634435271">Adresse MAC de la station d'accueil désignée de l'appareil</translation>
 <translation id="4322842393287974810">Autoriser l'application kiosque lancée automatiquement sans délai à contrôler la version de l'application <ph name="PRODUCT_OS_NAME" /></translation>
@@ -2551,11 +2614,6 @@ Si cette règle n'est pas configurée, l'utilisateur peut décider d'afficher ou
       Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> ne se connecte aux appareils Cast que sur les adresses privées décrites dans la RFC 1918 ou la RFC 4193, sauf si la fonctionnalité CastAllowAllIPs est activée.</translation>
 <translation id="489803897780524242">Paramètre contrôlant le positionnement des termes de recherche pour le moteur de recherche par défaut</translation>
 <translation id="4899708173828500852">Activer la navigation sécurisée</translation>
-<translation id="4902163780937592202">Permet de fusionner les règles liées aux listes d'installation d'extensions <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> et <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />.
-
-      Si vous activez cette règle, les valeurs issues des règles relatives au cloud (machine) et aux plates-formes (machines et utilisateurs) sont fusionnées dans une seule liste et utilisées globalement. Ce ne sont pas uniquement les valeurs de la source ayant la priorité la plus élevée qui sont utilisées.
-
-      Si vous désactivez cette règle ou qu'elle n'est pas configurée, seules les entrées de listes issues de la source ayant la priorité la plus élevée sont prises en compte. Toutes les autres sources sont affichées en tant que sources en conflit, mais ignorées.</translation>
 <translation id="4906194810004762807">Fréquence d'actualisation des règles de l'appareil</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4919122295221518724">Appliquer un traitement plus strict au contenu mixte</translation>
@@ -2863,6 +2921,22 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
       Si la règle est définie sur "Obliger la connexion au navigateur", une boîte de dialogue s'affiche pour demander à l'utilisateur de choisir un compte auquel se connecter pour utiliser le navigateur. Cette mesure permet de s'assurer que dans le cas de comptes gérés, les règles qui les régissent sont bien appliquées. Cela active par défaut la synchronisation Chrome pour le compte, sauf si celle-ci a été désactivée par l'administrateur de domaine ou via la règle "SyncDisabled". La valeur par défaut de "BrowserGuestModeEnabled" est alors définie sur "False". Sachez que les profils existants non connectés seront verrouillés et inaccessibles une fois cette règle activée. Pour en savoir plus, consultez l'article suivant du centre d'aide : https://support.google.com/chrome/a/answer/7572556. Cette option n'est pas compatible avec Linux et Android, et sera remplacée par l'option "Activer la connexion au navigateur" sous ces systèmes d'exploitation.
 
         Si la règle n'est pas définie, l'utilisateur peut décider d'activer ou non l'option de connexion au navigateur et l'utiliser à sa convenance.</translation>
+<translation id="5327325901414715560">Fournit les configurations des imprimantes d'entreprise associées à des appareils.
+
+      Cette règle vous permet de communiquer les configurations des imprimantes aux appareils <ph name="PRODUCT_OS_NAME" />.  Le format est le même que celui du dictionnaire NativePrinters, à l'exception d'un champ supplémentaire "id" ou "guid" obligatoire pour chaque imprimante à ajouter à la liste blanche ou noire.
+
+      Le fichier, qui doit être encodé au format JSON, ne doit pas dépasser 5 Mo.  Habituellement, un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes.  Le hachage cryptographique permet de vérifier l'intégrité du fichier téléchargé.
+
+      Le fichier est téléchargé et mis en cache. Il sera de nouveau téléchargé à chaque modification de l'URL ou du hachage.
+
+      Si cette règle est configurée, <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimantes et rend les imprimantes accessibles conformément aux règles <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> et <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
+
+      Elle n'a aucune incidence pour les utilisateurs en ce qui concerne la possibilité ou non de configurer des imprimantes sur différents appareils.  Elle est destinée à compléter la configuration des imprimantes effectuée par les différents utilisateurs.
+
+      Elle vient en complément de la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
+
+      Si cette règle n'est pas configurée, aucune imprimante associée à un appareil n'est affichée, et les autres règles <ph name="DEVICE_PRINTERS_POLICY_PATTERN" /> sont ignorées.
+      </translation>
 <translation id="532848608876725157">Activer DNS-over-HTTPS avec solution de secours à risque</translation>
 <translation id="5329007337159326804">Avertissement : La règle relative à la version TLS maximale sera entièrement supprimée de <ph name="PRODUCT_NAME" /> à partir de la version 75 environ (autour de juin 2019).
 
@@ -3001,7 +3075,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
       Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> ne peut pas présenter ces informations dans ce mode.
 
       Cette règle permet de contrôler la présentation des pages de bienvenue qui aident les utilisateurs à se connecter à <ph name="PRODUCT_NAME" />, de définir <ph name="PRODUCT_NAME" /> comme leur navigateur par défaut ou de les informer des fonctionnalités du produit.</translation>
-<translation id="5447306928176905178">Activer l'envoi d'informations sur la mémoire (taille du tas JS) à la page (obsolète)</translation>
 <translation id="5450893456912604446">Permet de configurer l'URL de la page d'accueil par défaut dans <ph name="PRODUCT_NAME" /> et d'empêcher les utilisateurs de la modifier.
 
           La page d'accueil est la page qui s'ouvre lorsque l'utilisateur clique sur le bouton "Accueil". Sur ordinateur, les pages qui s'affichent au démarrage sont gérées par les règles RestoreOnStartup.
@@ -3174,6 +3247,9 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle n'est pas configurée, le clavier est désactivé, mais les utilisateurs peuvent modifier ce paramètre.
 
        Remarque : Des règles heuristiques peuvent également déterminer quand le clavier doit être affiché.</translation>
+<translation id="5657752663637568277">Cette règle détermine si les avertissements d'abandon de <ph name="CLOUD_PRINT_NAME" /> sont présentés aux utilisateurs dans la boîte de dialogue d'aperçu avant impression ou dans les pages de paramètres.
+      Si cette règle est définie sur "True", les avertissements d'abandon seront masqués.
+      Si cette règle est définie sur "False" ou n'est pas configurée, les avertissements d'abandon seront affichés.</translation>
 <translation id="5666457529647159548">Autoriser les utilisateurs à gérer les certificats client installés.</translation>
 <translation id="567377007899266033">Si cette règle est définie sur "True", des rapports sur les événements critiques d'installation d'extensions déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré. Si elle n'est pas configurée, la valeur par défaut est définie sur "True".</translation>
 <translation id="5676740747107495269">Permet d'afficher les options d'accessibilité dans le menu de la barre d'état système, sur l'écran de connexion</translation>
@@ -3397,6 +3473,12 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Désactiver cette règle affectera la sécurité et la stabilité de Chrome, car des codes inconnus et potentiellement dangereux pourront être chargés dans les processus de son moteur de rendu. Consultez la page https://chromium.googlesource.com/chromium/src/+/master/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus.</translation>
 <translation id="6048199181629830227">Activer l'alimentation alternée en heures pleines</translation>
+<translation id="6054485492411959335">Indique les imprimantes auxquelles un utilisateur a accès.
+
+      Cette règle est utilisée uniquement si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />.
+
+      Si cette règle est appliquée, seules les imprimantes dont l'ID correspond aux valeurs de la règle sont à la disposition de l'utilisateur. Les ID doivent correspondre aux champs "id" ou "guid" du fichier spécifié dans <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
+      </translation>
 <translation id="6066761914755798079">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche pour fournir des suggestions de recherche. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -3419,6 +3501,12 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       <ph name="PRODUCT_NAME" /> gère le contenu du répertoire racine d'un volume. Ainsi, pour éviter de perdre des données ou de générer d'autres erreurs, ne définissez pas cette règle sur le répertoire racine ni sur un autre répertoire utilisé à d'autres fins. Pour savoir quelles variables vous pouvez utiliser, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="6083631234867522991">Windows (clients Windows) :</translation>
+<translation id="6086225644749063677">Permet de spécifier les imprimantes auxquelles les utilisateurs ont accès.
+
+      Cette règle est utilisée uniquement si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+
+      Si cette règle est appliquée, seules les imprimantes dont l'ID correspond aux valeurs de la règle sont à la disposition de l'utilisateur. Les ID doivent correspondre aux champs "id" ou "guid" du fichier spécifié dans <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
+      </translation>
 <translation id="608788685013546076">Définir le niveau de batterie minimal autorisé avec l'alimentation alternée en heures pleines</translation>
 <translation id="6089679180657323464">Contrôle les paramètres du dispositif de contrôle de diagnostic et de télémétrie de Wilco.</translation>
 <translation id="6091233616732024397">Obliger les utilisateurs à se connecter pour se servir du navigateur</translation>
@@ -3907,6 +3995,11 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Notez que les utilisateurs peuvent accéder aux services Google dans un état non authentifié en bloquant leurs cookies.</translation>
 <translation id="6843296367238757293">Cette règle est obsolète. Nous vous déconseillons de l'utiliser. Pour en savoir plus, rendez-vous sur https://support.google.com/chrome/a/answer/7643500.</translation>
+<translation id="6846126863870444592">Permet de définir les extensions autorisées à ignorer la boîte de dialogue de confirmation d'une tâche d'impression lorsque la fonction <ph name="SUBMIT_JOB_FUNCTION" /> est utilisée via l'API <ph name="PRINTING_API" /> pour envoyer la tâche en question.
+
+      Si une extension ne figure pas dans la liste ou si cette liste n'est pas configurée, la boîte de dialogue de confirmation d'une tâche d'impression s'affiche à chaque appel de fonction <ph name="SUBMIT_JOB_FUNCTION" />.
+
+      Cette règle étant obsolète, veuillez utiliser à la place la règle <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="684856667300805181">Cette règle a été supprimée dans <ph name="PRODUCT_NAME" /> 68 et remplacée par <ph name="ARC_GLS_POLICY_NAME" />.</translation>
 <translation id="6851199885688265233">Activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur</translation>
 <translation id="6851315055469993882">Permet d'activer un cache d'authentification HTTP à portée globale</translation>
@@ -3926,14 +4019,10 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si cette règle n'est pas définie, le Partage à proximité est autorisé par défaut pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="6864244339257535116">Autoriser l'importation et le téléchargement de fichiers protégés par un mot de passe</translation>
-<translation id="687046793986382807">Cette règle a été supprimée de la version 35 de <ph name="PRODUCT_NAME" />.
-
-      Les informations relatives à la mémoire sont tout de même consignées sur cette page, quelle que soit l'option retenue, mais les tailles indiquées sont
-      quantifiées et la fréquence des mises à jour est limitée pour des raisons de sécurité. Pour obtenir des données en temps réel précises,
-      veuillez utiliser un outil tel que Telemetry.</translation>
 <translation id="68798513449385583">Retarder les téléchargements jusqu'à ce que les résultats d'analyse soient connus</translation>
 <translation id="6889123056995503704">L'utilisateur détermine le comportement de retour à une version antérieure</translation>
 <translation id="6894178810167845842">URL de la page "Nouvel onglet"</translation>
+<translation id="6897730193187922386">Supprimer les messages d'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Détecter automatiquement les paramètres de proxy</translation>
 <translation id="6902561336084511004">Fournit les configurations des serveurs d'impression disponibles.
 
@@ -3962,6 +4051,13 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6907778402784621686">Bloquer le contenu non sécurisé sur ces sites</translation>
 <translation id="6908640907898649429">Configure le moteur de recherche par défaut. Vous pouvez définir le moteur de recherche par défaut dont se servira l'utilisateur ou choisir de désactiver le moteur de recherche par défaut.</translation>
 <translation id="6913068954484253496">Autoriser <ph name="PRODUCT_NAME" /> à se connecter aux appareils Cast sur toutes les adresses IP.</translation>
+<translation id="6916817094593836501">Cette règle empêche l'affichage d'avertissements concernant des URL similaires sur les sites répertoriés. Ces avertissements s'affichent généralement sur un site soupçonné par <ph name="PRODUCT_NAME" /> d'imiter frauduleusement un autre site connu de l'utilisateur.
+
+       Si cette règle est activée et définie sur un ou plusieurs domaines, aucun avertissement ne s'affiche lorsque l'utilisateur consulte des pages sur ce ou ces domaines.
+
+       Si la règle est désactivée, non définie ou définie sur une liste vide, ces avertissements peuvent s'afficher sur n'importe quel site consulté par l'utilisateur.
+
+       Un nom d'hôte peut être autorisé dans le cadre d'une correspondance d'hôte exacte ou de toute correspondance de domaine. Par exemple, les avertissements peuvent être supprimés pour l'URL "https://foo.example.com/bar" si la liste inclut "foo.example.com" ou "example.com".</translation>
 <translation id="6922884955650325312">Bloquer le plug-in "<ph name="FLASH_PLUGIN_NAME" />"</translation>
 <translation id="6923731550900440989">Activer la mise en surbrillance du curseur de saisie sur l'écran de connexion</translation>
 <translation id="6924223708804692571">Force la désactivation de la vérification orthographique pour certaines langues. Les langues non reconnues dans cette liste seront ignorées.
@@ -4712,7 +4808,6 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="793134539373873765">Indiquer si une connexion P2P doit être utilisée pour les charges utiles de mise à jour de l'OS. Si le paramètre est défini sur "True", les charges utiles de mise à jour sur le réseau local sont partagées et utilisées par les appareils, ce qui peut avoir pour effet de réduire la quantité de bande passante utilisée et l'encombrement sur Internet. Si la charge utile de mise à jour n'est pas disponible sur le réseau local, le téléchargement est effectué sur l'appareil à partir d'un serveur de mise à jour. Si le paramètre est défini sur "False", ou s'il n'est pas configuré, la connexion P2P n'est pas utilisée.</translation>
 <translation id="7933141401888114454">Autoriser la création de comptes utilisateurs supervisés</translation>
 <translation id="793473937901685727">Définir la disponibilité des certificats pour les applications ARC</translation>
-<translation id="7937491150792971922">Fusionner les règles relatives aux listes d'installation d'extensions à partir de différentes sources</translation>
 <translation id="7937766917976512374">Autoriser ou interdire la capture vidéo</translation>
 <translation id="7941975817681987555">Ne pas prédire d'actions réseau lors d'une connexion au réseau</translation>
 <translation id="7951605113561734721">Indique les certificats clients qui doivent être enregistrés au niveau de l'appareil à l'aide du protocole de gestion des appareils.</translation>
@@ -4733,6 +4828,9 @@ au maximum si un utilisateur se sert de l'appareil.
 <translation id="7953256619080733119">Hôtes d'exception manuelle des utilisateurs gérés</translation>
 <translation id="7956210013490975468">Configure le service proxy du système pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7958537754689366707">La saisie du mot de passe est requise toutes les 12 heures</translation>
+<translation id="7960293328203000385">Définit la liste des utilisateurs autorisés à se connecter à l'appareil. Les entrées se présentent sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (<ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />, par exemple). Pour autoriser des utilisateurs arbitraires sur un domaine, utilisez les entrées sous la forme suivante : <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" />.
+
+       Si cette règle n'est pas configurée, aucune restriction ne s'applique quant aux utilisateurs autorisés à se connecter. Notez que la création d'utilisateurs nécessite toujours de configurer correctement la règle <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" />.</translation>
 <translation id="7961779417826583251">Désactiver l'application des règles de transparence des certificats pour une liste d'autorités de certification héritées</translation>
 <translation id="7973609468423251675">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 
@@ -5126,6 +5224,14 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Elle vise à permettre aux entreprises qui utilisent encore le protocole HTTP/0.9 à migrer leurs serveurs vers une version plus récente. Elle sera supprimée prochainement.
 
       Si cette règle n'est pas configurée, le protocole HTTP/0.9 est désactivé sur les ports non définis par défaut.</translation>
+<translation id="8504725006737796967">Permet de spécifier les imprimantes auxquelles les utilisateurs ont accès.
+
+      Cette règle n'est utilisée que si <ph name="PRINTERS_WHITELIST" /> est sélectionné dans la règle <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+
+      Si cette règle est configurée, seules les imprimantes dont l'ID correspond aux valeurs définies dans celle-ci sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs "id" ou "guid" du fichier spécifié dans la règle <ph name="BULK_PRINTERS_POLICY_NAME" />.
+
+      Cette règle étant obsolète, veuillez utiliser à la place la règle <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.
+      </translation>
 <translation id="8507835864888987300">Définit une version cible pour les mises à jour automatiques.
 
       Cette règle spécifie le préfixe de la version cible que <ph name="PRODUCT_OS_NAME" /> doit installer. Si la version installée sur l'appareil est antérieure au préfixe défini, la dernière version associée à ce préfixe est installée. Si l'appareil exécute déjà une version ultérieure, les effets varient en fonction de la valeur de la règle <ph name="DEVICE_ROLLBACK_TO_TARGET_VERSION_POLICY_NAME" />. Comme l'illustre l'exemple suivant, le format du préfixe tient compte des composants :

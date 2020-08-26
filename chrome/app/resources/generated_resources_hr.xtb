@@ -525,7 +525,6 @@
 <translation id="1608668830839595724">Više radnji za odabrane stavke</translation>
 <translation id="161042844686301425">Cijan</translation>
 <translation id="1611432201750675208">Uređaj je zaključan</translation>
-<translation id="1611584202130317952">Tijek pružanja niza usluga prekinut je. Pokušajte ponovo ili se obratite vlasniku ili administratoru uređaja.</translation>
 <translation id="1614511179807650956">Vjerojatno ste potrošili dopuštenu količinu mobilnih podataka. Posjetite aktivacijski portal <ph name="NAME" /> kako biste platili dodatni prijenos podataka.</translation>
 <translation id="161460670679785907">Nije moguće otkriti vaš telefon</translation>
 <translation id="1616206807336925449">To proširenje ne zahtijeva nikakva posebna dopuštenja.</translation>
@@ -967,6 +966,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2148219725039824548">Pogreška pri učitavanju dijeljenja. Navedeno dijeljenje nije pronađeno na mreži.</translation>
 <translation id="2148756636027685713">Formatiranje je dovršeno</translation>
 <translation id="2148892889047469596">Emitiraj karticu</translation>
+<translation id="2149973817440762519">Uredi oznaku</translation>
 <translation id="2150139952286079145">Pretražite odredišta</translation>
 <translation id="2150661552845026580">Dodati proširenje "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Unesen je nevažeći indeks kartice.</translation>
@@ -1138,7 +1138,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2347644257713614136">Upotrebu usluga Hangouts i Cast for Education reguliraju Googleova pravila o privatnosti.</translation>
 <translation id="2348176352564285430">Aplikacija: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="234889437187286781">Pogreška prilikom učitavanja podataka</translation>
-<translation id="2349610121459545414">Ovoj web-lokaciji i dalje omogućite pristup vašoj lokaciji</translation>
+<translation id="2349610121459545414">Omogućite ovoj web-lokaciji da i dalje pristupa vašoj lokaciji</translation>
 <translation id="2349896577940037438">Ako je uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun. Na stranici account.google.com možete pogledati svoje podatke, izbrisati ih ili promijeniti postavke računa.</translation>
 <translation id="2350133097354918058">Ponovno učitano</translation>
 <translation id="2350182423316644347">Inicijalizacija aplikacije...</translation>
@@ -2780,7 +2780,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4348766275249686434">Prikupljaj pogreške</translation>
 <translation id="4349828822184870497">Korisno</translation>
 <translation id="4350019051035968019">Uređaj se ne može prijaviti na domenu kojoj pripada vaš račun jer je postavljen za upravljanje na nekoj drugoj domeni.</translation>
-<translation id="4350230709416545141">Uvijek blokiraj hostu <ph name="HOST" /> pristup vašoj lokaciji</translation>
+<translation id="4350230709416545141">Uvijek blokirajte pristup svojoj lokaciji za <ph name="HOST" /></translation>
 <translation id="4350782034419308508">Hey Google</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> želi potražiti Bluetooth uređaje u blizini. Pronađeni su sljedeći uređaji:</translation>
 <translation id="4354073718307267720">Prikaži upit kada web-lokacija želi izraditi 3D kartu vašeg okruženja ili pratiti položaj kamere</translation>
@@ -5989,6 +5989,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8288032458496410887">Deinstaliranje aplikacije <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Veličina diska</translation>
 <translation id="8291967909914612644">Zemlja davatelja usluge kućne mreže</translation>
+<translation id="8293206222192510085">Dodaj oznaku</translation>
 <translation id="8294431847097064396">Izvor</translation>
 <translation id="8297006494302853456">Slab</translation>
 <translation id="8299319456683969623">Trenutačno ste izvan mreže.</translation>

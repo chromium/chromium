@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">ไม่พบเครือข่าย</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">โทรศัพท์มือถือ: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">สวัสดียามบ่าย <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">ฉันเบื่อจัง</translation>
 <translation id="1104084341931202936">แสดงการตั้งค่าการเข้าถึงพิเศษ</translation>
 <translation id="1104621072296271835">อุปกรณ์จะทำงานได้ดียิ่งขึ้นเมื่อใช้ร่วมกัน</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1698080062160024910">ตัวจับเวลา <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">ที่อยู่ IPv6: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">โต๊ะ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">การตั้งค่าเครือข่าย</translation>
 <translation id="1743570585616704562">ไม่รู้จัก</translation>
 <translation id="1746730358044914197">ผู้ดูแลระบบเป็นคนกำหนดค่าวิธีการป้อนข้อมูล</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">เล่าเรื่องตลกให้ฟังหน่อย</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
 <translation id="2067602449040652523">ความสว่างของแป้นพิมพ์</translation>
+<translation id="2083190527011054446">ราตรีสวัสดิ์ <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">ไม่ได้เชื่อมต่อกับเครือข่าย</translation>
 <translation id="2126242104232412123">โต๊ะทำงานใหม่</translation>
 <translation id="2127372758936585790">ที่ชาร์จพลังงานต่ำ</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3038571455154067151">โปรดป้อนรหัสการเข้าถึง Family Link ของผู้ปกครองเพื่อลงชื่อเข้าใช้</translation>
+<translation id="3045488863354895414">สวัสดียามบ่าย</translation>
 <translation id="3051128274746680507">ระบบจะนำโปรไฟล์ผู้ใช้ภายใต้การควบคุมดูแลออกในเร็วๆ นี้ ลงชื่อเข้าใช้เพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="3055162170959710888">วันนี้คุณใช้อุปกรณ์เครื่องนี้ไป <ph name="USED_TIME" /></translation>
 <translation id="3076778413190775903">ถาดสถานะ เวลา <ph name="TIME" />
@@ -304,6 +308,7 @@
 <translation id="4261870227682513959">แสดงการตั้งค่าการแจ้งเตือน การแจ้งเตือนปิดอยู่</translation>
 <translation id="4269883910223712419">ผู้ดูแลระบบของอุปกรณ์เครื่องนี้ทำสิ่งต่อไปนี้ได้</translation>
 <translation id="4279490309300973883">กำลังแสดงผล</translation>
+<translation id="4294319844246081198">สวัสดียามเช้า <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">ล้างการแจ้งเตือนทั้งหมด <ph name="COUNT" /> รายการ</translation>
 <translation id="4303223480529385476">ขยายพื้นที่แสดงสถานะ</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@
 <translation id="4421231901400348175">กำลังแชร์การควบคุมหน้าจอกับ <ph name="HELPER_NAME" /> ผ่านความช่วยเหลือระยะไกล</translation>
 <translation id="4430019312045809116">ระดับเสียง</translation>
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
+<translation id="445864333228800152">สวัสดียามเย็น</translation>
 <translation id="4458688154122353284">หยุดการอัดหน้าจอ</translation>
 <translation id="4477350412780666475">แทร็กถัดไป</translation>
 <translation id="4477892968187500306">อุปกรณ์นี้อาจมีแอปที่ยังไม่ได้รับการยืนยันจาก Google</translation>
@@ -430,6 +436,7 @@
 <translation id="5887866489674258948">โหมดมืด</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">โต๊ะที่ไม่ได้ใช้งาน</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5920710855273935292">ปิดเสียงไมค์อยู่</translation>
@@ -561,8 +568,10 @@
 <translation id="7405710164030118432">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครองเพื่อปลดล็อกอุปกรณ์</translation>
 <translation id="741244894080940828">การแปลง</translation>
 <translation id="742594950370306541">ใช้กล้องถ่ายรูปอยู่</translation>
+<translation id="742608627846767349">สวัสดียามเช้า</translation>
 <translation id="743058460480092004">ใช้กล้องถ่ายรูปและไมโครโฟนอยู่</translation>
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
+<translation id="7477793887173910789">ควบคุมเพลง วิดีโอ และอื่นๆ</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@
 <translation id="8351131234907093545">สร้างโน้ต</translation>
 <translation id="8371779926711439835">ไปข้างหน้าทีละตัวอักษร</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> นี้และโทรศัพท์จะเชื่อมต่อกันโดยอัตโนมัติ</translation>
+<translation id="8380784334203145311">ราตรีสวัสดิ์</translation>
 <translation id="8388750414311082622">นำพื้นที่ทำงานสุดท้ายออกไม่ได้</translation>
 <translation id="8392451568018454956">เมนูตัวเลือกสำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">ผู้ปกครองของคุณล็อกอุปกรณ์นี้ไว้</translation>
 <translation id="8412677897383510995">แสดงการตั้งค่าการแสดงผล</translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
+<translation id="8426708595819210923">สวัสดียามเย็น <ph name="GIVEN_NAME" /></translation>
 <translation id="8427213022735114808">การพิมพ์ตามคำบอกจะส่งเสียงของคุณไปยัง Google เพื่อให้พิมพ์ด้วยเสียงในช่องข้อความต่างๆ</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8433186206711564395">การตั้งค่าเครือข่าย</translation>

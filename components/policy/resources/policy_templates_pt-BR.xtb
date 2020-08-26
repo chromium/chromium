@@ -1326,11 +1326,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Observação: esta política aponta para um arquivo XML no mesmo formato que a política <ph name="IEEM_SITELIST_POLICY" /> do <ph name="IE_PRODUCT_NAME" />. As regras são carregadas de um arquivo XML e não são compartilhadas com o <ph name="IE_PRODUCT_NAME" />. Leia mais sobre a política <ph name="IEEM_SITELIST_POLICY" /> do <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
 <translation id="2952347049958405264">Restrições:</translation>
-<translation id="2956777931324644324">Esta política foi retirada de circulação a partir da versão 36 do <ph name="PRODUCT_NAME" />.
-
-      Especifica se a extensão dos certificados vinculados ao domínio TLS deve ser ativada.
-
-      Essa extensão é usada para ativar a extensão dos certificados vinculados ao domínio TLS para testes. Essa configuração experimental será removida no futuro.</translation>
 <translation id="2957047180944828740">Especifica se sites não seguros podem fazer solicitações para endpoints de uma rede mais privada</translation>
 <translation id="2957506574938329824">Não permite que nenhum site solicite acesso a dispositivos Bluetooth por meio da API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo de conta para autenticação <ph name="HTTP_NEGOTIATE" /></translation>
@@ -1862,7 +1857,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
 <translation id="3803171355925844705">Não permitir que nenhum site carregue conteúdo misto</translation>
-<translation id="3805659594028420438">Ativar extensão dos certificados vinculados ao domínio TLS (obsoleto)</translation>
 <translation id="3808945828600697669">Especificar uma lista de plug-ins desativados</translation>
 <translation id="3810642039169532482">Ativar o recurso de acessibilidade de ditado na tela de login.
 
@@ -2587,11 +2581,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Se a política não for definida, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193, exceto se o recurso CastAllowAllIPs estiver ativado.</translation>
 <translation id="489803897780524242">Parâmetro que controla o posicionamento do termo de pesquisa para o provedor de pesquisa padrão</translation>
 <translation id="4899708173828500852">Ativar Navegação segura</translation>
-<translation id="4902163780937592202">Ativa a mesclagem das políticas de lista <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" /> e <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> para instalação de extensões.
-
-      Se você ativar essa configuração, os valores da política da plataforma de máquina, da política da nuvem de máquina e da política da plataforma de usuário serão mesclados em uma única lista e usados em combinação, em vez de usar apenas os valores da fonte única com maior prioridade.
-
-      Se você desativar ou não definir essa configuração, apenas as entradas da lista da fonte de maior prioridade serão usadas, e todas as outras fontes serão exibidas como conflitos, mas ignoradas.</translation>
 <translation id="4906194810004762807">Taxa de atualização da Política de dispositivos</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4919122295221518724">Ativar tratamento mais rigoroso para conteúdo misto</translation>
@@ -3044,7 +3033,6 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
       Se ela for definida como falsa, o <ph name="PRODUCT_NAME" /> não poderá mostrar informações do produto como conteúdo em guia cheia.
 
       Esta política controla a apresentação das informações promocionais em uma guia inteira. Isso inclui conteúdo como as páginas de boas-vindas que ajudam os usuários a fazer login em <ph name="PRODUCT_NAME" />, definir <ph name="PRODUCT_NAME" /> como navegador padrão ou descobrir os recursos do produto.</translation>
-<translation id="5447306928176905178">Ativar relatórios de informação de memória (JS tamanho da pilha) para a página (obsoleta)</translation>
 <translation id="5450893456912604446">Configura o URL padrão da página inicial no <ph name="PRODUCT_NAME" /> e impede que os usuários o modifiquem.
 
           A página inicial é aquela aberta pelo botão "Página inicial". No computador, as páginas que são abertas na inicialização são controladas pelas políticas RestoreOnStartup.
@@ -3610,7 +3598,7 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
 
       Se esta configuração for definida como falsa ou não for definida, a nova implementação será usada e poderá causar possíveis problemas de compatibilidade específicos da empresa.
 
-      Esta política será removida depois de alguns marcos.
+      Esta política será removida após o lançamento de alguns recursos.
 
       Para ver detalhes sobre <ph name="CORS" />, acesse: <ph name="CORS_HELP_URL" />.
 
@@ -3985,11 +3973,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se esta política não for definida, o padrão será permitido tanto para usuários gerenciados por empresas quanto para usuários não gerenciados.</translation>
 <translation id="6864244339257535116">Permitir upload e download de arquivos protegidos por senha</translation>
-<translation id="687046793986382807">Esta política foi desativada a partir da versão 35 do <ph name="PRODUCT_NAME" />.
-
-      De alguma forma, as informações da memória são reportadas à página, independentemente do valor da opção. No entanto, os tamanhos reportados são
-      quantificados, e a taxa de atualizações é limitada por motivos de segurança. Para obter dados precisos em tempo real,
-      utilize ferramentas como o Telemetry.</translation>
 <translation id="68798513449385583">Atrasar downloads até que o resultado da verificação seja conhecido</translation>
 <translation id="6889123056995503704">O usuário decide o comportamento de downgrade de canal</translation>
 <translation id="6894178810167845842">URL da página "Nova guia"</translation>
@@ -4347,11 +4330,11 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       A pesquisa e a instalação automáticas de plug-ins ausentes não são mais compatíveis.</translation>
 <translation id="7267809745244694722">Teclas de mídia padrão para teclas de função</translation>
 <translation id="7271085005502526897">Importar homepage do navegador padrão na primeira execução</translation>
-<translation id="7271181393214180342">Definir a política como "Ativada" faz com que a autenticação HTTP respeite a aprovação pela política KDC. Em outras palavras, o <ph name="PRODUCT_NAME" /> delegará credenciais de usuário para o serviço acessado se o KDC definir <ph name="OK_AS_DELEGATE" /> em um ticket de serviço. Consulte RFC 5896 (https://tools.ietf.org/html/rfc5896.html, link em inglês). O serviço também precisa ter a permissão de <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
+<translation id="7271181393214180342">Definir a política como "Ativada" faz com que a autenticação HTTP respeite a aprovação pela política de KDC. Em outras palavras, o <ph name="PRODUCT_NAME" /> delegará credenciais de usuário para o serviço acessado se o KDC definir <ph name="OK_AS_DELEGATE" /> em um ticket de serviço. Consulte RFC 5896 (https://tools.ietf.org/html/rfc5896.html, link em inglês). O serviço também precisa ter a permissão de <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
 
-      Definir a política como "Desativada" ou deixá-la sem definição faz com que a KDC seja ignorada nas plataformas compatíveis, e somente <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> será respeitada.
+      Definir a política como "Desativada" ou deixá-la sem definição faz com que a política de KDC seja ignorada nas plataformas compatíveis, e somente <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> será respeitada.
 
-      No <ph name="MS_WIN_NAME" />, a política KDC sempre é respeitada.</translation>
+      No <ph name="MS_WIN_NAME" />, a política de KDC sempre é respeitada.</translation>
 <translation id="7273823081800296768">Se esta definição estiver ativada ou não estiver configurada, os usuários podem optar por parear clientes e hosts no momento da conexão, eliminando a necessidade de inserir um PIN todas as vezes.
 
           Se esta definição estiver desativada, esse recurso não fica disponível.</translation>
@@ -4779,7 +4762,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 <translation id="793134539373873765">Especifica se p2p deve ser usado para cargas de atualização do sistema operacional. Se for definido como verdadeiro, os dispositivos compartilharão e tentarão consumir as cargas de atualização na LAN, possivelmente reduzindo o uso de largura de banda de Internet e o congestionamento. Se a carga de atualização não estiver disponível na LAN, o dispositivo voltará a fazer download a partir de um servidor de atualização. Se for definido como falso ou não for configurado, o p2p não será usado.</translation>
 <translation id="7933141401888114454">Ativar a criação de usuários supervisionados</translation>
 <translation id="793473937901685727">Definir a disponibilidade do certificado para apps ARC</translation>
-<translation id="7937491150792971922">Mesclar políticas de lista para instalação de extensões de diversas fontes</translation>
 <translation id="7937766917976512374">Permitir ou negar captura de vídeo</translation>
 <translation id="7941975817681987555">Não prever ações da rede em nenhuma conexão de rede</translation>
 <translation id="7951605113561734721">Especifica os certificados do cliente em todo o dispositivo que deveriam ser registrados usando o protocolo de gerenciamento do dispositivo.</translation>

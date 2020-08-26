@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">La configuration de la synchro. initiale n'est pas terminée</translation>
 <translation id="1821253160463689938">Utilise des témoins pour mémoriser vos préférences, même si vous ne consultez pas ces pages</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
+<translation id="1843805151597803366">Pour obtenir des traductions de meilleure qualité, autorisez la recherche Google à utiliser la page actuelle</translation>
 <translation id="1853692000353488670">Nouvel onglet de navigation privée</translation>
 <translation id="1856325424225101786">Réinitialiser le mode simplifié?</translation>
 <translation id="1868024384445905608">Chrome télécharge maintenant les fichiers plus rapidement</translation>
@@ -477,6 +478,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchronisation<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nom du titulaire de la carte</translation>
+<translation id="4818017973810341238">Échec de la vérification des liens de ressource numérique sur la page <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Annuler la synchronisation?</translation>
 <translation id="4835385943915508971">Chrome n'a pas accès à la ressource demandée.</translation>
 <translation id="4837753911714442426">Ouvrir les options d'impression de la page</translation>
@@ -637,7 +639,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5942872142862698679">Google est utilisé pour la recherche</translation>
 <translation id="5952764234151283551">Envoie l'URL d'une page que vous essayez d'atteindre à Google</translation>
 <translation id="5956665950594638604">Centre d'aide de Chrome : nouvel onglet</translation>
-<translation id="5957442310066583693">Pour consulter vos sites les plus fréquentés, touchez la touche d'accueil</translation>
+<translation id="5957442310066583693">Pour consulter vos sites les plus fréquentés, touchez le bouton Accueil</translation>
 <translation id="5958275228015807058">Trouvez vos fichiers et vos pages dans Téléchargements</translation>
 <translation id="5962718611393537961">Toucher pour réduire</translation>
 <translation id="5964805880140440652">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres de Chrome</translation>
@@ -911,6 +913,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7981313251711023384">Précharger les pages pour une navigation et une recherche plus rapides</translation>
 <translation id="79859296434321399">Pour regarder du contenu de réalité augmentée, installez ARCore</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
+<translation id="799806351373751710">Annuler la configuration de la synchronisation</translation>
 <translation id="7998918019931843664">Rouvrir l'onglet fermé</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8013372441983637696">Aussi effacer vos données de Chrome de cet appareil</translation>

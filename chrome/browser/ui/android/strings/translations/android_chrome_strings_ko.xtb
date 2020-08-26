@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">초기 동기화 설정이 완료되지 않음</translation>
 <translation id="1821253160463689938">페이지를 방문하지 않더라도 쿠키를 사용하여 환경설정 저장</translation>
 <translation id="1829244130665387512">페이지에서 찾기</translation>
+<translation id="1843805151597803366">번역을 개선하려면 Google 검색을 통해 현재 페이지를 사용하세요.</translation>
 <translation id="1853692000353488670">새 시크릿 탭</translation>
 <translation id="1856325424225101786">라이트 모드를 재설정하시겠습니까?</translation>
 <translation id="1868024384445905608">이제 Chrome에서 파일을 더 빠르게 다운로드합니다.</translation>
@@ -477,6 +478,7 @@
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하세요.</translation>
 <translation id="4807098396393229769">카드 명의</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" />에서 디지털 애셋 링크 확인에 실패함</translation>
 <translation id="4824958205181053313">동기화를 취소하시겠습니까?</translation>
 <translation id="4835385943915508971">Chrome에서 요청된 리소스에 액세스할 권한이 없습니다.</translation>
 <translation id="4837753911714442426">옵션을 열어 페이지 인쇄</translation>
@@ -911,6 +913,7 @@
 <translation id="7981313251711023384">더 빠른 인터넷 사용과 검색을 위해 페이지 미리 로드</translation>
 <translation id="79859296434321399">증강 현실 콘텐츠를 보려면 ARCore를 설치하세요.</translation>
 <translation id="7986741934819883144">연락처 선택</translation>
+<translation id="799806351373751710">동기화 설정 취소</translation>
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8013372441983637696">이 기기에서 내 Chrome 데이터 삭제</translation>

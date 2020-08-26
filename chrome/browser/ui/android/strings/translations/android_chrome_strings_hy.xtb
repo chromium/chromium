@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Համաժամացման սկզբնական կարգավորումը չի ավարտվել</translation>
 <translation id="1821253160463689938">Օգտագործում է քուքիները՝ ձեր նախընտրանքները հիշելու համար, նույնիսկ եթե չեք այցելում այդ կայքեր</translation>
 <translation id="1829244130665387512">Գտնել էջում</translation>
+<translation id="1843805151597803366">Ավելի լավ թարգմանությունների համար թույլատրեք, որ Google Որոնումն օգտագործի այս էջը</translation>
 <translation id="1853692000353488670">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="1856325424225101786">Վերակայե՞լ Lite ռեժիմը</translation>
 <translation id="1868024384445905608">Chrome-ն այժմ ավելի արագ է ֆայլեր ներբեռնում</translation>
@@ -477,6 +478,7 @@
 
 Այս կարգավորումը փոփոխելու համար <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
+<translation id="4818017973810341238">Չհաջողվեց հաստատել թվային օբյեկտների հղումները <ph name="VIOLATED_URL" /> էջում</translation>
 <translation id="4824958205181053313">Չեղարկե՞լ համաժամացումը</translation>
 <translation id="4835385943915508971">Հարցված ռեսուրսը հասանելի չէ Chrome-ին:</translation>
 <translation id="4837753911714442426">Բացել էջը տպելու տարբերակները</translation>
@@ -911,6 +913,7 @@
 <translation id="7981313251711023384">Նախաբեռնել էջերը ավելի արագ դիտարկման և որոնման համար</translation>
 <translation id="79859296434321399">Լրացված իրականության ռեժիմում բովանդակությունը դիտելու համար տեղադրեք ARCore հավելվածը</translation>
 <translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
+<translation id="799806351373751710">Չեղարկել համաժամացման կարգավորումը</translation>
 <translation id="7998918019931843664">Նորից բացել փակված ներդիրը</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="8013372441983637696">Նաև մաքրել Chrome-ի ձեր տվյալներն այս սարքից</translation>

@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">មិនមានបណ្ដាញទេ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />៖ <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">បណ្ដាញទូរសព្ទចល័ត៖ <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">ទិវា​សួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">ខ្ញុំ​ធុញ</translation>
 <translation id="1104084341931202936">បង្ហាញ​ការកំណត់​ភាពងាយស្រួល</translation>
 <translation id="1104621072296271835">ឧបករណ៍​របស់អ្នក​ដំណើរការ​កាន់តែល្អ​ពេលប្រើ​រួមគ្នា</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478">នៅសល់ <ph name="TIME" /></translation>
 <translation id="1698080062160024910">កម្មវិធីកំណត់ម៉ោង <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">អាសយដ្ឋាន IPv6 ៖ <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">តុ៖ <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ការកំណត់បណ្ដាញ</translation>
 <translation id="1743570585616704562">មិន​ស្គាល់ទេ</translation>
 <translation id="1746730358044914197">វិធីសាស្ត្រ​បញ្ចូលត្រូវ​បានកំណត់​រចនាសម្ព័ន្ធ​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">និយាយ​រឿងកំប្លែង​ឱ្យខ្ញុំស្ដាប់</translation>
 <translation id="2050339315714019657">បញ្ឈរ</translation>
 <translation id="2067602449040652523">ពន្លឺកា្តរចុច</translation>
+<translation id="2083190527011054446">រាត្រីសួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">មិនបាន​ភ្ជាប់ទៅ​បណ្ដាញ​ទេ</translation>
 <translation id="2126242104232412123">តុធ្វើការថ្មី</translation>
 <translation id="2127372758936585790">ឆ្នាំងសាកផ្តល់ថាមពលទាប</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">ទិន្នផល</translation>
 <translation id="3033545621352269033">បើក</translation>
 <translation id="3038571455154067151">ដើម្បីចូលគណនី សូម​បញ្ចូល​លេខ​កូដ​ចូលប្រើប្រាស់​របស់​មាតាបិតារបស់ Family Link អ្នក</translation>
+<translation id="3045488863354895414">ទិវា​សួស្ដី</translation>
 <translation id="3051128274746680507">កម្រងព័ត៌មាន​អ្នកប្រើប្រាស់ដែលស្ថិតក្រោម​ការមើលការខុសត្រូវរបស់អ្នក​នឹងត្រូវបានលុបចេញ​នាពេលឆាប់ៗនេះ។ ចូលគណនី​ដើម្បីស្វែងយល់​បន្ថែម។</translation>
 <translation id="3055162170959710888">អ្នកបានប្រើឧបករណ៍នេះរយៈពេល <ph name="USED_TIME" /> នៅថ្ងៃនេះ</translation>
 <translation id="3076778413190775903">របារស្ថានភាព ម៉ោង <ph name="TIME" />,
@@ -304,6 +308,7 @@
 <translation id="4261870227682513959">បង្ហាញ​ការកំណត់​ការជូនដំណឹង។ ការជូនដំណឹង​ត្រូវបាន​បិទ</translation>
 <translation id="4269883910223712419">អ្នកគ្រប់គ្រ​ងឧបករណ៍​នេះ​មានលទ្ធភាព​៖</translation>
 <translation id="4279490309300973883">កំពុងឆ្លុះ</translation>
+<translation id="4294319844246081198">អរុណសួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">សម្អាត​ការ​ជូន​ដំណឹង​ទាំង <ph name="COUNT" /></translation>
 <translation id="4303223480529385476">ពង្រីក​តំបន់​ស្ថានភាព</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@
 <translation id="4421231901400348175">ចែករំលែកការបញ្ជាអេក្រង់របស់អ្នកជាមួយ <ph name="HELPER_NAME" /> តាមរយៈជំនួយការពីចម្ងាយ។</translation>
 <translation id="4430019312045809116">សម្លេង</translation>
 <translation id="4450893287417543264">កុំបង្ហាញម្ដងទៀត</translation>
+<translation id="445864333228800152">សាយណ្ហ​សួស្ដី</translation>
 <translation id="4458688154122353284">បញ្ឈប់​ការថត​អេក្រង់</translation>
 <translation id="4477350412780666475">សំនៀង​បន្ទាប់</translation>
 <translation id="4477892968187500306">ឧបករណ៍នេះ​អាចមាន​កម្មវិធី​ដែល​មិនត្រូវបាន​ផ្ទៀងផ្ទាត់​ដោយ Google។</translation>
@@ -430,6 +436,7 @@
 <translation id="5887866489674258948">មុខងារ​ងងឹត</translation>
 <translation id="5895138241574237353">ចាប់ផ្តើមឡើងវិញ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">តុអសកម្ម។</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5920710855273935292">បានបិទសំឡេងមីក្រូហ្វូន។</translation>
@@ -561,8 +568,10 @@
 <translation id="7405710164030118432">ដើម្បី​ដោះសោ​ឧបករណ៍ សូម​បញ្ចូល​លេខកូដ​ចូលប្រើប្រាស់​របស់​មាតាបិតា​សម្រាប់ Family Link របស់អ្នក</translation>
 <translation id="741244894080940828">ការបំប្លែង</translation>
 <translation id="742594950370306541">កាមេរ៉ាស្ថិតនៅក្នុងការប្រើ។</translation>
+<translation id="742608627846767349">អរុណសួស្ដី</translation>
 <translation id="743058460480092004">កាមេរ៉ា និងម៉ៃក្រូហ្វូនស្ថិតក្នុងការប្រើ។</translation>
 <translation id="7466449121337984263">សូមប៉ះ​ឧបករណ៍​ចាប់សញ្ញា</translation>
+<translation id="7477793887173910789">គ្រប់គ្រងតន្ត្រី វីដេអូរបស់អ្នក និងអ្វីៗជាច្រើនទៀត</translation>
 <translation id="7497767806359279797">ជ្រើសរើស​ភាសា និងក្ដារចុច</translation>
 <translation id="7526573455193969409">បណ្ដាញ​អាច​ត្រូវ​បាន​ត្រួតពិនិត្យ</translation>
 <translation id="7536035074519304529">អាសយដ្ឋាន IP ៖ <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@
 <translation id="8351131234907093545">បង្កើត​កំណត់​ចំណាំ</translation>
 <translation id="8371779926711439835">ទៅមុខមួយតួអក្សរ</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> នេះ និងទូរសព្ទរបស់អ្នក​នឹងភ្ជាប់ដោយស្វ័យប្រវត្តិ</translation>
+<translation id="8380784334203145311">រាត្រីសួស្ដី</translation>
 <translation id="8388750414311082622">មិនអាច​លុបតុចុងក្រោយ​បានទេ។</translation>
 <translation id="8392451568018454956">ម៉ឺនុយជម្រើសសម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">មាតា​បិតា​របស់អ្នក​បាន​ចាក់​សោ​ឧបករណ៍​នេះ</translation>
 <translation id="8412677897383510995">បង្ហាញ​ការកំណត់​ផ្ទាំងអេក្រង់</translation>
 <translation id="8425213833346101688">ប្តូរ</translation>
+<translation id="8426708595819210923">សាយណ្ហ​សួស្ដី <ph name="GIVEN_NAME" /></translation>
 <translation id="8427213022735114808">ការសរសេរតាមអាន​បញ្ជូន​សំឡេង​របស់អ្នក​ទៅ Google ដើម្បី​អនុញ្ញាត​ឱ្យ​ប្រើការ​វាយ​បញ្ចូល​ដោយ​សំឡេង​​ទៅក្នុង​កន្លែងបញ្ចូលអក្សរ។</translation>
 <translation id="8428213095426709021">ការកំណត់</translation>
 <translation id="8433186206711564395">ការ​កំណត់​បណ្ដាញ</translation>

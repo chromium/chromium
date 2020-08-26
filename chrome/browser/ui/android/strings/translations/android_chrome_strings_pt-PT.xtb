@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">A configuração da sincronização inicial não está concluída</translation>
 <translation id="1821253160463689938">Utiliza cookies para memorizar as suas preferências, mesmo que não visite essas páginas.</translation>
 <translation id="1829244130665387512">Localizar na página</translation>
+<translation id="1843805151597803366">Para obter melhores traduções, permita que a Pesquisa Google utilize a página atual.</translation>
 <translation id="1853692000353488670">Novo separador anónimo</translation>
 <translation id="1856325424225101786">Pretende repor o Modo Lite?</translation>
 <translation id="1868024384445905608">O Chrome agora transfere os ficheiros mais rapidamente.</translation>
@@ -477,6 +478,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 
 Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Nome no cartão</translation>
+<translation id="4818017973810341238">Falha ao validar os Digital Asset Links em <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Pretende cancelar a sincronização?</translation>
 <translation id="4835385943915508971">O Chrome não tem acesso ao recurso solicitado.</translation>
 <translation id="4837753911714442426">Abrir opções para imprimir página</translation>
@@ -911,6 +913,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7981313251711023384">Pré-carregar as páginas para uma navegação e uma pesquisa mais rápidas</translation>
 <translation id="79859296434321399">Para ver conteúdo de realidade aumentada, instale o ARCore.</translation>
 <translation id="7986741934819883144">Selecionar um contacto</translation>
+<translation id="799806351373751710">Cancelar configuração da sincronização</translation>
 <translation id="7998918019931843664">Reabrir separador fechado</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8013372441983637696">Limpar também os dados do Chrome deste dispositivo</translation>

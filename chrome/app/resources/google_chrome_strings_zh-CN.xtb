@@ -8,13 +8,16 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chrome</translation>
 <translation id="1097330777386562916">退出 Chrome 时清除 Cookie 及网站数据</translation>
 <translation id="110877069173485804">这是您的专属Chrome</translation>
+<translation id="1125124144982679672">谁在使用 Chrome？</translation>
 <translation id="1142745911746664600">无法更新 Chrome</translation>
 <translation id="1154147086299354128">在 Chrome 中打开(&amp;O)</translation>
 <translation id="123620459398936149">Chrome操作系统无法同步您的数据。请更新您的同步密码。</translation>
 <translation id="1302523850133262269">Chrome正在安装最新的系统更新，请稍候。</translation>
+<translation id="1355000804395496115">在 Chrome 中使用不同的个人资料将工作上的浏览数据和个人的浏览数据分隔开来，或者为此设备的不同用户使用不同的个人资料</translation>
 <translation id="137466361146087520">Google Chrome 测试版</translation>
 <translation id="1399397803214730675">该计算机已安装了更高版本的 Google Chrome 浏览器。如果该软件无法正常运行，请卸载 Google Chrome 浏览器，然后重试。</translation>
 <translation id="1434626383986940139">Chrome Canary 应用</translation>
+<translation id="1513277449617685876">若要将个人的浏览数据与 <ph name="NEW_USER" /> 的浏览数据分隔开来，请在 Chrome 中创建一份新的个人资料</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用您的摄像头。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 存在危险，因此 Chrome 已将其拦截。</translation>
@@ -102,6 +105,7 @@
 <translation id="3889417619312448367">卸载 Google Chrome</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
+<translation id="4110895483821904099">设置您的新 Chrome 个人资料</translation>
 <translation id="4143243756087420366">Chrome 名称和图片</translation>
 <translation id="4147555960264124640">您目前登录的帐号是一个托管帐号，该帐号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 帐号信息中心删除这些数据，但无法将这些数据与其他帐号相关联。<ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">安装程序无法解压缩存档文件。请重新下载 Google Chrome。</translation>
@@ -151,6 +155,7 @@
 <translation id="5430073640787465221">您的偏好设置文件已损坏或无效。Google Chrome 浏览器无法恢复您的设置。</translation>
 <translation id="556024056938947818">Google Chrome 正尝试显示密码。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5633355459292055250">在我打开 Chrome 时询问</translation>
 <translation id="5657226924540934362">如果此页面中未显示某项设置，请在 <ph name="LINK_BEGIN" />
       Chrome 操作系统设置<ph name="LINK_END" />中查找</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能存在危险，因此 Chrome 已将其拦截。</translation>
@@ -204,6 +209,7 @@
 <translation id="7398801000654795464">您之前登录 Chrome 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
 <translation id="7408085963519505752">Chrome操作系统条款</translation>
 <translation id="7419046106786626209">由于您的网域停用了同步功能，Chrome操作系统无法同步您的数据。</translation>
+<translation id="7423733001651488593">此操作会将您的浏览数据从这部设备上永久删除。若要恢复这些数据，请使用以下身份登录 Chrome：</translation>
 <translation id="7486227612705979895">Chrome 将访问您的云端硬盘，以在地址栏提供建议</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
 <translation id="7573289029918943991">若想确认您设备上的操作系统是否是最新版本，请前往 <ph name="LINK_BEGIN" />Chrome 操作系统设置<ph name="LINK_END" /></translation>
@@ -251,6 +257,7 @@
 <translation id="8681614230122836773">Chrome 在您的计算机上发现了有害软件</translation>
 <translation id="870251953148363156">更新 Google Chrome(&amp;G)</translation>
 <translation id="873133009373065397">Google Chrome 无法确定或设置默认浏览器</translation>
+<translation id="8748242232968346981">在 Chrome 中创建您自己的个人资料？</translation>
 <translation id="8823341990149967727">Chrome版本太旧</translation>
 <translation id="8834965163890861871">Google Chrome 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="884296878221830158">它还能够控制您启动Chrome或点击“主页”按钮后系统显示的页面。</translation>

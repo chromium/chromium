@@ -525,7 +525,6 @@
 <translation id="1608668830839595724">Więcej czynności dla wybranych elementów</translation>
 <translation id="161042844686301425">Cyjan</translation>
 <translation id="1611432201750675208">Urządzenie jest zablokowane</translation>
-<translation id="1611584202130317952">Przepływ obsługi administracyjnej został przerwany. Spróbuj ponownie lub skontaktuj się z właścicielem lub administratorem urządzenia.</translation>
 <translation id="1614511179807650956">Możliwe, że masz już wykorzystany limit mobilnej transmisji danych. Odwiedź portal aktywacji <ph name="NAME" />, by kupić dodatkowy pakiet danych.</translation>
 <translation id="161460670679785907">Nie można wykryć telefonu</translation>
 <translation id="1616206807336925449">To rozszerzenie nie wymaga specjalnych uprawnień.</translation>
@@ -963,6 +962,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2148219725039824548">Błąd podczas podłączania udziału. Udziału nie znaleziono w sieci.</translation>
 <translation id="2148756636027685713">Formatowanie zostało zakończone.</translation>
 <translation id="2148892889047469596">Przesyłaj kartę</translation>
+<translation id="2149973817440762519">Edytuj zakładkę</translation>
 <translation id="2150139952286079145">Szukaj urządzeń docelowych</translation>
 <translation id="2150661552845026580">Dodać „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="2151576029659734873">Wprowadzono nieprawidłowy indeks tabulacji.</translation>
@@ -5985,6 +5985,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8288032458496410887">Odinstaluj aplikację <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Rozmiar dysku</translation>
 <translation id="8291967909914612644">Kraj operatora macierzystego</translation>
+<translation id="8293206222192510085">Dodaj zakładkę</translation>
 <translation id="8294431847097064396">Źródło</translation>
 <translation id="8297006494302853456">Słaby</translation>
 <translation id="8299319456683969623">Jesteś teraz w trybie offline.</translation>

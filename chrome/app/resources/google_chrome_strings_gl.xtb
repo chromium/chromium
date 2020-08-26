@@ -10,13 +10,16 @@
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> estaba utilizando Chrome previamente</translation>
 <translation id="1097330777386562916">Borrar as cookies e os datos dos sitios cando peches Chrome</translation>
 <translation id="110877069173485804">Este é o teu navegador Chrome</translation>
+<translation id="1125124144982679672">Quen está utilizando Chrome?</translation>
 <translation id="1142745911746664600">Non se puido actualizar Chrome</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
 <translation id="123620459398936149">Chrome OS non puido sincronizar os teus datos. Actualiza a túa frase de acceso de sincronización.</translation>
 <translation id="1302523850133262269">Espera a que Chrome instale as actualizacións do sistema máis recentes.</translation>
+<translation id="1355000804395496115">Utiliza distintos perfís en Chrome para separar a actividade de navegación persoal da do traballo, ou a das diferentes persoas que empregan este dispositivo</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1399397803214730675">Este ordenador ten instalada unha versión máis recente de Google Chrome. Se o software non funciona, desinstala Google Chrome e téntao de novo.</translation>
 <translation id="1434626383986940139">Aplicacións de valores controlados de Chrome</translation>
+<translation id="1513277449617685876">Para separar a actividade de navegación persoal da de <ph name="NEW_USER" />, crea un perfil novo en Chrome</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1587223624401073077">Google Chrome utiliza a túa cámara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> é perigoso, así que Chrome bloqueouno.</translation>
@@ -106,6 +109,7 @@
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
 <translation id="4050175100176540509">A última versión conta con melloras de seguranza importantes e novas funcións.</translation>
 <translation id="4053720452172726777">Personaliza e controla Google Chrome</translation>
+<translation id="4110895483821904099">Configura o teu novo perfil de Chrome</translation>
 <translation id="4143243756087420366">Imaxe e nome para o perfil de Chrome</translation>
 <translation id="4147555960264124640">Estás iniciando sesión cunha conta administrada, polo que concedes ao seu administrador o control sobre o teu perfil de Google Chrome. Os tes datos de Chrome, como aplicacións, marcadores, historial, contrasinais e outras opcións quedarán ligados de forma permanente a <ph name="USER_NAME" />. Poderás eliminar estes datos mediante o panel de control de contas de Google, pero non poderás asocialos a outra conta. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">O instalador non puido descomprimir o arquivo. Descarga Google Chrome de novo.</translation>
@@ -159,6 +163,7 @@
 Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="556024056938947818">Google Chrome está intentando mostrar contrasinais.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
+<translation id="5633355459292055250">Preguntar cando abra Chrome</translation>
 <translation id="5657226924540934362">Se non se mostra algunha opción de configuración nesta páxina, accede á <ph name="LINK_BEGIN" />
       configuración de Chrome OS<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, así que Chrome bloqueouno.</translation>
@@ -212,6 +217,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7398801000654795464">Iniciaches sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
 <translation id="7408085963519505752">Condicións de Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS non puido sincronizar os teus datos porque a función de sincronización non está dispoñible para o teu dominio.</translation>
+<translation id="7423733001651488593">Esta acción eliminará permanentemente os teus datos de navegación deste dispositivo. Para recuperalos, inicia sesión en Chrome como</translation>
 <translation id="7486227612705979895">Chrome accederá a Drive para facer suxestións na barra de enderezos</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Para ver ser o teu dispositivo está actualizado, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" /></translation>
@@ -259,6 +265,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8681614230122836773">Chrome atopou software daniño no teu ordenador</translation>
 <translation id="870251953148363156">Actualizar &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome non pode determinar nin establecer o navegador predeterminado</translation>
+<translation id="8748242232968346981">Queres crear o teu propio perfil en Chrome?</translation>
 <translation id="8823341990149967727">Chrome está desactualizado</translation>
 <translation id="8834965163890861871">Google Chrome está tentando editar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="884296878221830158">Tamén controla que páxina se mostra ao iniciar Chrome ou ao facer clic no botón Inicio.</translation>

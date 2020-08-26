@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Počáteční nastavení synchronizace nebylo dokončeno</translation>
 <translation id="1821253160463689938">Používá soubory cookie k uložení vašeho nastavení i v případě, že stránky nenavštívíte</translation>
 <translation id="1829244130665387512">Najít na stránce</translation>
+<translation id="1843805151597803366">Za účelem zvýšení kvality překladů umožněte Vyhledávání Google použít tuto stránku</translation>
 <translation id="1853692000353488670">Nová anonymní karta</translation>
 <translation id="1856325424225101786">Resetovat zjednodušený režim?</translation>
 <translation id="1868024384445905608">Chrome teď stahuje soubory rychleji</translation>
@@ -477,6 +478,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 
 Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Jméno na kartě</translation>
+<translation id="4818017973810341238">Ověření protokolu Digital Asset Links na adrese <ph name="VIOLATED_URL" /> se nezdařilo</translation>
 <translation id="4824958205181053313">Zrušit synchronizaci?</translation>
 <translation id="4835385943915508971">Chrome k požadovanému zdroji nemá přístup.</translation>
 <translation id="4837753911714442426">Otevřít možnosti tisku stránky</translation>
@@ -911,6 +913,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7981313251711023384">Předběžně načítat stránky pro rychlejší procházení a vyhledávání</translation>
 <translation id="79859296434321399">Chcete-li zobrazit obsah pro rozšířenou realitu, nainstalujte ARCore</translation>
 <translation id="7986741934819883144">Výběr kontaktu</translation>
+<translation id="799806351373751710">Zrušit nastavení synchronizace</translation>
 <translation id="7998918019931843664">Znovu otevřít zavřenou kartu</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
 <translation id="8013372441983637696">Vymazat data prohlížeče Chrome také z tohoto zařízení</translation>

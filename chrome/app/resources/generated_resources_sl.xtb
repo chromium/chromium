@@ -525,7 +525,6 @@
 <translation id="1608668830839595724">Več dejanj za izbrane elemente</translation>
 <translation id="161042844686301425">Cianova</translation>
 <translation id="1611432201750675208">Naprava je zaklenjena</translation>
-<translation id="1611584202130317952">Omogočanje uporabe je bilo prekinjeno. Poskusite znova ali se obrnite na lastnika ali skrbnika naprave.</translation>
 <translation id="1614511179807650956">Morda ste porabili dovoljeno količino prenosa podatkov v mobilnem omrežju. Večjo količino podatkov lahko kupite na portalu za aktiviranje <ph name="NAME" />.</translation>
 <translation id="161460670679785907">Ni mogoče zaznati vašega telefona</translation>
 <translation id="1616206807336925449">Za to razširitev so potrebna posebna dovoljenja.</translation>
@@ -967,6 +966,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2148219725039824548">Napaka pri vpenjanju datotečnega sredstva v skupni rabi. Določeno datotečno sredstvo v skupni rabi ni bilo najdeno v omrežju.</translation>
 <translation id="2148756636027685713">Formatiranje je končano</translation>
 <translation id="2148892889047469596">Predvajanje zavihka</translation>
+<translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2150139952286079145">Iskanje ciljev</translation>
 <translation id="2150661552845026580">Želite dodati »<ph name="EXTENSION_NAME" />«?</translation>
 <translation id="2151576029659734873">Vneseni tabulatorski indeks ni veljaven.</translation>
@@ -5991,6 +5991,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8288032458496410887">Odmeščanje aplikacije <ph name="APP" /> …</translation>
 <translation id="8289128870594824098">Velikost diska</translation>
 <translation id="8291967909914612644">Država domačega ponudnika</translation>
+<translation id="8293206222192510085">Dodaj zaznamek</translation>
 <translation id="8294431847097064396">Vir</translation>
 <translation id="8297006494302853456">Šibek</translation>
 <translation id="8299319456683969623">Trenutno ste brez povezave.</translation>

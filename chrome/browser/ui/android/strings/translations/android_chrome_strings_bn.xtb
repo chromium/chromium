@@ -7,6 +7,7 @@
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> যোগ করা হচ্ছে...</translation>
 <translation id="1041308826830691739">ওয়েবসাইট থেকে</translation>
 <translation id="1045899828449635435">এই সাইটগুলির ডেটাও কি মুছে ফলতে চান?</translation>
+<translation id="1047303875618851375">Chrome আপনার তথ্য যাচাই করতে পারেনি</translation>
 <translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="10614374240317010">কখনও সংরক্ষিত হয়নি</translation>
 <translation id="1067922213147265141">Google-এর অন্যান্য পরিষেবা</translation>
@@ -101,6 +102,7 @@
 <translation id="1810845389119482123">প্রারম্ভিক সিঙ্ক সেট-আপ করা সম্পূর্ণ হয়নি</translation>
 <translation id="1821253160463689938">আপনার পছন্দগুলি মনে রাখার জন্য কুকি ব্যবহার করে। আপনি সেই সমস্ত পৃষ্ঠায় না গেলেও তা করে থাকে</translation>
 <translation id="1829244130665387512">পৃষ্ঠাতে খুঁজুন</translation>
+<translation id="1843805151597803366">আরও ভাল অনুবাদের জন্য, Google Search আপনার থেকে বর্তমান পৃষ্ঠা ব্যবহার করার অনুমতি চাইতে পারে</translation>
 <translation id="1853692000353488670">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1856325424225101786">লাইট মোড রিসেট করবেন?</translation>
 <translation id="1868024384445905608">Chrome এখন আরও দ্রুত ফাইল ডাউনলোড করে</translation>
@@ -451,6 +453,7 @@
 <translation id="4650364565596261010">সিস্টেম ডিফল্ট</translation>
 <translation id="465657074423018424">Safe Browsing প্রতাণামূলক ওয়েবসাইট থেকে আপনাকে নিরাপদে রাখে। এটি বন্ধ করা থাকলে, ব্রাউজ করার সময় (বিশেষ করে পাসওয়ার্ড লেখার আগে) অতিরিক্ত সতর্কতা অবলম্বন করুন।</translation>
 <translation id="4662373422909645029">ডাকনামে সংখ্যা থাকবে না</translation>
+<translation id="4663499661119906179">আপনার জন্যই বেছে নেওয়া সেরা সাইট ও খবর দেখুন</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" />টি বুকমার্ক মোছা হয়েছে</translation>
 <translation id="4665282149850138822">আপনার হোম স্ক্রীনে <ph name="NAME" /> কে যোগ করা হয়েছে</translation>
 <translation id="4668347365065281350">কুকি ও স্থানীয়ভাবে সেভ করা ডেটা সহ সাইটের সেভ করা সব ডেটা</translation>
@@ -463,6 +466,7 @@
 <translation id="4719927025381752090">অনুবাদ করুন</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> এ খুলুন</translation>
 <translation id="4720982865791209136">Chrome উন্নত করতে সাহায্য করুন। <ph name="BEGIN_LINK" />সমীক্ষায় অংশ নিন।<ph name="END_LINK" /></translation>
+<translation id="47217992755561375">আপনার জন্য বেছে নেওয়া সেরা সাইট দেখুন</translation>
 <translation id="4732120983431207637">স্ট্যাক আনউইন্ডার</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4738836084190194332">সর্বশেষ সিঙ্ক হয়েছে: <ph name="WHEN" /></translation>
@@ -476,6 +480,7 @@
 
 <ph name="BEGIN_LINK" />রিসেট সিঙ্ক<ph name="END_LINK" /> থেকে এই সেটিং পরিবর্তন করুন</translation>
 <translation id="4807098396393229769">কার্ডে থাকা নাম</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" />-এ Digital Asset Links যাচাই করা যায়নি</translation>
 <translation id="4824958205181053313">সিঙ্ক বাতিল করতে চান?</translation>
 <translation id="4835385943915508971">অনুরোধকৃত সম্পদে Chrome এর অ্যাক্সেস নেই।</translation>
 <translation id="4837753911714442426">‘পৃষ্ঠা প্রিন্ট করুন’-এর বিকল্পগুলি খুলুন</translation>
@@ -560,6 +565,7 @@
 <translation id="5433691172869980887">ইউজারনেম কপি করা হয়েছে</translation>
 <translation id="543509235395288790"><ph name="COUNT" />টি ফাইল ডাউনলোড হচ্ছে (<ph name="MEGABYTES" />)।</translation>
 <translation id="5441522332038954058">অ্যাড্রেস বারে চলে যান</translation>
+<translation id="544776284582297024">ট্যাব খুলে বিভিন্ন পৃষ্ঠা একইসাথে ব্রাউজ করার জন্য 'ট্যাব খুলুন' বোতাম টিপুন</translation>
 <translation id="545042621069398927">আপনার ডাউনলোডের স্পিড বাড়ানো হচ্ছে।</translation>
 <translation id="5456381639095306749">পৃষ্ঠা ডাউনলোড করুন</translation>
 <translation id="548278423535722844">ম্যাপ অ্যাপ্লিকেশানে খুলুন</translation>
@@ -635,6 +641,7 @@
 <translation id="5942872142862698679">সার্চের জন্য Google কে ব্যবহার করছে</translation>
 <translation id="5952764234151283551">যে পৃষ্ঠাটি দেখার চেষ্টা করছেন Google-কে সেটির ইউআরএল পাঠায়</translation>
 <translation id="5956665950594638604">Chrome সহায়তা কেন্দ্রকে একটি নতুন ট্যাবে খুলুন</translation>
+<translation id="5957442310066583693">আপনার জন্য বেছে নেওয়া সেরা সাইট দেখতে 'হোম' বোতাম টিপুন</translation>
 <translation id="5958275228015807058">ডাউনলোড ফোল্ডার থেকে আপনার সমস্ত ফাইল ও পৃষ্ঠাগুলি খুঁজে নিন</translation>
 <translation id="5962718611393537961">সঙ্কুচিত করতে আলতো চাপুন</translation>
 <translation id="5964805880140440652">এই পৃষ্ঠাটিকে অন্য ডিভাইসের সাথে শেয়ার করার জন্য, Chrome সেটিংস থেকে সিঙ্ক চালু করুন</translation>
@@ -726,10 +733,12 @@
 <translation id="6583199322650523874">বর্তমান পৃষ্ঠাটি বুকমার্ক করুন</translation>
 <translation id="6588043302623806746">নিরাপদ ডিএনএস ব্যবহার করুন</translation>
 <translation id="6590471736817333463">সর্বাধিক ৬০ শতাংশ ডেটা সাশ্রয় করুন</translation>
+<translation id="6590680911007613645">আপনি যে পাসওয়ার্ড সেভ করছেন, সেটি <ph name="SITE" /> সাইটে লেখা আপনার পাসওয়ার্ডের সাথে মিলছে কিনা দেখুন</translation>
 <translation id="6593061639179217415">ডেস্কটপ সাইট</translation>
 <translation id="6597891566292541626">এই ফ্রেমের মধ্যে QR/বার কোড বসান।</translation>
 <translation id="6600954340915313787">Chrome-এ প্রতিলিপি করা হয়েছে</translation>
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
+<translation id="6618554661997243500">আপনার জন্য বেছে নেওয়া সেরা সাইট ও খবর দেখতে 'হোম' বোতাম টিপুন</translation>
 <translation id="6627583120233659107">ফোল্ডার সম্পাদনা করুন</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6643649862576733715">সেভ করা ডেটার পরিমাণ অনুযায়ী সাজান</translation>
@@ -790,6 +799,7 @@
 <translation id="7077143737582773186">এসডি কার্ড</translation>
 <translation id="7080806333218412752">Safe Browsing-এ ইউআরএল চেক করতে পাঠানো হয়। তাছাড়া, নতুন কোনও ঝুঁকি খুঁজে পেতে সাহায্য করার জন্য পৃষ্ঠার ছোট নমুনা, ডাউনলোড, এক্সটেনশন অ্যাক্টিভিটি এবং সিস্টেম সংক্রান্ত তথ্যও পাঠানো হয়। সমস্ত Google অ্যাপ জুড়ে আপনাকে সুরক্ষিত রাখতে, যখন আপনি সাইন-ইন করেন, তখন আপনার Google অ্যাকাউন্টে অস্থায়ীভাবে এই ডেটাকে লিঙ্ক করানো হয়।</translation>
 <translation id="7088681679121566888">Chrome আপ-টু-ডেট আছে</translation>
+<translation id="7106762743910369165">আপনার সংস্থা ব্রাউজার ম্যানেজ করছে</translation>
 <translation id="7121362699166175603">অ্যাড্রেস বারের ইতিহাস এবং অটোকমপ্লিট তথ্য মুছে ফেলে। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-এ আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিংয়ের ইতিহাস থাকতে পারে।</translation>
 <translation id="7128355412245153445">বেশি ব্যবহার করেন এমন সাইট ও সাম্প্রতিক খবরগুলি যখন খুশি হোম বোতামে ট্যাপ করে দেখে নিন</translation>
 <translation id="7138678301420049075">অন্যান্য</translation>
@@ -905,6 +915,7 @@
 <translation id="7981313251711023384">আরও দ্রুত ব্রাউজ করা এবং খোঁজার জন্য পৃষ্ঠা আগে লোড করুন</translation>
 <translation id="79859296434321399">অগমেন্টেড রিয়েলিটি কন্টেন্ট দেখার জন্য ARCore ইনস্টল করুন</translation>
 <translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
+<translation id="799806351373751710">সিঙ্ক করার সেট-আপ বাতিল করুন</translation>
 <translation id="7998918019931843664">বন্ধ হওয়া ট্যাব আবার খুলুন</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="8013372441983637696">এছাড়া এই ডিভাইস থেকে Chrome ডেটা সরিয়ে ফেলুন</translation>
@@ -1032,6 +1043,7 @@
 <translation id="8993760627012879038">ছদ্মবেশী মোডে একটি নতুন ট্যাব খুলুন</translation>
 <translation id="8996847606757455498">অন্য একটি পরিষেবা প্রদানকারী বেছে নিন</translation>
 <translation id="8998729206196772491">আপনি <ph name="MANAGED_DOMAIN" /> দ্বারা পরিচালিত একটি অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Chrome ডেটা নিয়ন্ত্রণ করতে দিচ্ছেন৷ আপনার ডেটা এই অ্যাকাউন্টের সাথে স্থায়ীভাবে আবদ্ধ হবে৷ Chrome থেকে সাইন-আউট করলে এই ডিভাইস থেকে আপনার ডেটা মুছে ফেলা হবে, কিন্তু এটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে।</translation>
+<translation id="9022774213089566801">আপনি প্রায়ই দেখেন</translation>
 <translation id="9028914725102941583">বিভিন্ন ডিভাইসের জুড়ে শেয়ার করার জন্য সিঙ্ক ফিচার চালু করুন</translation>
 <translation id="9040142327097499898">বিজ্ঞপ্তির অনুমতি দেওয়া আছে। এই ডিভাইসে লোকেশন বন্ধ করা আছে।</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{#টি ভিডিও}one{#টি ভিডিও}other{#টি ভিডিও}}</translation>

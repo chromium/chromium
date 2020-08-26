@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">ਸ਼ੁਰੂਆਤੀ ਸਮਕਾਲੀਕਰਨ ਸੈੱਟਅੱਪ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ</translation>
 <translation id="1821253160463689938">ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਯਾਦ ਰੱਖਣ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਕਰਦੀ ਹੈ, ਭਾਵੇਂ ਤੁਸੀਂ ਉਹ ਪੰਨੇ ਨਹੀਂ ਦੇਖਦੇ</translation>
 <translation id="1829244130665387512">ਸਫ਼ੇ ਵਿੱਚ ਲੱਭੋ</translation>
+<translation id="1843805151597803366">ਬਿਹਤਰ ਅਨੁਵਾਦ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Google Search ਨੂੰ ਮੌਜੂਦਾ ਪੰਨੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿਓ</translation>
 <translation id="1853692000353488670">ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="1856325424225101786">ਕੀ ਲਾਈਟ ਮੋਡ ਰੀਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1868024384445905608">Chrome ਹੁਣ ਫ਼ਾਈਲਾਂ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਡਾਊਨਲੋਡ ਕਰਦਾ ਹੈ</translation>
@@ -477,6 +478,7 @@
 
 ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ਕਾਰਡ ਤੇ ਨਾਮ</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> 'ਤੇ ਡਿਜੀਟਲ ਸੰਪਤੀ ਵਾਲੇ ਲਿੰਕਾਂ ਦੀ ਪੁਸ਼ਟੀ ਅਸਫਲ ਹੋਈ</translation>
 <translation id="4824958205181053313">ਕੀ ਸਮਕਾਲੀਕਰਨ ਰੱਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="4835385943915508971">Chrome ਦੀ ਬੇਨਤੀ ਕੀਤੇ ਸਰੋਤ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਹੈ।</translation>
 <translation id="4837753911714442426">ਪੰਨਾ ਪ੍ਰਿੰਟ ਕਰਨ ਲਈ ਵਿਕਲਪਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
@@ -911,6 +913,7 @@
 <translation id="7981313251711023384">ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ਿੰਗ ਅਤੇ ਖੋਜ ਕਰਨ ਲਈ ਪੰਨੇ ਪਹਿਲਾਂ ਤੋਂ ਲੋਡ ਕਰੋ</translation>
 <translation id="79859296434321399">ਸੰਵਰਧਿਤ ਵਾਸਤਵਿਕਤਾ ਵਾਲੀ ਸਮੱਗਰੀ ਦੇਖਣ ਲਈ, ARCore ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="7986741934819883144">ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ</translation>
+<translation id="799806351373751710">ਸਮਕਾਲੀਕਰਨ ਸੈੱਟਅੱਪ ਰੱਦ ਕਰੋ</translation>
 <translation id="7998918019931843664">ਬੰਦ ਕੀਤੀ ਟੈਬ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
 <translation id="8013372441983637696">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡਾ Chrome ਡਾਟਾ ਵੀ ਕਲੀਅਰ ਕਰੋ</translation>

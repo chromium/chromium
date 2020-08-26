@@ -156,6 +156,7 @@
 <translation id="2712127207578915686">无法打开该文件</translation>
 <translation id="2718352093833049315">仅限使用无线局域网时</translation>
 <translation id="2747003861858887689">上一个字段</translation>
+<translation id="2764831210418622012">刚刚</translation>
 <translation id="2773292004659987824">无痕搜索</translation>
 <translation id="277771892408211951">选择语言</translation>
 <translation id="2780046210906776326">没有电子邮件帐号</translation>
@@ -301,6 +302,7 @@
 <translation id="4476574785019001431">设置</translation>
 <translation id="4496373720959965247">添加标签页并在网页之间切换</translation>
 <translation id="4502566650163919158">立即检查</translation>
+<translation id="4505980578794259603">上次检查时间：<ph name="TIME" />。</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>
 <translation id="4526249700380860531">通过 <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> 查看和管理已保存的密码</translation>
 <translation id="4536418791685807335">请尝试重新登录。</translation>
@@ -482,6 +484,7 @@
 <translation id="6445051938772793705">国家/地区</translation>
 <translation id="6445981559479772097">短信已发送。</translation>
 <translation id="6447842834002726250">Cookie</translation>
+<translation id="6453018583485750254">从未检查过。</translation>
 <translation id="6464071786529933911">在新的无痕式标签页中打开</translation>
 <translation id="6464397691496239022">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品。
 

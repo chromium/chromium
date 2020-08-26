@@ -11,6 +11,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1056775291175587022">Şəbəkə yoxdur</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Mobil: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">Günortanız xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">Darıxıram</translation>
 <translation id="1104084341931202936">Əlçatımlılıq ayarlarını göstərin</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikdə daha yaxşı işləyir</translation>
@@ -71,6 +72,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qaldı</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> taymeri · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ünvanı: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Masa: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Şəbəkə Ayarları</translation>
 <translation id="1743570585616704562">Tanınmır</translation>
 <translation id="1746730358044914197">Daxiletmə üsulları administrator tərəfindən konfiqurasiya edilir.</translation>
@@ -107,6 +109,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2018630726571919839">Gülməli əhvalat danış</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2067602449040652523">Klaviatura parlaqlığı</translation>
+<translation id="2083190527011054446">Gecəniz xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="209965399369889474">Şəbəkəyə qoşulmayıb</translation>
 <translation id="2126242104232412123">Yeni iş masası</translation>
 <translation id="2127372758936585790">Gücü az şarjer</translation>
@@ -185,6 +188,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3009178788565917040">Çıxış</translation>
 <translation id="3033545621352269033">Aktiv</translation>
 <translation id="3038571455154067151">Daxil olmaq üçün Family Link valideyn giriş kodunuzu daxil edin</translation>
+<translation id="3045488863354895414">Günortanız xeyir,</translation>
 <translation id="3051128274746680507">Nəzarət edilən istifadəçi profili tezliklə silinəcək. Ətraflı məlumat üçün daxil olun.</translation>
 <translation id="3055162170959710888">Bugün <ph name="USED_TIME" /> bu cihazdan istifadə etdiniz</translation>
 <translation id="3076778413190775903">Vəziyyət bölməsi, vaxt: <ph name="TIME" />,
@@ -304,6 +308,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4261870227682513959">Bildiriş ayarlarını göstərin. Bildirişlər deaktivdir</translation>
 <translation id="4269883910223712419">Bu cihazın admini edə bilər:</translation>
 <translation id="4279490309300973883">Əks etdirilir</translation>
+<translation id="4294319844246081198">Sabahınız xeyir, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> bildirişin hamısını silin</translation>
 <translation id="4303223480529385476">Status sahəsini genişləndirin</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="4421231901400348175">Uzaqdan Yardım vasitəsilə <ph name="HELPER_NAME" /> ilə ekranın kontrolunu paylaşın</translation>
 <translation id="4430019312045809116">Həcm</translation>
 <translation id="4450893287417543264">Daha göstərməyin</translation>
+<translation id="445864333228800152">Axşamınız xeyir,</translation>
 <translation id="4458688154122353284">Ekran çəkilişini dayandırın</translation>
 <translation id="4477350412780666475">Növbəti trek</translation>
 <translation id="4477892968187500306">Bu cihaz Google tərəfindən doğrulanmamış tətbiqlər ehtiva edə bilər.</translation>
@@ -430,6 +436,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5887866489674258948">Qaranlıq rejim</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">Deaktiv masa.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5920710855273935292">Mikrofon səssiz edilib.</translation>
@@ -561,8 +568,10 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="7405710164030118432">Cihazı kiliddən çıxarmaq üçün Family Link ailə giriş kodunu daxil edin</translation>
 <translation id="741244894080940828">çevirmə</translation>
 <translation id="742594950370306541">Kamera istifadə olunur.</translation>
+<translation id="742608627846767349">Sabahınız xeyir,</translation>
 <translation id="743058460480092004">Kamera və mikrofon istifadə olunur.</translation>
 <translation id="7466449121337984263">Sensora toxunun</translation>
+<translation id="7477793887173910789">Musiqi, video və daha çoxuna nəzarət edin</translation>
 <translation id="7497767806359279797">Dil və klaviatura seçin</translation>
 <translation id="7526573455193969409">Şəbəkəyə nəzarət edilə bilər</translation>
 <translation id="7536035074519304529">IP ünvanı: <ph name="ADDRESS" /></translation>
@@ -647,11 +656,13 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>
 <translation id="8371779926711439835">Hərf üzrə irəli keçin</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> və telefon avtomatik qoşulacaq</translation>
+<translation id="8380784334203145311">Gecəniz xeyir,</translation>
 <translation id="8388750414311082622">Sonuncu masa silinə bilməz.</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> üçün seçimlər menyusu</translation>
 <translation id="8394567579869570560">Valideyniniz cihazı kilidləyib</translation>
 <translation id="8412677897383510995">Displey ayarlarını göstərin</translation>
 <translation id="8425213833346101688">Dəyişin</translation>
+<translation id="8426708595819210923">Axşamınız xeyir, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Diktant istənilən mətn sahəsində səs yazmağa icazə vermək üçün səsinizi Google'a göndərir.</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8433186206711564395">Şəbəkə ayarları</translation>

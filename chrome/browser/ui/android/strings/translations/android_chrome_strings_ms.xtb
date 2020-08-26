@@ -102,6 +102,7 @@
 <translation id="1810845389119482123">Penyediaan penyegerakan permulaan belum selesai</translation>
 <translation id="1821253160463689938">Menggunakan kuki untuk mengingati pilihan anda, walaupun anda tidak melawati halaman tersebut</translation>
 <translation id="1829244130665387512">Cari dalam halaman</translation>
+<translation id="1843805151597803366">Untuk mendapatkan terjemahan yang lebih baik, benarkan Carian Google menggunakan halaman semasa</translation>
 <translation id="1853692000353488670">Tab inkognito baharu</translation>
 <translation id="1856325424225101786">Tetapkan semula mod Ringkas?</translation>
 <translation id="1868024384445905608">Chrome kini memuat turun fail dengan lebih pantas</translation>
@@ -463,7 +464,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4719927025381752090">Tawaran untuk menterjemah</translation>
 <translation id="4720023427747327413">Buka dalam <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Bantu meningkatkan Chrome. <ph name="BEGIN_LINK" />Jawab tinjauan<ph name="END_LINK" /></translation>
-<translation id="47217992755561375">Lihat tapak web paling kerap dilawat anda</translation>
+<translation id="47217992755561375">Lihat tapak web yang paling kerap anda lawati</translation>
 <translation id="4732120983431207637">Pengurai Tindanan</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4738836084190194332">Kali terakhir disegerakkan: <ph name="WHEN" /></translation>
@@ -477,6 +478,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 
 Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nama pada kad</translation>
+<translation id="4818017973810341238">Pengesahan pautan aset digital gagal di <ph name="VIOLATED_URL" /></translation>
 <translation id="4824958205181053313">Batalkan penyegerakan?</translation>
 <translation id="4835385943915508971">Chrome tidak boleh mengakses sumber yang diminta.</translation>
 <translation id="4837753911714442426">Buka pilihan untuk mencetak halaman</translation>
@@ -637,7 +639,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5942872142862698679">Menggunakan Google untuk carian</translation>
 <translation id="5952764234151283551">Menghantar URL halaman yang cuba anda capai kepada Google</translation>
 <translation id="5956665950594638604">Buka Pusat Bantuan Chrome dalam tab baharu</translation>
-<translation id="5957442310066583693">Untuk melihat tapak web paling kerap dilawat anda, ketik butang Skrin Utama</translation>
+<translation id="5957442310066583693">Untuk melihat tapak web yang paling kerap anda lawati, ketik butang Skrin Utama</translation>
 <translation id="5958275228015807058">Cari fail dan halaman anda dalam Muat Turun</translation>
 <translation id="5962718611393537961">Ketik untuk runtuhkan</translation>
 <translation id="5964805880140440652">Untuk berkongsi halaman ini dengan peranti lain, hidupkan penyegerakan dalam tetapan Chrome</translation>
@@ -734,7 +736,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="6597891566292541626">Pastikan kod QR/kod bar berada dalam bingkai ini.</translation>
 <translation id="6600954340915313787">Disalin ke Chrome</translation>
 <translation id="661266467055912436">Meningkatkan keselamatan untuk anda dan semua orang yang melayari web.</translation>
-<translation id="6618554661997243500">Untuk melihat tapak web dan cerita paling kerap dilawat untuk anda, ketik butang Skrin Utama</translation>
+<translation id="6618554661997243500">Untuk melihat tapak web dan cerita yang paling kerap anda lawati, ketik butang Skrin Utama</translation>
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6643649862576733715">Isih mengikut jumlah penjimatan data</translation>
@@ -911,6 +913,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="7981313251711023384">Pramuat halaman untuk penyemakan imbas dan pencarian yang lebih cepat</translation>
 <translation id="79859296434321399">Untuk melihat kandungan realiti tambahan, pasang ARCore</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
+<translation id="799806351373751710">Batalkan penyediaan penyegerakan</translation>
 <translation id="7998918019931843664">Buka semula tab yang ditutup</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
 <translation id="8013372441983637696">Selain itu, kosongkan data Chrome anda daripada peranti ini</translation>

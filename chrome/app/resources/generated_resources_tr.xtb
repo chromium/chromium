@@ -524,7 +524,6 @@
 <translation id="1608668830839595724">Seçilen öğeler için daha fazla işlem</translation>
 <translation id="161042844686301425">Camgöbeği</translation>
 <translation id="1611432201750675208">Cihazınız kilitlendi</translation>
-<translation id="1611584202130317952">Temel hazırlık akışı kesildi. Lütfen tekrar deneyin veya cihaz sahibiyle ya da yöneticisiyle iletişime geçin.</translation>
 <translation id="1614511179807650956">Mobil veri kullanım hakkınızı doldurmuş olabilirsiniz. Daha fazla veri satın almak için <ph name="NAME" /> etkinleştirme portalını ziyaret edin.</translation>
 <translation id="161460670679785907">Telefonunuz algılanamadı</translation>
 <translation id="1616206807336925449">Bu uzantı herhangi bir özel izin gerektirmiyor.</translation>
@@ -964,6 +963,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2148219725039824548">Paylaşım eklenirken hata oluştu. Belirtilen paylaşım ağda bulunamadı.</translation>
 <translation id="2148756636027685713">Biçimlendirme tamamlandı</translation>
 <translation id="2148892889047469596">Sekmeyi yayınla</translation>
+<translation id="2149973817440762519">Yer İşaretini Düzenle</translation>
 <translation id="2150139952286079145">Arama hedefleri</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" eklensin mi?</translation>
 <translation id="2151576029659734873">Geçersiz sekme dizini girildi.</translation>
@@ -5959,6 +5959,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8288032458496410887"><ph name="APP" /> Uygulamasının Yüklemesini Kaldır...</translation>
 <translation id="8289128870594824098">Disk boyutu</translation>
 <translation id="8291967909914612644">Ev sağlayıcısının ülkesi</translation>
+<translation id="8293206222192510085">Yer İşareti Ekle</translation>
 <translation id="8294431847097064396">Kaynak</translation>
 <translation id="8297006494302853456">Zayıf</translation>
 <translation id="8299319456683969623">Şu anda çevrimdışısınız.</translation>
