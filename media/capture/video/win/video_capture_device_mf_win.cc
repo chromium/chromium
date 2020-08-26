@@ -777,8 +777,17 @@ bool VideoCaptureDeviceMFWin::Init() {
   }
 
   ComPtr<IMFAttributes> attributes;
-  MFCreateAttributes(&attributes, 1);
-  DCHECK(attributes);
+  hr = MFCreateAttributes(&attributes, 1);
+  if (FAILED(hr)) {
+    LogError(FROM_HERE, hr);
+    return false;
+  }
+
+  hr = attributes->SetUINT32(MF_CAPTURE_ENGINE_USE_VIDEO_DEVICE_ONLY, TRUE);
+  if (FAILED(hr)) {
+    LogError(FROM_HERE, hr);
+    return false;
+  }
 
   video_callback_ = new MFVideoCallback(this);
   hr = engine_->Initialize(video_callback_.get(), attributes.Get(), nullptr,
