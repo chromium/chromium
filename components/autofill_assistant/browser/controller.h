@@ -341,6 +341,7 @@ class Controller : public ScriptExecutorDelegate,
   void PerformDelayedShutdownIfNecessary();
 
   bool StateNeedsUI(AutofillAssistantState state);
+  bool IsRunningLiteScript() const;
 
   ClientSettings settings_;
   Client* const client_;
