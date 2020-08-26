@@ -43,6 +43,7 @@
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -422,6 +423,7 @@ class NearbySharingServiceImplTest : public testing::Test {
       bool is_incoming,
       sharing::mojom::PairedKeyResultFrame::Status status) {
     SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+    local_device_data_manager()->SetDeviceName(kDeviceName);
 
     std::string encryption_frame = "test_encryption_frame";
     std::vector<uint8_t> encryption_bytes(encryption_frame.begin(),
@@ -1249,9 +1251,11 @@ TEST_F(NearbySharingServiceImplTest, UnregisterSendSurfaceNeverRegistered) {
 }
 
 TEST_F(NearbySharingServiceImplTest,
-       ForegroundRegisterReceiveSurfaceIsAdvertising) {
+       ForegroundRegisterReceiveSurfaceIsAdvertisingAllContacts) {
   ui::ScopedSetIdleState unlocked(ui::IDLE_STATE_IDLE);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
+  local_device_data_manager()->SetDeviceName(kDeviceName);
   MockTransferUpdateCallback callback;
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
       &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
@@ -1259,12 +1263,54 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_EQ(PowerLevel::kHighPower,
             fake_nearby_connections_manager_->advertising_power_level());
+  ASSERT_TRUE(fake_nearby_connections_manager_->adverting_endpoint_info());
+  auto advertisement =
+      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
+          *fake_nearby_connections_manager_->adverting_endpoint_info()));
+  ASSERT_TRUE(advertisement);
+  EXPECT_EQ(kDeviceName, advertisement->device_name());
+  EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
+            advertisement->device_type());
+  auto& test_metadata_key = GetNearbyShareTestEncryptedMetadataKey();
+  EXPECT_EQ(test_metadata_key.salt(), advertisement->salt());
+  EXPECT_EQ(test_metadata_key.encrypted_key(),
+            advertisement->encrypted_metadata_key());
 }
 
 TEST_F(NearbySharingServiceImplTest,
-       BackgroundRegisterReceiveSurfaceIsAdvertising) {
+       ForegroundRegisterReceiveSurfaceIsAdvertisingNoOne) {
   ui::ScopedSetIdleState unlocked(ui::IDLE_STATE_IDLE);
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  SetVisibility(nearby_share::mojom::Visibility::kNoOne);
+  local_device_data_manager()->SetDeviceName(kDeviceName);
+  MockTransferUpdateCallback callback;
+  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
+      &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
+  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
+  EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
+  EXPECT_EQ(PowerLevel::kHighPower,
+            fake_nearby_connections_manager_->advertising_power_level());
+  ASSERT_TRUE(fake_nearby_connections_manager_->adverting_endpoint_info());
+  auto advertisement =
+      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
+          *fake_nearby_connections_manager_->adverting_endpoint_info()));
+  ASSERT_TRUE(advertisement);
+  EXPECT_EQ(kDeviceName, advertisement->device_name());
+  EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
+            advertisement->device_type());
+  // Expecting random metadata key.
+  EXPECT_EQ(static_cast<size_t>(sharing::Advertisement::kSaltSize),
+            advertisement->salt().size());
+  EXPECT_EQ(static_cast<size_t>(
+                sharing::Advertisement::kMetadataEncryptionKeyHashByteSize),
+            advertisement->encrypted_metadata_key().size());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       BackgroundRegisterReceiveSurfaceIsAdvertisingSelectedContacts) {
+  ui::ScopedSetIdleState unlocked(ui::IDLE_STATE_IDLE);
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
+  SetVisibility(nearby_share::mojom::Visibility::kSelectedContacts);
   prefs_.SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                     static_cast<int>(Visibility::kSelectedContacts));
   MockTransferUpdateCallback callback;
@@ -1274,6 +1320,18 @@ TEST_F(NearbySharingServiceImplTest,
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_EQ(PowerLevel::kLowPower,
             fake_nearby_connections_manager_->advertising_power_level());
+  ASSERT_TRUE(fake_nearby_connections_manager_->adverting_endpoint_info());
+  auto advertisement =
+      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
+          *fake_nearby_connections_manager_->adverting_endpoint_info()));
+  ASSERT_TRUE(advertisement);
+  EXPECT_FALSE(advertisement->device_name());
+  EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
+            advertisement->device_type());
+  auto& test_metadata_key = GetNearbyShareTestEncryptedMetadataKey();
+  EXPECT_EQ(test_metadata_key.salt(), advertisement->salt());
+  EXPECT_EQ(test_metadata_key.encrypted_key(),
+            advertisement->encrypted_metadata_key());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -2529,6 +2587,19 @@ TEST_F(NearbySharingServiceImplTest, SendText_Success) {
   EXPECT_EQ(kTextPayload, meta.text_title());
   EXPECT_EQ(strlen(kTextPayload), static_cast<size_t>(meta.size()));
   EXPECT_EQ(sharing::nearby::TextMetadata_Type_TEXT, meta.type());
+
+  ASSERT_TRUE(fake_nearby_connections_manager_->connection_endpoint_info());
+  auto advertisement =
+      sharing::AdvertisementDecoder::FromEndpointInfo(base::make_span(
+          *fake_nearby_connections_manager_->connection_endpoint_info()));
+  ASSERT_TRUE(advertisement);
+  EXPECT_EQ(kDeviceName, advertisement->device_name());
+  EXPECT_EQ(nearby_share::mojom::ShareTargetType::kLaptop,
+            advertisement->device_type());
+  auto& test_metadata_key = GetNearbyShareTestEncryptedMetadataKey();
+  EXPECT_EQ(test_metadata_key.salt(), advertisement->salt());
+  EXPECT_EQ(test_metadata_key.encrypted_key(),
+            advertisement->encrypted_metadata_key());
 
   // Expect the text payload to be sent in the end.
   base::RunLoop payload_run_loop;

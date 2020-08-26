@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "chrome/browser/nearby_sharing/certificates/nearby_share_visibility.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
@@ -39,22 +38,6 @@ PairedKeyVerificationRunner::PairedKeyVerificationResult Convert(
 
     case sharing::mojom::PairedKeyResultFrame_Status::kUnable:
       return PairedKeyVerificationRunner::PairedKeyVerificationResult::kUnable;
-  }
-}
-
-NearbyShareVisibility Convert(nearby_share::mojom::Visibility visibility) {
-  switch (visibility) {
-    case nearby_share::mojom::Visibility::kAllContacts:
-      return NearbyShareVisibility::kAllContacts;
-
-    case nearby_share::mojom::Visibility::kSelectedContacts:
-      return NearbyShareVisibility::kSelectedContacts;
-
-    case nearby_share::mojom::Visibility::kNoOne:
-      return NearbyShareVisibility::kNoOne;
-
-    case nearby_share::mojom::Visibility::kUnknown:
-      return NearbyShareVisibility::kNoOne;
   }
 }
 
@@ -250,7 +233,7 @@ void PairedKeyVerificationRunner::SendCertificateInfo() {
 
 void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
   NearbySharePrivateCertificate private_certificate =
-      certificate_manager_->GetValidPrivateCertificate(Convert(visibility_));
+      certificate_manager_->GetValidPrivateCertificate(visibility_);
 
   sharing::nearby::Frame frame;
   frame.set_version(sharing::nearby::Frame::V1);
@@ -286,7 +269,7 @@ PairedKeyVerificationRunner::PairedKeyVerificationResult
 PairedKeyVerificationRunner::VerifyRemotePublicCertificate(
     const sharing::mojom::V1FramePtr& frame) {
   NearbySharePrivateCertificate private_certificate =
-      certificate_manager_->GetValidPrivateCertificate(Convert(visibility_));
+      certificate_manager_->GetValidPrivateCertificate(visibility_);
 
   if (private_certificate.HashAuthenticationToken(raw_token_) ==
       frame->get_paired_key_encryption()->secret_id_hash) {

@@ -17,6 +17,7 @@
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_client_impl.h"
@@ -807,18 +808,34 @@ void NearbySharingServiceImpl::OnDataUsageChanged(DataUsage data_usage) {
 const base::Optional<std::vector<uint8_t>>
 NearbySharingServiceImpl::CreateEndpointInfo(
     const base::Optional<std::string>& device_name) {
-  // TODO(nmusgrave) fill values from CertificateManager
-  std::vector<uint8_t> salt(sharing::Advertisement::kSaltSize, 0);
-  std::vector<uint8_t> encrypted_metadata_key(
-      sharing::Advertisement::kMetadataEncryptionKeyHashByteSize, 0);
+  std::vector<uint8_t> salt;
+  std::vector<uint8_t> encrypted_key;
+
+  nearby_share::mojom::Visibility visibility = settings_.GetVisibility();
+  if (visibility == Visibility::kAllContacts ||
+      visibility == Visibility::kSelectedContacts) {
+    base::Optional<NearbyShareEncryptedMetadataKey> encrypted_metadata_key =
+        certificate_manager_->GetValidPrivateCertificate(visibility)
+            .EncryptMetadataKey();
+    if (encrypted_metadata_key) {
+      salt = encrypted_metadata_key->salt();
+      encrypted_key = encrypted_metadata_key->encrypted_key();
+    }
+  }
+
+  if (salt.empty() || encrypted_key.empty()) {
+    // Generate random metadata key.
+    salt = GenerateRandomBytes(sharing::Advertisement::kSaltSize);
+    encrypted_key = GenerateRandomBytes(
+        sharing::Advertisement::kMetadataEncryptionKeyHashByteSize);
+  }
 
   nearby_share::mojom::ShareTargetType device_type =
       nearby_share::mojom::ShareTargetType::kLaptop;
 
   std::unique_ptr<sharing::Advertisement> advertisement =
-      sharing::Advertisement::NewInstance(std::move(salt),
-                                          std::move(encrypted_metadata_key),
-                                          device_type, device_name);
+      sharing::Advertisement::NewInstance(
+          std::move(salt), std::move(encrypted_key), device_type, device_name);
   if (advertisement) {
     return advertisement->ToEndpointInfo();
   } else {

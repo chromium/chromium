@@ -33,6 +33,7 @@ source_set("certificates") {
     "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/nearby_sharing/proto",
     "//chrome/browser/nearby_sharing/scheduling",
+    "//chrome/browser/ui/webui/nearby_share/public/mojom",
     "//components/leveldb_proto",
     "//components/prefs",
     "//crypto",

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/optional.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/services/sharing/public/mojom/nearby_connections.mojom.h"
 
@@ -85,6 +86,12 @@ class FakeNearbyConnectionsManager
       base::RepeatingCallback<void(PayloadPtr payload)> callback) {
     send_payload_callback_ = std::move(callback);
   }
+  const base::Optional<std::vector<uint8_t>>& adverting_endpoint_info() {
+    return adverting_endpoint_info_;
+  }
+  const base::Optional<std::vector<uint8_t>>& connection_endpoint_info() {
+    return connection_endpoint_info_;
+  }
 
  private:
   IncomingConnectionListener* advertising_listener_ = nullptr;
@@ -97,6 +104,8 @@ class FakeNearbyConnectionsManager
   NearbyConnection* connection_ = nullptr;
   DataUsage connected_data_usage_ = DataUsage::kUnknown;
   base::RepeatingCallback<void(PayloadPtr payload)> send_payload_callback_;
+  base::Optional<std::vector<uint8_t>> adverting_endpoint_info_;
+  base::Optional<std::vector<uint8_t>> connection_endpoint_info_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_FAKE_NEARBY_CONNECTIONS_MANAGER_H_
