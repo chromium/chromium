@@ -610,11 +610,9 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   }
 
   if (is_devtools_js_test) {
-    if (!secondary_window_) {
-      secondary_window_ = content::Shell::CreateNewWindow(
-          ShellContentBrowserClient::Get()->browser_context(),
-          GURL(url::kAboutBlankURL), nullptr, window_size);
-    }
+    secondary_window_ = content::Shell::CreateNewWindow(
+        ShellContentBrowserClient::Get()->browser_context(),
+        GURL(url::kAboutBlankURL), nullptr, window_size);
     // This navigates the secondary (devtools inspector) window, and then
     // navigates the main window once that has loaded to a devtools html test
     // page, based on the test url.
@@ -1675,9 +1673,10 @@ void WebTestControlHost::CloseTestOpenedWindows() {
   DevToolsAgentHost::DetachAllClients();
   std::vector<Shell*> open_windows(Shell::windows());
   for (auto* shell : open_windows) {
-    if (shell != main_window_ && shell != secondary_window_)
+    if (shell != main_window_)
       shell->Close();
   }
+  secondary_window_ = nullptr;
   base::RunLoop().RunUntilIdle();
 }
 
