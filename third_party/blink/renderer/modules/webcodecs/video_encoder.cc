@@ -259,17 +259,36 @@ void VideoEncoder::encode(VideoFrame* frame,
                                       "Encoder is not configured yet.");
     return;
   }
-  if (frame->cropWidth() != uint32_t{frame_size_.width()} ||
-      frame->cropHeight() != uint32_t{frame_size_.height()}) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kOperationError,
-        "Frame size doesn't match initial encoder parameters.");
+
+  // This will fail if |frame| is already destroyed.
+  auto* internal_frame = frame->clone(exception_state);
+
+  if (!internal_frame) {
+    // Set a more helpful exception than the cloning error message.
+    exception_state.ClearException();
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Cannot encode destroyed frame.");
     return;
   }
 
+  if (internal_frame->cropWidth() != uint32_t{frame_size_.width()} ||
+      internal_frame->cropHeight() != uint32_t{frame_size_.height()}) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kOperationError,
+        "Frame size doesn't match initial encoder parameters.");
+
+    // Free the temporary clone.
+    internal_frame->destroy();
+    return;
+  }
+
+  // At this point, we have "consumed" the frame, and will destroy the clone in
+  // ProcessEncode().
+  frame->destroy();
+
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kEncode;
-  request->frame = frame;
+  request->frame = internal_frame;
   request->encodeOpts = opts;
   ++requested_encodes_;
   return EnqueueRequest(request);
@@ -407,6 +426,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
   media_encoder_->Encode(frame, keyframe,
                          WTF::Bind(done_callback, WrapWeakPersistent(this),
                                    WrapPersistentIfNeeded(request)));
+
+  // We passed a copy of frame() above, so this should be safe to destroy here.
+  request->frame->destroy();
 }
 
 void VideoEncoder::ProcessConfigure(Request* request) {
