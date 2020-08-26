@@ -25,6 +25,7 @@ source_set("whats_new") {
     ":utils",
     "//base",
     "//ios/chrome/app/strings:ios_google_chrome_strings",
+    "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/whats_new/resources",
     "//ios/chrome/common/ui/confirmation_alert",

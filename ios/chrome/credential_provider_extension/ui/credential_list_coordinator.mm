@@ -193,6 +193,10 @@
   // No-op.
 }
 
+- (void)confirmationAlertSecondaryAction {
+  // No-op.
+}
+
 - (void)confirmationAlertLearnMoreAction {
   // No-op.
 }

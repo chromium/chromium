@@ -15,6 +15,7 @@ source_set("confirmation_alert") {
   ]
   deps = [
     ":confirmation_alert_ic_help",
+    "//base",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
