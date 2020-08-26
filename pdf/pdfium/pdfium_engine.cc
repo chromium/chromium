@@ -2698,7 +2698,7 @@ void PDFiumEngine::RefreshCurrentDocumentLayout() {
   DCHECK_EQ(pages_.size(), layout_.page_count());
   for (size_t i = 0; i < layout_.page_count(); ++i) {
     // TODO(kmoon): This should be the only place that sets |PDFiumPage::rect_|.
-    pages_[i]->set_rect(RectFromPPRect(layout_.page_bounds_rect(i)));
+    pages_[i]->set_rect(layout_.page_bounds_rect(i));
   }
 
   layout_.clear_dirty();

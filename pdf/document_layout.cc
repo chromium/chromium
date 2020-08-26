@@ -8,8 +8,6 @@
 
 #include "base/check_op.h"
 #include "base/values.h"
-#include "pdf/ppapi_migration/geometry_conversions.h"
-#include "ppapi/cpp/rect.h"
 #include "ppapi/cpp/var.h"
 #include "ppapi/cpp/var_dictionary.h"
 #include "ui/gfx/geometry/point.h"
@@ -32,11 +30,12 @@ int GetWidestPageWidth(const std::vector<gfx::Size>& page_sizes) {
   return widest_page_width;
 }
 
-pp::Rect InsetRect(pp::Rect rect,
-                   const draw_utils::PageInsetSizes& inset_sizes) {
-  rect.Inset(inset_sizes.left, inset_sizes.top, inset_sizes.right,
-             inset_sizes.bottom);
-  return rect;
+gfx::Rect InsetRect(const gfx::Rect& rect,
+                    const draw_utils::PageInsetSizes& inset_sizes) {
+  gfx::Rect inset_rect(rect);
+  inset_rect.Inset(inset_sizes.left, inset_sizes.top, inset_sizes.right,
+                   inset_sizes.bottom);
+  return inset_rect;
 }
 
 }  // namespace
@@ -118,11 +117,11 @@ void DocumentLayout::ComputeSingleViewLayout(
     }
 
     const gfx::Size& page_size = page_sizes[i];
-    pp::Rect page_rect = PPRectFromRect(
-        draw_utils::GetRectForSingleView(page_size, document_size));
-    CopyRectIfModified(page_rect, &page_layouts_[i].outer_rect);
+    gfx::Rect page_rect =
+        draw_utils::GetRectForSingleView(page_size, document_size);
+    CopyRectIfModified(page_rect, page_layouts_[i].outer_rect);
     CopyRectIfModified(InsetRect(page_rect, kSingleViewInsets),
-                       &page_layouts_[i].inner_rect);
+                       page_layouts_[i].inner_rect);
 
     draw_utils::ExpandDocumentSize(page_size, &document_size);
   }
@@ -149,19 +148,19 @@ void DocumentLayout::ComputeTwoUpViewLayout(
             i, page_sizes.size(), kSingleViewInsets, kHorizontalSeparator);
     const gfx::Size& page_size = page_sizes[i];
 
-    pp::Rect page_rect;
+    gfx::Rect page_rect;
     if (i % 2 == 0) {
-      page_rect = PPRectFromRect(draw_utils::GetLeftRectForTwoUpView(
-          page_size, {document_size.width(), document_size.height()}));
+      page_rect = draw_utils::GetLeftRectForTwoUpView(
+          page_size, {document_size.width(), document_size.height()});
     } else {
-      page_rect = PPRectFromRect(draw_utils::GetRightRectForTwoUpView(
-          page_size, {document_size.width(), document_size.height()}));
+      page_rect = draw_utils::GetRightRectForTwoUpView(
+          page_size, {document_size.width(), document_size.height()});
       document_size.Enlarge(
           0, std::max(page_size.height(), page_sizes[i - 1].height()));
     }
-    CopyRectIfModified(page_rect, &page_layouts_[i].outer_rect);
+    CopyRectIfModified(page_rect, page_layouts_[i].outer_rect);
     CopyRectIfModified(InsetRect(page_rect, page_insets),
-                       &page_layouts_[i].inner_rect);
+                       page_layouts_[i].inner_rect);
   }
 
   if (page_sizes.size() % 2 == 1) {
@@ -176,10 +175,10 @@ void DocumentLayout::ComputeTwoUpViewLayout(
   }
 }
 
-void DocumentLayout::CopyRectIfModified(const pp::Rect& source_rect,
-                                        pp::Rect* destination_rect) {
-  if (*destination_rect != source_rect) {
-    *destination_rect = source_rect;
+void DocumentLayout::CopyRectIfModified(const gfx::Rect& source_rect,
+                                        gfx::Rect& destination_rect) {
+  if (destination_rect != source_rect) {
+    destination_rect = source_rect;
     dirty_ = true;
   }
 }

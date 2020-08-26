@@ -1159,7 +1159,7 @@ void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
   dimensions.Set(kJSLayoutOptions, VarFromValue(layout.options().ToValue()));
   pp::VarArray page_dimensions_array;
   for (size_t i = 0; i < layout.page_count(); ++i) {
-    const pp::Rect& page_rect = layout.page_rect(i);
+    const gfx::Rect& page_rect = layout.page_rect(i);
     pp::VarDictionary page_dimensions;
     page_dimensions.Set(kJSPageX, pp::Var(page_rect.x()));
     page_dimensions.Set(kJSPageY, pp::Var(page_rect.y()));
