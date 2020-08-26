@@ -609,7 +609,7 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   // TODO(crbug.com/1068668): AX onion soup - finish migrating the rest of
   // this function inside of AXObject::Serialize and removing
   // unneeded WebAXObject interfaces.
-  src.Serialize(dst);
+  src.Serialize(dst, accessibility_mode_);
 
   dst->role = src.Role();
   dst->id = src.AxID();
@@ -640,7 +640,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   }
 
   if (accessibility_mode_.has_mode(ui::AXMode::kPDF)) {
-    SerializePDFAttributes(src, dst);
     // Return early. None of the following attributes are needed for PDFs.
     return;
   }
@@ -649,7 +648,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   cached_bounding_boxes_[dst->id] = dst->relative_bounds;
 
   SerializeSparseAttributes(src, dst);
-  SerializeValueAttributes(src, dst);
   SerializeStateAttributes(src, dst);
   SerializeChooserPopupAttributes(src, dst);
 
@@ -725,17 +723,6 @@ void BlinkAXTreeSource::SerializeBoundingBoxAttributes(
   }
 }
 
-void BlinkAXTreeSource::SerializePDFAttributes(WebAXObject src,
-                                               ui::AXNodeData* dst) const {
-  // The DOMNodeID from Blink. Currently only populated when using
-  // the accessibility tree for PDF exporting. Warning, this is totally
-  // unrelated to the accessibility node ID, or the ID attribute for an
-  // HTML element - it's an ID used to uniquely identify nodes in Blink.
-  int dom_node_id = src.GetDOMNodeId();
-  if (dom_node_id)
-    dst->AddIntAttribute(ax::mojom::IntAttribute::kDOMNodeId, dom_node_id);
-}
-
 void BlinkAXTreeSource::SerializeSparseAttributes(WebAXObject src,
                                                   ui::AXNodeData* dst) const {
   AXNodeDataSparseAttributeAdapter sparse_attribute_adapter(dst);
@@ -784,17 +771,6 @@ void BlinkAXTreeSource::SerializeNameAndDescriptionAttributes(
       TruncateAndAddStringAttribute(dst,
                                     ax::mojom::StringAttribute::kPlaceholder,
                                     web_placeholder.Utf8());
-  }
-}
-
-void BlinkAXTreeSource::SerializeValueAttributes(WebAXObject src,
-                                                 ui::AXNodeData* dst) const {
-  if (src.ValueDescription().length()) {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kValue,
-                                  src.ValueDescription().Utf8());
-  } else {
-    TruncateAndAddStringAttribute(dst, ax::mojom::StringAttribute::kValue,
-                                  src.StringValue().Utf8());
   }
 }
 

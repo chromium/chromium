@@ -70,7 +70,7 @@ namespace {
 #if !defined(OS_ANDROID)
 bool IsSelected(const WebAXObject& obj) {
   ui::AXNodeData node_data;
-  obj.Serialize(&node_data);
+  obj.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 }
 #endif  // !defined(OS_ANDROID)

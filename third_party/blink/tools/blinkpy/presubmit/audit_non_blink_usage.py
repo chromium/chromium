@@ -471,6 +471,7 @@ _CONFIG = [
             # depend on.
             'ui::AXEvent',
             'ui::AXEventIntent',
+            'ui::AXMode',
             'ui::AXNodeData',
             'ui::IsDialog',
             'ui::IsContainerWithSelectableChildren',

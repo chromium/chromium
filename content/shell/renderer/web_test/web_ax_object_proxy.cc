@@ -406,11 +406,6 @@ std::string GetRole(const blink::WebAXObject& object) {
   return role_string;
 }
 
-std::string GetValueDescription(const blink::WebAXObject& object) {
-  std::string value_description = object.ValueDescription().Utf8();
-  return value_description.insert(0, "AXValueDescription: ");
-}
-
 std::string GetLanguage(const blink::WebAXObject& object) {
   std::string language = object.Language().Utf8();
   return language.insert(0, "AXLanguage: ");
@@ -994,7 +989,11 @@ int WebAXObjectProxy::StepValue() {
 
 std::string WebAXObjectProxy::ValueDescription() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
-  return GetValueDescription(accessibility_object_);
+  ui::AXNodeData node_data;
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
+  std::string value_description =
+      node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue);
+  return value_description.insert(0, "AXValueDescription: ");
 }
 
 int WebAXObjectProxy::ChildrenCount() {
@@ -1139,7 +1138,7 @@ bool WebAXObjectProxy::IsAtomic() {
 bool WebAXObjectProxy::IsAutofillAvailable() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kAutofillAvailable);
 }
 
@@ -1167,7 +1166,7 @@ std::string WebAXObjectProxy::Restriction() {
 bool WebAXObjectProxy::IsRequired() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kRequired);
 }
 
@@ -1179,14 +1178,14 @@ bool WebAXObjectProxy::IsEditableRoot() {
 bool WebAXObjectProxy::IsEditable() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kEditable);
 }
 
 bool WebAXObjectProxy::IsRichlyEditable() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kRichlyEditable);
 }
 
@@ -1198,7 +1197,7 @@ bool WebAXObjectProxy::IsFocused() {
 bool WebAXObjectProxy::IsFocusable() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kFocusable);
 }
 
@@ -1210,14 +1209,14 @@ bool WebAXObjectProxy::IsModal() {
 bool WebAXObjectProxy::IsSelected() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 }
 
 bool WebAXObjectProxy::IsSelectable() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   // It's selectable if it has the attribute, whether it's true or false.
   return node_data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected) &&
          accessibility_object_.Restriction() !=
@@ -1227,14 +1226,14 @@ bool WebAXObjectProxy::IsSelectable() {
 bool WebAXObjectProxy::IsMultiLine() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kMultiline);
 }
 
 bool WebAXObjectProxy::IsMultiSelectable() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kMultiselectable);
 }
 
@@ -1246,7 +1245,7 @@ bool WebAXObjectProxy::IsSelectedOptionActive() {
 bool WebAXObjectProxy::IsExpanded() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kExpanded);
 }
 
@@ -1267,14 +1266,14 @@ std::string WebAXObjectProxy::Checked() {
 bool WebAXObjectProxy::IsCollapsed() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.HasState(ax::mojom::State::kCollapsed);
 }
 
 bool WebAXObjectProxy::IsVisible() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   return !node_data.HasState(ax::mojom::State::kInvisible);
 }
 
@@ -1369,7 +1368,7 @@ std::string WebAXObjectProxy::Current() {
 std::string WebAXObjectProxy::HasPopup() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   switch (node_data.GetHasPopup()) {
     case ax::mojom::HasPopup::kTrue:
       return "true";
@@ -1467,7 +1466,7 @@ std::string WebAXObjectProxy::Live() {
 std::string WebAXObjectProxy::Orientation() {
   accessibility_object_.UpdateLayoutAndCheckValidity();
   ui::AXNodeData node_data;
-  accessibility_object_.Serialize(&node_data);
+  accessibility_object_.Serialize(&node_data, ui::kAXModeComplete);
   if (node_data.HasState(ax::mojom::State::kVertical))
     return "AXOrientation: AXVerticalOrientation";
   else if (node_data.HasState(ax::mojom::State::kHorizontal))

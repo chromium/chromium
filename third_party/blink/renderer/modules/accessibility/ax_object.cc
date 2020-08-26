@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 
 #include <algorithm>
-
+#include "base/strings/string_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
@@ -727,7 +727,8 @@ void AXObject::GetSparseAXAttributes(
   }
 }
 
-void AXObject::Serialize(ui::AXNodeData* node_data) {
+void AXObject::Serialize(ui::AXNodeData* node_data,
+                         ui::AXMode accessibility_mode) {
   AccessibilityExpanded expanded = IsExpanded();
   if (expanded) {
     if (expanded == kExpandedCollapsed)
@@ -829,6 +830,44 @@ void AXObject::Serialize(ui::AXNodeData* node_data) {
             child_token->ToString());
       }
     }
+  }
+
+  if (accessibility_mode.has_mode(ui::AXMode::kPDF)) {
+    // The DOMNodeID from Blink. Currently only populated when using
+    // the accessibility tree for PDF exporting. Warning, this is totally
+    // unrelated to the accessibility node ID, or the ID attribute for an
+    // HTML element - it's an ID used to uniquely identify nodes in Blink.
+    int dom_node_id = GetDOMNodeId();
+    if (dom_node_id) {
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kDOMNodeId,
+                                 dom_node_id);
+    }
+    // None of the following attributes are needed for PDF accessibility.
+    return;
+  }
+
+  if (ValueDescription().length()) {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kValue,
+                                  ValueDescription().Utf8());
+  } else {
+    TruncateAndAddStringAttribute(node_data,
+                                  ax::mojom::blink::StringAttribute::kValue,
+                                  StringValue().Utf8());
+  }
+}
+
+void AXObject::TruncateAndAddStringAttribute(
+    ui::AXNodeData* dst,
+    ax::mojom::blink::StringAttribute attribute,
+    const std::string& value,
+    uint32_t max_len) const {
+  if (value.size() > max_len) {
+    std::string truncated;
+    base::TruncateUTF8ToByteSize(value, max_len, &truncated);
+    dst->AddStringAttribute(attribute, truncated);
+  } else {
+    dst->AddStringAttribute(attribute, value);
   }
 }
 

@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
+#include "ui/accessibility/ax_mode.h"
 
 class SkMatrix44;
 
@@ -404,7 +405,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   //
   // TODO(crbug.com/1068668): AX onion soup - finish migrating
   // BlinkAXTreeSource::SerializeNode into AXObject::Serialize.
-  void Serialize(ui::AXNodeData* node_data);
+  void Serialize(ui::AXNodeData* node_data, ui::AXMode accessibility_mode);
 
   // Determine subclass type.
   virtual bool IsImageMapLink() const;
@@ -1304,6 +1305,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // objects generated. Returns nullptr if a native scroll action to the node is
   // not possible.
   LayoutObject* GetLayoutObjectForNativeScrollAction() const;
+
+  // Max length for attributes such as aria-label.
+  static const uint32_t kMaxStringAttributeLength = 10000;
+  void TruncateAndAddStringAttribute(
+      ui::AXNodeData* dst,
+      ax::mojom::blink::StringAttribute attribute,
+      const std::string& value,
+      uint32_t max_len = kMaxStringAttributeLength) const;
 
   static unsigned number_of_live_ax_objects_;
 

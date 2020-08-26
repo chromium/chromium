@@ -260,11 +260,12 @@ void WebAXObject::GetSparseAXAttributes(
   private_->GetSparseAXAttributes(adapter);
 }
 
-void WebAXObject::Serialize(ui::AXNodeData* node_data) const {
+void WebAXObject::Serialize(ui::AXNodeData* node_data,
+                            ui::AXMode accessibility_mode) const {
   if (IsDetached())
     return;
 
-  private_->Serialize(node_data);
+  private_->Serialize(node_data, accessibility_mode);
 }
 
 bool WebAXObject::IsAnchor() const {
@@ -1081,13 +1082,6 @@ bool WebAXObject::SupportsRangeValue() const {
   return private_->IsRangeValueSupported();
 }
 
-WebString WebAXObject::ValueDescription() const {
-  if (IsDetached())
-    return WebString();
-
-  return private_->ValueDescription();
-}
-
 bool WebAXObject::ValueForRange(float* out_value) const {
   if (IsDetached())
     return false;
@@ -1580,13 +1574,6 @@ void WebAXObject::HandleAutofillStateChanged(
     return;
 
   private_->HandleAutofillStateChanged(state);
-}
-
-int WebAXObject::GetDOMNodeId() const {
-  if (IsDetached())
-    return 0;
-
-  return private_->GetDOMNodeId();
 }
 
 WebString WebAXObject::ToString(bool verbose) const {

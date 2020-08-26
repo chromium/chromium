@@ -10,11 +10,11 @@
 #include <ostream>
 #include <string>
 
-#include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_base_export.h"
 
 namespace ui {
 
-class AX_EXPORT AXMode {
+class AX_BASE_EXPORT AXMode {
  public:
   static constexpr uint32_t kFirstModeFlag = 1 << 0;
 
@@ -107,7 +107,8 @@ static constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
                                         AXMode::kScreenReader | AXMode::kHTML);
 
 // For debugging, test assertions, etc.
-AX_EXPORT std::ostream& operator<<(std::ostream& stream, const AXMode& mode);
+AX_BASE_EXPORT std::ostream& operator<<(std::ostream& stream,
+                                        const AXMode& mode);
 
 }  // namespace ui
 

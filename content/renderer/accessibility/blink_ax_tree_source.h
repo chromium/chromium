@@ -138,14 +138,10 @@ class CONTENT_EXPORT BlinkAXTreeSource
 
   void SerializeBoundingBoxAttributes(blink::WebAXObject src,
                                       ui::AXNodeData* dst) const;
-  void SerializePDFAttributes(blink::WebAXObject src,
-                              ui::AXNodeData* dst) const;
   void SerializeSparseAttributes(blink::WebAXObject src,
                                  ui::AXNodeData* dst) const;
   void SerializeNameAndDescriptionAttributes(blink::WebAXObject src,
                                              ui::AXNodeData* dst) const;
-  void SerializeValueAttributes(blink::WebAXObject src,
-                                ui::AXNodeData* dst) const;
   void SerializeStateAttributes(blink::WebAXObject src,
                                 ui::AXNodeData* dst) const;
   void SerializeStyleAttributes(blink::WebAXObject src,

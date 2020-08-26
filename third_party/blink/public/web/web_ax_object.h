@@ -38,6 +38,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_mode.h"
 
 class SkMatrix44;
 
@@ -135,7 +136,8 @@ class WebAXObject {
   // TODO(crbug.com/1068668): AX onion soup - finish migrating
   // BlinkAXTreeSource::SerializeNode into AXObject::Serialize and removing
   // the unneeded WebAXObject interfaces below.
-  BLINK_EXPORT void Serialize(ui::AXNodeData* node_data) const;
+  BLINK_EXPORT void Serialize(ui::AXNodeData* node_data,
+                              ui::AXMode accessibility_mode) const;
 
   BLINK_EXPORT bool IsAnchor() const;
   BLINK_EXPORT ax::mojom::CheckedState CheckedState() const;
@@ -271,7 +273,6 @@ class WebAXObject {
   BLINK_EXPORT WebString ContainerLiveRegionStatus() const;
 
   BLINK_EXPORT bool SupportsRangeValue() const;
-  BLINK_EXPORT WebString ValueDescription() const;
   BLINK_EXPORT bool ValueForRange(float* out_value) const;
   BLINK_EXPORT bool MaxValueForRange(float* out_value) const;
   BLINK_EXPORT bool MinValueForRange(float* out_value) const;
@@ -395,9 +396,6 @@ class WebAXObject {
   // on any object.
   BLINK_EXPORT void GetAllObjectsWithChangedBounds(
       WebVector<WebAXObject>& out_changed_bounds_objects) const;
-
-  // Blink-internal DOM Node ID. Currently used for PDF exporting.
-  BLINK_EXPORT int GetDOMNodeId() const;
 
   // Exchanges a WebAXObject with another.
   BLINK_EXPORT void Swap(WebAXObject& other);

@@ -1,5 +1,6 @@
 include_rules = [
     "-third_party/blink/renderer/modules",
+    "+base/strings/string_util.h",
     "+third_party/blink/renderer/modules/accessibility",
     "+third_party/blink/renderer/modules/media_controls",
     "+third_party/blink/renderer/modules/modules_export.h",
@@ -7,6 +8,7 @@ include_rules = [
     "+ui/accessibility/ax_enums.mojom-blink.h",
     "+ui/accessibility/ax_enums.mojom-blink-forward.h",
     "+ui/accessibility/ax_event.h",
+    "+ui/accessibility/ax_mode.h",
     "+ui/accessibility/ax_node_data.h",
     "+ui/accessibility/ax_role_properties.h",
 ]
