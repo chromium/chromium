@@ -176,6 +176,7 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return max_search_result_list_items_;
   }
 
+  double privacy_container_score() const { return privacy_container_score_; }
   double app_tiles_container_score() const {
     return app_tiles_container_score_;
   }
@@ -472,8 +473,11 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // Max number of search result list items in the launcher suggestion window.
   const size_t max_search_result_list_items_ = 5;
 
-  // Scores for the three containers within the search box view. These are
-  // displayed in high-to-low order.
+  // Scores for the containers within the search box view. These are displayed
+  // in high-to-low order.
+  // The privacy container is not always visible, but when available it should
+  // always be the first item underneath the search box.
+  const double privacy_container_score_ = 4.0;
   const double app_tiles_container_score_ = 3.0;
   const double answer_card_container_score_ = 2.0;
   const double results_list_container_score_ = 1.0;

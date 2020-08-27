@@ -11,6 +11,7 @@
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/assistant/assistant_privacy_info_view.h"
 #include "ash/app_list/views/suggested_content_info_view.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -87,7 +88,9 @@ int PrivacyContainerView::DoUpdate() {
   // the top of the results list.
   const bool should_show_container =
       should_show_assistant || should_show_suggested_content;
-  set_container_score(should_show_container ? INT_MAX : -1);
+  set_container_score(should_show_container
+                          ? AppListConfig::instance().privacy_container_score()
+                          : -1);
   return should_show_container ? 1 : 0;
 }
 
