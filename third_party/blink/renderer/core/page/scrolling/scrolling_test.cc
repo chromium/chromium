@@ -115,6 +115,15 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
     return helper_.GetWebWidgetClient();
   }
 
+  PaintLayerScrollableArea* ScrollableAreaByDOMElementId(
+      const char* id_value) const {
+    return GetFrame()
+        ->GetDocument()
+        ->getElementById(id_value)
+        ->GetLayoutBoxForScrolling()
+        ->GetScrollableArea();
+  }
+
   void LoadAhem() { helper_.LoadAhem(); }
 
   const cc::ScrollNode* ScrollNodeForScrollableArea(
@@ -129,8 +138,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
   }
 
   const cc::ScrollNode* ScrollNodeByDOMElementId(const char* dom_id) const {
-    return ScrollNodeForScrollableArea(
-        GetFrame()->GetDocument()->getElementById(dom_id)->GetScrollableArea());
+    return ScrollNodeForScrollableArea(ScrollableAreaByDOMElementId(dom_id));
   }
 
   gfx::ScrollOffset CurrentScrollOffset(cc::ElementId element_id) const {
@@ -175,10 +183,7 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
 
   const cc::Layer* ScrollingContentsLayerByDOMElementId(
       const char* element_id) const {
-    const auto* scrollable_area = GetFrame()
-                                      ->GetDocument()
-                                      ->getElementById(element_id)
-                                      ->GetScrollableArea();
+    const auto* scrollable_area = ScrollableAreaByDOMElementId(element_id);
     return ScrollingContentsCcLayerByScrollElementId(
         RootCcLayer(), scrollable_area->GetScrollElementId());
   }
@@ -1364,10 +1369,7 @@ TEST_P(ScrollingTest, ScrollOffsetClobberedBeforeCompositingUpdate) {
       )HTML");
   ForceFullCompositingUpdate();
 
-  auto* scrollable_area = GetFrame()
-                              ->GetDocument()
-                              ->getElementById("container")
-                              ->GetScrollableArea();
+  auto* scrollable_area = ScrollableAreaByDOMElementId("container");
   ASSERT_EQ(0, scrollable_area->GetScrollOffset().Height());
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
 
@@ -1631,9 +1633,9 @@ TEST_P(ScrollingTest, TouchActionUpdatesOutsideInterestRect) {
 
   ForceFullCompositingUpdate();
 
-  auto* scroller = GetFrame()->GetDocument()->getElementById("scroller");
-  scroller->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 5100), mojom::blink::ScrollType::kProgrammatic);
+  ScrollableAreaByDOMElementId("scroller")
+      ->SetScrollOffset(ScrollOffset(0, 5100),
+                        mojom::blink::ScrollType::kProgrammatic);
 
   ForceFullCompositingUpdate();
 
@@ -1705,6 +1707,15 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
             scrollable_area->GetScrollElementId()));
   }
 
+  PaintLayerScrollableArea* ScrollableAreaByDOMElementId(const char* id_value) {
+    auto* box = MainFrame()
+                    .GetFrame()
+                    ->GetDocument()
+                    ->getElementById(id_value)
+                    ->GetLayoutBoxForScrolling();
+    return box ? box->GetScrollableArea() : nullptr;
+  }
+
  protected:
   RuntimeEnabledFeaturesTestHelpers::ScopedScrollUnification
       scroll_unification_enabled_;
@@ -1745,7 +1756,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
 
   Element* noncomposited_element =
       MainFrame().GetFrame()->GetDocument()->getElementById("noncomposited");
-  auto* scrollable_area = noncomposited_element->GetScrollableArea();
+  auto* scrollable_area =
+      noncomposited_element->GetLayoutBoxForScrolling()->GetScrollableArea();
   ASSERT_EQ(
       cc::MainThreadScrollingReason::kCantPaintScrollingBackgroundAndLCDText,
       scrollable_area->GetNonCompositedMainThreadScrollingReasons());
@@ -1804,7 +1816,8 @@ TEST_P(UnifiedScrollingSimTest,
 
   Element* composited_element =
       MainFrame().GetFrame()->GetDocument()->getElementById("composited");
-  auto* scrollable_area = composited_element->GetScrollableArea();
+  auto* scrollable_area =
+      composited_element->GetLayoutBoxForScrolling()->GetScrollableArea();
   EXPECT_EQ(0u, scrollable_area->GetNonCompositedMainThreadScrollingReasons());
 
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
@@ -1900,6 +1913,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
   // Ensure we have a compositor scroll node for the noncomposited subscroller.
   auto* child_scrollable_area = iframe->contentDocument()
                                     ->getElementById("scroller")
+                                    ->GetLayoutBoxForScrolling()
                                     ->GetScrollableArea();
   const auto* child_scroll_node =
       ScrollNodeForScrollableArea(child_scrollable_area);
@@ -1984,6 +1998,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
   // nested in the second iframe.
   auto* child_scrollable_area = child_iframe_2->contentDocument()
                                     ->getElementById("scroller")
+                                    ->GetLayoutBoxForScrolling()
                                     ->GetScrollableArea();
   const auto* child_scroll_node =
       ScrollNodeForScrollableArea(child_scrollable_area);
@@ -2043,11 +2058,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
   Compositor().BeginFrame();
 
   // Ensure the opacity 0 noncomposited scrollable area generates a scroll node
-  auto* invisible_scrollable_area = MainFrame()
-                                        .GetFrame()
-                                        ->GetDocument()
-                                        ->getElementById("invisible")
-                                        ->GetScrollableArea();
+  auto* invisible_scrollable_area = ScrollableAreaByDOMElementId("invisible");
   ASSERT_EQ(
       cc::MainThreadScrollingReason::kCantPaintScrollingBackgroundAndLCDText,
       invisible_scrollable_area->GetNonCompositedMainThreadScrollingReasons());
@@ -2066,11 +2077,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
 
   // Ensure there's no scrollable area (and therefore no scroll node) for a
   // display none scroller.
-  EXPECT_EQ(nullptr, MainFrame()
-                         .GetFrame()
-                         ->GetDocument()
-                         ->getElementById("displaynone")
-                         ->GetScrollableArea());
+  EXPECT_EQ(nullptr, ScrollableAreaByDOMElementId("displaynone"));
 }
 
 // Tests that the compositor gets a scroll node for scrollable input boxes,
@@ -2090,9 +2097,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   )HTML");
   Compositor().BeginFrame();
 
-  Element* input_element =
-      MainFrame().GetFrame()->GetDocument()->getElementById("textinput");
-  auto* scrollable_area = input_element->GetScrollableArea();
+  auto* scrollable_area = ScrollableAreaByDOMElementId("textinput");
   ASSERT_EQ(0u, scrollable_area->GetNonCompositedMainThreadScrollingReasons());
 
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);

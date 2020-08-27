@@ -154,6 +154,7 @@ TEST_F(MapCoordinatesTest, OverflowClip) {
   LayoutObject* target = GetLayoutObjectByElementId("target");
   LayoutObject* overflow = GetLayoutObjectByElementId("overflow");
   To<Element>(overflow->GetNode())
+      ->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
       ->ScrollToAbsolutePosition(FloatPoint(32, 54));
 
@@ -1743,6 +1744,7 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffset) {
       MapLocalToAncestor(box, scroller, PhysicalOffset(), kIgnoreScrollOffset));
 
   To<Element>(scroller->GetNode())
+      ->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
       ->ScrollToAbsolutePosition(FloatPoint(0, 50));
 
@@ -1781,6 +1783,7 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffsetForInline) {
       MapLocalToAncestor(box, scroller, PhysicalOffset(), kIgnoreScrollOffset));
 
   To<Element>(scroller->GetNode())
+      ->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
       ->ScrollToAbsolutePosition(FloatPoint(0, 50));
 
@@ -1817,8 +1820,9 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffsetWithWritingModes) {
       PhysicalOffset(1990, 10),
       MapLocalToAncestor(box, scroller, PhysicalOffset(), kIgnoreScrollOffset));
 
-  scroll_element->GetScrollableArea()->ScrollToAbsolutePosition(
-      FloatPoint(0, 50));
+  scroll_element->GetLayoutBoxForScrolling()
+      ->GetScrollableArea()
+      ->ScrollToAbsolutePosition(FloatPoint(0, 50));
 
   EXPECT_EQ(PhysicalOffset(1990, -40),
             MapLocalToAncestor(box, scroller, PhysicalOffset()));
@@ -1826,8 +1830,9 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffsetWithWritingModes) {
       PhysicalOffset(1990, 10),
       MapLocalToAncestor(box, scroller, PhysicalOffset(), kIgnoreScrollOffset));
 
-  scroll_element->GetScrollableArea()->ScrollToAbsolutePosition(
-      FloatPoint(1900, 50));
+  scroll_element->GetLayoutBoxForScrolling()
+      ->GetScrollableArea()
+      ->ScrollToAbsolutePosition(FloatPoint(1900, 50));
 
   EXPECT_EQ(PhysicalOffset(90, -40),
             MapLocalToAncestor(box, scroller, PhysicalOffset()));
@@ -1868,6 +1873,7 @@ TEST_F(MapCoordinatesTest,
       MapLocalToAncestor(box, scroller, PhysicalOffset(), kIgnoreScrollOffset));
 
   To<Element>(scroller->GetNode())
+      ->GetLayoutBoxForScrolling()
       ->GetScrollableArea()
       ->ScrollToAbsolutePosition(FloatPoint(0, 0));
 

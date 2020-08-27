@@ -727,7 +727,8 @@ TEST_F(IntersectionObserverTest, CachedRectsTest) {
   EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
 
   // Scrolling the root should not invalidate.
-  PaintLayerScrollableArea* root_scroller = root->GetScrollableArea();
+  PaintLayerScrollableArea* root_scroller =
+      root->GetLayoutBoxForScrolling()->GetScrollableArea();
   root_scroller->SetScrollOffset(ScrollOffset(0, 100),
                                  mojom::blink::ScrollType::kProgrammatic);
   EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());

@@ -73,7 +73,6 @@ class InputDeviceCapabilities;
 class Locale;
 class MutableCSSPropertyValueSet;
 class NamedNodeMap;
-class PaintLayerScrollableArea;
 class PointerLockOptions;
 class PseudoElement;
 class PseudoElementStyleRequest;
@@ -325,9 +324,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void scrollBy(const ScrollToOptions*);
   void scrollTo(double x, double y);
   void scrollTo(const ScrollToOptions*);
-  // This will return the |GetScrollableArea| of correspond LayoutBox. For
-  // LayoutTextControlSingleLine, it will return its |InnerEditorElement|'s.
-  virtual PaintLayerScrollableArea* GetScrollableArea() const;
+  // This is similar to GetLayoutBox(), but returns nullptr if it's not
+  // scrollable. Some elements override this to delegate scroll operations to
+  // a descendant LayoutBox.
+  virtual LayoutBox* GetLayoutBoxForScrolling() const;
 
   IntRect BoundsInViewport() const;
   // Returns an intersection rectangle of the bounds rectangle and the visual

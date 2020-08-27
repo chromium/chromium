@@ -14,6 +14,17 @@
 
 namespace blink {
 
+namespace {
+
+inline PaintLayerScrollableArea* GetScrollableArea(
+    const LayoutBlock* container) {
+  return To<Element>(container->GetNode())
+      ->GetLayoutBoxForScrolling()
+      ->GetScrollableArea();
+}
+
+}  // namespace
+
 class VisualRectMappingTest : public PaintTestConfigurations,
                               public RenderingTest {
  public:
@@ -117,8 +128,7 @@ TEST_P(VisualRectMappingTest, LayoutText) {
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
   auto* text = GetLayoutObjectByElementId("text")->SlowFirstChild();
 
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   scrollable_area->ScrollToAbsolutePosition(
       FloatPoint(scrollable_area->ScrollPosition().X(), 50));
   UpdateAllLifecyclePhasesForTest();
@@ -157,8 +167,7 @@ TEST_P(VisualRectMappingTest, LayoutTextContainerFlippedWritingMode) {
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
   auto* text = GetLayoutObjectByElementId("text")->SlowFirstChild();
 
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   scrollable_area->ScrollToAbsolutePosition(
       FloatPoint(scrollable_area->ScrollPosition().X(), 50));
   UpdateAllLifecyclePhasesForTest();
@@ -195,8 +204,7 @@ TEST_P(VisualRectMappingTest, LayoutInline) {
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
   LayoutObject* leaf = container->LastChild();
 
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   scrollable_area->ScrollToAbsolutePosition(
       FloatPoint(scrollable_area->ScrollPosition().X(), 50));
   UpdateAllLifecyclePhasesForTest();
@@ -235,8 +243,7 @@ TEST_P(VisualRectMappingTest, LayoutInlineContainerFlippedWritingMode) {
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
   LayoutObject* leaf = container->LastChild();
 
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   scrollable_area->ScrollToAbsolutePosition(
       FloatPoint(scrollable_area->ScrollPosition().X(), 50));
   UpdateAllLifecyclePhasesForTest();
@@ -452,8 +459,7 @@ TEST_P(VisualRectMappingTest, ContainerOverflowScroll) {
   )HTML");
 
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   EXPECT_EQ(0, scrollable_area->ScrollPosition().Y());
   EXPECT_EQ(0, scrollable_area->ScrollPosition().X());
   scrollable_area->ScrollToAbsolutePosition(FloatPoint(8, 7));
@@ -511,8 +517,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowScroll) {
   )HTML");
 
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   EXPECT_EQ(0, scrollable_area->ScrollPosition().Y());
   // The initial scroll offset is to the left-most because of flipped blocks
   // writing mode.
@@ -584,8 +589,7 @@ TEST_P(VisualRectMappingTest, ContainerOverflowHidden) {
   )HTML");
 
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   EXPECT_EQ(0, scrollable_area->ScrollPosition().Y());
   EXPECT_EQ(0, scrollable_area->ScrollPosition().X());
   scrollable_area->ScrollToAbsolutePosition(FloatPoint(28, 27));
@@ -618,8 +622,7 @@ TEST_P(VisualRectMappingTest, ContainerFlippedWritingModeAndOverflowHidden) {
   )HTML");
 
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   EXPECT_EQ(0, scrollable_area->ScrollPosition().Y());
   // The initial scroll offset is to the left-most because of flipped blocks
   // writing mode.
@@ -658,8 +661,7 @@ TEST_P(VisualRectMappingTest, ContainerAndTargetDifferentFlippedWritingMode) {
   )HTML");
 
   auto* container = To<LayoutBlock>(GetLayoutObjectByElementId("container"));
-  auto* scrollable_area =
-      To<Element>(container->GetNode())->GetScrollableArea();
+  auto* scrollable_area = GetScrollableArea(container);
   EXPECT_EQ(0, scrollable_area->ScrollPosition().Y());
   // The initial scroll offset is to the left-most because of flipped blocks
   // writing mode.
@@ -717,9 +719,7 @@ TEST_P(VisualRectMappingTest,
   )HTML");
 
   auto* scroller = To<LayoutBlock>(GetLayoutObjectByElementId("scroller"));
-  To<Element>(scroller->GetNode())
-      ->GetScrollableArea()
-      ->ScrollToAbsolutePosition(FloatPoint(88, 77));
+  GetScrollableArea(scroller)->ScrollToAbsolutePosition(FloatPoint(88, 77));
   UpdateAllLifecyclePhasesForTest();
 
   auto* normal_flow =

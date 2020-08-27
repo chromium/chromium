@@ -332,7 +332,7 @@ class CORE_EXPORT HTMLInputElement
 
   void ChildrenChanged(const ChildrenChange&) override;
 
-  PaintLayerScrollableArea* GetScrollableArea() const final;
+  LayoutBox* GetLayoutBoxForScrolling() const final;
 
   void SetHasBeenPasswordField() { has_been_password_field_ = true; }
 

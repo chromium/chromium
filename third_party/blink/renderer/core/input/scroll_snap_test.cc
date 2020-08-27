@@ -137,8 +137,10 @@ void ScrollSnapTest::ScrollEnd(double x, double y, bool is_in_inertial_phase) {
 
 void ScrollSnapTest::SetInitialScrollOffset(double x, double y) {
   Element* scroller = GetDocument().getElementById("scroller");
-  scroller->GetScrollableArea()->ScrollToAbsolutePosition(
-      FloatPoint(x, y), mojom::blink::ScrollBehavior::kAuto);
+  scroller->GetLayoutBoxForScrolling()
+      ->GetScrollableArea()
+      ->ScrollToAbsolutePosition(FloatPoint(x, y),
+                                 mojom::blink::ScrollBehavior::kAuto);
   ASSERT_EQ(scroller->scrollLeft(), x);
   ASSERT_EQ(scroller->scrollTop(), y);
 }

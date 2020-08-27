@@ -282,7 +282,10 @@ bool ScrollInDirection(Node* container, SpatialNavigationDirection direction) {
     case SpatialNavigationDirection::kRight:
       // TODO(bokan, https://crbug.com/952326): Fix this DCHECK.
       //  DCHECK_GT(container->GetLayoutBox()->ScrollWidth(),
-      //            container->GetScrollableArea()->ScrollPosition().X() +
+      //            container->GetLayoutBoxForScrolling()
+      //                    ->GetScrollableArea()
+      //                    ->ScrollPosition()
+      //                    .X() +
       //                container->GetLayoutBox()->ClientWidth());
       dx = pixels_per_line_step;
       break;
@@ -292,7 +295,10 @@ bool ScrollInDirection(Node* container, SpatialNavigationDirection direction) {
     case SpatialNavigationDirection::kDown:
       // TODO(bokan, https://crbug.com/952326): Fix this DCHECK.
       //  DCHECK_GT(container->GetLayoutBox()->ScrollHeight(),
-      //            container->GetScrollableArea()->ScrollPosition().Y() +
+      //            container->GetLayoutBoxForScrolling()
+      //                    ->GetScrollableArea()
+      //                    ->ScrollPosition()
+      //                    .Y() +
       //                container->GetLayoutBox()->ClientHeight());
       dy = pixels_per_line_step;
       break;
@@ -364,7 +370,10 @@ bool CanScrollInDirection(const Node* container,
   const Element* container_element = DynamicTo<Element>(container);
   if (!container_element)
     return false;
-  auto* scrollable_area = container_element->GetScrollableArea();
+  LayoutBox* box = container_element->GetLayoutBoxForScrolling();
+  if (!box)
+    return false;
+  auto* scrollable_area = box->GetScrollableArea();
   if (!scrollable_area)
     return false;
 

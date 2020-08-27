@@ -2019,13 +2019,11 @@ void HTMLInputElement::ChildrenChanged(const ChildrenChange& change) {
   ContainerNode::ChildrenChanged(change);
 }
 
-PaintLayerScrollableArea* HTMLInputElement::GetScrollableArea() const {
-  // If it's LayoutTextControlSingleLine, return InnerEditorElement's scrollable
-  // area.
+LayoutBox* HTMLInputElement::GetLayoutBoxForScrolling() const {
+  // If it's LayoutTextControlSingleLine, return InnerEditorElement's LayoutBox.
   if (IsTextField() && InnerEditorElement())
-    return InnerEditorElement()->GetScrollableArea();
-
-  return Element::GetScrollableArea();
+    return InnerEditorElement()->GetLayoutBox();
+  return Element::GetLayoutBoxForScrolling();
 }
 
 bool HTMLInputElement::IsDraggedSlider() const {

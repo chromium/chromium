@@ -1351,11 +1351,11 @@ int Element::clientHeight() {
   return 0;
 }
 
-PaintLayerScrollableArea* Element::GetScrollableArea() const {
+LayoutBox* Element::GetLayoutBoxForScrolling() const {
   LayoutBox* box = GetLayoutBox();
   if (!box || !box->HasNonVisibleOverflow())
     return nullptr;
-  return box->GetScrollableArea();
+  return box;
 }
 
 double Element::scrollLeft() {
@@ -1371,7 +1371,10 @@ double Element::scrollLeft() {
     return 0;
   }
 
-  if (PaintLayerScrollableArea* scrollable_area = GetScrollableArea()) {
+  LayoutBox* box = GetLayoutBoxForScrolling();
+  if (!box)
+    return 0;
+  if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
     DCHECK(GetLayoutBox());
 
     if (HasLeftwardDirection(*this)) {
@@ -1409,7 +1412,10 @@ double Element::scrollTop() {
     return 0;
   }
 
-  if (PaintLayerScrollableArea* scrollable_area = GetScrollableArea()) {
+  LayoutBox* box = GetLayoutBoxForScrolling();
+  if (!box)
+    return 0;
+  if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
     DCHECK(GetLayoutBox());
 
     if (HasUpwardDirection(*this)) {
@@ -1449,10 +1455,13 @@ void Element::setScrollLeft(double new_left) {
       options->setLeft(new_left);
       window->scrollTo(options);
     }
-  } else if (PaintLayerScrollableArea* scrollable_area = GetScrollableArea()) {
-    LayoutBox* box = GetLayoutBox();
-    DCHECK(box);
+    return;
+  }
 
+  LayoutBox* box = GetLayoutBoxForScrolling();
+  if (!box)
+    return;
+  if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
     if (HasLeftwardDirection(*this)) {
       UseCounter::Count(
           GetDocument(),
@@ -1516,10 +1525,13 @@ void Element::setScrollTop(double new_top) {
       options->setTop(new_top);
       window->scrollTo(options);
     }
-  } else if (PaintLayerScrollableArea* scrollable_area = GetScrollableArea()) {
-    LayoutBox* box = GetLayoutBox();
-    DCHECK(box);
+    return;
+  }
 
+  LayoutBox* box = GetLayoutBoxForScrolling();
+  if (!box)
+    return;
+  if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
     if (HasUpwardDirection(*this)) {
       UseCounter::Count(
           GetDocument(),
@@ -1675,8 +1687,10 @@ void Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options) {
       mojom::blink::ScrollBehavior::kAuto;
   ScrollableArea::ScrollBehaviorFromString(scroll_to_options->behavior(),
                                            scroll_behavior);
-  if (PaintLayerScrollableArea* scrollable_area = GetScrollableArea()) {
-    LayoutBox* box = GetLayoutBox();
+  LayoutBox* box = GetLayoutBoxForScrolling();
+  if (!box)
+    return;
+  if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
     DCHECK(box);
     gfx::ScrollOffset current_position(scrollable_area->ScrollPosition().X(),
                                        scrollable_area->ScrollPosition().Y());
@@ -1701,9 +1715,10 @@ void Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
   ScrollableArea::ScrollBehaviorFromString(scroll_to_options->behavior(),
                                            scroll_behavior);
 
-  if (PaintLayerScrollableArea* scrollable_area = GetScrollableArea()) {
-    LayoutBox* box = GetLayoutBox();
-    DCHECK(box);
+  LayoutBox* box = GetLayoutBoxForScrolling();
+  if (!box)
+    return;
+  if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
     if (scroll_to_options->hasLeft() && HasLeftwardDirection(*this)) {
       UseCounter::Count(
           GetDocument(),

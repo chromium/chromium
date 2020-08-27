@@ -719,8 +719,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // scroll shadow content (but pretend that they are the objects that are
   // scrolling).
 
-  // Replaced ScrollLeft/Top by using Element::GetScrollableArea to return the
-  // correct ScrollableArea.
+  // Replaced ScrollLeft/Top by using Element::GetLayoutBoxForScrolling to
+  // return the correct ScrollableArea.
   // TODO(cathiechen): We should do the same with ScrollWidth|Height .
   virtual LayoutUnit ScrollWidth() const;
   virtual LayoutUnit ScrollHeight() const;
