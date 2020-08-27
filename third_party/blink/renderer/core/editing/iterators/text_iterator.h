@@ -87,8 +87,7 @@ class TextIteratorAlgorithm {
   // Returns the position after |char16_offset| in current text run.
   PositionTemplate<Strategy> GetPositionAfter(int char16_offset) const;
 
-  // TODO(xiaochengh): Rename to |GetTextState()|.
-  const TextIteratorTextState& GetText() const { return text_state_; }
+  const TextIteratorTextState& GetTextState() const { return text_state_; }
   int length() const { return text_state_.length(); }
   UChar CharacterAt(unsigned index) const {
     return text_state_.CharacterAt(index);

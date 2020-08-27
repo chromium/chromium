@@ -144,7 +144,7 @@ std::string TextIteratorTest::IterateWithIterator(
   StringBuilder text_chunks;
   for (; !iterator.AtEnd(); iterator.Advance()) {
     text_chunks.Append('[');
-    text_chunks.Append(iterator.GetText().GetTextForTesting());
+    text_chunks.Append(iterator.GetTextState().GetTextForTesting());
     text_chunks.Append(']');
   }
   return text_chunks.ToString().Utf8();
@@ -701,14 +701,14 @@ TEST_P(TextIteratorTest, StartAtFirstLetter) {
   TextIterator iter(start, end);
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("A", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("A", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 0), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("xyz", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
@@ -728,21 +728,21 @@ TEST_P(TextIteratorTest, StartInMultiCharFirstLetterWithCollapsedSpace) {
   TextIterator iter(start, end);
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("A)", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("A)", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 3), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 5), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(" ", iter.GetText().GetTextForTesting());
+  EXPECT_EQ(" ", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 5), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 6), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("xyz", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 7), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 10), iter.EndPositionInCurrentContainer());
@@ -762,7 +762,7 @@ TEST_P(TextIteratorTest, StartAndEndInMultiCharFirstLetterWithCollapsedSpace) {
   TextIterator iter(start, end);
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("A", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("A", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 3), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
@@ -781,7 +781,7 @@ TEST_P(TextIteratorTest, StartAtRemainingText) {
   TextIterator iter(start, end);
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("xyz", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
@@ -800,14 +800,14 @@ TEST_P(TextIteratorTest, StartAtFirstLetterInPre) {
   TextIterator iter(start, end);
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("A", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("A", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 0), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("xyz", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
@@ -827,14 +827,14 @@ TEST_P(TextIteratorTest, StartInMultiCharFirstLetterInPre) {
   TextIterator iter(start, end);
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("A)", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("A)", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 3), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("xyz", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 3), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 6), iter.EndPositionInCurrentContainer());
@@ -854,7 +854,7 @@ TEST_P(TextIteratorTest, StartAndEndInMultiCharFirstLetterInPre) {
   TextIterator iter(start, end);
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("A", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("A", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 2), iter.EndPositionInCurrentContainer());
@@ -873,7 +873,7 @@ TEST_P(TextIteratorTest, StartAtRemainingTextInPre) {
   TextIterator iter(start, end);
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
+  EXPECT_EQ("xyz", iter.GetTextState().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());

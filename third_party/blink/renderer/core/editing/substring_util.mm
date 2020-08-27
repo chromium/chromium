@@ -121,7 +121,7 @@ NSAttributedString* AttributedSubstringFromRange(const EphemeralRange& range,
     else
       [attrs removeObjectForKey:NSBackgroundColorAttributeName];
 
-    String characters = it.GetText().GetTextForTesting();
+    String characters = it.GetTextState().GetTextForTesting();
     characters.Ensure16Bit();
     NSString* substring =
         [[[NSString alloc] initWithCharacters:characters.Characters16()
