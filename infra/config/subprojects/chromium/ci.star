@@ -680,6 +680,9 @@ ci.android_builder(
 ci.android_builder(
     name = "android-cronet-arm-rel",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.android",
     console_view_entry = ci.console_view_entry(
         category = "cronet|arm",
         short_name = "rel",
@@ -1138,6 +1141,9 @@ ci.chromiumos_builder(
 ci.chromiumos_builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.ALL_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.chromiumos",
     console_view_entry = ci.console_view_entry(
         category = "simple|release|x64",
         short_name = "rel",
@@ -3006,6 +3012,9 @@ ci.gpu_builder(
 ci.gpu_builder(
     name = "GPU Mac Builder",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.gpu",
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
@@ -3028,6 +3037,9 @@ ci.gpu_builder(
 ci.gpu_builder(
     name = "GPU Win x64 Builder",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.gpu",
     builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "Windows",
@@ -3082,6 +3094,9 @@ ci.gpu_thin_tester(
 ci.gpu_thin_tester(
     name = "Mac Release (Intel)",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.gpu",
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
@@ -3102,6 +3117,9 @@ ci.gpu_thin_tester(
 ci.gpu_thin_tester(
     name = "Mac Retina Release (AMD)",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.gpu",
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
@@ -3122,6 +3140,9 @@ ci.gpu_thin_tester(
 ci.gpu_thin_tester(
     name = "Win10 x64 Release (NVIDIA)",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.gpu",
     console_view_entry = ci.console_view_entry(
         category = "Windows",
     ),
@@ -4050,6 +4071,9 @@ ci.linux_builder(
 ci.linux_builder(
     name = "fuchsia-x64-cast",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.linux",
     console_view_entry = ci.console_view_entry(
         category = "fuchsia|cast",
         short_name = "x64",
@@ -4168,6 +4192,9 @@ ci.linux_builder(
 ci.mac_builder(
     name = "Mac Builder",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "bld",
@@ -4243,6 +4270,9 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.13 Tests",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.mac",
     mastername = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
@@ -4306,6 +4336,9 @@ ci.mac_ios_builder(
 ci.mac_ios_builder(
     name = "ios-simulator",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "ios|default",
         short_name = "sim",
@@ -4805,6 +4838,9 @@ ci.win_builder(
 ci.win_builder(
     name = "Win x64 Builder",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.win",
     console_view_entry = ci.console_view_entry(
         category = "release|builder",
         short_name = "64",
@@ -4818,6 +4854,9 @@ ci.win_builder(
 ci.win_builder(
     name = "Win10 Tests x64",
     branch_selector = branches.STANDARD_RELEASES,
+    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
+    # not explicitly set
+    builder_group = "chromium.win",
     console_view_entry = ci.console_view_entry(
         category = "release|tester",
         short_name = "w10",
