@@ -689,6 +689,13 @@ void IconLoadingPipeline::LoadCompressedIconFromFile(
 void IconLoadingPipeline::LoadIconFromCompressedData(
     const std::string& compressed_icon_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // For the compressed icon, MaybeApplyEffectsAndComplete() uses
+  // |icon_scale_for_compressed_response_| to apps::EncodeImageToPngBytes(). So
+  // set |icon_scale_for_compressed_response_| to match |icon_scale_|, which is
+  // used to decode the icon.
+  icon_scale_for_compressed_response_ = icon_scale_;
+
   std::vector<uint8_t> data(compressed_icon_data.begin(),
                             compressed_icon_data.end());
   apps::CompressedDataToImageSkiaCallback(
