@@ -2886,4 +2886,52 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       AudioDeviceSettingPersists) {
+  // When an audio output device has been set: in addition to players switching
+  // to that audio device, players created later on the same origin in the same
+  // session should also use that device.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
+  int player_1 = player_observer->StartNewPlayer();
+  AddPlayer(player_observer.get(), player_1,
+            media::MediaContentType::Persistent);
+  UISetAudioSink("speaker1");
+  EXPECT_EQ(player_observer->GetAudioOutputSinkId(player_1), "speaker1");
+
+  // When a second player has been added on the same page, it should use the
+  // audio device previously set.
+  int player_2 = player_observer->StartNewPlayer();
+  AddPlayer(player_observer.get(), player_2,
+            media::MediaContentType::Persistent);
+  EXPECT_EQ(player_observer->GetAudioOutputSinkId(player_2), "speaker1");
+
+  // Clear the players and navigate to a new page on the same origin.
+  RemovePlayers(player_observer.get());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+  player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
+
+  // After navigating to another page on the same origin, newly created players
+  // should use the previously set device.
+  player_1 = player_observer->StartNewPlayer();
+  AddPlayer(player_observer.get(), player_1,
+            media::MediaContentType::Persistent);
+  EXPECT_EQ(player_observer->GetAudioOutputSinkId(player_1), "speaker1");
+
+  // Clear the players and navigate to a new page on a different origin
+  RemovePlayers(player_observer.get());
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+  player_observer = std::make_unique<MockMediaSessionPlayerObserver>();
+
+  // After navigating to another page on a different origin, newly created
+  // players should not use the previously set device.
+  player_1 = player_observer->StartNewPlayer();
+  AddPlayer(player_observer.get(), player_1,
+            media::MediaContentType::Persistent);
+  EXPECT_NE(player_observer->GetAudioOutputSinkId(player_1), "speaker1");
+}
 }  // namespace content

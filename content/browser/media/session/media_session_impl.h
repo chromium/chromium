@@ -255,6 +255,10 @@ class MediaSessionImpl : public MediaSession,
 
   // Routes the audio from this Media Session to the given output device. If
   // |id| is null, we will route to the default output device.
+  // Players created after this setting has been set will also have their audio
+  // rerouted. This setting persists until cross-origin navigation occurs, the
+  // renderer reports an audio sink change to a device different from |id|, or
+  // this method is called again.
   void SetAudioSinkId(const base::Optional<std::string>& id) override;
 
   // Downloads the bitmap version of a MediaImage at least |minimum_size_px|
@@ -451,6 +455,11 @@ class MediaSessionImpl : public MediaSession,
 
   // True if the WebContents associated with this MediaSessionImpl is focused.
   bool focused_ = false;
+
+  // Used to persist audio device selection between navigations on the same
+  // origin.
+  url::Origin origin_;
+  base::Optional<std::string> audio_device_id_for_origin_;
 
 #if defined(OS_ANDROID)
   std::unique_ptr<MediaSessionAndroid> session_android_;

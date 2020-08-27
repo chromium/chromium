@@ -269,6 +269,13 @@ void MediaSessionImpl::DidFinishNavigation(
     return;
   }
 
+  auto new_origin = url::Origin::Create(navigation_handle->GetURL());
+  if (navigation_handle->IsInMainFrame() &&
+      !new_origin.IsSameOriginWith(origin_)) {
+    audio_device_id_for_origin_.reset();
+    origin_ = new_origin;
+  }
+
   RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
   if (services_.count(rfh))
     services_[rfh]->DidFinishNavigation();
@@ -351,6 +358,8 @@ bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
     return AddPepperPlayer(observer, player_id);
 
   observer->OnSetVolumeMultiplier(player_id, GetVolumeMultiplier());
+  if (audio_device_id_for_origin_)
+    observer->OnSetAudioSinkId(player_id, audio_device_id_for_origin_.value());
 
   AudioFocusType required_audio_focus_type;
   if (media_content_type == media::MediaContentType::Persistent)
@@ -1079,6 +1088,8 @@ void MediaSessionImpl::ExitPictureInPicture() {
 }
 
 void MediaSessionImpl::SetAudioSinkId(const base::Optional<std::string>& id) {
+  audio_device_id_for_origin_ = id;
+
   for (const auto& it : normal_players_) {
     it.first.observer->OnSetAudioSinkId(
         it.first.player_id,
@@ -1366,6 +1377,11 @@ void MediaSessionImpl::OnPictureInPictureAvailabilityChanged() {
 }
 
 void MediaSessionImpl::OnAudioOutputSinkIdChanged() {
+  if (audio_device_id_for_origin_ &&
+      audio_device_id_for_origin_ != GetSharedAudioOutputDeviceId()) {
+    audio_device_id_for_origin_.reset();
+  }
+
   RebuildAndNotifyMediaSessionInfoChanged();
 }
 
