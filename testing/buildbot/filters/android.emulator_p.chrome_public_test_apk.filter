@@ -75,9 +75,6 @@
 # crbug.com/1061214
 -org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testHiddenTabAndChangingFragmentDontWait
 
-# crbug.com/1061216
--org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testRightSwipeNavigateForwardOnNativePage
-
 # crbug.com/1058877
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarContinueButton_EmptyExpDate_launchesExpDateFixFlow
 -org.chromium.chrome.browser.autofill.AutofillUpstreamTest.testSaveCardInfoBarContinueButton_EmptyName_launchesNameFixFlow
