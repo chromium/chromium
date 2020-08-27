@@ -385,7 +385,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
       Gebruikers kunnen deze instelling niet wijzigen of overschrijven.
 
-      Opmerking: Door dit beleid wordt de kop 'X-GoogApps-Allowed-Domains' toegevoegd aan alle HTTP- en HTTPS-verzoeken voor alle google.com-domeinen, zoals beschreven in https://support.google.com/a/answer/1668854</translation>
+      Opmerking: Door dit beleid wordt de kop 'X-GoogApps-Allowed-Domains' toegevoegd aan alle HTTP- en HTTPS-verzoeken voor alle google.com-domeinen, zoals beschreven in https://support.google.com/a/answer/1668854.</translation>
 <translation id="1599424828227887013">Site-isolatie inschakelen voor gespecificeerde herkomsten op Android-apparaten</translation>
 <translation id="159946228300522107">Als je het beleid instelt op 'True', maximaliseert Chrome het eerst weergegeven venster tijdens de eerste uitvoering.
 
@@ -394,7 +394,7 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
 
       Als je het beleid instelt op False of niet instelt, worden pdf-bestanden geopend, tenzij gebruikers de pdf-plug-in uitschakelen.</translation>
 <translation id="1608755754295374538">URL's die zonder prompt toegang krijgen tot apparaten voor het vastleggen van audio</translation>
-<translation id="1609917034797989341">Als je het beleid instelt, geef je extensies toegang tot zakelijke sleutels. Sleutels zijn alleen voor zakelijk gebruik bedoeld als ze via een beheerd account worden gegenereerd met de chrome.enterprise.platformKeys-API. Gebruikers kunnen geen toegang toestaan of intrekken tot zakelijke sleutels naar of van extensies.
+<translation id="1609917034797989341">Als je het beleid instelt, geef je extensies toegang tot zakelijke sleutels. Sleutels zijn alleen voor zakelijk gebruik bedoeld als ze via een beheerd account worden gegenereerd met de chrome.enterprise.platformKeys API. Gebruikers kunnen geen toegang toestaan of intrekken tot zakelijke sleutels naar of van extensies.
 
       Een extensie kan standaard geen sleutel gebruiken die is bedoeld voor zakelijk gebruik. Dit staat gelijk aan het instellen van allowCorporateKeyUsage op False voor die extensie. Alleen als allowCorporateKeyUsage is ingesteld op True, kan deze elke platformsleutel gebruiken die is gemarkeerd voor zakelijk gebruik om willekeurige gegevens te ondertekenen. Geef deze toestemming alleen als de extensie toegang tot de sleutel op betrouwbare wijze beveiligt tegen aanvallers.</translation>
 <translation id="1611394564825535541">Hiermee kun je bepalen of gebruikers toegang hebben tot printers die niet van het bedrijf zijn.
@@ -2440,7 +2440,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="465099050592230505">URL van zakelijke webwinkel (verouderd)</translation>
 <translation id="4656856690225958260">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
 
-      Als je dit beleid inschakelt, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De downloadbeveiligingsservice van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De wachtwoordbeveiligingsservice checkt niet of wachtwoorden opnieuw worden gebruikt.
+      Als je dit beleid inschakelt, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
 
       Als je het beleid uitschakelt of niet instelt, wordt de standaardbescherming van Safe Browsing toegepast op alle resources.
 
@@ -2590,9 +2590,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="4917385247580444890">Sterk</translation>
 <translation id="4919122295221518724">Strengere behandeling van gecombineerde content inschakelen</translation>
 <translation id="4923806312383904642">WebDriver toestaan niet-compatibele beleidsregels te negeren</translation>
-<translation id="4927797103413916381">Als je <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> niet inschakelt, voorkomt het inschakelen van <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> of dit niet instellen dat sites met misleidende functionaliteit nieuwe vensters of tabbladen openen.
+<translation id="4927797103413916381">Als je <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> niet hebt uitgeschakeld, voorkomt het inschakelen van <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> of dit niet instellen dat sites met misleidende functionaliteit nieuwe vensters of tabbladen openen.
 
-       Als je <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />uitschakelt of <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> uitschakelt, kunnen sites met misleidende functionaliteit nieuwe vensters of tabbladen openen.</translation>
+       Als je <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> uitschakelt of <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> uitschakelt, kunnen sites met misleidende functionaliteit nieuwe vensters of tabbladen openen.</translation>
 <translation id="4929721861648439998">De toegankelijkheidsfunctie voor monogeluid op het inlogscherm inschakelen.
 
           Met deze functie kun je de apparaatmodus snel overschakelen van het standaard stereogeluid naar monogeluid.
@@ -2627,7 +2627,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers bepalen of ze rapporten willen sturen of niet.
 
-      Meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
+      Meer informatie over Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="4962262530309732070">Als dit beleid is ingesteld op 'True' of niet wordt geconfigureerd, staat <ph name="PRODUCT_NAME" /> 'Persoon toevoegen' toe vanuit gebruikersbeheer.
 
       Als dit beleid is ingesteld op 'False', staat <ph name="PRODUCT_NAME" /> het maken van nieuwe profielen niet toe vanuit gebruikersbeheer.</translation>
@@ -2790,11 +2790,11 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5182483318861266793">De plank aan de rechterkant van het scherm plaatsen</translation>
 <translation id="5190426551516379357">Als je het beleid instelt, wordt een minimale beperkte modus op YouTube afgedwongen en kunnen gebruikers geen minder beperkte modus kiezen. Als je het instelt op:
 
-      * 'Streng', is de strenge beperkte modus in YouTube altijd actief.
+      * Streng, is de strenge beperkte modus in YouTube altijd actief.
 
-      * 'Gemiddeld', kan de gebruiker alleen de gemiddelde beperkte modus en de strenge beperkte modus selecteren op YouTube, maar kan de gebruiker de beperkte modus niet uitschakelen.
+      * Gemiddeld, kan de gebruiker alleen de gemiddelde beperkte modus en de strenge beperkte modus selecteren op YouTube, maar kan de gebruiker de beperkte modus niet uitschakelen.
 
-      * 'Uit' of als je geen waarde instelt, wordt de beperkte modus op YouTube niet afgedwongen door Chrome. De beperkte modus kan echter nog steeds worden afgedwongen door externe beleidsregels zoals het YouTube-beleid.</translation>
+      * Uit of als je geen waarde instelt, wordt de beperkte modus op YouTube niet afgedwongen door Chrome. De beperkte modus kan echter nog steeds worden afgedwongen door externe beleidsregels zoals het YouTube-beleid.</translation>
 <translation id="519247340330463721">Beleid met betrekking tot Safe Browsing configureren.</translation>
 <translation id="5196520640744454600">Plaktoetsen op het inlogscherm inschakelen</translation>
 <translation id="5212118847531454979">Hiermee kun je de periode in milliseconden instellen waarin gebruikers een melding ontvangen dat <ph name="PRODUCT_NAME" /> opnieuw moet worden gestart of dat een <ph name="PRODUCT_OS_NAME" />-apparaat opnieuw moet worden opgestart om een update in behandeling uit te voeren.
@@ -2818,7 +2818,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="5236882091572996759">Als dit beleid is ingesteld op 'true' of niet is ingesteld, wordt de gebruiker niet beschouwd als inactief terwijl de audio wordt afgespeeld. Hierdoor wordt voorkomen dat de inactieve time-out wordt bereikt en dat de inactieve actie wordt ondernomen. Dimmen van het scherm, scherm uitschakelen en schermvergrendeling worden echter uitgevoerd na de geconfigureerde time-outs, ongeacht de audioactiviteit.
 
           Als dit beleid is ingesteld op 'false', voorkomt audioactiviteit niet dat de gebruiker als inactief wordt beschouwd.</translation>
-<translation id="5239333626804545932">Als je het beleid inschakelt of niet instelt, scant Chrome Cleanup het systeem periodiek op ongewenste software. Als er ongewenste software wordt aangetroffen, wordt de gebruiker gevraagd of deze software moet worden verwijderd. Het is in dit geval mogelijk Chrome Cleanup te starten via chrome://settings.
+<translation id="5239333626804545932">Als je het beleid inschakelt of niet instelt, scant Chrome Cleanup het systeem periodiek op ongewenste software. Als er ongewenste software wordt aangetroffen, wordt de gebruiker gevraagd of deze software moet worden verwijderd. Het is in dit geval mogelijk Chrome Cleanup handmatig te starten via chrome://settings.
 
       Als je het beleid uitschakelt, scant Chrome Cleanup niet periodiek en wordt handmatige activering uitgeschakeld.
 
@@ -3018,7 +3018,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
           Als je dit beleid uitschakelt, wordt de functie gedwongen uitgeschakeld.
           </translation>
-<translation id="5433987053727629422">Als je dit beleid inschakelt, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De downloadbeveiligingsservice van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De wachtwoordbeveiligingsservice checkt niet of wachtwoorden opnieuw worden gebruikt.
+<translation id="5433987053727629422">Als je dit beleid inschakelt, vertrouwt Safe Browsing de domeinen die je aangeeft. De functie checkt deze niet op gevaarlijke bronnen zoals phishing, malware of ongewenste software. De service voor downloadbeveiliging van Safe Browsing checkt downloads die worden gehost op deze domeinen niet. De service voor wachtwoordbeveiliging checkt niet of wachtwoorden opnieuw worden gebruikt.
 
       Als je het beleid uitschakelt of niet instelt, wordt de standaardbescherming van Safe Browsing toegepast op alle resources.
 
@@ -3548,7 +3548,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
 <translation id="6210261948043479030">Als je het beleid instelt, wordt de lijst met zakelijke login-URL's (alleen HTTP- en HTTPS-protocollen) ingesteld. De service voor wachtwoordbeveiliging legt salted hashes van wachtwoorden op deze URL's vast en gebruikt ze om hergebruik van wachtwoorden te detecteren. Zorg ervoor dat je inlogpagina's voldoen aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de 'salted hashes' van wachtwoorden juist worden vastgelegd.
 
-      Als je deze instelling uitschakelt of niet instelt, legt de wachtwoordbeveiligingsservice 'salted hashes' van wachtwoorden alleen vast op https://accounts.google.com.
+      Als je deze instelling uitschakelt of niet instelt, legt de service voor wachtwoordbeveiliging 'salted hashes' van wachtwoorden alleen vast op https://accounts.google.com.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="6210610748361191729">Als het beleid is ingesteld op False , is de optie om containerafbeeldingen te exporteren/importeren via de gebruikersinterface niet beschikbaar voor gebruikers. Het is nog wel steeds mogelijk om rechtstreeks in de virtuele machine 'lxc'-opdrachten te gebruiken voor het exporteren/importeren van containerafbeeldingen.</translation>
@@ -3927,7 +3927,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 <translation id="6752711782954612641">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is ingeschakeld en je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd als een URL wordt gezocht via POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter is (zoals <ph name="SEARCH_TERM_MARKER" />), wordt deze vervangen door de echte zoektermen.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden zoekopdrachten gestuurd met de GET-methode.</translation>
-<translation id="6753052385433167009">Als je dit beleid instelt, stel je de URL in waarmee gebruikers hun wachtwoord moeten wijzigen nadat zij een waarschuwing zien in de browser. De wachtwoordbeveiligingsservice stuurt gebruikers de URL (alleen HTTP- en HTTPS-protocollen) die je opgeeft via dit beleid. Zorg dat je pagina voor het wijzigen van wachtwoorden voldoet aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de 'salted hash' van het nieuwe wachtwoord op deze pagina voor het wijzigen van wachtwoorden juist vastlegt.
+<translation id="6753052385433167009">Als je dit beleid instelt, stel je de URL in waarmee gebruikers hun wachtwoord moeten wijzigen nadat zij een waarschuwing zien in de browser. De service voor wachtwoordbeveiliging stuurt gebruikers de URL (alleen HTTP- en HTTPS-protocollen) die je opgeeft via dit beleid. Zorg dat je pagina voor het wijzigen van wachtwoorden voldoet aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de 'salted hash' van het nieuwe wachtwoord op deze pagina voor het wijzigen van wachtwoorden juist vastlegt.
 
       Als je dit beleid uitschakelt of niet instelt, stuurt de service gebruikers naar https://myaccount.google.com om hun wachtwoord te wijzigen.
 
@@ -4086,7 +4086,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als je het beleid niet instelt, kunnen gebruikers deze instelling zelf wijzigen.
 
-      Opmerking: Ondersteuning van site-isolatie voor Android wordt verbeterd, maar op dit moment kan het prestatieproblemen veroorzaken. Dit beleid is alleen van toepassing op Chrome op Android, dat wordt uitgevoerd op apparaten met absolut meer dan 1 GM RAM-geheugen. Gebruik <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> om het beleid toe passen op platforms anders dan Android.</translation>
+      Opmerking: Ondersteuning van site-isolatie voor Android wordt verbeterd, maar op dit moment kan het prestatieproblemen veroorzaken. Dit beleid is alleen van toepassing op Chrome op Android-apparaten met meer dan 1 GB RAM-geheugen. Gebruik <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> om het beleid toe te passen op andere platforms dan Android.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Als het beleid wordt ingesteld op <ph name="BR_ENABLED" />, is de back-up- en herstelfunctie van Android in eerste instantie ingeschakeld. Als dit beleid wordt ingesteld op <ph name="BR_DISABLED" /> of niet wordt ingesteld, is de back-up- en herstelfunctie uitgeschakeld tijdens het instellen.
 
@@ -4362,9 +4362,9 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als je het beleid inschakelt, blijft de Safe Browsing-functie van Chrome ingeschakeld. Als je het beleid uitschakelt, blijft Safe Browsing uitgeschakeld.
 
-      Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of de instelling 'Bescherming tegen phishing en malware inschakelen' niet overschrijven. Als dit beleid niet is ingesteld, wordt 'Bescherming tegen phishing en malware inschakelen' ingesteld op 'True', maar kan de gebruiker dit wijzigen.
+      Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of de instelling 'Bescherming tegen phishing en malware inschakelen' niet overschrijven. Als dit beleid niet is ingesteld, wordt 'Bescherming tegen phishing en malware inschakelen' ingesteld op True, maar kan de gebruiker dit wijzigen.
 
-      Meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).
+      Meer informatie over Safe Browsing ( https://developers.google.com/safe-browsing ).
 
       Als het beleid <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> is ingesteld, wordt de waarde van het beleid <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> genegeerd.
 
@@ -4730,7 +4730,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
 
       Als er een lijst met URL's wordt ingesteld in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering '--unsafely-treat-insecure-origin-as-secure' wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
 
-      Voor meer informatie over een veilige context ga je naar https://www.w3.org/TR/secure-contexts</translation>
+      Voor meer informatie over een veilige context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
 <translation id="7823902813460802031">Als je dit beleid inschakelt, voorkomt <ph name="PRODUCT_OS_NAME" /> dat het apparaat in de ontwikkelaarsmodus gaat.
 
        Als je het beleid uitschakelt of niet instelt, blijft de ontwikkelaarsmodus beschikbaar voor het apparaat.</translation>
@@ -4975,7 +4975,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 
       Als je het beleid uitschakelt of niet instelt, kunnen gebruikers ervoor kiezen door te gaan naar de gemarkeerde site nadat de waarschuwing wordt weergegeven.
 
-      Meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
+      Meer informatie over Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="8213770777756919897">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Als dit beleid is ingesteld, specificeert het de actie die worden ondernomen door <ph name="PRODUCT_OS_NAME" /> als de gebruiker inactief is gedurende de tijdsduur die is opgegeven door de inactieve vertraging. Dit kan afzonderlijk worden geconfigureerd.
@@ -5393,9 +5393,9 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       Gebruikers kunnen de broncode van een extensie wijzigen via de ontwikkelaarstools, waardoor de extensie mogelijk niet meer functioneert. Als je je hierover zorgen maakt, moet je het beleid '<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />' instellen.
 
-      Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien opgegeven, moet verwijzen naar een XML-updatedocument voor het manifest (https://developer.chrome.com/extensions/autoupdate). Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven.
+      Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (;). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op chrome://extensions kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien opgegeven, moet verwijzen naar een XML-updatedocument voor het manifest ( https://developer.chrome.com/extensions/autoupdate ). Standaard wordt de update-URL van de Chrome Web Store gebruikt. De update-URL die in dit beleid is ingesteld, wordt alleen voor de eerste installatie gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven.
 
-       Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Bekijk meer informatie over het hosten van extensies (https://developer.chrome.com/extensions/hosting).</translation>
+       Opmerking: Dit beleid is niet van toepassing op de incognitomodus. Bekijk meer informatie over het hosten van extensies ( https://developer.chrome.com/extensions/hosting ).</translation>
 <translation id="8833109046074170275">Verificatie via GAIA (standaard)</translation>
 <translation id="8851325571441692315">Specificeert de door <ph name="PRODUCT_NAME" /> gebruikte proxyserver en voorkomt dat gebruikers de proxyinstellingen wijzigen.
 
@@ -5569,9 +5569,9 @@ Dit beleid wordt verwijderd in M75.</translation>
 
       * PasswordProtectionWarningOnPasswordReuse, wordt de waarschuwing voor wachtwoordbeveiliging weergegeven als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een site die niet op de witte lijst is gezet.
 
-      * PasswordProtectionWarningOnPhishingReuse wordt de waarschuwing voor wachtwoordbeveiliging weergegeven als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een phishingsite.
+      * PasswordProtectionWarningOnPhishingReuse, wordt de waarschuwing voor wachtwoordbeveiliging weergegeven als de gebruiker het beschermde wachtwoord opnieuw gebruikt op een phishingsite.
 
-      Als dit beleid niet is ingesteld, beschermt de wachtwoordbeveiligingsservice alleen Google-wachtwoorden, maar de gebruiker kan deze instelling wijzigen.</translation>
+      Als dit beleid niet is ingesteld, beschermt de service voor wachtwoordbeveiliging alleen Google-wachtwoorden, maar de gebruiker kan deze instelling wijzigen.</translation>
 <translation id="9021334785554745279">URL-patronen waarvoor gedownloade content moet worden gecontroleerd op schendingen van de beveiligingsregels voor gevoelige gegevens</translation>
 <translation id="9035086760683255833">De toegankelijkheidsfunctie voor markeren via toetsenbordfocus inschakelen.
 

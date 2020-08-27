@@ -46,7 +46,7 @@
 <translation id="1046635659603195359">Offenbar haben Sie Voice Match bereits auf einem anderen Gerät für Google Assistant eingerichtet. Diese vorherigen Aufnahmen können verwendet werden, um ein Sprachmodell auf diesem Gerät zu erstellen. Dies sollte weniger als eine Minute dauern.</translation>
 <translation id="104710386808485638">Linux neu starten?</translation>
 <translation id="1047431265488717055">Linkte&amp;xt kopieren</translation>
-<translation id="1048286738600630630">Bildschirme</translation>
+<translation id="1048286738600630630">Displays</translation>
 <translation id="1048986595386481879">Dynamisch zugeordnet</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> wird von <ph name="DEVICE_NAME" /> empfangen}other{<ph name="ATTACHMENTS" /> werden von <ph name="DEVICE_NAME" /> empfangen}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -1012,7 +1012,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2200356397587687044">Chrome benötigt eine Berechtigung, um fortzufahren</translation>
 <translation id="220138918934036434">Schaltfläche ausblenden</translation>
 <translation id="2202898655984161076">Problem beim Erstellen der Druckerliste. Einige Ihrer Drucker wurden möglicherweise nicht richtig bei <ph name="CLOUD_PRINT_NAME" /> registriert.</translation>
-<translation id="2203682048752833055">In der <ph name="BEGIN_LINK" />Adressleiste<ph name="END_LINK" /> verwendete Suchmaschine</translation>
 <translation id="2204034823255629767">Ihre Eingaben lesen und ändern</translation>
 <translation id="220858061631308971">Geben Sie diesen PIN-Code bitte auf "<ph name="DEVICE_NAME" /> " ein:</translation>
 <translation id="2212565012507486665">Cookies zulassen</translation>
@@ -1933,6 +1932,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">App-Info</translation>
 <translation id="3333190335304955291">Sie können diesen Dienst in den Einstellungen deaktivieren.</translation>
+<translation id="3333961966071413176">Alle Kontakte</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video wird im Bild-im-Bild-Modus abgespielt</translation>
 <translation id="3335947283844343239">Geschlossenen Tab wieder öffnen</translation>
 <translation id="3340620525920140773">Download abgeschlossen: <ph name="FILE_NAME" />.</translation>
@@ -2116,7 +2116,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3555812735919707620">Erweiterung entfernen</translation>
 <translation id="3556000484321257665">Ihre Suchmaschine wurde in <ph name="URL" /> geändert.</translation>
 <translation id="3556433843310711081">Dein Administrator kann die Blockierung aufheben</translation>
-<translation id="3557101512409028104">Mit Family Link können Sie Website-Einschränkungen und die Gerätenutzungsdauer festlegen</translation>
+<translation id="3557101512409028104">Mit Family Link den Web-Zugriff und die Gerätenutzungsdauer begrenzen</translation>
 <translation id="3559262020195162408">Fehler beim Installieren der Richtlinie auf dem Gerät.</translation>
 <translation id="3559533181353831840">Noch <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Rechtschreibprüfung</translation>
@@ -2808,7 +2808,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4384312707950789900">Zu bevorzugten Netzwerken hinzufügen</translation>
 <translation id="4384652540891215547">Erweiterung aktivieren</translation>
 <translation id="438503109373656455">Brauner</translation>
-<translation id="4385040356362222432">Wenn Sie Ihre <ph name="NEW_USER" />- und <ph name="EXISTING_USER" />-Browsingaktivitäten getrennt halten möchten, erstellen Sie ein neues Profil</translation>
+<translation id="4385040356362222432">Wenn Sie Ihre <ph name="NEW_USER" /> und die Browsingaktivitäten von <ph name="EXISTING_USER" /> getrennt halten möchten, erstellen Sie ein neues Profil</translation>
 <translation id="4387004326333427325">Remote-Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="4387890294700445764">Gehackte Passwörter</translation>
 <translation id="4389091756366370506">Nutzer <ph name="VALUE" /></translation>
@@ -3363,7 +3363,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5088534251099454936">PKCS #1 SHA-512 mit RSA-Verschlüsselung</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5094721898978802975">Mit zusammenarbeitenden systemeigenen Anwendungen kommunizieren</translation>
-<translation id="5097002363526479830">Fehler beim Herstellen einer Verbindung mit dem Netzwerk "<ph name="NAME" />": <ph name="DETAILS" /></translation>
+<translation id="5097002363526479830">Verbinden mit dem Netzwerk "<ph name="NAME" />" fehlgeschlagen: <ph name="DETAILS" /></translation>
 <translation id="5097649414558628673">Tool: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatisch klicken, wenn der Cursor stoppt</translation>
 <translation id="5101042277149003567">Alle Lesezeichen öffnen</translation>
@@ -3484,7 +3484,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5249624017678798539">Der Browser ist während des Downloads abgestürzt.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> verwendet Ihren Standort, um Ihnen lokale Inhalte bereitzustellen. Sie können dies unter <ph name="SETTINGS_LINK" /> ändern.</translation>
 <translation id="5252456968953390977">Roaming</translation>
-<translation id="5252496130205799136">Ihr Google-Konto verwenden, um Passwörter zu speichern und auszufüllen?</translation>
+<translation id="5252496130205799136">Ihr Google-Konto verwenden, um Passwörter zu speichern und automatisch auszufüllen?</translation>
 <translation id="5252653240322147470">PIN muss weniger als <ph name="MAXIMUM" /> Ziffern umfassen</translation>
 <translation id="5254368820972107711">Zu entfernende Dateien anzeigen</translation>
 <translation id="52550593576409946">Die Kioskanwendung konnte nicht gestartet werden.</translation>
@@ -4352,7 +4352,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6298962879096096191">Google Play verwenden, um Android-Apps zu installieren</translation>
 <translation id="630065524203833229">&amp;Beenden</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> konnte nicht automatisch konfiguriert werden. Bitte legen Sie erweiterte Einstellungen für den Drucker fest. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">Wenn Sie Ihre privaten und <ph name="EXISTING_USER" />-Browsingaktivitäten getrennt halten möchten, erstellen Sie ein neues Profil für <ph name="NEW_USER" /></translation>
+<translation id="6301076166764763868">Wenn Sie Ihre privaten und die Browsingaktivitäten für <ph name="EXISTING_USER" />getrennt halten möchten, erstellen Sie ein neues Profil für <ph name="NEW_USER" /></translation>
 <translation id="630292539633944562">Vorschläge zu personenbezogenen Daten</translation>
 <translation id="6305607932814307878">Globale Richtlinien:</translation>
 <translation id="6307990684951724544">System ausgelastet</translation>
@@ -4796,7 +4796,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6860097299815761905">Proxy-Einstellungen...</translation>
 <translation id="6860427144121307915">In Tab öffnen</translation>
 <translation id="686366188661646310">Passwort löschen?</translation>
-<translation id="6865313869410766144">Formulardaten automatisch ausfüllen</translation>
+<translation id="6865313869410766144">Formulardaten für automatisches Ausfüllen</translation>
 <translation id="6865598234501509159">Diese Seite ist nicht auf <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">WebRTC-Ereignisprotokolle (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686664946474413495">Farbtemperatur</translation>
@@ -5040,7 +5040,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7167486101654761064">Dateien dieses Typs &amp;immer öffnen</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> wird heruntergeladen.</translation>
 <translation id="7168109975831002660">Mindestgröße</translation>
-<translation id="7170041865419449892">Außerhalb des Bereichs</translation>
+<translation id="7170041865419449892">Außer Reichweite</translation>
 <translation id="7170236477717446850">Profilbild</translation>
 <translation id="7171259390164035663">Nicht anmelden</translation>
 <translation id="7171559745792467651">Apps von Ihren anderen Geräten installieren</translation>
@@ -5829,7 +5829,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8104696615244072556">Powerwash für Ihr <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät ausführen und auf die vorherige Version zurücksetzen</translation>
 <translation id="8107015733319732394">Google Play Store wird auf Ihrem <ph name="DEVICE_TYPE" /> installiert. Dies kann ein paar Minuten dauern.</translation>
 <translation id="810728361871746125">Displayauflösung</translation>
-<translation id="8108526232944491552">{COUNT,plural, =0{Keine Drittanbieter-Cookies}=1{1 Cookie von Drittanbietern wird blockiert}other{# Cookies von Drittanbietern werden blockiert}}</translation>
+<translation id="8108526232944491552">{COUNT,plural, =0{Keine Drittanbieter-Cookies}=1{1 Cookie von Drittanbietern blockiert}other{# Cookies von Drittanbietern blockiert}}</translation>
 <translation id="810875025413331850">Keine Geräte in der Nähe gefunden.</translation>
 <translation id="8113476325385351118">Dieser Website weiterhin keine vollständige Kontrolle über MIDI-Geräte gewähren</translation>
 <translation id="8114199541033039755">Mit den Schaltflächen im Tablet-Modus zum Launcher, zurück und zwischen Apps wechseln. Wird aktiviert, wenn ChromeVox oder "Automatische Klicks" eingeschaltet ist.</translation>
@@ -6175,7 +6175,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8546930481464505581">Touch Bar anpassen</translation>
 <translation id="8547013269961688403">Vollbildlupe aktivieren</translation>
 <translation id="85486688517848470">Halten Sie die Suchtaste gedrückt, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
-<translation id="8549316893834449916">Die können Ihr Google-Konto verwenden, um sich auf Ihrem Chromebook anzumelden – das ist dasselbe Konto, das Sie schon für Gmail, Drive, YouTube und andere Google-Dienste verwenden.</translation>
+<translation id="8549316893834449916">Sie können Ihr Google-Konto verwenden, um sich auf Ihrem Chromebook anzumelden – also mit demselben Konto, das Sie schon für Gmail, Drive, YouTube und andere Google-Dienste verwenden.</translation>
 <translation id="8551388862522347954">Lizenzen</translation>
 <translation id="8551588720239073785">Datums- und Uhrzeiteinstellungen</translation>
 <translation id="8553342806078037065">Andere Personen verwalten</translation>
@@ -6725,7 +6725,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="9203962528777363226">Der Administrator dieses Geräts hat die Funktion zum Hinzufügen neuer Nutzer deaktiviert.</translation>
 <translation id="9206889157914079472">Notizen mit Eingabestift auf Sperrbildschirm</translation>
 <translation id="9209563766569767417">Einrichtung des Linux-Containers wird geprüft</translation>
-<translation id="9209689095351280025">Websites können keine Cookies verwenden, die Ihre Browserdaten über mehrere Websites hinweg erfassen</translation>
+<translation id="9209689095351280025">Websites können keine Cookies nutzen, die Sie durch das Web verfolgen</translation>
 <translation id="9211177926627870898">Aktualisierung erforderlich</translation>
 <translation id="9211904674129619383">Das Drucken über die Cloud wird ab dem 1. Januar nicht mehr unterstützt. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="9214520840402538427">Hoppla! Bei der Initialisierung der Installationszeit-Attribute ist eine Zeitüberschreitung aufgetreten. Bitte wenden Sie sich an Ihren Support-Mitarbeiter.</translation>
@@ -6742,7 +6742,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="932327136139879170">Startseite</translation>
 <translation id="932508678520956232">Druckvorgang konnte nicht gestartet werden.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Diese Datei ist zu groß für eine Sicherheitsprüfung. Sie können Dateien mit einer Größe von bis zu 50 MB hochladen.}other{Einige dieser Dateien sind zu groß für eine Sicherheitsprüfung. Sie können Dateien mit einer Größe von bis zu 50 MB hochladen.}}</translation>
-<translation id="93343527085570547">Auf der <ph name="BEGIN_LINK1" />Seite "Rechtliche Hinweise"<ph name="END_LINK1" /> haben Sie die Möglichkeit, die Änderung von Inhalten aus rechtlichen Gründen zu beantragen. Möglicherweise werden bestimmte Konto- und Systeminformationen an Google gesendet. Mithilfe der von Ihnen übermittelten Daten können wir unter Einhaltung unserer <ph name="BEGIN_LINK2" />Datenschutzerklärung<ph name="END_LINK2" /> und <ph name="BEGIN_LINK3" />Nutzungsbedingungen<ph name="END_LINK3" /> technische Probleme lösen und unsere Dienste verbessern.</translation>
+<translation id="93343527085570547">Inhaltsänderungen aus rechtlichen Gründen können Sie auf der <ph name="BEGIN_LINK1" />Seite "Rechtliche Hinweise"<ph name="END_LINK1" /> beantragen. Möglicherweise werden bestimmte Konto- und Systeminformationen an Google gesendet. Mithilfe der von Ihnen übermittelten Daten können wir unter Einhaltung unserer <ph name="BEGIN_LINK2" />Datenschutzerklärung<ph name="END_LINK2" /> und <ph name="BEGIN_LINK3" />Nutzungsbedingungen<ph name="END_LINK3" /> technische Probleme lösen und unsere Dienste verbessern.</translation>
 <translation id="93393615658292258">Nur Passwort</translation>
 <translation id="934244546219308557">Gruppe benennen</translation>
 <translation id="934503638756687833">Elemente, die hier nicht aufgeführt sind, werden bei Bedarf ebenfalls entfernt. Weitere Informationen zum &lt;a href="<ph name="URL" />"&gt;Schutz vor unerwünschter Software&lt;/a&gt; finden Sie im Whitepaper zum Datenschutz in Chrome.</translation>

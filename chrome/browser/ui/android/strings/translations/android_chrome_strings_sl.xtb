@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Prijavljeni boste z računom Google\n(to ne bo vklopilo sinhronizacije za Chrome)</translation>
 <translation id="1877026089748256423">Chrome je zastarel</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
-<translation id="1919950603503897840">Izbira stikov</translation>
 <translation id="1925021887439448749">Vnesite spletni naslov po meri</translation>
 <translation id="1928696683969751773">Posodobitve</translation>
 <translation id="19288952978244135">Znova odprite Chrome.</translation>
@@ -216,7 +215,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2689830683995595741">Če uporabljate Chrome, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />. Za vas velja tudi <ph name="BEGIN_LINK3" />pravilnik o zasebnosti za račune Google, upravljane s Family Linkom<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Osveži stran</translation>
 <translation id="2709516037105925701">Samodejno izpolnjevanje</translation>
-<translation id="2717722538473713889">E-poštni naslovi</translation>
 <translation id="2728754400939377704">Razvrsti glede na spletno mesto</translation>
 <translation id="2744248271121720757">Dotaknite se besede, če želite dinamično iskati ali prikazati sorodna dejanja</translation>
 <translation id="2760989362628427051">Vklop temne teme, ko je v napravi vklopljena temna tema ali je vklopljeno varčevanje z energijo akumulatorja</translation>
@@ -241,7 +239,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2893180576842394309">Google lahko vašo zgodovino uporabi za prilagajanje Iskanja Google in drugih Googlovih storitev</translation>
 <translation id="2898264748040935573">Urejanje shranjenega gesla</translation>
 <translation id="2900528713135656174">Ustvarite dogodek</translation>
-<translation id="2903493209154104877">Naslovi</translation>
 <translation id="2904414404539560095">Seznam naprav, s katerimi želite deliti zavihek, odprt pri polni višini.</translation>
 <translation id="2905036901251765993">Če želite deliti z osebami v bližini, naj optično preberejo to kodo QR</translation>
 <translation id="2909615210195135082">Googlovo okolje za obvestila</translation>
@@ -294,7 +291,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3306398118552023113">Ta aplikacija se izvaja v Chromu</translation>
 <translation id="3315103659806849044">Trenutno prilagajate nastavitve sinhronizacije in Googlovih storitev. Če želite dokončati vklop sinhronizacije, se dotaknite gumba za potrditev pri dnu zaslona. Pomik navzgor</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
-<translation id="3333961966071413176">Vsi stiki</translation>
 <translation id="3334729583274622784">Želite spremeniti pripono datoteke?</translation>
 <translation id="3341058695485821946">Oglejte si, koliko prenosa podatkov ste prihranili</translation>
 <translation id="3350687908700087792">Zapri vse zavihke brez beleženja zgodovine</translation>
@@ -353,7 +349,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3789841737615482174">Namesti</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljanje</translation>
-<translation id="381841723434055211">Telefonske številke</translation>
 <translation id="3819178904835489326">Št. izbrisanih prenosov: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3856096718352044181">Preverite, ali je ponudnik veljaven, in poskusite pozneje znova</translation>
 <translation id="388596076286380598">Prejemajte članke, videoposnetke in drugo vsebino s spletnih mest, ki so vam všeč, tudi ko nimate povezave ali ko je ta slaba.</translation>
@@ -509,7 +504,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="497421865427891073">Pojdi naprej</translation>
 <translation id="4988210275050210843">Prenos datoteke (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Strani</translation>
-<translation id="4994033804516042629">Ni najdenih stikov</translation>
 <translation id="5004416275253351869">Googlovi kontrolniki za dejavnost</translation>
 <translation id="5005498671520578047">Kopiranje gesla</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> se želite povezati</translation>
@@ -533,7 +527,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5184329579814168207">Odpri v Chromu</translation>
 <translation id="5193988420012215838">Kopirano v odložišče</translation>
-<translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Delovni profil</translation>
 <translation id="5210286577605176222">Premik na prejšnji zavihek</translation>
 <translation id="5210365745912300556">Zapri zavihek</translation>
@@ -553,8 +546,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5355191726083956201">Izboljšana zaščita je vklopljena</translation>
 <translation id="5357811892247919462">Prejet zavihek</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> odprt zavihek, dotaknite se, če želite preklopiti med zavihki}one{<ph name="OPEN_TABS_MANY" /> odprt zavihek, dotaknite se, če želite preklopiti med zavihki}two{<ph name="OPEN_TABS_MANY" /> odprta zavihka, dotaknite se, če želite preklopiti med zavihki}few{<ph name="OPEN_TABS_MANY" /> odprti zavihki, dotaknite se, če želite preklopiti med zavihki}other{<ph name="OPEN_TABS_MANY" /> odprtih zavihkov, dotaknite se, če želite preklopiti med zavihki}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
-<translation id="5403592356182871684">Imena</translation>
 <translation id="5403644198645076998">Dovoli samo nekatera spletna mesta</translation>
 <translation id="5414836363063783498">Preverjanje …</translation>
 <translation id="5423934151118863508">Tu bodo prikazane strani, ki jih obiskujete najpogosteje</translation>
@@ -750,7 +741,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="666981079809192359">Obvestilo o zasebnosti za Chrome</translation>
 <translation id="6671495933530132209">Kopiraj sliko</translation>
 <translation id="6676840375528380067">Ali želite izbrisati podatke v Chromu iz te naprave?</translation>
-<translation id="6689172468748959065">Profilne fotografije</translation>
 <translation id="6691888250440401212">1. Izberite aplikacijo <ph name="APP_NAME" />.\n2. Dotaknite se »Nastavi kot privzeto«.</translation>
 <translation id="6697492270171225480">Prikaz predlogov za podobne strani, ko strani ni mogoče najti</translation>
 <translation id="6698801883190606802">Upravljanje sinhroniziranih podatkov</translation>
@@ -912,7 +902,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7975379999046275268">Predogled strani <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Vnaprejšnje nalaganje strani zaradi hitrejšega brskanja in iskanja</translation>
 <translation id="79859296434321399">Če si želite ogledati vsebino v razširjeni resničnosti, namestite ARCore</translation>
-<translation id="7986741934819883144">Izberite stik</translation>
 <translation id="799806351373751710">Prekliči nastavitev sinhronizacije</translation>
 <translation id="7998918019931843664">Vnovično odpiranje zaprtega zavihka</translation>
 <translation id="8004582292198964060">Brskalnik</translation>
@@ -1010,7 +999,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8662811608048051533">Odjavi vas iz večine spletnih mest.</translation>
 <translation id="8664979001105139458">Ime datoteke že obstaja</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Moč signala: # črtica}one{Moč signala: # črtica}two{Moč signala: # črtici}few{Moč signala: # črtice}other{Moč signala: # črtic}}</translation>
-<translation id="868929229000858085">Iskanje po stikih</translation>
 <translation id="869891660844655955">Datum izteka</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>

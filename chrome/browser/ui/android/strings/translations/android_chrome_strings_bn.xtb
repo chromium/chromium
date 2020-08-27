@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">আপনি নিজের Google অ্যাকাউন্টের মাধ্যমে সাইন-ইন হয়ে যাবেন\n(এটি Chrome সিঙ্ক' ফিচারের সুবিধা চালু করবে না)</translation>
 <translation id="1877026089748256423">Chrome পুরানো হয়ে গেছে</translation>
 <translation id="1883903952484604915">আমার ফাইল</translation>
-<translation id="1919950603503897840">পরিচিতিগুলি বেছে নিন</translation>
 <translation id="1925021887439448749">কাস্টম ওয়েব ঠিকানা লিখুন</translation>
 <translation id="1928696683969751773">আপডেটগুলি</translation>
 <translation id="19288952978244135">Chrome আবার খুলুন।</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_LINK1" />Google পরিষেবার শর্তাবলী<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />Google Chrome ও Chrome OS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_LINK2" /> মেনে নিচ্ছেন। তাছাড়া, এর সাথে <ph name="BEGIN_LINK3" />Family Link-এর মাধ্যমে ম্যানেজ করা Google অ্যাকাউন্টের গোপনীয়তা বিজ্ঞপ্তি<ph name="END_LINK3" />ও প্রযোজ্য হবে।</translation>
 <translation id="2707726405694321444">পৃষ্ঠা রিফ্রেশ করুন</translation>
 <translation id="2709516037105925701">স্বয়ংপূরণ</translation>
-<translation id="2717722538473713889">ইমেল আইডি</translation>
 <translation id="2728754400939377704">সাইট অনুযায়ী সাজান</translation>
 <translation id="2744248271121720757">ঝটপট সার্চ এবং সম্পর্কিত অ্যাকশন দেখতে একটি শব্দ ট্যাপ করুন</translation>
 <translation id="2760989362628427051">আপনার ডিভাইসে গাঢ় থিম বা ব্যাটারি সেভার চালু থাকলে, গাঢ় থিম চালু করুন</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">সার্চ এবং অন্যান্য Google পরিষেবাকে আপনার মতো করে সাজিয়ে নিতে Google আপনার ইতিহাস ব্যবহার করতে পারে</translation>
 <translation id="2898264748040935573">স্টোর করা পাসওয়ার্ড এডিট করুন</translation>
 <translation id="2900528713135656174">ইভেন্ট তৈরি করুন</translation>
-<translation id="2903493209154104877">ঠিকানা</translation>
 <translation id="2904414404539560095">ট্যাব শেয়ার করা যাবে এমন ডিভাইসের সূচি সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে।</translation>
 <translation id="2905036901251765993">কাছাকাছি আছেন এমন ব্যক্তির সাথে শেয়ার করতে তাকে এই QR কোড স্ক্যান করতে দিন</translation>
 <translation id="2909615210195135082">Google বিজ্ঞপ্তি প্ল্যাটফর্ম</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">Chrome-এ এই অ্যাপটি চলছে</translation>
 <translation id="3315103659806849044">আপনি এখন আপনার সিঙ্ক এবং Google পরিষেবার সেটিংস কাস্টমাইজ করছেন। স্ক্রিনের নিচের দিকে থাকা 'কনফার্ম করুন' বোতামে ট্যাপ করে সিঙ্ক চালু দিন। উপরে নেভিগেট করুন</translation>
 <translation id="3328801116991980348">সাইট তথ্য</translation>
-<translation id="3333961966071413176">সব পরিচিতি</translation>
 <translation id="3334729583274622784">ফাইলের এক্সটেনশন পরিবর্তন করতে চান?</translation>
 <translation id="3341058695485821946">দেখুন আপনি কত ডেটা সাশ্রয় করেছেন</translation>
 <translation id="3350687908700087792">সমস্ত ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3810973564298564668">পরিচালনা</translation>
-<translation id="381841723434055211">ফোন নম্বর</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" />টি ডাউনলোড মোছা হয়েছে</translation>
 <translation id="3856096718352044181">এটি সঠিক প্রদানকারী কিনা যাচাই করুন অথবা পরে আবার চেষ্টা করুন</translation>
 <translation id="388596076286380598">আপনি অফলাইনে থাকার সময়ে বা কানেকশন খারাপ থাকলেও আপনার পছন্দের সাইট থেকে আর্টিকেল, ভিডিও এবং অন্যান্য কন্টেন্ট দেখতে পাবেন।</translation>
@@ -511,7 +506,6 @@
 <translation id="497421865427891073">অগ্রবর্তী করুন</translation>
 <translation id="4988210275050210843">ফাইল ডাউনলোড হচ্ছে (<ph name="MEGABYTES" />)।</translation>
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
-<translation id="4994033804516042629">কোনও পরিচিতি পাওয়া যায়নি</translation>
 <translation id="5004416275253351869">Google অ্যাক্টিভিটির নিয়ন্ত্রণ</translation>
 <translation id="5005498671520578047">পাসওয়ার্ড কপি করুন</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
@@ -535,7 +529,6 @@
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5184329579814168207">Chrome এ খুলুন</translation>
 <translation id="5193988420012215838">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
-<translation id="5197729504361054390">আপনার বেছে নেওয়া পরিচিতি <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এর সাথে শেয়ার করা হবে।</translation>
 <translation id="5199929503336119739">কর্মস্থলের প্রোফাইল</translation>
 <translation id="5210286577605176222">পূর্ববর্তী ট্যাবে চলে যান</translation>
 <translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
@@ -555,8 +548,6 @@
 <translation id="5355191726083956201">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="5357811892247919462">ট্যাব পাওয়া গেছে</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" />টি খোলা ট্যাব, এক ট্যাব থেকে অন্য ট্যাবে যেতে ট্যাপ করুন}one{<ph name="OPEN_TABS_MANY" />টি খোলা ট্যাব, এক ট্যাব থেকে অন্য ট্যাবে যেতে ট্যাপ করুন}other{<ph name="OPEN_TABS_MANY" />টি খোলা ট্যাব, এক ট্যাব থেকে অন্য ট্যাবে যেতে ট্যাপ করুন}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(এছাড়া আরও ১টি)}one{(এছাড়া আরও #টি)}other{(এছাড়া আরও #টি)}}</translation>
-<translation id="5403592356182871684">নাম</translation>
 <translation id="5403644198645076998">শুধুমাত্র নির্দিষ্ট কিছু সাইটকে অনুমতি দিন</translation>
 <translation id="5414836363063783498">যাচাই করা হচ্ছে...</translation>
 <translation id="5423934151118863508">আপনার সর্বাধিক দেখা পৃষ্ঠাগুলি এখানে দেখা যাবে</translation>
@@ -752,7 +743,6 @@
 <translation id="666981079809192359">Chrome এর গোপনীয়তা বিজ্ঞপ্তি</translation>
 <translation id="6671495933530132209">ছবি কপি করুন</translation>
 <translation id="6676840375528380067">এই ডিভাইস থেকে Chrome ডেটা সরিয়ে ফেলবেন?</translation>
-<translation id="6689172468748959065">প্রোফাইল ফটো</translation>
 <translation id="6691888250440401212">১. <ph name="APP_NAME" /> বেছে নিন\n2. “ডিফল্ট হিসেবে সেট করুন” বিকল্পে ট্যাপ করুন</translation>
 <translation id="6697492270171225480">কোনও একটি পৃষ্ঠা খুঁজে পাওয়া না গেলে একইরকম আরও পৃষ্ঠার সাজেশন দেখুন</translation>
 <translation id="6698801883190606802">সিঙ্ক হওয়া ডেটা পরিচালনা করুন</translation>
@@ -914,7 +904,6 @@
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> পৃষ্ঠার প্রিভিউ দেখুন</translation>
 <translation id="7981313251711023384">আরও দ্রুত ব্রাউজ করা এবং খোঁজার জন্য পৃষ্ঠা আগে লোড করুন</translation>
 <translation id="79859296434321399">অগমেন্টেড রিয়েলিটি কন্টেন্ট দেখার জন্য ARCore ইনস্টল করুন</translation>
-<translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
 <translation id="799806351373751710">সিঙ্ক করার সেট-আপ বাতিল করুন</translation>
 <translation id="7998918019931843664">বন্ধ হওয়া ট্যাব আবার খুলুন</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
@@ -1012,7 +1001,6 @@
 <translation id="8662811608048051533">বেশিরভাগ সাইট থেকে আপনাকে সাইন-আউট করিয়ে দেয়।</translation>
 <translation id="8664979001105139458">ফাইলের নামটি আগে থেকেই আছে</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{সিগনালের স্তর: #টি দণ্ড}one{সিগনালের স্তর: #টি দণ্ড}other{সিগনালের স্তর: #টি দণ্ড}}</translation>
-<translation id="868929229000858085">আপনার পরিচিতি সার্চ করুন</translation>
 <translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>

@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> tətbiqinə AR-dan istifadə icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
 <translation id="1887786770086287077">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="1919345977826869612">Reklamlar</translation>
+<translation id="1919950603503897840">Kontaktları seçin</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">İcazə verilir, üçüncü tərəf istisna olmaqla</translation>
 <translation id="1989112275319619282">Baxın</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Tərk edin</translation>
 <translation id="2687403674020088961">Bütün kukiləri bloklayın (tövsiyə edilmir)</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
+<translation id="2717722538473713889">E-poçt ünvanları</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> üçün bütün sayt icazələrini sıfırlamaq istədiyinizə əminsiniz?</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2874939134665556319">Öncəki trek</translation>
+<translation id="2903493209154104877">Ünvanlar</translation>
 <translation id="2910701580606108292">Saytlar qorunan kontenti göstərmədən öncə icazə tələb edilsin</translation>
 <translation id="2913331724188855103">Saytlara kuki datanı saxlamağa və oxumağa imkan verir (tövsiyə olunur)</translation>
 <translation id="2968755619301702150">Sertifikat izləyici</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Saytların sensorlara daxil olmasına icazə verin (tövsiyə edilir)</translation>
 <translation id="3295602654194328831">Məlumatı gizlədin</translation>
+<translation id="3333961966071413176">Bütün kontaktar</translation>
 <translation id="3386292677130313581">Saytlara məkanınızı bilmək icazəsi verməmişdən əvvəl soruşun (tövsiyə olunur)</translation>
 <translation id="3479552764303398839">İndi yox</translation>
 <translation id="3538390592868664640">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə qarşı blok qoyun</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Səs oxudan saytları səssiz rejimə keçirin</translation>
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3763247130972274048">10 saniyə keçmək üçün videonun sol və ya sağına iki dəfə toxunun</translation>
+<translation id="381841723434055211">Telefon nömrələri</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3859306556332390985">İrəli axtarın</translation>
 <translation id="3955193568934677022">Saytlara qorunan datanı oxumağa icazə verin (tövsiyə olunur)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Saytlar virtual reallıq cihazınız və datanızı istifadə etməzdən əvvəl icazə istəsin (tövsiyə edilir)</translation>
 <translation id="4962975101802056554">Cihaz üçün bütün icazələri ləğv edin</translation>
 <translation id="497421865427891073">İrəli</translation>
+<translation id="4994033804516042629">Kontakt tapılmadı</translation>
 <translation id="4996978546172906250">Paylaşma vasitəsi:</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5048398596102334565">Saytların hərəkət sensorlarınıza daxil olmasına icazə verin (tövsiyə edilir)</translation>
 <translation id="5063480226653192405">Istifadə</translation>
 <translation id="5100237604440890931">Yığcamlaşdırıldı - genişləndirmək üçün klikləyin.</translation>
 <translation id="5123685120097942451">Aanonim tab</translation>
+<translation id="5197729504361054390">Seçdiyiniz kontaktlar <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ilə paylaşılacaq.</translation>
 <translation id="5300589172476337783">Göstərin</translation>
 <translation id="5301954838959518834">Ok, anladım</translation>
 <translation id="5313967007315987356">Sayt əlavə edin</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Bununla saytlar tərəfindən saxlanılan <ph name="DATASIZE" /> data və kuki silinəcək.</translation>
 <translation id="5384883051496921101">Bu sayt gizli rejimdə olmayan tətbiqlə məlumat paylaşmaq üzrədir.</translation>
 <translation id="5391532827096253100">Bu sayta bağlantınız güvənli deyil. Sayt barədə məlumat</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+1)}other{(+ #)}}</translation>
+<translation id="5403592356182871684">Adlar</translation>
 <translation id="5489227211564503167">Keçən vaxt: <ph name="ELAPSED_TIME" /> / <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">İntruziv və aldadıcı reklamlar göstərən saytlardakı reklamları bloklayın</translation>
 <translation id="5505264765875738116">Saytlar bildiriş göndərilməsini tələb edə bilməz</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Qorunan kontent</translation>
 <translation id="662080504995468778">Qalın</translation>
 <translation id="6643016212128521049">Silin</translation>
+<translation id="6689172468748959065">Profil fotoları</translation>
 <translation id="6697925417670533197">Aktiv endirmələr</translation>
 <translation id="6746124502594467657">Aşağı köçürün</translation>
 <translation id="6766622839693428701">Bağlamaq üçün aşağı sürüşdürün.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Seçimi ləğv edin</translation>
 <translation id="7846621471902887024">Bütün saytlardan çıxacaqsınız.</translation>
 <translation id="7882806643839505685">Xüsusi sayt üçün səsə icazə verin.</translation>
+<translation id="7986741934819883144">Kontakt seçin</translation>
 <translation id="7993619969781047893">Bəzi saytlardakı xüsusiyyətlər işləməyə bilər</translation>
 <translation id="7999064672810608036">Bütün lokal datanı silmək və bu sayt üçün bütün icazələri sıfırlamaq istəyirsiniz?</translation>
 <translation id="8007176423574883786">Bu cihaz üçün söndürüldükdə</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">İcazə verilib (tövsiyə olunur)</translation>
 <translation id="8609465669617005112">Yuxarı köçürün</translation>
 <translation id="8676374126336081632">Daxiletməni silin</translation>
+<translation id="868929229000858085">Kontaktlarda axtarın</translation>
 <translation id="8702612070107455751">Bütün oflayn data silinəcək.</translation>
 <translation id="8719283222052720129"><ph name="APP_NAME" /> üçün icazəni <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>

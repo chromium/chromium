@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> aplikazioari errealitate areagotua erabiltzeko baimena emateko, kamera atzitzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Kokapenerako sarbidea desaktibatuta dago gailuan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Iragarkiak</translation>
+<translation id="1919950603503897840">Hautatu kontaktuak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Onartuta, hirugarrenenak izan ezik</translation>
 <translation id="1989112275319619282">Arakatu</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2687403674020088961">Blokeatu cookie guztiak (ez da gomendatzen)</translation>
 <translation id="2704606927547763573">Kopiatuta</translation>
+<translation id="2717722538473713889">Helbide elektronikoak</translation>
 <translation id="2822354292072154809">Ziur <ph name="CHOSEN_OBJECT_NAME" /> objektuaren webgune-baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2874939134665556319">Aurreko pista</translation>
+<translation id="2903493209154104877">Helbideak</translation>
 <translation id="2910701580606108292">Webguneei eduki babestua erreproduzitzeko baimena eman aurretik, eskatu onespena</translation>
 <translation id="2913331724188855103">Baimendu webguneei cookieen datuak gordetzea eta irakurtzea (gomendatua)</translation>
 <translation id="2968755619301702150">Ziurtagiri-ikustailea</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofonoa</translation>
 <translation id="3277252321222022663">Eman sentsoreak atzitzeko baimena webguneei (gomendatua)</translation>
 <translation id="3295602654194328831">Ezkutatu informazioa</translation>
+<translation id="3333961966071413176">Kontaktu guztiak</translation>
 <translation id="3386292677130313581">Webguneei zure kokapena erakusteko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="3479552764303398839">Orain ez</translation>
 <translation id="3538390592868664640">Ez utzi inongo webguneri inguruaren 3D-ko mapa bat sortzen edo kameraren posizioaren jarraipena egiten</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Desaktibatu soinua erreproduzitzen duten webguneen audioa</translation>
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
 <translation id="3763247130972274048">Sakatu birritan bideoaren ezkerreko edo eskuineko aldea 10 s saltatzeko</translation>
+<translation id="381841723434055211">Telefono-zenbakiak</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3859306556332390985">Aurreratu</translation>
 <translation id="3955193568934677022">Baimendu webguneei eduki babestua erreproduzitzea (gomendatua)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Eskatu zure baimena webguneren batek errealitate birtualeko gailuak eta datuak erabili nahi dituenean (gomendatua)</translation>
 <translation id="4962975101802056554">Baliogabetu gailuaren baimen guztiak</translation>
 <translation id="497421865427891073">Aurrera</translation>
+<translation id="4994033804516042629">Ez da aurkitu kontakturik</translation>
 <translation id="4996978546172906250">Partekatu honen bidez:</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5048398596102334565">Eman mugimendu-sentsoreak atzitzeko baimena webguneei (gomendatua)</translation>
 <translation id="5063480226653192405">Erabilera</translation>
 <translation id="5100237604440890931">Tolestuta; egin klik zabaltzeko.</translation>
 <translation id="5123685120097942451">Ezkutuko moduko fitxa</translation>
+<translation id="5197729504361054390">Hautatzen dituzun kontaktuak <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> webgunearekin partekatuko dira.</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
 <translation id="5301954838959518834">Ados, ulertu dut</translation>
 <translation id="5313967007315987356">Gehitu webgunea</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Webguneek gordetako datu eta cookieen <ph name="DATASIZE" /> garbituko dira.</translation>
 <translation id="5384883051496921101">Webgune hau informazioa partekatzera doa aplikazio batekin ezkutuko modutik kanpo.</translation>
 <translation id="5391532827096253100">Webgune honetarako konexioa ez da guztiz segurua. Webguneari buruzko informazioa</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(eta beste bat)}other{(eta beste #)}}</translation>
+<translation id="5403592356182871684">Izenak</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> igaro dira, eta <ph name="TOTAL_TIME" /> gelditzen</translation>
 <translation id="5494752089476963479">Blokeatu iragarki oztopatzaileak edo iruzurrezkoak erakusten dituzten webguneetako iragarkiak</translation>
 <translation id="5505264765875738116">Webguneek ezin dute eskatu jakinarazpenak bidaltzea</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Eduki babestua</translation>
 <translation id="662080504995468778">Jarraitu bertan</translation>
 <translation id="6643016212128521049">Garbitu</translation>
+<translation id="6689172468748959065">Profileko argazkiak</translation>
 <translation id="6697925417670533197">Deskarga aktiboak</translation>
 <translation id="6746124502594467657">Eraman behera</translation>
 <translation id="6766622839693428701">Pasatu hatza behera ixteko.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
 <translation id="7846621471902887024">Webgune guztietan amaituko da saioa.</translation>
 <translation id="7882806643839505685">Baimendu webgune jakin baten audioa.</translation>
+<translation id="7986741934819883144">Hautatu kontaktu bat</translation>
 <translation id="7993619969781047893">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="7999064672810608036">Ziur webgune honek gailuan ezarritako datu guztiak (cookieak barne) ezabatu eta baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="8007176423574883786">Desaktibatu egin da gailu honetan</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>
 <translation id="8609465669617005112">Eraman gora</translation>
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
+<translation id="868929229000858085">Bilatu kontaktuak</translation>
 <translation id="8702612070107455751">Garbitu egingo dira konexiorik gabe gordetako datu guztiak.</translation>
 <translation id="8719283222052720129">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimena <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>

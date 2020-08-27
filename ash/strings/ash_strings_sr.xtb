@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">Бићете одмах одјављени.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не подржава резолуцију <ph name="SPECIFIED_RESOLUTION" />. Резолуција је промењена у <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полица</translation>
+<translation id="2841907151129139818">Прешли сте у режим таблета</translation>
 <translation id="2844169650293029770">Уређај са USB прикључком типа C (леви предњи порт)</translation>
 <translation id="2865888419503095837">Информације о мрежи</translation>
 <translation id="2872961005593481000">Искључи</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">Шта можеш да радиш?</translation>
 <translation id="3290356915286466215">Незаштићено</translation>
 <translation id="3294437725009624529">Гост</translation>
+<translation id="3307642347673023554">Прешли сте у режим лаптопа</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ће и даље моћи да се пријави касније.</translation>
 <translation id="3321628682574733415">Нетачан кôд родитеља</translation>
 <translation id="332587331255250389">Замените батерију</translation>

@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">تا ۶۰٪ در مصرف داده صرفه‌جویی کنید، اخبار امروز را بخوانید</translation>
 <translation id="1303339473099049190">گذرواژه پیدا نشد. املای آن را بررسی و دوباره امتحان کنید.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - ارسال‌شده از <ph name="DEVICE_NAME" /></translation>
+<translation id="1307205233980126133">متأسفیم، نتوانستیم اطلاعات کاربری شما را تأیید کنیم</translation>
 <translation id="1310482092992808703">گروه‌بندی برگه‌ها</translation>
 <translation id="1311657260431405215">‏این کد QR یک نشانی وب نیست: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">سابقه «پیمایش» باز است.</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">‏با «حساب Google» خود به سیستم وارد خواهید شد\n(با این کار، «همگام‌سازی Chrome» روشن نخواهد شد)</translation>
 <translation id="1877026089748256423">‏نسخه Chrome قدیمی است</translation>
 <translation id="1883903952484604915">فایل‌های من</translation>
-<translation id="1919950603503897840">انتخاب مخاطبین</translation>
 <translation id="1925021887439448749">نشانی وب سفارشی وارد کنید</translation>
 <translation id="1928696683969751773">به‌روزرسانی‌ها</translation>
 <translation id="19288952978244135">‏Chrome را دوباره باز کنید.</translation>
@@ -216,7 +216,6 @@
 <translation id="2689830683995595741">‏با استفاده کردن از Chrome، با <ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Google Chrome و سیستم‌عامل Chrome<ph name="END_LINK2" /> موافقت می‌کنید. <ph name="BEGIN_LINK3" />اعلان حریم‌خصوصی برای «حساب‌های Google» مدیریت‌شده با Family Link<ph name="END_LINK3" /> نیز اعمال می‌شود.</translation>
 <translation id="2707726405694321444">بازخوانی صفحه</translation>
 <translation id="2709516037105925701">تکمیل خودکار</translation>
-<translation id="2717722538473713889">آدرس‌های ایمیل</translation>
 <translation id="2728754400939377704">مرتب‌سازی براساس سایت</translation>
 <translation id="2744248271121720757">برای جستجوی فوری، روی کلمه‌ای ضربه بزنید یا اقدام‌های مرتبط را ببینید</translation>
 <translation id="2760989362628427051">روشن شدن طرح زمینه تیره وقتی طرح زمینه تیره دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
@@ -241,7 +240,6 @@
 <translation id="2893180576842394309">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو و سایر سرویس‌های Google استفاده کند</translation>
 <translation id="2898264748040935573">ویرایش گذرواژه ذخیره‌شده</translation>
 <translation id="2900528713135656174">ایجاد رویداد</translation>
-<translation id="2903493209154104877">آدرس‌ها</translation>
 <translation id="2904414404539560095">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد کاملاً باز است.</translation>
 <translation id="2905036901251765993">‏برای هم‌رسانی کردن با افراد اطراف، اجازه دهید این کد QR را اسکن کنند</translation>
 <translation id="2909615210195135082">‏پلتفورم اعلان‌های Google</translation>
@@ -294,7 +292,6 @@
 <translation id="3306398118552023113">‏این برنامه در Chrome درحال اجرا است</translation>
 <translation id="3315103659806849044">‏شما درحال سفارشی کردن تنظیمات همگام‌سازی و سرویس‌های Google هستید. برای تکمیل روشن کردن همگام‌سازی، روی دکمه «تأیید» در پایین صفحه ضربه بزنید. پیمایش به بالا</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
-<translation id="3333961966071413176">همه مخاطبین</translation>
 <translation id="3334729583274622784">پسوند فایل تغییر کند؟</translation>
 <translation id="3341058695485821946">ببینید چه مقدار داده صرفه‌جویی کرده‌اید</translation>
 <translation id="3350687908700087792">بستن همه برگه‌های ناشناس</translation>
@@ -353,7 +350,6 @@
 <translation id="3789841737615482174">نصب</translation>
 <translation id="3810838688059735925">فیلم</translation>
 <translation id="3810973564298564668">مدیریت</translation>
-<translation id="381841723434055211">شماره‌های تلفن</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> بارگیری حذف شد</translation>
 <translation id="3856096718352044181">لطفاً تأیید کنید این ارائه‌دهندهْ معتبر است یا بعداً دوباره امتحان کنید</translation>
 <translation id="388596076286380598">حتی وقتی آفلاین هستید یا ارتباط ضعیفی دارید، مقاله، ویدیو، و محتواهای دیگر را از سایت‌های موردعلاقه دریافت کنید.</translation>
@@ -509,7 +505,6 @@
 <translation id="497421865427891073">جلو رفتن</translation>
 <translation id="4988210275050210843">درحال بارگیری فایل (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">صفحات</translation>
-<translation id="4994033804516042629">مخاطبی پیدا نشد</translation>
 <translation id="5004416275253351869">‏کنترل‌های فعالیت Google</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> می‌خواهد مرتبط شود</translation>
@@ -533,7 +528,6 @@
 <translation id="5170568018924773124">نمایش در پوشه</translation>
 <translation id="5184329579814168207">‏باز کردن در Chrome</translation>
 <translation id="5193988420012215838">در بریده‌دان کپی شد</translation>
-<translation id="5197729504361054390">مخاطبین انتخابی شما با <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> هم‌رسانی می‌شود.</translation>
 <translation id="5199929503336119739">نمایه کاری</translation>
 <translation id="5210286577605176222">رفتن به برگه قبلی</translation>
 <translation id="5210365745912300556">بستن برگه</translation>
@@ -553,8 +547,6 @@
 <translation id="5355191726083956201">«محافظت بهبودیافته» روشن است</translation>
 <translation id="5357811892247919462">برگه دریافت شد</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> برگه باز، برای جستجوی برگه ضربه بزنید}one{<ph name="OPEN_TABS_MANY" /> برگه باز، برای جستجوی برگه ضربه بزنید}other{<ph name="OPEN_TABS_MANY" /> برگه باز، برای جستجوی برگه ضربه بزنید}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ۱ مورد دیگر)}one{(+ # مورد دیگر)}other{(+ # مورد دیگر)}}</translation>
-<translation id="5403592356182871684">نام‌ها</translation>
 <translation id="5403644198645076998">فقط بعضی از سایت‌ها مجاز هستند</translation>
 <translation id="5414836363063783498">در حال تأیید...</translation>
 <translation id="5423934151118863508">صفحاتی که بیشترین بازدید را از آنها داشته‌اید در اینجا نمایان می‌شوند</translation>
@@ -750,7 +742,6 @@
 <translation id="666981079809192359">‏اخطار حریم خصوصی Chrome</translation>
 <translation id="6671495933530132209">کپی تصویر</translation>
 <translation id="6676840375528380067">‏داده‌های Chrome شما از این دستگاه پاک شود؟</translation>
-<translation id="6689172468748959065">عکس‌های نمایه</translation>
 <translation id="6691888250440401212">‏۱. ‫<ph name="APP_NAME" /> را انتخاب کنید\n۲. روی «تنظیم به‌عنوان پیش‌فرض» ضربه بزنید</translation>
 <translation id="6697492270171225480">نمایش پیشنهادهای صفحه‌های مشابه وقتی صفحه‌ای پیدا نمی‌شود</translation>
 <translation id="6698801883190606802">مدیریت داده‌های همگام‌سازی شده</translation>
@@ -912,7 +903,6 @@
 <translation id="7975379999046275268">پیش‌نمایش صفحه <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">پیش‌بارگیری صفحه‌ها برای مرور و جستجوی سریع‌تر</translation>
 <translation id="79859296434321399">‏برای مشاهده محتوای واقعیت افزوده، ARCore را نصب کنید</translation>
-<translation id="7986741934819883144">مخاطبی انتخاب کنید</translation>
 <translation id="799806351373751710">لغو راه‌اندازی همگام‌سازی</translation>
 <translation id="7998918019931843664">بازکردن مجدد برگه‌های بسته شده</translation>
 <translation id="8004582292198964060">مرورگر</translation>
@@ -1010,7 +1000,6 @@
 <translation id="8662811608048051533">شما را از سیستم اکثر سایت‌ها خارج می‌کند.</translation>
 <translation id="8664979001105139458">نام فایل از قبل وجود دارد</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{سطح قدرت سیگنال: # نوار}one{سطح قدرت سیگنال: # نوار}other{سطح قدرت سیگنال: # نوار}}</translation>
-<translation id="868929229000858085">جستجوی مخاطبین</translation>
 <translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>

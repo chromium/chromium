@@ -330,7 +330,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1386387014181100145">कैसे हैं.</translation>
 <translation id="1386791642444521222">सिम चालू करें</translation>
-<translation id="1387519831959169718">निजी इस्तेमाल के लिए अलग से ब्राउज़ करने के लिए, आप <ph name="NEW_USER" /> के लिए एक नई प्रोफ़ाइल बना सकते हैं</translation>
+<translation id="1387519831959169718">अपने निजी इस्तेमाल को अलग रखने के लिए, आप <ph name="NEW_USER" /> के लिए एक नई प्रोफ़ाइल बना सकते हैं</translation>
 <translation id="138784436342154190">डिफ़ॉल्ट स्टार्टअप पेज को बहाल करना चाहते हैं?</translation>
 <translation id="1388728792929436380">अपडेट पूरा होने पर <ph name="DEVICE_TYPE" /> रीस्टार्ट होगा.</translation>
 <translation id="1390548061267426325">नियमित टैब के रूप में खोलें</translation>
@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">जारी रखने के लिए Chrome को अनुमति चाहिए</translation>
 <translation id="220138918934036434">छुपाएं बटन</translation>
 <translation id="2202898655984161076">प्रिंटरों को सूचीबद्ध करने में कोई समस्या थी. आपके प्रिंटरों में से कुछ <ph name="CLOUD_PRINT_NAME" /> के साथ सफलतापूर्वक पंजीकृत नहीं हो सके हैं.</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />पता बार<ph name="END_LINK" /> में इस्तेमाल किया गया सर्च इंजन</translation>
 <translation id="2204034823255629767">आप जो कुछ भी लिखते हैं उसे पढ़ें और बदलें</translation>
 <translation id="220858061631308971">कृपया इस पिन कोड को "<ph name="DEVICE_NAME" />" पर दर्ज करें:</translation>
 <translation id="2212565012507486665">कुकी की अनुमति दें</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ऐप्लिकेशन की जानकारी</translation>
 <translation id="3333190335304955291">सेटिंग में जाकर आप यह सेवा बंद कर सकते हैं</translation>
+<translation id="3333961966071413176">सभी संपर्क</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - वीडियो 'पिक्चर में पिक्चर' मोड में चल रहा है</translation>
 <translation id="3335947283844343239">बंद किए गए टैब फिर से खोलें</translation>
 <translation id="3340620525920140773">फ़ाइल डाउनलोड हो गई: <ph name="FILE_NAME" />.</translation>
@@ -1981,7 +1981,7 @@
 <translation id="3396800784455899911">"स्वीकार करें और जारी रखें" बटन पर क्लिक करके, आप पुष्टि करते हैं कि इन Google सेवाओं के लिए ऊपर बताई गई प्रोसेसिंग से आप सहमत हैं.</translation>
 <translation id="3399432415385675819">नोटिफ़िकेशन अक्षम हो जाएंगे</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> हर्ट्ज़) - जाली की तरह</translation>
-<translation id="3402255108239926910">अवतार चुनें</translation>
+<translation id="3402255108239926910">एक अवतार चुनें</translation>
 <translation id="3402585168444815892">डेमाे माेड में नाम दर्ज किया जा रहा है</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">इस साइट के लिए कोई पासवर्ड सेव नहीं किया गया है</translation>
@@ -2811,7 +2811,7 @@
 <translation id="4384312707950789900">पसंदीदा में जोड़ें</translation>
 <translation id="4384652540891215547">एक्सटेंशन सक्रिय करें</translation>
 <translation id="438503109373656455">साराटोगा</translation>
-<translation id="4385040356362222432"><ph name="NEW_USER" /> और <ph name="EXISTING_USER" /> के तौर पर ब्राउज़ करना, दोनों को अलग रखने के लिए एक नई प्रोफ़ाइल बनाएं</translation>
+<translation id="4385040356362222432"><ph name="NEW_USER" /> और <ph name="EXISTING_USER" /> के तौर पर, अलग-अलग ब्राउज़ करने के लिए एक नई प्रोफ़ाइल बनाएं</translation>
 <translation id="4387004326333427325">प्रमाणीकरण प्रमाणपत्र को दूरस्थ रूप से अस्वीकार किया गया</translation>
 <translation id="4387890294700445764">चोरी या हैक हुए पासवर्ड</translation>
 <translation id="4389091756366370506">उपयोगकर्ता <ph name="VALUE" /></translation>
@@ -3487,7 +3487,7 @@
 <translation id="5249624017678798539">डाउनलोड पूरा होने से पहले ही ब्राउज़र क्रैश हो गया था.</translation>
 <translation id="5250372599208556903">आपको स्थानीय सामग्री देने के लिए, <ph name="SEARCH_ENGINE_NAME" /> आपके स्थान की जानकारी का इस्तेमाल करता है. आप इसे <ph name="SETTINGS_LINK" /> में बदल सकते हैं.</translation>
 <translation id="5252456968953390977">रोमिंग</translation>
-<translation id="5252496130205799136">क्या आप पासवर्ड सेव करने और इन्हें भरने के लिए, Google खाते का इस्तेमाल करना चाहते हैं?</translation>
+<translation id="5252496130205799136">क्या आप पासवर्ड सेव करने और इन्हें अपने-आप भरने के लिए, Google खाते का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="5252653240322147470">पिन <ph name="MAXIMUM" /> से कम अंकों का होना चाहिए</translation>
 <translation id="5254368820972107711">निकाली जाने वाली फ़ाइलें दिखाएं</translation>
 <translation id="52550593576409946">कियोस्क ऐप्लिकेशन लॉन्च नहीं किया जा सका.</translation>
@@ -4355,7 +4355,7 @@
 <translation id="6298962879096096191">Android ऐप्लिकेशन इंस्टॉल करने के लिए Google Play का उपयोग करें</translation>
 <translation id="630065524203833229">&amp;बाहर निकलें</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> को अपने-आप कॉन्फ़िगर नहीं किया जा सका. कृपया प्रिंटर की बेहतर जानकारी के बारे में बताएं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">निजी इस्तेमाल के लिए और <ph name="EXISTING_USER" /> के तौर पर ब्राउज़ करना, दोनों को अलग रखने के लिए, <ph name="NEW_USER" /> के लिए एक नई प्रोफ़ाइल बनाएं</translation>
+<translation id="6301076166764763868">निजी इस्तेमाल के लिए और <ph name="EXISTING_USER" /> के तौर पर, अलग-अलग ब्राउज़ करने के लिए, <ph name="NEW_USER" /> के लिए एक नई प्रोफ़ाइल बनाएं</translation>
 <translation id="630292539633944562">निजी जानकारी के सुझाव</translation>
 <translation id="6305607932814307878">वैश्विक नीति:</translation>
 <translation id="6307990684951724544">सिस्‍टम व्‍यस्‍त है</translation>
@@ -5810,7 +5810,7 @@
 <translation id="8084114998886531721">सहेजा गया पासवर्ड</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेट अप करें</translation>
-<translation id="8086550884324762001">उदाहरण: ऑफ़िस के काम, निजी इस्तेमाल, बच्चों या किसी दूसरे व्यक्ति के लिए</translation>
+<translation id="8086550884324762001">उदाहरण: ऑफ़िस के काम, निजी इस्तेमाल, बच्चों या किसी नाम से</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यह फ़ाइल सुरक्षित की गई है. इसके मालिक से इसे सबकी पहुंच में लाने के लिए कहें.}one{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}other{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}}</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8090234456044969073">अपनी सबसे ज़्यादा देखी गई वेबसाइटों की सूची पढ़ें</translation>

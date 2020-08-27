@@ -1015,7 +1015,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2200356397587687044">Norint tęsti „Chrome“ reikia leidimo</translation>
 <translation id="220138918934036434">Paslėpti mygtuką</translation>
 <translation id="2202898655984161076">Sudarant spausdintuvų sąrašą iškilo problema. Kai kurie spausdintuvai galėjo nebūti sėkmingai užregistruoti „<ph name="CLOUD_PRINT_NAME" />“.</translation>
-<translation id="2203682048752833055">Paieškos variklis, naudojamas <ph name="BEGIN_LINK" />adreso juostoje<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Skaityti ir keisti viską, ką įvedate</translation>
 <translation id="220858061631308971">Įveskite šį PIN kodą „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2212565012507486665">Leisti slapukus</translation>
@@ -1937,6 +1936,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Programos informacija</translation>
 <translation id="3333190335304955291">Šią paslaugą galite išjungti skiltyje „Nustatymai“.</translation>
+<translation id="3333961966071413176">Visi kontaktai</translation>
 <translation id="3334632933872291866">„<ph name="WINDOW_TITLE" />“ – vaizdo įrašas leidžiamas vaizdo vaizde režimu</translation>
 <translation id="3335947283844343239">Iš naujo atidarykite uždarytą skirtuką</translation>
 <translation id="3340620525920140773">Atsisiuntimas baigtas: <ph name="FILE_NAME" />.</translation>
@@ -3032,6 +3032,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4646675363240786305">Prievadai</translation>
 <translation id="4646949265910132906">Saugus „Wi-Fi“ ryšys</translation>
 <translation id="4647090755847581616">&amp;Uždaryti skirtuką</translation>
+<translation id="4647283074445570750"><ph name="CURRENT_STEP" /> veiksmas iš <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Paleisti programą prisijungus prie planšetinio kompiuterio}computer{Paleisti programą prisijungus prie kompiuterio}other{Paleisti programą prisijungus prie įrenginio}}</translation>
 <translation id="4647697156028544508">Įveskite „<ph name="DEVICE_NAME" />“ PIN kodą:</translation>
 <translation id="4648491805942548247">Nepakankami leidimai</translation>

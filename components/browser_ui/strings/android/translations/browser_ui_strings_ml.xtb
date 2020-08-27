@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ആപ്പിനെ AR ഉപയോഗിക്കാൻ അനുവദിക്കുന്നതിന് <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിലും<ph name="END_LINK" /> ക്യാമറ ഓണാക്കുക.</translation>
 <translation id="1887786770086287077">ഈ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ആക്‌സസ് ഓഫാണ്; <ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> അത് ഓണാക്കുക.</translation>
 <translation id="1919345977826869612">പരസ്യങ്ങള്‍</translation>
+<translation id="1919950603503897840">കോൺടാക്റ്റുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">മൂന്നാം കക്ഷി ഒഴികെയുള്ളവയെ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="1989112275319619282">ബ്രൗസ് ചെയ്യുക</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">ഉപേക്ഷിക്കുക</translation>
 <translation id="2687403674020088961">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="2704606927547763573">പകർത്തി</translation>
+<translation id="2717722538473713889">ഇമെയിൽ വിലാസങ്ങൾ</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> എന്നതിനുള്ള എല്ലാ സൈറ്റ് അനുമതികളും പുനഃസജ്ജീകരിക്കണമെന്ന് നിങ്ങൾക്ക് ഉറപ്പാണോ?</translation>
 <translation id="2870560284913253234">സൈറ്റ്</translation>
 <translation id="2874939134665556319">മുമ്പത്തെ ട്രാക്ക്</translation>
+<translation id="2903493209154104877">വിലാസങ്ങള്‍‌</translation>
 <translation id="2910701580606108292">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കുന്നതിന് മുമ്പ് ചോദിക്കുക</translation>
 <translation id="2913331724188855103">കുക്കി ഡാറ്റ സംരക്ഷിക്കുന്നതിനും വായിക്കുന്നതിനും സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശചെയ്‌തത്)</translation>
 <translation id="2968755619301702150">സർട്ടിഫിക്കറ്റ് വ്യൂവർ</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">മൈക്രോഫോൺ</translation>
 <translation id="3277252321222022663">സെൻസറുകൾ ആക്‌സസ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശ ചെയ്യുന്നത്)</translation>
 <translation id="3295602654194328831">വിവരങ്ങൾ മറയ്‌ക്കുക</translation>
+<translation id="3333961966071413176">എല്ലാ കോൺടാക്റ്റുകളും</translation>
 <translation id="3386292677130313581">നിങ്ങളുടെ ലൊക്കേഷൻ അറിയാൻ സൈറ്റുകളെ അനുവദിക്കുന്നതിന് മുമ്പ് ചോദിക്കുക (ശുപാർശചെയ്‌തിരിക്കുന്നു)</translation>
 <translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
 <translation id="3538390592868664640">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്ടിക്കുന്നതിൽ നിന്നോ ക്യാമറയുടെ സ്ഥാനം ട്രാക്ക് ചെയ്യുന്നതിൽ നിന്നോ സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുക</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">ശബ്‌ദം പ്ലേ ചെയ്യുന്ന സൈറ്റുകളെ മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="3744111561329211289">പശ്ചാത്തല സമന്വയിപ്പിക്കൽ</translation>
 <translation id="3763247130972274048">10 സെക്കൻഡ് ഒഴിവാക്കാൻ വീഡിയോയിൽ ഇടത്തോ വലത്തോ ഡബിൾ ടാപ്പ് ചെയ്യുക</translation>
+<translation id="381841723434055211">ഫോൺ നമ്പറുകൾ</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3859306556332390985">മുന്നോട്ട് നീക്കുക</translation>
 <translation id="3955193568934677022">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശ ചെയ്‌തിരിക്കുന്നു)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">നിങ്ങളുടെ വെർച്വൽ റിയാലിറ്റി ഉപകരണവും ഡാറ്റയും ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കുന്നതിന് മുമ്പ് ചോദിക്കുക (ശുപാർശ ചെയ്യുന്നത്)</translation>
 <translation id="4962975101802056554">ഉപകരണത്തിനുള്ള എല്ലാ അനുമതികളും അസാധുവാക്കുക</translation>
 <translation id="497421865427891073">മുന്നോട്ട് പോകുക</translation>
+<translation id="4994033804516042629">കോൺടാക്റ്റുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="4996978546172906250">ഇതുവഴി പങ്കിടുക</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5048398596102334565">നിങ്ങളുടെ ചലന സെൻസറുകൾ ആക്‌സസ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കുക (ശുപാർശ ചെയ്യുന്നത്)</translation>
 <translation id="5063480226653192405">ഉപയോഗം</translation>
 <translation id="5100237604440890931">ചുരുക്കിയത് - വിപുലീകരിക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="5123685120097942451">അദൃശ്യ ടാബ്</translation>
+<translation id="5197729504361054390">നിങ്ങൾ തിരഞ്ഞെടുക്കുന്ന കോൺടാക്‌റ്റുകൾ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> എന്ന സൈറ്റുമായി പങ്കിടും.</translation>
 <translation id="5300589172476337783">കാണിക്കുക</translation>
 <translation id="5301954838959518834">മനസ്സിലായി</translation>
 <translation id="5313967007315987356">സൈറ്റ് ചേർക്കുക</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">സൈറ്റുകൾ സംഭരിച്ച <ph name="DATASIZE" /> ഡാറ്റയും കുക്കികളും ഇത് മായ്‌ക്കും.</translation>
 <translation id="5384883051496921101">അദൃശ്യതാ സംവിധാനത്തിനു പുറത്തുള്ള ഒരു ആപ്പുമായി ഈ സൈറ്റ് വിവരങ്ങൾ പങ്കിടാൻ പോകുന്നു.</translation>
 <translation id="5391532827096253100">ഈ സൈറ്റിലേക്കുള്ള നിങ്ങളുടെ കണക്ഷൻ സുരക്ഷിതമല്ല. സൈറ്റ് വിവരങ്ങള്‍</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ഒരെണ്ണം കൂടി)}other{(+ # എണ്ണം കൂടി)}}</translation>
+<translation id="5403592356182871684">പേരുകൾ</translation>
 <translation id="5489227211564503167">ആകെ <ph name="TOTAL_TIME" />-ൽ <ph name="ELAPSED_TIME" /> കഴിഞ്ഞു.</translation>
 <translation id="5494752089476963479">അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങള്‍ കാണിക്കുന്ന സൈറ്റുകളിലെ പരസ്യങ്ങൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="5505264765875738116">അറിയിപ്പുകൾ അയയ്ക്കാൻ സൈറ്റുകൾക്ക് അനുവാദം ചോദിക്കാനാവില്ല</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">പരിരക്ഷിത ഉള്ളടക്കം</translation>
 <translation id="662080504995468778">തുടരുക</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
+<translation id="6689172468748959065">പ്രൊഫൈൽ ഫോട്ടോകൾ</translation>
 <translation id="6697925417670533197">സജീവ ഡൗൺലോഡുകൾ</translation>
 <translation id="6746124502594467657">താഴേക്ക് നീക്കുക</translation>
 <translation id="6766622839693428701">അവസാനിപ്പിക്കാൻ താഴേക്ക് സ്വൈപ്പ് ചെയ്യുക.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">തിരഞ്ഞെടുത്തത് റദ്ദാക്കുക</translation>
 <translation id="7846621471902887024">എല്ലാ സൈറ്റുകളിൽ നിന്നും നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്യപ്പെടും.</translation>
 <translation id="7882806643839505685">ഒരു പ്രത്യേക സൈറ്റിനായി ശബ്‌ദം അനുവദിക്കുക.</translation>
+<translation id="7986741934819883144">ഒരു കോൺടാക്റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7993619969781047893">ചില സൈറ്റുകളിലെ ഫീച്ചറുകൾക്ക് പ്രവർത്തനം നടത്താനായേക്കില്ല</translation>
 <translation id="7999064672810608036">കുക്കികൾ ഉൾപ്പെടെ എല്ലാ പ്രാദേശിക വിവരവും മായ്‌ച്ച് ഈ വെബ്‌സൈറ്റിനായുള്ള എല്ലാ അനുമതികളും റീസെറ്റ് ചെയ്യാൻ താൽപ്പര്യമുണ്ടോ?</translation>
 <translation id="8007176423574883786">ഈ ഉപകരണത്തിനായി ഓഫാക്കി</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">അനുവദിച്ചിരിക്കുന്നു (ശുപാർശചെയ്‌തത്)</translation>
 <translation id="8609465669617005112">മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="8676374126336081632">ഇൻപുട്ട് മായ്‌ക്കുക</translation>
+<translation id="868929229000858085">നിങ്ങളുടെ കോൺടാക്‌റ്റുകൾ തിരയുക</translation>
 <translation id="8702612070107455751">എല്ലാ ഓഫ്‍ലൈൻ ഡാറ്റയും മായ്‌ക്കും.</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ<ph name="END_LINK" /> <ph name="APP_NAME" /> ആപ്പിനായി അനുമതി ഓണാക്കുക.</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>

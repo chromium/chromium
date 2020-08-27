@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Spar op til 60 % data, og læs dagens nyheder</translation>
 <translation id="1303339473099049190">Adgangskoden blev ikke fundet. Tjek stavningen, og prøv igen.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – sendt fra <ph name="DEVICE_NAME" /></translation>
+<translation id="1307205233980126133">Vi kunne ikke bekræfte dine loginoplysninger</translation>
 <translation id="1310482092992808703">Gruppér faner</translation>
 <translation id="1311657260431405215">Denne QR-kode er ikke en webadresse: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">Navigationsoversigt er åbnet</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">Du bliver logget ind på din Google-konto\n(Chrome-synkronisering aktiveres ikke)</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
 <translation id="1883903952484604915">Mine filer</translation>
-<translation id="1919950603503897840">Vælg kontakter</translation>
 <translation id="1925021887439448749">Angiv tilpasset webadresse</translation>
 <translation id="1928696683969751773">Opdateringer</translation>
 <translation id="19288952978244135">Åbn Chrome igen.</translation>
@@ -216,7 +216,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2689830683995595741">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Erklæringen om privatliv for Google-konti, der administreres med Family Link<ph name="END_LINK3" />, gælder også.</translation>
 <translation id="2707726405694321444">Opdater siden</translation>
 <translation id="2709516037105925701">AutoFyld</translation>
-<translation id="2717722538473713889">Mailadresser</translation>
 <translation id="2728754400939377704">Sortér efter website</translation>
 <translation id="2744248271121720757">Tryk på et ord for at søge øjeblikkeligt eller se relaterede handlinger</translation>
 <translation id="2760989362628427051">Aktivér mørkt tema, når enhedens mørke tema eller batterisparefunktion er aktiveret</translation>
@@ -241,7 +240,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2893180576842394309">Google kan bruge din historik til at tilpasse Søgning og andre Google-tjenester</translation>
 <translation id="2898264748040935573">Rediger gemt adgangskode</translation>
 <translation id="2900528713135656174">Opret begivenhed</translation>
-<translation id="2903493209154104877">Adresser</translation>
 <translation id="2904414404539560095">Åben liste i fuld højde over enheder, der skal deles en fane med.</translation>
 <translation id="2905036901251765993">Du kan dele med folk i nærheden ved at få dem til at scanne denne QR-kode</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -294,7 +292,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3306398118552023113">Denne app kører i Chrome</translation>
 <translation id="3315103659806849044">Du tilpasser i øjeblikket dine indstillinger for Synkronisering og Google-tjenester. Afslut aktiveringen af synkronisering ved at trykke på knappen Bekræft nederst på skærmen. Gå op</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
-<translation id="3333961966071413176">Alle kontakter</translation>
 <translation id="3334729583274622784">Vil du ændre filtypen?</translation>
 <translation id="3341058695485821946">Se, hvor meget data du har sparet</translation>
 <translation id="3350687908700087792">Luk alle inkognitofaner</translation>
@@ -353,7 +350,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Valgmuligheder</translation>
-<translation id="381841723434055211">Telefonnumre</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads blev slettet</translation>
 <translation id="3856096718352044181">Bekræft, at dette er en gyldig udbyder, eller prøv igen senere</translation>
 <translation id="388596076286380598">Få adgang til artikler, videoer og andet indhold fra de websites, du kan lide, selvom du er offline eller har en dårlig forbindelse.</translation>
@@ -451,7 +447,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4650364565596261010">Systemstandard</translation>
 <translation id="465657074423018424">Beskyttet søgning beskytter dig mod vildledende websites. Hvis du deaktiverer dette, skal du være ekstra påpasselig – især når du angiver adgangskoder.</translation>
 <translation id="4662373422909645029">Kaldenavnet må ikke indeholde tal</translation>
-<translation id="4663499661119906179">Se dine mest anvendte websites og seneste historier</translation>
+<translation id="4663499661119906179">Se dine websites og anbefalede artikler</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bogmærker blev slettet</translation>
 <translation id="4665282149850138822"><ph name="NAME" /> blev føjet til din startskærm</translation>
 <translation id="4668347365065281350">Alle data, der gemmes af websites, bl.a. cookies og andre data, der er gemt lokalt</translation>
@@ -509,7 +505,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4988210275050210843">Downloader fil (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Sider</translation>
-<translation id="4994033804516042629">Der blev ikke fundet nogen kontakter</translation>
 <translation id="5004416275253351869">Aktivitetsadministration på Google</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vil gerne oprette forbindelse</translation>
@@ -533,7 +528,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5184329579814168207">Åbn i Chrome</translation>
 <translation id="5193988420012215838">Kopieret til din udklipsholder</translation>
-<translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Arbejdsprofil</translation>
 <translation id="5210286577605176222">Gå til den forrige fane</translation>
 <translation id="5210365745912300556">Luk fanen</translation>
@@ -553,8 +547,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5355191726083956201">Forbedret beskyttelse er aktiveret</translation>
 <translation id="5357811892247919462">Du har modtaget en fane</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> åben fane – tryk for at skifte fane}one{<ph name="OPEN_TABS_MANY" /> åben fane – tryk for at skifte fane}other{<ph name="OPEN_TABS_MANY" /> åbne faner – tryk for at skifte fane}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
-<translation id="5403592356182871684">Navne</translation>
 <translation id="5403644198645076998">Tillad kun bestemte websites</translation>
 <translation id="5414836363063783498">Bekræfter...</translation>
 <translation id="5423934151118863508">Dine mest besøgte sider vises her</translation>
@@ -563,7 +555,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5433691172869980887">Brugernavnet er kopieret</translation>
 <translation id="543509235395288790">Downloader <ph name="COUNT" /> filer (<ph name="MEGABYTES" />).</translation>
 <translation id="5441522332038954058">Gå til adresselinjen</translation>
-<translation id="544776284582297024">Hvis du vil åbne faner og besøge forskellige sider på samme tid, skal du trykke på knappen til åbning af faner</translation>
+<translation id="544776284582297024">Hvis du vil åbne faner og besøge forskellige sider på samme tid, skal du trykke på faneknappen</translation>
 <translation id="545042621069398927">Øger hastigheden på din download.</translation>
 <translation id="5456381639095306749">Download siden</translation>
 <translation id="548278423535722844">Åbn i kortapp</translation>
@@ -736,7 +728,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6597891566292541626">Placer QR-/stregkoden inden for denne ramme.</translation>
 <translation id="6600954340915313787">Kopieret til Chrome</translation>
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
-<translation id="6618554661997243500">Tryk på knappen Hjem for at se dine mest anvendte websites og seneste historier</translation>
+<translation id="6618554661997243500">Tryk på knappen Hjem for at se de mest anvendte websites og anbefalede artikler</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6643649862576733715">Sortér efter mængden af data, der blev sparet</translation>
@@ -750,7 +742,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="666981079809192359">Erklæring om privatliv for Google Chrome</translation>
 <translation id="6671495933530132209">Kopiér billede</translation>
 <translation id="6676840375528380067">Vil du rydde dine Chrome-data på denne enhed?</translation>
-<translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6691888250440401212">1. Vælg <ph name="APP_NAME" />\n2. Tryk på "Angiv som standard"</translation>
 <translation id="6697492270171225480">Se forslag til lignende sider, når en side ikke kan findes</translation>
 <translation id="6698801883190606802">Administrer synkroniserede data</translation>
@@ -912,7 +903,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Forudindlæs sider, så du kan browse og søge hurtigere</translation>
 <translation id="79859296434321399">Installer ARCore for at se augmented reality-indhold</translation>
-<translation id="7986741934819883144">Vælg en kontakt</translation>
 <translation id="799806351373751710">Annuller konfigurationen af synkronisering</translation>
 <translation id="7998918019931843664">Åbn lukket fane igen</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1010,7 +1000,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8662811608048051533">Logger dig ud af de fleste websites.</translation>
 <translation id="8664979001105139458">Filnavnet findes allerede</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalstyrkeniveau: # søjle}one{Signalstyrkeniveau: # søjle}other{Signalstyrkeniveau: # søjler}}</translation>
-<translation id="868929229000858085">Søg blandt dine kontakter</translation>
 <translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>

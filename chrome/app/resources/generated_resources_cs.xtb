@@ -1015,7 +1015,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2200356397587687044">Chrome k pokračování potřebuje oprávnění</translation>
 <translation id="220138918934036434">Skrýt tlačítko</translation>
 <translation id="2202898655984161076">Při vytváření seznamu tiskáren se vyskytla chyba. Některé vaše tiskárny možná nebyly ve službě <ph name="CLOUD_PRINT_NAME" /> úspěšně zaregistrovány.</translation>
-<translation id="2203682048752833055">Vyhledávač používaný v <ph name="BEGIN_LINK" />adresním řádku<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Číst a upravovat vše, co napíšete</translation>
 <translation id="220858061631308971">Zadejte prosím v zařízení <ph name="DEVICE_NAME" /> tento kód PIN:</translation>
 <translation id="2212565012507486665">Povolit cookies</translation>
@@ -1936,6 +1935,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">O aplikaci</translation>
 <translation id="3333190335304955291">Tuto službu můžete vypnout v Nastavení.</translation>
+<translation id="3333961966071413176">Všechny kontakty</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video se přehrává v režimu obrazu v obraze</translation>
 <translation id="3335947283844343239">Znovu otevřít zavřenou kartu</translation>
 <translation id="3340620525920140773">Stažení bylo dokončeno: <ph name="FILE_NAME" />.</translation>
@@ -3030,6 +3030,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4646675363240786305">Porty</translation>
 <translation id="4646949265910132906">Zabezpečené připojení k Wi-Fi</translation>
 <translation id="4647090755847581616">&amp;Zavřít kartu</translation>
+<translation id="4647283074445570750">Krok <ph name="CURRENT_STEP" /> z <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Spustit aplikaci, když se přihlásíte do tabletu}computer{Spustit aplikaci, když se přihlásíte do počítače}other{Spustit aplikaci, když se přihlásíte do zařízení}}</translation>
 <translation id="4647697156028544508">Zadejte prosím PIN pro zařízení <ph name="DEVICE_NAME" />:</translation>
 <translation id="4648491805942548247">Nedostatečná oprávnění</translation>

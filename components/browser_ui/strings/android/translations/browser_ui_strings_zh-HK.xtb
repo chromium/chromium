@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">如要讓 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="1887786770086287077">此裝置的位置資訊存取權已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="1919345977826869612">廣告</translation>
+<translation id="1919950603503897840">選取聯絡人</translation>
 <translation id="1923695749281512248">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">已允許 (第三方除外)</translation>
 <translation id="1989112275319619282">瀏覽</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2704606927547763573">已複製</translation>
+<translation id="2717722538473713889">電郵地址</translation>
 <translation id="2822354292072154809">確定要重設「<ph name="CHOSEN_OBJECT_NAME" />」的所有網站權限嗎？</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
+<translation id="2903493209154104877">地址</translation>
 <translation id="2910701580606108292">網站播放受保護內容前先詢問您</translation>
 <translation id="2913331724188855103">允許網站儲存及讀取 Cookie 資料 (建議)</translation>
 <translation id="2968755619301702150">憑證檢視者</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
 <translation id="3295602654194328831">隱藏資料</translation>
+<translation id="3333961966071413176">所有聯絡人</translation>
 <translation id="3386292677130313581">允許網站存取您的位置前先詢問您 (建議)</translation>
 <translation id="3479552764303398839">略過</translation>
 <translation id="3538390592868664640">禁止網站建立您身處環境的 3D 地圖或追蹤攝錄機位置</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">將播放音效的網站設為靜音</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
+<translation id="381841723434055211">電話號碼</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">向前快轉</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">在允許網站使用您的虛擬實境裝置和資料前先詢問您 (建議)</translation>
 <translation id="4962975101802056554">撤銷裝置所有的權限</translation>
 <translation id="497421865427891073">往前</translation>
+<translation id="4994033804516042629">找不到任何聯絡人</translation>
 <translation id="4996978546172906250">共用方式</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
 <translation id="5063480226653192405">用量</translation>
 <translation id="5100237604440890931">已收合 - 點擊即可展開。</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
+<translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
 <translation id="5313967007315987356">新增網站</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">此操作會清除網站儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
 <translation id="5384883051496921101">此網站即將與外部應用程式分享資料，分享時會離開無痕模式。</translation>
 <translation id="5391532827096253100">呢個網站嘅連線唔安全。網站資料</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
+<translation id="5403592356182871684">名稱</translation>
 <translation id="5489227211564503167">播咗嘅時間係 <ph name="ELAPSED_TIME" />，影片總長度係 <ph name="TOTAL_TIME" />。</translation>
 <translation id="5494752089476963479">在顯示滋擾或誤導廣告的網站上封鎖廣告</translation>
 <translation id="5505264765875738116">網站將無法要求向您傳送通知</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
 <translation id="6643016212128521049">清除</translation>
+<translation id="6689172468748959065">個人檔案相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="6766622839693428701">向下掃就可以閂咗佢。</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">取消選取</translation>
 <translation id="7846621471902887024">您將會從所有網站登出。</translation>
 <translation id="7882806643839505685">允許特定網站播放音效。</translation>
+<translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7993619969781047893">部分網站的功能可能會無法正常運作</translation>
 <translation id="7999064672810608036">您確定要清除這個網站的所有本機資料 (包括 Cookie)，然後重設其所有權限嗎？</translation>
 <translation id="8007176423574883786">已為這部裝置關閉</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">允許 (建議)</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8676374126336081632">清除輸入</translation>
+<translation id="868929229000858085">搜尋您的聯絡人</translation>
 <translation id="8702612070107455751">所有離線資料將會被清除</translation>
 <translation id="8719283222052720129">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用此權限。</translation>
 <translation id="8725066075913043281">再試一次</translation>

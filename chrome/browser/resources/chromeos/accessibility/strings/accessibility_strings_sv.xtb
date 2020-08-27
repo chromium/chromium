@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Det finns inga länkar som har besökts tidigare</translation>
 <translation id="4281245629646759298">Ljusgul</translation>
 <translation id="4289540628985791613">Översikt</translation>
+<translation id="4294967782363273192">Stigande ordning</translation>
 <translation id="4300318234632215983">Läs upp webbadressen bakom en länk</translation>
 <translation id="4322625298640984693">Siennabrun</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punkt}=3{tre punkter}other{# punkter}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Röster</translation>
 <translation id="6006050241733874051">Formulär</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{bakstreck}other{# bakstreck}}</translation>
+<translation id="6010616110396250088">Fallande ordning</translation>
 <translation id="6017514345406065928">Grön</translation>
 <translation id="602001110135236999">Rulla åt vänster</translation>
 <translation id="6034000775414344507">Ljusgrå</translation>

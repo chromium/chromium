@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">कुनै पनि नेटवर्क छैन</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">सेल्युलर: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">मलाई दिक्क लागिसक्यो</translation>
 <translation id="1104084341931202936">पहुँचसम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1104621072296271835">तपाईंका यन्त्रहरूलाई सँगै प्रयोग गरेमा तिनले अझ राम्रो काम गर्छन्</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> बाँकी छ</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ठेगाना: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">डेस्क: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">नेटवर्कसम्बन्धी सेटिङहरू</translation>
 <translation id="1743570585616704562">पहिचान भएन</translation>
 <translation id="1746730358044914197">तपाईंको प्रशासकले इनपुट विधिहरूको कन्फिगर गर्नुभएको हो।</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">मलाई एउटा चुट्किला सुनाउनुहोस्</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2067602449040652523">किबोर्डको चमक</translation>
+<translation id="2083190527011054446">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">नेटवर्कमा जोडिएको छैन</translation>
 <translation id="2126242104232412123">नयाँ डेस्क</translation>
 <translation id="2127372758936585790">न्यून-पावर चार्जर</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">निर्गत</translation>
 <translation id="3033545621352269033">अन</translation>
 <translation id="3038571455154067151">साइन इन गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड प्रविष्टि गर्नुहोस्</translation>
+<translation id="3045488863354895414">नमस्ते,</translation>
 <translation id="3051128274746680507">तपाईंको सुपरिवेक्षण गरिएको प्रयोगकर्ताको प्रोफाइल चाँडै नै हटाइने छ। थप जान्न साइन इन गर्नुहोस्।</translation>
 <translation id="3055162170959710888">तपाईंले आज यो यन्त्र <ph name="USED_TIME" /> प्रयोग गर्नुभयो</translation>
 <translation id="3076778413190775903">वस्तुस्थिति ट्रे, समय <ph name="TIME" />,
@@ -304,6 +308,7 @@
 <translation id="4261870227682513959">सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। सूचनाहरू निष्क्रिय छन्</translation>
 <translation id="4269883910223712419">यो यन्त्रको प्रशासक निम्न कुराहरू गर्न सक्नुहु्न्छ:</translation>
 <translation id="4279490309300973883">प्रतिबिम्ब गर्दै</translation>
+<translation id="4294319844246081198">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सबै <ph name="COUNT" /> सूचनाहरू हटाउनुहोस्</translation>
 <translation id="4303223480529385476">वस्तुस्थिति देखाउने क्षेत्र विस्तृत गर्नुहोस्</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@
 <translation id="4421231901400348175">रिमोट सहायता मार्फत <ph name="HELPER_NAME" /> सँग तपाईँको स्क्रिनको नियन्त्रण साझेदारी गर्दै।</translation>
 <translation id="4430019312045809116">आयतन</translation>
 <translation id="4450893287417543264">फेरि नदेखाउनुहोस्</translation>
+<translation id="445864333228800152">नमस्ते,</translation>
 <translation id="4458688154122353284">स्क्रिन रेकर्ड गर्ने कार्य रोक्नुहोस्</translation>
 <translation id="4477350412780666475">अर्को ट्र्याक</translation>
 <translation id="4477892968187500306">यो यन्त्रमा Google ले पुष्टि नगरेका एपहरू हुन सक्छन्।</translation>
@@ -430,6 +436,7 @@
 <translation id="5887866489674258948">अँध्यारो मोड</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">निष्क्रिय डेस्क।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5920710855273935292">माइक म्युट गरिएको छ।</translation>
@@ -561,6 +568,7 @@
 <translation id="7405710164030118432">यन्त्र अनलक गर्न आफ्नो Family Link को अभिभावकको पहुँचसम्बन्धी कोड प्रविष्टि गर्नुहोस्‌</translation>
 <translation id="741244894080940828">रूपान्तरण</translation>
 <translation id="742594950370306541">क्यामेरा प्रयोगमा छ।</translation>
+<translation id="742608627846767349">नमस्ते,</translation>
 <translation id="743058460480092004">क्यामेरा र माइक्रोफोन प्रयोगमा छ।</translation>
 <translation id="7466449121337984263">कृपया फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>
 <translation id="7477793887173910789">आफ्नो सङ्गीत, भिडियो र थप कुराहरू नियन्त्रण गर्नुहोस्</translation>
@@ -648,11 +656,13 @@
 <translation id="8351131234907093545">टिपोट सिर्जना गर्नुहोस्</translation>
 <translation id="8371779926711439835">कर्सरलाई एक अक्षर अगाडि लैजानुहोस्</translation>
 <translation id="8375916635258623388">यो <ph name="DEVICE_NAME" /> र तपाईंको फोन स्वतः जोडिने छन्</translation>
+<translation id="8380784334203145311">नमस्ते,</translation>
 <translation id="8388750414311082622">अन्तिम डेस्क हटाउन सकिँदैन।</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> का लागि विकल्प मेनु</translation>
 <translation id="8394567579869570560">तपाईंका अभिभावकले यो यन्त्र लक गर्नुभयो</translation>
 <translation id="8412677897383510995">डिस्प्लेसम्बन्धी सेटिङ देखाउनुहोस्</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
+<translation id="8426708595819210923">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">श्रुतिलेखन सुविधाले कुनै पनि पाठ क्षेत्रमा आवाजमार्फत टाइप गर्ने सुविधा सक्षम पार्न तपाईंको आवाज Google मा पठाउँछ।</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8433186206711564395">नेटवर्क सम्बन्धी सेटिङहरू</translation>

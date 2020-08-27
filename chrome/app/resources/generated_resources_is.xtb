@@ -1015,7 +1015,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2200356397587687044">Chrome þarf að fá heimild til að halda áfram</translation>
 <translation id="220138918934036434">Hnappur til að fela</translation>
 <translation id="2202898655984161076">Vandamál kom upp við að birta prentara. Sumir prentaranna þinna eru ef til vill ekki skráðir á fullnægjandi hátt hjá <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Leitarvél notuð í <ph name="BEGIN_LINK" />veffangastiku<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Lesa og breyta því sem þú skrifar</translation>
 <translation id="220858061631308971">Sláðu þetta PIN-númer inn í „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2212565012507486665">Leyfa fótspor</translation>
@@ -1063,7 +1062,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2256115617011615191">Endurræsa núna</translation>
 <translation id="225614027745146050">Velkomin(n)</translation>
 <translation id="225692081236532131">Virkjunarstaða</translation>
-<translation id="2257053455312861282">Ef skólareikningi er bætt við geta notendur skráð sig auðveldlega inn á vefsvæði, viðbætur og forrit sem nemendur þó að þeir séu enn undir stjórn foreldra.</translation>
+<translation id="2257053455312861282">Með skólareikningi getur notandi auðveldlega skráð sig inn á vefsvæði, viðbætur og forrit sem nemandi með barnalæsingar virkar.</translation>
 <translation id="2261323523305321874">Kerfisstjórinn þinn hefur gert kerfislæga breytingu sem gerir suma eldri prófíla óvirka.</translation>
 <translation id="2262332168014443534">Með léttútgáfu er nú fljótlegra að skoða allar síður, líka HTTPS.</translation>
 <translation id="2262477216570151239">Töf fyrir endurtekningu</translation>
@@ -1243,7 +1242,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2471506181342525583">Aðgangur að staðsetningu veittur</translation>
 <translation id="2473195200299095979">Þýða þessa síðu</translation>
 <translation id="2475982808118771221">Villa kom upp</translation>
-<translation id="2476578072172137802">Stillingar vefsvæðis</translation>
+<translation id="2476578072172137802">Vefsvæðastillingar</translation>
 <translation id="2476974672882258506">Lokaðu Windows til að fjarlægja <ph name="PARALLELS_DESKTOP" />.</translation>
 <translation id="2478176599153288112">Heimildir margmiðlunarskráa fyrir „<ph name="EXTENSION" />“</translation>
 <translation id="247949520305900375">Deila hljóði</translation>
@@ -1937,6 +1936,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Upplýsingar um forrit</translation>
 <translation id="3333190335304955291">Þú getur slökkt á þessari þjónustu í stillingunum.</translation>
+<translation id="3333961966071413176">Allir tengiliðir</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – myndskeið spilast með stillingunni „mynd í mynd“</translation>
 <translation id="3335947283844343239">Enduropna lokaðan flipa</translation>
 <translation id="3340620525920140773">Niðurhali lokið: <ph name="FILE_NAME" />.</translation>
@@ -2812,7 +2812,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4384312707950789900">Bæta við forval</translation>
 <translation id="4384652540891215547">Virkja viðbótina</translation>
 <translation id="438503109373656455">Guðfaðirinn</translation>
-<translation id="4385040356362222432">Til að aðskilja vefskoðun hjá <ph name="NEW_USER" /> frá vefskoðun hjá <ph name="EXISTING_USER" /> skaltu búa til nýjan prófíl</translation>
+<translation id="4385040356362222432">Til að aðskilja vefskoðun <ph name="NEW_USER" /> frá vefskoðun <ph name="EXISTING_USER" /> skaltu búa til nýjan prófíl</translation>
 <translation id="4387004326333427325">Sannvottunarvottorði hafnað fjartengt</translation>
 <translation id="4387890294700445764">Aðgangsorð í hættu</translation>
 <translation id="4389091756366370506">Notandi <ph name="VALUE" /></translation>
@@ -2974,7 +2974,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4573515936045019911">Nettenging er nauðsynleg til að uppfæra Linux. Tengstu internetinu og reyndu aftur.</translation>
 <translation id="457386861538956877">Meira...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Ef skólareikningi er bætt við notandasnið geta notendur á auðveldan hátt skráð sig inn á vefsvæði, viðbætur og forrit sem nemendur þar sem slík innskráning er enn undir stjórn foreldra. Það gefur barni ekki aðgang að bókamerkjum, aðgangsorðum eða öðrum vafragögnum sem eru samstillt við skólareikning.&lt;br&gt;&lt;br&gt;
+<translation id="457564749856982089">Með skólareikningi getur notandi auðveldlega skráð sig inn á vefsvæði, viðbætur og forrit sem nemandi með barnalæsingar virkar. Það gefur barni ekki aðgang að bókamerkjum, aðgangsorðum eða öðrum vafragögnum sem eru samstillt við skólareikning.&lt;br&gt;&lt;br&gt;
     Ef barnið þitt notar Chromebook í skólanum og þú vilt spegla skólareikning heima til að tryggja að barnið þitt hafi aðgang að öllu nauðsynlegu efni skaltu skrá þig út af þessum Family Link reikningi og skrá þig inn á skólareikninginn af Chrome OS reikningssíðunni (athugið: barnalæsingar Family Link munu ekki gilda).&lt;br&gt;&lt;br&gt;
     Ef barnið þitt notar ekki Chromebook í skólanum eða ef þú vilt stjórna aðgangi barnsins heima með Family Link skaltu smella á hnappinn „Áfram“ hér að neðan til að bæta skólareikningi við þennan prófíl.</translation>
 <translation id="4576541033847873020">Para Bluetooth-tæki</translation>
@@ -3032,6 +3032,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4646675363240786305">Gáttir</translation>
 <translation id="4646949265910132906">Örugg Wi-Fi tenging</translation>
 <translation id="4647090755847581616">Loka flipa</translation>
+<translation id="4647283074445570750">Skref <ph name="CURRENT_STEP" /> af <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Ræsa forrit þegar þú skráir þig inn í spjaldtölvuna þína}computer{Ræsa forrit þegar þú skráir þig inn í tölvuna þína}other{Ræsa forrit þegar þú skráir þig inn í tækið þitt}}</translation>
 <translation id="4647697156028544508">Sláðu inn PIN-númer fyrir „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="4648491805942548247">Ekki nægar heimildir</translation>
@@ -4356,7 +4357,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6298962879096096191">Notaðu Google Play til að setja upp Android forrit</translation>
 <translation id="630065524203833229">Hætta</translation>
 <translation id="6300718114348072351">Ekki tókst að stilla <ph name="PRINTER_NAME" /> sjálfvirkt. Tilgreindu ítarlegar prentaraupplýsingar. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">Til að aðskilja þína persónulegu vefskoðun og vefskoðun <ph name="EXISTING_USER" /> skaltu búa til nýjan prófíl fyrir <ph name="NEW_USER" /></translation>
+<translation id="6301076166764763868">Til að skilja að persónulega vefskoðun og vefskoðun <ph name="EXISTING_USER" /> skaltu búa til nýjan prófíl fyrir <ph name="NEW_USER" /></translation>
 <translation id="630292539633944562">Tillögur að persónuupplýsingum</translation>
 <translation id="6305607932814307878">Altæk regla:</translation>
 <translation id="6307990684951724544">Kerfi upptekið</translation>
@@ -5811,7 +5812,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8084114998886531721">Vistað aðgangsorð</translation>
 <translation id="8086015605808120405">Stillir <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Setja upp <ph name="PRINTER_NAME" /></translation>
-<translation id="8086550884324762001">Dæmi: vinna, persónulegt, börn eða nafn</translation>
+<translation id="8086550884324762001">Dæmi: Vinna, Krakkarnir eða nafn</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Þessi skrá er dulkóðuð. Biddu eiganda hennar um að dulráða hana.}one{Sumar þessara skráa eru dulkóðaðar. Biddu eigandann um að dulráða þær.}other{Sumar þessara skráa eru dulkóðaðar. Biddu eigandann um að dulráða þær.}}</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
 <translation id="8090234456044969073">Lesa lista yfir vefsvæðin sem þú heimsækir oftast</translation>

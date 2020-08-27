@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Para permitir que <ph name="APP_NAME" /> utilice a realidade aumentada, tamén debes activar a cámara en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">O acceso á localización está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Anuncios</translation>
+<translation id="1919950603503897840">Seleccionar contactos</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Cookies permitidas, salvo as de terceiros</translation>
 <translation id="1989112275319619282">Examinar</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Saír</translation>
 <translation id="2687403674020088961">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="2704606927547763573">Copiada</translation>
+<translation id="2717722538473713889">Enderezos de correo electrónico</translation>
 <translation id="2822354292072154809">Seguro que queres restablecer todos os permisos do sitio <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
+<translation id="2903493209154104877">Enderezos</translation>
 <translation id="2910701580606108292">Preguntar antes de permitir que os sitios reproduzan contido protexido</translation>
 <translation id="2913331724188855103">Permitir que os sitios garden e lean datos de cookies (recomendado)</translation>
 <translation id="2968755619301702150">Visor de certificados</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3277252321222022663">Permitir que os sitios accedan aos sensores (recomendado)</translation>
 <translation id="3295602654194328831">Ocultar información</translation>
+<translation id="3333961966071413176">Todos os contactos</translation>
 <translation id="3386292677130313581">Pregunta antes de permitir que os sitios coñezan a túa localización (recomendado)</translation>
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3538390592868664640">Impide que os sitios creen un mapa 3D do que te rodea e fagan un seguimento da posición da cámara</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Silencia sitios que reproducen son</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Toca dúas veces cara á esquerda ou á dereita no vídeo para saltar 10 s</translation>
+<translation id="381841723434055211">Números de teléfono</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3859306556332390985">Buscar cara adiante</translation>
 <translation id="3955193568934677022">Permitir que os sitios reproduzan contido protexido (recomendado)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Pregunta antes de permitir que os sitios utilicen os teus datos e dispositivos de realidade virtual (recomendado)</translation>
 <translation id="4962975101802056554">Revogar todos os permisos do dispositivo</translation>
 <translation id="497421865427891073">Avanzar</translation>
+<translation id="4994033804516042629">Non se atopou ningún contacto</translation>
 <translation id="4996978546172906250">Compartir a través de</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permite aos sitios acceder aos teus sensores de movemento (recomendado)</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5100237604440890931">Vista contraída (fai clic para ampliala).</translation>
 <translation id="5123685120097942451">Pestana do modo de incógnito</translation>
+<translation id="5197729504361054390">Os contactos que selecciones compartiranse con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5313967007315987356">Engadir sitio</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Ao realizar esta acción, borraranse os datos e as cookies (<ph name="DATASIZE" />) que almacenasen os sitios.</translation>
 <translation id="5384883051496921101">Neste sitio estase a piques de compartir información cunha aplicación fóra do modo de incógnito.</translation>
 <translation id="5391532827096253100">A túa conexión a este sitio non é segura. Información do sitio</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
+<translation id="5403592356182871684">Nomes</translation>
 <translation id="5489227211564503167">Tempo transcorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquear anuncios en sitios que mostran anuncios enganosos ou intrusivos</translation>
 <translation id="5505264765875738116">Os sitios non poden pedir permiso para enviar notificacións</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Contido protexido</translation>
 <translation id="662080504995468778">Quedar</translation>
 <translation id="6643016212128521049">Borrar</translation>
+<translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Descargas activas</translation>
 <translation id="6746124502594467657">Mover cara abaixo</translation>
 <translation id="6766622839693428701">Pasa o dedo cara abaixo para pechar o panel inferior.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Cancelar selección</translation>
 <translation id="7846621471902887024">Pecharase a túa sesión en todos os sitios.</translation>
 <translation id="7882806643839505685">Permite o son dun sitio específico.</translation>
+<translation id="7986741934819883144">Seleccionar contacto</translation>
 <translation id="7993619969781047893">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="7999064672810608036">Estás seguro de que queres borrar todos os datos locais, incluídas as cookies, e restablecer todos os permisos para este sitio web?</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover cara arriba</translation>
 <translation id="8676374126336081632">Borrar texto</translation>
+<translation id="868929229000858085">Busca nos teus contactos</translation>
 <translation id="8702612070107455751">Borraranse todos os datos sen conexión.</translation>
 <translation id="8719283222052720129">Activa o permiso para <ph name="APP_NAME" /> en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>

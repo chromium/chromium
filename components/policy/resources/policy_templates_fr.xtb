@@ -287,7 +287,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
           2) Son adresse IP est privée et celle de l'autre est publique.
           Selon l'évolution des spécifications, cette règle pourrait s'appliquer à l'avenir à toutes les requêtes dirigées vers des IP privés ou un localhost, quelle que soit leur origine.
 
-          Un site Web est considéré comment sécurisé s'il correspond à un contexte sécurisé tel que défini dans l'article https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts. Sinon, il sera traité comme un contexte non sécurisé.
+          Un site Web est considéré comme sécurisé s'il correspond à un contexte sécurisé tel que défini dans l'article https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts. Sinon, il sera traité comme un contexte non sécurisé.
 
           Si cette règle n'est pas configurée ou est définie sur "False", le comportement par défaut des requêtes envoyées depuis des contextes non sécurisés vers des points de terminaison plus privés du réseau dépend de la configuration personnelle de l'utilisateur concernant la fonctionnalité <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, qui peut être définie lors d'un test ou via une ligne de commande.
 
@@ -4108,7 +4108,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6972540544240464302">Sélectionner la configuration du planificateur de tâches</translation>
 <translation id="6973754855639335783">Si cette règle est activée, chacune des origines définies et répertoriées dans une liste d'éléments séparés par une virgule exécute son propre processus et isole les origines par sous-domaines. Par exemple, si vous indiquez https://example.com/, https://foo.example.com/ est isolé en tant que partie du site https://example.com/.
 
-      Si cette règle est désactivée, les sites à contenu explicite ne sont pas isolés, et les tests en conditions réelles dans le cadre des règles IsolateOriginsAndroid et SitePerProcessAndroid sont désactivés. Les utilisateurs peuvent quand même activer manuellement la règle IsolateOrigins à l'aide de l'option de ligne de commande.
+      Si cette règle est désactivée, aucune isolation de sites explicite n'est effectuée, et les tests en conditions réelles dans le cadre des règles IsolateOriginsAndroid et SitePerProcessAndroid sont désactivés. Les utilisateurs peuvent quand même activer manuellement la règle IsolateOrigins à l'aide de l'option de ligne de commande.
 
       Si cette règle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
 

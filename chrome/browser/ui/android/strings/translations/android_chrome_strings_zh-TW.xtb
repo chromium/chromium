@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">你將使用自己的 Google 帳戶登入\n(這項操作不會開啟 Chrome 同步功能)</translation>
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
-<translation id="1919950603503897840">選取聯絡人</translation>
 <translation id="1925021887439448749">輸入自訂網址</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新開啟 Chrome。</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">使用 Chrome 即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 作業系統的《附加服務條款》<ph name="END_LINK2" />。您也必須遵守《<ph name="BEGIN_LINK3" />透過 Family Link 管理的 Google 帳戶所適用的隱私權聲明<ph name="END_LINK3" />》。</translation>
 <translation id="2707726405694321444">重新整理頁面</translation>
 <translation id="2709516037105925701">自動填入</translation>
-<translation id="2717722538473713889">電子郵件地址</translation>
 <translation id="2728754400939377704">依網站排序</translation>
 <translation id="2744248271121720757">只要輕觸字詞就能立即展開搜尋或查看相關的動作</translation>
 <translation id="2760989362628427051">當裝置開啟深色主題或節約耗電量功能時，啟用深色主題</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務</translation>
 <translation id="2898264748040935573">編輯已儲存的密碼</translation>
 <translation id="2900528713135656174">建立活動</translation>
-<translation id="2903493209154104877">地址</translation>
 <translation id="2904414404539560095">要共用分頁的裝置清單已開啟，顯示於整個畫面。</translation>
 <translation id="2905036901251765993">如要與附近的使用者分享，請讓對方掃描這個 QR 圖碼</translation>
 <translation id="2909615210195135082">Google 通知平台</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">Chrome 正在執行這個應用程式</translation>
 <translation id="3315103659806849044">你正在自訂同步功能和 Google 服務設定。如要完成開啟同步功能，請輕觸畫面底部附近的 [確認] 按鈕。向上瀏覽</translation>
 <translation id="3328801116991980348">網站資訊</translation>
-<translation id="3333961966071413176">所有聯絡人</translation>
 <translation id="3334729583274622784">是否要變更副檔名？</translation>
 <translation id="3341058695485821946">查看節省的數據用量</translation>
 <translation id="3350687908700087792">關閉所有無痕式分頁</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3810973564298564668">管理</translation>
-<translation id="381841723434055211">電話號碼</translation>
 <translation id="3819178904835489326">已刪除 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載項目</translation>
 <translation id="3856096718352044181">請驗證供應商是否有效，或稍後再試</translation>
 <translation id="388596076286380598">即使處於離線狀態或網路訊號不良，你也可以查看喜愛網站上的文章、影片和其他內容。</translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">往前</translation>
 <translation id="4988210275050210843">正在下載檔案 (<ph name="MEGABYTES" />)。</translation>
 <translation id="4988526792673242964">網頁</translation>
-<translation id="4994033804516042629">找不到任何聯絡人</translation>
 <translation id="5004416275253351869">Google 活動控制項</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連線</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5193988420012215838">已複製到剪貼簿</translation>
-<translation id="5197729504361054390">系統會將你選取的聯絡人資訊提供給 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5199929503336119739">工作資料夾</translation>
 <translation id="5210286577605176222">跳至上一個分頁</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">已啟用強化防護功能</translation>
 <translation id="5357811892247919462">已收到分頁</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{已開啟 <ph name="OPEN_TABS_ONE" /> 個分頁，輕觸即可切換分頁}other{已開啟 <ph name="OPEN_TABS_MANY" /> 個分頁，輕觸即可切換分頁}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
-<translation id="5403592356182871684">名稱</translation>
 <translation id="5403644198645076998">只允許特定網站</translation>
 <translation id="5414836363063783498">驗證中…</translation>
 <translation id="5423934151118863508">這裡會顯示您最常造訪的網頁</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">Chrome 隱私權聲明</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
-<translation id="6689172468748959065">個人資料相片</translation>
 <translation id="6691888250440401212">1. 選擇 <ph name="APP_NAME" />\n2. 輕觸 [設為預設]</translation>
 <translation id="6697492270171225480">找不到網頁時顯示類似的網頁建議</translation>
 <translation id="6698801883190606802">管理同步資料</translation>
@@ -912,7 +902,6 @@
 <translation id="7975379999046275268">預覽網頁 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">預先載入網頁，以加快瀏覽及搜尋速度</translation>
 <translation id="79859296434321399">如要查看擴增實境內容，請安裝 ARCore</translation>
-<translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="799806351373751710">取消同步處理設定</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">大多數網站都會將你登出。</translation>
 <translation id="8664979001105139458">檔案名稱已存在</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{訊號強度等級：# 格}other{訊號強度等級：# 格}}</translation>
-<translation id="868929229000858085">搜尋聯絡人</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8725066075913043281">再試一次</translation>

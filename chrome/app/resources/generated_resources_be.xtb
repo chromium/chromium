@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">Браўзеру Chrome патрабуецца дазвол на працяг</translation>
 <translation id="220138918934036434">Кнопка "Схаваць"</translation>
 <translation id="2202898655984161076">Узнікла праблема пры падрыхтоўцы спіса прынтараў. Магчыма, некаторыя прынтары не ўдалося зарэгістраваць у <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Пошукавая сістэма, якая выкарыстоўваецца ў <ph name="BEGIN_LINK" />адрасным радку<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Прагляд і змяненне таго, што вы набіраеце</translation>
 <translation id="220858061631308971">Увядзіце гэты PIN-код на прыладзе "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Дазволіць файлы cookie</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Звесткі пра праграму</translation>
 <translation id="3333190335304955291">Гэты сэрвіс можна выключыць у Наладах.</translation>
+<translation id="3333961966071413176">Усе кантакты</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – відэа прайграецца ў рэжыме "відарыс у відарысе"</translation>
 <translation id="3335947283844343239">Паўторна адкрыць закрытыя ўкладкі</translation>
 <translation id="3340620525920140773">Спампоўванне завершана: <ph name="FILE_NAME" />.</translation>

@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Iniciarás sesión coa túa Conta de Google\n(isto non activará a Sincronización de Chrome)</translation>
 <translation id="1877026089748256423">Chromium está desactualizado</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
-<translation id="1919950603503897840">Seleccionar contactos</translation>
 <translation id="1925021887439448749">Introducir enderezo web personalizado</translation>
 <translation id="1928696683969751773">Actualizacións</translation>
 <translation id="19288952978244135">Abre Chrome de novo.</translation>
@@ -216,7 +215,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2689830683995595741">Ao utilizar Chrome, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén se aplica o <ph name="BEGIN_LINK3" />Aviso de privacidade das Contas de Google xestionadas a través de Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Actualiza páxina</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
-<translation id="2717722538473713889">Enderezos de correo electrónico</translation>
 <translation id="2728754400939377704">Ordenar por sitio</translation>
 <translation id="2744248271121720757">Toca unha palabra para realizar buscas de forma instantánea ou ver accións relacionadas</translation>
 <translation id="2760989362628427051">Activa o tema escuro cando o teu dispositivo teña activado o tema escuro ou a función Aforro de batería</translation>
@@ -241,7 +239,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="2893180576842394309">Google pode utilizar o teu historial para personalizar a Busca e outros servizos de Google</translation>
 <translation id="2898264748040935573">Edita o contrasinal almacenado</translation>
 <translation id="2900528713135656174">Crear evento</translation>
-<translation id="2903493209154104877">Enderezos</translation>
 <translation id="2904414404539560095">A lista de dispositivos cos que compartir unha pestana está aberta a pantalla completa.</translation>
 <translation id="2905036901251765993">Para compartir contido coas persoas que estean preto, deixa que escaneen este código QR</translation>
 <translation id="2909615210195135082">Plataforma de notificacións de Google</translation>
@@ -294,7 +291,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3306398118552023113">Esta aplicación execútase en Chrome</translation>
 <translation id="3315103659806849044">Estás personalizando as opcións de configuración dos servizos de Google e de sincronización. Pera rematar de activar a sincronización, toca o botón Confirmar, situado preto da parte inferior da pantalla. Vai cara arriba</translation>
 <translation id="3328801116991980348">Información do sitio</translation>
-<translation id="3333961966071413176">Todos os contactos</translation>
 <translation id="3334729583274622784">Queres cambiar a extensión do ficheiro?</translation>
 <translation id="3341058695485821946">Comproba a cantidade de datos que aforraches</translation>
 <translation id="3350687908700087792">Pecha todas as pestanas do modo de incógnito</translation>
@@ -353,7 +349,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Xestionar</translation>
-<translation id="381841723434055211">Números de teléfono</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descargas eliminadas</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="388596076286380598">Accede a artigos, vídeos e outros contidos dos sitios que che gustan, aínda que esteas sen conexión ou esta sexa de mala calidade.</translation>
@@ -509,7 +504,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4988210275050210843">Descargando ficheiro (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Páxinas</translation>
-<translation id="4994033804516042629">Non se atopou ningún contacto</translation>
 <translation id="5004416275253351869">Controis de actividade de Google</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quere conectarse</translation>
@@ -533,7 +527,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5193988420012215838">Copiouse no teu portapapeis</translation>
-<translation id="5197729504361054390">Os contactos que selecciones compartiranse con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Perfil de traballo</translation>
 <translation id="5210286577605176222">Saltar á pestana anterior</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
@@ -553,8 +546,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
 <translation id="5357811892247919462">Recibiuse unha pestana</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> pestana aberta, toca para cambiar de pestana}other{<ph name="OPEN_TABS_MANY" /> pestanas abertas, toca para cambiar de pestana}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
-<translation id="5403592356182871684">Nomes</translation>
 <translation id="5403644198645076998">Permitir só determinados sitios</translation>
 <translation id="5414836363063783498">Verificando...</translation>
 <translation id="5423934151118863508">As túas páxinas máis visitadas aparecerán aquí</translation>
@@ -736,7 +727,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6597891566292541626">Coloca o código QR ou o código de barras neste marco.</translation>
 <translation id="6600954340915313787">Copiouse en Chrome</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
-<translation id="6618554661997243500">Tocar o botón Inicio para ver os principais sitios e historias recomendados para ti</translation>
+<translation id="6618554661997243500">Tocar botón Inicio para ver os principais sitios e historias recomendados para ti</translation>
 <translation id="6627583120233659107">Editar cartafol</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6643649862576733715">Ordenar por cantidade de datos aforrados</translation>
@@ -750,7 +741,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="666981079809192359">Aviso de privacidade de Chrome</translation>
 <translation id="6671495933530132209">Copiar imaxe</translation>
 <translation id="6676840375528380067">Queres borrar os teus datos de Chrome deste dispositivo?</translation>
-<translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6691888250440401212">1. Escolle <ph name="APP_NAME" />\n2. Toca App predeterminada</translation>
 <translation id="6697492270171225480">Mostrar suxestións de páxinas similares cando non se atope unha páxina</translation>
 <translation id="6698801883190606802">Xestionar datos sincronizados</translation>
@@ -912,7 +902,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Cargar previamente as páxinas para que a navegación e as buscas sexan máis rápidas</translation>
 <translation id="79859296434321399">Para ver contido de realidade aumentada, instala ARCore</translation>
-<translation id="7986741934819883144">Seleccionar contacto</translation>
 <translation id="799806351373751710">Cancelar configuración da sincronización</translation>
 <translation id="7998918019931843664">Abre de novo a pestana pechada</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1010,7 +999,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8662811608048051533">Pecha a túa sesión na maioría dos sitios.</translation>
 <translation id="8664979001105139458">Xa existe un ficheiro con este nome</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de intensidade do sinal: # barra}other{Nivel de intensidade do sinal: # barras}}</translation>
-<translation id="868929229000858085">Busca nos teus contactos</translation>
 <translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>

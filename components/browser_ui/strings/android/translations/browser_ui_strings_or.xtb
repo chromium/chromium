@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" />କୁ AR ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ କ୍ୟାମେରା ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="1887786770086287077">ଏହି ଡିଭାଇସ୍ ପାଇଁ ଲୋକେସନ୍ ଆକ୍ସେସ୍ ବନ୍ଦ ଅଛି। <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‍<ph name="END_LINK" />ରେ ଏହାକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="1919345977826869612">ବିଜ୍ଞାପନ</translation>
+<translation id="1919950603503897840">ଯୋଗାଯୋଗଗୁଡ଼ିକ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">ତୃତୀୟ-ପକ୍ଷ ଛାଡ଼ି ଅନ୍ୟ ସବୁଗୁଡ଼ିକରେ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1989112275319619282">ବ୍ରାଉଜ୍ କରନ୍ତୁ</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
 <translation id="2687403674020088961">ସମସ୍ତ କୁକୀ ବ୍ଲକ୍ କରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇ ନାହିଁ)</translation>
 <translation id="2704606927547763573">କପି କରାଯାଇଛି</translation>
+<translation id="2717722538473713889">ଇମେଲ୍ ଠିକଣାଗୁଡ଼ିକ</translation>
 <translation id="2822354292072154809">ଆପଣ କ’ଣ ନିଶ୍ଚିତ ଯେ ଆପଣ <ph name="CHOSEN_OBJECT_NAME" /> ପାଇଁ ସମସ୍ତ ସାଇଟ୍ ଅନୁମତିଗୁଡ଼ିକ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="2870560284913253234">ସାଇଟ୍</translation>
 <translation id="2874939134665556319">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍‌</translation>
+<translation id="2903493209154104877">ଠିକଣାଗୁଡ଼ିକ</translation>
 <translation id="2910701580606108292">ସାଇଟ୍‌ଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଚଲାଇବା ପାଇଁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ, ପଚାରନ୍ତୁ</translation>
 <translation id="2913331724188855103">କୁକୀ ଡାଟାଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଏବଂ ପଢ଼ିବା ପାଇଁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="2968755619301702150">ସାର୍ଟିଫିକେଟ୍‌ ଭ୍ୟୁଅର୍‌</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3277252321222022663">ସେନ୍ସର୍ ଆକ୍ସେସ୍ କରିବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="3295602654194328831">ସୂଚନା ଲୁଚାନ୍ତୁ</translation>
+<translation id="3333961966071413176">ସମସ୍ତ ଯୋଗାଯୋଗଗୁଡ଼ିକ</translation>
 <translation id="3386292677130313581">ସାଇଟ୍‍ଗୁଡ଼ିକ ଆପଣଙ୍କର ଲୋକେସନ୍‌ ଜାଣିବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ୍‌ କରାଯାଇଛି)</translation>
 <translation id="3479552764303398839">ଏବେ ନୁହେଁ</translation>
 <translation id="3538390592868664640">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">ଯେଉଁ ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକରେ ସାଉଣ୍ଡ ଚାଲୁଛି ସେଗୁଡ଼ିକୁ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="3744111561329211289">ପୃଷ୍ଠପଟ ସିଙ୍କ୍‌</translation>
 <translation id="3763247130972274048">10 ସେକେଣ୍ଡ ବାଦ୍ ଦେବାକୁ ଭିଡିଓର ବାମ କିମ୍ବା ଡାହାଣକୁ ଦୁଇ ଥର ଟାପ୍ କରନ୍ତୁ</translation>
+<translation id="381841723434055211">ଫୋନ୍ ନମ୍ଵରଗୁଡ଼ିକ</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
 <translation id="3859306556332390985">ଆଗକୁ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="3955193568934677022">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ଚଲାଇବା ପାଇଁ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି।(ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">ସାଇଟଗୁଡ଼ିକୁ ଆପଣଙ୍କର ଭର୍ଚୁଆଲ୍ ରିଆଲିଟୀ ଡିଭାଇସ୍ ଏବଂ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ଆଗରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="4962975101802056554">ଡିଭାଇସ୍‌ପାଇଁ ଥିବା ସମସ୍ତ ଅନୁମତିଗୁଡ଼ିକ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ</translation>
 <translation id="497421865427891073">ଆଗକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="4994033804516042629">କୌଣସି ଯୋଗାଯୋଗ ମିଳିଲା ନାହିଁ</translation>
 <translation id="4996978546172906250">ଏହା ମାଧ୍ୟମରେ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5039804452771397117">ଅନୁମତି</translation>
 <translation id="5048398596102334565">ମୋସନ୍ ସେନ୍‌ସର୍ ଆକ୍ସେସ୍ କରିବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="5063480226653192405">ବ୍ୟବହାର</translation>
 <translation id="5100237604440890931">ସଙ୍କୁଚିତ ହୋଇଯାଇଛି - ବିସ୍ତାର କରିବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="5123685120097942451">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
+<translation id="5197729504361054390">ଆପଣ ଚୟନ କରିଥିବା ଯୋଗାଯୋଗଗୁଡ଼ିକ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ସହିତ ସେୟାର୍ କରାଯିବ।</translation>
 <translation id="5300589172476337783">ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="5301954838959518834">ଠିକ୍ ଅଛି, ବୁଝିଗଲି</translation>
 <translation id="5313967007315987356">ସାଇଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">ଏହା ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା <ph name="DATASIZE" /> ଡାଟା ଏବଂ କୁକୀଗୁଡ଼ିକୁ ଖାଲି କରିଦେବ।</translation>
 <translation id="5384883051496921101">ଏହି ସାଇଟ୍ ଇନ୍‌କଗ୍ନିଟୋ ମୋଡ୍‍‍ରେ ବାହାରର କୌଣସି ଆପ୍ ସହ ସୂଚନା ସେୟାର୍ କରିବାକୁ ଯାଉଛି।</translation>
 <translation id="5391532827096253100">ଏହି ସାଇଟ୍‌କୁ ଆପଣଙ୍କର ସଂଯୋଗ ସୁରକ୍ଷିତ ନୁହେଁ ସାଇଟ୍ ସୂଚନା</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1ଟି ଅଧିକ)}other{(+ #ଟି ଅଧିକ)}}</translation>
+<translation id="5403592356182871684">ନାମଗୁଡ଼ିକ</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" />ର <ph name="ELAPSED_TIME" /> ବିତିଯାଇଥିବା ସମୟ।</translation>
 <translation id="5494752089476963479">ଅନଧିକାର ପ୍ରବେଶ କରିଥିବା କିମ୍ବା ବିଭ୍ରାନ୍ତିକର ବିଜ୍ଞାପନ ଦେଖାଉଥିବା ସାଇଟ୍ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="5505264765875738116">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ପଠାଇବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକ ପଚାରିପାରିବେ ନାହିଁ</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="662080504995468778">ରୁହନ୍ତୁ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
+<translation id="6689172468748959065">ପ୍ରୋଫାଇଲ୍ ଫଟୋ</translation>
 <translation id="6697925417670533197">ସକ୍ରିୟ ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
 <translation id="6746124502594467657">ତଳକୁ ଚାଳନ କରନ୍ତୁ</translation>
 <translation id="6766622839693428701">ବନ୍ଦ କରିବା ପାଇଁ ତଳକୁ ସ୍ଵାଇପ୍ କରନ୍ତୁ</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">ଚୟନିତ ଆଇଟମ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="7846621471902887024">ଆପଣ ସମସ୍ତ ସାଇଟରୁ ସାଇନ୍ ଆଉଟ୍ ହୋଇଯିବେ।</translation>
 <translation id="7882806643839505685">ଏକ ନିର୍ଦ୍ଧିଷ୍ଟ ସାଇଟ୍‌ରେ ଧ୍ୱନୀ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
+<translation id="7986741934819883144">ଗୋଟିଏ ଯୋଗାଯୋଗ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7993619969781047893">କିଛି ସାଇଟରେ ଫିଚରଗୁଡ଼ିକ ଠିକ୍ ଭାବେ କାମ କରିନପାରେ</translation>
 <translation id="7999064672810608036">ଆପଣ କ’ଣ ସୁନିଶ୍ଚିତ ଯେ ଆପଣ କୁକୀ ସହିତ ଏହି ୱେବ୍‌ସାଇଟ୍‌ର ସମସ୍ତ ସ୍ଥାନୀୟ ଡାଟା ଖାଲି କରିବା ଏବଂ ଏହାର ସମସ୍ତ ଅନୁମତି ରିସେଟ୍‍ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="8007176423574883786">ଏହି ଡିଭାଇସ୍‌ ପାଇଁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">ଅନୁମୋଦିତ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="8609465669617005112">ଉପରକୁ ଚଳନ କରନ୍ତୁ</translation>
 <translation id="8676374126336081632">ଇନ୍‌ପୁଟ୍ ଖାଲି କରନ୍ତୁ</translation>
+<translation id="868929229000858085">ଆପଣଙ୍କର ଯୋଗାଯୋଗ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="8702612070107455751">ଯେ କୌଣସି ଅଫଲାଇନ୍ ଡାଟା ଖାଲି ହୋଇଯିବ।</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ <ph name="APP_NAME" /> ପାଇଁ ଅନୁମତି ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="8725066075913043281">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>

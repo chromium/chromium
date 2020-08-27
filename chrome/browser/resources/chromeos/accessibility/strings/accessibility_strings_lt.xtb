@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Nėra ankstesnės nuorodos, kuria lankytasi</translation>
 <translation id="4281245629646759298">Šviesiai geltona spalva</translation>
 <translation id="4289540628985791613">Apžvalga</translation>
+<translation id="4294967782363273192">Rūšiavimas didėjimo tvarka</translation>
 <translation id="4300318234632215983">Pranešti apie nuorodos URL</translation>
 <translation id="4322625298640984693">Ochros spalva</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{taškas}=3{daugtaškis}one{# taškas}few{# taškai}many{# dots}other{# taškų}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Balsai</translation>
 <translation id="6006050241733874051">Forma</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{kairinis brūkšnys}one{# kairinis brūkšnys}few{# kairiniai brūkšniai}many{# backslashes}other{# kairinių brūkšnių}}</translation>
+<translation id="6010616110396250088">Rūšiavimas mažėjimo tvarka</translation>
 <translation id="6017514345406065928">Žalia</translation>
 <translation id="602001110135236999">Slinkti kairėn</translation>
 <translation id="6034000775414344507">Šviesiai pilka</translation>

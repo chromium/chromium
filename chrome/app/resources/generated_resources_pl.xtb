@@ -1011,7 +1011,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2200356397587687044">Chrome wymaga pozwolenia na kontynuację</translation>
 <translation id="220138918934036434">Ukryj przycisk</translation>
 <translation id="2202898655984161076">Podczas tworzenia listy drukarek wystąpił problem. Niektóre drukarki mogły nie zostać pomyślnie zarejestrowane w usłudze <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Wyszukiwarka używana w <ph name="BEGIN_LINK" />pasku adresu<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Odczyt i zmiana wpisanego tekstu</translation>
 <translation id="220858061631308971">Wpisz ten kod PIN na urządzeniu „<ph name="DEVICE_NAME" />”:</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
@@ -1933,6 +1932,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informacje o aplikacji</translation>
 <translation id="3333190335304955291">Możesz wyłączyć tę usługę w Ustawieniach.</translation>
+<translation id="3333961966071413176">Wszystkie kontakty</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – odtwarzanie filmu w trybie obrazu w obrazie</translation>
 <translation id="3335947283844343239">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="3340620525920140773">Ukończono pobieranie: <ph name="FILE_NAME" />.</translation>
@@ -3028,6 +3028,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="4646675363240786305">Porty</translation>
 <translation id="4646949265910132906">Bezpieczne połączenie z Wi-Fi</translation>
 <translation id="4647090755847581616">&amp;Zamknij kartę</translation>
+<translation id="4647283074445570750">Krok <ph name="CURRENT_STEP" /> z <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Uruchom aplikację po zalogowaniu się na tablecie}computer{Uruchom aplikację po zalogowaniu się na komputerze}other{Uruchom aplikację po zalogowaniu się na urządzeniu}}</translation>
 <translation id="4647697156028544508">Wpisz PIN urządzenia „<ph name="DEVICE_NAME" />”:</translation>
 <translation id="4648491805942548247">Niewystarczające uprawnienia</translation>
@@ -5401,7 +5402,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="7631205654593498032">Łącząc swoje urządzenia, zgadzasz się na to, by Twój <ph name="DEVICE_TYPE" /> mógł:</translation>
 <translation id="7631887513477658702">&amp;Zawsze otwieraj pliki tego typu</translation>
 <translation id="7632948528260659758">Nie udało się zaktualizować tych aplikacji kiosku:</translation>
-<translation id="7633724038415831385">To jest jedyny raz, kiedy musisz poczekać na aktualizację. Aktualizacje oprogramowania na Chromebookach są instalowane w tle.</translation>
+<translation id="7633724038415831385">To jedyny raz, kiedy musisz poczekać na aktualizację. Aktualizacje oprogramowania na Chromebookach są instalowane w tle.</translation>
 <translation id="7634566076839829401">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="763632859238619983">Nie zezwalaj żadnym stronom na instalowanie modułów do obsługi płatności</translation>
 <translation id="7636919061354591437">Zainstaluj na tym urządzeniu</translation>

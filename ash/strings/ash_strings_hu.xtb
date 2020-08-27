@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">A rendszer most kijelentkezteti Önt.</translation>
 <translation id="2825224105325558319">A(z) <ph name="DISPLAY_NAME" /> nem támogatja a következő felbontást: <ph name="SPECIFIED_RESOLUTION" />. A felbontás erre módosult: <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Polc</translation>
+<translation id="2841907151129139818">Visszaváltott táblagép módra</translation>
 <translation id="2844169650293029770">C típusú USB-vel kompatibilis eszköz (bal első port)</translation>
 <translation id="2865888419503095837">Hálózatinformáció</translation>
 <translation id="2872961005593481000">Leállítás</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">Mit lehet csinálni?</translation>
 <translation id="3290356915286466215">Nem bizt.</translation>
 <translation id="3294437725009624529">Vendég</translation>
+<translation id="3307642347673023554">Visszaváltott laptop módra</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> később be tud jelentkezni.</translation>
 <translation id="3321628682574733415">Érvénytelen szülői kód</translation>
 <translation id="332587331255250389">Cserélje ki az akkumulátort</translation>

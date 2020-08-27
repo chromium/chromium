@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Google есептік жазбаңызға кіресіз\n(Chrome Sync іске қосылмайды).</translation>
 <translation id="1877026089748256423">Chrome ескірген</translation>
 <translation id="1883903952484604915">Файлдарым</translation>
-<translation id="1919950603503897840">Контактілерді таңдау</translation>
 <translation id="1925021887439448749">Арнаулы веб-мекенжайды енгізу</translation>
 <translation id="1928696683969751773">Жаңартулар</translation>
 <translation id="19288952978244135">Chrome браузерін қайта ашыңыз.</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">Chrome браузерін пайдалану арқылы <ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарына<ph name="END_LINK1" /> және <ph name="BEGIN_LINK2" />Google Chrome және Chrome OS Қосымша қызмет көрсету шарттарына<ph name="END_LINK2" /> келісім бересіз. <ph name="BEGIN_LINK3" />Family Link арқылы басқарылатын Google есептік жазбаларына арналған Құпиялылық мәлімдемесі<ph name="END_LINK3" /> де қолданылады.</translation>
 <translation id="2707726405694321444">Бетті жаңарту</translation>
 <translation id="2709516037105925701">Автотолтыру</translation>
-<translation id="2717722538473713889">электрондық пошта мекенжайлары</translation>
 <translation id="2728754400939377704">Сайт бойынша сұрыптау</translation>
 <translation id="2744248271121720757">Бірден іздеу үшін сөзді түртіңіз не ұқсас әрекеттерді қараңыз</translation>
 <translation id="2760989362628427051">Құрылғыдағы қараңғы тақырып немесе Battery saver режимі қосылып тұрғанда, қараңғы тақырыпты қосу</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">Search және басқа да Google қызметтерін жеке қажеттеліктерге бейімдеу үшін Google интернеттегі әрекеттеріңізді пайдалануы мүмкін.</translation>
 <translation id="2898264748040935573">Сақталған құпия сөзді өзгерту</translation>
 <translation id="2900528713135656174">Оқиға жасау</translation>
-<translation id="2903493209154104877">Мекенжайлар</translation>
 <translation id="2904414404539560095">Қойынды жіберілетін құрылғылар тізімі толық экранға ашылған.</translation>
 <translation id="2905036901251765993">Жаныңыздағы адамдармен бөлісу үшін олар осы QR кодын сканерлеуі қажет.</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">Бұл қолданба Chrome браузерінде жұмыс істеп тұр</translation>
 <translation id="3315103659806849044">Синхрондау және Google қызметі параметрлерін реттеудесіз. Синхрондауды қосуды аяқтау үшін экранның төменгі жағындағы "Растау" түймесін түртіңіз. Жоғары қарай өту</translation>
 <translation id="3328801116991980348">Сайт ақпараты</translation>
-<translation id="3333961966071413176">Барлық контакт</translation>
 <translation id="3334729583274622784">Файл кеңейтімін өзгертесіз бе?</translation>
 <translation id="3341058695485821946">Қанша деректер сақталғанын көріңіз</translation>
 <translation id="3350687908700087792">Барлық жасырын қойындыларды жабу</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">Орнату</translation>
 <translation id="3810838688059735925">Бейне</translation>
 <translation id="3810973564298564668">Басқару</translation>
-<translation id="381841723434055211">Телефон нөмірлері</translation>
 <translation id="3819178904835489326">Жүктелген <ph name="NUMBER_OF_DOWNLOADS" /> файл жойылды</translation>
 <translation id="3856096718352044181">Мұның жарамды провайдер екенін тексеріңіз немесе кейінірек қайталап көріңіз.</translation>
 <translation id="388596076286380598">Интернетке қосылмасаңыз да немесе байланыс нашар болса да, өзіңізге ұнайтын сайттардағы мақалаларды, бейнелерді және басқа мазмұнды көріңіз.</translation>
@@ -509,7 +504,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="497421865427891073">Алға өту</translation>
 <translation id="4988210275050210843">Файл (<ph name="MEGABYTES" />) жүктеп алынуда.</translation>
 <translation id="4988526792673242964">Беттер</translation>
-<translation id="4994033804516042629">Ешқандай контакт табылмады.</translation>
 <translation id="5004416275253351869">Google әрекеттерді басқару элементтері</translation>
 <translation id="5005498671520578047">Құпия сөзді көшіру</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сайты байланыс орнатқысы келеді</translation>
@@ -533,7 +527,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5184329579814168207">Chrome жүйесінде ашу</translation>
 <translation id="5193988420012215838">Буферге көшірілді.</translation>
-<translation id="5197729504361054390">Сіз таңдаған контактілер <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтымен бөлісіледі.</translation>
 <translation id="5199929503336119739">Жұмыс профилі</translation>
 <translation id="5210286577605176222">Алдыңғы қойындыға өту</translation>
 <translation id="5210365745912300556">Қойындыны жабу</translation>
@@ -553,8 +546,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5355191726083956201">Жақсартылған қорғаныс қосулы.</translation>
 <translation id="5357811892247919462">Қойынды алынды.</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> қойынды ашық тұр, қойындыларды ауыстыру үшін түртіңіз.}other{<ph name="OPEN_TABS_MANY" /> қойынды ашық тұр, қойындыларды ауыстыру үшін түртіңіз.}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(Тағы 1)}other{(Тағы #)}}</translation>
-<translation id="5403592356182871684">Атаулары</translation>
 <translation id="5403644198645076998">Тек белгілі бір сайттарға рұқсат беру</translation>
 <translation id="5414836363063783498">Расталуда…</translation>
 <translation id="5423934151118863508">Ең көп кірген беттеріңіз мына жерде пайда болады</translation>
@@ -563,7 +554,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="5433691172869980887">Пайдаланушының аты көшірілді</translation>
 <translation id="543509235395288790"><ph name="COUNT" /> файл (<ph name="MEGABYTES" />) жүктеп алынуда.</translation>
 <translation id="5441522332038954058">Мекенжай жолағына өту</translation>
-<translation id="544776284582297024">Бір уақытта қойындыларды ашып, неше түрлі беттерге кіру үшін ашық қойындылар түймесін басыңыз.</translation>
+<translation id="544776284582297024">Бір уақытта қойындыларды ашып, неше түрлі беттерге кіру үшін "ашық қойындылар" түймесін басыңыз.</translation>
 <translation id="545042621069398927">Жылдамырақ жүктеп алынуда.</translation>
 <translation id="5456381639095306749">Жүктеп алу беті</translation>
 <translation id="548278423535722844">Maps қолданбасында ашу</translation>
@@ -736,7 +727,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="6597891566292541626">QR кодын/штрихкодты осы кадрға қойыңыз.</translation>
 <translation id="6600954340915313787">Chrome жүйесіне көшірілген</translation>
 <translation id="661266467055912436">Интернеттегі сіздің және басқалардың қауіпсіздігін күшейтеді.</translation>
-<translation id="6618554661997243500">Көп қолданылатын сайттар мен қызықты жаңалықтарды көру үшін негізгі экран түймесін басыңыз.</translation>
+<translation id="6618554661997243500">Көп қолданылатын сайттар мен қызықты жаңалықтарды көру үшін "Hегізгі экран" түймесін басыңыз.</translation>
 <translation id="6627583120233659107">Қалтаны өзгерту</translation>
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6643649862576733715">Үнемделген деректер көлемі бойынша сұрыптау</translation>
@@ -750,7 +741,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="666981079809192359">Chrome құпиялылық ескертпесі</translation>
 <translation id="6671495933530132209">Кескінді көшіру</translation>
 <translation id="6676840375528380067">Chrome деректері осы құрылғыдан жойылсын ба?</translation>
-<translation id="6689172468748959065">Профиль фотосуреттері</translation>
 <translation id="6691888250440401212">1. <ph name="APP_NAME" /> қолданбасын таңдаңыз.\n2. "Әдепкі етіп орнату" түймесін түртіңіз.</translation>
 <translation id="6697492270171225480">Бет табылмағанда, ұқсас нұсқаларды ұсыну</translation>
 <translation id="6698801883190606802">Синхрондалған деректерді басқару</translation>
@@ -912,7 +902,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7975379999046275268">Бетті алдын ала қарау <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Интернетте жылдамырақ шарлау және іздеу үшін беттерді алдын ала жүктеу</translation>
 <translation id="79859296434321399">Толықтырылған шындық мазмұнын көру үшін ARCore платформасын орнатыңыз</translation>
-<translation id="7986741934819883144">Контактіні таңдау</translation>
 <translation id="799806351373751710">Синхрондауды реттеуді бас тарту</translation>
 <translation id="7998918019931843664">Жабық қойындыны қайта ашу</translation>
 <translation id="8004582292198964060">Браузер</translation>
@@ -1010,7 +999,6 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="8662811608048051533">Көп сайттардан шығарады.</translation>
 <translation id="8664979001105139458">Мұндай атаулы файл бұрыннан бар</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Сигнал деңгейі: # сызықша}other{Сигнал деңгейі: # сызықша}}</translation>
-<translation id="868929229000858085">Контактілеріңізді іздеңіз</translation>
 <translation id="869891660844655955">Аяқталу мерзімі</translation>
 <translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8725066075913043281">Әрекетті қайталау</translation>

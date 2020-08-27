@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ኤአር እንዲጠቀም ለማስቻል፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
 <translation id="1887786770086287077">የአካባቢ መዳረሻ ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="1919345977826869612">ማስታወቂያዎች</translation>
+<translation id="1919950603503897840">ዕውቂያዎችን ምረጥ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">የተፈቀደ፣ ከሶስተኛ ወገን በቀር</translation>
 <translation id="1989112275319619282">አስስ</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2687403674020088961">ሁሉንም ኩኪዎች አግድ (አይመከርም)</translation>
 <translation id="2704606927547763573">ተቀድቷል</translation>
+<translation id="2717722538473713889">ኢሜይል አድራሻዎች</translation>
 <translation id="2822354292072154809">እርግጠኛ ነዎት ሁሉንም የ<ph name="CHOSEN_OBJECT_NAME" /> ጣቢያ ፈቃዶችን ዳግም ማስጀመር ይፈልጋሉ?</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
+<translation id="2903493209154104877">አድራሻዎች</translation>
 <translation id="2910701580606108292">ጣቢያዎች ጥበቃ የሚደረግለትን ይዘትን እንዲያጫውቱ ከመፍቀድ በፊት ጠይቅ</translation>
 <translation id="2913331724188855103">ጣቢያዎች የኩኪ ውሂብ እንዲያስቀምጡ እና እንዲያነቡ ይፍቀዱ (የሚመከር)</translation>
 <translation id="2968755619301702150">የእውቅና ማረጋገጫ መመልከቻ</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">ማይክሮፎን</translation>
 <translation id="3277252321222022663">ጣቢያዎች ዳሳሾችን እንዲደርሱ ይፍቀዱላቸው (የሚመከር)</translation>
 <translation id="3295602654194328831">መረጃ ደብቅ</translation>
+<translation id="3333961966071413176">ሁሉም እውቂያዎች</translation>
 <translation id="3386292677130313581">ጣቢያዎች አካባቢዎን እንዲያውቁ ከመፍቀድዎ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3538390592868664640">ጣቢያዎች የዙሪያዎ የ3ል ካርታ እንዳይፈጥሩ ወይም የካሜራ ቦታን እንዳይከታተሉ ያግዷቸው</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">ድምጽን በሚያጫውቱ ጣቢያዎች ላይ ድምጸ-ከል አድርግ</translation>
 <translation id="3744111561329211289">የዳራ ስምረት</translation>
 <translation id="3763247130972274048">10 ሴ ለመዝለል ቪዲዮ ወደ ግራ ወይም ቀኝ ላይ ሁለቴ መታ ያድርጉ</translation>
+<translation id="381841723434055211">ስልክ ቁጥሮች</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3859306556332390985">ወደፊት ፈልግ</translation>
 <translation id="3955193568934677022">ጥበቃ የሚደረግበትን ይዘት እንዲያጫውቱ ለጣቢያዎች ፍቀድ (የሚመከር)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">ጣቢያዎች የእርስዎን የምናባዊ እውነታ መሣሪያ እና ውሂብ እንዲጠቀሙ ፈቃድ ከማግኘታቸው በፊት ይጠይቁ (የሚመከር)</translation>
 <translation id="4962975101802056554">ሁሉንም የመሣሪያ ፈቃዶች ይሻሩ</translation>
 <translation id="497421865427891073">ወደ ፊት ሂድ</translation>
+<translation id="4994033804516042629">ምንም ዕውቂያዎች አልተገኙም</translation>
 <translation id="4996978546172906250">ያጋሩ በ</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
 <translation id="5048398596102334565">ጣቢያዎች የእንቅስቃሴ ዳሳሾችን እንዲደርሱባቸው ይፍቀዱ (የሚመከር)</translation>
 <translation id="5063480226653192405">አጠቃቀም</translation>
 <translation id="5100237604440890931">ተሰብስቧል - ለመዘርጋት ጠቅ ያድርጉ</translation>
 <translation id="5123685120097942451">ማንነት የማያሳውቅ ትር</translation>
+<translation id="5197729504361054390">የመረጧቸው እውቂያዎች ለ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ይጋራሉ።</translation>
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5301954838959518834">እሺ፣ ገባኝ</translation>
 <translation id="5313967007315987356">ጣቢያ አክል</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">ይህ በጣቢያዎች የተከማቹ <ph name="DATASIZE" /> ውሂብ እና ኩኪዎችን ያጸዳል።</translation>
 <translation id="5384883051496921101">ይህ ጣቢያ ማንነት ከማያሳውቅ ሁነታ ውጭ ላለ መተግበሪያ መረጃ ሊያጋራ ነው።</translation>
 <translation id="5391532827096253100">ወደዚህ ጣቢያ ያልዎት ግንኙነት ደህንነቱ የተጠበቀ አይደለም። የጣቢያ መረጃ</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ተጨማሪ)}one{(+ # ተጨማሪ)}other{(+ # ተጨማሪ)}}</translation>
+<translation id="5403592356182871684">ስሞች</translation>
 <translation id="5489227211564503167">የጠፋው ጊዜ <ph name="ELAPSED_TIME" /> ከ<ph name="TOTAL_TIME" />።</translation>
 <translation id="5494752089476963479">ረባሽ ወይም አሳሳች ማስታወቂያዎችን ከሚያሳዩ ጣቢያዎች የሚመጡ ማስታወቂያዎችን አግድ</translation>
 <translation id="5505264765875738116">ጣቢያዎች ማሳወቂያዎችን ለመላክ መጠየቅ አይችሉም</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">ጥበቃ የሚደረግለት ይዘት</translation>
 <translation id="662080504995468778">ቆይ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
+<translation id="6689172468748959065">የመገለጫ ፎቶዎች</translation>
 <translation id="6697925417670533197">ንቁ ውርዶች</translation>
 <translation id="6746124502594467657">ወደታች አውርድ</translation>
 <translation id="6766622839693428701">ለመዝጋት ወደታች ያንሸራትቱ።</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">ምርጫ ሰርዝ</translation>
 <translation id="7846621471902887024">ከሁሉም ጣቢያዎች ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="7882806643839505685">ለተወሰነ ጣቢያ ድምጽ ፍቀድ።</translation>
+<translation id="7986741934819883144">አንድ እውቂያ ይምረጡ</translation>
 <translation id="7993619969781047893">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ሊሰበሩ ይችላሉ</translation>
 <translation id="7999064672810608036">እርግጠኛ ነዎት ለዚህ ጣቢያ ኩኪዎችንም ጨምሮ ሁሉንም አካባቢያዊ ውሂብ ማጽዳት እና ሁሉም ፍቃዶችን ዳግም ማስጀመር ይፈልጋሉ?</translation>
 <translation id="8007176423574883786">ለዚህ መሣሪያ ጠፍቷል</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
 <translation id="8609465669617005112">ወደላይ አውጣ</translation>
 <translation id="8676374126336081632">ግቤቱን አጽዳ</translation>
+<translation id="868929229000858085">እውቂያዎችዎን ይፈልጉ</translation>
 <translation id="8702612070107455751">ማንኛውም የመስመር ውጭ ውሂብ ይጸዳል።</translation>
 <translation id="8719283222052720129">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃድን ያብሩ።</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>

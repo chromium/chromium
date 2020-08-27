@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Lai atļautu lietotnei <ph name="APP_NAME" /> izmantot papildināto realitāti, ieslēdziet arī kameru <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Reklāmas</translation>
+<translation id="1919950603503897840">Kontaktpersonu atlase</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> no <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Atļauti, izņemot trešo pušu sīkfailus</translation>
 <translation id="1989112275319619282">Pārlūkot</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Iziet</translation>
 <translation id="2687403674020088961">Bloķēt visus sīkfailus (nav ieteicams)</translation>
 <translation id="2704606927547763573">Nokopēts</translation>
+<translation id="2717722538473713889">E-pasta adreses</translation>
 <translation id="2822354292072154809">Vai tiešām vēlaties atiestatīt visas vietņu atļaujas, kas piešķirtas šim objektam: <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Vietne</translation>
 <translation id="2874939134665556319">Iepriekšējais ieraksts</translation>
+<translation id="2903493209154104877">Adreses</translation>
 <translation id="2910701580606108292">Jautāt, pirms atļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="2913331724188855103">Atļaut vietnēm saglabāt un lasīt sīkfailu datus (ieteicams)</translation>
 <translation id="2968755619301702150">Sertifikātu skatītājs</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofons</translation>
 <translation id="3277252321222022663">Atļaut vietnēm piekļūt sensoriem (ieteicams)</translation>
 <translation id="3295602654194328831">Slēpt informāciju</translation>
+<translation id="3333961966071413176">Visas kontaktpersonas</translation>
 <translation id="3386292677130313581">Jautāt, pirms atļaut vietnēm uzzināt jūsu atrašanās vietu (ieteicams)</translation>
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3538390592868664640">Neļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Izslēgt skaņu vietnēm, kurās tiek atskaņota skaņa</translation>
 <translation id="3744111561329211289">Sinhronizācija fonā</translation>
 <translation id="3763247130972274048">Divreiz pieskarieties videoklipam pa labi vai pa kreisi, lai izlaistu 10 s.</translation>
+<translation id="381841723434055211">Tālruņa numuri</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3859306556332390985">Pārtīt uz priekšu</translation>
 <translation id="3955193568934677022">Atļaut vietnēm atskaņot aizsargātu saturu (ieteicams)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Vaicāt, pirms atļaut vietnēm piekļūt jūsu virtuālās realitātes ierīcei un datiem (ieteicams)</translation>
 <translation id="4962975101802056554">Atsaukt visas atļaujas, kas piešķirtas ierīcei</translation>
 <translation id="497421865427891073">Doties uz priekšu</translation>
+<translation id="4994033804516042629">Nav atrasta neviena kontaktpersona</translation>
 <translation id="4996978546172906250">Kopīgošanas veids:</translation>
 <translation id="5039804452771397117">Atļaut</translation>
 <translation id="5048398596102334565">Atļaut vietnēm piekļūt kustību sensoriem (ieteicams)</translation>
 <translation id="5063480226653192405">Lietojums</translation>
 <translation id="5100237604440890931">Sakļauts — noklikšķiniet, lai izvērstu.</translation>
 <translation id="5123685120097942451">Inkognito cilne</translation>
+<translation id="5197729504361054390">Atlasīto kontaktpersonu dati tiks kopīgoti ar vietni <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5301954838959518834">Labi, sapratu</translation>
 <translation id="5313967007315987356">Pievienot vietni</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Tiks dzēsti dati un vietnēs uzglabātie sīkfaili (<ph name="DATASIZE" />).</translation>
 <translation id="5384883051496921101">Šī vietne kopīgos informāciju ar lietotni, kas nav inkognito režīmā.</translation>
 <translation id="5391532827096253100">Savienojums ar šo vietni nav drošs. Vietnes informācija</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(un vēl 1)}zero{(un vēl #)}one{(un vēl #)}other{(un vēl #)}}</translation>
+<translation id="5403592356182871684">Nosaukumi</translation>
 <translation id="5489227211564503167">Pagājušais laiks: <ph name="ELAPSED_TIME" /> (no <ph name="TOTAL_TIME" />)</translation>
 <translation id="5494752089476963479">Bloķēt reklāmas vietnēs, kurās tiek rādītas traucējošas vai maldinošas reklāmas</translation>
 <translation id="5505264765875738116">Vietnēs nevar lūgt atļauju sūtīt paziņojumus</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Aizsargāts saturs</translation>
 <translation id="662080504995468778">Palikt</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
+<translation id="6689172468748959065">Profila fotoattēli</translation>
 <translation id="6697925417670533197">Aktīvas lejupielādes</translation>
 <translation id="6746124502594467657">Pārvietot uz leju</translation>
 <translation id="6766622839693428701">Velciet uz leju, lai aizvērtu.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Atcelt atlasi</translation>
 <translation id="7846621471902887024">Jūs tiksiet izrakstīts no visām vietnēm.</translation>
 <translation id="7882806643839505685">Atļaut skaņu konkrētai vietnei</translation>
+<translation id="7986741934819883144">Kontaktpersonas atlase</translation>
 <translation id="7993619969781047893">Noteiktās vietnēs funkcijas var nedarboties</translation>
 <translation id="7999064672810608036">Vai tiešām vēlaties notīrīt visus ar šo vietni saistītos lokālos datus, tostarp sīkfailus, un atiestatīt visas atļaujas?</translation>
 <translation id="8007176423574883786">Izslēgts šai ierīcei</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Atļauta (ieteicams)</translation>
 <translation id="8609465669617005112">Virziet uz augšu</translation>
 <translation id="8676374126336081632">Notīrīt ievadi</translation>
+<translation id="868929229000858085">Meklējiet kontaktpersonas</translation>
 <translation id="8702612070107455751">Visi bezsaistē saglabātie dati tiks notīrīti.</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļauju lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>

@@ -1015,7 +1015,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2200356397587687044">Chrome tarvitsee luvan jatkamiseen</translation>
 <translation id="220138918934036434">Piilota painike</translation>
 <translation id="2202898655984161076">Tulostimien luetteloinnissa tapahtui virhe. Kaikkia tulostimiasi ei ole välttämättä rekisteröity palveluun <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Hakukone, jota käytetään <ph name="BEGIN_LINK" />osoitepalkissa<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Lukea ja muuttaa kaikkea kirjoittamaasi</translation>
 <translation id="220858061631308971">Syötä tämä PIN-koodi laitteella <ph name="DEVICE_NAME" />:</translation>
 <translation id="2212565012507486665">Salli evästeet</translation>
@@ -1937,6 +1936,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Sovelluksen tiedot</translation>
 <translation id="3333190335304955291">Voit laittaa tämän palvelun pois päältä asetuksista.</translation>
+<translation id="3333961966071413176">Kaikki yhteystiedot</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Video toistetaan kuva kuvassa ‑tilassa</translation>
 <translation id="3335947283844343239">Avaa suljettu välilehti uudelleen</translation>
 <translation id="3340620525920140773">Lataus valmis: <ph name="FILE_NAME" /></translation>
@@ -3029,6 +3029,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4646675363240786305">Portit</translation>
 <translation id="4646949265910132906">Suojattu Wi-Fi-yhteys</translation>
 <translation id="4647090755847581616">&amp;Sulje välilehti</translation>
+<translation id="4647283074445570750">Vaihe <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Käynnistä sovellus, kun kirjaudut tabletillesi}computer{Käynnistä sovellus, kun kirjaudut tietokoneellesi}other{Käynnistä sovellus, kun kirjaudut laitteellesi}}</translation>
 <translation id="4647697156028544508">Anna laitteen <ph name="DEVICE_NAME" /> PIN-koodi:</translation>
 <translation id="4648491805942548247">Käyttöluvat eivät riitä</translation>

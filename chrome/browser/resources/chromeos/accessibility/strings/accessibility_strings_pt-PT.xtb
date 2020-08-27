@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Não existe nenhum link visitado anterior.</translation>
 <translation id="4281245629646759298">Amarelo-claro</translation>
 <translation id="4289540628985791613">Vista geral</translation>
+<translation id="4294967782363273192">Ordenação ascendente</translation>
 <translation id="4300318234632215983">Anunciar o URL por detrás de um link</translation>
 <translation id="4322625298640984693">Castanho sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ponto}=3{reticências}other{# pontos}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Vozes</translation>
 <translation id="6006050241733874051">Formulário</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{barra invertida}other{# barras invertidas}}</translation>
+<translation id="6010616110396250088">Ordenação descendente</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="602001110135236999">Deslocar para a esquerda</translation>
 <translation id="6034000775414344507">Cinzento-claro</translation>

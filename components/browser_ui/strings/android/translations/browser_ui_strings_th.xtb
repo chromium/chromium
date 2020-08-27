@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="1887786770086287077">ตอนนี้ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="1919345977826869612">โฆษณา</translation>
+<translation id="1919950603503897840">เลือกรายชื่อติดต่อ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">อนุญาต ยกเว้นบุคคลที่สาม</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2687403674020088961">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="2704606927547763573">คัดลอกแล้ว</translation>
+<translation id="2717722538473713889">อีเมล</translation>
 <translation id="2822354292072154809">แน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ทั้งหมดของเว็บไซต์สำหรับ <ph name="CHOSEN_OBJECT_NAME" /></translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
+<translation id="2903493209154104877">ที่อยู่</translation>
 <translation id="2910701580606108292">ถามก่อนอนุญาตให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง</translation>
 <translation id="2913331724188855103">อนุญาตให้เว็บไซต์บันทึกและอ่านข้อมูลคุกกี้ (แนะนำ)</translation>
 <translation id="2968755619301702150">เครื่องมือดูใบรับรอง</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">ไมโครโฟน</translation>
 <translation id="3277252321222022663">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ (แนะนำ)</translation>
 <translation id="3295602654194328831">ซ่อนข้อมูล</translation>
+<translation id="3333961966071413176">รายชื่อติดต่อทั้งหมด</translation>
 <translation id="3386292677130313581">ถามก่อนอนุญาตให้เว็บไซต์ทราบตำแหน่งของคุณ (แนะนำ)</translation>
 <translation id="3479552764303398839">ไม่ใช่ตอนนี้</translation>
 <translation id="3538390592868664640">บล็อกไม่ให้เว็บไซต์สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณหรือติดตามตำแหน่งของกล้อง</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">ปิดเสียงเว็บไซต์ที่เล่นเสียง</translation>
 <translation id="3744111561329211289">ซิงค์ในแบ็กกราวด์</translation>
 <translation id="3763247130972274048">แตะสองครั้งที่ด้านซ้ายหรือขวาของวิดีโอเพื่อข้ามทีละ 10 วินาที</translation>
+<translation id="381841723434055211">หมายเลขโทรศัพท์</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3859306556332390985">ไปข้างหน้า</translation>
 <translation id="3955193568934677022">อนุญาตให้เว็บไซต์เล่นเนื้อหาที่ได้รับความคุ้มครอง (แนะนำ)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">ถามก่อนที่จะอนุญาตให้เว็บไซต์ใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ (แนะนำ)</translation>
 <translation id="4962975101802056554">เพิกถอนสิทธิ์ทั้งหมดสำหรับอุปกรณ์</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
+<translation id="4994033804516042629">ไม่พบรายชื่อติดต่อ</translation>
 <translation id="4996978546172906250">แชร์ผ่าน</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5048398596102334565">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ตรวจจับความเคลื่อนไหว (แนะนำ)</translation>
 <translation id="5063480226653192405">การใช้</translation>
 <translation id="5100237604440890931">ยุบ - คลิกเพื่อขยาย</translation>
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
+<translation id="5197729504361054390">ระบบจะแชร์รายชื่อติดต่อที่คุณเลือกกับ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /></translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5301954838959518834">ตกลง เข้าใจแล้ว</translation>
 <translation id="5313967007315987356">เพิ่มเว็บไซต์</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">การดำเนินการนี้จะล้างข้อมูลและคุกกี้ที่เว็บไซต์ต่างๆ จัดเก็บไว้รวมทั้งสิ้น <ph name="DATASIZE" /></translation>
 <translation id="5384883051496921101">ไซต์นี้กำลังจะแชร์ข้อมูลกับแอปนอกโหมดไม่ระบุตัวตน</translation>
 <translation id="5391532827096253100">การเชื่อมต่อกับเว็บไซต์นี้ไม่ปลอดภัย ข้อมูลเว็บไซต์</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(อีก 1 รายการ)}other{(อีก # รายการ)}}</translation>
+<translation id="5403592356182871684">ชื่อ</translation>
 <translation id="5489227211564503167">เวลาผ่านไป <ph name="ELAPSED_TIME" /> จาก <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">บล็อกโฆษณาในเว็บไซต์ที่แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="5505264765875738116">เว็บไซต์ขออนุญาตเพื่อส่งการแจ้งเตือนไม่ได้</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
 <translation id="662080504995468778">อยู่ต่อ</translation>
 <translation id="6643016212128521049">ล้าง</translation>
+<translation id="6689172468748959065">รูปโปรไฟล์</translation>
 <translation id="6697925417670533197">การดาวน์โหลดที่ทำงานอยู่</translation>
 <translation id="6746124502594467657">เลื่อนลง</translation>
 <translation id="6766622839693428701">เลื่อนลงเพื่อปิด</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">ยกเลิกการเลือก</translation>
 <translation id="7846621471902887024">คุณจะออกจากระบบของทุกเว็บไซต์</translation>
 <translation id="7882806643839505685">อนุญาตให้เว็บไซต์ที่ต้องการเล่นเสียงได้</translation>
+<translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="7993619969781047893">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="7999064672810608036">คุณแน่ใจไหมว่าต้องการล้างข้อมูลในเครื่องทั้งหมด รวมถึงคุกกี้ และรีเซ็ตสิทธิ์ทั้งหมดสำหรับเว็บไซต์นี้</translation>
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">อนุญาตแล้ว (แนะนำ)</translation>
 <translation id="8609465669617005112">เลื่อนขึ้น</translation>
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
+<translation id="868929229000858085">ค้นหารายชื่อติดต่อ</translation>
 <translation id="8702612070107455751">ระบบจะล้างข้อมูลออฟไลน์ทั้งหมด</translation>
 <translation id="8719283222052720129">เปิดการใช้สิทธิ์สำหรับ <ph name="APP_NAME" /> ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>

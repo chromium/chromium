@@ -911,7 +911,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2081816110395725788">Inactieve stand bij batterijvoeding</translation>
 <translation id="2082187087049518845">Tabblad toevoegen aan groep</translation>
-<translation id="2082510809738716738">Een themakleur kiezen</translation>
+<translation id="2082510809738716738">Kies een themakleur</translation>
 <translation id="2087822576218954668">Afdrukken: <ph name="PRINT_NAME" /></translation>
 <translation id="2088690981887365033">VPN-netwerk</translation>
 <translation id="208928984520943006">Je kunt het startscherm op elk moment openen door vanaf de onderkant omhoog te swipen.</translation>
@@ -1015,7 +1015,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2200356397587687044">Chrome heeft rechten nodig om verder te gaan</translation>
 <translation id="220138918934036434">Knop verbergen</translation>
 <translation id="2202898655984161076">Er is een probleem opgetreden met het genereren van het printeroverzicht. Sommige van je printers zijn mogelijk niet geregistreerd voor <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">De zoekmachine die wordt gebruikt in de <ph name="BEGIN_LINK" />adresbalk<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Alles lezen en wijzigen wat je typt</translation>
 <translation id="220858061631308971">Voer deze pincode in op '<ph name="DEVICE_NAME" />':</translation>
 <translation id="2212565012507486665">Cookies toestaan</translation>
@@ -1937,6 +1936,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">App-informatie</translation>
 <translation id="3333190335304955291">Je kunt deze service uitschakelen via Instellingen.</translation>
+<translation id="3333961966071413176">Alle contacten</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: video wordt afgespeeld in de scherm-in-scherm-modus</translation>
 <translation id="3335947283844343239">Open gesloten tabblad opnieuw</translation>
 <translation id="3340620525920140773">Download voltooid: <ph name="FILE_NAME" />.</translation>
@@ -2975,7 +2975,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="457386861538956877">Meer...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="457564749856982089">Door een schoolaccount toe te voegen aan een profiel, kunnen kinderen gemakkelijk als leerling inloggen bij websites, extensies en apps terwijl ze nog steeds onder ouderlijk toezicht staan. Dit geeft een kind geen toegang tot bookmarks, wachtwoorden en andere browsegegevens die zijn gesynchroniseerd met het schoolaccount.&lt;br&gt;&lt;br&gt;
-    Als je kind een Chromebook gebruikt op school en je de schoolomgeving thuis wilt mirroren zodat je kind toegang heeft tot al het benodigde schoolwerk, log je uit van dit Family Link-account en log je in op het schoolaccount vanaf de Chrome OS-accountpagina. (Opmerking: Ouderlijk toezicht van Family Link is dan niet van toepassing.)&lt;br&gt;&lt;br&gt;
+    Als je kind een Chromebook gebruikt op school en je de schoolomgeving thuis wilt mirroren zodat je kind toegang heeft tot al het nodige schoolwerk, log je uit van dit Family Link-account en log je in op het schoolaccount vanaf de Chrome OS-accountpagina. (Opmerking: Ouderlijk toezicht van Family Link is dan niet van toepassing.)&lt;br&gt;&lt;br&gt;
     Als je kind geen Chromebook gebruikt op school of als je liever de online omgeving van je kind thuis beheert met Family Link, klik je hieronder op de knop Volgende om een schoolaccount toe te voegen aan dit profiel.</translation>
 <translation id="4576541033847873020">Bluetooth-apparaat koppelen</translation>
 <translation id="4579453506923101210">Verbonden telefoon vergeten</translation>
@@ -4356,7 +4356,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6298962879096096191">Gebruik Google Play om Android-apps te installeren</translation>
 <translation id="630065524203833229">&amp;Sluiten</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kan niet automatisch worden ingesteld. Geef geavanceerde printergegevens op. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">Maak een nieuw profiel voor <ph name="NEW_USER" /> om persoonlijke browsegegevens en browsegegevens van <ph name="EXISTING_USER" /> van elkaar te scheiden</translation>
+<translation id="6301076166764763868">Maak een nieuw profiel voor <ph name="NEW_USER" /> om je persoonlijke browsegegevens en browsegegevens van <ph name="EXISTING_USER" /> van elkaar te scheiden</translation>
 <translation id="630292539633944562">Suggesties voor persoonlijke informatie</translation>
 <translation id="6305607932814307878">Algemeen beleid:</translation>
 <translation id="6307990684951724544">Systeem is bezet</translation>

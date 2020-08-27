@@ -1015,7 +1015,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2200356397587687044">Chromeu je potrebna dozvola za nastavak</translation>
 <translation id="220138918934036434">Dugme za sakrivanje</translation>
 <translation id="2202898655984161076">Došlo je do problema prilikom navođenja štampača. Moguće je da neki od vaših štampača nisu uspješno registrirani na serveru <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Pretraživač korišten u <ph name="BEGIN_LINK" />traci za adresu<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">ČItanje i mijenjanje svega što unesete</translation>
 <translation id="220858061631308971">Unesite ovaj PIN kod na "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Dozvoli kolačiće</translation>
@@ -1937,6 +1936,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informacije o aplikaciji</translation>
 <translation id="3333190335304955291">Ovu uslugu možete isključiti u Postavkama.</translation>
+<translation id="3333961966071413176">Svi kontakti</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Videozapis se reproducira u načinu rada slika u slici</translation>
 <translation id="3335947283844343239">Ponovo otvori zatvorenu karticu</translation>
 <translation id="3340620525920140773">Preuzimanje je završeno: <ph name="FILE_NAME" />.</translation>
@@ -2944,7 +2944,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4546692474302123343">Glasovni unos Google Asistenta</translation>
 <translation id="4547659257713117923">Nema kartica iz drugih uređaja</translation>
 <translation id="4547672827276975204">Postavi automatski</translation>
-<translation id="4548483925627140043">Nije pronađen nijedan signal</translation>
+<translation id="4548483925627140043">Signal nije pronađen</translation>
 <translation id="4549791035683739768">Na vašem sigurnosnom ključu nisu pohranjeni otisci prstiju</translation>
 <translation id="4551763574344810652">Pritisnite tipku <ph name="MODIFIER_KEY_DESCRIPTION" /> da opozovete radnju</translation>
 <translation id="4552089082226364758">Flash</translation>
@@ -3032,6 +3032,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="4646675363240786305">Priključci</translation>
 <translation id="4646949265910132906">Sigurna WiFi veza</translation>
 <translation id="4647090755847581616">&amp;Zatvori karticu</translation>
+<translation id="4647283074445570750"><ph name="CURRENT_STEP" />. korak od <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Pokretanje aplikacije prilikom prijave na tabletu}computer{Pokretanje aplikacije prilikom prijave na računaru}other{Pokretanje aplikaciju prilikom prijave na uređaju}}</translation>
 <translation id="4647697156028544508">Unesite PIN za uređaj "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Nedovoljno odobrenja</translation>

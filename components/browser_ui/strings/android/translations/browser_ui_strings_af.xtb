@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Om <ph name="APP_NAME" /> AR te laat gebruik, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="1887786770086287077">Liggingtoegang is af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="1919345977826869612">Advertensies</translation>
+<translation id="1919950603503897840">Kies kontakte</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Toegelaat, buiten van derde party af</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2687403674020088961">Blokkeer alle webkoekies (nie aanbeveel nie)</translation>
 <translation id="2704606927547763573">Gekopieer</translation>
+<translation id="2717722538473713889">E-posadresse</translation>
 <translation id="2822354292072154809">Is jy seker jy wil alle werftoestemmings vir <ph name="CHOSEN_OBJECT_NAME" /> terugstel?</translation>
 <translation id="2870560284913253234">Werf</translation>
 <translation id="2874939134665556319">Vorige snit</translation>
+<translation id="2903493209154104877">Adresse</translation>
 <translation id="2910701580606108292">Vra voordat werwe toegelaat word om beskermde inhoud te speel</translation>
 <translation id="2913331724188855103">Laat werwe toe om webkoekiedata te stoor en te lees (aanbeveel)</translation>
 <translation id="2968755619301702150">Sertifikaatbekyker</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3277252321222022663">Laat werwe toegang tot sensors toe (aanbeveel)</translation>
 <translation id="3295602654194328831">Versteek inligting</translation>
+<translation id="3333961966071413176">Alle kontakte</translation>
 <translation id="3386292677130313581">Vra voordat werwe toegelaat word om jou ligging te ken (aanbeveel)</translation>
 <translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3538390592868664640">Verhoed werwe om 'n 3D-kaart van jou omgewing te skep of kameraposisie na te spoor</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Demp werwe wat klank speel</translation>
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
 <translation id="3763247130972274048">Dubbeltik links of regs op video om 10 s. oor te slaan</translation>
+<translation id="381841723434055211">Foonnommers</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3859306556332390985">Soek vorentoe</translation>
 <translation id="3955193568934677022">Laat werwe toe om beskermde inhoud te speel (aanbeveel)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Vra voordat werwe toegelaat word om jou virtuelerealiteittoestel en -data te gebruik (aanbeveel)</translation>
 <translation id="4962975101802056554">Herroep alle toestemmings vir toestel</translation>
 <translation id="497421865427891073">Gaan vorentoe</translation>
+<translation id="4994033804516042629">Geen kontakte gevind nie</translation>
 <translation id="4996978546172906250">Deel via</translation>
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5048398596102334565">Laat werwe toegang tot bewegingsensors toe (aanbeveel)</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5100237604440890931">Ingevou – klik om uit te vou.</translation>
 <translation id="5123685120097942451">Incognito-oortjie</translation>
+<translation id="5197729504361054390">Die kontakte wat jy kies, sal gedeel word met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5301954838959518834">OK, het dit</translation>
 <translation id="5313967007315987356">Voeg werf by</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Dit sal <ph name="DATASIZE" /> se data en webkoekies uitvee wat deur werwe geberg is.</translation>
 <translation id="5384883051496921101">Hierdie werf is op die punt om inligting met 'n program buite incognitomodus te deel.</translation>
 <translation id="5391532827096253100">Jou verbinding aan hierdie werf is nie veilig nie. Werfinligting</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ nog 1)}other{(+ nog #)}}</translation>
+<translation id="5403592356182871684">Name</translation>
 <translation id="5489227211564503167">Tyd verstreke is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokkeer advertensies op werwe wat indringerige of misleidende advertensies wys</translation>
 <translation id="5505264765875738116">Werwe kan nie vra om kennisgewings te stuur nie</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Beskermde inhoud</translation>
 <translation id="662080504995468778">Bly</translation>
 <translation id="6643016212128521049">Vee uit</translation>
+<translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Aktiewe aflaaie</translation>
 <translation id="6746124502594467657">Skuif af</translation>
 <translation id="6766622839693428701">Swiep ondertoe om toe te maak</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Kanselleer keuse</translation>
 <translation id="7846621471902887024">Jy sal op alle werwe afgemeld word.</translation>
 <translation id="7882806643839505685">Laat klank toe vir 'n spesifieke werf.</translation>
+<translation id="7986741934819883144">Kies 'n kontak</translation>
 <translation id="7993619969781047893">Kenmerke op sommige werwe kan breek</translation>
 <translation id="7999064672810608036">Is jy seker dat jy alle plaaslike data, insluitend webkoekies, wil uitvee en alle toestemmings vir hierdie webwerf wil terugstel?</translation>
 <translation id="8007176423574883786">Afgeskakel vir hierdie toestel</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Toegelaat (aanbeveel)</translation>
 <translation id="8609465669617005112">Skuif op</translation>
 <translation id="8676374126336081632">Vee invoer uit</translation>
+<translation id="868929229000858085">Deursoek jou kontakte</translation>
 <translation id="8702612070107455751">Enige vanlyn data sal uitgevee word.</translation>
 <translation id="8719283222052720129">Skakel toestemming vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="8725066075913043281">Probeer weer</translation>

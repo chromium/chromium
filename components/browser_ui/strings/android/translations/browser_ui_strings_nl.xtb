@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera inschakelen via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Locatietoegang is uitgeschakeld voor dit apparaat. Schakel dit in via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Advertenties</translation>
+<translation id="1919950603503897840">Contacten selecteren</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> van <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Toegestaan, behalve van derden</translation>
 <translation id="1989112275319619282">Browsen</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2687403674020088961">Alle cookies blokkeren (niet aanbevolen)</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
+<translation id="2717722538473713889">E-mailadressen</translation>
 <translation id="2822354292072154809">Weet je zeker dat je alle siterechten voor <ph name="CHOSEN_OBJECT_NAME" /> wilt resetten?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Vorig nummer</translation>
+<translation id="2903493209154104877">Adressen</translation>
 <translation id="2910701580606108292">Vragen voordat sites beschermde content mogen afspelen</translation>
 <translation id="2913331724188855103">Sites toestaan cookiegegevens op te slaan en te lezen (aanbevolen)</translation>
 <translation id="2968755619301702150">Certificaatviewer</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Microfoon</translation>
 <translation id="3277252321222022663">Sites toegang geven tot sensoren (aanbevolen)</translation>
 <translation id="3295602654194328831">Informatie verbergen</translation>
+<translation id="3333961966071413176">Alle contacten</translation>
 <translation id="3386292677130313581">Vragen of je sites toegang wilt verlenen tot je locatie (aanbevolen)</translation>
 <translation id="3479552764303398839">Niet nu</translation>
 <translation id="3538390592868664640">Voorkomen dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Sites dempen die geluid afspelen</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
+<translation id="381841723434055211">Telefoonnummers</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3859306556332390985">Vooruit zoeken</translation>
 <translation id="3955193568934677022">Toestaan dat sites beschermde content afspelen (aanbevolen)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Vragen voordat sites je virtualreality-apparaat en -gegevens mogen gebruiken (aanbevolen)</translation>
 <translation id="4962975101802056554">Alle rechten voor apparaat intrekken</translation>
 <translation id="497421865427891073">Naar voren gaan</translation>
+<translation id="4994033804516042629">Geen contacten gevonden</translation>
 <translation id="4996978546172906250">Delen via</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5048398596102334565">Sites toegang geven tot bewegingssensoren (aanbevolen)</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5100237604440890931">Samengevouwen; klik om uit te vouwen.</translation>
 <translation id="5123685120097942451">Incognitotabblad</translation>
+<translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Weergeven</translation>
 <translation id="5301954838959518834">OK, begrepen</translation>
 <translation id="5313967007315987356">Site toevoegen</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Hiermee wis je <ph name="DATASIZE" /> aan gegevens en cookies die zijn opgeslagen door sites.</translation>
 <translation id="5384883051496921101">Deze site staat op het punt buiten de incognitomodus informatie met een app te delen.</translation>
 <translation id="5391532827096253100">Je verbinding met deze site is niet beveiligd. Site-informatie</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(en nog 1)}other{(en nog #)}}</translation>
+<translation id="5403592356182871684">Namen</translation>
 <translation id="5489227211564503167">De verstreken tijd is <ph name="ELAPSED_TIME" /> van <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Advertenties blokkeren op sites die opdringerige of misleidende advertenties weergeven</translation>
 <translation id="5505264765875738116">Sites kunnen niet vragen of ze je meldingen mogen sturen</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Beschermde content</translation>
 <translation id="662080504995468778">Blijven</translation>
 <translation id="6643016212128521049">Wissen</translation>
+<translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Actieve downloads</translation>
 <translation id="6746124502594467657">Omlaag</translation>
 <translation id="6766622839693428701">Swipe omlaag om te sluiten.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Selectie opheffen</translation>
 <translation id="7846621471902887024">Je wordt uitgelogd van alle sites.</translation>
 <translation id="7882806643839505685">Geluid toestaan voor een specifieke site.</translation>
+<translation id="7986741934819883144">Een contact selecteren</translation>
 <translation id="7993619969781047893">Functies op bepaalde sites werken mogelijk niet meer</translation>
 <translation id="7999064672810608036">Weet je zeker dat je alle gegevens, inclusief cookies, voor deze website wilt wissen en alle rechten opnieuw wilt instellen?</translation>
 <translation id="8007176423574883786">Uitgeschakeld voor dit apparaat</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Toegestaan (aanbevolen)</translation>
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8676374126336081632">Invoer wissen</translation>
+<translation id="868929229000858085">Zoek in je contacten</translation>
 <translation id="8702612070107455751">Alle offline gegevens worden gewist.</translation>
 <translation id="8719283222052720129">Schakel rechten in voor <ph name="APP_NAME" /> via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>

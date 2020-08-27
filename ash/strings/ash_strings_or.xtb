@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">ନେଟୱାର୍କ ନାହିଁ</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">ସେଲ୍ୟୁଲାର୍: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">ଶୁଭ ଅପରାହ୍ନ <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">ମୁଁ ବିରକ୍ତ ହୋଇଗଲିଣି</translation>
 <translation id="1104084341931202936">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="1104621072296271835">ଏକାଠି ହୋ‍ଇ ଆପଣଙ୍କର ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଆହୁରି ଭଲ କାର୍ଯ୍ୟ କରନ୍ତି</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> ବାକି ଅଛି</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> ଟାଇମର୍ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ଠିକଣା: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">ଡେସ୍କ: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">ନେଟୱାର୍କ ସେଟିଂସ୍</translation>
 <translation id="1743570585616704562">ଚିହ୍ନଟ ହେଲାନାହିଁ</translation>
 <translation id="1746730358044914197">ଇନ୍‍ପୁଟ୍ ପଦ୍ଧତିକୁ ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ଵାରା କନ୍‌ଫିଗର୍‍ କରାଯାଇଛି।</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">ମୋତେ ଏକ ଜୋକ୍ କୁହନ୍ତୁ</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
 <translation id="2067602449040652523">କୀ'ବୋର୍ଡ ଉଜ୍ଜ୍ଵଳତା</translation>
+<translation id="2083190527011054446">ଶୁଭ ରାତ୍ରି <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">ନେଟ୍‌ୱାର୍କ ସହିତ ସଂଯୁକ୍ତ ହୋଇ ନାହିଁ</translation>
 <translation id="2126242104232412123">ନୂଆ ଡେସ୍କ</translation>
 <translation id="2127372758936585790">କମ୍-ଶକ୍ତି ବିଶିଷ୍ଟ ଚାର୍ଜର୍</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">ଆଉଟ୍‌ପୁଟ୍</translation>
 <translation id="3033545621352269033">ଚାଲୁ</translation>
 <translation id="3038571455154067151">ସାଇନ୍ ଇନ୍ କରିବାକୁ, ଆପଣଙ୍କର Family Linkର ବାପାମା ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ</translation>
+<translation id="3045488863354895414">ଶୁଭ ଅପରାହ୍ନ,</translation>
 <translation id="3051128274746680507">ଆପଣଙ୍କର ପର୍ଯ୍ୟବେକ୍ଷିତ ଉପଯୋଗକର୍ତ୍ତା ପ୍ରୋଫାଇଲ୍ ଖୁବ୍‍ଶୀଘ୍ର କାଢ଼ିଦିଆଯିବ। ଅଧିକ ଜାଣିବା ପାଇଁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="3055162170959710888">ଆଜି, ଆପଣ <ph name="USED_TIME" /> ସମୟରେ ଏହି ଡିଭାଇସ୍‌ ବ୍ୟବହାର କଲେ</translation>
 <translation id="3076778413190775903">ସ୍ଥିତି ଟ୍ରେ, ସମୟ <ph name="TIME" />,
@@ -304,6 +308,7 @@
 <translation id="4261870227682513959">ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍ ଦେଖାନ୍ତୁ। ବିଜ୍ଞପ୍ତି ବନ୍ଦ ଅଛି</translation>
 <translation id="4269883910223712419">ଏହା କରିବାକୁ ଏହି ଡିଭାଇସ୍‌ର ବ୍ୟବସ୍ଥାପକଙ୍କ କ୍ଷମତା ରହିଛି:</translation>
 <translation id="4279490309300973883">ପ୍ରତିଫଳନ</translation>
+<translation id="4294319844246081198">ସୁପ୍ରଭାତ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ସମସ୍ତ <ph name="COUNT" />ବିଜ୍ଞପ୍ତି ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4303223480529385476">ସ୍ଥିତି କ୍ଷେତ୍ର ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@
 <translation id="4421231901400348175">ଆପଣଙ୍କର ସ୍କ୍ରିନ୍‌ର ନିୟନ୍ତ୍ରଣ ରିମୋଟ୍‍ ସହାୟକ ମାଧ୍ୟମରେ <ph name="HELPER_NAME" />ସହିତ ସେୟାର୍‌ କରାଯାଉଛି।</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
 <translation id="4450893287417543264">ଆଉ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
+<translation id="445864333228800152">ଶୁଭ ସନ୍ଧ୍ୟା,</translation>
 <translation id="4458688154122353284">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4477350412780666475">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="4477892968187500306">ଏହି ଡିଭାଇସ୍‍‍ରେ ଏପରି ଆପ୍ସ ଥାଇପାରେ ଯାହା Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯାଇନାହିଁ।</translation>
@@ -430,6 +436,7 @@
 <translation id="5887866489674258948">ଡାର୍କ ମୋଡ୍</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">ନିଷ୍କ୍ରିୟ ଡେସ୍କ।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5920710855273935292">ମାଇକ୍ ମ୍ୟୁଟ୍ କରାଯାଇଛି।</translation>
@@ -561,6 +568,7 @@
 <translation id="7405710164030118432">ଡିଭାଇସ୍‍କୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣଙ୍କ Family Linkର ଅଭିଭାବକଙ୍କ ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="741244894080940828">କନଭର୍ସନ୍</translation>
 <translation id="742594950370306541">କ୍ୟାମେରା ବ୍ୟବହାରରେ ଅଛି।</translation>
+<translation id="742608627846767349">ସୁପ୍ରଭାତ,</translation>
 <translation id="743058460480092004">କ୍ୟାମେରା ଓ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାରରେ ଅଛି।</translation>
 <translation id="7466449121337984263">ଦୟାକରି ସେନସରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="7477793887173910789">ଆପଣଙ୍କର ସଙ୍ଗୀତ, ଭିଡିଓଗୁଡ଼ିକ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ</translation>
@@ -648,11 +656,13 @@
 <translation id="8351131234907093545">ନୋଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8371779926711439835">ଗୋଟିଏ ଅକ୍ଷର ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8375916635258623388">ଏହି <ph name="DEVICE_NAME" /> ଏବଂ ଆପଣଙ୍କର ଫୋନ୍‌ ସ୍ୱଚାଳିତ ଭାବେ ସଂଯୋଗ ହେବ</translation>
+<translation id="8380784334203145311">ଶୁଭ ରାତ୍ରି,</translation>
 <translation id="8388750414311082622">ଶେଷ ଡେସ୍କକୁ କଢ଼ା ଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> ପାଇଁ ବିକଳ୍ପଗୁଡ଼ିକ</translation>
 <translation id="8394567579869570560">ଆପଣଙ୍କ ମାତା-ପିତା ଏହି ଡିଭାଇସ୍‌କୁ ଲକ୍‌ କରିଦେଇଛନ୍ତି</translation>
 <translation id="8412677897383510995">ଡିସପ୍ଲେ ସେଟିଂସ୍ ଦେଖାନ୍ତୁ</translation>
 <translation id="8425213833346101688">ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
+<translation id="8426708595819210923">ଶୁଭ ସନ୍ଧ୍ୟା <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">ଶ୍ରୁତଲିଖନ ଆପଣଙ୍କ ଭଏସ୍‌କୁ Googleକୁ ପଠାଇଥାଏ ଯାହାଦ୍ୱାରା ଯେକୌଣସି ଟେକ୍ସଟ୍‌ ଫିଲ୍ଡରେ ଭଏସ୍‌ ଟାଇପ୍‌ କରାଯାଇପାରିବ।</translation>
 <translation id="8428213095426709021">ସେଟିଂସ୍</translation>
 <translation id="8433186206711564395">ନେଟ୍‍ୱର୍କ ସେଟିଂସ୍</translation>

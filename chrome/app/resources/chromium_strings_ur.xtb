@@ -10,7 +10,7 @@
 <translation id="1104942323762546749">‏Chromium آپ کے پاس ورڈز برآمد کرنا چاہتا ہے۔ اس کی اجازت دینے کیلئے، اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="113122355610423240">‏Chromium آپ کا ڈیفالٹ براؤزر ہے</translation>
 <translation id="1185134272377778587">‏Chromium کے بارے میں</translation>
-<translation id="1315551408014407711">‏اپنی نئی Chromium پروفائل ترتیب دیں</translation>
+<translation id="1315551408014407711">‏اپنی نئی Chromium پروفائل سیٹ اپ کریں</translation>
 <translation id="1396446129537741364">‏Chromium پاس ورڈز دکھانے کی کوشش کر رہا ہے۔</translation>
 <translation id="1414495520565016063">‏آپ Chromium میں سائن ان ہیں!</translation>
 <translation id="151962892725702025">‏Chromium OS آپ کے ڈیٹا کی مطابقت پذیری نہیں کر سکا کیونکہ Sync آپ کے ڈومین کیلئے دستیاب نہیں ہے۔</translation>
@@ -107,7 +107,7 @@
 <translation id="4788777615168560705">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا ہے۔ 24 گھنٹے بعد دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں<ph name="END_LINK" />۔</translation>
 <translation id="479167709087336770">‏یہ وہی املا جانچ کنندہ استعمال کرتا ہے جسے Google تلاش میں استعمال کیا جاتا ہے۔ آپ براؤزر میں جو متن ٹائپ کرتے ہیں، اسے Google کو بھیجا جاتا ہے۔ آپ اس برتاؤ کو کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="4888717733111232871">‏mDNS ٹریفک کی اجازت دینے کیلئے Chromium کیلئے ان باؤنڈ اصول۔</translation>
-<translation id="4893632094755846570">‏یہ اس آلہ سے آپ کے براؤزنگ ڈیٹا کو مستقل طور پر حذف کر دے گا۔ ڈیٹا بحال کرنے کیلئے، Chromium میں سائن ان کریں بطور</translation>
+<translation id="4893632094755846570">‏یہ اس آلے سے آپ کے براؤزنگ ڈیٹا کو مستقل طور پر حذف کر دے گا۔ ڈیٹا بحال کرنے کیلئے، Chromium میں سائن ان کریں بطور</translation>
 <translation id="4943838377383847465">‏Chromium پس منظر وضع میں ہے۔</translation>
 <translation id="4987820182225656817">‏مہمان کسی چیز کو پیچھے چھوڑے بغیر Chromium کو استعمال کر سکتے ہیں۔</translation>
 <translation id="4994636714258228724">‏خود کو Chromium میں شامل کریں</translation>
@@ -170,7 +170,7 @@
 ممکن ہے کچھ خصوصیات غیر دستیاب ہوں۔ براہ کرم ایک مختلف پروفائل ڈائریکٹری متعین کریں یا Chromium کا ایک جدید تر ورژن استعمال کریں۔</translation>
 <translation id="6734080038664603509">‏‎Chromium کو اپ ڈیٹ کریں</translation>
 <translation id="6734291798041940871">‏Chromium پہلے سے آپ کے کمپیوٹر پر سبھی صارفین کیلئے انسٹال ہے۔</translation>
-<translation id="6762551859069255163">‏دفتر یا ذاتی براؤزنگ کو الگ کرنے کے لیے یا اس آلہ کو استعمال کرنے والے مختلف لوگوں کے لیے Chromium میں مختلف پروفائلز کا استعمال کریں</translation>
+<translation id="6762551859069255163">‏دفتر یا ذاتی براؤزنگ کو الگ کرنے کے لیے یا اس آلے کو استعمال کرنے والے مختلف لوگوں کے لیے Chromium میں مختلف پروفائلز کا استعمال کریں</translation>
 <translation id="6774082503108938489">‏آپ کے والدین نے "Chromium کی خاطر سائٹس، ایپس اور ایکسٹینشنز کے لیے اجازتوں" کو آف کر دیا ہے۔ اس <ph name="EXTENSION_TYPE_PARAMETER" /> کو فعال کرنے کی اجازت نہیں ہے۔</translation>
 <translation id="6847869444787758381">‏Chromium آپ کو بتاتا ہے کہ آیا آپ کے پاس ورڈز کے ساتھ کبھی چھیڑ چھاڑ کی گئی ہے</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" />‎</translation>

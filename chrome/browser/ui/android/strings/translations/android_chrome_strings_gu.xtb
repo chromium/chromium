@@ -102,13 +102,13 @@
 <translation id="1810845389119482123">સિંકનું પ્રારંભિક સેટઅપ પૂર્ણ થયું નથી</translation>
 <translation id="1821253160463689938">તમારી પસંદગીઓ યાદ રાખવા માટે કુકીનો ઉપયોગ કરે છે, પછી ભલે તમે તે પેજની મુલાકાત ન પણ લો</translation>
 <translation id="1829244130665387512">આ પૃષ્ઠમાં શોધો</translation>
+<translation id="1843805151597803366">બહેતર અનુવાદો મેળવવા માટે, Google Searchને હાલના પેજનો ઉપયોગ કરવાની પરવાનગી આપો</translation>
 <translation id="1853692000353488670">નવી છુપી ટેબ</translation>
 <translation id="1856325424225101786">લાઇટ મોડને રીસેટ કરીએ?</translation>
 <translation id="1868024384445905608">Chrome હવે ફાઇલોને વધુ ઝડપથી ડાઉનલોડ કરે છે</translation>
 <translation id="1874760110381325409">તમને તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરવામાં આવશે\n(આમ થવાથી Chrome સિંકની સુવિધા ચાલુ થશે નહીં)</translation>
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="1883903952484604915">મારી ફાઇલો</translation>
-<translation id="1919950603503897840">સંપર્કો પસંદ કરો</translation>
 <translation id="1925021887439448749">કસ્ટમ વેબ ઍડ્રેસ દાખલ કરો</translation>
 <translation id="1928696683969751773">અપડેટ</translation>
 <translation id="19288952978244135">Chrome ફરીથી ખોલો.</translation>
@@ -215,7 +215,6 @@
 <translation id="2689830683995595741">Chromeનો ઉપયોગ કરીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા Chrome OSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />Family Link વડે મેનેજ કરવામાં આવતા Google એકાઉન્ટ માટેની પ્રાઇવસી નોટિસ<ph name="END_LINK3" /> પણ લાગુ.</translation>
 <translation id="2707726405694321444">પેજ રિફ્રેશ કરો</translation>
 <translation id="2709516037105925701">સ્વતઃભરો</translation>
-<translation id="2717722538473713889">ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="2728754400939377704">સાઇટ અનુસાર સૉર્ટ કરો</translation>
 <translation id="2744248271121720757">ઝટપટ શોધ કરવા માટે શબ્દ પર ટૅપ કરો અથવા સંબંધિત ક્રિયાઓ જુઓ</translation>
 <translation id="2760989362628427051">જ્યારે તમારા ડિવાઇસની ઘેરી થીમ અથવા બૅટરી સેવર ચાલુ હોય ત્યારે ઘેરી થીમ ચાલુ કરો</translation>
@@ -240,7 +239,6 @@
 <translation id="2893180576842394309">Google, શોધ અને અન્ય Google સેવાઓને વ્યક્તિગત કરવા માટે તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે</translation>
 <translation id="2898264748040935573">સાચવેલા પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="2900528713135656174">ઇવેન્ટ બનાવો</translation>
-<translation id="2903493209154104877">સરનામાંઓ</translation>
 <translation id="2904414404539560095">કોઈ ટૅબ સાથે શેર કરવાના ડિવાઇસની સૂચિ સંપૂર્ણ ઊંચાઈએ ખૂલે છે.</translation>
 <translation id="2905036901251765993">નજીકના લોકો સાથે શેર કરવા માટે, તેમને આ QR કોડ તપાસવા દો</translation>
 <translation id="2909615210195135082">Google નોટિફિકેશન પ્લૅટફૉર્મ</translation>
@@ -293,7 +291,6 @@
 <translation id="3306398118552023113">આ ઍપ Chromeમાં ચાલી રહી છે</translation>
 <translation id="3315103659806849044">તમે હાલમાં તમારા સિંક અને Google સેવા સેટિંગને કસ્ટમાઇઝ કરી રહ્યાં છો. સિંક ચાલુ કરવાનું પૂર્ણ કરવા માટે, સ્ક્રીનની નીચેની બાજુએ કન્ફર્મ કરો બટન પર ટૅપ કરો. ઉપર નૅવિગેટ કરો</translation>
 <translation id="3328801116991980348">સાઇટ માહિતી</translation>
-<translation id="3333961966071413176">બધા સંપર્કો</translation>
 <translation id="3334729583274622784">ફાઇલનું એક્સ્ટેંશન બદલવું છે?</translation>
 <translation id="3341058695485821946">તમે કેટલો ડેટા સાચવ્યો તે જુઓ</translation>
 <translation id="3350687908700087792">બધા છુપા ટેબ્સ બંધ કરો</translation>
@@ -352,7 +349,6 @@
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
 <translation id="3810838688059735925">વીડિયો</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
-<translation id="381841723434055211">ફોન નંબર</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ડાઉનલોડ કાઢી નાખ્યાં</translation>
 <translation id="3856096718352044181">કૃપા કરીને ચકાસણી કરો કે આ માન્ય પ્રદાતા છે અથવા પછીથી ફરી પ્રયાસ કરો</translation>
 <translation id="388596076286380598">તમારું ઇન્ટરનેટ કનેક્શન ઉપલબ્ધ ન હોય અથવા ધીમું હોય ત્યારે પણ તમને ગમતી સાઇટ તરફથી લેખ, વીડિયો અને અન્ય કન્ટેન્ટ મેળવો.</translation>
@@ -477,6 +473,7 @@
 
 આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />સિંકને રીસેટ કરો<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">કાર્ડ પરનું નામ</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> પર ડિજિટલ અસેટ લિંકની ચકાસણી નિષ્ફળ રહી</translation>
 <translation id="4824958205181053313">સિંક કરવાનું રદ કરીએ?</translation>
 <translation id="4835385943915508971">Chrome ને વિનંતી કરેલ સંસાધનની ઍક્સેસ નથી.</translation>
 <translation id="4837753911714442426">પેજને પ્રિન્ટ કરવાના વિકલ્પો ખોલો</translation>
@@ -507,7 +504,6 @@
 <translation id="497421865427891073">આગળ જાઓ</translation>
 <translation id="4988210275050210843">(<ph name="MEGABYTES" />)ની ફાઇલ ડાઉનલોડ કરી રહ્યાં છીએ.</translation>
 <translation id="4988526792673242964">પૃષ્ઠો</translation>
-<translation id="4994033804516042629">કોઈ સંપર્કો મળ્યા નથી</translation>
 <translation id="5004416275253351869">Google પ્રવૃત્તિ નિયંત્રણો</translation>
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5011311129201317034"><ph name="SITE" />, કનેક્ટ કરવા માગે છે</translation>
@@ -531,7 +527,6 @@
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="5184329579814168207">Chrome માં ખોલો</translation>
 <translation id="5193988420012215838">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવી</translation>
-<translation id="5197729504361054390">તમે પસંદ કરશો તે સંપર્કોને <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> સાથે શેર કરવામાં આવશે.</translation>
 <translation id="5199929503336119739">ઑફિસની પ્રોફાઇલ</translation>
 <translation id="5210286577605176222">પાછલી ટૅબ પર જાઓ</translation>
 <translation id="5210365745912300556">ટૅબ બંધ કરો</translation>
@@ -551,8 +546,6 @@
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
 <translation id="5357811892247919462">ટૅબ પ્રાપ્ત થયું</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ખુલ્લી ટૅબ, ટૅબને સ્વિચ કરવા માટે ટૅપ કરો}one{<ph name="OPEN_TABS_MANY" /> ખુલ્લી ટૅબ, ટૅબને સ્વિચ કરવા માટે ટૅપ કરો}other{<ph name="OPEN_TABS_MANY" /> ખુલ્લી ટૅબ, ટૅબને સ્વિચ કરવા માટે ટૅપ કરો}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ વધુ 1)}one{(+ વધુ #)}other{(+ વધુ #)}}</translation>
-<translation id="5403592356182871684">નામ</translation>
 <translation id="5403644198645076998">ફક્ત અમુક સાઇટની મંજૂરી આપો</translation>
 <translation id="5414836363063783498">ચકાસી રહ્યું છે...</translation>
 <translation id="5423934151118863508">તમારા સૌથી વધુ મુલાકાત લીધેલા પૃષ્ઠો અહીં દેખાશે</translation>
@@ -748,7 +741,6 @@
 <translation id="666981079809192359">Chrome ગોપનીયતા સૂચના</translation>
 <translation id="6671495933530132209">છબી કૉપિ કરો</translation>
 <translation id="6676840375528380067">આ ડિવાઇસમાંથી તમારા Chrome ડેટાને સાફ કરીએ?</translation>
-<translation id="6689172468748959065">પ્રોફાઇલ ફોટો</translation>
 <translation id="6691888250440401212">1. <ph name="APP_NAME" /> પસંદ કરો\n2. “ડિફૉલ્ટ તરીકે સેટ કરો” પર ટૅપ કરો</translation>
 <translation id="6697492270171225480">જ્યારે કોઈ પેજ ન મળે ત્યારે તેના જેવા પેજ માટે સૂચનો બતાવો</translation>
 <translation id="6698801883190606802">સમન્વયિત ડેટા સંચાલિત કરો</translation>
@@ -910,7 +902,7 @@
 <translation id="7975379999046275268">પેજને પ્રીવ્યૂ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ઝડપી બ્રાઉઝિંગ અને શોધ માટે પેજને પહેલેથી લોડ કરો</translation>
 <translation id="79859296434321399">ઑગ્મેન્ટેડ રિયાલિટી કન્ટેન્ટ જોવા માટે, ARCore ઇન્સ્ટૉલ કરો</translation>
-<translation id="7986741934819883144">સંપર્ક પસંદ કરો</translation>
+<translation id="799806351373751710">સિંકનું સેટઅપ રદ કરો</translation>
 <translation id="7998918019931843664">બંધ કરેલ ટેબ ફરીથી ખોલો</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
 <translation id="8013372441983637696">આ ડિવાઇસમાંથી તમારો Chrome ડેટા પણ સાફ કરો</translation>
@@ -1007,7 +999,6 @@
 <translation id="8662811608048051533">તમને મોટાભાગની સાઇટોમાંથી સાઇન આઉટ કરે છે.</translation>
 <translation id="8664979001105139458">ફાઇલનું નામ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}one{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}other{સિગ્નલની ક્ષમતાનું સ્તર: # બાર}}</translation>
-<translation id="868929229000858085">તમારા સંપર્કો શોધો</translation>
 <translation id="869891660844655955">સમાપ્તિ તારીખ</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>

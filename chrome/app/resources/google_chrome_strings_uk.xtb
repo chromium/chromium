@@ -13,11 +13,11 @@
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
 <translation id="123620459398936149">ОС Chrome не вдалося синхронізувати ваші дані. Оновіть свою парольну фразу для синхронізації.</translation>
 <translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
-<translation id="1355000804395496115">Входьте в різні профілі в Chrome для особистого й робочого користування Інтернетом або для різних людей</translation>
+<translation id="1355000804395496115">Різні профілі в Chrome дають змогу розділити веб-перегляд для робочих і особистих цілей або для різних користувачів цього пристрою</translation>
 <translation id="137466361146087520">Бета-версія Google Chrome</translation>
 <translation id="1399397803214730675">На комп’ютері вже встановлено новішу версію Google Chrome. Якщо програмне забезпечення не працює, видаліть Google Chrome і повторіть спробу.</translation>
 <translation id="1434626383986940139">Програми Chrome для версії Canary</translation>
-<translation id="1513277449617685876">Щоб відокремити особистий веб-перегляд від перегляду як <ph name="NEW_USER" />, створіть новий профіль у Chrome</translation>
+<translation id="1513277449617685876">Для роздільного веб-перегляду створіть у Chrome новий профіль для користувача <ph name="NEW_USER" /> (окремий від особистого профілю)</translation>
 <translation id="1553358976309200471">Оновити Chrome</translation>
 <translation id="1587223624401073077">Google Chrome використовує вашу камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небезпечний, тому Chrome заблокував його.</translation>
@@ -257,7 +257,7 @@
 <translation id="8681614230122836773">Веб-переглядач Chrome виявив шкідливе програмне забезпечення на вашому комп'ютері</translation>
 <translation id="870251953148363156">Оновити &amp;Google Chrome</translation>
 <translation id="873133009373065397">Google Chrome не може визначити чи встановити веб-переглядач за умовчанням</translation>
-<translation id="8748242232968346981">Створити ваш особистий профіль у Chrome?</translation>
+<translation id="8748242232968346981">Створити власний профіль у Chrome?</translation>
 <translation id="8823341990149967727">Версія Chrome застаріла</translation>
 <translation id="8834965163890861871">Google Chrome намагається змінити паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="884296878221830158">Розширення також змінило сторінку, яка відкривається під час запуску Chrome або натискання кнопки "Домашня сторінка".</translation>

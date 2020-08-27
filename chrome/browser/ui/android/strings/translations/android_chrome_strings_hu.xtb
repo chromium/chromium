@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Csökkentse akár 60%-kal adatforgalmát, és olvassa el a mai híreket</translation>
 <translation id="1303339473099049190">Ez a jelszó nem található. Ellenőrizze, hogy jól írta-e be.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – A(z) <ph name="DEVICE_NAME" /> eszközről</translation>
+<translation id="1307205233980126133">Sajnos nem sikerült érvényesíteni a hitelesítési adatait</translation>
 <translation id="1310482092992808703">Lapok csoportosítása</translation>
 <translation id="1311657260431405215">Ez a QR-kód nem URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">Megnyitotta a navigációs előzményeket</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">A rendszer bejelentkezteti majd a Google-fiókjába\n(ez nem kapcsolja be a Chrome-szinkronizálást)</translation>
 <translation id="1877026089748256423">A Chrome elavult</translation>
 <translation id="1883903952484604915">Saját fájlok</translation>
-<translation id="1919950603503897840">Névjegyek kiválasztása</translation>
 <translation id="1925021887439448749">Írja be az egyéni internetcímet</translation>
 <translation id="1928696683969751773">Frissítések</translation>
 <translation id="19288952978244135">Nyissa meg újra a Chrome-ot.</translation>
@@ -216,7 +216,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2689830683995595741">A Chrome használatával elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Family Link szolgáltatással kezelt Google-fiókokra vonatkozó adatvédelmi közlemény<ph name="END_LINK3" /> is érvényben van.</translation>
 <translation id="2707726405694321444">Oldal frissítése</translation>
 <translation id="2709516037105925701">Automatikus kitöltés</translation>
-<translation id="2717722538473713889">E-mail-címek</translation>
 <translation id="2728754400939377704">Rendezés webhely szerint</translation>
 <translation id="2744248271121720757">Az azonnali kereséshez koppintson a kívánt szóra, vagy tekintse meg a kapcsolódó műveleteket</translation>
 <translation id="2760989362628427051">Sötét téma bekapcsolása, amikor az eszköz sötét témája vagy Akkumulátorkímélő módja be van kapcsolva</translation>
@@ -241,7 +240,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2893180576842394309">A Google felhasználhatja az Ön előzményeit a Keresés és más Google-szolgáltatások személyre szabására</translation>
 <translation id="2898264748040935573">Tárolt jelszó módosítása</translation>
 <translation id="2900528713135656174">Esemény létrehozása</translation>
-<translation id="2903493209154104877">Címek</translation>
 <translation id="2904414404539560095">Lap megosztására szolgáló eszközök listája teljes magasságban megnyitva.</translation>
 <translation id="2905036901251765993">Ha szeretné engedélyezni a megosztást a közelben lévő személyekkel, olvastassa be velük ezt a QR-kódot</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -294,7 +292,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3306398118552023113">Ez az alkalmazás fut a Chrome-ban</translation>
 <translation id="3315103659806849044">Jelenleg a Szinkronizálás és Google beállításait szabja személyre. A szinkronizálás bekapcsolásának véglegesítéséhez koppintson a képernyő alján található Megerősítés gombra. Fel</translation>
 <translation id="3328801116991980348">Webhelyadatok</translation>
-<translation id="3333961966071413176">Összes névjegy</translation>
 <translation id="3334729583274622784">Módosítja a fájl kiterjesztését?</translation>
 <translation id="3341058695485821946">Megnézheti, mennyi adatot takarított meg</translation>
 <translation id="3350687908700087792">Az összes inkognitó lap bezárása</translation>
@@ -353,7 +350,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3810838688059735925">Videó</translation>
 <translation id="3810973564298564668">Szerkesztés</translation>
-<translation id="381841723434055211">Telefonszámok</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> letöltés törölve</translation>
 <translation id="3856096718352044181">Ellenőrizze a szolgáltató érvényességét, vagy próbálkozzon újra.</translation>
 <translation id="388596076286380598">Hozzájuthat cikkekhez, videókhoz és más tartalmakhoz a kedvenc webhelyeiről – még akkor is, ha offline állapotban van, vagy ha a kapcsolat rossz minőségű.</translation>
@@ -509,7 +505,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="497421865427891073">Előrelépés</translation>
 <translation id="4988210275050210843">Fájl letöltése folyamatban (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Oldal</translation>
-<translation id="4994033804516042629">Nem találhatók névjegyek</translation>
 <translation id="5004416275253351869">Google Tevékenységvezérlők</translation>
 <translation id="5005498671520578047">Jelszó másolása</translation>
 <translation id="5011311129201317034">A(z) <ph name="SITE" /> csatlakozni szeretne</translation>
@@ -533,7 +528,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5184329579814168207">Megnyitás Chrome-ban</translation>
 <translation id="5193988420012215838">Vágólapra másolva</translation>
-<translation id="5197729504361054390">A kiválasztott névjegyeket megosztjuk a következő webhellyel: <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Munkaprofil</translation>
 <translation id="5210286577605176222">Ugrás az előző lapra</translation>
 <translation id="5210365745912300556">Lap bezárása</translation>
@@ -553,8 +547,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5355191726083956201">A Speciális védelem be van kapcsolva</translation>
 <translation id="5357811892247919462">Lap fogadva</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> megnyitott lap. A lapok között koppintással válthat.}other{<ph name="OPEN_TABS_MANY" /> megnyitott lap. A lapok között koppintással válthat.}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 további)}other{(+ # további)}}</translation>
-<translation id="5403592356182871684">Nevek</translation>
 <translation id="5403644198645076998">Csak bizonyos webhelyek engedélyezése</translation>
 <translation id="5414836363063783498">Ellenőrzés...</translation>
 <translation id="5423934151118863508">A leggyakrabban látogatott oldalak fognak itt megjelenni</translation>
@@ -750,7 +742,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="666981079809192359">Chrome – Adatvédelmi közlemény</translation>
 <translation id="6671495933530132209">Kép másolása</translation>
 <translation id="6676840375528380067">Törli Chrome-adatait az eszközről?</translation>
-<translation id="6689172468748959065">Profilfotók</translation>
 <translation id="6691888250440401212">1. Válassza ki a(z) <ph name="APP_NAME" /> alkalmazást.\n2. Koppintson az „Alapértelmezett” lehetőségre.</translation>
 <translation id="6697492270171225480">Hasonló oldalakra vonatkozó javaslatok megjelenítése, ha az oldal nem található</translation>
 <translation id="6698801883190606802">Szinkronizálás kezelése</translation>
@@ -912,7 +903,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7975379999046275268">Oldal előnézete <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Oldalak előtöltése a gyorsabb böngészés és keresés érdekében</translation>
 <translation id="79859296434321399">A kiterjesztett valósággal kapcsolatos tartalmak megtekintéséhez telepítse az ARCore-t</translation>
-<translation id="7986741934819883144">Válasszon ki egy névjegyet</translation>
 <translation id="799806351373751710">Szinkronizálás beállításának megszakítása</translation>
 <translation id="7998918019931843664">Bezárt lap megnyitása</translation>
 <translation id="8004582292198964060">Böngésző</translation>
@@ -1010,7 +1000,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8662811608048051533">A rendszer a legtöbb webhelyről kijelentkezteti Önt.</translation>
 <translation id="8664979001105139458">Már van ilyen nevű fájl</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Jelerősség szintje: # sáv}other{Jelerősség szintje: # sáv}}</translation>
-<translation id="868929229000858085">Keresés a névjegyek között</translation>
 <translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8712637175834984815">Sikerült</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>

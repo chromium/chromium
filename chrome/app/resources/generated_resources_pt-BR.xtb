@@ -1015,7 +1015,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2200356397587687044">O Chrome precisa de permissão para continuar</translation>
 <translation id="220138918934036434">Ocultar botão</translation>
 <translation id="2202898655984161076">Ocorreu um problema na listagem de impressoras. Algumas impressoras podem não ter sido registradas no <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">O mecanismo de pesquisa usado na <ph name="BEGIN_LINK" />barra de endereço<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Ler e alterar tudo o que você digitar</translation>
 <translation id="220858061631308971">Digite este código PIN em "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
@@ -1063,7 +1062,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2256115617011615191">Reiniciar agora</translation>
 <translation id="225614027745146050">Bem-vindo</translation>
 <translation id="225692081236532131">Status da ativação</translation>
-<translation id="2257053455312861282">A adição de uma conta escolar facilita o login como aluno em sites, extensões e apps sem desativar o controle dos pais.</translation>
+<translation id="2257053455312861282">Adicionar uma conta escolar facilita o login como aluno em sites, extensões e apps sem desativar o controle dos pais.</translation>
 <translation id="2261323523305321874">Seu administrador fez uma alteração no sistema inteiro que desativa alguns perfis antigos.</translation>
 <translation id="2262332168014443534">Agora, o Modo Lite acelera a navegação em todas as páginas, inclusive HTTPS.</translation>
 <translation id="2262477216570151239">Atraso antes da repetição</translation>
@@ -1937,6 +1936,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informações sobre o aplicativo</translation>
 <translation id="3333190335304955291">Você pode desativar esse serviço nas configurações.</translation>
+<translation id="3333961966071413176">Todos os contatos</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Vídeo reproduzido em picture-in-picture</translation>
 <translation id="3335947283844343239">Reabrir guia fechada</translation>
 <translation id="3340620525920140773">Download concluído: <ph name="FILE_NAME" />.</translation>

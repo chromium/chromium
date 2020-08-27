@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Вы ўвойдзеце ва Уліковы запіс Google\n(Сінхранізацыя Chrome не ўключыцца)</translation>
 <translation id="1877026089748256423">Chrome састарэў</translation>
 <translation id="1883903952484604915">Мае файлы</translation>
-<translation id="1919950603503897840">Выберыце кантакты</translation>
 <translation id="1925021887439448749">Увядзіце карыстальніцкі вэб-адрас</translation>
 <translation id="1928696683969751773">Абнаўленні</translation>
 <translation id="19288952978244135">Адкрыйце Chrome яшчэ раз.</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">Выкарыстоўваючы Chrome, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />. Таксама прымяняецца <ph name="BEGIN_LINK3" />Паведамленне аб прыватнасці ў дачыненні да Уліковых запісаў Google, якія кіруюцца праз Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Абнавіць старонку</translation>
 <translation id="2709516037105925701">Аўтазапаўненне</translation>
-<translation id="2717722538473713889">Адрасы электроннай пошты</translation>
 <translation id="2728754400939377704">Сартаваць па сайце</translation>
 <translation id="2744248271121720757">Каб выканаць імгненны пошук або паглядзець звязаныя са словам дзеянні, націсніце на яго</translation>
 <translation id="2760989362628427051">Выкарыстоўваць цёмную тэму, калі на прыладзе ўключаны рэжым эканоміі зараду або цёмная тэма</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць пошук і іншыя сэрвісы Google</translation>
 <translation id="2898264748040935573">Рэдагаваць захаваны пароль</translation>
 <translation id="2900528713135656174">Стварыце падзею</translation>
-<translation id="2903493209154104877">Адрасы</translation>
 <translation id="2904414404539560095">Спіс прылад, з якімі можна абагуліць укладку, разгорнуты на ўвесь экран.</translation>
 <translation id="2905036901251765993">Каб абагуліць гэта змесціва з карыстальнікамі паблізу, дайце ім прасканіраваць гэты QR-код</translation>
 <translation id="2909615210195135082">Платформа апавяшчэнняў Google</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">Гэта праграма працуе ў браўзеры Chrome</translation>
 <translation id="3315103659806849044">Вы змяняеце налады сэрвісаў Google і сінхранізацыі. Каб завяршыць уключэнне сінхранізацыі, націсніце кнопку "Пацвердзіць" унізе экрана. Перайсці ўверх</translation>
 <translation id="3328801116991980348">Звесткі пра сайт</translation>
-<translation id="3333961966071413176">Усе кантакты</translation>
 <translation id="3334729583274622784">Змяніць пашырэнне файла?</translation>
 <translation id="3341058695485821946">Глядзіце, колькі трафіка вы сэканомілі</translation>
 <translation id="3350687908700087792">Закрыць усе ўкладкі інкогніта</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3810838688059735925">Відэа</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
-<translation id="381841723434055211">Нумары тэлефонаў</translation>
 <translation id="3819178904835489326">Выдалена спамповак: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3856096718352044181">Праверце, ці сапраўдны гэта аператар, або паўтарыце спробу</translation>
 <translation id="388596076286380598">Чытайце артыкулы, глядзіце відэа і іншае змесціва на любімых сайтах, нават калі вы не падключаны да інтэрнэту або якасць падключэння дрэнная.</translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">Наперад</translation>
 <translation id="4988210275050210843">Ідзе спампоўванне файла (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Старонкі</translation>
-<translation id="4994033804516042629">Кантакты не знойдзены</translation>
 <translation id="5004416275253351869">Параметры дзейнасці Google</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> хоча падключыцца</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
 <translation id="5193988420012215838">Скапіравана ў буфер абмену</translation>
-<translation id="5197729504361054390">Выбраныя вамі кантакты будуць абагулены з сайтам <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Працоўны профіль</translation>
 <translation id="5210286577605176222">Перайсці на папярэднюю ўкладку</translation>
 <translation id="5210365745912300556">Закрыць укладку</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">Палепшаная абарона ўключана</translation>
 <translation id="5357811892247919462">Атрымана ўкладка</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> адкрытая ўкладка. Націсніце, каб пераключыцца паміж укладкамі.}one{<ph name="OPEN_TABS_MANY" /> адкрытая ўкладка. Націсніце, каб пераключыцца паміж укладкамі.}few{<ph name="OPEN_TABS_MANY" /> адкрытыя ўкладкі. Націсніце, каб пераключыцца паміж укладкамі.}many{<ph name="OPEN_TABS_MANY" /> адкрытых укладак. Націсніце, каб пераключыцца паміж укладкамі.}other{<ph name="OPEN_TABS_MANY" /> адкрытай укладкі. Націсніце, каб пераключыцца паміж укладкамі.}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(і яшчэ 1)}one{(і яшчэ #)}few{(і яшчэ #)}many{(і яшчэ #)}other{(і яшчэ #)}}</translation>
-<translation id="5403592356182871684">Імёны</translation>
 <translation id="5403644198645076998">Дазваляць толькі пэўныя сайты</translation>
 <translation id="5414836363063783498">Ідзе праверка…</translation>
 <translation id="5423934151118863508">Тут будуць паказвацца старонкі, якія вы найчасцей наведваеце</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">Паведамленне аб прыватнасці Chrome</translation>
 <translation id="6671495933530132209">Скапіраваць відарыс</translation>
 <translation id="6676840375528380067">Выдаліць даныя Chrome з гэтай прылады?</translation>
-<translation id="6689172468748959065">Фота профілю</translation>
 <translation id="6691888250440401212">1. Выберыце <ph name="APP_NAME" />.\n2. Націсніце "Зрабіць стандартнай праграмай".</translation>
 <translation id="6697492270171225480">Паказваць прапановы падобных старонак, калі старонку не ўдаецца знайсці</translation>
 <translation id="6698801883190606802">Кіраванне сінхранізаванымі данымі</translation>
@@ -912,7 +902,6 @@
 <translation id="7975379999046275268">Перадпрагляд старонкі <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Папярэдне загружаць старонкі для больш хуткага прагляду і пошуку</translation>
 <translation id="79859296434321399">Каб праглядаць змесціва ў рэжыме дапоўненай рэальнасці, усталюйце ARCore</translation>
-<translation id="7986741934819883144">Выберыце кантакт</translation>
 <translation id="799806351373751710">Скасаваць наладжванне сінхранізацыі</translation>
 <translation id="7998918019931843664">Паўторна адкрыць закрытую ўкладку</translation>
 <translation id="8004582292198964060">Браўзер</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">Будзе выкананы выхад з уліковых запісаў на большасці сайтаў.</translation>
 <translation id="8664979001105139458">Файл з такой назвай ужо існуе</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Узровень сігналу: # палоска}one{Узровень сігналу: # палоска}few{Узровень сігналу: # палоскі}many{Узровень сігналу: # палосак}other{Узровень сігналу: # палоскі}}</translation>
-<translation id="868929229000858085">Пошук у кантактах</translation>
 <translation id="869891660844655955">Тэрмін дзеяння</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>

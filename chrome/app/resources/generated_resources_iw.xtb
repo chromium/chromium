@@ -1012,7 +1012,6 @@
 <translation id="2200356397587687044">‏Chrome צריך הרשאה כדי להמשיך</translation>
 <translation id="220138918934036434">לחצן הסתר</translation>
 <translation id="2202898655984161076">היתה בעיה ברישום מדפסות. ייתכן שחלק מהמדפסות שלך לא נרשמו בהצלחה ב-<ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">מנוע החיפוש שבאמצעותו מבוצע חיפוש מ<ph name="BEGIN_LINK" />שורת כתובת האתר<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">לקרוא ולשנות את כל מה שאתה מקליד</translation>
 <translation id="220858061631308971">‏הזן את קוד PIN זה ב-"<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">‏אישור קובצי cookie</translation>
@@ -1935,6 +1934,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">פרטי יישום</translation>
 <translation id="3333190335304955291">אפשר להשבית את השירות הזה דרך ההגדרות.</translation>
+<translation id="3333961966071413176">כל אנשי הקשר</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - הסרטון פועל במצב תמונה בתוך תמונה</translation>
 <translation id="3335947283844343239">פתח מחדש כרטיסייה שנסגרה</translation>
 <translation id="3340620525920140773">ההורדה הושלמה: <ph name="FILE_NAME" />.</translation>
@@ -2891,7 +2891,7 @@
 <translation id="4480590691557335796">‏Chrome יכול לאתר תוכנות מזיקות במחשב ולהסיר אותן</translation>
 <translation id="4481530544597605423">מכשירים לא מותאמים</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
-<translation id="4487489714832036847">‏מכשירי Chromebook משתמשים באפליקציות במקום בתוכנות, בניגוד למכשירים אחרים. ניתן להוריד את האפליקציות וליהנות מפרודוקטיביות, מבידור ועוד.</translation>
+<translation id="4487489714832036847">‏במכשירי Chromebook משתמשים באפליקציות במקום בתוכנות רגילות. ניתן להוריד אפליקציות לפרודוקטיביות, לבידור ועוד.</translation>
 <translation id="4488502501195719518">לנקות את כל הנתונים?</translation>
 <translation id="4493468155686877504">מומלץ (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">אל תציג בדף זה</translation>
@@ -2942,7 +2942,7 @@
 <translation id="4546692474302123343">‏קלט קולי ב-Google Assistant</translation>
 <translation id="4547659257713117923">אין כרטיסיות ממכשירים אחרים</translation>
 <translation id="4547672827276975204">הגדרה באופן אוטומטי</translation>
-<translation id="4548483925627140043">האות לא נמצא</translation>
+<translation id="4548483925627140043">לא אותר אות</translation>
 <translation id="4549791035683739768">לא נשמרו טביעות אצבעות במפתח האבטחה</translation>
 <translation id="4551763574344810652">אפשר לבטל את הפעולה בהקשה על <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4552089082226364758">Flash</translation>
@@ -6124,7 +6124,7 @@
 <translation id="8472623782143987204">גיבוי חומרה</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8475313423285172237">‏תוכנה אחרת במחשב שלך הוסיפה תוסף שעשוי לשנות את אופן הפעולה של Chrome.</translation>
-<translation id="8475690821716466388">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש</translation>
+<translation id="8475690821716466388">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP PSK חלש</translation>
 <translation id="8477241577829954800">הוחלף</translation>
 <translation id="8477384620836102176">&amp;כללי</translation>
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>

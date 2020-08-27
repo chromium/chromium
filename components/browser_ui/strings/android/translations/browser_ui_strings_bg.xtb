@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">За да разрешите на <ph name="APP_NAME" /> да използва AR, камерата трябва да бъде включена от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Достъпът до местоположението е изключен за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Реклами</translation>
+<translation id="1919950603503897840">Избор на контакти</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> от <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Разрешено, но не и за трети страни</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Излизане</translation>
 <translation id="2687403674020088961">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
 <translation id="2704606927547763573">Копирано</translation>
+<translation id="2717722538473713889">Имейл адреси</translation>
 <translation id="2822354292072154809">Наистина ли искате да зададете повторно всички разрешения за сайта за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
+<translation id="2903493209154104877">Адреси</translation>
 <translation id="2910701580606108292">Запитване преди разрешаване на сайтовете да възпроизвеждат защитено съдържание</translation>
 <translation id="2913331724188855103">Разрешаване на сайтовете да запазват „бисквитки“ и да четат данни от такива (препоръчително)</translation>
 <translation id="2968755619301702150">Визуализатор на сертификатите</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3277252321222022663">Разрешаване на достъпа на сайтовете до сензорите (препоръчително)</translation>
 <translation id="3295602654194328831">Скриване на информацията</translation>
+<translation id="3333961966071413176">Всички контакти</translation>
 <translation id="3386292677130313581">Извеждане на запитване, преди на сайтовете да се разреши достъп до местоположението ви (препоръчително)</translation>
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3538390592868664640">Блокиране на сайтовете, така че да не могат да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Спиране на звука, възпроизвеждан от сайтовете</translation>
 <translation id="3744111561329211289">Синхронизиране на заден план</translation>
 <translation id="3763247130972274048">Докоснете два пъти левия или десния край на прозореца с видеоклипа, за да пропуснете 10 сек</translation>
+<translation id="381841723434055211">Телефонни номера</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Придвижване напред</translation>
 <translation id="3955193568934677022">Разрешаване на сайтовете да възпроизвеждат защитено съдържание (препоръчително)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Извеждане на запитване, преди да се разреши на сайтовете да използват устройството и данните ви за виртуална реалност (препоръчително)</translation>
 <translation id="4962975101802056554">Отмяна на всички разрешения за устройството</translation>
 <translation id="497421865427891073">Преминаване напред</translation>
+<translation id="4994033804516042629">Няма намерени контакти</translation>
 <translation id="4996978546172906250">Споделяне чрез</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5048398596102334565">Разрешаване на достъпа на сайтовете до сензорите за движение (препоръчително)</translation>
 <translation id="5063480226653192405">Употреба</translation>
 <translation id="5100237604440890931">Свито – кликнете за разгъване.</translation>
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
+<translation id="5197729504361054390">Избраните от вас контакти ще бъдат споделени със сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Показване</translation>
 <translation id="5301954838959518834">Добре, разбрах</translation>
 <translation id="5313967007315987356">Добавяне на сайт</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Съхраняваните от сайтовете данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
 <translation id="5384883051496921101">Този сайт е напът да сподели информация с приложение, което не е в режим „инкогнито“.</translation>
 <translation id="5391532827096253100">Връзката ви с този сайт не е защитена. Информация за сайта</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и още 1)}other{(и още #)}}</translation>
+<translation id="5403592356182871684">Имена</translation>
 <translation id="5489227211564503167">Изминало време: <ph name="ELAPSED_TIME" /> от <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокиране на рекламите от сайтове, на които се показват натрапчиви или подвеждащи реклами</translation>
 <translation id="5505264765875738116">Сайтовете не могат да извеждат подкани за изпращане на известия</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Защитено съдържание</translation>
 <translation id="662080504995468778">Оставане</translation>
 <translation id="6643016212128521049">Изчистване</translation>
+<translation id="6689172468748959065">Снимки на потребителския профил</translation>
 <translation id="6697925417670533197">Активни изтегляния</translation>
 <translation id="6746124502594467657">Придвижване надолу</translation>
 <translation id="6766622839693428701">Прекарайте пръст надолу, за да затворите.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Анулиране на избора</translation>
 <translation id="7846621471902887024">Ще излезете от профила си във всички сайтове.</translation>
 <translation id="7882806643839505685">Разрешаване на звука за конкретен сайт.</translation>
+<translation id="7986741934819883144">Изберете контакт</translation>
 <translation id="7993619969781047893">Функциите в някои сайтове може да не работят правилно</translation>
 <translation id="7999064672810608036">Наистина ли искате да изчистите всички локални данни, включително „бисквитките“, и да нулирате всички разрешения за този уебсайт?</translation>
 <translation id="8007176423574883786">Изключено за това устройство</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Разрешено (препоръчително)</translation>
 <translation id="8609465669617005112">Придвижване нагоре</translation>
 <translation id="8676374126336081632">Изчистване на въведеното</translation>
+<translation id="868929229000858085">Търсене в контактите ви</translation>
 <translation id="8702612070107455751">Всички офлайн данни ще бъдат изчистени.</translation>
 <translation id="8719283222052720129">Включете разрешението за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>

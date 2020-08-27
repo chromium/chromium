@@ -110,7 +110,6 @@
 <translation id="1874760110381325409">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಬಳಸಿ ನೀವು ಸೈನ್ ಇನ್ ಆಗುತ್ತೀರಿ\n(ಇದು Chrome ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡುವುದಿಲ್ಲ)</translation>
 <translation id="1877026089748256423">Chrome ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="1883903952484604915">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
-<translation id="1919950603503897840">ಸಂಪರ್ಕಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="1925021887439448749">ಕಸ್ಟಮ್ ವೆಬ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="1928696683969751773">ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="19288952978244135">Chrome ಮರುತೆರೆಯಿರಿ.</translation>
@@ -217,7 +216,6 @@
 <translation id="2689830683995595741">Chrome ಅನ್ನು ಬಳಸುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು Chrome OS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_LINK3" />Family Link ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುವ Google ಖಾತೆಗಳಿಗಾಗಿ ಗೌಪ್ಯತೆ ಸೂಚನೆ<ph name="END_LINK3" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
 <translation id="2707726405694321444">ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="2709516037105925701">ಸ್ವಯಂತುಂಬುವಿಕೆ</translation>
-<translation id="2717722538473713889">ಇಮೇಲ್ ವಿಳಾಸಗಳು</translation>
 <translation id="2728754400939377704">ಸೈಟ್ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="2744248271121720757">ತತ್‌ಕ್ಷಣ ಹುಡುಕಲು ಅಥವಾ ಸಂಬಂಧಿತ ಕ್ರಿಯೆಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಪದವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2760989362628427051">ನಿಮ್ಮ ಸಾಧನದ ಡಾರ್ಕ್ ಥೀಮ್ ಅಥವಾ ಬ್ಯಾಟರಿ ಸೇವರ್ ಆನ್ ಆಗಿರುವಾಗ, ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -242,7 +240,6 @@
 <translation id="2893180576842394309">ಹುಡುಕಾಟ ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು Google ಬಳಸಬಹುದು.</translation>
 <translation id="2898264748040935573">ಸಂಗ್ರಹಿಸಿರುವ ಪಾಸ್‌ವರ್ಡ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2900528713135656174">ಈವೆಂಟ್ ರಚಿಸು</translation>
-<translation id="2903493209154104877">ವಿಳಾಸಗಳು</translation>
 <translation id="2904414404539560095">ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕಾದ ಸಾಧನಗಳ ಪಟ್ಟಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="2905036901251765993">ಸಮೀಪದ ಜನರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು, ಅವರು ಈ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಿ</translation>
 <translation id="2909615210195135082">Google ಅಧಿಸೂಚನೆಗಳು ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್</translation>
@@ -295,7 +292,6 @@
 <translation id="3306398118552023113">ಈ ಆ್ಯಪ್‌, Chrome ನಲ್ಲಿ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3315103659806849044">ನೀವು ಪ್ರಸ್ತುತವಾಗಿ ನಿಮ್ಮ ಸಿಂಕ್ ಮತ್ತು Google ಸೇವೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡುತ್ತಿರುವಿರಿ. ಸಿಂಕ್ ಆನ್ ಮಾಡುವುದನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು, ಪರದೆಯ ಕೆಳಭಾಗದಲ್ಲಿ ಸಮೀಪದಲ್ಲಿರುವ 'ದೃಢೀಕರಿಸಿ' ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ. ಮೇಲಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್</translation>
 <translation id="3328801116991980348">ಸೈಟ್ ಮಾಹಿತಿ</translation>
-<translation id="3333961966071413176">ಎಲ್ಲಾ ಸಂಪರ್ಕಗಳು</translation>
 <translation id="3334729583274622784">ಫೈಲ್ ವಿಸ್ತರಣೆಯನ್ನು ಬದಲಿಸುವುದೇ?</translation>
 <translation id="3341058695485821946">ನೀವು ಎಷ್ಟು ಡೇಟಾ ಉಳಿಸಿದ್ದಿರಾ ಎಂದು ನೋಡಿ</translation>
 <translation id="3350687908700087792">ಎಲ್ಲಾ ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
@@ -354,7 +350,6 @@
 <translation id="3789841737615482174">ಇನ್‌ಸ್ಟಾಲ್</translation>
 <translation id="3810838688059735925">ವೀಡಿಯೊ</translation>
 <translation id="3810973564298564668">ನಿರ್ವಹಿಸು</translation>
-<translation id="381841723434055211">ಫೋನ್ ಸಂಖ್ಯೆಗಳು</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3856096718352044181">ಇವರು ಮಾನ್ಯವಾದ ಪೂರೈಕೆದಾರರೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ ಅಥವಾ ಆನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="388596076286380598">ನೀವು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿದ್ದರೂ ಅಥವಾ ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಕಳಪೆ ಆಗಿದ್ದರೂ ಸಹ ನಿಮಗೆ ಇಷ್ಟವಾಗುವ ಸೈಟ್‌ನಲ್ಲಿರುವ ಲೇಖನಗಳು, ವೀಡಿಯೊಗಳು ಮತ್ತು ಇತರ ವಿಷಯವನ್ನು ಪಡೆದುಕೊಳ್ಳಿ.</translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">ಮುಂದಕ್ಕೆ ಹೋಗು</translation>
 <translation id="4988210275050210843">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">ಪುಟಗಳು</translation>
-<translation id="4994033804516042629">ಯಾವುದೇ ಸಂಪರ್ಕಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="5004416275253351869">Google ಚಟುವಟಿಕೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ನಕಲಿಸಿ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="5184329579814168207">Chrome ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="5193988420012215838">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ</translation>
-<translation id="5197729504361054390">ನೀವು ಆಯ್ಕೆ ಮಾಡುವ ಸಂಪರ್ಕಗಳನ್ನು <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="5199929503336119739">ಕೆಲಸದ ಪ್ರೊಫೈಲ್</translation>
 <translation id="5210286577605176222">ಹಿಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="5210365745912300556">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5357811892247919462">ಟ್ಯಾಬ್ ಸ್ವೀಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ಟ್ಯಾಬ್ ತೆರೆದಿದೆ, ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬದಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ}one{<ph name="OPEN_TABS_MANY" /> ಟ್ಯಾಬ್‌ಗಳು ತೆರೆದಿವೆ, ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬದಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ}other{<ph name="OPEN_TABS_MANY" /> ಟ್ಯಾಬ್‌ಗಳು ತೆರೆದಿವೆ, ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬದಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ಹೆಚ್ಚು)}one{(+ # ಹೆಚ್ಚು)}other{(+ # ಹೆಚ್ಚು)}}</translation>
-<translation id="5403592356182871684">ಹೆಸರುಗಳು</translation>
 <translation id="5403644198645076998">ಕೆಲವು ಸೈಟ್‌ಗಳಿಗೆ ಮಾತ್ರ ಅನುಮತಿಸಿ</translation>
 <translation id="5414836363063783498">ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5423934151118863508">ನಿವು ಹೆಚ್ಚು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">Chrome ಗೌಪ್ಯತಾ ಸೂಚನೆ</translation>
 <translation id="6671495933530132209">ಚಿತ್ರವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="6676840375528380067">ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ Chrome ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸುವುದೇ?</translation>
-<translation id="6689172468748959065">ಪ್ರೊಫೈಲ್ ಫೋಟೋಗಳು</translation>
 <translation id="6691888250440401212">1. <ph name="APP_NAME" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ\n2. “ಡೀಫಾಲ್ಟ್ ಆಗಿ ಹೊಂದಿಸಿ” ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6697492270171225480">ಯಾವುದೇ ಪುಟವನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗದಿದ್ದರೆ, ಅಂತಹುದೇ ಪುಟಗಳ ಸಲಹೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6698801883190606802">ಸಿಂಕ್‌ ಮಾಡಲಾದ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -912,7 +902,6 @@
 <translation id="7975379999046275268">ಪುಟ ಪೂರ್ವವೀಕ್ಷಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸದು<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ವೇಗವಾದ ಬ್ರೌಸಿಂಗ್ ಮತ್ತು ಹುಡುಕಾಟಕ್ಕಾಗಿ ಪುಟಗಳನ್ನು ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="79859296434321399">ವರ್ಧಿತ ನೈಜತೆಯ ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಲು, ARCore ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
-<translation id="7986741934819883144">ಸಂಪರ್ಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="799806351373751710">ಸಿಂಕ್ ಸೆಟಪ್ ಅನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="7998918019931843664">ಮುಚ್ಚಿದ ಟ್ಯಾಬ್ ಮತ್ತೆ ತೆರೆಯಿರಿ</translation>
 <translation id="8004582292198964060">ಬ್ರೌಸರ್</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">ಹೆಚ್ಚಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಂದ ಸೈನ್‌ ಔಟ್‌ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="8664979001105139458">ಫೈಲ್ ಹೆಸರು ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ಸಿಗ್ನಲ್‌ ಸಾಮರ್ಥ್ಯದ ಹಂತ: # ಪಟ್ಟಿ}one{ಸಿಗ್ನಲ್‌ ಸಾಮರ್ಥ್ಯದ ಹಂತ: # ಪಟ್ಟಿಗಳು}other{ಸಿಗ್ನಲ್‌ ಸಾಮರ್ಥ್ಯದ ಹಂತ: # ಪಟ್ಟಿಗಳು}}</translation>
-<translation id="868929229000858085">ನಿಮ್ಮ ಸಂಪರ್ಕಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="869891660844655955">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>

@@ -178,6 +178,9 @@
 <translation id="1252536192437793850">Consenti ai siti di chiedere all'utente di concedere l'accesso a una porta seriale</translation>
 <translation id="1257550411839719984">Imposta directory di download predefinita</translation>
 <translation id="1265053460044691532">Limita il tempo per cui un utente autenticato tramite SAML può eseguire l'accesso offline</translation>
+<translation id="1271840407438458464">Se il criterio viene impostato su un valore valido, <ph name="PRODUCT_NAME" /> non utilizza versioni SSL/TLS precedenti alla versione specificata. I valori non riconosciuti vengono ignorati.
+
+      Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> utilizza una versione minima predefinita, ovvero TLS 1.0.</translation>
 <translation id="127264587838521316">Attiva le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /></translation>
 <translation id="1290634681382861275">Consente di gestire varie impostazioni, tra cui USB, Bluetooth, aggiornamento delle norme, modalità sviluppatore e altre ancora.</translation>
 <translation id="1291880496936992484">Avviso. RC4 sarà rimosso completamente da <ph name="PRODUCT_NAME" /> dopo la versione 52 (nel periodo di settembre 2016), dopodiché questa norma non sarà più attiva.
@@ -274,11 +277,11 @@
 Se attivi o non configuri questo criterio, viene attivato lo scorrimento della pagina web ai frammenti di testo specifici tramite URL.
 
 Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di testo specifici tramite URL viene disattivato.</translation>
-<translation id="1469072784237350146">Consente di controllare se i siti web non sicuri possono effettuare richieste agli endpoint di rete privata.
+<translation id="1469072784237350146">Consente di controllare se i siti web non sicuri possono effettuare richieste agli endpoint di rete con un livello di protezione più alto.
 
           Questo criterio riguarda la specifica CORS-RFC1918. Per maggiori dettagli, consulta il sito https://wicg.github.io/cors-rfc1918.
 
-          Un endpoint di rete è più privato di un altro se:
+          Un endpoint di rete ha un livello di protezione più alto di un altro se:
           1) il suo indirizzo IP è localhost e l'altro no.
           2) il suo indirizzo IP è privato e l'altro è pubblico.
           In futuro, a seconda dell'evoluzione della specifica, questo criterio potrebbe essere applicato a tutte le richieste multiorigine indirizzate a localhost o IP privati.
@@ -412,6 +415,9 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1617235075406854669">Attiva eliminazione cronologia del browser e dei download</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="163200210584085447">I pattern di questo elenco verranno confrontati con l'origine di sicurezza dell'URL richiedente. Se viene trovata una corrispondenza, l'accesso ai dispositivi di acquisizione video verrà concesso sulle pagine di accesso SAML. In caso contrario, l'accesso verrà automaticamente negato. Non sono consentite sequenze con caratteri jolly.</translation>
+<translation id="1634770710106162474">Se il criterio viene impostato su Attivato, viene eliminato l'avviso visualizzato quando <ph name="PRODUCT_NAME" /> è in esecuzione su un computer o un sistema operativo non supportato.
+
+      Se il criterio viene impostato su Disattivato o se non viene configurato, sui sistemi non supportati vengono visualizzati degli avvisi.</translation>
 <translation id="1634989431648355062">Consenti il plug-in <ph name="FLASH_PLUGIN_NAME" /> su questi siti</translation>
 <translation id="1635112116013359810">Elenco di pattern URL per i quali è necessario controllare la presenza di violazioni delle regole relative alla protezione dei dati sensibili nei contenuti scaricati prima che vengano salvati nello spazio di archiviazione locale.  Questo criterio viene utilizzato solo se il criterio <ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" /> è attivato.
 
@@ -615,7 +621,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2006530844219044261">Gestione dell'alimentazione</translation>
 <translation id="2011716066101019796">L'impostazione o la mancata configurazione del criterio consente a Chrome di mostrare finestre di dialogo di selezione dei file che gli utenti possono aprire.
 
-      Se il criterio viene disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Si presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
+      Se il criterio viene disattivato, quando gli utenti eseguono delle azioni che comportano l'apertura di una finestra di dialogo di selezione dei file, come importare preferiti, caricare file e salvare link, viene visualizzato un messaggio. Il browser presuppone che l'utente abbia fatto clic su Annulla nella finestra di dialogo di selezione dei file.</translation>
 <translation id="2014757022750736514">Consente di stabilire il comportamento della schermata di accesso, da cui gli utenti possono accedere ai propri account. Le impostazioni consentono di decidere chi può accedere, che tipi di account sono consentiti, quali metodi di autenticazione devono essere usati. Sono disponibili anche impostazioni generali relative ad accessibilità, metodo di immissione e lingue.</translation>
 <translation id="201557587962247231">Frequenza dei caricamenti del rapporto sullo stato del dispositivo</translation>
 <translation id="2017301949684549118">URL per abb web da installare automaticamente.</translation>
@@ -1509,6 +1515,25 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3219421230122020860">Modalità di navigazione in incognito disponibile</translation>
 <translation id="3220624000494482595">Se l'app kiosk è un'app Android, non avrà controllo sulla versione di <ph name="PRODUCT_OS_NAME" />, anche se la norma viene impostata su <ph name="TRUE" />.</translation>
 <translation id="322359555555487980">Determina la disponibilità delle varianti su <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="3231837273069128027">La configurazione del criterio consente di impostare disponibilità e comportamento degli aggiornamenti del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
+
+      Specifica le singole impostazioni nelle proprietà JSON:
+
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH" />: se viene impostato su <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH_TRUE" />, gli utenti possono attivare il flusso della funzione Powerwash per l'installazione di un aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
+
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" /> (disponibile a partire dalla versione 68 di <ph name="PRODUCT_NAME" />): se viene impostato su <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" />, gli utenti possono richiamare il flusso di aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> che conserva lo stato a livello di dispositivo, inclusa la registrazione aziendale, ma che comporta la perdita dei dati utente.
+
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" /> (disponibile a partire dalla versione 75 di <ph name="PRODUCT_NAME" />): consente di controllare in che modo gli aggiornamenti automatici del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> vengono applicati per contrastare la vulnerabilità del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />. Tutti i flussi conservano lo stato del dispositivo locale. Se il criterio viene impostato su:
+
+        * 1 o se non viene configurato, gli aggiornamenti del firmware<ph name="TPM_FIRMWARE_UPDATE_TPM" /> non vengono applicati.
+
+        * 2, il firware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> viene aggiornato al riavvio successivo, in seguito alla conferma dell'aggiornamento da parte dell'utente.
+
+        * 3, il firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> viene aggiornato al riavvio successivo.
+
+        * 4, il firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> viene aggiornato in seguito alla registrazione, prima dell'accesso dell'utente.
+
+      Se il criterio non viene configurato, la visualizzazione dell'aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /> non è disponibile.</translation>
 <translation id="3236046242843493070">Pattern URL per consentire installazioni di estensioni, applicazioni e script utente da</translation>
 <translation id="3240609035816615922">Norma di accesso alla configurazione delle stampanti.</translation>
 <translation id="324062325008698789">Consente di configurare un elenco di stampanti</translation>
@@ -1594,6 +1619,11 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.
 
           L'avviso viene mostrato solo se l'azione stabilita in caso di inattività è la disconnessione o lo spegnimento.</translation>
+<translation id="3367868895271989224">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati. Ogni sito viene eseguito nel proprio processo. Se il criterio viene impostato su Disattivato o se non viene configurato, l'isolamento dei siti non viene disattivato, ma possono farlo gli utenti (ad esempio, utilizzando la voce "Disattiva isolamento dei siti" in chrome://flags).
+
+      Il criterio <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> potrebbe essere utile anche per la correzione delle origini. In <ph name="PRODUCT_OS_NAME" /> 76 o versioni precedenti, imposta il criterio relativo ai dispositivi <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> sullo stesso valore, perché, se i valori non corrispondono, potrebbe verificarsi un ritardo quando si accede a una sessione utente.
+
+      Nota: per Android, utilizza invece il criterio <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="3373381043600809954">Attiva <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Consente di configurare la directory che <ph name="PRODUCT_NAME" /> utilizza per memorizzare i dati utente.
 
@@ -1652,6 +1682,11 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
       In futuro, quando l'accesso incorporato supporterà completamente tutti i flussi di accesso SSO, questa impostazione sperimentale verrà rimossa.</translation>
 <translation id="3435796032110614169">Consenti l'eliminazione della cronologia dei processi di stampa</translation>
 <translation id="3437924696598384725">Consente all'utente di gestire le connessioni VPN</translation>
+<translation id="3451951038162074887">Se il criterio viene impostato su Attivato o se non viene configurato, i software di terze parti non possono inserire codice eseguibile nei processi di <ph name="PRODUCT_NAME" />.
+
+      Se il criterio viene impostato su Disattivato, questi software possono inserire tale codice nei processi di <ph name="PRODUCT_NAME" />.
+
+      A prescindere dal valore di questo criterio, il browser non impedisce a software di terze parti di inserire codice eseguibile nei propri processi su una macchina collegata a un dominio <ph name="MS_AD_NAME" />.</translation>
 <translation id="3459509316159669723">Stampa</translation>
 <translation id="3461279434465463233">Segnala lo stato dell'alimentazione</translation>
 <translation id="346731943813722404">Consente di specificare se i ritardi di gestione dell'alimentazione e il limite di durata delle sessioni devono iniziare soltanto dopo il rilevamento dell'attività del primo utente in una sessione.
@@ -1712,6 +1747,11 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="350443680860256679">Configura ARC</translation>
 <translation id="350797926066071931">Abilita traduzione</translation>
 <translation id="3508047333410537654">Attiva l'audio in formato mono sulla schermata di accesso</translation>
+<translation id="3509819648242653622">La configurazione del criterio consente di impedire il caricamento delle pagine web con URL proibiti. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. Un pattern URL deve essere nel formato indicato all'indirizzo https://www.chromium.org/administrators/url-blacklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+      A partire da <ph name="PRODUCT_NAME" /> 73, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con un caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
+
+      Nota: il blocco degli URL chrome://* interni può generare errori imprevisti.</translation>
 <translation id="3513655665999652754">Quirks Server fornisce file di configurazione specifici per l'hardware, ad esempio
       profili ICC per regolare la calibrazione del monitor.
 
@@ -2207,6 +2247,9 @@ Il valore della norma dovrebbe essere specificato in secondi. Il valore minimo d
 
           Nota: i valori consentiti per il campo <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARGE_START_TIME_FIELD_NAME" /> e <ph name="CHARGE_END_TIME_FIELD_NAME" /> sono 0, 15, 30, 45.</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
+<translation id="4228745249339680042">La configurazione del criterio consente di specificare gli URL e i domini per i quali non vengono visualizzati messaggi quando vengono richiesti certificati di attestazione dei token di sicurezza. Viene inoltre inviato un segnale al token di sicurezza per indicare che potrebbe essere utilizzata la singola attestazione. Senza questo segnale, gli utenti di <ph name="PRODUCT_NAME" /> 65 e versioni successive ricevono un messaggio quando i siti richiedono l'attestazione dei token di sicurezza.
+
+      Gli URL corrispondono soltanto ad appID U2F. I domini corrispondono soltanto a ID RP webauthn. Di conseguenza, per includere entrambe le API U2F e webauthn per un determinato sito, devono essere elencati sia il dominio sia l'URL appID.</translation>
 <translation id="4238997902172035160">Consente di configurare la directory che <ph name="PRODUCT_NAME" /> utilizzerà per memorizzare la copia di roaming dei profili.
 
       Se imposti questa norma, <ph name="PRODUCT_NAME" /> utilizzerà la directory indicata per memorizzare la copia di roaming dei profili se è stata attivata la norma <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />. Se la norma <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> viene disattivata o non è impostata, il valore memorizzato in questa norma non viene utilizzato.
@@ -2756,6 +2799,13 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 Se questa norma non viene impostata viene utilizzata la riga di comando predefinita.</translation>
 <translation id="5150323673529584553">Non analizzare i file</translation>
 <translation id="5152787786897382519">Chromium e Google Chrome hanno alcuni gruppi di criteri che dipendono gli uni dagli altri per fornire il controllo di una funzionalità. Questi insiemi sono rappresentati dai seguenti gruppi di criteri. Dato che i criteri possono avere diverse origini, vengono applicati soltanto i valori provenienti dall'origine con la priorità massima. I valori dello stesso gruppo provenienti da un'origine con priorità inferiore vengono ignorati. L'ordine di priorità è definito in <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
+<translation id="515816885693899426">Questo criterio è obsoleto. Usa il criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />".
+
+      La configurazione del criterio consente di impedire il caricamento delle pagine web con URL proibiti. Consente di fornire un elenco di pattern URL che specificano gli URL vietati. Se il criterio non viene configurato, nessun URL è vietato nel browser. Un pattern URL deve essere nel formato indicato all'indirizzo https://www.chromium.org/administrators/url-blacklist-filter-format. È possibile definire fino a 1000 eccezioni nel criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.
+
+      A partire da <ph name="PRODUCT_NAME" /> 73, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet. Gli URL JavaScript in-page con un caricamento dinamico dei dati non sono soggetti a questo criterio. Ad esempio, se example.com/abc viene bloccato, example.com può comunque caricare example.com/abc tramite XMLHTTPRequest.
+
+      Nota: il blocco degli URL chrome://* interni può generare errori imprevisti.</translation>
 <translation id="5159469559091666409">Consente di stabilire la frequenza di invio, in millisecondi, dei pacchetti di rete di monitoraggio.
 
       Se la norma non viene impostata, l'intervallo predefinito è pari a tre minuti. L'intervallo minimo è pari a 30 secondi, il massimo a 24 ore. I valori che non rientrano in questo intervallo verranno fatti rientrare.</translation>
@@ -3199,6 +3249,13 @@ Se questa impostazione viene disattivata o non viene impostata, sia gli utenti l
       Se il criterio è impostato su false, il client DNS integrato non verrà mai utilizzato.
 
       Se il criterio non viene impostato, per impostazione predefinita il client DNS integrato verrà attivato su macOS, Android (nel caso in cui non siano attivi il DNS privato né la VPN) e ChromeOS. Gli utenti potranno scegliere se utilizzare o meno il client DNS integrato modificando chrome://flags o specificando un flag della riga di comando.</translation>
+<translation id="5624946025057772960">La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descrizione del criterio per il formato delle voci di questo elenco. Ad esempio, * può essere proibito per bloccare tutte le richieste ed è possibile utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. Il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sul criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questo criterio è possibile definire al massimo 1000 voci.
+
+      Questo criterio consente anche di abilitare il richiamo automatico da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
+
+      Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="5630352020869108293">Ripristina l'ultima sessione</translation>
 <translation id="5633871703004128675">Attiva la funzione di accessibilità di evidenziazione del cursore di testo</translation>
 <translation id="5641279111657132737">Questo criterio è deprecato. Usa il criterio "<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />".
@@ -3445,9 +3502,9 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6048199181629830227">Attiva la gestione della variazione dei picchi energetici</translation>
 <translation id="6054485492411959335">Consente di specificare le stampanti utilizzabili dagli utenti.
 
-      Questa norma viene usata soltanto se viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" /> per la norma <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />.
+      Questo criterio viene usato soltanto se viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" /> per il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />.
 
-      Se viene usata questa norma, solo le stampanti con ID corrispondenti ai valori della norma saranno disponibili per gli utenti. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nella norma <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
+      Se viene usato questo criterio, solo le stampanti con ID corrispondenti ai valori del criterio saranno disponibili per gli utenti. Gli ID devono corrispondere ai campi "id" o "guid" del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
       </translation>
 <translation id="6066761914755798079">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca per fornire suggerimenti per le ricerche. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
@@ -3540,6 +3597,15 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6190022522129724693">Impostazione popup predefiniti</translation>
 <translation id="6190367314942602985">Segnala informazioni di identificazione degli utenti</translation>
 <translation id="6195802366906945965">Consente di stabilire se verrà utilizzato lo strumento di verifica dei certificati integrato per verificare i certificati dei server</translation>
+<translation id="6199780467005360782">Questo criterio è deprecato. Usa il criterio "<ph name="URL_ALLOWLIST_POLICY_NAME" />".
+
+      La configurazione del criterio consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni alla lista bloccata di URL. Consulta la descrizione del criterio per il formato delle voci di questo elenco. Ad esempio, * può essere proibito per bloccare tutte le richieste ed è possibile utilizzare questo criterio per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. La lista consentita ha la precedenza sulla lista bloccata. Per questo criterio è possibile definire al massimo 1000 voci.
+
+      Questo criterio consente anche di abilitare il richiamo automatico da parte del browser di applicazioni esterne registrate come gestori di protocollo per i protocolli elencati come "tel:" o "ssh:".
+
+      Se il criterio non viene configurato, non sono consentite eccezioni.
+
+      Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto sulle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="6205094657236844092">Questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente e che non possono essere disinstallate o disattivate dagli utenti.
 
       Ogni voce del criterio è un oggetto con un componente obbligatorio: <ph name="URL_LABEL" /> (l'URL dell'app web da installare) e due componenti facoltativi: <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (che indica la modalità di apertura dell'app web, ovvero una nuova scheda per impostazione predefinita) e <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True, se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e Windows®).
@@ -3547,7 +3613,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app sullo shelf di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
-<translation id="6210261948043479030">La configurazione del criterio consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTP). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
+<translation id="6210261948043479030">La configurazione del criterio consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
       Se l'impostazione viene disattivata o se non viene configurata, il servizio di protezione tramite password acquisisce solo gli hash con salt della password all'indirizzo https://accounts.google.com.
 
@@ -3827,6 +3893,13 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
       Se viene impostato su true, consente di attivare la funzionalità Powerwash sul dispositivo.
       Se non viene configurato, il valore predefinito sarà true, consentendo al dispositivo di attivare la funzionalità Powerwash.
       </translation>
+<translation id="6621839881150363218">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati (ogni sito viene eseguito nel proprio processo). Se il criterio viene impostato su Disattivato, non si verifica alcun isolamento esplicito dei siti e le prove sul campo di IsolateOriginsAndroid e SitePerProcessAndroid vengono disattivate. Gli utenti possono comunque attivare manualmente il criterio.
+
+      Se il criterio non viene configurato, gli utenti possono modificare questa impostazione.
+
+      Per isolare i siti e limitare l'impatto sugli utenti, utilizza il criterio <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> con un elenco dei siti da isolare.
+
+      Nota: il supporto dell'isolamento dei siti per Android migliorerà, ma attualmente potrebbe causare problemi di interferenze. Questo criterio viene applicato solo a Chrome su dispositivi Android con più di 1 GB di RAM. Per applicare il criterio a piattaforme non Androd, utilizza <ph name="SITE_PER_PROCESS_POLICY_NAME" />.</translation>
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
 <translation id="6628043374475466084">Pattern URL per non eseguire il controllo della presenza di violazioni delle regole relative alla protezione dei dati sensibili nei contenuti caricati</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
@@ -3927,7 +4000,7 @@ Il valore della norma deve essere specificato in millisecondi. I valori devono e
 <translation id="6752711782954612641">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di un URL con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> non viene configurato, le richieste di ricerca vengono inviate utilizzando il metodo Get.</translation>
-<translation id="6753052385433167009">La configurazione del criterio consente di impostare l'URL per gli utenti per la modifica delle proprie password dopo aver visualizzato un avviso nel browser. Il servizio di protezione tramite password reindirizza gli utenti all'URL (solo protocolli HTTP e HTTP) indicato tramite questo criterio. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente l'hash con salt della nuova password in questa pagina di modifica della password, segui queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
+<translation id="6753052385433167009">La configurazione del criterio consente di impostare l'URL per gli utenti per la modifica delle proprie password dopo aver visualizzato un avviso nel browser. Il servizio di protezione tramite password reindirizza gli utenti all'URL (solo protocolli HTTP e HTTPS) indicato tramite questo criterio. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente l'hash con salt della nuova password in questa pagina di modifica della password, segui queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
       Se il criterio viene disattivato o se non viene configurato, il servizio reindirizza gli utenti al sito https://myaccount.google.com per la modifica della propria password.
 
@@ -4698,6 +4771,9 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Se questa impostazione è abilitata, gli utenti devono fornire un codice valido a due fattori quando accedono a un host.
 
           Se questa impostazione è disabilitata o non è impostata, l'autenticazione a due fattori non sarà attiva e verrà utilizzato il comportamento predefinito che prevede l'uso di un PIN definito dall'utente.</translation>
+<translation id="7749402921503577264">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono fare clic nelle pagine di avviso mostrate da <ph name="PRODUCT_NAME" /> quando navigano su siti con errori SSL.
+
+      Se il criterio viene impostato su Disattivato, gli utenti non possono fare clic nelle pagine di avviso.</translation>
 <translation id="7750991880413385988">Apri pagina Nuova scheda</translation>
 <translation id="7754704193130578113">Chiedi dove salvare il file prima di scaricarlo</translation>
 <translation id="7758378441185523981">Attiva l'autenticazione ambientale in base ai tipi di profilo.</translation>
@@ -4726,7 +4802,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7818131573217430250">Impostazione stato predefinito modalità ad alto contrasto nella schermata di accesso</translation>
 <translation id="7823420548819808002">La configurazione del criterio consente di specificare un elenco di origini (URL) o schemi di nomi host (come *.example.com) per cui non vengono applicate limitazioni di sicurezza sulle origini non sicure. Le organizzazioni possono impostare le origini autorizzate per le applicazioni precedenti che non possono eseguire il deployment di TLS o configurare un server temporaneo per lo sviluppo web interno, così che gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover eseguire il deployment di TLS sul server temporaneo. Inoltre questo criterio impedisce all'origine di essere etichettata come "Non sicura" nella barra degli indirizzi.
 
-      La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presente.
+      La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
 
       Per ulteriori informazioni sui contesti sicuri, visita la pagina Contesti sicuri (https://www.w3.org/TR/secure-contexts).</translation>
 <translation id="7823902813460802031">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> impedisce al dispositivo di avviare la modalità sviluppatore.

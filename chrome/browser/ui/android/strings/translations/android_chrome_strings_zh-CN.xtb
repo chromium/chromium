@@ -102,13 +102,13 @@
 <translation id="1810845389119482123">未完成初始同步设置</translation>
 <translation id="1821253160463689938">使用 Cookie 记住您的偏好设置（即使您不访问这些网页）</translation>
 <translation id="1829244130665387512">在网页中查找</translation>
+<translation id="1843805151597803366">如果想获得更好的译文，请允许 Google 搜索使用当前网页</translation>
 <translation id="1853692000353488670">打开新的无痕式标签页</translation>
 <translation id="1856325424225101786">重置精简模式？</translation>
 <translation id="1868024384445905608">Chrome 现可更快速地下载文件</translation>
 <translation id="1874760110381325409">您将会通过自己的 Google 帐号登录\n（Chrome 同步功能不会因此开启）</translation>
 <translation id="1877026089748256423">Chrome版本太旧</translation>
 <translation id="1883903952484604915">我的文件</translation>
-<translation id="1919950603503897840">选择联系人</translation>
 <translation id="1925021887439448749">输入自定义网址</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新打开 Chrome。</translation>
@@ -215,7 +215,6 @@
 <translation id="2689830683995595741">使用 Chrome 即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。<ph name="BEGIN_LINK3" />针对通过 Family Link 管理的 Google 帐号的隐私权声明<ph name="END_LINK3" />也适用。</translation>
 <translation id="2707726405694321444">刷新网页</translation>
 <translation id="2709516037105925701">自动填充</translation>
-<translation id="2717722538473713889">电子邮件地址</translation>
 <translation id="2728754400939377704">按网站排序</translation>
 <translation id="2744248271121720757">点按某个字词可立即开始搜索或查看相关操作</translation>
 <translation id="2760989362628427051">在设备开启深色主题背景或省电模式时启用深色主题背景</translation>
@@ -240,7 +239,6 @@
 <translation id="2893180576842394309">Google 可能会利用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务</translation>
 <translation id="2898264748040935573">修改存储的密码</translation>
 <translation id="2900528713135656174">创建活动</translation>
-<translation id="2903493209154104877">地址</translation>
 <translation id="2904414404539560095">要与之分享标签页的设备的列表已全屏打开。</translation>
 <translation id="2905036901251765993">要与附近的人分享，请让他们扫描此二维码</translation>
 <translation id="2909615210195135082">Google 通知平台</translation>
@@ -293,7 +291,6 @@
 <translation id="3306398118552023113">此应用正在 Chrome 中运行</translation>
 <translation id="3315103659806849044">您正在自定义您的“同步功能和 Google 服务”设置。要完成开启同步功能的操作，请点按屏幕底部附近的“确认”按钮。转到上一层级</translation>
 <translation id="3328801116991980348">网站信息</translation>
-<translation id="3333961966071413176">所有联系人</translation>
 <translation id="3334729583274622784">更改文件扩展名？</translation>
 <translation id="3341058695485821946">查看您已节省多少数据流量</translation>
 <translation id="3350687908700087792">关闭所有隐身标签页</translation>
@@ -352,7 +349,6 @@
 <translation id="3789841737615482174">安装</translation>
 <translation id="3810838688059735925">视频</translation>
 <translation id="3810973564298564668">管理</translation>
-<translation id="381841723434055211">电话号码</translation>
 <translation id="3819178904835489326">已删除 <ph name="NUMBER_OF_DOWNLOADS" /> 项下载内容</translation>
 <translation id="3856096718352044181">请检查并确保这是一个有效的提供商，或者稍后重试</translation>
 <translation id="388596076286380598">畅享您喜爱的网站上的文章、视频和其他内容，即使离线或网络连接状况不佳也不受影响。</translation>
@@ -477,6 +473,7 @@
 
 要更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> 上的 Digital Asset Links 验证失败了</translation>
 <translation id="4824958205181053313">取消同步？</translation>
 <translation id="4835385943915508971">Chrome 无权访问请求的资源。</translation>
 <translation id="4837753911714442426">打开选项以打印网页</translation>
@@ -507,7 +504,6 @@
 <translation id="497421865427891073">前进</translation>
 <translation id="4988210275050210843">正在下载文件 (<ph name="MEGABYTES" />)。</translation>
 <translation id="4988526792673242964">网页</translation>
-<translation id="4994033804516042629">找不到任何联系人</translation>
 <translation id="5004416275253351869">Google 活动控件</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 希望连接到以下所选设备：</translation>
@@ -531,7 +527,6 @@
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>
-<translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5199929503336119739">工作资料</translation>
 <translation id="5210286577605176222">跳转到上一个标签页</translation>
 <translation id="5210365745912300556">关闭标签页</translation>
@@ -551,8 +546,6 @@
 <translation id="5355191726083956201">已开启增强型保护</translation>
 <translation id="5357811892247919462">收到了标签页</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> 个打开的标签页，点按即可切换标签页}other{<ph name="OPEN_TABS_MANY" /> 个打开的标签页，点按即可切换标签页}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（以及另外 1 个）}other{（以及另外 # 个）}}</translation>
-<translation id="5403592356182871684">名称</translation>
 <translation id="5403644198645076998">只允许访问某些网站</translation>
 <translation id="5414836363063783498">正在验证…</translation>
 <translation id="5423934151118863508">您最常访问的网页将列在此处</translation>
@@ -748,7 +741,6 @@
 <translation id="666981079809192359">Chrome 隐私权声明</translation>
 <translation id="6671495933530132209">复制图片</translation>
 <translation id="6676840375528380067">从这部设备中清除您的 Chrome 数据？</translation>
-<translation id="6689172468748959065">个人资料照片</translation>
 <translation id="6691888250440401212">1. 选择 <ph name="APP_NAME" />\n2. 点按“设为默认应用”</translation>
 <translation id="6697492270171225480">找不到相应网页时，显示有关类似网页的建议</translation>
 <translation id="6698801883190606802">管理已同步的数据</translation>
@@ -910,7 +902,7 @@
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">预加载网页，以便实现更快速的浏览和搜索</translation>
 <translation id="79859296434321399">要查看增强现实内容，请安装 ARCore</translation>
-<translation id="7986741934819883144">选择联系人</translation>
+<translation id="799806351373751710">取消同步设置</translation>
 <translation id="7998918019931843664">重新打开关闭的标签页</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8013372441983637696">同时从此设备中清除您的 Chrome 数据</translation>
@@ -1007,7 +999,6 @@
 <translation id="8662811608048051533">您会从大多数网站退出。</translation>
 <translation id="8664979001105139458">文件名已存在</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{信号强度：# 格}other{信号强度：# 格}}</translation>
-<translation id="868929229000858085">搜索联系人</translation>
 <translation id="869891660844655955">截止日期</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8725066075913043281">重试</translation>

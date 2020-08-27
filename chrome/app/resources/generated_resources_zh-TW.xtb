@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">Chrome 需要權限才能繼續執行</translation>
 <translation id="220138918934036434">隱藏按鈕</translation>
 <translation id="2202898655984161076">列出印表機清單時發生問題，你的部分印表機尚未使用 <ph name="CLOUD_PRINT_NAME" /> 完成註冊。</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />網址列<ph name="END_LINK" />中使用的搜尋引擎</translation>
 <translation id="2204034823255629767">讀取及變更你輸入的任何設定</translation>
 <translation id="220858061631308971">請在「<ph name="DEVICE_NAME" />」上輸入以下 PIN 碼：</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
@@ -1931,11 +1930,12 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{這項資料含有敏感內容或危險內容。請移除這類內容，然後再試一次。}=1{這個檔案含有敏感內容或危險內容。請移除這類內容，然後再試一次。}other{這些檔案含有敏感內容或危險內容。請移除這類內容，然後再試一次。}}</translation>
 <translation id="3323521181261657960">恭喜！你的裝置使用時間增加了</translation>
 <translation id="3325910708063135066">已關閉 Mac 系統偏好設定中的攝影機和麥克風</translation>
-<translation id="3327050066667856415">Chromebook 專為提升安全性所設計。你的裝置會自動防範惡意軟體，無須安裝額外軟體。</translation>
+<translation id="3327050066667856415">Chromebook 的設計可確保安全性。你的裝置會自動防範惡意軟體，無須安裝額外軟體。</translation>
 <translation id="3328489342742826322">還原備份內容時，系統將會刪除 Linux 檔案資料夾中的現有 Linux 應用程式和資料。</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">應用程式資訊</translation>
 <translation id="3333190335304955291">你可以前往「設定」關閉這項服務。</translation>
+<translation id="3333961966071413176">所有聯絡人</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - 正在使用子母畫面模式播放影片</translation>
 <translation id="3335947283844343239">重新開啟先前關閉的分頁</translation>
 <translation id="3340620525920140773">下載完成：<ph name="FILE_NAME" />。</translation>
@@ -2942,7 +2942,7 @@
 <translation id="4546692474302123343">Google 助理語音輸入</translation>
 <translation id="4547659257713117923">沒有在其他裝置上開啟的分頁</translation>
 <translation id="4547672827276975204">自動設定</translation>
-<translation id="4548483925627140043">偵測不到信號</translation>
+<translation id="4548483925627140043">偵測不到訊號</translation>
 <translation id="4549791035683739768">你的安全金鑰沒有儲存任何指紋</translation>
 <translation id="4551763574344810652">按下 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可復原</translation>
 <translation id="4552089082226364758">Flash</translation>

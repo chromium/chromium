@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" />에서 AR을 사용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="1887786770086287077">이 기기의 위치 액세스가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="1919345977826869612">광고</translation>
+<translation id="1919950603503897840">연락처 선택</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">타사 쿠키만 제외하고 허용</translation>
 <translation id="1989112275319619282">찾아보기</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2687403674020088961">모든 쿠키 차단(권장되지 않음)</translation>
 <translation id="2704606927547763573">복사됨</translation>
+<translation id="2717722538473713889">이메일 주소</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" />의 모든 사이트 권한을 재설정하시겠습니까?</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
+<translation id="2903493209154104877">주소</translation>
 <translation id="2910701580606108292">사이트에서 보호된 콘텐츠를 재생하도록 허용하기 전에 확인</translation>
 <translation id="2913331724188855103">사이트에서 쿠키 데이터를 저장하고 읽도록 허용(권장)</translation>
 <translation id="2968755619301702150">인증서 뷰어</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">마이크</translation>
 <translation id="3277252321222022663">사이트의 센서 액세스 허용(권장)</translation>
 <translation id="3295602654194328831">정보 숨기기</translation>
+<translation id="3333961966071413176">모든 연락처</translation>
 <translation id="3386292677130313581">사이트에서 내 위치를 파악하도록 허용하기 전에 확인(권장)</translation>
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3538390592868664640">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하지 못하도록 차단</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">소리를 재생하는 사이트 음소거</translation>
 <translation id="3744111561329211289">백그라운드 동기화</translation>
 <translation id="3763247130972274048">10초를 건너뛰려면 동영상 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
+<translation id="381841723434055211">전화번호</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3859306556332390985">앞으로 탐색</translation>
 <translation id="3955193568934677022">사이트에서 보호된 콘텐츠를 재생하도록 허용(권장)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">사이트에서 내 가상 현실 기기 및 데이터를 사용하도록 허용하기 전에 확인(권장)</translation>
 <translation id="4962975101802056554">기기에서 모든 권한을 취소합니다.</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
+<translation id="4994033804516042629">연락처 없음</translation>
 <translation id="4996978546172906250">공유 방법</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5048398596102334565">사이트의 움직임 감지 센서 액세스 허용(권장)</translation>
 <translation id="5063480226653192405">사용</translation>
 <translation id="5100237604440890931">접힘 - 펼치려면 클릭</translation>
 <translation id="5123685120097942451">시크릿 탭</translation>
+<translation id="5197729504361054390">선택한 연락처가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />과(와) 공유됩니다.</translation>
 <translation id="5300589172476337783">표시</translation>
 <translation id="5301954838959518834">확인</translation>
 <translation id="5313967007315987356">사이트 추가</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">사이트에서 저장한 <ph name="DATASIZE" />의 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="5384883051496921101">이 사이트에서 시크릿 모드 외부의 앱을 사용하여 정보를 공유하려고 합니다.</translation>
 <translation id="5391532827096253100">이 사이트와의 연결은 안전하지 않습니다. 사이트 정보</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
+<translation id="5403592356182871684">이름</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> 중 <ph name="ELAPSED_TIME" /> 경과</translation>
 <translation id="5494752089476963479">방해가 되거나 사용자를 현혹하는 광고를 표시하는 사이트의 광고 차단</translation>
 <translation id="5505264765875738116">사이트에서 알림 전송 허용을 요청할 수 없음</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">보호된 콘텐츠</translation>
 <translation id="662080504995468778">머무르기</translation>
 <translation id="6643016212128521049">삭제</translation>
+<translation id="6689172468748959065">프로필 사진</translation>
 <translation id="6697925417670533197">진행 중인 다운로드</translation>
 <translation id="6746124502594467657">아래로 이동</translation>
 <translation id="6766622839693428701">닫으려면 아래로 스와이프하세요.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">선택 취소</translation>
 <translation id="7846621471902887024">모든 사이트에서 로그아웃됩니다.</translation>
 <translation id="7882806643839505685">특정 사이트에서 소리를 재생하도록 허용합니다.</translation>
+<translation id="7986741934819883144">연락처 선택</translation>
 <translation id="7993619969781047893">일부 사이트에서는 기능이 작동하지 않을 수 있음</translation>
 <translation id="7999064672810608036">쿠키를 포함하여 이 웹사이트의 모든 로컬 데이터를 삭제하고 모든 권한을 재설정하시겠습니까?</translation>
 <translation id="8007176423574883786">기기에 대해 사용 중지됨</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">허용(권장)</translation>
 <translation id="8609465669617005112">위로 이동</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
+<translation id="868929229000858085">연락처 검색</translation>
 <translation id="8702612070107455751">모든 오프라인 데이터가 삭제됩니다.</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 설정합니다.</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>

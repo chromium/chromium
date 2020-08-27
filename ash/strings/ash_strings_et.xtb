@@ -170,6 +170,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2819276065543622893">Teid logitakse nüüd välja.</translation>
 <translation id="2825224105325558319">Üksus <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Riiul</translation>
+<translation id="2841907151129139818">Lülitati tahvelarvutirežiimile</translation>
 <translation id="2844169650293029770">C-tüüpi USB-seade (eesmine vasakpoolne port)</translation>
 <translation id="2865888419503095837">Võrguteave</translation>
 <translation id="2872961005593481000">Lülita välja</translation>
@@ -221,6 +222,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3255483164551725916">Mida sa teha oskad?</translation>
 <translation id="3290356915286466215">Kaitsmata</translation>
 <translation id="3294437725009624529">Külaline</translation>
+<translation id="3307642347673023554">Lülitati sülearvutirežiimile</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> saab siiski hiljem sisse logida.</translation>
 <translation id="3321628682574733415">Vanema kood on vale</translation>
 <translation id="332587331255250389">Vahetage akut</translation>

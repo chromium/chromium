@@ -71,6 +71,7 @@
 <translation id="1070705170564860382">将于 <ph name="COUNTDOWN_SECONDS" /> 秒后在替代浏览器中打开</translation>
 <translation id="1071917609930274619">数据加密</translation>
 <translation id="1072700771426194907">检测到了 USB 设备</translation>
+<translation id="107278043869924952">使用 PIN 码和密码</translation>
 <translation id="1076176485976385390">使用文本光标浏览网页</translation>
 <translation id="1076698951459398590">启用主题背景</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -529,6 +530,7 @@
 <translation id="1618268899808219593">帮助中心(&amp;E)</translation>
 <translation id="1620307519959413822">密码错误。请重试，或点击“忘记了密码？”以重置密码。</translation>
 <translation id="1620510694547887537">摄像头</translation>
+<translation id="1621831347985899379">系统将会删除 <ph name="DEVICE_TYPE" /> 数据</translation>
 <translation id="1622054403950683339">移除 WLAN 网络</translation>
 <translation id="1623132449929929218">暂时无法提供图片。请重新连接到互联网以查看壁纸集。</translation>
 <translation id="1623723619460186680">减少蓝光</translation>
@@ -756,6 +758,7 @@
 <translation id="1877377290348678128">标签（可选）</translation>
 <translation id="1877520246462554164">未能获取身份验证令牌。请退出并重新登录，然后重试。</translation>
 <translation id="1877860345998737529">指定开关操作</translation>
+<translation id="1878155070920054810">您的 Chromebook 似乎会在完成更新前耗尽电量。请确保它已在正确充电，以免更新中断。</translation>
 <translation id="1879000426787380528">登录身份</translation>
 <translation id="1880905663253319515">要删除证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="1881445033931614352">键盘布局</translation>
@@ -1009,7 +1012,6 @@
 <translation id="2200356397587687044">Chrome 需要获得相应权限才能继续</translation>
 <translation id="220138918934036434">隐藏按钮</translation>
 <translation id="2202898655984161076">列出打印机时发生问题。您的某些打印机可能尚未成功使用“<ph name="CLOUD_PRINT_NAME" />”进行注册。</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />地址栏<ph name="END_LINK" />中使用的搜索引擎</translation>
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
 <translation id="220858061631308971">请在“<ph name="DEVICE_NAME" />”上输入此 PIN 码：</translation>
 <translation id="2212565012507486665">允许使用 Cookie</translation>
@@ -1070,6 +1072,7 @@
 <translation id="2270627217422354837">与下列网域中的任何设备交换数据：<ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">马天尼酒杯</translation>
 <translation id="2273119997271134996">基座视频端口出问题了</translation>
+<translation id="2274840746523584236">您的 Chromebook 需要充电</translation>
 <translation id="2276503375879033601">添加更多应用</translation>
 <translation id="2277255602909579701">所有 Cookie 和网站数据</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{已复制 1 项}other{已复制 # 项}}</translation>
@@ -1911,6 +1914,7 @@
 <translation id="3308116878371095290">系统已禁止设置此网页的 Cookie。</translation>
 <translation id="3308134619352333507">隐藏按钮</translation>
 <translation id="3308852433423051161">正在加载 Google 助理…</translation>
+<translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3311445899360743395">系统可能会从此设备上移除与该应用相关的数据。</translation>
 <translation id="3312424061798279731">已启用的语言</translation>
 <translation id="3313622045786997898">证书签名值</translation>
@@ -1923,10 +1927,12 @@
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{此数据包含敏感或危险内容。请移除此内容，然后重试。}=1{这个文件包含敏感或危险内容。请移除此内容，然后重试。}other{这些文件包含敏感或危险内容。请移除此内容，然后重试。}}</translation>
 <translation id="3323521181261657960">恭喜！您获得了更多的设备使用时间</translation>
 <translation id="3325910708063135066">已在 Mac 系统偏好设置中关闭摄像头和麦克风</translation>
+<translation id="3327050066667856415">Chromebook 旨在确保安全。您的设备会自动防范恶意软件 - 无需安装其他软件。</translation>
 <translation id="3328489342742826322">使用备份进行恢复会致使系统删除您“Linux 文件”文件夹中的现有 Linux 应用和数据。</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">应用信息</translation>
 <translation id="3333190335304955291">您可在“设置”中关闭此服务。</translation>
+<translation id="3333961966071413176">所有联系人</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - 视频正在“画中画”模式中播放</translation>
 <translation id="3335947283844343239">重新打开关闭的标签页</translation>
 <translation id="3340620525920140773">“<ph name="FILE_NAME" />”已下载完毕。</translation>
@@ -2112,6 +2118,7 @@
 <translation id="3556433843310711081">您的管理员可为您取消屏蔽此网站</translation>
 <translation id="3557101512409028104">通过 Family Link 设置网站限制和设备使用时间限制</translation>
 <translation id="3559262020195162408">未能在此设备上安装政策。</translation>
+<translation id="3559533181353831840">还需大约 <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">拼写检查(&amp;S)</translation>
 <translation id="3562423906127931518">此过程可能需要几分钟的时间。正在设置 Linux 容器。</translation>
 <translation id="3563432852173030730">无法下载自助服务终端应用。</translation>
@@ -2154,6 +2161,7 @@
 <translation id="3602290021589620013">预览</translation>
 <translation id="3603622770190368340">获取网络证书</translation>
 <translation id="3604713164406837697">更换壁纸</translation>
+<translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3605780360466892872">男性商务人士</translation>
 <translation id="3608576286259426129">用户图片预览</translation>
 <translation id="3610369246614755442">基座风扇需要维修</translation>
@@ -2190,6 +2198,7 @@
 <translation id="3639220004740062347">退出阅读器模式</translation>
 <translation id="3640214691812501263">要为<ph name="USER_NAME" />添加“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="3640613767643722554">训练 Google 助理识别您的声音</translation>
+<translation id="3643014427358482789"><ph name="DOMAIN" /> 正在停用 ADB 调试，这会强制您重置 <ph name="DEVICE_TYPE" />。请先备份您的文件，然后再重启设备。</translation>
 <translation id="3645372836428131288">请稍微移动一下手指，以便系统记录您指纹的不同部分。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">检测到<ph name="USB_DEVICE_NAME" /></translation>
@@ -2278,6 +2287,7 @@
 <translation id="3732857534841813090">Google 助理相关信息</translation>
 <translation id="3733127536501031542">带有递升式验证机制的 SSL 服务器</translation>
 <translation id="3735740477244556633">排序依据</translation>
+<translation id="3738632186060045350">系统将会在 24 小时后删除 <ph name="DEVICE_TYPE" /> 数据</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
 <translation id="3739254215541673094">要打开 <ph name="APPLICATION" /> 吗？</translation>
 <translation id="3742055079367172538">已完成屏幕截图</translation>
@@ -2465,6 +2475,7 @@
 <translation id="3937734102568271121">一律翻译<ph name="LANGUAGE" /></translation>
 <translation id="3938128855950761626">来自供应商 <ph name="VENDOR_ID" /> 的设备</translation>
 <translation id="3940233957883229251">启用自动重复功能</translation>
+<translation id="3941014780699102620">未能解析主机</translation>
 <translation id="3941565636838060942">要禁止使用此程序，您需要使用控制面板中的“<ph name="CONTROL_PANEL_APPLET_NAME" />”将其卸载。
 
   要启动“<ph name="CONTROL_PANEL_APPLET_NAME" />”吗？</translation>
@@ -2626,6 +2637,7 @@
 <translation id="413121957363593859">组件</translation>
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="413193092008917129">网络诊断例程</translation>
+<translation id="4132183752438206707">在 Google Play 商店中查找所需应用</translation>
 <translation id="4133076602192971179">打开应用以更改密码</translation>
 <translation id="4136203100490971508">护眼模式将于日出时自动关闭</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
@@ -2875,6 +2887,8 @@
 <translation id="4479877282574735775">正在配置虚拟机。这可能需要几分钟的时间。</translation>
 <translation id="4480590691557335796">Chrome 可以查找您计算机上的有害软件并将其移除</translation>
 <translation id="4481530544597605423">未配对的设备</translation>
+<translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4487489714832036847">Chromebook 会使用应用（而非传统软件）。无论您是想提高办公效率、娱乐身心还是有其他需求，都能在这里找到合适的应用。</translation>
 <translation id="4488502501195719518">清除所有数据？</translation>
 <translation id="4493468155686877504">建议大小 (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">不要在本页上显示</translation>
@@ -2925,6 +2939,7 @@
 <translation id="4546692474302123343">Google 助理语音输入</translation>
 <translation id="4547659257713117923">没有从其他设备打开的标签页</translation>
 <translation id="4547672827276975204">自动设置</translation>
+<translation id="4548483925627140043">找不到信号</translation>
 <translation id="4549791035683739768">您的安全密钥未存储任何指纹</translation>
 <translation id="4551763574344810652">按 <ph name="MODIFIER_KEY_DESCRIPTION" /> 即可撤消</translation>
 <translation id="4552089082226364758">Flash</translation>
@@ -2964,6 +2979,7 @@
 <translation id="4582563038311694664">重置所有设置</translation>
 <translation id="4585793705637313973">修改启动页</translation>
 <translation id="4586275095964870617">无法在替代浏览器中打开 <ph name="URL" />。请与您的系统管理员联系。</translation>
+<translation id="458794348635939462">未能解析所有主机</translation>
 <translation id="4589713469967853491">已成功将日志写入“下载内容”目录中。</translation>
 <translation id="4590324241397107707">数据库存储</translation>
 <translation id="4592891116925567110">触控笔绘图应用</translation>
@@ -3347,6 +3363,7 @@
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5094721898978802975">与协作的本机应用通信</translation>
 <translation id="5097002363526479830">无法连接到网络“<ph name="NAME" />”：<ph name="DETAILS" /></translation>
+<translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">光标停止移动时自动点击</translation>
 <translation id="5101042277149003567">打开所有书签</translation>
 <translation id="5101839224773798795">光标停止时自动点击</translation>
@@ -3565,6 +3582,7 @@
 <translation id="5370819323174483825">重新加载(&amp;R)</translation>
 <translation id="5372529912055771682">此版本的操作系统不支持所提供的注册模式。请确保您运行的是最新版本，然后重试。</translation>
 <translation id="5372579129492968947">取消固定扩展程序</translation>
+<translation id="5372659122375744710">Wi-Fi 网络不安全</translation>
 <translation id="5376169624176189338">点击可后退，按住可查看历史记录</translation>
 <translation id="5376931455988532197">文件过大</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{已成功将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}other{已成功将 <ph name="ATTACHMENTS" />发送到“<ph name="DEVICE_NAME" />”}}</translation>
@@ -3594,6 +3612,7 @@
 <translation id="5414566801737831689">读取您访问过的网站对应的图标</translation>
 <translation id="5417312524372586921">浏览器主题背景</translation>
 <translation id="5419405654816502573">Voice Match</translation>
+<translation id="5420274697768050645">为了提升安全性，必须输入密码才能解锁设备</translation>
 <translation id="5420438158931847627">确定文字和图片的清晰度</translation>
 <translation id="5422221874247253874">接入点</translation>
 <translation id="5422781158178868512">抱歉，系统无法识别您的外部存储设备。</translation>
@@ -3718,6 +3737,7 @@
 <translation id="5548606607480005320">安全检查</translation>
 <translation id="5551573675707792127">键盘和文字输入</translation>
 <translation id="5553089923092577885">证书政策映射</translation>
+<translation id="5554403733534868102">此后，再也不必等待系统完成更新</translation>
 <translation id="5554489410841842733">如果该扩展程序可以在当前网页上运行，则会显示此图标。</translation>
 <translation id="5554720593229208774">电子邮件证书授权中心</translation>
 <translation id="5556459405103347317">重新加载</translation>
@@ -4131,6 +4151,7 @@
 <translation id="6061882183774845124">将链接发送到您的设备</translation>
 <translation id="6064217302520318294">屏幕锁定</translation>
 <translation id="6065289257230303064">证书主题背景目录属性</translation>
+<translation id="6069464830445383022">您将使用 Google 帐号登录 Chromebook</translation>
 <translation id="6069671174561668781">设置壁纸</translation>
 <translation id="6071181508177083058">确认密码</translation>
 <translation id="6071576563962215370">系统未能建立设备安装时间属性锁定。</translation>
@@ -4173,6 +4194,7 @@
 <translation id="6104311680260824317">无法将此设备加入到该网域中。相应服务器不支持所指定的 Kerberos 加密类型。请前往“更多选项”以检查加密设置。</translation>
 <translation id="6104796831253957966">打印机队列已满</translation>
 <translation id="6105994589138235234">Chrome 浏览器同步</translation>
+<translation id="6108689792487843350">无法连接至网关</translation>
 <translation id="6111972606040028426">启用 Google 助理</translation>
 <translation id="6112294629795967147">触摸即可调整大小</translation>
 <translation id="6112727384379533756">添加票据</translation>
@@ -4233,6 +4255,7 @@
 <translation id="6178664161104547336">选择证书</translation>
 <translation id="6181431612547969857">下载已被阻止</translation>
 <translation id="6185132558746749656">设备位置</translation>
+<translation id="6191293864534840972">域名服务器格式不正确</translation>
 <translation id="6195446518998936840">如果您要设置家长控制功能，您的孩子必须有一个由您帮助管理的 Google 帐号。您可以使用 Family Link 应用来设定设备使用时限、允许/禁止访问网站以及执行其他操作。</translation>
 <translation id="6195693561221576702">无法在此设备上设置离线演示模式。</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
@@ -4446,6 +4469,7 @@
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> 及另外 1 个标签页}other{<ph name="PAGE_TITLE" /> 及另外 # 个标签页}}</translation>
 <translation id="6451689256222386810">如果您忘记了密码或要更改此设置，请<ph name="BEGIN_LINK" />重置同步功能<ph name="END_LINK" />。</translation>
 <translation id="6452181791372256707">拒绝</translation>
+<translation id="6452251728599530347">已完成 <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">网络问题或领域有误</translation>
 <translation id="6455264371803474013">在特定网站上</translation>
 <translation id="6455894534188563617">新建文件夹(&amp;N)</translation>
@@ -4502,6 +4526,7 @@
         <ph name="EVENT_NAME" /></translation>
 <translation id="6520876759015997832">第 <ph name="LIST_POSITION" /> 条搜索结果（共 <ph name="LIST_SIZE" /> 条）：<ph name="SEARCH_RESULT_TEXT" />。按 Enter 键即可转到相应部分。</translation>
 <translation id="652492607360843641">您已连接到<ph name="NETWORK_TYPE" />网络。</translation>
+<translation id="6527081081771465939">Wi-Fi 安全协议不明</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6528513914570774834">允许此设备的其他用户使用此网络</translation>
 <translation id="652948702951888897">Chrome 历史记录</translation>
@@ -4618,6 +4643,7 @@
 <translation id="6680442031740878064">可用空间：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">语速</translation>
 <translation id="6681668084120808868">拍照</translation>
+<translation id="6684827949542560880">正在下载最新更新</translation>
 <translation id="668599234725812620">打开 Google Play</translation>
 <translation id="6686490380836145850">关闭右侧标签页</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
@@ -4727,6 +4753,7 @@
 <translation id="6812841287760418429">保留更改</translation>
 <translation id="6817174620439930047">当网站想使用系统专有消息访问 MIDI 设备时询问您（推荐）</translation>
 <translation id="6818198425579322765">要翻译的网页语言</translation>
+<translation id="6818802132960437751">内置病毒防护功能</translation>
 <translation id="682123305478866682">投射桌面</translation>
 <translation id="6823174134746916417">触控板点按即点击</translation>
 <translation id="6823506025919456619">您需要登录 Chrome，才能看到自己的设备</translation>
@@ -5373,6 +5400,7 @@
 <translation id="7631205654593498032">连接您的设备即表示您同意 <ph name="DEVICE_TYPE" /> 执行以下操作：</translation>
 <translation id="7631887513477658702">总是打开此类文件(&amp;A)</translation>
 <translation id="7632948528260659758">以下自助服务终端应用未能成功更新：</translation>
+<translation id="7633724038415831385">只有这一次，您需要等待系统完成更新。Chromebook 上的软件更新会在后台进行。</translation>
 <translation id="7634566076839829401">出了点问题，请重试。</translation>
 <translation id="763632859238619983">不允许任何网站安装付款处理程序</translation>
 <translation id="7636919061354591437">在此设备上安装</translation>
@@ -5651,6 +5679,7 @@
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{将这个网站取消静音}other{将这些网站取消静音}}</translation>
 <translation id="7933634003144813719">管理共享的文件夹</translation>
 <translation id="793531125873261495">下载虚拟机时出错。请重试。</translation>
+<translation id="7936303884198020182">找不到任何域名服务器</translation>
 <translation id="7938594894617528435">当前处于离线状态</translation>
 <translation id="7939062555109487992">高级选项</translation>
 <translation id="7939412583708276221">仍然保留</translation>
@@ -5893,6 +5922,7 @@
 <translation id="8226742006292257240">以下是一个分配给您计算机的、随机生成的 TPM 密码：</translation>
 <translation id="8227119283605456246">附上文件</translation>
 <translation id="8230134520748321204">要保存 <ph name="ORIGIN" /> 的密码吗？</translation>
+<translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8234795456569844941">请告诉我们在您收到个人资料错误消息之前发生的情况，以帮助我们的工程师解决此问题：</translation>
 <translation id="8236917170563564587">改为分享此标签页</translation>
 <translation id="8237647586961940482">深粉色和红色</translation>
@@ -6003,6 +6033,7 @@
 <translation id="8363095875018065315">稳定</translation>
 <translation id="8363142353806532503">已禁止使用麦克风</translation>
 <translation id="8363763184161554204">已允许使用<ph name="PERMISSION" /></translation>
+<translation id="8364946094152050673">未指定域名服务器</translation>
 <translation id="8366396658833131068">您的网络连接已恢复。要启动自助服务终端应用，请选择其他网络或按下方的“继续”按钮。</translation>
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368859634510605990">打开所有书签(&amp;O)</translation>
@@ -6088,8 +6119,10 @@
 <translation id="8472623782143987204">硬件支持</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8475313423285172237">您计算机上的其他程序添加了一个扩展程序，该扩展程序可能会改变 Chrome 的工作方式。</translation>
+<translation id="8475690821716466388">Wi-Fi 网络采用了防护能力较弱的 WEP PSK 协议</translation>
 <translation id="8477241577829954800">被取代</translation>
 <translation id="8477384620836102176">基本信息(&amp;G)</translation>
+<translation id="8477551185774834963">DNS 延迟时间略微超出了允许的阈值</translation>
 <translation id="8480082892550707549">即使您之前从该网站下载过文件，该网站也可能暂时存在安全隐患（遭到黑客入侵）。请稍后再尝试下载此文件。</translation>
 <translation id="8480869669560681089">由“<ph name="VENDOR_NAME" />”提供的未知设备</translation>
 <translation id="8481187309597259238">确认 USB 权限</translation>
@@ -6141,6 +6174,7 @@
 <translation id="8546930481464505581">自定义触摸栏</translation>
 <translation id="8547013269961688403">启用全屏放大镜</translation>
 <translation id="85486688517848470">按住搜索键可切换顶行键的行为</translation>
+<translation id="8549316893834449916">您将使用自己的 Google 帐号登录 Chromebook - 此帐号与您登录 Gmail、Google 云端硬盘、YouTube 等服务时使用的帐号相同。</translation>
 <translation id="8551388862522347954">许可</translation>
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
@@ -6279,6 +6313,7 @@
 <translation id="8720200012906404956">正在查找移动网络。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8720816553731218127">安装时间属性的初始化已超时。</translation>
 <translation id="8722912030556880711">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
+<translation id="8723108084122415655">非默认网络的延迟时间超出了阈值</translation>
 <translation id="8724405322205516354">当您看见此图标时，请使用您的指纹进行身份验证或批准购买交易。</translation>
 <translation id="8724409975248965964">指纹已添加</translation>
 <translation id="8724859055372736596">在文件夹中显示(&amp;S)</translation>
@@ -6456,6 +6491,7 @@
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
 <translation id="8910146161325739742">共享屏幕</translation>
 <translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 帐号。但是，您的现有数据依然会存储在您的 Google 帐号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
+<translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8912362522468806198">Google 帐号</translation>
 <translation id="8912793549644936705">拉伸</translation>
 <translation id="8912810933860534797">启用自动扫描</translation>
@@ -6559,7 +6595,7 @@
 <translation id="9031549947500880805">备份到 Google 云端硬盘。您随时可以轻松地恢复数据或更换设备。您的备份内容包含应用数据。</translation>
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
-<translation id="9037818663270399707">您的连接无法确保所有网络流量的私密性</translation>
+<translation id="9037818663270399707">您的连接在部分网络流量中不是私密连接</translation>
 <translation id="9037965129289936994">显示原始网页</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{您还剩 1 次尝试机会。}other{您还剩 # 次尝试机会。}}</translation>
 <translation id="9039663905644212491">PEAP</translation>

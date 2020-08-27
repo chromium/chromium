@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Đã tắt quyền truy cập vị trí đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Quảng cáo</translation>
+<translation id="1919950603503897840">Chọn mục liên hệ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Được cho phép, ngoại trừ cookie của bên thứ ba</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2687403674020088961">Chặn tất cả cookie (không khuyến nghị)</translation>
 <translation id="2704606927547763573">Đã sao chép</translation>
+<translation id="2717722538473713889">Địa chỉ email</translation>
 <translation id="2822354292072154809">Bạn có chắc muốn đặt lại tất cả các quyền của trang web cho <ph name="CHOSEN_OBJECT_NAME" /> không?</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2874939134665556319">Bản nhạc trước</translation>
+<translation id="2903493209154104877">Địa chỉ</translation>
 <translation id="2910701580606108292">Hỏi trước khi cho phép trang web phát nội dung được bảo vệ</translation>
 <translation id="2913331724188855103">Cho phép trang web lưu và đọc dữ liệu cookie (được đề xuất)</translation>
 <translation id="2968755619301702150">Trình xem chứng chỉ</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Micrô</translation>
 <translation id="3277252321222022663">Cho phép các trang web sử dụng cảm biến của thiết bị (nên dùng)</translation>
 <translation id="3295602654194328831">Ẩn thông tin</translation>
+<translation id="3333961966071413176">Tất cả người liên hệ</translation>
 <translation id="3386292677130313581">Hỏi trước khi cho phép các trang web biết vị trí của bạn (được đề xuất)</translation>
 <translation id="3479552764303398839">Không phải bây giờ</translation>
 <translation id="3538390592868664640">Chặn không cho trang web tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Tắt tiếng trên các trang web phát âm thanh</translation>
 <translation id="3744111561329211289">Đồng bộ hóa dưới nền</translation>
 <translation id="3763247130972274048">Nhấn đúp vào bên trái hoặc bên phải của video để tua lại/tua đi 10 giây</translation>
+<translation id="381841723434055211">Số điện thoại</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3859306556332390985">Tìm kiếm tiến</translation>
 <translation id="3955193568934677022">Cho phép trang web phát nội dung được bảo vệ (được đề xuất)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Hỏi ý bạn trước khi cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn (khuyên dùng)</translation>
 <translation id="4962975101802056554">Thu hồi tất cả các quyền đối với thiết bị</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
+<translation id="4994033804516042629">Không tìm thấy người liên hệ nào</translation>
 <translation id="4996978546172906250">Chia sẻ qua</translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5048398596102334565">Cho phép trang web sử dụng cảm biến chuyển động (nên dùng)</translation>
 <translation id="5063480226653192405">Mức sử dụng</translation>
 <translation id="5100237604440890931">Đã thu gọn - nhấp để mở rộng.</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
+<translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5301954838959518834">Ok</translation>
 <translation id="5313967007315987356">Thêm trang web</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Thao tác này sẽ xóa <ph name="DATASIZE" /> dữ liệu và cookie do các trang web lưu trữ.</translation>
 <translation id="5384883051496921101">Trang web này sắp chia sẻ thông tin với một ứng dụng bên ngoài chế độ ẩn danh.</translation>
 <translation id="5391532827096253100">Kết nối của bạn tới trang web này không an toàn. Thông tin trang web</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
+<translation id="5403592356182871684">Tên</translation>
 <translation id="5489227211564503167">Thời gian đã trôi qua: <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Chặn quảng cáo trên các trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
 <translation id="5505264765875738116">Các trang web không thể xin phép gửi thông báo</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Nội dung được bảo vệ</translation>
 <translation id="662080504995468778">Ở lại</translation>
 <translation id="6643016212128521049">Xóa</translation>
+<translation id="6689172468748959065">Ảnh tiểu sử</translation>
 <translation id="6697925417670533197">Hiện đang tải xuống</translation>
 <translation id="6746124502594467657">Di chuyển xuống</translation>
 <translation id="6766622839693428701">Vuốt xuống để đóng.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Hủy chọn</translation>
 <translation id="7846621471902887024">Bạn sẽ bị đăng xuất khỏi tất cả các trang web.</translation>
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
+<translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="7993619969781047893">Các tính năng trên một số trang web có thể hoạt động không đúng cách</translation>
 <translation id="7999064672810608036">Bạn có chắc chắn muốn xóa tất cả dữ liệu cục bộ, bao gồm cookie và đặt lại tất cả các quyền cho trang web này không?</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Được phép (được đề xuất)</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
+<translation id="868929229000858085">Tìm kiếm trong danh bạ</translation>
 <translation id="8702612070107455751">Mọi dữ liệu ngoại tuyến sẽ bị xóa.</translation>
 <translation id="8719283222052720129">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Thử lại</translation>

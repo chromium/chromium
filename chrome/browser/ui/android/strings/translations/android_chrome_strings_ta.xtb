@@ -102,13 +102,13 @@
 <translation id="1810845389119482123">ஒத்திசைவின் முதற்கட்ட அமைவு நிறைவடையவில்லை</translation>
 <translation id="1821253160463689938">நீங்கள் அந்தப் பக்கங்களைப் பார்வையிடவில்லை என்றாலும், உங்கள் விருப்பத்தேர்வுகளை நினைவில்கொள்ள குக்கீகளைப் பயன்படுத்தும்</translation>
 <translation id="1829244130665387512">இந்தப் பக்கத்தில் தேடு</translation>
+<translation id="1843805151597803366">சிறப்பான மொழிபெயர்ப்புகளைப் பெற, தற்போதைய பக்கத்தைப் பயன்படுத்த Google Searchசை அனுமதியுங்கள்</translation>
 <translation id="1853692000353488670">புதிய மறைநிலை தாவல்</translation>
 <translation id="1856325424225101786">லைட் பயன்முறையை மீட்டமைக்கவா?</translation>
 <translation id="1868024384445905608">Chrome இப்போது கோப்புகளை வேகமாகப் பதிவிறக்குகிறது</translation>
 <translation id="1874760110381325409">உங்கள் Google கணக்கில் உள்நுழைவீர்கள்\n(இதனால் Chrome ஒத்திசைவு இயக்கப்படாது)</translation>
 <translation id="1877026089748256423">Chrome காலாவதியானது</translation>
 <translation id="1883903952484604915">எனது கோப்புகள்</translation>
-<translation id="1919950603503897840">தொடர்புகளைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="1925021887439448749">பிரத்தியேக இணைய முகவரியை உள்ளிடவும்</translation>
 <translation id="1928696683969751773">புதுப்பிப்புகள்</translation>
 <translation id="19288952978244135">Chromeமை மீண்டும் திறக்கவும்.</translation>
@@ -215,7 +215,6 @@
 <translation id="2689830683995595741">Chromeமைப் பயன்படுத்துவதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகளையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome மற்றும் Chrome OS தொடர்பான கூடுதல் சேவை விதிமுறைகளையும்<ph name="END_LINK2" /> ஏற்கிறீர்கள். இவற்றோடு <ph name="BEGIN_LINK3" />Family Link நிர்வகிக்கும் Google கணக்குகளுக்கான தனியுரிமை அறிக்கையும்<ph name="END_LINK3" /> பொருந்தும்.</translation>
 <translation id="2707726405694321444">பக்கத்தைப் புதுப்பி</translation>
 <translation id="2709516037105925701">தானாகநிரப்பு</translation>
-<translation id="2717722538473713889">மின்னஞ்சல் முகவரிகள்</translation>
 <translation id="2728754400939377704">தளத்தின்படி வரிசைப்படுத்தும்</translation>
 <translation id="2744248271121720757">உடனடியாகத் தேட அல்லது தொடர்புடைய செயல்களைப் பார்க்க, சொல்லைத் தட்டவும்</translation>
 <translation id="2760989362628427051">சாதனத்தில் டார்க் தீம் அல்லது பேட்டரி சேமிப்பான் ஆன் செய்யப்பட்டால் டார்க் தீமினை ஆன் செய்யும்</translation>
@@ -240,7 +239,6 @@
 <translation id="2893180576842394309">‘தேடல்’ மற்றும் பிற Google சேவைகளைத் தனிப்பயனாக்க, உங்கள் வரலாற்றை Google பயன்படுத்தக்கூடும்</translation>
 <translation id="2898264748040935573">சேமிக்கப்பட்ட கடவுச்சொல்லைத் திருத்தும் பட்டன்</translation>
 <translation id="2900528713135656174">நிகழ்வை உருவாக்கவும்</translation>
-<translation id="2903493209154104877">முகவரிகள்</translation>
 <translation id="2904414404539560095">தாவலைப் பகிர்வதற்கான சாதனங்களின் பட்டியல் திரையின் முழு அளவிற்குத் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="2905036901251765993">அருகிலுள்ளவர்களுடன் பகிர, இந்த QR குறியீட்டை ஸ்கேன் செய்ய சொல்லவும்</translation>
 <translation id="2909615210195135082">Google அறிவிப்புகள் பிளாட்ஃபார்ம்</translation>
@@ -293,7 +291,6 @@
 <translation id="3306398118552023113">இந்த ஆப்ஸ் Chromeமில் இயங்குகிறது</translation>
 <translation id="3315103659806849044">உங்கள் ஒத்திசைவு மற்றும் Google சேவை அமைப்புகளைத் தற்போது உங்களுக்கேற்ப மாற்றியமைக்கிறீர்கள். ஒத்திசைவை இயக்க, திரையின் அடிப்பகுதிக்கு அருகிலுள்ள ‘உறுதிப்படுத்து’ பட்டனைத் தட்டவும். மேலே செல்</translation>
 <translation id="3328801116991980348">தளம் குறித்த தகவல்</translation>
-<translation id="3333961966071413176">எல்லாத் தொடர்புகளும்</translation>
 <translation id="3334729583274622784">கோப்பு நீட்டிப்பை மாற்றவா?</translation>
 <translation id="3341058695485821946">எவ்வளவு தரவைச் சேமித்துள்ளீர்கள் என்பதைப் பார்க்கவும்</translation>
 <translation id="3350687908700087792">எல்லா மறைநிலைத் தாவல்களையும் மூடு</translation>
@@ -352,7 +349,6 @@
 <translation id="3789841737615482174">நிறுவுக</translation>
 <translation id="3810838688059735925">வீடியோ</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
-<translation id="381841723434055211">ஃபோன் எண்கள்</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> பதிவிறக்கங்கள் உள்ளன</translation>
 <translation id="3856096718352044181">இது சரியான வழங்குநர்தான் என்பதைச் சரிபார்க்கவும் அல்லது பிறகு முயலவும்</translation>
 <translation id="388596076286380598">ஆஃப்லைனிலும், வேகம் குறைந்த இணைப்பிலும் கூட உங்களுக்கு விருப்பமான தளங்களில் இருந்து கட்டுரைகள், வீடியோக்கள் மற்றும் பிற உள்ளடக்கங்களைப் பெற்றிடுங்கள்.</translation>
@@ -477,6 +473,7 @@
 
 இந்த அமைப்பை மாற்ற, <ph name="BEGIN_LINK" />ஒத்திசைவை மீட்டமைக்கவும்<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">அட்டையிலுள்ள பெயர் </translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> என்ற URLலில் டிஜிட்டல் அசெட் இணைப்புகளைச் சரிபார்க்க முடியவில்லை</translation>
 <translation id="4824958205181053313">ஒத்திசைவை ரத்துசெய்யவா?</translation>
 <translation id="4835385943915508971">Chromeமிடம் நீங்கள் கோரியதற்கான அணுகல் இல்லை.</translation>
 <translation id="4837753911714442426">பக்கத்தை அச்சிடுவதற்கான விருப்பங்களைத் திறக்கும்</translation>
@@ -507,7 +504,6 @@
 <translation id="497421865427891073">முன் செல்க</translation>
 <translation id="4988210275050210843">கோப்பைப் பதிவிறக்குகிறது (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">பக்கங்கள்</translation>
-<translation id="4994033804516042629">தொடர்புகள் எதுவும் இல்லை</translation>
 <translation id="5004416275253351869">Google செயல்பாட்டுக் கட்டுப்பாடுகள்</translation>
 <translation id="5005498671520578047">கடவுச்சொல்லை நகலெடு</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> இணைய விரும்புகிறது</translation>
@@ -531,7 +527,6 @@
 <translation id="5170568018924773124">கோப்புறையில் காண்பி</translation>
 <translation id="5184329579814168207">Chrome இல் திற</translation>
 <translation id="5193988420012215838">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>
-<translation id="5197729504361054390">நீங்கள் தேர்ந்தெடுக்கும் தொடர்புகள் <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> உடன் பகிரப்படும்.</translation>
 <translation id="5199929503336119739">பணி சுயவிவரம்</translation>
 <translation id="5210286577605176222">முந்தைய தாவலுக்குச் செல்லும்</translation>
 <translation id="5210365745912300556">தாவலை மூடுக</translation>
@@ -551,8 +546,6 @@
 <translation id="5355191726083956201">மேம்படுத்தப்பட்ட பாதுகாப்பு இயக்கப்பட்டுள்ளது</translation>
 <translation id="5357811892247919462">பகிர்ந்த தாவல் பெறப்பட்டது</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> திறந்துள்ள தாவல், தாவல்களை மாற்ற, தட்டவும்}other{<ph name="OPEN_TABS_MANY" /> திறந்துள்ள தாவல்கள், தாவல்களை மாற்ற, தட்டவும்}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(மேலும் 1)}other{(மேலும் #)}}</translation>
-<translation id="5403592356182871684">பெயர்கள்</translation>
 <translation id="5403644198645076998">குறிப்பிட்ட தளங்களை மட்டும் அனுமதி</translation>
 <translation id="5414836363063783498">சரிபார்க்கிறது...</translation>
 <translation id="5423934151118863508">நீங்கள் அதிகமாகப் பார்வையிட்ட பக்கங்கள் இங்கு தோன்றும்</translation>
@@ -748,7 +741,6 @@
 <translation id="666981079809192359">Chrome தனியுரிமை அறிக்கை</translation>
 <translation id="6671495933530132209">படத்தை நகலெடு</translation>
 <translation id="6676840375528380067">இந்தச் சாதனத்திலிருந்து உங்கள் Chrome தரவை அழிக்கவா?</translation>
-<translation id="6689172468748959065">சுயவிவரப் படங்கள்</translation>
 <translation id="6691888250440401212">1. <ph name="APP_NAME" /> ஐத் தேர்வுசெய்யவும்\n2. “இயல்பு ஆப்ஸாக அமை” என்பதைத் தட்டவும்</translation>
 <translation id="6697492270171225480">பக்கத்தைக் கண்டறிய முடியாத போது, அதே மாதிரியான பக்கங்களுக்கான பரிந்துரைகளைக் காட்டும்</translation>
 <translation id="6698801883190606802">ஒத்திசைத்த தரவை நிர்வகித்தல்</translation>
@@ -910,7 +902,7 @@
 <translation id="7975379999046275268">பக்க மாதிரிக்காட்சியைக் காட்டு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">மிக விரைவான உலாவலுக்காகவும் தேடலிற்காகவும் பக்கங்களை முன்னதாக ஏற்றும்</translation>
 <translation id="79859296434321399">ஆக்மென்ட்டட் ரியாலிட்டி உள்ளடக்கத்தைப் பார்க்க, ARCoreஐ நிறுவவும்</translation>
-<translation id="7986741934819883144">தொடர்பைத் தேர்ந்தெடுக்கவும்</translation>
+<translation id="799806351373751710">ஒத்திசைவு அமைவை ரத்துசெய்</translation>
 <translation id="7998918019931843664">மூடப்பட்ட தாவலை மீண்டும் திற</translation>
 <translation id="8004582292198964060">உலாவி</translation>
 <translation id="8013372441983637696">அத்துடன் இந்தச் சாதனத்திலிருந்து எனது Chrome தரவையும் அழி</translation>
@@ -1007,7 +999,6 @@
 <translation id="8662811608048051533">பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும்.</translation>
 <translation id="8664979001105139458">கோப்புப் பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{சிக்னல் வலிமையின் அளவு: # கோடு}other{சிக்னல் வலிமையின் அளவு: # கோடுகள்}}</translation>
-<translation id="868929229000858085">உங்கள் தொடர்புகளில் தேடுக</translation>
 <translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>

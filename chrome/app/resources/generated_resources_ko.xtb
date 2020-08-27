@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">계속하려면 Chrome에 권한이 필요함</translation>
 <translation id="220138918934036434">버튼 숨기기</translation>
 <translation id="2202898655984161076">프린터를 나열하는 데 문제가 발생했습니다. <ph name="CLOUD_PRINT_NAME" />에 성공적으로 등록되지 못한 프린터가 있을 수 있습니다.</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />주소 표시줄<ph name="END_LINK" />에서 사용되는 검색엔진</translation>
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
 <translation id="220858061631308971">'<ph name="DEVICE_NAME" />'의 PIN 코드를 입력하세요:</translation>
 <translation id="2212565012507486665">쿠키 허용</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">앱 정보</translation>
 <translation id="3333190335304955291">이 서비스는 설정에서 사용 중지할 수 있습니다.</translation>
+<translation id="3333961966071413176">모든 연락처</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - PIP 모드로 동영상 재생 중</translation>
 <translation id="3335947283844343239">닫은 탭 다시 열기</translation>
 <translation id="3340620525920140773"><ph name="FILE_NAME" /> 다운로드 완료</translation>

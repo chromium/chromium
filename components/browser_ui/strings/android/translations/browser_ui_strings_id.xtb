@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan Augmented Reality (AR), aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Akses lokasi dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Iklan</translation>
+<translation id="1919950603503897840">Pilih kontak</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Diizinkan, kecuali pihak ketiga</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2687403674020088961">Blokir semua cookie (tidak direkomendasikan)</translation>
 <translation id="2704606927547763573">Disalin</translation>
+<translation id="2717722538473713889">Alamat email</translation>
 <translation id="2822354292072154809">Yakin ingin menyetel ulang semua izin situs untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Situs</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
+<translation id="2903493209154104877">Alamat</translation>
 <translation id="2910701580606108292">Tanyakan sebelum mengizinkan situs untuk memutar konten yang dilindungi</translation>
 <translation id="2913331724188855103">Izinkan situs untuk menyimpan dan membaca data cookie (disarankan)</translation>
 <translation id="2968755619301702150">Penampil sertifikat</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Mengizinkan situs untuk mengakses sensor (disarankan)</translation>
 <translation id="3295602654194328831">Sembunyikan Info</translation>
+<translation id="3333961966071413176">Semua kontak</translation>
 <translation id="3386292677130313581">Minta izin sebelum memungkinkan situs mengetahui lokasi Anda (disarankan)</translation>
 <translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3538390592868664640">Blokir situs agar tidak membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Nonaktifkan suara situs yang memutar suara</translation>
 <translation id="3744111561329211289">Sinkronisasi latar belakang</translation>
 <translation id="3763247130972274048">Ketuk video dua kali di kiri atau kanan untuk melewati 10 detik</translation>
+<translation id="381841723434055211">Nomor telepon</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3859306556332390985">Cari maju</translation>
 <translation id="3955193568934677022">Izinkan situs memutar konten yang dilindungi (direkomendasikan)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Tanyakan sebelum mengizinkan situs untuk menggunakan perangkat dan data virtual reality Anda (direkomendasikan)</translation>
 <translation id="4962975101802056554">Cabut semua izin untuk perangkat</translation>
 <translation id="497421865427891073">Maju</translation>
+<translation id="4994033804516042629">Kontak tidak ditemukan</translation>
 <translation id="4996978546172906250">Bagikan dengan</translation>
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5048398596102334565">Mengizinkan situs mengakses sensor gerakan (disarankan)</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5100237604440890931">Diciutkan - klik untuk memperluas.</translation>
 <translation id="5123685120097942451">Tab samaran</translation>
+<translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5301954838959518834">Oke, mengerti</translation>
 <translation id="5313967007315987356">Tambahkan situs</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Ini akan menghapus <ph name="DATASIZE" /> data dan cookie yang disimpan oleh situs.</translation>
 <translation id="5384883051496921101">Situs ini akan membagikan informasi dengan aplikasi di luar mode samaran.</translation>
 <translation id="5391532827096253100">Sambungan ke situs ini tidak aman. Informasi situs</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lainnya)}other{(+ # lainnya)}}</translation>
+<translation id="5403592356182871684">Nama</translation>
 <translation id="5489227211564503167">Waktu berlalu <ph name="ELAPSED_TIME" /> dari <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokir iklan di situs yang menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="5505264765875738116">Situs tidak dapat meminta izin mengirimkan notifikasi</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Konten dilindungi</translation>
 <translation id="662080504995468778">Tinggal</translation>
 <translation id="6643016212128521049">Hapus</translation>
+<translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Download aktif</translation>
 <translation id="6746124502594467657">Berpindah ke bawah</translation>
 <translation id="6766622839693428701">Geser ke bawah untuk menutup.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7846621471902887024">Anda akan logout dari semua situs.</translation>
 <translation id="7882806643839505685">Izinkan suara untuk situs tertentu.</translation>
+<translation id="7986741934819883144">Pilih kontak</translation>
 <translation id="7993619969781047893">Fitur pada beberapa situs mungkin error</translation>
 <translation id="7999064672810608036">Yakin ingin menghapus semua data lokal, termasuk cookie, dan menyetel ulang semua izin untuk situs web ini?</translation>
 <translation id="8007176423574883786">Dinonaktifkan untuk perangkat ini</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Diizinkan (disarankan)</translation>
 <translation id="8609465669617005112">Berpindah ke atas</translation>
 <translation id="8676374126336081632">Hapus masukan</translation>
+<translation id="868929229000858085">Telusuri kontak Anda</translation>
 <translation id="8702612070107455751">Semua data offline akan dihapus.</translation>
 <translation id="8719283222052720129">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Coba lagi</translation>

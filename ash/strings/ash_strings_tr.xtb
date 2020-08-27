@@ -11,6 +11,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1056775291175587022">Ağ yok</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Cep telefonu: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">İyi günler <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Canım sıkıldı</translation>
 <translation id="1104084341931202936">Erişilebilirlik ayarlarını göster</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikte daha da iyi çalışır</translation>
@@ -71,6 +72,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> zamanlayıcı· <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 adresi: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">Masa: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ağ Ayarları</translation>
 <translation id="1743570585616704562">Tanınmadı</translation>
 <translation id="1746730358044914197">Giriş yöntemleri, yöneticiniz tarafından yapılandırılır.</translation>
@@ -107,6 +109,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2018630726571919839">Bana bir fıkra anlat</translation>
 <translation id="2050339315714019657">Dikey</translation>
 <translation id="2067602449040652523">Klavye parlaklığı</translation>
+<translation id="2083190527011054446">İyi geceler <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Ağa bağlı değilsiniz</translation>
 <translation id="2126242104232412123">Yeni masa</translation>
 <translation id="2127372758936585790">Düşük güçlü şarj cihazı</translation>
@@ -185,6 +188,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3009178788565917040">Çıkış</translation>
 <translation id="3033545621352269033">Açık</translation>
 <translation id="3038571455154067151">Oturum açmak için Family Link ebeveyn erişim kodunuzu girin</translation>
+<translation id="3045488863354895414">İyi günler,</translation>
 <translation id="3051128274746680507">Denetlenen kullanıcı profiliniz yakında kaldırılacak. Daha fazla bilgi edinmek için oturum açın.</translation>
 <translation id="3055162170959710888">Bugün bu cihazı <ph name="USED_TIME" /> kullandınız</translation>
 <translation id="3076778413190775903">Durum tepsisi, saat <ph name="TIME" />,
@@ -304,6 +308,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4261870227682513959">Bildirim ayarlarını göster. Bildirimler kapalı</translation>
 <translation id="4269883910223712419">Bu cihazın yöneticisi şunları yapabilir:</translation>
 <translation id="4279490309300973883">Yansıtılıyor</translation>
+<translation id="4294319844246081198">Günaydın <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> bildirimin tümünü temizle</translation>
 <translation id="4303223480529385476">Durum alanını genişlet</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -320,6 +325,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4421231901400348175">Ekranınızın kontrolü, Uzaktan Yardım kullanılarak <ph name="HELPER_NAME" /> ile paylaşılıyor.</translation>
 <translation id="4430019312045809116">Ses</translation>
 <translation id="4450893287417543264">Bir daha gösterme</translation>
+<translation id="445864333228800152">İyi akşamlar,</translation>
 <translation id="4458688154122353284">Ekran kaydını durdur</translation>
 <translation id="4477350412780666475">Sonraki Parça</translation>
 <translation id="4477892968187500306">Bu cihaz Google tarafından doğrulanmamış uygulamalar içerebilir.</translation>
@@ -430,6 +436,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5887866489674258948">Koyu Mod</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5901316534475909376">Üst Karakter+Esc</translation>
+<translation id="5909862606227538307">Masa etkin değil.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5920710855273935292">Mikrofonun sesi kapalı.</translation>
@@ -562,6 +569,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7405710164030118432">Bu cihazın kilidini açmak için Family Link ebeveyn erişim kodunuzu girin</translation>
 <translation id="741244894080940828">dönüştürme</translation>
 <translation id="742594950370306541">Kamera kullanımda.</translation>
+<translation id="742608627846767349">Günaydın,</translation>
 <translation id="743058460480092004">Kamera ve mikrofon kullanımda.</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
 <translation id="7477793887173910789">Müzik, video ve diğer içeriklerinizi kontrol edin</translation>
@@ -649,11 +657,13 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8371779926711439835">Harf bazında ilerle</translation>
 <translation id="8375916635258623388">Bu <ph name="DEVICE_NAME" /> ve telefonunuz otomatik olarak bağlanacaktır</translation>
+<translation id="8380784334203145311">İyi geceler,</translation>
 <translation id="8388750414311082622">Son masa kaldırılamaz.</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> seçenekler menüsü</translation>
 <translation id="8394567579869570560">Ebeveyniniz bu cihazı kilitledi</translation>
 <translation id="8412677897383510995">Ekran ayarlarını göster</translation>
 <translation id="8425213833346101688">Değiştir</translation>
+<translation id="8426708595819210923">İyi akşamlar <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Dikte özelliği, konuşarak herhangi bir metin alanına yazı yazabilmenizi sağlamak için sesinizi Google'a gönderir.</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8433186206711564395">Ağ ayarları</translation>

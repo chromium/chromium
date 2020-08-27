@@ -533,7 +533,7 @@
 <translation id="1618268899808219593">說明中心(&amp;E)</translation>
 <translation id="1620307519959413822">密碼錯誤，請再試一次，或按一下 [忘記密碼] 以重設密碼。</translation>
 <translation id="1620510694547887537">相機</translation>
-<translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> 資料會被刪除</translation>
+<translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> 資料將被刪除</translation>
 <translation id="1622054403950683339">移除 Wi-Fi 網絡</translation>
 <translation id="1623132449929929218">目前無法提供相片，請重新連線至互聯網以查看桌布相片集。</translation>
 <translation id="1623723619460186680">減少藍光</translation>
@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">Chrome 需要權限才能繼續</translation>
 <translation id="220138918934036434">隱藏按鈕</translation>
 <translation id="2202898655984161076">列出打印機清單時發生問題，您的部分打印機尚未在 <ph name="CLOUD_PRINT_NAME" /> 完成註冊。</translation>
-<translation id="2203682048752833055">在<ph name="BEGIN_LINK" />網址列<ph name="END_LINK" />中使用的搜尋引擎</translation>
 <translation id="2204034823255629767">讀取及變更您輸入的任何設定</translation>
 <translation id="220858061631308971">請在「<ph name="DEVICE_NAME" />」上輸入以下 PIN：</translation>
 <translation id="2212565012507486665">允許 Cookie</translation>
@@ -1936,6 +1935,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">應用程式資料</translation>
 <translation id="3333190335304955291">您可以在「設定」中關閉此服務。</translation>
+<translation id="3333961966071413176">所有聯絡人</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - 影片以畫中畫模式播放</translation>
 <translation id="3335947283844343239">重新開啟先前關閉的分頁</translation>
 <translation id="3340620525920140773">下載完成：<ph name="FILE_NAME" />。</translation>
@@ -2892,7 +2892,7 @@
 <translation id="4480590691557335796">Chrome 能夠在您的電腦上尋找並移除有害軟件</translation>
 <translation id="4481530544597605423">未配對的裝置</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
-<translation id="4487489714832036847">Chromebook 使用應用程式代替傳統軟件。取得應用程式以提升生產力、享受娛樂體驗等等。</translation>
+<translation id="4487489714832036847">Chromebook 使用應用程式代替傳統軟件。下載各種應用程式，以提升生產力、享受娛樂體驗等等。</translation>
 <translation id="4488502501195719518">要清除所有資料嗎？</translation>
 <translation id="4493468155686877504">建議大小 (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">不要在這個網頁上顯示</translation>
@@ -3031,6 +3031,7 @@
 <translation id="4646675363240786305">連接埠</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
 <translation id="4647090755847581616">關閉分頁(&amp;C)</translation>
+<translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
 <translation id="4647420311443994946">{0,select, tablet{在您登入平板電腦時啟動應用程式}computer{在您登入電腦時啟動應用程式}other{在您登入裝置時啟動應用程式}}</translation>
 <translation id="4647697156028544508">請輸入「<ph name="DEVICE_NAME" />」的 PIN：</translation>
 <translation id="4648491805942548247">權限不足</translation>

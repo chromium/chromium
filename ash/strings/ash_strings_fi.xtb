@@ -170,6 +170,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylly</translation>
+<translation id="2841907151129139818">Siirrytty tablettitilaan</translation>
 <translation id="2844169650293029770">C-tyypin USB-laite (vasemman sivun etummainen portti)</translation>
 <translation id="2865888419503095837">Verkon tiedot</translation>
 <translation id="2872961005593481000">Sammuta</translation>
@@ -221,6 +222,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3255483164551725916">Mitä osaat tehdä?</translation>
 <translation id="3290356915286466215">Suojaamaton</translation>
 <translation id="3294437725009624529">Vierailja</translation>
+<translation id="3307642347673023554">Siirrytty tietokonetilaan</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> voi silti kirjautua sisään myöhemmin.</translation>
 <translation id="3321628682574733415">Virheellinen vanhemman koodi</translation>
 <translation id="332587331255250389">Vaihda paristo.</translation>

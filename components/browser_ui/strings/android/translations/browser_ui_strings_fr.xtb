@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez également l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">L'accès à la position est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Annonces</translation>
+<translation id="1919950603503897840">Sélectionner des contacts</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Autorisés, sauf cookies tiers</translation>
 <translation id="1989112275319619282">Parcourir</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2687403674020088961">Bloquer tous les cookies (non recommandé)</translation>
 <translation id="2704606927547763573">Copié</translation>
+<translation id="2717722538473713889">Adresses e-mail</translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations du site pour <ph name="CHOSEN_OBJECT_NAME" /> ?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Piste précédente</translation>
+<translation id="2903493209154104877">Adresses</translation>
 <translation id="2910701580606108292">Demander avant d'autoriser les sites à lire les contenus protégés</translation>
 <translation id="2913331724188855103">Autoriser les sites à enregistrer et à lire les données des cookies (recommandé)</translation>
 <translation id="2968755619301702150">Lecteur de certificat</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3277252321222022663">Autoriser les sites à accéder à vos capteurs (recommandé)</translation>
 <translation id="3295602654194328831">Masquer les informations</translation>
+<translation id="3333961966071413176">Tous les contacts</translation>
 <translation id="3386292677130313581">Demander avant d'autoriser des sites à accéder à ma position (recommandé)</translation>
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3538390592868664640">Empêcher les sites de créer un plan 3D de votre environnement ou de suivre la position de la caméra</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Couper le son des sites</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Appuyez deux fois à gauche/droite de la vidéo pour reculer/avancer de 10 s</translation>
+<translation id="381841723434055211">Numéros de téléphone</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3859306556332390985">Avance rapide</translation>
 <translation id="3955193568934677022">Autoriser les sites à lire les contenus protégés (recommandé)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Vous demander votre avis avant d'autoriser les sites à utiliser vos données et votre appareil de réalité virtuelle (recommandé)</translation>
 <translation id="4962975101802056554">Révoquer toutes les autorisations de l'appareil</translation>
 <translation id="497421865427891073">Avancer</translation>
+<translation id="4994033804516042629">Aucun contact trouvé</translation>
 <translation id="4996978546172906250">Partager via</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5048398596102334565">Autoriser les sites à accéder à vos capteurs de mouvement (recommandé)</translation>
 <translation id="5063480226653192405">Utilisation</translation>
 <translation id="5100237604440890931">Réduit – Cliquer pour développer</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
+<translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5313967007315987356">Ajouter un site</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Cette action entraînera la suppression de <ph name="DATASIZE" /> de données et de cookies stockés par les sites.</translation>
 <translation id="5384883051496921101">Ce site s'apprête à partager des informations avec une application en dehors du mode navigation privée.</translation>
 <translation id="5391532827096253100">Votre connexion à ce site n'est pas sécurisée. Informations sur le site</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
+<translation id="5403592356182871684">Noms</translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloquer les annonces sur les sites qui affichent des annonces intrusives ou trompeuses</translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="662080504995468778">Rester</translation>
 <translation id="6643016212128521049">Effacer</translation>
+<translation id="6689172468748959065">Photos de profil</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
 <translation id="6746124502594467657">Descendre</translation>
 <translation id="6766622839693428701">Balayez l'écran vers le bas pour fermer la feuille.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7846621471902887024">Vous allez être déconnecté de tous les sites.</translation>
 <translation id="7882806643839505685">Autorisez le son pour un site spécifique.</translation>
+<translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="7999064672810608036">Voulez-vous vraiment effacer toutes les données locales, y compris les cookies, et réinitialiser toutes les autorisations pour ce site Web ?</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
 <translation id="8609465669617005112">Monter</translation>
 <translation id="8676374126336081632">Effacer la saisie</translation>
+<translation id="868929229000858085">Rechercher des contacts</translation>
 <translation id="8702612070107455751">Toutes les données hors connexion vont être effacées.</translation>
 <translation id="8719283222052720129">Activez l'autorisation pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Réessayer</translation>

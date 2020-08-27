@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> က AR အသုံးပြုနိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း ကင်မရာကို ဖွင့်ပါ။</translation>
 <translation id="1887786770086287077">ဤစက်ပစ္စည်းအတွက် တည်နေရာ အသုံးပြုခွင့်ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ၎င်းကို ဖွင့်ပါ။</translation>
 <translation id="1919345977826869612">ကြော်ငြာများ</translation>
+<translation id="1919950603503897840">အဆက်အသွယ်များ ရွေးရန်</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">ခွင့်ပြုထားသည်၊ တတိယပါတီမှ လွဲ၍</translation>
 <translation id="1989112275319619282">ကြည့်ရန်</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
 <translation id="2687403674020088961">ကွတ်ကီးများအားလုံးကို ပိတ်ရန် (အကြံမပြုပါ)</translation>
 <translation id="2704606927547763573">ကူးယူပြီးပါပြီ</translation>
+<translation id="2717722538473713889">အီးမေးလ်လိပ်စာများ</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> အတွက် ဝဘ်ဆိုက်ခွင့်ပြုချက်အားလုံးကို ပြင်ဆင်သတ်မှတ်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="2870560284913253234">ဆိုဒ်</translation>
 <translation id="2874939134665556319">ယခင်တစ်ပုဒ်</translation>
+<translation id="2903493209154104877">လိပ်စာများ</translation>
 <translation id="2910701580606108292">ဝဘ်ဆိုက်များအား ကာကွယ်ထားသည့် အကြောင်းအရာများကို ပြသခွင့် မပြုမီ ဦးစွာ မေးပါ</translation>
 <translation id="2913331724188855103">ဆိုဒ်များကို ကွက်ကီးများ ဖတ်ရန်နှင့် သိမ်းရန် ခွင့်ပြုသည် (အကြံပြုထား)</translation>
 <translation id="2968755619301702150">လက်မှတ်ကို ကြည့်ရှုသူ</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
 <translation id="3277252321222022663">အာရုံခံစနစ်များ အသုံးပြုရန် ဤဝဘ်ဆိုက်များကို ခွင့်ပြုသည် (အကြံပြုထားသည်)</translation>
 <translation id="3295602654194328831">အချက်အလက်များကို ဖျောက်ထားရန်</translation>
+<translation id="3333961966071413176">အဆက်အသွယ်အားလုံး</translation>
 <translation id="3386292677130313581">သင့်တည်နေရာကို ဆိုက်များအား အသိမပေးမီ မေးပါ (အကြံပြုထားသည်)</translation>
 <translation id="3479552764303398839">ယခု မလို</translation>
 <translation id="3538390592868664640">သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံဆွဲခြင်း သို့မဟုတ် ကင်မရာအနေအထား ခြေရာခံခြင်းတို့ မပြုလုပ်ရန် ဝဘ်ဆိုက်များကို ပိတ်ထားသည်</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">အသံဖွင့်နိုင်သော ဝဘ်ဆိုက်များကို အသံတိတ်ထားသည်</translation>
 <translation id="3744111561329211289">နောက်ခံတွင် စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="3763247130972274048">၁၀ စက္ကန့်ကျော်ရန် ဗီဒီယိုဘယ်ဘက် သို့မဟုတ် ညာဘက်တွင် နှစ်ချက်တို့ပါ</translation>
+<translation id="381841723434055211">ဖုန်းနံပါတ်များ</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3859306556332390985">အရှေ့သို့ ရစ်ရန်</translation>
 <translation id="3955193568934677022">ကာကွယ်ထားသည့် အကြောင်းအရာများကို ဆိုက်များအား ဖွင့်ခွင့်ပြုပါ (အကြံပြုထားသည်)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">သင်၏ပကတိအသွင်စက်နှင့် ဒေတာများကို ဝဘ်ဆိုက်များအား အသုံးပြုခွင့်မပေးမီ မေးမြန်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="4962975101802056554">စက်ပစ္စည်းအတွက် ခွင့်ပြုချက်အားလုံး ရုပ်သိမ်းသည်</translation>
 <translation id="497421865427891073">ရှေ့သို့သွား</translation>
+<translation id="4994033804516042629">အဆက်အသွယ်များ မတွေ့ပါ</translation>
 <translation id="4996978546172906250">မှတစ်ဆင့် မျှဝေရန်</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5048398596102334565">အာရုံခံစနစ်များ အသုံးပြုရန် ဤဝဘ်ဆိုက်များကို ခွင့်ပြုသည် (အကြံပြုထားသည်)</translation>
 <translation id="5063480226653192405">အသုံးပြုပုံ</translation>
 <translation id="5100237604440890931">ချုံ့ထား၏ - ချဲ့ရန် ကလစ်နှိပ်ပါ။</translation>
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
+<translation id="5197729504361054390">သင်ရွေးချယ်သော အဆက်အသွယ်များကို <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> နှင့် မျှဝေပါမည်။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5313967007315987356">ဆိုက်အား ထည့်ရန်</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">၎င်းက ဒေတာ <ph name="DATASIZE" /> နှင့် ဝဘ်ဆိုက်များက သိမ်းထားသည့် ကွတ်ကီးများကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
 <translation id="5384883051496921101">ဤဝဘ်ဆိုက်သည် အချက်အလက်များကို ရုပ်ဖျက်မုဒ်ပြင်ပရှိ အက်ပ်တစ်ခုနှင့် မျှဝေပါတော့မည်။</translation>
 <translation id="5391532827096253100">ဤဝဘ်ဆိုက်သို့ သင်၏ချိတ်ဆက်မှုသည် လုံခြုံမှုမရှိပါ။ ဝဘ်ဆိုက် အချက်အလက်</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ နောက်ထပ် ၁ ခု)}other{(+ နောက်ထပ် # ခု)}}</translation>
+<translation id="5403592356182871684">အမည်များ</translation>
 <translation id="5489227211564503167">ကုန်လွန်သွားချိန် <ph name="TOTAL_TIME" /> အနက် <ph name="ELAPSED_TIME" />။</translation>
 <translation id="5494752089476963479">စိတ်အနှောင့်အယှက်ဖြစ်စေသော သို့မဟုတ် အထင်အမြင်မှားစေနိုင်သော ကြော်ငြာများပြသသည့် ဝဘ်ဆိုက်များတွင် ကြော်ငြာများကို ပိတ်သည်</translation>
 <translation id="5505264765875738116">ဝဘ်ဆိုက်များက အကြောင်းကြားချက်များပို့ရန် တောင်းဆို၍မရပါ</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">ကာကွယ်ထားသည့် အကြောင်းအရာ</translation>
 <translation id="662080504995468778">နေပါ</translation>
 <translation id="6643016212128521049">ရှင်းရန်</translation>
+<translation id="6689172468748959065">ပရိုဖိုင် ဓာတ်ပုံများ</translation>
 <translation id="6697925417670533197">လက်ရှိ ဒေါင်းလုဒ်များ</translation>
 <translation id="6746124502594467657">အောက်သို့ရွှေ့ပါ</translation>
 <translation id="6766622839693428701">ပိတ်ရန် အောက်သို့ ပွတ်ဆွဲပါ။</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">ရွေးချယ်ထားသောဖိုင်များကို ပြန်ဖျက်ပါ</translation>
 <translation id="7846621471902887024">ဝဘ်ဆိုက်အားလုံးမှ သင် ထွက်သွားပါမည်။</translation>
 <translation id="7882806643839505685">ဝဘ်ဆိုက်တစ်ခုအတွက် အသံဖွင့်ခွင့်ပြုသည်။</translation>
+<translation id="7986741934819883144">အဆက်အသွယ်တစ်ခုကို ရွေးပါ</translation>
 <translation id="7993619969781047893">အချို့ဝဘ်ဆိုက်များပေါ်ရှိ ဝန်ဆောင်မှုများ ရပ်သွားနိုင်ပါသည်</translation>
 <translation id="7999064672810608036">ကွက်ကီးများအပါအဝင်၊ အတွင်းရှိ ဒေတာများအားလုံး ရှင်းလင်းကာ၊ ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုချက်များအားလုံးအား ပြန်လည်သတ်မှတ်လိုသည်မှာ သေချာပါသလား?</translation>
 <translation id="8007176423574883786">ဤစက်ပစ္စည်းအတွက် ပိတ်ထားသည်</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">ခွင့်ပြု၏ (အကြံပြုထား)</translation>
 <translation id="8609465669617005112">အပေါ်ရွှေ့ပါ</translation>
 <translation id="8676374126336081632">ထည့်သွင်းမှု ရှင်းရန်</translation>
+<translation id="868929229000858085">သင်၏အဆက်အသွယ်များကို ရှာရန်</translation>
 <translation id="8702612070107455751">အော့ဖ်လိုင်းဒေတာ မှန်သမျှကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် <ph name="APP_NAME" /> အတွက် ခွင့်ပြုချက်ကို ဖွင့်ပါ။</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>

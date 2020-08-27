@@ -1012,7 +1012,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2200356397587687044">Chrome inahitaji ruhusa ili iendelee</translation>
 <translation id="220138918934036434">Ficha kitufe</translation>
 <translation id="2202898655984161076">Kulikuwa na tatizo wakati wa kuongeza printa. Huenda baadhi ya printa zako hazikuweza kusajili kwenye <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Mtambo wa kutafuta uliotumiwa kwenye <ph name="BEGIN_LINK" />sehemu ya anwani<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Kusoma na kubadilisha chochote unachocharaza</translation>
 <translation id="220858061631308971">Tafadhali weka nambari hii ya PIN kwenye "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Ruhusu vidakuzi</translation>
@@ -1934,6 +1933,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Maelezo ya programu</translation>
 <translation id="3333190335304955291">Unaweza kuzima huduma hii kwenye Mipangilio.</translation>
+<translation id="3333961966071413176">Anwani zote</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video inacheza katika hali ya picha ndani ya picha</translation>
 <translation id="3335947283844343239">Fungua Tena Kichupo Kilichofugwa</translation>
 <translation id="3340620525920140773">Imemaliza kupakua: <ph name="FILE_NAME" />.</translation>
@@ -3027,6 +3027,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4646675363240786305">Milango</translation>
 <translation id="4646949265910132906">Muunganisho Salama wa WiFi</translation>
 <translation id="4647090755847581616">&amp;Funga Kichupo</translation>
+<translation id="4647283074445570750">Hatua ya <ph name="CURRENT_STEP" /> kati ya <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Fungua programu unapoingia katika akaunti ukitumia kompyuta kibao}computer{Fungua programu unapoingia katika akaunti ukitumia kompyuta}other{Fungua programu unapoingia katika akaunti ukitumia kifaa chako}}</translation>
 <translation id="4647697156028544508">Tafadhali ingiza PIN ya "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Idhini isiyotosha</translation>

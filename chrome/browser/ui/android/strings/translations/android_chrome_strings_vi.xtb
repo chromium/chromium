@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Bạn sẽ đăng nhập bằng Tài khoản Google của mình\n(thao tác này sẽ không bật Chrome Sync)</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
 <translation id="1883903952484604915">Tệp của tôi</translation>
-<translation id="1919950603503897840">Chọn mục liên hệ</translation>
 <translation id="1925021887439448749">Nhập địa chỉ web tùy chỉnh</translation>
 <translation id="1928696683969751773">Số lần cập nhật</translation>
 <translation id="19288952978244135">Mở lại Chrome.</translation>
@@ -216,7 +215,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2689830683995595741">Bằng việc sử dụng Chrome, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />. Bạn sẽ phải tuân thủ cả <ph name="BEGIN_LINK3" />Thông báo về quyền riêng tư cho Tài khoản Google được quản lý bằng Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Làm mới trang</translation>
 <translation id="2709516037105925701">Tự động điền</translation>
-<translation id="2717722538473713889">Địa chỉ email</translation>
 <translation id="2728754400939377704">Sắp xếp theo trang web</translation>
 <translation id="2744248271121720757">Hãy nhấn vào một từ để tìm kiếm ngay hoặc xem các hành động có liên quan</translation>
 <translation id="2760989362628427051">Bật giao diện tối khi Trình tiết kiệm pin hoặc giao diện tối trên thiết bị đang bật</translation>
@@ -241,7 +239,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2893180576842394309">Google có thể sử dụng lịch sử của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp với bạn</translation>
 <translation id="2898264748040935573">Chỉnh sửa mật khẩu đã lưu trữ</translation>
 <translation id="2900528713135656174">Tạo sự kiện</translation>
-<translation id="2903493209154104877">Địa chỉ</translation>
 <translation id="2904414404539560095">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở trên toàn màn hình.</translation>
 <translation id="2905036901251765993">Để chia sẻ với những người ở gần, hãy cho phép họ quét mã QR này</translation>
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
@@ -294,7 +291,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3306398118552023113">Ứng dụng này đang chạy trong Chrome</translation>
 <translation id="3315103659806849044">Bạn đang tùy chỉnh các tùy chọn cài đặt Đồng bộ hóa và dịch vụ của Google. Để hoàn tất thao tác bật tính năng đồng bộ hóa, hãy nhấn vào nút Xác nhận ở gần cuối màn hình. Di chuyển lên</translation>
 <translation id="3328801116991980348">Thông tin về trang web</translation>
-<translation id="3333961966071413176">Tất cả người liên hệ</translation>
 <translation id="3334729583274622784">Thay đổi đuôi tệp?</translation>
 <translation id="3341058695485821946">Xem lượng dữ liệu bạn đã tiết kiệm được</translation>
 <translation id="3350687908700087792">Đóng tất cả các thẻ ẩn danh</translation>
@@ -353,7 +349,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Quản lý</translation>
-<translation id="381841723434055211">Số điện thoại</translation>
 <translation id="3819178904835489326">Đã xóa <ph name="NUMBER_OF_DOWNLOADS" /> bản tải xuống</translation>
 <translation id="3856096718352044181">Vui lòng xác minh rằng đây là nhà cung cấp hợp lệ hoặc thử lại sau</translation>
 <translation id="388596076286380598">Bạn có thể xem các bài viết, video và nội dung khác trên những trang web mình thích, ngay cả khi không có kết nối mạng hoặc kết nối yếu.</translation>
@@ -509,7 +504,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="497421865427891073">Đi về phía trước</translation>
 <translation id="4988210275050210843">Đang tải tệp xuống (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Trang</translation>
-<translation id="4994033804516042629">Không tìm thấy người liên hệ nào</translation>
 <translation id="5004416275253351869">Kiểm soát hoạt động trên Google</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> muốn kết nối</translation>
@@ -533,7 +527,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5184329579814168207">Mở trong Chrome</translation>
 <translation id="5193988420012215838">Đã sao chép vào khay nhớ tạm</translation>
-<translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Hồ sơ công việc</translation>
 <translation id="5210286577605176222">Quay về thẻ trước</translation>
 <translation id="5210365745912300556">Đóng thẻ</translation>
@@ -553,8 +546,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
 <translation id="5357811892247919462">Đã nhận thẻ</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> thẻ đang mở, nhấn để chuyển thẻ}other{<ph name="OPEN_TABS_MANY" /> thẻ đang mở, nhấn để chuyển thẻ}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lựa chọn khác)}other{(+ # lựa chọn khác)}}</translation>
-<translation id="5403592356182871684">Tên</translation>
 <translation id="5403644198645076998">Chỉ cho phép một số trang web</translation>
 <translation id="5414836363063783498">Đang xác minh...</translation>
 <translation id="5423934151118863508">Trang bạn truy cập nhiều nhất sẽ xuất hiện ở đây</translation>
@@ -750,7 +741,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="666981079809192359">Thông báo quyền riêng tư của Chrome</translation>
 <translation id="6671495933530132209">Sao chép ảnh</translation>
 <translation id="6676840375528380067">Xóa dữ liệu Chrome của bạn khỏi thiết bị này?</translation>
-<translation id="6689172468748959065">Ảnh tiểu sử</translation>
 <translation id="6691888250440401212">1. Chọn <ph name="APP_NAME" />\n2. Nhấn vào mục "Đặt làm mặc định"</translation>
 <translation id="6697492270171225480">Hiển thị phần đề xuất các trang tương tự khi không tìm thấy một trang</translation>
 <translation id="6698801883190606802">Quản lý dữ liệu đã đồng bộ hóa</translation>
@@ -912,7 +902,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7975379999046275268">Xem trước trang <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Tải trước các trang để tìm kiếm và duyệt web nhanh hơn</translation>
 <translation id="79859296434321399">Để xem nội dung thực tế tăng cường, hãy cài đặt bộ công cụ ARCore</translation>
-<translation id="7986741934819883144">Chọn một người liên hệ</translation>
 <translation id="799806351373751710">Hủy quá trình thiết lập đồng bộ hóa</translation>
 <translation id="7998918019931843664">Mở lại thẻ đã đóng</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
@@ -1010,7 +999,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8662811608048051533">Đăng xuất bạn khỏi hầu hết các trang web.</translation>
 <translation id="8664979001105139458">Tên tệp đã tồn tại</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Mức cường độ tín hiệu: # vạch}other{Mức cường độ tín hiệu: # vạch}}</translation>
-<translation id="868929229000858085">Tìm kiếm trong danh bạ</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8725066075913043281">Thử lại</translation>

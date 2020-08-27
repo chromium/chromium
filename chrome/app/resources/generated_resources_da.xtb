@@ -1015,7 +1015,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2200356397587687044">Chrome skal have tilladelse til at fortsætte</translation>
 <translation id="220138918934036434">Skjul knap</translation>
 <translation id="2202898655984161076">Der opstod et problem under fortegnelsen af printere. Nogle af dine printere er muligvis ikke registreret korrekt hos <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Den søgemaskine, der bruges i <ph name="BEGIN_LINK" />adresselinjen<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Læs og rediger alt, hvad du indtaster</translation>
 <translation id="220858061631308971">Angiv denne pinkode på "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Tillad cookies</translation>
@@ -1937,6 +1936,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Oplysninger om appen</translation>
 <translation id="3333190335304955291">Du kan deaktivere denne tjeneste i Indstillinger.</translation>
+<translation id="3333961966071413176">Alle kontakter</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – afspiller video i tilstanden med integreret billede</translation>
 <translation id="3335947283844343239">Åbn lukket fane igen</translation>
 <translation id="3340620525920140773">Downloaden er fuldført: <ph name="FILE_NAME" />.</translation>
@@ -2812,7 +2812,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4384312707950789900">Føj til foretrukne</translation>
 <translation id="4384652540891215547">Aktivér udvidelsen</translation>
 <translation id="438503109373656455">Tarok</translation>
-<translation id="4385040356362222432">Hvis du vil adskille browsing for <ph name="NEW_USER" /> fra browsing for <ph name="EXISTING_USER" />, skal du oprette en ny profil</translation>
+<translation id="4385040356362222432">Hvis du vil adskille <ph name="NEW_USER" />-browsing fra <ph name="EXISTING_USER" />-browsing, skal du oprette en ny profil</translation>
 <translation id="4387004326333427325">Godkendelsescertifikatet blev afvist eksternt</translation>
 <translation id="4387890294700445764">Kompromitterede adgangskoder</translation>
 <translation id="4389091756366370506">Bruger <ph name="VALUE" /></translation>
@@ -2975,7 +2975,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="457386861538956877">Flere...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="457564749856982089">Hvis du føjer en skolekonto til en profil, kan du nemt logge ind på websites, i udvidelser og i apps som elev, mens du er underlagt forældreindstillinger. Dette giver ikke et barn adgang til bogmærker, adgangskoder eller andre browserdata, der synkroniseres med skolekontoen.&lt;br&gt;&lt;br&gt;
-    Hvis dit barn bruger en Chromebook i skolen, og du vil genskabe skoleoplevelsen derhjemme for at sikre, at dit barn har adgang til alle nødvendige skoleressourcer, skal du logge ud af denne Family Link-konto og logge ind på skolekontoen via kontosiden for Chrome OS. Vær opmærksom på, at forældreindstillinger fra Family Link ikke anvendes.&lt;br&gt;&lt;br&gt;
+    Hvis dit barn bruger en Chromebook i skolen, og du vil genskabe skoleoplevelsen derhjemme for at sikre, at dit barn har adgang til alle nødvendige skoleressourcer, skal du logge ud af denne Family Link-konto og logge ind på skolekontoen via kontosiden for Chrome OS. Vær opmærksom på, at forældreindstillingerne fra Family Link ikke anvendes.&lt;br&gt;&lt;br&gt;
     Hvis dit barn ikke bruger en Chromebook i skolen, eller hvis du foretrækker at administrere dit barns oplevelse derhjemme ved hjælp af Family Link, skal du klikke på knappen Næste nedenfor og føje en skolekonto til denne profil.</translation>
 <translation id="4576541033847873020">Par Bluetooth-enhed</translation>
 <translation id="4579453506923101210">Glem den tilsluttede telefon</translation>
@@ -3032,6 +3032,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4646675363240786305">Porte</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
 <translation id="4647090755847581616">&amp;Luk fanen</translation>
+<translation id="4647283074445570750">Trin <ph name="CURRENT_STEP" /> af <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Start appen. når du logger ind på din tablet}computer{Start appen, når du logger ind på din computer}other{Start appen, når du logger ind på din enhed}}</translation>
 <translation id="4647697156028544508">Angiv pinkoden for "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Utilstrækkelige tilladelser</translation>
@@ -4357,7 +4358,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6298962879096096191">Brug Google Play til at installere Android-apps</translation>
 <translation id="630065524203833229">Af&amp;slut</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kunne ikke konfigureres automatisk. Angiv avancerede indstillinger for printeren. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">Hvis du vil adskille personlig browsing og browsing for <ph name="EXISTING_USER" />, skal du oprette en ny profil for <ph name="NEW_USER" /></translation>
+<translation id="6301076166764763868">Hvis du vil adskille din personlige browsing og <ph name="EXISTING_USER" />-browsing, skal du oprette en ny profil for <ph name="NEW_USER" /></translation>
 <translation id="630292539633944562">Forslag til personlige oplysninger</translation>
 <translation id="6305607932814307878">Global politik:</translation>
 <translation id="6307990684951724544">Systemet er optaget</translation>

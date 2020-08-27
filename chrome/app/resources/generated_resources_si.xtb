@@ -1012,7 +1012,6 @@
 <translation id="2200356397587687044">දිගටම කරගෙන යාමට Chrome අවසරය අවශ්‍යයි</translation>
 <translation id="220138918934036434">සැඟවීමේ බොත්තම</translation>
 <translation id="2202898655984161076">මුද්‍රණ යන්ත්‍ර ලැයිස්තුගත කිරීමේ ගැටළුවක් තිබේ. ඔබේ සමහු මුද්‍රණ යන්ත්‍ර සාර්ථකව <ph name="CLOUD_PRINT_NAME" /> සමඟ ලියාපදිංචි කර නොමැති වන්නට පුළුවන.</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />ලිපින තීරුව<ph name="END_LINK" /> තුළ භාවිත කළ සෙවීම් යාන්ත්‍රණය</translation>
 <translation id="2204034823255629767">ඔබ ටයිප් කරන ඕනෑම දෙයක් කියවා වෙනස් කරන්න</translation>
 <translation id="220858061631308971">PIN කේතය "<ph name="DEVICE_NAME" />" තුළ ඔන් කරන්න:</translation>
 <translation id="2212565012507486665">කුකීවලට ඉඩ දෙන්න</translation>
@@ -1934,6 +1933,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">යෙදුම් තතු</translation>
 <translation id="3333190335304955291">ඔබට මෙය සැකසීම් තුළ අක්‍රිය කළ හැක.</translation>
+<translation id="3333961966071413176">සියලු සම්බන්ධතා</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - පින්තූරය-තුළ-පින්තූරය ආකාරයෙහි ඇති වීඩියෝව</translation>
 <translation id="3335947283844343239">වැසූ ටැබය යළි විවෘත කරන්න</translation>
 <translation id="3340620525920140773">බාගැනීම සම්පූර්ණයි: <ph name="FILE_NAME" />.</translation>
@@ -3030,6 +3030,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4646675363240786305">තොටවල්</translation>
 <translation id="4646949265910132906">ආරක්ෂිත WiFi සබැඳුම</translation>
 <translation id="4647090755847581616">ටැබය වසන්න (&amp;C)</translation>
+<translation id="4647283074445570750">පියවර <ph name="TOTAL_STEPS" />හි <ph name="CURRENT_STEP" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{ඔබ ඔබේ ටැබ්ලට් එකට පුරන විට යෙදුම ආරම්භ කරන්න}computer{ඔබ ඒබේ පරිගණකයට පුරන විට යෙදුම ආරම්භ කරන්න}other{ඔබ ඔබේ උපාංගයට පුරන විට යෙදුම ආරම්භ කරන්න}}</translation>
 <translation id="4647697156028544508">කරුණාකර "<ph name="DEVICE_NAME" />" සඳහා මුරපදය ඇතුළත් කරන්න:</translation>
 <translation id="4648491805942548247">අවසර ප්‍රමාණවත් නොවේ</translation>

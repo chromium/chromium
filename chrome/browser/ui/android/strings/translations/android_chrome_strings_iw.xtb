@@ -102,14 +102,13 @@
 <translation id="1810845389119482123">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
 <translation id="1821253160463689938">‏שימוש בקובצי cookie כדי לשמור את ההעדפות שלך, גם אם לא נכנסת אל הדפים האלה</translation>
 <translation id="1829244130665387512">חיפוש בדף</translation>
-<translation id="1843805151597803366">‏כדי לשפר את התרגומים, יש לאפשר לחיפוש Google להשתמש בעמוד הנוכחי</translation>
+<translation id="1843805151597803366">‏כדי לשפר את התרגומים, יש לאפשר לחיפוש Google להשתמש בדף הנוכחי</translation>
 <translation id="1853692000353488670">כרטיסייה חדשה לגלישה בסתר</translation>
 <translation id="1856325424225101786">לאפס את מצב הטעינה המהירה?</translation>
 <translation id="1868024384445905608">‏הורדת קבצים ב-Chrome מתבצעת עכשיו מהר יותר</translation>
 <translation id="1874760110381325409">‏המערכת תכניס אותך באמצעות חשבון Google שלך\n(הפעולה הזו לא תגרום להפעלה של סנכרון Chrome).</translation>
 <translation id="1877026089748256423">‏Chrome אינו מעודכן</translation>
 <translation id="1883903952484604915">הקבצים שלי</translation>
-<translation id="1919950603503897840">בחירת אנשי קשר</translation>
 <translation id="1925021887439448749">הזן כתובת אינטרנט מותאמת אישית</translation>
 <translation id="1928696683969751773">עדכונים</translation>
 <translation id="19288952978244135">‏יש לפתוח מחדש את Chrome.</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">‏השימוש ב-Chrome מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />. על השימוש חלה גם <ph name="BEGIN_LINK3" />הודעת הפרטיות לגבי חשבונות Google המנוהלים באמצעות Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">רענן את הדף</translation>
 <translation id="2709516037105925701">מילוי אוטומטי</translation>
-<translation id="2717722538473713889">כתובות אימייל</translation>
 <translation id="2728754400939377704">מיון לפי אתר</translation>
 <translation id="2744248271121720757">כדי לחפש באופן מיידי או לראות פעולות קשורות, צריך להקיש על מילה</translation>
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך לצורך התאמה אישית של החיפוש ושירותי Google אחרים</translation>
 <translation id="2898264748040935573">עריכת הסיסמה השמורה</translation>
 <translation id="2900528713135656174">צור אירוע</translation>
-<translation id="2903493209154104877">כתובות</translation>
 <translation id="2904414404539560095">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נפתחה בגובה המלא של המסך.</translation>
 <translation id="2905036901251765993">‏כדי לשתף עם אנשים בקרבת מקום, יש לתת להם לסרוק את קוד ה-QR הזה</translation>
 <translation id="2909615210195135082">‏פלטפורמת ההתראות של Google</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">‏האפליקציה הזו פועלת ב-Chrome</translation>
 <translation id="3315103659806849044">‏מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון ושירותי Google. כדי להשלים את הפעלת הסנכרון, יש להקיש על הלחצן 'אישור' קרוב לתחתית המסך. ניווט למעלה</translation>
 <translation id="3328801116991980348">פרטי אתר</translation>
-<translation id="3333961966071413176">כל אנשי הקשר</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
 <translation id="3341058695485821946">בדיקת החיסכון בצריכת נתונים</translation>
 <translation id="3350687908700087792">סגור את כל כרטיסיות הגלישה בסתר</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">התקן</translation>
 <translation id="3810838688059735925">וידאו</translation>
 <translation id="3810973564298564668">נהל</translation>
-<translation id="381841723434055211">מספרי טלפון</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> הורדות נמחקו</translation>
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
 <translation id="388596076286380598">גם כשאין חיבור לאינטרנט וגם כשהחיבור חלש, עדיין אפשר לגשת למאמרים, לסרטונים ולתוכן אחר מאתרים שמעניינים אותך.</translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">המשך קדימה</translation>
 <translation id="4988210275050210843">מתבצעת הורדה של קובץ (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">דפים</translation>
-<translation id="4994033804516042629">לא נמצאו אנשי קשר</translation>
 <translation id="5004416275253351869">‏בחירת פעילויות של Google</translation>
 <translation id="5005498671520578047">העתק סיסמה</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> מבקש להתחבר אל</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">הצג בתיקייה</translation>
 <translation id="5184329579814168207">‏פתח ב-Chrome</translation>
 <translation id="5193988420012215838">הועתק אל הלוח</translation>
-<translation id="5197729504361054390">אנשי הקשר שייבחרו ישותפו עם <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">פרופיל עבודה</translation>
 <translation id="5210286577605176222">חזרה לכרטיסייה הקודמת</translation>
 <translation id="5210365745912300556">סגור כרטיסייה</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="5357811892247919462">התקבלה כרטיסייה</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{כרטיסייה פתוחה אחת (<ph name="OPEN_TABS_ONE" />), יש להקיש כדי להחליף כרטיסיות}two{<ph name="OPEN_TABS_MANY" /> כרטיסיות פתוחות, יש להקיש כדי להחליף כרטיסיות}many{<ph name="OPEN_TABS_MANY" /> כרטיסיות פתוחות, יש להקיש כדי להחליף כרטיסיות}other{<ph name="OPEN_TABS_MANY" /> כרטיסיות פתוחות, יש להקיש כדי להחליף כרטיסיות}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}two{(ועוד #)}many{(ועוד #)}other{(ועוד #)}}</translation>
-<translation id="5403592356182871684">שמות</translation>
 <translation id="5403644198645076998">גישה רק לאתרים ספציפיים</translation>
 <translation id="5414836363063783498">מאמת…</translation>
 <translation id="5423934151118863508">הדפים שבהם אתה מבקר בתדירות הגבוהה ביותר יופיעו כאן</translation>
@@ -639,7 +630,7 @@
 <translation id="5942872142862698679">‏שימוש ב-Google לחיפוש</translation>
 <translation id="5952764234151283551">‏שליחת כתובת האתר של הדף שאליו ניסית להגיע אל Google</translation>
 <translation id="5956665950594638604">‏פתיחת מרכז העזרה של Chrome בכרטיסייה חדשה</translation>
-<translation id="5957442310066583693">להצגת האתרים המובילים שלך, יש להקיש על הלחצן הראשי</translation>
+<translation id="5957442310066583693">להצגת האתרים המובילים שלך, יש להקיש על לחצן דף הבית</translation>
 <translation id="5958275228015807058">הקבצים והדפים שלך נמצאים ב'הורדות'</translation>
 <translation id="5962718611393537961">הקש כדי לכווץ</translation>
 <translation id="5964805880140440652">‏כדי לשתף את הדף הזה עם מכשיר אחר, יש להפעיל את הסנכרון בהגדרות של Chrome</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">‏הודעת הפרטיות של Chrome</translation>
 <translation id="6671495933530132209">העתק את התמונה</translation>
 <translation id="6676840375528380067">‏למחוק את נתוני Chrome שלך מהמכשיר הזה?</translation>
-<translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6691888250440401212">‏1. בוחרים את <ph name="APP_NAME" />.\n2. מקישים על 'הגדרה כברירת מחדל'.</translation>
 <translation id="6697492270171225480">הצגת הצעות לדפים דומים אם דף מסוים לא נמצא</translation>
 <translation id="6698801883190606802">ניהול נתונים מסונכרנים</translation>
@@ -912,7 +902,6 @@
 <translation id="7975379999046275268">הצגת הדף בתצוגה מקדימה<ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">טעינה מראש של דפים כדי לאפשר גלישה וחיפוש מהירים יותר</translation>
 <translation id="79859296434321399">‏כדי להציג תוכן של מציאות רבודה, צריך להתקין את ARCore</translation>
-<translation id="7986741934819883144">בחירת איש קשר</translation>
 <translation id="799806351373751710">ביטול הגדרת הסנכרון</translation>
 <translation id="7998918019931843664">פתח מחדש כרטיסייה שנסגרה</translation>
 <translation id="8004582292198964060">דפדפן</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">תבוצע יציאה שלך מרוב האתרים.</translation>
 <translation id="8664979001105139458">שם הקובץ כבר קיים</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{רמת עוצמת אות: עמודה אחת}two{רמת עוצמת אות: שתי עמודות}many{רמת עוצמת אות: # עמודות}other{רמת עוצמת אות: # עמודות}}</translation>
-<translation id="868929229000858085">חיפוש באנשי הקשר</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8725066075913043281">נסה שוב</translation>

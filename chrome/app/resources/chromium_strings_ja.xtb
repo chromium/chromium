@@ -3,12 +3,12 @@
 <translationbundle lang="ja">
 <translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: 1 時間前。}other{Chromium で週 1 回、望ましくないソフトウェアがないか確認します。前回の確認: {NUM_HOURS} 時間前。}}</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
-<translation id="107513968719897256">個人用と <ph name="NEW_USER" /> のブラウジング環境を分けるには、Chromium で新しいプロフィールを作成します</translation>
+<translation id="107513968719897256">個人用と <ph name="NEW_USER" /> のブラウジング環境を分けるには、Chromium で新しいプロファイルを作成します</translation>
 <translation id="1098170124587656448">Chromium でデータ侵害や不正な拡張機能などの脅威から保護できているか確認します</translation>
 <translation id="1104942323762546749">Chromium からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
 <translation id="113122355610423240">既定のブラウザは Chromium です</translation>
 <translation id="1185134272377778587">Chromium について</translation>
-<translation id="1315551408014407711">新しい Chromium プロフィールの設定</translation>
+<translation id="1315551408014407711">新しい Chromium プロファイルの設定</translation>
 <translation id="1396446129537741364">Chromium はパスワードを表示しようとしています。</translation>
 <translation id="1414495520565016063">Chromium にログインしました</translation>
 <translation id="151962892725702025">お使いのドメインでは同期を利用できないため、Chromium OS はデータを同期できませんでした。</translation>
@@ -109,7 +109,7 @@
 <translation id="4943838377383847465">Chromium はバックグラウンド モードです。</translation>
 <translation id="4987820182225656817">ゲスト ユーザーは、記録を残さずに Chromium を使用できます。</translation>
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
-<translation id="5080135079858647714">Chromium で自分用のプロフィールを作成しますか？</translation>
+<translation id="5080135079858647714">Chromium で自分用のプロファイルを作成しますか？</translation>
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
 <translation id="5277894862589591112">変更を適用するには Chromium を再起動してください</translation>
 <translation id="5358375970380395591">現在、管理対象アカウントでログインしており、あなたの Chromium プロフィールを管理者が制御できる状態になっています。あなたの Chromium データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。<ph name="LEARN_MORE" /></translation>
@@ -168,7 +168,7 @@
 一部の機能が利用できない可能性があります。別の場所のプロフィールを指定するか、新しいバージョンの Chromium をご使用ください。</translation>
 <translation id="6734080038664603509">Chromium を更新(&amp;C)</translation>
 <translation id="6734291798041940871">Chromium は既にパソコンのすべてのユーザーに対してインストールされています。</translation>
-<translation id="6762551859069255163">仕事用と個人用のブラウジング環境を分ける場合や複数のユーザーがこのデバイスを使用する場合は、Chromium で個別のプロフィールを作成します</translation>
+<translation id="6762551859069255163">仕事用と個人用のブラウジング環境を分ける場合や複数のユーザーがこのデバイスを使用する場合は、Chromium で個別のプロファイルを作成します</translation>
 <translation id="6774082503108938489">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を有効にすることはできません。</translation>
 <translation id="6847869444787758381">Chromium では、特定のパスワードが侵害された事実の有無がわかります</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>

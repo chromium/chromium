@@ -330,7 +330,7 @@
 <translation id="1383876407941801731">検索</translation>
 <translation id="1386387014181100145">こんにちは。</translation>
 <translation id="1386791642444521222">物理的な SIM を有効にする</translation>
-<translation id="1387519831959169718">ブラウジング環境を分けるには、<ph name="NEW_USER" /> 用の新しいプロフィールを作成できます</translation>
+<translation id="1387519831959169718">ブラウジング環境を分けるには、<ph name="NEW_USER" /> 用の新しいプロファイルを作成できます</translation>
 <translation id="138784436342154190">デフォルトの起動ページに戻しますか？</translation>
 <translation id="1388728792929436380">更新が完了すると、<ph name="DEVICE_TYPE" />が再起動されます。</translation>
 <translation id="1390548061267426325">通常のタブとして開く</translation>
@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">続行するには Chrome に権限が必要です</translation>
 <translation id="220138918934036434">ボタンを非表示にする</translation>
 <translation id="2202898655984161076">プリンタのリスト作成中に問題が発生しました。一部のプリンタが <ph name="CLOUD_PRINT_NAME" /> に正常に登録されていない可能性があります。</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />アドレスバー<ph name="END_LINK" />で使用される検索エンジン</translation>
 <translation id="2204034823255629767">すべての入力内容の読み取りと変更</translation>
 <translation id="220858061631308971">「<ph name="DEVICE_NAME" />」の PIN コードを入力してください:</translation>
 <translation id="2212565012507486665">Cookie を許可</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3331321258768829690">（<ph name="UTCOFFSET" />）<ph name="LONGTZNAME" />（<ph name="EXEMPLARCITY" />）</translation>
 <translation id="3331974543021145906">アプリ情報</translation>
 <translation id="3333190335304955291">このサービスは [設定] でオフにできます。</translation>
+<translation id="3333961966071413176">すべての連絡先</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ピクチャー イン ピクチャー モードで再生中の動画</translation>
 <translation id="3335947283844343239">閉じたタブを開く</translation>
 <translation id="3340620525920140773"><ph name="FILE_NAME" /> のダウンロードが完了しました。</translation>
@@ -2812,7 +2812,7 @@
 <translation id="4384312707950789900">優先ネットワークに追加</translation>
 <translation id="4384652540891215547">拡張機能を有効にする</translation>
 <translation id="438503109373656455">サラトガ</translation>
-<translation id="4385040356362222432"><ph name="NEW_USER" /> と <ph name="EXISTING_USER" /> のブラウジング環境を分けるには、新しいプロフィールを作成します</translation>
+<translation id="4385040356362222432"><ph name="NEW_USER" /> と <ph name="EXISTING_USER" /> のブラウジング環境を分けるには、新しいプロファイルを作成します</translation>
 <translation id="4387004326333427325">認証証明書がリモートで拒否されました</translation>
 <translation id="4387890294700445764">不正使用されたパスワード</translation>
 <translation id="4389091756366370506">ユーザー <ph name="VALUE" /></translation>
@@ -2922,7 +2922,7 @@
 <translation id="4522570452068850558">詳細</translation>
 <translation id="4522600456902129422">このサイトによるクリップボードへのアクセスを今後も許可する</translation>
 <translation id="4524832533047962394">指定の登録モードは、このバージョンのオペレーティング システムではサポートされていません。最新バージョンであることをご確認ください。</translation>
-<translation id="4527186207340858212">仕事用のプロフィールを新しく作成しますか？</translation>
+<translation id="4527186207340858212">仕事用のプロファイルを新しく作成しますか？</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4530494379350999373">発行元:</translation>
 <translation id="4532646538815530781">このサイトはモーション センサーを使用しています。</translation>
@@ -2974,9 +2974,9 @@
 <translation id="4573515936045019911">Linux のアップグレードには、ネットワーク接続が必要です。インターネットに接続してから、もう一度お試しください。</translation>
 <translation id="457386861538956877">その他...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">学校用アカウントをプロフィールに追加すると、保護者による使用制限のもとで、生徒としてウェブサイト、拡張機能、アプリに簡単にログインできるようになります。学校用アカウントと同期しているブックマークやパスワードなどのブラウザデータへのアクセス権がお子様に付与されることはありません。&lt;br&gt;&lt;br&gt;
+<translation id="457564749856982089">学校用アカウントをプロファイルに追加すると、保護者による使用制限のもとで、生徒としてウェブサイト、拡張機能、アプリに簡単にログインできるようになります。学校用アカウントと同期しているブックマークやパスワードなどのブラウザデータへのアクセス権がお子様に付与されることはありません。&lt;br&gt;&lt;br&gt;
     お子様が学校で Chromebook を使用している場合に、自宅で学校の使用環境を再現して、お子様が必要な学習用コンテンツすべてにアクセスできるようにするには、このファミリー リンク アカウントからログアウトしてください。その後、Chrome OS のアカウント ページから学校用アカウントにログインしてください（注: ファミリー リンクの保護者による使用制限は適用されなくなります）。&lt;br&gt;&lt;br&gt;
-    お子様が学校で Chromebook を使用していない場合、またはファミリー リンクを使用してお子様の自宅での使用環境を管理したい場合は、下の [次へ] ボタンをクリックして、学校用アカウントをこのプロフィールに追加してください。</translation>
+    お子様が学校で Chromebook を使用していない場合、またはファミリー リンクを使用してお子様の自宅での使用環境を管理したい場合は、下の [次へ] ボタンをクリックして、学校用アカウントをこのプロファイルに追加してください。</translation>
 <translation id="4576541033847873020">Bluetooth デバイスのペア設定</translation>
 <translation id="4579453506923101210">接続済みスマートフォンの解除</translation>
 <translation id="4579581181964204535"><ph name="HOST_NAME" /> をキャストできません。</translation>
@@ -3756,7 +3756,7 @@
 <translation id="5565735124758917034">有効</translation>
 <translation id="5567989639534621706">アプリケーション キャッシュ</translation>
 <translation id="5568069709869097550">ログインできない</translation>
-<translation id="5571832155627049070">プロフィールのカスタマイズ</translation>
+<translation id="5571832155627049070">プロファイルのカスタマイズ</translation>
 <translation id="5572851009514199876">このサイトへのアクセス権があるかどうかを Chrome で確認できるように、Chrome を起動してログインしてください。</translation>
 <translation id="5575473780076478375">シークレット モード拡張機能: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">デモ登録リクエストで問題が発生しました。</translation>
@@ -4356,7 +4356,7 @@
 <translation id="6298962879096096191">Google Play を使用して Android アプリをインストールします</translation>
 <translation id="630065524203833229">終了(&amp;X)</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> を自動的に設定できませんでした。プリンタの詳細設定を指定してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">個人用と <ph name="EXISTING_USER" /> のブラウジング環境を分けるには、<ph name="NEW_USER" /> 用の新しいプロフィールを作成します</translation>
+<translation id="6301076166764763868">個人用と <ph name="EXISTING_USER" /> のブラウジング環境を分けるには、<ph name="NEW_USER" /> 用の新しいプロファイルを作成します</translation>
 <translation id="630292539633944562">個人情報の候補</translation>
 <translation id="6305607932814307878">グローバル ポリシー:</translation>
 <translation id="6307990684951724544">システムがビジー状態です</translation>
@@ -5745,7 +5745,7 @@
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> は利用できなくなりました</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8005600846065423578"><ph name="HOST" /> によるクリップボードへのアクセスを常に許可する</translation>
-<translation id="8006143138282906848">このプロフィールを削除</translation>
+<translation id="8006143138282906848">このプロファイルを削除</translation>
 <translation id="8008356846765065031">インターネットが切断されました。インターネット接続を確認してください。</translation>
 <translation id="8009225694047762179">パスワードを管理</translation>
 <translation id="8012647001091218357">現在、保護者にたずねることができません。もう一度お試しください。</translation>
@@ -5869,7 +5869,7 @@
 <translation id="8146177459103116374">このデバイスでの登録が済んでいる場合は<ph name="LINK2_START" />既存のユーザー<ph name="LINK2_END" />としてログインできます。</translation>
 <translation id="8146793085009540321">ログインできませんでした。管理者にお問い合わせいただくか、もう一度お試しください。</translation>
 <translation id="8148760431881541277">ログインの制限</translation>
-<translation id="8151579390896831136">プロフィールの名前などをカスタマイズします</translation>
+<translation id="8151579390896831136">プロファイルの名前などをカスタマイズします</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8152091997436726702">プリンタの登録がタイムアウトしました。プリンタを登録するには、プリンタで登録を確認する必要があります。</translation>
 <translation id="8154790740888707867">ファイルがありません</translation>

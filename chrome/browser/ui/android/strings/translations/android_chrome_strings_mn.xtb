@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Датагаа 60% хүртэл хэмнэж, өнөөдрийн мэдээг уншаарай</translation>
 <translation id="1303339473099049190">Тийм нууц үг олж чадсангүй. Үсгийн алдаагаа шалгаад дахин оролдоно уу.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-с илгээсэн</translation>
+<translation id="1307205233980126133">Уучлаарай, бид таны мандат үнэмлэхийг баталж чадсангүй</translation>
 <translation id="1310482092992808703">Бүлэг таб</translation>
 <translation id="1311657260431405215">Хурдан хариу үйлдлийн энэ код бол URL биш: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">Навигацын түүх нээлттэй байна</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">Та Google Бүртгэлээрээ нэвтэрнэ\n(ингэснээр Chrome Синк идэвхжихгүй)</translation>
 <translation id="1877026089748256423">Chrome хуучирсан байна.</translation>
 <translation id="1883903952484604915">Миний файл</translation>
-<translation id="1919950603503897840">Харилцагчдыг сонгох</translation>
 <translation id="1925021887439448749">Тохируулсан вэб хаяг оруулах</translation>
 <translation id="1928696683969751773">Шинэчлэл</translation>
 <translation id="19288952978244135">Chrome-г дахин нээнэ үү.</translation>
@@ -216,7 +216,6 @@
 <translation id="2689830683995595741">Chrome-г ашигласнаар та <ph name="BEGIN_LINK1" />Google-н Үйлчилгээний нөхцөл<ph name="END_LINK1" /> ба <ph name="BEGIN_LINK2" />Google Chrome болон Chrome үйлдлийн системийн Үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна. <ph name="BEGIN_LINK3" />Family Link-р удирддаг Google Бүртгэлийн нууцлалын сануулгыг<ph name="END_LINK3" /> мөн хэрэгжүүлнэ.</translation>
 <translation id="2707726405694321444">Хуудсыг дахин шинэчлэх</translation>
 <translation id="2709516037105925701">Автоматаар бөглөх</translation>
-<translation id="2717722538473713889">Имэйл хаяг</translation>
 <translation id="2728754400939377704">Сайтаар эрэмбэлэх</translation>
 <translation id="2744248271121720757">Шууд хайх эсвэл холбоотой үйлдлийг харахын тулд үгийг товшино уу</translation>
 <translation id="2760989362628427051">Таны төхөөрөмжийн бараан загвар эсвэл Батарей хэмнэгч асаалттай үед бараан загварыг асаах</translation>
@@ -241,7 +240,6 @@
 <translation id="2893180576842394309">Google таны түүхийг Хайлт болон Google-н бусад үйлчилгээг хувийн болгох зорилгоор ашиглаж болзошгүй</translation>
 <translation id="2898264748040935573">Хадгалсан нууц үгийг засах</translation>
 <translation id="2900528713135656174">Арга хэмжээ үүсгэх</translation>
-<translation id="2903493209154104877">Хаягууд</translation>
 <translation id="2904414404539560095">Таб хуваалцах төхөөрөмжийн жагсаалтыг бүрэн өндрөөр нээлээ.</translation>
 <translation id="2905036901251765993">Ойролцоо байгаа хүмүүстэй хуваалцахын тулд тэдэнд энэ QR кодыг скан хийхийг зөвшөөрнө үү</translation>
 <translation id="2909615210195135082">Google мэдэгдлийн платформ</translation>
@@ -294,7 +292,6 @@
 <translation id="3306398118552023113">Энэ апп Chrome-д ажиллаж байна</translation>
 <translation id="3315103659806849044">Та одоогоор Синк болон Google-н үйлчилгээний тохиргоогоо өөрчилж байна. Синкийг асааж дуусгахын тулд дэлгэцийн доод хэсгийн ойролцоо байгаа Зөвшөөрөх товчлуурыг товшино уу. Дээш шилжих</translation>
 <translation id="3328801116991980348">Сайтын мэдээлэл</translation>
-<translation id="3333961966071413176">Бүх харилцагч</translation>
 <translation id="3334729583274622784">Файлын өргөтгөлийг өөрчлөх үү?</translation>
 <translation id="3341058695485821946">Ямар хэмжээний дата хэмнэснээ харах</translation>
 <translation id="3350687908700087792">Бүх incognito цонхийг хаа</translation>
@@ -353,7 +350,6 @@
 <translation id="3789841737615482174">Суулгах</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">удирдах</translation>
-<translation id="381841723434055211">Утасны дугаар</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> таталтыг устгасан</translation>
 <translation id="3856096718352044181">Энэ нь хүчинтэй нийлүүлэгч болохыг бататгах эсвэл дараа дахин оролдоно уу</translation>
 <translation id="388596076286380598">Та офлайн эсвэл таны холболт муу байсан ч дуртай сайтаасаа нийтлэл, видео болон бусад контентыг аваарай.</translation>
@@ -508,7 +504,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="497421865427891073">Цаашаа явах</translation>
 <translation id="4988210275050210843">Файлыг татаж байна (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Хуудас</translation>
-<translation id="4994033804516042629">Харилцагч олдсонгүй</translation>
 <translation id="5004416275253351869">Google-н ашиглалт удирдлага</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> холбогдох хүсэлтэй байна</translation>
@@ -532,7 +527,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5184329579814168207">Chrome-д нээх</translation>
 <translation id="5193988420012215838">Түр санах ой руу хуулсан</translation>
-<translation id="5197729504361054390">Таны сонгох харилцагчдыг <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-тай хуваалцана.</translation>
 <translation id="5199929503336119739">Ажлын профайл</translation>
 <translation id="5210286577605176222">Өмнөх чихтэй хуудаст очих</translation>
 <translation id="5210365745912300556">Цонхыг хаа</translation>
@@ -552,8 +546,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="5357811892247919462">Табыг хүлээн авлаа</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> таб нээлттэй байна. Табыг сэлгэхийн тулд товшино уу}other{<ph name="OPEN_TABS_MANY" /> таб нээлттэй байна. Табыг сэлгэхийн тулд товшино уу}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(бусад + 1)}other{(бусад + #)}}</translation>
-<translation id="5403592356182871684">Нэр</translation>
 <translation id="5403644198645076998">Зөвхөн тодорхой сайтыг зөвшөөрөх</translation>
 <translation id="5414836363063783498">Баталгаажуулж байна ...</translation>
 <translation id="5423934151118863508">Таны хамгийн их зочилсон хуудас энд гарч ирэх болно</translation>
@@ -749,7 +741,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="666981079809192359">Chrome-н нууцлалын мэдэгдэл</translation>
 <translation id="6671495933530132209">Зургийг хуулах</translation>
 <translation id="6676840375528380067">Энэ төхөөрөмжөөс Chrome-н өгөгдлөө устгах уу?</translation>
-<translation id="6689172468748959065">Профайл зураг</translation>
 <translation id="6691888250440401212">1. <ph name="APP_NAME" />-г сонгоно уу\n2. “Өгөгдмөлөөр тохируулах”-ыг товшино уу</translation>
 <translation id="6697492270171225480">Хуудас олдоогүй үед төстэй хуудсын зөвлөмжийг харуулах</translation>
 <translation id="6698801883190606802">Синк хийсэн мэдээллийг удирдах</translation>
@@ -911,7 +902,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Хурдан хөтлөх болон хайхын тулд хуудсыг урьдчилан ачаалах</translation>
 <translation id="79859296434321399">Өргөтгөсөн бодит орчны (АR) агуулга харахын тулд ARCore-г суулгана уу</translation>
-<translation id="7986741934819883144">Харилцагч сонгох</translation>
 <translation id="799806351373751710">Синкийн тохируулгыг цуцлах</translation>
 <translation id="7998918019931843664">Хаагдсан цонхыг дахин нээх</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
@@ -1009,7 +999,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8662811608048051533">Ихэнх сайтаас гаргах болно.</translation>
 <translation id="8664979001105139458">Файлын нэр ашиглалтад байна</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Дохионы хүчний түвшин: # мөр}other{Дохионы хүчний түвшин: # мөр}}</translation>
-<translation id="868929229000858085">Харилцагчдаа хайх</translation>
 <translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>

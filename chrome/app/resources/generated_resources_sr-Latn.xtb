@@ -1012,7 +1012,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2200356397587687044">Chrome traži dozvolu da nastavi</translation>
 <translation id="220138918934036434">Sakrij dugme</translation>
 <translation id="2202898655984161076">Došlo je do problema prilikom popisa štampača. Neki od štampača možda nisu registrovani sa <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Pretraživač koji se koristi iz <ph name="BEGIN_LINK" />trake za adresu<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Čitanje i menjanje svega što unosite</translation>
 <translation id="220858061631308971">Unesite ovaj PIN kôd na uređaju „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2212565012507486665">Dozvoli kolačiće</translation>
@@ -1934,6 +1933,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informacije o aplikaciji</translation>
 <translation id="3333190335304955291">Možete da isključite ovu uslugu u Podešavanjima.</translation>
+<translation id="3333961966071413176">Svi kontakti</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video se reprodukuje u režimu slike u slici</translation>
 <translation id="3335947283844343239">Ponovo otvori zatvorenu karticu</translation>
 <translation id="3340620525920140773">Preuzimanje je završeno: <ph name="FILE_NAME" />.</translation>
@@ -2972,7 +2972,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="457386861538956877">Još...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="457564749856982089">Dodavanje školskog naloga omogućava da se dete lako prijavljuje na veb-sajtove, u dodatke i u aplikacije kao učenik, a da i dalje radi pod roditeljskim nadzorom. Time se detetu ne daje pristup obeleživačima, lozinkama ili drugim podacima pregledača koji se sinhronizuju sa školskim nalogom.&lt;br&gt;&lt;br&gt;
-    Ako dete koristi Chromebook u školi i želite da preslikate taj doživljaj kod kuće kako biste osigurali da ono ima pristup svim neophodnim školskim zadacima, odjavite se sa ovog Family Link naloga i prijavite se na školski nalog sa stranice Chrome OS naloga (napomena: Family Link roditeljski nadzor se neće primenjivati).&lt;br&gt;&lt;br&gt;
+    Ako dete koristi Chromebook u školi i želite da preslikate taj doživljaj kod kuće kako biste obezbedili da ono ima pristup svim neophodnim školskim zadacima, odjavite se sa ovog Family Link naloga i prijavite se na školski nalog sa stranice Chrome OS naloga (napomena: Family Link roditeljski nadzor se neće primenjivati).&lt;br&gt;&lt;br&gt;
     Ako dete ne koristi Chromebook u školi ili biste radije da upravljate detetovim doživljajem kod kuće koristeći Family Link, kliknite na dugme Dalje u nastavku da biste dodali školski nalog ovom profilu.</translation>
 <translation id="4576541033847873020">Uparite Bluetooth uređaj</translation>
 <translation id="4579453506923101210">Zaboravite povezani telefon</translation>
@@ -3029,6 +3029,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4646675363240786305">Portovi</translation>
 <translation id="4646949265910132906">Bezbedna Wi-Fi veza</translation>
 <translation id="4647090755847581616">&amp;Close Tab (Zatvori karticu)</translation>
+<translation id="4647283074445570750"><ph name="CURRENT_STEP" />. korak od <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Pokrenite aplikaciju kada se prijavite na tablet}computer{Pokrenite aplikaciju kada se prijavite na računar}other{Pokrenite aplikaciju kada se prijavite na uređaj}}</translation>
 <translation id="4647697156028544508">Unesite PIN za „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="4648491805942548247">Nedovoljan broj dozvola</translation>
@@ -5810,7 +5811,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8084114998886531721">Sačuvana lozinka</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> se konfiguriše…</translation>
 <translation id="8086442853986205778">Podesite <ph name="PRINTER_NAME" /></translation>
-<translation id="8086550884324762001">Primer: Poslovni, Lični, Dečji ili neko ime</translation>
+<translation id="8086550884324762001">Primer: Poslovni, Lični, Dečji ili nečije ime</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ova datoteka je šifrovana. Zatražite od vlasnika da je dešifruje.}one{Neke od ovih datoteka su šifrovane. Zatražite od vlasnika da ih dešifruje.}few{Neke od ovih datoteka su šifrovane. Zatražite od vlasnika da ih dešifruje.}other{Neke od ovih datoteka su šifrovane. Zatražite od vlasnika da ih dešifruje.}}</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
 <translation id="8090234456044969073">Čitanje liste najčešće posećivanih veb-sajtova</translation>

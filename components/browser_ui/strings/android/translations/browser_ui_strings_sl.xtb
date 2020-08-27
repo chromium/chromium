@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo razširjene resničnosti, prav tako vklopite fotoaparat v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Dostop do lokacije je izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Oglasi</translation>
+<translation id="1919950603503897840">Izbira stikov</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Dovoljeno, razen za druga spletna mesta</translation>
 <translation id="1989112275319619282">Brskanje</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2687403674020088961">Blokiranje vseh piškotkov (ni priporočljivo)</translation>
 <translation id="2704606927547763573">Kopirano</translation>
+<translation id="2717722538473713889">E-poštni naslovi</translation>
 <translation id="2822354292072154809">Ali ste prepričani, da želite ponastaviti vsa dovoljenja za spletna mesta za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Spletno mesto</translation>
 <translation id="2874939134665556319">Prejšnja skladba</translation>
+<translation id="2903493209154104877">Naslovi</translation>
 <translation id="2910701580606108292">Prikaži poziv, preden se spletnim mestom dovoli predvajanje zaščitene vsebine</translation>
 <translation id="2913331724188855103">Dovoli spletnim mestom shranjevanje in branje podatkov piškotkov (priporočljivo)</translation>
 <translation id="2968755619301702150">Pregledovalnik potrdil</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Spletnim mestom dovoli dostop do tipal (priporočeno)</translation>
 <translation id="3295602654194328831">Skrij informacije</translation>
+<translation id="3333961966071413176">Vsi stiki</translation>
 <translation id="3386292677130313581">Prikaži poziv, preden se spletnim mestom razkrije vaša lokacija (priporočeno)</translation>
 <translation id="3479552764303398839">Ne zdaj</translation>
 <translation id="3538390592868664640">Preprečevanje, da bi spletna mesta ustvarila 3D-zemljevid vaše okolice ali spremljala položaj kamere</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Izklop zvoka na spletnih mestih, ki predvajajo zvok</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3763247130972274048">Dvakrat se dotaknite videoposnetka levo ali desno, da preskočite 10 s</translation>
+<translation id="381841723434055211">Telefonske številke</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3859306556332390985">Išči naprej</translation>
 <translation id="3955193568934677022">Dovoli spletnim mestom predvajanje zaščitene vsebine (priporočeno)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Vprašaj, preden se spletnim mestom dovoli uporaba naprav in podatkov za navidezno resničnost (priporočeno)</translation>
 <translation id="4962975101802056554">Umik vseh dovoljenj za napravo</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
+<translation id="4994033804516042629">Ni najdenih stikov</translation>
 <translation id="4996978546172906250">Skupna raba prek</translation>
 <translation id="5039804452771397117">Dovoli</translation>
 <translation id="5048398596102334565">Spletnim mestom dovoli dostop do tipal gibanja (priporočeno)</translation>
 <translation id="5063480226653192405">Uporaba</translation>
 <translation id="5100237604440890931">Strnjeno – kliknite, če želite razširiti.</translation>
 <translation id="5123685120097942451">Zavihek brez beleženja zgodovine</translation>
+<translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5301954838959518834">V redu, razumem</translation>
 <translation id="5313967007315987356">Dodajanje mesta</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">S tem boste izbrisali <ph name="DATASIZE" /> podatkov in piškotkov, ki so jih shranila spletna mesta.</translation>
 <translation id="5384883051496921101">To spletno mesto bo delilo podatke z aplikacijo zunaj načina brez beleženja zgodovine.</translation>
 <translation id="5391532827096253100">Povezava s tem spletnim mestom ni varna. Podatki o spletnem mestu.</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
+<translation id="5403592356182871684">Imena</translation>
 <translation id="5489227211564503167">Pretečeni čas: <ph name="ELAPSED_TIME" /> od <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokiranje oglasov na spletnih mestih, ki prikazujejo vsiljive ali zavajajoče oglase</translation>
 <translation id="5505264765875738116">Spletna mesta vas ne smejo vprašati, ali želite, da vam pošiljajo obvestila</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Zaščitena vsebina</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6643016212128521049">Izbriši</translation>
+<translation id="6689172468748959065">Profilne fotografije</translation>
 <translation id="6697925417670533197">Aktivni prenosi</translation>
 <translation id="6746124502594467657">Premakni dol</translation>
 <translation id="6766622839693428701">Povlecite navzdol, da zaprete.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Prekliči izbor</translation>
 <translation id="7846621471902887024">Odjavljeni boste z vseh spletnih mest.</translation>
 <translation id="7882806643839505685">Dovolitev zvoka za določeno spletno mesto.</translation>
+<translation id="7986741934819883144">Izberite stik</translation>
 <translation id="7993619969781047893">Funkcije na nekaterih spletnih mestih morda ne bodo delovale</translation>
 <translation id="7999064672810608036">Ali želite res izbrisati vse lokalne podatke, vključno s piškotki, in ponastaviti vsa dovoljenja za to spletno mesto?</translation>
 <translation id="8007176423574883786">Izklopljeno za to napravo</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
 <translation id="8676374126336081632">Izbriši vnos</translation>
+<translation id="868929229000858085">Iskanje po stikih</translation>
 <translation id="8702612070107455751">Morebitni podatki brez povezave bodo izbrisani.</translation>
 <translation id="8719283222052720129">V <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" /> vklopite dovoljenje za aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>

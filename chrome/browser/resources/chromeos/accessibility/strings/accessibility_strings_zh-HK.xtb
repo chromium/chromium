@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">冇上一個瀏覽過嘅連結</translation>
 <translation id="4281245629646759298">淺黃色</translation>
 <translation id="4289540628985791613">概覽</translation>
+<translation id="4294967782363273192">遞增排序</translation>
 <translation id="4300318234632215983">朗讀連結的網址</translation>
 <translation id="4322625298640984693">啡黃色</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{1 個點}=3{3 個刪節號}other{# 個點}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">語音</translation>
 <translation id="6006050241733874051">表格</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{1 個反斜線}other{# 個反斜線}}</translation>
+<translation id="6010616110396250088">遞減排序</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="602001110135236999">向左捲動</translation>
 <translation id="6034000775414344507">淺灰色</translation>

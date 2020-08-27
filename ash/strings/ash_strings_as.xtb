@@ -11,6 +11,7 @@
 <translation id="1056775291175587022">নেটৱৰ্ক নাই</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">চেলুলাৰ: <ph name="ADDRESS" /></translation>
+<translation id="1087110696012418426">শুভ অপৰাহ্ন <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">মই বিৰক্ত হৈছোঁ</translation>
 <translation id="1104084341931202936">সাধ্য সুবিধাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="1104621072296271835">আপোনাৰ ডিভাইচসমূহে একেলগে আৰু ভালকৈ কাম কৰে</translation>
@@ -71,6 +72,7 @@
 <translation id="1677472565718498478"><ph name="TIME" /> বাকী</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" />ৰ টাইমাৰ · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 ঠিকনা: <ph name="ADDRESS" /></translation>
+<translation id="1708345662127501511">ডেস্ক: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">নেটৱৰ্কৰ ছেটিংসমূহ</translation>
 <translation id="1743570585616704562">চিনাক্ত কৰিব পৰা নাই</translation>
 <translation id="1746730358044914197">ইনপুট পদ্ধতিসমূহ আপোনাৰ প্ৰশাসকে কনফিগাৰ কৰে।</translation>
@@ -107,6 +109,7 @@
 <translation id="2018630726571919839">মোক এটা কৌতুক শুনাওক</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
 <translation id="2067602449040652523">কীব’ৰ্ডৰ উজ্জ্বলতা</translation>
+<translation id="2083190527011054446">শুভৰাত্ৰি <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">নেটৱৰ্কৰ সৈতে সংযুক্ত হৈ নাই</translation>
 <translation id="2126242104232412123">নতুন ডেস্ক</translation>
 <translation id="2127372758936585790">কম শক্তিৰ চ্চাৰ্জাৰ</translation>
@@ -185,6 +188,7 @@
 <translation id="3009178788565917040">আউটপুট</translation>
 <translation id="3033545621352269033">অন আছে</translation>
 <translation id="3038571455154067151">ছাইন ইন কৰিবলৈ, আপোনাৰ Family Linkৰ অভিভাৱকৰ এক্সেছ ক'ডটো দিয়ক</translation>
+<translation id="3045488863354895414">শুভ অপৰাহ্ন,</translation>
 <translation id="3051128274746680507">আপোনাৰ তদাৰকী ব্যৱহাৰকাৰী প্ৰ’ফাইলটো অতি সোনকালে আঁতৰোৱা হ’ব। অধিক জানিবলৈ ছাইন ইন কৰক।</translation>
 <translation id="3055162170959710888">আপুনি আজি ডিভাইচটো <ph name="USED_TIME" /> সময় ব্যৱহাৰ কৰিলে</translation>
 <translation id="3076778413190775903">স্থিতি ট্ৰে’, সময় <ph name="TIME" />,
@@ -303,6 +307,7 @@
 <translation id="4261870227682513959">জাননীৰ ছেটিং দেখুৱাওক। জাননী অফ আছে</translation>
 <translation id="4269883910223712419">এই ডিভাইচটোৰ প্ৰশাসকে এইকেইটা কাৰ্য কৰিব পাৰে:</translation>
 <translation id="4279490309300973883">প্ৰতিবিম্বকৰণ</translation>
+<translation id="4294319844246081198">সুপ্ৰভাত <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">সম্পূৰ্ণ <ph name="COUNT" />টা জাননী মচক</translation>
 <translation id="4303223480529385476">বিভিন্ন স্থিতি দেখুওৱা ঠাই বিস্তাৰ কৰক</translation>
 <translation id="4321179778687042513">Ctrl</translation>
@@ -319,6 +324,7 @@
 <translation id="4421231901400348175">আপোনাৰ স্ক্ৰীণৰ নিয়ন্ত্ৰণ ৰিম’ট সহায়কৰ দ্বাৰা <ph name="HELPER_NAME" />ৰ সৈতে শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
 <translation id="4450893287417543264">পুনৰ নেদেখুৱাব</translation>
+<translation id="445864333228800152">শুভ সন্ধ্যা,</translation>
 <translation id="4458688154122353284">স্ক্ৰীন ৰেকৰ্ডিং কৰা বন্ধ কৰক</translation>
 <translation id="4477350412780666475">পৰৱৰ্তী ট্ৰেক</translation>
 <translation id="4477892968187500306">এই ডিভাইচটোত Googleএ সত্যাপন নকৰা এপ্‌সমূহ থাকিব পাৰে।</translation>
@@ -429,6 +435,7 @@
 <translation id="5887866489674258948">গাঢ় ম’ড</translation>
 <translation id="5895138241574237353">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
+<translation id="5909862606227538307">নিষ্ক্ৰিয় ডেস্ক।</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">অন আছে</translation>
 <translation id="5920710855273935292">মাইক মিউট কৰা আছে।</translation>
@@ -559,6 +566,7 @@
 <translation id="7405710164030118432">ডিভাইচটো আনলক কৰিবলৈ আপোনাৰ Family Linkৰ অভিভাৱকৰ প্ৰৱেশ ক'ডটো দিয়ক</translation>
 <translation id="741244894080940828">ৰূপান্তৰণ</translation>
 <translation id="742594950370306541">কেমেৰা ব্যৱহাৰ কৰি থকা হৈছে।</translation>
+<translation id="742608627846767349">সুপ্ৰভাত,</translation>
 <translation id="743058460480092004">কেমেৰা আৰু মাইক্ৰ’ফন ব্যৱহাৰ হৈ আছে।</translation>
 <translation id="7466449121337984263">অনুগ্ৰহ কৰি ছেন্সৰটো স্পৰ্শ কৰক</translation>
 <translation id="7477793887173910789">আপোনাৰ সংগীত, ভিডিঅ’সমূহ আৰু অধিক নিয়ন্ত্ৰণ কৰক</translation>
@@ -644,11 +652,13 @@
 <translation id="8351131234907093545">টোকা সৃষ্টি কৰক</translation>
 <translation id="8371779926711439835">এটা বৰ্ণ আগলৈ যাওক</translation>
 <translation id="8375916635258623388">এই <ph name="DEVICE_NAME" /> আৰু আপোনাৰ ফ’ন স্বয়ংক্ৰিয়ভাৱে সংযোগ হ’ব</translation>
+<translation id="8380784334203145311">শুভৰাত্ৰি,</translation>
 <translation id="8388750414311082622">আগৰ ডেস্কটো আঁতৰাব নোৱাৰি।</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" />ৰ বিকল্পৰ মেনু</translation>
 <translation id="8394567579869570560">আপোনাৰ অভিভাৱকে এই ডিভাইচটো লক কৰিছে</translation>
 <translation id="8412677897383510995">ডিছপ্লে’ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="8425213833346101688">সলনি কৰক</translation>
+<translation id="8426708595819210923">শুভ সন্ধ্যা <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">শ্ৰুতলিপিয়ে আপোনাৰ কণ্ঠস্বৰ Googleলৈ পঠিয়ায় যাৰ দ্বাৰা যিকোনো পাঠ ক্ষেত্ৰত ভইচ টাইপ কৰিব পৰা যায়।</translation>
 <translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8433186206711564395">নেটৱর্ক ছেটিংসমূহ</translation>

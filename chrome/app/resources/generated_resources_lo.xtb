@@ -1013,7 +1013,6 @@
 <translation id="2200356397587687044">Chrome ຕ້ອງການມີການອະນຸຍາດເພື່ອສືບຕໍ່</translation>
 <translation id="220138918934036434">ເຊື່ອງປຸ່ມ​</translation>
 <translation id="2202898655984161076">ມີບັນຫາການເຮັດລາຍຊື່ເຄື່ອງພິມ. ບາງເຄື່ອງພິມອາດຈະບໍ່ໄດ້ລົງທະບຽນຢ່າງສໍາເລັດກັບ <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">ໂປຣແກຣມຊອກຫາທີ່ໃຊ້ໃນ <ph name="BEGIN_LINK" />ແຖບທີ່ຢູ່<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">ອ່ານ​ ແລະ​​ປ່ຽນອັນໃດໜຶ່ງທີ່​ທ່ານ​ພິມ</translation>
 <translation id="220858061631308971">ກະລຸນາໃສ່ PIN ນີ້ຢູ່ໃນ "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">ອະນຸຍາດຄຸກກີ້</translation>
@@ -1935,6 +1934,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ຂໍ້​ມູນ​ແອັບ</translation>
 <translation id="3333190335304955291">ທ່ານສາມາດປິດການບໍລິການນີ້ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
+<translation id="3333961966071413176">ລາຍຊື່ຜູ້ຕິດຕໍ່ທັງໝົດ</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ວິດີໂອທີ່ຫຼິ້ນໃນໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="3335947283844343239">ເປີດ​ແຖບ​ທີ່ປິດແລ້ວຄືນໃໝ່</translation>
 <translation id="3340620525920140773">ດາວໂຫຼດສຳເລັດແລ້ວ: <ph name="FILE_NAME" />.</translation>

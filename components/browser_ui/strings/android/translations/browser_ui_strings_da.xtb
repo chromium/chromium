@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
 <translation id="1887786770086287077">Placeringsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Annoncer</translation>
+<translation id="1919950603503897840">Vælg kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Tilladt, undtagen tredjepartscookies</translation>
 <translation id="1989112275319619282">Gennemse</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="2704606927547763573">Kopieret</translation>
+<translation id="2717722538473713889">Mailadresser</translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2874939134665556319">Forrige nummer</translation>
+<translation id="2903493209154104877">Adresser</translation>
 <translation id="2910701580606108292">Spørg, før websites begynder at afspille beskyttet indhold</translation>
 <translation id="2913331724188855103">Tillad, at websites gemmer og læser cookiedata (anbefales)</translation>
 <translation id="2968755619301702150">Certifikatfremviser</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Tillad, at websites kan få adgang til sensorer (anbefales)</translation>
 <translation id="3295602654194328831">Skjul oplysninger</translation>
+<translation id="3333961966071413176">Alle kontakter</translation>
 <translation id="3386292677130313581">Spørg, om websites må få adgang til din placering (anbefales)</translation>
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Lyden slås fra for websites, der afspiller lyd</translation>
 <translation id="3744111561329211289">Synkronisering i baggrunden</translation>
 <translation id="3763247130972274048">Tryk to gange i videoens venstre eller højre side for at springe ti sekunder frem eller tilbage</translation>
+<translation id="381841723434055211">Telefonnumre</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3859306556332390985">Spol fremad</translation>
 <translation id="3955193568934677022">Tillad, at websites afspiller beskyttet indhold (anbefales)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
+<translation id="4994033804516042629">Der blev ikke fundet nogen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5048398596102334565">Tillad, at websites kan få adgang til bevægelsessensorer (anbefales)</translation>
 <translation id="5063480226653192405">Databrug</translation>
 <translation id="5100237604440890931">Skjult – klik for at udvide.</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
+<translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
 <translation id="5313967007315987356">Tilføj website</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites.</translation>
 <translation id="5384883051496921101">Dette website skal til at dele oplysninger med en app uden for inkognitotilstand.</translation>
 <translation id="5391532827096253100">Din forbindelse til dette website er ikke sikker. Websiteoplysninger</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
+<translation id="5403592356182871684">Navne</translation>
 <translation id="5489227211564503167">Forløbet tid: <ph name="ELAPSED_TIME" /> af <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Bloker annoncer på websites, der viser påtrængende eller vildledende annoncer</translation>
 <translation id="5505264765875738116">Websites kan ikke spørge dig, om de må sende dig notifikationer</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="662080504995468778">Bliv her</translation>
 <translation id="6643016212128521049">Ryd</translation>
+<translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
 <translation id="6746124502594467657">Flyt ned</translation>
 <translation id="6766622839693428701">Stryg ned for at lukke.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Annuller valg</translation>
 <translation id="7846621471902887024">Du bliver logget ud af alle websites.</translation>
 <translation id="7882806643839505685">Tillad, at et bestemt website afspiller lyd.</translation>
+<translation id="7986741934819883144">Vælg en kontakt</translation>
 <translation id="7993619969781047893">Funktioner på visse websites fungerer muligvis ikke</translation>
 <translation id="7999064672810608036">Er du sikker på, at du vil slette alle lokale data, herunder cookies, og nulstille alle tilladelser for dette website?</translation>
 <translation id="8007176423574883786">Deaktiveret på denne enhed</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Tilladt (anbefales)</translation>
 <translation id="8609465669617005112">Flyt op</translation>
 <translation id="8676374126336081632">Ryd indtastning</translation>
+<translation id="868929229000858085">Søg blandt dine kontakter</translation>
 <translation id="8702612070107455751">Alle offlinedata ryddes.</translation>
 <translation id="8719283222052720129">Aktivér tilladelse for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>

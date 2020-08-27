@@ -330,6 +330,7 @@
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1386387014181100145">Kaixo.</translation>
 <translation id="1386791642444521222">Aktibatu SIM txartel fisikoa</translation>
+<translation id="1387519831959169718">Arakatzeak bereizita izateko, profil bat sor dezakezu <ph name="NEW_USER" /> erabiltzailearentzat</translation>
 <translation id="138784436342154190">Abioko orri lehenetsia leheneratu nahi duzu?</translation>
 <translation id="1388728792929436380">Eguneratzen bukatzean, <ph name="DEVICE_TYPE" /> gailua berrabiarazi egingo da.</translation>
 <translation id="1390548061267426325">Ireki fitxa arrunt gisa</translation>
@@ -344,6 +345,7 @@
 <translation id="139911022479327130">Desblokeatu telefonoa eta berretsi zure nortasuna</translation>
 <translation id="1399511500114202393">Ez erabili erabiltzaile-ziurtagiririk</translation>
 <translation id="1401308693935339022">Erabili kokapena. Baimendu kokapena atzi dezaketen aplikazio eta zerbitzuei gailuaren kokapena erabiltzea. Google-k kokapen-datu anonimoak biltzen ditu noizean behin, kokapenaren zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko.</translation>
+<translation id="1403222014593521787">Ezin da konektatu proxyra</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (gainbegiratua)</translation>
 <translation id="1405779994569073824">Huts egin du.</translation>
 <translation id="1406500794671479665">Egiaztatzen…</translation>
@@ -480,6 +482,7 @@
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1556537182262721003">Ezin izan da luzapenen direktorioa profilera eraman.</translation>
 <translation id="155865706765934889">Ukipen-teklatua</translation>
+<translation id="1563702743503072935">Google-ko kontuko pasahitzak ere erabilgarri egongo dira gailuan saioa hasita daukazunean</translation>
 <translation id="1566049601598938765">Webgunea</translation>
 <translation id="15662109988763471">Hautatutako inprimagailua ez dago erabilgarri edo ez da instalatu behar bezala. Egiaztatu inprimagailua edo hautatu beste bat.</translation>
 <translation id="1567387640189251553">Beste teklatu bat konektatu duzu pasahitza azkenekoz idatzi zenuenetik. Agian sakatzen ari zaren teklak erregistratzen ari da, pasahitzak lapurtzeko asmoz.</translation>
@@ -908,6 +911,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2081816110395725788">Modu inaktiboan bateria erabili bitartean</translation>
 <translation id="2082187087049518845">Taldekatu fitxa</translation>
+<translation id="2082510809738716738">Aukeratu gaiaren kolorea</translation>
 <translation id="2087822576218954668">Inprimatu: <ph name="PRINT_NAME" /></translation>
 <translation id="2088690981887365033">VPN sarea</translation>
 <translation id="208928984520943006">Edozein unetan hasierako pantailara joateko, pasatu hatza pantailaren behealdetik gora.</translation>
@@ -1011,7 +1015,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2200356397587687044">Chrome-k baimena behar du aurrera egiteko</translation>
 <translation id="220138918934036434">Ezkutatu botoia</translation>
 <translation id="2202898655984161076">Arazo bat izan da inprimagailuak zerrendatzean. Agian inprimagailuetako batzuk ez dira behar bezala erregistratu <ph name="CLOUD_PRINT_NAME" /> zerbitzuan.</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />Helbide-barran<ph name="END_LINK" /> egiten diren bilaketetarako erabiltzen den bilatzailea</translation>
 <translation id="2204034823255629767">Irakurri eta aldatu idazten duzuna</translation>
 <translation id="220858061631308971">Idatzi PIN kodea "<ph name="DEVICE_NAME" />" gailuan:</translation>
 <translation id="2212565012507486665">Onartu cookieak</translation>
@@ -1059,6 +1062,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2256115617011615191">Berrabiarazi</translation>
 <translation id="225614027745146050">Ongi etorri</translation>
 <translation id="225692081236532131">Aktibazioaren egoera</translation>
+<translation id="2257053455312861282">Ikastetxeko kontu bat gehituz gero, haurrak erraz hasi ahalko du saioa ikasle gisa webgune, luzapen eta aplikazioetan, baina gurasoen murriztapenen mende egoteari utzi gabe.</translation>
 <translation id="2261323523305321874">Administratzaileak sistema osoari eragiten dion aldaketa bat egin du; ondorioz, profil zahar batzuk desgaitu dira.</translation>
 <translation id="2262332168014443534">Oinarrizko modua eginbideari esker, bizkorrago araka ditzakezu orri guztiak, baita HTTPS webguneetakoak ere.</translation>
 <translation id="2262477216570151239">Errepikatu aurreko tartea</translation>
@@ -1932,6 +1936,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Aplikazioari buruzko informazioa</translation>
 <translation id="3333190335304955291">Ezarpenak atalean desaktiba dezakezu zerbitzu hori.</translation>
+<translation id="3333961966071413176">Kontaktu guztiak</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" />: bideoa pantaila txiki gainjarriko moduan erreproduzitzen ari da</translation>
 <translation id="3335947283844343239">Ireki aurretik itxitako fitxa</translation>
 <translation id="3340620525920140773">Deskargatu da <ph name="FILE_NAME" />.</translation>
@@ -1976,6 +1981,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3396800784455899911">"Onartu eta egin aurrera" botoia sakatuta, onartu egingo duzu Google-ren zerbitzuok prozesatzeko modua, arestian aipatu bezala.</translation>
 <translation id="3399432415385675819">Desgaitu egingo dira jakinarazpenak</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz) - gurutzatuta</translation>
+<translation id="3402255108239926910">Aukeratu abatarra</translation>
 <translation id="3402585168444815892">Demo moduan erregistratzen</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">Ez da gorde webgune honetako pasahitzik</translation>
@@ -2003,6 +2009,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3428747202529429621">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean</translation>
 <translation id="3428800329481094896">Linux-en edukiontziko SSH gakoak eskuratzen</translation>
 <translation id="3429275422858276529">Egin orri honen laster-marka, geroago bizkor aurkitzeko</translation>
+<translation id="3431370546335300761">Hasi saioa proxyra konektatzeko</translation>
 <translation id="3432227430032737297">Kendu erakutsitako guztiak</translation>
 <translation id="3432757130254800023">Bidali audioa eta bideoa sare lokaleko pantailetara</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
@@ -2388,6 +2395,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3841964634449506551">Pasahitzak ez du balio</translation>
 <translation id="3842552989725514455">Serif letra</translation>
 <translation id="3843464315703645664">Chrome-ren onartutakoen zerrendan</translation>
+<translation id="3844888638014364087">Emojia txertatu da</translation>
 <translation id="3846116211488856547">Lortu webguneak, Android-erako aplikazioak eta beste garatzeko tresnak. Linux instalatuz gero, <ph name="DOWNLOAD_SIZE" /> deskargatuko dira.</translation>
 <translation id="3847319713229060696">Hobetu sareko segurtasuna denontzat</translation>
 <translation id="385051799172605136">Atzera</translation>
@@ -2693,6 +2701,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4232375817808480934">Konfiguratu Kerberos</translation>
 <translation id="4235200303672858594">Pantaila osoa</translation>
 <translation id="4235965441080806197">Utzi bertan behera saio-hasiera</translation>
+<translation id="4237773362828263530">"*" komodina duten ezarpenak ez dira onartzen jada. <ph name="BEGIN_LINK" />Ezarpen horiek aldatzeko<ph name="END_LINK" />, jarri harremanetan administratzailearekin.</translation>
 <translation id="4242145785130247982">Ezin dira erabili bezero-ziurtagiri bat baino gehiago</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4242577469625748426">Ezin izan dira instalatu gidalerroaren ezarpenak gailuan: <ph name="VALIDATION_ERROR" />.</translation>
@@ -2803,6 +2812,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4384312707950789900">Gehitu hobetsietan</translation>
 <translation id="4384652540891215547">Aktibatu luzapena</translation>
 <translation id="438503109373656455">Zaldia</translation>
+<translation id="4385040356362222432"><ph name="NEW_USER" /> kontuaren arakatzea <ph name="EXISTING_USER" /> kontuaren arakatzetik bereizteko, sortu beste profil bat</translation>
 <translation id="4387004326333427325">Autentifikazio-ziurtagiria urrunetik baztertu da</translation>
 <translation id="4387890294700445764">Arriskuan dauden pasahitzak</translation>
 <translation id="4389091756366370506"><ph name="VALUE" /> erabiltzailea</translation>
@@ -2912,6 +2922,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4522570452068850558">Xehetasunak</translation>
 <translation id="4522600456902129422">Jarraitu baimentzen webguneak arbela ikustea</translation>
 <translation id="4524832533047962394">Sistema eragilearen bertsio honek ez du onartzen erregistratzeko adierazitako modua. Ziurtatu bertsiorik berriena erabiltzen ari zarela.</translation>
+<translation id="4527186207340858212">Lanerako beste profil bat sortu nahi duzu?</translation>
 <translation id="452750746583162491">Berrikusi sinkronizatutako datuak</translation>
 <translation id="4530494379350999373">Jatorria</translation>
 <translation id="4532646538815530781">Mugimendu-sentsoreak erabiltzen ari da webgune hau.</translation>
@@ -2963,6 +2974,9 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4573515936045019911">Sarera konektatuta egon behar da Linux bertsio-berritzeko. Konektatu Internetera eta saiatu berriro.</translation>
 <translation id="457386861538956877">Gehiago…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
+<translation id="457564749856982089">Profilean ikastetxeko kontu bat gehituz gero, haurrak erraz hasi ahalko du saioa ikasle gisa webgune, luzapen eta aplikazioetan, baina gurasoen murriztapenen mende egoteari utzi gabe. Horrela, ezingo ditu atzitu ikastetxeko kontuarekin sinkronizatutako laster-markak, pasahitzak edo bestelako arakatze-datuak.&lt;br&gt;&lt;br&gt;
+Haurrak ikastetxean Chromebook bat erabiltzen badu, eta etxean ere ikastetxeko baldintza beretan lan egiteko aukera eskaini nahi badiozu behar duen material guztietarako sarbidea izan dezan, amaitu saioa Family Link-eko kontu honetan eta hasi saioa ikastetxeko kontuarekin Chrome OS-ko kontuen orrian (oharra: ez dira aplikatuko Family Link-en gurasoen murriztapenak).&lt;br&gt;&lt;br&gt;
+Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean egiten duena Family Link-en bidez kudeatu, sakatu Hurrengoa botoia eta gehitu ikastetxeko kontu bat profil honetan.</translation>
 <translation id="4576541033847873020">Parekatu Bluetooth bidezko gailua</translation>
 <translation id="4579453506923101210">Ahaztu konektatutako telefonoa</translation>
 <translation id="4579581181964204535">Ezin da igorri <ph name="HOST_NAME" />.</translation>
@@ -3101,6 +3115,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4763408175235639573">Cookie hauek ezarri dira orria ikusi duzunean:</translation>
 <translation id="4765582662863429759">Testu-mezuak telefonotik Chromebook gailura bidaltzea baimentzen dio Android Mezuak aplikazioari</translation>
 <translation id="4768332406694066911">Identifikatzen zaituzten erakunde hauen ziurtagiriak dituzu</translation>
+<translation id="477647109558161443">Sortu mahaigaineko lasterbidea</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> erabiltzaile-kontuaren pasahitza</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4777943778632837590">Konfiguratu sareko izenen zerbitzariak</translation>
@@ -3473,6 +3488,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="5249624017678798539">Arakatzaileak hutsegite bat izan du deskargatzen amaitu aurretik.</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> bilatzaileak zure kokapena erabiltzen du tokiko edukiak erakusteko. <ph name="SETTINGS_LINK" /> atalean alda dezakezu hori.</translation>
 <translation id="5252456968953390977">Ibiltaritza</translation>
+<translation id="5252496130205799136">Google-ko kontua erabili nahi duzu pasahitzak gordetzeko eta eremuak automatikoki betetzeko?</translation>
 <translation id="5252653240322147470"><ph name="MAXIMUM" /> digitu baino gutxiago izan behar ditu PIN kodeak</translation>
 <translation id="5254368820972107711">Erakutsi kendu beharreko fitxategiak</translation>
 <translation id="52550593576409946">Ezin izan da abiarazi aplikazio espezializatua.</translation>
@@ -3740,6 +3756,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="5565735124758917034">Aktibo</translation>
 <translation id="5567989639534621706">Aplikazio-cacheak</translation>
 <translation id="5568069709869097550">Ezin da hasi saioa</translation>
+<translation id="5571832155627049070">Pertsonalizatu profila</translation>
 <translation id="5572851009514199876">Ireki Chrome eta hasi saioa Chrome-k webgune hau atzitzeko baimena duzula egiazta dezan.</translation>
 <translation id="5575473780076478375">Ezkutuko luzapena: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Arazo bat izan da demoa erregistratzeko eskaerarekin.</translation>
@@ -4318,6 +4335,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="6270770586500173387">Bidali <ph name="BEGIN_LINK1" />sistemari eta aplikazioei buruzko informazioa<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />estatistikak<ph name="END_LINK2" /></translation>
 <translation id="6272643420381259437">Errore bat gertatu da (<ph name="ERROR" />) plugina deskargatzean</translation>
 <translation id="6273677812470008672">Kalitatea</translation>
+<translation id="6276210637549544171"><ph name="PROXY_SERVER" /> proxyak erabiltzaile-izena eta pasahitza behar ditu.</translation>
 <translation id="6277105963844135994">Sarera konektatzeko denbora-muga gainditu da</translation>
 <translation id="6277518330158259200">&amp;Atera pantaila-argazkia</translation>
 <translation id="6278057325678116358">Erabili GTK+</translation>
@@ -4338,6 +4356,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="6298962879096096191">Erabili Google Play Android-erako aplikazioak instalatzeko</translation>
 <translation id="630065524203833229">Irt&amp;en</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> ezin izan da konfiguratu automatikoki. Zehaztu inprimagailuaren xehetasun aurreratuak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="6301076166764763868">Kontu pertsonalarekin eta <ph name="EXISTING_USER" /> kontuarekin egindako arakatzeak bereizteko, sortu beste profil bat <ph name="NEW_USER" /> erabiltzailearentzat</translation>
 <translation id="630292539633944562">Informazio pertsonalari buruzko iradokizunak</translation>
 <translation id="6305607932814307878">Gidalerro orokorra:</translation>
 <translation id="6307990684951724544">Sistema lanpetuta dago</translation>
@@ -4543,6 +4562,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="6556866813142980365">Berregin</translation>
 <translation id="6556903358015358733">Gaia eta horma-papera</translation>
 <translation id="6557290421156335491">Nire lasterbideak</translation>
+<translation id="6560151649238390891">Iradokizuna txertatu da</translation>
 <translation id="6561560012278703671">Erabili mezularitza isilagoa (jakinarazpenak blokeatzen ditu arretarik galaraz ez diezazuten)</translation>
 <translation id="6561726789132298588">sartu</translation>
 <translation id="6562117348069327379">Gorde sistemaren erregistroak Deskargak direktorioan.</translation>
@@ -5194,6 +5214,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="7385854874724088939">Arazoren bat izan da inprimatzen saiatzean. Egiaztatu inprimagailua eta saiatu berriro.</translation>
 <translation id="7385896526023870365">Luzapen honek ez du webgunerako sarbide gehigarririk.</translation>
 <translation id="7388044238629873883">Ia amaitu duzu!</translation>
+<translation id="7388209873137778229">Onartutako gailuak soilik daude ikusgai.</translation>
 <translation id="7392118418926456391">Birus-analisiak huts egin du</translation>
 <translation id="7392915005464253525">Ir&amp;eki leihoa berriro</translation>
 <translation id="7396017167185131589">Partekatutako karpetak agertuko dira hemen.</translation>
@@ -5217,6 +5238,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="7415454883318062233">Konfiguratu da</translation>
 <translation id="7416362041876611053">Sareko errore ezezaguna.</translation>
 <translation id="741906494724992817">Aplikazio honek ez du baimen berezirik eskatzen.</translation>
+<translation id="7420817660256886596"><ph name="PROXY" /> proxyak erabiltzaile-izen eta pasahitz batekin autentifikatzea eskatzen du</translation>
 <translation id="742130257665691897">Laster-markak kendu dira</translation>
 <translation id="7421925624202799674">&amp;Ikusi orriaren iturburua</translation>
 <translation id="7422192691352527311">Hobespenak…</translation>
@@ -5477,6 +5499,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" gailuarekin parekatzen…</translation>
 <translation id="7737238973539693982">Ezabatu Linux (Beta)</translation>
 <translation id="7740996059027112821">Estandarra</translation>
+<translation id="7741721175294046818">Ezin da konektatu proxyra. Saiatu berriro.</translation>
 <translation id="774377079771918250">Aukeratu non gorde nahi duzun</translation>
 <translation id="7744047395460924128">Ikusi inprimatze-historia</translation>
 <translation id="7744192722284567281">Datuen isilpekotasuna urratu den batean aurkitu da</translation>
@@ -5722,6 +5745,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ez dago jada erabilgarri</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
 <translation id="8005600846065423578">Eman beti arbela ikusteko baimena <ph name="HOST" /> webguneari</translation>
+<translation id="8006143138282906848">Kendu profila</translation>
 <translation id="8008356846765065031">Internet deskonektatuta dago. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="8009225694047762179">Kudeatu pasahitzak</translation>
 <translation id="8012647001091218357">Ezin izan gara jarri harremanetan zure gurasoekin. Saiatu berriro.</translation>
@@ -5787,9 +5811,11 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8084114998886531721">Gordetako pasahitza</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfiguratzen…</translation>
 <translation id="8086442853986205778">Konfiguratu <ph name="PRINTER_NAME" /></translation>
+<translation id="8086550884324762001">Adibidez: "lana", "pertsonala", "haurrak" edo izen bat</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Fitxategia enkriptatuta dago. Eskatu jabeari hura desenkriptatzeko.}other{Fitxategi hauetako batzuk enkriptatuta daude. Eskatu jabeari haiek desenkriptatzeko.}}</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>
 <translation id="8090234456044969073">Irakurri gehien bisitatzen dituzun webguneen zerrenda</translation>
+<translation id="8092681102116274204">"*" komodina duten ezarpenak ez dira onartzen jada. <ph name="BEGIN_LINK" />Ezarpen hauek aldatzeko<ph name="END_LINK" />, jarri luzapenaren garatzailearekin edo administratzailearekin harremanetan.</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> pluginak ez du erantzuten</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Egin babeskopiak Google Drive-n; horrela, errazagoa izango da datuak leheneratzea edo beste gailu batera eramatea. Aplikazioetako datuak ere sartzen dira babeskopietan.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira Google-ko kontuaren pasahitza erabilita.<ph name="END_PARAGRAPH2" />
@@ -5842,6 +5868,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8146177459103116374">Dagoeneko gailu honetan erregistratu bazara, <ph name="LINK2_START" />lehendik zegoen erabiltzaile gisa has dezakezu saioa<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Ezin izan da hasi saioa. Jarri harremanetan administratzailearekin edo saiatu berriro.</translation>
 <translation id="8148760431881541277">Mugatu saioa hasteko aukera</translation>
+<translation id="8151579390896831136">Pertsonalizatu profila, izena barne</translation>
 <translation id="8151638057146502721">Konfiguratu</translation>
 <translation id="8152091997436726702">Inprimagailua erregistratzeko prozesuaren denbora-muga gainditu da. Inprimagailua erregistratzeko, inprimagailuan berretsi behar duzu erregistratu egin nahi duzula.</translation>
 <translation id="8154790740888707867">Ez dago fitxategirik</translation>
@@ -6573,6 +6600,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="9031549947500880805">Egin babeskopiak Google Drive-n. Leheneratu gailuaren datuak edo aldatu gailua edonoiz. Aplikazioetako datuak sartzen dira babeskopietan.</translation>
 <translation id="9033765790910064284">Jarraitu, halere</translation>
 <translation id="9033857511263905942">It&amp;satsi</translation>
+<translation id="9037818663270399707">Konexioa ez da pribatua sareko trafiko guztirako</translation>
 <translation id="9037965129289936994">Ikusi jatorrizkoa</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{Saiakera bakarra geratzen zaizu.}other{# saiakera geratzen zaizkizu.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>

@@ -102,13 +102,13 @@
 <translation id="1810845389119482123">सिंक गर्ने कार्यको प्रारम्भिक सेटअप पूरा भएको छैन</translation>
 <translation id="1821253160463689938">तपाईं ती पृष्ठहरूमा नजानुभए तापनि तपाईंका प्राथमिकताहरू सम्झनका लागि कुकीहरूको प्रयोग गर्छ</translation>
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
+<translation id="1843805151597803366">अझ राम्रो अनुवाद पाउन Google खोजलाई हालको पृष्ठ प्रयोग गर्न दिनुहोस्</translation>
 <translation id="1853692000353488670">नयाँ इनकगनिटो ट्याब</translation>
 <translation id="1856325424225101786">लाइट मोड रिसेट गर्ने हो?</translation>
 <translation id="1868024384445905608">Chrome ले अब फाइलहरू अझ छिटो डाउनलोड गर्छ</translation>
 <translation id="1874760110381325409">तपाईं आफ्नो Google खातामार्फत साइन इन हुनु हुने छ\n(यसो गर्दा Chrome सिंक नामक सुविधा अन हुने छैन)</translation>
 <translation id="1877026089748256423">Chrome को मिति समाप्त भएको छ</translation>
 <translation id="1883903952484604915">मेरा फाइलहरू</translation>
-<translation id="1919950603503897840">सम्पर्कहरू चयन गर्नुहोस्</translation>
 <translation id="1925021887439448749">आफू अनुकूल पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="1928696683969751773">अद्यावधिकहरू</translation>
 <translation id="19288952978244135">Chrome पुनः खोल्नुहोस्।</translation>
@@ -215,7 +215,6 @@
 <translation id="2689830683995595741">Chrome प्रयोग गरेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ। <ph name="BEGIN_LINK3" />Family Link मार्फत व्यवस्थापन गरिएका Google खाताहरूको गोपनीयता सूचना<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
 <translation id="2707726405694321444">पृष्ठ ताजा गर्नुहोस्</translation>
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
-<translation id="2717722538473713889">इमेल ठेगानाहरू</translation>
 <translation id="2728754400939377704">साइटद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="2744248271121720757">तत्कालै खोज्नका लागि कुनै शब्दमा ट्याप गर्नुहोस् वा सम्बन्धित कारबाहीहरू हेर्नुहोस्</translation>
 <translation id="2760989362628427051">तपाईंको यन्त्रमा अँध्यारो थिम वा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
@@ -240,7 +239,6 @@
 <translation id="2893180576842394309">Google ले खोज र Google का अन्य सेवाहरूलाई वैयक्तीकृत गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ</translation>
 <translation id="2898264748040935573">भण्डार गरिएको पासवर्ड सम्पादन गर्नुहोस्</translation>
 <translation id="2900528713135656174">कार्यक्रम सिर्जना गर्नुहोस्</translation>
-<translation id="2903493209154104877">ठेगानाहरू</translation>
 <translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने यन्त्रहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="2905036901251765993">वरपर रहेका मान्छेहरूसँग आदान प्रदान गर्न उनीहरूलाई यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
@@ -293,7 +291,6 @@
 <translation id="3306398118552023113">यो एप Chrome मा चलिरहेको छ</translation>
 <translation id="3315103659806849044">तपाईं हाल आफ्ना सिंक तथा Google का सेवासम्बन्धी सेटिङहरूलाई आफू अनुकूल पार्दै हुनुहुन्छ। सिंक सेवा सक्रिय पार्ने कार्य पूरा गर्न स्क्रिन बटनको छेवैमा रहेको सुनिश्चित गर्नुहोस् नामक बटनमा ट्याप गर्नुहोस्। माथि नेभिगेसन गर्नुहोस्</translation>
 <translation id="3328801116991980348">साइट जानकारी</translation>
-<translation id="3333961966071413176">सबै सम्पर्कहरू</translation>
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
 <translation id="3341058695485821946">आफूले सुरक्षित गरेको डेटाको मात्रा हेर्नुहोस्</translation>
 <translation id="3350687908700087792">सबै इन्कग्निटो ट्याबहरू बन्द गर्नुहोस्</translation>
@@ -352,7 +349,6 @@
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
-<translation id="381841723434055211">फोन नम्बरहरू</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोडहरूलाई मेटाइयो</translation>
 <translation id="3856096718352044181">कृपया यो एउटा मान्य प्रदायक हो भनी पुष्टि गर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="388596076286380598">आफू अफलाइन भएको वा आफ्नो इन्टरनेट राम्रोसँग नचलेको बेलामा पनि आफूलाई मन पर्ने साइटहरूका लेख, भिडियो वा अन्य सामग्री प्राप्त गर्नुहोस्।</translation>
@@ -476,6 +472,7 @@
 
 यो सेटिङ परिवर्तन गर्न <ph name="BEGIN_LINK" />सिंक रिसेट गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">कार्डमा रहेको नाम</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> मा Digital Asset Links पुष्टि गर्न सकिएन</translation>
 <translation id="4824958205181053313">सिंक रद्द गर्ने हो?</translation>
 <translation id="4835385943915508971">Chrome सँग अनुरोध गरिएको स्रोत माथिको पहुँच छैन।</translation>
 <translation id="4837753911714442426">पृष्ठ छाप्ने सम्बन्धी विकल्पहरू खोल्नुहोस्</translation>
@@ -506,7 +503,6 @@
 <translation id="497421865427891073">अगाडि जानुहोस्</translation>
 <translation id="4988210275050210843">फाइलहरू डाउनलोड गर्दै (<ph name="MEGABYTES" />)।</translation>
 <translation id="4988526792673242964">पृष्ठहरू</translation>
-<translation id="4994033804516042629">कुनै पनि सम्पर्क ठेगाना भेटिएन</translation>
 <translation id="5004416275253351869">Google का क्रियाकलापसम्बन्धी नियन्त्रणहरू</translation>
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> जडान गर्न चाहन्छ</translation>
@@ -530,7 +526,6 @@
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
 <translation id="5193988420012215838">तपाईंको क्लिपबोर्डमा प्रतिलिपि गरियो</translation>
-<translation id="5197729504361054390">तपाईंले चयन गर्ने सम्पर्कहरू <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> सँग आदान प्रदान गरिने छन्।</translation>
 <translation id="5199929503336119739">कार्य प्रोफाइल</translation>
 <translation id="5210286577605176222">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
@@ -550,8 +545,6 @@
 <translation id="5355191726083956201">परिष्कृत सुरक्षा सक्रिय छ</translation>
 <translation id="5357811892247919462">ट्याब प्राप्त भयो</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> ट्याब खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}other{<ph name="OPEN_TABS_MANY" /> ट्याबहरू खोल्नुहोस्, एउटा ट्याबबाट अर्को ट्याबमा जान ट्याप गर्नुहोस्}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ १ थप)}other{(+ # थप)}}</translation>
-<translation id="5403592356182871684">नामहरू</translation>
 <translation id="5403644198645076998">निश्चित साइटहरूलाई मात्र अनुमति दिनुहोस्</translation>
 <translation id="5414836363063783498">प्रमाणीकरण गर्दै...</translation>
 <translation id="5423934151118863508">तपाईँले धेरै भ्रमण गर्नुभएका पृष्ठहरू यहाँ देखिने छन्।</translation>
@@ -747,7 +740,6 @@
 <translation id="666981079809192359">Chrome गोपनीयता सूचना</translation>
 <translation id="6671495933530132209">छविको प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6676840375528380067">यस यन्त्रबाट तपाईंको Chrome को डेटा हटाउने हो?</translation>
-<translation id="6689172468748959065">प्रोफाइल तस्बिरहरू</translation>
 <translation id="6691888250440401212">१. <ph name="APP_NAME" /> छनौट गर्नुहोस्\n2. “डिफल्ट सेट गर्नुहोस्” मा ट्याप गर्नुहोस्</translation>
 <translation id="6697492270171225480">कुनै पृष्ठ फेला पार्न नसकिएको खण्डमा मिल्दाजुल्दा पृष्ठसम्बन्धी सुझावहरू देखाउनुहोस्</translation>
 <translation id="6698801883190606802">सिंक गरिएका डेटा व्यवस्थित गर्नुहोस्</translation>
@@ -909,7 +901,7 @@
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
 <translation id="7981313251711023384">ब्राउजिङ र खोजी कार्यलाई अझ छिटो बनाउन पृष्ठहरू पूर्वलोड गर्नुहोस्</translation>
 <translation id="79859296434321399">अग्मेन्टेड रियालिटी सामग्री हेर्न ARCore स्थापना गर्नुहोस्</translation>
-<translation id="7986741934819883144">कुनै सम्पर्क ठेगाना चयन गर्नुहोस्</translation>
+<translation id="799806351373751710">सिंकसम्बन्धी सेटअप गर्ने प्रक्रिया रद्द गर्नुहोस्</translation>
 <translation id="7998918019931843664">बन्द ट्याब पुन: खोल्नुहोस्</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
 <translation id="8013372441983637696">यो यन्त्रबाट आफ्नो Chrome को डेटा पनि हटाउनुहोस्</translation>
@@ -1006,7 +998,6 @@
 <translation id="8662811608048051533">तपाईंलाई प्रायः जसो साइटहरूबाट साइन आउट गर्दछ।</translation>
 <translation id="8664979001105139458">यो नामको फाइल पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{सङ्केतको क्षमता स्तर: # बार}other{सङ्केतको क्षमता स्तर: # बारहरू}}</translation>
-<translation id="868929229000858085">आफ्ना सम्पर्कहरू खोज्नुहोस्</translation>
 <translation id="869891660844655955">समाप्ति मिति</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>

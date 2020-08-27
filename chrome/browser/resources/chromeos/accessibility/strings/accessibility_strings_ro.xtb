@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Nu există niciun link accesat anterior</translation>
 <translation id="4281245629646759298">Galben deschis</translation>
 <translation id="4289540628985791613">Prezentare generală</translation>
+<translation id="4294967782363273192">Sortare în ordine crescătoare</translation>
 <translation id="4300318234632215983">Anunță adresa URL la care trimite un link</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punct}=3{puncte de suspensie}few{# puncte}other{# de puncte}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Voci</translation>
 <translation id="6006050241733874051">Formular</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{bară oblică inversă}few{# bare oblice inverse}other{# de bare oblice inverse}}</translation>
+<translation id="6010616110396250088">Sortare în ordine descrescătoare</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="602001110135236999">Derulează la stânga</translation>
 <translation id="6034000775414344507">Gri deschis</translation>

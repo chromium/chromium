@@ -7,7 +7,7 @@
 <translation id="1036727731225946849">Dodaję aplikację <ph name="WEBAPK_NAME" />…</translation>
 <translation id="1041308826830691739">Ze stron internetowych</translation>
 <translation id="1045899828449635435">Wyczyścić też dane z tych stron?</translation>
-<translation id="1047303875618851375">Przeglądarce Chrome nie udało się zweryfikować Twoich informacji</translation>
+<translation id="1047303875618851375">Przeglądarce Chrome nie udało się zweryfikować Twoich danych</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="10614374240317010">Nigdy nie zapisane</translation>
 <translation id="1067922213147265141">Inne usługi Google</translation>
@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Oszczędź do 60% danych, przeczytaj dzisiejsze wiadomości</translation>
 <translation id="1303339473099049190">Nie udało się znaleźć tego hasła. Sprawdź pisownię i spróbuj jeszcze raz.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – wysłane z: <ph name="DEVICE_NAME" /></translation>
+<translation id="1307205233980126133">Nie udało się zweryfikować Twoich danych logowania</translation>
 <translation id="1310482092992808703">Grupuj karty</translation>
 <translation id="1311657260431405215">Ten kod QR nie jest adresem URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">Historia nawigacji jest otwarta</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">Zalogujesz się na swoje konto Google\n(to nie spowoduje uruchomienia Synchronizacji Chrome)</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
 <translation id="1883903952484604915">Moje pliki</translation>
-<translation id="1919950603503897840">Wybierz kontakty</translation>
 <translation id="1925021887439448749">Wpisz niestandardowy adres internetowy</translation>
 <translation id="1928696683969751773">Aktualizacje</translation>
 <translation id="19288952978244135">Uruchom ponownie Chrome.</translation>
@@ -216,7 +216,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2689830683995595741">Korzystając z Chrome, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />. Obowiązują też <ph name="BEGIN_LINK3" />Informacje na temat ochrony prywatności na kontach Google zarządzanych przez Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Odśwież stronę</translation>
 <translation id="2709516037105925701">Autouzupełnianie</translation>
-<translation id="2717722538473713889">Adresy e-mail</translation>
 <translation id="2728754400939377704">Sortuj według witryny</translation>
 <translation id="2744248271121720757">Kliknij słowo, by szybko je wyszukać lub wyświetlić powiązane czynności</translation>
 <translation id="2760989362628427051">Włącz tryb ciemny, gdy urządzenie ma włączony tryb ciemny lub oszczędzanie baterii</translation>
@@ -241,7 +240,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2893180576842394309">Google może korzystać z Twojej historii, by personalizować wyniki wyszukiwania i działanie innych usług.</translation>
 <translation id="2898264748040935573">Edytuj zapisane hasło</translation>
 <translation id="2900528713135656174">Utwórz wydarzenie</translation>
-<translation id="2903493209154104877">Adresy</translation>
 <translation id="2904414404539560095">Lista urządzeń, którym udostępnisz kartę, jest otwarta na pełną wysokość.</translation>
 <translation id="2905036901251765993">Aby udostępniać pliki użytkownikom w pobliżu, pozwól im zeskanować ten kod QR</translation>
 <translation id="2909615210195135082">Platforma powiadomień Google</translation>
@@ -294,7 +292,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3306398118552023113">Ta aplikacja działa w Chrome</translation>
 <translation id="3315103659806849044">Teraz dostosowujesz ustawienia synchronizacji i usług Google. Aby zakończyć włączanie synchronizacji, na dole ekranu kliknij przycisk Potwierdź. Przejdź wyżej</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
-<translation id="3333961966071413176">Wszystkie kontakty</translation>
 <translation id="3334729583274622784">Zmienić rozszerzenie pliku?</translation>
 <translation id="3341058695485821946">Sprawdź ilość zaoszczędzonych danych</translation>
 <translation id="3350687908700087792">Zamknij wszystkie karty incognito</translation>
@@ -353,7 +350,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3789841737615482174">Zainstaluj</translation>
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
-<translation id="381841723434055211">Numery telefonów</translation>
 <translation id="3819178904835489326">Usunięte pobrane pliki: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3856096718352044181">Sprawdź, czy jest to prawidłowy dostawca, lub spróbuj ponownie później</translation>
 <translation id="388596076286380598">Możesz czytać artykuły i oglądać filmy oraz inne treści ze swoich ulubionych stron nawet wtedy, gdy jesteś offline lub masz słabe połączenie.</translation>
@@ -509,7 +505,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="497421865427891073">Dalej</translation>
 <translation id="4988210275050210843">Pobieram plik (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Strony</translation>
-<translation id="4994033804516042629">Nie znaleziono kontaktów</translation>
 <translation id="5004416275253351869">Zarządzanie aktywnością w Google</translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> chce się połączyć</translation>
@@ -533,7 +528,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5184329579814168207">Otwórz w Chrome</translation>
 <translation id="5193988420012215838">Skopiowane do schowka</translation>
-<translation id="5197729504361054390">Wybrane kontakty zostaną udostępnione witrynie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Profil służbowy</translation>
 <translation id="5210286577605176222">Przejdź do poprzedniej karty</translation>
 <translation id="5210365745912300556">Zamknij kartę</translation>
@@ -553,8 +547,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5355191726083956201">Włączona jest silniejsza ochrona</translation>
 <translation id="5357811892247919462">Odebrano kartę</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> otwarta karta. Kliknij, by przełączyć się między kartami}few{<ph name="OPEN_TABS_MANY" /> otwarte karty. Kliknij, by przełączyć się między kartami}many{<ph name="OPEN_TABS_MANY" /> otwartych kart. Kliknij, by przełączyć się między kartami}other{<ph name="OPEN_TABS_MANY" /> otwartej karty. Kliknij, by przełączyć się między kartami}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i jeszcze 1)}few{(i jeszcze #)}many{(i jeszcze #)}other{(i jeszcze #)}}</translation>
-<translation id="5403592356182871684">Nazwy</translation>
 <translation id="5403644198645076998">Pozwól na otwieranie tylko wybranych stron</translation>
 <translation id="5414836363063783498">Weryfikuję…</translation>
 <translation id="5423934151118863508">Tu pojawią się strony, na które najczęściej wchodzisz</translation>
@@ -750,7 +742,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="666981079809192359">Informacje na temat ochrony prywatności w Chrome</translation>
 <translation id="6671495933530132209">Kopiuj grafikę</translation>
 <translation id="6676840375528380067">Usunąć dane Chrome z tego urządzenia?</translation>
-<translation id="6689172468748959065">Zdjęcia profilowe</translation>
 <translation id="6691888250440401212">1. Wybierz aplikację <ph name="APP_NAME" />\n2. Kliknij „Ustaw jako domyślną”</translation>
 <translation id="6697492270171225480">Gdy nie można odnaleźć strony, pokazuj sugestie podobnych stron</translation>
 <translation id="6698801883190606802">Zarządzaj synchronizowanymi danymi</translation>
@@ -912,7 +903,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7975379999046275268">Wyświetl podgląd strony <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Ładuj wstępnie strony, by przyspieszyć przeglądanie i wyszukiwanie</translation>
 <translation id="79859296434321399">Aby oglądać treści rzeczywistości rozszerzonej, zainstaluj ARCore</translation>
-<translation id="7986741934819883144">Wybierz kontakt</translation>
 <translation id="799806351373751710">Anuluj konfigurację synchronizacji</translation>
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
@@ -1010,7 +1000,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8662811608048051533">Wylogowuje z większości stron internetowych.</translation>
 <translation id="8664979001105139458">Ta nazwa pliku już istnieje</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Poziom siły sygnału: # słupek}few{Poziom siły sygnału: # słupki}many{Poziom siły sygnału: # słupków}other{Poziom siły sygnału: # słupka}}</translation>
-<translation id="868929229000858085">Wyszukaj w kontaktach</translation>
 <translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>

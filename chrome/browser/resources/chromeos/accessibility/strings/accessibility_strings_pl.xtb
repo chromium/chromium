@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Nie ma poprzedniego klikniętego linku</translation>
 <translation id="4281245629646759298">Jasnożółty</translation>
 <translation id="4289540628985791613">Przegląd</translation>
+<translation id="4294967782363273192">Sortowanie rosnąco</translation>
 <translation id="4300318234632215983">Przeczytaj URL linku</translation>
 <translation id="4322625298640984693">Sjena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{kropka}=3{wielokropek}few{# kropki}many{# kropek}other{# dots}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Głosy</translation>
 <translation id="6006050241733874051">Formularz</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{ukośnik wsteczny}few{# ukośniki wsteczne}many{# ukośników wstecznych}other{# backslashes}}</translation>
+<translation id="6010616110396250088">Sortowanie malejąco</translation>
 <translation id="6017514345406065928">Zielony</translation>
 <translation id="602001110135236999">Przewiń w lewo</translation>
 <translation id="6034000775414344507">Jasnoszary</translation>

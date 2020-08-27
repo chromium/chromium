@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">現在即將登出。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解像度已變更為 <ph name="FALLBACK_RESOLUTION" />。</translation>
 <translation id="2825619548187458965">檔案櫃</translation>
+<translation id="2841907151129139818">已切換至平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
 <translation id="2865888419503095837">網絡資訊</translation>
 <translation id="2872961005593481000">關閉</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3294437725009624529">訪客</translation>
+<translation id="3307642347673023554">已切換至手提電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼錯誤</translation>
 <translation id="332587331255250389">請更換電池</translation>

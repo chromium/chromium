@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Masa-sign in ka sa iyong Google Account\n(hindi nito mao-on ang Chrome Sync)</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
 <translation id="1883903952484604915">Aking Mga File</translation>
-<translation id="1919950603503897840">Pumili ng mga contact</translation>
 <translation id="1925021887439448749">Maglagay ng custom na address sa web</translation>
 <translation id="1928696683969751773">Mga Update</translation>
 <translation id="19288952978244135">Muling buksan ang Chrome.</translation>
@@ -216,7 +215,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2689830683995595741">Sa pamamagitan ng paggamit sa Chrome, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at Chrome OS<ph name="END_LINK2" />. Nalalapat din ang <ph name="BEGIN_LINK3" />Notification ng Privacy para sa Mga Google Account na Pinapamahalaan Gamit ang Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">I-refresh ang page</translation>
 <translation id="2709516037105925701">AutoFill</translation>
-<translation id="2717722538473713889">Mga email address</translation>
 <translation id="2728754400939377704">Pagbukud-bukurin ayon sa site</translation>
 <translation id="2744248271121720757">Mag-tap ng salita upang hanapin agad ito o tingnan ang mga nauugnay na pagkilos</translation>
 <translation id="2760989362628427051">I-on ang madilim na tema kapag naka-on ang madilim na tema o Pangtipid sa Baterya ng iyong device</translation>
@@ -241,7 +239,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2893180576842394309">Maaaring gamitin ng Google ang iyong history para i-personalize ang Search at iba pang serbisyo ng Google</translation>
 <translation id="2898264748040935573">I-edit ang naka-store na password</translation>
 <translation id="2900528713135656174">Gumawa ng event</translation>
-<translation id="2903493209154104877">Mga Address</translation>
 <translation id="2904414404539560095">Nakabukas ang listahan ng mga device kung saan magbabahagi ng tab nang buo ang taas.</translation>
 <translation id="2905036901251765993">Para magbahagi sa mga taong nasa malapit, ipa-scan sa kanila ang QR code na ito</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -294,7 +291,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3306398118552023113">Gumagana ang app na ito sa Chrome</translation>
 <translation id="3315103659806849044">Kasalukuyan mong kino-customize ang iyong mga setting ng Pag-sync at serbisyo ng Google. Para tapusin ang pag-on ng pag-sync, i-tap ang button na Kumpirmahin malapit sa ibaba ng screen. Mag-navigate pataas</translation>
 <translation id="3328801116991980348">Impormasyon ng site</translation>
-<translation id="3333961966071413176">Lahat ng contact</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
 <translation id="3341058695485821946">Tingnan kung gaano karaming data ang iyong natipid</translation>
 <translation id="3350687908700087792">Isara ang lahat ng incognito na tab</translation>
@@ -353,7 +349,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Mamahala</translation>
-<translation id="381841723434055211">Mga numero ng telepono</translation>
 <translation id="3819178904835489326">Na-delete ang <ph name="NUMBER_OF_DOWNLOADS" /> (na) pag-download</translation>
 <translation id="3856096718352044181">Paki-verify na valid na provider ito o subukan ulit sa ibang pagkakataon</translation>
 <translation id="388596076286380598">Kumuha ng mga artikulo, video, at iba pang content sa mga site na gusto mo, kahit na offline ka o mahina ang iyong koneksyon.</translation>
@@ -509,7 +504,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="497421865427891073">Sumulong</translation>
 <translation id="4988210275050210843">Nagda-download ng file (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Mga Page</translation>
-<translation id="4994033804516042629">Walang nakitang contact</translation>
 <translation id="5004416275253351869">Mga kontrol ng aktibidad sa Google</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5011311129201317034">Gustong kumonekta ng <ph name="SITE" /></translation>
@@ -533,7 +527,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5184329579814168207">Buksan sa Chrome</translation>
 <translation id="5193988420012215838">Kinopya sa iyong clipboard</translation>
-<translation id="5197729504361054390">Ibabahagi sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ang mga contact na pipiliin mo.</translation>
 <translation id="5199929503336119739">Profile sa trabaho</translation>
 <translation id="5210286577605176222">Pumunta sa nakaraang tab</translation>
 <translation id="5210365745912300556">Isara ang tab</translation>
@@ -553,8 +546,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5355191726083956201">Naka-on ang Enhanced Protection</translation>
 <translation id="5357811892247919462">Natanggap ang tab</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> nakabukas na tab, i-tap para lumipat ng tab}one{<ph name="OPEN_TABS_MANY" /> nakabukas na tab, i-tap para lumipat ng tab}other{<ph name="OPEN_TABS_MANY" /> na nakabukas na tab, i-tap para lumipat ng tab}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 pa)}one{(+ # pa)}other{(+ # pa)}}</translation>
-<translation id="5403592356182871684">Mga Pangalan</translation>
 <translation id="5403644198645076998">Ilang partikular na site lang ang payagan</translation>
 <translation id="5414836363063783498">Vine-verify…</translation>
 <translation id="5423934151118863508">Lalabas dito ang mga page na madalas mong bisitahin</translation>
@@ -750,7 +741,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="666981079809192359">Notification ng Privacy ng Chrome</translation>
 <translation id="6671495933530132209">Kopyahin ang larawan</translation>
 <translation id="6676840375528380067">I-clear ang iyong data sa Chrome sa device na ito?</translation>
-<translation id="6689172468748959065">Mga larawan sa profile</translation>
 <translation id="6691888250440401212">1. Piliin ang <ph name="APP_NAME" />\n2. I-tap ang “Itakda bilang default”</translation>
 <translation id="6697492270171225480">Magpakita ng mga mungkahi para sa mga katulad na page kapag hindi mahanap ang isang page</translation>
 <translation id="6698801883190606802">Pamahalaan ang na-sync na data</translation>
@@ -912,7 +902,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7975379999046275268">I-preview ang page na <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">I-preload ang mga page para sa mas mabilis na pag-browse at paghahanap</translation>
 <translation id="79859296434321399">Para matingnan ang augmented reality na content, i-install ang ARCore</translation>
-<translation id="7986741934819883144">Pumili ng contact</translation>
 <translation id="799806351373751710">Kanselahin ang pag-set up ng pag-sync</translation>
 <translation id="7998918019931843664">Muling buksan ang isinarang tab</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1010,7 +999,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8662811608048051533">Nagsa-sign out sa iyo sa karamihan ng site.</translation>
 <translation id="8664979001105139458">May ganito nang pangalan ng file</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Antas ng Lakas ng Signal: # bar}one{Antas ng Lakas ng Signal: # bar}other{Antas ng Lakas ng Signal: # na bar}}</translation>
-<translation id="868929229000858085">Maghanap sa iyong mga contact</translation>
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8725066075913043281">Muling subukan</translation>

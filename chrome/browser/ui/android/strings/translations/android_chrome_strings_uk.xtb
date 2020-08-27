@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Ви ввійдете у свій обліковий запис Google\n(синхронізацію Chrome не буде ввімкнено)</translation>
 <translation id="1877026089748256423">Версія Chrome застаріла</translation>
 <translation id="1883903952484604915">Мої файли</translation>
-<translation id="1919950603503897840">Виберіть контакти</translation>
 <translation id="1925021887439448749">Введіть користувацьку веб-адресу</translation>
 <translation id="1928696683969751773">Оновлення</translation>
 <translation id="19288952978244135">Знову відкрийте Chrome.</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">Використовуючи Chrome, ви погоджуєтесь із <ph name="BEGIN_LINK1" />Загальними положеннями та умовами Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додатковими умовами використання Google Chrome і ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Примітка про конфіденційність для облікових записів Google, керованих у Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Оновити сторінку</translation>
 <translation id="2709516037105925701">Автозаповнення</translation>
-<translation id="2717722538473713889">Електронні адреси</translation>
 <translation id="2728754400939377704">Сортувати за сайтом</translation>
 <translation id="2744248271121720757">Торкніться слова для миттєвого пошуку або перегляду схожих дій</translation>
 <translation id="2760989362628427051">Активувати нічний режим, якщо його налаштовано або ввімкнено режим енергозбереження</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">Google може використовувати вашу історію, щоб персоналізувати Пошук та інші сервіси Google</translation>
 <translation id="2898264748040935573">Змінити збережений пароль</translation>
 <translation id="2900528713135656174">Створити подію</translation>
-<translation id="2903493209154104877">Адреси</translation>
 <translation id="2904414404539560095">Список пристроїв, на які можна надіслати вкладку, відкрито на всю висоту екрана.</translation>
 <translation id="2905036901251765993">Щоб ділитися даними з людьми поблизу, дозвольте їм зісканувати цей QR-код</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">Цей додаток запущено в Chrome</translation>
 <translation id="3315103659806849044">Зараз ви налаштовуєте синхронізацію та сервіси Google. Щоб увімкнути синхронізацію, натисніть кнопку "Підтвердити" внизу екрана. Перейти вгору</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
-<translation id="3333961966071413176">Усі контакти</translation>
 <translation id="3334729583274622784">Змінити розширення файлу?</translation>
 <translation id="3341058695485821946">Перевірте обсяг збережених даних</translation>
 <translation id="3350687908700087792">Закрити всі анонімні вікна</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">Встановити</translation>
 <translation id="3810838688059735925">Відео</translation>
 <translation id="3810973564298564668">Змінити</translation>
-<translation id="381841723434055211">Номери телефонів</translation>
 <translation id="3819178904835489326">Видалено завантажених файлів: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3856096718352044181">Підтвердьте, що цей постачальник активний, або повторіть спробу пізніше</translation>
 <translation id="388596076286380598">Отримуйте статті, відео й інший контент від сайтів, які вам подобаються, навіть у режимі офлайн або при слабкому з'єднанні.</translation>
@@ -451,7 +446,7 @@
 <translation id="4650364565596261010">За умовчанням у системі</translation>
 <translation id="465657074423018424">Безпечний перегляд захищає вас від оманливих веб-сайтів. Якщо ви вимкнете цю функцію, будьте обережні під час перегляду веб-сторінок, особливо коли вводите паролі.</translation>
 <translation id="4662373422909645029">Не можна додавати цифри</translation>
-<translation id="4663499661119906179">Переглядайте популярні сайти й новини, підібрані для вас</translation>
+<translation id="4663499661119906179">Переглядайте підібрані для вас сайти й новини</translation>
 <translation id="4663756553811254707">Видалено закладок: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
 <translation id="4665282149850138822">Веб-сайт <ph name="NAME" /> додано на головний екран</translation>
 <translation id="4668347365065281350">Усі дані сайтів, зокрема файли cookie й інша збережена на пристрої інформація</translation>
@@ -464,7 +459,7 @@
 <translation id="4719927025381752090">Пропонувати переклад</translation>
 <translation id="4720023427747327413">Відкрити в <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Допоможіть покращити Chrome. <ph name="BEGIN_LINK" />Візьміть участь в опитуванні<ph name="END_LINK" /></translation>
-<translation id="47217992755561375">Переглянути популярні сайти</translation>
+<translation id="47217992755561375">Переглянути улюблені сайти</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="473775607612524610">Оновити</translation>
 <translation id="4738836084190194332">Остання синхронізація: <ph name="WHEN" /></translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">Перейти вперед</translation>
 <translation id="4988210275050210843">Завантажується файл (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Сторінки</translation>
-<translation id="4994033804516042629">Немає контактів</translation>
 <translation id="5004416275253351869">Керування активністю в Google</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5011311129201317034">Сайт <ph name="SITE" /> хоче підключитися</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5184329579814168207">Відкрити в Chrome</translation>
 <translation id="5193988420012215838">Скопійовано в буфер обміну</translation>
-<translation id="5197729504361054390">Веб-сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> отримає доступ до вибраних контактів.</translation>
 <translation id="5199929503336119739">Робочий профіль</translation>
 <translation id="5210286577605176222">Перейти до попередньої вкладки</translation>
 <translation id="5210365745912300556">Закрити вкладку</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="5357811892247919462">Вкладку отримано</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}one{<ph name="OPEN_TABS_MANY" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}few{<ph name="OPEN_TABS_MANY" /> відкриті вкладки: натисніть, щоб перейти на іншу вкладку}many{<ph name="OPEN_TABS_MANY" /> відкритих вкладок: натисніть, щоб перейти на іншу вкладку}other{<ph name="OPEN_TABS_MANY" /> відкритої вкладки: натисніть, щоб перейти на іншу вкладку}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ще 1)}one{(+ ще #)}few{(+ ще #)}many{(+ ще #)}other{(+ ще #)}}</translation>
-<translation id="5403592356182871684">Імена</translation>
 <translation id="5403644198645076998">Дозволити лише певні сайти</translation>
 <translation id="5414836363063783498">Підтвердження…</translation>
 <translation id="5423934151118863508">Тут відображатимуться найчастіше відвідувані сторінки</translation>
@@ -639,7 +630,7 @@
 <translation id="5942872142862698679">Пошук за допомогою Google</translation>
 <translation id="5952764234151283551">Надсилає в Google URL-адресу сторінки, яку ви намагаєтеся відкрити</translation>
 <translation id="5956665950594638604">Відкрити Довідковий центр Chrome у новій вкладці</translation>
-<translation id="5957442310066583693">Щоб переглянути популярні сайти, натисніть кнопку головного екрана</translation>
+<translation id="5957442310066583693">Щоб переглянути свої улюблені сайти, натисніть кнопку домашньої сторінки</translation>
 <translation id="5958275228015807058">Знаходьте свої файли та сторінки в розділі "Завантаження"</translation>
 <translation id="5962718611393537961">Торкніться, щоб згорнути</translation>
 <translation id="5964805880140440652">Щоб ця сторінка була доступна на іншому пристрої, увімкніть синхронізацію в налаштуваннях Chrome</translation>
@@ -731,12 +722,12 @@
 <translation id="6583199322650523874">Зробити закладку поточної сторінки</translation>
 <translation id="6588043302623806746">Використовувати безпечну систему DNS</translation>
 <translation id="6590471736817333463">Заощаджуйте до 60% трафіку</translation>
-<translation id="6590680911007613645">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="SITE" /></translation>
+<translation id="6590680911007613645">Переконайтеся, що ввели правильний пароль для веб-сайту <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Версія для комп’ютера</translation>
 <translation id="6597891566292541626">Вставте QR-код або штрих-код у цю рамку.</translation>
 <translation id="6600954340915313787">Скопійовано в Chrome</translation>
 <translation id="661266467055912436">Покращує захист усіх користувачів в Інтернеті.</translation>
-<translation id="6618554661997243500">Щоб переглянути популярні сайти й новини, підібрані для вас, натисніть кнопку головного екрана</translation>
+<translation id="6618554661997243500">Щоб переглянути підібрані для вас сайти й новини, натисніть кнопку домашньої сторінки</translation>
 <translation id="6627583120233659107">Редагувати папку</translation>
 <translation id="6643016212128521049">Очистити</translation>
 <translation id="6643649862576733715">Сортувати за кількістю заощадженого трафіку</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">Примітка про конфіденційність Chrome</translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
 <translation id="6676840375528380067">Видалити дані Chrome із цього пристрою?</translation>
-<translation id="6689172468748959065">Фотографії профілів</translation>
 <translation id="6691888250440401212">1. Виберіть <ph name="APP_NAME" />\n2. Натисніть "Використовувати за умовчанням".</translation>
 <translation id="6697492270171225480">Показувати пропозиції схожих сторінок, коли не вдається знайти сторінку</translation>
 <translation id="6698801883190606802">Керування синхронізованими даними</translation>
@@ -912,8 +902,7 @@
 <translation id="7975379999046275268">Переглянути сторінку <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Попередньо завантажувати сторінки, щоб швидше переглядати та шукати</translation>
 <translation id="79859296434321399">Щоб переглядати вміст у режимі доповненої реальності, установіть ARCore</translation>
-<translation id="7986741934819883144">Виберіть контакт</translation>
-<translation id="799806351373751710">Скасувати синхронізацію налаштувань</translation>
+<translation id="799806351373751710">Скасувати налаштування синхронізації</translation>
 <translation id="7998918019931843664">Знову відкрити закриту вкладку</translation>
 <translation id="8004582292198964060">Переглядач</translation>
 <translation id="8013372441983637696">Також видалити дані Chrome із цього пристрою</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">Ви вийдете з більшості сайтів.</translation>
 <translation id="8664979001105139458">Файл із такою назвою вже існує</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Рівень сигналу: # поділка}one{Рівень сигналу: # поділка}few{Рівень сигналу: # поділки}many{Рівень сигналу: # поділок}other{Рівень сигналу: # поділки}}</translation>
-<translation id="868929229000858085">Пошук у контактах</translation>
 <translation id="869891660844655955">Діє до</translation>
 <translation id="8712637175834984815">Виконано</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>

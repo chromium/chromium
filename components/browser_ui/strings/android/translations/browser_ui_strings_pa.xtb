@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ਨੂੰ AR ਵਰਤਣ ਦੇਣ ਲਈ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਕੈਮਰਾ ਵੀ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="1887786770086287077">ਇਸ ਡੀਵਾਈਸ ਲਈ ਟਿਕਾਣਾ ਪਹੁੰਚ ਬੰਦ ਹੈ। ਇਸਨੂੰ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="1919345977826869612">ਵਿਗਿਆਪਨ</translation>
+<translation id="1919950603503897840">ਸੰਪਰਕ ਚੁਣੋ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">ਅਨੁਮਤੀ ਦਿੱਤੀ, ਤੀਜੀ-ਪਾਰਟੀ ਨੂੰ ਛੱਡ ਕੇ</translation>
 <translation id="1989112275319619282">ਬ੍ਰਾਊਜ਼ ਕਰੋ</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">ਛੱਡੋ</translation>
 <translation id="2687403674020088961">ਸਾਰੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰੋ (ਇਸਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ)</translation>
 <translation id="2704606927547763573">ਕਾਪੀ ਕੀਤਾ</translation>
+<translation id="2717722538473713889">ਈਮੇਲ ਪਤੇ</translation>
 <translation id="2822354292072154809">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="CHOSEN_OBJECT_NAME" /> ਲਈ ਸਾਰੀਆਂ ਸਾਈਟ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2870560284913253234">ਸਾਈਟ</translation>
 <translation id="2874939134665556319">ਪਿਛਲਾ ਟਰੈਕ</translation>
+<translation id="2903493209154104877">ਪਤੇ</translation>
 <translation id="2910701580606108292">ਸਾਈਟਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
 <translation id="2913331724188855103">ਸਾਈਟਾਂ ਨੂੰ ਕੁਕੀ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਅਤੇ ਪੜ੍ਹਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="2968755619301702150">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਿਊਅਰ</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">ਮਾਈਕ੍ਰੋਫੋਨ</translation>
 <translation id="3277252321222022663">ਸਾਈਟਾਂ ਨੂੰ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="3295602654194328831">ਜਾਣਕਾਰੀ ਲੁਕਾਓ</translation>
+<translation id="3333961966071413176">ਸਭ ਸੰਪਰਕ</translation>
 <translation id="3386292677130313581">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਜਾਣਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੀ ਇਜਾਜ਼ਤ ਲੈਣ ਨੂੰ ਜ਼ਰੂਰੀ ਬਣਾਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="3479552764303398839">ਹੁਣ ਨਹੀਂ</translation>
 <translation id="3538390592868664640">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਜਾਂ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">ਧੁਨੀ ਵਜਾਉਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਮਿਊਟ ਕਰੋ</translation>
 <translation id="3744111561329211289">ਬੈਕਗ੍ਰਾਊਂਡ ਸਮਕਾਲੀਕਰਨ</translation>
 <translation id="3763247130972274048">10 ਸਕਿੰਟ ਅੱਗੇ ਜਾਂ ਪਿੱਛੇ ਜਾਣ ਲਈ ਵੀਡੀਓ 'ਤੇ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਡਬਲ ਟੈਪ ਕਰੋ</translation>
+<translation id="381841723434055211">ਫ਼ੋਨ ਨੰਬਰ</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="3859306556332390985">ਅੱਗੇ ਵੱਲ ਨੂੰ ਲੈ ਜਾਓ</translation>
 <translation id="3955193568934677022">ਸਾਈਟਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡੇ ਆਭਾਸੀ ਵਾਸਤਵਿਕਤਾ ਡੀਵਾਈਸ ਅਤੇ ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="4962975101802056554">ਡੀਵਾਈਸ ਲਈ ਸਾਰੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੱਦ ਕਰੋ</translation>
 <translation id="497421865427891073">ਅੱਗੇ ਵੱਲ ਜਾਓ</translation>
+<translation id="4994033804516042629">ਕੋਈ ਸੰਪਰਕ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="4996978546172906250">ਰਾਹੀਂ ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="5039804452771397117">ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5048398596102334565">ਸਾਈਟਾਂ ਨੂੰ ਗਤੀਸ਼ੀਲਤਾ ਸੈਂਸਰਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="5063480226653192405">ਵਰਤੋਂ</translation>
 <translation id="5100237604440890931">ਸਮੇਟਿਆ ਗਿਆ - ਵਿਸਤਾਰ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="5123685120097942451">ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
+<translation id="5197729504361054390">ਤੁਹਾਡੇ ਵੱਲੋਂ ਚੁਣੇ ਸੰਪਰਕ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="5300589172476337783">ਦਿਖਾਓ</translation>
 <translation id="5301954838959518834">ਠੀਕ, ਸਮਝ ਲਿਆ</translation>
 <translation id="5313967007315987356">ਸਾਈਟ ਜੋੜੋ</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">ਇੰਝ ਕਰਨ ਨਾਲ ਸਾਈਟਾਂ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ <ph name="DATASIZE" /> ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5384883051496921101">ਇਹ ਸਾਈਟ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਕਿਸੇ ਐਪ ਦੇ ਨਾਲ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰਨ ਲੱਗੀ ਹੈ।</translation>
 <translation id="5391532827096253100">ਇਸ ਸਾਈਟ ਲਈ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ। ਸਾਈਟ ਜਾਣਕਾਰੀ</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ਹੋਰ)}one{(+ # ਹੋਰ)}other{(+ # ਹੋਰ)}}</translation>
+<translation id="5403592356182871684">ਨਾਮ</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> ਵਿੱਚੋਂ ਬੀਤਿਆ ਸਮਾਂ <ph name="ELAPSED_TIME" />।</translation>
 <translation id="5494752089476963479">ਉਹਨਾਂ ਸਾਈਟਾਂ 'ਤੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ, ਜੋ ਦਖਲਅੰਦਾਜ਼ੀ ਅਤੇ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀਆਂ ਹਨ</translation>
 <translation id="5505264765875738116">ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਨਹੀਂ ਸਕਦੀਆਂ ਹਨ</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
 <translation id="662080504995468778">ਇੱਥੇ ਰੁਕੋ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
+<translation id="6689172468748959065">ਪ੍ਰੋਫਾਈਲ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="6697925417670533197">ਕਿਰਿਆਸ਼ੀਲ ਡਾਊਨਲੋਡ</translation>
 <translation id="6746124502594467657">ਹੇਠਾਂ ਜਾਓ</translation>
 <translation id="6766622839693428701">ਬੰਦ ਕਰਨ ਲਈ ਹੇਠਾਂ ਵੱਲ ਸਵਾਈਪ ਕਰੋ।</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">ਚੋਣ ਰੱਦ ਕਰੋ</translation>
 <translation id="7846621471902887024">ਤੁਹਾਨੂੰ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7882806643839505685">ਕਿਸੇ ਖ਼ਾਸ ਸਾਈਟ ਲਈ ਧੁਨੀ ਵਜਾਉਣ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
+<translation id="7986741934819883144">ਇੱਕ ਸੰਪਰਕ ਚੁਣੋ</translation>
 <translation id="7993619969781047893">ਸ਼ਾਇਦ ਕੁਝ ਸਾਈਟਾਂ 'ਤੇ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਠੀਕ ਤਰੀਕੇ ਨਾਲ ਕੰਮ ਨਾ ਕਰਨ</translation>
 <translation id="7999064672810608036">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਕੁਕੀਜ਼ ਸਮੇਤ ਸਾਰਾ ਸਥਾਨਕ ਡਾਟਾ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ ਅਤੇ ਇਸ ਵੈੱਬਸਾਈਟ ਲਈ ਸਾਰੀਆਂ ਇਜਾਜ਼ਤਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8007176423574883786">ਇਸ ਡਿਵਾਈਸ ਲਈ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">ਇਜਾਜ਼ਤ ਹੈ ( ਸਿਫ਼ਾਰਸ਼  ਕੀਤੇ)</translation>
 <translation id="8609465669617005112">ਉੱਪਰ ਜਾਓ</translation>
 <translation id="8676374126336081632">ਇਨਪੁਟ ਹਟਾਓ</translation>
+<translation id="868929229000858085">ਆਪਣੇ ਸੰਪਰਕ ਖੋਜੋ</translation>
 <translation id="8702612070107455751">ਕਿਸੇ ਵੀ ਆਫ਼ਲਾਈਨ ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ <ph name="APP_NAME" /> ਲਈ ਇਜਾਜ਼ਤ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="8725066075913043281">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>

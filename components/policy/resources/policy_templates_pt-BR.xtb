@@ -5177,11 +5177,11 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Esta política visa permitir que empresas migrem servidores existentes para fora do HTTP/0.9 e ela será removida.
 
       Se esta política não for definida, o HTTP/0.9 será desativado em portas não padrão.</translation>
-<translation id="8504725006737796967">Especifica quais impressoras o usuário pode usar.
+<translation id="8504725006737796967">Especifica as impressoras que um usuário pode usar.
 
-      Esta política será usada apenas se a <ph name="PRINTERS_WHITELIST" /> for escolhida para <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
+      Esta política só será usada se <ph name="PRINTERS_WHITELIST" /> for escolhida para <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />.
 
-      Se esta política for usada, somente as impressoras com IDs correspondentes aos valores da política estarão disponíveis para o usuário. Os IDs precisam corresponder aos campos "id" ou "guid" no arquivo especificado na <ph name="BULK_PRINTERS_POLICY_NAME" />.
+      Se esta política for usada, somente as impressoras com IDs que correspondem aos valores da política estarão disponíveis para o usuário. Os IDs precisam corresponder aos campos "id" ou "guid" no arquivo especificado na <ph name="BULK_PRINTERS_POLICY_NAME" />.
 
       Esta política está obsoleta. Use a <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" />.
       </translation>

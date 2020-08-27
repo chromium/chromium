@@ -3969,7 +3969,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 
       Steht eine Erweiterung nicht auf der Liste oder ist die Liste nicht konfiguriert, wird dem Nutzer für jeden Aufruf von <ph name="SUBMIT_JOB_FUNCTION" /> der Bestätigungsdialog für den Druckauftrag angezeigt.
 
-      Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
+      Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen <ph name="PRINTING_API_EXTENSIONS_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="684856667300805181">Diese Richtlinie wurde in Version 68 von <ph name="PRODUCT_NAME" /> entfernt und durch "<ph name="ARC_GLS_POLICY_NAME" />" ersetzt.</translation>
 <translation id="6851199885688265233">Bedienungshilfe "Mauszeiger hervorheben" aktivieren</translation>
 <translation id="6851315055469993882">Globales HTTP-Auth-Cache aktivieren</translation>
@@ -4026,7 +4026,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 
        Ist die Richtlinie aktiviert und für eine oder mehrere Domains konfiguriert, werden keine Warnungen zu nachgeahmten URLs angezeigt, wenn Nutzer Seiten auf der jeweiligen Domain aufrufen.
 
-       Wenn diese Richtlinie deaktiviert, nicht konfiguriert oder auf eine leere Liste festgelegt, können jederzeit Warnungen zu nachgeahmten URLs erscheinen.
+       Wenn diese Richtlinie deaktiviert, nicht konfiguriert oder auf eine leere Liste festgelegt ist, können jederzeit Warnungen zu nachgeahmten URLs erscheinen.
 
        Ein Hostname kann bei vollständiger Host- oder beliebiger Domainübereinstimmung erlaubt sein. Beispiel: Für die URL "https://foo.example.com/bar" werden Warnungen möglicherweise unterdrückt, wenn "foo.example.com" oder "example.com" zur Liste hinzugefügt wurden.</translation>
 <translation id="6922884955650325312">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" blockieren</translation>

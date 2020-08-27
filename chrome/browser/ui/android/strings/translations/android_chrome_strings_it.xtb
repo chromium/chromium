@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Risparmia fino al 60% di dati, leggi le notizie di oggi</translation>
 <translation id="1303339473099049190">Impossibile trovare quella password. Verifica di averla scritta correttamente e riprova.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Inviato da <ph name="DEVICE_NAME" /></translation>
+<translation id="1307205233980126133">Spiacenti, impossibile convalidare le credenziali</translation>
 <translation id="1310482092992808703">Raggruppa schede</translation>
 <translation id="1311657260431405215">Questo codice QR non corrisponde a un URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">La cronologia di navigazione è aperta</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">Verrà eseguito l'accesso con il tuo Account Google\n(questa operazione non attiverà Sincronizzazione Chrome)</translation>
 <translation id="1877026089748256423">Chrome non è aggiornato</translation>
 <translation id="1883903952484604915">I miei file</translation>
-<translation id="1919950603503897840">Seleziona contatti</translation>
 <translation id="1925021887439448749">Inserisci l'indirizzo web personalizzato</translation>
 <translation id="1928696683969751773">Aggiornamenti</translation>
 <translation id="19288952978244135">Riapri Chrome.</translation>
@@ -216,7 +216,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2689830683995595741">Utilizzando Chrome, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />. Si applica inoltre l'<ph name="BEGIN_LINK3" />Informativa sulla privacy per gli Account Google gestiti tramite Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Aggiorna la pagina</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
-<translation id="2717722538473713889">Indirizzi email</translation>
 <translation id="2728754400939377704">Ordina per sito</translation>
 <translation id="2744248271121720757">Tocca una parola per eseguire una ricerca immediata o visualizzare le azioni correlate</translation>
 <translation id="2760989362628427051">Attiva il tema scuro quando sul dispositivo è attivo il tema scuro o il risparmio energetico</translation>
@@ -241,7 +240,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2893180576842394309">Google può utilizzare la tua cronologia per personalizzare la Ricerca e altri servizi Google</translation>
 <translation id="2898264748040935573">Modifica la password memorizzata</translation>
 <translation id="2900528713135656174">Crea evento</translation>
-<translation id="2903493209154104877">Indirizzi</translation>
 <translation id="2904414404539560095">Elenco di dispositivi con cui condividere una scheda aperto a schermo intero.</translation>
 <translation id="2905036901251765993">Per condividere i contenuti con le persone qui vicino, fa' scansionare loro questo codice QR</translation>
 <translation id="2909615210195135082">Piattaforma per le notifiche Google</translation>
@@ -294,7 +292,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3306398118552023113">Questa app è in esecuzione in Chrome</translation>
 <translation id="3315103659806849044">Stai personalizzando le impostazioni Sincronizzazione e servizi Google. Per terminare l'attivazione della sincronizzazione, tocca il pulsante Conferma nella parte inferiore dello schermo. Torna indietro</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
-<translation id="3333961966071413176">Tutti i contatti</translation>
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="3341058695485821946">Scopri la quantità di dati risparmiata</translation>
 <translation id="3350687908700087792">Chiudi tutte le schede di navigazione in incognito</translation>
@@ -353,7 +350,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3789841737615482174">Installa</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestisci</translation>
-<translation id="381841723434055211">Numeri di telefono</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> download eliminati</translation>
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="388596076286380598">Accedi ad articoli, video e altri contenuti dai siti che ti piacciono anche quando sei offline o se la connessione è insufficiente.</translation>
@@ -509,7 +505,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="497421865427891073">Avanti</translation>
 <translation id="4988210275050210843">Download del file (<ph name="MEGABYTES" />) in corso.</translation>
 <translation id="4988526792673242964">Pagine</translation>
-<translation id="4994033804516042629">Nessun contatto trovato</translation>
 <translation id="5004416275253351869">Gestione attività Google</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5011311129201317034">Il sito <ph name="SITE" /> desidera collegarsi</translation>
@@ -533,7 +528,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5184329579814168207">Apri in Chrome</translation>
 <translation id="5193988420012215838">Copiata nei tuoi appunti</translation>
-<translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Profilo di lavoro</translation>
 <translation id="5210286577605176222">Vai alla scheda precedente</translation>
 <translation id="5210365745912300556">Chiudi scheda</translation>
@@ -553,8 +547,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
 <translation id="5357811892247919462">Scheda ricevuta</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> scheda aperta, tocca per cambiare scheda}other{<ph name="OPEN_TABS_MANY" /> schede aperte, tocca per cambiare scheda}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 altro)}other{(+ altri #)}}</translation>
-<translation id="5403592356182871684">Nomi</translation>
 <translation id="5403644198645076998">Consenti solo siti specifici</translation>
 <translation id="5414836363063783498">Verifica…</translation>
 <translation id="5423934151118863508">Le pagine che visiti più spesso verranno visualizzate qui</translation>
@@ -563,7 +555,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5433691172869980887">Nome utente copiato</translation>
 <translation id="543509235395288790">Download di <ph name="COUNT" /> file (<ph name="MEGABYTES" />) in corso.</translation>
 <translation id="5441522332038954058">Vai alla barra degli indirizzi</translation>
-<translation id="544776284582297024">Per aprire più schede e visitare pagine diverse contemporaneamente, tocca il pulsante Apri schede</translation>
+<translation id="544776284582297024">Per aprire più schede e visitare pagine diverse contemporaneamente, tocca il pulsante Schede aperte</translation>
 <translation id="545042621069398927">Accelerazione del download in corso.</translation>
 <translation id="5456381639095306749">Scarica la pagina</translation>
 <translation id="548278423535722844">Apri nell'app di mappe</translation>
@@ -750,7 +742,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="666981079809192359">Informativa sulla privacy di Chrome</translation>
 <translation id="6671495933530132209">Copia immagine</translation>
 <translation id="6676840375528380067">Eliminare i dati di Chrome dal dispositivo?</translation>
-<translation id="6689172468748959065">Foto del profilo</translation>
 <translation id="6691888250440401212">1. Scegli <ph name="APP_NAME" />\n2. Tocca "Imposta predefinita"</translation>
 <translation id="6697492270171225480">Mostra suggerimenti per pagine simili quando una pagina non viene trovata</translation>
 <translation id="6698801883190606802">Gestisci dati sincronizzati</translation>
@@ -912,7 +903,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7975379999046275268">Anteprima pagina <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Le pagine vengono precaricate per velocizzare la navigazione e la ricerca</translation>
 <translation id="79859296434321399">Per visualizzare i contenuti di realtà aumentata, installa ARCore</translation>
-<translation id="7986741934819883144">Seleziona un contatto</translation>
 <translation id="799806351373751710">Annulla configurazione della sincronizzazione</translation>
 <translation id="7998918019931843664">Riapri la scheda chiusa</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1010,7 +1000,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8662811608048051533">Verrai disconnesso dalla maggior parte dei siti.</translation>
 <translation id="8664979001105139458">Nome file già esistente</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Intensità del segnale: # barra}other{Intensità del segnale: # barre}}</translation>
-<translation id="868929229000858085">Cerca nei contatti</translation>
 <translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8712637175834984815">Fatto</translation>
 <translation id="8725066075913043281">Riprova</translation>

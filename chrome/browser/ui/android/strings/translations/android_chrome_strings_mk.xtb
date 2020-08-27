@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Ќе ве најавиме со вашата сметка на Google\n(ова нема да вклучи „Синхронизација на Chrome“)</translation>
 <translation id="1877026089748256423">Chrome е застарен</translation>
 <translation id="1883903952484604915">Мои датотеки</translation>
-<translation id="1919950603503897840">Изберете контакти</translation>
 <translation id="1925021887439448749">Внесете приспособена веб-адреса</translation>
 <translation id="1928696683969751773">Ажурирања</translation>
 <translation id="19288952978244135">Повторно отворете го Chrome.</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">Ако користите Chrome, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Известувањето за приватност за сметките на Google управувани со Family Link<ph name="END_LINK3" /> исто така важи.</translation>
 <translation id="2707726405694321444">Освежи ја страницата</translation>
 <translation id="2709516037105925701">Автоматско пополнување</translation>
-<translation id="2717722538473713889">Адреси за е-пошта</translation>
 <translation id="2728754400939377704">Подреди според сајт</translation>
 <translation id="2744248271121720757">Допрете даден збор за да пребарувате веднаш или за да видите слични дејства</translation>
 <translation id="2760989362628427051">Вклучува темна тема кога е вклучена темната тема или „Штедачот на батерија“ на уредот</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">Google може да ја користи вашата историја за да го персонализира „Пребарувањето“ и другите услуги на Google</translation>
 <translation id="2898264748040935573">Изменете ги зачуваните лозинки</translation>
 <translation id="2900528713135656174">Создаjте настан</translation>
-<translation id="2903493209154104877">Адреси</translation>
 <translation id="2904414404539560095">Списокот со уреди за споделување картичка е отворен на цел екран.</translation>
 <translation id="2905036901251765993">За да споделувате со луѓе во близина, дозволете им да го скенираат QR-кодов</translation>
 <translation id="2909615210195135082">Платформа за известувања на Google</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">Апликацијава се извршува во Chrome</translation>
 <translation id="3315103659806849044">Моментално ги приспособувате поставките за синхронизација и услугата Google. За да го завршите вклучувањето на синхронизацијата, допрете на копчето „Потврди“ долу на екранот. Движете се нагоре</translation>
 <translation id="3328801116991980348">Информации за веб-локација</translation>
-<translation id="3333961966071413176">Сите контакти</translation>
 <translation id="3334729583274622784">Дали да се промени наставката на датотеката?</translation>
 <translation id="3341058695485821946">Видете колку мобилен интернет сте заштедиле</translation>
 <translation id="3350687908700087792">Затвори ги сите инкогнито картички</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">Инсталирај</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">Управувај</translation>
-<translation id="381841723434055211">Телефонски броеви</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> преземања се избришани</translation>
 <translation id="3856096718352044181">Потврдете дека ова е вистински давател на услуги или обидете се повторно подоцна</translation>
 <translation id="388596076286380598">Добивајте статии, видеа и други содржини од сајтови што ви се допаѓаат, дури и ако сте офлајн или ако врската е слаба.</translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">Оди напред</translation>
 <translation id="4988210275050210843">Се презема датотека (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Страници</translation>
-<translation id="4994033804516042629">Не се најдени контакти</translation>
 <translation id="5004416275253351869">Контроли на активноста на Google</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сака да се поврзе</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5184329579814168207">Отвори во Chrome</translation>
 <translation id="5193988420012215838">Копирано во привремената меморија</translation>
-<translation id="5197729504361054390">Контактите што ќе ги изберете ќе се споделат со <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Работен профил</translation>
 <translation id="5210286577605176222">Скокнете на претходната картичка</translation>
 <translation id="5210365745912300556">Затвори ја картичката</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
 <translation id="5357811892247919462">Примена е картичка</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> отворена ка​ртичка, допрете за да се префрлите помеѓу картичките}one{<ph name="OPEN_TABS_MANY" /> отворена ка​ртичка, допрете за да се префрлите помеѓу картичките}other{<ph name="OPEN_TABS_MANY" /> отворени ка​ртички, допрете за да се префрлите помеѓу картичките}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и уште 1)}one{(и уште #)}other{(и уште #)}}</translation>
-<translation id="5403592356182871684">Имиња</translation>
 <translation id="5403644198645076998">Дозволи само одредени сајтови</translation>
 <translation id="5414836363063783498">Се проверува…</translation>
 <translation id="5423934151118863508">Најпосетуваните страници ќе се појават тука</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">Известување за приватност на Chrome</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
 <translation id="6676840375528380067">Да се избришат податоците на Chrome од уредов?</translation>
-<translation id="6689172468748959065">Фотографии на профилот</translation>
 <translation id="6691888250440401212">1. Изберете <ph name="APP_NAME" />\n2. Допрете „Постави како стандардна“</translation>
 <translation id="6697492270171225480">Прикажувај предлози за слични страници кога страницата не може да се најде</translation>
 <translation id="6698801883190606802">Управувајте со синхронизираните податоци</translation>
@@ -912,7 +902,6 @@
 <translation id="7975379999046275268">Прегледајте ја страницата <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Претходно вчитувај страници за побрзо прелистување и пребарување</translation>
 <translation id="79859296434321399">За да прегледувате содржини во проширена реалност, инсталирајте го ARCore</translation>
-<translation id="7986741934819883144">Изберете контакт</translation>
 <translation id="799806351373751710">Откажи поставување синхронизација</translation>
 <translation id="7998918019931843664">Повторно отвори ја затворената картичка</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">Ќе ве одјави од повеќето сајтови.</translation>
 <translation id="8664979001105139458">Името на датотеката веќе постои</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Ниво на јачина на сигналот: # бар}one{Ниво на јачина на сигналот: # бар}other{Ниво на јачина на сигналот: # бари}}</translation>
-<translation id="868929229000858085">Пребарајте ги контактите</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>

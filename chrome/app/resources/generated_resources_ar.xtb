@@ -761,7 +761,7 @@
 <translation id="1877377290348678128">التصنيف (اختياري)</translation>
 <translation id="1877520246462554164">تعذّر الحصول على الرمز المميز للمصادقة. يُرجى الخروج ثم تسجيل الدخول مرّة أخرى لإعادة المحاولة.</translation>
 <translation id="1877860345998737529">تحديد مفتاح التبديل إلى إجراء</translation>
-<translation id="1878155070920054810">‏يبدو أن الشحن سينفذ من جهاز Chromebook قبل اكتمال التحديث. تأكَّد من شحن جهازك بشكل صحيح لتجنُّب المقاطعة.</translation>
+<translation id="1878155070920054810">‏يبدو أن الشحن سينفد من جهاز Chromebook قبل اكتمال التحديث. تأكَّد من شحن جهازك بشكل صحيح لتجنُّب المقاطعة.</translation>
 <translation id="1879000426787380528">تسجيل الدخول باسم</translation>
 <translation id="1880905663253319515">هل تريد حذف الشهادة "<ph name="CERTIFICATE_NAME" />"؟</translation>
 <translation id="1881445033931614352">تنسيق لوحة المفاتيح</translation>
@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">‏يحتاج Chrome إلى إذن للمتابعة</translation>
 <translation id="220138918934036434">إخفاء الزر</translation>
 <translation id="2202898655984161076">حدثت مشكلة أثناء إدراج الطابعات. ربما لا يتم تسجيل بعض الطابعات بنجاح في <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">محرك البحث الذي تم استخدامه في <ph name="BEGIN_LINK" />شريط العناوين<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">قراءة وتغيير أي شيء تكتبه</translation>
 <translation id="220858061631308971">يُرجى إدخال رمز رقم التعريف الشخصي هذا على "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">السماح بملفات تعريف الارتباط</translation>
@@ -1871,7 +1870,7 @@
 <translation id="3254715652085014625">‏افتح متصفِّح Chrome على هاتفك الذي يعمل بنظام التشغيل Android وانتقِل إلى "الإعدادات &gt; كلمات المرور &gt; استخدام الهاتف كمفتاح أمان"، ثم اتّبِع التعليمات.</translation>
 <translation id="3255355328033513170">سيتم حذف جميع البيانات المُخزَّنة من خلال <ph name="SITE_GROUP_NAME" /> وأي مواقع إلكترونية ضمنها. ويتضمن هذا ملفات تعريف الارتباط. سيتم تسجيل خروجك من المواقع الإلكترونية هذه، بما في ذلك علامات التبويب المفتوحة.</translation>
 <translation id="3259723213051400722">يُرجى إعادة المحاولة.</translation>
-<translation id="3261268979727295785">في حال الأطفال الأكبر سنًا، يمكنك إضافة أدوات الرقابة الأبوية بعد الانتهاء من الإعداد. يمكنك العثور على معلومات حول أدوات الرقابة الأبوية في تطبيق "استكشاف".</translation>
+<translation id="3261268979727295785">في ما يتعلّق بالأطفال الأكبر سنًا، يمكنك إضافة أدوات الرقابة الأبوية بعد الانتهاء من الإعداد. يمكنك العثور على معلومات حول أدوات الرقابة الأبوية في تطبيق "استكشاف".</translation>
 <translation id="3264544094376351444">‏خط Sans-serif</translation>
 <translation id="3264582393905923483">السياق</translation>
 <translation id="3265459715026181080">إغلاق الإطار</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">معلومات التطبيق</translation>
 <translation id="3333190335304955291">يمكنك إيقاف هذه الخدمة من خلال الإعدادات.</translation>
+<translation id="3333961966071413176">جميع جهات الاتصال</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - جارٍ تشغيل الفيديو في وضع "نافذة ضمن نافذة"</translation>
 <translation id="3335947283844343239">إعادة فتح علامة التبويب المغلقة</translation>
 <translation id="3340620525920140773">اكتمل التنزيل: <ph name="FILE_NAME" />.</translation>
@@ -2165,7 +2165,7 @@
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3603622770190368340">الحصول على شهادة الشبكة</translation>
 <translation id="3604713164406837697">تغيير الخلفية</translation>
-<translation id="360565022852130722">‏شبكة Wi-Fi مؤَّمنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
+<translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3605780360466892872">الزر لأسفل</translation>
 <translation id="3608576286259426129">معاينة صورة المستخدم</translation>
 <translation id="3610369246614755442">تحتاج مروحة تبريد محطة الإرساء إلى الصيانة.</translation>
@@ -2639,7 +2639,7 @@
 <translation id="413121957363593859">المكونات</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="413193092008917129">سلسلة إجراءات بيانات تشخيص الشبكة</translation>
-<translation id="4132183752438206707">‏البحث عن تطبيقات على "متجر Google Play"</translation>
+<translation id="4132183752438206707">‏البحث عن تطبيقات على "متجر Google Play" وتنزيلها</translation>
 <translation id="4133076602192971179">فتح التطبيق لتغيير كلمة المرور</translation>
 <translation id="4136203100490971508">سيتم إيقاف الإضاءة الليلية تلقائيًا عند شروق الشمس.</translation>
 <translation id="41365691917097717">‏ستؤدي المواصلة إلى تفعيل خيار "تصحيح الأخطاء عبر ADB" لإنشاء تطبيقات متوافقة مع Android واختبارها. ويُرجى ملاحظة أن هذا الإجراء يتيح تثبيت تطبيقات متوافقة مع Android لم تتحقَّق منها Google، ويتطلب أيضًا إعادة ضبط على الإعدادات الأصلية لإيقافه.</translation>
@@ -2809,7 +2809,7 @@
 <translation id="4384312707950789900">إضافة إلى الشبكات المُفضلة</translation>
 <translation id="4384652540891215547">تفعيل الإضافة</translation>
 <translation id="438503109373656455">ساراتوجا</translation>
-<translation id="4385040356362222432">للفصل بين تصفُّحك باستخدام حساب <ph name="NEW_USER" /> وتصفُّحك باستخدام حساب <ph name="EXISTING_USER" />، يجب إنشاء ملف شخصي جديد.</translation>
+<translation id="4385040356362222432">للفصل بين تصفُّحك باستخدام حساب <ph name="NEW_USER" /> وتصفُّحك باستخدام حساب <ph name="EXISTING_USER" />، يمكنك إنشاء ملف شخصي جديد.</translation>
 <translation id="4387004326333427325">تم رفض شهادة المصادقة عن بُعد</translation>
 <translation id="4387890294700445764">كلمات مرور محتمَل تعرّضها للاختراق</translation>
 <translation id="4389091756366370506">المستخدم <ph name="VALUE" /></translation>
@@ -4355,7 +4355,7 @@
 <translation id="6298962879096096191">‏استخدام Google Play لتثبيت تطبيقات Android</translation>
 <translation id="630065524203833229">إن&amp;هاء</translation>
 <translation id="6300718114348072351">تعذّر ضبط <ph name="PRINTER_NAME" /> تلقائيًا. يُرجى تحديد التفاصيل المتقدّمة للطابعة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">للفصل بين التصفُّح الشخصي والتصفُّح باستخدام حساب <ph name="EXISTING_USER" />، يجب إنشاء ملف شخصي جديد للمستخدِم <ph name="NEW_USER" />.</translation>
+<translation id="6301076166764763868">للفصل بين التصفُّح الشخصي والتصفُّح باستخدام حساب <ph name="EXISTING_USER" />، يمكنك إنشاء ملف شخصي جديد للمستخدِم <ph name="NEW_USER" />.</translation>
 <translation id="630292539633944562">اقتراحات المعلومات الشخصية</translation>
 <translation id="6305607932814307878">السياسة العامة:</translation>
 <translation id="6307990684951724544">النظام مشغول</translation>
@@ -5237,7 +5237,7 @@
 <translation id="7415454883318062233">اكتمل الإعداد</translation>
 <translation id="7416362041876611053">خطأ غير معروف في الشبكة.</translation>
 <translation id="741906494724992817">لا يتطلب هذا التطبيق أذونات خاصة.</translation>
-<translation id="7420817660256886596">يتطلّب الخادم الوكيل <ph name="PROXY" /> منك المصادقة باسم المستخدِم وكلمة المرور.</translation>
+<translation id="7420817660256886596">يتطلّب الخادم الوكيل <ph name="PROXY" /> منك المصادقة من خلال إدخال اسم مستخدِم وكلمة مرور.</translation>
 <translation id="742130257665691897">تمت إزالة الإشارات المرجعية</translation>
 <translation id="7421925624202799674">عرض م&amp;صدر الصفحة</translation>
 <translation id="7422192691352527311">الإعدادات المفضّلة...</translation>
@@ -5683,7 +5683,7 @@
 <translation id="7933314993013528982">{NUM_TABS,plural, =1{إعادة صوت موقع إلكتروني واحد}zero{إعادة صوت المواقع الإلكترونية}two{إعادة صوت موقعيِّ الويب}few{إعادة صوت المواقع الإلكترونية}many{إعادة صوت المواقع الإلكترونية}other{إعادة صوت المواقع الإلكترونية}}</translation>
 <translation id="7933634003144813719">إدارة المجلدات التي تمت مشاركتها</translation>
 <translation id="793531125873261495">حدث خطأ أثناء تنزيل الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
-<translation id="7936303884198020182">لم يتم العثور على خوادم أسماء.</translation>
+<translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
 <translation id="7938594894617528435">بلا إنترنت حاليًا</translation>
 <translation id="7939062555109487992">خيارات متقدمة</translation>
 <translation id="7939412583708276221">المتابعة على أيّ حال</translation>

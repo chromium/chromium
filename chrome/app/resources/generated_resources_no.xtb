@@ -1012,7 +1012,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2200356397587687044">Chrome trenger tillatelse for å fortsette</translation>
 <translation id="220138918934036434">Skjul knappen</translation>
 <translation id="2202898655984161076">Det oppstod et problem med oppføring av skrivere. Enkelte av skriverne dine er ikke registrert på <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Søkemotoren som brukes i <ph name="BEGIN_LINK" />adressefeltet<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">lese og endre alt du skriver</translation>
 <translation id="220858061631308971">Skriv inn denne PIN-koden på «<ph name="DEVICE_NAME" />»:</translation>
 <translation id="2212565012507486665">Tillat informasjonskapsler</translation>
@@ -1934,6 +1933,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Appinformasjon</translation>
 <translation id="3333190335304955291">Du kan slå av denne tjenesten i Innstillinger.</translation>
+<translation id="3333961966071413176">Alle kontakter</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – videoen spilles av i bilde-i-bilde-modus</translation>
 <translation id="3335947283844343239">Åpne lukkede faner igjen</translation>
 <translation id="3340620525920140773">Nedlastingen er fullført: <ph name="FILE_NAME" />.</translation>
@@ -3027,6 +3027,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4646675363240786305">Porter</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-tilkobling</translation>
 <translation id="4647090755847581616">&amp;Lukk fane</translation>
+<translation id="4647283074445570750">Trinn <ph name="CURRENT_STEP" /> av <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Start appen når du logger på nettbrettet}computer{Start appen når du logger på datamaskinen}other{Start appen når du logger på enheten}}</translation>
 <translation id="4647697156028544508">Skriv inn PIN-koden for «<ph name="DEVICE_NAME" />»:</translation>
 <translation id="4648491805942548247">Utilstrekkelige tillatelser</translation>

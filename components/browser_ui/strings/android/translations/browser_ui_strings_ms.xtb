@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Akses lokasi dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Iklan</translation>
+<translation id="1919950603503897840">Pilih kenalan</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Dibenarkan, kecuali pihak ketiga</translation>
 <translation id="1989112275319619282">Semak Imbas</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
 <translation id="2704606927547763573">Disalin</translation>
+<translation id="2717722538473713889">Alamat e-mel</translation>
 <translation id="2822354292072154809">Adakah anda pasti mahu menetapkan semula semua kebenaran tapak untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
+<translation id="2903493209154104877">Alamat</translation>
 <translation id="2910701580606108292">Tanya sebelum membenarkan tapak memainkan kandungan yang dilindungi</translation>
 <translation id="2913331724188855103">Benarkan tapak untuk menyimpan dan membaca data kuki (disyorkan)</translation>
 <translation id="2968755619301702150">Pemapar sijil</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Benarkan tapak mengakses penderia (disyorkan)</translation>
 <translation id="3295602654194328831">Sembunyikan Maklumat</translation>
+<translation id="3333961966071413176">Semua kenalan</translation>
 <translation id="3386292677130313581">Tanya sebelum membenarkan tapak mengetahui lokasi anda (disyorkan)</translation>
 <translation id="3479552764303398839">Bukan sekarang</translation>
 <translation id="3538390592868664640">Sekat tapak daripada membuat peta 3D bagi persekitaran anda atau menjejaki kedudukan kamera</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Redam tapak yang memainkan bunyi</translation>
 <translation id="3744111561329211289">Penyegerakan latar belakang</translation>
 <translation id="3763247130972274048">Dwiketik video di sebelah kiri atau kanan untuk melangkau 10s</translation>
+<translation id="381841723434055211">Nombor telefon</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3859306556332390985">Cari ke hadapan</translation>
 <translation id="3955193568934677022">Benarkan tapak untuk memainkan kandungan yang dilindungi (disyorkan)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Tanya sebelum membenarkan tapak menggunakan peranti dan data realiti maya anda (disyorkan)</translation>
 <translation id="4962975101802056554">Batalkan semua kebenaran untuk peranti</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
+<translation id="4994033804516042629">Tiada kenalan ditemui</translation>
 <translation id="4996978546172906250">Kongsi melalui</translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5048398596102334565">Benarkan tapak mengakses penderia gerakan (disyorkan)</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5100237604440890931">Diruntuhkan - klik untuk mengembangkan.</translation>
 <translation id="5123685120097942451">Tab Inkognito</translation>
+<translation id="5197729504361054390">Kenalan yang anda pilih akan dikongsi dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5301954838959518834">OK, faham</translation>
 <translation id="5313967007315987356">Tambahkan tapak</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Tindakan ini akan mengosongkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh tapak.</translation>
 <translation id="5384883051496921101">Tapak ini akan berkongsi maklumat dengan apl di luar daripada mod inkognito.</translation>
 <translation id="5391532827096253100">Sambungan anda ke tapak web ini tidak selamat. Maklumat tapak</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lagi)}other{(+ # lagi)}}</translation>
+<translation id="5403592356182871684">Nama</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> masa berlalu daripada <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Sekat iklan di tapak yang menyiarkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="5505264765875738116">Tapak tidak boleh membuat permintaan untuk menghantar pemberitahuan</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Kandungan yang dilindungi</translation>
 <translation id="662080504995468778">Kekal di sini</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
+<translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Muat turun aktif</translation>
 <translation id="6746124502594467657">Alihkan ke bawah</translation>
 <translation id="6766622839693428701">Leret ke bawah untuk tutup.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7846621471902887024">Anda akan dilog keluar daripada semua tapak.</translation>
 <translation id="7882806643839505685">Benarkan bunyi untuk tapak tertentu.</translation>
+<translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7993619969781047893">Ciri pada sesetengah tapak mungkin rosak</translation>
 <translation id="7999064672810608036">Anda pasti ingin mengosongkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk tapak web ini?</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Dibenarkan (disyorkan)</translation>
 <translation id="8609465669617005112">Alihkan ke atas</translation>
 <translation id="8676374126336081632">Kosongkan input</translation>
+<translation id="868929229000858085">Cari dalam kenalan anda</translation>
 <translation id="8702612070107455751">Sebarang data luar talian akan dipadamkan.</translation>
 <translation id="8719283222052720129">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>

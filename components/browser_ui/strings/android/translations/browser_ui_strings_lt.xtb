@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Norėdami leisti „<ph name="APP_NAME" />“ naudoti AR, taip pat įjunkite fotoaparatą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Vietos prieiga išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Skelbimai</translation>
+<translation id="1919950603503897840">Kontaktų pasirinkimas</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> iš <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Leidžiama (išskyrus trečiąsias šalis)</translation>
 <translation id="1989112275319619282">Naršyti</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Išeiti</translation>
 <translation id="2687403674020088961">Blokuoti visus slapukus (nerekomenduojama)</translation>
 <translation id="2704606927547763573">Nukopij.</translation>
+<translation id="2717722538473713889">El. pašto adresai</translation>
 <translation id="2822354292072154809">Ar tikrai norite iš naujo nustatyti visus „<ph name="CHOSEN_OBJECT_NAME" />“ svetainės leidimus?</translation>
 <translation id="2870560284913253234">Svetainė</translation>
 <translation id="2874939134665556319">Ankstesnis takelis</translation>
+<translation id="2903493209154104877">Adresai</translation>
 <translation id="2910701580606108292">Paklausti prieš leidžiant svetainėms leisti saugomą turinį</translation>
 <translation id="2913331724188855103">Leisti svetainėms išsaugoti ir nuskaityti slapukų duomenis (rekomenduojama)</translation>
 <translation id="2968755619301702150">Sertifikato peržiūros priemonė</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofonas</translation>
 <translation id="3277252321222022663">Leidžiama svetainėms pasiekti jutiklius (rekomenduojama)</translation>
 <translation id="3295602654194328831">Slėpti informaciją</translation>
+<translation id="3333961966071413176">Visi kontaktai</translation>
 <translation id="3386292677130313581">Klausti prieš leidžiant svetainėms žinoti vietą (rekomenduojama)</translation>
 <translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3538390592868664640">Blokuoti, kad svetainės nekurtų jūsų aplinkos 3D žemėlapio ir nestebėtų kameros padėties</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Nutildyti svetaines, kurios leidžia garsą</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3763247130972274048">Dukart palieskite vaizdo įrašą, kad praleistumėte 10 sek.</translation>
+<translation id="381841723434055211">Telefono numeriai</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3859306556332390985">Eiti pirmyn</translation>
 <translation id="3955193568934677022">Leisti svetainėms paleisti apsaugotą turinį (rekomenduojama)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Klausti prieš leidžiant svetainėms naudoti virtualiosios realybės įrenginį ir duomenis (rekomenduojama)</translation>
 <translation id="4962975101802056554">Anuliuoti visus įrenginio leidimus</translation>
 <translation id="497421865427891073">Eiti pirmyn</translation>
+<translation id="4994033804516042629">Kontaktų nerasta</translation>
 <translation id="4996978546172906250">Bendrinti per</translation>
 <translation id="5039804452771397117">Leisti</translation>
 <translation id="5048398596102334565">Leidžiama svetainėms pasiekti judesio jutiklius (rekomenduojama)</translation>
 <translation id="5063480226653192405">Naudojimas</translation>
 <translation id="5100237604440890931">Sutraukta – spustelėkite, kad išskleistumėte</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
+<translation id="5197729504361054390">Pasirinkti kontaktai bus bendrinami su <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Rodyti</translation>
 <translation id="5301954838959518834">Gerai, supratau</translation>
 <translation id="5313967007315987356">Pridėti svetainę</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Tai atlikus bus išvalyta <ph name="DATASIZE" /> svetainių saugomų duomenų ir slapukų.</translation>
 <translation id="5384883051496921101">Šioje svetainėje ketinama bendrinti informaciją su programa ne inkognito režimu.</translation>
 <translation id="5391532827096253100">Ryšys su šia svetaine nėra saugus. Svetainės informacija</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
+<translation id="5403592356182871684">Pavadinimai</translation>
 <translation id="5489227211564503167">Praėjęs laikas: <ph name="ELAPSED_TIME" /> iš <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokuoti skelbimus svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="5505264765875738116">Svetainės negali prašyti siųsti pranešimus</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Apsaugotas turinys</translation>
 <translation id="662080504995468778">Likti</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
+<translation id="6689172468748959065">Profilio nuotraukos</translation>
 <translation id="6697925417670533197">Aktyvūs atsisiuntimai</translation>
 <translation id="6746124502594467657">Perkelti žemyn</translation>
 <translation id="6766622839693428701">Perbraukite žemyn, kad uždarytumėte.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
 <translation id="7846621471902887024">Būsite atjungti nuo visų svetainių.</translation>
 <translation id="7882806643839505685">Konkrečios svetainės garso leidimas.</translation>
+<translation id="7986741934819883144">Pasirinkite kontaktą</translation>
 <translation id="7993619969781047893">Funkcijos gali neveikti tam tikrose svetainėse</translation>
 <translation id="7999064672810608036">Ar tikrai norite išvalyti visus šios svetainės vietinius duomenis, įskaitant slapukus, ir iš naujo nustatyti visus leidimus?</translation>
 <translation id="8007176423574883786">Išjungta šiame įrenginyje</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Leidžiama (rekomenduojama)</translation>
 <translation id="8609465669617005112">Perkelti į viršų</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
+<translation id="868929229000858085">Ieškokite savo kontaktuose</translation>
 <translation id="8702612070107455751">Visi neprisijungus pasiekiami duomenys bus išvalyti.</translation>
 <translation id="8719283222052720129">Įjunkite „<ph name="APP_NAME" />“ leidimą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>

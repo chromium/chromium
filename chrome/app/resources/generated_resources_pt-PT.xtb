@@ -1015,7 +1015,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2200356397587687044">O Chrome necessita de autorização para continuar</translation>
 <translation id="220138918934036434">Ocultar botão</translation>
 <translation id="2202898655984161076">Ocorreu um problema ao listar as impressoras. Algumas impressoras podem não ter sido registadas com êxito no <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Motor de pesquisa utilizado na <ph name="BEGIN_LINK" />barra de endereço<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Ler e alterar tudo o que introduzir</translation>
 <translation id="220858061631308971">Introduza este código PIN no "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
@@ -1937,6 +1936,7 @@ Pretende pará-lo?</translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informações da aplicação</translation>
 <translation id="3333190335304955291">Pode desativar este serviço nas Definições.</translation>
+<translation id="3333961966071413176">Todos os contactos</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – vídeo em reprodução no modo ecrã no ecrã.</translation>
 <translation id="3335947283844343239">Reabrir separador fechado</translation>
 <translation id="3340620525920140773">Transferência concluída: <ph name="FILE_NAME" />.</translation>
@@ -3032,6 +3032,7 @@ Pretende pará-lo?</translation>
 <translation id="4646675363240786305">Portas</translation>
 <translation id="4646949265910132906">Ligação segura ao Wi-Fi</translation>
 <translation id="4647090755847581616">Fe&amp;char Separador</translation>
+<translation id="4647283074445570750">Passo <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Iniciar app quando inicia sessão no seu tablet}computer{Iniciar app quando inicia sessão no seu computador}other{Iniciar app quando inicia sessão no seu dispositivo}}</translation>
 <translation id="4647697156028544508">Introduza o PIN para "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Permissões insuficientes</translation>

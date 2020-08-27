@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Դուք կմտնեք ձեր Google հաշիվ\n(Chrome-ի համաժամացումը չի միանա)</translation>
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
 <translation id="1883903952484604915">Իմ ֆայլերը</translation>
-<translation id="1919950603503897840">Ընտրեք կոնտակտներ</translation>
 <translation id="1925021887439448749">Մուտքագրեք այլ հասցե</translation>
 <translation id="1928696683969751773">Թարմացումներ</translation>
 <translation id="19288952978244135">Նորից բացեք Chrome-ը:</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և Chrome OS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Գործում է նաև <ph name="BEGIN_LINK3" />Family Link-ի միջոցով կառավարվող Google հաշիվների գաղտնիության ծանուցագիրը<ph name="END_LINK3" />։</translation>
 <translation id="2707726405694321444">Թարմացնել էջը</translation>
 <translation id="2709516037105925701">Ինքնալցում</translation>
-<translation id="2717722538473713889">Էլ․ հասցեներ</translation>
 <translation id="2728754400939377704">Տեսակավորել ըստ կայքի</translation>
 <translation id="2744248271121720757">Հպեք բառին՝ ակնթարթորեն որոնելու կամ առնչվող գործողությունները տեսնելու համար</translation>
 <translation id="2760989362628427051">Միացնել մուգ թեման, երբ սարքի մուգ թեման կամ մարտկոցի տնտեսման ռեժիմը միացված է</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">Google-ը կարող է ձեր այցելությունների պատմությունն օգտագործել` Որոնումն ու Google-ի մյուս ծառայություններն անհատականացնելու համար:</translation>
 <translation id="2898264748040935573">Փոփոխել պահված գաղտնաբառը</translation>
 <translation id="2900528713135656174">Ստեղծել միջոցառում</translation>
-<translation id="2903493209154104877">Հասցեներ</translation>
 <translation id="2904414404539560095">Սարքերը, որոնց հետ կիսվելու եք ներդիրով, ցուցադրված են ամբողջ էկրանով:</translation>
 <translation id="2905036901251765993">Մոտակայքում գտնվող մարդկանց հետ կիսվելու համար սկանավորեք այս QR կոդը</translation>
 <translation id="2909615210195135082">Google ծանուցումների հարթակ</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">Այս հավելվածն աշխատում է Chrome-ում</translation>
 <translation id="3315103659806849044">Դուք ներկայումս անհատականացնում եք համաժամացման և Google-ի ծառայությունների կարգավորումները: Անհատականացումն ավարտելու և համաժամացումը միացնելու համար հպեք «Հաստատել» կոճակին էկրանի ներքևի հատվածում: Անցնել վերև</translation>
 <translation id="3328801116991980348">Տեղեկություններ կայքի մասին</translation>
-<translation id="3333961966071413176">Բոլոր կոնտակտները</translation>
 <translation id="3334729583274622784">Փոխե՞լ ֆայլի ընդլայնումը</translation>
 <translation id="3341058695485821946">Դիտեք պահված տվյալների ծավալը</translation>
 <translation id="3350687908700087792">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">Տեղադրել</translation>
 <translation id="3810838688059735925">Տեսանյութ</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
-<translation id="381841723434055211">Հեռախոսահամարներ</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ներբեռնում ջնջվեց</translation>
 <translation id="3856096718352044181">Հաստատեք, որ սա վավեր մատակարար է կամ նորից փորձեք</translation>
 <translation id="388596076286380598">Դուք կարող եք կարդալ հոդվածներ, դիտել տեսանյութեր և այլ բովանդակություն ձեր սիրած կայքերից նույնիսկ, երբ կապը թույլ է կամ բացակայում է։</translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">Առաջ գնալ</translation>
 <translation id="4988210275050210843">Ֆայլը ներբեռնվում է (<ph name="MEGABYTES" />)։</translation>
 <translation id="4988526792673242964">Էջեր</translation>
-<translation id="4994033804516042629">Ոչ մի կոնտակտ չի գտնվել</translation>
 <translation id="5004416275253351869">Google-ում գործողությունների հետագծում</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> կայքն ուզում է միանալ</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5184329579814168207">Բացել Chrome-ով</translation>
 <translation id="5193988420012215838">Պատճենվեց սեղմատախտակին</translation>
-<translation id="5197729504361054390">Ձեր ընտրած կոնտակտները հասանելի կդառնան <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքին:</translation>
 <translation id="5199929503336119739">Աշխատանքային պրոֆիլ</translation>
 <translation id="5210286577605176222">Անցնել նախորդ ներդիր</translation>
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">Լրացուցիչ պաշտպանությունը միացված է</translation>
 <translation id="5357811892247919462">Դուք ներդիր եք ստացել</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> բացված ներդիր: Հպեք՝ ներդիրների միջև անցնելու համար։}one{<ph name="OPEN_TABS_MANY" /> բացված ներդիր։ հպեք՝ ներդիրների միջև անցնելու համար։}other{<ph name="OPEN_TABS_MANY" /> բացված ներդիրներ։ հպեք՝ ներդիրների միջև անցնելու համար։}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ու ևս 1)}one{(ու ևս #)}other{(ու ևս #)}}</translation>
-<translation id="5403592356182871684">Անուններ</translation>
 <translation id="5403644198645076998">Թույլատրել միայն որոշ կայքեր</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
 <translation id="5423934151118863508">Ձեր հաճախակի այցելած էջերը կցուցադրվեն այստեղ</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">Chrome-ի Գաղտնիության ծանուցագիր</translation>
 <translation id="6671495933530132209">Պատճենել պատկերը</translation>
 <translation id="6676840375528380067">Հեռացնե՞լ Chrome-ի տվյալները այս սարքից</translation>
-<translation id="6689172468748959065">Պրոֆիլի լուսանկարներ</translation>
 <translation id="6691888250440401212">1. Ընտրեք <ph name="APP_NAME" /> հավելվածը\n2. Հպեք «Նշել որպես կանխադրված»</translation>
 <translation id="6697492270171225480">Ցուցադրել նմանատիպ էջերի առաջարկներ, երբ որևէ էջ չհաջողվի գտնել</translation>
 <translation id="6698801883190606802">Կառավարել համաժամացված տվյալները</translation>
@@ -912,7 +902,6 @@
 <translation id="7975379999046275268">Նախադիտել էջը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Նախաբեռնել էջերը ավելի արագ դիտարկման և որոնման համար</translation>
 <translation id="79859296434321399">Լրացված իրականության ռեժիմում բովանդակությունը դիտելու համար տեղադրեք ARCore հավելվածը</translation>
-<translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
 <translation id="799806351373751710">Չեղարկել համաժամացման կարգավորումը</translation>
 <translation id="7998918019931843664">Նորից բացել փակված ներդիրը</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">Դուք դուրս կգրվեք կայքերի մեծ մասից։</translation>
 <translation id="8664979001105139458">Այս անունով ֆայլ արդեն գոյություն ունի</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Ազդանշանի ուժգնությունը՝ # գծիկ}one{Signal Strength Level: # bars}other{Ազդանշանի ուժգնությունը՝ # գծիկ}}</translation>
-<translation id="868929229000858085">Որոնեք կոնտակտներ</translation>
 <translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>

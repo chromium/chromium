@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">‏כדי לאפשר ל-<ph name="APP_NAME" /> להשתמש ב-AR, צריך להפעיל את המצלמה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">‏הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">מודעות</translation>
+<translation id="1919950603503897840">בחירת אנשי קשר</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">מותר, מלבד צד שלישי</translation>
 <translation id="1989112275319619282">דפדף</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2687403674020088961">‏חסימה של כל קובצי ה-cookie (לא מומלץ)</translation>
 <translation id="2704606927547763573">הועתק</translation>
+<translation id="2717722538473713889">כתובות אימייל</translation>
 <translation id="2822354292072154809">לאפס את כל הרשאות האתר בשביל <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2874939134665556319">הרצועה הקודמת</translation>
+<translation id="2903493209154104877">כתובות</translation>
 <translation id="2910701580606108292">הצגת שאלה לפני מתן הרשאה לאתרים להפעיל תוכן מוגן</translation>
 <translation id="2913331724188855103">‏אתרים יוכלו לשמור ולקרוא נתונים של קובצי Cookie (מומלץ)</translation>
 <translation id="2968755619301702150">מציג האישורים</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">מיקרופון</translation>
 <translation id="3277252321222022663">התרת גישה של אתרים אל החיישנים (מומלץ)</translation>
 <translation id="3295602654194328831">הסתר פרטים</translation>
+<translation id="3333961966071413176">כל אנשי הקשר</translation>
 <translation id="3386292677130313581">יש לשאול לפני שמאפשרים לאתרים לדעת מה המיקום שלך (מומלץ)</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3538390592868664640">חסימה של יצירת מפה בתלת ממד של הסביבה שלך או של מעקב אחר מיקום המצלמה על ידי אתרים.</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">השתקת אתרים שמשמיעים צלילים</translation>
 <translation id="3744111561329211289">סינכרון ברקע</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
+<translation id="381841723434055211">מספרי טלפון</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3859306556332390985">הרץ קדימה</translation>
 <translation id="3955193568934677022">אתרים יוכלו להפעיל תוכן מוגן (מומלץ)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">תוצג שאלה לפני מתן הרשאה לאתרים להשתמש במכשיר המציאות המדומה ובנתוני המציאות המדומה שלך (מומלץ)</translation>
 <translation id="4962975101802056554">ביטול כל ההרשאות בשביל המכשיר</translation>
 <translation id="497421865427891073">המשך קדימה</translation>
+<translation id="4994033804516042629">לא נמצאו אנשי קשר</translation>
 <translation id="4996978546172906250">שיתוף באמצעות</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5048398596102334565">התרת גישה של אתרים אל חיישני התנועה (מומלץ)</translation>
 <translation id="5063480226653192405">שימוש</translation>
 <translation id="5100237604440890931">מכווץ - לחץ כדי להרחיב.</translation>
 <translation id="5123685120097942451">כרטיסיית גלישה בסתר</translation>
+<translation id="5197729504361054390">אנשי הקשר שייבחרו ישותפו עם <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">הצגה</translation>
 <translation id="5301954838959518834">בסדר, הבנתי</translation>
 <translation id="5313967007315987356">הוסף אתר</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">‏הפעולה הזו תגרום למחיקת <ph name="DATASIZE" /> של נתונים וקובצי cookie שנשמרו על ידי אתרים.</translation>
 <translation id="5384883051496921101">אתר זה עומד לשתף מידע עם אפליקציה מחוץ למצב גלישה בסתר.</translation>
 <translation id="5391532827096253100">החיבור שלך לאתר הזה לא מאובטח. פרטי האתר</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ועוד 1)}two{(ועוד #)}many{(ועוד #)}other{(ועוד #)}}</translation>
+<translation id="5403592356182871684">שמות</translation>
 <translation id="5489227211564503167">צפית ב-<ph name="ELAPSED_TIME" /> מתוך <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">חסימת מודעות באתרים שמוצגות בהם מודעות מפריעות או מטעות</translation>
 <translation id="5505264765875738116">אתרים לא יכולים לבקש לשלוח התראות</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">תוכן מוגן</translation>
 <translation id="662080504995468778">הישאר</translation>
 <translation id="6643016212128521049">ניקוי</translation>
+<translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>
 <translation id="6746124502594467657">הזז למטה</translation>
 <translation id="6766622839693428701">החלקה מטה סוגרת.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">בטל את הבחירה</translation>
 <translation id="7846621471902887024">תתבצע יציאה מכל האתרים.</translation>
 <translation id="7882806643839505685">מתן הרשאה להשמעת צלילים באתר ספציפי.</translation>
+<translation id="7986741934819883144">בחירת איש קשר</translation>
 <translation id="7993619969781047893">ייתכן שהתכונות של חלק מהאתרים לא יפעלו כראוי</translation>
 <translation id="7999064672810608036">‏האם אתה בטוח שברצונך לנקות את כל הנתונים המקומיים, כולל קובצי Cookie, ולאפס את כל ההרשאות של האתר הזה?</translation>
 <translation id="8007176423574883786">כבוי בשביל המכשיר הזה</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">מותרת (מומלץ)</translation>
 <translation id="8609465669617005112">הזז למעלה</translation>
 <translation id="8676374126336081632">ניקוי קלט</translation>
+<translation id="868929229000858085">חיפוש באנשי הקשר</translation>
 <translation id="8702612070107455751">המערכת תמחק את כל הנתונים ששמורים אופליין.</translation>
 <translation id="8719283222052720129">‏יש להעניק הרשאה עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">נסה שוב</translation>

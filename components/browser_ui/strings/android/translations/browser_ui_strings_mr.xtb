@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ला AR वापरू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" />मध्ये कॅमेरादेखील सुरू करा.</translation>
 <translation id="1887786770086287077">या डिव्हाइसाठी स्थान अ‍ॅक्सेस बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="1919345977826869612">जाहिराती</translation>
+<translation id="1919950603503897840">संपर्क निवडा</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">तृतीय-पक्षाशिवाय, अनुमती असलेले</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">सोडा</translation>
 <translation id="2687403674020088961">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
 <translation id="2704606927547763573">कॉपी केले</translation>
+<translation id="2717722538473713889">ईमेल ॲड्रेस</translation>
 <translation id="2822354292072154809">तुम्हाला नक्की <ph name="CHOSEN_OBJECT_NAME" /> साठी सर्व साइट परवानग्या रीसेट करायच्या आहेत का?</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
+<translation id="2903493209154104877">पत्ते</translation>
 <translation id="2910701580606108292">सायटींना संरक्षित आशय प्ले करू देण्याआधी विचारा</translation>
 <translation id="2913331724188855103">कुकी डेटा सेव्ह करणे आणि वाचण्यासाठी साइटना अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="2968755619301702150">सर्टिफिकेट दर्शक</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">मायक्रोफोन</translation>
 <translation id="3277252321222022663">साइटना सेन्सर ॲक्सेस करण्याची अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="3295602654194328831">माहिती लपवा</translation>
+<translation id="3333961966071413176">सर्व संपर्क</translation>
 <translation id="3386292677130313581">साइटना तुमचे स्थान जाणून घेण्याची अनुमती देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
 <translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3538390592868664640">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करण्यापासून किंवा कॅमेर्‍याचे स्थान ट्रॅक करण्यापासून साइट ब्लॉक करा</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">ध्वनी प्ले करणाऱ्या साइट म्यूट करा</translation>
 <translation id="3744111561329211289">पार्श्वभूमी संकालन</translation>
 <translation id="3763247130972274048">१० सेकंद पुढे जाण्यासाठी व्हिडिओवर डावीकडे किंवा उजवीकडे दोनदा टॅप करा</translation>
+<translation id="381841723434055211">फोन नंबर</translation>
 <translation id="385051799172605136">मागील</translation>
 <translation id="3859306556332390985">पुढे शोधा</translation>
 <translation id="3955193568934677022">संरक्षित आशय प्ले करण्यासाठी साइटना अनुमती द्या (शिफारस केलेले)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">साइटना तुमचे आभासी वास्तविकता डिव्हाइस आणि डेटा वापरू देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
 <translation id="4962975101802056554">डिव्हाइससाठीच्या सर्व परवानग्या रद्द करा</translation>
 <translation id="497421865427891073">पुढे जा</translation>
+<translation id="4994033804516042629">संपर्क सापडले नाहीत</translation>
 <translation id="4996978546172906250">याद्वारे शेअर करा</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5048398596102334565">साइटना मोशन सेन्सर ॲक्सेस करण्याची अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="5063480226653192405">वापर</translation>
 <translation id="5100237604440890931">संकुचित केले - विस्तृत करण्यासाठी क्लिक करा.</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
+<translation id="5197729504361054390">तुम्ही निवडलेले संपर्क <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />सोबत शेअर केले जातील.</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5301954838959518834">ठीक आहे, समजले</translation>
 <translation id="5313967007315987356">साइट जोडा</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">हे साइटने स्टोअर केलेला <ph name="DATASIZE" /> डेटा आणि कुकी साफ करेल.</translation>
 <translation id="5384883051496921101">ही साइट गुप्त मोडच्या बाहेरील एखाद्या अ‍ॅपबरोबर ही माहिती शेअर करणार आहे.</translation>
 <translation id="5391532827096253100">या साइटवरील तुमचे कनेक्शन सुरक्षित नाही. साइट माहिती</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ आणखी एक)}other{(+ आणखी #)}}</translation>
+<translation id="5403592356182871684">नावे</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> पैकी <ph name="ELAPSED_TIME" /> गेलेला वेळ.</translation>
 <translation id="5494752089476963479">अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवणाऱ्या साइटवरील जाहिराती ब्लॉक करा</translation>
 <translation id="5505264765875738116">साइट सूचना पाठवण्यास सांगू शकत नाहीत</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">संरक्षित आशय</translation>
 <translation id="662080504995468778">यावर रहा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
+<translation id="6689172468748959065">प्रोफाइल फोटो</translation>
 <translation id="6697925417670533197">सुरू असलेली डाउनलोड</translation>
 <translation id="6746124502594467657">खाली हलवा</translation>
 <translation id="6766622839693428701">बंद करण्यासाठी खाली स्वाइप करा.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">निवड रद्द करा</translation>
 <translation id="7846621471902887024">तुम्हाला सर्व साइटमधून साइन आउट केले जाईल.</translation>
 <translation id="7882806643839505685">विशिष्ट साइटसाठी ध्वनीची परवानगी द्या.</translation>
+<translation id="7986741934819883144">संपर्क निवडा</translation>
 <translation id="7993619969781047893">काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="7999064672810608036">तुम्ही कुकीजसह, सर्व स्थानिक डेटा साफ करू इच्छिता आणि या वेबसाइटसाठी सर्व परवानग्या रीसेट करू इच्छिता?</translation>
 <translation id="8007176423574883786">या डिव्हाइससाठी बंद करा</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">अनुमती दिली (शिफारस केलेले)</translation>
 <translation id="8609465669617005112">वर हलवा</translation>
 <translation id="8676374126336081632">इनपुट साफ करा</translation>
+<translation id="868929229000858085">तुमचे संपर्क शोधा</translation>
 <translation id="8702612070107455751">कोणताही ऑफलाइन डेटा साफ केला जाईल.</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्ये <ph name="APP_NAME" /> साठी परवानगी सुरू करा.</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>

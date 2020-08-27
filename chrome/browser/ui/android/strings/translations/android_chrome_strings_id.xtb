@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Anda akan login dengan Akun Google\n(ini tidak akan mengaktifkan Sinkronisasi Chrome)</translation>
 <translation id="1877026089748256423">Chrome terlalu lawas</translation>
 <translation id="1883903952484604915">File Saya</translation>
-<translation id="1919950603503897840">Pilih kontak</translation>
 <translation id="1925021887439448749">Masukkan alamat web khusus</translation>
 <translation id="1928696683969751773">Pembaruan</translation>
 <translation id="19288952978244135">Buka Chrome lagi.</translation>
@@ -216,7 +215,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2689830683995595741">Dengan menggunakan Chrome, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Pemberitahuan Privasi untuk Akun Google yang Dikelola dengan Family Link<ph name="END_LINK3" /> juga berlaku.</translation>
 <translation id="2707726405694321444">Segarkan halaman</translation>
 <translation id="2709516037105925701">Isi-Otomatis</translation>
-<translation id="2717722538473713889">Alamat email</translation>
 <translation id="2728754400939377704">Urutkan menurut situs</translation>
 <translation id="2744248271121720757">Ketuk sebuah kata untuk menelusuri secara instan atau melihat tindakan terkait</translation>
 <translation id="2760989362628427051">Mengaktifkan tema gelap ketika tema gelap perangkat atau Penghemat Baterai aktif</translation>
@@ -241,7 +239,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2893180576842394309">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya</translation>
 <translation id="2898264748040935573">Edit sandi yang disimpan</translation>
 <translation id="2900528713135656174">Buat acara</translation>
-<translation id="2903493209154104877">Alamat</translation>
 <translation id="2904414404539560095">Daftar perangkat yang dapat digunakan untuk berbagi tab terbuka dalam layar penuh.</translation>
 <translation id="2905036901251765993">Untuk berbagi dengan orang-orang di sekitar, izinkan mereka memindai kode QR ini</translation>
 <translation id="2909615210195135082">Platform Notifikasi Google</translation>
@@ -294,7 +291,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3306398118552023113">Aplikasi ini dijalankan di Chrome</translation>
 <translation id="3315103659806849044">Anda sedang menyesuaikan setelan layanan Google dan Sinkronisasi. Untuk menyelesaikan pengaktifan sinkronisasi, ketuk Konfirmasi di dekat bagian bawah layar. Kembali ke atas</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
-<translation id="3333961966071413176">Semua kontak</translation>
 <translation id="3334729583274622784">Ubah ekstensi file?</translation>
 <translation id="3341058695485821946">Lihat banyaknya kuota yang Anda hemat</translation>
 <translation id="3350687908700087792">Tutup semua jendela samaran</translation>
@@ -353,7 +349,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3789841737615482174">Instal</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Kelola</translation>
-<translation id="381841723434055211">Nomor telepon</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> download dihapus</translation>
 <translation id="3856096718352044181">Verifikasi bahwa ini adalah penyedia yang valid atau coba lagi nanti</translation>
 <translation id="388596076286380598">Dapatkan artikel, video, dan konten lain dari situs yang Anda sukai, meskipun Anda sedang offline atau koneksi Anda buruk.</translation>
@@ -451,7 +446,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4650364565596261010">Default sistem</translation>
 <translation id="465657074423018424">Safe Browsing melindungi Anda dari situs yang menipu. Jika dinonaktifkan, Anda harus lebih berhati-hati saat menjelajah, terutama sebelum memasukkan sandi.</translation>
 <translation id="4662373422909645029">Nama panggilan tidak boleh berisi angka</translation>
-<translation id="4663499661119906179">Lihat situs populer dan artikel untuk Anda</translation>
+<translation id="4663499661119906179">Lihat situs dan artikel teratas untuk Anda</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bookmark dihapus</translation>
 <translation id="4665282149850138822"><ph name="NAME" /> telah ditambahkan ke layar Utama</translation>
 <translation id="4668347365065281350">Semua data yang disimpan oleh situs, termasuk cookie dan data lain yang disimpan secara lokal</translation>
@@ -464,7 +459,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4719927025381752090">Tawarkan penerjemahan</translation>
 <translation id="4720023427747327413">Buka di <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Bantu sempurnakan Chrome. <ph name="BEGIN_LINK" />Ikuti survei<ph name="END_LINK" /></translation>
-<translation id="47217992755561375">Lihat situs populer Anda</translation>
+<translation id="47217992755561375">Lihat situs teratas Anda</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="473775607612524610">Perbarui</translation>
 <translation id="4738836084190194332">Terakhir disinkronkan: <ph name="WHEN" /></translation>
@@ -509,7 +504,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="497421865427891073">Maju</translation>
 <translation id="4988210275050210843">Mendownload file (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Halaman</translation>
-<translation id="4994033804516042629">Kontak tidak ditemukan</translation>
 <translation id="5004416275253351869">Kontrol aktivitas Google</translation>
 <translation id="5005498671520578047">Salin sandi</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ingin terhubung</translation>
@@ -533,7 +527,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5184329579814168207">Buka di Chrome</translation>
 <translation id="5193988420012215838">Disalin ke papan klip Anda</translation>
-<translation id="5197729504361054390">Kontak yang Anda pilih akan dibagikan dengan <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Profil kerja</translation>
 <translation id="5210286577605176222">Beralih ke tab sebelumnya</translation>
 <translation id="5210365745912300556">Tutup tab</translation>
@@ -553,8 +546,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5355191726083956201">Perlindungan yang Disempurnakan aktif</translation>
 <translation id="5357811892247919462">Tab diterima</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> tab terbuka, ketuk untuk beralih tab}other{<ph name="OPEN_TABS_MANY" /> tab terbuka, ketuk untuk beralih tab}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lainnya)}other{(+ # lainnya)}}</translation>
-<translation id="5403592356182871684">Nama</translation>
 <translation id="5403644198645076998">Hanya izinkan situs tertentu</translation>
 <translation id="5414836363063783498">Memverifikasi...</translation>
 <translation id="5423934151118863508">Halaman yang paling sering dikunjungi akan muncul di sini</translation>
@@ -563,7 +554,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5433691172869980887">Nama pengguna disalin</translation>
 <translation id="543509235395288790">Mendownload <ph name="COUNT" /> file (<ph name="MEGABYTES" />).</translation>
 <translation id="5441522332038954058">Beralih ke bilah alamat</translation>
-<translation id="544776284582297024">Untuk membuka tab dan mengunjungi halaman yang berbeda secara bersamaan, ketuk tombol buka tab</translation>
+<translation id="544776284582297024">Untuk membuka tab dan mengunjungi halaman yang berbeda secara bersamaan, ketuk tombol tab terbuka</translation>
 <translation id="545042621069398927">Mempercepat download.</translation>
 <translation id="5456381639095306749">Download halaman</translation>
 <translation id="548278423535722844">Buka di aplikasi peta</translation>
@@ -639,7 +630,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5942872142862698679">Menggunakan Google untuk penelusuran</translation>
 <translation id="5952764234151283551">Mengirimkan URL halaman yang ingin Anda buka ke Google</translation>
 <translation id="5956665950594638604">Membuka Pusat Bantuan Chrome di tab baru</translation>
-<translation id="5957442310066583693">Untuk melihat situs populer, ketuk tombol Beranda</translation>
+<translation id="5957442310066583693">Untuk melihat situs teratas Anda, ketuk tombol Beranda</translation>
 <translation id="5958275228015807058">Temukan file dan halaman di Download</translation>
 <translation id="5962718611393537961">Ketuk untuk menciutkan</translation>
 <translation id="5964805880140440652">Untuk membagikan halaman ini ke perangkat lain, aktifkan sinkronisasi di setelan Chrome</translation>
@@ -736,7 +727,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6597891566292541626">Letakkan kode batang/QR dalam bingkai ini.</translation>
 <translation id="6600954340915313787">Disalin ke Chrome</translation>
 <translation id="661266467055912436">Meningkatkan keamanan untuk Anda dan semua orang di web.</translation>
-<translation id="6618554661997243500">Untuk melihat situs populer dan artikel untuk Anda, ketuk tombol Beranda</translation>
+<translation id="6618554661997243500">Untuk melihat situs dan artikel teratas untuk Anda, ketuk tombol Beranda</translation>
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6643649862576733715">Urutkan menurut jumlah kuota yang dihemat</translation>
@@ -750,7 +741,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="666981079809192359">Notifikasi Privasi Chrome</translation>
 <translation id="6671495933530132209">Salin gambar</translation>
 <translation id="6676840375528380067">Hapus data Chrome Anda dari perangkat ini?</translation>
-<translation id="6689172468748959065">Foto profil</translation>
 <translation id="6691888250440401212">1. Pilih <ph name="APP_NAME" />\n2. Ketuk “Setel sebagai default”</translation>
 <translation id="6697492270171225480">Tampilkan saran untuk halaman yang serupa jika halaman tidak dapat ditemukan</translation>
 <translation id="6698801883190606802">Kelola data yang disinkronkan</translation>
@@ -912,7 +902,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7975379999046275268">Pratinjau halaman <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pramuat halaman agar browsing dan menelusuri lebih cepat</translation>
 <translation id="79859296434321399">Untuk melihat konten augmented reality, instal ARCore</translation>
-<translation id="7986741934819883144">Pilih kontak</translation>
 <translation id="799806351373751710">Batalkan penyiapan sinkronisasi</translation>
 <translation id="7998918019931843664">Buka kembali tab yang ditutup</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1010,7 +999,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8662811608048051533">Membuat Anda logout dari sebagian besar situs.</translation>
 <translation id="8664979001105139458">Nama file sudah ada</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Tingkat Kekuatan Sinyal: # batang}other{Tingkat Kekuatan Sinyal: # batang}}</translation>
-<translation id="868929229000858085">Telusuri kontak Anda</translation>
 <translation id="869891660844655955">Masa berlaku</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8725066075913043281">Coba lagi</translation>

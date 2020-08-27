@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">คุณจะลงชื่อเข้าใช้ด้วยบัญชี Google\n(การดำเนินการนี้จะไม่เปิดการซิงค์ของ Chrome)</translation>
 <translation id="1877026089748256423">Chrome ล้าสมัย</translation>
 <translation id="1883903952484604915">ไฟล์ของฉัน</translation>
-<translation id="1919950603503897840">เลือกรายชื่อติดต่อ</translation>
 <translation id="1925021887439448749">ป้อนที่อยู่เว็บที่กำหนดเอง</translation>
 <translation id="1928696683969751773">อัปเดต</translation>
 <translation id="19288952978244135">เปิด Chrome อีกครั้ง</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">การใช้ Chrome หมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวสำหรับบัญชี Google ที่มีการจัดการด้วย Family Link<ph name="END_LINK3" /> จะมีผลใช้บังคับด้วย</translation>
 <translation id="2707726405694321444">รีเฟรชหน้า</translation>
 <translation id="2709516037105925701">ป้อนอัตโนมัติ</translation>
-<translation id="2717722538473713889">อีเมล</translation>
 <translation id="2728754400939377704">จัดเรียงตามเว็บไซต์</translation>
 <translation id="2744248271121720757">แตะคำเพื่อค้นหาทันทีหรือดูการทำงานที่เกี่ยวข้อง</translation>
 <translation id="2760989362628427051">เปิดธีมสีเข้มเมื่อโหมดธีมสีเข้มหรือโหมดประหยัดแบตเตอรี่ของอุปกรณ์เปิดอยู่</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เข้ากับคุณ</translation>
 <translation id="2898264748040935573">แก้ไขรหัสผ่านที่เก็บไว้</translation>
 <translation id="2900528713135656174">สร้างกิจกรรม</translation>
-<translation id="2903493209154104877">ที่อยู่</translation>
 <translation id="2904414404539560095">รายการอุปกรณ์ที่จะแชร์แท็บด้วยเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
 <translation id="2905036901251765993">หากต้องการแชร์กับผู้คนที่อยู่ใกล้ๆ ให้สแกนคิวอาร์โค้ดนี้</translation>
 <translation id="2909615210195135082">แพลตฟอร์มการแจ้งเตือนของ Google</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">แอปนี้กำลังทำงานใน Chrome</translation>
 <translation id="3315103659806849044">ขณะนี้คุณกำลังปรับแต่งการตั้งค่าการซิงค์และบริการ Google แตะปุ่ม "ยืนยัน" ใกล้ด้านล่างของหน้าจอเพื่อเปิดการซิงค์ให้เสร็จสิ้น กลับ</translation>
 <translation id="3328801116991980348">ข้อมูลไซต์</translation>
-<translation id="3333961966071413176">รายชื่อติดต่อทั้งหมด</translation>
 <translation id="3334729583274622784">เปลี่ยนนามสกุลไฟล์ใช่ไหม</translation>
 <translation id="3341058695485821946">ดูปริมาณอินเทอร์เน็ตที่คุณประหยัดไปได้</translation>
 <translation id="3350687908700087792">ปิดแท็บไม่ระบุตัวตนทั้งหมด</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="3810838688059735925">วิดีโอ</translation>
 <translation id="3810973564298564668">จัดการ</translation>
-<translation id="381841723434055211">หมายเลขโทรศัพท์</translation>
 <translation id="3819178904835489326">ลบการดาวน์โหลด <ph name="NUMBER_OF_DOWNLOADS" /> รายการแล้ว</translation>
 <translation id="3856096718352044181">โปรดยืนยันว่านี่เป็นผู้ให้บริการที่ถูกต้องหรือลองอีกครั้งภายหลัง</translation>
 <translation id="388596076286380598">ดูบทความ วิดีโอและเนื้อหาอื่นๆ จากเว็บไซต์ที่คุณชื่นชอบ แม้ว่าคุณกำลังออฟไลน์หรือมีการเชื่อมต่อสัญญาณที่ไม่ดี</translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">ไปข้างหน้า</translation>
 <translation id="4988210275050210843">กำลังดาวน์โหลดไฟล์ (<ph name="MEGABYTES" />)</translation>
 <translation id="4988526792673242964">หน้า</translation>
-<translation id="4994033804516042629">ไม่พบรายชื่อติดต่อ</translation>
 <translation id="5004416275253351869">ส่วนควบคุมกิจกรรมของ Google</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ต้องการเชื่อมต่อ</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5184329579814168207">เปิดใน Chrome</translation>
 <translation id="5193988420012215838">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
-<translation id="5197729504361054390">ระบบจะแชร์รายชื่อติดต่อที่คุณเลือกกับ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /></translation>
 <translation id="5199929503336119739">โปรไฟล์งาน</translation>
 <translation id="5210286577605176222">ข้ามไปยังแท็บก่อนหน้า</translation>
 <translation id="5210365745912300556">ปิดแท็บ</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">การปกป้องที่ปรับปรุงแล้วเปิดอยู่</translation>
 <translation id="5357811892247919462">ได้รับแท็บแล้ว</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{เปิดแท็บไว้ <ph name="OPEN_TABS_ONE" /> แท็บ แตะเพื่อเปลี่ยนแท็บ}other{เปิดแท็บไว้ <ph name="OPEN_TABS_MANY" /> แท็บ แตะเพื่อเปลี่ยนแท็บ}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(อีก 1 รายการ)}other{(อีก # รายการ)}}</translation>
-<translation id="5403592356182871684">ชื่อ</translation>
 <translation id="5403644198645076998">อนุญาตเฉพาะบางไซต์</translation>
 <translation id="5414836363063783498">กำลังยืนยัน…</translation>
 <translation id="5423934151118863508">หน้าที่มีการเข้าชมมากที่สุดของคุณจะปรากฏที่นี่</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวของ Chrome</translation>
 <translation id="6671495933530132209">คัดลอกรูปภาพ</translation>
 <translation id="6676840375528380067">ล้างข้อมูล Chrome ของคุณออกจากอุปกรณ์นี้ไหม</translation>
-<translation id="6689172468748959065">รูปโปรไฟล์</translation>
 <translation id="6691888250440401212">1. เลือก <ph name="APP_NAME" />\n2. แตะ "ตั้งเป็นแอปเริ่มต้น"</translation>
 <translation id="6697492270171225480">แสดงคำแนะนำหน้าที่คล้ายกันเมื่อไม่พบหน้าเว็บ</translation>
 <translation id="6698801883190606802">จัดการข้อมูลที่ซิงค์</translation>
@@ -912,7 +902,6 @@
 <translation id="7975379999046275268">พรีวิวหน้า <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">โหลดหน้าเว็บล่วงหน้าเพื่อให้เรียกดูและค้นหาได้เร็วขึ้น</translation>
 <translation id="79859296434321399">ติดตั้ง ARCore เพื่อดูเนื้อหา Augmented Reality</translation>
-<translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="799806351373751710">ยกเลิกการตั้งค่าซิงค์</translation>
 <translation id="7998918019931843664">เปิดแท็บที่ปิดไปแล้วขึ้นใหม่</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่</translation>
 <translation id="8664979001105139458">มีชื่อไฟล์นี้อยู่แล้ว</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{ระดับความแรงของสัญญาณ: # แถบ}other{ระดับความแรงของสัญญาณ: # แถบ}}</translation>
-<translation id="868929229000858085">ค้นหารายชื่อติดต่อ</translation>
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>

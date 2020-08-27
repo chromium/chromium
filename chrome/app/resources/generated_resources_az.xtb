@@ -1011,7 +1011,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2200356397587687044">Chrome davam etmək üçün icazə tələb edir</translation>
 <translation id="220138918934036434">Düyməni gizlədin</translation>
 <translation id="2202898655984161076">Printerlərin siyahısını tərtib edərkən xəta baş verdi. Bəzi printerləriniz <ph name="CLOUD_PRINT_NAME" /> ilə uğurla qeydiyyat olunmayıb..</translation>
-<translation id="2203682048752833055">Axtarış sistemi <ph name="BEGIN_LINK" />ünvan panelində<ph name="END_LINK" /> istifadə edildi</translation>
 <translation id="2204034823255629767">Oxuyun və yazdığınız istənilən şeyi dəyişin</translation>
 <translation id="220858061631308971">Bu PIN kodu "<ph name="DEVICE_NAME" />" cihazına daxil edin:</translation>
 <translation id="2212565012507486665">Kukilərə icazə verin</translation>
@@ -1932,6 +1931,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Tətbiq məlumatı</translation>
 <translation id="3333190335304955291">Bu xidməti Ayarlarda söndürə bilərsiniz.</translation>
+<translation id="3333961966071413176">Bütün kontaktar</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video Şəkil içində Şəkil rejimində oxudulur</translation>
 <translation id="3335947283844343239">Bağlanmış Paneli yenidən açın</translation>
 <translation id="3340620525920140773">Endirmə tamamlandı: <ph name="FILE_NAME" />.</translation>

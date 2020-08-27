@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Google アカウントでログインします\n（Chrome 同期は有効になりません）</translation>
 <translation id="1877026089748256423">Chrome は古いバージョンです</translation>
 <translation id="1883903952484604915">マイファイル</translation>
-<translation id="1919950603503897840">連絡先を選択</translation>
 <translation id="1925021887439448749">カスタムのウェブアドレスを入力</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">Chrome を再度開きます。</translation>
@@ -216,7 +215,6 @@
 <translation id="2689830683995595741">Chrome を使用すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。また、<ph name="BEGIN_LINK3" />ファミリー リンクで管理する Google アカウントのプライバシーに関するお知らせ<ph name="END_LINK3" />も適用されます。</translation>
 <translation id="2707726405694321444">ページを更新</translation>
 <translation id="2709516037105925701">自動入力</translation>
-<translation id="2717722538473713889">メールアドレス</translation>
 <translation id="2728754400939377704">サイトで並べ替え</translation>
 <translation id="2744248271121720757">単語をタップすると、検索をすばやく実行したり、関連する操作メニューを確認したりできます</translation>
 <translation id="2760989362628427051">デバイスのダークテーマまたはバッテリー セーバーがオンのときにダークテーマをオンにする</translation>
@@ -241,7 +239,6 @@
 <translation id="2893180576842394309">検索やその他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
 <translation id="2898264748040935573">保存したパスワードを編集します</translation>
 <translation id="2900528713135656174">予定を作成</translation>
-<translation id="2903493209154104877">住所</translation>
 <translation id="2904414404539560095">タブを共有するデバイスのリストが画面全体に表示されました。</translation>
 <translation id="2905036901251765993">近くのユーザーと共有するには、この QR コードをスキャンしてもらいます</translation>
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
@@ -294,7 +291,6 @@
 <translation id="3306398118552023113">このアプリは Chrome で実行中です</translation>
 <translation id="3315103659806849044">[同期と Google サービス] の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
 <translation id="3328801116991980348">サイト情報</translation>
-<translation id="3333961966071413176">すべての連絡先</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="3341058695485821946">データ削減量を確認できます</translation>
 <translation id="3350687908700087792">すべてのシークレット タブを閉じます</translation>
@@ -353,7 +349,6 @@
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3810973564298564668">管理</translation>
-<translation id="381841723434055211">電話番号</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> 件のダウンロードを削除しました</translation>
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
 <translation id="388596076286380598">オフラインの場合や接続が不安定な場合でも、お気に入りのサイトの記事や動画などのコンテンツを閲覧できます。</translation>
@@ -509,7 +504,6 @@
 <translation id="497421865427891073">次に進む</translation>
 <translation id="4988210275050210843">ファイルをダウンロードしています（<ph name="MEGABYTES" />）。</translation>
 <translation id="4988526792673242964">ページ</translation>
-<translation id="4994033804516042629">連絡先が見つかりませんでした</translation>
 <translation id="5004416275253351869">Google アクティビティ管理</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> が接続を要求しています</translation>
@@ -533,7 +527,6 @@
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
-<translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
 <translation id="5199929503336119739">仕事用プロファイル</translation>
 <translation id="5210286577605176222">前のタブに移動する</translation>
 <translation id="5210365745912300556">タブを閉じる</translation>
@@ -553,8 +546,6 @@
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
 <translation id="5357811892247919462">タブが共有されました</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> 個のタブが開いています。タブを切り替えるにはタップします}other{<ph name="OPEN_TABS_MANY" /> 個のタブが開いています。タブを切り替えるにはタップします}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
-<translation id="5403592356182871684">名前</translation>
 <translation id="5403644198645076998">特定のサイトのみを許可</translation>
 <translation id="5414836363063783498">確認しています…</translation>
 <translation id="5423934151118863508">最もアクセスの多かったページがここに表示されます</translation>
@@ -750,7 +741,6 @@
 <translation id="666981079809192359">Chrome のプライバシーに関するお知らせ</translation>
 <translation id="6671495933530132209">画像をコピー</translation>
 <translation id="6676840375528380067">Chrome データをこのデバイスから削除しますか？</translation>
-<translation id="6689172468748959065">プロフィール写真</translation>
 <translation id="6691888250440401212">1. <ph name="APP_NAME" /> を選択します\n2. [デフォルトとして設定] をタップします</translation>
 <translation id="6697492270171225480">ページが見つからない場合に類似のページを候補として表示する</translation>
 <translation id="6698801883190606802">同期データを管理</translation>
@@ -912,7 +902,6 @@
 <translation id="7975379999046275268">ページをプレビュー <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ページをプリロードして、閲覧と検索をすばやく行えるようにする</translation>
 <translation id="79859296434321399">拡張現実（AR）コンテンツを表示するには ARCore をインストールしてください</translation>
-<translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="799806351373751710">同期設定をキャンセル</translation>
 <translation id="7998918019931843664">閉じたタブを開く</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
@@ -1010,7 +999,6 @@
 <translation id="8662811608048051533">ほとんどのサイトからログアウトします。</translation>
 <translation id="8664979001105139458">同じ名前のファイルが存在します</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{電波強度: レベル #}other{電波強度: レベル #}}</translation>
-<translation id="868929229000858085">連絡先を検索</translation>
 <translation id="869891660844655955">有効期限</translation>
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8725066075913043281">やり直し</translation>

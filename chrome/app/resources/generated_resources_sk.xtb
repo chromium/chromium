@@ -1015,7 +1015,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2200356397587687044">Chrome potrebuje na pokračovanie povolenie</translation>
 <translation id="220138918934036434">Skryť tlačidlo</translation>
 <translation id="2202898655984161076">Pri vytváraní zoznamu tlačiarní sa vyskytol problém. Niektoré z vašich tlačiarní možno nie sú v službe <ph name="CLOUD_PRINT_NAME" /> registrované.</translation>
-<translation id="2203682048752833055">Vyhľadávač, ktorý sa používa v <ph name="BEGIN_LINK" />paneli s adresou<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Čítať a meniť všetko, čo napíšete</translation>
 <translation id="220858061631308971">Zadajte tento kód PIN v zariadení „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="2212565012507486665">Povoliť súbory cookie</translation>
@@ -1936,6 +1935,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informácie o aplikácii</translation>
 <translation id="3333190335304955291">Túto službu môžete vypnúť v Nastaveniach.</translation>
+<translation id="3333961966071413176">Všetky kontakty</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video sa prehráva v režime obraz v obraze</translation>
 <translation id="3335947283844343239">Znova otvoriť zatvorenú kartu</translation>
 <translation id="3340620525920140773">Sťahovanie bolo dokončené: <ph name="FILE_NAME" />.</translation>
@@ -5237,7 +5237,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7415454883318062233">Nastavenie je dokončené</translation>
 <translation id="7416362041876611053">Neznáma chyba siete</translation>
 <translation id="741906494724992817">Táto aplikácia nevyžaduje žiadne špeciálne povolenia.</translation>
-<translation id="7420817660256886596">Proxy server <ph name="PROXY" /> požaduje overenie pomocou používateľského mena a hesla</translation>
+<translation id="7420817660256886596">Proxy server <ph name="PROXY" /> požaduje overenie používateľským menom a heslom</translation>
 <translation id="742130257665691897">Boli odstránené záložky</translation>
 <translation id="7421925624202799674">&amp;Zobraziť zdrojový kód stránky</translation>
 <translation id="7422192691352527311">Predvoľby...</translation>

@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">За да овозможите <ph name="APP_NAME" /> да користи AR, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Пристапот до локацијата е исклучен за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Реклами</translation>
+<translation id="1919950603503897840">Изберете контакти</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Се дозволува, освен од трети лица</translation>
 <translation id="1989112275319619282">Прелистувај</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Напушти</translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="2704606927547763573">Копирано</translation>
+<translation id="2717722538473713889">Адреси за е-пошта</translation>
 <translation id="2822354292072154809">Сигурно ли сакате да ги ресетирате сите дозволи на сајтот за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2874939134665556319">Претходна песна</translation>
+<translation id="2903493209154104877">Адреси</translation>
 <translation id="2910701580606108292">Прашај пред да дозволиш сајтовите да пуштаат заштитени содржини</translation>
 <translation id="2913331724188855103">Дозволете локациите да зачувуваат и читаат податоци за колачињата (препорачано)</translation>
 <translation id="2968755619301702150">Прикажувач на сертификат</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3277252321222022663">Дозволете сајтовите да пристапуваат до сензорите (препорачано)</translation>
 <translation id="3295602654194328831">Сокриј ги информациите</translation>
+<translation id="3333961966071413176">Сите контакти</translation>
 <translation id="3386292677130313581">Прашај пред да дозволиш сајтовите да ја дознаат локацијата (се препорачува)</translation>
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3538390592868664640">Не дозволувај им на сајтовите да создаваат 3D-карта на опкружувањето или да ја следат позицијата на камерата</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Исклучи го звукот на сајтовите што пуштаат звук</translation>
 <translation id="3744111561329211289">Синхронизација во заднина</translation>
 <translation id="3763247130972274048">Допрете двапати на видеото лево или десно за да прескокнете 10 секунди</translation>
+<translation id="381841723434055211">Телефонски броеви</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Барај понапред</translation>
 <translation id="3955193568934677022">Дозволете сајтовите да пуштаат заштитени содржини (се препорачува)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Прашувај пред да им дозволиш на сајтовите да ги користат уредот и податоците за виртуелна реалност (препорачано)</translation>
 <translation id="4962975101802056554">Повлечи ги сите дозволи за уредот</translation>
 <translation id="497421865427891073">Оди напред</translation>
+<translation id="4994033804516042629">Не се најдени контакти</translation>
 <translation id="4996978546172906250">Сподели преку</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5048398596102334565">Дозволете сајтовите да пристапуваат до сензорите за движење (препорачано)</translation>
 <translation id="5063480226653192405">Користење</translation>
 <translation id="5100237604440890931">Проширено - кликни да се прошири.</translation>
 <translation id="5123685120097942451">Картичка инкогнито</translation>
+<translation id="5197729504361054390">Контактите што ќе ги изберете ќе се споделат со <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5301954838959518834">Добро, сфатив</translation>
 <translation id="5313967007315987356">Додај локација</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Ова ќе избрише <ph name="DATASIZE" /> податоци и колачиња складирани од сајтовите.</translation>
 <translation id="5384883051496921101">Сајтов ќе сподели информации со една апликација надвор од режимот „Инкогнито“.</translation>
 <translation id="5391532827096253100">Врската со сајтов не е безбедна. Информации за сајтот</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и уште 1)}one{(и уште #)}other{(и уште #)}}</translation>
+<translation id="5403592356182871684">Имиња</translation>
 <translation id="5489227211564503167">Изминато време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокирај ги рекламите на сајтови што прикажуваат нападни или лажни реклами</translation>
 <translation id="5505264765875738116">Сајтовите не можат да прашуваат дали да испраќаат известувања</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Заштитена содржина</translation>
 <translation id="662080504995468778">Остани</translation>
 <translation id="6643016212128521049">Исчисти</translation>
+<translation id="6689172468748959065">Фотографии на профилот</translation>
 <translation id="6697925417670533197">Активни преземања</translation>
 <translation id="6746124502594467657">Премести долу</translation>
 <translation id="6766622839693428701">Повлечете надолу за да затворите.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7846621471902887024">Ќе ве одјавиме од сите сајтови.</translation>
 <translation id="7882806643839505685">Дозволете го звукот за одреден сајт.</translation>
+<translation id="7986741934819883144">Изберете контакт</translation>
 <translation id="7993619969781047893">Функциите на некои сајтови може да не функционираат</translation>
 <translation id="7999064672810608036">Дали сте сигурни дека сакате да ги исчистите сите локални податоци, вклучувајќи ги колачињата, и да ги ресетирате сите дозволи за веб-локацијата?</translation>
 <translation id="8007176423574883786">Исклучена за овој уред</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Дозволено (препорачано)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
 <translation id="8676374126336081632">Јасно внесување</translation>
+<translation id="868929229000858085">Пребарајте ги контактите</translation>
 <translation id="8702612070107455751">Сите офлајн податоци ќе се избришат.</translation>
 <translation id="8719283222052720129">Вклучете ја дозволата за <ph name="APP_NAME" /> во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>

@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Iniciarás sesión con tu cuenta de Google\n(esto no activará la sincronización de Chrome).</translation>
 <translation id="1877026089748256423">Chrome no está actualizado</translation>
 <translation id="1883903952484604915">Mis archivos</translation>
-<translation id="1919950603503897840">Seleccionar contactos</translation>
 <translation id="1925021887439448749">Introduce una dirección web personalizada</translation>
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="19288952978244135">Vuelve a abrir Chrome.</translation>
@@ -216,7 +215,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2689830683995595741">Al utilizar Chrome, aceptas los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Google Chrome y Chrome OS<ph name="END_LINK2" />. El uso de Chrome también está sujeto al <ph name="BEGIN_LINK3" />Aviso de Privacidad para Cuentas de Google Gestionadas con Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Actualizar página</translation>
 <translation id="2709516037105925701">Autocompletar</translation>
-<translation id="2717722538473713889">Direcciones de correo electrónico</translation>
 <translation id="2728754400939377704">Ordenar por sitio web</translation>
 <translation id="2744248271121720757">Toca una palabra para buscarla de forma instantánea o ver acciones relacionadas</translation>
 <translation id="2760989362628427051">Habilita el tema oscuro cuando esté activado el tema oscuro del dispositivo o el dispositivo esté en modo de ahorro de batería</translation>
@@ -241,7 +239,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2893180576842394309">Es posible que Google utilice tu historial para personalizar la Búsqueda y otros servicios de Google</translation>
 <translation id="2898264748040935573">Edita la contraseña almacenada</translation>
 <translation id="2900528713135656174">Crear evento</translation>
-<translation id="2903493209154104877">Direcciones</translation>
 <translation id="2904414404539560095">La lista de dispositivos con los que puedes compartir una pestaña está abierta y ocupa toda la pantalla.</translation>
 <translation id="2905036901251765993">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR</translation>
 <translation id="2909615210195135082">Plataforma de notificaciones de Google</translation>
@@ -294,7 +291,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3306398118552023113">Esta aplicación se está ejecutando en Chrome</translation>
 <translation id="3315103659806849044">En estos momentos estás personalizando los ajustes de los servicios de Google y sincronización. Para activar finalmente la sincronización, toca el botón Confirmar, que se encuentra casi al final de la pantalla. Desplázate hacia arriba</translation>
 <translation id="3328801116991980348">Información del sitio</translation>
-<translation id="3333961966071413176">Todos los contactos</translation>
 <translation id="3334729583274622784">¿Cambiar la extensión del archivo?</translation>
 <translation id="3341058695485821946">Consulta la cantidad de datos que has ahorrado</translation>
 <translation id="3350687908700087792">Cerrar todas las pestañas de incógnito</translation>
@@ -353,7 +349,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gestionar</translation>
-<translation id="381841723434055211">Números de teléfono</translation>
 <translation id="3819178904835489326">Descargas eliminadas: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3856096718352044181">Verifica que este sea un proveedor válido o inténtalo de nuevo más tarde.</translation>
 <translation id="388596076286380598">Consulta artículos, vídeos y otros contenidos de los sitios web que te gusten incluso sin conexión a Internet o con una conexión inestable.</translation>
@@ -509,7 +504,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4988210275050210843">Descargando archivo (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Páginas</translation>
-<translation id="4994033804516042629">No se han encontrado contactos</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quiere conectarse</translation>
@@ -533,7 +527,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5193988420012215838">Se ha copiado al portapapeles</translation>
-<translation id="5197729504361054390">Los contactos que selecciones se compartirán con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Perfil de trabajo</translation>
 <translation id="5210286577605176222">Te dirige a la pestaña anterior</translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
@@ -553,8 +546,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5355191726083956201">La protección mejorada está activada</translation>
 <translation id="5357811892247919462">Pestaña recibida</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> pestaña abierta, toca para cambiar de una a otra}other{<ph name="OPEN_TABS_MANY" /> pestañas abiertas, toca para cambiar de una a otra}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(y 1 más)}other{(y # más)}}</translation>
-<translation id="5403592356182871684">Nombres</translation>
 <translation id="5403644198645076998">Permitir solo determinados sitios web</translation>
 <translation id="5414836363063783498">Verificando…</translation>
 <translation id="5423934151118863508">Aquí aparecerán las páginas a las que accedes con más frecuencia</translation>
@@ -563,7 +554,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5433691172869980887">Se ha copiado el nombre de usuario</translation>
 <translation id="543509235395288790">Descargando <ph name="COUNT" /> archivos (<ph name="MEGABYTES" />).</translation>
 <translation id="5441522332038954058">Te dirige a la barra de direcciones</translation>
-<translation id="544776284582297024">Para abrir pestañas y visitar varias páginas al mismo tiempo, toca el botón "Pestañas abiertas"</translation>
+<translation id="544776284582297024">Para abrir pestañas y visitar varias páginas al mismo tiempo, toca el botón "pestañas abiertas"</translation>
 <translation id="545042621069398927">Acelerando descarga.</translation>
 <translation id="5456381639095306749">Descargar página</translation>
 <translation id="548278423535722844">Abrirla en una aplicación de mapas</translation>
@@ -750,7 +741,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="666981079809192359">Aviso de privacidad de Chrome</translation>
 <translation id="6671495933530132209">Copiar imagen</translation>
 <translation id="6676840375528380067">¿Quieres borrar tus datos de Chrome en este dispositivo?</translation>
-<translation id="6689172468748959065">Fotos de perfil</translation>
 <translation id="6691888250440401212">1. Elige <ph name="APP_NAME" />\n2. Toca "Establecer como predeterminado"</translation>
 <translation id="6697492270171225480">Mostrar sugerencias de páginas similares cuando no se encuentre una página</translation>
 <translation id="6698801883190606802">Administrar datos sincronizados</translation>
@@ -912,7 +902,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7975379999046275268">Revisar página <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Cargar previamente las páginas para que la navegación y las búsquedas sean más rápidas</translation>
 <translation id="79859296434321399">Instala ARCore para visualizar contenido de realidad aumentada</translation>
-<translation id="7986741934819883144">Selecciona un contacto</translation>
 <translation id="799806351373751710">Cancelar configuración de sincronización</translation>
 <translation id="7998918019931843664">Volver a abrir pestaña cerrada</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1010,7 +999,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8662811608048051533">Cierra tu sesión en la mayoría de los sitios web.</translation>
 <translation id="8664979001105139458">El nombre del archivo ya existe</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nivel de intensidad de la señal: # barra}other{Nivel de intensidad de la señal: # barras}}</translation>
-<translation id="868929229000858085">Buscar en tus contactos</translation>
 <translation id="869891660844655955">Fecha de caducidad</translation>
 <translation id="8712637175834984815">Listo</translation>
 <translation id="8725066075913043281">Volver a intentarlo</translation>

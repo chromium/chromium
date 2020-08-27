@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">‏للسماح لتطبيق <ph name="APP_NAME" /> باستخدام ميزة الواقع المعزَّز، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">الإعلانات</translation>
+<translation id="1919950603503897840">اختيار جهات الاتصال</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">مسموح باستثناء الجهات الخارجية</translation>
 <translation id="1989112275319619282">تصفّح</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">الخروج</translation>
 <translation id="2687403674020088961">حظر كل ملفات تعريف الارتباط (غير مُستحسَن)</translation>
 <translation id="2704606927547763573">تم النسخ</translation>
+<translation id="2717722538473713889">عنوان البريد الإلكتروني</translation>
 <translation id="2822354292072154809">هل تريد فعلاً إعادة ضبط جميع أذونات الموقع الإلكتروني للكائن <ph name="CHOSEN_OBJECT_NAME" />؟</translation>
 <translation id="2870560284913253234">الموقع</translation>
 <translation id="2874939134665556319">المقطع الصوتي السابق</translation>
+<translation id="2903493209154104877">العناوين</translation>
 <translation id="2910701580606108292">السؤال قبل السماح للمواقع الإلكترونية بتشغيل المحتوى المحمي</translation>
 <translation id="2913331724188855103">السماح للمواقع الإلكترونية بحفظ بيانات ملفات تعريف الارتباط وقراءتها (موصى به)</translation>
 <translation id="2968755619301702150">عارض الشهادات</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">الميكروفون</translation>
 <translation id="3277252321222022663">يمكنك السماح للمواقع بالوصول إلى أجهزة الاستشعار (مُقترَح).</translation>
 <translation id="3295602654194328831">إخفاء المعلومات</translation>
+<translation id="3333961966071413176">جميع جهات الاتصال</translation>
 <translation id="3386292677130313581">السؤال قبل السماح للمواقع الإلكترونية بمعرفة الموقع الجغرافي (موصى به)</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3538390592868664640">منع المواقع الإلكترونية من إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">كتم صوت المواقع الإلكترونية التي تشغّل الصوت</translation>
 <translation id="3744111561329211289">المزامنة في الخلفية</translation>
 <translation id="3763247130972274048">يُرجى النقر بشكل مزدوج على الفيديو يمينًا أو يسارًا لتخطّي 10 ثوانٍ.</translation>
+<translation id="381841723434055211">أرقام الهواتف</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3859306556332390985">الانتقال للأمام</translation>
 <translation id="3955193568934677022">السماح للمواقع الإلكترونية بتشغيل المحتوى المحمي (مُستحسَن)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">طلب الإذن قبل السماح للمواقع الإلكترونية باستخدام جهاز الواقع الافتراضي وبياناته (إعداد مقترَح)</translation>
 <translation id="4962975101802056554">إبطال جميع الأذونات للجهاز</translation>
 <translation id="497421865427891073">انتقال للأمام</translation>
+<translation id="4994033804516042629">لم يتم العثور على أي جهات اتصال</translation>
 <translation id="4996978546172906250">المشاركة عن طريق</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5048398596102334565">السماح للمواقع الإلكترونية بالوصول إلى مستشعرات الحركة (مُقترَح)</translation>
 <translation id="5063480226653192405">الاستخدام</translation>
 <translation id="5100237604440890931">تم التصغير - انقر للتوسيع.</translation>
 <translation id="5123685120097942451">علامة تبويب "التصفُّح المتخفي"</translation>
+<translation id="5197729504361054390">ستتم مشاركة جهات الاتصال التي تختارها مع الموقع الإلكتروني <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5301954838959518834">حسنًا</translation>
 <translation id="5313967007315987356">إضافة موقع إلكتروني</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">سيؤدي هذا الإجراء إلى محو <ph name="DATASIZE" /> من البيانات وملفات تعريف الارتباط المُخزّنة من خلال المواقع الإلكترونية.</translation>
 <translation id="5384883051496921101">الموقع الإلكتروني هذا على وشك مشاركة معلومات مع أحد التطبيقات خارج وضع التصفح المتخفي.</translation>
 <translation id="5391532827096253100">إن اتصالك بهذا الموقع الإلكتروني غير آمن. معلومات الموقع الإلكتروني</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 آخر)}zero{(+ # آخر)}two{(+ اثنين (#) آخرين)}few{(+ # أخرى)}many{(+ # آخر)}other{(+ # آخر)}}</translation>
+<translation id="5403592356182871684">الأسماء</translation>
 <translation id="5489227211564503167">الوقت المنقضي <ph name="ELAPSED_TIME" /> من <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">حظر الإعلانات في المواقع الإلكترونية التي تعرض إعلانات مضلِّلة أو غير مرغوب فيها</translation>
 <translation id="5505264765875738116">منع المواقع الإلكترونية من طلب إرسال إشعارات</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">المحتوى المحمي</translation>
 <translation id="662080504995468778">البقاء</translation>
 <translation id="6643016212128521049">محو</translation>
+<translation id="6689172468748959065">صور الملف الشخصي</translation>
 <translation id="6697925417670533197">عمليات التنزيل النشِطة</translation>
 <translation id="6746124502594467657">الانتقال إلى الأسفل</translation>
 <translation id="6766622839693428701">يمكنك التمرير السريع للأسفل للإغلاق.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
 <translation id="7846621471902887024">سيتم تسجيل خروجك من جميع المواقع الإلكترونية.</translation>
 <translation id="7882806643839505685">السماح بتشغيل الصوت لموقع معين.</translation>
+<translation id="7986741934819883144">اختيار جهة اتصال</translation>
 <translation id="7993619969781047893">قد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="7999064672810608036">هل أنت متأكّد أنك تريد محو كل البيانات المحلية، بما في ذلك ملفات تعريف الارتباط، وإعادة ضبط كافة الأذونات لهذا الموقع الإلكتروني؟</translation>
 <translation id="8007176423574883786">تم إيقافه لهذا الجهاز</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">مسموح بها (موصى بها)</translation>
 <translation id="8609465669617005112">الانتقال إلى الأعلى</translation>
 <translation id="8676374126336081632">محو الإرسال</translation>
+<translation id="868929229000858085">البحث في جهات الاتصال</translation>
 <translation id="8702612070107455751">سيتم محو أي بيانات متوفّرة بلا اتصال بالإنترنت.</translation>
 <translation id="8719283222052720129">‏فعِّل الإذن لتطبيق <ph name="APP_NAME" /> في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">أعد المحاولة</translation>

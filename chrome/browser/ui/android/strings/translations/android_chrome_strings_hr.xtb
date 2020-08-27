@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Uštedite do 60% podataka, pročitajte današnje vijesti</translation>
 <translation id="1303339473099049190">Ta zaporka nije pronađena. Provjerite jeste li je točno napisali pa pokušajte ponovno.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – poslano s uređaja <ph name="DEVICE_NAME" /></translation>
+<translation id="1307205233980126133">Nažalost nismo uspjeli potvrditi vaše vjerodajnice</translation>
 <translation id="1310482092992808703">Grupiraj kartice</translation>
 <translation id="1311657260431405215">Taj QR kôd nije URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">Otvorena je povijest navigacije</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">Prijavit ćete se Google računom\n(time se neće uključiti Chrome sinkronizacija)</translation>
 <translation id="1877026089748256423">Chrome je zastario</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
-<translation id="1919950603503897840">Odabir kontakata</translation>
 <translation id="1925021887439448749">Unesite prilagođenu web-adresu</translation>
 <translation id="1928696683969751773">Ažuriranja</translation>
 <translation id="19288952978244135">Ponovo otvorite Chrome.</translation>
@@ -216,7 +216,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2689830683995595741">Korištenjem Chromea prihvaćate <ph name="BEGIN_LINK1" />Googleove uvjete pružanja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />Dodatne uvjete pružanja usluge za Google Chrome i OS Chrome<ph name="END_LINK2" />. Primjenjuje se i <ph name="BEGIN_LINK3" />Obavijest o privatnosti za Google račune kojima se upravlja putem Family Linka<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Osvježavanje stranice</translation>
 <translation id="2709516037105925701">Automatsko popunjavanje</translation>
-<translation id="2717722538473713889">E-adrese</translation>
 <translation id="2728754400939377704">Poredaj po web-lokaciji</translation>
 <translation id="2744248271121720757">Dodirnite riječ da biste je odmah pretražili ili vidjeli povezane radnje</translation>
 <translation id="2760989362628427051">Uključite tamnu temu kada je na uređaju uključena tamna tema ili Štednja baterije</translation>
@@ -241,7 +240,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2893180576842394309">Google može upotrebljavati vašu povijest za prilagodbu Pretraživanja i drugih Googleovih usluga</translation>
 <translation id="2898264748040935573">Uredite pohranjenu zaporku</translation>
 <translation id="2900528713135656174">Stvori događaj</translation>
-<translation id="2903493209154104877">Adrese</translation>
 <translation id="2904414404539560095">Popis za odabir uređaja s kojim će se dijeliti kartica otvoren punom visinom.</translation>
 <translation id="2905036901251765993">Za dijeljenje s osobama u blizini dopustite im da skeniraju ovaj QR kod</translation>
 <translation id="2909615210195135082">Googleova platforma za obavijesti</translation>
@@ -294,7 +292,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3306398118552023113">Ova se aplikacija izvodi u Chromeu</translation>
 <translation id="3315103659806849044">Trenutačno prilagođavate postavke sinkronizacije i Googleovih usluga. Da biste dovršili uključivanje sinkronizacije, dodirnite gumb Potvrdi pri dnu zaslona. Natrag</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
-<translation id="3333961966071413176">Svi kontakti</translation>
 <translation id="3334729583274622784">Promijeniti datotečni nastavak?</translation>
 <translation id="3341058695485821946">Pogledajte količinu ušteđenih podataka</translation>
 <translation id="3350687908700087792">Zatvori sve anonimne kartice</translation>
@@ -353,7 +350,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
-<translation id="381841723434055211">Telefonski brojevi</translation>
 <translation id="3819178904835489326">Izbrisano preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3856096718352044181">Potvrdite da je to valjani davatelj ili pokušajte ponovo kasnije</translation>
 <translation id="388596076286380598">Primajte članke, videozapise i druge sadržaje s web-lokacija koje vam se sviđaju, čak i izvanmrežno ili ako vam je veza loša.</translation>
@@ -509,7 +505,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="497421865427891073">Idi naprijed</translation>
 <translation id="4988210275050210843">Preuzimanje datoteke (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Stranice</translation>
-<translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="5004416275253351869">Kontrole aktivnosti na Googleu</translation>
 <translation id="5005498671520578047">Kopiranje zaporke</translation>
 <translation id="5011311129201317034">Web-lokacija <ph name="SITE" /> želi se povezati</translation>
@@ -533,7 +528,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5184329579814168207">Otvori u Chromeu</translation>
 <translation id="5193988420012215838">Kopirano u međuspremnik</translation>
-<translation id="5197729504361054390">Kontakti koje odaberete podijelit će se s web-lokacijom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Radni profil</translation>
 <translation id="5210286577605176222">Preskakanje na prethodnu karticu</translation>
 <translation id="5210365745912300556">Zatvori karticu</translation>
@@ -553,8 +547,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5355191726083956201">Uključena je Poboljšana zaštita</translation>
 <translation id="5357811892247919462">Primljena je kartica</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> otvorena kartica, dodirnite da biste prešli na drugu karticu}one{<ph name="OPEN_TABS_MANY" /> otvorena kartica, dodirnite da biste prešli na drugu karticu}few{<ph name="OPEN_TABS_MANY" /> otvorene kartice, dodirnite da biste prešli na drugu karticu}other{<ph name="OPEN_TABS_MANY" /> otvorenih kartica, dodirnite da biste prešli na drugu karticu}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ još 1)}one{(+ još #)}few{(+ još #)}other{(+ još #)}}</translation>
-<translation id="5403592356182871684">Nazivi</translation>
 <translation id="5403644198645076998">Dopusti samo određene web-lokacije</translation>
 <translation id="5414836363063783498">Potvrđivanje…</translation>
 <translation id="5423934151118863508">Najposjećenije stranice prikazivat će se ovdje</translation>
@@ -563,7 +555,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5433691172869980887">Korisničko je ime kopirano</translation>
 <translation id="543509235395288790">Preuzimanje ovoliko datoteka: <ph name="COUNT" /> (<ph name="MEGABYTES" />).</translation>
 <translation id="5441522332038954058">Preskakanje na adresnu traku</translation>
-<translation id="544776284582297024">Da biste otvorili kartice i istovremeno posjetili različite stranice, dodirnite gumb Otvorene kartice</translation>
+<translation id="544776284582297024">Da biste otvorili kartice i istovremeno posjetili različite stranice, dodirnite gumb za otvorene kartice</translation>
 <translation id="545042621069398927">Ubrzavanje preuzimanja.</translation>
 <translation id="5456381639095306749">Preuzmi stranicu</translation>
 <translation id="548278423535722844">Otvori u aplikaciji za karte</translation>
@@ -750,7 +742,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="666981079809192359">Obavijest o privatnosti za Chrome</translation>
 <translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6676840375528380067">Želite li izbrisati svoje podatke iz Chromea s ovog uređaja?</translation>
-<translation id="6689172468748959065">Fotografije profila</translation>
 <translation id="6691888250440401212">1. Odaberite <ph name="APP_NAME" />\n2. Dodirnite "Postavi kao zadano"</translation>
 <translation id="6697492270171225480">Prikaži prijedloge za slične stranice kada se stranica ne može pronaći</translation>
 <translation id="6698801883190606802">Upravljanje sinkroniziranim podacima</translation>
@@ -912,7 +903,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7975379999046275268">Pregled stranice <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Prethodno učitaj stranice za brže pregledavanje i pretraživanje</translation>
 <translation id="79859296434321399">Za prikaz sadržaja proširene stvarnosti instalirajte ARCore</translation>
-<translation id="7986741934819883144">Odaberite kontakt</translation>
 <translation id="799806351373751710">Otkaži postavljanje sinkronizacije</translation>
 <translation id="7998918019931843664">Ponovno otvaranje zatvorene kartice</translation>
 <translation id="8004582292198964060">Preglednik</translation>
@@ -1010,7 +1000,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8662811608048051533">Odjavit ćete se s većine web-lokacija.</translation>
 <translation id="8664979001105139458">Već postoji datoteka s tim nazivom</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Jačina signala: # crtica}one{Jačina signala: # crtica}few{Jačina signala: # crtice}other{Jačina signala: # crtica}}</translation>
-<translation id="868929229000858085">Pretraživanje kontakata</translation>
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>

@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">For å la <ph name="APP_NAME" /> bruke AR, slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" /> også.</translation>
 <translation id="1887786770086287077">Posisjonstilgang er slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Annonser</translation>
+<translation id="1919950603503897840">Velg kontakter</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Tillatt – unntatt fra tredjeparter.</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2687403674020088961">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="2704606927547763573">Kopiert</translation>
+<translation id="2717722538473713889">E-postadresser</translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
+<translation id="2903493209154104877">Adresser</translation>
 <translation id="2910701580606108292">Spør før nettsteder kan spille av beskyttet innhold</translation>
 <translation id="2913331724188855103">Tillat at nettsteder lagrer og leser data i informasjonskapsler (anbefales)</translation>
 <translation id="2968755619301702150">Visningsprogram for sertifikater</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Gi nettsteder tilgang til sensorer (anbefalt)</translation>
 <translation id="3295602654194328831">Skjul informasjonen</translation>
+<translation id="3333961966071413176">Alle kontakter</translation>
 <translation id="3386292677130313581">Spør før nettsteder får vite posisjonen min (anbefales)</translation>
 <translation id="3479552764303398839">Ikke nå</translation>
 <translation id="3538390592868664640">Blokkér nettsteder fra å lage 3D-kart av omgivelsene dine eller spore kameraposisjonen</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Kutt lyden for nettsteder som spiller av lyd</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3763247130972274048">Dobbelttrykk på venstre eller høyre side av videoen for å hoppe 10 sekunder</translation>
+<translation id="381841723434055211">Telefonnumre</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="3859306556332390985">Spol fremover</translation>
 <translation id="3955193568934677022">Gi nettsteder tillatelse til å spille av beskyttet innhold (anbefales)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Spør før nettsteder får bruke virtuell virkelighet-enheten din eller -dataene dine (anbefales)</translation>
 <translation id="4962975101802056554">Opphev alle tillatelser for enheten</translation>
 <translation id="497421865427891073">Gå til neste</translation>
+<translation id="4994033804516042629">Fant ingen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5048398596102334565">Gi nettsteder tilgang til bevegelsessensorer (anbefalt)</translation>
 <translation id="5063480226653192405">Bruk</translation>
 <translation id="5100237604440890931">Minimert – klikk for å utvide</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
+<translation id="5197729504361054390">Kontaktene du velger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5301954838959518834">Greit</translation>
 <translation id="5313967007315987356">Legg til et nettsted</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Dette sletter <ph name="DATASIZE" /> med data og informasjonskapsler som er lagret av nettsteder.</translation>
 <translation id="5384883051496921101">Dette nettstedet er i ferd med å dele informasjon med en app utenfor inkognitomodus.</translation>
 <translation id="5391532827096253100">Tilkoblingen din til dette nettstedet er ikke sikker. Informasjon om nettstedet</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 til)}other{(+ # til)}}</translation>
+<translation id="5403592356182871684">Navn</translation>
 <translation id="5489227211564503167">Medgått tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokkér annonser på nettsteder som ofte viser forstyrrende eller villedende annonser</translation>
 <translation id="5505264765875738116">Nettsteder kan ikke be om å få sende deg varsler</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Beskyttet innhold</translation>
 <translation id="662080504995468778">Bli her</translation>
 <translation id="6643016212128521049">Tøm</translation>
+<translation id="6689172468748959065">Profilbilder</translation>
 <translation id="6697925417670533197">Aktive nedlastinger</translation>
 <translation id="6746124502594467657">Flytt ned</translation>
 <translation id="6766622839693428701">Sveip ned for å lukke.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Opphev valget</translation>
 <translation id="7846621471902887024">Du blir logget av alle nettsteder.</translation>
 <translation id="7882806643839505685">Tillat lyd for et bestemt nettsted.</translation>
+<translation id="7986741934819883144">Velg en kontakt</translation>
 <translation id="7993619969781047893">Det kan hende at funksjoner på enkelte nettsteder slutter å fungere</translation>
 <translation id="7999064672810608036">Er du sikker på at du vil slette alle lokale data, deriblant informasjonskapsler, og tilbakestille alle tillatelser for dette nettstedet?</translation>
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Tillatt (anbefales)</translation>
 <translation id="8609465669617005112">Flytt opp</translation>
 <translation id="8676374126336081632">Slett teksten</translation>
+<translation id="868929229000858085">Søk i kontaktene dine</translation>
 <translation id="8702612070107455751">Eventuelle frakoblede data blir slettet.</translation>
 <translation id="8719283222052720129">Slå på tillatelsen for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Prøv igjen</translation>

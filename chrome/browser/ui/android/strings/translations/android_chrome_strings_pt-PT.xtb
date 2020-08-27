@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Poupe até 60% de dados, leia as notícias de hoje</translation>
 <translation id="1303339473099049190">Não é possível encontrar essa palavra-passe. Verifique a ortografia e tente novamente.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Enviado de <ph name="DEVICE_NAME" /></translation>
+<translation id="1307205233980126133">Lamentamos, mas não foi possível validar as suas credenciais.</translation>
 <translation id="1310482092992808703">Agrupar separadores</translation>
 <translation id="1311657260431405215">Este código QR não é um URL: <ph name="QRCODEVALUE" />.</translation>
 <translation id="1327257854815634930">O histórico de navegação está aberto.</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">Vai iniciar sessão com a sua Conta Google\n(esta ação não ativa a Sincronização do Chrome).</translation>
 <translation id="1877026089748256423">O Chrome está desatualizado</translation>
 <translation id="1883903952484604915">Os meus ficheiros</translation>
-<translation id="1919950603503897840">Selecionar contactos</translation>
 <translation id="1925021887439448749">Introduzir endereço Web personalizado</translation>
 <translation id="1928696683969751773">Atualizações</translation>
 <translation id="19288952978244135">Reabra o Chrome.</translation>
@@ -216,7 +216,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2689830683995595741">Ao utilizar o Chrome, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e Chrome OS<ph name="END_LINK2" />. O <ph name="BEGIN_LINK3" />Aviso de Privacidade para Contas Google geridas com o Family Link<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="2707726405694321444">Atualizar página</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
-<translation id="2717722538473713889">Endereços de email</translation>
 <translation id="2728754400939377704">Ordenar por site</translation>
 <translation id="2744248271121720757">Toque numa palavra para pesquisar instantaneamente ou ver as ações relacionadas.</translation>
 <translation id="2760989362628427051">Ative o tema escuro quando a Poupança de bateria ou o tema escuro do dispositivo estiver ativado(a).</translation>
@@ -241,7 +240,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2893180576842394309">A Google pode utilizar o seu histórico para personalizar a Pesquisa e outros serviços Google.</translation>
 <translation id="2898264748040935573">Editar a palavra-passe armazenada</translation>
 <translation id="2900528713135656174">Criar evento</translation>
-<translation id="2903493209154104877">Endereços</translation>
 <translation id="2904414404539560095">Lista de dispositivos com os quais pretende partilhar um separador aberta à altura total.</translation>
 <translation id="2905036901251765993">Para partilhar com pessoas nas proximidades, deixe-as ler este código QR.</translation>
 <translation id="2909615210195135082">Plataforma de notificações da Google</translation>
@@ -294,7 +292,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3306398118552023113">Esta aplicação está a ser executada no Chrome</translation>
 <translation id="3315103659806849044">Está atualmente a personalizar as definições de Sincronização e dos serviços Google. Para concluir a ativação da sincronização, toque no botão Confirmar junto à parte inferior do ecrã. Navegar para cima</translation>
 <translation id="3328801116991980348">Informações do site</translation>
-<translation id="3333961966071413176">Todos os contactos</translation>
 <translation id="3334729583274622784">Pretende alterar a extensão de ficheiro?</translation>
 <translation id="3341058695485821946">Veja a quantidade de dados que poupou.</translation>
 <translation id="3350687908700087792">Fechar todos os separadores de navegação anónima</translation>
@@ -353,7 +350,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gerir</translation>
-<translation id="381841723434055211">Números de telefone</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> transferências eliminadas</translation>
 <translation id="3856096718352044181">Confirme que se trata de um fornecedor válido ou tente novamente mais tarde.</translation>
 <translation id="388596076286380598">Obtenha artigos, vídeos e outros conteúdos dos sites de que gosta, mesmo se estiver offline ou se a ligação for fraca.</translation>
@@ -509,7 +505,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="497421865427891073">Avançar</translation>
 <translation id="4988210275050210843">A transferir ficheiro (<ph name="MEGABYTES" />)…</translation>
 <translation id="4988526792673242964">Páginas </translation>
-<translation id="4994033804516042629">Não foram encontrados contactos</translation>
 <translation id="5004416275253351869">Controlos da atividade Google</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> pretende estabelecer ligação</translation>
@@ -533,7 +528,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5184329579814168207">Abrir no Chrome</translation>
 <translation id="5193988420012215838">Copiado para a área de transferência.</translation>
-<translation id="5197729504361054390">Os contactos que selecionar serão partilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Perfil de trabalho</translation>
 <translation id="5210286577605176222">Ir para o separador anterior</translation>
 <translation id="5210365745912300556">Fechar separador</translation>
@@ -553,8 +547,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
 <translation id="5357811892247919462">Separador recebido</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> separador aberto, toque para alternar entre separadores}other{<ph name="OPEN_TABS_MANY" /> separadores abertos, toque para alternar entre separadores}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}other{(mais #)}}</translation>
-<translation id="5403592356182871684">Nomes</translation>
 <translation id="5403644198645076998">Permitir apenas determinados sites</translation>
 <translation id="5414836363063783498">A validar…</translation>
 <translation id="5423934151118863508">As páginas mais visitadas aparecem aqui</translation>
@@ -750,7 +742,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="666981079809192359">Aviso de privacidade do Chrome</translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6676840375528380067">Pretende limpar os dados do Chrome deste dispositivo?</translation>
-<translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6691888250440401212">1. Escolha o <ph name="APP_NAME" />.\n2. Toque em "Definir como predef.".</translation>
 <translation id="6697492270171225480">Mostrar sugestões de páginas semelhantes se não for possível encontrar uma página</translation>
 <translation id="6698801883190606802">Gerir dados sincronizados</translation>
@@ -912,7 +903,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7975379999046275268">Pré-visualizar página <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pré-carregar as páginas para uma navegação e uma pesquisa mais rápidas</translation>
 <translation id="79859296434321399">Para ver conteúdo de realidade aumentada, instale o ARCore.</translation>
-<translation id="7986741934819883144">Selecionar um contacto</translation>
 <translation id="799806351373751710">Cancelar configuração da sincronização</translation>
 <translation id="7998918019931843664">Reabrir separador fechado</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1010,7 +1000,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8662811608048051533">A sua sessão é terminada na maioria dos sites.</translation>
 <translation id="8664979001105139458">O nome do ficheiro já existe</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nível de intensidade do sinal: # barra}other{Nível de intensidade do sinal: # barras}}</translation>
-<translation id="868929229000858085">Pesquise os seus contactos</translation>
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>

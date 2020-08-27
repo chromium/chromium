@@ -30,6 +30,7 @@
 <translation id="1818308510395330587"><ph name="APP_NAME" /> に AR の使用を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
 <translation id="1887786770086287077">位置情報へのアクセスがデバイスでオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="1919345977826869612">広告</translation>
+<translation id="1919950603503897840">連絡先を選択</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">サードパーティを除いて許可する</translation>
 <translation id="1989112275319619282">閲覧</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="2704606927547763573">コピーしました</translation>
+<translation id="2717722538473713889">メールアドレス</translation>
 <translation id="2822354292072154809">「<ph name="CHOSEN_OBJECT_NAME" />」に関するすべてのサイト権限をリセットしてもよろしいですか？</translation>
 <translation id="2870560284913253234">サイト</translation>
 <translation id="2874939134665556319">前のトラック</translation>
+<translation id="2903493209154104877">住所</translation>
 <translation id="2910701580606108292">保護されたコンテンツの再生をサイトに許可する前に確認する</translation>
 <translation id="2913331724188855103">サイトに Cookie データの保存と読み取りを許可する（推奨）</translation>
 <translation id="2968755619301702150">証明書ビューア</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3277252321222022663">サイトによるセンサーへのアクセスを許可する（推奨）</translation>
 <translation id="3295602654194328831">情報を表示しない</translation>
+<translation id="3333961966071413176">すべての連絡先</translation>
 <translation id="3386292677130313581">サイトに現在地の認識を許可する前に確認する（推奨）</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3538390592868664640">サイトによる周囲の 3D マップの作成またはカメラ位置の追跡をブロックします</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">音声が再生されるサイトをミュートする</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
+<translation id="381841723434055211">電話番号</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3859306556332390985">前方にシーク再生</translation>
 <translation id="3955193568934677022">保護されたコンテンツの再生をサイトに許可する（推奨）</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">サイトにバーチャル リアリティ デバイスとデータの使用を許可する前に確認する（推奨）</translation>
 <translation id="4962975101802056554">デバイスのすべての権限を取り消します</translation>
 <translation id="497421865427891073">次に進む</translation>
+<translation id="4994033804516042629">連絡先が見つかりませんでした</translation>
 <translation id="4996978546172906250">共有方法</translation>
 <translation id="5039804452771397117">許可</translation>
 <translation id="5048398596102334565">サイトによるモーション センサーへのアクセスを許可する（推奨）</translation>
 <translation id="5063480226653192405">使用状況</translation>
 <translation id="5100237604440890931">折りたたまれています - クリックすると展開します。</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
+<translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5313967007315987356">サイトを追加</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">サイトにより保存された <ph name="DATASIZE" /> のデータと Cookie が削除されます。</translation>
 <translation id="5384883051496921101">このサイトの情報がシークレット モードの外部のアプリに共有されようとしています。</translation>
 <translation id="5391532827096253100">このサイトへの接続は保護されていません。サイト情報</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
+<translation id="5403592356182871684">名前</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> のうち <ph name="ELAPSED_TIME" /> 経過しました。</translation>
 <translation id="5494752089476963479">煩わしい広告や誤解を招く広告が表示されるサイトで広告をブロックする</translation>
 <translation id="5505264765875738116">通知を送信するかどうかの確認をサイトに許可しない</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">保護されたコンテンツ</translation>
 <translation id="662080504995468778">とどまる</translation>
 <translation id="6643016212128521049">削除</translation>
+<translation id="6689172468748959065">プロフィール写真</translation>
 <translation id="6697925417670533197">アクティブなダウンロード</translation>
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="6766622839693428701">閉じるには下にスワイプします。</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">選択解除</translation>
 <translation id="7846621471902887024">すべてのサイトからログアウトします。</translation>
 <translation id="7882806643839505685">特定のサイトに対して音声の再生を許可します。</translation>
+<translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="7993619969781047893">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="7999064672810608036">すべてのローカルデータ（Cookie を含む）を削除して、このウェブサイトに指定したすべての権限をリセットしてもよろしいですか？</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">許可（推奨）</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8676374126336081632">入力内容を消去</translation>
+<translation id="868929229000858085">連絡先を検索</translation>
 <translation id="8702612070107455751">オフライン データも削除されます。</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="8725066075913043281">やり直し</translation>

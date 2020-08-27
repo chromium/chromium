@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Vous serez connecté avec votre compte Google\n(cela n'activera pas la synchronisation Chrome)</translation>
 <translation id="1877026089748256423">Google Chrome n'est pas à jour</translation>
 <translation id="1883903952484604915">Mes fichiers</translation>
-<translation id="1919950603503897840">Sélectionner des contacts</translation>
 <translation id="1925021887439448749">Entrer une adresse Web personnalisée</translation>
 <translation id="1928696683969751773">Mises à jour</translation>
 <translation id="19288952978244135">Rouvrir Chrome.</translation>
@@ -216,7 +215,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2689830683995595741">En utilisant Chrome, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires pour Google Chrome et Chrome OS<ph name="END_LINK2" />. L'<ph name="BEGIN_LINK3" />avis de confidentialité pour les comptes Google gérés par Family Link<ph name="END_LINK3" /> s'applique aussi.</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
 <translation id="2709516037105925701">Remplissage automatique</translation>
-<translation id="2717722538473713889">Adresses de courriel</translation>
 <translation id="2728754400939377704">Trier par site</translation>
 <translation id="2744248271121720757">Touchez un mot pour lancer une recherche instantanée ou afficher les actions associées</translation>
 <translation id="2760989362628427051">Activer le thème sombre lorsque le thème sombre ou la fonction Économiseur de pile de votre appareil est activé</translation>
@@ -241,7 +239,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2893180576842394309">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google</translation>
 <translation id="2898264748040935573">Modifier le mot de passe enregistré</translation>
 <translation id="2900528713135656174">Créer un événement</translation>
-<translation id="2903493209154104877">Adresses</translation>
 <translation id="2904414404539560095">La liste d'appareils avec lesquels partager un onglet est ouverte à la hauteur maximale.</translation>
 <translation id="2905036901251765993">Pour partager avec des personnes à proximité, faites-leur numériser ce code QR</translation>
 <translation id="2909615210195135082">Plateforme des notifications Google</translation>
@@ -294,7 +291,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3306398118552023113">Cette application s'exécute dans Google Chrome</translation>
 <translation id="3315103659806849044">Vous personnalisez actuellement les paramètres relatifs aux services Google et à la synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir au haut de la page</translation>
 <translation id="3328801116991980348">Information sur le site</translation>
-<translation id="3333961966071413176">Tous les contacts</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier?</translation>
 <translation id="3341058695485821946">Affichez la quantité de données enregistrées</translation>
 <translation id="3350687908700087792">Fermer tous les onglets de navigation privée</translation>
@@ -353,7 +349,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3810973564298564668">Gérer</translation>
-<translation id="381841723434055211">Numéros de téléphone</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements supprimés</translation>
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="388596076286380598">Consultez des articles, des vidéos et d'autres contenus sur les sites qui vous intéressent, même si vous êtes hors ligne ou si votre connexion est mauvaise.</translation>
@@ -509,7 +504,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="497421865427891073">Avancer</translation>
 <translation id="4988210275050210843">Téléchargement du fichier (<ph name="MEGABYTES" />) en cours…</translation>
 <translation id="4988526792673242964">Pages</translation>
-<translation id="4994033804516042629">Aucun contact trouvé</translation>
 <translation id="5004416275253351869">Commandes d'activité Google</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> veut se connecter</translation>
@@ -533,7 +527,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5193988420012215838">Copié dans votre presse-papier</translation>
-<translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Profil professionnel</translation>
 <translation id="5210286577605176222">Accéder à l'onglet précédent</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
@@ -553,8 +546,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="5357811892247919462">Onglet reçu</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> onglet ouvert, touchez pour basculer vers un autre onglet}one{<ph name="OPEN_TABS_MANY" /> onglet ouvert, touchez pour basculer vers un autre onglet}other{<ph name="OPEN_TABS_MANY" /> onglets ouverts, touchez pour basculer vers un autre onglet}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
-<translation id="5403592356182871684">Noms</translation>
 <translation id="5403644198645076998">Autoriser uniquement certains sites</translation>
 <translation id="5414836363063783498">Vérification...</translation>
 <translation id="5423934151118863508">Les pages les plus consultées s'affichent ici</translation>
@@ -750,7 +741,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="666981079809192359">Avis de confidentialité Chrome</translation>
 <translation id="6671495933530132209">Copier l'image</translation>
 <translation id="6676840375528380067">Effacer vos données Chrome de cet appareil?</translation>
-<translation id="6689172468748959065">Photos de profils</translation>
 <translation id="6691888250440401212">1. Sélectionnez <ph name="APP_NAME" />\n2. Touchez « Définir par défaut »</translation>
 <translation id="6697492270171225480">Afficher des suggestions de pages similaires lorsqu'une page ne peut pas être trouvée</translation>
 <translation id="6698801883190606802">Gérer les données synchronisées</translation>
@@ -912,7 +902,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Précharger les pages pour une navigation et une recherche plus rapides</translation>
 <translation id="79859296434321399">Pour regarder du contenu de réalité augmentée, installez ARCore</translation>
-<translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="799806351373751710">Annuler la configuration de la synchronisation</translation>
 <translation id="7998918019931843664">Rouvrir l'onglet fermé</translation>
 <translation id="8004582292198964060">Navigateur</translation>
@@ -1010,7 +999,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8662811608048051533">Vous déconnecte de la plupart des sites.</translation>
 <translation id="8664979001105139458">Ce nom de fichier existe déjà</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Niveau du signal : # barre}one{Niveau du signal : # barre}other{Niveau du signal : # barres}}</translation>
-<translation id="868929229000858085">Effectuez une recherche dans vos contacts</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8725066075913043281">Réessayer</translation>

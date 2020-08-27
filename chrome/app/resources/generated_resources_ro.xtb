@@ -1015,7 +1015,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2200356397587687044">Chrome are nevoie de permisiune pentru a continua</translation>
 <translation id="220138918934036434">Ascunde butonul</translation>
 <translation id="2202898655984161076">A apărut o problemă la listarea imprimantelor. Este posibil ca unele dintre imprimante să nu fi fost înregistrate la <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Motorul de căutare folosit în <ph name="BEGIN_LINK" />bara de adrese<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Citește și modifică orice date introduse</translation>
 <translation id="220858061631308971">Introduceți acest cod PIN pe „<ph name="DEVICE_NAME" />”:</translation>
 <translation id="2212565012507486665">Permite cookie-urile</translation>
@@ -1937,6 +1936,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Informații despre aplicație</translation>
 <translation id="3333190335304955291">Poți dezactiva acest serviciu din Setări.</translation>
+<translation id="3333961966071413176">Toată agenda</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – Videoclipul se redă în modul picture-in-picture</translation>
 <translation id="3335947283844343239">Redeschide fila închisă</translation>
 <translation id="3340620525920140773">Descărcare finalizată: <ph name="FILE_NAME" />.</translation>
@@ -3032,6 +3032,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4646675363240786305">Porturi</translation>
 <translation id="4646949265910132906">Conexiune Wi-Fi securizată</translation>
 <translation id="4647090755847581616">&amp;Închide fila</translation>
+<translation id="4647283074445570750">Pasul <ph name="CURRENT_STEP" /> din <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Pornește aplicația când te conectezi pe tabletă}computer{Pornește aplicația când te conectezi pe computer}other{Pornește aplicația când te conectezi pe dispozitiv}}</translation>
 <translation id="4647697156028544508">Introduceți codul PIN pentru „<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Permisiuni insuficiente</translation>

@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Да бисте дозволили да <ph name="APP_NAME" /> користи ПР, укључите и камеру у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Приступ локацији је искључен за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Огласи</translation>
+<translation id="1919950603503897840">Изаберите контакте</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Дозвољени, осим треће стране</translation>
 <translation id="1989112275319619282">Прегледај</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2687403674020088961">Блокирај све колачиће (не препоручује се)</translation>
 <translation id="2704606927547763573">Копирано</translation>
+<translation id="2717722538473713889">Имејл адресе</translation>
 <translation id="2822354292072154809">Желите ли стварно да ресетујете све дозволе за сајт за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сајт</translation>
 <translation id="2874939134665556319">Претходна песма</translation>
+<translation id="2903493209154104877">Адресе</translation>
 <translation id="2910701580606108292">Питај пре него што дозволиш сајтовима да пуштају заштићени садржај</translation>
 <translation id="2913331724188855103">Дозволи сајтовима да чувају и читају податке колачића (препоручује се)</translation>
 <translation id="2968755619301702150">Приказивач сертификата</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3277252321222022663">Дозволи сајтовима да приступају сензорима (препоручено)</translation>
 <translation id="3295602654194328831">Сакриј информације</translation>
+<translation id="3333961966071413176">Сви контакти</translation>
 <translation id="3386292677130313581">Питај пре него што дозволиш сајтовима да знају локацију (препоручено)</translation>
 <translation id="3479552764303398839">Не сада</translation>
 <translation id="3538390592868664640">Спречите сајтове да праве 3D мапу окружења или да прате положај камере</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Искључи звук сајтова који пуштају звук</translation>
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3763247130972274048">Двапут додирните видео лево или десно да бисте прескочили 10 сек</translation>
+<translation id="381841723434055211">Бројеви телефона</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Премотај унапред</translation>
 <translation id="3955193568934677022">Дозволи сајтовима да пуштају заштићени садржај (препоручено)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Пре него што дозволите сајтовима да користе уређај и податке виртуелне реалности приказује се упит (препоручено)</translation>
 <translation id="4962975101802056554">Опозовите све дозволе за уређај</translation>
 <translation id="497421865427891073">Кретање унапред</translation>
+<translation id="4994033804516042629">Није пронађен ниједан контакт</translation>
 <translation id="4996978546172906250">Дељење преко</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5048398596102334565">Дозволи сајтовима да приступају сензорима за покрет (препоручено)</translation>
 <translation id="5063480226653192405">Коришћење</translation>
 <translation id="5100237604440890931">Скупљено је – Кликните да бисте проширили.</translation>
 <translation id="5123685120097942451">Картица без архивирања</translation>
+<translation id="5197729504361054390">Контакти које изаберете ће се делити са <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5301954838959518834">Важи</translation>
 <translation id="5313967007315987356">Додајте сајт</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови.</translation>
 <translation id="5384883051496921101">Овај сајт ће делити информације са апликацијом изван режима без архивирања.</translation>
 <translation id="5391532827096253100">Веза са овим сајтом није безбедна. Информације о сајту</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и још 1)}one{(и још #)}few{(и још #)}other{(и још #)}}</translation>
+<translation id="5403592356182871684">Имена</translation>
 <translation id="5489227211564503167">Протекло време: <ph name="ELAPSED_TIME" /> од <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Блокирај огласе на сајтовима који приказују огласе који ометају активности или обмањујуће огласе</translation>
 <translation id="5505264765875738116">Сајтови не могу да траже да шаљу обавештења</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Заштићени садржај</translation>
 <translation id="662080504995468778">Не затварај</translation>
 <translation id="6643016212128521049">Обриши</translation>
+<translation id="6689172468748959065">Слике профила</translation>
 <translation id="6697925417670533197">Активна преузимања</translation>
 <translation id="6746124502594467657">Премести надоле</translation>
 <translation id="6766622839693428701">Превуците надоле да бисте затворили.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7846621471902887024">Одјавићете се са свих сајтова.</translation>
 <translation id="7882806643839505685">Дозволи звук за одређени сајт.</translation>
+<translation id="7986741934819883144">Изаберите контакт</translation>
 <translation id="7993619969781047893">Функције на неким сајтовима могу да престану са радом</translation>
 <translation id="7999064672810608036">Желите ли стварно да обришете све локалне податке, укључујући колачиће, и ресетујете све дозволе за овај веб-сајт?</translation>
 <translation id="8007176423574883786">Искључено је за овај уређај</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Дозвољено (препоручено)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
 <translation id="8676374126336081632">Обриши унос</translation>
+<translation id="868929229000858085">Претражите контакте</translation>
 <translation id="8702612070107455751">Бришу се сви офлајн подаци.</translation>
 <translation id="8719283222052720129">Укључите дозволу за апликацију <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>

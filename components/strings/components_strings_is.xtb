@@ -766,7 +766,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4152318981910038897">{COUNT,plural, =1{Síða 1}one{Síða {COUNT}}other{Síða {COUNT}}}</translation>
 <translation id="4154664944169082762">Fingraför</translation>
 <translation id="4159784952369912983">Purpurarauður</translation>
-<translation id="4165986682804962316">Svæðisstillingar</translation>
+<translation id="4165986682804962316">Vefsvæðastillingar</translation>
 <translation id="4171400957073367226">Röng staðfestingarundirskrift</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Sýna alltaf</translation>

@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">Το Chrome χρειάζεται άδεια για να συνεχίσει</translation>
 <translation id="220138918934036434">Απόκρυψη κουμπιού</translation>
 <translation id="2202898655984161076">Προέκυψε πρόβλημα κατά την καταχώριση εκτυπωτών. Μερικοί από τους εκτυπωτές σας ενδέχεται να μην έχουν καταχωρηθεί σωστά με το <ph name="CLOUD_PRINT_NAME" />.</translation>
-<translation id="2203682048752833055">Μηχανή αναζήτησης που χρησιμοποιείται στη <ph name="BEGIN_LINK" />γραμμή διεύθυνσης<ph name="END_LINK" /></translation>
 <translation id="2204034823255629767">Ανάγνωση και αλλαγή όσων πληκτρολογείτε</translation>
 <translation id="220858061631308971">Εισαγάγετε αυτόν τον κωδικό PIN στη συσκευή "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Αποδοχή cookie</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Πληροφορίες εφαρμογής</translation>
 <translation id="3333190335304955291">Μπορείτε να απενεργοποιήσετε αυτήν την υπηρεσία από τις Ρυθμίσεις.</translation>
+<translation id="3333961966071413176">Όλες οι επαφές</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Αναπαραγωγή βίντεο στη λειτουργία picture-in-picture</translation>
 <translation id="3335947283844343239">Εκ Νέου Άνοιγμα Κλεισμένης Καρτέλας</translation>
 <translation id="3340620525920140773">Η λήψη ολοκληρώθηκε: <ph name="FILE_NAME" />.</translation>
@@ -3032,6 +3032,7 @@
 <translation id="4646675363240786305">Θύρες</translation>
 <translation id="4646949265910132906">Ασφαλής σύνδεση Wi-Fi</translation>
 <translation id="4647090755847581616">&amp;Κλείσιμο καρτέλας</translation>
+<translation id="4647283074445570750">Βήμα <ph name="CURRENT_STEP" /> από <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Εκκίνηση εφαρμογής κατά τη σύνδεση στο tablet σας}computer{Εκκίνηση εφαρμογής κατά τη σύνδεση στον υπολογιστή σας}other{Εκκίνηση εφαρμογής κατά τη σύνδεση στη συσκευή σας}}</translation>
 <translation id="4647697156028544508">Εισαγάγετε το PIN για τη συσκευή "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Ανεπαρκείς άδειες</translation>

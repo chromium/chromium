@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Për të lejuar që <ph name="APP_NAME" /> të përdorë AR, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Qasja te vendndodhja është joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Reklamat</translation>
+<translation id="1919950603503897840">Zgjidh kontaktet</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Lejohet, përveç palëve të treta</translation>
 <translation id="1989112275319619282">Shfleto</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2687403674020088961">Blloko të gjitha kukit (nuk rekomandohet)</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
+<translation id="2717722538473713889">Adresat e email-it</translation>
 <translation id="2822354292072154809">Je i sigurt që dëshiron t'i rivendosësh të gjitha lejet e sajtit për <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2874939134665556319">Kënga e mëparshme</translation>
+<translation id="2903493209154104877">Adresat</translation>
 <translation id="2910701580606108292">Pyet përpara se sajtet të lejohen të luajnë përmbajtje të mbrojtura</translation>
 <translation id="2913331724188855103">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive (rekomandohet)</translation>
 <translation id="2968755619301702150">Shikuesi i certifikatave</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3277252321222022663">Lejoju faqeve të të hapin sensorët (rekomandohet)</translation>
 <translation id="3295602654194328831">Fshih informacionin</translation>
+<translation id="3333961966071413176">Të gjitha kontaktet</translation>
 <translation id="3386292677130313581">Pyet përpara se sajtet të lejohen të dinë vendndodhjen tënde (rekomandohet)</translation>
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3538390592868664640">Blloko krijimin nga sajtet të një harte 3D të ambientit tënd rrethues ose gjurmimin prej tyre të pozicionit të kamerës</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Hiq zërin për sajtet që luajnë tinguj</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3763247130972274048">Trokit dy herë videon majtas ose djathtas për të kapërcyer 10 sek.</translation>
+<translation id="381841723434055211">Numrat e telefonit</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3859306556332390985">Kërko përpara</translation>
 <translation id="3955193568934677022">Lejo që sajtet të luajnë përmbajtje të mbrojtur (rekomandohet)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Pyet përpara se sajtet të lejohen të përdorin pajisjen e realitetit virtual dhe të dhënat e tua (rekomandohet)</translation>
 <translation id="4962975101802056554">Anulo të gjitha lejet për pajisjen</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
+<translation id="4994033804516042629">Nuk u gjet asnjë kontakt</translation>
 <translation id="4996978546172906250">Ndaje nëpërmjet</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5048398596102334565">Lejoju faqeve të të hapin sensorët e lëvizjes (rekomandohet)</translation>
 <translation id="5063480226653192405">Përdorimi</translation>
 <translation id="5100237604440890931">I palosur - kliko për ta zgjeruar</translation>
 <translation id="5123685120097942451">Skeda "e fshehtë"</translation>
+<translation id="5197729504361054390">Kontaktet që zgjedh do të ndahen me <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5301954838959518834">Në rregull, kuptova.</translation>
 <translation id="5313967007315987356">Shto një sajt</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Kjo do të pastrojë <ph name="DATASIZE" /> të dhëna dhe kuki të ruajtura nga sajtet.</translation>
 <translation id="5384883051496921101">Ky sajt është gati për të ndarë informacione me një aplikacion jashtë modalitetit "të fshehtë".</translation>
 <translation id="5391532827096253100">Lidhja jote me këtë faqe nuk është e sigurt. Informacioni i faqes</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tjetër)}other{(+ # të tjerë)}}</translation>
+<translation id="5403592356182871684">Emrat</translation>
 <translation id="5489227211564503167">Koha e kaluar: <ph name="ELAPSED_TIME" /> nga <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blloko reklamat në sajtet që shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="5505264765875738116">Sajtet nuk mund të kërkojnë të dërgojnë njoftime</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Përmbajtje e mbrojtur</translation>
 <translation id="662080504995468778">Qëndro</translation>
 <translation id="6643016212128521049">Pastro</translation>
+<translation id="6689172468748959065">Fotografitë e profilit</translation>
 <translation id="6697925417670533197">Shkarkimet aktive</translation>
 <translation id="6746124502594467657">Lëviz poshtë</translation>
 <translation id="6766622839693428701">Rrëshqit shpejt poshtë për ta mbyllur.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
 <translation id="7846621471902887024">Do të dalësh nga të gjitha sajtet.</translation>
 <translation id="7882806643839505685">Lejo tingullin për një sajt specifik.</translation>
+<translation id="7986741934819883144">Zgjidh një kontakt</translation>
 <translation id="7993619969781047893">Veçoritë në disa sajte mund të ndalojnë së funksionuari</translation>
 <translation id="7999064672810608036">Je i sigurt që dëshiron t'i pastrosh të gjitha të dhënat lokale, duke përfshirë kukit, dhe të rivendosësh të gjitha lejet për këtë sajt uebi?</translation>
 <translation id="8007176423574883786">E çaktivizuar për këtë pajisje</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Lejuar (rekomandohet)</translation>
 <translation id="8609465669617005112">Lëviz lart</translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
+<translation id="868929229000858085">Kërko te kontaktet e tua</translation>
 <translation id="8702612070107455751">Çdo e dhënë jashtë linje do të fshihet.</translation>
 <translation id="8719283222052720129">Aktivizo lejen për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>

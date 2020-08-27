@@ -30,6 +30,7 @@
 <translation id="1818308510395330587">Fotoaparát zapnite aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />, aby mohla aplikácia <ph name="APP_NAME" /> používať RR.</translation>
 <translation id="1887786770086287077">Prístup k polohe je v tomto zariadení vypnutý. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="1919345977826869612">Reklamy</translation>
+<translation id="1919950603503897840">Výber kontaktov</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">Povolené (okrem tretích strán)</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
@@ -63,9 +64,11 @@
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2687403674020088961">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="2704606927547763573">Skopírované</translation>
+<translation id="2717722538473713889">E‑mailové adresy</translation>
 <translation id="2822354292072154809">Naozaj chcete resetovať všetky povolenia webu pre <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Web</translation>
 <translation id="2874939134665556319">Predchádzajúca skladba</translation>
+<translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Pýtať sa, či chcete povoliť webu prehrávať chránený obsah</translation>
 <translation id="2913331724188855103">Povoliť webom ukladať a čítať súbory cookie (odporučané)</translation>
 <translation id="2968755619301702150">Zobrazovač certifikátov</translation>
@@ -79,6 +82,7 @@
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3277252321222022663">Povoliť webom prístup k senzorom (odporúčané)</translation>
 <translation id="3295602654194328831">Skryť informácie</translation>
+<translation id="3333961966071413176">Všetky kontakty</translation>
 <translation id="3386292677130313581">Pýtať sa, či chcete povoliť webu zisťovať vašu polohu (odporúčané)</translation>
 <translation id="3479552764303398839">Teraz nie</translation>
 <translation id="3538390592868664640">Zabráňte webom vytvárať 3D mapu vášho okolia či sledovať umiestnenie kamier</translation>
@@ -89,6 +93,7 @@
 <translation id="3600792891314830896">Stlmiť weby, ktoré prehrávajú zvuk</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím doľava alebo doprava preskočíte vo videu o 10 s</translation>
+<translation id="381841723434055211">Telefónne čísla</translation>
 <translation id="385051799172605136">Späť</translation>
 <translation id="3859306556332390985">Pretočiť dopredu</translation>
 <translation id="3955193568934677022">Povoliť webom prehrávať chránený obsah (odporúčané)</translation>
@@ -119,12 +124,14 @@
 <translation id="4887024562049524730">Opýtať sa, či chcete povoliť webom používať vaše zariadenie a údaje virtuálnej reality (odporúčané)</translation>
 <translation id="4962975101802056554">Odvolať všetky povolenia pre zariadenie</translation>
 <translation id="497421865427891073">Ďalej</translation>
+<translation id="4994033804516042629">Nenašli sa žiadne kontakty</translation>
 <translation id="4996978546172906250">Zdieľať</translation>
 <translation id="5039804452771397117">Povoliť</translation>
 <translation id="5048398596102334565">Povoliť webom prístup k senzorom pohybu (odporúčané)</translation>
 <translation id="5063480226653192405">Použitie</translation>
 <translation id="5100237604440890931">Zbalená (rozbalíte ju kliknutím)</translation>
 <translation id="5123685120097942451">Karta inkognito</translation>
+<translation id="5197729504361054390">Vybrané kontakty budú zdieľané s webom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5301954838959518834">Dobre</translation>
 <translation id="5313967007315987356">Pridať web</translation>
@@ -134,6 +141,8 @@
 <translation id="5354152178998424783">Týmto vymažete <ph name="DATASIZE" /> dát a súborov cookie uložených webmi.</translation>
 <translation id="5384883051496921101">Tento web chce zdieľať informácie s aplikáciou mimo režimu inkognito.</translation>
 <translation id="5391532827096253100">Spojenie s týmto webom nie je zabezpečené. Informácie o webe</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ďalšie)}few{(+ # ďalšie)}many{(+ # more)}other{(+ # ďalších)}}</translation>
+<translation id="5403592356182871684">Názvy</translation>
 <translation id="5489227211564503167">Uplynutý čas: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blokovať reklamy webov, ktoré zobrazujú obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="5505264765875738116">Weby nemôžu žiadať o odosielanie upozornení</translation>
@@ -179,6 +188,7 @@
 <translation id="6612358246767739896">Chránený obsah</translation>
 <translation id="662080504995468778">Zostať</translation>
 <translation id="6643016212128521049">Vymazať</translation>
+<translation id="6689172468748959065">Profilové fotky</translation>
 <translation id="6697925417670533197">Práve sťahované položky</translation>
 <translation id="6746124502594467657">Presunúť nadol</translation>
 <translation id="6766622839693428701">Zatvorte potiahnutím dole.</translation>
@@ -224,6 +234,7 @@
 <translation id="7846076177841592234">Zrušiť výber</translation>
 <translation id="7846621471902887024">Systém vás odhlási zo všetkých webov.</translation>
 <translation id="7882806643839505685">Povoliť zvuk pre konkrétny web.</translation>
+<translation id="7986741934819883144">Výber kontaktu</translation>
 <translation id="7993619969781047893">Funkcie na niektorých weboch môžu zlyhávať</translation>
 <translation id="7999064672810608036">Naozaj chcete vymazať všetky miestne dáta tohto webu, vrátane súborov cookie, a resetovať všetky jeho povolenia?</translation>
 <translation id="8007176423574883786">Vypnuté v tomto zariadení</translation>
@@ -254,6 +265,7 @@
 <translation id="857943718398505171">Povolené (odporúčané)</translation>
 <translation id="8609465669617005112">Presunúť nahor</translation>
 <translation id="8676374126336081632">Vymazať vstup</translation>
+<translation id="868929229000858085">Prehľadať kontakty</translation>
 <translation id="8702612070107455751">Budú vymazané všetky offline údaje.</translation>
 <translation id="8719283222052720129">Zapnite v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" /> povolenie pre aplikáciu <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>

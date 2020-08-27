@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">Շարունակելու համար Chrome-ին անհրաժեշտ է թույլտվություն</translation>
 <translation id="220138918934036434">Թաքցնել կոճակը</translation>
 <translation id="2202898655984161076">Տպիչների ցանկը կազմելիս խնդիր առաջացավ: Հնարավոր է, ձեր տպիչներից մի քանիսը բարեհաջող չեն գրանցվել <ph name="CLOUD_PRINT_NAME" />-ում:</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />Հասցեագոտում<ph name="END_LINK" /> օգտագործվող որոնիչը</translation>
 <translation id="2204034823255629767">Կարդալ և փոխել այն ամենն, ինչ դուք մուտքագրում եք</translation>
 <translation id="220858061631308971">Մուտքագրեք այս PIN կոդը «<ph name="DEVICE_NAME" />»-ում՝</translation>
 <translation id="2212565012507486665">Թույլատրել քուքիները</translation>
@@ -1937,6 +1936,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">Տեղեկություններ հավելվածի մասին</translation>
 <translation id="3333190335304955291">Այս ծառայությունը կարող եք անջատել կարգավորումներում։</translation>
+<translation id="3333961966071413176">Բոլոր կոնտակտները</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – «Նկար նկարի մեջ» ռեժիմում նվագարկվող տեսանյութ</translation>
 <translation id="3335947283844343239">Նորից բացել փակված ներդիրը</translation>
 <translation id="3340620525920140773">Ներբեռնումն ավարտվեց՝ <ph name="FILE_NAME" />:</translation>

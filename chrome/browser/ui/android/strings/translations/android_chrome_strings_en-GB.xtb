@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Save up to 60% data, read today's news</translation>
 <translation id="1303339473099049190">Can’t find that password. Check your spelling and try again.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Sent from <ph name="DEVICE_NAME" /></translation>
+<translation id="1307205233980126133">Sorry, we couldn’t validate your credentials</translation>
 <translation id="1310482092992808703">Group tabs</translation>
 <translation id="1311657260431405215">This QR code is not a URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">Navigation history is opened</translation>
@@ -109,7 +110,6 @@
 <translation id="1874760110381325409">You’ll be signed in with your Google Account\n(this won’t turn on Chrome Sync)</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1883903952484604915">My files</translation>
-<translation id="1919950603503897840">Select contacts</translation>
 <translation id="1925021887439448749">Enter custom web address</translation>
 <translation id="1928696683969751773">Updates</translation>
 <translation id="19288952978244135">Reopen Chrome.</translation>
@@ -216,7 +216,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2689830683995595741">By using Chrome, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS Additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Notice for Google Accounts managed with Family Link<ph name="END_LINK3" /> also applies.</translation>
 <translation id="2707726405694321444">Refresh page</translation>
 <translation id="2709516037105925701">Auto-fill</translation>
-<translation id="2717722538473713889">Email addresses</translation>
 <translation id="2728754400939377704">Sort by site</translation>
 <translation id="2744248271121720757">Tap a word to search instantly or see related actions</translation>
 <translation id="2760989362628427051">Turn on dark theme when your device's dark theme or Battery Saver is on</translation>
@@ -241,7 +240,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2893180576842394309">Google may use your history to personalise Search and other Google services</translation>
 <translation id="2898264748040935573">Edit stored password</translation>
 <translation id="2900528713135656174">Create event</translation>
-<translation id="2903493209154104877">Addresses</translation>
 <translation id="2904414404539560095">List of devices to share a tab with, opened at full height.</translation>
 <translation id="2905036901251765993">To share with people nearby, let them scan this QR code</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
@@ -294,7 +292,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3306398118552023113">This app is running in Chrome</translation>
 <translation id="3315103659806849044">You are currently customising your Sync and Google service settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
 <translation id="3328801116991980348">Site information</translation>
-<translation id="3333961966071413176">All contacts</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
 <translation id="3341058695485821946">See how much data you've saved</translation>
 <translation id="3350687908700087792">Close all incognito tabs</translation>
@@ -353,7 +350,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3789841737615482174">Install</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Manage</translation>
-<translation id="381841723434055211">Phone numbers</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads deleted</translation>
 <translation id="3856096718352044181">Please verify that this is a valid provider or try again later</translation>
 <translation id="388596076286380598">Get articles, videos and other content from sites that you like, even if you’re offline or your connection is poor.</translation>
@@ -509,7 +505,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="497421865427891073">go forward</translation>
 <translation id="4988210275050210843">Downloading file (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Pages</translation>
-<translation id="4994033804516042629">No contacts found</translation>
 <translation id="5004416275253351869">Google activity controls</translation>
 <translation id="5005498671520578047">Copy password</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wants to connect</translation>
@@ -533,7 +528,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5184329579814168207">Open in Chrome</translation>
 <translation id="5193988420012215838">Copied to your clipboard</translation>
-<translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Work profile</translation>
 <translation id="5210286577605176222">Jump to the previous tab</translation>
 <translation id="5210365745912300556">Close tab</translation>
@@ -553,8 +547,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5355191726083956201">Enhanced protection is on</translation>
 <translation id="5357811892247919462">Tab received</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> open tab, tap to switch tabs}other{<ph name="OPEN_TABS_MANY" /> open tabs, tap to switch tabs}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
-<translation id="5403592356182871684">Names</translation>
 <translation id="5403644198645076998">Only allow certain sites</translation>
 <translation id="5414836363063783498">Verifying…</translation>
 <translation id="5423934151118863508">Your most visited pages will appear here</translation>
@@ -750,7 +742,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="666981079809192359">Chrome Privacy Notice</translation>
 <translation id="6671495933530132209">Copy image</translation>
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
-<translation id="6689172468748959065">Profile photos</translation>
 <translation id="6691888250440401212">1. Choose <ph name="APP_NAME" />\n2. Tap 'Set as default'</translation>
 <translation id="6697492270171225480">Show suggestions for similar pages when a page can't be found</translation>
 <translation id="6698801883190606802">Manage synced data</translation>
@@ -912,7 +903,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Preload pages for faster browsing and searching</translation>
 <translation id="79859296434321399">To view augmented reality content, install ARCore</translation>
-<translation id="7986741934819883144">Select a contact</translation>
 <translation id="799806351373751710">Cancel sync setup</translation>
 <translation id="7998918019931843664">Re-open closed tab</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1010,7 +1000,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8662811608048051533">Signs you out of most sites.</translation>
 <translation id="8664979001105139458">File name already exists</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signal Strength Level: # bar}other{Signal Strength Level: # bars}}</translation>
-<translation id="868929229000858085">Search your contacts</translation>
 <translation id="869891660844655955">Expiry date</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8725066075913043281">Try again</translation>

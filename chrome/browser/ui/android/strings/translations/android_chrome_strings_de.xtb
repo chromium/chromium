@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Sie werden mit Ihrem Google-Konto angemeldet\n(die Chrome-Synchronisierung wird dabei nicht aktiviert)</translation>
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
 <translation id="1883903952484604915">Meine Dateien</translation>
-<translation id="1919950603503897840">Kontakte auswählen</translation>
 <translation id="1925021887439448749">Benutzerdefinierte Webadresse eingeben</translation>
 <translation id="1928696683969751773">Aktualisierungen</translation>
 <translation id="19288952978244135">Öffnen Sie Chrome noch einmal.</translation>
@@ -216,7 +215,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2689830683995595741">Wenn Sie Chrome verwenden, stimmen Sie damit den <ph name="BEGIN_LINK1" />Nutzungsbedingungen von Google<ph name="END_LINK1" /> und den <ph name="BEGIN_LINK2" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_LINK2" /> zu. Außerdem gelten die <ph name="BEGIN_LINK3" />Datenschutzhinweise für mit Family Link verwaltete Google-Konten<ph name="END_LINK3" />.</translation>
 <translation id="2707726405694321444">Seite aktualisieren</translation>
 <translation id="2709516037105925701">Automatisches Ausfüllen</translation>
-<translation id="2717722538473713889">E-Mail-Adressen</translation>
 <translation id="2728754400939377704">Nach Website sortieren</translation>
 <translation id="2744248271121720757">Tippen Sie auf ein Wort, um eine Sofortsuche zu starten oder weitere Aktionen anzuzeigen</translation>
 <translation id="2760989362628427051">Dunkles Design verwenden, wenn beim Gerät der Energiesparmodus oder das dunkle Design aktiviert ist</translation>
@@ -241,7 +239,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2893180576842394309">Anhand Ihres Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren</translation>
 <translation id="2898264748040935573">Gespeichertes Passwort bearbeiten</translation>
 <translation id="2900528713135656174">Termin erstellen</translation>
-<translation id="2903493209154104877">Adressen</translation>
 <translation id="2904414404539560095">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist ganz geöffnet.</translation>
 <translation id="2905036901251765993">Bitten Sie Leute in der Nähe, diesen QR-Code zu scannen, um Inhalte mit Ihnen zu teilen</translation>
 <translation id="2909615210195135082">Google-Benachrichtigungsplattform</translation>
@@ -294,7 +291,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3306398118552023113">Diese App wird in Chrome ausgeführt</translation>
 <translation id="3315103659806849044">Sie passen gerade die Einstellungen für "Synchronisierung und Google-Dienste" an Wenn Sie die Aktivierung der Synchronisierung abschließen möchten, tippen Sie unten auf dem Bildschirm auf "Bestätigen". Nach oben</translation>
 <translation id="3328801116991980348">Websiteinformationen</translation>
-<translation id="3333961966071413176">Alle Kontakte</translation>
 <translation id="3334729583274622784">Dateiendung ändern?</translation>
 <translation id="3341058695485821946">Erfahren Sie, wie viel Datenvolumen Sie eingespart haben</translation>
 <translation id="3350687908700087792">Alle Inkognito-Tabs schließen</translation>
@@ -332,7 +328,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3631987586758005671">Wird mit "<ph name="DEVICE_NAME" />" geteilt</translation>
 <translation id="3632295766818638029">Passwort anzeigen</translation>
-<translation id="363596933471559332">Sie werden mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn das Kästchen nicht angeklickt ist, werden Sie jedes Mal aufgefordert, sich manuell auf einer Website anzumelden.</translation>
+<translation id="363596933471559332">Sie werden mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion nicht aktiviert ist, werden Sie jedes Mal aufgefordert, sich manuell auf einer Website anzumelden.</translation>
 <translation id="3658159451045945436">Durch das Zurücksetzen wird der Verlauf gelöscht. Dazu gehört auch die Liste der besuchten Websites.</translation>
 <translation id="3692944402865947621">Download von <ph name="FILE_NAME" /> fehlgeschlagen, weil der Speicherort nicht erreichbar ist.</translation>
 <translation id="3701167022068948696">Jetzt beheben</translation>
@@ -353,7 +349,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3789841737615482174">Installieren</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Verwalten</translation>
-<translation id="381841723434055211">Telefonnummern</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> Downloads gelöscht</translation>
 <translation id="3856096718352044181">Vergewissern Sie sich, dass dies ein gültiger Provider ist, oder versuchen Sie es später noch einmal</translation>
 <translation id="388596076286380598">Erhalten Sie Artikel, Videos und weitere Inhalte von Websites, die Ihnen gefallen – auch offline oder bei schlechter Internetverbindung.</translation>
@@ -509,7 +504,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="497421865427891073">Weiter</translation>
 <translation id="4988210275050210843">Datei wird heruntergeladen (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Seiten</translation>
-<translation id="4994033804516042629">Keine Kontakte gefunden</translation>
 <translation id="5004416275253351869">Google-Aktivitätseinstellungen</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> möchte eine Verbindung herstellen</translation>
@@ -533,7 +527,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5184329579814168207">In Chrome öffnen</translation>
 <translation id="5193988420012215838">In die Zwischenablage kopiert</translation>
-<translation id="5197729504361054390">Die von Ihnen ausgewählten Kontakte werden mit <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> geteilt.</translation>
 <translation id="5199929503336119739">Arbeitsprofil</translation>
 <translation id="5210286577605176222">Zum vorherigen Tab wechseln</translation>
 <translation id="5210365745912300556">Schließen</translation>
@@ -553,8 +546,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
 <translation id="5357811892247919462">Tab erhalten</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> geöffneter Tab, zum Wechseln der Tabs tippen}other{<ph name="OPEN_TABS_MANY" /> geöffnete Tabs, zum Wechseln der Tabs tippen}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 weitere)}other{(+ # weitere)}}</translation>
-<translation id="5403592356182871684">Namen</translation>
 <translation id="5403644198645076998">Nur bestimmte Websites zulassen</translation>
 <translation id="5414836363063783498">Überprüfung...</translation>
 <translation id="5423934151118863508">Hier werden Ihre am meisten aufgerufenen Seiten angezeigt.</translation>
@@ -750,7 +741,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="666981079809192359">Chrome-Datenschutzhinweise</translation>
 <translation id="6671495933530132209">Bild kopieren</translation>
 <translation id="6676840375528380067">Ihre Chrome-Daten von diesem Gerät löschen?</translation>
-<translation id="6689172468748959065">Profilfotos</translation>
 <translation id="6691888250440401212">1. Wählen Sie <ph name="APP_NAME" /> aus\n2. Tippen Sie auf "Als Standard festlegen"</translation>
 <translation id="6697492270171225480">Vorschläge für ähnliche Seiten anzeigen, wenn eine Seite nicht gefunden werden kann</translation>
 <translation id="6698801883190606802">Synchronisierte Daten verwalten</translation>
@@ -768,7 +758,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> Tabs geschlossen</translation>
 <translation id="685850645784703949">Discover von Google – aus</translation>
 <translation id="6864459304226931083">Bild herunterladen</translation>
-<translation id="6865313869410766144">Formulardaten automatisch ausfüllen</translation>
+<translation id="6865313869410766144">Formulardaten für automatisches Ausfüllen</translation>
 <translation id="6882836635272038266">Standardschutz vor Websites, Downloads und Erweiterungen, die bekannterweise schädlich sind.</translation>
 <translation id="6884306546558072722">Offline mehr entdecken</translation>
 <translation id="688738109438487280">Vorhandene Daten werden zu <ph name="TO_ACCOUNT" /> hinzugefügt.</translation>
@@ -912,7 +902,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7975379999046275268">Seitenvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Seiten vorab laden, um das Surfen und die Suche zu beschleunigen</translation>
 <translation id="79859296434321399">ARCore installieren, um Augmented-Reality-Inhalte zu sehen</translation>
-<translation id="7986741934819883144">Kontakt auswählen</translation>
 <translation id="799806351373751710">Einrichtung der Synchronisierung abbrechen</translation>
 <translation id="7998918019931843664">Geschlossenen Tab wieder öffnen</translation>
 <translation id="8004582292198964060">Browser</translation>
@@ -1010,7 +999,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8662811608048051533">Sie werden von den meisten Websites abgemeldet.</translation>
 <translation id="8664979001105139458">Dateiname schon vorhanden</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Signalstärke: # Balken}other{Signalstärke: # Balken}}</translation>
-<translation id="868929229000858085">Kontakte durchsuchen</translation>
 <translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>

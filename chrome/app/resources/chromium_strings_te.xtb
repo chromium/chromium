@@ -166,7 +166,7 @@
 కొన్ని ఫీచర్‌లు అందుబాటులో ఉండకపోవచ్చు. దయచేసి వేరొక ప్రొఫైల్ డైరెక్టరీని పేర్కొనండి లేదా Chromium యొక్క కొత్త వెర్షన్‌ను ఉపయోగించండి.</translation>
 <translation id="6734080038664603509">&amp;Chromiumను అప్‌డేట్ చేయండి</translation>
 <translation id="6734291798041940871">మీ కంప్యూటర్‌లోని వినియోగదారులందరికీ Chromium ఇప్పటికే ఇన్‌స్టాల్ చేయబడింది.</translation>
-<translation id="6762551859069255163">ఈ పరికరాన్ని ఉపయోగించే వేర్వేరు వ్యక్తుల కోసం లేదా కార్యాలయం, వ్యక్తిగత బ్రౌజింగ్‍లను విడిగా ఉంచడానికి Chromiumలో వేర్వేరు ప్రొఫైల్‍లను ఉపయోగించండి</translation>
+<translation id="6762551859069255163">ఈ పరికరాన్ని ఉపయోగించే వేర్వేరు వ్యక్తుల కోసం లేదా ఆఫీస్, వ్యక్తిగత బ్రౌజింగ్‍లను విడిగా ఉంచడానికి Chromiumలో వేర్వేరు ప్రొఫైల్‍లను ఉపయోగించండి</translation>
 <translation id="6774082503108938489">Chromiumలో సైట్‌లు, యాప్‌లు, ఎక్స్‌టెన్షన్‌లకు సంబంధించిన అనుమతులను మీ తల్లి/తండ్రి ఆఫ్ చేశారు. ఈ <ph name="EXTENSION_TYPE_PARAMETER" />ను ఎనేబుల్ చేయడానికి అనుమతి లేదు.</translation>
 <translation id="6847869444787758381">మీ పాస్‌వర్డ్‌లు ఎప్పుడైనా హ్యాక్ అయితే, Chromium మీకు తెలియచేస్తుంది</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
@@ -253,6 +253,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromiumకి ఇప్పుడు Windows XP లేదా Windows Vistaలో మద్దతు లేనందున ఇది సరిగ్గా పని చేయకపోవచ్చు</translation>
 <translation id="95514773681268843">మీరు ఈ పరికరాన్ని ఉపయోగించడానికి ముందు సేవా నిబంధనలను చదివి, అంగీకరించాలని <ph name="DOMAIN" /> కోరుతోంది. ఈ నిబంధనలు Chromium OS నిబంధనలను విస్తరింపజేయవు, సవరించవు లేదా పరిమితం చేయవు.</translation>
-<translation id="965162752251293939">Chromiumని ఎవరు ఉపయోగిస్తున్నారు?</translation>
+<translation id="965162752251293939">Chromiumను ఎవరు ఉపయోగిస్తున్నారు?</translation>
 <translation id="985602178874221306">Chromium రచయితలు</translation>
 </translationbundle>

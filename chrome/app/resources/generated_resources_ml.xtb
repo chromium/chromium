@@ -1012,7 +1012,6 @@
 <translation id="2200356397587687044">Chrome-ന് തുടരാൻ അനുമതി ആവശ്യമാണ്</translation>
 <translation id="220138918934036434">മറയ്‌ക്കല്‍ ബട്ടണ്‍</translation>
 <translation id="2202898655984161076">പ്രിന്‍ററുകള്‍ ലിസ്റ്റുചെയ്യുന്നതില്‍ പ്രശ്നമുണ്ടായിരുന്നു. നിങ്ങളുടെ പ്രിന്‍ററുകളില്‍ ചിലത് <ph name="CLOUD_PRINT_NAME" /> എന്നതില്‍ വിജയകരമായി രജിസ്റ്റര്‍ ചെയ്തിട്ടില്ലായിരിക്കാം.</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />വിലാസ ബാറിൽ<ph name="END_LINK" /> ഉപയോഗിക്കുന്ന തിരയൽ യന്ത്രം</translation>
 <translation id="2204034823255629767">നിങ്ങൾ ടൈപ്പുചെയ്യുന്നവയെല്ലാം വായിക്കുക, മാറ്റുക</translation>
 <translation id="220858061631308971">"<ph name="DEVICE_NAME" />" എന്നതിൽ PIN കോഡ് നൽകുക:</translation>
 <translation id="2212565012507486665">കുക്കികൾ അനുവദിക്കുക</translation>
@@ -1934,6 +1933,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">ആപ്പ് വിവരം</translation>
 <translation id="3333190335304955291">ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഈ സേവനം ഓഫാക്കാം.</translation>
+<translation id="3333961966071413176">എല്ലാ കോൺടാക്റ്റുകളും</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ചിത്രത്തിനുള്ളിലെ ചിത്രം മോഡിൽ വീഡിയോ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="3335947283844343239">അടച്ച ടാബ് വീണ്ടും തുറക്കുക</translation>
 <translation id="3340620525920140773">ഡൗൺലോഡ് പൂർത്തിയായി: <ph name="FILE_NAME" />.</translation>

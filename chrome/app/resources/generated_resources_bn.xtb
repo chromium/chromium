@@ -1015,7 +1015,6 @@
 <translation id="2200356397587687044">কাজটি চালিয়ে যাওয়ার জন্য Chrome কে অনুমতি দিতে হবে</translation>
 <translation id="220138918934036434">বোতাম লুকান</translation>
 <translation id="2202898655984161076">মুদ্রকগুলি তালিকাকরণে একটি সমস্যা ছিল৷ আপনার মুদ্রকগুলির মধ্যে কয়েকটি সফলভাবে <ph name="CLOUD_PRINT_NAME" />তে নিবন্ধীকৃত নাও থাকতে পারে৷</translation>
-<translation id="2203682048752833055"><ph name="BEGIN_LINK" />অ্যাড্রেস বারে<ph name="END_LINK" /> যে সার্চ ইঞ্জিন ব্যবহার করা হয়েছে</translation>
 <translation id="2204034823255629767">আপনি যা টাইপ করেন তা পড়ুন এবং পরিবর্তন করুন</translation>
 <translation id="220858061631308971">দয়া করে  <ph name="DEVICE_NAME" /> "-এ পিন কোড লিখুন:</translation>
 <translation id="2212565012507486665">কুকিগুলিকে অনুমতি দিন</translation>
@@ -1936,6 +1935,7 @@
 <translation id="3331321258768829690">(<ph name="UTCOFFSET" />) <ph name="LONGTZNAME" /> (<ph name="EXEMPLARCITY" />)</translation>
 <translation id="3331974543021145906">অ্যাপ্লিকেশানের তথ্য</translation>
 <translation id="3333190335304955291">আপনি সেটিংসে গিয়ে এই পরিষেবাটি বন্ধ করতে পারেন।</translation>
+<translation id="3333961966071413176">সব পরিচিতি</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - ভিডিওটি ছবির-মধ্যে-ছবি মোডে চালানো হচ্ছে</translation>
 <translation id="3335947283844343239">বন্ধ হওয়া ট্যাব আবার খুলুন</translation>
 <translation id="3340620525920140773">ডাউনলোড সম্পূর্ণ হয়েছে: <ph name="FILE_NAME" />.</translation>

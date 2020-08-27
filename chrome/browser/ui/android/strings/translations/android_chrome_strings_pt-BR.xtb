@@ -109,7 +109,6 @@
 <translation id="1874760110381325409">Você fará login com sua Conta do Google.\nIsso não ativará a Sincronização do Chrome</translation>
 <translation id="1877026089748256423">O Google Chrome está desatualizado</translation>
 <translation id="1883903952484604915">Meus arquivos</translation>
-<translation id="1919950603503897840">Selecionar contatos</translation>
 <translation id="1925021887439448749">Digite o endereço da Web personalizado</translation>
 <translation id="1928696683969751773">Atualizações</translation>
 <translation id="19288952978244135">Reabra o Chrome.</translation>
@@ -216,7 +215,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2689830683995595741">Ao usar o Chrome, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />. O <ph name="BEGIN_LINK3" />Aviso de privacidade para Contas do Google gerenciadas no Family Link<ph name="END_LINK3" /> também é aplicável.</translation>
 <translation id="2707726405694321444">Atualizar página</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
-<translation id="2717722538473713889">Endereços de e-mail</translation>
 <translation id="2728754400939377704">Classificar por site</translation>
 <translation id="2744248271121720757">Toque em uma palavra para pesquisar instantaneamente ou ver as ações relacionadas</translation>
 <translation id="2760989362628427051">Ativa o tema escuro quando essa opção ou a "Economia de bateria" do dispositivo está ativada</translation>
@@ -241,7 +239,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2893180576842394309">O Google pode usar seu histórico para personalizar a Pesquisa e outros serviços que ele oferece</translation>
 <translation id="2898264748040935573">Editar senha armazenada</translation>
 <translation id="2900528713135656174">Criar evento</translation>
-<translation id="2903493209154104877">Endereços</translation>
 <translation id="2904414404539560095">Lista de dispositivos com os quais é possível compartilhar uma guia aberta no tamanho máximo.</translation>
 <translation id="2905036901251765993">Para compartilhar com pessoas próximas, permita que elas leiam esse código QR</translation>
 <translation id="2909615210195135082">Plataforma de notificações do Google</translation>
@@ -294,7 +291,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3306398118552023113">Este app está sendo executado no Chrome</translation>
 <translation id="3315103659806849044">No momento, você está personalizando suas configurações de sincronização e de serviço do Google. Para terminar de ativar a sincronização, toque no botão "Confirmar" na parte inferior da tela. Navegar para cima</translation>
 <translation id="3328801116991980348">Informações do site</translation>
-<translation id="3333961966071413176">Todos os contatos</translation>
 <translation id="3334729583274622784">Mudar extensão do arquivo?</translation>
 <translation id="3341058695485821946">Veja o volume de dados que você economizou</translation>
 <translation id="3350687908700087792">Fechar todas as guias anônimas</translation>
@@ -353,7 +349,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
-<translation id="381841723434055211">Números de telefone</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads excluídos</translation>
 <translation id="3856096718352044181">Verifique se o provedor é válido ou tente novamente mais tarde</translation>
 <translation id="388596076286380598">Receba artigos, vídeos e outros conteúdos dos sites que você gosta, mesmo que você esteja off-line ou com uma conexão ruim.</translation>
@@ -510,7 +505,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="497421865427891073">Avançar</translation>
 <translation id="4988210275050210843">Fazendo o download do arquivo (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Páginas</translation>
-<translation id="4994033804516042629">Nenhum contato encontrado</translation>
 <translation id="5004416275253351869">Controles de atividade do Google</translation>
 <translation id="5005498671520578047">Copiar senha</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> deseja se conectar</translation>
@@ -534,7 +528,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5170568018924773124">Mostrar na pasta</translation>
 <translation id="5184329579814168207">Abrir no Google Chrome</translation>
 <translation id="5193988420012215838">Copiado para a área de transferência</translation>
-<translation id="5197729504361054390">Os contatos selecionados serão compartilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5199929503336119739">Perfil de trabalho</translation>
 <translation id="5210286577605176222">Ir para a guia anterior</translation>
 <translation id="5210365745912300556">Fechar guia</translation>
@@ -554,8 +547,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5355191726083956201">A "Proteção reforçada" está ativa</translation>
 <translation id="5357811892247919462">Guia recebida</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> guia aberta, toque para alternar}one{<ph name="OPEN_TABS_MANY" /> guia aberta, toque para alternar}other{<ph name="OPEN_TABS_MANY" /> guias abertas, toque para alternar}}</translation>
-<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
-<translation id="5403592356182871684">Nomes</translation>
 <translation id="5403644198645076998">Permitir apenas determinados sites</translation>
 <translation id="5414836363063783498">Verificando...</translation>
 <translation id="5423934151118863508">Suas páginas mais visitadas aparecerão aqui</translation>
@@ -751,7 +742,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="666981079809192359">Aviso de Privacidade do Chrome</translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
 <translation id="6676840375528380067">Limpar seus dados do Chrome deste dispositivo?</translation>
-<translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6691888250440401212">1. Selecione o app <ph name="APP_NAME" />.\n2. Toque em “Definir como padrão”.</translation>
 <translation id="6697492270171225480">Mostrar sugestões de páginas semelhantes quando uma página não for encontrada</translation>
 <translation id="6698801883190606802">Gerenciar dados sincronizados</translation>
@@ -798,7 +788,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7077143737582773186">Cartão SD</translation>
 <translation id="7080806333218412752">Envia URLs para a verificação pelo Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
 <translation id="7088681679121566888">O Chrome está atualizado</translation>
-<translation id="7106762743910369165">Seu navegador é gerenciado pela sua organização</translation>
+<translation id="7106762743910369165">O navegador é gerenciado pela sua organização</translation>
 <translation id="7121362699166175603">Limpa o histórico e os preenchimentos automáticos na barra de endereço. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="7128355412245153445">Veja os principais sites e as matérias recentes sempre que tocar no botão home</translation>
 <translation id="7138678301420049075">Outro</translation>
@@ -913,7 +903,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7975379999046275268">Visualizar página <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pré-carregar páginas para possibilitar navegação e pesquisa mais rápidas</translation>
 <translation id="79859296434321399">Para ver conteúdo de realidade aumentada, instale o ARCore</translation>
-<translation id="7986741934819883144">Selecione um contato</translation>
 <translation id="799806351373751710">Cancelar configuração de sincronização</translation>
 <translation id="7998918019931843664">Reabrir guia fechada</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1011,7 +1000,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8662811608048051533">Desconecta você da maioria dos sites.</translation>
 <translation id="8664979001105139458">O nome do arquivo já existe</translation>
 <translation id="8687353297350450808">{N_BARS,plural, =1{Nível de intensidade do sinal: de # barra}one{Nível de intensidade do sinal: de # barra}other{Nível de intensidade do sinal: de # barras}}</translation>
-<translation id="868929229000858085">Pesquisar seus contatos</translation>
 <translation id="869891660844655955">Validade</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>

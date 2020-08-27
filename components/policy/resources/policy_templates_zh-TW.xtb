@@ -615,7 +615,7 @@
 <translation id="199764499252435679">允許更新 <ph name="PRODUCT_NAME" /> 的元件</translation>
 <translation id="1999000620918508488">強制登入畫面顯示或隱藏系統資訊。</translation>
 <translation id="2006530844219044261">電源管理</translation>
-<translation id="2011716066101019796">如果設定這項政策或未設定，Chrome 可以顯示檔案選項對話，使用者也可以開啟檔案選項對話。
+<translation id="2011716066101019796">如果設定這項政策或未設定，Chrome 可以顯示檔案選項對話方塊，使用者也可以開啟檔案選項對話方塊。
 
       如果關閉這項政策，只要使用者執行會開啟檔案選項對話方塊的動作 (例如匯入書籤、上傳檔案、儲存連結等)，螢幕上就會改為顯示訊息。系統會視同使用者已按下檔案選項對話方塊上的 [取消]。</translation>
 <translation id="2014757022750736514">控管登入畫面的行為，使用者會從該畫面登入帳戶。可調整的設定包含可登入的人員、系統允許的帳戶類型、應使用何種驗證方法，以及一般無障礙、輸入法和語言代碼設定。</translation>
@@ -1737,7 +1737,7 @@
 <translation id="3577251398714997599">含侵入式廣告的網站的廣告設定</translation>
 <translation id="3577628175311752799">使用預設的參照政策 no-referrer-when-downgrade。</translation>
 <translation id="357917253161699596">允許使用者管理使用者憑證</translation>
-<translation id="3580414086211696382">控管 File System API 的讀取使用權限</translation>
+<translation id="3580414086211696382">控管能否透過 File System API 要求讀取權限</translation>
 <translation id="3583230441447348508">指定一組預先設定的網路檔案共用清單。
 
       這項政策的每個清單項目都是一個物件，由下列兩個元素組成：「share_url」和「mode」。「share_url」是檔案共用網址，「mode」則應設為「drop_down」或「pre_mount」。如果是「drop_down」模式，系統會將「share_url」新增至共用項目搜尋下拉式選單中。如果是「pre_mount」模式，則系統會掛接「share_url」。</translation>
@@ -2422,7 +2422,7 @@
 
       如果將這項政策設為停用或不設定，系統會將預設的「安全瀏覽」保護功能套用至所有資源。
 
-       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
+       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="4661889655253181651">內容設定可讓你指定特定內容類型 (例如 Cookie、圖片或 JavaScript) 的處理方式。</translation>
 <translation id="4665897631924472251">擴充功能管理設定</translation>
 <translation id="4666930704271463612">指定系統尋找伺服器印表機時，要查詢符合何種條件的列印伺服器。
@@ -2998,7 +2998,7 @@
 
       如果將這項政策設為停用或不設定，系統會將預設的「安全瀏覽」保護功能套用至所有資源。
 
-      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="5437214086679373363">必須進行掃描時，控管使用者是否可以上傳或下載受密碼保護的檔案。如果 <ph name="SEND_FILES_FOR_MALWARE_CHECK_POLICY_NAME" />、<ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" /> 或控管已啟用檢查功能的網域清單政策判斷檔案需要掃描，系統才會套用這項限制。
 
       如果將這項政策設為「無」，<ph name="PRODUCT_NAME" /> 會禁止使用者上傳或下載受密碼保護的檔案。
@@ -3328,9 +3328,9 @@
 
       如果將這項政策設為停用，當下載的檔案來自可信任的來源，安全瀏覽功能就不會將下載作業送交分析。
 
-      這些限制適用於網頁內容及 [下載連結] 選單選項所觸發的下載作業，但不適用於目前顯示網頁的下載作業，以及透過列印選項儲存為 PDF 檔的作業。
+      這些限制適用於網頁內容及 [下載連結] 選單選項所觸發的下載作業，但不適用於目前顯示網頁的儲存或下載作業，以及透過列印選項儲存為 PDF 檔的作業。
 
-      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="5879014913445067283">控制網路檔案共用功能是否透過 <ph name="NETBIOS_NAME" /> 搜尋檔案</translation>
 <translation id="588135807064822874">啟用「輕觸搜尋」功能</translation>
 <translation id="5882345429632338713">在啟動替代瀏覽器前的延遲時間 (以毫秒為單位)</translation>
@@ -3407,7 +3407,7 @@
 
       如果你停用這項政策或將其設為 False，列印指令就會啟動列印預覽畫面。</translation>
 <translation id="6022948604095165524">起始動作</translation>
-<translation id="6026722971789064331">控管 File System API 的寫入使用權限</translation>
+<translation id="6026722971789064331">控管能否透過 File System API 要求寫入權限</translation>
 <translation id="602728333950205286">預設搜尋引擎互動智慧搜尋網址</translation>
 <translation id="603410445099326293">使用 POST 的建議網址參數</translation>
 <translation id="6034341625190551415">控管公開工作階段和資訊站帳戶類型。</translation>
@@ -3524,9 +3524,9 @@
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>
 <translation id="6210261948043479030">你可以透過設定這項政策來設定企業登入網址清單 (僅限 HTTP 和 HTTPS 通訊協定)。密碼保護服務會從這些網址擷取密碼的加料式雜湊值，並用於偵測密碼重複使用情形。為了讓 <ph name="PRODUCT_NAME" /> 正確擷取密碼的加料式雜湊值，請確保你的登入頁面遵循下列指南：https://www.chromium.org/developers/design-documents/create-amazing-password-forms。
 
-      如果關閉這項設定或不設定，密碼保護服務只會在 https://accounts.google.com上擷取密碼的加料式雜湊值。
+      如果關閉這項設定或不設定，密碼保護服務只會在 https://accounts.google.com 上擷取密碼的加料式雜湊值。
 
-      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="6210610748361191729">如果將這項政策設為 False，系統將不會向使用者提供匯出/匯入 UI，但使用者仍可在虛擬機器中直接使用「lxc」指令來匯出及匯入容器圖片。</translation>
 <translation id="6211428344788340116">回報裝置活動時間。
 
@@ -3903,7 +3903,7 @@
 
       如果關閉這項政策或不設定，密碼保護服務會將使用者導向至 https://myaccount.google.com 以變更密碼。
 
-      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="6757613329154374267">已啟用備份與還原功能</translation>
 <translation id="6758659208493449452">這項政策可控管已加入進階保護計畫的使用者是否可以享有額外的防護。部分功能可能涉及與 Google 共用資料 (例如，進階保護計畫的使用者可將下載內容傳送至 Google 進行惡意軟體掃描)。如果設為 True 或不予設定，已加入計畫的使用者將能享有額外的防護。如果設為 False，進階保護計畫的使用者只能享有標準的消費者功能。</translation>
 <translation id="6766216162565713893">允許網站要求使用者授權存取附近的藍牙裝置</translation>
@@ -4344,7 +4344,7 @@
 
       如果已設定 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 政策，系統會忽視 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 政策的值。
 
-      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="7291084543582732020">如果啟用這項設定，只要滿足 Smart Lock 的使用條件，使用者即可使用這項功能。
 
       如果停用這項設定，使用者將無法使用 Smart Lock 登入功能。
@@ -4692,15 +4692,15 @@
 
           根據預設，系統會允許所有內建訊息傳遞主機，但如果政策封鎖了所有內建訊息傳遞主機，你可以使用允許清單覆寫該政策。</translation>
 <translation id="7818131573217430250">設定高反差模式在登入畫面的預設狀態</translation>
-<translation id="7823420548819808002">你可以透過設定這項政策來指定來源清單 (網址) 或主機名稱模式 (例如 *.example.com)，指定內容來源將不會套用針對不安全來源所設的安全性限制。機構為無法部署傳輸層安全標準 (TLS) 的舊版應用程式設定許可清單來源，或是方便機構設定內部網頁開發所需的暫存伺服器。這樣一來，開發人員就能測試需要安全內容的功能，而不必在暫存伺服器上部署傳輸層安全標準 (TLS)。此外，這項政策也能避免系統在網址列中將指定來源加上「不安全」標籤。
+<translation id="7823420548819808002">你可以透過這項政策建立清單，指定針對不安全來源所設的安全性限制不適用於哪些來源 (網址) 或主機名稱模式 (例如 *.example.com)。機構可以為無法部署傳輸層安全標準 (TLS) 的舊版應用程式設定許可清單來源，或設定內部網頁開發所需的暫存伺服器。這樣一來，開發人員就能測試需要安全內容的功能，而不必在暫存伺服器上部署傳輸層安全標準 (TLS)。此外，這項政策也能避免系統在網址列中將指定來源加上「不安全」標籤。
 
-      如果在這項政策中設定網址清單，效果等同於將「--unsafely-treat-insecure-origin-as-secure」命令列標記設定至相同的網址清單 (以逗號分隔)。這項政策會覆寫命令列標記。這項政策會覆寫 UnsafelyTreatInsecureOriginAsSecure 政策 (如已設定)。
+      如果在這項政策中設定網址清單，效果等同於將「--unsafely-treat-insecure-origin-as-secure」命令列標記設定至相同的網址清單 (以逗號分隔)。這項政策會覆寫前述命令列標記與 UnsafelyTreatInsecureOriginAsSecure 政策 (如已設定)。
 
       如要進一步瞭解安全內容，請參閱「安全內容」：https://www.w3.org/TR/secure-contexts。</translation>
 <translation id="7823902813460802031">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" />會阻止裝置進入開發人員模式。
 
        如果將這項設為停用或不設定，裝置便可以使用開發人員模式。</translation>
-<translation id="782661371433719637">不允許任何網站要求透過 File System API 讀取檔案及目錄</translation>
+<translation id="782661371433719637">不允許任何網站透過 File System API 要求讀取檔案及目錄</translation>
 <translation id="7841880500990419427">備用的最低 TLS 版本</translation>
 <translation id="7846952520291088817">會在 WebRTC ICE 候選項目中顯示本機 IP 的網址</translation>
 <translation id="7848641140449742406">OS 設定</translation>
@@ -4769,7 +4769,7 @@
 <translation id="7958537754689366707">每 12 小時需輸入密碼</translation>
 <translation id="7960293328203000385">這項政策會定義可登入裝置的使用者清單，輸入項目格式為 <ph name="USER_ALLOWLIST_ENTRY_FORMAT" /> (例如 <ph name="USER_ALLOWLIST_ENTRY_EXAMPLE" />)。如要允許特定網域的任意使用者登入裝置，請使用 <ph name="USER_ALLOWLIST_ENTRY_WILDCARD" /> 格式輸入項目。
 
-      如果不設定這項政策，所有使用者均可登入裝置。請注意，想要建立新使用者，你仍需適當地設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。</translation>
+      如果不設定這項政策，所有使用者均可登入裝置。請注意，建立新使用者時，仍然需要正確設定 <ph name="DEVICE_ALLOW_NEW_USERS_POLICY_NAME" /> 政策。</translation>
 <translation id="7961779417826583251">不針對列出的舊版憑證授權單位強制執行憑證透明化政策</translation>
 <translation id="7973609468423251675">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
@@ -5347,9 +5347,9 @@
 
           這項政策會取代 <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 政策。如果從這份清單中移除先前強制安裝的應用程式或擴充功能，<ph name="PRODUCT_NAME" /> 會自動將其解除安裝。
 
-      在 <ph name="MS_WIN_NAME" /> 執行個體上，執行個體必須加入 <ph name="MS_AD_NAME" /> 網域、在 Windows 10 專業版上執行，或是已註冊 Chrome 瀏覽器雲端管理服務，系統才能強制安裝來自 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+      在 <ph name="MS_WIN_NAME" /> 執行個體上，執行個體必須加入 <ph name="MS_AD_NAME" /> 網域、在 Windows 10 專業版上執行，或是已註冊 Chrome 瀏覽器雲端管理服務，系統才能強制安裝並非來自 Chrome 線上應用程式商店的應用程式和擴充功能。
 
-      在 <ph name="MAC_OS_NAME" /> 執行個體上，執行個體必須透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域，系統才能強制安裝來自 Chrome 線上應用程式商店以外的應用程式和擴充功能。
+      在 <ph name="MAC_OS_NAME" /> 執行個體上，執行個體必須透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域，系統才能強制安裝並非來自 Chrome 線上應用程式商店的應用程式和擴充功能。
 
       使用者可透過開發人員工具變更任何擴充功能的原始碼，但可能會導致擴充功能無法正常運作。如果你對此有所顧慮，請設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。
 
