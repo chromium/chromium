@@ -3,7 +3,7 @@
 <translationbundle lang="de">
 <translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium prüft Ihr Gerät einmal pro Woche auf unerwünschte Software. Zuletzt geprüft: vor 1 Stunde.}other{Chromium prüft Ihr Gerät einmal pro Woche auf unerwünschte Software. Zuletzt geprüft: vor {NUM_HOURS} Stunden.}}</translation>
 <translation id="1065672644894730302">Ihre Einstellungen können nicht gelesen werden. Einige Funktionen sind möglicherweise nicht verfügbar und Änderungen an Einstellungen werden nicht gespeichert.</translation>
-<translation id="107513968719897256">Wenn Sie Ihre privaten und <ph name="NEW_USER" />-Browsingaktivitäten getrennt halten möchten, erstellen Sie ein neues Profil in Chromium</translation>
+<translation id="107513968719897256">Wenn Sie Ihre privaten und die Browsingaktivitäten für <ph name="NEW_USER" />getrennt halten möchten, erstellen Sie ein neues Profil in Chromium</translation>
 <translation id="1098170124587656448">Chromium kann dazu beitragen, Sie beispielsweise vor Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="1104942323762546749">Chromium möchte Ihre Passwörter exportieren. Wenn Sie dies zulassen möchten, geben Sie Ihr Windows-Passwort ein.</translation>
 <translation id="113122355610423240">Chromium ist Ihr Standardbrowser</translation>

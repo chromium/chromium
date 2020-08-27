@@ -26,9 +26,9 @@
 
       Mengontrol notifikasi otomatis untuk sesi tamu terkelola di <ph name="PRODUCT_OS_NAME" />.
 
-      Jika kebijakan ini ditetapkan ke True, notifikasi peringatan privasi akan ditutup setelah beberapa detik.
+      Jika kebijakan ini ditetapkan ke True (Benar), notifikasi peringatan privasi akan ditutup setelah beberapa detik.
 
-      Jika kebijakan ini ditetapkan ke False atau tidak ditetapkan, notifikasi peringatan privasi akan terus ditampilkan hingga pengguna menutupnya.</translation>
+      Jika kebijakan ini ditetapkan ke False (Salah) atau tidak ditetapkan, notifikasi peringatan privasi akan terus ditampilkan hingga pengguna menutupnya.</translation>
 <translation id="1022361784792428773">ID ekstensi yang tidak diizinkan dipasang pengguna (atau * untuk semua)</translation>
 <translation id="102492767056134033">Menyetel status default keyboard di layar di layar masuk</translation>
 <translation id="1027000705181149370">Menentukan apakah cookie autentikasi yang ditetapkan oleh IdP SAML selama proses masuk harus ditransfer ke profil pengguna atau tidak.
@@ -288,9 +288,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
           Sebuah situs dianggap aman jika telah memenuhi definisi konteks aman di https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts. Jika tidak, situs akan dianggap sebagai konteks yang tidak aman.
 
-          Jika kebijakan ini tidak ditetapkan atau ditetapkan ke false, perilaku default untuk permintaan dari konteks yang tidak aman ke endpoint jaringan yang lebih pribadi akan bergantung pada konfigurasi pribadi pengguna untuk fitur <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, yang dapat disetel berdasarkan uji coba lapangan atau command line.
+          Jika kebijakan ini tidak ditetapkan atau ditetapkan ke false (salah), perilaku default untuk permintaan dari konteks yang tidak aman ke endpoint jaringan yang lebih pribadi akan bergantung pada konfigurasi pribadi pengguna untuk fitur <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, yang dapat disetel berdasarkan uji coba lapangan atau command line.
 
-          Jika kebijakan ini ditetapkan ke true, situs yang tidak aman diizinkan untuk membuat permintaan ke endpoint jaringan mana saja, bergantung pada pemeriksaan lintas asal lainnya.</translation>
+          Jika kebijakan ini ditetapkan ke true (benar), situs yang tidak aman diizinkan untuk membuat permintaan ke endpoint jaringan mana saja, bergantung pada pemeriksaan lintas asal lainnya.</translation>
 <translation id="1474273443907024088">Nonaktifkan TLS False Start</translation>
 <translation id="1477934438414550161">TLS 1.2</translation>
 <translation id="1479427764273213107">Menyetel kebijakan akan menentukan daftar perangkat USB yang dapat dilepas dari driver kernelnya, agar dapat langsung digunakan melalui chrome.usb API dalam aplikasi web. Entri berupa pasangan ID Vendor USB dan Kode Produk untuk mengidentifikasi hardware tertentu.

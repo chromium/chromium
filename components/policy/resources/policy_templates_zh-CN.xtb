@@ -278,7 +278,7 @@
 
           此政策与 CORS-RFC1918 规范相关。如需了解详情，请参阅 https://wicg.github.io/cors-rfc1918。
 
-          在以下情况下，某个网络上的端点会比另一个网络上的端点更专用：
+          在以下情况下，某个网络上的端点会比另一个端点更专用：
           1) 该端点的 IP 地址是 localhost，另一个端点的 IP 地址不是 localhost。
           2) 该端点的 IP 地址是专用的，另一个端点的 IP 地址是公开的。
           日后，此政策可能会应用于针对专用 IP 或 localhost 发出的所有跨源请求，具体取决于相关规范的演变情况。
@@ -1130,6 +1130,7 @@
 
       如果此政策未设置，默认情况下，受管理用户将不能使用短信同步功能，不受管理的用户则可以。</translation>
 <translation id="2660846099862559570">从不使用代理</translation>
+<translation id="2664682171745499686">禁止在特定网域上针对类似域名显示警告</translation>
 <translation id="2665422249821137126">在登录屏幕上启用大号光标</translation>
 <translation id="2672012807430078509">控制是否允许将 NTLM 作为 SMB 装载功能的身份验证协议</translation>
 <translation id="2678503605767349615">必需的设备级客户端证书</translation>
@@ -4066,6 +4067,13 @@
 
       注意：这项政策仅适用于 Android 版 Chrome，且运行 Chrome 的设备一定要有超过 1GB 的 RAM。若要在非 Android 平台上应用此政策，请改用 SitePerProcess。
       </translation>
+<translation id="6916817094593836501">通过设置此政策，您可禁止在所列网站上针对相似网址显示警告。这些警告通常会显示在以下类型的网站上：被 <ph name="PRODUCT_NAME" /> 认定为可能正试图仿冒用户熟悉的另一个网站。
+
+       如果此政策已启用，并且设为一个或多个域名，当用户访问相应网域上的网页时，系统将不会针对相似网址显示任何警告页面。
+
+       如果此政策已停用、未设置或设为一个空列表，系统则可能会在用户访问的任一网站上显示这类警告。
+
+       允许主机名匹配整个主机或任一网域。例如，倘若此列表包含“foo.example.com”或“example.com”，诸如“https://foo.example.com/bar”之类的网址便可能不会显示这类警告。</translation>
 <translation id="6922884955650325312">禁止 <ph name="FLASH_PLUGIN_NAME" /> 插件运行</translation>
 <translation id="6923731550900440989">在登录屏幕上启用“插入符号突出显示”</translation>
 <translation id="6924223708804692571">强制停用语言拼写检查。该列表中未识别的语言将被忽略。

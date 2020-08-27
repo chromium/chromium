@@ -4101,7 +4101,7 @@ Speicherinformationen werden unabhängig von der gewählten Option an die Seite 
 
        Ist die Richtlinie aktiviert und für eine oder mehrere Domains konfiguriert, werden keine Warnungen zu nachgeahmten URLs angezeigt, wenn Nutzer Seiten auf der jeweiligen Domain aufrufen.
 
-       Wenn diese Richtlinie deaktiviert, nicht konfiguriert oder auf eine leere Liste festgelegt, können jederzeit Warnungen zu nachgeahmten URLs erscheinen.
+       Wenn diese Richtlinie deaktiviert, nicht konfiguriert oder auf eine leere Liste festgelegt ist, können jederzeit Warnungen zu nachgeahmten URLs erscheinen.
 
        Ein Hostname kann bei vollständiger Host- oder beliebiger Domainübereinstimmung erlaubt sein. Beispiel: Für die URL "https://foo.example.com/bar" werden Warnungen möglicherweise unterdrückt, wenn "foo.example.com" oder "example.com" zur Liste hinzugefügt wurden.</translation>
 <translation id="6922884955650325312">Das Plug-in "<ph name="FLASH_PLUGIN_NAME" />" blockieren</translation>

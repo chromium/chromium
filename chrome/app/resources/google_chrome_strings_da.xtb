@@ -17,7 +17,7 @@
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1399397803214730675">Denne computer har allerede en nyere version af Google Chrome. Hvis programmet ikke virker, skal du afinstallere Google Chrome og prøve igen.</translation>
 <translation id="1434626383986940139">Chrome Canary-apps</translation>
-<translation id="1513277449617685876">Hvis du vil adskille personlig browsing og browsing for <ph name="NEW_USER" />, kan du oprette en ny profil i Chrome</translation>
+<translation id="1513277449617685876">Hvis du vil adskille din personlige browsing og <ph name="NEW_USER" />-browsing, kan du oprette en ny profil i Chrome</translation>
 <translation id="1553358976309200471">Opdater Chrome</translation>
 <translation id="1587223624401073077">Google Chrome bruger dit kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> er skadelig, så Chrome har blokeret den.</translation>
@@ -105,7 +105,7 @@
 <translation id="3889417619312448367">Afinstaller Google Chrome</translation>
 <translation id="4050175100176540509">Vigtige sikkerhedsforbedringer og nye funktioner er tilgængelige i den seneste version.</translation>
 <translation id="4053720452172726777">Tilpas Google Chrome</translation>
-<translation id="4110895483821904099">Opret din nye Chrome-profil</translation>
+<translation id="4110895483821904099">Konfigurer din nye Chrome-profil</translation>
 <translation id="4143243756087420366">Chrome-navn og -billede</translation>
 <translation id="4147555960264124640">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. <ph name="LEARN_MORE" /></translation>
 <translation id="4149882025268051530">Installationsprogrammet kunne ikke pakke arkivet ud. Download Google Chrome igen.</translation>

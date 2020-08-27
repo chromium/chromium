@@ -104,6 +104,7 @@
 <translation id="1810845389119482123">सिंक गर्ने कार्यको प्रारम्भिक सेटअप पूरा भएको छैन</translation>
 <translation id="1821253160463689938">तपाईं ती पृष्ठहरूमा नजानुभए तापनि तपाईंका प्राथमिकताहरू सम्झनका लागि कुकीहरूको प्रयोग गर्छ</translation>
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
+<translation id="1843805151597803366">अझ राम्रो अनुवाद पाउन Google खोजलाई हालको पृष्ठ प्रयोग गर्न दिनुहोस्</translation>
 <translation id="1853692000353488670">नयाँ इनकगनिटो ट्याब</translation>
 <translation id="1856325424225101786">लाइट मोड रिसेट गर्ने हो?</translation>
 <translation id="1868024384445905608">Chrome ले अब फाइलहरू अझ छिटो डाउनलोड गर्छ</translation>
@@ -482,6 +483,7 @@
 
 यो सेटिङ परिवर्तन गर्न <ph name="BEGIN_LINK" />सिंक रिसेट गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">कार्डमा रहेको नाम</translation>
+<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> मा Digital Asset Links पुष्टि गर्न सकिएन</translation>
 <translation id="4824958205181053313">सिंक रद्द गर्ने हो?</translation>
 <translation id="4835385943915508971">Chrome सँग अनुरोध गरिएको स्रोत माथिको पहुँच छैन।</translation>
 <translation id="4837753911714442426">पृष्ठ छाप्ने सम्बन्धी विकल्पहरू खोल्नुहोस्</translation>
@@ -921,6 +923,7 @@
 <translation id="7981313251711023384">ब्राउजिङ र खोजी कार्यलाई अझ छिटो बनाउन पृष्ठहरू पूर्वलोड गर्नुहोस्</translation>
 <translation id="79859296434321399">अग्मेन्टेड रियालिटी सामग्री हेर्न ARCore स्थापना गर्नुहोस्</translation>
 <translation id="7986741934819883144">कुनै सम्पर्क ठेगाना चयन गर्नुहोस्</translation>
+<translation id="799806351373751710">सिंकसम्बन्धी सेटअप गर्ने प्रक्रिया रद्द गर्नुहोस्</translation>
 <translation id="7998918019931843664">बन्द ट्याब पुन: खोल्नुहोस्</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
 <translation id="8013372441983637696">यो यन्त्रबाट आफ्नो Chrome को डेटा पनि हटाउनुहोस्</translation>

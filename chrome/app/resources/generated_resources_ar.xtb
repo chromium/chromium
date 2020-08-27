@@ -1868,7 +1868,7 @@
 <translation id="3254715652085014625">‏افتح متصفِّح Chrome على هاتفك الذي يعمل بنظام التشغيل Android وانتقِل إلى "الإعدادات &gt; كلمات المرور &gt; استخدام الهاتف كمفتاح أمان"، ثم اتّبِع التعليمات.</translation>
 <translation id="3255355328033513170">سيتم حذف جميع البيانات المُخزَّنة من خلال <ph name="SITE_GROUP_NAME" /> وأي مواقع إلكترونية ضمنها. ويتضمن هذا ملفات تعريف الارتباط. سيتم تسجيل خروجك من المواقع الإلكترونية هذه، بما في ذلك علامات التبويب المفتوحة.</translation>
 <translation id="3259723213051400722">يُرجى إعادة المحاولة.</translation>
-<translation id="3261268979727295785">في حال الأطفال الأكبر سنًا، يمكنك إضافة أدوات الرقابة الأبوية بعد الانتهاء من الإعداد. يمكنك العثور على معلومات حول أدوات الرقابة الأبوية في تطبيق "استكشاف".</translation>
+<translation id="3261268979727295785">في ما يتعلّق بالأطفال الأكبر سنًا، يمكنك إضافة أدوات الرقابة الأبوية بعد الانتهاء من الإعداد. يمكنك العثور على معلومات حول أدوات الرقابة الأبوية في تطبيق "استكشاف".</translation>
 <translation id="3264544094376351444">‏خط Sans-serif</translation>
 <translation id="3264582393905923483">السياق</translation>
 <translation id="3265459715026181080">إغلاق الإطار</translation>
@@ -2799,7 +2799,7 @@
 <translation id="4384312707950789900">إضافة إلى الشبكات المُفضلة</translation>
 <translation id="4384652540891215547">تفعيل الإضافة</translation>
 <translation id="438503109373656455">ساراتوجا</translation>
-<translation id="4385040356362222432">للفصل بين تصفُّحك باستخدام حساب <ph name="NEW_USER" /> وتصفُّحك باستخدام حساب <ph name="EXISTING_USER" />، يجب إنشاء ملف شخصي جديد.</translation>
+<translation id="4385040356362222432">للفصل بين تصفُّحك باستخدام حساب <ph name="NEW_USER" /> وتصفُّحك باستخدام حساب <ph name="EXISTING_USER" />، يمكنك إنشاء ملف شخصي جديد.</translation>
 <translation id="4387004326333427325">تم رفض شهادة المصادقة عن بُعد</translation>
 <translation id="4387890294700445764">كلمات مرور محتمَل تعرّضها للاختراق</translation>
 <translation id="4389091756366370506">المستخدم <ph name="VALUE" /></translation>
@@ -4333,7 +4333,7 @@
 <translation id="6298962879096096191">‏استخدام Google Play لتثبيت تطبيقات Android</translation>
 <translation id="630065524203833229">إن&amp;هاء</translation>
 <translation id="6300718114348072351">تعذّر ضبط <ph name="PRINTER_NAME" /> تلقائيًا. يُرجى تحديد التفاصيل المتقدّمة للطابعة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">للفصل بين التصفُّح الشخصي والتصفُّح باستخدام حساب <ph name="EXISTING_USER" />، يجب إنشاء ملف شخصي جديد للمستخدِم <ph name="NEW_USER" />.</translation>
+<translation id="6301076166764763868">للفصل بين التصفُّح الشخصي والتصفُّح باستخدام حساب <ph name="EXISTING_USER" />، يمكنك إنشاء ملف شخصي جديد للمستخدِم <ph name="NEW_USER" />.</translation>
 <translation id="630292539633944562">اقتراحات المعلومات الشخصية</translation>
 <translation id="6305607932814307878">السياسة العامة:</translation>
 <translation id="6307990684951724544">النظام مشغول</translation>
@@ -5210,7 +5210,7 @@
 <translation id="7415454883318062233">اكتمل الإعداد</translation>
 <translation id="7416362041876611053">خطأ غير معروف في الشبكة.</translation>
 <translation id="741906494724992817">لا يتطلب هذا التطبيق أذونات خاصة.</translation>
-<translation id="7420817660256886596">يتطلّب الخادم الوكيل <ph name="PROXY" /> منك المصادقة باسم المستخدِم وكلمة المرور.</translation>
+<translation id="7420817660256886596">يتطلّب الخادم الوكيل <ph name="PROXY" /> منك المصادقة من خلال إدخال اسم مستخدِم وكلمة مرور.</translation>
 <translation id="742130257665691897">تمت إزالة الإشارات المرجعية</translation>
 <translation id="7421925624202799674">عرض م&amp;صدر الصفحة</translation>
 <translation id="7422192691352527311">الإعدادات المفضّلة...</translation>

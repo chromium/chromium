@@ -2802,7 +2802,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4384312707950789900">Føj til foretrukne</translation>
 <translation id="4384652540891215547">Aktivér udvidelsen</translation>
 <translation id="438503109373656455">Tarok</translation>
-<translation id="4385040356362222432">Hvis du vil adskille browsing for <ph name="NEW_USER" /> fra browsing for <ph name="EXISTING_USER" />, skal du oprette en ny profil</translation>
+<translation id="4385040356362222432">Hvis du vil adskille <ph name="NEW_USER" />-browsing fra <ph name="EXISTING_USER" />-browsing, skal du oprette en ny profil</translation>
 <translation id="4387004326333427325">Godkendelsescertifikatet blev afvist eksternt</translation>
 <translation id="4387890294700445764">Kompromitterede adgangskoder</translation>
 <translation id="4389091756366370506">Bruger <ph name="VALUE" /></translation>
@@ -2961,7 +2961,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="457386861538956877">Flere...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="457564749856982089">Hvis du føjer en skolekonto til en profil, kan du nemt logge ind på websites, i udvidelser og i apps som elev, mens du er underlagt forældreindstillinger. Dette giver ikke et barn adgang til bogmærker, adgangskoder eller andre browserdata, der synkroniseres med skolekontoen.&lt;br&gt;&lt;br&gt;
-    Hvis dit barn bruger en Chromebook i skolen, og du vil genskabe skoleoplevelsen derhjemme for at sikre, at dit barn har adgang til alle nødvendige skoleressourcer, skal du logge ud af denne Family Link-konto og logge ind på skolekontoen via kontosiden for Chrome OS. Vær opmærksom på, at forældreindstillinger fra Family Link ikke anvendes.&lt;br&gt;&lt;br&gt;
+    Hvis dit barn bruger en Chromebook i skolen, og du vil genskabe skoleoplevelsen derhjemme for at sikre, at dit barn har adgang til alle nødvendige skoleressourcer, skal du logge ud af denne Family Link-konto og logge ind på skolekontoen via kontosiden for Chrome OS. Vær opmærksom på, at forældreindstillingerne fra Family Link ikke anvendes.&lt;br&gt;&lt;br&gt;
     Hvis dit barn ikke bruger en Chromebook i skolen, eller hvis du foretrækker at administrere dit barns oplevelse derhjemme ved hjælp af Family Link, skal du klikke på knappen Næste nedenfor og føje en skolekonto til denne profil.</translation>
 <translation id="4576541033847873020">Par Bluetooth-enhed</translation>
 <translation id="4579453506923101210">Glem den tilsluttede telefon</translation>
@@ -4335,7 +4335,7 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6298962879096096191">Brug Google Play til at installere Android-apps</translation>
 <translation id="630065524203833229">Af&amp;slut</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> kunne ikke konfigureres automatisk. Angiv avancerede indstillinger for printeren. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">Hvis du vil adskille personlig browsing og browsing for <ph name="EXISTING_USER" />, skal du oprette en ny profil for <ph name="NEW_USER" /></translation>
+<translation id="6301076166764763868">Hvis du vil adskille din personlige browsing og <ph name="EXISTING_USER" />-browsing, skal du oprette en ny profil for <ph name="NEW_USER" /></translation>
 <translation id="630292539633944562">Forslag til personlige oplysninger</translation>
 <translation id="6305607932814307878">Global politik:</translation>
 <translation id="6307990684951724544">Systemet er optaget</translation>

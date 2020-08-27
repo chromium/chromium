@@ -3,12 +3,12 @@
 <translationbundle lang="da">
 <translation id="1060499346270045814">{NUM_HOURS,plural, =1{Chromium tjekker, om du har uønsket software, én gang om ugen. Seneste tjek: For 1 time siden.}one{Chromium tjekker, om du har uønsket software, én gang om ugen. Seneste tjek: For {NUM_HOURS} time siden.}other{Chromium tjekker, om du har uønsket software, én gang om ugen. Seneste tjek: For {NUM_HOURS} timer siden.}}</translation>
 <translation id="1065672644894730302">Dine præferencer kan ikke læses. Visse funktioner er muligvis ikke tilgængelige, og ændringer af præferencer gemmes ikke.</translation>
-<translation id="107513968719897256">Hvis du vil adskille personlig browsing og browsing for <ph name="NEW_USER" />, kan du oprette en ny profil i Chromium</translation>
+<translation id="107513968719897256">Hvis du vil adskille din personlige browsing og <ph name="NEW_USER" />-browsing, kan du oprette en ny profil i Chromium</translation>
 <translation id="1098170124587656448">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, farlige udvidelser og meget mere</translation>
 <translation id="1104942323762546749">Chromium anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="113122355610423240">Chromium er din standardbrowser</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
-<translation id="1315551408014407711">Opret din nye Chromium-profil</translation>
+<translation id="1315551408014407711">Konfigurer din nye Chromium-profil</translation>
 <translation id="1396446129537741364">Chromium forsøger at vise adgangskoder.</translation>
 <translation id="1414495520565016063">Du er logget ind på Chromium.</translation>
 <translation id="151962892725702025">Chromium OS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængeligt på dit domæne.</translation>

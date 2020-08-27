@@ -1142,6 +1142,7 @@ Bu politika ayarlanmazsa <ph name="PRODUCT_NAME" /> varsayılan 10.000 milisaniy
 
       Bu politika ayarlanmadan bırakılırsa varsayılan değer, yönetilen kullanıcılara izin verilmemesi ve yönetilmeyen kullanıcılara izin verilmesi şeklindedir.</translation>
 <translation id="2660846099862559570">Hiçbir zaman proxy kullanma</translation>
+<translation id="2664682171745499686">Alan adlarında benzer alan adı uyarılarını gizle</translation>
 <translation id="2665422249821137126">Giriş ekranında büyük imleci etkinleştir</translation>
 <translation id="2672012807430078509">NTLM'nin SMB ekleme için kimlik doğrulama protokolü olarak etkinleştirilmesini kontrol eder</translation>
 <translation id="2678503605767349615">Cihaz genelinde gerekli İstemci Sertifikaları</translation>
@@ -4108,6 +4109,13 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       NOT: Bu politika yalnızca 1 GB'tan daha fazla RAM'e sahip cihazlarda çalıştırılan Android işletim sistemindeki Chrome tarayıcı için geçerlidir. Bu politikayı Android dışındaki platformlarda uygulamak için SitePerProcess'i kullanın.
       </translation>
+<translation id="6916817094593836501">Bu politika, listelenen sitelerde benzer URL uyarılarının gösterilmesini engeller. Bu uyarılar genellikle <ph name="PRODUCT_NAME" />, bir sitenin, kullanıcının aşina olduğu başka bir siteyle ilgili sahtecilik yapmaya çalıştığını düşünürse o sitede gösterilir.
+
+       Politika etkinleştirilerek bir veya daha fazla alan adına ayarlanırsa kullanıcı o alan adındaki sayfaları ziyaret ederken benzer uyarı sayfaları gösterilmez.
+
+       Politika devre dışı bırakılır, ayarlanmaz veya boş listeye ayarlanırsa uyarılar kullanıcının ziyaret ettiği her sitede gösterilebilir.
+
+       Ana makine adı tam olarak eşleşirse veya alan adında eşleşme söz konusu olursa ana makine adına izin verilebilir. Örneğin, bu listede "foo.example.com" veya "example.com" yer alıyorsa "https://foo.example.com/bar" gibi bir URL için uyarılar gizlenebilir.</translation>
 <translation id="6922884955650325312"><ph name="FLASH_PLUGIN_NAME" /> eklentisini engelle</translation>
 <translation id="6923731550900440989">Giriş ekranında metin vurgu kutusunu etkinleştir</translation>
 <translation id="6924223708804692571">Yazım denetimi dillerini zorla devre dışı bırakır. Bu listedeki tanınmayan diller yoksayılır.

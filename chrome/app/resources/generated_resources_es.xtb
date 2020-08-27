@@ -909,7 +909,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2080070583977670716">Más ajustes</translation>
 <translation id="2081816110395725788">Modo de inactividad con batería</translation>
 <translation id="2082187087049518845">Agrupar pestañas</translation>
-<translation id="2082510809738716738">Elegir un color de tema</translation>
+<translation id="2082510809738716738">Elige un color de tema</translation>
 <translation id="2087822576218954668">Imprimir: <ph name="PRINT_NAME" /></translation>
 <translation id="2088690981887365033">Red VPN</translation>
 <translation id="208928984520943006">Puedes volver a la pantalla de inicio en cualquier momento deslizando el dedo hacia arriba.</translation>
@@ -3869,7 +3869,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5728450728039149624">Opciones de bloqueo de pantalla Smart Lock</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pega&amp;r y acceder</translation>
-<translation id="5732392974455271431">Tus padres pueden desbloquearlo</translation>
+<translation id="5732392974455271431">Tu padre o tu madre pueden desbloquearlo</translation>
 <translation id="5734362860645681824">Comunicaciones</translation>
 <translation id="5734697361979786483">Añadir sistema de archivos compartidos</translation>
 <translation id="5736544606961847675">{COUNT,plural, =1{1 vídeo}other{# vídeos}}</translation>

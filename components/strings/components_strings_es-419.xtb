@@ -217,11 +217,7 @@
 <translation id="1753706481035618306">Número de página</translation>
 <translation id="1763864636252898013">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el sistema operativo del dispositivo no confía en el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Intenta ejecutar el Diagnóstico de red de Windows<ph name="END_LINK" />.</translation>
-<translation id="1772163372082567643">El servidor <ph name="ORIGIN" /> al que te diriges estableció un encabezado
-    donde se indica que se aplica una política de origen a todas las solicitudes. Sin embargo,
-    el encabezado tiene un formato no válido, por lo que el navegador no puede cumplir
-    con tu solicitud para <ph name="SITE" />. Los operadores de sitios pueden usar
-    políticas de origen para configurar la seguridad y otras propiedades de un sitio.</translation>
+<translation id="1772163372082567643">El servidor <ph name="ORIGIN" /> al que te diriges estableció un encabezado donde se indica que se aplica una política de origen a todas las solicitudes. Sin embargo, el encabezado tiene un formato no válido, por lo que el navegador no puede cumplir con tu solicitud para <ph name="SITE" />. Los operadores de sitios pueden usar políticas de origen para configurar la seguridad y otras propiedades de un sitio.</translation>
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1783075131180517613">Actualiza tu frase de contraseña de sincronización.</translation>
 <translation id="1787142507584202372">Tus pestañas abiertas aparecen aquí</translation>
@@ -775,11 +771,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4194250254487269611">No se puede guardar tu tarjeta en este momento</translation>
 <translation id="4196861286325780578">&amp;Rehacer Mover</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comprobar las configuraciones de firewall y antivirus<ph name="END_LINK" />.</translation>
-<translation id="4209166701302774460">El servidor <ph name="ORIGIN" /> al que te diriges solicitó
-    que se aplique una política de origen a todas las solicitudes. Sin embargo, no pudo
-    entregar ninguna política, lo que impide al navegador procesar tu solicitud
-    para <ph name="SITE" />. Los operadores de sitios pueden usar
-    políticas de origen para configurar la seguridad y otras propiedades de un sitio.</translation>
+<translation id="4209166701302774460">El servidor <ph name="ORIGIN" /> al que te diriges solicitó que se aplique una política de origen a todas las solicitudes. Sin embargo, no pudo entregar ninguna política, lo que impide al navegador procesar tu solicitud para <ph name="SITE" />. Los operadores de sitios pueden usar políticas de origen para configurar la seguridad y otras propiedades de un sitio.</translation>
 <translation id="421066178035138955">Usar datos y dispositivos de realidad virtual</translation>
 <translation id="4214357935346142455">perfil de la pantalla de acceso</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
