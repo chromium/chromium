@@ -188,7 +188,6 @@ public abstract class PersistedTabData implements UserData {
     abstract byte[] serialize();
 
     private byte[] serializeAndLog() {
-        // TODO(crbug.com/1119856) Add trace events
         byte[] res = serialize();
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);

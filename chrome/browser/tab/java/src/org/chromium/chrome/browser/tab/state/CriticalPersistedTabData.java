@@ -15,6 +15,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.WebContentsState;
@@ -207,7 +208,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
 
     @Override
     boolean deserialize(@Nullable byte[] bytes) {
-        try {
+        try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Deserialize")) {
             CriticalPersistedTabDataProto criticalPersistedTabDataProto =
                     CriticalPersistedTabDataProto.parseFrom(bytes);
             mParentId = criticalPersistedTabDataProto.getParentId();
@@ -354,24 +355,26 @@ public class CriticalPersistedTabData extends PersistedTabData {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Override
     public byte[] serialize() {
-        WebContentsState webContentsState = mWebContentsState;
-        if (webContentsState == null) {
-            webContentsState = getWebContentsStateFromTab(mTab);
+        try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
+            WebContentsState webContentsState = mWebContentsState;
+            if (webContentsState == null) {
+                webContentsState = getWebContentsStateFromTab(mTab);
+            }
+            return CriticalPersistedTabDataProto.newBuilder()
+                    .setParentId(mParentId)
+                    .setRootId(mRootId)
+                    .setTimestampMillis(mTimestampMillis)
+                    .setWebContentsStateBytes(webContentsState == null
+                                    ? ByteString.EMPTY
+                                    : ByteString.copyFrom(
+                                            getContentStateByteArray(webContentsState.buffer())))
+                    .setContentStateVersion(mContentStateVersion)
+                    .setOpenerAppId(mOpenerAppId)
+                    .setThemeColor(mThemeColor)
+                    .setLaunchTypeAtCreation(getLaunchType(mTabLaunchTypeAtCreation))
+                    .build()
+                    .toByteArray();
         }
-        return CriticalPersistedTabDataProto.newBuilder()
-                .setParentId(mParentId)
-                .setRootId(mRootId)
-                .setTimestampMillis(mTimestampMillis)
-                .setWebContentsStateBytes(webContentsState == null
-                                ? ByteString.EMPTY
-                                : ByteString.copyFrom(
-                                        getContentStateByteArray(webContentsState.buffer())))
-                .setContentStateVersion(mContentStateVersion)
-                .setOpenerAppId(mOpenerAppId)
-                .setThemeColor(mThemeColor)
-                .setLaunchTypeAtCreation(getLaunchType(mTabLaunchTypeAtCreation))
-                .build()
-                .toByteArray();
     }
 
     protected static byte[] getContentStateByteArray(ByteBuffer buffer) {
