@@ -396,7 +396,7 @@ const base::Feature kQuickAnswersTranslation{"QuickAnswersTranslation",
 
 // Controls whether the PIN auto submit feature is enabled.
 const base::Feature kQuickUnlockPinAutosubmit{
-    "QuickUnlockPinAutosubmit", base::FEATURE_DISABLED_BY_DEFAULT};
+    "QuickUnlockPinAutosubmit", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // TODO(crbug.com/1104164) - Remove this once most
 // users have their preferences backfilled.
