@@ -9,6 +9,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
@@ -40,7 +41,10 @@ void BackButton::HandleLocaleChange() {
 void BackButton::PaintButtonContents(gfx::Canvas* canvas) {
   // Use PaintButtonContents instead of SetImage so the icon gets drawn at
   // |GetCenterPoint| coordinates instead of always in the center.
-  gfx::ImageSkia img = CreateVectorIcon(kShelfBackIcon, SK_ColorWHITE);
+  gfx::ImageSkia img = CreateVectorIcon(
+      kShelfBackIcon, AshColorProvider::Get()->GetContentLayerColor(
+                          AshColorProvider::ContentLayerType::kButtonIconColor,
+                          AshColorProvider::AshColorMode::kDark));
   canvas->DrawImageInt(img, GetCenterPoint().x() - img.width() / 2,
                        GetCenterPoint().y() - img.height() / 2);
 }
