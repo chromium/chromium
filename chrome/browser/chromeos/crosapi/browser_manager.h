@@ -52,10 +52,11 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   void SetLoadCompleteCallback(LoadCompleteCallback callback);
 
   // Opens the browser window in lacros-chrome.
-  // If lacros-chrome is not yet launched, it triggers to launch.
-  // This needs to be called after loading. The condition can be checked
-  // IsReady(), and if not yet, SetLoadCompletionCallback can be used
-  // to wait for the loading.
+  // If lacros-chrome is not yet launched, it triggers to launch. If this is
+  // called again during the setup phase of the launch process, it will be
+  // ignored. This needs to be called after loading. The condition can be
+  // checked IsReady(), and if not yet, SetLoadCompletionCallback can be used to
+  // wait for the loading.
   // TODO(crbug.com/1101676): Notify callers the result of opening window
   // request. Because of asynchronous operations crossing processes,
   // there's no guarantee that the opening window request succeeds.
@@ -83,6 +84,9 @@ class BrowserManager : public session_manager::SessionManagerObserver {
     // Lacros-chrome is loaded and ready for launching.
     STOPPED,
 
+    // Lacros-chrome is creating a new log file to log to.
+    CREATING_LOG_FILE,
+
     // Lacros-chrome is launching.
     STARTING,
 
@@ -94,10 +98,12 @@ class BrowserManager : public session_manager::SessionManagerObserver {
     TERMINATING,
   };
 
-  // Starts the lacros-chrome process. Returns whether the subprocess is
-  // created. Note that the subprocess may be crashed immediately, even if this
-  // returns true. This can be called only in STOPPED state.
-  bool Start();
+  // Posts CreateLogFile() and StartWithLogFile() to the thread pooll.
+  void Start();
+
+  // Starts the lacros-chrome process and redirects stdout/err to file pointed
+  // by logfd.
+  void StartWithLogFile(base::ScopedFD logfd);
 
   // Called when PendingReceiver of AshChromeService is passed from
   // lacros-chrome.

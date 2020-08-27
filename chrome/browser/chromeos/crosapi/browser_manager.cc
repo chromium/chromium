@@ -4,6 +4,9 @@
 
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,6 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,6 +54,29 @@ BrowserManager* g_instance = nullptr;
 
 base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
+}
+
+base::ScopedFD CreateLogFile() {
+  base::FilePath::StringType log_path = LacrosLogPath().value();
+
+  // Delete old log file if exists.
+  if (unlink(log_path.c_str()) != 0) {
+    if (errno != ENOENT) {
+      // unlink() failed for reason other than the file not existing.
+      PLOG(ERROR) << "Failed to unlink the log file " << log_path;
+      return base::ScopedFD();
+    }
+  }
+
+  int fd =
+      HANDLE_EINTR(open(log_path.c_str(), O_WRONLY | O_CREAT | O_EXCL, 644));
+
+  if (fd < 0) {
+    PLOG(ERROR) << "Failed to get file descriptor for " << log_path;
+    return base::ScopedFD();
+  }
+
+  return base::ScopedFD(fd);
 }
 
 std::string GetXdgRuntimeDir() {
@@ -146,11 +173,14 @@ void BrowserManager::NewWindow() {
     return;
   }
 
+  if (state_ == State::CREATING_LOG_FILE) {
+    LOG(WARNING) << "lacros-chrome is in the process of launching";
+    return;
+  }
+
   if (state_ == State::STOPPED) {
     // If lacros-chrome is not running, launch it.
-    bool succeeded = Start();
-    LOG_IF(ERROR, !succeeded)
-        << "lacros-chrome failed to launch. Cannot open a window";
+    Start();
     return;
   }
 
@@ -158,9 +188,20 @@ void BrowserManager::NewWindow() {
   lacros_chrome_service_->NewWindow(base::DoNothing());
 }
 
-bool BrowserManager::Start() {
+void BrowserManager::Start() {
   DCHECK_EQ(state_, State::STOPPED);
   DCHECK(!lacros_path_.empty());
+
+  state_ = State::CREATING_LOG_FILE;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CreateLogFile),
+      base::BindOnce(&BrowserManager::StartWithLogFile,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
+  DCHECK_EQ(state_, State::CREATING_LOG_FILE);
 
   std::string chrome_path = lacros_path_.MaybeAsASCII() + "/chrome";
   LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
@@ -210,9 +251,17 @@ bool BrowserManager::Start() {
     argv.push_back(flag);
   }
 
-  // Always enable logging.
-  argv.push_back("--enable-logging");
-  argv.push_back("--log-file=" + LacrosLogPath().value());
+  // If logfd is valid, enable logging and redirect stdout/stderr to logfd.
+  if (logfd.is_valid()) {
+    // The next flag will make chrome log only via stderr. See
+    // DetermineLoggingDestination in logging_chrome.cc.
+    argv.push_back("--enable-logging=stderr");
+
+    // These options will assign stdout/stderr fds to logfd in the fd table of
+    // the new process.
+    options.fds_to_remap.push_back(std::make_pair(logfd.get(), STDOUT_FILENO));
+    options.fds_to_remap.push_back(std::make_pair(logfd.get(), STDERR_FILENO));
+  }
 
   // Set up Mojo channel.
   base::CommandLine command_line(argv);
@@ -243,7 +292,8 @@ bool BrowserManager::Start() {
   lacros_process_ = base::LaunchProcess(command_line, options);
   if (!lacros_process_.IsValid()) {
     LOG(ERROR) << "Failed to launch lacros-chrome";
-    return false;
+    state_ = State::STOPPED;
+    return;
   }
   state_ = State::STARTING;
   LOG(WARNING) << "Launched lacros-chrome with pid " << lacros_process_.Pid();
@@ -253,7 +303,6 @@ bool BrowserManager::Start() {
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  lacros_process_.Handle(),
                                  channel.TakeLocalEndpoint());
-  return true;
 }
 
 void BrowserManager::OnAshChromeServiceReceiverReceived(
