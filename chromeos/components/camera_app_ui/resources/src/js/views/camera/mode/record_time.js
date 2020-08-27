@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {speak} from '../../toast.js';
+import {speak} from '../../../toast.js';
 
 /**
  * Controller for the record-time of Camera view.

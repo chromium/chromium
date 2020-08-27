@@ -25,10 +25,8 @@ import * as toast from '../toast.js';
 import * as util from '../util.js';
 
 import {Camera} from './camera.js';
-import {
-  PhotoResult,  // eslint-disable-line no-unused-vars
-  VideoResult,  // eslint-disable-line no-unused-vars
-} from './camera/modes.js';
+// eslint-disable-next-line no-unused-vars
+import {PhotoResult, VideoResult} from './camera/mode/index.js';
 import {ReviewResult} from './camera/review_result.js';
 
 /**
@@ -109,7 +107,7 @@ export class CameraIntent extends Camera {
   /**
    * @override
    */
-  async doSavePhoto_(result, name) {
+  async handleResultPhoto(result, name) {
     this.photoResult_ = result;
     try {
       await this.resultSaver_.savePhoto(result.blob, name);
@@ -122,7 +120,7 @@ export class CameraIntent extends Camera {
   /**
    * @override
    */
-  async doSaveVideo_(result) {
+  async handleResultVideo(result) {
     this.videoResult_ = result;
     try {
       await this.resultSaver_.finishSaveVideo(result.videoSaver);

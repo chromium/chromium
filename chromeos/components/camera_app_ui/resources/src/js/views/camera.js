@@ -29,12 +29,12 @@ import {
 import * as util from '../util.js';
 
 import {Layout} from './camera/layout.js';
-import {
+import {   // eslint-disable-line no-unused-vars
   Modes,
-  PhotoResult,  // eslint-disable-line no-unused-vars
+  PhotoHandler,  // eslint-disable-line no-unused-vars
   Video,
-  VideoResult,  // eslint-disable-line no-unused-vars
-} from './camera/modes.js';
+  VideoHandler,  // eslint-disable-line no-unused-vars
+} from './camera/mode/index.js';
 import {Options} from './camera/options.js';
 import {Preview} from './camera/preview.js';
 import * as timertick from './camera/timertick.js';
@@ -55,6 +55,8 @@ class CameraSuspendedError extends Error {
 
 /**
  * Camera-view controller.
+ * @implements {VideoHandler}
+ * @implements {PhotoHandler}
  */
 export class Camera extends View {
   /**
@@ -123,13 +125,6 @@ export class Camera extends View {
      */
     this.activeDeviceId_ = null;
 
-    const createVideoSaver = async () => resultSaver.startSaveVideo();
-
-    const playShutterEffect = () => {
-      sound.play('#sound-shutter');
-      util.animateOnce(this.preview_.video);
-    };
-
     /**
      * Modes for the camera.
      * @type {!Modes}
@@ -137,9 +132,7 @@ export class Camera extends View {
      */
     this.modes_ = new Modes(
         this.defaultMode_, photoPreferrer, videoPreferrer,
-        this.start.bind(this), this.doSavePhoto_.bind(this), createVideoSaver,
-        this.doSaveVideo_.bind(this), playShutterEffect,
-        () => this.preview_.toImage());
+        this.start.bind(this), this, this);
 
     /**
      * @type {!Facing}
@@ -389,13 +382,9 @@ export class Camera extends View {
   }
 
   /**
-   * Handles captured photo result.
-   * @param {!PhotoResult} result Captured photo result.
-   * @param {string} name Name of the photo result to be saved as.
-   * @return {!Promise} Promise for the operation.
-   * @protected
+   * @override
    */
-  async doSavePhoto_({resolution, blob, isVideoSnapshot = false}, name) {
+  async handleResultPhoto({resolution, blob, isVideoSnapshot}, name) {
     metrics.sendCaptureEvent({
       facing: this.facingMode_,
       resolution,
@@ -411,12 +400,31 @@ export class Camera extends View {
   }
 
   /**
-   * Handles captured video result.
-   * @param {!VideoResult} result Captured video result.
-   * @return {!Promise} Promise for the operation.
-   * @protected
+   * @override
    */
-  async doSaveVideo_({resolution, duration, videoSaver, everPaused}) {
+  createVideoSaver() {
+    return this.resultSaver_.startSaveVideo();
+  }
+
+  /**
+   * @override
+   */
+  playShutterEffect() {
+    sound.play('#sound-shutter');
+    util.animateOnce(this.preview_.video);
+  }
+
+  /**
+   * @override
+   */
+  getPreviewFrame() {
+    return this.preview_.toImage();
+  }
+
+  /**
+   * @override
+   */
+  async handleResultVideo({resolution, duration, videoSaver, everPaused}) {
     metrics.sendCaptureEvent({
       facing: this.facingMode_,
       duration,

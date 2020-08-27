@@ -26,6 +26,7 @@ group("chrome_camera_app") {
     ":chrome_camera_app_js_mojo",
     ":chrome_camera_app_js_views",
     ":chrome_camera_app_js_views_camera",
+    ":chrome_camera_app_js_views_camera_mode",
     ":chrome_camera_app_mojo_generated",
     ":chrome_camera_app_sounds",
     ":chrome_camera_app_views",
@@ -190,15 +191,27 @@ copy("chrome_camera_app_js_views") {
 copy("chrome_camera_app_js_views_camera") {
   sources = [
     "src/js/views/camera/layout.js",
-    "src/js/views/camera/modes.js",
     "src/js/views/camera/options.js",
     "src/js/views/camera/preview.js",
-    "src/js/views/camera/recordtime.js",
     "src/js/views/camera/review_result.js",
     "src/js/views/camera/timertick.js",
   ]
 
   outputs = [ "$out_camera_app_dir/js/views/camera/{{source_file_part}}" ]
+}
+
+copy("chrome_camera_app_js_views_camera_mode") {
+  sources = [
+    "src/js/views/camera/mode/index.js",
+    "src/js/views/camera/mode/mode_base.js",
+    "src/js/views/camera/mode/photo.js",
+    "src/js/views/camera/mode/portrait.js",
+    "src/js/views/camera/mode/record_time.js",
+    "src/js/views/camera/mode/square.js",
+    "src/js/views/camera/mode/video.js",
+  ]
+
+  outputs = [ "$out_camera_app_dir/js/views/camera/mode/{{source_file_part}}" ]
 }
 
 copy("chrome_camera_app_sounds") {
