@@ -1441,18 +1441,6 @@ external/wpt/webaudio/the-audio-api/the-audioworklet-interface/suspended-context
 external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/mediaElementAudioSourceToScriptProcessorTest.html [ Pass Failure ]
 external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Pass Failure ]
 external/wpt/webaudio/the-audio-api/the-offlineaudiocontext-interface/offlineaudiocontext-detached-execution-context.tentative.html [ Failure ]
-external/wpt/webauthn/createcredential-badargs-authnrselection.https.html [ Failure ]
-external/wpt/webauthn/createcredential-excludecredentials.https.html [ Failure ]
-external/wpt/webauthn/createcredential-extensions.https.html [ Failure Timeout ]
-external/wpt/webauthn/createcredential-passing.https.html [ Failure ]
-external/wpt/webauthn/createcredential-pubkeycredparams.https.html [ Failure ]
-external/wpt/webauthn/createcredential-timeout.https.html [ Failure Pass ]
-external/wpt/webauthn/getcredential-badargs-rpid.https.html [ Failure ]
-external/wpt/webauthn/getcredential-badargs-userverification.https.html [ Failure ]
-external/wpt/webauthn/getcredential-extensions.https.html [ Failure ]
-external/wpt/webauthn/getcredential-passing.https.html [ Failure ]
-external/wpt/webauthn/getcredential-timeout.https.html [ Failure ]
-external/wpt/webauthn/webauthn-testdriver-basic.https.html [ Failure ]
 external/wpt/webmessaging/broadcastchannel/sandbox.html [ Failure Pass ] # wpt_subtest_failure
 external/wpt/webmessaging/with-options/broken-origin.html [ Failure Pass ] # wpt_subtest_failure
 external/wpt/webmessaging/with-ports/001.html [ Failure Pass ] # wpt_subtest_failure
