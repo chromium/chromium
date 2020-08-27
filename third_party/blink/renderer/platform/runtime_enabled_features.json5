@@ -223,6 +223,11 @@
       name: "BackForwardCache",
     },
     {
+      name: "BackForwardCacheExperimentHTTPHeader",
+      origin_trial_feature_name: "BackForwardCacheExperimentHTTPHeader",
+      status: "experimental",
+    },
+    {
       name: "BackgroundFetch",
       status: "stable",
     },

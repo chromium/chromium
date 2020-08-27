@@ -327,6 +327,9 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
 
   if (save_data_enabled_)
     request.SetHttpHeaderField(http_names::kSaveData, "on");
+
+  AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
+      document_->GetExecutionContext(), request);
 }
 
 // TODO(toyoshim, arthursonzogni): PlzNavigate doesn't use this function to set

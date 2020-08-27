@@ -744,5 +744,15 @@ const base::Feature kContentCaptureUserActivatedDelay = {
 const base::Feature kTransferableStreams{"TransferableStreams",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// The "BackForwardCacheABExperimentControl" feature indicates the state of the
+// same-site BackForwardCache experiment. This information is used when sending
+// the "Sec-bfcache-experiment" HTTP Header on resource requests. The header
+// value is determined by the value of the "experiment_group_for_http_header"
+// feature parameter.
+const base::Feature kBackForwardCacheABExperimentControl{
+    "BackForwardCacheABExperimentControl", base::FEATURE_DISABLED_BY_DEFAULT};
+const char kBackForwardCacheABExperimentGroup[] =
+    "experiment_group_for_http_header";
+
 }  // namespace features
 }  // namespace blink

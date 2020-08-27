@@ -117,6 +117,10 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   // TODO(yhirano): Remove this.
   virtual void AddConsoleMessage(ConsoleMessage*) const = 0;
 
+  void AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
+      ExecutionContext* context,
+      ResourceRequest& request);
+
  private:
   const Member<const DetachableResourceFetcherProperties> fetcher_properties_;
 

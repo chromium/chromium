@@ -2786,6 +2786,7 @@ enum WebFeature {
   kWebCodecsVideoEncoder = 3458,
   kWebCodecsVideoTrackReader= 3459,
   kWebCodecsImageDecoder = 3460,
+  kBackForwardCacheExperimentHTTPHeader = 3461,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
