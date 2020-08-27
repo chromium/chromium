@@ -98,7 +98,8 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       WTF::Vector<blink::mojom::blink::FaviconURLPtr> favicon_urls) override;
   void DownloadURL(mojom::blink::DownloadURLParamsPtr params) override;
   void FocusedElementChanged(bool is_editable_element,
-                             const gfx::Rect& bounds_in_frame_widget) override;
+                             const gfx::Rect& bounds_in_frame_widget,
+                             blink::mojom::FocusType focus_type) override;
   void ShowPopupMenu(
       mojo::PendingRemote<mojom::blink::PopupMenuClient> popup_client,
       const gfx::Rect& bounds,

@@ -8,6 +8,7 @@
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
@@ -609,5 +610,42 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
                                -1, url1, first_party_url, "foo", "bar"}));
   cookie_tracker.cookie_accesses().clear();
 }
+
+namespace {
+
+class FocusedNodeObserver : public WebContentsObserver {
+ public:
+  explicit FocusedNodeObserver(WebContentsImpl* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  blink::mojom::FocusType last_focus_type() const { return last_focus_type_; }
+
+  void WaitForFocusChangedInPage() { run_loop_.Run(); }
+
+  // WebContentsObserver:
+  void OnFocusChangedInPage(FocusedNodeDetails* details) override {
+    last_focus_type_ = details->focus_type;
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  blink::mojom::FocusType last_focus_type_;
+};
+
+// Tests that the focus type is reported correctly in FocusedNodeDetails when
+// WebContentsObserver::OnFocusChangedInPage() is called.
+IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowserTest,
+                       OnFocusChangedInPageFocusType) {
+  FocusedNodeObserver observer(web_contents());
+  GURL url(embedded_test_server()->GetURL("/form_that_posts_cross_site.html"));
+
+  EXPECT_TRUE(NavigateToURL(web_contents(), url));
+  SimulateMouseClickOrTapElementWithId(web_contents(), "text");
+  observer.WaitForFocusChangedInPage();
+  EXPECT_EQ(blink::mojom::FocusType::kMouse, observer.last_focus_type());
+}
+
+}  // namespace
 
 }  // namespace content

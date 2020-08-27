@@ -1167,7 +1167,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // updating focus appearance.
   bool WillUpdateFocusAppearance() const;
 
-  void SendFocusNotification(Element*);
+  void SendFocusNotification(Element*, mojom::blink::FocusType);
 
   bool IsDNSPrefetchEnabled() const { return is_dns_prefetch_enabled_; }
   void ParseDNSPrefetchControlHeader(const String&);
@@ -1782,7 +1782,8 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   void NotifyFocusedElementChanged(Element* old_focused_element,
-                                   Element* new_focused_element);
+                                   Element* new_focused_element,
+                                   mojom::blink::FocusType focus_type);
   void DisplayNoneChangedForFrame();
 
   // Handles a connection error to |has_trust_tokens_answerer_| by rejecting all

@@ -164,7 +164,8 @@ void FakeLocalFrameHost::DownloadURL(
 
 void FakeLocalFrameHost::FocusedElementChanged(
     bool is_editable_element,
-    const gfx::Rect& bounds_in_frame_widget) {}
+    const gfx::Rect& bounds_in_frame_widget,
+    blink::mojom::FocusType focus_type) {}
 
 void FakeLocalFrameHost::ShowPopupMenu(
     mojo::PendingRemote<mojom::blink::PopupMenuClient> popup_client,

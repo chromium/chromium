@@ -370,7 +370,7 @@ interface LocalFrameHost {
   // local root's view, and it will be an empty bounds if there is no focused
   // element.
   FocusedElementChanged(bool is_editable_element,
-                        gfx.mojom.Rect bounds_in_frame_widget);
+                        gfx.mojom.Rect bounds_in_frame_widget, blink.mojom.FocusType focus_type);
 
   // Show a popup menu using native controls on Mac or Android.
   // The popup menu is hidden when the mojo channel is closed.

@@ -3157,7 +3157,8 @@ void Document::Shutdown() {
   if (focused_element_.Get()) {
     Element* old_focused_element = focused_element_;
     focused_element_ = nullptr;
-    NotifyFocusedElementChanged(old_focused_element, nullptr);
+    NotifyFocusedElementChanged(old_focused_element, nullptr,
+                                mojom::blink::FocusType::kNone);
   }
   sequential_focus_navigation_starting_point_ = nullptr;
 
@@ -5199,8 +5200,10 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     }
   }
 
-  if (!focus_change_blocked)
-    NotifyFocusedElementChanged(old_focused_element, focused_element_.Get());
+  if (!focus_change_blocked) {
+    NotifyFocusedElementChanged(old_focused_element, focused_element_.Get(),
+                                params.type);
+  }
 
   UpdateStyleAndLayoutTree();
   if (LocalFrame* frame = GetFrame())
@@ -5214,7 +5217,8 @@ void Document::ClearFocusedElement() {
                                 mojom::blink::FocusType::kNone, nullptr));
 }
 
-void Document::SendFocusNotification(Element* new_focused_element) {
+void Document::SendFocusNotification(Element* new_focused_element,
+                                     mojom::blink::FocusType focus_type) {
   if (!GetPage())
     return;
 
@@ -5244,12 +5248,13 @@ void Document::SendFocusNotification(Element* new_focused_element) {
     element_bounds = gfx::Rect(rect);
   }
 
-  GetFrame()->GetLocalFrameHostRemote().FocusedElementChanged(is_editable,
-                                                              element_bounds);
+  GetFrame()->GetLocalFrameHostRemote().FocusedElementChanged(
+      is_editable, element_bounds, focus_type);
 }
 
 void Document::NotifyFocusedElementChanged(Element* old_focused_element,
-                                           Element* new_focused_element) {
+                                           Element* new_focused_element,
+                                           mojom::blink::FocusType focus_type) {
   // |old_focused_element| may not belong to this document by invoking
   // adoptNode in event handlers during moving the focus to the new element.
   DCHECK(!new_focused_element || new_focused_element->GetDocument() == this);
@@ -5263,7 +5268,7 @@ void Document::NotifyFocusedElementChanged(Element* old_focused_element,
     GetPage()->GetValidationMessageClient().DidChangeFocusTo(
         new_focused_element);
 
-    SendFocusNotification(new_focused_element);
+    SendFocusNotification(new_focused_element, focus_type);
 
     Document* old_document =
         old_focused_element ? &old_focused_element->GetDocument() : nullptr;

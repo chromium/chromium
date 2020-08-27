@@ -6957,7 +6957,8 @@ void WebContentsImpl::OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {
 
 void WebContentsImpl::OnFocusedElementChangedInFrame(
     RenderFrameHostImpl* frame,
-    const gfx::Rect& bounds_in_root_view) {
+    const gfx::Rect& bounds_in_root_view,
+    blink::mojom::FocusType focus_type) {
   RenderWidgetHostViewBase* root_view =
       static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView());
   if (!root_view || !frame->GetView())
@@ -6972,7 +6973,7 @@ void WebContentsImpl::OnFocusedElementChangedInFrame(
                                 bounds_in_screen);
 
   FocusedNodeDetails details = {frame->has_focused_editable_element(),
-                                bounds_in_screen};
+                                bounds_in_screen, focus_type};
 
   // TODO(ekaramad): We should replace this with an observer notification
   // (https://crbug.com/675975).

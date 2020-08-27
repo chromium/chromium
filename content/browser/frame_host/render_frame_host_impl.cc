@@ -4510,16 +4510,19 @@ void RenderFrameHostImpl::OnSelectionChanged(const base::string16& text,
 
 void RenderFrameHostImpl::FocusedElementChanged(
     bool is_editable_element,
-    const gfx::Rect& bounds_in_frame_widget) {
+    const gfx::Rect& bounds_in_frame_widget,
+    blink::mojom::FocusType focus_type) {
   if (!GetView())
     return;
 
   has_focused_editable_element_ = is_editable_element;
   // First convert the bounds to root view.
   delegate_->OnFocusedElementChangedInFrame(
-      this, gfx::Rect(GetView()->TransformPointToRootCoordSpace(
-                          bounds_in_frame_widget.origin()),
-                      bounds_in_frame_widget.size()));
+      this,
+      gfx::Rect(GetView()->TransformPointToRootCoordSpace(
+                    bounds_in_frame_widget.origin()),
+                bounds_in_frame_widget.size()),
+      focus_type);
 }
 
 void RenderFrameHostImpl::DidReceiveFirstUserActivation() {

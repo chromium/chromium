@@ -841,6 +841,36 @@ void SimulateMouseClickAt(WebContents* web_contents,
                                                             ui::LatencyInfo());
 }
 
+void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
+                                          const std::string& id) {
+  // Get the center coordinates of the DOM element.
+  const int x =
+      content::EvalJs(
+          web_contents,
+          content::JsReplace("const bounds = "
+                             "document.getElementById($1)."
+                             "getBoundingClientRect();"
+                             "Math.floor(bounds.left + bounds.width / 2)",
+                             id))
+          .ExtractInt();
+  const int y =
+      content::EvalJs(
+          web_contents,
+          content::JsReplace("const bounds = "
+                             "document.getElementById($1)."
+                             "getBoundingClientRect();"
+                             "Math.floor(bounds.top + bounds.height / 2)",
+                             id))
+          .ExtractInt();
+#if defined(OS_ANDROID)
+  content::SimulateTapDownAt(web_contents, gfx::Point(x, y));
+  content::SimulateTapAt(web_contents, gfx::Point(x, y));
+#else
+  content::SimulateMouseClickAt(
+      web_contents, 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(x, y));
+#endif  // defined(OS_ANDROID)
+}
+
 void SendMouseDownToWidget(RenderWidgetHost* target,
                            int modifiers,
                            blink::WebMouseEvent::Button button) {

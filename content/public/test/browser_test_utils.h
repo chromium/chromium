@@ -216,6 +216,11 @@ void SimulateMouseClickAt(WebContents* web_contents,
                           blink::WebMouseEvent::Button button,
                           const gfx::Point& point);
 
+// Retrieves the center coordinates of the element with id |id| and simulates a
+// mouse click there using SimulateMouseClickAt().
+void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
+                                          const std::string& id);
+
 // Simulates MouseDown at the center of the given RenderWidgetHost's area.
 // This does not send a corresponding MouseUp.
 void SendMouseDownToWidget(RenderWidgetHost* target,
