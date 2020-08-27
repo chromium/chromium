@@ -980,6 +980,7 @@
     },
     {
       name: "LayoutNGBlockFragmentation",
+      implied_by: ["LayoutNGPrinting"],
     },
     {
       name: "LayoutNGFieldset",
@@ -1008,6 +1009,9 @@
     },
     {
       name: "LayoutNGGrid",
+    },
+    {
+      name: "LayoutNGPrinting",
     },
     {
       name: "LayoutNGRuby",

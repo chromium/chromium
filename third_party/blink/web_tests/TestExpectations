@@ -1200,10 +1200,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/overflow-crossing-bo
 crbug.com/1079031 virtual/layout_ng_block_frag/fragmentation/relayout-abspos.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/remove-unbreakable-block-in-line-float.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fragmentation/scrolling-contents-scroll.html [ Failure ]
-crbug.com/591099 virtual/layout_ng_block_frag/printing/fixed-positioned-child-repeats-even-when-html-and-body-are-zero-height.html [ Crash Pass ]
-crbug.com/591099 virtual/layout_ng_block_frag/printing/fixed-positioned-child-shouldnt-print.html [ Crash Pass ]
-crbug.com/829028 virtual/layout_ng_block_frag/printing/frameset.html [ Failure ]
-crbug.com/829804 virtual/layout_ng_block_frag/printing/webgl-oversized-printing.html [ Skip ]
 
 ### With LayoutNGFragmentTraversal (and LayoutNGFragmentItem) enabled:
 
@@ -1226,6 +1222,13 @@ virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/normal-flow/inline-re
 # Lots of manual tests here; just skip everything - not too interesting for LayoutNGFragmentTraversal anyway:
 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/cascade/* [ Skip ]
 virtual/layout_ng_fragment_traversal/external/wpt/css/CSS2/text/* [ Skip ]
+
+### With LayoutNGPrinting enabled:
+
+crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-child-repeats-even-when-html-and-body-are-zero-height.html [ Crash Pass ]
+crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-child-shouldnt-print.html [ Crash Pass ]
+crbug.com/1121942 virtual/layout_ng_printing/printing/frameset.html [ Failure ]
+crbug.com/1121942 virtual/layout_ng_printing/printing/webgl-oversized-printing.html [ Skip ]
 
 # ====== LayoutNG-only failures until here ======
 

@@ -420,6 +420,9 @@ virtual/layout_ng_block_frag/* [ Skip ]
 ### virtual/layout_ng_fragment_traversal/
 virtual/layout_ng_fragment_traversal/* [ Skip ]
 
+### virtual/layout_ng_printing/
+virtual/layout_ng_printing/* [ Skip ]
+
 ### virtual/omt-worker-fetch/external/wpt/service-workers/service-worker/
 crbug.com/591099 virtual/omt-worker-fetch/external/wpt/service-workers/service-worker/registration-updateviacache.https.html [ Failure ]
 

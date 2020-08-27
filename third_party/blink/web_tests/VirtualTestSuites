@@ -227,8 +227,7 @@
               "external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements",
               "fast/forms/fieldset",
               "fast/multicol",
-              "fragmentation",
-              "printing"],
+              "fragmentation"],
     "args": ["--enable-blink-features=LayoutNGBlockFragmentation,LayoutNGFieldset"]
   },
   {
@@ -238,6 +237,11 @@
               "fast/block",
               "fast/table"],
     "args": ["--enable-blink-features=LayoutNGFragmentTraversal"]
+  },
+  {
+    "prefix": "layout_ng_printing",
+    "bases": ["printing"],
+    "args": ["--enable-blink-features=LayoutNGPrinting"]
   },
   {
     "prefix": "layout-ng-grid",
