@@ -165482,6 +165482,18 @@ prefs when the profile is loaded.  -->
   <summary>The number of signed in accounts in the cookie jar.</summary>
 </histogram>
 
+<histogram base="true" name="Signin.CookieJar.SignedInCountWithPrimary"
+    units="accounts" expires_after="2021-03-01">
+  <owner>jkrcal@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    The number of signed in accounts in the cookie jar for users that have a
+    (possibly unconsented) primary account. Reported at most every 24 hours
+    (using a persistent timer). Reporting is split based on the type of the
+    primary account.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Signin.CookieJar.SignedOutCount" units="accounts"
     expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
@@ -217973,6 +217985,14 @@ regressions. -->
       label="Restricted to UKM source id types. Deprecated and replaced by
              'Default' in 2020/05."/>
   <affected-histogram name="UKM.Sources.SerializedCount2"/>
+</histogram_suffixes>
+
+<histogram_suffixes name="UnconsentedPrimaryAccountType" separator=".">
+  <suffix name="NoSyncConsumer" label="A consumer account, no sync."/>
+  <suffix name="NoSyncEnterprise" label="An enterprise account, no sync."/>
+  <suffix name="SyncConsumer" label="A consumer account, syncing."/>
+  <suffix name="SyncEnterprise" label="An enterprise account, syncing."/>
+  <affected-histogram name="Signin.CookieJar.SignedInCountWithPrimary"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="UnPackConsumer" separator="_">

@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -358,6 +359,76 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportStale) {
   EXPECT_FALSE(*periodic_pending());
   ExpectSharedReportHistograms(ReportingType::PERIODIC, histogram_tester,
                                nullptr, 1, 0, 1, nullptr, false);
+
+  // There's no primary account and thus no break-down into types of primary
+  // accounts.
+  EXPECT_EQ(0u, histogram_tester
+                    .GetTotalCountsForPrefix(
+                        "Signin.CookieJar.SignedInCountWithPrimary.")
+                    .size());
+}
+
+TEST_F(AccountInvestigatorTest, TryPeriodicReportWithPrimary) {
+  investigator()->Initialize();
+
+  std::string email("f@bar.com");
+  identity_test_env()->SetCookieAccounts(
+      {{email, signin::GetTestGaiaIdForEmail(email)}});
+  identity_test_env()->MakePrimaryAccountAvailable(email);
+
+  const HistogramTester histogram_tester;
+  TryPeriodicReport();
+  EXPECT_FALSE(*periodic_pending());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CookieJar.SignedInCountWithPrimary.SyncConsumer",
+      /*bucket=*/1, /*count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CookieJar.SignedInCountWithPrimary.NoSyncConsumer",
+      /*count=*/0);
+}
+
+// Neither iOS nor Android support unconsented primary accounts.
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+TEST_F(AccountInvestigatorTest, TryPeriodicReportWithUnconsentedPrimary) {
+  investigator()->Initialize();
+
+  std::string email("f@bar.com");
+  identity_test_env()->SetCookieAccounts(
+      {{email, signin::GetTestGaiaIdForEmail(email)}});
+  identity_test_env()->MakeUnconsentedPrimaryAccountAvailable(email);
+
+  const HistogramTester histogram_tester;
+  TryPeriodicReport();
+  EXPECT_FALSE(*periodic_pending());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CookieJar.SignedInCountWithPrimary.NoSyncConsumer",
+      /*bucket=*/1, /*count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CookieJar.SignedInCountWithPrimary.SyncConsumer",
+      /*count=*/0);
+}
+#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
+
+TEST_F(AccountInvestigatorTest, TryPeriodicReportWithEnterprisePrimary) {
+  investigator()->Initialize();
+
+  std::string email("f@bar.com");
+  identity_test_env()->SetCookieAccounts(
+      {{email, signin::GetTestGaiaIdForEmail(email)}});
+  AccountInfo account_info =
+      identity_test_env()->MakePrimaryAccountAvailable(email);
+  account_info.hosted_domain = "bar.com";
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  const HistogramTester histogram_tester;
+  TryPeriodicReport();
+  EXPECT_FALSE(*periodic_pending());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CookieJar.SignedInCountWithPrimary.SyncEnterprise",
+      /*bucket=*/1, /*count=*/1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.CookieJar.SignedInCountWithPrimary.NoSyncEnterprise",
+      /*count=*/0);
 }
 
 TEST_F(AccountInvestigatorTest, TryPeriodicReportEmpty) {

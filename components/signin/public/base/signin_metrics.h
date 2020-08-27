@@ -413,7 +413,7 @@ void LogAccountEquality(AccountEquality equality);
 void LogCookieJarStableAge(const base::TimeDelta stable_age,
                            const ReportingType type);
 
-// Records three counts for the number of accounts in the cookei jar.
+// Records three counts for the number of accounts in the cookie jar.
 void LogCookieJarCounts(const int signed_in,
                         const int signed_out,
                         const int total,
@@ -427,6 +427,14 @@ void LogAccountRelation(const AccountRelation relation,
 // Records if the best guess is that this profile is currently shared or not
 // between multiple users.
 void LogIsShared(const bool is_shared, const ReportingType type);
+
+// Records the number of signed-in accounts in the cookie jar for the given
+// (potentially unconsented) primary account type, characterized by sync being
+// enabled (`primary_syncing`) and the account being managed (i.e. enterprise,
+// `primary_managed`).
+void LogSignedInCookiesCountsPerPrimaryAccountType(int signed_in_accounts_count,
+                                                   bool primary_syncing,
+                                                   bool primary_managed);
 
 // Records the source that updated a refresh token.
 void RecordRefreshTokenUpdatedFromSource(bool refresh_token_is_valid,
