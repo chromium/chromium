@@ -64,6 +64,7 @@ static_library("content") {
     "//components/webdata/common",
     "//content/public/browser",
     "//device/fido",
+    "//services/data_decoder/public/cpp",
     "//third_party/blink/public:blink_headers",
     "//url",
   ]

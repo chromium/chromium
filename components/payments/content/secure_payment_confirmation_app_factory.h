@@ -14,6 +14,8 @@
 
 namespace payments {
 
+struct SecurePaymentConfirmationInstrument;
+
 class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
                                             public WebDataServiceConsumer {
  public:
@@ -41,6 +43,11 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
       mojom::SecurePaymentConfirmationRequestPtr request,
       std::unique_ptr<autofill::InternalAuthenticator> authenticator,
       bool is_available);
+
+  void OnAppIconDecoded(
+      std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+      std::unique_ptr<Request> request,
+      const SkBitmap& decoded_image);
 
   std::map<WebDataServiceBase::Handle, std::unique_ptr<Request>> requests_;
   base::WeakPtrFactory<SecurePaymentConfirmationAppFactory> weak_ptr_factory_{
