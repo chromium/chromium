@@ -45,6 +45,26 @@ const std::string& SyncInvalidationsServiceImpl::GetFCMRegistrationToken()
   return fcm_handler_->GetFCMRegistrationToken();
 }
 
+void SyncInvalidationsServiceImpl::AddSubscribedDataTypesObserver(
+    SubscribedDataTypesObserver* observer) {
+  data_types_manager_.AddSubscribedDataTypesObserver(observer);
+}
+
+void SyncInvalidationsServiceImpl::RemoveSubscribedDataTypesObserver(
+    SubscribedDataTypesObserver* observer) {
+  data_types_manager_.RemoveSubscribedDataTypesObserver(observer);
+}
+
+const ModelTypeSet& SyncInvalidationsServiceImpl::GetSubscribedDataTypes()
+    const {
+  return data_types_manager_.GetSubscribedDataTypes();
+}
+
+void SyncInvalidationsServiceImpl::SetSubscribedDataTypes(
+    const ModelTypeSet& data_types) {
+  data_types_manager_.SetSubscribedDataTypes(data_types);
+}
+
 void SyncInvalidationsServiceImpl::Shutdown() {
   fcm_handler_.reset();
 }

@@ -8,10 +8,12 @@
 #include <string>
 
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/base/model_type.h"
 
 namespace syncer {
 class FCMRegistrationTokenObserver;
 class InvalidationsListener;
+class SubscribedDataTypesObserver;
 
 // Service which is used to register with FCM. It is used to obtain an FCM token
 // which is used to send invalidations from the server. The service also
@@ -33,6 +35,17 @@ class SyncInvalidationsService : public KeyedService {
   // Used to get an obtained FCM token. Returns empty string if it hasn't been
   // received yet.
   virtual const std::string& GetFCMRegistrationToken() const = 0;
+
+  // Add or remove a subscribed data types change observer. |observer| must not
+  // be nullptr.
+  virtual void AddSubscribedDataTypesObserver(
+      SubscribedDataTypesObserver* observer) = 0;
+  virtual void RemoveSubscribedDataTypesObserver(
+      SubscribedDataTypesObserver* observer) = 0;
+
+  // Get or set for which data types should the device receive invalidations.
+  virtual const ModelTypeSet& GetSubscribedDataTypes() const = 0;
+  virtual void SetSubscribedDataTypes(const ModelTypeSet& data_types) = 0;
 };
 
 }  // namespace syncer
