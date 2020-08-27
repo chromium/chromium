@@ -4112,9 +4112,6 @@ if (enable_java_templates) {
   #       will still be verified regardless of the value of this flag.
   #   strip_resources: Whether to ignore android resources found in the .aar.
   #   custom_package: Java package for generated R.java files.
-  #   extract_assets: Whether to extract and include assets found in the .aar.
-  #       If the file contains assets, either extract_assets or ignore_assets
-  #       must be set.
   #   extract_native_libraries: Whether to extract .so files found in the .aar.
   #       If the file contains .so, either extract_native_libraries or
   #       ignore_native_libraries must be set.
@@ -4142,7 +4139,6 @@ if (enable_java_templates) {
     _unpack_target_name = "${_target_name_without_java_or_junit}__unpack_aar"
     _ignore_aidl = defined(invoker.ignore_aidl) && invoker.ignore_aidl
     _ignore_assets = defined(invoker.ignore_assets) && invoker.ignore_assets
-    _extract_assets = defined(invoker.extract_assets) && invoker.extract_assets
     _ignore_manifest =
         defined(invoker.ignore_manifest) && invoker.ignore_manifest
     _ignore_native_libraries = defined(invoker.ignore_native_libraries) &&
@@ -4176,7 +4172,7 @@ if (enable_java_templates) {
     #   rm -r out/tmp
     _scanned_files = read_file(_info_path, "scope")
 
-    _contains_scanned_assets = _scanned_files.assets != []
+    _use_scanned_assets = !_ignore_assets && _scanned_files.assets != []
 
     assert(_ignore_aidl || _scanned_files.aidl == [],
            "android_aar_prebuilt() aidl not yet supported." +
@@ -4190,11 +4186,6 @@ if (enable_java_templates) {
     assert(
         !(_ignore_native_libraries && _extract_native_libraries),
         "ignore_native_libraries and extract_native_libraries cannot both be set.")
-    assert(!_contains_scanned_assets || (_ignore_assets || _extract_assets),
-           "android_aar_prebuilt() contains asset files." +
-               " Please set ignore_assets or extract_assets.")
-    assert(!(_ignore_assets && _extract_assets),
-           "ignore_assets and extract_assets cannot both be set.")
     assert(!_scanned_files.has_native_libraries ||
            _scanned_files.native_libraries != [])
     assert(_scanned_files.has_classes_jar || _scanned_files.subjars == [])
@@ -4252,7 +4243,7 @@ if (enable_java_templates) {
                 rebase_path(_scanned_files.native_libraries, "", _output_path),
                 "abspath")
       }
-      if (_extract_assets && _contains_scanned_assets) {
+      if (_use_scanned_assets) {
         outputs +=
             get_path_info(rebase_path(_scanned_files.assets, "", _output_path),
                           "abspath")
@@ -4310,10 +4301,8 @@ if (enable_java_templates) {
       not_needed(invoker, [ "strip_drawables" ])
     }
 
-    _should_extract_assets = _extract_assets && _contains_scanned_assets
-
     # Create the android_assets target for assets
-    if (_should_extract_assets) {
+    if (_use_scanned_assets) {
       _assets_target_name = "${target_name}__assets"
       android_assets(_assets_target_name) {
         forward_variables_from(invoker, [ "testonly" ])
