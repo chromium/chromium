@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "v8/include/v8.h"
@@ -536,6 +537,8 @@ TEST_F(ActivityLoggerTest, FormActionAttribute) {
 }
 
 TEST_F(ActivityLoggerTest, LocalDOMWindowAttribute) {
+  ScopedAllowContentInitiatedDataUrlNavigationsForTest allow_data_url(true);
+
   const char* code =
       "location.href = 'data:text/html;charset=utf-8,A';"
       "location.assign('data:text/html;charset=utf-8,B');"

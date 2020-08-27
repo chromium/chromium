@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/common/frame_messages.h"
@@ -23,6 +24,7 @@
 #include "content/common/renderer.mojom.h"
 #include "content/common/unfreezable_frame_messages.h"
 #include "content/common/widget_messages.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/document_state.h"
@@ -872,8 +874,16 @@ void ExpectPendingInterfaceReceiversFromSources(
 
 class RenderFrameRemoteInterfacesTest : public RenderViewTest {
  public:
-  RenderFrameRemoteInterfacesTest() {}
-  ~RenderFrameRemoteInterfacesTest() override {}
+  RenderFrameRemoteInterfacesTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAllowContentInitiatedDataUrlNavigations);
+    blink::WebRuntimeFeatures::EnableFeatureFromString(
+        "AllowContentInitiatedDataUrlNavigations", true);
+  }
+  ~RenderFrameRemoteInterfacesTest() override {
+    blink::WebRuntimeFeatures::EnableFeatureFromString(
+        "AllowContentInitiatedDataUrlNavigations", false);
+  }
 
  protected:
   void SetUp() override {
@@ -907,6 +917,7 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
  private:
   // Owned by RenderViewTest.
   FrameCreationObservingRendererClient* frame_creation_observer_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameRemoteInterfacesTest);
 };
