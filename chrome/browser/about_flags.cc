@@ -3116,12 +3116,6 @@ const FeatureEntry kFeatureEntries[] = {
          kAutofillKeyboardAccessoryFeatureVariations,
          "AutofillKeyboardAccessory")},
 #endif  // OS_ANDROID
-#if defined(OS_WIN)
-    {"try-supported-channel-layouts",
-     flag_descriptions::kTrySupportedChannelLayoutsName,
-     flag_descriptions::kTrySupportedChannelLayoutsDescription, kOsWin,
-     SINGLE_VALUE_TYPE(switches::kTrySupportedChannelLayouts)},
-#endif  // OS_WIN
 #if defined(OS_MAC)
     {"mac-syscall-sandbox", flag_descriptions::kMacSyscallSandboxName,
      flag_descriptions::kMacSyscallSandboxDescription, kOsMac,

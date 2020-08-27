@@ -4365,11 +4365,6 @@
     "expiry_milestone": 86
   },
   {
-    "name": "try-supported-channel-layouts",
-    "owners": [ "dalecurtis" ],
-    "expiry_milestone": 76
-  },
-  {
     "name": "turn-off-streaming-media-caching-always",
     "owners": [ "shawnpi@microsoft.com", "cassew@google.com" ],
     "expiry_milestone": 87

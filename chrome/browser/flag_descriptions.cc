@@ -2376,15 +2376,6 @@ const char kTrustTokensDescription[] =
     "Enables the prototype Trust Token API "
     "(https://github.com/wicg/trust-token-api).";
 
-const char kTrySupportedChannelLayoutsName[] =
-    "Causes audio output streams to check if channel layouts other than the "
-    "default hardware layout are available.";
-const char kTrySupportedChannelLayoutsDescription[] =
-    "Causes audio output streams to check if channel layouts other than the "
-    "default hardware layout are available. Turning this on will allow the OS "
-    "to do stereo to surround expansion if supported. May expose third party "
-    "driver bugs, use with caution.";
-
 const char kTurnOffStreamingMediaCachingOnBatteryName[] =
     "Turn off caching of streaming media to disk while on battery power.";
 const char kTurnOffStreamingMediaCachingOnBatteryDescription[] =
