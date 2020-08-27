@@ -308,69 +308,6 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
   }
 }
 
-TEST_F(ImageBitmapTest, ImageBitmapPixelFormat) {
-  SkImageInfo info = SkImageInfo::MakeS32(10, 10, kPremul_SkAlphaType);
-  sk_sp<SkSurface> surface(SkSurface::MakeRaster(info));
-  sk_sp<SkImage> sk_image = surface->makeImageSnapshot();
-  scoped_refptr<StaticBitmapImage> bitmap_image =
-      UnacceleratedStaticBitmapImage::Create(sk_image);
-
-  // source: uint8, bitmap pixel format: default
-  ImageBitmapOptions* options = ImageBitmapOptions::Create();
-  auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      bitmap_image, bitmap_image->Rect(), options);
-
-  ASSERT_TRUE(image_bitmap);
-  sk_sp<SkImage> sk_image_internal =
-      image_bitmap->BitmapImage()->PaintImageForCurrentFrame().GetSwSkImage();
-  ASSERT_EQ(kN32_SkColorType, sk_image_internal->colorType());
-
-  // source: uint8, bitmap pixel format: uint8
-  options->setImagePixelFormat("uint8");
-  auto* image_bitmap_8888 = MakeGarbageCollected<ImageBitmap>(
-      bitmap_image, bitmap_image->Rect(), options);
-  ASSERT_TRUE(image_bitmap_8888);
-  sk_sp<SkImage> sk_image_internal_8888 = image_bitmap_8888->BitmapImage()
-                                              ->PaintImageForCurrentFrame()
-                                              .GetSwSkImage();
-  ASSERT_EQ(kN32_SkColorType, sk_image_internal_8888->colorType());
-
-  // Since there is no conversion from uint8 to default for image bitmap pixel
-  // format option, we expect the two image bitmaps to refer to the same
-  // internal SkImage back storage.
-  ASSERT_EQ(sk_image_internal, sk_image_internal_8888);
-
-  sk_sp<SkColorSpace> p3_color_space = SkColorSpace::MakeRGB(
-      SkNamedTransferFn::kLinear, SkNamedGamut::kDisplayP3);
-  SkImageInfo info_f16 = SkImageInfo::Make(10, 10, kRGBA_F16_SkColorType,
-                                           kPremul_SkAlphaType, p3_color_space);
-  sk_sp<SkSurface> surface_f16(SkSurface::MakeRaster(info_f16));
-  sk_sp<SkImage> sk_image_f16 = surface_f16->makeImageSnapshot();
-  scoped_refptr<StaticBitmapImage> bitmap_image_f16 =
-      UnacceleratedStaticBitmapImage::Create(sk_image_f16);
-
-  // source: f16, bitmap pixel format: default
-  ImageBitmapOptions* options_f16 = ImageBitmapOptions::Create();
-  auto* image_bitmap_f16 = MakeGarbageCollected<ImageBitmap>(
-      bitmap_image_f16, bitmap_image_f16->Rect(), options_f16);
-  ASSERT_TRUE(image_bitmap_f16);
-  sk_sp<SkImage> sk_image_internal_f16 = image_bitmap_f16->BitmapImage()
-                                             ->PaintImageForCurrentFrame()
-                                             .GetSwSkImage();
-  ASSERT_EQ(kRGBA_F16_SkColorType, sk_image_internal_f16->colorType());
-
-  // source: f16, bitmap pixel format: uint8
-  options_f16->setImagePixelFormat("uint8");
-  auto* image_bitmap_f16_8888 = MakeGarbageCollected<ImageBitmap>(
-      bitmap_image_f16, bitmap_image_f16->Rect(), options_f16);
-  ASSERT_TRUE(image_bitmap_f16_8888);
-  sk_sp<SkImage> sk_image_internal_f16_8888 =
-      image_bitmap_f16_8888->BitmapImage()
-          ->PaintImageForCurrentFrame()
-          .GetSwSkImage();
-  ASSERT_EQ(kN32_SkColorType, sk_image_internal_f16_8888->colorType());
-}
-
 // This test is failing on asan-clang-phone because memory allocation is
 // declined. See <http://crbug.com/782286>.
 // See <http://crbug.com/1090252>, test is flaky in fuchsia.

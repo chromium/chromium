@@ -48,10 +48,6 @@ constexpr const char* kImageBitmapOptionPremultiply = "premultiply";
 constexpr const char* kImageBitmapOptionResizeQualityHigh = "high";
 constexpr const char* kImageBitmapOptionResizeQualityMedium = "medium";
 constexpr const char* kImageBitmapOptionResizeQualityPixelated = "pixelated";
-constexpr const char* kPreserveImageBitmapColorSpaceConversion = "preserve";
-constexpr const char* kSRGBImageBitmapColorSpaceConversion = "srgb";
-constexpr const char* kP3ImageBitmapColorSpaceConversion = "p3";
-constexpr const char* kRec2020ImageBitmapColorSpaceConversion = "rec2020";
 
 namespace {
 
@@ -96,27 +92,12 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
 
   parsed_options.has_color_space_conversion =
       (options->colorSpaceConversion() != kImageBitmapOptionNone);
-  parsed_options.preserve_source_color_space =
-      (options->colorSpaceConversion() ==
-       kPreserveImageBitmapColorSpaceConversion);
   parsed_options.color_params.SetCanvasColorSpace(CanvasColorSpace::kSRGB);
-  if (options->colorSpaceConversion() != kSRGBImageBitmapColorSpaceConversion &&
-      options->colorSpaceConversion() !=
-          kPreserveImageBitmapColorSpaceConversion &&
-      options->colorSpaceConversion() != kImageBitmapOptionNone &&
+  if (options->colorSpaceConversion() != kImageBitmapOptionNone &&
       options->colorSpaceConversion() != kImageBitmapOptionDefault) {
-    parsed_options.color_params.SetCanvasPixelFormat(CanvasPixelFormat::kF16);
-    if (options->colorSpaceConversion() == kP3ImageBitmapColorSpaceConversion) {
-      parsed_options.color_params.SetCanvasColorSpace(CanvasColorSpace::kP3);
-    } else if (options->colorSpaceConversion() ==
-               kRec2020ImageBitmapColorSpaceConversion) {
-      parsed_options.color_params.SetCanvasColorSpace(
-          CanvasColorSpace::kRec2020);
-    } else {
-      NOTREACHED()
-          << "Invalid ImageBitmap creation attribute colorSpaceConversion: "
-          << IDLEnumAsString(options->colorSpaceConversion());
-    }
+    NOTREACHED()
+        << "Invalid ImageBitmap creation attribute colorSpaceConversion: "
+        << IDLEnumAsString(options->colorSpaceConversion());
   }
 
   int source_width = source_size.Width();
@@ -456,15 +437,7 @@ scoped_refptr<StaticBitmapImage> ApplyColorSpaceConversion(
   if (src_image_info.isEmpty())
     return nullptr;
 
-  // If we should preserve color precision, don't lose it in color space
-  // conversion.
-  if (options.pixel_format == kImageBitmapPixelFormat_Default &&
-      (src_image_info.colorType() == kRGBA_F16_SkColorType ||
-       (src_image_info.colorSpace() &&
-        src_image_info.colorSpace()->gammaIsLinear()) ||
-       (color_space && color_space->gammaIsLinear()))) {
-    color_type = kRGBA_F16_SkColorType;
-  }
+  // This will always convert to 8-bit sRGB.
   return image->ConvertToColorSpace(color_space, color_type);
 }
 
@@ -561,8 +534,7 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
   }
 
   // color convert if needed
-  if (parsed_options.has_color_space_conversion &&
-      !parsed_options.preserve_source_color_space) {
+  if (parsed_options.has_color_space_conversion) {
     result = ApplyColorSpaceConversion(std::move(result), parsed_options);
     if (!result)
       return nullptr;
