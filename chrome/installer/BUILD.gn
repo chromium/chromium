@@ -3,12 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 
 declare_args() {
-  enable_linux_installer = is_linux && !is_chromeos && !is_component_build &&
-                           use_sysroot && !using_sanitizer
+  enable_linux_installer =
+      is_linux && !is_chromeos && !is_component_build && use_sysroot &&
+      !using_sanitizer && !chromeos_is_browser_only
 }
 
 # Meta-target that forwards to the installer of the correct type (if any).
