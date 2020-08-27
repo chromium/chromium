@@ -312,6 +312,8 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Additions/UIScrollView+GREYApp.m",
     "src/AppFramework/Additions/UISwitch+GREYApp.h",
     "src/AppFramework/Additions/UISwitch+GREYApp.m",
+    "src/AppFramework/Additions/UITextSelectionView+GREYApp.h",
+    "src/AppFramework/Additions/UITextSelectionView+GREYApp.m",
     "src/AppFramework/Additions/UIView+GREYApp.h",
     "src/AppFramework/Additions/UIView+GREYApp.m",
     "src/AppFramework/Additions/UIViewController+GREYApp.h",
