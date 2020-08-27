@@ -36,6 +36,7 @@
 #include "chrome/browser/chromeos/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/chromeos/login/test/webview_content_extractor.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -742,29 +743,23 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     navigation_observer.WatchExistingWebContents();
     navigation_observer.StartWatchingNewWebContents();
 
-    // TODO(https://crbug.com/830337): Remove the logs if flakiness is gone.
+    // TODO(https://crbug.com/1092562): Remove the logs if flakiness is gone.
     // If you see this after April 2019, please ping the owner of the above bug.
-    LOG(INFO) << "Triggering navigation to " << url.spec() << ".";
     test::OobeJS().Evaluate(base::StringPrintf(
         "%s.src='%s'", test::GetOobeElementPath(webview_path).c_str(),
         url.spec().c_str()));
     navigation_observer.Wait();
     LOG(INFO) << "Navigation done.";
 
-    content::WebContents* main_web_contents = GetLoginUI()->GetWebContents();
-    const std::string webview_id = std::prev(webview_path.end())->as_string();
-    content::WebContents* frame_web_contents =
-        signin::GetAuthFrameWebContents(main_web_contents, webview_id);
-    test::JSChecker frame_js_checker(frame_web_contents);
     const std::string https_reply_content =
-        frame_js_checker.GetString("document.body.textContent");
-    // TODO(https://crbug.com/830337): Remove this is if flakiness does not
+        test::GetWebViewContents(webview_path);
+    // TODO(https://crbug.com/1092562): Remove this is if flakiness does not
     // reproduce.
-    // If you see this after April 2019, please ping the owner of the above bug.
+    // If you see this after October 2020, please ping the above bug.
     if (https_reply_content.empty()) {
       base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1000));
       const std::string https_reply_content_after_sleep =
-          frame_js_checker.GetString("document.body.textContent");
+          test::GetWebViewContents(webview_path);
       if (!https_reply_content_after_sleep.empty())
         LOG(INFO) << "Magic - textContent appeared after sleep.";
     }
