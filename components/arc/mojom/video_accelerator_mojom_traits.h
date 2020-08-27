@@ -5,17 +5,13 @@
 #ifndef COMPONENTS_ARC_MOJOM_VIDEO_ACCELERATOR_MOJOM_TRAITS_H_
 #define COMPONENTS_ARC_MOJOM_VIDEO_ACCELERATOR_MOJOM_TRAITS_H_
 
-#include <string.h>
-
 #include <memory>
 
-#include "components/arc/mojom/arc_gfx_mojom_traits.h"
 #include "components/arc/mojom/video_common.mojom.h"
 #include "components/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/decode_status.h"
 #include "media/base/video_codecs.h"
-#include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -142,46 +138,6 @@ struct EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus> {
 
   static bool FromMojom(arc::mojom::DecodeStatus input,
                         media::DecodeStatus* output);
-};
-
-template <>
-struct StructTraits<arc::mojom::VideoFrameDataView,
-                    scoped_refptr<media::VideoFrame>> {
-  static bool IsNull(const scoped_refptr<media::VideoFrame> input) {
-    return !input;
-  }
-
-  static void SetToNull(scoped_refptr<media::VideoFrame>* output) {
-    output->reset();
-  }
-
-  static uint64_t id(const scoped_refptr<media::VideoFrame> input) {
-    DCHECK(input);
-    DCHECK(!input->mailbox_holder(0).mailbox.IsZero());
-
-    // We store id at the first 8 byte of the mailbox.
-    uint64_t id;
-    static_assert(GL_MAILBOX_SIZE_CHROMIUM >= sizeof(id),
-                  "Size of Mailbox is too small to store id.");
-    const int8_t* const name = input->mailbox_holder(0).mailbox.name;
-    memcpy(&id, name, sizeof(id));
-    return id;
-  }
-
-  static gfx::Rect visible_rect(const scoped_refptr<media::VideoFrame> input) {
-    DCHECK(input);
-
-    return input->visible_rect();
-  }
-
-  static int64_t timestamp(const scoped_refptr<media::VideoFrame> input) {
-    DCHECK(input);
-
-    return input->timestamp().InMilliseconds();
-  }
-
-  static bool Read(arc::mojom::VideoFrameDataView data,
-                   scoped_refptr<media::VideoFrame>* out);
 };
 
 }  // namespace mojo

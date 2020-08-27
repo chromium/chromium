@@ -7,8 +7,6 @@
 
 module arc.mojom;
 
-import "components/arc/mojom/gfx.mojom";
-
 [Extensible]
 enum VideoCodecProfile {
   // The values must match to the values in media::VideoCodecProfile.
@@ -121,12 +119,4 @@ struct VideoFrameLayout {
   bool is_multi_planar;
   uint32 buffer_addr_align;
   uint64 modifier;
-};
-
-struct VideoFrame {
-  // Identifier of the buffer. The value of a valid frame should be non-zero.
-  uint64 id;
-  Rect visible_rect;
-  // timestamp in milliseconds.
-  int64 timestamp;
 };

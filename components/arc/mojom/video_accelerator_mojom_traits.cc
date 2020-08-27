@@ -269,31 +269,4 @@ bool StructTraits<arc::mojom::VideoFrameLayoutDataView,
   return true;
 }
 
-// static
-bool StructTraits<arc::mojom::VideoFrameDataView,
-                  scoped_refptr<media::VideoFrame>>::
-    Read(arc::mojom::VideoFrameDataView data,
-         scoped_refptr<media::VideoFrame>* out) {
-  gfx::Rect visible_rect;
-  if (data.id() == 0 || !data.ReadVisibleRect(&visible_rect)) {
-    return false;
-  }
-
-  // We store id at the first 8 byte of the mailbox.
-  const uint64_t id = data.id();
-  static_assert(GL_MAILBOX_SIZE_CHROMIUM >= sizeof(id),
-                "Size of Mailbox is too small to store id.");
-  gpu::Mailbox mailbox;
-  memcpy(mailbox.name, &id, sizeof(id));
-  gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
-  mailbox_holders[0] = gpu::MailboxHolder(mailbox, gpu::SyncToken(), 0);
-
-  // We don't store pixel format and coded_size in Mojo struct. Use dummy value.
-  *out = media::VideoFrame::WrapNativeTextures(
-      media::PIXEL_FORMAT_I420, mailbox_holders,
-      media::VideoFrame::ReleaseMailboxCB(), visible_rect.size(), visible_rect,
-      visible_rect.size(), base::TimeDelta::FromMilliseconds(data.timestamp()));
-  return true;
-}
-
 }  // namespace mojo

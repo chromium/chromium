@@ -8,7 +8,6 @@ public_headers = [
   "//media/base/color_plane_layout.h",
   "//media/base/decode_status.h",
   "//media/base/video_codecs.h",
-  "//media/base/video_frame.h",
   "//media/base/video_types.h",
   "//ui/gfx/geometry/size.h",
 ]
@@ -34,7 +33,6 @@ type_mappings = [
   "arc.mojom.ColorPlaneLayout=media::ColorPlaneLayout",
   "arc.mojom.Size=gfx::Size",
   "arc.mojom.VideoCodecProfile=media::VideoCodecProfile",
-  "arc.mojom.VideoFrame=scoped_refptr<media::VideoFrame>[nullable_is_same_type]",
 
   # media::VideoFrameLayout doesn't have default constructor, so we cannot
   # convert directly.

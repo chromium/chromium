@@ -15,7 +15,6 @@
 namespace mojo {
 
 namespace {
-constexpr int64_t kTimestamp = 1234;
 constexpr int kWidth = 640;
 constexpr int kHeight = 480;
 constexpr media::VideoPixelFormat kFormat = media::PIXEL_FORMAT_I420;
@@ -55,43 +54,6 @@ TEST(VideoAcceleratorStructTraitsTest, ConvertNullVideoFrameLayout) {
   std::unique_ptr<media::VideoFrameLayout> output;
   mojo::test::SerializeAndDeserialize<arc::mojom::VideoFrameLayout>(&input,
                                                                     &output);
-
-  EXPECT_FALSE(output);
-}
-
-TEST(VideoAcceleratorStructTraitsTest, ConvertVideoFrame) {
-  // We store id in the first 8 bytes of kMailbox.
-  gpu::Mailbox kMailbox;
-  kMailbox.name[0] = 0xff;
-  kMailbox.name[1] = 0xed;
-  kMailbox.name[2] = 0xfb;
-  kMailbox.name[3] = 0xea;
-  kMailbox.name[4] = 0xf9;
-  kMailbox.name[5] = 0x7e;
-  kMailbox.name[6] = 0xe5;
-  kMailbox.name[7] = 0xe3;
-
-  gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes];
-  mailbox_holders[0] = gpu::MailboxHolder(kMailbox, gpu::SyncToken(), 0);
-
-  scoped_refptr<media::VideoFrame> input =
-      media::VideoFrame::WrapNativeTextures(
-          kFormat, mailbox_holders, media::VideoFrame::ReleaseMailboxCB(),
-          kCodedSize, gfx::Rect(kCodedSize), kCodedSize,
-          base::TimeDelta::FromMilliseconds(kTimestamp));
-  scoped_refptr<media::VideoFrame> output;
-  mojo::test::SerializeAndDeserialize<arc::mojom::VideoFrame>(&input, &output);
-
-  // Verify the fields of input and output frames.
-  EXPECT_EQ(output->mailbox_holder(0).mailbox, kMailbox);
-  EXPECT_EQ(output->visible_rect(), input->visible_rect());
-  EXPECT_EQ(output->timestamp(), input->timestamp());
-}
-
-TEST(VideoAcceleratorStructTraitsTest, ConvertNullVideoFrame) {
-  scoped_refptr<media::VideoFrame> input;
-  scoped_refptr<media::VideoFrame> output;
-  mojo::test::SerializeAndDeserialize<arc::mojom::VideoFrame>(&input, &output);
 
   EXPECT_FALSE(output);
 }
