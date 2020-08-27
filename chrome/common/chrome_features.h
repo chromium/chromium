@@ -551,6 +551,8 @@ extern const base::Feature kWebTimeLimits;
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kWebUIDarkMode;
 
 #if defined(OS_CHROMEOS)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kUmaStorageDimensions;
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kWilcoDtc;
 #endif  // defined(OS_CHROMEOS)
 

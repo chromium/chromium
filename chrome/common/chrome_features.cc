@@ -820,6 +820,10 @@ const base::Feature kWebUIDarkMode {
 };
 
 #if defined(OS_CHROMEOS)
+// Populates storage dimensions in UMA log if enabled. Requires diagnostics
+// package in the image.
+const base::Feature kUmaStorageDimensions{"UmaStorageDimensions",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 // Allow a Wilco DTC (diagnostics and telemetry controller) on Chrome OS.
 // More info about the project may be found here:
 // https://docs.google.com/document/d/18Ijj8YlC8Q3EWRzLspIi2dGxg4vIBVe5sJgMPt9SWYo
