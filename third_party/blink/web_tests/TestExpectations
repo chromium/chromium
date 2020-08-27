@@ -2204,6 +2204,7 @@ crbug.com/893480 external/wpt/infrastructure/testdriver/actions/multiDevice.html
 crbug.com/893480 external/wpt/pointerevents/pointerevent_touch-action-keyboard.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/infrastructure/testdriver/actions/actionsWithKeyPressed.html [ Failure Timeout ]
 crbug.com/893480 external/wpt/css/css-scroll-snap/input/keyboard.html [ Failure Timeout ]
+crbug.com/893480 external/wpt/is-input-pending/tentative/* [ Failure Timeout ]
 
 # Need to support 'direction: rtl' for scroll snap
 crbug.com/1012173 external/wpt/css/css-scroll-snap/snap-after-initial-layout/direction-rtl.html [ Failure ]
