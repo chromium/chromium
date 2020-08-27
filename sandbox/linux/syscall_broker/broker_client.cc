@@ -112,11 +112,14 @@ int BrokerClient::Readlink(const char* path, char* buf, size_t bufsize) const {
     return -ENOMEM;
   if (return_length < 0)
     return -ENOMEM;
+  // Sanity check that our broker is behaving correctly.
+  RAW_CHECK(return_length == static_cast<size_t>(return_value));
 
-  if (static_cast<size_t>(return_length) > bufsize)
-    return -ENAMETOOLONG;
+  if (return_length > bufsize) {
+    return_length = bufsize;
+  }
   memcpy(buf, return_data, return_length);
-  return return_value;
+  return return_length;
 }
 
 int BrokerClient::Rename(const char* oldpath, const char* newpath) const {

@@ -1094,7 +1094,7 @@ void TestReadlinkHelper(bool fast_check_in_client) {
     BrokerProcess open_broker(kFakeErrnoSentinel, command_set, permissions,
                               fast_check_in_client);
     ASSERT_TRUE(open_broker.Init(base::BindOnce(&NoOpCallback)));
-    EXPECT_EQ(-ENAMETOOLONG, open_broker.Readlink(newpath_name, buf, 4));
+    EXPECT_EQ(4, open_broker.Readlink(newpath_name, buf, 4));
   }
 
   // Cleanup both paths.
