@@ -4,6 +4,7 @@ PASS Idle -> After
 PASS Before -> Active
 PASS Before -> After
 PASS Active -> Idle, display: none
+PASS After -> Idle, display: none
 FAIL Active -> Idle, setting Animation.timeline = null promise_test: Unhandled rejection with value: object "TypeError: Cannot set property timeline of #<Animation> which has only a getter"
 PASS Active -> Idle, calling Animation.cancel()
 PASS Active -> Before

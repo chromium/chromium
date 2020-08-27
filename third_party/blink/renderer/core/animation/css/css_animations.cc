@@ -1572,7 +1572,10 @@ void CSSAnimations::AnimationEventDelegate::OnEventCondition(
                   event_type_names::kAnimationend, elapsed_time);
   }
 
-  if (phase_change && current_phase == Timing::kPhaseNone) {
+  // The following phase transitions trigger an animationcalcel event:
+  //   not idle and not after --> idle
+  if (phase_change && current_phase == Timing::kPhaseNone &&
+      previous_phase_ != Timing::kPhaseAfter) {
     // TODO(crbug.com/1059968): Determine if animation direction or playback
     // rate factor into the calculation of the elapsed time.
     double cancel_time = animation_node.GetCancelTime();
