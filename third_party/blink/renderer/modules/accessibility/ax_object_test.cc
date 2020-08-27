@@ -679,21 +679,17 @@ TEST_F(AccessibilityTest, CheckNoDuplicateChildren) {
       ax_select->FirstChildIncludingIgnored()->ChildCountIncludingIgnored(), 1);
 }
 
-TEST_F(AccessibilityTest, InitRelationCache) {
-  // All of the other tests already have accessibility initialized
+TEST_F(AccessibilityTest, InitRelationCacheLabelFor) {
+  // Most other tests already have accessibility initialized
   // first, but we don't want to in this test.
   //
   // Get rid of the AXContext so the AXObjectCache is destroyed.
   ax_context_.reset(nullptr);
 
   SetBodyInnerHTML(R"HTML(
-      <ul id="ul" aria-owns="li"></ul>
       <label for="a"></label>
       <input id="a">
       <input id="b">
-      <div role="section" id="div">
-        <li id="li"></li>
-      </div>
     )HTML");
 
   // Now recreate an AXContext, simulating what happens if accessibility
@@ -706,11 +702,32 @@ TEST_F(AccessibilityTest, InitRelationCache) {
   ASSERT_NE(nullptr, input_a);
   const AXObject* input_b = GetAXObjectByElementId("b");
   ASSERT_NE(nullptr, input_b);
+}
 
-  EXPECT_TRUE(GetAXObjectCache().MayHaveHTMLLabel(
-      To<HTMLElement>(*input_a->GetNode())));
-  EXPECT_FALSE(GetAXObjectCache().MayHaveHTMLLabel(
-      To<HTMLElement>(*input_b->GetNode())));
+TEST_F(AccessibilityTest, InitRelationCacheAriaOwns) {
+  // Most other tests already have accessibility initialized
+  // first, but we don't want to in this test.
+  //
+  // Get rid of the AXContext so the AXObjectCache is destroyed.
+  ax_context_.reset(nullptr);
+
+  SetBodyInnerHTML(R"HTML(
+      <ul id="ul" aria-owns="li"></ul>
+      <div role="section" id="div">
+        <li id="li"></li>
+      </div>
+    )HTML");
+
+  // Now recreate an AXContext, simulating what happens if accessibility
+  // is enabled after the document is loaded.
+  ax_context_.reset(new AXContext(GetDocument()));
+
+  const AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+
+  // Perform deferred processing so that aria-owns children are attached.
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInAccessibility);
+  GetAXObjectCache().ProcessDeferredAccessibilityEvents(GetDocument());
 
   // Note: retrieve the LI first and check that its parent is not
   // the paragraph element. If we were to retrieve the UL element,

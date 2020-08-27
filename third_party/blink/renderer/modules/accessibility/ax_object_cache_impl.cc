@@ -148,8 +148,11 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document)
   if (document_->LoadEventFinished())
     AddPermissionStatusListener();
   documents_.insert(&document);
-  relation_cache_->Init();
   use_ax_menu_list_ = GetSettings()->GetUseAXMenuList();
+
+  // Perform last, to ensure AXObjectCacheImpl() is fully set up, as
+  // AXRelationCache() sometimes calls back into AXObjectCacheImpl.
+  relation_cache_->Init();
 }
 
 AXObjectCacheImpl::~AXObjectCacheImpl() {

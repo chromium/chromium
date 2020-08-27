@@ -24,11 +24,13 @@ void AXRelationCache::Init() {
     if (!id.IsEmpty())
       all_previously_seen_label_target_ids_.insert(id);
 
+    // Ensure correct ancestor chains even when not all AXObject's in the
+    // document are created, e.g. in the devtools accessibility panel.
+    // Defers adding aria-owns targets as children of their new parents,
+    // and to the relation cache, until the appropriate document lifecycle.
     if (element.FastHasAttribute(html_names::kAriaOwnsAttr)) {
-      if (AXObject* obj = object_cache_->GetOrCreate(&element)) {
-        obj->ClearChildren();
-        obj->AddChildren();
-      }
+      object_cache_->HandleAttributeChanged(html_names::kAriaOwnsAttr,
+                                            &element);
     }
   }
 }
