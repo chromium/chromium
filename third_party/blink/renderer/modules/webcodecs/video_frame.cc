@@ -94,9 +94,9 @@ VideoFrame* VideoFrame::Create(ImageBitmap* source,
   base::TimeDelta timestamp =
       base::TimeDelta::FromMicroseconds(init->timestamp());
 
-  auto sk_image =
-      source->BitmapImage()->PaintImageForCurrentFrame().GetSkImage();
-  auto sk_color_space = sk_image->refColorSpace();
+  auto sk_image_info =
+      source->BitmapImage()->PaintImageForCurrentFrame().GetSkImageInfo();
+  auto sk_color_space = sk_image_info.refColorSpace();
   if (!sk_color_space) {
     sk_color_space = SkColorSpace::MakeSRGB();
   }
@@ -105,7 +105,7 @@ VideoFrame* VideoFrame::Create(ImageBitmap* source,
                                       "Invalid color space");
     return nullptr;
   }
-  auto sk_color_type = sk_image->colorType();
+  auto sk_color_type = sk_image_info.colorType();
   if (!IsValidSkColorType(sk_color_type)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid pixel format");

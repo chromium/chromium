@@ -66,6 +66,10 @@ bool PaintImage::operator==(const PaintImage& other) const {
     return false;
   if (is_multipart_ != other.is_multipart_)
     return false;
+  if (texture_backing_ != other.texture_backing_)
+    return false;
+  if (paint_worklet_input_ != other.paint_worklet_input_)
+    return false;
   return true;
 }
 
@@ -378,7 +382,7 @@ const std::vector<FrameMetadata>& PaintImage::GetFrameMetadata() const {
 }
 
 size_t PaintImage::FrameCount() const {
-  if (!GetSkImage())
+  if (!*this)
     return 0u;
   return paint_image_generator_
              ? paint_image_generator_->GetFrameMetadata().size()

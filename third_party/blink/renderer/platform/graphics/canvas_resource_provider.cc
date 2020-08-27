@@ -198,9 +198,9 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
     auto paint_image = MakeImageSnapshot();
     if (!paint_image)
       return nullptr;
-    DCHECK(!paint_image.GetSkImage()->isTextureBacked());
+    DCHECK(!paint_image.IsTextureBacked());
 
-    output_resource->TakeSkImage(paint_image.GetSkImage());
+    output_resource->TakeSkImage(paint_image.GetSwSkImage());
 
     return output_resource;
   }
@@ -349,7 +349,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     DCHECK(sk_image);
     SkPixmap map;
     // We know this SkImage is software backed because it's guaranteed by
-    // PaintImage::GetRasterSkImage above
+    // PaintImage::GetSwSkImage above
     sk_image->peekPixels(&map);
     WritePixels(map.info(), map.addr(), map.rowBytes(), /*x=*/0, /*y=*/0);
   }
@@ -1222,7 +1222,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProvider::SnapshotInternal(
     return nullptr;
 
   auto paint_image = MakeImageSnapshot();
-  DCHECK(!paint_image.GetSkImage()->isTextureBacked());
+  DCHECK(!paint_image.IsTextureBacked());
   return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
                                                 orientation);
 }

@@ -265,7 +265,7 @@ class CC_PAINT_EXPORT PaintImage {
     return paint_worklet_input_ ? 0 : GetSkImage()->uniqueID();
   }
   explicit operator bool() const {
-    return paint_worklet_input_ || !!GetSkImage() || texture_backing_;
+    return paint_worklet_input_ || cached_sk_image_ || texture_backing_;
   }
   bool IsLazyGenerated() const {
     return paint_record_ || paint_image_generator_;
@@ -336,6 +336,7 @@ class CC_PAINT_EXPORT PaintImage {
   friend class PlaybackImageProvider;
   friend class DrawImageRectOp;
   friend class DrawImageOp;
+  friend class AcceleratedStaticBitmapImageTest;
 
   bool DecodeFromGenerator(void* memory,
                            SkImageInfo* info,

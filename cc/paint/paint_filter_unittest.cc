@@ -20,9 +20,10 @@ class MockImageProvider : public ImageProvider {
   ScopedResult GetRasterContent(const DrawImage& draw_image) override {
     DCHECK(!draw_image.paint_image().IsPaintWorklet());
     image_count_++;
-    return ScopedResult(DecodedDrawImage(
-        CreateBitmapImage(gfx::Size(10, 10)).GetSkImage(), SkSize::MakeEmpty(),
-        SkSize::Make(1.0f, 1.0f), draw_image.filter_quality(), true));
+    return ScopedResult(
+        DecodedDrawImage(CreateBitmapImage(gfx::Size(10, 10)).GetSwSkImage(),
+                         SkSize::MakeEmpty(), SkSize::Make(1.0f, 1.0f),
+                         draw_image.filter_quality(), true));
   }
   int image_count_ = 0;
 };

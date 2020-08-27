@@ -169,12 +169,10 @@ TEST_F(Canvas2DLayerBridgeTest, DisableAcceleration) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(IntSize(300, 150), RasterMode::kCPU, CanvasColorParams());
 
-  GrBackendTexture backend_texture = bridge->NewImageSnapshot()
-                                         ->PaintImageForCurrentFrame()
-                                         .GetSkImage()
-                                         ->getBackendTexture(true);
+  bool has_backend_texture =
+      bridge->NewImageSnapshot()->PaintImageForCurrentFrame().IsTextureBacked();
 
-  EXPECT_FALSE(backend_texture.isValid());
+  EXPECT_FALSE(has_backend_texture);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, NoDrawOnContextLost) {

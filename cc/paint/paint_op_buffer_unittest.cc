@@ -2637,9 +2637,8 @@ TEST(PaintOpBufferTest, BoundingRect_DrawImageOp) {
   for (auto* base_op : PaintOpBuffer::Iterator(&buffer)) {
     auto* op = static_cast<DrawImageOp*>(base_op);
 
-    SkRect image_rect =
-        SkRect::MakeXYWH(op->left, op->top, op->image.GetSkImage()->width(),
-                         op->image.GetSkImage()->height());
+    SkRect image_rect = SkRect::MakeXYWH(op->left, op->top, op->image.width(),
+                                         op->image.height());
     ASSERT_TRUE(PaintOp::GetBounds(op, &rect));
     EXPECT_EQ(rect, image_rect.makeSorted());
   }

@@ -81,10 +81,9 @@ class AcceleratedStaticBitmapImageTest : public Test {
 TEST_F(AcceleratedStaticBitmapImageTest, SkImageCached) {
   auto bitmap = CreateBitmap();
 
-  sk_sp<SkImage> stored_image =
-      bitmap->PaintImageForCurrentFrame().GetSkImage();
-  auto stored_image2 = bitmap->PaintImageForCurrentFrame().GetSkImage();
-  EXPECT_EQ(stored_image.get(), stored_image2.get());
+  cc::PaintImage stored_image = bitmap->PaintImageForCurrentFrame();
+  auto stored_image2 = bitmap->PaintImageForCurrentFrame();
+  EXPECT_EQ(stored_image, stored_image2);
 }
 
 TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {

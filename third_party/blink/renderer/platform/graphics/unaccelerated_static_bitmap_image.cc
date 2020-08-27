@@ -47,7 +47,7 @@ UnacceleratedStaticBitmapImage::UnacceleratedStaticBitmapImage(
     PaintImage image,
     ImageOrientation orientation)
     : StaticBitmapImage(orientation), paint_image_(std::move(image)) {
-  CHECK(paint_image_.GetSkImage());
+  DCHECK(paint_image_);
 }
 
 UnacceleratedStaticBitmapImage::~UnacceleratedStaticBitmapImage() {
@@ -98,7 +98,7 @@ PaintImage UnacceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
 void UnacceleratedStaticBitmapImage::Transfer() {
   DETACH_FROM_THREAD(thread_checker_);
 
-  original_skia_image_ = paint_image_.GetSkImage();
+  original_skia_image_ = paint_image_.GetSwSkImage();
   original_skia_image_task_runner_ = Thread::Current()->GetTaskRunner();
 }
 
@@ -108,7 +108,7 @@ UnacceleratedStaticBitmapImage::ConvertToColorSpace(
     SkColorType color_type) {
   DCHECK(color_space);
 
-  sk_sp<SkImage> skia_image = PaintImageForCurrentFrame().GetSkImage();
+  sk_sp<SkImage> skia_image = PaintImageForCurrentFrame().GetSwSkImage();
   // If we don't need to change the color type, use SkImage::makeColorSpace()
   if (skia_image->colorType() == color_type) {
     skia_image = skia_image->makeColorSpace(color_space);

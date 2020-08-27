@@ -1030,12 +1030,10 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmap) {
 
   // Check that the pixel at (3, 3) is red.
   uint8_t pixel[4] = {};
-  ASSERT_TRUE(new_image_bitmap->BitmapImage()
-                  ->PaintImageForCurrentFrame()
-                  .GetSkImage()
-                  ->readPixels(SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType,
-                                                 kPremul_SkAlphaType),
-                               &pixel, 4, 3, 3));
+  ASSERT_TRUE(
+      new_image_bitmap->BitmapImage()->PaintImageForCurrentFrame().readPixels(
+          SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType, kPremul_SkAlphaType),
+          &pixel, 4, 3, 3));
   ASSERT_THAT(pixel, testing::ElementsAre(255, 0, 0, 255));
 }
 
@@ -1072,10 +1070,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
   // GPU hardware may result in small differences in lower significant byte in
   // Skia color conversion pipeline. Hence, we use a tolerance of 2 here.
   uint8_t pixel[8] = {};
-  ASSERT_TRUE(new_image_bitmap->BitmapImage()
-                  ->PaintImageForCurrentFrame()
-                  .GetSkImage()
-                  ->readPixels(info.makeWH(1, 1), &pixel, 8, 3, 3));
+  ASSERT_TRUE(
+      new_image_bitmap->BitmapImage()->PaintImageForCurrentFrame().readPixels(
+          info.makeWH(1, 1), &pixel, 8, 3, 3));
   uint8_t p3_red[8] = {0x57, 0x3B, 0x68, 0x32, 0x6E, 0x30, 0x00, 0x3C};
   bool approximate_match = true;
   uint8_t tolerance = 2;
@@ -1118,12 +1115,10 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmap) {
 
   // Check that the pixels are opaque red and green, respectively.
   uint8_t pixels[8] = {};
-  ASSERT_TRUE(new_image_bitmap->BitmapImage()
-                  ->PaintImageForCurrentFrame()
-                  .GetSkImage()
-                  ->readPixels(SkImageInfo::Make(2, 1, kRGBA_8888_SkColorType,
-                                                 kPremul_SkAlphaType),
-                               &pixels, 8, 0, 0));
+  ASSERT_TRUE(
+      new_image_bitmap->BitmapImage()->PaintImageForCurrentFrame().readPixels(
+          SkImageInfo::Make(2, 1, kRGBA_8888_SkColorType, kPremul_SkAlphaType),
+          &pixels, 8, 0, 0));
   ASSERT_THAT(pixels, testing::ElementsAre(255, 0, 0, 255, 0, 255, 0, 255));
 }
 
@@ -1153,10 +1148,9 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV18) {
       SkImageInfo::Make(1, 1, kRGBA_F16_SkColorType, kPremul_SkAlphaType,
                         SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB,
                                               SkNamedGamut::kDisplayP3));
-  ASSERT_TRUE(new_image_bitmap->BitmapImage()
-                  ->PaintImageForCurrentFrame()
-                  .GetSkImage()
-                  ->readPixels(info, &pixel, 8, 1, 0));
+  ASSERT_TRUE(
+      new_image_bitmap->BitmapImage()->PaintImageForCurrentFrame().readPixels(
+          info, &pixel, 8, 1, 0));
   // The reference values are the hex representation of red in P3 (as stored
   // in half floats by Skia).
   ASSERT_THAT(pixel, testing::ElementsAre(0x94, 0x3A, 0x3F, 0x28, 0x5F, 0x24,

@@ -23,7 +23,7 @@ namespace blink {
 scoped_refptr<StaticBitmapImage> StaticBitmapImage::Create(
     PaintImage image,
     ImageOrientation orientation) {
-  DCHECK(!image.GetSkImage()->isTextureBacked());
+  DCHECK(!image.IsTextureBacked());
   return UnacceleratedStaticBitmapImage::Create(std::move(image), orientation);
 }
 

@@ -403,15 +403,13 @@ AcceleratedStaticBitmapImage::ConvertToColorSpace(
   if (!ContextProviderWrapper())
     return nullptr;
 
-  sk_sp<SkImage> skia_image = PaintImageForCurrentFrame().GetSkImage();
-  if (SkColorSpace::Equals(color_space.get(), skia_image->colorSpace()) &&
-      color_type == skia_image->colorType()) {
+  SkImageInfo image_info = PaintImageForCurrentFrame().GetSkImageInfo();
+  if (SkColorSpace::Equals(color_space.get(), image_info.colorSpace()) &&
+      color_type == image_info.colorType()) {
     return this;
   }
 
-  auto image_info = skia_image->imageInfo()
-                        .makeColorSpace(color_space)
-                        .makeColorType(color_type);
+  image_info = image_info.makeColorSpace(color_space).makeColorType(color_type);
 
   auto usage_flags = ContextProviderWrapper()
                          ->ContextProvider()

@@ -46,7 +46,7 @@ ImageProvider::ScopedResult PlaybackImageProvider::GetRasterContent(
 
   const PaintImage& paint_image = draw_image.paint_image();
   if (settings_->images_to_skip.count(paint_image.stable_id()) != 0) {
-    DCHECK(paint_image.GetSkImage()->isLazyGenerated());
+    DCHECK(paint_image.IsLazyGenerated());
     return ScopedResult();
   }
 

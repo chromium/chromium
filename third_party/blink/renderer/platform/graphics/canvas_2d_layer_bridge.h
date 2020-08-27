@@ -133,7 +133,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
     kHibernationAbortedDueToVisibilityChange = 3,
     kHibernationAbortedDueGpuContextLoss = 4,
     kHibernationAbortedDueToSwitchToUnacceleratedRendering = 5,
-    kHibernationAbortedDueToAllocationFailure = 6,
+    // kHibernationAbortedDueToAllocationFailure = 6, (obsolete)
     kHibernationAbortedDueSnapshotFailure = 7,
     kHibernationEndedNormally = 8,
     kHibernationEndedWithSwitchToBackgroundRendering = 9,

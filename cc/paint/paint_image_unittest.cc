@@ -67,7 +67,7 @@ TEST(PaintImageTest, SupportedDecodeSize) {
 
 TEST(PaintImageTest, GetSkImageForFrameNotGeneratorBacked) {
   PaintImage image = CreateBitmapImage(gfx::Size(10, 10));
-  EXPECT_EQ(image.GetSkImage(),
+  EXPECT_EQ(image.GetSwSkImage(),
             image.GetSkImageForFrame(PaintImage::kDefaultFrameIndex,
                                      PaintImage::GetNextGeneratorClientId()));
 }

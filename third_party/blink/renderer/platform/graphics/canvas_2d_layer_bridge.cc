@@ -179,12 +179,6 @@ void Canvas2DLayerBridge::Hibernate() {
   }
 
   TRACE_EVENT0("blink", "Canvas2DLayerBridge::hibernate");
-  sk_sp<SkSurface> temp_hibernation_surface =
-      SkSurface::MakeRasterN32Premul(size_.Width(), size_.Height());
-  if (!temp_hibernation_surface) {
-    logger_->ReportHibernationEvent(kHibernationAbortedDueToAllocationFailure);
-    return;
-  }
   // No HibernationEvent reported on success. This is on purppose to avoid
   // non-complementary stats. Each HibernationScheduled event is paired with
   // exactly one failure or exit event.
@@ -202,9 +196,7 @@ void Canvas2DLayerBridge::Hibernate() {
     logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
   }
-  temp_hibernation_surface->getCanvas()->drawImage(
-      snapshot->PaintImageForCurrentFrame().GetSkImage(), 0, 0, &copy_paint);
-  hibernation_image_ = temp_hibernation_surface->makeImageSnapshot();
+  hibernation_image_ = snapshot->PaintImageForCurrentFrame().GetSwSkImage();
   ResetResourceProvider();
   if (layer_)
     layer_->ClearTexture();

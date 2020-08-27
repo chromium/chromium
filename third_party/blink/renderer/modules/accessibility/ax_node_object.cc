@@ -1929,7 +1929,8 @@ String AXNodeObject::ImageDataUrl(const IntSize& max_size) const {
   if (!bitmap_image)
     return String();
 
-  sk_sp<SkImage> image = bitmap_image->PaintImageForCurrentFrame().GetSkImage();
+  sk_sp<SkImage> image =
+      bitmap_image->PaintImageForCurrentFrame().GetSwSkImage();
   if (!image || image->width() <= 0 || image->height() <= 0)
     return String();
 
@@ -1947,12 +1948,18 @@ String AXNodeObject::ImageDataUrl(const IntSize& max_size) const {
   int width = std::round(image->width() * scale);
   int height = std::round(image->height() * scale);
 
-  // Draw the scaled image into a bitmap in native format.
+  // Draw the image into a bitmap in native format.
   SkBitmap bitmap;
-  bitmap.allocPixels(SkImageInfo::MakeN32(width, height, kPremul_SkAlphaType));
-  SkCanvas canvas(bitmap);
-  canvas.clear(SK_ColorTRANSPARENT);
-  canvas.drawImageRect(image, SkRect::MakeIWH(width, height), nullptr);
+  SkPixmap unscaled_pixmap;
+  if (scale == 1.0 && image->peekPixels(&unscaled_pixmap)) {
+    bitmap.installPixels(unscaled_pixmap);
+  } else {
+    bitmap.allocPixels(
+        SkImageInfo::MakeN32(width, height, kPremul_SkAlphaType));
+    SkCanvas canvas(bitmap);
+    canvas.clear(SK_ColorTRANSPARENT);
+    canvas.drawImageRect(image, SkRect::MakeIWH(width, height), nullptr);
+  }
 
   // Copy the bits into a buffer in RGBA_8888 unpremultiplied format
   // for encoding.

@@ -155,7 +155,7 @@ PaintImage Image::ResizeAndOrientImage(
 
   SkCanvas* canvas = surface->getCanvas();
   canvas->concat(AffineTransformToSkMatrix(transform));
-  canvas->drawImage(image.GetSkImage(), 0, 0, &paint);
+  canvas->drawImage(image.GetSwSkImage(), 0, 0, &paint);
 
   return PaintImageBuilder::WithProperties(std::move(image))
       .set_image(surface->makeImageSnapshot(), PaintImage::GetNextContentId())
@@ -356,7 +356,7 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
       return {};
   }
 
-  sk_sp<SkImage> sk_image = paint_image.GetSkImage();
+  sk_sp<SkImage> sk_image = paint_image.GetSwSkImage();
   if (!sk_image)
     return {};
 
