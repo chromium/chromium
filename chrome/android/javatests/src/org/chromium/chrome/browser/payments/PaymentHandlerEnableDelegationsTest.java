@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -20,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -88,11 +86,7 @@ public class PaymentHandlerEnableDelegationsTest {
     @Test
     @Feature({"Payments"})
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testShippingDelegation() throws Throwable {
+    public void testShippingDelegation() throws Throwable {
         installPaymentHandlerWithDelegations("['shippingAddress']");
         // The pay button should be enabled when shipping address is requested and the selected
         // payment instrument can provide it.
@@ -120,11 +114,7 @@ public class PaymentHandlerEnableDelegationsTest {
     @Test
     @Feature({"Payments"})
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testShippingAndContactInfoDelegation() throws Throwable {
+    public void testShippingAndContactInfoDelegation() throws Throwable {
         installPaymentHandlerWithDelegations(
                 "['shippingAddress', 'payerName', 'payerEmail', 'payerPhone']");
         // The pay button should be enabled when shipping address and payer's contact information
@@ -155,11 +145,7 @@ public class PaymentHandlerEnableDelegationsTest {
     @Test
     @Feature({"Payments"})
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testPartialDelegationContactInfoNotSupported() throws Throwable {
+    public void testPartialDelegationContactInfoNotSupported() throws Throwable {
         installPaymentHandlerWithDelegations("['shippingAddress']");
         createPaymentRequestAndWaitFor(
                 "{requestShipping: true, requestPayerName: true, requestPayerEmail: true}",

@@ -8,8 +8,6 @@ import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.DECEMB
 import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.FIRST_BILLING_ADDRESS;
 import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.NEXT_YEAR;
 
-import android.os.Build.VERSION_CODES;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.ClassRule;
@@ -18,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -68,11 +65,7 @@ public class PaymentRequestRemoveBillingAddressTest implements MainActivityStart
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testPayWithCard() throws TimeoutException {
+    public void testPayWithCard() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
 
         // Expand the payment section.

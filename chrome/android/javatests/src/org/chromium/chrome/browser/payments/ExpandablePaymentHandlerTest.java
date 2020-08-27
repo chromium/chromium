@@ -15,7 +15,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 
@@ -370,9 +369,6 @@ public class ExpandablePaymentHandlerTest {
             sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
             sdk_is_less_than = Build.VERSION_CODES.N)
     @Feature({"Payments"})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
     public void
     testNavigateBackWithSystemBackButton() throws Throwable {
         startDefaultServer();
@@ -423,11 +419,7 @@ public class ExpandablePaymentHandlerTest {
     @SmallTest
     @Feature({"Payments"})
     @ParameterAnnotations.UseMethodParameter(GoodCertParams.class)
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testSecureConnectionShowUi(int goodCertificate) throws Throwable {
+    public void testSecureConnectionShowUi(int goodCertificate) throws Throwable {
         startServer(goodCertificate);
         PaymentHandlerCoordinator paymentHandler = createPaymentHandlerAndShow(mDefaultIsIncognito);
         waitForTitleShown(paymentHandler.getWebContentsForTest());

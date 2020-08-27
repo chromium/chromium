@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -17,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -102,11 +100,7 @@ public class ExpandablePaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testReject() throws Throwable {
+    public void testReject() throws Throwable {
         installPaymentHandler();
         mRule.clickNodeAndWait("testReject", mRule.getDismissed());
         mRule.expectResultContains(
@@ -134,11 +128,7 @@ public class ExpandablePaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testThrow() throws Throwable {
+    public void testThrow() throws Throwable {
         installPaymentHandler();
         mRule.clickNodeAndWait("testThrow", mRule.getDismissed());
         mRule.expectResultContains(
@@ -151,11 +141,7 @@ public class ExpandablePaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testThrowBasicCard() throws Throwable {
+    public void testThrowBasicCard() throws Throwable {
         mRule.clickNode("basicCardMethodName");
         installPaymentHandler();
         mRule.triggerUIAndWait("testThrow", mRule.getReadyToPay());
@@ -170,11 +156,7 @@ public class ExpandablePaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testDetails() throws Throwable {
+    public void testDetails() throws Throwable {
         installPaymentHandler();
         mRule.clickNodeAndWait("testDetails", mRule.getDismissed());
         // Look for the this exact return value to ensure that the browser redacts some details
@@ -197,11 +179,7 @@ public class ExpandablePaymentHandlerChangePaymentMethodTest {
      */
     @Test
     @Feature({"Payments"})
-    @DisableIf.
-    Build(sdk_is_greater_than = VERSION_CODES.LOLLIPOP_MR1, sdk_is_less_than = VERSION_CODES.N,
-            message = "Flaky on Marshmallow https://crbug.com/1102320")
-    public void
-    testDetailsBasicCard() throws Throwable {
+    public void testDetailsBasicCard() throws Throwable {
         mRule.clickNode("basicCardMethodName");
         installPaymentHandler();
         mRule.triggerUIAndWait("testDetails", mRule.getReadyToPay());
