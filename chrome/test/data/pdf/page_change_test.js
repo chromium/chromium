@@ -21,7 +21,6 @@ function simulateFormFocusChange(focused) {
 function resetDocument() {
   const viewer = getViewer();
   viewer.viewport.goToPage(0);
-  viewer.viewport.setZoom(1);
   simulateFormFocusChange(false);
 }
 

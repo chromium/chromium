@@ -14,12 +14,11 @@ const tests = [
   function testHasElements() {
     const viewer = /** @type {!PDFViewerElement} */ (
         document.body.querySelector('pdf-viewer'));
-    const elementNames = [
-      'viewer-pdf-toolbar',
-      'viewer-zoom-toolbar',
-      'viewer-password-screen',
-      'viewer-error-screen',
-    ];
+    const commonElements = ['viewer-password-screen', 'viewer-error-screen'];
+    const elementNames =
+        document.documentElement.hasAttribute('pdf-viewer-update-enabled') ?
+        ['viewer-pdf-toolbar-new', 'viewer-pdf-sidenav', ...commonElements] :
+        ['viewer-pdf-toolbar', 'viewer-zoom-toolbar', ...commonElements];
     for (let i = 0; i < elementNames.length; i++) {
       const elements = viewer.shadowRoot.querySelectorAll(elementNames[i]);
       chrome.test.assertEq(1, elements.length);
@@ -52,11 +51,17 @@ const tests = [
         document.body.querySelector('pdf-viewer'));
     const toolbar = /** @type {!ViewerPdfToolbarElement} */ (
         viewer.shadowRoot.querySelector('#toolbar'));
-    toolbar.$$('#pageselector').pageSelector.focus();
+    toolbar.shadowRoot.querySelector('viewer-page-selector')
+        .pageSelector.focus();
     chrome.test.assertTrue(shouldIgnoreKeyEvents(toolbar));
 
     // Test case where the active element has a shadow root of its own.
-    toolbar.$['rotate-right'].focus();
+    const rotateButton =
+        document.documentElement.hasAttribute('pdf-viewer-update-enabled') ?
+        toolbar.shadowRoot.querySelector(
+            'cr-icon-button[iron-icon=\'pdf:rotate-left\']') :
+        toolbar.$['rotate-right'];
+    rotateButton.focus();
     chrome.test.assertFalse(shouldIgnoreKeyEvents(toolbar));
 
     chrome.test.assertFalse(
@@ -70,6 +75,13 @@ const tests = [
    * pressing escape.
    */
   function testOpenCloseBookmarks() {
+    // Test is not relevant for the new viewer, as bookmarks are no longer in a
+    // dropdown.
+    if (document.documentElement.hasAttribute('pdf-viewer-update-enabled')) {
+      chrome.test.succeed();
+      return;
+    }
+
     const viewer = /** @type {!PDFViewerElement} */ (
         document.body.querySelector('pdf-viewer'));
     const toolbar = /** @type {!ViewerPdfToolbarElement} */ (

@@ -759,9 +759,9 @@ INSTANTIATE_TEST_SUITE_P(PDFTestFiles,
                          PDFExtensionLoadTest,
                          testing::Range(0, kNumberLoadTestParts));
 
-class PDFExtensionJSTest : public PDFExtensionTest {
+class PDFExtensionJSTestBase : public PDFExtensionTest {
  public:
-  ~PDFExtensionJSTest() override = default;
+  ~PDFExtensionJSTestBase() override = default;
 
  protected:
   void RunTestsInJsModule(const std::string& filename,
@@ -809,104 +809,137 @@ class PDFExtensionJSTest : public PDFExtensionTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Basic) {
+class PDFExtensionJSUpdatesDisabledTest : public PDFExtensionJSTestBase {
+ public:
+  ~PDFExtensionJSUpdatesDisabledTest() override = default;
+
+ protected:
+  const std::vector<base::Feature> GetDisabledFeatures() const override {
+    return {chrome_pdf::features::kPDFViewerUpdate};
+  }
+};
+
+// Zoom toolbar doesn't exist and the top toolbar is sticky with the new PDF
+// viewer updates, so run this test only with the updates disabled.
+IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesDisabledTest, ToolbarManager) {
+  RunTestsInJsModule("toolbar_manager_test.js", "test.pdf");
+}
+
+class PDFExtensionJSTest : public PDFExtensionJSTestBase,
+                           public testing::WithParamInterface<bool> {
+ public:
+  ~PDFExtensionJSTest() override = default;
+
+ protected:
+  const std::vector<base::Feature> GetEnabledFeatures() const override {
+    if (GetParam()) {
+      return {chrome_pdf::features::kPDFViewerUpdate};
+    }
+    return {};
+  }
+
+  const std::vector<base::Feature> GetDisabledFeatures() const override {
+    if (GetParam()) {
+      return {};
+    }
+    return {chrome_pdf::features::kPDFViewerUpdate};
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Basic) {
   RunTestsInJsModule("basic_test.js", "test.pdf");
 
   // Ensure it loaded in a PPAPI process.
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, BasicPlugin) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, BasicPlugin) {
   RunTestsInJsModule("basic_plugin_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Viewport) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Viewport) {
   RunTestsInJsModule("viewport_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Layout3) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Layout3) {
   RunTestsInJsModule("layout_test.js", "test-layout3.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Layout4) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Layout4) {
   RunTestsInJsModule("layout_test.js", "test-layout4.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Bookmark) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Bookmark) {
   RunTestsInJsModule("bookmarks_test.js", "test-bookmarks-with-zoom.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Navigator) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Navigator) {
   RunTestsInJsModule("navigator_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ParamsParser) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ParamsParser) {
   RunTestsInJsModule("params_parser_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ZoomManager) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ZoomManager) {
   RunTestsInJsModule("zoom_manager_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, GestureDetector) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, GestureDetector) {
   RunTestsInJsModule("gesture_detector_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, TouchHandling) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, TouchHandling) {
   RunTestsInJsModule("touch_handling_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Elements) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Elements) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("material_elements_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, DownloadControls) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("download_controls_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerPdfToolbarNew) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPdfToolbarNew) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_pdf_toolbar_new_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerPdfSidenav) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerPdfSidenav) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_pdf_sidenav_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ViewerThumbnailBar) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerThumbnailBar) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("viewer_thumbnail_bar_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ToolbarManager) {
-  RunTestsInJsModule("toolbar_manager_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Title) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Title) {
   RunTestsInJsModule("title_test.js", "test-title.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, WhitespaceTitle) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, WhitespaceTitle) {
   RunTestsInJsModule("whitespace_title_test.js", "test-whitespace-title.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, PageChange) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, PageChange) {
   RunTestsInJsModule("page_change_test.js", "test-bookmarks.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Metrics) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Metrics) {
   RunTestsInJsModule("metrics_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ArrayBufferAllocator) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ArrayBufferAllocator) {
   // Run several times to see if there are issues with unloading.
   RunTestsInJsModule("beep_test.js", "array_buffer.pdf");
   RunTestsInJsModule("beep_test.js", "array_buffer.pdf");
@@ -916,12 +949,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, ArrayBufferAllocator) {
 // Test that if the plugin tries to load a URL that redirects then it will fail
 // to load. This is to avoid the source origin of the document changing during
 // the redirect, which can have security implications. https://crbug.com/653749.
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, RedirectsFailInPlugin) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, RedirectsFailInPlugin) {
   RunTestsInJsModule("redirects_fail_test.js", "test.pdf");
 }
 
 #if defined(OS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Printing) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
   RunTestsInJsModule("printing_icon_test.js", "test.pdf");
 }
 
@@ -932,13 +965,15 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Printing) {
 #else
 #define MAYBE_AnnotationsFeatureEnabled AnnotationsFeatureEnabled
 #endif
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, MAYBE_AnnotationsFeatureEnabled) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, MAYBE_AnnotationsFeatureEnabled) {
   RunTestsInJsModule("annotations_feature_enabled_test.js", "test.pdf");
 }
 #endif  // defined(OS_CHROMEOS)
 
+INSTANTIATE_TEST_SUITE_P(/* no prefix */, PDFExtensionJSTest, testing::Bool());
+
 class PDFExtensionContentSettingJSTest
-    : public PDFExtensionJSTest,
+    : public PDFExtensionJSTestBase,
       public testing::WithParamInterface<bool> {
  public:
   ~PDFExtensionContentSettingJSTest() override = default;
@@ -1017,7 +1052,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 // Service worker tests are regression tests for
 // https://crbug.com/916514.
-class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
+class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTestBase {
  public:
   ~PDFExtensionServiceWorkerJSTest() override = default;
 

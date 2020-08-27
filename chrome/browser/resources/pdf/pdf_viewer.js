@@ -540,7 +540,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   onScroll_(e) {
-    this.pluginController.updateScroll(e.target.scrollLeft, e.target.scrollTop);
+    if (this.currentController === this.pluginController) {
+      this.pluginController.updateScroll(
+          e.target.scrollLeft, e.target.scrollTop);
+    }
   }
 
   /** @override */

@@ -40,10 +40,16 @@ export class ViewerAnnotationsBarElement extends PolymerElement {
       annotationTool_: Object,
 
       /** @private */
-      canUndoAnnotation_: Boolean,
+      canUndoAnnotation_: {
+        type: Boolean,
+        value: false,
+      },
 
       /** @private */
-      canRedoAnnotation_: Boolean,
+      canRedoAnnotation_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
