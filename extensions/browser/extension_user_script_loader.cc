@@ -162,15 +162,18 @@ SubstitutionMap* GetLocalizationMessages(
 
 void FillScriptFileResourceIds(const UserScript::FileList& script_files,
                                ScriptResourceIds& script_resource_ids) {
+  const ComponentExtensionResourceManager* extension_resource_manager =
+      ExtensionsBrowserClient::Get()->GetComponentExtensionResourceManager();
+  if (!extension_resource_manager)
+    return;
+
   for (const std::unique_ptr<UserScript::File>& script_file : script_files) {
     if (!script_file->GetContent().empty())
       continue;
     int resource_id = 0;
-    if (ExtensionsBrowserClient::Get()
-            ->GetComponentExtensionResourceManager()
-            ->IsComponentExtensionResource(script_file->extension_root(),
-                                           script_file->relative_path(),
-                                           &resource_id)) {
+    if (extension_resource_manager->IsComponentExtensionResource(
+            script_file->extension_root(), script_file->relative_path(),
+            &resource_id)) {
       script_resource_ids[script_file.get()] = resource_id;
     }
   }
