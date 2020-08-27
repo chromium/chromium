@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,7 +38,8 @@ const base::string16 NearbyShareAction::GetActionName() {
 }
 
 const gfx::ImageSkia NearbyShareAction::GetActionIcon() {
-  return gfx::CreateVectorIcon(kNearbyShareIcon);
+  return gfx::CreateVectorIcon(kNearbyShareIcon, sharesheet::kIconSize,
+                               gfx::kPlaceholderColor);
 }
 
 void NearbyShareAction::LaunchAction(
