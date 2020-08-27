@@ -17,6 +17,8 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_implementation.h"
+#include "ui/gl/scoped_binders.h"
 #include "ui/gl/trace_util.h"
 
 #if defined(OS_MAC)
@@ -568,6 +570,22 @@ void SharedImageBackingGLImage::SharedImageRepresentationGLTextureEndAccess() {
   if (usage() & SHARED_IMAGE_USAGE_WEBGPU) {
     gl::GLApi* api = gl::g_current_gl_context;
     api->glFlushFn();
+  }
+
+  // When SwANGLE is used as the GL implementation, we have to call
+  // ReleaseTexImage to signal an UnlockIOSurface call to sync the surface
+  // between the CPU and GPU. The next time this texture is accessed we will
+  // call BindTexImage to signal a LockIOSurface call before rendering to it via
+  // the CPU.
+  if (IsPassthrough() &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader &&
+      image_->ShouldBindOrCopy() == gl::GLImage::BIND) {
+    const GLenum target = GetGLTarget();
+    gl::ScopedTextureBinder binder(target, passthrough_texture_->service_id());
+    if (!passthrough_texture_->is_bind_pending()) {
+      image_->ReleaseTexImage(target);
+      image_bind_or_copy_needed_ = true;
+    }
   }
 #endif
 }
