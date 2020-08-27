@@ -226,6 +226,24 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
                     : LayoutUnit());
 }
 
+#if DCHECK_IS_ON()
+void CheckDidAddFragment(const LayoutBox& box,
+                         const NGPhysicalBoxFragment& fragment) {
+  // If |HasFragmentItems|, |ChildrenInline()| should be true.
+  // |HasFragmentItems| uses this condition to optimize .
+  if (fragment.HasItems())
+    DCHECK(box.ChildrenInline());
+
+  for (const NGPhysicalBoxFragment& fragment : box.PhysicalFragments()) {
+    if (const NGFragmentItems* fragment_items = fragment.Items())
+      fragment_items->CheckAllItemsAreValid();
+  }
+}
+#else
+inline void CheckDidAddFragment(const LayoutBox& box,
+                                const NGPhysicalBoxFragment& fragment) {}
+#endif
+
 }  // anonymous namespace
 
 BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& box) : box(box) {
@@ -2612,6 +2630,14 @@ void LayoutBox::InLayoutNGInlineFormattingContextWillChange(bool new_value) {
                    : !inline_box_wrapper_);
 }
 
+bool LayoutBox::NGPhysicalFragmentList::HasFragmentItems() const {
+  for (const NGPhysicalBoxFragment& fragment : *this) {
+    if (fragment.HasItems())
+      return true;
+  }
+  return false;
+}
+
 void LayoutBox::SetCachedLayoutResult(
     scoped_refptr<const NGLayoutResult> result) {
   DCHECK(!result->PhysicalFragment().BreakToken());
@@ -2645,18 +2671,15 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
     ReplaceLayoutResult(std::move(result), index);
     return;
   }
+
   DCHECK_EQ(index, layout_results_.size());
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   layout_results_.push_back(std::move(result));
-#if DCHECK_IS_ON()
-  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
-    if (const NGFragmentItems* fragment_items = fragment.Items())
-      fragment_items->CheckAllItemsAreValid();
-  }
-#endif
+  CheckDidAddFragment(*this, fragment);
+
   // If this is the last fragment for the node, and its node establishes an
   // inline formatting context, we have some finalization to do.
-  if (!fragment.BreakToken() && fragment.Items())
+  if (!fragment.BreakToken() && HasFragmentItems())
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 
@@ -2686,15 +2709,11 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
     }
   }
   layout_results_[index] = std::move(result);
-#if DCHECK_IS_ON()
-  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
-    if (const NGFragmentItems* fragment_items = fragment.Items())
-      fragment_items->CheckAllItemsAreValid();
-  }
-#endif
+  CheckDidAddFragment(*this, fragment);
+
   // If this is the last fragment for the node, and its node establishes an
   // inline formatting context, we have some finalization to do.
-  if (!fragment.BreakToken() && fragment.Items() && (index || got_new_fragment))
+  if (got_new_fragment && !fragment.BreakToken() && HasFragmentItems())
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 }
 

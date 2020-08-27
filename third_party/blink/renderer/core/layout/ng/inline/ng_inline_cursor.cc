@@ -1405,12 +1405,6 @@ void NGInlineCursor::MoveToNextIncludingFragmentainer() {
     MoveToNextFragmentainer();
 }
 
-inline bool NGInlineCursor::CanUseLayoutObjectIndex() const {
-  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
-    return true;
-  return CanMoveAcrossFragmentainer() && max_fragment_index_ == 0;
-}
-
 void NGInlineCursor::SlowMoveToForIfNeeded(const LayoutObject& layout_object) {
   while (Current() && Current().GetLayoutObject() != &layout_object)
     MoveToNextIncludingFragmentainer();
@@ -1490,14 +1484,6 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
     is_descendants_cursor = IsDescendantsCursor();
   }
 
-  // TODO(crbug.com/829028): |FirstInlineFragmentItemIndex| is not setup when
-  // block fragmented. Use the slow codepath.
-  if (UNLIKELY(!CanUseLayoutObjectIndex())) {
-    layout_object_to_slow_move_to_ = &layout_object;
-    SlowMoveToFirstFor(layout_object);
-    return;
-  }
-
   wtf_size_t item_index = layout_object.FirstInlineFragmentItemIndex();
   if (UNLIKELY(!item_index)) {
 #if DCHECK_IS_ON()
@@ -1512,9 +1498,18 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
   // |FirstInlineFragmentItemIndex| is 1-based. Convert to 0-based index.
   --item_index;
 
+  // Find |NGFragmentItems| that contains |item_index|.
   DCHECK_EQ(is_descendants_cursor, IsDescendantsCursor());
   if (root_block_flow_) {
     DCHECK(!is_descendants_cursor);
+    while (item_index >= fragment_items_->EndItemIndex()) {
+      MoveToNextFragmentainer();
+      if (!Current()) {
+        NOTREACHED();
+        return;
+      }
+    }
+    item_index -= fragment_items_->SizeOfEarlierFragments();
 #if DCHECK_IS_ON()
     NGInlineCursor check_cursor(*root_block_flow_);
     check_cursor.SlowMoveToFirstFor(layout_object);
@@ -1522,6 +1517,26 @@ void NGInlineCursor::MoveTo(const LayoutObject& layout_object) {
               &fragment_items_->Items()[item_index]);
 #endif
   } else {
+    // If |this| is not rooted at |LayoutBlockFlow|, iterate |NGFragmentItems|
+    // from |LayoutBlockFlow|.
+    if (fragment_items_->HasItemIndex(item_index)) {
+      item_index -= fragment_items_->SizeOfEarlierFragments();
+    } else {
+      NGInlineCursor cursor;
+      for (cursor.MoveTo(layout_object);;
+           cursor.MoveToNextForSameLayoutObject()) {
+        if (!cursor || cursor.fragment_items_->SizeOfEarlierFragments() >
+                           fragment_items_->SizeOfEarlierFragments()) {
+          MakeNull();
+          return;
+        }
+        if (cursor.fragment_items_ == fragment_items_) {
+          item_index =
+              cursor.Current().Item() - fragment_items_->Items().data();
+          break;
+        }
+      }
+    }
 #if DCHECK_IS_ON()
     const LayoutBlockFlow* root = layout_object.FragmentItemsContainer();
     NGInlineCursor check_cursor(*root);
@@ -1576,21 +1591,28 @@ void NGInlineCursor::MoveToNextForSameLayoutObjectExceptCulledInline() {
     return MakeNull();
   }
   if (current_.item_) {
-    if (UNLIKELY(layout_object_to_slow_move_to_)) {
-      SlowMoveToNextForSameLayoutObject(*layout_object_to_slow_move_to_);
-      return;
-    }
+    if (wtf_size_t delta = current_.item_->DeltaToNextForSameLayoutObject()) {
+      while (true) {
+        // Return if the next index is in the current range.
+        const wtf_size_t delta_to_end = items_.end() - current_.item_iter_;
+        if (delta < delta_to_end) {
+          MoveToItem(current_.item_iter_ + delta);
+          return;
+        }
 
-    const wtf_size_t delta = current_.item_->DeltaToNextForSameLayoutObject();
-    if (delta) {
-      // Check the next item is in |items_| because |delta| can be beyond
-      // |end()| if |this| is limited.
-      const wtf_size_t delta_to_end = items_.end() - current_.item_iter_;
-      if (delta < delta_to_end) {
-        MoveToItem(current_.item_iter_ + delta);
-        return;
+        // |this| is |IsDescendantsCursor| and the next item is out of the
+        // specified range, or the next item is in following fragmentainers.
+        if (!CanMoveAcrossFragmentainer())
+          break;
+
+        MoveToNextFragmentainer();
+        if (!Current()) {
+          NOTREACHED();
+          break;
+        }
+        DCHECK_GE(delta, delta_to_end);
+        delta -= delta_to_end;
       }
-      DCHECK(IsDescendantsCursor());
     }
     MakeNull();
   }

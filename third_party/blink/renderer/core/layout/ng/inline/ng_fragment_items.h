@@ -49,10 +49,20 @@ class CORE_EXPORT NGFragmentItems {
                : text_content_;
   }
 
+  // When block-fragmented, returns the number of |NGFragmentItem| in earlier
+  // fragments for this box. 0 for the first fragment.
+  wtf_size_t SizeOfEarlierFragments() const {
+    return size_of_earlier_fragments_;
+  }
+  wtf_size_t EndItemIndex() const { return size_of_earlier_fragments_ + size_; }
+  bool HasItemIndex(wtf_size_t index) const {
+    return index >= SizeOfEarlierFragments() && index < EndItemIndex();
+  }
+
   // Associate |NGFragmentItem|s with |LayoutObject|s and finalize the items
   // (set which ones are the first / last for the LayoutObject).
   static void FinalizeAfterLayout(
-      const Vector<scoped_refptr<const NGLayoutResult>, 1>&);
+      const Vector<scoped_refptr<const NGLayoutResult>, 1>& results);
 
   // Disassociate |NGFragmentItem|s with |LayoutObject|s. And more.
   static void ClearAssociatedFragments(LayoutObject* container);
@@ -92,6 +102,10 @@ class CORE_EXPORT NGFragmentItems {
   String first_line_text_content_;
 
   wtf_size_t size_;
+
+  // Total size of |NGFragmentItem| in earlier fragments when block fragmented.
+  // 0 for the first |NGFragmentItems|.
+  mutable wtf_size_t size_of_earlier_fragments_;
 
   // Semantically, |items_| is a flexible array of |scoped_refptr<const
   // NGFragmentItem>|, but |scoped_refptr| has non-trivial destruction which

@@ -12,10 +12,37 @@
 
 namespace blink {
 
+namespace {
+
+#if DCHECK_IS_ON()
+void CheckNoItemsAreAssociated(const NGPhysicalBoxFragment& fragment) {
+  if (const NGFragmentItems* fragment_items = fragment.Items()) {
+    for (const NGFragmentItem& item : fragment_items->Items()) {
+      if (item.Type() == NGFragmentItem::kLine)
+        continue;
+      if (const LayoutObject* layout_object = item.GetLayoutObject())
+        DCHECK(!layout_object->FirstInlineFragmentItemIndex());
+    }
+  }
+}
+
+void CheckIsLast(const NGFragmentItem& item) {
+  if (const NGPhysicalBoxFragment* fragment = item.BoxFragment()) {
+    if (!fragment->IsInline()) {
+      DCHECK(fragment->IsFloating());
+      DCHECK_EQ(item.IsLastForNode(), !fragment->BreakToken());
+    }
+  }
+}
+#endif
+
+}  // namespace
+
 NGFragmentItems::NGFragmentItems(NGFragmentItemsBuilder* builder)
     : text_content_(std::move(builder->text_content_)),
       first_line_text_content_(std::move(builder->first_line_text_content_)),
-      size_(builder->items_.size()) {
+      size_(builder->items_.size()),
+      size_of_earlier_fragments_(0) {
   NGFragmentItemsBuilder::ItemWithOffsetList& source_items = builder->items_;
   for (unsigned i = 0; i < size_; ++i) {
     // Call the move constructor to move without |AddRef|. Items in
@@ -36,27 +63,32 @@ bool NGFragmentItems::IsSubSpan(const Span& span) const {
 
 void NGFragmentItems::FinalizeAfterLayout(
     const Vector<scoped_refptr<const NGLayoutResult>, 1>& results) {
+#if DCHECK_IS_ON()
+  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    for (const auto& result : results) {
+      CheckNoItemsAreAssociated(
+          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+    }
+  }
+#endif
   struct LastItem {
     const NGFragmentItem* item;
     wtf_size_t fragment_id;
     wtf_size_t item_index;
   };
   HashMap<const LayoutObject*, LastItem> last_items;
+  wtf_size_t item_index = 0;
   for (const auto& result : results) {
     const auto& fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-    const NGFragmentItems* current = fragment.Items();
-    if (UNLIKELY(!current))
+    const NGFragmentItems* fragment_items = fragment.Items();
+    if (UNLIKELY(!fragment_items))
       continue;
 
-    // TODO(layout-dev): Make this work for multiple box fragments (block
-    // fragmentation).
-    const bool create_index_cache = fragment.IsFirstForNode();
-
-    const Span items = current->Items();
-    wtf_size_t index = 0;
+    fragment_items->size_of_earlier_fragments_ = item_index;
+    const Span items = fragment_items->Items();
     for (const NGFragmentItem& item : items) {
-      ++index;
+      ++item_index;
       if (item.Type() == NGFragmentItem::kLine) {
         DCHECK_EQ(item.DeltaToNextForSameLayoutObject(), 0u);
         continue;
@@ -66,56 +98,60 @@ void NGFragmentItems::FinalizeAfterLayout(
       DCHECK(layout_object->IsInLayoutNGInlineFormattingContext());
 
       item.SetDeltaToNextForSameLayoutObject(0);
-      item.SetIsLastForNode(false);
-
-      // Fragments that aren't really on a line, such as floats, will have block
-      // break tokens if they continue in a subsequent fragmentainer, so just
-      // check that. Floats in particular will continue as regular box fragment
-      // children in subsequent fragmentainers, i.e. they will not be fragment
-      // items (even if we're in an inline formatting context). So we're not
-      // going to find the last fragment by just looking for items.
-      bool skip_last_items_map = false;
-      if (const NGPhysicalBoxFragment* child_fragment = item.BoxFragment()) {
-        if (!child_fragment->IsInline()) {
-          item.SetIsLastForNode(!child_fragment->BreakToken());
-          skip_last_items_map = true;
-        }
+      if (UNLIKELY(layout_object->IsFloating())) {
+        // Fragments that aren't really on a line, such as floats, will have
+        // block break tokens if they continue in a subsequent fragmentainer, so
+        // just check that. Floats in particular will continue as regular box
+        // fragment children in subsequent fragmentainers, i.e. they will not be
+        // fragment items (even if we're in an inline formatting context). So
+        // we're not going to find the last fragment by just looking for items.
+        DCHECK(item.BoxFragment() && item.BoxFragment()->IsFloating());
+        item.SetIsLastForNode(!item.BoxFragment()->BreakToken());
+      } else {
+        DCHECK(layout_object->IsInline());
+        // This will be updated later if following fragments are found.
+        item.SetIsLastForNode(true);
       }
 
-      bool is_first = skip_last_items_map;
-      LastItem* last = nullptr;
-      if (!skip_last_items_map) {
-        const auto last_item_result =
-            last_items.insert(layout_object, LastItem{&item, 0, index});
-        is_first = last_item_result.is_new_entry;
-        last = &last_item_result.stored_value->value;
-      }
-
+      // If this is the first fragment, associate with |layout_object|.
+      const auto last_item_result =
+          last_items.insert(layout_object, LastItem{&item, 0, item_index});
+      const bool is_first = last_item_result.is_new_entry;
       if (is_first) {
         item.SetFragmentId(0);
-        if (create_index_cache) {
+#if DCHECK_IS_ON()
+        if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
           DCHECK_EQ(layout_object->FirstInlineFragmentItemIndex(), 0u);
-          layout_object->SetFirstInlineFragmentItemIndex(index);
-        }
+#endif
+        layout_object->SetFirstInlineFragmentItemIndex(item_index);
         continue;
       }
 
+      // Update the last item for |layout_object|.
+      LastItem* last = &last_item_result.stored_value->value;
       const NGFragmentItem* last_item = last->item;
       DCHECK_EQ(last_item->DeltaToNextForSameLayoutObject(), 0u);
-      if (create_index_cache) {
-        const wtf_size_t last_index = last->item_index;
-        DCHECK_GT(last_index, 0u);
-        DCHECK_LT(last_index, items.size());
-        DCHECK_LT(last_index, index);
-        last_item->SetDeltaToNextForSameLayoutObject(index - last_index);
-      }
+      const wtf_size_t last_index = last->item_index;
+      DCHECK_GT(last_index, 0u);
+      DCHECK_LT(last_index, fragment_items->EndItemIndex());
+      DCHECK_LT(last_index, item_index);
+      last_item->SetDeltaToNextForSameLayoutObject(item_index - last_index);
+      if (!layout_object->IsFloating())
+        last_item->SetIsLastForNode(false);
+#if DCHECK_IS_ON()
+      CheckIsLast(*last_item);
+#endif
+
+      // Update this item.
       item.SetFragmentId(++last->fragment_id);
       last->item = &item;
-      last->item_index = index;
+      last->item_index = item_index;
     }
   }
+#if DCHECK_IS_ON()
   for (const auto& iter : last_items)
-    iter.value.item->SetIsLastForNode(true);
+    CheckIsLast(*iter.value.item);
+#endif
 }
 
 void NGFragmentItems::ClearAssociatedFragments(LayoutObject* container) {
@@ -135,6 +171,12 @@ void NGFragmentItems::ClearAssociatedFragments(LayoutObject* container) {
     if (child->IsLayoutInline())
       ClearAssociatedFragments(child);
   }
+#if DCHECK_IS_ON()
+  if (const auto* box = ToLayoutBoxOrNull(container)) {
+    for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments())
+      CheckNoItemsAreAssociated(fragment);
+  }
+#endif
 }
 
 // static

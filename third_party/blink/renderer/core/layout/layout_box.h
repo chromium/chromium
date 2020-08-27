@@ -1017,6 +1017,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     wtf_size_t Size() const { return layout_results_.size(); }
     bool IsEmpty() const { return layout_results_.IsEmpty(); }
 
+    bool HasFragmentItems() const;
+
     class CORE_EXPORT Iterator : public std::iterator<std::forward_iterator_tag,
                                                       NGPhysicalBoxFragment> {
      public:
@@ -1848,6 +1850,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   TextDirection ResolvedDirection() const;
 
  private:
+  bool HasFragmentItems() const {
+    return ChildrenInline() && PhysicalFragments().HasFragmentItems();
+  }
+
   inline bool LayoutOverflowIsSet() const {
     return overflow_ && overflow_->layout_overflow;
   }
