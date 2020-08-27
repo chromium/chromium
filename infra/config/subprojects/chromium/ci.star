@@ -57,7 +57,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.chromiumos",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.ALL_RELEASES,
     ordering = {
         None: ["default"],
         "default": ci.ordering(short_names = ["ful", "rel"]),
@@ -1138,7 +1138,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "chromeos-amd64-generic-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.ALL_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "simple|release|x64",
         short_name = "rel",
@@ -1158,7 +1158,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "chromeos-arm-generic-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.ALL_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "simple|release",
         short_name = "arm",
@@ -1169,6 +1169,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "chromeos-kevin-rel",
+    branch_selector = branches.ALL_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "simple|release",
         short_name = "kvn",
@@ -1189,7 +1190,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "linux-chromeos-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.ALL_RELEASES,
     console_view_entry = ci.console_view_entry(
         category = "default",
         short_name = "rel",
