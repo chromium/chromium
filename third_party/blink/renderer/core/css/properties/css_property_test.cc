@@ -82,6 +82,11 @@ TEST_F(CSSPropertyTest, InternalResetEffectiveNotWebExposed) {
   EXPECT_FALSE(author_set->HasProperty(CSSPropertyID::kZoom));
 }
 
+TEST_F(CSSPropertyTest, InternalFontSizeDeltaNotWebExposed) {
+  ASSERT_FALSE(
+      CSSProperty::Get(CSSPropertyID::kInternalFontSizeDelta).IsWebExposed());
+}
+
 TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
   scoped_refptr<ComputedStyle> initial_style = ComputedStyle::Create();
 

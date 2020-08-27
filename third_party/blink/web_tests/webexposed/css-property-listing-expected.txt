@@ -14,7 +14,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-box-orient
     -webkit-box-pack
     -webkit-box-reflect
-    -webkit-font-size-delta
     -webkit-font-smoothing
     -webkit-highlight
     -webkit-hyphenate-character

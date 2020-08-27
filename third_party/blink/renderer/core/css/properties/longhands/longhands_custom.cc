@@ -7131,7 +7131,7 @@ const CSSValue* WebkitBoxReflect::CSSValueFromComputedStyleInternal(
                                                 allow_visited_style);
 }
 
-const CSSValue* WebkitFontSizeDelta::ParseSingleValue(
+const CSSValue* InternalFontSizeDelta::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {

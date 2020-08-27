@@ -162,8 +162,10 @@ bool StyleCommands::ExecuteFontSizeDelta(LocalFrame& frame,
                                          Event*,
                                          EditorCommandSource source,
                                          const String& value) {
+  // TODO(hjkim3323@gmail.com): Directly set EditingStyle::font_size_delta_
+  // instead of setting it via CSS property
   return ExecuteApplyStyle(frame, source, InputEvent::InputType::kNone,
-                           CSSPropertyID::kWebkitFontSizeDelta, value);
+                           CSSPropertyID::kInternalFontSizeDelta, value);
 }
 
 bool StyleCommands::ExecuteMakeTextWritingDirectionLeftToRight(
@@ -625,7 +627,7 @@ String StyleCommands::ValueFontSize(const EditorInternalCommand&,
 String StyleCommands::ValueFontSizeDelta(const EditorInternalCommand&,
                                          LocalFrame& frame,
                                          Event*) {
-  return ValueStyle(frame, CSSPropertyID::kWebkitFontSizeDelta);
+  return ValueStyle(frame, CSSPropertyID::kInternalFontSizeDelta);
 }
 
 }  // namespace blink

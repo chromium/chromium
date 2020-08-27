@@ -610,13 +610,13 @@ void EditingStyle::ExtractFontSizeDelta() {
 
   if (mutable_style_->GetPropertyCSSValue(CSSPropertyID::kFontSize)) {
     // Explicit font size overrides any delta.
-    mutable_style_->RemoveProperty(CSSPropertyID::kWebkitFontSizeDelta);
+    mutable_style_->RemoveProperty(CSSPropertyID::kInternalFontSizeDelta);
     return;
   }
 
   // Get the adjustment amount out of the style.
-  const CSSValue* value =
-      mutable_style_->GetPropertyCSSValue(CSSPropertyID::kWebkitFontSizeDelta);
+  const CSSValue* value = mutable_style_->GetPropertyCSSValue(
+      CSSPropertyID::kInternalFontSizeDelta);
   const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value)
     return;
@@ -627,7 +627,7 @@ void EditingStyle::ExtractFontSizeDelta() {
     return;
 
   font_size_delta_ = primitive_value->GetFloatValue();
-  mutable_style_->RemoveProperty(CSSPropertyID::kWebkitFontSizeDelta);
+  mutable_style_->RemoveProperty(CSSPropertyID::kInternalFontSizeDelta);
 }
 
 bool EditingStyle::IsEmpty() const {

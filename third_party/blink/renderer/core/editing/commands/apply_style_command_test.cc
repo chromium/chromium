@@ -92,9 +92,8 @@ TEST_F(ApplyStyleCommandTest, FontSizeDeltaWithSpanElement) {
           "<div contenteditable>^<div></div>a<span></span>|</div>"),
       SetSelectionOptions());
 
-  auto* style =
-      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
-  style->SetProperty(CSSPropertyID::kWebkitFontSizeDelta, "3",
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->SetProperty(CSSPropertyID::kInternalFontSizeDelta, "3px",
                      /* important */ false,
                      GetFrame().DomWindow()->GetSecureContextMode());
   MakeGarbageCollected<ApplyStyleCommand>(

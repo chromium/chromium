@@ -36,6 +36,7 @@ enum CSSSampleId {
     kInternalVisitedTextEmphasisColor = 0,
     kInternalVisitedTextFillColor = 0,
     kInternalVisitedTextStrokeColor = 0,
+    kInternalFontSizeDelta = 0,
 
     // This CSSSampleId represents page load for CSS histograms. It is recorded once
     // per page visit for each CSS histogram being logged on the blink side and the
@@ -284,7 +285,7 @@ enum CSSSampleId {
     kFlexShrink = 238,
     kFlexWrap = 239,
     kJustifyContent = 240,
-    kWebkitFontSizeDelta = 241,
+    // kWebkitFontSizeDelta = 241,
     kGridTemplateColumns = 242,
     kGridTemplateRows = 243,
     kGridColumnStart = 244,
