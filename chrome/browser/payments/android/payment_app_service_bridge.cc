@@ -331,4 +331,8 @@ void PaymentAppServiceBridge::OnDoneCreatingPaymentApps() {
   PaymentAppServiceBridgeStorage::GetInstance()->Remove(this);
 }
 
+void PaymentAppServiceBridge::SetCanMakePaymentEvenWithoutApps() {
+  NOTREACHED();
+}
+
 }  // namespace payments

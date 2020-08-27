@@ -10,9 +10,9 @@ enum SecurePaymentConfirmationAction {
 
 dictionary SecurePaymentConfirmationRequest {
     SecurePaymentConfirmationAction action;
-    required DOMString instrumentId;
+    required FrozenArray<BufferSource> credentialIds;
     // Opaque data about the current transaction provided by the issuer. As the
-    // issuer is the RP of the credential, |networkData| provides protection
+    // issuer is the RP of the credential, `networkData` provides protection
     // against replay attacks.
     required BufferSource networkData;
     unsigned long timeout;

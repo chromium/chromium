@@ -227,16 +227,21 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
 
   // Fulfill the pending CanMakePayment call.
   if (can_make_payment_callback_)
-    std::move(can_make_payment_callback_).Run(are_requested_methods_supported_);
+    std::move(can_make_payment_callback_).Run(GetCanMakePaymentValue());
 
   // Fulfill the pending HasEnrolledInstrument call.
   if (has_enrolled_instrument_callback_)
-    std::move(has_enrolled_instrument_callback_).Run(has_enrolled_instrument_);
+    std::move(has_enrolled_instrument_callback_)
+        .Run(GetHasEnrolledInstrumentValue());
 
   // Fulfill the pending AreRequestedMethodsSupported call.
   if (are_requested_methods_supported_callback_)
     CheckRequestedMethodsSupported(
         std::move(are_requested_methods_supported_callback_));
+}
+
+void PaymentRequestState::SetCanMakePaymentEvenWithoutApps() {
+  can_make_payment_even_without_apps_ = true;
 }
 
 void PaymentRequestState::OnPaymentResponseReady(
@@ -305,7 +310,7 @@ void PaymentRequestState::HasEnrolledInstrument(StatusCallback callback) {
     return;
   }
 
-  PostStatusCallback(std::move(callback), has_enrolled_instrument_);
+  PostStatusCallback(std::move(callback), GetHasEnrolledInstrumentValue());
 }
 
 void PaymentRequestState::AreRequestedMethodsSupported(
@@ -752,6 +757,15 @@ void PaymentRequestState::OnAddressNormalized(
 
 bool PaymentRequestState::IsInTwa() const {
   return !payment_request_delegate_->GetTwaPackageName().empty();
+}
+
+bool PaymentRequestState::GetCanMakePaymentValue() const {
+  return are_requested_methods_supported_ ||
+         can_make_payment_even_without_apps_;
+}
+
+bool PaymentRequestState::GetHasEnrolledInstrumentValue() const {
+  return has_enrolled_instrument_ || can_make_payment_even_without_apps_;
 }
 
 }  // namespace payments

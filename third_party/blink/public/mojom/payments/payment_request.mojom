@@ -125,9 +125,10 @@ struct GooglePaymentMethodData {
 // Parameters for the "secure-payment-confirmation" payment method identifier.
 // https://github.com/rsolomakhin/secure-payment-confirmation
 struct SecurePaymentConfirmationRequest {
-  // An identifier of a set of credentials that map to a single instrument
-  // name and icon.
-  string instrument_id;
+  // A list of WebAuthn credential identifiers. These values will be looked up
+  // in "secure_payment_confirmation_instrument" table. Upon user gesture, one
+  // of these credentials will be queried from WebAuthn.
+  array<array<uint8>> credential_ids;
 
   // An indefinite-length blob passed from the relying party server, to be sent
   // to an authenticator for signing together with the price and merchant

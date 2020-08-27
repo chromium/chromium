@@ -45,6 +45,8 @@ typedef enum {
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>
   PAYMENT_METHOD_MANIFEST,       // WDResult<std::vector<std::string>>
+  SECURE_PAYMENT_CONFIRMATION,   // WDResult<std::vector<std::unique_ptr<
+                                 //     SecurePaymentConfirmationInstrument>>>
 #endif
 } WDResultType;
 

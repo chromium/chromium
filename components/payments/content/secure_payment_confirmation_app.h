@@ -29,11 +29,13 @@ namespace payments {
 
 class SecurePaymentConfirmationApp : public PaymentApp {
  public:
+  // Please use `std::move()` for the `credential_id` parameter to avoid extra
+  // copies.
   SecurePaymentConfirmationApp(
       const std::string& effective_relying_party_identity,
       std::unique_ptr<SkBitmap> icon,
       const base::string16& label,
-      std::vector<std::unique_ptr<std::vector<uint8_t>>> credential_ids,
+      std::vector<uint8_t> credential_id,
       const url::Origin& merchant_origin,
       const mojom::PaymentCurrencyAmountPtr& total,
       mojom::SecurePaymentConfirmationRequestPtr request,
@@ -82,7 +84,8 @@ class SecurePaymentConfirmationApp : public PaymentApp {
   const std::string effective_relying_party_identity_;
   const std::unique_ptr<SkBitmap> icon_;
   const base::string16 label_;
-  const std::vector<std::unique_ptr<std::vector<uint8_t>>> credential_ids_;
+  const std::vector<uint8_t> credential_id_;
+  const std::string encoded_credential_id_;
   const url::Origin merchant_origin_;
   const mojom::PaymentCurrencyAmountPtr total_;
   const mojom::SecurePaymentConfirmationRequestPtr request_;
