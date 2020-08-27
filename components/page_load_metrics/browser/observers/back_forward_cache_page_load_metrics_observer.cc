@@ -181,7 +181,7 @@ void BackForwardCachePageLoadMetricsObserver::
   ukm::builders::HistoryNavigation builder(
       GetLastUkmSourceIdForBackForwardCacheRestore());
   builder.SetCumulativeShiftScoreAfterBackForwardCacheRestore(
-      page_load_metrics::LayoutShiftUkmValue(layout_main_frame_shift_score));
+      page_load_metrics::LayoutShiftUkmValue(layout_shift_score));
   builder.Record(ukm::UkmRecorder::Get());
 
   last_main_frame_layout_shift_score_ =
