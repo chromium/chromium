@@ -50,6 +50,21 @@ public class SiteSettingsIntentHelper {
         return createIntentWithExtras(context, extras);
     }
 
+    /** Creates an Intent that launches the all sites settings UI. */
+    public static Intent createIntentForAllSites(
+            Context context, String profileName, String type, String title) {
+        Bundle extras = new Bundle();
+        extras.putString(SiteSettingsFragmentArgs.PROFILE_NAME, profileName);
+        extras.putString(
+                SiteSettingsFragmentArgs.FRAGMENT_NAME, SiteSettingsFragmentArgs.ALL_SITES);
+
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putString(SiteSettingsFragmentArgs.ALL_SITES_TITLE, title);
+        fragmentArgs.putString(SiteSettingsFragmentArgs.ALL_SITES_TYPE, type);
+        extras.putBundle(SiteSettingsFragmentArgs.FRAGMENT_ARGUMENTS, fragmentArgs);
+        return createIntentWithExtras(context, extras);
+    }
+
     private static Intent createIntentWithExtras(Context context, Bundle extras) {
         Intent intent = new Intent();
         intent.setClassName(context, SiteSettingsFragmentArgs.ACTIVITY_CLASS_NAME);

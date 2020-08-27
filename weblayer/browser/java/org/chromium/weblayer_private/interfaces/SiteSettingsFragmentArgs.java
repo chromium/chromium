@@ -14,6 +14,7 @@ public interface SiteSettingsFragmentArgs {
     String FRAGMENT_ARGUMENTS = "fragment_arguments";
 
     // FRAGMENT_NAME values
+    String ALL_SITES = "all_sites";
     String CATEGORY_LIST = "category_list";
     String SINGLE_CATEGORY = "single_category";
     String SINGLE_WEBSITE = "single_website";
@@ -24,4 +25,8 @@ public interface SiteSettingsFragmentArgs {
     // SINGLE_CATEGORY argument names
     String SINGLE_CATEGORY_TITLE = "title";
     String SINGLE_CATEGORY_TYPE = "type";
+
+    // ALL_SITES argument names
+    String ALL_SITES_TITLE = "title";
+    String ALL_SITES_TYPE = "type";
 }

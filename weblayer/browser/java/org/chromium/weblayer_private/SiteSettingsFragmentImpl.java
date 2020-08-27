@@ -24,6 +24,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
@@ -150,6 +151,11 @@ public class SiteSettingsFragmentImpl extends RemoteFragmentImpl {
                         mFragmentImpl.getEmbedderContext(), mFragmentImpl.getProfile().getName(),
                         newFragmentArgs.getString(SingleCategorySettings.EXTRA_CATEGORY),
                         newFragmentArgs.getString(SingleCategorySettings.EXTRA_TITLE));
+            } else if (newFragmentClassName.equals(AllSiteSettings.class.getName())) {
+                intent = SiteSettingsIntentHelper.createIntentForAllSites(
+                        mFragmentImpl.getEmbedderContext(), mFragmentImpl.getProfile().getName(),
+                        newFragmentArgs.getString(AllSiteSettings.EXTRA_CATEGORY),
+                        newFragmentArgs.getString(AllSiteSettings.EXTRA_TITLE));
             } else if (newFragmentClassName.equals(SingleWebsiteSettings.class.getName())) {
                 WebsiteAddress address;
                 if (newFragmentArgs.containsKey(SingleWebsiteSettings.EXTRA_SITE)) {
@@ -217,6 +223,14 @@ public class SiteSettingsFragmentImpl extends RemoteFragmentImpl {
         // implementation fragments expect.
         Bundle fragmentArgs = intentExtras.getBundle(SiteSettingsFragmentArgs.FRAGMENT_ARGUMENTS);
         switch (intentExtras.getString(SiteSettingsFragmentArgs.FRAGMENT_NAME)) {
+            case SiteSettingsFragmentArgs.ALL_SITES:
+                mFragmentClass = AllSiteSettings.class;
+                mFragmentArguments = new Bundle();
+                mFragmentArguments.putString(AllSiteSettings.EXTRA_TITLE,
+                        fragmentArgs.getString(SiteSettingsFragmentArgs.ALL_SITES_TITLE));
+                mFragmentArguments.putString(AllSiteSettings.EXTRA_CATEGORY,
+                        fragmentArgs.getString(SiteSettingsFragmentArgs.ALL_SITES_TYPE));
+                break;
             case SiteSettingsFragmentArgs.CATEGORY_LIST:
                 mFragmentClass = SiteSettings.class;
                 mFragmentArguments = null;
