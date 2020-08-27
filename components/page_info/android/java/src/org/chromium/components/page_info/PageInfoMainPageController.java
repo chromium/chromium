@@ -22,6 +22,13 @@ public interface PageInfoMainPageController {
     void exitSubpage();
 
     /**
+     * Record a user action.
+     *
+     * @param action The action to record.
+     */
+    void recordAction(@PageInfoAction int action);
+
+    /**
      * @return A BrowserContext for this dialog.
      */
     BrowserContextHandle getBrowserContext();

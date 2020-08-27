@@ -404,7 +404,7 @@ public class PageInfoController
             messageBuilder.append(details);
         }
 
-        if (isConnectionDetailsLinkVisible()) {
+        if (!mIsV2Enabled && isConnectionDetailsLinkVisible()) {
             messageBuilder.append(" ");
             SpannableString detailsText =
                     new SpannableString(mContext.getString(R.string.details_link));
@@ -480,7 +480,8 @@ public class PageInfoController
         mContext = null;
     }
 
-    private void recordAction(int action) {
+    @Override
+    public void recordAction(@PageInfoAction int action) {
         if (mNativePageInfoController != 0) {
             PageInfoControllerJni.get().recordPageInfoAction(
                     mNativePageInfoController, PageInfoController.this, action);

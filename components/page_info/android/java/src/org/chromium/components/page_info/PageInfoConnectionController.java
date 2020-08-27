@@ -32,6 +32,7 @@ public class PageInfoConnectionController
     }
 
     private void launchSubpage() {
+        mMainController.recordAction(PageInfoAction.PAGE_INFO_SECURITY_DETAILS_OPENED);
         mMainController.launchSubpage(this);
     }
 
@@ -63,7 +64,7 @@ public class PageInfoConnectionController
         rowParams.title = mTitle;
         rowParams.subtitle = params.message != null ? params.message.toString() : null;
         rowParams.visible = rowParams.title != null || rowParams.subtitle != null;
-        rowParams.clickCallback = this::launchSubpage;
+        if (params.clickCallback != null) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
     }
 
