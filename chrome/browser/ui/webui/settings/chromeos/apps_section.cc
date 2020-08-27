@@ -238,6 +238,8 @@ std::string AppsSection::GetSectionPath() const {
 }
 
 void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
+  generator->RegisterTopLevelSetting(mojom::Setting::kTurnOnPlayStore);
+
   // Manage apps.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_APPS_LINK_TEXT,
                                      mojom::Subpage::kAppManagement,
@@ -266,10 +268,11 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   static constexpr mojom::Setting kGooglePlayStoreSettings[] = {
       mojom::Setting::kManageAndroidPreferences,
       mojom::Setting::kRemovePlayStore,
-      mojom::Setting::kTurnOnPlayStore,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kGooglePlayStore,
                             kGooglePlayStoreSettings, generator);
+  generator->RegisterTopLevelAltSetting(
+      mojom::Setting::kManageAndroidPreferences);
 }
 
 void AppsSection::OnAppRegistered(const std::string& app_id,
