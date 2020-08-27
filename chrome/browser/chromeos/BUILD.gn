@@ -2819,11 +2819,15 @@ source_set("chromeos") {
   if (!is_official_build) {
     deps += [
       "//chromeos/components/sample_system_web_app_ui:sample_system_web_app_ui",
+      "//chromeos/components/telemetry_extension_ui",
       "//chromeos/resources:sample_system_web_app_resources_grit",
+      "//chromeos/resources:telemetry_extension_resources",
     ]
     sources += [
       "web_applications/sample_system_web_app_info.cc",
       "web_applications/sample_system_web_app_info.h",
+      "web_applications/telemetry_extension_web_app_info.cc",
+      "web_applications/telemetry_extension_web_app_info.h",
     ]
   }
 

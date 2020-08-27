@@ -1127,10 +1127,7 @@ class SystemWebAppManagerUpgradeBrowserTest
 #if defined(OFFICIAL_BUILD)
     return 8;
 #else
-    // TODO(http://crbug.com/1120208): Telemetry isn't available for install
-    // unless its flag is enabled. So it's not included here. Update this after
-    // Telemetry is available for install without a flag.
-    return 9;
+    return 10;
 #endif  // defined(OFFICIAL_BUILD)
   }
 

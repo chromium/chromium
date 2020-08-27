@@ -30,9 +30,6 @@ CreateTrustedTelemetryExtensionDataSource() {
       content::WebUIDataSource::Create(kChromeUITelemetryExtensionHost));
 
   trusted_source->AddResourcePath("", IDR_TELEMETRY_EXTENSION_INDEX_HTML);
-  trusted_source->AddResourcePath("pwa.html", IDR_TELEMETRY_EXTENSION_PWA_HTML);
-  trusted_source->AddResourcePath("manifest.json",
-                                  IDR_TELEMETRY_EXTENSION_MANIFEST);
   trusted_source->AddResourcePath("app_icon_96.png",
                                   IDR_TELEMETRY_EXTENSION_ICON_96);
   trusted_source->AddResourcePath("trusted_scripts.js",

@@ -57,6 +57,7 @@
 
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/chromeos/web_applications/sample_system_web_app_info.h"
+#include "chrome/browser/chromeos/web_applications/telemetry_extension_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
 
 #endif  // defined(OS_CHROMEOS)
@@ -172,9 +173,11 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps() {
 
 #if !defined(OFFICIAL_BUILD)
   if (SystemWebAppManager::IsAppEnabled(SystemAppType::TELEMETRY)) {
-    infos.emplace(SystemAppType::TELEMETRY,
-                  SystemAppInfo("Telemetry",
-                                GURL("chrome://telemetry-extension/pwa.html")));
+    infos.emplace(
+        SystemAppType::TELEMETRY,
+        SystemAppInfo(
+            "Telemetry", GURL("chrome://telemetry-extension"),
+            base::BindRepeating(&CreateWebAppInfoForTelemetryExtension)));
   }
 
   infos.emplace(
