@@ -2899,6 +2899,7 @@ ci.fyi_mac_builder(
     cores = None,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
+    os = os.MAC_10_15,
 )
 
 ci.fyi_mac_builder(
