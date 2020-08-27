@@ -15,9 +15,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"  // nogncheck
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 using autofill::PasswordForm;
 using base::ASCIIToUTF16;
@@ -135,7 +135,7 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
   }
 }
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 class PasswordSyncUtilEnterpriseTest : public SyncUsernameTestBase {
  public:
   void SetUp() override {
@@ -149,7 +149,7 @@ class PasswordSyncUtilEnterpriseTest : public SyncUsernameTestBase {
   TestingPrefServiceSimple prefs_;
 };
 
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 }  // namespace sync_util
 }  // namespace password_manager

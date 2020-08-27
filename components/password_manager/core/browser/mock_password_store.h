@@ -102,7 +102,7 @@ class MockPasswordStore : public PasswordStore {
 
   MOCK_CONST_METHOD0(IsAbleToSavePasswords, bool());
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   MOCK_METHOD3(CheckReuse,
                void(const base::string16&,
                     const std::string&,

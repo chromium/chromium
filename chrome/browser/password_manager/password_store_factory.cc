@@ -46,7 +46,7 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 #include "chrome/browser/password_manager/password_store_signin_notifier_impl.h"
 #endif
 
@@ -59,7 +59,7 @@ constexpr PasswordStoreX::MigrationToLoginDBStep
     kMigrationToLoginDBNotAttempted = PasswordStoreX::NOT_ATTEMPTED;
 #endif
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 std::string GetSyncUsername(Profile* profile) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
@@ -68,7 +68,7 @@ std::string GetSyncUsername(Profile* profile) {
 }
 #endif
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 bool IsSignedIn(Profile* profile) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile);
@@ -121,7 +121,7 @@ PasswordStoreFactory::PasswordStoreFactory()
           "PasswordStore",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(WebDataServiceFactory::GetInstance());
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   // TODO(crbug.com/715987). Remove when PasswordReuseDetector is decoupled
   // from PasswordStore.
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -172,7 +172,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   // Prepare password hash data for reuse detection.
   ps->PreparePasswordHashData(GetSyncUsername(profile), IsSignedIn(profile));
 #endif

@@ -286,7 +286,7 @@ void LogGenerationDialogChoice(GenerationDialogChoice choice,
   };
 }  // namespace metrics_util
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
                                bool is_sync_password) {
   if (is_sync_password) {

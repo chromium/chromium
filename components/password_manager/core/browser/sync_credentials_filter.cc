@@ -69,12 +69,12 @@ bool SyncCredentialsFilter::ShouldSave(
 
 bool SyncCredentialsFilter::ShouldSaveGaiaPasswordHash(
     const autofill::PasswordForm& form) const {
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   return !client_->IsIncognito() &&
          sync_util::IsGaiaCredentialPage(form.signon_realm);
 #else
   return false;
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 }
 
 bool SyncCredentialsFilter::ShouldSaveEnterprisePasswordHash(

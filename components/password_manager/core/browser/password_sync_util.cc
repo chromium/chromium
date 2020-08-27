@@ -14,9 +14,9 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/origin.h"
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 using autofill::PasswordForm;
 using url::Origin;
@@ -88,13 +88,13 @@ bool IsGaiaCredentialPage(const std::string& signon_realm) {
 
 bool ShouldSaveEnterprisePasswordHash(const autofill::PasswordForm& form,
                                       const PrefService& prefs) {
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   return safe_browsing::MatchesPasswordProtectionLoginURL(form.url, prefs) ||
          safe_browsing::MatchesPasswordProtectionChangePasswordURL(form.url,
                                                                    prefs);
 #else
   return false;
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 }
 
 }  // namespace sync_util

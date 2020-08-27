@@ -32,9 +32,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"  // nogncheck
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 using autofill::PasswordForm;
 
@@ -45,15 +45,15 @@ namespace {
 const char kFilledAndLoginActionName[] =
     "PasswordManager_SyncCredentialFilledAndLoginSuccessfull";
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 const char kEnterpriseURL[] = "https://enterprise.test/";
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 class FakePasswordManagerClient : public StubPasswordManagerClient {
  public:
   explicit FakePasswordManagerClient(signin::IdentityManager* identity_manager)
       : identity_manager_(identity_manager) {
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
     // Initializes and configures prefs.
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs_->registry()->RegisterStringPref(
@@ -61,7 +61,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     prefs_->registry()->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
     prefs_->SetString(prefs::kPasswordProtectionChangePasswordURL,
                       kEnterpriseURL);
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
   }
 
   ~FakePasswordManagerClient() override {
@@ -83,7 +83,7 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
     last_committed_origin_ = url::Origin::Create(GURL(url_spec));
   }
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   PrefService* GetPrefs() const override { return prefs_.get(); }
 #endif
 
@@ -97,9 +97,9 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
       new testing::NiceMock<MockPasswordStore>;
   bool is_incognito_ = false;
   signin::IdentityManager* identity_manager_;
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
   DISALLOW_COPY_AND_ASSIGN(FakePasswordManagerClient);
 };
@@ -269,7 +269,7 @@ TEST_P(CredentialsFilterTest, ShouldSave_SyncCredential_NotSyncingPasswords) {
     EXPECT_TRUE(filter_.ShouldSave(form));
 }
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
+#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 TEST_P(CredentialsFilterTest, ShouldSaveGaiaPasswordHash) {
   PasswordForm gaia_form = SimpleGaiaForm("user@gmail.org");
   EXPECT_TRUE(filter_.ShouldSaveGaiaPasswordHash(gaia_form));
@@ -332,7 +332,7 @@ TEST_P(CredentialsFilterTest, IsSyncAccountEmailIncognito) {
   EXPECT_TRUE(filter_.IsSyncAccountEmail("us.er@gmail.com"));
   EXPECT_TRUE(filter_.IsSyncAccountEmail("user@googlemail.com"));
 }
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
+#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 INSTANTIATE_TEST_SUITE_P(, CredentialsFilterTest, ::testing::Bool());
 

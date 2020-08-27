@@ -18,12 +18,10 @@ password_on_focus_ping_support = !is_ios
 config("password_reuse_detection_config") {
   defines = []
   if (password_reuse_detection_support) {
-    # TODO(crbug.com/1036042): Rename it to PASSWORD_REUSE_DETECTION_ENABLED.
-    defines += [ "SYNC_PASSWORD_REUSE_DETECTION_ENABLED" ]
+    defines += [ "PASSWORD_REUSE_DETECTION_ENABLED" ]
   }
   if (password_reuse_warning_support) {
-    # TODO(crbug.com/1036042): Rename it to PASSWORD_REUSE_WARNING_ENABLED.
-    defines += [ "SYNC_PASSWORD_REUSE_WARNING_ENABLED" ]
+    defines += [ "PASSWORD_REUSE_WARNING_ENABLED" ]
   }
   if (password_on_focus_ping_support) {
     defines += [ "ON_FOCUS_PING_ENABLED" ]
