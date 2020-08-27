@@ -161,6 +161,13 @@ class BottomSheet extends FrameLayout
     /** A means of checking whether accessibility is currently enabled. */
     private AccessibilityUtil mAccessibilityUtil;
 
+    /**
+     * This is the height that the sheet is capable of scrolling through. It extends past the top of
+     * the screen so that the opaque part of the sheet reaches the top of the screen as the shadow
+     * scrolls off.
+     */
+    private int mScrollableHeight;
+
     @Override
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
         // If the sheet is scrolling off-screen or in the process of hiding, gestures should not
@@ -296,6 +303,7 @@ class BottomSheet extends FrameLayout
 
         mContainerWidth = root.getWidth();
         mContainerHeight = root.getHeight();
+        mScrollableHeight = mContainerHeight + mToolbarShadowHeight;
 
         // Listen to height changes on the root.
         root.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -310,6 +318,7 @@ class BottomSheet extends FrameLayout
                 int previousHeight = mContainerHeight;
                 mContainerWidth = right - left;
                 mContainerHeight = bottom - top;
+                mScrollableHeight = mContainerHeight + mToolbarShadowHeight;
 
                 if (previousWidth != mContainerWidth || previousHeight != mContainerHeight) {
                     if (mCurrentState == SheetState.HALF && !isHalfStateEnabled()) {
@@ -411,7 +420,7 @@ class BottomSheet extends FrameLayout
 
     @Override
     public float getMinOffsetPx() {
-        return (swipeToDismissEnabled() ? getHiddenRatio() : getPeekRatio()) * mContainerHeight;
+        return (swipeToDismissEnabled() ? getHiddenRatio() : getPeekRatio()) * mScrollableHeight;
     }
 
     /**
@@ -475,7 +484,7 @@ class BottomSheet extends FrameLayout
 
     @Override
     public float getMaxOffsetPx() {
-        return getFullRatio() * mContainerHeight;
+        return getFullRatio() * mScrollableHeight;
     }
 
     /**
@@ -616,7 +625,7 @@ class BottomSheet extends FrameLayout
             return 0;
         }
 
-        return getPeekRatio() * mContainerHeight * mBrowserControlsHiddenRatio;
+        return getPeekRatio() * mScrollableHeight * mBrowserControlsHiddenRatio;
     }
 
     /**
@@ -718,7 +727,7 @@ class BottomSheet extends FrameLayout
         if (mSheetContent != null && mSheetContent.getPeekHeight() != HeightMode.DEFAULT) {
             assert mSheetContent.getPeekHeight()
                     != HeightMode.WRAP_CONTENT : "The peek mode can't wrap content.";
-            float ratio = mSheetContent.getPeekHeight() / (float) mContainerHeight;
+            float ratio = mSheetContent.getPeekHeight() / (float) mScrollableHeight;
             assert ratio > 0 && ratio <= 1 : "Custom peek ratios must be in the range of (0, 1].";
             return ratio;
         }
@@ -737,12 +746,12 @@ class BottomSheet extends FrameLayout
                     toolbarView.measure(
                             MeasureSpec.makeMeasureSpec(mContainerWidth, MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(
-                                    (int) mContainerHeight, MeasureSpec.AT_MOST));
+                                    getMaxContentHeight(), MeasureSpec.AT_MOST));
                     toolbarHeight = toolbarView.getMeasuredHeight();
                 }
             }
         }
-        return (toolbarHeight + mToolbarShadowHeight) / (float) mContainerHeight;
+        return (toolbarHeight + mToolbarShadowHeight) / (float) mScrollableHeight;
     }
 
     private View getToolbarView() {
@@ -779,13 +788,11 @@ class BottomSheet extends FrameLayout
         if (isFullHeightWrapContent()) {
             ensureContentDesiredHeightIsComputed();
             float heightPx =
-                    Math.min(mContainerHeight, mContentDesiredHeight + mToolbarShadowHeight);
-            return heightPx / mContainerHeight;
+                    Math.min(getMaxContentHeight(), mContentDesiredHeight) + mToolbarShadowHeight;
+            return heightPx / mScrollableHeight;
         }
 
-        return customFullRatio == HeightMode.DEFAULT
-                ? (mContainerHeight + mToolbarShadowHeight) / (float) mContainerHeight
-                : customFullRatio;
+        return customFullRatio == HeightMode.DEFAULT ? 1 : customFullRatio;
     }
 
     /**
@@ -970,10 +977,14 @@ class BottomSheet extends FrameLayout
     private float getSheetHeightForState(@SheetState int state) {
         if (isFullHeightWrapContent() && state == SheetState.FULL) {
             ensureContentDesiredHeightIsComputed();
-            return mContentDesiredHeight + mToolbarShadowHeight;
         }
 
-        return getRatioForState(state) * mContainerHeight;
+        return getRatioForState(state) * mScrollableHeight;
+    }
+
+    /** @return The max possible height that the content can be. */
+    private int getMaxContentHeight() {
+        return mContainerHeight;
     }
 
     private void ensureContentDesiredHeightIsComputed() {
@@ -983,7 +994,7 @@ class BottomSheet extends FrameLayout
 
         mSheetContent.getContentView().measure(
                 MeasureSpec.makeMeasureSpec(mContainerWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(mContainerHeight, MeasureSpec.AT_MOST));
+                MeasureSpec.makeMeasureSpec(getMaxContentHeight(), MeasureSpec.AT_MOST));
         mContentDesiredHeight = mSheetContent.getContentView().getMeasuredHeight();
     }
 
@@ -1147,9 +1158,7 @@ class BottomSheet extends FrameLayout
         if (sIsSmallScreenForTesting != null) return sIsSmallScreenForTesting;
 
         // A small screen is defined by there being less than 160dp between half and full states.
-        float fullHeightRatio =
-                (mContainerHeight + mToolbarShadowHeight) / (float) mContainerHeight;
-        float fullToHalfDiff = (fullHeightRatio - HALF_HEIGHT_RATIO) * mContainerHeight;
+        float fullToHalfDiff = (1 - HALF_HEIGHT_RATIO) * mScrollableHeight;
         return fullToHalfDiff < mMinHalfFullDistance;
     }
 

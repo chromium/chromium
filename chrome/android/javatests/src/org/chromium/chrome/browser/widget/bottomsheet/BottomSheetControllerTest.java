@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -100,11 +99,6 @@ public class BottomSheetControllerTest {
             mNonPeekableContent = new TestBottomSheetContent(mActivityTestRule.getActivity());
             mNonPeekableContent.setPeekHeight(BottomSheetContent.HeightMode.DISABLED);
         });
-    }
-
-    /** @return The height of the container view. */
-    private int getContainerHeight() {
-        return mActivityTestRule.getActivity().getActivityTabProvider().get().getView().getHeight();
     }
 
     @Test
@@ -434,30 +428,30 @@ public class BottomSheetControllerTest {
     @MediumTest
     public void testCustomHalfRatio() throws TimeoutException {
         final float customHalfHeight = 0.3f;
-        int containerHeight = getContainerHeight();
         mLowPriorityContent.setHalfHeightRatio(customHalfHeight);
         requestContentInSheet(mLowPriorityContent, true);
 
         expandSheet();
 
-        assertEquals("Half height is incorrect for custom ratio.",
-                (int) (customHalfHeight * containerHeight), mSheetController.getCurrentOffset(),
-                MathUtils.EPSILON);
+        int computedOffset = (int) (customHalfHeight
+                * (mSheetController.getContainerHeight() + mSheetController.getTopShadowHeight()));
+        assertEquals("Half height is incorrect for custom ratio.", computedOffset,
+                mSheetController.getCurrentOffset());
     }
 
     @Test
     @MediumTest
     public void testCustomFullRatio() throws TimeoutException {
         final float customFullHeight = 0.5f;
-        int containerHeight = getContainerHeight();
         mLowPriorityContent.setFullHeightRatio(customFullHeight);
         requestContentInSheet(mLowPriorityContent, true);
 
         maximizeSheet();
 
-        assertEquals("Full height is incorrect for custom ratio.",
-                (int) (customFullHeight * containerHeight), mSheetController.getCurrentOffset(),
-                MathUtils.EPSILON);
+        int computedOffset = (int) (customFullHeight
+                * (mSheetController.getContainerHeight() + mSheetController.getTopShadowHeight()));
+        assertEquals("Full height is incorrect for custom ratio.", computedOffset,
+                mSheetController.getCurrentOffset());
     }
 
     @Test

@@ -35,12 +35,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     /** The initial capacity for the priority queue handling pending content show requests. */
     private static final int INITIAL_QUEUE_CAPACITY = 1;
 
-    /** The height of the shadow that sits above the toolbar. */
-    private int mToolbarShadowHeight;
-
-    /** The offset of the toolbar shadow from the top that remains empty. */
-    private int mShadowTopOffset;
-
     /** A handle to the {@link BottomSheet} that this class controls. */
     private BottomSheet mBottomSheet;
 
@@ -114,10 +108,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
         mBottomSheet.init(window, keyboardDelegate);
         mBottomSheet.setAccssibilityUtil(mAccessibilityUtil);
-        mToolbarShadowHeight = mBottomSheet.getResources().getDimensionPixelOffset(
-                BottomSheet.getTopShadowResourceId());
-        mShadowTopOffset = mBottomSheet.getResources().getDimensionPixelOffset(
-                BottomSheet.getShadowTopOffsetResourceId());
 
         // Initialize the queue with a comparator that checks content priority.
         mContentQueue = new PriorityQueue<>(INITIAL_QUEUE_CAPACITY,
@@ -296,7 +286,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     @Override
     public int getTopShadowHeight() {
-        return mToolbarShadowHeight + mShadowTopOffset;
+        return mBottomSheet != null ? (int) mBottomSheet.getToolbarShadowHeight() : 0;
     }
 
     @Override
