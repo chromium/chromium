@@ -35,6 +35,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     kMeasuringItems,
     kResolvingInlineSize,
     kResolvingBlockSize,
+    kPlacingGridItems,
     kCompletedLayout
   };
 
@@ -68,6 +69,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                                               wtf_size_t auto_row);
   wtf_size_t AutoRepeatCountForDirection(
       GridTrackSizingDirection direction) const;
+
+  // Lays out and computes inline and block offsets for grid items.
+  void PlaceGridItems();
 
   Vector<GridItemData> items_;
   GridLayoutAlgorithmState state_;

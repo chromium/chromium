@@ -1403,6 +1403,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return !IsInline() && !IsOutOfFlowPositioned() && Parent();
   }
 
+  bool IsGridItemIncludingNG() const {
+    return IsGridItem() || (Parent() && Parent()->IsLayoutNGGrid());
+  }
+
   bool IsGridItem() const { return Parent() && Parent()->IsLayoutGrid(); }
 
   bool IsMathItem() const { return Parent() && Parent()->IsMathML(); }

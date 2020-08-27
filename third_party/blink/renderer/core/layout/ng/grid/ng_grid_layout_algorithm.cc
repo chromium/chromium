@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 
 namespace blink {
@@ -57,6 +58,11 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
       case GridLayoutAlgorithmState::kResolvingBlockSize:
         ComputeUsedTrackSizes(GridTrackSizingDirection::kForRows);
+        state_ = GridLayoutAlgorithmState::kPlacingGridItems;
+        break;
+
+      case GridLayoutAlgorithmState::kPlacingGridItems:
+        PlaceGridItems();
         state_ = GridLayoutAlgorithmState::kCompletedLayout;
         break;
 
@@ -65,6 +71,10 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
         break;
     }
   }
+
+  // TODO(kschmi): Calculate correct block-size.
+  container_builder_.SetFragmentsTotalBlockSize(LayoutUnit());
+  NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
   return container_builder_.ToBoxFragment();
 }
 
@@ -162,7 +172,11 @@ NGConstraintSpace NGGridLayoutAlgorithm::BuildSpaceForGridItem(
 void NGGridLayoutAlgorithm::SetSpecifiedTracks() {
   const ComputedStyle& grid_style = Style();
   // TODO(kschmi): Auto track repeat count should be based on the number of
-  // children, rather than specified auto-column/track.
+  // children, rather than specified auto-column/track. Temporarily assign them
+  // to zero here to avoid DCHECK's until we implement this logic.
+  automatic_column_repetitions_ = 0;
+  automatic_row_repetitions_ = 0;
+
   // TODO(janewman): We need to implement calculation for track auto repeat
   // count so this can be used outside of testing.
   block_column_track_collection_.SetSpecifiedTracks(
@@ -284,10 +298,80 @@ void NGGridLayoutAlgorithm::SetAutomaticTrackRepetitionsForTesting(
   automatic_column_repetitions_ = auto_column;
   automatic_row_repetitions_ = auto_row;
 }
+
 wtf_size_t NGGridLayoutAlgorithm::AutoRepeatCountForDirection(
     GridTrackSizingDirection direction) const {
   return (direction == kForColumns) ? automatic_column_repetitions_
                                     : automatic_row_repetitions_;
+}
+
+void NGGridLayoutAlgorithm::PlaceGridItems() {
+  NGGridChildIterator iterator(Node());
+  LayoutUnit current_inline_offset, current_block_offset;
+
+  for (auto row_set_iterator = TrackCollection(kForRows).GetSetIterator();
+       !row_set_iterator.IsAtEnd(); row_set_iterator.MoveToNextSet()) {
+    LayoutUnit row_base_size = row_set_iterator.CurrentSet().BaseSize();
+    current_inline_offset = LayoutUnit();
+
+    for (auto column_set_iterator =
+             TrackCollection(kForColumns).GetSetIterator();
+         !column_set_iterator.IsAtEnd(); column_set_iterator.MoveToNextSet()) {
+      LayoutUnit column_base_size = column_set_iterator.CurrentSet().BaseSize();
+
+      const NGBlockNode child_node = iterator.NextChild();
+      if (!child_node)
+        return;  // TODO(kschmi): DCHECK when auto rows/columns are implemented.
+
+      if (child_node.IsOutOfFlowPositioned()) {
+        // TODO(kschmi): Pass correct static positioned offset in.
+        container_builder_.AddOutOfFlowChildCandidate(child_node,
+                                                      LogicalOffset());
+        continue;
+      }
+
+      // Layout child nodes based on constraint space from grid row/column
+      // definitions and the inline and block offsets being accumulated.
+      NGConstraintSpaceBuilder space_builder(
+          ConstraintSpace(), child_node.Style().GetWritingMode(),
+          /* is_new_fc */ true);
+      space_builder.SetIsPaintedAtomically(true);
+      space_builder.SetAvailableSize(
+          LogicalSize(column_base_size, row_base_size));
+      space_builder.SetPercentageResolutionSize(
+          LogicalSize(column_base_size, row_base_size));
+      space_builder.SetTextDirection(child_node.Style().Direction());
+      space_builder.SetIsShrinkToFit(
+          child_node.Style().LogicalWidth().IsAuto());
+      NGConstraintSpace constraint_space = space_builder.ToConstraintSpace();
+      scoped_refptr<const NGLayoutResult> result =
+          child_node.Layout(constraint_space);
+
+      container_builder_.AddChild(
+          result->PhysicalFragment(),
+          {current_inline_offset, current_block_offset});
+
+      // TODO(kschmi): row-gap and column-gap should be accounted for in
+      // inline and block positioning.
+      current_inline_offset += column_base_size;
+    }
+    current_block_offset += row_base_size;
+  }
+
+  // TODO(kschmi): There should not be any remaining children, as grid auto
+  // rows and columns should be expanded to handle all children. However, as
+  // that functionality isn't implemented yet, it is currently possible to
+  // have more children than available rows and columns. For now, place these
+  // children at (0, 0). This should be turned into an assert that no children
+  // remain in the iterator after the above loops have completed iterating over
+  // rows and columns.
+  while (const NGBlockNode child_node = iterator.NextChild()) {
+    NGConstraintSpace constraint_space = BuildSpaceForGridItem(child_node);
+    scoped_refptr<const NGLayoutResult> result =
+        child_node.Layout(constraint_space);
+    container_builder_.AddChild(result->PhysicalFragment(),
+                                {LayoutUnit(), LayoutUnit()});
+  }
 }
 
 }  // namespace blink

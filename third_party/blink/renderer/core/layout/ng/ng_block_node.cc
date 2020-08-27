@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/ng/custom/ng_custom_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
@@ -155,6 +156,9 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
     CreateAlgorithmAndRun<NGCustomLayoutAlgorithm>(params, callback);
   } else if (box.IsMathML()) {
     DetermineMathMLAlgorithmAndRun(box, params, callback);
+  } else if (box.IsLayoutNGGrid() &&
+             RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
+    CreateAlgorithmAndRun<NGGridLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutNGFieldset()) {
     CreateAlgorithmAndRun<NGFieldsetLayoutAlgorithm>(params, callback);
     // If there's a legacy layout box, we can only do block fragmentation if

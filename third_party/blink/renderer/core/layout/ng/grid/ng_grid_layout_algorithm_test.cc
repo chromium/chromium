@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -101,6 +102,31 @@ class NGGridLayoutAlgorithmTest
       growth_limits.push_back(set_iterator.CurrentSet().GrowthLimit());
     }
     return growth_limits;
+  }
+
+  scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
+      Element* element) {
+    NGBlockNode container(ToLayoutBox(element->GetLayoutObject()));
+    NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+        WritingMode::kHorizontalTb, TextDirection::kLtr,
+        LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+        /* shrink_to_fit */ false,
+        /* is_new_formatting_context */ true);
+    return NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(container, space);
+  }
+
+  String DumpFragmentTree(Element* element) {
+    auto fragment = RunBlockLayoutAlgorithm(element);
+    return DumpFragmentTree(fragment.get());
+  }
+
+  String DumpFragmentTree(const blink::NGPhysicalBoxFragment* fragment) {
+    NGPhysicalFragment::DumpFlags flags =
+        NGPhysicalFragment::DumpHeaderText | NGPhysicalFragment::DumpSubtree |
+        NGPhysicalFragment::DumpIndentation | NGPhysicalFragment::DumpOffset |
+        NGPhysicalFragment::DumpSize;
+
+    return fragment->DumpFragmentTree(flags);
   }
 
   scoped_refptr<ComputedStyle> style_;
@@ -343,8 +369,8 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
     <style>
     #grid1 {
       display: grid;
-      grid-template-columns: 5px repeat(auto-fit, 150px) repeat(3, 10px);
-      grid-template-rows: repeat(20, 100px);
+      grid-template-columns: 5px repeat(auto-fit, 150px) repeat(3, 10px) 10px 10px;
+      grid-template-rows: repeat(20, 100px) 10px 10px;
     }
     </style>
     <div id="grid1">
@@ -373,6 +399,11 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
   NGGridTrackCollectionBase::RangeRepeatIterator row_iterator(
       &algorithm.RowTrackCollection(), 0u);
   EXPECT_RANGE(0u, 20u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(20u, 1u, row_iterator);
+  EXPECT_TRUE(row_iterator.MoveToNextRange());
+  EXPECT_RANGE(21u, 1u, row_iterator);
   EXPECT_FALSE(row_iterator.MoveToNextRange());
 
   NGGridTrackCollectionBase::RangeRepeatIterator column_iterator(
@@ -381,10 +412,13 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
   EXPECT_RANGE(0u, 1u, column_iterator);
   EXPECT_TRUE(column_iterator.MoveToNextRange());
 
-  EXPECT_COLLAPSED_RANGE(1u, 3u, column_iterator);
+  EXPECT_RANGE(1u, 3u, column_iterator);
   EXPECT_TRUE(column_iterator.MoveToNextRange());
 
-  EXPECT_RANGE(4u, 3u, column_iterator);
+  EXPECT_RANGE(4u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+
+  EXPECT_RANGE(5u, 1u, column_iterator);
   EXPECT_FALSE(column_iterator.MoveToNextRange());
 }
 
@@ -580,6 +614,55 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
   EXPECT_EQ(expected_row_growth_limits.size(), growth_limits.size());
   for (wtf_size_t i = 0; i < growth_limits.size(); ++i)
     EXPECT_EQ(expected_row_growth_limits[i], growth_limits[i]);
+}
+
+TEST_F(NGGridLayoutAlgorithmTest, FixedSizePositioning) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
+      #grid {
+        display: grid;
+        width: 200px;
+        height: 200px;
+        grid-template-columns: 100px 100px;
+        grid-template-rows: 100px 100px;
+      }
+
+      .grid_item {
+        width: 100px;
+        height: 100px;
+        background-color: gray;
+      }
+
+    </style>
+    <div id="grid">
+      <div class="grid_item">1</div>
+      <div class="grid_item">2</div>
+      <div class="grid_item">3</div>
+      <div class="grid_item">4</div>
+    </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("grid"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:200x200
+    offset:0,0 size:100x100
+      offset:0,0 size:10x10
+    offset:0,100 size:100x100
+      offset:0,0 size:10x10
+    offset:0,200 size:100x100
+      offset:0,0 size:10x10
+    offset:0,300 size:100x100
+      offset:0,0 size:10x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
 }
 
 }  // namespace blink

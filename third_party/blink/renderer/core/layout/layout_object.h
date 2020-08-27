@@ -677,6 +677,7 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   bool IsLayoutNGFlexibleBox() const {
     return IsOfType(kLayoutObjectNGFlexibleBox);
   }
+  bool IsLayoutNGGrid() const { return IsOfType(kLayoutObjectNGGrid); }
   bool IsLayoutNGMixin() const { return IsOfType(kLayoutObjectNGMixin); }
   bool IsLayoutNGListItem() const { return IsOfType(kLayoutObjectNGListItem); }
   bool IsLayoutNGInsideListMarker() const {

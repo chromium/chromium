@@ -4331,7 +4331,7 @@ DISABLE_CFI_PERF
 bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   if (IsInline() || IsFloatingOrOutOfFlowPositioned() ||
       HasNonVisibleOverflow() || IsFlexItemIncludingDeprecatedAndNG() ||
-      IsCustomItem() || IsDocumentElement() || IsGridItem() ||
+      IsCustomItem() || IsDocumentElement() || IsGridItemIncludingNG() ||
       IsWritingModeRoot() || IsMathItem() ||
       StyleRef().Display() == EDisplay::kFlowRoot ||
       ShouldApplyPaintContainment() || ShouldApplyLayoutContainment() ||
