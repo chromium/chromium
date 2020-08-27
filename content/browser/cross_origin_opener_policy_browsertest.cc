@@ -2370,6 +2370,11 @@ class CoopReportingOriginTrialBrowserTest : public ContentBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) final {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+
+    // TODO(https://crbug.com/1119555): Remove this once fixed.
+    // This test relies on the origin-trial's public key to keep its default
+    // value. Overriding it would break the test.
+    CHECK(!command_line->HasSwitch("origin-trial-public-key"));
   }
 
  private:
