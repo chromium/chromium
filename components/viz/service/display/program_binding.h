@@ -126,6 +126,8 @@ class VIZ_SERVICE_EXPORT ProgramKey {
   }
   TexCoordPrecision tex_coord_precision() const { return precision_; }
 
+  ProgramType type() const { return type_; }
+
  private:
   friend struct ProgramKeyHash;
   friend class Program;

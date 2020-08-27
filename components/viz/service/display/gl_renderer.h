@@ -370,6 +370,8 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
 
   ResourceFormat CurrentRenderPassResourceFormat() const;
 
+  bool HasOutputColorMatrix() const;
+
   // A map from RenderPass id to the texture used to draw the RenderPass from.
   base::flat_map<AggregatedRenderPassId, ScopedRenderPassTexture>
       render_pass_textures_;

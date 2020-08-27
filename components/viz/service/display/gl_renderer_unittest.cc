@@ -230,6 +230,7 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
           auto color_transform = gfx::ColorTransform::NewColorTransform(
               adjusted_color_space, dst_color_space,
               gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
+
           ASSERT_EQ(color_transform->GetShaderSource(),
                     renderer()
                         ->current_program_->color_transform_for_testing()
@@ -237,8 +238,15 @@ class GLRendererShaderPixelTest : public cc::PixelTest {
         }
 
         if (validate_output_color_matrix) {
-          ASSERT_NE(
-              -1, renderer()->current_program_->output_color_matrix_location());
+          if (program_key.type() == ProgramType::PROGRAM_TYPE_SOLID_COLOR) {
+            ASSERT_EQ(
+                -1,
+                renderer()->current_program_->output_color_matrix_location());
+          } else {
+            ASSERT_NE(
+                -1,
+                renderer()->current_program_->output_color_matrix_location());
+          }
         }
       }
     }

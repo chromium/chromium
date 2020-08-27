@@ -2092,11 +2092,35 @@ void GLRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad,
   SetupQuadForClippingAndAntialiasing(device_transform, quad, aa_quad,
                                       clip_region, &local_quad, edge);
 
-  gfx::ColorSpace quad_color_space = gfx::ColorSpace::CreateSRGB();
   SetUseProgram(ProgramKey::SolidColor(use_aa ? USE_AA : NO_AA,
                                        tint_gl_composited_content_,
                                        ShouldApplyRoundedCorner(quad)),
-                quad_color_space, CurrentRenderPassColorSpace());
+                CurrentRenderPassColorSpace(), CurrentRenderPassColorSpace());
+
+  gfx::ColorSpace quad_color_space = gfx::ColorSpace::CreateSRGB();
+  SkColor4f color_f = SkColor4f::FromColor(color);
+
+  // Apply color transform if the color space or source and target do not match.
+  if (quad_color_space != CurrentRenderPassColorSpace()) {
+    const gfx::ColorTransform* color_transform =
+        GetColorTransform(quad_color_space, CurrentRenderPassColorSpace());
+    gfx::ColorTransform::TriStim col(color_f.fR, color_f.fG, color_f.fB);
+    color_transform->Transform(&col, 1);
+    color_f.fR = col.x();
+    color_f.fG = col.y();
+    color_f.fB = col.z();
+    color = color_f.toSkColor();
+  }
+
+  // Apply any color matrix that may be present.
+  if (HasOutputColorMatrix()) {
+    const SkMatrix44& output_color_matrix = output_surface_->color_matrix();
+    const SkVector4 color_v(color_f.fR, color_f.fG, color_f.fB, color_f.fA);
+    const SkVector4 result = output_color_matrix * color_v;
+    std::copy(result.fData, result.fData + 4, color_f.vec());
+    color = color_f.toSkColor();
+  }
+
   SetShaderColor(color, opacity);
   if (current_program_->rounded_corner_rect_location() != -1) {
     SetShaderRoundedCorner(
@@ -3537,12 +3561,9 @@ void GLRenderer::SetUseProgram(const ProgramKey& program_key_no_color,
       GetColorTransform(adjusted_src_color_space, dst_color_space);
   program_key.SetColorTransform(color_transform);
 
-  const bool is_root_render_pass =
-      current_frame()->current_render_pass == current_frame()->root_render_pass;
-  const SkMatrix44& output_color_matrix = output_surface_->color_matrix();
-  const bool has_output_color_matrix =
-      is_root_render_pass && !output_color_matrix.isIdentity();
-
+  bool has_output_color_matrix = false;
+  if (program_key.type() != ProgramType::PROGRAM_TYPE_SOLID_COLOR)
+    has_output_color_matrix = HasOutputColorMatrix();
   program_key.set_has_output_color_matrix(has_output_color_matrix);
 
   // Create and set the program if needed.
@@ -3577,7 +3598,7 @@ void GLRenderer::SetUseProgram(const ProgramKey& program_key_no_color,
   if (has_output_color_matrix) {
     DCHECK_NE(current_program_->output_color_matrix_location(), -1);
     float matrix[16];
-    output_color_matrix.asColMajorf(matrix);
+    output_surface_->color_matrix().asColMajorf(matrix);
     gl_->UniformMatrix4fv(current_program_->output_color_matrix_location(), 1,
                           false, matrix);
   }
@@ -4215,6 +4236,13 @@ ResourceFormat GLRenderer::CurrentRenderPassResourceFormat() const {
     return RGBA_F16;
   }
   return PlatformColor::BestSupportedTextureFormat(caps);
+}
+
+bool GLRenderer::HasOutputColorMatrix() const {
+  const bool is_root_render_pass =
+      current_frame()->current_render_pass == current_frame()->root_render_pass;
+  const SkMatrix44& output_color_matrix = output_surface_->color_matrix();
+  return is_root_render_pass && !output_color_matrix.isIdentity();
 }
 
 void GLRenderer::AllocateRenderPassResourceIfNeeded(
