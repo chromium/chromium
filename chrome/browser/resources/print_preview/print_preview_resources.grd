@@ -15,138 +15,138 @@
       <!-- Generated Polymer 3 elements -->
       <include name="IDR_PRINT_PREVIEW_UI_APP_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/app.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <include name="IDR_PRINT_PREVIEW_UI_SIDEBAR_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/sidebar.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <include name="IDR_PRINT_PREVIEW_UI_MARGIN_CONTROL_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/margin_control.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_MARGIN_CONTROL_CONTAINER_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/margin_control_container.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_PREVIEW_AREA_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/preview_area.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <include name="IDR_PRINT_PREVIEW_UI_HEADER_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/header.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_BUTTON_STRIP_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/button_strip.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <include name="IDR_PRINT_PREVIEW_UI_SETTINGS_SECTION_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/settings_section.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_SETTINGS_SELECT_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/settings_select.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <if expr="not chromeos">
         <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_SELECT_JS"
                  file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_select.js"
-                 use_base_dir="false" compress="false" type="BINDATA"/>
+                 use_base_dir="false" type="BINDATA"/>
       </if>
       <if expr="chromeos">
         <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_SELECT_CROS_JS"
                  file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_select_cros.js"
-                 use_base_dir="false" compress="false" type="BINDATA"/>
+                 use_base_dir="false" type="BINDATA"/>
         <include name="IDR_PRINT_PREVIEW_UI_PRINT_PREVIEW_DESTINATION_DROPDOWN_CROS_JS"
                  file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_dropdown_cros.js"
-                 use_base_dir="false" compress="false" type="BINDATA"/>
+                 use_base_dir="false" type="BINDATA"/>
         <include name="IDR_PRINT_PREVIEW_UI_PRINT_PREVIEW_PRINTER_STATUS_ICON_CROS_JS"
                  file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/printer_status_icon_cros.js"
-                 use_base_dir="false" compress="false" type="BINDATA"/>
+                 use_base_dir="false" type="BINDATA"/>
       </if>
       <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_SELECT_CSS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_select_css.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <if expr="chromeos">
         <include name="IDR_PRINT_PREVIEW_UI_PIN_SETTINGS_JS"
                  file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/pin_settings.js"
-                 use_base_dir="false" compress="false" type="BINDATA"/>
+                 use_base_dir="false" type="BINDATA"/>
       </if>
       <include name="IDR_PRINT_PREVIEW_UI_PAGES_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/pages_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_COPIES_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/copies_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_LAYOUT_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/layout_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_COLOR_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/color_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_MEDIA_SIZE_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/media_size_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_MARGINS_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/margins_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_DPI_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/dpi_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_DUPLEX_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/duplex_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_SCALING_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/scaling_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_PAGES_PER_SHEET_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/pages_per_sheet_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_OTHER_OPTIONS_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/other_options_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_ADVANCED_OPTIONS_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/advanced_options_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_MORE_SETTINGS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/more_settings.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_ADVANCED_SETTINGS_DIALOG_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/advanced_settings_dialog.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_ADVANCED_SETTINGS_ITEM_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/advanced_settings_item.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_NUMBER_SETTINGS_SECTION_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/number_settings_section.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <if expr="not chromeos">
         <include name="IDR_PRINT_PREVIEW_UI_LINK_CONTAINER_JS"
                  file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/link_container.js"
-                 use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+                 use_base_dir="false" type="BINDATA" preprocess="true"/>
       </if>
       <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_DIALOG_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_dialog.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_LIST_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_list.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_DESTINATION_LIST_ITEM_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/destination_list_item.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <include name="IDR_PRINT_PREVIEW_UI_PROVISIONAL_DESTINATION_RESOLVER_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/provisional_destination_resolver.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_PRINT_PREVIEW_SEARCH_BOX_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/print_preview_search_box.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_PRINT_PREVIEW_SHARED_CSS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/print_preview_shared_css.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <include name="IDR_PRINT_PREVIEW_UI_PRINT_PREVIEW_VARS_CSS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/print_preview_vars_css.js"
-               use_base_dir="false" compress="false" type="BINDATA" preprocess="true"/>
+               use_base_dir="false" type="BINDATA" preprocess="true"/>
       <include name="IDR_PRINT_PREVIEW_UI_THROBBER_CSS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/throbber_css.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
       <include name="IDR_PRINT_PREVIEW_UI_ICONS_JS"
                file="${root_gen_dir}/chrome/browser/resources/print_preview/ui/icons.js"
-               use_base_dir="false" compress="false" type="BINDATA"/>
+               use_base_dir="false" type="BINDATA"/>
     </includes>
     <structures>
       <structure name="IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML"
