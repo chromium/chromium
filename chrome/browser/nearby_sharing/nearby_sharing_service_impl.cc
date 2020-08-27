@@ -227,7 +227,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   GetBluetoothAdapter();
 
   nearby_notification_manager_ = std::make_unique<NearbyNotificationManager>(
-      notification_display_service, this, prefs, profile_);
+      notification_display_service, this, prefs);
 }
 
 NearbySharingServiceImpl::~NearbySharingServiceImpl() {
