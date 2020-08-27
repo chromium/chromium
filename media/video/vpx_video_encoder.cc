@@ -140,11 +140,18 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
       codec_config_.g_input_bit_depth = 8;
       break;
   }
-  vpx_image_ =
-      vpx_img_wrap(nullptr, img_fmt, options.width, options.height, 1, nullptr);
-  vpx_image_->bit_depth = bits_for_storage;
 
-  auto status = SetUpVpxConfig(options, &codec_config_);
+  Status status;
+  if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt, options.width,
+                                  options.height, 1, nullptr)) {
+    status = Status(StatusCode::kEncoderInitializationError,
+                    "Invalid format or frame size.");
+    std::move(done_cb).Run(status);
+    return;
+  }
+  vpx_image_.bit_depth = bits_for_storage;
+
+  status = SetUpVpxConfig(options, &codec_config_);
   if (!status.is_ok()) {
     std::move(done_cb).Run(status);
     return;
@@ -230,29 +237,29 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
           frame->stride(media::VideoFrame::kUPlane),
           frame->visible_data(media::VideoFrame::kVPlane),
           frame->stride(media::VideoFrame::kVPlane),
-          reinterpret_cast<uint16_t*>(vpx_image_->planes[VPX_PLANE_Y]),
-          vpx_image_->stride[VPX_PLANE_Y] / 2,
-          reinterpret_cast<uint16_t*>(vpx_image_->planes[VPX_PLANE_U]),
-          vpx_image_->stride[VPX_PLANE_U] / 2,
-          reinterpret_cast<uint16_t*>(vpx_image_->planes[VPX_PLANE_V]),
-          vpx_image_->stride[VPX_PLANE_V] / 2, frame->coded_size().width(),
+          reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_Y]),
+          vpx_image_.stride[VPX_PLANE_Y] / 2,
+          reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_U]),
+          vpx_image_.stride[VPX_PLANE_U] / 2,
+          reinterpret_cast<uint16_t*>(vpx_image_.planes[VPX_PLANE_V]),
+          vpx_image_.stride[VPX_PLANE_V] / 2, frame->coded_size().width(),
           frame->coded_size().height());
       break;
     case media::VP9PROFILE_PROFILE3:
       NOTREACHED();
       break;
     default:
-      vpx_image_->planes[VPX_PLANE_Y] =
+      vpx_image_.planes[VPX_PLANE_Y] =
           const_cast<uint8_t*>(frame->visible_data(media::VideoFrame::kYPlane));
-      vpx_image_->planes[VPX_PLANE_U] =
+      vpx_image_.planes[VPX_PLANE_U] =
           const_cast<uint8_t*>(frame->visible_data(media::VideoFrame::kUPlane));
-      vpx_image_->planes[VPX_PLANE_V] =
+      vpx_image_.planes[VPX_PLANE_V] =
           const_cast<uint8_t*>(frame->visible_data(media::VideoFrame::kVPlane));
-      vpx_image_->stride[VPX_PLANE_Y] =
+      vpx_image_.stride[VPX_PLANE_Y] =
           frame->stride(media::VideoFrame::kYPlane);
-      vpx_image_->stride[VPX_PLANE_U] =
+      vpx_image_.stride[VPX_PLANE_U] =
           frame->stride(media::VideoFrame::kUPlane);
-      vpx_image_->stride[VPX_PLANE_V] =
+      vpx_image_.stride[VPX_PLANE_V] =
           frame->stride(media::VideoFrame::kVPlane);
       break;
   }
@@ -261,7 +268,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   auto duration = GetFrameDuration(*frame);
   auto deadline = VPX_DL_REALTIME;
   vpx_codec_flags_t flags = key_frame ? VPX_EFLAG_FORCE_KF : 0;
-  auto vpx_error = vpx_codec_encode(codec_, vpx_image_, timestamp, duration,
+  auto vpx_error = vpx_codec_encode(codec_, &vpx_image_, timestamp, duration,
                                     flags, deadline);
 
   if (vpx_error != VPX_CODEC_OK) {
@@ -319,10 +326,10 @@ VpxVideoEncoder::~VpxVideoEncoder() {
   DCHECK_EQ(error, VPX_CODEC_OK);
   delete codec_;
 
-  if (vpx_image_ != nullptr) {
-    vpx_img_free(vpx_image_);
-    vpx_image_ = nullptr;
-  }
+  // It's safe to call vpx_img_free, even if vpx_image_ has never been
+  // initialized. vpx_img_free is not going to deallocate the vpx_image_
+  // itself, only internal buffers.
+  vpx_img_free(&vpx_image_);
 }
 
 void VpxVideoEncoder::Flush(StatusCB done_cb) {
