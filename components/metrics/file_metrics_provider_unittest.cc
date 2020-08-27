@@ -75,7 +75,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
             base::StatisticsRecorder::CreateTemporaryForTesting()),
         prefs_(new TestingPrefServiceSimple) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-    FileMetricsProvider::RegisterPrefs(prefs_->registry(), kMetricsName);
+    FileMetricsProvider::RegisterSourcePrefs(prefs_->registry(), kMetricsName);
     FileMetricsProvider::SetTaskRunnerForTesting(task_runner_);
   }
 

@@ -134,6 +134,7 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   int GetPackageNameLimitRatePerMille() override;
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
+  bool IsPersistentHistogramsEnabled() override;
 
  private:
   bool app_in_foreground_ = false;

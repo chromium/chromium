@@ -11,6 +11,7 @@
 #include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 #include "base/android/jni_android.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/no_destructor.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -130,6 +131,10 @@ void AwMetricsServiceClient::RegisterAdditionalMetricsProviders(
       std::make_unique<android_webview::AwStabilityMetricsProvider>(
           pref_service()));
   delegate_->RegisterAdditionalMetricsProviders(service);
+}
+
+bool AwMetricsServiceClient::IsPersistentHistogramsEnabled() {
+  return base::FeatureList::IsEnabled(base::kPersistentHistogramsFeature);
 }
 
 // static

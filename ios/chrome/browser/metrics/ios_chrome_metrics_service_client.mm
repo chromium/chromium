@@ -161,7 +161,8 @@ void IOSChromeMetricsServiceClient::RegisterPrefs(
     PrefRegistrySimple* registry) {
   metrics::MetricsService::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
-  metrics::FileMetricsProvider::RegisterPrefs(registry, kBrowserMetricsName);
+  metrics::FileMetricsProvider::RegisterSourcePrefs(registry,
+                                                    kBrowserMetricsName);
   metrics::RegisterMetricsReportingStatePrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
 }

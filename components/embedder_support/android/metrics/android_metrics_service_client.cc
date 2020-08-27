@@ -12,6 +12,7 @@
 #include "base/base_paths_android.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
@@ -135,6 +136,11 @@ void RegisterOrRemovePreviousRunMetricsFile(
   }
 }
 
+bool IsSamplesCounterEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      base::kPersistentHistogramsFeature, "prev_run_metrics_count_only", false);
+}
+
 std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     PrefService* pref_service,
     bool metrics_reporting_enabled) {
@@ -158,8 +164,12 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     metrics::FileMetricsProvider::Params browser_metrics_params(
         browser_metrics_upload_dir,
         metrics::FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
-        metrics::FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE,
+        IsSamplesCounterEnabled()
+            ? metrics::FileMetricsProvider::
+                  ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER
+            : metrics::FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE,
         kBrowserMetricsName);
+
     browser_metrics_params.max_dir_kib = kMaxHistogramStorageKiB;
     browser_metrics_params.filter =
         base::BindRepeating(FilterBrowserMetricsFiles);
@@ -192,9 +202,11 @@ AndroidMetricsServiceClient::~AndroidMetricsServiceClient() = default;
 // static
 void AndroidMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   metrics::MetricsService::RegisterPrefs(registry);
-  metrics::FileMetricsProvider::RegisterPrefs(registry, kBrowserMetricsName);
-  metrics::FileMetricsProvider::RegisterPrefs(registry,
-                                              kCrashpadHistogramAllocatorName);
+  metrics::FileMetricsProvider::RegisterSourcePrefs(registry,
+                                                    kBrowserMetricsName);
+  metrics::FileMetricsProvider::RegisterSourcePrefs(
+      registry, kCrashpadHistogramAllocatorName);
+  metrics::FileMetricsProvider::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
 }
@@ -259,7 +271,7 @@ void AndroidMetricsServiceClient::CreateMetricsService(
       std::make_unique<CPUMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ScreenInfoMetricsProvider>());
-  if (client->EnablePersistentHistograms()) {
+  if (client->IsPersistentHistogramsEnabled()) {
     metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
         pref_service_, metrics_state_manager_->IsMetricsReportingEnabled()));
   }
@@ -538,7 +550,7 @@ bool AndroidMetricsServiceClient::IsInPackageNameSample() {
 void AndroidMetricsServiceClient::RegisterAdditionalMetricsProviders(
     MetricsService* service) {}
 
-bool AndroidMetricsServiceClient::EnablePersistentHistograms() {
+bool AndroidMetricsServiceClient::IsPersistentHistogramsEnabled() {
   return false;
 }
 

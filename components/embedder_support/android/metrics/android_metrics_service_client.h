@@ -212,7 +212,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // client returns true then its
   // variations::PlatformFieldTrials::SetupFieldTrials needs to also call
   // InstantiatePersistentHistograms.
-  virtual bool EnablePersistentHistograms();
+  virtual bool IsPersistentHistogramsEnabled();
 
   // Returns the embedding application's package name (unconditionally). Virtual
   // for testing.

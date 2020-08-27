@@ -83,6 +83,10 @@ const char kMetricsSessionID[] = "user_experience_metrics.session_id";
 const char kMetricsLastSeenPrefix[] =
     "user_experience_metrics.last_seen.";
 
+// Array of the number of samples in the memory mapped file.
+const char kMetricsFileMetricsMetadata[] =
+    "user_experience_metrics.file_metrics_metadata";
+
 // Number of times the browser has been able to register crash reporting.
 const char kStabilityBreakpadRegistrationSuccess[] =
     "user_experience_metrics.stability.breakpad_registration_ok";
@@ -149,6 +153,17 @@ const char kStabilityExtensionRendererFailedLaunchCount[] =
 // last report.
 const char kStabilityExtensionRendererLaunchCount[] =
     "user_experience_metrics.stability.extension_renderer_launch_count";
+
+// The total number of samples that will be lost if ASSOCIATE_INTERNAL_PROFILE
+// isn't enabled since the previous stability recorded, this is different than
+// the previous browser run, because one file was just uploaded before the
+// stability is recorded.
+const char kStabilityFileMetricsUnsentSamplesCount[] =
+    "user_experience_metrics.stability.file_metrics_unsent_samples_count";
+
+// The number of the unsent files at the time the stability recorded.
+const char kStabilityFileMetricsUnsentFilesCount[] =
+    "user_experience_metrics.stability.file_metrics_unsent_files_count";
 
 // The GMS core version used in Chrome.
 const char kStabilityGmsCoreVersion[] =

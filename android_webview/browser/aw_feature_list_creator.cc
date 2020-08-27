@@ -60,11 +60,15 @@ const char* const kPersistentPrefsAllowlist[] = {
     // Random seed value for variation's entropy providers. Used to assign
     // experiment groups.
     metrics::prefs::kMetricsLowEntropySource,
+    // File metrics metadata.
+    metrics::prefs::kMetricsFileMetricsMetadata,
     // Logged directly in the ChromeUserMetricsExtension proto.
     metrics::prefs::kInstallDate,
     metrics::prefs::kMetricsReportingEnabledTimestamp,
     metrics::prefs::kMetricsSessionID,
     // Logged in system_profile.stability fields.
+    metrics::prefs::kStabilityFileMetricsUnsentFilesCount,
+    metrics::prefs::kStabilityFileMetricsUnsentSamplesCount,
     metrics::prefs::kStabilityLaunchCount,
     metrics::prefs::kStabilityPageLoadCount,
     metrics::prefs::kStabilityRendererHangCount,

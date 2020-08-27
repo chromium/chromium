@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/sequence_checker.h"
@@ -97,6 +98,15 @@ class FileMetricsProvider : public MetricsProvider,
     // that time even though actual transfer will be delayed if an
     // embedded profile is found.
     ASSOCIATE_INTERNAL_PROFILE_OR_PREVIOUS_RUN,
+
+    // Used to only record the metadata of |ASSOCIATE_INTERNAL_PROFILE| but not
+    // merge the metrics. Instead, write metadata such as the samples count etc,
+    // to prefs then delete file. To precisely simulate the
+    // |ASSOCIATE_INTERNAL_PROFILE| behavior, one file record will be read out
+    // and added to the stability prefs each time the metrics service requests
+    // the |ASSOCIATE_INTERNAL_PROFILE| source metrics. Finally, the results
+    // will be recoreded as stability metrics in the next run.
+    ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER,
   };
 
   enum FilterAction {
@@ -159,8 +169,8 @@ class FileMetricsProvider : public MetricsProvider,
   // Indicates a file or directory to be monitored and how the file or files
   // within that directory are used. Because some metadata may need to persist
   // across process restarts, preferences entries are used based on the
-  // |prefs_key| name. Call RegisterPrefs() with the same name to create the
-  // necessary keys in advance. Set |prefs_key| empty (nullptr will work) if
+  // |prefs_key| name. Call RegisterSourcePrefs() with the same name to create
+  // the necessary keys in advance. Set |prefs_key| empty (nullptr will work) if
   // no persistence is required. ACTIVE files shouldn't have a pref key as
   // they update internal state about what has been previously sent.
   void RegisterSource(const Params& params);
@@ -168,8 +178,10 @@ class FileMetricsProvider : public MetricsProvider,
   // Registers all necessary preferences for maintaining persistent state
   // about a monitored file across process restarts. The |prefs_key| is
   // typically the filename.
-  static void RegisterPrefs(PrefRegistrySimple* prefs,
-                            const base::StringPiece prefs_key);
+  static void RegisterSourcePrefs(PrefRegistrySimple* prefs,
+                                  const base::StringPiece prefs_key);
+
+  static void RegisterPrefs(PrefRegistrySimple* prefs);
 
   // Sets the task runner to use for testing.
   static void SetTaskRunnerForTesting(
@@ -250,7 +262,7 @@ class FileMetricsProvider : public MetricsProvider,
 
   // Checks a list of sources (on a task-runner allowed to do I/O) and merge
   // any data found within them.
-  static void CheckAndMergeMetricSourcesOnTaskRunner(SourceInfoList* sources);
+  void CheckAndMergeMetricSourcesOnTaskRunner(SourceInfoList* sources);
 
   // Checks a single source and maps it into memory.
   static AccessResult CheckAndMapMetricSource(SourceInfo* source);
@@ -272,6 +284,12 @@ class FileMetricsProvider : public MetricsProvider,
       SourceInfo* source,
       SystemProfileProto* system_profile_proto,
       base::HistogramSnapshotManager* snapshot_manager);
+
+  // Records the metadata of the |source| to perf.
+  void RecordFileMetadataOnTaskRunner(SourceInfo* source);
+
+  // Appends the samples count to pref on UI thread.
+  void AppendToSamplesCountPref(size_t samples_count);
 
   // Creates a task to check all monitored sources for updates.
   void ScheduleSourcesCheck();
@@ -306,6 +324,11 @@ class FileMetricsProvider : public MetricsProvider,
       std::unique_ptr<SourceInfo> source,
       bool success);
 
+  // Simulates the independent metrics to read the first item from
+  // kMetricsBrowserMetricsMetadata and updates the stability prefs accordingly,
+  // return true if the pref isn't empty.
+  bool SimulateIndependentMetrics();
+
   // A task-runner capable of performing I/O.
   scoped_refptr<base::TaskRunner> task_runner_;
 
@@ -325,6 +348,8 @@ class FileMetricsProvider : public MetricsProvider,
 
   // The preferences-service used to store persistent state about sources.
   PrefService* pref_service_;
+
+  const scoped_refptr<base::TaskRunner> main_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileMetricsProvider> weak_factory_{this};

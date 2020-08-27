@@ -16,6 +16,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -26,12 +27,15 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
 #include "base/task_runner_util.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/persistent_histograms.h"
 #include "components/metrics/persistent_system_profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace metrics {
 
@@ -191,7 +195,10 @@ FileMetricsProvider::Params::Params(const base::FilePath& path,
 FileMetricsProvider::Params::~Params() {}
 
 FileMetricsProvider::FileMetricsProvider(PrefService* local_state)
-    : task_runner_(CreateBackgroundTaskRunner()), pref_service_(local_state) {
+    : task_runner_(CreateBackgroundTaskRunner()),
+      pref_service_(local_state),
+      main_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+  DCHECK(main_task_runner_);
   base::StatisticsRecorder::RegisterHistogramProvider(
       weak_factory_.GetWeakPtr());
 }
@@ -216,6 +223,7 @@ void FileMetricsProvider::RegisterSource(const Params& params) {
   switch (params.association) {
     case ASSOCIATE_CURRENT_RUN:
     case ASSOCIATE_INTERNAL_PROFILE:
+    case ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER:
       sources_to_check_.push_back(std::move(source));
       break;
     case ASSOCIATE_PREVIOUS_RUN:
@@ -227,10 +235,16 @@ void FileMetricsProvider::RegisterSource(const Params& params) {
 }
 
 // static
-void FileMetricsProvider::RegisterPrefs(PrefRegistrySimple* prefs,
-                                        const base::StringPiece prefs_key) {
+void FileMetricsProvider::RegisterSourcePrefs(
+    PrefRegistrySimple* prefs,
+    const base::StringPiece prefs_key) {
   prefs->RegisterInt64Pref(metrics::prefs::kMetricsLastSeenPrefix +
                            prefs_key.as_string(), 0);
+}
+
+//  static
+void FileMetricsProvider::RegisterPrefs(PrefRegistrySimple* prefs) {
+  prefs->RegisterListPref(metrics::prefs::kMetricsFileMetricsMetadata);
 }
 
 // static
@@ -373,7 +387,6 @@ void FileMetricsProvider::FinishedWithSource(SourceInfo* source,
   }
 }
 
-// static
 void FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner(
     SourceInfoList* sources) {
   // This method has all state information passed in |sources| and is intended
@@ -401,7 +414,11 @@ void FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner(
         if (source->association == ASSOCIATE_INTERNAL_PROFILE)
           break;
 
-        MergeHistogramDeltasFromSource(source.get());
+        if (source->association == ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER) {
+          RecordFileMetadataOnTaskRunner(source.get());
+        } else {
+          MergeHistogramDeltasFromSource(source.get());
+        }
         DCHECK(source->read_complete);
       }
 
@@ -627,6 +644,25 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
   return false;
 }
 
+void FileMetricsProvider::AppendToSamplesCountPref(size_t samples_count) {
+  ListPrefUpdate update(pref_service_,
+                        metrics::prefs::kMetricsFileMetricsMetadata);
+  update->Append(static_cast<int>(samples_count));
+}
+
+void FileMetricsProvider::RecordFileMetadataOnTaskRunner(SourceInfo* source) {
+  base::HistogramBase::Count samples_count = 0;
+  base::PersistentHistogramAllocator::Iterator it{source->allocator.get()};
+  std::unique_ptr<base::HistogramBase> histogram;
+  while ((histogram = it.GetNext()) != nullptr) {
+    samples_count += histogram->SnapshotFinalDelta()->TotalCount();
+  }
+  main_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&FileMetricsProvider::AppendToSamplesCountPref,
+                                base::Unretained(this), samples_count));
+  source->read_complete = true;
+}
+
 void FileMetricsProvider::ScheduleSourcesCheck() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -643,7 +679,7 @@ void FileMetricsProvider::ScheduleSourcesCheck() {
       FROM_HERE,
       base::BindOnce(
           &FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner,
-          base::Unretained(check_list)),
+          base::Unretained(this), base::Unretained(check_list)),
       base::BindOnce(&FileMetricsProvider::RecordSourcesChecked,
                      weak_factory_.GetWeakPtr(), base::Owned(check_list)));
 }
@@ -723,7 +759,7 @@ void FileMetricsProvider::OnDidCreateMetricsLog() {
 
 bool FileMetricsProvider::HasIndependentMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !sources_with_profile_.empty();
+  return !sources_with_profile_.empty() || SimulateIndependentMetrics();
 }
 
 void FileMetricsProvider::ProvideIndependentMetrics(
@@ -842,6 +878,31 @@ void FileMetricsProvider::MergeHistogramDeltas() {
   for (std::unique_ptr<SourceInfo>& source : sources_mapped_) {
     MergeHistogramDeltasFromSource(source.get());
   }
+}
+
+bool FileMetricsProvider::SimulateIndependentMetrics() {
+  if (!pref_service_->HasPrefPath(
+          metrics::prefs::kMetricsFileMetricsMetadata)) {
+    return false;
+  }
+
+  ListPrefUpdate list_value(pref_service_,
+                            metrics::prefs::kMetricsFileMetricsMetadata);
+  if (list_value->empty())
+    return false;
+
+  base::Value::ListView mutable_list = list_value->GetList();
+  size_t count = pref_service_->GetInteger(
+      metrics::prefs::kStabilityFileMetricsUnsentSamplesCount);
+  pref_service_->SetInteger(
+      metrics::prefs::kStabilityFileMetricsUnsentSamplesCount,
+      mutable_list[0].GetInt() + count);
+  pref_service_->SetInteger(
+      metrics::prefs::kStabilityFileMetricsUnsentFilesCount,
+      list_value->GetSize() - 1);
+  list_value->EraseListIter(mutable_list.begin());
+
+  return true;
 }
 
 }  // namespace metrics

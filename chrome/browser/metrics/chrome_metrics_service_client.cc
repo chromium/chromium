@@ -209,16 +209,17 @@ base::LazyInstance<std::string>::Leaky g_environment_for_crash_reporter;
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
 
 void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
-  metrics::FileMetricsProvider::RegisterPrefs(registry, kBrowserMetricsName);
+  metrics::FileMetricsProvider::RegisterSourcePrefs(registry,
+                                                    kBrowserMetricsName);
 
-  metrics::FileMetricsProvider::RegisterPrefs(registry,
-                                              kCrashpadHistogramAllocatorName);
+  metrics::FileMetricsProvider::RegisterSourcePrefs(
+      registry, kCrashpadHistogramAllocatorName);
 
 #if defined(OS_WIN)
-  metrics::FileMetricsProvider::RegisterPrefs(
+  metrics::FileMetricsProvider::RegisterSourcePrefs(
       registry, installer::kSetupHistogramAllocatorName);
 
-  metrics::FileMetricsProvider::RegisterPrefs(
+  metrics::FileMetricsProvider::RegisterSourcePrefs(
       registry, notification_helper::kNotificationHelperHistogramAllocatorName);
 #endif
 }

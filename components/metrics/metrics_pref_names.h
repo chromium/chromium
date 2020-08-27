@@ -12,6 +12,7 @@ namespace prefs {
 // component. Document each in the .cc file.
 extern const char kInstallDate[];
 extern const char kMetricsClientID[];
+extern const char kMetricsFileMetricsMetadata[];
 extern const char kMetricsDefaultOptIn[];
 extern const char kMetricsInitialLogs[];
 extern const char kMetricsInitialLogsMetadata[];
@@ -47,6 +48,8 @@ extern const char kStabilityExitedCleanly[];
 extern const char kStabilityExtensionRendererCrashCount[];
 extern const char kStabilityExtensionRendererFailedLaunchCount[];
 extern const char kStabilityExtensionRendererLaunchCount[];
+extern const char kStabilityFileMetricsUnsentSamplesCount[];
+extern const char kStabilityFileMetricsUnsentFilesCount[];
 extern const char kStabilityGmsCoreVersion[];
 extern const char kStabilityGpuCrashCount[];
 extern const char kStabilityIncompleteSessionEndCount[];

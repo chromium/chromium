@@ -48,7 +48,7 @@ class WebLayerMetricsServiceClient
   int GetPackageNameLimitRatePerMille() override;
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
-  bool EnablePersistentHistograms() override;
+  bool IsPersistentHistogramsEnabled() override;
   bool IsOffTheRecordSessionActive() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 

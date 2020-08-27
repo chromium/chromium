@@ -153,7 +153,7 @@ void WebLayerMetricsServiceClient::RegisterAdditionalMetricsProviders(
   service->RegisterMetricsProvider(std::make_unique<PageLoadMetricsProvider>());
 }
 
-bool WebLayerMetricsServiceClient::EnablePersistentHistograms() {
+bool WebLayerMetricsServiceClient::IsPersistentHistogramsEnabled() {
   return true;
 }
 
