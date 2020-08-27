@@ -51121,8 +51121,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>donnd@chromium.org</owner>
   <owner>jinsukkim@chromium.org</owner>
   <summary>
-    Records whether the user opened the Ephemeral Tab panel when it was shown.
-    Recorded when the UX is hidden. Implemented for Android.
+    Records whether the user fully opened the Ephemeral Tab panel when it was
+    shown. Recorded when the UX is hidden. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="EphemeralTab.CtrPeek" enum="BooleanOpened" expires_after="M88">
+  <owner>donnd@chromium.org</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <summary>
+    Records whether the user opened the Ephemeral Tab panel beyond peeking
+    state. Recorded when the UX is hidden. Implemented for Android.
   </summary>
 </histogram>
 
