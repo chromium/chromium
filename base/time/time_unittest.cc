@@ -958,6 +958,134 @@ TEST_F(TimeTest, FromLocalExplodedCrashOnAndroid) {
 }
 #endif  // OS_ANDROID
 
+// Regression test for https://crbug.com/1104442
+TEST_F(TimeTest, Explode_Y10KCompliance) {
+  constexpr int kDaysPerYear = 365;
+  constexpr int64_t kHalfYearInMicros =
+      TimeDelta::FromDays(kDaysPerYear / 2).InMicroseconds();
+
+  // The Y2038 issue occurs when a 32-bit signed integer overflows.
+  constexpr int64_t kYear2038MicrosOffset =
+      Time::kTimeTToMicrosecondsOffset +
+      (std::numeric_limits<int32_t>::max() * Time::kMicrosecondsPerSecond);
+
+  // 1 March 10000 at noon.
+  constexpr int64_t kYear10000YearsOffset = 10000 - 1970;
+  constexpr int kExtraLeapDaysOverThoseYears = 1947;
+  constexpr int kDaysFromJanToMar10000 = 31 + 29;
+  constexpr int64_t kMarch10000MicrosOffset =
+      Time::kTimeTToMicrosecondsOffset +
+      TimeDelta::FromDays(kYear10000YearsOffset * kDaysPerYear +
+                          kExtraLeapDaysOverThoseYears + kDaysFromJanToMar10000)
+          .InMicroseconds() +
+      TimeDelta::FromHours(12).InMicroseconds();
+
+  // Windows uses a 64-bit signed integer type that reperesents the number of
+  // 1/10 microsecond ticks.
+  constexpr int64_t kWindowsMaxMicrosOffset =
+      std::numeric_limits<int64_t>::max() / 10;
+
+  // ICU's Calendar API uses double values. Thus, the maximum supported value is
+  // the maximum integer that can be represented by a double.
+  static_assert(std::numeric_limits<double>::radix == 2, "");
+  constexpr int64_t kMaxIntegerAsDoubleMillis =
+      int64_t{1} << std::numeric_limits<double>::digits;
+  constexpr int64_t kIcuMaxMicrosOffset =
+      Time::kTimeTToMicrosecondsOffset +
+      (kMaxIntegerAsDoubleMillis * Time::kMicrosecondsPerMillisecond + 999);
+
+  const auto make_time = [](int64_t micros) {
+    return Time::FromDeltaSinceWindowsEpoch(
+        TimeDelta::FromMicroseconds(micros));
+  };
+
+  const struct TestCase {
+    Time time;
+    Time::Exploded expected;
+  } kTestCases[] = {
+      // A very long time ago.
+      {Time::Min(), Time::Exploded{-290677, 12, 4, 23, 19, 59, 5, 224}},
+
+      // Before/On/After 1 Jan 1601.
+      {make_time(-kHalfYearInMicros),
+       Time::Exploded{1600, 7, 1, 3, 0, 0, 0, 0}},
+      {make_time(0), Time::Exploded{1601, 1, 1, 1, 0, 0, 0, 0}},
+      {make_time(kHalfYearInMicros), Time::Exploded{1601, 7, 1, 2, 0, 0, 0, 0}},
+
+      // Before/On/After 1 Jan 1970.
+      {make_time(Time::kTimeTToMicrosecondsOffset - kHalfYearInMicros),
+       Time::Exploded{1969, 7, 4, 3, 0, 0, 0, 0}},
+      {make_time(Time::kTimeTToMicrosecondsOffset),
+       Time::Exploded{1970, 1, 4, 1, 0, 0, 0, 0}},
+      {make_time(Time::kTimeTToMicrosecondsOffset + kHalfYearInMicros),
+       Time::Exploded{1970, 7, 4, 2, 0, 0, 0, 0}},
+
+      // Before/On/After 19 January 2038.
+      {make_time(kYear2038MicrosOffset - kHalfYearInMicros),
+       Time::Exploded{2037, 7, 2, 21, 3, 14, 7, 0}},
+      {make_time(kYear2038MicrosOffset),
+       Time::Exploded{2038, 1, 2, 19, 3, 14, 7, 0}},
+      {make_time(kYear2038MicrosOffset + kHalfYearInMicros),
+       Time::Exploded{2038, 7, 2, 20, 3, 14, 7, 0}},
+
+      // Before/On/After 1 March 10000 at noon.
+      {make_time(kMarch10000MicrosOffset - kHalfYearInMicros),
+       Time::Exploded{9999, 9, 3, 1, 12, 0, 0, 0}},
+      {make_time(kMarch10000MicrosOffset),
+       Time::Exploded{10000, 3, 3, 1, 12, 0, 0, 0}},
+      {make_time(kMarch10000MicrosOffset + kHalfYearInMicros),
+       Time::Exploded{10000, 8, 3, 30, 12, 0, 0, 0}},
+
+      // Before/On/After Windows Max (14 September 30828).
+      {make_time(kWindowsMaxMicrosOffset - kHalfYearInMicros),
+       Time::Exploded{30828, 3, 4, 16, 2, 48, 5, 477}},
+      {make_time(kWindowsMaxMicrosOffset),
+       Time::Exploded{30828, 9, 4, 14, 2, 48, 5, 477}},
+      {make_time(kWindowsMaxMicrosOffset + kHalfYearInMicros),
+       Time::Exploded{30829, 3, 4, 15, 2, 48, 5, 477}},
+
+      // Before/On/After ICU Max.
+      {make_time(kIcuMaxMicrosOffset - kHalfYearInMicros),
+       Time::Exploded{287396, 4, 3, 13, 8, 59, 0, 992}},
+      {make_time(kIcuMaxMicrosOffset),
+       Time::Exploded{287396, 10, 3, 12, 8, 59, 0, 992}},
+      {make_time(kIcuMaxMicrosOffset + kHalfYearInMicros),
+       Time::Exploded{287397, 4, 3, 12, 8, 59, 0, 992}},
+
+      // A very long time from now.
+      {Time::Max(), Time::Exploded{293878, 1, 4, 10, 4, 0, 54, 775}},
+  };
+
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message() << "Time: " << test_case.time);
+
+    Time::Exploded exploded = {};
+    test_case.time.UTCExplode(&exploded);
+
+    // Confirm the implementation provides a correct conversion for all inputs
+    // within the guaranteed range (as discussed in the header comments). If an
+    // implementation provides a result for inputs outside the guaranteed range,
+    // the result must still be correct.
+    if (exploded.HasValidValues()) {
+      EXPECT_EQ(test_case.expected.year, exploded.year);
+      EXPECT_EQ(test_case.expected.month, exploded.month);
+      EXPECT_EQ(test_case.expected.day_of_week, exploded.day_of_week);
+      EXPECT_EQ(test_case.expected.day_of_month, exploded.day_of_month);
+      EXPECT_EQ(test_case.expected.hour, exploded.hour);
+      EXPECT_EQ(test_case.expected.minute, exploded.minute);
+      EXPECT_EQ(test_case.expected.second, exploded.second);
+      EXPECT_EQ(test_case.expected.millisecond, exploded.millisecond);
+    } else {
+      // The implementation could not provide a conversion. That is only allowed
+      // for inputs outside the guaranteed range.
+      const bool is_in_range =
+          test_case.time >= make_time(0) &&
+          test_case.time <= make_time(kWindowsMaxMicrosOffset);
+      EXPECT_FALSE(is_in_range);
+    }
+  }
+}
+
 TEST_F(TimeTest, FromExploded_MinMax) {
   Time::Exploded exploded = {0};
   exploded.month = 1;

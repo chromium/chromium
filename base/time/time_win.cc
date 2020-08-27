@@ -62,13 +62,17 @@ int64_t FileTimeToMicroseconds(const FILETIME& ft) {
   return bit_cast<int64_t, FILETIME>(ft) / 10;
 }
 
-void MicrosecondsToFileTime(int64_t us, FILETIME* ft) {
-  DCHECK_GE(us, 0LL) << "Time is less than 0, negative values are not "
-      "representable in FILETIME";
+bool CanConvertToFileTime(int64_t us) {
+  return us >= 0 && us <= (std::numeric_limits<int64_t>::max() / 10);
+}
+
+FILETIME MicrosecondsToFileTime(int64_t us) {
+  DCHECK(CanConvertToFileTime(us)) << "Out-of-range: Cannot convert " << us
+                                   << " microseconds to FILETIME units.";
 
   // Multiply by 10 to convert microseconds to 100-nanoseconds. Bit_cast will
   // handle alignment problems. This only works on little-endian machines.
-  *ft = bit_cast<FILETIME, int64_t>(us * 10);
+  return bit_cast<FILETIME, int64_t>(us * 10);
 }
 
 int64_t CurrentWallclockMicroseconds() {
@@ -235,9 +239,7 @@ FILETIME Time::ToFileTime() const {
     result.dwLowDateTime = std::numeric_limits<DWORD>::max();
     return result;
   }
-  FILETIME utc_ft;
-  MicrosecondsToFileTime(us_, &utc_ft);
-  return utc_ft;
+  return MicrosecondsToFileTime(us_);
 }
 
 // static
@@ -348,15 +350,13 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
 }
 
 void Time::Explode(bool is_local, Exploded* exploded) const {
-  if (us_ < 0LL) {
+  if (!CanConvertToFileTime(us_)) {
     // We are not able to convert it to FILETIME.
     ZeroMemory(exploded, sizeof(*exploded));
     return;
   }
 
-  // FILETIME in UTC.
-  FILETIME utc_ft;
-  MicrosecondsToFileTime(us_, &utc_ft);
+  const FILETIME utc_ft = MicrosecondsToFileTime(us_);
 
   // FILETIME in local time if necessary.
   bool success = true;

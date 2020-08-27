@@ -41,33 +41,25 @@ TEST(EncodeValuesTest, EncodeTimeAsGeneralizedTime) {
 // after the 32-bit time_t maximum, the conversion between base::Time and
 // der::GeneralizedTime goes through the time representation of the underlying
 // platform, which might not be able to handle the full GeneralizedTime date
-// range. Out-of-range times should not be converted to der::GeneralizedTime. In
-// tests, possibly-out-of-range test times are specified as a
-// base::Time::Exploded, and then converted to a base::Time. If the conversion
-// fails, this signals the underlying platform cannot handle the time, and the
-// test aborts early. If the underlying platform can represent the time, then
-// the conversion is successful, and the encoded GeneralizedTime can should
-// match the test time.
+// range. Out-of-range times should not be converted to der::GeneralizedTime.
 //
-// Thu, 1 Jan 1570 00:00:00 GMT. This time is unrepresentable by the Windows
-// native time libraries.
+// Thus, this test focuses on an input date 31 years before the Windows epoch,
+// and confirms that EncodeTimeAsGeneralizedTime() produces the correct result
+// on platforms where it returns true. As of this writing, it will return false
+// on Windows.
 TEST(EncodeValuesTest, EncodeTimeFromBeforeWindowsEpoch) {
-  base::Time::Exploded exploded;
-  exploded.year = 1570;
-  exploded.month = 1;
-  exploded.day_of_week = 5;
-  exploded.day_of_month = 1;
-  exploded.hour = 0;
-  exploded.minute = 0;
-  exploded.second = 0;
-  exploded.millisecond = 0;
-
-  base::Time time;
-  if (!base::Time::FromUTCExploded(exploded, &time))
-    return;
+  constexpr int kYearsBeforeWindowsEpoch = 1601 - 1570;
+  constexpr int kDaysPerYear = 365;
+  constexpr int kExtraLeapDaysOverThoseYears = 8;
+  constexpr base::Time kStartOfYear1570 =
+      base::Time() -
+      base::TimeDelta::FromDays(kYearsBeforeWindowsEpoch * kDaysPerYear +
+                                kExtraLeapDaysOverThoseYears);
 
   GeneralizedTime generalized_time;
-  ASSERT_TRUE(EncodeTimeAsGeneralizedTime(time, &generalized_time));
+  if (!EncodeTimeAsGeneralizedTime(kStartOfYear1570, &generalized_time))
+    return;
+
   EXPECT_EQ(1570, generalized_time.year);
   EXPECT_EQ(1, generalized_time.month);
   EXPECT_EQ(1, generalized_time.day);

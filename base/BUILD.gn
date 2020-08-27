@@ -2043,9 +2043,18 @@ component("base") {
   if (is_posix && !is_mac && !is_ios) {
     sources += [
       "time/time_conversion_posix.cc",
+      "time/time_exploded_icu.cc",  # See note below.
       "time/time_exploded_posix.cc",
       "time/time_now_posix.cc",
     ]
+
+    # The ICU dependency is only needed on systems with a 32-bit time_t.
+    # However, that cannot be determined from build variables, like
+    # |current_cpu|, since some 32-bit systems have a 64-bit time_t (and vice
+    # versa). Thus, the dependency is taken here for all POSIX platforms and the
+    # compiler+linker should be able to easily detect when the ICU routines will
+    # not be called and delete them in the final linking.
+    deps += [ "//third_party/icu:icui18n" ]
   }
 
   if (is_posix && !is_mac && !is_ios && !is_nacl) {

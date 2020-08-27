@@ -440,12 +440,20 @@ bool Time::FromMillisecondsSinceUnixEpoch(int64_t unix_milliseconds,
 }
 
 int64_t Time::ToRoundedDownMillisecondsSinceUnixEpoch() const {
-  // Adjust from Windows epoch (1601) to Unix epoch (1970).
-  const int64_t ms = (*this - UnixEpoch()).InMicroseconds();
+  constexpr int64_t kEpochOffsetMillis =
+      kTimeTToMicrosecondsOffset / kMicrosecondsPerMillisecond;
+  static_assert(kTimeTToMicrosecondsOffset % kMicrosecondsPerMillisecond == 0,
+                "assumption: no epoch offset sub-milliseconds");
 
-  // Floor rather than truncating.
-  return (ms >= 0) ? (ms / kMicrosecondsPerMillisecond)
-                   : ((ms + 1) / kMicrosecondsPerMillisecond - 1);
+  // Compute the milliseconds since UNIX epoch without the possibility of
+  // under/overflow. Round the result towards -infinity.
+  //
+  // If |us_| is negative and includes fractions of a millisecond, subtract one
+  // more to effect the round towards -infinity. C-style integer truncation
+  // takes care of all other cases.
+  const int64_t millis = us_ / kMicrosecondsPerMillisecond;
+  const int64_t submillis = us_ % kMicrosecondsPerMillisecond;
+  return millis - kEpochOffsetMillis - (submillis < 0);
 }
 
 std::ostream& operator<<(std::ostream& os, Time time) {

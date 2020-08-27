@@ -5,7 +5,6 @@
 #include "net/cert/internal/revocation_util.h"
 
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,13 +137,15 @@ TEST(CheckRevocationDateTest, VerifyTimeMinusAgeFromBeforeWindowsEpoch) {
   der::GeneralizedTime encoded_this_update;
   ASSERT_TRUE(
       der::EncodeTimeAsGeneralizedTime(this_update, &encoded_this_update));
-#if defined(OS_WIN)
-  EXPECT_FALSE(CheckRevocationDateValid(encoded_this_update, nullptr,
-                                        verify_time, kOneWeek));
-#else
-  EXPECT_TRUE(CheckRevocationDateValid(encoded_this_update, nullptr,
-                                       verify_time, kOneWeek));
-#endif
+  // Note: Not all platforms can explode Time before the Windows Epoch. So,
+  // CheckRevocationDateValid() should succeed iff UTCExplode() will also
+  // succeed for a Time 6 days before the Windows Epoch.
+  base::Time::Exploded exploded;
+  (verify_time - kOneWeek).UTCExplode(&exploded);
+  const bool can_encode_before_windows_epoch = exploded.HasValidValues();
+  EXPECT_EQ(can_encode_before_windows_epoch,
+            CheckRevocationDateValid(encoded_this_update, nullptr, verify_time,
+                                     kOneWeek));
 }
 
 }  // namespace net

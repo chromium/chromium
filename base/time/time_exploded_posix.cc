@@ -14,18 +14,13 @@
 
 #include <limits>
 
+#include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
-#include "base/os_compat_android.h"
-#elif defined(OS_NACL)
+#if defined(OS_NACL)
 #include "base/os_compat_nacl.h"
-#endif
-
-#if defined(OS_APPLE)
-static_assert(sizeof(time_t) >= 8, "Y2038 problem!");
 #endif
 
 namespace {
@@ -33,14 +28,15 @@ namespace {
 // This prevents a crash on traversing the environment global and looking up
 // the 'TZ' variable in libc. See: crbug.com/390567.
 base::Lock* GetSysTimeToTimeStructLock() {
-  static auto* lock = new base::Lock();
-  return lock;
+  static base::NoDestructor<base::Lock> lock;
+  return lock.get();
 }
 
 // Define a system-specific SysTime that wraps either to a time_t or
 // a time64_t depending on the host system, and associated convertion.
 // See crbug.com/162007
 #if defined(OS_ANDROID) && !defined(__LP64__)
+
 typedef time64_t SysTime;
 
 SysTime SysTimeFromTimeStruct(struct tm* timestruct, bool is_local) {
@@ -58,7 +54,9 @@ void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
   else
     gmtime64_r(&t, timestruct);
 }
+
 #elif defined(OS_AIX)
+
 // The function timegm is not available on AIX.
 time_t aix_timegm(struct tm* tm) {
   time_t ret;
@@ -99,7 +97,8 @@ void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
     gmtime_r(&t, timestruct);
 }
 
-#else
+#else  // MacOS (and iOS 64-bit), Linux/ChromeOS, or any other POSIX-compliant.
+
 typedef time_t SysTime;
 
 SysTime SysTimeFromTimeStruct(struct tm* timestruct, bool is_local) {
@@ -114,6 +113,7 @@ void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
   else
     gmtime_r(&t, timestruct);
 }
+
 #endif  // defined(OS_ANDROID) && !defined(__LP64__)
 
 }  // namespace
@@ -121,24 +121,25 @@ void SysTimeToTimeStruct(SysTime t, struct tm* timestruct, bool is_local) {
 namespace base {
 
 void Time::Explode(bool is_local, Exploded* exploded) const {
-  // The following values are all rounded towards -infinity.
-  int64_t milliseconds = ToRoundedDownMillisecondsSinceUnixEpoch();
-  SysTime seconds;       // Seconds since epoch.
-  int millisecond;       // Exploded millisecond value (0-999).
+  const int64_t millis_since_unix_epoch =
+      ToRoundedDownMillisecondsSinceUnixEpoch();
 
-  // If the microseconds were negative, the rounded down milliseconds will also
-  // be negative. For example, -1 us becomes -1 ms.
-  if (milliseconds >= 0) {
-    // Rounding towards -infinity <=> rounding towards 0, in this case.
-    seconds = milliseconds / kMillisecondsPerSecond;
-    millisecond = milliseconds % kMillisecondsPerSecond;
-  } else {
-    // Round these *down* (towards -infinity).
-    seconds = (milliseconds + 1) / kMillisecondsPerSecond - 1;
-    // Make this nonnegative (and between 0 and 999 inclusive).
-    millisecond = milliseconds % kMillisecondsPerSecond;
-    if (millisecond < 0)
-      millisecond += kMillisecondsPerSecond;
+  // For systems with a Y2038 problem, use ICU as the Explode() implementation.
+  if (sizeof(SysTime) < 8) {
+    ExplodeUsingIcu(millis_since_unix_epoch, is_local, exploded);
+    return;
+  }
+
+  // Split the |millis_since_unix_epoch| into separate seconds and millisecond
+  // components because the platform calendar-explode operates at one-second
+  // granularity.
+  SysTime seconds = millis_since_unix_epoch / Time::kMillisecondsPerSecond;
+  int64_t millisecond = millis_since_unix_epoch % Time::kMillisecondsPerSecond;
+  if (millisecond < 0) {
+    // Make the the |millisecond| component positive, within the range [0,999],
+    // by transferring 1000 ms from |seconds|.
+    --seconds;
+    millisecond += Time::kMillisecondsPerSecond;
   }
 
   struct tm timestruct;

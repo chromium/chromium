@@ -541,6 +541,9 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 // functions will return false if passed values outside these limits. The limits
 // are inclusive, meaning that the API should support all dates within a given
 // limit year.
+//
+// WARNING: These are not the same limits for the inverse functionality,
+// UTCExplode() and LocalExplode(). See method comments for further details.
 #if defined(OS_WIN)
   static constexpr int kExplodedMinYear = 1601;
   static constexpr int kExplodedMaxYear = 30827;
@@ -741,14 +744,16 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
     return FromStringInternal(time_string, false, parsed_time);
   }
 
-  // Fills the given exploded structure with either the local time or UTC from
-  // this time structure (containing UTC).
-  void UTCExplode(Exploded* exploded) const {
-    return Explode(false, exploded);
-  }
-  void LocalExplode(Exploded* exploded) const {
-    return Explode(true, exploded);
-  }
+  // Fills the given |exploded| structure with either the local time or UTC from
+  // this Time instance. If the conversion cannot be made, the output will be
+  // assigned invalid values. Use Exploded::HasValidValues() to confirm a
+  // successful conversion.
+  //
+  // Y10K compliance: This method will successfully convert all Times that
+  // represent dates on/after the start of the year 1601 and on/before the start
+  // of the year 30828. Some platforms might convert over a wider input range.
+  void UTCExplode(Exploded* exploded) const { Explode(false, exploded); }
+  void LocalExplode(Exploded* exploded) const { Explode(true, exploded); }
 
   // The following two functions round down the time to the nearest day in
   // either UTC or local time. It will represent midnight on that day.
@@ -781,6 +786,16 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   static bool FromExploded(bool is_local,
                            const Exploded& exploded,
                            Time* time) WARN_UNUSED_RESULT;
+
+  // Some platforms use the ICU library to provide To/FromExploded, when their
+  // native library implementations are insufficient in some way.
+  static void ExplodeUsingIcu(int64_t millis_since_unix_epoch,
+                              bool is_local,
+                              Exploded* exploded);
+  static bool FromExplodedUsingIcu(bool is_local,
+                                   const Exploded& exploded,
+                                   int64_t* millis_since_unix_epoch)
+      WARN_UNUSED_RESULT;
 
   // Rounds down the time to the nearest day in either local time
   // |is_local = true| or UTC |is_local = false|.
