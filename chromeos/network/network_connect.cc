@@ -124,17 +124,16 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
   }
 
   if (network->type() == shill::kTypeWifi) {
-    // If the network does not require a password, do not show the dialog since
-    // there is nothing to configure. Likewise, if the network is the underlying
-    // Wi-Fi hotspot for a Tether network, do not show the dialog since the
-    // Tether component handles this case itself.
-    if (!network->IsSecure() && network->tether_guid().empty())
+    // If the network requires a password and is not the underlying Wi-Fi
+    // hotspot for a Tether network, show the configure dialog.
+    if (network->IsSecure() && network->tether_guid().empty())
       delegate_->ShowNetworkConfigure(network_id);
     return;
   }
 
   if (network->type() == shill::kTypeVPN) {
-    // Third-party VPNs handle configuration UI themselves.
+    // Show the configure dialog for non third-party VPNs (which provide their
+    // own configuration UI).
     if (network->GetVpnProviderType() != shill::kProviderThirdPartyVpn)
       delegate_->ShowNetworkConfigure(network_id);
     return;
