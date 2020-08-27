@@ -2145,10 +2145,6 @@ virtual/passive-fingerprinting/http/tests/navigation/frozen-useragent.html [ Pas
 # This test run under virtual suites only.
 crbug.com/1018640 external/wpt/web-bundle/wbn-from-network/* [ Skip ]
 virtual/wbn-from-network/external/wpt/web-bundle/wbn-from-network/* [ Pass ]
-crbug.com/1082020 external/wpt/web-bundle/subresource-loading/* [ Skip ]
-virtual/subresource-web-bundles/external/wpt/web-bundle/subresource-loading/* [ Pass ]
-crbug.com/1082020 http/tests/loading/wbn/subresource-loading/* [ Skip ]
-virtual/subresource-web-bundles/http/tests/loading/wbn/subresource-loading/* [ Pass ]
 crbug.com/1082020 http/tests/loading/wbn/origin-trial/* [ Skip ]
 virtual/subresource-web-bundles-disabled/http/tests/loading/wbn/origin-trial/* [ Pass ]
 

@@ -556,7 +556,8 @@ void SetRuntimeFeaturesFromFieldTrialParams() {
 // as a last resort.
 void SetCustomizedRuntimeFeaturesFromCombinedArgs(
     const base::CommandLine& command_line,
-    bool enable_experimental_web_platform_features) {
+    bool enable_experimental_web_platform_features,
+    bool enable_blink_test_features) {
   // CAUTION: Only add custom enabling logic here if it cannot
   // be covered by the other functions.
 
@@ -603,6 +604,10 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // these features.
   if (enable_experimental_web_platform_features) {
     WebRuntimeFeatures::EnableNetInfoDownlinkMax(true);
+  }
+
+  if (enable_blink_test_features) {
+    WebRuntimeFeatures::EnableSubresourceWebBundles(true);
   }
 
   // Except for stable release mode, web tests still run with Web Components
@@ -672,8 +677,10 @@ void SetRuntimeFeaturesDefaultsAndUpdateFromArgs(
   // Sets experimental features.
   bool enable_experimental_web_platform_features =
       command_line.HasSwitch(switches::kEnableExperimentalWebPlatformFeatures);
+  bool enable_blink_test_features =
+      command_line.HasSwitch(switches::kEnableBlinkTestFeatures);
 
-  if (command_line.HasSwitch(switches::kEnableBlinkTestFeatures)) {
+  if (enable_blink_test_features) {
     enable_experimental_web_platform_features = true;
     WebRuntimeFeatures::EnableTestOnlyFeatures(true);
   }
@@ -705,7 +712,8 @@ void SetRuntimeFeaturesDefaultsAndUpdateFromArgs(
   SetRuntimeFeaturesFromFieldTrialParams();
 
   SetCustomizedRuntimeFeaturesFromCombinedArgs(
-      command_line, enable_experimental_web_platform_features);
+      command_line, enable_experimental_web_platform_features,
+      enable_blink_test_features);
 
   // Enable explicitly enabled features, and then disable explicitly disabled
   // ones.

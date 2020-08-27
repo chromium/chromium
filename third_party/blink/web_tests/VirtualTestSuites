@@ -724,12 +724,6 @@
     "args": [ "--enable-features=OutOfBlinkCSPEE" ]
   },
   {
-    "prefix": "subresource-web-bundles",
-    "bases": [ "external/wpt/web-bundle/subresource-loading",
-               "http/tests/loading/wbn/subresource-loading" ],
-    "args": [ "--enable-blink-features=SubresourceWebBundles" ]
-  },
-  {
     "prefix": "subresource-web-bundles-disabled",
     "bases": [ "http/tests/loading/wbn/origin-trial/" ],
     "args": [ "--disable-blink-features=SubresourceWebBundles" ]

@@ -790,6 +790,7 @@ html element link
     property referrerPolicy
     property rel
     property relList
+    property resources
     property rev
     property sheet
     property sizes
