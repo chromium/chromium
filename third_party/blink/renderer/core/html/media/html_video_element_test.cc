@@ -191,4 +191,17 @@ TEST_F(HTMLVideoElementTest, HasAvailableVideoFrameChecksWMP) {
   EXPECT_TRUE(video()->HasAvailableVideoFrame());
 }
 
+TEST_F(HTMLVideoElementTest, AutoPIPExitPIPTest) {
+  video()->SetSrc("http://example.com/foo.mp4");
+  test::RunPendingTasks();
+
+  // Set in auto PIP.
+  video()->OnBecamePersistentVideo(true);
+
+  // Shouldn't get to PictureInPictureController::ExitPictureInPicture
+  // and fail the DCHECK.
+  EXPECT_NO_FATAL_FAILURE(video()->DidEnterFullscreen());
+  test::RunPendingTasks();
+}
+
 }  // namespace blink

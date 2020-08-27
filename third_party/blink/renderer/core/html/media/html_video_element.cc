@@ -491,7 +491,8 @@ bool HTMLVideoElement::UsesOverlayFullscreenVideo() const {
 void HTMLVideoElement::DidEnterFullscreen() {
   UpdateControlsVisibility();
 
-  if (DisplayType() == WebMediaPlayer::DisplayType::kPictureInPicture) {
+  if (DisplayType() == WebMediaPlayer::DisplayType::kPictureInPicture &&
+      !IsInAutoPIP()) {
     PictureInPictureController::From(GetDocument())
         .ExitPictureInPicture(this, nullptr);
   }

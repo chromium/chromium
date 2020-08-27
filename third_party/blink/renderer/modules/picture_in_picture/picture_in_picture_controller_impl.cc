@@ -242,6 +242,7 @@ void PictureInPictureControllerImpl::ExitPictureInPicture(
   if (!EnsureService())
     return;
 
+  DCHECK(picture_in_picture_session_.is_bound());
   picture_in_picture_session_->Stop(
       WTF::Bind(&PictureInPictureControllerImpl::OnExitedPictureInPicture,
                 WrapPersistent(this), WrapPersistent(resolver)));
