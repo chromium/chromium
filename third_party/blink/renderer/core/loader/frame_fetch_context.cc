@@ -689,7 +689,7 @@ void FrameFetchContext::PopulateResourceRequest(
   AddClientHintsIfNecessary(hints_preferences, resource_width, request);
 
   const ContentSecurityPolicy* csp =
-      GetContentSecurityPolicyForWorld(options.world.get());
+      GetContentSecurityPolicyForWorld(options.world_for_csp.get());
   if (csp && csp->ShouldSendCSPHeader(type))
     // TODO(crbug.com/993769): Test if this header returns duplicated values
     // (i.e. "CSP: active, active") on asynchronous "stale-while-revalidate"

@@ -83,7 +83,7 @@ bool CSSFontFaceSrcValue::HasFailedOrCanceledSubresources() const {
 
 FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
                                          FontResourceClient* client) const {
-  if (!fetched_ || fetched_->GetResource()->Options().world != world_) {
+  if (!fetched_ || fetched_->GetResource()->Options().world_for_csp != world_) {
     ResourceRequest resource_request(absolute_resource_);
     resource_request.SetReferrerPolicy(
         ReferrerUtils::MojoReferrerPolicyResolveDefault(

@@ -46,7 +46,7 @@ ResourceLoaderOptions::ResourceLoaderOptions(
       cors_flag(false),
       parser_disposition(kParserInserted),
       cache_aware_loading_enabled(kNotCacheAwareLoadingEnabled),
-      world(std::move(world)) {}
+      world_for_csp(std::move(world)) {}
 
 ResourceLoaderOptions::ResourceLoaderOptions(
     const ResourceLoaderOptions& other) = default;

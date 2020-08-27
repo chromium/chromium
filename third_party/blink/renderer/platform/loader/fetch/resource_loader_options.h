@@ -119,8 +119,7 @@ struct PLATFORM_EXPORT ResourceLoaderOptions {
 
   // The world in which this request initiated. This will be used for CSP checks
   // if specified. If null, the CSP bound to the FetchContext is used.
-  // TODO(crbug.com/896041): Rename to |world_for_csp|.
-  scoped_refptr<const DOMWrapperWorld> world;
+  scoped_refptr<const DOMWrapperWorld> world_for_csp;
 
   // If not null, this URLLoaderFactory should be used to load this resource
   // rather than whatever factory the system might otherwise use.
