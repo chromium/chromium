@@ -30,7 +30,7 @@ class OptOutBlocklistDelegate {
   virtual void OnUserBlocklistedStatusChange(bool blocklisted) {}
 
   // Notifies |this| the blocklist loaded state changed to |is_loaded|.
-  virtual void OnLoadingStateChanged(bool is_load) {}
+  virtual void OnLoadingStateChanged(bool is_loaded) {}
 
   // Notifies |this| that the blocklist is cleared at |time|.
   virtual void OnBlocklistCleared(base::Time time) {}

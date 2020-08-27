@@ -314,14 +314,12 @@ void LiteVideoDecider::OnOptimizationGuideHintAvailable(
   std::move(callback).Run(hint, blocklist_reason, decision);
 }
 
-void LiteVideoDecider::OnUserBlocklistedStatusChange(bool blocklisted) {
+void LiteVideoDecider::OnLoadingStateChanged(bool is_loaded) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!blocklist_loaded_) {
-    blocklist_loaded_ = true;
-    // Local event used as a signal for testing.
+  blocklist_loaded_ = is_loaded;
+  if (blocklist_loaded_)
     LOCAL_HISTOGRAM_BOOLEAN("LiteVideo.UserBlocklist.BlocklistLoaded", true);
-  }
 }
 
 void LiteVideoDecider::OnEffectiveConnectionTypeChanged(

@@ -305,9 +305,6 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
   // Navigate metrics get recorded.
   ui_test_utils::NavigateToURL(browser(), navigation_url);
 
-  // Close the tab to flush the UKM metrics.
-  browser()->tab_strip_model()->GetActiveWebContents()->Close();
-
   EXPECT_GT(RetryForHistogramUntilCountReached(
                 *histogram_tester(), "LiteVideo.HintAgent.HasHint", 1),
             0);
@@ -320,6 +317,10 @@ IN_PROC_BROWSER_TEST_P(LiteVideoKeyedServiceBrowserTest,
       lite_video::LiteVideoBlocklistReason::kAllowed, 1);
   histogram_tester()->ExpectTotalCount(
       "LiteVideo.CanApplyLiteVideo.UserBlocklist.SubFrame", 0);
+
+  // Close the tab to flush the UKM metrics.
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::LiteVideo::kEntryName);
   ASSERT_EQ(1u, entries.size());
