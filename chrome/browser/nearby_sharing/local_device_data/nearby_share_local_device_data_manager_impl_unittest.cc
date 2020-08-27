@@ -151,13 +151,15 @@ class NearbyShareLocalDeviceDataManagerImplTest
                        &returned_success));
 
     EXPECT_FALSE(updater()->pending_requests().front().certificates);
-    std::vector<nearbyshare::proto::Contact> fake_contacts;
-    for (size_t i = 0; i < fake_contacts.size(); ++i) {
-      EXPECT_EQ(fake_contacts[i].SerializeAsString(), updater()
-                                                          ->pending_requests()
-                                                          .front()
-                                                          .contacts->at(i)
-                                                          .SerializeAsString());
+    std::vector<nearbyshare::proto::Contact> expected_fake_contacts =
+        GetFakeContacts();
+    for (size_t i = 0; i < expected_fake_contacts.size(); ++i) {
+      EXPECT_EQ(expected_fake_contacts[i].SerializeAsString(),
+                updater()
+                    ->pending_requests()
+                    .front()
+                    .contacts->at(i)
+                    .SerializeAsString());
     }
 
     EXPECT_FALSE(returned_success);
@@ -176,9 +178,10 @@ class NearbyShareLocalDeviceDataManagerImplTest
                        &returned_success));
 
     EXPECT_FALSE(updater()->pending_requests().front().contacts);
-    std::vector<nearbyshare::proto::PublicCertificate> fake_certificates;
-    for (size_t i = 0; i < fake_certificates.size(); ++i) {
-      EXPECT_EQ(fake_certificates[i].SerializeAsString(),
+    std::vector<nearbyshare::proto::PublicCertificate>
+        expected_fake_certificates = GetFakeCertificates();
+    for (size_t i = 0; i < expected_fake_certificates.size(); ++i) {
+      EXPECT_EQ(expected_fake_certificates[i].SerializeAsString(),
                 updater()
                     ->pending_requests()
                     .front()
