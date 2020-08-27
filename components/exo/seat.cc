@@ -59,6 +59,9 @@ Seat::Seat() : changing_clipboard_data_to_selection_source_(false) {
   // null. https://crbug.com/856230
   if (ui::PlatformEventSource::GetInstance())
     ui::PlatformEventSource::GetInstance()->AddPlatformEventObserver(this);
+#if defined(OS_CHROMEOS)
+  ui_lock_controller_ = std::make_unique<UILockController>(this);
+#endif
 }
 
 Seat::~Seat() {

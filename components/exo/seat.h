@@ -19,6 +19,10 @@
 #include "ui/events/keycodes/dom/dom_codes.h"
 #include "ui/events/platform/platform_event_observer.h"
 
+#if defined(OS_CHROMEOS)
+#include "components/exo/ui_lock_controller.h"
+#endif
+
 namespace ui {
 enum class DomCode;
 class KeyEvent;
@@ -158,6 +162,10 @@ class Seat : public aura::client::FocusChangeObserver,
   bool changing_clipboard_data_to_selection_source_;
 
   gfx::Point last_location_;
+
+#if defined(OS_CHROMEOS)
+  std::unique_ptr<UILockController> ui_lock_controller_;
+#endif  // defined(OS_CHROMEOS)
 
   base::WeakPtrFactory<Seat> weak_ptr_factory_{this};
 

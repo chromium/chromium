@@ -25,6 +25,13 @@ class ExoTestHelper;
 class ExoTestBase : public ash::AshTestBase {
  public:
   ExoTestBase();
+
+  // Constructs an ExoTestBase with |traits| being forwarded to its
+  // TaskEnvironment. See the corresponding |AshTestBase| constructor.
+  template <typename... TaskEnvironmentTraits>
+  NOINLINE explicit ExoTestBase(TaskEnvironmentTraits&&... traits)
+      : AshTestBase(std::forward<TaskEnvironmentTraits>(traits)...) {}
+
   ~ExoTestBase() override;
 
   // TODO(oshima): Convert unit tests to use this.

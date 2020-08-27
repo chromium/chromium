@@ -145,6 +145,8 @@ static_library("exo") {
       "toast_surface.cc",
       "toast_surface.h",
       "toast_surface_manager.h",
+      "ui_lock_controller.cc",
+      "ui_lock_controller.h",
       "wm_helper_chromeos.cc",
       "wm_helper_chromeos.h",
       "xdg_shell_surface.cc",
@@ -268,6 +270,7 @@ source_set("unit_tests") {
       "text_input_unittest.cc",
       "toast_surface_unittest.cc",
       "touch_unittest.cc",
+      "ui_lock_controller_unittest.cc",
       "xdg_shell_surface_unittest.cc",
     ]
 
