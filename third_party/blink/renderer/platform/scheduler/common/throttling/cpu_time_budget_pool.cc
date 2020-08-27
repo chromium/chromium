@@ -130,7 +130,7 @@ void CPUTimeBudgetPool::OnWakeUp(base::TimeTicks now) {}
 void CPUTimeBudgetPool::AsValueInto(base::trace_event::TracedValue* state,
                                     base::TimeTicks now) const {
   current_budget_level_.Trace();
-  state->BeginDictionary(name_);
+  auto dictionary_scope = state->BeginDictionaryScoped(name_);
 
   state->SetString("name", name_);
   state->SetDouble("time_budget", cpu_percentage_);
@@ -151,13 +151,12 @@ void CPUTimeBudgetPool::AsValueInto(base::trace_event::TracedValue* state,
                      max_budget_level_.value().InSecondsF());
   }
 
-  state->BeginArray("task_queues");
-  for (TaskQueue* queue : associated_task_queues_) {
-    state->AppendString(PointerToString(queue));
+  {
+    auto array_scope = state->BeginArrayScoped("task_queues");
+    for (TaskQueue* queue : associated_task_queues_) {
+      state->AppendString(PointerToString(queue));
+    }
   }
-  state->EndArray();
-
-  state->EndDictionary();
 }
 
 void CPUTimeBudgetPool::Advance(base::TimeTicks now) {

@@ -421,22 +421,24 @@ void TaskQueueThrottler::AsValueInto(base::trace_event::TracedValue* state,
 
   state->SetBoolean("allow_throttling", allow_throttling_);
 
-  state->BeginDictionary("time_budget_pools");
-  for (const auto& map_entry : budget_pools_) {
-    BudgetPool* pool = map_entry.key;
-    pool->AsValueInto(state, now);
+  {
+    auto dictionary_scope = state->BeginDictionaryScoped("time_budget_pools");
+    for (const auto& map_entry : budget_pools_) {
+      BudgetPool* pool = map_entry.key;
+      pool->AsValueInto(state, now);
+    }
   }
-  state->EndDictionary();
 
-  state->BeginDictionary("queue_details");
-  for (const auto& map_entry : queue_details_) {
-    state->BeginDictionaryWithCopiedName(PointerToString(map_entry.key));
-    state->SetInteger(
-        "throttling_ref_count",
-        static_cast<int>(map_entry.value->throttling_ref_count()));
-    state->EndDictionary();
+  {
+    auto dictionary_scope = state->BeginDictionaryScoped("queue_details");
+    for (const auto& map_entry : queue_details_) {
+      auto inner_scope = state->BeginDictionaryScopedWithCopiedName(
+          PointerToString(map_entry.key));
+      state->SetInteger(
+          "throttling_ref_count",
+          static_cast<int>(map_entry.value->throttling_ref_count()));
+    }
   }
-  state->EndDictionary();
 }
 
 void TaskQueueThrottler::AddQueueToBudgetPool(TaskQueue* queue,

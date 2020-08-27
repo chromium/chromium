@@ -141,7 +141,7 @@ void UserModel::Reset(base::TimeTicks now) {
 }
 
 void UserModel::AsValueInto(base::trace_event::TracedValue* state) const {
-  state->BeginDictionary("user_model");
+  auto dictionary_scope = state->BeginDictionaryScoped("user_model");
   state->SetInteger("pending_input_event_count", pending_input_event_count_);
   state->SetDouble(
       "last_input_signal_time",
@@ -159,7 +159,6 @@ void UserModel::AsValueInto(base::trace_event::TracedValue* state) const {
                    (last_reset_time_ - base::TimeTicks()).InMillisecondsF());
   state->SetBoolean("is_gesture_expected", is_gesture_expected_);
   state->SetBoolean("is_gesture_active", is_gesture_active_);
-  state->EndDictionary();
 }
 
 }  // namespace scheduler

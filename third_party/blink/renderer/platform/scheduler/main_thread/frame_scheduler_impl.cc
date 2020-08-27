@@ -790,17 +790,18 @@ void FrameSchedulerImpl::AsValueInto(
       "disable_background_timer_throttling",
       !RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled());
 
-  state->BeginDictionary("frame_task_queue_controller");
-  frame_task_queue_controller_->AsValueInto(state);
-  state->EndDictionary();
+  {
+    auto dictionary_scope =
+        state->BeginDictionaryScoped("frame_task_queue_controller");
+    frame_task_queue_controller_->AsValueInto(state);
+  }
 
   if (blame_context_) {
-    state->BeginDictionary("blame_context");
+    auto dictionary_scope = state->BeginDictionaryScoped("blame_context");
     state->SetString(
         "id_ref",
         PointerToString(reinterpret_cast<void*>(blame_context_->id())));
     state->SetString("scope", blame_context_->scope());
-    state->EndDictionary();
   }
 }
 

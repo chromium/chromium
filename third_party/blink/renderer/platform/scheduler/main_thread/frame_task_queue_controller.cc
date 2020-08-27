@@ -174,17 +174,19 @@ bool FrameTaskQueueController::RemoveResourceLoadingTaskQueue(
 
 void FrameTaskQueueController::AsValueInto(
     base::trace_event::TracedValue* state) const {
-  state->BeginArray("task_queues");
-  for (const auto& it : task_queues_) {
-    state->AppendString(PointerToString(it.value.get()));
+  {
+    auto array_scope = state->BeginArrayScoped("task_queues");
+    for (const auto& it : task_queues_) {
+      state->AppendString(PointerToString(it.value.get()));
+    }
   }
-  state->EndArray();
 
-  state->BeginArray("resource_loading_task_queues");
-  for (const auto& queue : resource_loading_task_queues_) {
-    state->AppendString(PointerToString(queue.get()));
+  {
+    auto array_scope = state->BeginArrayScoped("resource_loading_task_queues");
+    for (const auto& queue : resource_loading_task_queues_) {
+      state->AppendString(PointerToString(queue.get()));
+    }
   }
-  state->EndArray();
 }
 
 // static

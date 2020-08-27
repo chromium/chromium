@@ -2013,17 +2013,20 @@ void MainThreadSchedulerImpl::AsValueIntoLocked(
       VirtualTimePolicyToString(main_thread_only().virtual_time_policy));
   state->SetBoolean("virtual_time", main_thread_only().use_virtual_time);
 
-  state->BeginDictionary("page_schedulers");
-  for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
-    state->BeginDictionaryWithCopiedName(PointerToString(page_scheduler));
-    page_scheduler->AsValueInto(state);
-    state->EndDictionary();
+  {
+    auto dictionary_scope = state->BeginDictionaryScoped("page_schedulers");
+    for (PageSchedulerImpl* page_scheduler :
+         main_thread_only().page_schedulers) {
+      auto inner_dictionary = state->BeginDictionaryScopedWithCopiedName(
+          PointerToString(page_scheduler));
+      page_scheduler->AsValueInto(state);
+    }
   }
-  state->EndDictionary();
 
-  state->BeginDictionary("policy");
-  main_thread_only().current_policy.AsValueInto(state);
-  state->EndDictionary();
+  {
+    auto dictionary_scope = state->BeginDictionaryScoped("policy");
+    main_thread_only().current_policy.AsValueInto(state);
+  }
 
   // TODO(skyostil): Can we somehow trace how accurate these estimates were?
   state->SetDouble(
@@ -2041,9 +2044,11 @@ void MainThreadSchedulerImpl::AsValueIntoLocked(
   any_thread().user_model.AsValueInto(state);
   render_widget_scheduler_signals_.AsValueInto(state);
 
-  state->BeginDictionary("task_queue_throttler");
-  task_queue_throttler_->AsValueInto(state, optional_now);
-  state->EndDictionary();
+  {
+    auto dictionary_scope =
+        state->BeginDictionaryScoped("task_queue_throttler");
+    task_queue_throttler_->AsValueInto(state, optional_now);
+  }
 }
 
 bool MainThreadSchedulerImpl::TaskQueuePolicy::IsQueueEnabled(

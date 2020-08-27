@@ -601,13 +601,14 @@ void PageSchedulerImpl::AsValueInto(
                     reported_background_throttling_since_navigation_);
   state->SetBoolean("is_page_freezable", IsBackgrounded());
 
-  state->BeginDictionary("frame_schedulers");
-  for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
-    state->BeginDictionaryWithCopiedName(PointerToString(frame_scheduler));
-    frame_scheduler->AsValueInto(state);
-    state->EndDictionary();
+  {
+    auto dictionary_scope = state->BeginDictionaryScoped("frame_schedulers");
+    for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
+      auto inner_dictionary = state->BeginDictionaryScopedWithCopiedName(
+          PointerToString(frame_scheduler));
+      frame_scheduler->AsValueInto(state);
+    }
   }
-  state->EndDictionary();
 }
 
 void PageSchedulerImpl::AddQueueToWakeUpBudgetPool(

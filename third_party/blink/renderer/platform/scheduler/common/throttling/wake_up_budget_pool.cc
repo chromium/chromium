@@ -124,7 +124,7 @@ void WakeUpBudgetPool::OnWakeUp(base::TimeTicks now) {
 
 void WakeUpBudgetPool::AsValueInto(base::trace_event::TracedValue* state,
                                    base::TimeTicks now) const {
-  state->BeginDictionary(name_);
+  auto dictionary_scope = state->BeginDictionaryScoped(name_);
 
   state->SetString("name", name_);
   state->SetDouble("wake_up_interval_in_seconds",
@@ -137,13 +137,12 @@ void WakeUpBudgetPool::AsValueInto(base::trace_event::TracedValue* state,
   }
   state->SetBoolean("is_enabled", is_enabled_);
 
-  state->BeginArray("task_queues");
-  for (TaskQueue* queue : associated_task_queues_) {
-    state->AppendString(PointerToString(queue));
+  {
+    auto array_scope = state->BeginArrayScoped("task_queues");
+    for (TaskQueue* queue : associated_task_queues_) {
+      state->AppendString(PointerToString(queue));
+    }
   }
-  state->EndArray();
-
-  state->EndDictionary();
 }
 
 }  // namespace scheduler
