@@ -39,10 +39,8 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
 }  // namespace
 
 NearbyPerSessionDiscoveryManager::NearbyPerSessionDiscoveryManager(
-    NearbySharingService* nearby_sharing_service,
-    std::vector<std::unique_ptr<Attachment>> attachments)
-    : nearby_sharing_service_(nearby_sharing_service),
-      attachments_(std::move(attachments)) {}
+    NearbySharingService* nearby_sharing_service)
+    : nearby_sharing_service_(nearby_sharing_service) {}
 
 NearbyPerSessionDiscoveryManager::~NearbyPerSessionDiscoveryManager() {
   UnregisterSendSurface();
@@ -115,9 +113,9 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
   mojo::PendingReceiver<nearby_share::mojom::TransferUpdateListener> receiver =
       transfer_update_listener_.BindNewPipeAndPassReceiver();
 
+  // TODO(crbug.com/1099710): Call correct method and pass attachments.
   NearbySharingService::StatusCodes status =
-      nearby_sharing_service_->SendAttachments(iter->second,
-                                               std::move(attachments_));
+      nearby_sharing_service_->SendText(iter->second, "Example Text");
 
   // If the send call succeeded, we expect OnTransferUpdate() to be called next.
   if (status == NearbySharingService::StatusCodes::kOk) {

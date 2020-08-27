@@ -72,19 +72,16 @@ void NearbyShareDialogUI::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void NearbyShareDialogUI::SetAttachments(
-    std::vector<std::unique_ptr<Attachment>> attachments) {
-  attachments_ = std::move(attachments);
+void NearbyShareDialogUI::SetShareIntent(apps::mojom::IntentPtr intent) {
+  intent_ = std::move(intent);
 }
 
 void NearbyShareDialogUI::BindInterface(
     mojo::PendingReceiver<mojom::DiscoveryManager> manager) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<NearbyPerSessionDiscoveryManager>(
-          nearby_service_, std::move(attachments_)),
+      std::make_unique<NearbyPerSessionDiscoveryManager>(nearby_service_),
       std::move(manager));
 }
-
 void NearbyShareDialogUI::BindInterface(
     mojo::PendingReceiver<mojom::NearbyShareSettings> receiver) {
   NearbySharingService* nearby_sharing_service =

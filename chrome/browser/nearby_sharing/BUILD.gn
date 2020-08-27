@@ -18,7 +18,6 @@ source_set("share_target") {
     "//base",
     "//chrome/services/sharing/public/mojom",
     "//chrome/services/sharing/public/mojom:nearby_share_target_types",
-    "//net",
     "//url",
   ]
 }

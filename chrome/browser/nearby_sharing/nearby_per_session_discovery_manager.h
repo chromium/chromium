@@ -5,13 +5,9 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_PER_SESSION_DISCOVERY_MANAGER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_PER_SESSION_DISCOVERY_MANAGER_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/share_target_discovered_callback.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
@@ -27,9 +23,8 @@ class NearbyPerSessionDiscoveryManager
       public ShareTargetDiscoveredCallback,
       public nearby_share::mojom::DiscoveryManager {
  public:
-  NearbyPerSessionDiscoveryManager(
-      NearbySharingService* nearby_sharing_service,
-      std::vector<std::unique_ptr<Attachment>> attachments);
+  explicit NearbyPerSessionDiscoveryManager(
+      NearbySharingService* nearby_sharing_service);
   ~NearbyPerSessionDiscoveryManager() override;
 
   // TransferUpdateCallback:
@@ -52,7 +47,6 @@ class NearbyPerSessionDiscoveryManager
   void UnregisterSendSurface();
 
   NearbySharingService* nearby_sharing_service_;
-  std::vector<std::unique_ptr<Attachment>> attachments_;
   mojo::Remote<nearby_share::mojom::ShareTargetListener> share_target_listener_;
   mojo::Remote<nearby_share::mojom::TransferUpdateListener>
       transfer_update_listener_;

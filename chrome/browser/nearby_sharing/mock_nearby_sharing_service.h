@@ -33,8 +33,12 @@ class MockNearbySharingService : public NearbySharingService {
               (TransferUpdateCallback*),
               (override));
   MOCK_METHOD(StatusCodes,
-              SendAttachments,
-              (const ShareTarget&, std::vector<std::unique_ptr<Attachment>>),
+              SendText,
+              (const ShareTarget&, std::string),
+              (override));
+  MOCK_METHOD(StatusCodes,
+              SendFiles,
+              (const ShareTarget&, const std::vector<base::FilePath>&),
               (override));
   MOCK_METHOD(void,
               Accept,

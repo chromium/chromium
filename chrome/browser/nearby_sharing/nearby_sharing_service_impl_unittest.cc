@@ -268,26 +268,6 @@ int64_t GetFreeSpaceInDownloadPath(Profile* profile) {
   return free_space;
 }
 
-std::vector<std::unique_ptr<Attachment>> CreateTextAttachments(
-    std::vector<std::string> texts) {
-  std::vector<std::unique_ptr<Attachment>> attachments;
-  for (auto& text : texts) {
-    attachments.push_back(std::make_unique<TextAttachment>(
-        TextAttachment::Type::kText, std::move(text)));
-  }
-  return attachments;
-}
-
-std::vector<std::unique_ptr<Attachment>> CreateFileAttachments(
-    std::vector<base::FilePath> file_paths) {
-  std::vector<std::unique_ptr<Attachment>> attachments;
-  for (auto& file_path : file_paths) {
-    attachments.push_back(
-        std::make_unique<FileAttachment>(std::move(file_path)));
-  }
-  return attachments;
-}
-
 class NearbySharingServiceImplTest : public testing::Test {
  public:
   NearbySharingServiceImplTest()
@@ -2360,9 +2340,8 @@ TEST_F(NearbySharingServiceImplTest, RegisterReceiveSurfaceWhileSending) {
                          TransferMetadata::Status::kAwaitingLocalConfirmation,
                          TransferMetadata::Status::kAwaitingRemoteAcceptance},
                         run_loop.QuitClosure());
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kOk,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+            service_->SendText(target, kTextPayload));
   run_loop.Run();
 
   NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
@@ -2371,17 +2350,6 @@ TEST_F(NearbySharingServiceImplTest, RegisterReceiveSurfaceWhileSending) {
   EXPECT_EQ(result,
             NearbySharingService::StatusCodes::kTransferAlreadyInProgress);
 
-  service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
-}
-
-TEST_F(NearbySharingServiceImplTest, SendAttachments_WithoutAttachments) {
-  MockTransferUpdateCallback transfer_callback;
-  MockShareTargetDiscoveredCallback discovery_callback;
-  ShareTarget target =
-      DiscoverShareTarget(transfer_callback, discovery_callback);
-
-  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kError,
-            service_->SendAttachments(target, /*attachments=*/{}));
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
 }
 
@@ -2397,24 +2365,21 @@ TEST_F(NearbySharingServiceImplTest, SendText_AlreadySending) {
                          TransferMetadata::Status::kAwaitingLocalConfirmation,
                          TransferMetadata::Status::kAwaitingRemoteAcceptance},
                         run_loop.QuitClosure());
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kOk,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+            service_->SendText(target, kTextPayload));
   run_loop.Run();
 
   // We're now in the sending state, try to send again should fail
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kError,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kError,
+            service_->SendText(target, kTextPayload));
 
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
 }
 
 TEST_F(NearbySharingServiceImplTest, SendText_WithoutScanning) {
   ShareTarget target;
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kError,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kError,
+            service_->SendText(target, kTextPayload));
 }
 
 TEST_F(NearbySharingServiceImplTest, SendText_UnknownTarget) {
@@ -2423,9 +2388,8 @@ TEST_F(NearbySharingServiceImplTest, SendText_UnknownTarget) {
   DiscoverShareTarget(transfer_callback, discovery_callback);
 
   ShareTarget target;
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kError,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kError,
+            service_->SendText(target, kTextPayload));
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
 }
 
@@ -2438,9 +2402,8 @@ TEST_F(NearbySharingServiceImplTest, SendText_FailedCreateEndpointInfo) {
   ShareTarget target =
       DiscoverShareTarget(transfer_callback, discovery_callback);
 
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kError,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kError,
+            service_->SendText(target, kTextPayload));
 
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
 }
@@ -2459,9 +2422,8 @@ TEST_F(NearbySharingServiceImplTest, SendText_FailedToConnect) {
                          TransferMetadata::Status::kFailed},
                         run_loop.QuitClosure());
 
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kOk,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+            service_->SendText(target, kTextPayload));
   run_loop.Run();
 
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
@@ -2485,9 +2447,8 @@ TEST_F(NearbySharingServiceImplTest, SendText_FailedKeyVerification) {
                                                               kToken);
   fake_nearby_connections_manager_->set_nearby_connection(&connection_);
 
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kOk,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+            service_->SendText(target, kTextPayload));
   run_loop.Run();
 
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
@@ -2512,9 +2473,8 @@ TEST_F(NearbySharingServiceImplTest, SendText_UnableToVerifyKey) {
                                                               kToken);
   fake_nearby_connections_manager_->set_nearby_connection(&connection_);
 
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kOk,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+            service_->SendText(target, kTextPayload));
   run_loop.Run();
 
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
@@ -2533,9 +2493,8 @@ TEST_P(NearbySharingServiceImplSendFailureTest, SendText_RemoteFailure) {
                          TransferMetadata::Status::kAwaitingRemoteAcceptance},
                         introduction_run_loop.QuitClosure());
 
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kOk,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+            service_->SendText(target, kTextPayload));
   introduction_run_loop.Run();
 
   // Verify data sent to the remote device so far.
@@ -2574,7 +2533,7 @@ TEST_P(NearbySharingServiceImplSendFailureTest, SendFiles_RemoteFailure) {
                         introduction_run_loop.QuitClosure());
 
   EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
-            service_->SendAttachments(target, CreateFileAttachments({path})));
+            service_->SendFiles(target, {path}));
   introduction_run_loop.Run();
 
   // Verify data sent to the remote device so far.
@@ -2613,9 +2572,8 @@ TEST_F(NearbySharingServiceImplTest, SendText_Success) {
                          TransferMetadata::Status::kAwaitingRemoteAcceptance},
                         introduction_run_loop.QuitClosure());
 
-  EXPECT_EQ(
-      NearbySharingServiceImpl::StatusCodes::kOk,
-      service_->SendAttachments(target, CreateTextAttachments({kTextPayload})));
+  EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+            service_->SendText(target, kTextPayload));
   introduction_run_loop.Run();
 
   // Verify data sent to the remote device so far.
@@ -2689,7 +2647,7 @@ TEST_F(NearbySharingServiceImplTest, SendFiles_Success) {
                         introduction_run_loop.QuitClosure());
 
   EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
-            service_->SendAttachments(target, CreateFileAttachments({path})));
+            service_->SendFiles(target, {path}));
   introduction_run_loop.Run();
 
   // Verify data sent to the remote device so far.

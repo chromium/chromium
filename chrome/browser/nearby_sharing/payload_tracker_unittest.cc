@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
@@ -38,8 +37,10 @@ class PayloadTrackerTest : public testing::Test {
 
   void SetUp() override {
     for (int i = 0; i < kAttachmentCount / 2; i++) {
-      FileAttachment file(base::FilePath(FILE_PATH_LITERAL("file.jpg")));
-      file.set_size(kTotalSize);
+      FileAttachment file(/*file_name=*/"file.jpg",
+                          FileAttachment::Type::kImage, kTotalSize,
+                          /*file_path=*/base::nullopt,
+                          /*mime_type=*/"example");
 
       AttachmentInfo info;
       info.payload_id = i;
