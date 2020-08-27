@@ -149121,7 +149121,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     with a delayed SafeBrowsing phishing warning, triggers the delayed warning
     (via keypress), or leaves the page without interacting. Only recorded when
     user has not disabled URL elision via &quot;Always Show Full URLs&quot;
-    context menu item.
+    context menu item, or by installing the Suspicious Site Reporter extension.
   </summary>
 </histogram>
 
@@ -149132,6 +149132,33 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Same as SafeBrowsing.DelayedWarnings.Event but only recorded when user has
     disabled URL elision via &quot;Always Show Full URLs&quot; context menu
+    item, or by installing the Suspicious Site Reporter extension.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DelayedWarnings.TimeOnPage" units="seconds"
+    expires_after="M89">
+  <owner>meacer@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how long a user in the Delayed Warnings experiment group spends on a
+    page with a delayed SafeBrowsing phishing warning. The time is recorded from
+    when the page loads to when the warning is shown or the user leaves the
+    page, whichever comes first. Only recorded when user has not disabled URL
+    elision via &quot;Always Show Full URLs&quot; context menu item, or by
+    installing the Suspicious Site Reporter extension.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.DelayedWarnings.TimeOnPage_UrlElisionDisabled"
+    units="seconds" expires_after="M89">
+  <owner>meacer@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Same as SafeBrowsing.DelayedWarnings.TimeOnPage but only recorded when user
+    has disabled URL elision via &quot;Always Show Full URLs&quot; context menu
     item, or by installing the Suspicious Site Reporter extension.
   </summary>
 </histogram>

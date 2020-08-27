@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -2072,8 +2073,21 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                        KeyPress_WarningShown) {
+  constexpr int kTimeOnPage = 10;
   base::HistogramTester histograms;
   NavigateAndAssertNoInterstitial();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Inject a test clock to test the histogram that records the time on the
+  // delayed warning page before the warning shows or the user leaves the page.
+  base::SimpleTestClock clock;
+  SafeBrowsingUserInteractionObserver* observer =
+      SafeBrowsingUserInteractionObserver::FromWebContents(web_contents);
+  ASSERT_TRUE(observer);
+  clock.SetNow(observer->GetCreationTimeForTesting());
+  observer->SetClockForTesting(&clock);
+  clock.Advance(base::TimeDelta::FromSeconds(kTimeOnPage));
 
   // Type something. An interstitial should be shown.
   EXPECT_TRUE(TypeAndWaitForInterstitial(browser()));
@@ -2088,17 +2102,33 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                                DelayedWarningEvent::kPageLoaded, 1);
   histograms.ExpectBucketCount(kDelayedWarningsHistogram,
                                DelayedWarningEvent::kWarningShownOnKeypress, 1);
+  histograms.ExpectUniqueTimeSample(kDelayedWarningsTimeOnPageHistogram,
+                                    base::TimeDelta::FromSeconds(kTimeOnPage),
+                                    1);
 }
 
 // Same as KeyPress_WarningShown, but user disabled URL elision by enabling
 // "Always Show Full URLs" option. A separate histogram must be recorded.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
                        KeyPress_WarningShown_UrlElisionDisabled) {
+  constexpr int kTimeOnPage = 10;
   browser()->profile()->GetPrefs()->SetBoolean(
       omnibox::kPreventUrlElisionsInOmnibox, true);
 
   base::HistogramTester histograms;
   NavigateAndAssertNoInterstitial();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Inject a test clock to test the histogram that records the time on the
+  // delayed warning page before the warning shows or the user leaves the page.
+  base::SimpleTestClock clock;
+  SafeBrowsingUserInteractionObserver* observer =
+      SafeBrowsingUserInteractionObserver::FromWebContents(web_contents);
+  ASSERT_TRUE(observer);
+  clock.SetNow(observer->GetCreationTimeForTesting());
+  observer->SetClockForTesting(&clock);
+  clock.Advance(base::TimeDelta::FromSeconds(kTimeOnPage));
 
   // Type something. An interstitial should be shown.
   EXPECT_TRUE(TypeAndWaitForInterstitial(browser()));
@@ -2106,13 +2136,16 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
   AssertNoInterstitial(browser(), false);  // Assert the interstitial is gone
   EXPECT_EQ(GURL(url::kAboutBlankURL),     // Back to "about:blank"
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+            web_contents->GetURL());
 
   histograms.ExpectTotalCount(kDelayedWarningsWithElisionDisabledHistogram, 2);
   histograms.ExpectBucketCount(kDelayedWarningsWithElisionDisabledHistogram,
                                DelayedWarningEvent::kPageLoaded, 1);
   histograms.ExpectBucketCount(kDelayedWarningsWithElisionDisabledHistogram,
                                DelayedWarningEvent::kWarningShownOnKeypress, 1);
+  histograms.ExpectUniqueTimeSample(
+      kDelayedWarningsTimeOnPageWithElisionDisabledHistogram,
+      base::TimeDelta::FromSeconds(kTimeOnPage), 1);
 }
 
 // Same as KeyPress_WarningShown_UrlElisionDisabled, but user disabled URL

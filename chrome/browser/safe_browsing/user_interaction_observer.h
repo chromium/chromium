@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_USER_INTERACTION_OBSERVER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_USER_INTERACTION_OBSERVER_H_
 
+#include "base/time/default_clock.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -57,14 +58,15 @@ enum class DelayedWarningEvent {
   kMaxValue = kWarningShownOnPaste,
 };
 
-// Name of the recorded histogram when the user did not disable URL elision via
+// Name of the recorded histograms when the user did not disable URL elision via
 // "Always Show Full URLs" menu option or by installing Suspicious Site Reporter
 // extension.
 extern const char kDelayedWarningsHistogram[];
+extern const char kDelayedWarningsTimeOnPageHistogram[];
 
-// Same as kDelayedWarningsHistogram but only recorded if the user disabled
-// URL elision.
+// Same as above but only recorded if the user disabled URL elision.
 extern const char kDelayedWarningsWithElisionDisabledHistogram[];
+extern const char kDelayedWarningsTimeOnPageWithElisionDisabledHistogram[];
 
 // Observes user interactions and shows an interstitial if necessary.
 // Only created when an interstitial was about to be displayed but was delayed
@@ -124,6 +126,9 @@ class SafeBrowsingUserInteractionObserver
       const char* extension_id);
   static void ResetSuspiciousSiteReporterExtensionIdForTesting();
 
+  void SetClockForTesting(base::Clock* clock);
+  base::Time GetCreationTimeForTesting() const;
+
  private:
   void RecordUMA(DelayedWarningEvent event);
 
@@ -152,6 +157,12 @@ class SafeBrowsingUserInteractionObserver
 
   // Id of the Suspicious Site Reporter extension. Only set in tests.
   static const char* suspicious_site_reporter_extension_id_;
+
+  // The time that this observer was created. Used for recording histograms.
+  base::Time creation_time_;
+  // This clock is used to record the delta from |creation_time_| when the
+  // observer is detached, and can be injected by tests.
+  base::Clock* clock_;
 };
 
 }  // namespace safe_browsing

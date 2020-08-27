@@ -29,9 +29,13 @@ const char kPreventElisionExtensionId[] = "jknemblkbdhdcpllfgbfekkdciegfboi";
 namespace safe_browsing {
 
 const char kDelayedWarningsHistogram[] = "SafeBrowsing.DelayedWarnings.Event";
+const char kDelayedWarningsTimeOnPageHistogram[] =
+    "SafeBrowsing.DelayedWarnings.TimeOnPage";
 
 const char kDelayedWarningsWithElisionDisabledHistogram[] =
     "SafeBrowsing.DelayedWarnings.Event_UrlElisionDisabled";
+const char kDelayedWarningsTimeOnPageWithElisionDisabledHistogram[] =
+    "SafeBrowsing.DelayedWarnings.TimeOnPage_UrlElisionDisabled";
 
 namespace {
 const char kWebContentsUserDataKey[] =
@@ -68,7 +72,9 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
     : content::WebContentsObserver(web_contents),
       web_contents_(web_contents),
       resource_(resource),
-      ui_manager_(ui_manager) {
+      ui_manager_(ui_manager),
+      creation_time_(base::Time::Now()),
+      clock_(base::DefaultClock::GetInstance()) {
   DCHECK(base::FeatureList::IsEnabled(kDelayedWarnings));
   key_press_callback_ =
       base::BindRepeating(&SafeBrowsingUserInteractionObserver::HandleKeyPress,
@@ -105,9 +111,6 @@ SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
       key_press_callback_);
   web_contents_->GetRenderViewHost()->GetWidget()->RemoveMouseEventCallback(
       mouse_event_callback_);
-  if (!interstitial_shown_) {
-    RecordUMA(DelayedWarningEvent::kWarningNotShown);
-  }
 }
 
 // static
@@ -188,7 +191,21 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
 }
 
 void SafeBrowsingUserInteractionObserver::Detach() {
+  if (!interstitial_shown_) {
+    RecordUMA(DelayedWarningEvent::kWarningNotShown);
+  }
+  base::TimeDelta time_on_page = clock_->Now() - creation_time_;
+  if (IsUrlElisionDisabled(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+          suspicious_site_reporter_extension_id_)) {
+    base::UmaHistogramLongTimes(
+        kDelayedWarningsTimeOnPageWithElisionDisabledHistogram, time_on_page);
+  } else {
+    base::UmaHistogramLongTimes(kDelayedWarningsTimeOnPageHistogram,
+                                time_on_page);
+  }
   web_contents()->RemoveUserData(kWebContentsUserDataKey);
+  // DO NOT add code past this point. |this| is destroyed.
 }
 
 void SafeBrowsingUserInteractionObserver::DidToggleFullscreenModeForTab(
@@ -260,6 +277,16 @@ void SafeBrowsingUserInteractionObserver::
 void SafeBrowsingUserInteractionObserver::
     ResetSuspiciousSiteReporterExtensionIdForTesting() {
   suspicious_site_reporter_extension_id_ = kPreventElisionExtensionId;
+}
+
+void SafeBrowsingUserInteractionObserver::SetClockForTesting(
+    base::Clock* clock) {
+  clock_ = clock;
+}
+
+base::Time SafeBrowsingUserInteractionObserver::GetCreationTimeForTesting()
+    const {
+  return creation_time_;
 }
 
 void SafeBrowsingUserInteractionObserver::RecordUMA(DelayedWarningEvent event) {
