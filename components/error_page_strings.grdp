@@ -332,12 +332,19 @@
   <message name="IDS_ERRORPAGES_SUGGESTION_DISABLE_EXTENSION_SUMMARY" desc="When a page fails to load, we provide a suggestion that the user try disabling the extension that's blocking it.">
     Try disabling your extensions.
   </message>
+  <message name="IDS_ERRORPAGES_CHECK_TYPO_SUMMARY" desc="When a page fails to load, we provide a suggestion to the user to check for spelling errors">
+    Check if there is a typo in <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.whatever.com</ex></ph>.
+  </message>
+
   <if expr="is_macosx">
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE" desc="Label for the link that invokes the connection diagnostic tool on the error page displayed in a list of suggestions. The suggestions list is prefixed with 'Try:'.">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE" desc="Standalone text for the link that invokes the connection diagnostic tool on the error page">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+    <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
+      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
   <if expr="is_win">
@@ -347,6 +354,9 @@
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE" desc="Standalone text for the link that invokes the connection diagnostic tool on the error page">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Windows Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
+   <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
+      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Windows Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
   </if>
   <if expr="chromeos">
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE" desc="Label for the link that invokes the connection diagnostic tool on the error page displayed in a list of suggestions. The suggestions list is prefixed with 'Try:'.">
@@ -354,6 +364,9 @@
     </message>
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE" desc="Standalone text for the link that invokes the connection diagnostic tool on the error page">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+    <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
+      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
 

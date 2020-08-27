@@ -455,7 +455,7 @@ const LocalizedErrorMap dns_probe_error_options[] = {
     {
         error_page::DNS_PROBE_FINISHED_NXDOMAIN,
         IDS_ERRORPAGES_HEADING_NOT_AVAILABLE,
-        IDS_ERRORPAGES_SUMMARY_NAME_NOT_RESOLVED,
+        IDS_ERRORPAGES_CHECK_TYPO_SUMMARY,
         SUGGEST_DIAGNOSE_TOOL,
         SHOW_BUTTON_RELOAD,
     },
@@ -750,8 +750,13 @@ void GetSuggestionsSummaryList(int error_code,
 // the URL is valid add a suggestion.
 #if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_MAC)
   if (IsOnlySuggestion(suggestions, SUGGEST_DIAGNOSE_TOOL)) {
+    int diagose_message_id =
+        error_code == error_page::DNS_PROBE_FINISHED_NXDOMAIN
+            ? IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE
+            : IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE;
+
     AddSingleEntryDictionaryToList(suggestions_summary_list, "summary",
-        IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE, false);
+                                   diagose_message_id, false);
     return;
   }
   if (IsSuggested(suggestions, SUGGEST_DIAGNOSE_TOOL)) {
