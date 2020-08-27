@@ -446,7 +446,11 @@ MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
           &main_thread_scheduler_impl->tracing_controller_,
           YesNoStateToString),
       compositor_priority_experiments(main_thread_scheduler_impl),
-      main_thread_compositing_is_fast(false) {}
+      main_thread_compositing_is_fast(false),
+      compositor_priority(TaskQueue::QueuePriority::kNormalPriority,
+                          "Scheduler.CompositorPriority",
+                          &main_thread_scheduler_impl->tracing_controller_,
+                          TaskQueue::PriorityToString) {}
 
 MainThreadSchedulerImpl::MainThreadOnly::~MainThreadOnly() = default;
 
@@ -1506,8 +1510,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 
   new_policy.should_disable_throttling() = main_thread_only().use_virtual_time;
 
-  new_policy.compositor_priority() = ComputeCompositorPriority();
-
   new_policy.find_in_page_priority() =
       find_in_page_budget_pool_controller_->CurrentTaskPriority();
 
@@ -1546,6 +1548,8 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
 
   Policy old_policy = main_thread_only().current_policy;
   main_thread_only().current_policy = new_policy;
+
+  UpdateCompositorTaskQueuePriority();
 
   UpdateStateForAllTaskQueues(old_policy);
 }
@@ -2083,8 +2087,6 @@ MainThreadSchedulerImpl::Policy::Policy()
       should_disable_throttling_(false),
       frozen_when_backgrounded_(false),
       should_prioritize_loading_with_compositing_(false),
-      compositor_priority_(
-          base::sequence_manager::TaskQueue::QueuePriority::kNormalPriority),
       find_in_page_priority_(FindInPageBudgetPoolController::
                                  kFindInPageBudgetNotExhaustedPriority),
       use_case_(UseCase::kNone) {}
@@ -2104,8 +2106,6 @@ void MainThreadSchedulerImpl::Policy::AsValueInto(
   state->EndDictionary();
 
   state->SetString("rail_mode", RAILModeToString(rail_mode()));
-  state->SetString("compositor_priority",
-                   TaskQueue::PriorityToString(compositor_priority()));
   state->SetString("use_case", UseCaseToString(use_case()));
 
   state->SetBoolean("should_disable_throttling", should_disable_throttling());
@@ -2551,8 +2551,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   RecordTaskUkm(queue.get(), task, *task_timing);
 
   main_thread_only().compositor_priority_experiments.OnTaskCompleted(
-      queue.get(), main_thread_only().current_policy.compositor_priority(),
-      task_timing);
+      queue.get(), main_thread_only().compositor_priority, task_timing);
 
   find_in_page_budget_pool_controller_->OnTaskCompleted(queue.get(),
                                                         task_timing);
@@ -2671,7 +2670,7 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputePriority(
 
   if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor) {
-    return main_thread_only().current_policy.compositor_priority();
+    return main_thread_only().compositor_priority;
   }
 
   // Default priority.
@@ -2735,8 +2734,6 @@ bool MainThreadSchedulerImpl::ShouldUpdateTaskQueuePriorities(
     Policy old_policy) const {
   return old_policy.use_case() !=
              main_thread_only().current_policy.use_case() ||
-         old_policy.compositor_priority() !=
-             main_thread_only().current_policy.compositor_priority() ||
          old_policy.find_in_page_priority() !=
              main_thread_only().current_policy.find_in_page_priority();
 }
@@ -2758,12 +2755,12 @@ void MainThreadSchedulerImpl::SetPrioritizeCompositingAfterInput(
   }
   main_thread_only().prioritize_compositing_after_input =
       prioritize_compositing_after_input;
-  UpdateCompositorPolicy();
+  UpdateCompositorTaskQueuePriority();
 }
 
 void MainThreadSchedulerImpl::
     OnCompositorPriorityExperimentUpdateCompositorPriority() {
-  UpdateCompositorPolicy();
+  UpdateCompositorTaskQueuePriority();
 }
 
 TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
@@ -2788,9 +2785,8 @@ TaskQueue::QueuePriority MainThreadSchedulerImpl::ComputeCompositorPriority()
   return TaskQueue::QueuePriority::kNormalPriority;
 }
 
-void MainThreadSchedulerImpl::UpdateCompositorPolicy() {
-  main_thread_only().current_policy.compositor_priority() =
-      ComputeCompositorPriority();
+void MainThreadSchedulerImpl::UpdateCompositorTaskQueuePriority() {
+  main_thread_only().compositor_priority = ComputeCompositorPriority();
   CompositorTaskQueue()->SetQueuePriority(
       ComputePriority(CompositorTaskQueue().get()));
 }

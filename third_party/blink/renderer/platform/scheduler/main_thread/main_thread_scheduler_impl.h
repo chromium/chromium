@@ -405,7 +405,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   base::WeakPtr<MainThreadSchedulerImpl> GetWeakPtr();
 
   base::sequence_manager::TaskQueue::QueuePriority compositor_priority() const {
-    return main_thread_only().current_policy.compositor_priority();
+    return main_thread_only().compositor_priority;
   }
 
   bool should_prioritize_loading_with_compositing() const {
@@ -565,14 +565,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       return should_freeze_compositor_task_queue_;
     }
 
-    base::sequence_manager::TaskQueue::QueuePriority& compositor_priority() {
-      return compositor_priority_;
-    }
-    base::sequence_manager::TaskQueue::QueuePriority compositor_priority()
-        const {
-      return compositor_priority_;
-    }
-
     base::sequence_manager::TaskQueue::QueuePriority& find_in_page_priority() {
       return find_in_page_priority_;
     }
@@ -592,7 +584,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
                  other.should_prioritize_loading_with_compositing_ &&
              should_freeze_compositor_task_queue_ ==
                  other.should_freeze_compositor_task_queue_ &&
-             compositor_priority_ == other.compositor_priority_ &&
              find_in_page_priority_ == other.find_in_page_priority_ &&
              use_case_ == other.use_case_;
     }
@@ -605,10 +596,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool frozen_when_backgrounded_;
     bool should_prioritize_loading_with_compositing_;
     bool should_freeze_compositor_task_queue_{false};
-
-    // Priority of task queues belonging to the compositor class (Check
-    // MainThread::QueueClass).
-    base::sequence_manager::TaskQueue::QueuePriority compositor_priority_;
 
     base::sequence_manager::TaskQueue::QueuePriority find_in_page_priority_;
 
@@ -770,9 +757,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // the use case. Defaults to kNormalPriority.
   TaskQueue::QueuePriority ComputeCompositorPriority() const;
 
-  // Used to update the compositor policy on the main thread when there is a
-  // change in the compositor priority.
-  void UpdateCompositorPolicy();
+  // Used to update the compositor priority on the main thread.
+  void UpdateCompositorTaskQueuePriority();
 
   // Computes the priority for compositing based on the current use case.
   // Returns nullopt if the use case does not need to set the priority.
@@ -973,6 +959,11 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     CompositorPriorityExperiments compositor_priority_experiments;
 
     bool main_thread_compositing_is_fast;
+
+    // Priority given to the main thread's compositor task queue. Defaults to
+    // kNormalPriority and is updated via UpdateCompositorTaskQueuePriority().
+    TraceableState<TaskQueue::QueuePriority, TracingCategoryName::kDefault>
+        compositor_priority;
   };
 
   struct AnyThread {

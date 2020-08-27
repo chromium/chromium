@@ -112,6 +112,7 @@ void CompositorPriorityExperiments::OnTaskCompleted(
     case Experiment::kVeryHighPriorityForCompositingAlways:
       return;
     case Experiment::kVeryHighPriorityForCompositingWhenFast:
+      scheduler_->OnCompositorPriorityExperimentUpdateCompositorPriority();
       return;
     case Experiment::kVeryHighPriorityForCompositingAlternating:
       // Deprioritize the compositor if it has just run a task. Prioritize the
