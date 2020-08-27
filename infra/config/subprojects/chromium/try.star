@@ -37,7 +37,7 @@ try_.list_view(
 
 try_.list_view(
     name = "tryserver.chromium.chromiumos",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.ALL_RELEASES,
 )
 
 try_.list_view(
@@ -538,7 +538,7 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "chromeos-amd64-generic-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.ALL_RELEASES,
     main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
@@ -549,7 +549,7 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "chromeos-arm-generic-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.ALL_RELEASES,
     main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),
 )
@@ -567,6 +567,7 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "chromeos-kevin-rel",
+    branch_selector = branches.ALL_RELEASES,
     main_list_view = settings.main_list_view_name,
     tryjob = try_.job(
         location_regexp = [
@@ -579,7 +580,7 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "linux-chromeos-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.ALL_RELEASES,
     goma_jobs = goma.jobs.J150,
     main_list_view = settings.main_list_view_name,
     tryjob = try_.job(cancel_stale = False),
