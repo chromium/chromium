@@ -4,20 +4,30 @@
 
 #include "chrome/browser/nearby_sharing/nearby_notification_manager.h"
 
+#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/platform_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/download_manager.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -253,6 +263,171 @@ class ConnectionRequestNotificationDelegate
   bool has_accept_button_;
 };
 
+class ReceivedImageDecoder : public ImageDecoder::ImageRequest {
+ public:
+  explicit ReceivedImageDecoder(
+      base::OnceCallback<
+          void(NearbyNotificationManager::SuccessNotificationAction)>
+          testing_callback)
+      : testing_callback_(std::move(testing_callback)) {}
+  ~ReceivedImageDecoder() override = default;
+
+  void DecodeImage(const base::FilePath& image_path) {
+    auto contents = std::make_unique<std::string>();
+    auto* contents_ptr = contents.get();
+
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&base::ReadFileToString, image_path, contents_ptr),
+        base::BindOnce(&ReceivedImageDecoder::OnFileRead,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(contents)));
+  }
+
+  // ImageDecoder::ImageRequest implementation:
+  void OnImageDecoded(const SkBitmap& decoded_image) override {
+    NS_LOG(VERBOSE) << __func__ << ": Image decoding succeeded.";
+    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+        .WriteImage(decoded_image);
+
+    if (testing_callback_) {
+      std::move(testing_callback_)
+          .Run(
+              NearbyNotificationManager::SuccessNotificationAction::kCopyImage);
+    }
+
+    delete this;
+  }
+
+  void OnDecodeImageFailed() override {
+    NS_LOG(ERROR) << __func__ << ": Failed to decode received image.";
+    if (testing_callback_) {
+      std::move(testing_callback_)
+          .Run(NearbyNotificationManager::SuccessNotificationAction::kNone);
+    }
+    delete this;
+  }
+
+ private:
+  void OnFileRead(std::unique_ptr<std::string> contents,
+                  bool is_contents_read) {
+    if (!is_contents_read || !contents || contents->empty()) {
+      NS_LOG(VERBOSE) << __func__ << ": Image contents not found.";
+
+      if (testing_callback_) {
+        std::move(testing_callback_)
+            .Run(NearbyNotificationManager::SuccessNotificationAction::kNone);
+      }
+
+      delete this;
+      return;
+    }
+
+    ImageDecoder::Start(this, *contents);
+  }
+
+  base::OnceCallback<void(NearbyNotificationManager::SuccessNotificationAction)>
+      testing_callback_;
+
+  base::WeakPtrFactory<ReceivedImageDecoder> weak_ptr_factory_{this};
+};
+
+class SuccessNotificationDelegate : public NearbyNotificationDelegate {
+ public:
+  SuccessNotificationDelegate(
+      NearbyNotificationManager* manager,
+      ShareTarget share_target,
+      Profile* profile,
+      base::OnceCallback<
+          void(NearbyNotificationManager::SuccessNotificationAction)>
+          testing_callback)
+      : manager_(manager),
+        share_target_(std::move(share_target)),
+        profile_(profile),
+        testing_callback_(std::move(testing_callback)) {}
+  ~SuccessNotificationDelegate() override = default;
+
+  static bool CanCopyAttachmentToClipboard(const ShareTarget& share_target) {
+    if (!share_target.text_attachments.empty()) {
+      return true;
+    }
+
+    if (share_target.file_attachments.size() == 1 &&
+        share_target.file_attachments[0].type() ==
+            sharing::mojom::FileMetadata::Type::kImage &&
+        share_target.file_attachments[0].file_path()) {
+      return true;
+    }
+
+    return false;
+  }
+
+  // NearbyNotificationDelegate:
+  void OnClick(const std::string& notification_id,
+               const base::Optional<int>& action_index) override {
+    DCHECK(!action_index);
+
+    if (!CanCopyAttachmentToClipboard(share_target_)) {
+      // TODO(crbug.com/1085069) - Open downloads tab instead for non ChromeOS
+      // browsers.
+      OpenDownloadsFolder();
+    } else if (!share_target_.text_attachments.empty()) {
+      CopyTextToClipboard(share_target_.text_attachments[0].text_body());
+    } else {
+      DCHECK_EQ(sharing::mojom::FileMetadata::Type::kImage,
+                share_target_.file_attachments[0].type());
+
+      CopyImageToClipboard(share_target_.file_attachments[0].file_path());
+    }
+
+    manager_->CloseSuccessNotification();
+  }
+
+  void OnClose(const std::string& notification_id) override {
+    manager_->CloseSuccessNotification();
+  }
+
+ private:
+  void OpenDownloadsFolder() {
+    platform_util::OpenItem(
+        profile_,
+        DownloadPrefs::FromDownloadManager(
+            content::BrowserContext::GetDownloadManager(profile_))
+            ->DownloadPath(),
+        platform_util::OPEN_FOLDER, platform_util::OpenOperationCallback());
+
+    if (testing_callback_) {
+      std::move(testing_callback_)
+          .Run(NearbyNotificationManager::SuccessNotificationAction::
+                   kOpenDownloads);
+    }
+  }
+
+  void CopyTextToClipboard(const std::string& text) {
+    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+        .WriteText(
+            base::UTF8ToUTF16(share_target_.text_attachments[0].text_body()));
+
+    if (testing_callback_) {
+      std::move(testing_callback_)
+          .Run(NearbyNotificationManager::SuccessNotificationAction::kCopyText);
+    }
+  }
+
+  void CopyImageToClipboard(const base::Optional<base::FilePath>& file_path) {
+    // ReceivedImageDecoder will delete itself on completion of ImageDecoder
+    // callback.
+    ReceivedImageDecoder* decoder =
+        new ReceivedImageDecoder(std::move(testing_callback_));
+    decoder->DecodeImage(*file_path);
+  }
+
+  NearbyNotificationManager* manager_;
+  ShareTarget share_target_;
+  Profile* profile_;
+  base::OnceCallback<void(NearbyNotificationManager::SuccessNotificationAction)>
+      testing_callback_;
+};
+
 class OnboardingNotificationDelegate : public NearbyNotificationDelegate {
  public:
   explicit OnboardingNotificationDelegate(NearbyNotificationManager* manager)
@@ -304,10 +479,12 @@ constexpr base::TimeDelta
 NearbyNotificationManager::NearbyNotificationManager(
     NotificationDisplayService* notification_display_service,
     NearbySharingService* nearby_service,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    Profile* profile)
     : notification_display_service_(notification_display_service),
       nearby_service_(nearby_service),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      profile_(profile) {
   DCHECK(notification_display_service_);
   DCHECK(nearby_service_);
   DCHECK(pref_service_);
@@ -466,7 +643,14 @@ void NearbyNotificationManager::ShowSuccess(const ShareTarget& share_target) {
   notification.set_title(GetSuccessNotificationTitle(share_target));
 
   // TODO(crbug.com/1102348): Show content specific actions and preview images.
-  delegate_map_.erase(kNearbyNotificationId);
+  if (share_target.is_incoming) {
+    delegate_map_[kNearbyNotificationId] =
+        std::make_unique<SuccessNotificationDelegate>(
+            this, share_target, profile_,
+            std::move(success_action_test_callback_));
+  } else {
+    delegate_map_.erase(kNearbyNotificationId);
+  }
 
   notification_display_service_->Display(
       NotificationHandler::Type::NEARBY_SHARE, notification,
@@ -532,4 +716,15 @@ void NearbyNotificationManager::OnOnboardingClicked() {
 void NearbyNotificationManager::OnOnboardingDismissed() {
   CloseOnboarding();
   UpdateOnboardingDismissedTime(pref_service_);
+}
+
+void NearbyNotificationManager::CloseSuccessNotification() {
+  delegate_map_.erase(kNearbyNotificationId);
+  notification_display_service_->Close(NotificationHandler::Type::NEARBY_SHARE,
+                                       kNearbyNotificationId);
+}
+
+void NearbyNotificationManager::SetOnSuccessClickedForTesting(
+    base::OnceCallback<void(SuccessNotificationAction)> callback) {
+  success_action_test_callback_ = std::move(callback);
 }

@@ -7,14 +7,22 @@
 #include <memory>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_core_service_impl.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/mock_nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
@@ -26,19 +34,27 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/test/clipboard_test_util.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
+
+const char kTextBody[] = "text body";
 
 MATCHER_P(MatchesTarget, target, "") {
   return arg.id == target.id;
 }
 
 TextAttachment CreateTextAttachment(TextAttachment::Type type) {
-  return TextAttachment(type, "text body");
+  return TextAttachment(type, kTextBody);
 }
 
 FileAttachment CreateFileAttachment(FileAttachment::Type type) {
@@ -61,6 +77,64 @@ MockNearbySharingService* CreateAndUseMockNearbySharingService(
           base::BindRepeating(&CreateMockNearbySharingService)));
 }
 
+std::string GetClipboardText() {
+  base::string16 text;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &text);
+  return base::UTF16ToUTF8(text);
+}
+
+SkBitmap GetClipboardImage() {
+  return ui::clipboard_test_util::ReadImage(
+      ui::Clipboard::GetForCurrentThread());
+}
+
+SkBitmap CreateTestSkBitmap() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(/*w=*/10, /*h=*/15);
+  bitmap.eraseColor(SK_ColorRED);
+  return bitmap;
+}
+
+ShareTarget CreateIncomingShareTarget(int text_attachments,
+                                      int image_attachments,
+                                      int other_file_attachments) {
+  ShareTarget share_target;
+  share_target.is_incoming = true;
+  for (int i = 0; i < text_attachments; i++) {
+    share_target.text_attachments.push_back(
+        CreateTextAttachment(TextAttachment::Type::kText));
+  }
+
+  for (int i = 0; i < image_attachments; i++) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath file_path;
+    base::CreateTemporaryFile(&file_path);
+    SkBitmap image = CreateTestSkBitmap();
+
+    std::vector<unsigned char> png_data;
+    EXPECT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
+        image, /*discard_transparency=*/true, &png_data));
+    char* data = reinterpret_cast<char*>(&png_data[0]);
+    int size = static_cast<int>(png_data.size());
+    base::WriteFile(file_path, data, size);
+
+    FileAttachment attachment(/*file_name=*/"file.jpg",
+                              FileAttachment::Type::kImage,
+                              /*size=*/10,
+                              /*file_path=*/file_path,
+                              /*mime_type=*/"example");
+
+    share_target.file_attachments.push_back(std::move(attachment));
+  }
+
+  for (int i = 0; i < other_file_attachments; i++) {
+    share_target.file_attachments.push_back(
+        CreateFileAttachment(FileAttachment::Type::kVideo));
+  }
+  return share_target;
+}
+
 class NearbyNotificationManagerTest : public testing::Test {
  public:
   NearbyNotificationManagerTest() {
@@ -75,8 +149,19 @@ class NearbyNotificationManagerTest : public testing::Test {
             testing::Invoke([&](const std::string& notification_id) {
               return manager_->GetNotificationDelegate(notification_id);
             }));
+
+    DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
+        ->SetDownloadManagerDelegateForTesting(
+            std::make_unique<ChromeDownloadManagerDelegate>(&profile_));
+
+    ui::TestClipboard::CreateForCurrentThread();
   }
-  ~NearbyNotificationManagerTest() override = default;
+
+  ~NearbyNotificationManagerTest() override {
+    DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
+        ->SetDownloadManagerDelegateForTesting(nullptr);
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+  }
 
   NearbyNotificationManager* manager() { return manager_.get(); }
 
@@ -89,7 +174,8 @@ class NearbyNotificationManagerTest : public testing::Test {
     NotificationDisplayService* notification_display_service =
         NotificationDisplayServiceFactory::GetForProfile(&profile_);
     return std::make_unique<NearbyNotificationManager>(
-        notification_display_service, nearby_service_, &pref_service_);
+        notification_display_service, nearby_service_, &pref_service_,
+        &profile_);
   }
 
  protected:
@@ -101,6 +187,8 @@ class NearbyNotificationManagerTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   MockNearbySharingService* nearby_service_;
   std::unique_ptr<NearbyNotificationManager> manager_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+  base::ScopedDisallowBlocking disallow_blocking_;
 };
 
 struct AttachmentsTestParamInternal {
@@ -780,4 +868,163 @@ TEST_F(NearbyNotificationManagerTest, Onboarding_DismissTimeout) {
       NearbyNotificationManager::kOnboardingDismissedTimeout);
   manager()->ShowOnboarding();
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       SuccessNotificationClicked_SingleImageReceived) {
+  base::RunLoop run_loop;
+  manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
+      [&](NearbyNotificationManager::SuccessNotificationAction action) {
+        EXPECT_EQ(
+            NearbyNotificationManager::SuccessNotificationAction::kCopyImage,
+            action);
+        run_loop.Quit();
+      }));
+
+  ShareTarget share_target =
+      CreateIncomingShareTarget(/*text_attachments=*/0, /*image_attachments=*/1,
+                                /*other_file_attachments=*/0);
+  manager()->ShowSuccess(share_target);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/base::nullopt,
+                                      /*reply=*/base::nullopt);
+
+  run_loop.Run();
+
+  // Expected behaviour is to copy to clipboard.
+  SkBitmap image = GetClipboardImage();
+  EXPECT_TRUE(gfx::BitmapsAreEqual(CreateTestSkBitmap(), image));
+
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       SuccessNotificationClicked_MultipleImagesReceived) {
+  base::RunLoop run_loop;
+  manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
+      [&](NearbyNotificationManager::SuccessNotificationAction action) {
+        EXPECT_EQ(NearbyNotificationManager::SuccessNotificationAction::
+                      kOpenDownloads,
+                  action);
+        run_loop.Quit();
+      }));
+
+  ShareTarget share_target =
+      CreateIncomingShareTarget(/*text_attachments=*/0, /*image_attachments=*/2,
+                                /*other_file_attachments=*/0);
+  manager()->ShowSuccess(share_target);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/base::nullopt,
+                                      /*reply=*/base::nullopt);
+
+  run_loop.Run();
+
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+TEST_F(NearbyNotificationManagerTest, SuccessNotificationClicked_TextReceived) {
+  base::RunLoop run_loop;
+  manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
+      [&](NearbyNotificationManager::SuccessNotificationAction action) {
+        EXPECT_EQ(
+            NearbyNotificationManager::SuccessNotificationAction::kCopyText,
+            action);
+        run_loop.Quit();
+      }));
+
+  ShareTarget share_target =
+      CreateIncomingShareTarget(/*text_attachments=*/1, /*image_attachments=*/0,
+                                /*other_file_attachments=*/0);
+  manager()->ShowSuccess(share_target);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/base::nullopt,
+                                      /*reply=*/base::nullopt);
+
+  run_loop.Run();
+  EXPECT_EQ(kTextBody, GetClipboardText());
+
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       SuccessNotificationClicked_SingleFileReceived) {
+  base::RunLoop run_loop;
+  manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
+      [&](NearbyNotificationManager::SuccessNotificationAction action) {
+        EXPECT_EQ(NearbyNotificationManager::SuccessNotificationAction::
+                      kOpenDownloads,
+                  action);
+        run_loop.Quit();
+      }));
+
+  ShareTarget share_target =
+      CreateIncomingShareTarget(/*text_attachments=*/0, /*image_attachments=*/0,
+                                /*other_file_attachments=*/1);
+  manager()->ShowSuccess(share_target);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/base::nullopt,
+                                      /*reply=*/base::nullopt);
+
+  run_loop.Run();
+
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       SuccessNotificationClicked_MultipleFilesReceived) {
+  base::RunLoop run_loop;
+  manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
+      [&](NearbyNotificationManager::SuccessNotificationAction action) {
+        EXPECT_EQ(NearbyNotificationManager::SuccessNotificationAction::
+                      kOpenDownloads,
+                  action);
+        run_loop.Quit();
+      }));
+
+  ShareTarget share_target =
+      CreateIncomingShareTarget(/*text_attachments=*/0, /*image_attachments=*/1,
+                                /*other_file_attachments=*/2);
+  manager()->ShowSuccess(share_target);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notifications[0].id(),
+                                      /*action_index=*/base::nullopt,
+                                      /*reply=*/base::nullopt);
+
+  run_loop.Run();
+
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
