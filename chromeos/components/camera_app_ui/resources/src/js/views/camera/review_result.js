@@ -138,7 +138,7 @@ export class ReviewResult {
    *     with the video result.
    */
   async openVideo(fileEntry) {
-    this.reviewVideoResult_.src = pictureURL(fileEntry);
+    this.reviewVideoResult_.src = await pictureURL(fileEntry);
     state.set(state.State.REVIEW_VIDEO_RESULT, true);
     state.set(state.State.REVIEW_RESULT, true);
     this.confirmResultButton_.focus();
