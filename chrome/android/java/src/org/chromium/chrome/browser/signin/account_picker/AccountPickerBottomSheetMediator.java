@@ -30,7 +30,8 @@ import java.util.List;
 /**
  * Mediator of the account picker bottom sheet in web sign-in flow.
  */
-class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Listener {
+class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Listener,
+                                                  AccountPickerBottomSheetView.BackPressListener {
     private final AccountPickerDelegate mAccountPickerDelegate;
     private final ProfileDataCache mProfileDataCache;
     private final PropertyModel mModel;
@@ -87,6 +88,23 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     public void goIncognitoMode() {
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.INCOGNITO_INTERSTITIAL);
         mAccountPickerDelegate.goIncognitoMode();
+    }
+
+    /**
+     * Notifies when user clicks the back-press button.
+     *
+     * @return true if the listener handles the back press, false if not.
+     */
+    @Override
+    public boolean onBackPressed() {
+        @ViewState
+        int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
+        if (viewState == ViewState.EXPANDED_ACCOUNT_LIST) {
+            mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE,
+                    ViewState.COLLAPSED_ACCOUNT_LIST);
+            return true;
+        }
+        return false;
     }
 
     PropertyModel getModel() {

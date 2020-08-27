@@ -28,7 +28,19 @@ import org.chromium.ui.widget.TextViewWithLeading;
  * options like "Add account" and "Go incognito mode".
  */
 class AccountPickerBottomSheetView implements BottomSheetContent {
+    /**
+     * Listener for the back-press button.
+     */
+    interface BackPressListener {
+        /**
+         * Notifies when user clicks the back-press button.
+         * @return true if the listener handles the back press, false if not.
+         */
+        boolean onBackPressed();
+    }
+
     private final Context mContext;
+    private final BackPressListener mBackPressListener;
     private final View mContentView;
     private final TextView mAccountPickerTitle;
     private final TextViewWithLeading mAccountPickerSubtitle;
@@ -37,8 +49,9 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final View mIncognitoInterstitialView;
     private final ButtonCompat mContinueAsButton;
 
-    AccountPickerBottomSheetView(Context context) {
+    AccountPickerBottomSheetView(Context context, BackPressListener backPressListener) {
         mContext = context;
+        mBackPressListener = backPressListener;
         mContentView = LayoutInflater.from(mContext).inflate(
                 R.layout.account_picker_bottom_sheet_view, null);
         mAccountPickerTitle = mContentView.findViewById(R.id.account_picker_bottom_sheet_title);
@@ -216,6 +229,11 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     @Override
     public boolean swipeToDismissEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean handleBackPress() {
+        return mBackPressListener.onBackPressed();
     }
 
     @Override

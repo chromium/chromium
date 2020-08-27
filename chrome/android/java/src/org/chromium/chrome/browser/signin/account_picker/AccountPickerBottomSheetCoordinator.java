@@ -42,9 +42,9 @@ public class AccountPickerBottomSheetCoordinator {
     public AccountPickerBottomSheetCoordinator(Context context,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate) {
-        mView = new AccountPickerBottomSheetView(context);
         mAccountPickerBottomSheetMediator =
                 new AccountPickerBottomSheetMediator(context, accountPickerDelegate);
+        mView = new AccountPickerBottomSheetView(context, mAccountPickerBottomSheetMediator);
         mAccountPickerCoordinator = new AccountPickerCoordinator(mView.getAccountListView(),
                 mAccountPickerBottomSheetMediator, null, AccountPickerAccessPoint.WEB);
         mBottomSheetController = bottomSheetController;

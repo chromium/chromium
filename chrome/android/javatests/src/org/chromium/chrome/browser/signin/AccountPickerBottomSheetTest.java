@@ -177,15 +177,12 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    public void testDismissExpandedSheet() {
+    public void testCollapsedSheetShowsWhenBackpressingOnExpandedSheet() {
         buildAndShowExpandedBottomSheet();
-        BottomSheetController controller = getBottomSheetController();
-        Assert.assertTrue(controller.isSheetOpen());
-        Assert.assertEquals(2, mFakeProfileDataSource.getNumberOfObservers());
         onView(isRoot()).perform(pressBack());
-        Assert.assertFalse(controller.isSheetOpen());
-        verify(mAccountPickerDelegateMock).onDismiss();
-        Assert.assertEquals(0, mFakeProfileDataSource.getNumberOfObservers());
+        CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
+                R.id.account_picker_continue_as_button)::isShown);
+        checkCollapsedAccountList(PROFILE_DATA1);
     }
 
     @Test
