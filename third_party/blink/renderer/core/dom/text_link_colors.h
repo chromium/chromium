@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_LINK_COLORS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TEXT_LINK_COLORS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_color_scheme.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -44,6 +43,8 @@ class TextLinkColors {
 
  public:
   TextLinkColors();
+  TextLinkColors(const TextLinkColors&) = delete;
+  TextLinkColors& operator=(const TextLinkColors&) = delete;
 
   void SetTextColor(const Color& color) { text_color_ = color; }
   Color TextColor() const { return text_color_; }
@@ -67,7 +68,6 @@ class TextLinkColors {
   Color link_color_;
   Color visited_link_color_;
   Color active_link_color_;
-  DISALLOW_COPY_AND_ASSIGN(TextLinkColors);
 };
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NTH_INDEX_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NTH_INDEX_CACHE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -19,6 +18,8 @@ class CORE_EXPORT NthIndexData final : public GarbageCollected<NthIndexData> {
  public:
   NthIndexData(ContainerNode&);
   NthIndexData(ContainerNode&, const QualifiedName& type);
+  NthIndexData(const NthIndexData&) = delete;
+  NthIndexData& operator=(const NthIndexData&) = delete;
 
   unsigned NthIndex(Element&) const;
   unsigned NthLastIndex(Element&) const;
@@ -30,7 +31,6 @@ class CORE_EXPORT NthIndexData final : public GarbageCollected<NthIndexData> {
  private:
   HeapHashMap<Member<Element>, unsigned> element_index_map_;
   unsigned count_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(NthIndexData);
 };
 
 class CORE_EXPORT NthIndexCache final {
@@ -38,6 +38,8 @@ class CORE_EXPORT NthIndexCache final {
 
  public:
   explicit NthIndexCache(Document&);
+  NthIndexCache(const NthIndexCache&) = delete;
+  NthIndexCache& operator=(const NthIndexCache&) = delete;
   ~NthIndexCache();
 
   static unsigned NthChildIndex(Element&);
@@ -62,7 +64,6 @@ class CORE_EXPORT NthIndexCache final {
 #if DCHECK_IS_ON()
   uint64_t dom_tree_version_;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(NthIndexCache);
 };
 
 }  // namespace blink

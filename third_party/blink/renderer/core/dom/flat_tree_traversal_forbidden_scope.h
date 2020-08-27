@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_TRAVERSAL_FORBIDDEN_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_TRAVERSAL_FORBIDDEN_SCOPE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
@@ -18,6 +17,10 @@ class FlatTreeTraversalForbiddenScope {
       : count_(document.FlatTreeTraversalForbiddenRecursionDepth()) {
     ++count_;
   }
+  FlatTreeTraversalForbiddenScope(const FlatTreeTraversalForbiddenScope&) =
+      delete;
+  FlatTreeTraversalForbiddenScope& operator=(
+      const FlatTreeTraversalForbiddenScope&) = delete;
 
   ~FlatTreeTraversalForbiddenScope() {
     DCHECK_GT(count_, 0u);
@@ -26,7 +29,6 @@ class FlatTreeTraversalForbiddenScope {
 
  private:
   unsigned& count_;
-  DISALLOW_COPY_AND_ASSIGN(FlatTreeTraversalForbiddenScope);
 };
 
 }  // namespace blink

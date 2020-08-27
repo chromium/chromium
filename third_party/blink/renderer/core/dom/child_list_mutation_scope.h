@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_LIST_MUTATION_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_LIST_MUTATION_SCOPE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -99,6 +98,8 @@ class ChildListMutationScope final {
       accumulator_->EnterMutationScope();
     }
   }
+  ChildListMutationScope(const ChildListMutationScope&) = delete;
+  ChildListMutationScope& operator=(const ChildListMutationScope&) = delete;
 
   ~ChildListMutationScope() {
     if (accumulator_) {
@@ -120,7 +121,6 @@ class ChildListMutationScope final {
 
  private:
   ChildListMutationAccumulator* accumulator_ = nullptr;
-  DISALLOW_COPY_AND_ASSIGN(ChildListMutationScope);
 };
 
 }  // namespace blink

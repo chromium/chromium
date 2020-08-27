@@ -7,7 +7,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -34,6 +33,8 @@ class CORE_EXPORT LiveNodeListRegistry {
 
  public:
   LiveNodeListRegistry() = default;
+  LiveNodeListRegistry(const LiveNodeListRegistry&) = delete;
+  LiveNodeListRegistry& operator=(const LiveNodeListRegistry&) = delete;
   void Add(const LiveNodeListBase*, NodeListInvalidationType);
   void Remove(const LiveNodeListBase*, NodeListInvalidationType);
 
@@ -63,7 +64,6 @@ class CORE_EXPORT LiveNodeListRegistry {
   Vector<Entry> data_;
 
   unsigned mask_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(LiveNodeListRegistry);
 };
 
 }  // namespace blink

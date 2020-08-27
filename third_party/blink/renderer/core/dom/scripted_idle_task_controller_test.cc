@@ -23,6 +23,10 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
  public:
   explicit MockScriptedIdleTaskControllerScheduler(ShouldYield should_yield)
       : should_yield_(should_yield == ShouldYield::YIELD) {}
+  MockScriptedIdleTaskControllerScheduler(
+      const MockScriptedIdleTaskControllerScheduler&) = delete;
+  MockScriptedIdleTaskControllerScheduler& operator=(
+      const MockScriptedIdleTaskControllerScheduler&) = delete;
   ~MockScriptedIdleTaskControllerScheduler() override = default;
 
   // ThreadScheduler implementation:
@@ -91,8 +95,6 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
   Thread::IdleTask idle_task_;
   scoped_refptr<scheduler::FakeTaskRunner> task_runner_ =
       base::MakeRefCounted<scheduler::FakeTaskRunner>();
-
-  DISALLOW_COPY_AND_ASSIGN(MockScriptedIdleTaskControllerScheduler);
 };
 
 class MockIdleTask : public ScriptedIdleTaskController::IdleTask {

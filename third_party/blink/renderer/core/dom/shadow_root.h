@@ -51,6 +51,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
 
  public:
   ShadowRoot(Document&, ShadowRootType);
+  ShadowRoot(const ShadowRoot&) = delete;
+  ShadowRoot& operator=(const ShadowRoot&) = delete;
 
   // Disambiguate between Node and TreeScope hierarchies; TreeScope's
   // implementation is simpler.
@@ -195,8 +197,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   unsigned is_declarative_shadow_root_ : 1;
   unsigned needs_distribution_recalc_ : 1;
   unsigned unused_ : 9;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowRoot);
 };
 
 inline Element* ShadowRoot::ActiveElement() const {

@@ -151,6 +151,10 @@ class TestSynchronousMutationObserver
   };
 
   explicit TestSynchronousMutationObserver(Document&);
+  TestSynchronousMutationObserver(const TestSynchronousMutationObserver&) =
+      delete;
+  TestSynchronousMutationObserver& operator=(
+      const TestSynchronousMutationObserver&) = delete;
   virtual ~TestSynchronousMutationObserver() = default;
 
   int CountContextDestroyedCalled() const {
@@ -211,8 +215,6 @@ class TestSynchronousMutationObserver
   HeapVector<Member<Node>> removed_nodes_;
   HeapVector<Member<const Text>> split_text_nodes_;
   HeapVector<Member<UpdateCharacterDataRecord>> updated_character_data_records_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSynchronousMutationObserver);
 };
 
 TestSynchronousMutationObserver::TestSynchronousMutationObserver(

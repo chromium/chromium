@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_THROW_ON_DYNAMIC_MARKUP_INSERTION_COUNT_INCREMENTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_THROW_ON_DYNAMIC_MARKUP_INSERTION_COUNT_INCREMENTER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -22,6 +21,10 @@ class ThrowOnDynamicMarkupInsertionCountIncrementer {
       return;
     ++(*count_);
   }
+  ThrowOnDynamicMarkupInsertionCountIncrementer(
+      const ThrowOnDynamicMarkupInsertionCountIncrementer&) = delete;
+  ThrowOnDynamicMarkupInsertionCountIncrementer& operator=(
+      const ThrowOnDynamicMarkupInsertionCountIncrementer&) = delete;
 
   ~ThrowOnDynamicMarkupInsertionCountIncrementer() {
     if (!count_)
@@ -31,7 +34,6 @@ class ThrowOnDynamicMarkupInsertionCountIncrementer {
 
  private:
   unsigned* count_;
-  DISALLOW_COPY_AND_ASSIGN(ThrowOnDynamicMarkupInsertionCountIncrementer);
 };
 
 }  // namespace blink

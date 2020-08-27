@@ -22,7 +22,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_RARE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_RARE_DATA_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
@@ -43,6 +42,8 @@ class NodeMutationObserverData final
     : public GarbageCollected<NodeMutationObserverData> {
  public:
   NodeMutationObserverData() = default;
+  NodeMutationObserverData(const NodeMutationObserverData&) = delete;
+  NodeMutationObserverData& operator=(const NodeMutationObserverData&) = delete;
 
   const HeapVector<Member<MutationObserverRegistration>>& Registry() {
     return registry_;
@@ -62,7 +63,6 @@ class NodeMutationObserverData final
  private:
   HeapVector<Member<MutationObserverRegistration>> registry_;
   HeapHashSet<Member<MutationObserverRegistration>> transient_registry_;
-  DISALLOW_COPY_AND_ASSIGN(NodeMutationObserverData);
 };
 
 class GC_PLUGIN_IGNORE(
@@ -107,6 +107,8 @@ class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.")
  public:
   NodeRenderingData(LayoutObject*,
                     scoped_refptr<const ComputedStyle> computed_style);
+  NodeRenderingData(const NodeRenderingData&) = delete;
+  NodeRenderingData& operator=(const NodeRenderingData&) = delete;
 
   LayoutObject* GetLayoutObject() const { return layout_object_; }
   void SetLayoutObject(LayoutObject* layout_object) {
@@ -129,7 +131,6 @@ class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.")
  private:
   LayoutObject* layout_object_;
   scoped_refptr<const ComputedStyle> computed_style_;
-  DISALLOW_COPY_AND_ASSIGN(NodeRenderingData);
 };
 
 class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.") NodeRareData
@@ -137,6 +138,8 @@ class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.") NodeRareData
  public:
   explicit NodeRareData(NodeRenderingData* node_layout_data)
       : NodeRareData(node_layout_data, false) {}
+  NodeRareData(const NodeRareData&) = delete;
+  NodeRareData& operator=(const NodeRareData&) = delete;
 
   NodeRenderingData* GetNodeRenderingData() const { return node_layout_data_; }
   void SetNodeRenderingData(NodeRenderingData* node_layout_data) {
@@ -223,8 +226,6 @@ class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.") NodeRareData
   // Keeps strong scroll timeline pointers linked to this node to ensure
   // the timelines are alive as long as the node is alive.
   Member<HeapHashSet<Member<ScrollTimeline>>> scroll_timelines_;
-
-  DISALLOW_COPY_AND_ASSIGN(NodeRareData);
 };
 
 }  // namespace blink

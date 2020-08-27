@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_LIFECYCLE_H_
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -99,12 +98,13 @@ class CORE_EXPORT DocumentLifecycle {
 
    public:
     Scope(DocumentLifecycle&, LifecycleState final_state);
+    Scope(const Scope&) = delete;
+    Scope& operator=(const Scope&) = delete;
     ~Scope();
 
    private:
     DocumentLifecycle& lifecycle_;
     LifecycleState final_state_;
-    DISALLOW_COPY_AND_ASSIGN(Scope);
   };
 
   class DeprecatedTransition {
@@ -112,6 +112,8 @@ class CORE_EXPORT DocumentLifecycle {
 
    public:
     DeprecatedTransition(LifecycleState from, LifecycleState to);
+    DeprecatedTransition(const DeprecatedTransition&) = delete;
+    DeprecatedTransition& operator=(const DeprecatedTransition&) = delete;
     ~DeprecatedTransition();
 
     LifecycleState From() const { return from_; }
@@ -121,7 +123,6 @@ class CORE_EXPORT DocumentLifecycle {
     DeprecatedTransition* previous_;
     LifecycleState from_;
     LifecycleState to_;
-    DISALLOW_COPY_AND_ASSIGN(DeprecatedTransition);
   };
 
   // Within this scope, state transitions are not allowed.
@@ -134,6 +135,8 @@ class CORE_EXPORT DocumentLifecycle {
         : document_lifecycle_(document_lifecycle) {
       document_lifecycle_.IncrementNoTransitionCount();
     }
+    DisallowTransitionScope(const DisallowTransitionScope&) = delete;
+    DisallowTransitionScope& operator=(const DisallowTransitionScope&) = delete;
 
     ~DisallowTransitionScope() {
       document_lifecycle_.DecrementNoTransitionCount();
@@ -141,7 +144,6 @@ class CORE_EXPORT DocumentLifecycle {
 
    private:
     DocumentLifecycle& document_lifecycle_;
-    DISALLOW_COPY_AND_ASSIGN(DisallowTransitionScope);
   };
 
   class DetachScope {
@@ -152,12 +154,13 @@ class CORE_EXPORT DocumentLifecycle {
         : document_lifecycle_(document_lifecycle) {
       document_lifecycle_.IncrementDetachCount();
     }
+    DetachScope(const DetachScope&) = delete;
+    DetachScope& operator=(const DetachScope&) = delete;
 
     ~DetachScope() { document_lifecycle_.DecrementDetachCount(); }
 
    private:
     DocumentLifecycle& document_lifecycle_;
-    DISALLOW_COPY_AND_ASSIGN(DetachScope);
   };
 
   // Throttling is disabled by default. Instantiating this class allows
@@ -169,8 +172,9 @@ class CORE_EXPORT DocumentLifecycle {
 
    public:
     AllowThrottlingScope(DocumentLifecycle&);
+    AllowThrottlingScope(const AllowThrottlingScope&) = delete;
+    AllowThrottlingScope& operator=(const AllowThrottlingScope&) = delete;
     ~AllowThrottlingScope();
-    DISALLOW_COPY_AND_ASSIGN(AllowThrottlingScope);
   };
 
   class CORE_EXPORT DisallowThrottlingScope {
@@ -178,11 +182,12 @@ class CORE_EXPORT DocumentLifecycle {
 
    public:
     DisallowThrottlingScope(DocumentLifecycle&);
+    DisallowThrottlingScope(const DisallowThrottlingScope&) = delete;
+    DisallowThrottlingScope& operator=(const DisallowThrottlingScope&) = delete;
     ~DisallowThrottlingScope();
 
    private:
     int saved_count_;
-    DISALLOW_COPY_AND_ASSIGN(DisallowThrottlingScope);
   };
 
   // If we hit a devtool break point in the middle of document lifecycle, for
@@ -217,6 +222,8 @@ class CORE_EXPORT DocumentLifecycle {
   };
 
   DocumentLifecycle();
+  DocumentLifecycle(const DocumentLifecycle&) = delete;
+  DocumentLifecycle& operator=(const DocumentLifecycle&) = delete;
 
   bool IsActive() const { return state_ > kInactive && state_ < kStopping; }
   LifecycleState GetState() const { return state_; }
@@ -265,7 +272,6 @@ class CORE_EXPORT DocumentLifecycle {
   int disallow_transition_count_;
   bool life_cycle_postponed_;
   bool check_no_transition_;
-  DISALLOW_COPY_AND_ASSIGN(DocumentLifecycle);
 };
 
 inline bool DocumentLifecycle::StateAllowsTreeMutations() const {

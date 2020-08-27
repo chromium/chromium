@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PSEUDO_ELEMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PSEUDO_ELEMENT_DATA_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -14,6 +13,8 @@ namespace blink {
 class PseudoElementData final : public GarbageCollected<PseudoElementData> {
  public:
   PseudoElementData() = default;
+  PseudoElementData(const PseudoElementData&) = delete;
+  PseudoElementData& operator=(const PseudoElementData&) = delete;
 
   void SetPseudoElement(PseudoId, PseudoElement*);
   PseudoElement* GetPseudoElement(PseudoId) const;
@@ -37,7 +38,6 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData> {
   Member<PseudoElement> generated_marker_;
   Member<PseudoElement> generated_first_letter_;
   Member<PseudoElement> backdrop_;
-  DISALLOW_COPY_AND_ASSIGN(PseudoElementData);
 };
 
 inline bool PseudoElementData::HasPseudoElements() const {

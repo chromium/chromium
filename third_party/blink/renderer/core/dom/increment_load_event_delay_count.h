@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -23,6 +22,9 @@ class CORE_EXPORT IncrementLoadEventDelayCount {
 
  public:
   explicit IncrementLoadEventDelayCount(Document&);
+  IncrementLoadEventDelayCount(const IncrementLoadEventDelayCount&) = delete;
+  IncrementLoadEventDelayCount& operator=(const IncrementLoadEventDelayCount&) =
+      delete;
   ~IncrementLoadEventDelayCount();
 
   // Decrements the loadEventDelayCount and checks load event synchronously,
@@ -37,7 +39,6 @@ class CORE_EXPORT IncrementLoadEventDelayCount {
 
  private:
   WeakPersistent<Document> document_;
-  DISALLOW_COPY_AND_ASSIGN(IncrementLoadEventDelayCount);
 };
 }  // namespace blink
 

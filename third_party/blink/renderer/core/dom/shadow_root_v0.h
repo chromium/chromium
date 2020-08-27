@@ -43,6 +43,8 @@ class CORE_EXPORT ShadowRootV0 final : public GarbageCollected<ShadowRootV0> {
       HeapHashMap<Member<const Node>, Member<DestinationInsertionPoints>>;
 
   explicit ShadowRootV0(ShadowRoot& shadow_root) : shadow_root_(&shadow_root) {}
+  ShadowRootV0(const ShadowRootV0&) = delete;
+  ShadowRootV0& operator=(const ShadowRootV0&) = delete;
 
   bool ContainsShadowElements() const {
     return descendant_shadow_element_count_;
@@ -97,8 +99,6 @@ class CORE_EXPORT ShadowRootV0 final : public GarbageCollected<ShadowRootV0> {
   SelectRuleFeatureSet select_features_;
   bool needs_select_feature_set_ = false;
   bool descendant_insertion_points_is_valid_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowRootV0);
 };
 
 inline void ShadowRootV0::DidAddInsertionPoint(V0InsertionPoint* point) {

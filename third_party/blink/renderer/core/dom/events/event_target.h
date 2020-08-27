@@ -34,7 +34,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
@@ -80,13 +79,14 @@ class CORE_EXPORT EventTargetData final
     : public GarbageCollected<EventTargetData> {
  public:
   EventTargetData();
+  EventTargetData(const EventTargetData&) = delete;
+  EventTargetData& operator=(const EventTargetData&) = delete;
   ~EventTargetData();
 
   void Trace(Visitor*) const;
 
   EventListenerMap event_listener_map;
   std::unique_ptr<FiringEventIteratorVector> firing_event_iterators;
-  DISALLOW_COPY_AND_ASSIGN(EventTargetData);
 };
 
 // All DOM event targets extend EventTarget. The spec is defined here:

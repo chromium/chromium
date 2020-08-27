@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_NODE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_NODE_DATA_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -16,6 +15,8 @@ class HTMLSlotElement;
 class FlatTreeNodeData final : public GarbageCollected<FlatTreeNodeData> {
  public:
   FlatTreeNodeData() {}
+  FlatTreeNodeData(const FlatTreeNodeData&) = delete;
+  FlatTreeNodeData& operator=(const FlatTreeNodeData&) = delete;
   void Clear() {
     assigned_slot_ = nullptr;
     previous_in_assigned_nodes_ = nullptr;
@@ -54,7 +55,6 @@ class FlatTreeNodeData final : public GarbageCollected<FlatTreeNodeData> {
   WeakMember<HTMLSlotElement> assigned_slot_;
   WeakMember<Node> previous_in_assigned_nodes_;
   WeakMember<Node> next_in_assigned_nodes_;
-  DISALLOW_COPY_AND_ASSIGN(FlatTreeNodeData);
 };
 
 }  // namespace blink

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ID_TARGET_OBSERVER_REGISTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ID_TARGET_OBSERVER_REGISTRY_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -43,6 +42,8 @@ class IdTargetObserverRegistry final
 
  public:
   IdTargetObserverRegistry() : notifying_observers_in_set_(nullptr) {}
+  IdTargetObserverRegistry(const IdTargetObserverRegistry&) = delete;
+  IdTargetObserverRegistry& operator=(const IdTargetObserverRegistry&) = delete;
 
   void Trace(Visitor*) const;
   void NotifyObservers(const AtomicString& id);
@@ -57,7 +58,6 @@ class IdTargetObserverRegistry final
   typedef HeapHashMap<StringImpl*, Member<ObserverSet>> IdToObserverSetMap;
   IdToObserverSetMap registry_;
   Member<ObserverSet> notifying_observers_in_set_;
-  DISALLOW_COPY_AND_ASSIGN(IdTargetObserverRegistry);
 };
 
 inline void IdTargetObserverRegistry::NotifyObservers(const AtomicString& id) {

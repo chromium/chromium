@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOM_STRING_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOM_STRING_MAP_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -54,6 +53,8 @@ class DOMStringMap : public ScriptWrappable {
     SetItem(name, value, exception_state);
     return NamedPropertySetterResult::kIntercepted;
   }
+  DOMStringMap(const DOMStringMap&) = delete;
+  DOMStringMap& operator=(const DOMStringMap&) = delete;
   NamedPropertyDeleterResult AnonymousNamedDeleter(const AtomicString& name) {
     return DeleteItem(name) ? NamedPropertyDeleterResult::kDeleted
                             : NamedPropertyDeleterResult::kDidNotIntercept;
@@ -65,7 +66,6 @@ class DOMStringMap : public ScriptWrappable {
 
  protected:
   DOMStringMap() = default;
-  DISALLOW_COPY_AND_ASSIGN(DOMStringMap);
 };
 
 }  // namespace blink
