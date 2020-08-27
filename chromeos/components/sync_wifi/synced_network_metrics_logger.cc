@@ -166,9 +166,19 @@ void SyncedNetworkMetricsLogger::NetworkConnectionStateChanged(
 }
 
 bool SyncedNetworkMetricsLogger::IsEligible(const NetworkState* network) {
-  return network &&
-         NetworkHandler::Get()->network_metadata_store()->GetIsConfiguredBySync(
-             network->guid());
+  // Only non-tether Wi-Fi networks are eligible for logging.
+  if (!network || network->type() != shill::kTypeWifi ||
+      !network->tether_guid().empty()) {
+    return false;
+  }
+
+  NetworkMetadataStore* metadata_store =
+      NetworkHandler::Get()->network_metadata_store();
+  if (!metadata_store) {
+    return false;
+  }
+
+  return metadata_store->GetIsConfiguredBySync(network->guid());
 }
 
 void SyncedNetworkMetricsLogger::OnConnectErrorGetProperties(

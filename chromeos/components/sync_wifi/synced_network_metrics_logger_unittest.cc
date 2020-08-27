@@ -235,6 +235,18 @@ TEST_F(SyncedNetworkMetricsLoggerTest, RecordTotalCount) {
               testing::ElementsAre(base::Bucket(/*min=*/10, /*count=*/1)));
 }
 
+TEST_F(SyncedNetworkMetricsLoggerTest, NetworkStatusChange_DuringLogout) {
+  base::HistogramTester histogram_tester;
+  const NetworkState* network = CreateNetwork(/*from_sync=*/true);
+  NetworkHandler::Get()->ShutdownPrefServices();
+  synced_network_metrics_logger()->NetworkConnectionStateChanged(network);
+  base::RunLoop().RunUntilIdle();
+
+  // Expect that there is no crash, and no Wi-Fi sync histograms recorded.
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Network.Wifi.Synced"),
+              testing::ContainerEq(base::HistogramTester::CountsMap()));
+}
+
 }  // namespace sync_wifi
 
 }  // namespace chromeos
