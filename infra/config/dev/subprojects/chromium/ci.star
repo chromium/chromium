@@ -47,7 +47,6 @@ defaults.service_account.set(
     "chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com",
 )
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
-defaults.goma_use_luci_auth.set(True)
 
 def ci_builder(*, name, **kwargs):
     return builder(

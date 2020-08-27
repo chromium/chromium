@@ -37,7 +37,6 @@ defaults.os.set(os.LINUX_DEFAULT)
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 defaults.triggered_by.set(["master-gitiles-trigger"])
-defaults.goma_use_luci_auth.set(True)
 
 defaults.properties.set({
     "perf_dashboard_machine_group": "ChromiumWebRTC",
