@@ -454,6 +454,7 @@ Jerry Lin <wahahab11@gmail.com>
 Jesper Storm Bache <jsbache@gmail.com>
 Jesse Miller <jesse@jmiller.biz>
 Jesus Sanchez-Palencia <jesus.sanchez-palencia.fernandez.fil@intel.com>
+Jiadong Chen <chenjiadong@huawei.com>
 Jiadong Zhu <jiadong.zhu@linaro.org>
 Jiahe Zhang <jiahe.zhang@intel.com>
 Jiajia Qin <jiajia.qin@intel.com>
@@ -517,6 +518,7 @@ Josyula Venkat Narasimham <venkat.nj@samsung.com>
 Joyer Huang <collger@gmail.com>
 Juan Jose Lopez Jaimez <jj.lopezjaimez@gmail.com>
 Juhui Lee <juhui24.lee@samsung.com>
+Julian Geppert <spctstr@gmail.com>
 Julien Brianceau <jbriance@cisco.com>
 Julien Isorce <j.isorce@samsung.com>
 Julien Racle <jracle@logitech.com>
@@ -1064,6 +1066,7 @@ Will Shackleton <w.shackleton@gmail.com>
 William Xie <william.xie@intel.com>
 Winston Chen <winston.c1@samsung.com>
 Xiang Long <xiang.long@intel.com>
+XiangYang <yangxiang12@huawei.com>
 Xiangze Zhang <xiangze.zhang@intel.com>
 Xiaofeng Zhang <xiaofeng.zhang@intel.com>
 Xiaolei Yu <dreifachstein@gmail.com>
@@ -1138,8 +1141,7 @@ Zoltan Herczeg <zherczeg.u-szeged@partner.samsung.com>
 Zoltan Kuscsik <zoltan.kuscsik@linaro.org>
 Zsolt Borbely <zsborbely.u-szeged@partner.samsung.com>
 方觉 (Fang Jue) <fangjue23303@gmail.com>
-Julian Geppert <spctstr@gmail.com>
-Jiadong Chen <chenjiadong@huawei.com>
+# Please DO NOT APPEND here. See comments at the top of the file.
 # END individuals section.
 
 # BEGIN organizations section.
@@ -1202,5 +1204,5 @@ Venture 3 Systems LLC <*@venture3systems.com>
 Vewd Software AS <*@vewd.com>
 Vivaldi Technologies AS <*@vivaldi.com>
 Yandex LLC <*@yandex-team.ru>
-XiangYang <yangxiang12@huawei.com>
+# Please DO NOT APPEND here. See comments at the top of the file.
 # END organizations section.
