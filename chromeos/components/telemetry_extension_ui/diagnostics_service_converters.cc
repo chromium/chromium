@@ -7,11 +7,12 @@
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "chrome/browser/chromeos/wilco_dtc_supportd/mojo_utils.h"
+#include "chromeos/components/telemetry_extension_ui/convert_ptr.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 
 namespace chromeos {
-namespace diagnostics_service_converters {
+namespace converters {
 
 namespace unchecked {
 
@@ -168,5 +169,5 @@ std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
   return output;
 }
 
-}  // namespace diagnostics_service_converters
+}  // namespace converters
 }  // namespace chromeos

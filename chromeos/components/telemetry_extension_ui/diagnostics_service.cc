@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "chromeos/components/telemetry_extension_ui/convert_ptr.h"
 #include "chromeos/components/telemetry_extension_ui/diagnostics_service_converters.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
@@ -42,8 +43,7 @@ void DiagnosticsService::GetAvailableRoutines(
              callback,
          const std::vector<cros_healthd::mojom::DiagnosticRoutineEnum>&
              routines) {
-        std::move(callback).Run(
-            diagnostics_service_converters::Convert(routines));
+        std::move(callback).Run(converters::Convert(routines));
       },
       std::move(callback)));
 }
@@ -54,13 +54,12 @@ void DiagnosticsService::GetRoutineUpdate(
     bool include_output,
     GetRoutineUpdateCallback callback) {
   GetService()->GetRoutineUpdate(
-      id, diagnostics_service_converters::Convert(command), include_output,
+      id, converters::Convert(command), include_output,
       base::BindOnce(
           [](health::mojom::DiagnosticsService::GetRoutineUpdateCallback
                  callback,
              cros_healthd::mojom::RoutineUpdatePtr ptr) {
-            std::move(callback).Run(
-                diagnostics_service_converters::ConvertPtr(std::move(ptr)));
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
           },
           std::move(callback)));
 }

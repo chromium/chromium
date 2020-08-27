@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "chromeos/components/telemetry_extension_ui/convert_ptr.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -15,7 +16,7 @@
 using testing::ElementsAre;
 
 namespace chromeos {
-namespace probe_service_converters {
+namespace converters {
 
 // Note: in some tests we intentionally use New() with no arguments for
 // cros_healthd::mojom types, because there can be some fields that we don't
@@ -48,12 +49,6 @@ TEST(ProbeServiceConvertors, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kFan,
           cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
           cros_healthd::mojom::ProbeCategoryEnum::kBluetooth));
-}
-
-// Tests that |ConvertPtr| function returns nullptr if input is nullptr.
-// ConvertPtr is a template, so we can test this function with any valid type.
-TEST(ProbeServiceConvertors, ConvertPtrTakesNullPtr) {
-  EXPECT_TRUE(ConvertPtr(cros_healthd::mojom::ProbeErrorPtr()).is_null());
 }
 
 TEST(ProbeServiceConvertors, ErrorType) {
@@ -698,5 +693,5 @@ TEST(ProbeServiceConvertors, TelemetryInfoPtrWithNullFields) {
                 health::mojom::BluetoothResultPtr(nullptr)));
 }
 
-}  // namespace probe_service_converters
+}  // namespace converters
 }  // namespace chromeos

@@ -14,10 +14,10 @@
 
 #include "base/check.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom-forward.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-forward.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace chromeos {
-namespace probe_service_converters {
+namespace converters {
 
 // This file contains helper functions used by ProbeService to convert its
 // types to/from cros_healthd ProbeService types.
@@ -127,12 +127,6 @@ health::mojom::UInt32ValuePtr Convert(uint32_t input);
 
 health::mojom::UInt64ValuePtr Convert(uint64_t input);
 
-template <class InputT>
-auto ConvertPtr(InputT input) {
-  return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
-                            : nullptr;
-}
-
 template <class OutputT, class InputT>
 std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   std::vector<OutputT> output;
@@ -146,7 +140,7 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
 std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
     const std::vector<health::mojom::ProbeCategoryEnum>& input);
 
-}  // namespace probe_service_converters
+}  // namespace converters
 }  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_PROBE_SERVICE_CONVERTERS_H_

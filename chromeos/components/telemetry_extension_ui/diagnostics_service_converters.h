@@ -14,11 +14,11 @@
 #include <vector>
 
 #include "chromeos/components/telemetry_extension_ui/mojom/diagnostics_service.mojom-forward.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "mojo/public/cpp/system/handle.h"
 
 namespace chromeos {
-namespace diagnostics_service_converters {
+namespace converters {
 
 // This file contains helper functions used by DiagnosticsService to convert its
 // types to/from cros_healthd DiagnosticsService types.
@@ -53,13 +53,7 @@ cros_healthd::mojom::DiagnosticRoutineCommandEnum Convert(
 
 std::string Convert(mojo::ScopedHandle handle);
 
-template <class InputT>
-auto ConvertPtr(InputT input) {
-  return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
-                            : nullptr;
-}
-
-}  // namespace diagnostics_service_converters
+}  // namespace converters
 }  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_TELEMETRY_EXTENSION_UI_DIAGNOSTICS_SERVICE_CONVERTERS_H_

@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-namespace diagnostics_service_converters {
+namespace converters {
 
 TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineStatusEnum) {
   namespace cros_healthd = ::chromeos::cros_healthd::mojom;
@@ -66,5 +66,5 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineCommandEnum) {
             cros_healthd::DiagnosticRoutineCommandEnum::kRemove);
 }
 
-}  // namespace diagnostics_service_converters
+}  // namespace converters
 }  // namespace chromeos

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "chromeos/components/telemetry_extension_ui/convert_ptr.h"
 #include "chromeos/components/telemetry_extension_ui/probe_service_converters.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -23,12 +24,11 @@ void ProbeService::ProbeTelemetryInfo(
     const std::vector<health::mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
   GetService()->ProbeTelemetryInfo(
-      probe_service_converters::ConvertCategoryVector(categories),
+      converters::ConvertCategoryVector(categories),
       base::BindOnce(
           [](health::mojom::ProbeService::ProbeTelemetryInfoCallback callback,
              cros_healthd::mojom::TelemetryInfoPtr ptr) {
-            std::move(callback).Run(
-                probe_service_converters::ConvertPtr(std::move(ptr)));
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
           },
           std::move(callback)));
 }

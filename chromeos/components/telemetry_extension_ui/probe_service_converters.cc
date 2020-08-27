@@ -9,11 +9,12 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/components/telemetry_extension_ui/convert_ptr.h"
 #include "chromeos/components/telemetry_extension_ui/mojom/probe_service.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 
 namespace chromeos {
-namespace probe_service_converters {
+namespace converters {
 
 namespace {
 
@@ -386,5 +387,5 @@ std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
   return output;
 }
 
-}  // namespace probe_service_converters
+}  // namespace converters
 }  // namespace chromeos
