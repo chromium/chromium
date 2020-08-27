@@ -122,6 +122,16 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
+template <typename AllocType>
+void SwapAlloc(AllocType& lhs, AllocType& rhs,
+               std::true_type /* propagate_on_container_swap */) {
+  using std::swap;
+  swap(lhs, rhs);
+}
+template <typename AllocType>
+void SwapAlloc(AllocType& /*lhs*/, AllocType& /*rhs*/,
+               std::false_type /* propagate_on_container_swap */) {}
+
 template <size_t Width>
 class probe_seq {
  public:
@@ -169,9 +179,13 @@ struct IsDecomposable<
 
 // TODO(alkis): Switch to std::is_nothrow_swappable when gcc/clang supports it.
 template <class T>
-constexpr bool IsNoThrowSwappable() {
+constexpr bool IsNoThrowSwappable(std::true_type = {} /* is_swappable */) {
   using std::swap;
   return noexcept(swap(std::declval<T&>(), std::declval<T&>()));
+}
+template <class T>
+constexpr bool IsNoThrowSwappable(std::false_type /* is_swappable */) {
+  return false;
 }
 
 template <typename T>
@@ -1231,8 +1245,8 @@ class raw_hash_set {
 
   void swap(raw_hash_set& that) noexcept(
       IsNoThrowSwappable<hasher>() && IsNoThrowSwappable<key_equal>() &&
-      (!AllocTraits::propagate_on_container_swap::value ||
-       IsNoThrowSwappable<allocator_type>())) {
+      IsNoThrowSwappable<allocator_type>(
+          typename AllocTraits::propagate_on_container_swap{})) {
     using std::swap;
     swap(ctrl_, that.ctrl_);
     swap(slots_, that.slots_);
@@ -1242,12 +1256,8 @@ class raw_hash_set {
     swap(hash_ref(), that.hash_ref());
     swap(eq_ref(), that.eq_ref());
     swap(infoz_, that.infoz_);
-    if (AllocTraits::propagate_on_container_swap::value) {
-      swap(alloc_ref(), that.alloc_ref());
-    } else {
-      // If the allocators do not compare equal it is officially undefined
-      // behavior. We choose to do nothing.
-    }
+    SwapAlloc(alloc_ref(), that.alloc_ref(),
+              typename AllocTraits::propagate_on_container_swap{});
   }
 
   void rehash(size_t n) {

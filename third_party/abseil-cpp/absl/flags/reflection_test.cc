@@ -18,7 +18,9 @@
 #include <memory>
 #include <string>
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/flags/declare.h"
 #include "absl/flags/flag.h"
 #include "absl/flags/internal/commandlineflag.h"
 #include "absl/flags/marshalling.h"
@@ -29,6 +31,8 @@
 ABSL_FLAG(int, int_flag, 1, "int_flag help");
 ABSL_FLAG(std::string, string_flag, "dflt", "string_flag help");
 ABSL_RETIRED_FLAG(bool, bool_retired_flag, false, "bool_retired_flag help");
+
+ABSL_DECLARE_FLAG(bool, help);
 
 namespace {
 
@@ -57,6 +61,33 @@ TEST_F(ReflectionTest, TestFindCommandLineFlag) {
 
   handle = absl::FindCommandLineFlag("bool_retired_flag");
   EXPECT_NE(handle, nullptr);
+}
+
+// --------------------------------------------------------------------
+
+TEST_F(ReflectionTest, TestGetAllFlags) {
+  (void)absl::GetFlag(FLAGS_help);  // Force linking of usage flags.
+
+  auto all_flags = absl::GetAllFlags();
+  EXPECT_NE(all_flags.find("int_flag"), all_flags.end());
+  EXPECT_NE(all_flags.find("bool_retired_flag"), all_flags.end());
+  EXPECT_NE(all_flags.find("help"), all_flags.end());
+  EXPECT_EQ(all_flags.find("some_undefined_flag"), all_flags.end());
+
+  std::vector<absl::string_view> flag_names_first_attempt;
+  auto all_flags_1 = absl::GetAllFlags();
+  for (auto f : all_flags_1) {
+    flag_names_first_attempt.push_back(f.first);
+  }
+
+  std::vector<absl::string_view> flag_names_second_attempt;
+  auto all_flags_2 = absl::GetAllFlags();
+  for (auto f : all_flags_2) {
+    flag_names_second_attempt.push_back(f.first);
+  }
+
+  EXPECT_THAT(flag_names_first_attempt,
+              ::testing::UnorderedElementsAreArray(flag_names_second_attempt));
 }
 
 // --------------------------------------------------------------------

@@ -555,7 +555,7 @@ TEST(AllocatorTraits, FunctionsMinimal) {
   EXPECT_CALL(mock, deallocate(&x, 7));
 
   EXPECT_EQ(&x, Traits::allocate(mock, 7));
-  Traits::allocate(mock, 7, static_cast<const void*>(&hint));
+  static_cast<void>(Traits::allocate(mock, 7, static_cast<const void*>(&hint)));
   EXPECT_EQ(&x, Traits::allocate(mock, 7, static_cast<const void*>(&hint)));
   Traits::deallocate(mock, &x, 7);
 

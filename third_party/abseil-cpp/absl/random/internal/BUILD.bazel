@@ -30,7 +30,7 @@ package(default_visibility = [
     "//absl/random:__pkg__",
 ])
 
-licenses(["notice"])  # Apache 2.0
+licenses(["notice"])
 
 cc_library(
     name = "traits",

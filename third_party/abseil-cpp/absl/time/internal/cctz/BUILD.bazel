@@ -16,7 +16,7 @@ load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
 
 package(features = ["-parse_headers"])
 
-licenses(["notice"])  # Apache License
+licenses(["notice"])
 
 filegroup(
     name = "zoneinfo",

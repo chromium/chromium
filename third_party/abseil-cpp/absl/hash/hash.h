@@ -88,7 +88,6 @@ ABSL_NAMESPACE_BEGIN
 //  * T is an arithmetic or pointer type
 //  * T defines an overload for `AbslHashValue(H, const T&)` for an arbitrary
 //    hash state `H`.
-//  - T defines a specialization of `HASH_NAMESPACE::hash<T>`
 //  - T defines a specialization of `std::hash<T>`
 //
 // `absl::Hash` intrinsically supports the following types:
@@ -128,8 +127,6 @@ ABSL_NAMESPACE_BEGIN
 //   * Natively supported types out of the box (see above)
 //   * Types for which an `AbslHashValue()` overload is provided (such as
 //     user-defined types). See "Adding Type Support to `absl::Hash`" below.
-//   * Types which define a `HASH_NAMESPACE::hash<T>` specialization (aka
-//     `__gnu_cxx::hash<T>` for gcc/Clang or `stdext::hash<T>` for MSVC)
 //   * Types which define a `std::hash<T>` specialization
 //
 // The fallback to legacy hash functions exists mainly for backwards

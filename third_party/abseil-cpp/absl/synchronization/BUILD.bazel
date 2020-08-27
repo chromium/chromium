@@ -24,7 +24,7 @@ load(
 
 package(default_visibility = ["//visibility:public"])
 
-licenses(["notice"])  # Apache 2.0
+licenses(["notice"])
 
 # Internal data structure for efficiently detecting mutex dependency cycles
 cc_library(

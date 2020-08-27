@@ -111,6 +111,11 @@ ABSL_NAMESPACE_BEGIN
 // example, when splitting a string, `std::vector<absl::string_view>` is a
 // natural data type for the output.
 //
+// For another example, a Cord is a non-contiguous, potentially very
+// long string-like object.  The Cord class has an interface that iteratively
+// provides string_view objects that point to the successive pieces of a Cord
+// object.
+//
 // When constructed from a source which is NUL-terminated, the `string_view`
 // itself will not include the NUL-terminator unless a specific size (including
 // the NUL) is passed to the constructor. As a result, common idioms that work
@@ -382,6 +387,7 @@ class string_view {
   // Returns a "substring" of the `string_view` (at offset `pos` and length
   // `n`) as another string_view. This function throws `std::out_of_bounds` if
   // `pos > size`.
+  // Use absl::ClippedSubstr if you need a truncating substr operation.
   constexpr string_view substr(size_type pos, size_type n = npos) const {
     return ABSL_PREDICT_FALSE(pos > length_)
                ? (base_internal::ThrowStdOutOfRange(

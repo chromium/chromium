@@ -186,7 +186,7 @@ class HashtablezInfoHandle {
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 extern ABSL_PER_THREAD_TLS_KEYWORD int64_t global_next_sample;
-#endif  // ABSL_PER_THREAD_TLS
+#endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 
 // Returns an RAII sampling handle that manages registration and unregistation
 // with the global sampler.

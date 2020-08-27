@@ -80,12 +80,9 @@
 #define ABSL_INTERNAL_ANNOTALYSIS_ENABLED 1
 #if !defined(SWIG)
 #define ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED 1
-#else
-#define ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED 0
 #endif
 #else
 #define ABSL_INTERNAL_ANNOTALYSIS_ENABLED 0
-#define ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED 0
 #endif
 
 // Read/write annotations are enabled in Annotalysis mode; disabled otherwise.
@@ -268,19 +265,19 @@ ABSL_INTERNAL_END_EXTERN_C
 // -------------------------------------------------------------------------
 // Define IGNORE_READS_BEGIN/_END attributes.
 
-#if ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED == 1
+#if defined(ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED)
 
 #define ABSL_INTERNAL_IGNORE_READS_BEGIN_ATTRIBUTE \
   __attribute((exclusive_lock_function("*")))
 #define ABSL_INTERNAL_IGNORE_READS_END_ATTRIBUTE \
   __attribute((unlock_function("*")))
 
-#else  // ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED == 0
+#else  // !defined(ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED)
 
 #define ABSL_INTERNAL_IGNORE_READS_BEGIN_ATTRIBUTE  // empty
 #define ABSL_INTERNAL_IGNORE_READS_END_ATTRIBUTE    // empty
 
-#endif  // ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED
+#endif  // defined(ABSL_INTERNAL_IGNORE_READS_ATTRIBUTE_ENABLED)
 
 // -------------------------------------------------------------------------
 // Define IGNORE_READS_BEGIN/_END annotations.

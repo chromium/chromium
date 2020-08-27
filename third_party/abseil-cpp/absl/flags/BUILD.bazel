@@ -24,7 +24,7 @@ load(
 
 package(default_visibility = ["//visibility:public"])
 
-licenses(["notice"])  # Apache 2.0
+licenses(["notice"])
 
 cc_library(
     name = "path_util",
@@ -179,6 +179,7 @@ cc_library(
         ":private_handle_accessor",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/container:flat_hash_map",
         "//absl/strings",
         "//absl/synchronization",
     ],
@@ -464,6 +465,7 @@ cc_test(
         ":flag",
         ":marshalling",
         ":reflection",
+        ":usage_internal",
         "//absl/memory",
         "//absl/strings",
         "@com_google_googletest//:gtest_main",
