@@ -175,6 +175,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
     "//ios/chrome/browser/ui/table_view/cells/resources:table_view_cell_check_mark",
+    "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/browser/voice",
     "//ios/chrome/browser/web:web",
     "//ios/chrome/common",

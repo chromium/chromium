@@ -240,6 +240,12 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
     _passwordCheckItem.infoButtonHidden = YES;
     _passwordCheckItem.trailingImage = nil;
 
+    // Show unsafe state if user already ran password check and there are
+    // compromised credentials.
+    if (!_passwordCheckManager->GetCompromisedCredentials().empty()) {
+      _passwordCheckRowState = PasswordCheckRowStateUnSafe;
+    }
+
     _safeBrowsingCheckRowState = SafeBrowsingCheckRowStateDefault;
     _safeBrowsingCheckItem =
         [[SettingsCheckItem alloc] initWithType:SafeBrowsingItemType];
@@ -275,6 +281,10 @@ typedef NS_ENUM(NSInteger, CheckStartStates) {
   [_consumer setCheckItems:checkItems];
   [_consumer setSafetyCheckHeaderItem:self.headerItem];
   [_consumer setCheckStartItem:self.checkStartItem];
+
+  // Need to reconfigure the |passwordCheckItem| to an unsafe state if there are
+  // remaining password issues.
+  [self reconfigurePasswordCheckItem];
 }
 
 #pragma mark - PasswordCheckObserver

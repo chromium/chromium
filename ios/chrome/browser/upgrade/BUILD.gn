@@ -10,6 +10,7 @@ source_set("upgrade") {
     "upgrade_recommended_details.h",
   ]
   deps = [
+    ":public",
     "resources:infobar_update",
     "//base",
     "//components/infobars/core",
@@ -21,6 +22,22 @@ source_set("upgrade") {
     "//ui/base",
     "//ui/gfx",
     "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("public") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "upgrade_constants.h",
+    "upgrade_constants.mm",
+    "upgrade_utils.h",
+    "upgrade_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/version_info:version_info",
+    "//ios/chrome/browser",
   ]
   frameworks = [ "UIKit.framework" ]
 }
