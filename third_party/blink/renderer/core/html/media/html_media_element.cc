@@ -37,6 +37,9 @@
 #include "base/time/time.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_switches.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_participation.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
@@ -113,6 +116,7 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_from_url.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -812,9 +816,20 @@ HTMLMediaElement::NetworkState HTMLMediaElement::getNetworkState() const {
   return network_state_;
 }
 
-String HTMLMediaElement::canPlayType(const String& mime_type) const {
+String HTMLMediaElement::canPlayType(ExecutionContext* context,
+                                     const String& mime_type) const {
   MIMETypeRegistry::SupportsType support =
       GetSupportsType(ContentType(mime_type));
+
+  if (IsUserInIdentifiabilityStudy()) {
+    blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
+        .Set(
+            blink::IdentifiableSurface::FromTypeAndToken(
+                blink::IdentifiableSurface::Type::kHTMLMediaElement_CanPlayType,
+                IdentifiabilityBenignStringToken(mime_type)),
+            static_cast<uint64_t>(support))
+        .Record(context->UkmRecorder());
+  }
   String can_play;
 
   // 4.8.12.3

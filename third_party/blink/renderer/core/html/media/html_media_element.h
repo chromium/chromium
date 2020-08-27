@@ -174,7 +174,7 @@ class CORE_EXPORT HTMLMediaElement
   WebTimeRanges BufferedInternal() const;
   TimeRanges* buffered() const;
   void load();
-  String canPlayType(const String& mime_type) const;
+  String canPlayType(ExecutionContext* context, const String& mime_type) const;
 
   // ready state
   enum ReadyState {

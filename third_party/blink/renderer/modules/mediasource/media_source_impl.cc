@@ -35,6 +35,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "media/base/logging_override_if_enabled.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_participation.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -52,6 +55,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 using blink::WebMediaSource;
@@ -202,7 +206,7 @@ SourceBuffer* MediaSourceImpl::addSourceBuffer(
   // relaxation of impl's StreamParserFactory (since it returns false if a
   // stream parser can't be constructed with |type|). See
   // https://crbug.com/535738.
-  if (!isTypeSupported(type)) {
+  if (!isTypeSupported(GetExecutionContext(), type)) {
     LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotSupportedError,
         "The type provided ('" + type + "') is unsupported.");
@@ -331,7 +335,8 @@ bool MediaSourceImpl::IsUpdating() const {
 }
 
 // static
-bool MediaSourceImpl::isTypeSupported(const String& type) {
+bool MediaSourceImpl::isTypeSupported(ExecutionContext* context,
+                                      const String& type) {
   // Section 2.2 isTypeSupported() method steps.
   // https://dvcs.w3.org/hg/html-media/raw-file/tip/media-source/media-source.html#widl-MediaSource-isTypeSupported-boolean-DOMString-type
   // 1. If type is an empty string, then return false.
@@ -357,6 +362,8 @@ bool MediaSourceImpl::isTypeSupported(const String& type) {
       MIMETypeRegistry::kIsNotSupported) {
     DVLOG(1) << __func__ << "(" << type
              << ") -> false (not supported by HTMLMediaElement)";
+    if (IsUserInIdentifiabilityStudy())
+      RecordIdentifiabilityMetric(context, type, false);
     return false;
   }
 
@@ -379,7 +386,20 @@ bool MediaSourceImpl::isTypeSupported(const String& type) {
                 MIMETypeRegistry::SupportsMediaSourceMIMEType(
                     content_type.GetType(), codecs);
   DVLOG(2) << __func__ << "(" << type << ") -> " << (result ? "true" : "false");
+  if (IsUserInIdentifiabilityStudy())
+    RecordIdentifiabilityMetric(context, type, result);
   return result;
+}
+
+void MediaSourceImpl::RecordIdentifiabilityMetric(ExecutionContext* context,
+                                                  const String& type,
+                                                  bool result) {
+  blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
+      .Set(blink::IdentifiableSurface::FromTypeAndToken(
+               blink::IdentifiableSurface::Type::kMediaSource_IsTypeSupported,
+               IdentifiabilityBenignStringToken(type)),
+           result)
+      .Record(context->UkmRecorder());
 }
 
 const AtomicString& MediaSourceImpl::InterfaceName() const {

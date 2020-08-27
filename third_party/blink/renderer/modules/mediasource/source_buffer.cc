@@ -542,7 +542,7 @@ void SourceBuffer::changeType(const String& type,
   // here. As part of that, CanChangeType in Chromium should inherit relaxation
   // of impl's StreamParserFactory (since it returns true iff a stream parser
   // can be constructed with |type|). See https://crbug.com/535738.
-  if (!MediaSourceImpl::isTypeSupported(type) ||
+  if (!MediaSourceImpl::isTypeSupported(GetExecutionContext(), type) ||
       !web_source_buffer_->CanChangeType(content_type.GetType(), codecs)) {
     MediaSourceImpl::LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotSupportedError,

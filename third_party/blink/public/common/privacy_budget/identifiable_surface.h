@@ -101,6 +101,21 @@ class IdentifiableSurface {
     // metric is retained even if filtering discards the surface.
     kMeasuredSurface = 7,
 
+    // WebGL parameter for WebGLRenderingContext.getParameter().
+    kWebGLParameter = 8,
+
+    // Represents a call to |MediaRecorder.isTypeSupported(mimeType)|. Input is
+    // the mime type supplied to the method.
+    kMediaRecorder_IsTypeSupported = 9,
+
+    // Represents a call to |MediaSource.isTypeSupported(mimeType)|. Input is
+    // the mime type supplied to the method.
+    kMediaSource_IsTypeSupported = 10,
+
+    // Represents a call to |HTMLMediaElement.canPlayType(mimeType)|. Input is
+    // the mime type supplied to the method.
+    kHTMLMediaElement_CanPlayType = 11,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };

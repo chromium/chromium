@@ -90,7 +90,7 @@ class MediaSourceImpl final : public EventTargetWithInlineData,
   void setLiveSeekableRange(double start, double end, ExceptionState&);
   void clearLiveSeekableRange(ExceptionState&);
 
-  static bool isTypeSupported(const String& type);
+  static bool isTypeSupported(ExecutionContext* context, const String& type);
 
   // html/media/MediaSource interface implementation
   MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*) override;
@@ -133,6 +133,9 @@ class MediaSourceImpl final : public EventTargetWithInlineData,
                                                          const String& codecs,
                                                          ExceptionState&);
   void ScheduleEvent(const AtomicString& event_name);
+  static void RecordIdentifiabilityMetric(ExecutionContext* context,
+                                          const String& type,
+                                          bool result);
 
   // Implements the duration change algorithm.
   // http://w3c.github.io/media-source/#duration-change-algorithm
