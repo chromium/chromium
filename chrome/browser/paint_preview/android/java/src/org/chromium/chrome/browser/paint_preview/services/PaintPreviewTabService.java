@@ -63,8 +63,10 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         }
 
         private boolean qualifiesForCapture(Tab tab) {
+            String scheme = tab.getUrl().getScheme();
+            boolean schemeAllowed = scheme.equals("http") || scheme.equals("https");
             return !tab.isIncognito() && !tab.isNativePage() && !tab.isShowingErrorPage()
-                    && tab.getWebContents() != null;
+                    && tab.getWebContents() != null && schemeAllowed;
         }
     }
 
