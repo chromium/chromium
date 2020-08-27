@@ -163,15 +163,15 @@ class DeviceSyncCryptAuthDeviceActivityGetterImplTest
  private:
   void OnGetDevicesActivityStatus(
       const cryptauthv2::GetDevicesActivityStatusRequest& request,
-      const CryptAuthClient::GetDevicesActivityStatusCallback& callback,
-      const CryptAuthClient::ErrorCallback& error_callback) {
+      CryptAuthClient::GetDevicesActivityStatusCallback callback,
+      CryptAuthClient::ErrorCallback error_callback) {
     EXPECT_FALSE(get_device_activity_status_request_);
     EXPECT_FALSE(get_device_activity_status_success_callback_);
     EXPECT_FALSE(get_device_activity_status_failure_callback_);
 
     get_device_activity_status_request_ = request;
-    get_device_activity_status_success_callback_ = callback;
-    get_device_activity_status_failure_callback_ = error_callback;
+    get_device_activity_status_success_callback_ = std::move(callback);
+    get_device_activity_status_failure_callback_ = std::move(error_callback);
   }
 
   void OnGetDevicesActivityStatusFinished(

@@ -292,10 +292,9 @@ class DeviceSyncCryptAuthMetadataSyncerImplTest
   base::MockOneShotTimer* timer() { return timer_; }
 
  private:
-  void OnSyncMetadataResponse(
-      const cryptauthv2::SyncMetadataRequest& request,
-      const CryptAuthClient::SyncMetadataCallback& callback,
-      const CryptAuthClient::ErrorCallback& error_callback) {
+  void OnSyncMetadataResponse(const cryptauthv2::SyncMetadataRequest& request,
+                              CryptAuthClient::SyncMetadataCallback callback,
+                              CryptAuthClient::ErrorCallback error_callback) {
     ++num_sync_metadata_calls_;
     EXPECT_LE(num_sync_metadata_calls_, 2u);
 
@@ -309,16 +308,16 @@ class DeviceSyncCryptAuthMetadataSyncerImplTest
       EXPECT_FALSE(first_sync_metadata_failure_callback_);
 
       first_sync_metadata_request_ = request;
-      first_sync_metadata_success_callback_ = callback;
-      first_sync_metadata_failure_callback_ = error_callback;
+      first_sync_metadata_success_callback_ = std::move(callback);
+      first_sync_metadata_failure_callback_ = std::move(error_callback);
     } else if (num_sync_metadata_calls_ == 2) {
       EXPECT_TRUE(first_sync_metadata_request_);
       EXPECT_FALSE(first_sync_metadata_success_callback_);
       EXPECT_TRUE(first_sync_metadata_failure_callback_);
 
       second_sync_metadata_request_ = request;
-      second_sync_metadata_success_callback_ = callback;
-      second_sync_metadata_failure_callback_ = error_callback;
+      second_sync_metadata_success_callback_ = std::move(callback);
+      second_sync_metadata_failure_callback_ = std::move(error_callback);
     }
   }
 

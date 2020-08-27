@@ -94,10 +94,10 @@ class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
       const std::string& serialized_request) {
     flow_.StartPostRequest(
         GURL(kRequestUrl), serialized_request, shared_factory_, kAccessToken,
-        base::Bind(&DeviceSyncCryptAuthApiCallFlowTest::OnResult,
-                   base::Unretained(this)),
-        base::Bind(&DeviceSyncCryptAuthApiCallFlowTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&DeviceSyncCryptAuthApiCallFlowTest::OnResult,
+                       base::Unretained(this)),
+        base::BindOnce(&DeviceSyncCryptAuthApiCallFlowTest::OnError,
+                       base::Unretained(this)));
     // A pending fetch for the API request should be created.
     CheckCryptAuthHttpPostRequest(serialized_request);
   }
@@ -113,10 +113,10 @@ class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
     flow_.StartGetRequest(
         GURL(kRequestUrl), request_as_query_parameters, shared_factory_,
         kAccessToken,
-        base::Bind(&DeviceSyncCryptAuthApiCallFlowTest::OnResult,
-                   base::Unretained(this)),
-        base::Bind(&DeviceSyncCryptAuthApiCallFlowTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&DeviceSyncCryptAuthApiCallFlowTest::OnResult,
+                       base::Unretained(this)),
+        base::BindOnce(&DeviceSyncCryptAuthApiCallFlowTest::OnError,
+                       base::Unretained(this)));
     // A pending fetch for the API request should be created.
     CheckCryptAuthHttpGetRequest(request_as_query_parameters);
   }

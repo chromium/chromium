@@ -50,12 +50,12 @@ void CryptAuthApiCallFlow::StartPostRequest(
     const std::string& serialized_request,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token,
-    const ResultCallback& result_callback,
-    const ErrorCallback& error_callback) {
+    ResultCallback result_callback,
+    ErrorCallback error_callback) {
   request_url_ = request_url;
   serialized_request_ = serialized_request;
-  result_callback_ = result_callback;
-  error_callback_ = error_callback;
+  result_callback_ = std::move(result_callback);
+  error_callback_ = std::move(error_callback);
   OAuth2ApiCallFlow::Start(std::move(url_loader_factory), access_token);
 }
 
@@ -65,12 +65,12 @@ void CryptAuthApiCallFlow::StartGetRequest(
         request_as_query_parameters,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token,
-    const ResultCallback& result_callback,
-    const ErrorCallback& error_callback) {
+    ResultCallback result_callback,
+    ErrorCallback error_callback) {
   request_url_ = request_url;
   request_as_query_parameters_ = request_as_query_parameters;
-  result_callback_ = result_callback;
-  error_callback_ = error_callback;
+  result_callback_ = std::move(result_callback);
+  error_callback_ = std::move(error_callback);
   OAuth2ApiCallFlow::Start(std::move(url_loader_factory), access_token);
 }
 
@@ -119,10 +119,10 @@ void CryptAuthApiCallFlow::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   if (!body) {
-    error_callback_.Run(NetworkRequestError::kResponseMalformed);
+    std::move(error_callback_).Run(NetworkRequestError::kResponseMalformed);
     return;
   }
-  result_callback_.Run(std::move(*body));
+  std::move(result_callback_).Run(std::move(*body));
 }
 
 void CryptAuthApiCallFlow::ProcessApiCallFailure(
@@ -145,7 +145,7 @@ void CryptAuthApiCallFlow::ProcessApiCallFailure(
   if (body)
     PA_LOG(VERBOSE) << "API failure response body:\n" << *body;
 
-  error_callback_.Run(*error);
+  std::move(error_callback_).Run(*error);
 }
 
 net::PartialNetworkTrafficAnnotationTag

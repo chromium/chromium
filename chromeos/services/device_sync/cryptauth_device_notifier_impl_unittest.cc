@@ -186,8 +186,8 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
  private:
   void OnBatchNotifyGroupDevices(
       const cryptauthv2::BatchNotifyGroupDevicesRequest& request,
-      const CryptAuthClient::BatchNotifyGroupDevicesCallback& callback,
-      const CryptAuthClient::ErrorCallback& error_callback) {
+      CryptAuthClient::BatchNotifyGroupDevicesCallback callback,
+      CryptAuthClient::ErrorCallback error_callback) {
     batch_notify_group_devices_requests_.push(request);
     batch_notify_group_devices_success_callbacks_.push(std::move(callback));
     batch_notify_group_devices_failure_callbacks_.push(

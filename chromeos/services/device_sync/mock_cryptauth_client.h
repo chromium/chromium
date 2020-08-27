@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_MOCK_CRYPTAUTH_CLIENT_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_MOCK_CRYPTAUTH_CLIENT_H_
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
@@ -24,70 +25,78 @@ class MockCryptAuthClient : public CryptAuthClient {
 
   // TODO(https://crbug.com/997268): Update these to use MOCK_METHOD.
   // CryptAuthClient:
-  MOCK_METHOD4(GetMyDevices,
+  void GetMyDevices(const cryptauth::GetMyDevicesRequest& request,
+                    GetMyDevicesCallback callback,
+                    ErrorCallback error_callback,
+                    const net::PartialNetworkTrafficAnnotationTag&
+                        partial_traffic_annotation) override {
+    GetMyDevices_(request, callback, error_callback,
+                  partial_traffic_annotation);
+  }
+  MOCK_METHOD4(GetMyDevices_,
                void(const cryptauth::GetMyDevicesRequest& request,
-                    const GetMyDevicesCallback& callback,
-                    const ErrorCallback& error_callback,
+                    GetMyDevicesCallback& callback,
+                    ErrorCallback& error_callback,
                     const net::PartialNetworkTrafficAnnotationTag&
                         partial_traffic_annotation));
   MOCK_METHOD3(FindEligibleUnlockDevices,
                void(const cryptauth::FindEligibleUnlockDevicesRequest& request,
-                    const FindEligibleUnlockDevicesCallback& callback,
-                    const ErrorCallback& error_callback));
+                    FindEligibleUnlockDevicesCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(FindEligibleForPromotion,
                void(const cryptauth::FindEligibleForPromotionRequest& request,
-                    const FindEligibleForPromotionCallback& callback,
-                    const ErrorCallback& error_callback));
+                    FindEligibleForPromotionCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD4(SendDeviceSyncTickle,
                void(const cryptauth::SendDeviceSyncTickleRequest& request,
-                    const SendDeviceSyncTickleCallback& callback,
-                    const ErrorCallback& error_callback,
+                    SendDeviceSyncTickleCallback callback,
+                    ErrorCallback error_callback,
                     const net::PartialNetworkTrafficAnnotationTag&
                         partial_traffic_annotation));
   MOCK_METHOD3(ToggleEasyUnlock,
                void(const cryptauth::ToggleEasyUnlockRequest& request,
-                    const ToggleEasyUnlockCallback& callback,
-                    const ErrorCallback& error_callback));
+                    ToggleEasyUnlockCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(SetupEnrollment,
                void(const cryptauth::SetupEnrollmentRequest& request,
-                    const SetupEnrollmentCallback& callback,
-                    const ErrorCallback& error_callback));
+                    SetupEnrollmentCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(FinishEnrollment,
                void(const cryptauth::FinishEnrollmentRequest& request,
-                    const FinishEnrollmentCallback& callback,
-                    const ErrorCallback& error_callback));
+                    FinishEnrollmentCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(SyncKeys,
                void(const cryptauthv2::SyncKeysRequest& request,
-                    const SyncKeysCallback& callback,
-                    const ErrorCallback& error_callback));
+                    SyncKeysCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(EnrollKeys,
                void(const cryptauthv2::EnrollKeysRequest& request,
-                    const EnrollKeysCallback& callback,
-                    const ErrorCallback& error_callback));
+                    EnrollKeysCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(SyncMetadata,
                void(const cryptauthv2::SyncMetadataRequest& request,
-                    const SyncMetadataCallback& callback,
-                    const ErrorCallback& error_callback));
+                    SyncMetadataCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(ShareGroupPrivateKey,
                void(const cryptauthv2::ShareGroupPrivateKeyRequest& request,
-                    const ShareGroupPrivateKeyCallback& callback,
-                    const ErrorCallback& error_callback));
+                    ShareGroupPrivateKeyCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(BatchNotifyGroupDevices,
                void(const cryptauthv2::BatchNotifyGroupDevicesRequest& request,
-                    const BatchNotifyGroupDevicesCallback& callback,
-                    const ErrorCallback& error_callback));
+                    BatchNotifyGroupDevicesCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(BatchGetFeatureStatuses,
                void(const cryptauthv2::BatchGetFeatureStatusesRequest& request,
-                    const BatchGetFeatureStatusesCallback& callback,
-                    const ErrorCallback& error_callback));
+                    BatchGetFeatureStatusesCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(BatchSetFeatureStatuses,
                void(const cryptauthv2::BatchSetFeatureStatusesRequest& request,
-                    const BatchSetFeatureStatusesCallback& callback,
-                    const ErrorCallback& error_callback));
+                    BatchSetFeatureStatusesCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD3(GetDevicesActivityStatus,
                void(const cryptauthv2::GetDevicesActivityStatusRequest& request,
-                    const GetDevicesActivityStatusCallback& callback,
-                    const ErrorCallback& error_callback));
+                    GetDevicesActivityStatusCallback callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD0(GetAccessTokenUsed, std::string());
 
  private:

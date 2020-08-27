@@ -347,8 +347,8 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
   }
 
   void OnSyncKeys(const SyncKeysRequest& request,
-                  const CryptAuthClient::SyncKeysCallback& callback,
-                  const CryptAuthClient::ErrorCallback& error_callback) {
+                  CryptAuthClient::SyncKeysCallback callback,
+                  CryptAuthClient::ErrorCallback error_callback) {
     // Check that SyncKeys is called before EnrollKeys.
     EXPECT_FALSE(sync_keys_request_);
     EXPECT_FALSE(enroll_keys_request_);
@@ -358,8 +358,8 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
     EXPECT_TRUE(enroll_keys_failure_callback_.is_null());
 
     sync_keys_request_ = request;
-    sync_keys_success_callback_ = callback;
-    sync_keys_failure_callback_ = error_callback;
+    sync_keys_success_callback_ = std::move(callback);
+    sync_keys_failure_callback_ = std::move(error_callback);
   }
 
   void SendSyncKeysResponse(const SyncKeysResponse& sync_keys_response) {
@@ -387,8 +387,8 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
   }
 
   void OnEnrollKeys(const EnrollKeysRequest& request,
-                    const CryptAuthClient::EnrollKeysCallback& callback,
-                    const CryptAuthClient::ErrorCallback& error_callback) {
+                    CryptAuthClient::EnrollKeysCallback callback,
+                    CryptAuthClient::ErrorCallback error_callback) {
     // Check that EnrollKeys is called after a successful SyncKeys call.
     EXPECT_TRUE(sync_keys_request_);
     EXPECT_FALSE(enroll_keys_request_);
@@ -398,8 +398,8 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
     EXPECT_TRUE(enroll_keys_failure_callback_.is_null());
 
     enroll_keys_request_ = request;
-    enroll_keys_success_callback_ = callback;
-    enroll_keys_failure_callback_ = error_callback;
+    enroll_keys_success_callback_ = std::move(callback);
+    enroll_keys_failure_callback_ = std::move(error_callback);
   }
 
   void VerifyKeyCreatorInputs(

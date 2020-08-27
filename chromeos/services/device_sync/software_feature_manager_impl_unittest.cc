@@ -113,24 +113,23 @@ class DeviceSyncSoftwareFeatureManagerImplTest
   }
 
   // Mock CryptAuthClient::ToggleEasyUnlock() implementation.
-  void MockToggleEasyUnlock(
-      const cryptauth::ToggleEasyUnlockRequest& request,
-      const CryptAuthClient::ToggleEasyUnlockCallback& callback,
-      const CryptAuthClient::ErrorCallback& error_callback) {
+  void MockToggleEasyUnlock(const cryptauth::ToggleEasyUnlockRequest& request,
+                            CryptAuthClient::ToggleEasyUnlockCallback callback,
+                            CryptAuthClient::ErrorCallback error_callback) {
     last_toggle_request_ = request;
-    toggle_easy_unlock_callback_ = callback;
-    error_callback_ = error_callback;
+    toggle_easy_unlock_callback_ = std::move(callback);
+    error_callback_ = std::move(error_callback);
     error_code_ = kErrorSettingSoftwareFeatureNetworkRequestError;
   }
 
   // Mock CryptAuthClient::FindEligibleUnlockDevices() implementation.
   void MockFindEligibleUnlockDevices(
       const cryptauth::FindEligibleUnlockDevicesRequest& request,
-      const CryptAuthClient::FindEligibleUnlockDevicesCallback& callback,
-      const CryptAuthClient::ErrorCallback& error_callback) {
+      CryptAuthClient::FindEligibleUnlockDevicesCallback callback,
+      CryptAuthClient::ErrorCallback error_callback) {
     last_find_request_ = request;
-    find_eligible_unlock_devices_callback_ = callback;
-    error_callback_ = error_callback;
+    find_eligible_unlock_devices_callback_ = std::move(callback);
+    error_callback_ = std::move(error_callback);
     error_code_ = kErrorFindingEligibleNetworkRequestError;
   }
 
@@ -259,10 +258,9 @@ class DeviceSyncSoftwareFeatureManagerImplTest
 
   void InvokeSetSoftwareFeatureCallback() {
     CryptAuthClient::ToggleEasyUnlockCallback success_callback =
-        toggle_easy_unlock_callback_;
+        std::move(toggle_easy_unlock_callback_);
     ASSERT_TRUE(!success_callback.is_null());
-    toggle_easy_unlock_callback_.Reset();
-    success_callback.Run(cryptauth::ToggleEasyUnlockResponse());
+    std::move(success_callback).Run(cryptauth::ToggleEasyUnlockResponse());
   }
 
   void InvokeSetFeatureStatusCallback() {
@@ -282,17 +280,15 @@ class DeviceSyncSoftwareFeatureManagerImplTest
       const cryptauth::FindEligibleUnlockDevicesResponse&
           retrieved_devices_response) {
     CryptAuthClient::FindEligibleUnlockDevicesCallback success_callback =
-        find_eligible_unlock_devices_callback_;
+        std::move(find_eligible_unlock_devices_callback_);
     ASSERT_TRUE(!success_callback.is_null());
-    find_eligible_unlock_devices_callback_.Reset();
-    success_callback.Run(retrieved_devices_response);
+    std::move(success_callback).Run(retrieved_devices_response);
   }
 
   void InvokeErrorCallback() {
-    CryptAuthClient::ErrorCallback error_callback = error_callback_;
+    CryptAuthClient::ErrorCallback error_callback = std::move(error_callback_);
     ASSERT_TRUE(!error_callback.is_null());
-    error_callback_.Reset();
-    error_callback.Run(*error_code_);
+    std::move(error_callback).Run(*error_code_);
   }
 
   void InvokeSetFeatureStatusErrorCallback() {

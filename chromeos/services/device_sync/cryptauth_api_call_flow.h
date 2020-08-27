@@ -30,9 +30,9 @@ namespace device_sync {
 
 class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
  public:
-  typedef base::Callback<void(const std::string& serialized_response)>
+  typedef base::OnceCallback<void(const std::string& serialized_response)>
       ResultCallback;
-  typedef base::Callback<void(NetworkRequestError error)> ErrorCallback;
+  typedef base::OnceCallback<void(NetworkRequestError error)> ErrorCallback;
 
   CryptAuthApiCallFlow();
   ~CryptAuthApiCallFlow() override;
@@ -49,8 +49,8 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
       const std::string& serialized_request,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
-      const ResultCallback& result_callback,
-      const ErrorCallback& error_callback);
+      ResultCallback result_callback,
+      ErrorCallback error_callback);
 
   // Starts the API GET request call.
   //   |request_url|: The URL endpoint of the API request.
@@ -67,8 +67,8 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
           request_as_query_parameters,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
-      const ResultCallback& result_callback,
-      const ErrorCallback& error_callback);
+      ResultCallback result_callback,
+      ErrorCallback error_callback);
 
   void SetPartialNetworkTrafficAnnotation(
       const net::PartialNetworkTrafficAnnotationTag&

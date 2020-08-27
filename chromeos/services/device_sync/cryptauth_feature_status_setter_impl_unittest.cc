@@ -212,8 +212,8 @@ class DeviceSyncCryptAuthFeatureStatusSetterImplTest
  private:
   void OnBatchSetFeatureStatuses(
       const cryptauthv2::BatchSetFeatureStatusesRequest& request,
-      const CryptAuthClient::BatchSetFeatureStatusesCallback& callback,
-      const CryptAuthClient::ErrorCallback& error_callback) {
+      CryptAuthClient::BatchSetFeatureStatusesCallback callback,
+      CryptAuthClient::ErrorCallback error_callback) {
     batch_set_feature_statuses_requests_.push(request);
     batch_set_feature_statuses_success_callbacks_.push(std::move(callback));
     batch_set_feature_statuses_failure_callbacks_.push(

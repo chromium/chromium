@@ -217,15 +217,15 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
  private:
   void OnBatchGetFeatureStatuses(
       const cryptauthv2::BatchGetFeatureStatusesRequest& request,
-      const CryptAuthClient::BatchGetFeatureStatusesCallback& callback,
-      const CryptAuthClient::ErrorCallback& error_callback) {
+      CryptAuthClient::BatchGetFeatureStatusesCallback callback,
+      CryptAuthClient::ErrorCallback error_callback) {
     EXPECT_FALSE(batch_get_feature_statuses_request_);
     EXPECT_FALSE(batch_get_feature_statuses_success_callback_);
     EXPECT_FALSE(batch_get_feature_statuses_failure_callback_);
 
     batch_get_feature_statuses_request_ = request;
-    batch_get_feature_statuses_success_callback_ = callback;
-    batch_get_feature_statuses_failure_callback_ = error_callback;
+    batch_get_feature_statuses_success_callback_ = std::move(callback);
+    batch_get_feature_statuses_failure_callback_ = std::move(error_callback);
   }
 
   void OnGetFeatureStatusesComplete(
