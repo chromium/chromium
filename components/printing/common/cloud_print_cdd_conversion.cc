@@ -44,15 +44,15 @@ printer::DuplexType ToCloudDuplexType(printing::mojom::DuplexMode mode) {
 
 #if defined(OS_CHROMEOS)
 printer::TypedValueVendorCapability::ValueType ToCloudValueType(
-    base::Value::Type type) {
+    printing::AdvancedCapability::Type type) {
   switch (type) {
-    case base::Value::Type::BOOLEAN:
+    case printing::AdvancedCapability::Type::kBoolean:
       return printer::TypedValueVendorCapability::ValueType::BOOLEAN;
-    case base::Value::Type::DOUBLE:
+    case printing::AdvancedCapability::Type::kFloat:
       return printer::TypedValueVendorCapability::ValueType::FLOAT;
-    case base::Value::Type::INTEGER:
+    case printing::AdvancedCapability::Type::kInteger:
       return printer::TypedValueVendorCapability::ValueType::INTEGER;
-    case base::Value::Type::STRING:
+    case printing::AdvancedCapability::Type::kString:
       return printer::TypedValueVendorCapability::ValueType::STRING;
     default:
       NOTREACHED();

@@ -5,7 +5,6 @@
 #include "printing/backend/ipp_handlers.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "printing/backend/cups_printer.h"
 
 namespace printing {
@@ -20,7 +19,7 @@ void TextHandler(const CupsOptionProvider& printer,
   capabilities->emplace_back();
   AdvancedCapability& capability = capabilities->back();
   capability.name = attribute_name;
-  capability.type = base::Value::Type::STRING;
+  capability.type = AdvancedCapability::Type::kString;
   // TODO(crbug.com/964919): Set defaults.
 }
 
@@ -37,7 +36,7 @@ void BooleanHandler(const CupsOptionProvider& printer,
   capabilities->emplace_back();
   AdvancedCapability& capability = capabilities->back();
   capability.name = attribute_name;
-  capability.type = base::Value::Type::BOOLEAN;
+  capability.type = AdvancedCapability::Type::kBoolean;
   ipp_attribute_t* attr_default = printer.GetDefaultOptionValue(attribute_name);
   capability.default_value = attr_default && ippGetBoolean(attr_default, 0);
 }
@@ -113,7 +112,7 @@ void MultivalueEnumHandler(int none_value,
     AdvancedCapability& capability = capabilities->back();
     capability.name =
         std::string(attribute_name) + "/" + base::NumberToString(value);
-    capability.type = base::Value::Type::BOOLEAN;
+    capability.type = AdvancedCapability::Type::kBoolean;
     // TODO(crbug.com/964919): Set defaults.
   }
 }

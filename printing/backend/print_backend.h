@@ -16,10 +16,6 @@
 #include "printing/printing_export.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_CHROMEOS)
-#include "base/values.h"
-#endif  // defined(OS_CHROMEOS)
-
 namespace base {
 class DictionaryValue;
 }
@@ -66,6 +62,8 @@ struct PRINTING_EXPORT AdvancedCapability {
   AdvancedCapability(const AdvancedCapability& other);
   ~AdvancedCapability();
 
+  enum class Type : uint8_t { kNone = 0, kBoolean, kFloat, kInteger, kString };
+
   // IPP identifier of the attribute.
   std::string name;
 
@@ -73,7 +71,7 @@ struct PRINTING_EXPORT AdvancedCapability {
   std::string display_name;
 
   // Attribute type.
-  base::Value::Type type;
+  AdvancedCapability::Type type;
 
   // Default value.
   std::string default_value;
