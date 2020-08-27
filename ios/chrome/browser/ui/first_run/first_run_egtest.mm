@@ -78,6 +78,14 @@ id<GREYMatcher> SkipSigninButton() {
   // Ensure we went back to the First Run screen.
   [[EarlGrey selectElementWithMatcher:termsOfServiceLink]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Ensure that we have completed First Runs.
+  // Accept the FRE.
+  [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
+      performAction:grey_tap()];
+  // Dismiss sign-in.
+  [[EarlGrey selectElementWithMatcher:SkipSigninButton()]
+      performAction:grey_tap()];
 }
 
 // Toggle the UMA checkbox.
