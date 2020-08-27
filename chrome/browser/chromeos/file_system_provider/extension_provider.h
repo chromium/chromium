@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/file_system_provider/provider_interface.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "extensions/common/extension_id.h"
 
 class Profile;
@@ -33,8 +34,12 @@ struct ProvidingExtensionInfo {
   extensions::FileSystemProviderCapabilities capabilities;
 };
 
-class ExtensionProvider : public ProviderInterface {
+class ExtensionProvider : public ProviderInterface,
+                          public apps::AppRegistryCache::Observer {
  public:
+  ExtensionProvider(Profile* profile,
+                    const extensions::ExtensionId& extension_id,
+                    const ProvidingExtensionInfo& info);
   ~ExtensionProvider() override;
 
   // Returns a provider instance for the specified extension. If the extension
@@ -54,8 +59,10 @@ class ExtensionProvider : public ProviderInterface {
   bool RequestMount(Profile* profile) override;
 
  private:
-  ExtensionProvider(const extensions::ExtensionId& extension_id,
-                    const ProvidingExtensionInfo& info);
+  // apps::AppRegistryCache::Observer overrides:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
   ProviderId provider_id_;
   Capabilities capabilities_;
