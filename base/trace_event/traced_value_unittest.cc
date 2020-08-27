@@ -66,7 +66,7 @@ TEST(TraceEventArgumentTest, ArrayAndDictionaryScope) {
   {
     auto surround_dictionary =
         value->BeginDictionaryScoped("outside_dictionary");
-    value->SetBoolean("my_bool:", true);
+    value->SetBoolean("my_bool", true);
     {
       auto inside_array = value->BeginArrayScoped("inside_array");
       value->AppendBoolean(false);
@@ -81,12 +81,20 @@ TEST(TraceEventArgumentTest, ArrayAndDictionaryScope) {
     value->AppendBoolean(false);
     {
       auto inside_dictionary = value->AppendDictionaryScoped();
-      value->SetBoolean("my_bool:", true);
+      value->SetBoolean("my_bool", true);
     }
     {
       auto inside_array = value->AppendArrayScoped();
       value->AppendBoolean(false);
     }
+  }
+  {
+    auto dictionary = value->BeginDictionaryScopedWithCopiedName(
+        std::string("wonderful_") + std::string("world"));
+  }
+  {
+    auto array = value->BeginArrayScopedWithCopiedName(
+        std::string("wonderful_") + std::string("array"));
   }
   std::string json;
   value->AppendAsTraceFormat(&json);
@@ -94,9 +102,11 @@ TEST(TraceEventArgumentTest, ArrayAndDictionaryScope) {
       "{"
       "\"dictionary_name\":{\"my_int\":1},"
       "\"array_name\":[2],"
-      "\"outside_dictionary\":{\"my_bool:\":true,\"inside_array\":[false],"
+      "\"outside_dictionary\":{\"my_bool\":true,\"inside_array\":[false],"
       "\"inside_dictionary\":{\"inner_bool\":false}},"
-      "\"outside_array\":[false,{\"my_bool:\":true},[false]]"
+      "\"outside_array\":[false,{\"my_bool\":true},[false]],"
+      "\"wonderful_world\":{},"
+      "\"wonderful_array\":[]"
       "}",
       json);
 }

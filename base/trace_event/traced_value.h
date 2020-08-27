@@ -67,14 +67,17 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
 
   void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead) override;
 
-  // Helper to open / close an array. The ctor of |ArrayScope| opens the array,
-  // the dtor closes. To be used via |TracedValue::AppendArrayScoped| and
-  // |TracedValue::BeginArrayScoped|.
+  // Helper to auto-close an array. The call to |ArrayScope::~ArrayScope| closes
+  // the array.
+  //
+  // To be constructed using:
+  //   |TracedValue::AppendArrayScoped|
+  //   |TracedValue::BeginArrayScoped|
+  //   |TracedValue::BeginArrayScopedWithCopiedName|
   //
   // |ArrayScope| holds a |TracedValue| pointer which should remain a valid
-  // pointer at the time |ArrayScope::~ArrayScope| is called.
+  // pointer until |ArrayScope::~ArrayScope| is called.
   //
-  // |ArrayScope::ArrayScope| calls |TracedValue::BeginArray|
   // |ArrayScope::~ArrayScope| calls |TracedValue::EndArray| (which checks if
   // the held |TracedValue*| is in array state).
   //
@@ -86,29 +89,37 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   //   }
   class BASE_EXPORT ArrayScope {
    public:
+    ArrayScope(const ArrayScope&) = delete;
+    ArrayScope(ArrayScope&&) = default;
+    ArrayScope& operator=(const ArrayScope&) = delete;
+    ArrayScope& operator=(ArrayScope&&) = default;
     ~ArrayScope();
 
    private:
     explicit ArrayScope(TracedValue* value);
-    explicit ArrayScope(TracedValue* value, const char* name);
 
     TracedValue* value_;
 
     friend class TracedValue;
   };
 
+  // Call |BeginArray| or |BeginArrayWithCopiedName| with no / the same
+  // parameter and return an |ArrayScope| holding |this|.
   ArrayScope AppendArrayScoped();
   ArrayScope BeginArrayScoped(const char* name);
+  ArrayScope BeginArrayScopedWithCopiedName(base::StringPiece name);
 
-  // Helper to open / close a dictionary. The ctor of |DictionaryScope| opens
-  // the dictionary, the dtor closes. To be used via
-  // |TracedValue::AppendDictionaryScoped| and
-  // |TracedValue::BeginDictionaryScoped|.
+  // Helper to auto-close a dictionary. The call to
+  // |DictionaryScope::~DictionaryScope| closes the dictionary.
+  //
+  // To be constructed using:
+  //   |TracedValue::AppendDictionaryScoped|
+  //   |TracedValue::BeginDictionaryScoped|
+  //   |TracedValue::BeginDictionaryScopedWithCopiedName|
   //
   // |DictionaryScope| holds a |TracedValue| pointer which should remain a valid
-  // pointer at the time |DictionaryScope::~DictionaryScope| is called.
+  // pointer until |DictionaryScope::~DictionaryScope| is called.
   //
-  // |DictionaryScope::DictionaryScope| calls |TracedValue::BeginDictionary|
   // |DictionaryScope::~DictionaryScope| calls |TracedValue::EndDictionary|
   // (which checks if the held |TracedValue*| is in dictionary state).
   //
@@ -120,19 +131,25 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   //   }
   class BASE_EXPORT DictionaryScope {
    public:
+    DictionaryScope(const DictionaryScope&) = delete;
+    DictionaryScope(DictionaryScope&&) = default;
+    DictionaryScope& operator=(const DictionaryScope&) = delete;
+    DictionaryScope& operator=(DictionaryScope&&) = default;
     ~DictionaryScope();
 
    private:
     explicit DictionaryScope(TracedValue* value);
-    explicit DictionaryScope(TracedValue* value, const char* name);
 
     TracedValue* value_;
 
     friend class TracedValue;
   };
 
+  // Call |BeginDictionary| or |BeginDictionaryWithCopiedName| with no / the
+  // same parameter and return a |DictionaryScope| holding |this|.
   DictionaryScope AppendDictionaryScoped();
   DictionaryScope BeginDictionaryScoped(const char* name);
+  DictionaryScope BeginDictionaryScopedWithCopiedName(base::StringPiece name);
 
   class BASE_EXPORT Array;
   class BASE_EXPORT Dictionary;
