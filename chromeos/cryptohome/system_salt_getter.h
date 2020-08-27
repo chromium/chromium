@@ -44,6 +44,8 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
 
   // Returns pointer to binary system salt if it is already known.
   // Returns nullptr if system salt is not known.
+  // WARNING: This pointer is null early in startup. Do not assume it is valid.
+  // Prefer GetSystemSalt() above. https://crbug.com/1122674
   const RawSalt* GetRawSalt() const;
 
   // This is for browser tests API.

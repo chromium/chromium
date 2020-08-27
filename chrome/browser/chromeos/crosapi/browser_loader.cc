@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/cryptohome/system_salt_getter.h"
 
 namespace crosapi {
 
@@ -82,7 +83,7 @@ void BrowserLoader::Unload() {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CheckInstalledAndMaybeRemoveUserDirectory,
                      component_manager_),
-      base::BindOnce(&BrowserLoader::UnloadAfterCleanUp,
+      base::BindOnce(&BrowserLoader::OnCheckInstalled,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -101,9 +102,22 @@ void BrowserLoader::OnLoadComplete(
   std::move(callback).Run(success ? path : base::FilePath());
 }
 
-void BrowserLoader::UnloadAfterCleanUp(bool was_installed) {
-  if (was_installed)
-    component_manager_->Unload(kLacrosComponentName);
+void BrowserLoader::OnCheckInstalled(bool was_installed) {
+  if (!was_installed)
+    return;
+
+  // Workaround for login crash when the user un-sets the LacrosSupport flag.
+  // CrOSComponentManager::Unload() calls into code in MetadataTable that
+  // assumes that system salt is available. This isn't always true when chrome
+  // restarts to apply non-owner flags. It's hard to make MetadataTable async.
+  // Ensure salt is available before unloading. https://crbug.com/1122674
+  chromeos::SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
+      &BrowserLoader::UnloadAfterCleanUp, weak_factory_.GetWeakPtr()));
+}
+
+void BrowserLoader::UnloadAfterCleanUp(const std::string& ignored_salt) {
+  CHECK(chromeos::SystemSaltGetter::Get()->GetRawSalt());
+  component_manager_->Unload(kLacrosComponentName);
 }
 
 }  // namespace crosapi
