@@ -40,8 +40,7 @@ public class StandardProtectionSettingsFragment
     protected void onCreatePreferencesInternal(Bundle bundle, String rootKey) {
         mExtendedReportingPreference = findPreference(PREF_EXTENDED_REPORTING);
         mExtendedReportingPreference.setOnPreferenceChangeListener(this);
-        // TODO(crbug.com/1108604): Set ManagedPreferenceDelegate for mExtendedReportingPreference
-        // when the extended reporting policy is supported on Android.
+        mExtendedReportingPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
         mPasswordLeakDetectionPreference = findPreference(PREF_PASSWORD_LEAK_DETECTION);
         mPasswordLeakDetectionPreference.setOnPreferenceChangeListener(this);
@@ -73,7 +72,11 @@ public class StandardProtectionSettingsFragment
         boolean extended_reporting_checked = is_enhanced_protection
                 || (is_standard_protection
                         && SafeBrowsingBridge.isSafeBrowsingExtendedReportingEnabled());
-        mExtendedReportingPreference.setEnabled(is_standard_protection);
+        boolean extended_reporting_disabled_by_delegate =
+                mManagedPreferenceDelegate.isPreferenceClickDisabledByPolicy(
+                        mExtendedReportingPreference);
+        mExtendedReportingPreference.setEnabled(
+                is_standard_protection && !extended_reporting_disabled_by_delegate);
         mExtendedReportingPreference.setChecked(extended_reporting_checked);
 
         boolean has_token_for_leak_check = SafeBrowsingBridge.hasAccountForLeakCheckRequest();
@@ -114,7 +117,9 @@ public class StandardProtectionSettingsFragment
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
         return preference -> {
             String key = preference.getKey();
-            if (PREF_PASSWORD_LEAK_DETECTION.equals(key)) {
+            if (PREF_EXTENDED_REPORTING.equals(key)) {
+                return SafeBrowsingBridge.isSafeBrowsingExtendedReportingManaged();
+            } else if (PREF_PASSWORD_LEAK_DETECTION.equals(key)) {
                 return mPrefService.isManagedPreference(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
             } else {
                 assert false : "Should not be reached";

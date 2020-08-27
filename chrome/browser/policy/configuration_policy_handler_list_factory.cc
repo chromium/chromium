@@ -1515,6 +1515,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<SimplePolicyHandler>(key::kURLAllowlist,
                                             policy_prefs::kUrlWhitelist,
                                             base::Value::Type::LIST)));
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kSafeBrowsingExtendedReportingEnabled,
+      prefs::kSafeBrowsingScoutReportingEnabled, chrome_schema,
+      SCHEMA_ALLOW_UNKNOWN,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
 #if defined(OS_ANDROID)
   handlers->AddHandler(
@@ -1536,13 +1542,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED));
-
-  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
-      key::kSafeBrowsingExtendedReportingEnabled,
-      prefs::kSafeBrowsingScoutReportingEnabled, chrome_schema,
-      SCHEMA_ALLOW_UNKNOWN,
-      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
-      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
   handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
       std::make_unique<SimplePolicyHandler>(key::kAutoplayWhitelist,

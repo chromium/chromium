@@ -243,6 +243,29 @@ public class StandardProtectionSettingsFragmentTest {
         });
     }
 
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @Policies.Add({ @Policies.Item(key = "SafeBrowsingExtendedReportingEnabled", string = "true") })
+    public void testExtendedReportingPolicyManaged() {
+        mBrowserTestRule.addAndSignInTestAccount();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+            SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        });
+        launchSettingsActivity();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(
+                    ASSERT_MESSAGE_PREFIX + EXTENDED_REPORTING + MANAGED_STATE + FROM_NATIVE,
+                    SafeBrowsingBridge.isSafeBrowsingExtendedReportingManaged());
+            Assert.assertFalse(ASSERT_MESSAGE_PREFIX + EXTENDED_REPORTING + ENABLED_STATE,
+                    mExtendedReportingPreference.isEnabled());
+            Assert.assertTrue(ASSERT_MESSAGE_PREFIX + EXTENDED_REPORTING + CHECKED_STATE,
+                    mExtendedReportingPreference.isChecked());
+        });
+    }
+
     PrefService getPrefService() {
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }

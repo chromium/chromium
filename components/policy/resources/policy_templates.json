@@ -17579,7 +17579,7 @@
       'owners': ['bdea@chromium.org', 'nparker@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:66-', 'chrome_os:66-'],
+      'supported_on': ['chrome.*:66-', 'chrome_os:66-', 'android: 87-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -17595,6 +17595,7 @@
       If you set this policy, users can't change it. If not set, users can decide whether to send reports or not.
 
       See more about Safe Browsing ( https://developers.google.com/safe-browsing ).''',
+      'arc_support': 'This policy is not supported within Arc.',
     },
     {
       'name': 'MachineLevelUserCloudPolicyEnrollmentToken',
