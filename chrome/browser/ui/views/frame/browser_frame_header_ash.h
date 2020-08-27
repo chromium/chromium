@@ -49,9 +49,8 @@ class BrowserFrameHeaderAsh : public ash::FrameHeader {
   SkColor GetCurrentFrameColor() const override;
 
  private:
-  // Paints the frame image for the |active| state based on the current value of
-  // the activation animation.
-  void PaintFrameImages(gfx::Canvas* canvas, bool active);
+  // Paints the frame image.
+  void PaintFrameImages(gfx::Canvas* canvas);
 
   AppearanceProvider* appearance_provider_ = nullptr;
 

@@ -7,11 +7,12 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
+#include "base/callback.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/animation/slide_animation.h"
-#include "ui/views/animation/animation_delegate_views.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace gfx {
@@ -29,13 +30,13 @@ namespace ash {
 class CaptionButtonModel;
 
 // Helper class for managing the window header.
-class ASH_PUBLIC_EXPORT FrameHeader : public views::AnimationDelegateViews {
+class ASH_PUBLIC_EXPORT FrameHeader {
  public:
   enum Mode { MODE_ACTIVE, MODE_INACTIVE };
 
   static FrameHeader* Get(views::Widget* widget);
 
-  ~FrameHeader() override;
+  virtual ~FrameHeader();
 
   const base::string16& frame_text_override() const {
     return frame_text_override_;
@@ -45,7 +46,7 @@ class ASH_PUBLIC_EXPORT FrameHeader : public views::AnimationDelegateViews {
   int GetMinimumHeaderWidth() const;
 
   // Paints the header.
-  void PaintHeader(gfx::Canvas* canvas, Mode mode);
+  void PaintHeader(gfx::Canvas* canvas);
 
   // Performs layout for the header.
   void LayoutHeader();
@@ -81,9 +82,6 @@ class ASH_PUBLIC_EXPORT FrameHeader : public views::AnimationDelegateViews {
   // regardless of what ShouldShowWindowTitle() returns.
   void SetFrameTextOverride(const base::string16& frame_text_override);
 
-  // views::AnimationDelegateViews:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-
   void UpdateFrameHeaderKey();
 
   views::View* view() { return view_; }
@@ -112,19 +110,20 @@ class ASH_PUBLIC_EXPORT FrameHeader : public views::AnimationDelegateViews {
 
   Mode mode() const { return mode_; }
 
-  const gfx::SlideAnimation& activation_animation() {
-    return activation_animation_;
-  }
-
   virtual void DoPaintHeader(gfx::Canvas* canvas) = 0;
   virtual views::CaptionButtonLayoutSize GetButtonLayoutSize() const = 0;
   virtual SkColor GetTitleColor() const = 0;
   virtual SkColor GetCurrentFrameColor() const = 0;
 
+  // Starts fade transition animation with given duration.
+  void StartTransitionAnimation(base::TimeDelta duration);
+
  private:
+  class FrameAnimatorView;
   FRIEND_TEST_ALL_PREFIXES(DefaultFrameHeaderTest, BackButtonAlignment);
   FRIEND_TEST_ALL_PREFIXES(DefaultFrameHeaderTest, TitleIconAlignment);
   FRIEND_TEST_ALL_PREFIXES(DefaultFrameHeaderTest, FrameColors);
+  friend class FramePaintWaiter;
 
   void LayoutHeaderInternal();
 
@@ -139,19 +138,18 @@ class ASH_PUBLIC_EXPORT FrameHeader : public views::AnimationDelegateViews {
   views::FrameCaptionButton* back_button_ = nullptr;  // May remain nullptr.
   views::View* left_header_view_ = nullptr;    // May remain nullptr.
   FrameCaptionButtonContainerView* caption_button_container_ = nullptr;
+  FrameAnimatorView* frame_animator_ = nullptr;  // owned by view tree.
 
   // The height of the header to paint.
   int painted_height_ = 0;
 
+  // Used to skip animation when the frame hasn't painted yet.
+  bool painted_ = false;
+
   // Whether the header should be painted as active.
   Mode mode_ = MODE_INACTIVE;
 
-  // Whether the header is painted for the first time.
-  bool initial_paint_ = true;
-
   base::string16 frame_text_override_;
-
-  gfx::SlideAnimation activation_animation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FrameHeader);
 };

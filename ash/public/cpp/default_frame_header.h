@@ -26,12 +26,8 @@ class ASH_PUBLIC_EXPORT DefaultFrameHeader : public FrameHeader {
                      FrameCaptionButtonContainerView* caption_button_container);
   ~DefaultFrameHeader() override;
 
-  SkColor active_frame_color_for_testing() {
-    return active_frame_color_.target_color();
-  }
-  SkColor inactive_frame_color_for_testing() {
-    return inactive_frame_color_.target_color();
-  }
+  SkColor active_frame_color_for_testing() { return active_frame_color_; }
+  SkColor inactive_frame_color_for_testing() { return inactive_frame_color_; }
 
   void SetWidthInPixels(int width_in_pixels);
 
@@ -51,33 +47,10 @@ class ASH_PUBLIC_EXPORT DefaultFrameHeader : public FrameHeader {
   // Returns the window of the target widget.
   aura::Window* GetTargetWindow();
 
-  gfx::SlideAnimation* GetAnimationForActiveFrameColorForTest();
   SkColor GetActiveFrameColorForPaintForTest();
 
-  // A utility class to animate color value.
-  class ColorAnimator {
-   public:
-    explicit ColorAnimator(gfx::AnimationDelegate* delegate);
-    ~ColorAnimator();
-
-    void SetTargetColor(SkColor target);
-    SkColor target_color() const { return target_color_; }
-    SkColor GetCurrentColor();
-    float get_value() const { return animation_.GetCurrentValue(); }
-
-    gfx::SlideAnimation* animation() { return &animation_; }
-
-   private:
-    gfx::SlideAnimation animation_;
-    SkColor start_color_ = kDefaultFrameColor;
-    SkColor target_color_ = kDefaultFrameColor;
-    SkColor current_color_ = kDefaultFrameColor;
-
-    DISALLOW_COPY_AND_ASSIGN(ColorAnimator);
-  };
-
-  ColorAnimator active_frame_color_;
-  ColorAnimator inactive_frame_color_;
+  SkColor active_frame_color_ = kDefaultFrameColor;
+  SkColor inactive_frame_color_ = kDefaultFrameColor;
 
   int width_in_pixels_ = -1;
 
