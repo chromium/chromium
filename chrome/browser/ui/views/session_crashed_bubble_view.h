@@ -42,6 +42,7 @@ class SessionCrashedBubbleView : public SessionCrashedBubble,
 
  protected:
   // views::BubbleDialogDelegateView:
+  gfx::Size CalculatePreferredSize() const override;
   ax::mojom::Role GetAccessibleWindowRole() override;
 
  private:

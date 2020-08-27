@@ -41,12 +41,12 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/checkbox.h"
+#include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -157,6 +157,13 @@ void SessionCrashedBubbleView::Show(
     RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_ALREADY_UMA_OPTIN);
 }
 
+gfx::Size SessionCrashedBubbleView::CalculatePreferredSize() const {
+  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                    margins().width();
+  return gfx::Size(width, GetHeightForWidth(width));
+}
+
 ax::mojom::Role SessionCrashedBubbleView::GetAccessibleWindowRole() {
   return ax::mojom::Role::kAlertDialog;
 }
@@ -173,6 +180,9 @@ SessionCrashedBubbleView::SessionCrashedBubbleView(views::View* anchor_view,
 
   SetShowCloseButton(true);
   SetTitle(l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_BUBBLE_TITLE));
+
+  set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
+      views::TEXT, offer_uma_optin_ ? views::CONTROL : views::TEXT));
 
   // Allow unit tests to leave out Browser.
   const SessionStartupPref session_startup_pref =
@@ -218,14 +228,10 @@ void SessionCrashedBubbleView::Init() {
 
   // Description text label.
   auto text_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_MESSAGE));
+      l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_MESSAGE),
+      CONTEXT_BODY_TEXT_LARGE);
   text_label->SetMultiLine(true);
-  text_label->SetLineHeight(20);
   text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  text_label->SizeToFit(
-      provider->GetDistanceMetric(
-          ChromeDistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-      margins().width());
   AddChildView(std::move(text_label));
 
   if (offer_uma_optin_)
@@ -235,15 +241,37 @@ void SessionCrashedBubbleView::Init() {
 std::unique_ptr<views::View> SessionCrashedBubbleView::CreateUmaOptInView() {
   RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_OPTIN_BAR_SHOWN);
 
+  // Create a view that will function like a views::Checkbox, but with a
+  // StyledLabel instead of the normal Label.
+  auto uma_view = std::make_unique<views::View>();
+  auto* uma_layout =
+      uma_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+  uma_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  // The checkbox itself.
+  uma_option_ = uma_view->AddChildView(
+      std::make_unique<views::Checkbox>(base::string16()));
+  uma_option_->SetChecked(false);
+
+  // Move the checkbox border up to |uma_view|.
+  uma_view->SetBorder(uma_option_->CreateDefaultBorder());
+  uma_option_->SetBorder(nullptr);
+
   // The text to the right of the checkbox.
   size_t offset;
   base::string16 link_text =
       l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_BUBBLE_UMA_LINK_TEXT);
-  auto uma_label = std::make_unique<views::StyledLabel>(this);
   base::string16 uma_text = l10n_util::GetStringFUTF16(
       IDS_SESSION_CRASHED_VIEW_UMA_OPTIN,
       link_text,
       &offset);
+
+  auto* uma_label =
+      uma_view->AddChildView(std::make_unique<views::StyledLabel>(this));
   uma_label->SetText(uma_text);
   uma_label->AddStyleRange(gfx::Range(offset, offset + link_text.length()),
                            views::StyledLabel::RangeStyleInfo::CreateForLink());
@@ -255,33 +283,8 @@ std::unique_ptr<views::View> SessionCrashedBubbleView::CreateUmaOptInView() {
   gfx::Range after_link_range(offset + link_text.length(), uma_text.length());
   if (!after_link_range.is_empty())
     uma_label->AddStyleRange(after_link_range, uma_style);
-  // Shift the text down by 3px to align with the checkbox.
-  uma_label->SetBorder(views::CreateEmptyBorder(3, 0, 0, 0));
 
-  // Checkbox for metric reporting setting.
-  auto uma_option = std::make_unique<views::Checkbox>(base::string16());
-  uma_option->SetChecked(false);
-  uma_option->SetAssociatedLabel(uma_label.get());
-
-  // Create a view to hold the checkbox and the text.
-  auto uma_view = std::make_unique<views::View>();
-  views::GridLayout* uma_layout =
-      uma_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  const int kReportColumnSetId = 0;
-  views::ColumnSet* cs = uma_layout->AddColumnSet(kReportColumnSetId);
-  cs->AddColumn(views::GridLayout::CENTER, views::GridLayout::LEADING,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  cs->AddPaddingColumn(views::GridLayout::kFixedSize,
-                       ChromeLayoutProvider::Get()->GetDistanceMetric(
-                           views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-  cs->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                views::GridLayout::ColumnSize::kFixed, 0, 0);
-
-  uma_layout->StartRow(views::GridLayout::kFixedSize, kReportColumnSetId);
-  uma_option_ = uma_layout->AddView(std::move(uma_option));
-  uma_layout->AddView(std::move(uma_label));
+  uma_option_->SetAssociatedLabel(uma_label);
 
   return uma_view;
 }
