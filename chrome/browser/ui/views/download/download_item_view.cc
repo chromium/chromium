@@ -562,7 +562,7 @@ void DownloadItemView::OnPaintBackground(gfx::Canvas* canvas) {
 
   // Draw the separator as part of the background. It will be covered by the
   // focus ring when the view has focus.
-  gfx::Rect rect(0, 0, 1, height());
+  gfx::Rect rect(width() - 1, 0, 1, height());
   rect.Inset(0, kTopBottomPadding);
   canvas->FillRect(GetMirroredRect(rect),
                    GetThemeProvider()->GetColor(
