@@ -169,18 +169,6 @@ static void ClearTruncation(LayoutBlockFlow* block_flow) {
 LayoutDeprecatedFlexibleBox::LayoutDeprecatedFlexibleBox(Element* element)
     : LayoutBlock(element) {
   DCHECK(!ChildrenInline());
-  if (!IsAnonymous()) {
-    const KURL& url = GetDocument().Url();
-    if (url.ProtocolIs("chrome")) {
-      UseCounter::Count(GetDocument(), WebFeature::kDeprecatedFlexboxChrome);
-    } else if (url.ProtocolIs("chrome-extension")) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kDeprecatedFlexboxChromeExtension);
-    } else {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kDeprecatedFlexboxWebContent);
-    }
-  }
 }
 
 LayoutDeprecatedFlexibleBox::~LayoutDeprecatedFlexibleBox() = default;
@@ -197,16 +185,6 @@ static LayoutUnit MarginWidthForChild(LayoutBox* child) {
   if (margin_right.IsFixed())
     margin += margin_right.Value();
   return margin;
-}
-
-void LayoutDeprecatedFlexibleBox::StyleWillChange(
-    StyleDifference diff,
-    const ComputedStyle& new_style) {
-  const ComputedStyle* old_style = Style();
-  if (old_style && old_style->HasLineClamp() && !new_style.HasLineClamp())
-    ClearLineClamp();
-
-  LayoutBlock::StyleWillChange(diff, new_style);
 }
 
 MinMaxSizes LayoutDeprecatedFlexibleBox::ComputeIntrinsicLogicalWidths() const {
@@ -230,26 +208,8 @@ MinMaxSizes LayoutDeprecatedFlexibleBox::ComputeIntrinsicLogicalWidths() const {
 void LayoutDeprecatedFlexibleBox::UpdateBlockLayout(bool relayout_children) {
   DCHECK(NeedsLayout());
   DCHECK_EQ(StyleRef().BoxOrient(), EBoxOrient::kVertical);
-
+  DCHECK(StyleRef().HasLineClamp());
   UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxLayout);
-
-  if (StyleRef().BoxDirection() !=
-      ComputedStyleInitialValues::InitialBoxDirection())
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxDirectionNotInitial);
-
-  if (!FirstChildBox()) {
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxNoChildren);
-  } else if (!FirstChildBox()->NextSiblingBox()) {
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxOneChild);
-
-    auto* first_child_block_flow = DynamicTo<LayoutBlockFlow>(FirstChildBox());
-    if (first_child_block_flow && first_child_block_flow->ChildrenInline()) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kWebkitBoxOneChildIsLayoutBlockFlowInline);
-    }
-  } else {
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxManyChildren);
-  }
 
   if (!relayout_children && SimplifiedLayout())
     return;
@@ -270,7 +230,6 @@ void LayoutDeprecatedFlexibleBox::UpdateBlockLayout(bool relayout_children) {
 
     SetHeight(LayoutUnit());
 
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxLayoutVertical);
     LayoutVerticalBox(relayout_children);
 
     LayoutUnit old_client_after_edge = ClientLogicalBottom();
@@ -296,8 +255,7 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
   // We confine the line clamp ugliness to vertical flexible boxes (thus keeping
   // it out of mainstream block layout); this is not really part of the XUL box
   // model.
-  if (StyleRef().HasLineClamp())
-    ApplyLineClamp(relayout_children);
+  ApplyLineClamp(relayout_children);
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
@@ -319,19 +277,13 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
       continue;
     }
 
-    SubtreeLayoutScope layout_scope(*child);
-    if (!StyleRef().HasLineClamp() &&
-        (relayout_children || (child->IsAtomicInlineLevel() &&
-                               (child->StyleRef().Width().IsPercentOrCalc() ||
-                                child->StyleRef().Height().IsPercentOrCalc()))))
-      layout_scope.SetChildNeedsLayout(child);
-
     // Compute the child's vertical margins.
     child->ComputeAndSetBlockDirectionMargins(this);
 
     // Add in the child's marginTop to our height.
     SetHeight(Size().Height() + child->MarginTop());
 
+    SubtreeLayoutScope layout_scope(*child);
     if (!child->NeedsLayout())
       MarkChildForPaginationRelayoutIfNeeded(*child, layout_scope);
 
@@ -345,7 +297,11 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
     } else {
       child_x += ContentWidth() - child->MarginRight() - child->Size().Width();
     }
-    PlaceChild(child, LayoutPoint(child_x, Size().Height()));
+    // TODO(crbug.com/370010): Investigate if this can be removed based on
+    // other flags.
+    child->SetShouldCheckForPaintInvalidation();
+    child->SetLocation(LayoutPoint(child_x, Size().Height()));
+
     SetHeight(Size().Height() + child->Size().Height() + child->MarginBottom());
 
     if (View()->GetLayoutState()->IsPaginated())
@@ -381,26 +337,6 @@ void LayoutDeprecatedFlexibleBox::LayoutVerticalBox(bool relayout_children) {
 }
 
 void LayoutDeprecatedFlexibleBox::ApplyLineClamp(bool relayout_children) {
-  UseCounter::Count(GetDocument(), WebFeature::kLineClamp);
-  UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxLineClamp);
-
-  LayoutBox* child = FirstChildBox();
-  if (!child) {
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxLineClampNoChildren);
-  } else if (!child->NextSiblingBox()) {
-    UseCounter::Count(GetDocument(), WebFeature::kWebkitBoxLineClampOneChild);
-
-    auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-    if (child_block_flow && child_block_flow->ChildrenInline()) {
-      UseCounter::Count(
-          GetDocument(),
-          WebFeature::kWebkitBoxLineClampOneChildIsLayoutBlockFlowInline);
-    }
-  } else {
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kWebkitBoxLineClampManyChildren);
-  }
-
   int max_line_count = 0;
   for (LayoutBox* child = FirstChildBox(); child;
        child = child->NextSiblingBox()) {
@@ -500,9 +436,6 @@ void LayoutDeprecatedFlexibleBox::ApplyLineClamp(bool relayout_children) {
             LayoutUnit(total_width)))
       continue;
 
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kWebkitBoxLineClampDoesSomething);
-
     // Let the truncation code kick in.
     // FIXME: the text alignment should be recomputed after the width changes
     // due to truncation.
@@ -515,38 +448,6 @@ void LayoutDeprecatedFlexibleBox::ApplyLineClamp(bool relayout_children) {
                                      &box_truncation_starts_at, ForceEllipsis);
     dest_block.SetHasMarkupTruncation(true);
   }
-}
-
-void LayoutDeprecatedFlexibleBox::ClearLineClamp() {
-  for (LayoutBox* child = FirstChildBox(); child;
-       child = child->NextSiblingBox()) {
-    if (child->IsOutOfFlowPositioned())
-      continue;
-
-    child->ClearOverrideSize();
-    if ((child->IsAtomicInlineLevel() &&
-         (child->StyleRef().Width().IsPercentOrCalc() ||
-          child->StyleRef().Height().IsPercentOrCalc())) ||
-        (child->StyleRef().Height().IsAuto() && child->IsLayoutBlock())) {
-      child->SetChildNeedsLayout();
-
-      auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-      if (child_block_flow) {
-        child_block_flow->MarkPositionedObjectsForLayout();
-        ClearTruncation(child_block_flow);
-      }
-    }
-  }
-}
-
-void LayoutDeprecatedFlexibleBox::PlaceChild(LayoutBox* child,
-                                             const LayoutPoint& location) {
-  // FIXME Investigate if this can be removed based on other flags.
-  // crbug.com/370010
-  child->SetShouldCheckForPaintInvalidation();
-
-  // Place the child.
-  child->SetLocation(location);
 }
 
 }  // namespace blink

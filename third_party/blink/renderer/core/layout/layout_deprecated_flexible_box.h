@@ -36,22 +36,16 @@ class LayoutDeprecatedFlexibleBox final : public LayoutBlock {
 
   const char* GetName() const override { return "LayoutDeprecatedFlexibleBox"; }
 
-  void StyleWillChange(StyleDifference,
-                       const ComputedStyle& new_style) override;
-
   void UpdateBlockLayout(bool relayout_children) override;
   void LayoutVerticalBox(bool relayout_children);
 
   bool IsDeprecatedFlexibleBox() const override { return true; }
   bool IsFlexibleBoxIncludingDeprecatedAndNG() const override { return true; }
 
-  void PlaceChild(LayoutBox* child, const LayoutPoint& location);
-
  private:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
 
   void ApplyLineClamp(bool relayout_children);
-  void ClearLineClamp();
 };
 
 }  // namespace blink
