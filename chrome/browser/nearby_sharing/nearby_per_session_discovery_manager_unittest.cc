@@ -28,6 +28,25 @@ MATCHER_P(MatchesTarget, target, "") {
   return arg.id == target.id;
 }
 
+const char kTextAttachmentBody[] = "Test text payload";
+
+std::vector<std::unique_ptr<Attachment>> CreateAttachments() {
+  std::vector<std::unique_ptr<Attachment>> attachments;
+  attachments.push_back(std::make_unique<TextAttachment>(
+      TextAttachment::Type::kText, kTextAttachmentBody));
+  return attachments;
+}
+
+void ExpectTextAttachment(
+    const std::string& text_body,
+    const std::vector<std::unique_ptr<Attachment>>& attachments) {
+  ASSERT_EQ(1u, attachments.size());
+  ASSERT_TRUE(attachments[0]);
+  ASSERT_EQ(Attachment::Family::kText, attachments[0]->family());
+  auto* text_attachment = static_cast<TextAttachment*>(attachments[0].get());
+  EXPECT_EQ(text_body, text_attachment->text_body());
+}
+
 class MockShareTargetListener
     : public nearby_share::mojom::ShareTargetListener {
  public:
@@ -84,7 +103,8 @@ class NearbyPerSessionDiscoveryManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   MockNearbySharingService sharing_service_;
-  NearbyPerSessionDiscoveryManager manager_{&sharing_service_};
+  NearbyPerSessionDiscoveryManager manager_{&sharing_service_,
+                                            CreateAttachments()};
 };
 
 }  // namespace
@@ -95,7 +115,8 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, CreateDestroyWithoutRegistering) {
   EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
       .Times(0);
   {
-    NearbyPerSessionDiscoveryManager manager(&sharing_service());
+    NearbyPerSessionDiscoveryManager manager(&sharing_service(),
+                                             CreateAttachments());
     // Creating and destroying an instance should not register itself with the
     // NearbySharingService.
   }
@@ -202,11 +223,13 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, SelectShareTarget_SendSuccess) {
   EXPECT_CALL(callback, Run(nearby_share::mojom::SelectShareTargetResult::kOk,
                             testing::IsTrue(), testing::IsTrue()));
 
-  // TODO(crbug.com/1099710): Call correct method and pass attachments.
-  EXPECT_CALL(sharing_service(), SendText(_, _))
+  EXPECT_CALL(sharing_service(), SendAttachments(_, _))
       .WillOnce(testing::Invoke(
-          [&share_target](const ShareTarget& target, std::string text) {
+          [&share_target](
+              const ShareTarget& target,
+              std::vector<std::unique_ptr<Attachment>> attachments) {
             EXPECT_EQ(share_target.id, target.id);
+            ExpectTextAttachment(kTextAttachmentBody, attachments);
             return NearbySharingService::StatusCodes::kOk;
           }));
 
@@ -230,11 +253,13 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, SelectShareTarget_SendError) {
               Run(nearby_share::mojom::SelectShareTargetResult::kError,
                   testing::IsFalse(), testing::IsFalse()));
 
-  // TODO(crbug.com/1099710): Call correct method and pass attachments.
-  EXPECT_CALL(sharing_service(), SendText(_, _))
+  EXPECT_CALL(sharing_service(), SendAttachments(_, _))
       .WillOnce(testing::Invoke(
-          [&share_target](const ShareTarget& target, std::string text) {
+          [&share_target](
+              const ShareTarget& target,
+              std::vector<std::unique_ptr<Attachment>> attachments) {
             EXPECT_EQ(share_target.id, target.id);
+            ExpectTextAttachment(kTextAttachmentBody, attachments);
             return NearbySharingService::StatusCodes::kError;
           }));
 
@@ -276,8 +301,7 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitRemote) {
               mojo::PendingRemote<nearby_share::mojom::ConfirmationManager>
                   manager) { transfer_listener.Bind(std::move(listener)); }));
 
-  // TODO(crbug.com/1099710): Call correct method and pass attachments.
-  EXPECT_CALL(sharing_service(), SendText(_, _))
+  EXPECT_CALL(sharing_service(), SendAttachments(_, _))
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
 
   manager().SelectShareTarget(share_target.id, callback.Get());
@@ -328,8 +352,7 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitLocal) {
               mojo::PendingRemote<nearby_share::mojom::ConfirmationManager>
                   manager) { transfer_listener.Bind(std::move(listener)); }));
 
-  // TODO(crbug.com/1099710): Call correct method and pass attachments.
-  EXPECT_CALL(sharing_service(), SendText(_, _))
+  EXPECT_CALL(sharing_service(), SendAttachments(_, _))
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kOk));
 
   manager().SelectShareTarget(share_target.id, callback.Get());

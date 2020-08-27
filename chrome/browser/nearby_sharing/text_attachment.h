@@ -19,12 +19,17 @@ class TextAttachment : public Attachment {
   TextAttachment(Type type, std::string text_body);
   TextAttachment(int64_t id, Type type, std::string text_title, int64_t size);
   TextAttachment(const TextAttachment&);
+  TextAttachment(TextAttachment&&);
   TextAttachment& operator=(const TextAttachment&);
+  TextAttachment& operator=(TextAttachment&&);
   ~TextAttachment() override;
 
   const std::string& text_body() const { return text_body_; }
   const std::string& text_title() const { return text_title_; }
   Type type() const { return type_; }
+
+  // Attachment:
+  void MoveToShareTarget(ShareTarget& share_target) override;
 
  private:
   Type type_;

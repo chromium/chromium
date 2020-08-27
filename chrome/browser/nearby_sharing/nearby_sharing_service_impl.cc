@@ -10,7 +10,6 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -40,7 +39,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "crypto/random.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "net/base/mime_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/idle/idle.h"
 #include "url/gurl.h"
@@ -157,41 +155,6 @@ int64_t GeneratePayloadId() {
   int64_t payload_id = 0;
   crypto::RandBytes(&payload_id, sizeof(payload_id));
   return payload_id;
-}
-
-TextAttachment TextAttachmentFromText(const std::string& text) {
-  return TextAttachment(TextAttachment::Type::kText, text);
-}
-
-FileAttachment::Type FileAttachmentTypeFromMimeType(
-    const std::string& mime_type) {
-  if (base::StartsWith(mime_type, "image/"))
-    return FileAttachment::Type::kImage;
-
-  if (base::StartsWith(mime_type, "video/"))
-    return FileAttachment::Type::kVideo;
-
-  if (base::StartsWith(mime_type, "audio/"))
-    return FileAttachment::Type::kAudio;
-
-  return FileAttachment::Type::kUnknown;
-}
-
-std::string MimeTypeFromPath(const base::FilePath path) {
-  std::string mime_type = "application/octet-stream";
-  base::FilePath::StringType ext = path.Extension();
-  if (!ext.empty())
-    net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
-
-  return mime_type;
-}
-
-FileAttachment FileAttachmentFromPath(const base::FilePath path) {
-  std::string mime_type = MimeTypeFromPath(path);
-  // Size will be updated later asynchronously, see OnOpenFiles().
-  return FileAttachment(path.BaseName().AsUTF8Unsafe(),
-                        FileAttachmentTypeFromMimeType(mime_type),
-                        /*size=*/0, path, mime_type);
 }
 
 // Wraps a call to OnTransferUpdate() to filter any updates after receiving a
@@ -473,25 +436,6 @@ NearbySharingServiceImpl::UnregisterReceiveSurface(
                   << ") has been unregistered";
   InvalidateSurfaceState();
   return StatusCodes::kOk;
-}
-
-NearbySharingServiceImpl::StatusCodes NearbySharingServiceImpl::SendText(
-    const ShareTarget& share_target,
-    std::string text) {
-  ShareTarget share_target_copy = share_target;
-  share_target_copy.text_attachments.push_back(TextAttachmentFromText(text));
-
-  return SendAttachments(std::move(share_target_copy));
-}
-
-NearbySharingServiceImpl::StatusCodes NearbySharingServiceImpl::SendFiles(
-    const ShareTarget& share_target,
-    const std::vector<base::FilePath>& files) {
-  ShareTarget share_target_copy = share_target;
-  for (const base::FilePath& path : files)
-    share_target_copy.file_attachments.push_back(FileAttachmentFromPath(path));
-
-  return SendAttachments(std::move(share_target_copy));
 }
 
 void NearbySharingServiceImpl::Accept(
@@ -1480,11 +1424,11 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendPayloads(
 }
 
 NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
-    ShareTarget share_target) {
+    const ShareTarget& share_target,
+    std::vector<std::unique_ptr<Attachment>> attachments) {
   if (!is_scanning_) {
-    NS_LOG(WARNING)
-        << __func__
-        << ": Failed to send file to remote ShareTarget. Not scanning.";
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to send attachments. Not scanning.";
     return StatusCodes::kError;
   }
 
@@ -1497,9 +1441,19 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info || !info->endpoint_id()) {
     // TODO(crbug.com/1119276): Support scanning for unknown share targets.
-    NS_LOG(WARNING)
-        << __func__
-        << ": Failed to send file to remote ShareTarget. Unknown ShareTarget.";
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to send attachments. Unknown ShareTarget.";
+    return StatusCodes::kError;
+  }
+
+  ShareTarget share_target_copy = share_target;
+  for (std::unique_ptr<Attachment>& attachment : attachments) {
+    DCHECK(attachment);
+    attachment->MoveToShareTarget(share_target_copy);
+  }
+
+  if (!share_target_copy.has_attachments()) {
+    NS_LOG(WARNING) << __func__ << ": No attachments to send.";
     return StatusCodes::kError;
   }
 
@@ -1523,11 +1477,11 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
   // Send process initialized successfully, from now on status updated will be
   // sent out via OnOutgoingTransferUpdate().
   info->transfer_update_callback()->OnTransferUpdate(
-      share_target, TransferMetadataBuilder()
-                        .set_status(TransferMetadata::Status::kConnecting)
-                        .build());
+      share_target_copy, TransferMetadataBuilder()
+                             .set_status(TransferMetadata::Status::kConnecting)
+                             .build());
 
-  CreatePayloads(std::move(share_target),
+  CreatePayloads(std::move(share_target_copy),
                  base::BindOnce(&NearbySharingServiceImpl::OnCreatePayloads,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 std::move(*endpoint_info)));
@@ -2181,8 +2135,8 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
     NS_LOG(VERBOSE) << __func__ << "Found file attachment " << file->name
                     << " of type " << file->type << " with mimeType "
                     << file->mime_type;
-    FileAttachment attachment(file->id, file->name, file->type, file->size,
-                              file->mime_type);
+    FileAttachment attachment(file->id, file->size, file->name, file->mime_type,
+                              file->type);
     SetAttachmentPayloadId(attachment, file->payload_id);
     share_target.file_attachments.push_back(std::move(attachment));
 

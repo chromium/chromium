@@ -58,10 +58,8 @@ TextAttachment CreateTextAttachment(TextAttachment::Type type) {
 }
 
 FileAttachment CreateFileAttachment(FileAttachment::Type type) {
-  return FileAttachment(/*file_name=*/"file.jpg", type,
-                        /*size=*/10,
-                        /*file_path=*/base::nullopt,
-                        /*mime_type=*/"example");
+  return FileAttachment(/*id=*/0, /*size=*/10, /*file_name=*/"file.jpg",
+                        /*mime_type=*/"example", type);
 }
 
 std::unique_ptr<KeyedService> CreateMockNearbySharingService(

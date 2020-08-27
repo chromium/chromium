@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/strings/strcat.h"
+#include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "url/gurl.h"
 
@@ -109,6 +110,14 @@ TextAttachment::TextAttachment(int64_t id,
 
 TextAttachment::TextAttachment(const TextAttachment&) = default;
 
+TextAttachment::TextAttachment(TextAttachment&&) = default;
+
 TextAttachment& TextAttachment::operator=(const TextAttachment&) = default;
 
+TextAttachment& TextAttachment::operator=(TextAttachment&&) = default;
+
 TextAttachment::~TextAttachment() = default;
+
+void TextAttachment::MoveToShareTarget(ShareTarget& share_target) {
+  share_target.text_attachments.push_back(std::move(*this));
+}
