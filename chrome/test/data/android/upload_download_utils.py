@@ -57,6 +57,16 @@ def download(directory, filter, scenario, gcs_bucket):
                   '%d: %s', scenario, directory, e.returncode, e.output)
 
 
+# TODO(crbug/1096656): Remove this after root cause is found.
+def verify_file_exists(directory, filter):
+  """Verifies that some file exists in the directory."""
+  for _, _, file_list in os.walk(directory):
+    for f in file_list:
+      if filter(f):
+        return True
+  return False
+
+
 def _get_files_to_delete(directory, filter):
   """Returns a list of local files to delete.
 
