@@ -122,7 +122,8 @@ std::string GetEnv(const std::string& var) {
 
 std::string CursorPath() {
   constexpr const char kDefaultPath[] =
-      "~/.icons:/usr/share/icons:/usr/share/pixmaps:/usr/X11R6/lib/X11/icons";
+      "~/.local/share/icons:~/.icons:/usr/share/icons:/usr/share/pixmaps:"
+      "/usr/X11R6/lib/X11/icons";
   std::string path = GetEnv("XCURSOR_PATH");
   return path.empty() ? kDefaultPath : path;
 }
@@ -374,9 +375,12 @@ void XCursorLoader::LoadCursorImpl(
   } else {
     // Fallback to using a font cursor.
     auto core_char = CursorNamesToChar(names);
-    connection_->CreateGlyphCursor({xcursor, cursor_font_, cursor_font_,
-                                    2 * core_char, 2 * core_char + 1, 0, 0, 0,
-                                    65535, 65535, 65535});
+    constexpr uint16_t kFontCursorFgColor = 0;
+    constexpr uint16_t kFontCursorBgColor = 65535;
+    connection_->CreateGlyphCursor(
+        {xcursor, cursor_font_, cursor_font_, 2 * core_char, 2 * core_char + 1,
+         kFontCursorFgColor, kFontCursorFgColor, kFontCursorFgColor,
+         kFontCursorBgColor, kFontCursorBgColor, kFontCursorBgColor});
   }
   cursor->SetCursor(xcursor);
 }
