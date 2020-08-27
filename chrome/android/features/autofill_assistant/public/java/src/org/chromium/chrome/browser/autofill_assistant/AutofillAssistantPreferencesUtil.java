@@ -55,14 +55,17 @@ class AutofillAssistantPreferencesUtil {
     /** Increments the number of times a user has explicitly canceled a lite script. */
     static void incrementAutofillAssistantNumberOfLiteScriptsCanceled() {
         int numCanceled = getAutofillAssistantNumberOfLiteScriptsCanceled() + 1;
-        SharedPreferencesManager.getInstance().writeInt(
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        sharedPreferencesManager.writeInt(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
                 numCanceled);
-        if (isAutofillAssistantLiteScriptCancelThresholdReached()) {
+        if (isAutofillAssistantLiteScriptCancelThresholdReached()
+                && !sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED)) {
             // Disable the flag, such that users will not see the lite script again. This will also
             // create the setting in the Chrome settings, if it was not present before, which will
             // allow users to opt back in.
-            SharedPreferencesManager.getInstance().writeBoolean(
+            sharedPreferencesManager.writeBoolean(
                     ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED, false);
         }
     }
