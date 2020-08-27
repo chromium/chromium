@@ -271,6 +271,12 @@ void BrowserImpl::SetWebPreferences(content::WebPreferences* prefs) {
 #endif
 }
 
+#if defined(OS_ANDROID)
+void BrowserImpl::DestroyTabFromJava(Tab* tab) {
+  RemoveTab(tab);
+}
+#endif
+
 void BrowserImpl::AddTab(Tab* tab) {
   DCHECK(tab);
   TabImpl* tab_impl = static_cast<TabImpl*>(tab);
@@ -283,7 +289,12 @@ void BrowserImpl::AddTab(Tab* tab) {
 }
 
 void BrowserImpl::DestroyTab(Tab* tab) {
+#if defined(OS_ANDROID)
+  Java_BrowserImpl_destroyTabImpl(AttachCurrentThread(), java_impl_,
+                                  static_cast<TabImpl*>(tab)->GetJavaTab());
+#else
   RemoveTab(tab);
+#endif
 }
 
 void BrowserImpl::SetActiveTab(Tab* tab) {
