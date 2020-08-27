@@ -18,11 +18,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
-import org.chromium.chrome.browser.prerender.ExternalPrerenderHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -144,7 +144,7 @@ public class HiddenTabHolder {
                           .build();
 
         // Resize the webContent to avoid expensive post load resize when attaching the tab.
-        Rect bounds = ExternalPrerenderHandler.estimateContentSize(context, false);
+        Rect bounds = TabUtils.estimateContentSize(context);
         int width = bounds.right - bounds.left;
         int height = bounds.bottom - bounds.top;
         tab.getWebContents().setSize(width, height);

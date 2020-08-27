@@ -20,11 +20,11 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.prerender.ExternalPrerenderHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -74,7 +74,7 @@ public class CustomTabObserver extends EmptyTabObserver {
                     R.dimen.custom_tabs_screenshot_width);
             float desiredHeight = appContext.getResources().getDimensionPixelSize(
                     R.dimen.custom_tabs_screenshot_height);
-            Rect bounds = ExternalPrerenderHandler.estimateContentSize(appContext, false);
+            Rect bounds = TabUtils.estimateContentSize(appContext);
             if (bounds.width() == 0 || bounds.height() == 0) {
                 mContentBitmapWidth = Math.round(desiredWidth);
                 mContentBitmapHeight = Math.round(desiredHeight);

@@ -1295,7 +1295,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/policy/EnterpriseInfo.java",
   "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
   "java/src/org/chromium/chrome/browser/prerender/ChromePrerenderService.java",
-  "java/src/org/chromium/chrome/browser/prerender/ExternalPrerenderHandler.java",
   "java/src/org/chromium/chrome/browser/previews/HttpsImageCompressionUtils.java",
   "java/src/org/chromium/chrome/browser/previews/Previews.java",
   "java/src/org/chromium/chrome/browser/previews/PreviewsAndroidBridge.java",

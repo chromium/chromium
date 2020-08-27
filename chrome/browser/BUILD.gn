@@ -2885,8 +2885,6 @@ static_library("browser") {
       "policy/cloud/user_policy_signin_service_mobile.cc",
       "policy/cloud/user_policy_signin_service_mobile.h",
       "policy/policy_service_factory_android.cc",
-      "prerender/external_prerender_handler_android.cc",
-      "prerender/external_prerender_handler_android.h",
       "previews/android/previews_android_bridge.cc",
       "previews/android/previews_android_bridge.h",
       "privacy/secure_dns_bridge.cc",

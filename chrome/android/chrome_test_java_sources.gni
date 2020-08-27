@@ -452,7 +452,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/permissions/RuntimePermissionTest.java",
   "javatests/src/org/chromium/chrome/browser/policy/CombinedPolicyProviderTest.java",
   "javatests/src/org/chromium/chrome/browser/portals/PortalsTest.java",
-  "javatests/src/org/chromium/chrome/browser/prerender/ExternalPrerenderHandlerTest.java",
   "javatests/src/org/chromium/chrome/browser/previewtab/PreviewTabTest.java",
   "javatests/src/org/chromium/chrome/browser/printing/PrintingControllerTest.java",
   "javatests/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerNativeTest.java",
