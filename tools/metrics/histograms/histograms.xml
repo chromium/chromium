@@ -212269,6 +212269,7 @@ regressions. -->
       label="Other processes on unexpected cores (of any architecture)"/>
   <suffix name="Unknown.Renderer"
       label="Renderer processes on unexpected cores (of any architecture)"/>
+  <affected-histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"/>
   <affected-histogram name="Power.CpuTimeSecondsPerCoreTypeAndFrequency"/>
 </histogram_suffixes>
 
