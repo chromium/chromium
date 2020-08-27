@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.MathUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -59,8 +61,24 @@ class BrowserControlsContainerView extends FrameLayout {
 
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
 
+    /** Stores the state needed to reconstruct offsets after recreating this class. */
+    /* package */ static class State {
+        private final int mControlsOffset;
+        private final int mContentOffset;
+
+        private State(int controlsOffset, int contentOffset) {
+            mControlsOffset = controlsOffset;
+            mContentOffset = contentOffset;
+        }
+    }
+
     private final Delegate mDelegate;
     private final boolean mIsTop;
+
+    // The state returned by a previous BrowserControlsContainerView instance's getState() method.
+    // This is saved rather than directly applied because layout needs to occur before we can apply
+    // the offsets.
+    private State mSavedState;
 
     private long mNativeBrowserControlsContainerView;
 
@@ -132,10 +150,11 @@ class BrowserControlsContainerView extends FrameLayout {
     }
 
     BrowserControlsContainerView(Context context, ContentViewRenderView contentViewRenderView,
-            Delegate delegate, boolean isTop) {
+            Delegate delegate, boolean isTop, @Nullable State savedState) {
         super(context);
         mDelegate = delegate;
         mIsTop = isTop;
+        mSavedState = savedState;
         mContentViewRenderView = contentViewRenderView;
         mNativeBrowserControlsContainerView =
                 BrowserControlsContainerViewJni.get().createBrowserControlsContainerView(
@@ -333,9 +352,21 @@ class BrowserControlsContainerView extends FrameLayout {
             createAdapterAndLayer();
             if (prevHeight == 0) {
                 assert heightChanged;
-                // If there wasn't a View before (or it had 0 height), move the new View off the
-                // screen until we know where to position it.
-                moveControlsOffScreen();
+                // If there wasn't a View before and we have non-empty saved state from a previous
+                // BrowserControlsContainerView instance, apply those saved offsets now. We can't
+                // rely on BrowserControlsOffsetManager to notify us of the correct location as we
+                // usually do because it only notifies us when offsets change, but it likely didn't
+                // get destroyed when the BrowserFragment got recreated, so it won't notify us
+                // because it thinks we already have the correct offsets.
+                if (mSavedState != null) {
+                    onOffsetsChanged(mSavedState.mControlsOffset, mSavedState.mContentOffset);
+                } else {
+                    // If there wasn't a View before (or it had 0 height) and there's no state from
+                    // a previous instance of this class, move the new View off the screen until
+                    // BrowserControlsOffsetManager tells us where to position it.
+                    moveControlsOffScreen();
+                }
+                mSavedState = null;
             }
         } else if (mViewResourceAdapter != null) {
             BrowserControlsContainerViewJni.get().setControlsSize(
@@ -350,6 +381,10 @@ class BrowserControlsContainerView extends FrameLayout {
         // Cancel the runnable when detached as calls to removeCallback() after this completes will
         // attempt to remove from the wrong handler.
         cancelDelayedFullscreenRunnable();
+    }
+
+    /* package */ State getState() {
+        return new State(mControlsOffset, mContentOffset);
     }
 
     private void cancelDelayedFullscreenRunnable() {

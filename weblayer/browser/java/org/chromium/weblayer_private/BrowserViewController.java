@@ -15,6 +15,8 @@ import android.webkit.ValueCallback;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -36,6 +38,18 @@ public final class BrowserViewController
         implements BrowserControlsContainerView.Delegate,
                    WebContentsGestureStateTracker.OnGestureStateChangedListener,
                    ModalDialogManager.ModalDialogManagerObserver {
+    /** Information needed to restore the UI state after recreating the BrowserViewController. */
+    /* package */ static class State {
+        private BrowserControlsContainerView.State mTopControlsState;
+        private BrowserControlsContainerView.State mBottomControlsState;
+
+        private State(BrowserControlsContainerView.State topControlsState,
+                BrowserControlsContainerView.State bottomControlsState) {
+            mTopControlsState = topControlsState;
+            mBottomControlsState = bottomControlsState;
+        }
+    }
+
     private final ContentViewRenderView mContentViewRenderView;
     // Child of mContentViewRenderView. Be very careful adding Views to this, as any Views are not
     // accessible (ContentView provides it's own accessible implementation that interacts with
@@ -72,8 +86,8 @@ public final class BrowserViewController
      */
     private boolean mCachedDoBrowserControlsShrinkRendererSize;
 
-    public BrowserViewController(
-            FragmentWindowAndroid windowAndroid, View.OnAttachStateChangeListener listener) {
+    public BrowserViewController(FragmentWindowAndroid windowAndroid,
+            View.OnAttachStateChangeListener listener, @Nullable State savedState) {
         mWindowAndroid = windowAndroid;
         mOnAttachedStateChangeListener = listener;
         Context context = mWindowAndroid.getContext().get();
@@ -83,10 +97,12 @@ public final class BrowserViewController
         mContentViewRenderView.onNativeLibraryLoaded(
                 mWindowAndroid, ContentViewRenderView.MODE_SURFACE_VIEW);
         mTopControlsContainerView =
-                new BrowserControlsContainerView(context, mContentViewRenderView, this, true);
+                new BrowserControlsContainerView(context, mContentViewRenderView, this, true,
+                        (savedState == null) ? null : savedState.mTopControlsState);
         mTopControlsContainerView.setId(View.generateViewId());
         mBottomControlsContainerView =
-                new BrowserControlsContainerView(context, mContentViewRenderView, this, false);
+                new BrowserControlsContainerView(context, mContentViewRenderView, this, false,
+                        (savedState == null) ? null : savedState.mBottomControlsState);
         mBottomControlsContainerView.setId(View.generateViewId());
         mContentView = ContentView.createContentView(
                 context, mTopControlsContainerView.getEventOffsetHandler(), null /* webContents */);
@@ -273,6 +289,11 @@ public final class BrowserViewController
     @Override
     public void onLastDialogDismissed() {
         onDialogVisibilityChanged(false);
+    }
+
+    /* package */ State getState() {
+        return new State(
+                mTopControlsContainerView.getState(), mBottomControlsContainerView.getState());
     }
 
     private void onDialogVisibilityChanged(boolean showing) {

@@ -56,6 +56,10 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
     private final ProfileImpl mProfile;
     private Context mEmbedderActivityContext;
     private BrowserViewController mViewController;
+    // Used to save UI state between destroyAttachmentState() and createAttachmentState() calls so
+    // it can be preserved during device rotations or other events that cause the Fragment to be
+    // recreated.
+    private BrowserViewController.State mViewControllerState;
     private FragmentWindowAndroid mWindowAndroid;
     private IBrowserClient mClient;
     private LocaleChangedBroadcastReceiver mLocaleReceiver;
@@ -136,7 +140,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         assert mEmbedderActivityContext == null;
         mWindowAndroid = windowAndroid;
         mEmbedderActivityContext = embedderAppContext;
-        mViewController = new BrowserViewController(windowAndroid, this);
+        mViewController = new BrowserViewController(windowAndroid, this, mViewControllerState);
         mLocaleReceiver = new LocaleChangedBroadcastReceiver(windowAndroid.getContext().get());
         mPasswordEchoEnabled = null;
     }
@@ -533,6 +537,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
             mLocaleReceiver = null;
         }
         if (mViewController != null) {
+            mViewControllerState = mViewController.getState();
             mViewController.destroy();
             mViewController = null;
             mViewAttachedToWindow = false;
