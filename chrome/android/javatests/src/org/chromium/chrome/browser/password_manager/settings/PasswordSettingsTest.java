@@ -895,6 +895,7 @@ public class PasswordSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ChromeFeatureList.PASSWORD_EDITING_ANDROID)
+    @DisabledTest(message = "crbug.com/1122310")
     public void testPasswordEditingMethodWasCalled() throws Exception {
         PasswordEditingDelegateProvider.getInstance().setPasswordEditingDelegate(
                 mMockPasswordEditingDelegate);
