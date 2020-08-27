@@ -2,6 +2,7 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="./nearby_share_settings_behavior.html">
 
 <dom-module id="nearby-onboarding-page">
@@ -42,7 +43,9 @@
       }
 
       #splash-image-column {
+        height: 200px;
         margin: 10px;
+        width: 200px;
       }
 
       #device-name-column {
@@ -81,8 +84,9 @@
       </div>
 
       <div id=center-content>
-        <img id="splash-image-column" width="200" height="200"
-             src="/shared/nearby_onboarding_splash.svg">
+        <iron-icon id="splash-image-column"
+            icon="nearby-images:nearby-onboarding-splash">
+        </iron-icon>
         <div id="device-name-column">
             <div id="device-name-desc-group">
               <div>Device Name</div>

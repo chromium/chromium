@@ -252,6 +252,49 @@ if (!is_android) {
     output_dir = "$root_gen_dir/chrome"
   }
 
+  grit("nearby_shared_resources") {
+    source = "nearby_share/shared/nearby_shared_resources.grd"
+
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    deps = [ "//chrome/browser/ui/webui/nearby_share:mojom_js" ]
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/nearby_shared_resources.h",
+      "grit/nearby_shared_resources_map.cc",
+      "grit/nearby_shared_resources_map.h",
+      "nearby_shared_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
+  grit("nearby_shared_resources_v3") {
+    source = "nearby_share/shared/nearby_shared_resources_v3.grd"
+
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    deps = [
+      "//chrome/browser/resources/nearby_share/shared:polymer3_elements",
+      "//chrome/browser/ui/webui/nearby_share:mojom_js",
+    ]
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/nearby_shared_resources_v3.h",
+      "grit/nearby_shared_resources_v3_map.cc",
+      "grit/nearby_shared_resources_v3_map.h",
+      "nearby_shared_resources_v3.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
   grit("new_tab_page_resources") {
     if (optimize_webui) {
       source = "new_tab_page/new_tab_page_resources_vulcanized.grd"

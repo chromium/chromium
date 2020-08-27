@@ -1327,6 +1327,8 @@ group("extra_resources") {
     public_deps += [
       "//chrome/browser/resources:bluetooth_pairing_dialog_resources",
       "//chrome/browser/resources:multidevice_internals_resources",
+      "//chrome/browser/resources:nearby_shared_resources",
+      "//chrome/browser/resources:nearby_shared_resources_v3",
       "//chrome/browser/resources:os_settings_resources",
       "//chrome/browser/resources/chromeos:cellular_setup_resources",
       "//chrome/browser/resources/chromeos:multidevice_setup_resources",

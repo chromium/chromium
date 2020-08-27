@@ -87,6 +87,10 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
                                  IDR_OS_SETTINGS_LAZY_LOAD_VULCANIZED_HTML);
     html_source->SetDefaultResource(IDR_OS_SETTINGS_VULCANIZED_HTML);
   }
+
+  // We only need to register the mojo resources here because the rest are
+  // bundled in.
+  RegisterNearbySharedMojoResources(html_source);
 #else
   webui::SetupWebUIDataSource(
       html_source,
@@ -95,13 +99,15 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(chromeos::features::kOsSettingsPolymer3)
           ? IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML
           : IDR_OS_SETTINGS_SETTINGS_HTML);
-#endif
 
   // Register chrome://nearby resources so they are available at
   // chrome://os-settings. This allows the sharing of resources without having
   // to put everything in chrome://resources. This is necessary because portions
   // of the nearby UI need to be re-used in both places.
+  // This is not nessary when OPTIMIZE_WEBUI is true because the files will be
+  // added to the optimized bundles.
   RegisterNearbySharedResources(html_source);
+#endif
 
   ManagedUIHandler::Initialize(web_ui, html_source);
 

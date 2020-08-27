@@ -523,13 +523,7 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<downloads::mojom::PageHandlerFactory,
                                          DownloadsUI>(map);
 
-  if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
     RegisterWebUIControllerInterfaceBinder<
-        nearby_share::mojom::DiscoveryManager,
-        nearby_share::NearbyShareDialogUI>(map);
-  }
-
-  RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
@@ -672,16 +666,11 @@ void PopulateChromeWebUIFrameBinders(
         nearby_share::mojom::NearbyShareSettings,
         chromeos::settings::OSSettingsUI, nearby_share::NearbyShareDialogUI>(
         map);
-  }
-#endif  // defined(OS_CHROMEOS)
-
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
     RegisterWebUIControllerInterfaceBinder<
-        nearby_share::mojom::NearbyShareSettings,
+        nearby_share::mojom::DiscoveryManager,
         nearby_share::NearbyShareDialogUI>(map);
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS)
 }
 
 }  // namespace internal

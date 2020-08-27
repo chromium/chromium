@@ -78,6 +78,9 @@ js_modulizer("modulize") {
     "os_about_page_tests.js",
     "test_about_page_browser_proxy_chromeos.js",
   ]
-  namespace_rewrites =
-      os_settings_namespace_rewrites + os_test_namespace_rewrites
+  namespace_rewrites = os_settings_namespace_rewrites +
+                       os_test_namespace_rewrites + [
+                         "nearby_share.setNearbyShareSettingsForTesting|setNearbyShareSettingsForTesting",
+                         "nearby_share.FakeNearbyShareSettings|FakeNearbyShareSettings",
+                       ]
 }

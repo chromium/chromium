@@ -25,7 +25,7 @@ cr.define('nearby_share', function() {
   /** @polymerBehavior */
   /* #export */ const NearbyShareSettingsBehavior = {
     properties: {
-      /** @type {?NearbySettings} */
+      /** @type {nearby_share.NearbySettings} */
       settings: {
         type: Object,
         notify: true,

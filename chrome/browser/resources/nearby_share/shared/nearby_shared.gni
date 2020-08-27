@@ -1,0 +1,12 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+nearby_shared_auto_imports = [ "chrome/browser/resources/nearby_share/shared/nearby_share_settings_behavior.html|NearbyShareSettingsBehavior,NearbySettings" ]
+nearby_shared_namespace_rewrites = [
+  "nearby_share.NearbySettings|NearbySettings",
+  "nearby_share.NearbyShareSettingsBehavior|NearbyShareSettingsBehavior",
+  "nearby_share.getNearbyShareSettings|getNearbyShareSettings",
+  "nearby_share.observeNearbyShareSettings|observeNearbyShareSettings",
+  "nearby_share.setNearbyShareSettingsForTesting|setNearbyShareSettingsForTesting",
+]

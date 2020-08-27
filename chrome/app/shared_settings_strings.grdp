@@ -147,6 +147,15 @@
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_OFFLINE_DESCRIPTION" desc="Description for scren readers, not displayed in UI, specifying the current data usage setting where transfers will only take place offline for the Nearby Share feature." is_accessibility_with_no_ui="true">
     Current data usage setting is Without internet
   </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_ROW_TITLE" desc="Text for the row in settings which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+    Device visibility
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_EDIT_VISIBILITY" desc="Label for the button that opens the dialog which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+    View device visibility
+  </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE" desc="Title for the dialog which allows a user to set their preference for the visibility of their device with their contacts for the Nearby Share feature.">
+    Device visibility
+  </message>
 
  <!-- Personalization Options SubPage (strings used by the <settings-personalization-options> element) -->
   <message name="IDS_SETTINGS_ENABLE_URL_KEYED_ANONYMIZED_DATA_COLLECTION" desc="The label of the checkbox to enable/disable url keyed anonymized data collection.">

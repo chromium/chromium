@@ -1,0 +1,32 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="../shared/nearby_contact_visibility.html">
+<link rel="import" href="../shared/nearby_onboarding_page.html">
+<link rel="import" href="../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="../shared/nearby_visibility_page.html">
+
+<!-- TODO(vecore): The two imports above for onboarding and visibility pages are
+         temporary. They are need to ensure the pages are included in the
+         bundling until they are actually referenced by a settings hosted
+         onboarding flow.
+-->
+
+<dom-module id="nearby-share-contact-visibility-dialog">
+  <template>
+    <cr-dialog id="dialog" show-on-attach>
+      <div slot="title">$i18n{nearbyShareVisibilityDialogTitle}</div>
+      <div slot="body">
+        <nearby-contact-visibility settings="{{settings}}">
+        </nearby-contact-visibility>
+      </div>
+      <div class="layout horizontal center" slot="button-container">
+        <cr-button class="action-button" on-click="onDoneClick_">
+          $i18n{done}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="nearby_share_contact_visibility_dialog.js"></script>
+</dom-module>

@@ -36,6 +36,32 @@
     {COUNT, plural, =1 {1 item} other {# items}}
   </message>
 
+  <!-- Settings Strings -->
+  <message name="IDS_NEARBY_VISIBLITY_ALL_CONTACTS" desc="Describes the user preference state for the user to be visibile to all their contacts in the Nearby Share feature.">
+    All contacts
+  </message>
+  <message name="IDS_NEARBY_VISIBLITY_ALL_CONTACTS_DESCRIPTION" desc="Accessibility description that explains to the user that their current visibility setting is all contacts for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current visibility setting is all contacts
+  </message>
+  <message name="IDS_NEARBY_VISIBLITY_SOME_CONTACTS" desc="Describes the user preference state for the user to be visibile to some selected set of their contacts in the Nearby Share feature.">
+    Some contacts
+  </message>
+  <message name="IDS_NEARBY_VISIBLITY_SOME_CONTACTS_DESCRIPTION" desc="Accessibility description that explains to the user that their current visibility setting is some contacts for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current visibility setting is some contacts
+  </message>
+  <message name="IDS_NEARBY_VISIBLITY_HIDDEN" desc="Describes the user preference state for the user to be visibile to none of their contacts (hidden) in the Nearby Share feature.">
+    Hidden
+  </message>
+  <message name="IDS_NEARBY_VISIBLITY_HIDDEN_DESCRIPTION" desc="Accessibility description that explains to the user that their current visibility setting hidden for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current visibility setting is hidden
+  </message>
+  <message name="IDS_NEARBY_VISIBLITY_UNKNOWN" desc="Describes the user preference state when the user has not chosen a visibility preference yet in the Nearby Share feature.">
+    Choose your visibility
+  </message>
+  <message name="IDS_NEARBY_VISIBLITY_UNKNOWN_DESCRIPTION" desc="Accessibility description that explains to the user that their current visibility setting is not set yet for the Nearby Share feature." is_accessibility_with_no_ui="true">
+    Current visibility setting is not set yet
+  </message>
+
   <!-- Notification strings -->
   <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_MESSAGE" desc="Text shown as the message of a notfication when a nearby device requests a connection via Nearby Share.">
     {COUNT, plural,

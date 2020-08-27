@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/android_sms/android_sms_service.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
@@ -324,6 +325,7 @@ void MultiDeviceSection::AddLoadTimeData(
 
   AddEasyUnlockStrings(html_source);
   ::settings::AddNearbyShareData(html_source);
+  RegisterNearbySharedStrings(html_source);
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {

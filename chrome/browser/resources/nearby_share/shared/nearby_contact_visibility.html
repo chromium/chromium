@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="nearby_share_settings_behavior.html">
 <link rel="import" href="nearby_shared_icons.html">
@@ -61,6 +62,7 @@
         color: var(--google-blue-600);
       }
       .card-icon {
+        fill: var(--google-blue-600);
         margin-block-end: 8px;
       }
 
@@ -75,6 +77,11 @@
         margin-inline-end: 24px;
         margin-inline-start: auto;
         text-align: end;
+      }
+
+      #zeroStateImage {
+        height: 200px;
+        width: 200px;
       }
 
       #zeroStateTextContainer {
@@ -197,8 +204,9 @@
       <template is="dom-if" if="[[!isVisibilitySelected_(selectedVisibility)]]">
         <div id="zeroStateContainer">
           <div id="zeroStateImageContainer">
-            <img id="zeroStateImage" width="200" height="200"
-                src="/shared/nearby_device_visibility.svg">
+            <iron-icon id="zeroStateImage"
+                icon="nearby-images:nearby-device-visibility">
+            </iron-icon>
           </div>
           <div id="zeroStateTextContainer">
             <div id="zeroStateText" class="cr-title-text">

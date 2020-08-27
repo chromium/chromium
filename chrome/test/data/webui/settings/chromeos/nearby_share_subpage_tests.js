@@ -5,7 +5,8 @@
 // clang-format off
 // #import {assertEquals} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+// #import {setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
 // clang-format on
 
 suite('NearbyShare', function() {
@@ -19,6 +20,11 @@ suite('NearbyShare', function() {
   let toggleRow = null;
 
   setup(function() {
+    /** @type {!nearbyShare.mojom.NearbyShareSettingsInterface} */
+    const fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    fakeSettings.setEnabled(true);
+    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
+
     PolymerTest.clearBody();
     subpage = document.createElement('settings-nearby-share-subpage');
     subpage.prefs = {
@@ -83,6 +89,19 @@ suite('NearbyShare', function() {
     dialog.$$('.action-button').click();
 
     assertEquals(newName, subpage.prefs.nearby_sharing.device_name.value);
+  });
+
+  test('update visibility shows dialog', function() {
+    // NOTE: all value editing is done and tested in the
+    // nearby-contact-visibility component which is hosted directly on the
+    // dialog. Here we just verify the dialog shows up, it has the component,
+    // and it has a close/action button.
+    subpage.$$('#editVisibilityButton').click();
+    Polymer.dom.flush();
+
+    const dialog = subpage.$$('nearby-share-contact-visibility-dialog');
+    assertTrue(dialog.$$('nearby-contact-visibility') !== null);
+    dialog.$$('.action-button').click();
   });
 
   test('update data usage preference', function() {

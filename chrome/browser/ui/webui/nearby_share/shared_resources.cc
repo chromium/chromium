@@ -7,14 +7,39 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/logging.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources_map.h"
+#include "chrome/grit/nearby_shared_resources.h"
+#include "chrome/grit/nearby_shared_resources_map.h"
+#include "chrome/grit/nearby_shared_resources_v3.h"
+#include "chrome/grit/nearby_shared_resources_v3_map.h"
 #include "ui/base/webui/web_ui_util.h"
 
 const char kNearbyShareGeneratedPath[] =
     "@out_folder@/gen/chrome/browser/resources/nearby_share/";
+
+namespace {
+
+void RegisterResourcesWithPrefix(
+    content::WebUIDataSource* data_source,
+    const base::span<const GritResourceMap>& resources,
+    std::string prefix) {
+  std::string generate_path{kNearbyShareGeneratedPath};
+  for (const GritResourceMap& resource : resources) {
+    std::string path = resource.name;
+    if (path.rfind(generate_path, 0) == 0) {
+      path = path.substr(generate_path.size());
+    } else {
+      path = prefix + path;
+    }
+    data_source->AddResourcePath(path, resource.value);
+  }
+}
+
+}  // namespace
 
 void RegisterNearbySharedMojoResources(content::WebUIDataSource* data_source) {
   data_source->AddResourcePath("mojo/nearby_share_settings.mojom-lite.js",
@@ -22,15 +47,16 @@ void RegisterNearbySharedMojoResources(content::WebUIDataSource* data_source) {
 }
 
 void RegisterNearbySharedResources(content::WebUIDataSource* data_source) {
-  std::string generate_path{kNearbyShareGeneratedPath};
-  for (const GritResourceMap& resource : base::make_span(
-           kNearbyShareDialogResources, kNearbyShareDialogResourcesSize)) {
-    std::string path = resource.name;
-    if (path.rfind(generate_path, 0) == 0) {
-      path = path.substr(generate_path.size());
-    }
-    data_source->AddResourcePath(path, resource.value);
-  }
+  RegisterResourcesWithPrefix(
+      data_source,
+      /*resources=*/
+      base::make_span(kNearbySharedResources, kNearbySharedResourcesSize),
+      /*prefix=*/"shared/");
+  RegisterResourcesWithPrefix(
+      data_source,
+      /*resources=*/
+      base::make_span(kNearbySharedResourcesV3, kNearbySharedResourcesV3Size),
+      /*prefix=*/"shared/");
   RegisterNearbySharedMojoResources(data_source);
 }
 
@@ -38,6 +64,17 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"secureConnectionId", IDS_NEARBY_SECURE_CONNECTION_ID},
       {"nearbyShareFeatureName", IDS_NEARBY_SHARE_FEATURE_NAME},
+      {"visibilityAllContacts", IDS_NEARBY_VISIBLITY_ALL_CONTACTS},
+      {"visibilityAllContactsDescription",
+       IDS_NEARBY_VISIBLITY_ALL_CONTACTS_DESCRIPTION},
+      {"visibilitySomeContacts", IDS_NEARBY_VISIBLITY_SOME_CONTACTS},
+      {"visibilitySomeContactsDescription",
+       IDS_NEARBY_VISIBLITY_SOME_CONTACTS_DESCRIPTION},
+      {"visibilityHidden", IDS_NEARBY_VISIBLITY_HIDDEN},
+      {"visibilityHiddenDescription", IDS_NEARBY_VISIBLITY_HIDDEN_DESCRIPTION},
+      {"visibilityUnknown", IDS_NEARBY_VISIBLITY_UNKNOWN},
+      {"visibilityUnknownDescription",
+       IDS_NEARBY_VISIBLITY_UNKNOWN_DESCRIPTION},
   };
   webui::AddLocalizedStringsBulk(data_source, kLocalizedStrings);
 }

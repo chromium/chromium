@@ -29,36 +29,6 @@
                file="discovery_manager.js"
                type="BINDATA"/>
 
-      <!-- Shared Polymer 2 pages-->
-      <include name="IDR_NEARBY_CONTACT_VISIBILITY_HTML"
-               file="shared/nearby_contact_visibility.html" type="BINDATA"/>
-      <include name="IDR_NEARBY_CONTACT_VISIBILITY_JS"
-               file="shared/nearby_contact_visibility.js" type="BINDATA"/>
-      <include name="IDR_NEARBY_ONBOARDING_PAGE_HTML"
-               file="shared/nearby_onboarding_page.html" type="BINDATA"/>
-      <include name="IDR_NEARBY_ONBOARDING_PAGE_JS"
-               file="shared/nearby_onboarding_page.js" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARE_SETTINGS_HTML"
-               file="shared/nearby_share_settings.html" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARE_SETTINGS_JS"
-               file="shared/nearby_share_settings.js" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARE_SETTINGS_BEHAVIOR_HTML"
-               file="shared/nearby_share_settings_behavior.html" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARE_SETTINGS_BEHAVIOR_JS"
-               file="shared/nearby_share_settings_behavior.js" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARED_ICONS_HTML"
-               file="shared/nearby_shared_icons.html" type="BINDATA"/>
-      <include name="IDR_NEARBY_VISIBILITY_PAGE_HTML"
-               file="shared/nearby_visibility_page.html" type="BINDATA"/>
-      <include name="IDR_NEARBY_VISIBILITY_PAGE_JS"
-               file="shared/nearby_visibility_page.js" type="BINDATA"/>
-
-      <!-- Shared images -->
-      <include name="IDR_NEARBY_SHARE_ONBOARDING_SPLASH_SVG"
-               file="shared/nearby_onboarding_splash.svg" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARE_DEVICE_VISIBILITY_SVG"
-               file="shared/nearby_device_visibility.svg" type="BINDATA"/>
-
       <!-- Generated Polymer 3 elements -->
       <include name="IDR_NEARBY_SHARE_APP_JS"
                file="${root_gen_dir}/chrome/browser/resources/nearby_share/app.js"
@@ -83,26 +53,6 @@
                use_base_dir="false" type="BINDATA"/>
       <include name="IDR_NEARBY_SHARE_NEARBY_PROGRESS_JS"
                file="${root_gen_dir}/chrome/browser/resources/nearby_share/nearby_progress.js"
-               use_base_dir="false" type="BINDATA"/>
-
-      <!-- Generated Polymer 2 to 3 elements -->
-      <include name="IDR_NEARBY_CONTACT_VISIBILITY_M_JS"
-               file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_contact_visibility.m.js"
-               use_base_dir="false" type="BINDATA"/>
-      <include name="IDR_NEARBY_ONBOARDING_PAGE_M_JS"
-               file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_onboarding_page.m.js"
-               use_base_dir="false" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARE_SETTINGS_M_JS"
-               file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_share_settings.m.js"
-               use_base_dir="false" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARE_SETTINGS_BEHAVIOR_M_JS"
-               file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_share_settings_behavior.m.js"
-               use_base_dir="false" type="BINDATA"/>
-      <include name="IDR_NEARBY_SHARED_ICONS_M_JS"
-               file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_shared_icons.m.js"
-               use_base_dir="false" type="BINDATA"/>
-      <include name="IDR_NEARBY_VISIBILITY_PAGE_M_JS"
-               file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_visibility_page.m.js"
                use_base_dir="false" type="BINDATA"/>
     </includes>
   </release>

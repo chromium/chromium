@@ -2,13 +2,14 @@
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../shared/nearby_share_settings.html">
 <link rel="import" href="../chromeos/os_route.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../prefs/prefs.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
 <link rel="import" href="../router.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="nearby_share_contact_visibility_dialog.html">
 <link rel="import" href="nearby_share_device_name_dialog.html">
 <link rel="import" href="nearby_share_data_usage_dialog.html">
 <link rel="import" href="types.html">
@@ -46,6 +47,25 @@
       <nearby-share-device-name-dialog prefs="{{prefs}}" id="deviceNameDialog"
           on-close="onDeviceNameDialogClose_">
       </nearby-share-device-name-dialog>
+    </template>
+    <div class="settings-box two-line">
+      <div class="start">
+        <div role="heading" aria-hidden="true">
+          $i18n{nearbyShareContactVisibilityRowTitle}
+        </div>
+        <div aria-hidden="true" class="secondary">
+          [[getVisibilityText_(settings.visibility)]]
+        </div>
+      </div>
+      <cr-button id="editVisibilityButton" on-click="onVisibilityTap_"
+          aria-description="[[getVisibilityDescription_(settings.visibility)]]">
+        $i18n{nearbyShareEditVisibility}
+      </cr-button>
+    </div>
+    <template is="dom-if" if="[[showVisibilityDialog_]]" restamp>
+      <nearby-share-contact-visibility-dialog settings="{{settings}}"
+          id="visibilityDialog" on-close="onVisibilityDialogClose_">
+      </nearby-share-contact-visibility-dialog>
     </template>
     <div class="settings-box two-line">
       <div class="start">

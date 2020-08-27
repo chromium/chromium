@@ -17,6 +17,12 @@ const NearbySharedBrowserTest = class extends PolymerTest {
   }
 
   /** @override */
+  setUp() {
+    super.setUp();
+    settings.ensureLazyLoaded('chromeos');
+  }
+
+  /** @override */
   get featureList() {
     return {enabled: ['features::kNearbySharing']};
   }
@@ -25,6 +31,7 @@ const NearbySharedBrowserTest = class extends PolymerTest {
   get extraLibraries() {
     return super.extraLibraries.concat([
       '../../test_util.js',
+      '../../settings/ensure_lazy_loaded.js',
       'fake_nearby_share_settings.js',
     ]);
   }

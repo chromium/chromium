@@ -1448,7 +1448,6 @@ if (!is_android) {
       "../browser/ui/webui/management_a11y_browsertest.cc",
       "../browser/ui/webui/management_a11y_browsertest.h",
       "../browser/ui/webui/management_ui_browsertest.cc",
-      "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.cc",
       "../browser/ui/webui/net_internals/net_internals_ui_browsertest.h",
       "../browser/ui/webui/new_tab_page/webui_ntp_browsertest.cc",
@@ -1614,6 +1613,7 @@ if (!is_android) {
         "../browser/policy/system_features_policy_browsertest.cc",
         "../browser/renderer_context_menu/quick_answers_menu_observer_browsertest.cc",
         "../browser/ui/ash/holding_space/holding_space_client_impl_browsertest.cc",
+        "../browser/ui/webui/nearby_share/nearby_share_dialog_ui_browsertest.cc",
       ]
     }
 

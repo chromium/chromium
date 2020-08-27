@@ -1060,6 +1060,7 @@ var OSSettingsNearbyShareSubPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
+      '../../nearby_share/shared/fake_nearby_share_settings.js',
       'nearby_share_subpage_tests.js',
     ]);
   }

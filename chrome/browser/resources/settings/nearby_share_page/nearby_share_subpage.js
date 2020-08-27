@@ -14,6 +14,7 @@ Polymer({
     I18nBehavior,
     PrefsBehavior,
     settings.RouteObserverBehavior,
+    nearby_share.NearbyShareSettingsBehavior,
   ],
 
   properties: {
@@ -25,6 +26,12 @@ Polymer({
 
     /** @private {boolean} */
     showDeviceNameDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
+    showVisibilityDialog_: {
       type: Boolean,
       value: false,
     },
@@ -56,6 +63,11 @@ Polymer({
   },
 
   /** @private */
+  onVisibilityTap_() {
+    this.showVisibilityDialog_ = true;
+  },
+
+  /** @private */
   onDataUsageTap_() {
     this.showDataUsageDialog_ = true;
   },
@@ -66,6 +78,14 @@ Polymer({
    */
   onDeviceNameDialogClose_(event) {
     this.showDeviceNameDialog_ = false;
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onVisibilityDialogClose_(event) {
+    this.showVisibilityDialog_ = false;
   },
 
   /**
@@ -94,6 +114,46 @@ Polymer({
    */
   getEditNameButtonAriaDescription_(name) {
     return this.i18n('nearbyShareDeviceNameAriaDescription', name);
+  },
+
+  /**
+   * @param {nearbyShare.mojom.Visibility} visibility
+   * @return {string} localized visibility string
+   * @private
+   */
+  getVisibilityText_(visibility) {
+    switch (visibility) {
+      case nearbyShare.mojom.Visibility.kAllContacts:
+        return this.i18n('visibilityAllContacts');
+      case nearbyShare.mojom.Visibility.kSelectedContacts:
+        return this.i18n('visibilitySomeContacts');
+      case nearbyShare.mojom.Visibility.kNoOne:
+        return this.i18n('visibilityHidden');
+      case nearbyShare.mojom.Visibility.kUnknown:
+        return this.i18n('visibilityUnknown');
+      default:
+        return '';  // Make closure happy.
+    }
+  },
+
+  /**
+   * @param {nearbyShare.mojom.Visibility} visibility
+   * @return {string} localized visibility description string
+   * @private
+   */
+  getVisibilityDescription_(visibility) {
+    switch (visibility) {
+      case nearbyShare.mojom.Visibility.kAllContacts:
+        return this.i18n('visibilityAllContactsDescription');
+      case nearbyShare.mojom.Visibility.kSelectedContacts:
+        return this.i18n('visibilitySomeContactsDescription');
+      case nearbyShare.mojom.Visibility.kNoOne:
+        return this.i18n('visibilityHiddenDescription');
+      case nearbyShare.mojom.Visibility.kUnknown:
+        return this.i18n('visibilityUnknownDescription');
+      default:
+        return '';  // Make closure happy.
+    }
   },
 
   /**

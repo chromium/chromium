@@ -544,10 +544,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
     if (url.host_piece() == chrome::kChromeUINearbyInternalsHost)
       return &NewWebUI<NearbyInternalsUI>;
-    if (url.host_piece() == chrome::kChromeUINearbyShareHost &&
-        profile->IsRegularProfile()) {
-      return &NewWebUI<nearby_share::NearbyShareDialogUI>;
-    }
   }
   if (url.host_piece() == chrome::kChromeUINewTabHost)
     return &NewWebUI<NewTabUI>;
@@ -673,6 +669,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::InternetConfigDialogUI>;
   if (url.host_piece() == chrome::kChromeUIInternetDetailDialogHost)
     return &NewWebUI<chromeos::InternetDetailDialogUI>;
+  if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
+    if (url.host_piece() == chrome::kChromeUINearbyShareHost &&
+        profile->IsRegularProfile()) {
+      return &NewWebUI<nearby_share::NearbyShareDialogUI>;
+    }
+  }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
     return &NewWebUI<chromeos::SetTimeUI>;
   if (url.host_piece() == chrome::kChromeUISlowHost)

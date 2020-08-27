@@ -5,14 +5,25 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../../nearby_share/shared/nearby_shared.gni")
 import("../settings.gni")
 
 js_type_check("closure_compile") {
   deps = [
+    ":nearby_share_contact_visibility_dialog",
     ":nearby_share_data_usage_dialog",
     ":nearby_share_device_name_dialog",
     ":nearby_share_subpage",
     ":types",
+  ]
+}
+
+js_library("nearby_share_contact_visibility_dialog") {
+  deps = [
+    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
   ]
 }
 
@@ -44,6 +55,7 @@ js_library("nearby_share_device_name_dialog") {
 
 js_library("nearby_share_subpage") {
   deps = [
+    ":nearby_share_contact_visibility_dialog",
     ":nearby_share_data_usage_dialog",
     ":nearby_share_device_name_dialog",
     ":types",
@@ -51,7 +63,9 @@ js_library("nearby_share_subpage") {
     "../prefs",
     "../prefs:prefs_behavior",
     "../prefs:prefs_types",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:i18n_behavior",
   ]
@@ -63,6 +77,7 @@ js_library("types") {
 group("polymer3_elements") {
   public_deps = [
     ":modulize",
+    ":nearby_share_contact_visibility_dialog_module",
     ":nearby_share_data_usage_dialog_module",
     ":nearby_share_device_name_dialog_module",
     ":nearby_share_subpage_module",
@@ -73,11 +88,28 @@ group("polymer3_elements") {
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
+
+  # TODO(crbug.com/1121865): browser_resolver_prefix_replacements allows path
+  # from ../shared/* to resolve to ../../nearby_share/shared/* for closure
+  # purposes.
+  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"../shared/=../../nearby_share/shared/\"" ]
   deps = [
+    ":nearby_share_contact_visibility_dialog.m",
     ":nearby_share_data_usage_dialog.m",
     ":nearby_share_device_name_dialog.m",
     ":nearby_share_subpage.m",
   ]
+}
+
+js_library("nearby_share_contact_visibility_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/nearby_share_page/nearby_share_contact_visibility_dialog.m.js" ]
+  deps = [
+    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+  ]
+  extra_deps = [ ":nearby_share_contact_visibility_dialog_module" ]
 }
 
 js_library("nearby_share_data_usage_dialog.m") {
@@ -113,6 +145,7 @@ js_library("nearby_share_device_name_dialog.m") {
 js_library("nearby_share_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/nearby_share_page/nearby_share_subpage.m.js" ]
   deps = [
+    ":nearby_share_contact_visibility_dialog.m",
     ":nearby_share_data_usage_dialog.m",
     ":nearby_share_device_name_dialog.m",
     ":types.m",
@@ -120,7 +153,9 @@ js_library("nearby_share_subpage.m") {
     "../prefs:prefs.m",
     "../prefs:prefs_behavior.m",
     "../prefs:prefs_types.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -135,6 +170,27 @@ js_library("types.m") {
 js_modulizer("modulize") {
   input_files = [ "types.js" ]
   namespace_rewrites = settings_namespace_rewrites
+}
+
+nearby_shared_auto_imports_closure_fix = [
+  # TODO(crbug.com/1121865): polymer.py normalizes the relative paths to shared
+  # nearby resources like ../shared/* against c/b/r/settings/nearby_share_page
+  # genreating paths with the prefix c/b/r/settings/shared/*. It uses the
+  # normalized path to look up relative references for auto import. In order get
+  # the auto import to match, we need to use this path prefix even though it
+  # does not exist on disk there. The actual resources are in
+  # c/b/r/nearby_share/shared and are re-hosted in the chrome://os-settings
+  # webui at the chrome://os-settings/shared/* prefix.
+  "chrome/browser/resources/settings/shared/nearby_share_settings_behavior.html|NearbyShareSettingsBehavior,NearbySettings",
+]
+
+polymer_modulizer("nearby_share_contact_visibility_dialog") {
+  js_file = "nearby_share_contact_visibility_dialog.js"
+  html_file = "nearby_share_contact_visibility_dialog.html"
+  html_type = "dom-module"
+  namespace_rewrites =
+      settings_namespace_rewrites + nearby_shared_namespace_rewrites
+  auto_imports = settings_auto_imports + nearby_shared_auto_imports_closure_fix
 }
 
 polymer_modulizer("nearby_share_data_usage_dialog") {
@@ -157,8 +213,9 @@ polymer_modulizer("nearby_share_subpage") {
   js_file = "nearby_share_subpage.js"
   html_file = "nearby_share_subpage.html"
   html_type = "dom-module"
-  namespace_rewrites = settings_namespace_rewrites
+  namespace_rewrites =
+      settings_namespace_rewrites + nearby_shared_namespace_rewrites
   auto_imports =
-      settings_auto_imports +
+      settings_auto_imports + nearby_shared_auto_imports_closure_fix +
       [ "chrome/browser/resources/settings/chromeos/os_route.html|routes" ]
 }

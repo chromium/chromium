@@ -278,7 +278,13 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
       {"nearbyShareDataUsageWifiOnlyEditButtonDescription",
        IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_WIFI_ONLY_DESCRIPTION},
       {"nearbyShareDataUsageOfflineEditButtonDescription",
-       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_OFFLINE_DESCRIPTION}};
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_EDIT_BUTTON_OFFLINE_DESCRIPTION},
+      {"nearbyShareContactVisibilityRowTitle",
+       IDS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_ROW_TITLE},
+      {"nearbyShareEditVisibility", IDS_SETTINGS_NEARBY_SHARE_EDIT_VISIBILITY},
+      {"nearbyShareVisibilityDialogTitle",
+       IDS_SETTINGS_NEARBY_SHARE_VISIBILITY_DIALOG_TITLE}};
+
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
   html_source->AddBoolean(

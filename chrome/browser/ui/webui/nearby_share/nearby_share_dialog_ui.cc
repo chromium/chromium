@@ -50,7 +50,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   html_source->AddResourcePath("nearby_share_target_types.mojom-lite.js",
                                IDR_NEARBY_SHARE_TARGET_TYPES_MOJO_JS);
 
-  RegisterNearbySharedMojoResources(html_source);
+  RegisterNearbySharedResources(html_source);
   RegisterNearbySharedStrings(html_source);
   html_source->UseStringsJs();
 

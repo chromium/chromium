@@ -1310,6 +1310,12 @@
       <structure name="IDR_OS_SETTINGS_MULTIDEVICE_TETHER_ITEM_JS"
                  file="chromeos/multidevice_page/multidevice_tether_item.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_DIALOG_HTML"
+                 file="nearby_share_page/nearby_share_contact_visibility_dialog.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_DIALOG_JS"
+                 file="nearby_share_page/nearby_share_contact_visibility_dialog.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_HTML"
                  file="nearby_share_page/nearby_share_device_name_dialog.html"
                  compress="false" type="chrome_html" />

@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("./nearby_shared.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -24,6 +25,7 @@ js_type_check("closure_compile") {
 js_library("nearby_contact_visibility") {
   deps = [
     ":nearby_share_settings_behavior",
+    "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
     "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group",
@@ -34,6 +36,7 @@ js_library("nearby_contact_visibility") {
 js_library("nearby_onboarding_page") {
   deps = [
     ":nearby_share_settings_behavior",
+    "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
     "//ui/webui/resources/cr_elements/cr_link_row",
   ]
 }
@@ -137,15 +140,6 @@ js_library("nearby_visibility_page.m") {
   ]
   extra_deps = [ ":nearby_visibility_page_module" ]
 }
-
-nearby_shared_auto_imports = [ "chrome/browser/resources/nearby_share/shared/nearby_share_settings_behavior.html|NearbyShareSettingsBehavior,NearbySettings" ]
-nearby_shared_namespace_rewrites = [
-  "nearby_share.NearbySettings|NearbySettings",
-  "nearby_share.NearbyShareSettingsBehavior|NearbyShareSettingsBehavior",
-  "nearby_share.getNearbyShareSettings|getNearbyShareSettings",
-  "nearby_share.observeNearbyShareSettings|observeNearbyShareSettings",
-  "nearby_share.setNearbyShareSettingsForTesting|setNearbyShareSettingsForTesting",
-]
 
 polymer_modulizer("nearby_contact_visibility") {
   js_file = "nearby_contact_visibility.js"
