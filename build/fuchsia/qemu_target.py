@@ -102,15 +102,14 @@ class QemuTarget(emu_target.EmuTarget):
       emu_command.extend([
           '-machine','virt,gic_version=3',
       ])
-      netdev_type = 'virtio-net-pci'
     else:
       emu_command.extend([
           '-machine', 'q35',
       ])
-      netdev_type = 'e1000'
 
     # Configure virtual network. It is used in the tests to connect to
     # testserver running on the host.
+    netdev_type = 'virtio-net-pci'
     netdev_config = 'user,id=net0,net=%s,dhcpstart=%s,host=%s' % \
             (GUEST_NET, GUEST_IP_ADDRESS, HOST_IP_ADDRESS)
 
