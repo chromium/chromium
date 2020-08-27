@@ -18,9 +18,11 @@ html {
   --ntp-selected-border-color: var(--google-blue-600);
   --ntp-selected-light-background-color: rgba(var(--google-blue-600-rgb), .24);
   --ntp-selected-primary-text-color: var(--google-blue-refresh-700);
+  --ntp-module-text-color: #616161;
 
   /* Other: */
   --ntp-focus-shadow: 0 0 0 2px var(--ntp-focus-shadow-color);
+  --ntp-module-text-size: 13px;
 }
 
 @media (prefers-color-scheme: dark) {
