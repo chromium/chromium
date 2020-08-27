@@ -81,17 +81,19 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
     if (request.GetURL().path().find("prefetch_meta.js") != std::string::npos) {
       script_executed_ = true;
     }
+    if (request.GetURL().path().find("alert.html") != std::string::npos) {
+      link_rel_next_started_ = true;
+    }
 
     // The default handlers will take care of this request.
     return nullptr;
   }
 
-  void NavigateToPrerenderedPageAndWaitForTitleChange() {
-    auto expected_title = base::ASCIIToUTF16("Prefetch Page");
+  void NavigateToPageAndWaitForTitleChange(const GURL& navigate_to,
+                                           base::string16 expected_title) {
     content::TitleWatcher title_watcher(
         static_cast<TabImpl*>(shell()->tab())->web_contents(), expected_title);
-    NavigateAndWaitForCompletion(
-        GURL(https_server_->GetURL("/prerendered_page.html")), shell());
+    NavigateAndWaitForCompletion(navigate_to, shell());
     ASSERT_TRUE(expected_title == title_watcher.WaitAndGetTitle());
   }
 
@@ -104,6 +106,7 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
 
   std::unique_ptr<base::RunLoop> prerendered_page_fetched_;
   std::unique_ptr<base::RunLoop> script_resource_fetched_;
+  bool link_rel_next_started_ = false;
   bool script_fetched_ = false;
   bool script_executed_ = false;
   std::string purpose_header_value_;
@@ -152,7 +155,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, NavigateToPrerenderedPage) {
 
   // Navigate to the prerendered page and wait for its title to change.
   script_fetched_ = false;
-  NavigateToPrerenderedPageAndWaitForTitleChange();
+  NavigateToPageAndWaitForTitleChange(
+      GURL(https_server_->GetURL("/prerendered_page.html")),
+      base::ASCIIToUTF16("Prefetch Page"));
 
   EXPECT_FALSE(script_fetched_);
   EXPECT_TRUE(script_executed_);
@@ -166,7 +171,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, UKMRecorded) {
                                shell());
   script_resource_fetched_->Run();
 
-  NavigateToPrerenderedPageAndWaitForTitleChange();
+  NavigateToPageAndWaitForTitleChange(
+      GURL(https_server_->GetURL("/prerendered_page.html")),
+      base::ASCIIToUTF16("Prefetch Page"));
 
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::NoStatePrefetch::kEntryName);
@@ -181,5 +188,25 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, UKMRecorded) {
       entry, ukm::builders::NoStatePrefetch::kPrefetchedRecently_OriginName, 7);
 }
 #endif
+
+// link-rel="prerender" happens even when NoStatePrefetch has been disabled.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       LinkRelPrerenderWithNSPDisabled) {
+  GetProfile()->SetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED,
+                                  false);
+  NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
+                               shell());
+  prerendered_page_fetched_->Run();
+}
+
+// link-rel="next" doesn't happen when NoStatePrefetch has been disabled.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, LinkRelNextWithNSPDisabled) {
+  GetProfile()->SetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED,
+                                  false);
+  NavigateToPageAndWaitForTitleChange(
+      GURL(https_server_->GetURL("/parent_page.html")),
+      base::ASCIIToUTF16("Parent Page"));
+  EXPECT_FALSE(link_rel_next_started_);
+}
 
 }  // namespace weblayer

@@ -365,6 +365,9 @@ class PrerenderManager : public content::RenderProcessHostObserver,
   // Same as base::SysInfo::IsLowEndDevice(), overridden in tests.
   virtual bool IsLowEndDevice() const;
 
+  // Whether network prediction is enabled for prerender origin, |origin|.
+  bool IsPredictionEnabled(Origin origin);
+
  private:
   friend class test_utils::PrerenderInProcessBrowserTest;
   friend class PrerenderContents;

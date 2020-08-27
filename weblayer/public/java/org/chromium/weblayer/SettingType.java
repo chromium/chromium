@@ -62,4 +62,12 @@ public @interface SettingType {
      */
     int REAL_TIME_SAFE_BROWSING_ENABLED =
             org.chromium.weblayer_private.interfaces.SettingType.REAL_TIME_SAFE_BROWSING_ENABLED;
+
+    /**
+     * Allows the embedder to enable/disable NoStatePrefetch. Enabled by default.
+     *
+     * @since 86
+     */
+    int NETWORK_PREDICTION_ENABLED =
+            org.chromium.weblayer_private.interfaces.SettingType.NETWORK_PREDICTION_ENABLED;
 }

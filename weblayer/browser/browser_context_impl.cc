@@ -70,6 +70,9 @@ void BindWakeLockProvider(
 }  // namespace
 
 namespace prefs {
+// Used to persist the public SettingType::NETWORK_PREDICTION_ENABLED API.
+const char kNoStatePrefetchEnabled[] = "weblayer.network_prediction_enabled";
+
 // Used to persist the public SettingType::UKM_ENABLED API.
 const char kUkmEnabled[] = "weblayer.ukm_enabled";
 }  // namespace prefs
@@ -247,6 +250,7 @@ void BrowserContextImpl::CreateUserPrefService() {
 
 void BrowserContextImpl::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* pref_registry) {
+  pref_registry->RegisterBooleanPref(prefs::kNoStatePrefetchEnabled, true);
   pref_registry->RegisterBooleanPref(prefs::kUkmEnabled, false);
 
   // This pref is used by captive_portal::CaptivePortalService (as well as other

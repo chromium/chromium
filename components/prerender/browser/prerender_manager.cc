@@ -402,7 +402,8 @@ std::unique_ptr<base::DictionaryValue> PrerenderManager::CopyAsValue() const {
   auto dict_value = std::make_unique<base::DictionaryValue>();
   dict_value->Set("history", prerender_history_->CopyEntriesAsValue());
   dict_value->Set("active", GetActivePrerendersAsValue());
-  dict_value->SetBoolean("enabled", delegate_->IsPredictionEnabled());
+  dict_value->SetBoolean("enabled",
+                         delegate_->IsNetworkPredictionPreferenceEnabled());
   dict_value->SetString("disabled_note",
                         delegate_->GetReasonForDisablingPrediction());
   // If prerender is disabled via a flag this method is not even called.
@@ -505,6 +506,26 @@ bool PrerenderManager::IsLowEndDevice() const {
   return base::SysInfo::IsLowEndDevice();
 }
 
+bool PrerenderManager::IsPredictionEnabled(Origin origin) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // <link rel=prerender> origins ignore the network state and the privacy
+  // settings. Web developers should be able prefetch with all possible privacy
+  // settings. This would avoid web devs coming up with creative ways to
+  // prefetch in cases they are not allowed to do so.
+  if (origin == ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN ||
+      origin == ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN) {
+    return true;
+  }
+
+  // TODO(crbug.com/1121970): Remove this check once we're no longer running the
+  // experiment "PredictivePrefetchingAllowedOnAllConnectionTypes".
+  if (delegate_->IsPredictionDisabledDueToNetwork(origin))
+    return false;
+
+  return delegate_->IsNetworkPredictionPreferenceEnabled();
+}
+
 void PrerenderManager::MaybePreconnect(Origin origin,
                                        const GURL& url_arg) const {
   delegate_->MaybePreconnect(url_arg);
@@ -541,7 +562,7 @@ PrerenderManager::AddPrerenderWithPreconnectFallback(
     return nullptr;
   }
 
-  if (!delegate_->IsPredictionEnabled(origin)) {
+  if (!IsPredictionEnabled(origin)) {
     FinalStatus final_status =
         delegate_->IsPredictionDisabledDueToNetwork(origin)
             ? FINAL_STATUS_CELLULAR_NETWORK

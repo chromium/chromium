@@ -25,6 +25,8 @@ class PrerenderManagerDelegateImpl
   scoped_refptr<content_settings::CookieSettings> GetCookieSettings() override;
   std::unique_ptr<prerender::PrerenderContentsDelegate>
   GetPrerenderContentsDelegate() override;
+  bool IsNetworkPredictionPreferenceEnabled() override;
+  std::string GetReasonForDisablingPrediction() override;
 
  private:
   content::BrowserContext* browser_context_;

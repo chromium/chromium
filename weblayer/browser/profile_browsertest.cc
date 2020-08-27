@@ -29,6 +29,17 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, PersistUKM) {
   ASSERT_TRUE(GetProfile()->GetBooleanSetting(SettingType::UKM_ENABLED));
 }
 
+// Enabling Network Prediction via Profile persists across restarts.
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, PRE_PersistNetworkPrediction) {
+  GetProfile()->SetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED,
+                                  false);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, PersistNetworkPrediction) {
+  ASSERT_FALSE(
+      GetProfile()->GetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED));
+}
+
 #endif  // !defined(OS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, GetCachedFaviconForPageUrl) {
@@ -111,6 +122,12 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearBrowsingDataDeletesFavicons) {
         run_loop3.Quit();
       }));
   run_loop3.Run();
+}
+
+// Test default value.
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DefaultNetworkPredictionState) {
+  ASSERT_TRUE(
+      GetProfile()->GetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED));
 }
 
 }  // namespace weblayer

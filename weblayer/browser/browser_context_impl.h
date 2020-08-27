@@ -23,6 +23,7 @@ class ResourceContextImpl;
 
 namespace prefs {
 // WebLayer specific pref names.
+extern const char kNoStatePrefetchEnabled[];
 extern const char kUkmEnabled[];
 }  // namespace prefs
 

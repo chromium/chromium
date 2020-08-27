@@ -34,13 +34,12 @@ class PrerenderManagerDelegate {
   virtual std::unique_ptr<PrerenderContentsDelegate>
   GetPrerenderContentsDelegate() = 0;
 
-  // Check whether predictive loading of web pages is enabled for |origin|.
-  virtual bool IsPredictionEnabled(Origin origin);
-
-  // Check whether predictive loading of web pages is enabled.
-  virtual bool IsPredictionEnabled();
+  // Check whether the user has enabled predictive loading of web pages.
+  virtual bool IsNetworkPredictionPreferenceEnabled();
 
   // Check whether predictive loading of web pages is disabled due to network.
+  // TODO(crbug.com/1121970): Remove this condition once we're no longer running
+  // the experiment "PredictivePrefetchingAllowedOnAllConnectionTypes".
   virtual bool IsPredictionDisabledDueToNetwork(Origin origin);
 
   // Gets the reason why predictive loading of web pages was disabld.
