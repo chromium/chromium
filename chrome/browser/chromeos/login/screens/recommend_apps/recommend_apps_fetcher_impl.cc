@@ -257,12 +257,6 @@ void RecordUmaResponseParseResult(RecommendAppsResponseParseResult result) {
                             result);
 }
 
-void RecordUmaResponseSize(unsigned long responseSize) {
-  UMA_HISTOGRAM_COUNTS_1M(
-      "OOBE.RecommendApps.Fetcher.ResponseSize",
-      static_cast<base::HistogramBase::Sample>(responseSize));
-}
-
 }  // namespace
 
 RecommendAppsFetcherImpl::RecommendAppsFetcherImpl(
@@ -488,7 +482,6 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   //
   // The response starts with a prefix ")]}'". This needs to be removed before
   // further parsing.
-  RecordUmaResponseSize(response_body->size());
   constexpr base::StringPiece json_xss_prevention_prefix(")]}'");
   base::StringPiece response_body_json(*response_body);
   if (base::StartsWith(response_body_json, json_xss_prevention_prefix))

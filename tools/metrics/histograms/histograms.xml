@@ -119466,8 +119466,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Fetcher.AppCount" units="units"
-    expires_after="2020-08-30">
-  <owner>rsorokin@chromium.org</owner>
+    expires_after="2021-07-30">
+  <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>play-bm-eng@google.com</owner>
   <summary>The number of recommended apps.</summary>
@@ -119499,7 +119499,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OOBE.RecommendApps.Fetcher.ResponseSize" units="KB"
     expires_after="2020-08-30">
-  <owner>rsorokin@chromium.org</owner>
+  <obsolete>
+    Removed as of 08/27/2020. No longer needed to track size of a response.
+  </obsolete>
+  <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The size of the recommend-apps JSON response.</summary>
@@ -119522,8 +119525,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OOBE.RecommendApps.Screen.SelectedRecommendedPercentage"
-    units="%" expires_after="2020-08-30">
-  <owner>rsorokin@chromium.org</owner>
+    units="%" expires_after="2021-07-30">
+  <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <owner>chromesky-eng@google.com</owner>
   <summary>The ratio of selected and recommended apps.</summary>
