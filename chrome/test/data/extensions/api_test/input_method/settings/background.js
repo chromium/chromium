@@ -56,15 +56,15 @@ chrome.test.runTests([
   // Test OnSettingsChanged event gets raised when settings are updated.
   function eventRaisedWhenSettingToInitialValue() {
     const settings = { 'enableDoubleSpacePeriod': true };
-    const listener = (ime, value) => {
+    const listener = (ime) => {
       chrome.test.assertEq('ime', ime);
-      chrome.test.assertEq(settings, value);
       chrome.test.succeed();
 
-      chrome.inputMethodPrivate.onSettingsChanged.removeListener(listener);
+      chrome.inputMethodPrivate.onInputMethodOptionsChanged
+          .removeListener(listener);
     };
 
-    chrome.inputMethodPrivate.onSettingsChanged.addListener(listener);
+    chrome.inputMethodPrivate.onInputMethodOptionsChanged.addListener(listener);
     chrome.inputMethodPrivate.setSettings('ime', settings);
   }
 ]);

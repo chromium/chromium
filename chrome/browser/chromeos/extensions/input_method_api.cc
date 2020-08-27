@@ -76,8 +76,8 @@ namespace SetAutocorrectRange =
     extensions::api::input_method_private::SetAutocorrectRange;
 namespace SetSelectionRange =
     extensions::api::input_method_private::SetSelectionRange;
-namespace OnSettingsChanged =
-    extensions::api::input_method_private::OnSettingsChanged;
+namespace OnInputMethodOptionsChanged =
+    extensions::api::input_method_private::OnInputMethodOptionsChanged;
 
 using chromeos::InputMethodEngineBase;
 
@@ -392,11 +392,11 @@ ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
   // The router will only send the event to extensions that are listening.
   extensions::EventRouter* router =
       extensions::EventRouter::Get(browser_context());
-  if (router->HasEventListener(OnSettingsChanged::kEventName)) {
+  if (router->HasEventListener(OnInputMethodOptionsChanged::kEventName)) {
     auto event = std::make_unique<extensions::Event>(
-        extensions::events::INPUT_METHOD_PRIVATE_ON_SETTINGS_CHANGED,
-        OnSettingsChanged::kEventName,
-        OnSettingsChanged::Create(params->engine_id, params->settings),
+        extensions::events::INPUT_IME_ON_INPUT_METHOD_OPTIONS_CHANGED,
+        OnInputMethodOptionsChanged::kEventName,
+        OnInputMethodOptionsChanged::Create(params->engine_id),
         browser_context());
     router->BroadcastEvent(std::move(event));
   }
