@@ -43,3 +43,9 @@ void NearbyConfirmationManager::Reject(RejectCallback callback) {
   nearby_service_->Reject(share_target_,
                           ToStatusCodesCallback(std::move(callback)));
 }
+
+void NearbyConfirmationManager::Cancel(CancelCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  nearby_service_->Cancel(share_target_,
+                          ToStatusCodesCallback(std::move(callback)));
+}

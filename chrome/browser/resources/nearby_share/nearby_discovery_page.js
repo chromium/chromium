@@ -56,12 +56,12 @@ Polymer({
     },
 
     /**
-     * Token to show to the user to confirm the selected share target.
-     * @type {?string}
+     * TransferUpdateListener interface for the currently selected share target.
+     * @type {?nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
      */
-    confirmationToken: {
+    transferUpdateListener: {
       notify: true,
-      type: String,
+      type: Object,
       value: null,
     },
 
@@ -187,19 +187,16 @@ Polymer({
     getDiscoveryManager()
         .selectShareTarget(this.selectedShareTarget.id)
         .then(response => {
-          const {result, token, confirmationManager} = response;
+          const {result, transferUpdateListener, confirmationManager} =
+              response;
           if (result !== nearbyShare.mojom.SelectShareTargetResult.kOk) {
             // TODO(knollr): Show error.
             return;
           }
 
-          if (confirmationManager) {
-            this.confirmationManager = confirmationManager;
-            this.confirmationToken = token;
-            this.fire('change-page', {page: 'confirmation'});
-          } else {
-            this.fire('close');
-          }
+          this.confirmationManager = confirmationManager;
+          this.transferUpdateListener = transferUpdateListener;
+          this.fire('change-page', {page: 'confirmation'});
         });
   },
 

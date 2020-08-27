@@ -8,15 +8,25 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://nearby/nearby_confirmation_page.js';
 
 import {assertEquals, assertTrue} from '../chai_assert.js';
-import {FakeConfirmationManagerRemote} from './fake_mojo_interfaces.js';
+import {FakeConfirmationManagerRemote, FakeTransferUpdateListenerPendingReceiver} from './fake_mojo_interfaces.js';
 
 suite('ConfirmatonPageTest', function() {
   /** @type {!NearbyConfirmationPageElement} */
   let confirmationPageElement;
 
+  /** @type {!FakeConfirmationManagerRemote} */
+  let confirmationManager;
+
+  /** @type {!FakeTransferUpdateListenerPendingReceiver} */
+  let transferUpdateListener;
+
   setup(function() {
+    confirmationManager = new FakeConfirmationManagerRemote();
+    transferUpdateListener = new FakeTransferUpdateListenerPendingReceiver();
     confirmationPageElement = /** @type {!NearbyConfirmationPageElement} */ (
         document.createElement('nearby-confirmation-page'));
+    confirmationPageElement.confirmationManager = confirmationManager;
+    confirmationPageElement.transferUpdateListener = transferUpdateListener;
     document.body.appendChild(confirmationPageElement);
   });
 
@@ -29,22 +39,41 @@ suite('ConfirmatonPageTest', function() {
   });
 
   test('calls accept on click', async function() {
-    const confirmationManager = new FakeConfirmationManagerRemote();
-    confirmationPageElement.confirmationManager = confirmationManager;
+    transferUpdateListener.remote_.onTransferUpdate(
+        nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation,
+        /*token=*/ null);
+    await transferUpdateListener.remote_.$.flushForTesting();
+
     confirmationPageElement.$$('#accept-button').click();
     await confirmationManager.whenCalled('accept');
   });
 
   test('calls reject on click', async function() {
-    const confirmationManager = new FakeConfirmationManagerRemote();
-    confirmationPageElement.confirmationManager = confirmationManager;
-    confirmationPageElement.$$('#cancel-button').click();
+    transferUpdateListener.remote_.onTransferUpdate(
+        nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation,
+        /*token=*/ null);
+    await transferUpdateListener.remote_.$.flushForTesting();
+
+    confirmationPageElement.$$('#reject-button').click();
     await confirmationManager.whenCalled('reject');
   });
 
-  test('renders confirmation token', function() {
+  test('calls cancel on click', async function() {
+    transferUpdateListener.remote_.onTransferUpdate(
+        nearbyShare.mojom.TransferStatus.kAwaitingRemoteAcceptance,
+        /*token=*/ null);
+    await transferUpdateListener.remote_.$.flushForTesting();
+
+    confirmationPageElement.$$('#cancel-button').click();
+    await confirmationManager.whenCalled('cancel');
+  });
+
+  test('renders confirmation token', async function() {
     const token = 'TestToken1234';
-    confirmationPageElement.confirmationToken = token;
+    transferUpdateListener.remote_.onTransferUpdate(
+        nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation, token);
+    await transferUpdateListener.remote_.$.flushForTesting();
+
     const renderedToken =
         confirmationPageElement.$$('#confirmation-token').textContent;
     assertTrue(renderedToken.includes(token));

@@ -15,6 +15,7 @@ export class FakeConfirmationManagerRemote extends TestBrowserProxy {
     super([
       'accept',
       'reject',
+      'cancel',
     ]);
   }
 
@@ -25,6 +26,11 @@ export class FakeConfirmationManagerRemote extends TestBrowserProxy {
 
   async reject() {
     this.methodCalled('reject');
+    return {success: true};
+  }
+
+  async cancel() {
+    this.methodCalled('cancel');
     return {success: true};
   }
 }
@@ -42,7 +48,7 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
 
     this.selectShareTargetResult = {
       result: nearbyShare.mojom.SelectShareTargetResult.kOk,
-      token: null,
+      transferUpdateListener: null,
       confirmationManager: null,
     };
   }
@@ -60,5 +66,17 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
   async startDiscovery(listener) {
     this.methodCalled('startDiscovery', listener);
     return {success: true};
+  }
+}
+
+/**
+ * @extends {nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
+ */
+export class FakeTransferUpdateListenerPendingReceiver extends
+    nearbyShare.mojom.TransferUpdateListenerPendingReceiver {
+  constructor() {
+    const {handle0, handle1} = Mojo.createMessagePipe();
+    super(handle0);
+    this.remote_ = new nearbyShare.mojom.TransferUpdateListenerRemote(handle1);
   }
 }

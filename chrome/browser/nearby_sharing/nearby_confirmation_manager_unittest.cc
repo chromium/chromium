@@ -88,3 +88,31 @@ TEST_F(NearbyConfirmationManagerTest, Reject_Error) {
 
   manager().Reject(callback.Get());
 }
+
+TEST_F(NearbyConfirmationManagerTest, Cancel_Success) {
+  EXPECT_CALL(sharing_service(), Cancel(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](const ShareTarget& target,
+              NearbySharingService::StatusCodesCallback callback) {
+            EXPECT_EQ(share_target().id, target.id);
+            std::move(callback).Run(NearbySharingService::StatusCodes::kOk);
+          }));
+  base::MockCallback<NearbyConfirmationManager::CancelCallback> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(true)));
+
+  manager().Cancel(callback.Get());
+}
+
+TEST_F(NearbyConfirmationManagerTest, Cancel_Error) {
+  EXPECT_CALL(sharing_service(), Cancel(testing::_, testing::_))
+      .WillOnce(testing::Invoke(
+          [&](const ShareTarget& target,
+              NearbySharingService::StatusCodesCallback callback) {
+            EXPECT_EQ(share_target().id, target.id);
+            std::move(callback).Run(NearbySharingService::StatusCodes::kError);
+          }));
+  base::MockCallback<NearbyConfirmationManager::CancelCallback> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false)));
+
+  manager().Cancel(callback.Get());
+}

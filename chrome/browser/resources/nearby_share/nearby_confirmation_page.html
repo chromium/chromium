@@ -78,7 +78,9 @@
   <div id="process-row">
     <nearby-preview title="Doggo.jpg"></nearby-preview>
     <div id="confirmation-token">
-      [[i18n('secureConnectionId', confirmationToken)]]
+      <template is="dom-if" if="[[confirmationToken_]]">
+        [[i18n('secureConnectionId', confirmationToken_)]]
+      </template>
     </div>
     <nearby-progress share-target="[[shareTarget]]"></nearby-progress>
   </div>
@@ -93,11 +95,21 @@
   </cr-checkbox>
 
   <div id="actions">
-    <cr-button id="cancel-button" class="cancel-button" on-click="onCancelTap_">
-      Cancel
-    </cr-button>
-    <cr-button id="accept-button" class="action-button" on-click="onAcceptTap_">
-      Confirm
-    </cr-button>
+    <template is="dom-if" if="[[needsConfirmation_]]">
+      <cr-button id="reject-button" class="cancel-button"
+          on-click="onRejectTap_">
+        Reject
+      </cr-button>
+      <cr-button id="accept-button" class="action-button"
+          on-click="onAcceptTap_">
+        Confirm
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[!needsConfirmation_]]">
+      <cr-button id="cancel-button" class="action-button"
+          on-click="onCancelTap_">
+        Cancel
+      </cr-button>
+    </template>
   </div>
 </div>

@@ -25,6 +25,7 @@ class NearbyConfirmationManager
   // nearby_share::mojom::ConfirmationManager:
   void Accept(AcceptCallback callback) override;
   void Reject(RejectCallback callback) override;
+  void Cancel(CancelCallback callback) override;
 
  private:
   NearbySharingService* nearby_service_;

@@ -53,11 +53,11 @@ Polymer({
     /**
      * Set by the nearby-discovery-page component when switching to the
      * nearby-confirmation-page.
-     * @type {?String}
+     * @type {?nearbyShare.mojom.TransferUpdateListenerPendingReceiver}
      * @private
      */
-    confirmationToken_: {
-      type: String,
+    transferUpdateListener_: {
+      type: Object,
       value: null,
     },
 

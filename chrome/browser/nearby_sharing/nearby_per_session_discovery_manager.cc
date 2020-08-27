@@ -14,6 +14,30 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
+namespace {
+
+base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
+    const TransferMetadata& transfer_metadata) {
+  switch (transfer_metadata.status()) {
+    case TransferMetadata::Status::kAwaitingLocalConfirmation:
+      return nearby_share::mojom::TransferStatus::kAwaitingLocalConfirmation;
+    case TransferMetadata::Status::kAwaitingRemoteAcceptance:
+      return nearby_share::mojom::TransferStatus::kAwaitingRemoteAcceptance;
+    case TransferMetadata::Status::kComplete:
+    case TransferMetadata::Status::kInProgress:
+      return nearby_share::mojom::TransferStatus::kInProgress;
+    default:
+      break;
+  }
+
+  // TODO(knollr): Show error if transfer_metadata.is_final_status().
+
+  // Ignore all other transfer status updates.
+  return base::nullopt;
+}
+
+}  // namespace
+
 NearbyPerSessionDiscoveryManager::NearbyPerSessionDiscoveryManager(
     NearbySharingService* nearby_sharing_service)
     : nearby_sharing_service_(nearby_sharing_service) {}
@@ -25,33 +49,14 @@ NearbyPerSessionDiscoveryManager::~NearbyPerSessionDiscoveryManager() {
 void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
     const ShareTarget& share_target,
     const TransferMetadata& transfer_metadata) {
-  switch (transfer_metadata.status()) {
-    case TransferMetadata::Status::kAwaitingLocalConfirmation: {
-      DCHECK(select_share_target_callback_);
-      mojo::PendingRemote<nearby_share::mojom::ConfirmationManager> remote;
-      mojo::MakeSelfOwnedReceiver(std::make_unique<NearbyConfirmationManager>(
-                                      nearby_sharing_service_, share_target),
-                                  remote.InitWithNewPipeAndPassReceiver());
-      std::move(select_share_target_callback_)
-          .Run(nearby_share::mojom::SelectShareTargetResult::kOk,
-               transfer_metadata.token(), std::move(remote));
-      break;
-    }
-    case TransferMetadata::Status::kAwaitingRemoteAcceptance:
-      DCHECK(select_share_target_callback_);
-      std::move(select_share_target_callback_)
-          .Run(nearby_share::mojom::SelectShareTargetResult::kOk,
-               /*token=*/base::nullopt, mojo::NullRemote());
-      break;
-    default:
-      if (transfer_metadata.is_final_status() &&
-          select_share_target_callback_) {
-        std::move(select_share_target_callback_)
-            .Run(nearby_share::mojom::SelectShareTargetResult::kError,
-                 /*token=*/base::nullopt, mojo::NullRemote());
-      }
-      break;
-  }
+  DCHECK(transfer_update_listener_.is_bound());
+  base::Optional<nearby_share::mojom::TransferStatus> status =
+      GetTransferStatus(transfer_metadata);
+  if (!status)
+    return;
+
+  transfer_update_listener_->OnTransferUpdate(*status,
+                                              transfer_metadata.token());
 }
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
@@ -93,34 +98,41 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
     const base::UnguessableToken& share_target_id,
     SelectShareTargetCallback callback) {
   DCHECK(share_target_listener_.is_bound());
-  DCHECK(!select_share_target_callback_);
+  DCHECK(!transfer_update_listener_.is_bound());
 
   auto iter = discovered_share_targets_.find(share_target_id);
   if (iter == discovered_share_targets_.end()) {
     NS_LOG(VERBOSE) << "Unknown share target selected: id=" << share_target_id;
     std::move(callback).Run(
         nearby_share::mojom::SelectShareTargetResult::kInvalidShareTarget,
-        /*token=*/base::nullopt, mojo::NullRemote());
+        mojo::NullReceiver(), mojo::NullRemote());
     return;
   }
 
-  select_share_target_callback_ = std::move(callback);
+  // Bind update listener before calling the sharing service to get all updates.
+  mojo::PendingReceiver<nearby_share::mojom::TransferUpdateListener> receiver =
+      transfer_update_listener_.BindNewPipeAndPassReceiver();
+
   // TODO(crbug.com/1099710): Call correct method and pass attachments.
   NearbySharingService::StatusCodes status =
       nearby_sharing_service_->SendText(iter->second, "Example Text");
 
-  // Nothing to do if the result has been returned already.
-  if (!select_share_target_callback_)
-    return;
-
   // If the send call succeeded, we expect OnTransferUpdate() to be called next.
-  if (status == NearbySharingService::StatusCodes::kOk)
+  if (status == NearbySharingService::StatusCodes::kOk) {
+    mojo::PendingRemote<nearby_share::mojom::ConfirmationManager> remote;
+    mojo::MakeSelfOwnedReceiver(std::make_unique<NearbyConfirmationManager>(
+                                    nearby_sharing_service_, iter->second),
+                                remote.InitWithNewPipeAndPassReceiver());
+
+    std::move(callback).Run(nearby_share::mojom::SelectShareTargetResult::kOk,
+                            std::move(receiver), std::move(remote));
     return;
+  }
 
   NS_LOG(VERBOSE) << "Failed to select share target";
-  std::move(select_share_target_callback_)
-      .Run(nearby_share::mojom::SelectShareTargetResult::kError,
-           /*token=*/base::nullopt, mojo::NullRemote());
+  transfer_update_listener_.reset();
+  std::move(callback).Run(nearby_share::mojom::SelectShareTargetResult::kError,
+                          mojo::NullReceiver(), mojo::NullRemote());
 }
 
 void NearbyPerSessionDiscoveryManager::UnregisterSendSurface() {

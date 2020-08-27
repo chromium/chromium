@@ -48,7 +48,8 @@ class NearbyPerSessionDiscoveryManager
 
   NearbySharingService* nearby_sharing_service_;
   mojo::Remote<nearby_share::mojom::ShareTargetListener> share_target_listener_;
-  SelectShareTargetCallback select_share_target_callback_;
+  mojo::Remote<nearby_share::mojom::TransferUpdateListener>
+      transfer_update_listener_;
 
   // Map of ShareTarget id to discovered ShareTargets.
   base::flat_map<base::UnguessableToken, ShareTarget> discovered_share_targets_;

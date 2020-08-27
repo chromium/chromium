@@ -40,6 +40,29 @@ interface ShareTargetListener {
   OnShareTargetLost(ShareTarget share_target);
 };
 
+// Status of the current transfer.
+enum TransferStatus {
+  // The user of the local device needs to accept or reject the transfer. This
+  // involves showing a token on both devices to be compared by the user.
+  kAwaitingLocalConfirmation,
+  // The remote device needs to accept the transfer. We still need to show the
+  // token on this device so the other user can compare it.
+  kAwaitingRemoteAcceptance,
+  // The current transfer is now in progress after both users accepted the
+  // tranfer on their devices.
+  kInProgress,
+};
+
+// Interface to be notified about transfer updates. Includes an optional token
+// that needs to be shown to the user to confirm with the remote device. The
+// token verification can be skipped for trusted devices in the contacts list
+// but must be shown when sending to unknown devices. This interface is
+// implemented in UI surfaces and called from the browser process.
+interface TransferUpdateListener {
+  // Called when the status of the current transfer changes.
+  OnTransferUpdate(TransferStatus status, string? token);
+};
+
 // Manager interface for nearby device discovery. Implemented on the browser
 // process and used by UI surfaces.
 interface DiscoveryManager {
@@ -48,14 +71,13 @@ interface DiscoveryManager {
   StartDiscovery(pending_remote<ShareTargetListener> listener)
       => (bool success);
 
-  // Select a previously discovered |share_target_id| to send data to. If the
-  // selected target requires an additional confirmation of a shared connection
-  // id by the user it will return a valid ConfirmationManager interface to be
-  // used to accept or reject the transfer. |token| will contain the string to
-  // show to the user in that case.
+  // Select a previously discovered |share_target_id| to send data to. On
+  // success this will return valid ConfirmationManager and
+  // TransferUpdateListener interfaces to be used to show an additional
+  // confirmation screen to accept or reject the transfer.
   SelectShareTarget(mojo_base.mojom.UnguessableToken share_target_id)
       => (SelectShareTargetResult result,
-          string? token,
+          pending_receiver<TransferUpdateListener>? transfer_update_listener,
           pending_remote<ConfirmationManager>? confirmation_manager);
 };
 
@@ -67,4 +89,7 @@ interface ConfirmationManager {
 
   // Rejects a connection to the current Share Target.
   Reject() => (bool success);
+
+  // Cancels a connection to the current Share Target.
+  Cancel() => (bool success);
 };
