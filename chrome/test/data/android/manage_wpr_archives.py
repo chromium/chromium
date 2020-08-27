@@ -11,7 +11,6 @@ import os
 
 from upload_download_utils import download
 from upload_download_utils import upload
-from upload_download_utils import verify_file_exists
 
 STORAGE_BUCKET = 'chrome-wpr-archives'
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -40,8 +39,6 @@ def main():
     for d in WPR_RECORD_REPLAY_TEST_DIRECTORIES:
       download(d, _is_file_of_interest,
                'WPR archives', STORAGE_BUCKET)
-      if not verify_file_exists(d, _is_file_of_interest):
-        raise RuntimeError('There is no file downloaded under {}'.format(d))
   else:
     for d in WPR_RECORD_REPLAY_TEST_DIRECTORIES:
       upload(d, _is_file_of_interest,
