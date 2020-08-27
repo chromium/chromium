@@ -7,7 +7,7 @@ import './localized_link/localized_link.m.js';
 import './bluetooth_page/bluetooth_page.m.js';
 import './bluetooth_page/bluetooth_subpage.m.js';
 import './bluetooth_page/bluetooth_device_list_item.m.js';
-import '../nearby_share_page/nearby_share_subpage.m.js';
+import './nearby_share_page/nearby_share_subpage.m.js';
 import './multidevice_page/multidevice_page.m.js';
 import '../prefs/prefs.m.js';
 import './personalization_page/personalization_page.m.js';
@@ -23,7 +23,6 @@ import './os_about_page/update_warning_dialog.m.js';
 
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from '../about_page/about_page_browser_proxy.m.js';
 export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.m.js';
-export {dataUsageStringToEnum, NearbyShareDataUsage} from '../nearby_share_page/types.m.js';
 export {pageVisibility} from '../page_visibility.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from '../people_page/account_manager_browser_proxy.m.js';
 export {ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.m.js';
@@ -37,6 +36,7 @@ export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.m.js';
 export {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_page/multidevice_browser_proxy.m.js';
 export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, SmartLockSignInEnabledState} from './multidevice_page/multidevice_constants.m.js';
+export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.m.js';
 export {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from './os_people_page/kerberos_accounts_browser_proxy.m.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.m.js';
 export {routes} from './os_route.m.js';

@@ -1311,34 +1311,34 @@
                  file="chromeos/multidevice_page/multidevice_tether_item.js"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_DIALOG_HTML"
-                 file="nearby_share_page/nearby_share_contact_visibility_dialog.html"
+                 file="chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.html"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_DIALOG_JS"
-                 file="nearby_share_page/nearby_share_contact_visibility_dialog.js"
+                 file="chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.js"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_HTML"
-                 file="nearby_share_page/nearby_share_device_name_dialog.html"
+                 file="chromeos/nearby_share_page/nearby_share_device_name_dialog.html"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_JS"
-                 file="nearby_share_page/nearby_share_device_name_dialog.js"
+                 file="chromeos/nearby_share_page/nearby_share_device_name_dialog.js"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DIALOG_HTML"
-                 file="nearby_share_page/nearby_share_data_usage_dialog.html"
+                 file="chromeos/nearby_share_page/nearby_share_data_usage_dialog.html"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_DATA_USAGE_DIALOG_JS"
-                 file="nearby_share_page/nearby_share_data_usage_dialog.js"
+                 file="chromeos/nearby_share_page/nearby_share_data_usage_dialog.js"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_TYPES_HTML"
-                 file="nearby_share_page/types.html"
+                 file="chromeos/nearby_share_page/types.html"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_TYPES_JS"
-                 file="nearby_share_page/types.js"
+                 file="chromeos/nearby_share_page/types.js"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_SUBPAGE_HTML"
-                 file="nearby_share_page/nearby_share_subpage.html"
+                 file="chromeos/nearby_share_page/nearby_share_subpage.html"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_SUBPAGE_JS"
-                 file="nearby_share_page/nearby_share_subpage.js"
+                 file="chromeos/nearby_share_page/nearby_share_subpage.js"
                  compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NETWORK_PROXY_SECTION_HTML"
                  file="chromeos/internet_page/network_proxy_section.html"

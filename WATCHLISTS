@@ -1344,7 +1344,7 @@
       'filepath': 'chrome/browser/nearby_sharing/|'\
                   'chrome/browser/resources/nearby_internals/|'\
                   'chrome/browser/resources/nearby_share/|'\
-                  'chrome/browser/resources/settings/nearby_share_page/|'\
+                  'chrome/browser/resources/settings/chromeos/nearby_share_page/|'\
                   'chrome/browser/ui/webui/nearby_internals/|'\
                   'chrome/browser/ui/webui/nearby_share/|'\
                   'chrome/services/sharing/'

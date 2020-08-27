@@ -1054,7 +1054,8 @@ TEST_F('OSSettingsMultideviceSubpageTest', 'AllJsTests', () => {
 var OSSettingsNearbyShareSubPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return super.browsePreload + 'nearby_share_page/nearby_share_subpage.html';
+    return super.browsePreload +
+        'chromeos/nearby_share_page/nearby_share_subpage.html';
   }
 
   /** @override */
