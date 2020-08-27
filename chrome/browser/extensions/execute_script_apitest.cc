@@ -32,6 +32,8 @@ class ExecuteScriptApiTest : public ExecuteScriptApiTestBase,
                              public testing::WithParamInterface<ContextType> {
  protected:
   ExecuteScriptApiTest() {
+    // Service Workers are currently only available on certain channels, so set
+    // the channel for those tests.
     if (GetParam() == ContextType::kServiceWorker)
       current_channel_ = std::make_unique<ScopedWorkerBasedExtensionsChannel>();
   }
@@ -87,14 +89,7 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptByFrameId) {
   ASSERT_TRUE(RunTest("executescript/frame_id")) << message_;
 }
 
-// Fails often on Windows.
-// http://crbug.com/174715
-#if defined(OS_WIN)
-#define MAYBE_ExecuteScriptPermissions DISABLED_ExecuteScriptPermissions
-#else
-#define MAYBE_ExecuteScriptPermissions ExecuteScriptPermissions
-#endif  // defined(OS_WIN)
-IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, MAYBE_ExecuteScriptPermissions) {
+IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptPermissions) {
   // TODO(https://crbug.com/1115182): Flaky for SW-based extensions.
   if (GetParam() == ContextType::kServiceWorker)
     return;
