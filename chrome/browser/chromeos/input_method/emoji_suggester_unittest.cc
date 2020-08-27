@@ -185,24 +185,13 @@ TEST_F(EmojiSuggesterTest, ReturnkDismissWhenPressingEsc) {
             emoji_suggester_->HandleKeyEvent(event));
 }
 
-TEST_F(EmojiSuggesterTest, ReturnkAcceptWhenPressDownThenValidNumber) {
+TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenValidNumber) {
   EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
   InputMethodEngineBase::KeyboardEvent event1;
   event1.key = "Down";
   emoji_suggester_->HandleKeyEvent(event1);
   InputMethodEngineBase::KeyboardEvent event2;
   event2.key = "1";
-  EXPECT_EQ(SuggestionStatus::kAccept,
-            emoji_suggester_->HandleKeyEvent(event2));
-}
-
-TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenNumberNotInRange) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  InputMethodEngineBase::KeyboardEvent event1;
-  event1.key = "Down";
-  emoji_suggester_->HandleKeyEvent(event1);
-  InputMethodEngineBase::KeyboardEvent event2;
-  event2.key = "4";
   EXPECT_EQ(SuggestionStatus::kNotHandled,
             emoji_suggester_->HandleKeyEvent(event2));
 }
@@ -216,20 +205,6 @@ TEST_F(EmojiSuggesterTest, ReturnkNotHandledWhenPressDownThenNotANumber) {
   event2.key = "a";
   EXPECT_EQ(SuggestionStatus::kNotHandled,
             emoji_suggester_->HandleKeyEvent(event2));
-}
-
-TEST_F(EmojiSuggesterTest, ReturnkAcceptWhenPressDownThenUpThenANumber) {
-  EXPECT_TRUE(emoji_suggester_->Suggest(base::UTF8ToUTF16("happy ")));
-  InputMethodEngineBase::KeyboardEvent event1;
-  event1.key = "Down";
-  emoji_suggester_->HandleKeyEvent(event1);
-  InputMethodEngineBase::KeyboardEvent event2;
-  event2.key = "Up";
-  emoji_suggester_->HandleKeyEvent(event2);
-  InputMethodEngineBase::KeyboardEvent event3;
-  event3.key = "1";
-  EXPECT_EQ(SuggestionStatus::kAccept,
-            emoji_suggester_->HandleKeyEvent(event3));
 }
 
 TEST_F(EmojiSuggesterTest,

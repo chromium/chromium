@@ -188,10 +188,6 @@ SuggestionStatus EmojiSuggester::HandleKeyEvent(
       }
       SetButtonHighlighted(buttons_[highlighted_index_], true);
       return SuggestionStatus::kBrowsing;
-    } else {
-      int choice = 0;
-      if (base::StringToInt(event.key, &choice) && AcceptSuggestion(choice - 1))
-        return SuggestionStatus::kAccept;
     }
   }
 
