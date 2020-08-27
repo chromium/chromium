@@ -643,6 +643,12 @@ int BrowserMainLoop::EarlyInitialization() {
 
 #if defined(OS_FUCHSIA)
   InitDefaultJob();
+
+  // Have child processes & jobs terminate automatically if the browser process
+  // exits, by marking the browser process as "critical" to its job.
+  zx_status_t result =
+      zx::job::default_job()->set_critical(0, *zx::process::self());
+  ZX_CHECK(ZX_OK == result, result) << "zx_job_set_critical";
 #endif
 
 #if defined(OS_WIN)

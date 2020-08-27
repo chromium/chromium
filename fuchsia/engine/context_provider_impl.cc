@@ -552,13 +552,6 @@ void ContextProviderImpl::Create(
     context_process = base::LaunchProcess(launch_command, launch_options);
   }
 
-  if (context_process.IsValid()) {
-    // Set |context_process| termination to teardown its job and sub-processes.
-    zx_status_t result = zx_job_set_critical(launch_options.job_handle, 0,
-                                             context_process.Handle());
-    ZX_CHECK(ZX_OK == result, result) << "zx_job_set_critical";
-  }
-
   // |context_request|, any DevTools channels and data directory channels were
   // transferred (not copied) to the Context process.
   ignore_result(context_request.TakeChannel().release());
