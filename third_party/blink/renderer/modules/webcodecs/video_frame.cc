@@ -16,6 +16,7 @@
 #include "media/renderers/video_frame_yuv_converter.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_factories.h"
@@ -184,7 +185,7 @@ String VideoFrame::format() const {
 
   switch (local_frame->format()) {
     case media::PIXEL_FORMAT_I420:
-      return "I420";
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420);
 
     default:
       NOTREACHED();

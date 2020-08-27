@@ -764,6 +764,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webcodecs/video_frame.idl",
           "//third_party/blink/renderer/modules/webcodecs/video_frame_init.idl",
           "//third_party/blink/renderer/modules/webcodecs/video_frame_output_callback.idl",
+          "//third_party/blink/renderer/modules/webcodecs/video_pixel_format.idl",
           "//third_party/blink/renderer/modules/webcodecs/video_track_reader.idl",
           "//third_party/blink/renderer/modules/webcodecs/video_track_writer_parameters.idl",
           "//third_party/blink/renderer/modules/webcodecs/web_codecs_error_callback.idl",

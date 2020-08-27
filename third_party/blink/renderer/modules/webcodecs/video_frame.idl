@@ -4,11 +4,6 @@
 
 // https://github.com/WICG/web-codecs
 
-enum VideoPixelFormat {
-    // 4:2:0 subsampled planar YUV
-    "I420"
-};
-
 [
     Exposed=(Window,Worker),
     Serializable,

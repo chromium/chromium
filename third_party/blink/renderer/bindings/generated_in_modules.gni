@@ -1062,6 +1062,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_user_verification_requirement.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_acceleration_preference.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_acceleration_preference.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_wake_lock_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_webgl_power_preference.cc",
