@@ -164,6 +164,8 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::IsolateAllSitesForTesting(command_line);
+
+    feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
   }
 
   void SetUpOnMainThread() override {
@@ -359,6 +361,16 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
         browser()->profile()->GetPath());
   }
 
+ protected:
+  // Hooks to set up feature flags.
+  virtual const std::vector<base::Feature> GetEnabledFeatures() const {
+    return {};
+  }
+
+  virtual const std::vector<base::Feature> GetDisabledFeatures() const {
+    return {};
+  }
+
  private:
   WebContents* LoadPdfGetGuestContentsHelper(const GURL& url, bool new_tab) {
     if (new_tab) {
@@ -374,6 +386,8 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
     WebContents* guest_contents = guest_manager->GetFullPageGuest(contents);
     return guest_contents;
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
@@ -930,11 +944,18 @@ class PDFExtensionContentSettingJSTest
   ~PDFExtensionContentSettingJSTest() override = default;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PDFExtensionJSTest::SetUpCommandLine(command_line);
-    feature_list_.InitWithFeatureState(
-        chrome_pdf::features::kPdfHonorJsContentSettings,
-        ShouldHonorJsContentSettings());
+  const std::vector<base::Feature> GetEnabledFeatures() const override {
+    if (ShouldHonorJsContentSettings()) {
+      return {chrome_pdf::features::kPdfHonorJsContentSettings};
+    }
+    return {};
+  }
+
+  const std::vector<base::Feature> GetDisabledFeatures() const override {
+    if (ShouldHonorJsContentSettings()) {
+      return {};
+    }
+    return {chrome_pdf::features::kPdfHonorJsContentSettings};
   }
 
   bool ShouldHonorJsContentSettings() const { return GetParam(); }
@@ -956,9 +977,6 @@ class PDFExtensionContentSettingJSTest
   std::string GetDisabledJsTestFile() const {
     return ShouldHonorJsContentSettings() ? "nobeep_test.js" : "beep_test.js";
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, Beep) {
@@ -2739,13 +2757,6 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
   PDFExtensionAccessibilityTextExtractionTest() = default;
   ~PDFExtensionAccessibilityTextExtractionTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PDFExtensionTest::SetUpCommandLine(command_line);
-    std::vector<base::Feature> enabled_features = {
-        chrome_pdf::features::kAccessiblePDFForm};
-    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
-  }
-
   void RunTextExtractionTest(const base::FilePath::CharType* pdf_file) {
     base::FilePath test_path = ui_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
@@ -2757,6 +2768,11 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
     base::FilePath pdf_path = test_path.Append(pdf_file);
 
     RunTest(pdf_path, "pdf/accessibility");
+  }
+
+ protected:
+  const std::vector<base::Feature> GetEnabledFeatures() const override {
+    return {chrome_pdf::features::kAccessiblePDFForm};
   }
 
  private:
@@ -2860,8 +2876,6 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
       lines.push_back(line);
     return lines;
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that Previous/NextOnLineId attributes are present and properly linked on
@@ -2945,9 +2959,6 @@ class PDFExtensionAccessibilityTreeDumpTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PDFExtensionTest::SetUpCommandLine(command_line);
-    std::vector<base::Feature> enabled_features = {
-        chrome_pdf::features::kAccessiblePDFForm};
-    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
 
     // Each test pass might require custom command-line setup
     if (test_pass_.set_up_command_line)
@@ -2955,6 +2966,10 @@ class PDFExtensionAccessibilityTreeDumpTest
   }
 
  protected:
+  const std::vector<base::Feature> GetEnabledFeatures() const override {
+    return {chrome_pdf::features::kAccessiblePDFForm};
+  }
+
   void RunPDFTest(const base::FilePath::CharType* pdf_file) {
     base::FilePath test_path = ui_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
@@ -2967,8 +2982,6 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     RunTest(pdf_path, "pdf/accessibility");
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   using PropertyFilter = content::AccessibilityTreeFormatter::PropertyFilter;
