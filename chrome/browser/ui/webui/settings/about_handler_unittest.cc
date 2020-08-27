@@ -80,7 +80,15 @@ class AboutHandlerTest : public testing::Test {
   FakeUpdateEngineClient* fake_update_engine_client_;
 };
 
-TEST_F(AboutHandlerTest, EndOfLifeMessageInAboutDetailsSubpage) {
+// Deterministic fail on CHROMEOS, crbug.com/1122584.
+#if defined(OS_CHROMEOS)
+#define MAYBE_EndOfLifeMessageInAboutDetailsSubpage \
+  DISABLED_EndOfLifeMessageInAboutDetailsSubpage
+#else
+#define MAYBE_EndOfLifeMessageInAboutDetailsSubpage \
+  EndOfLifeMessageInAboutDetailsSubpage
+#endif
+TEST_F(AboutHandlerTest, MAYBE_EndOfLifeMessageInAboutDetailsSubpage) {
   const base::Time eol_passed_date =
       base::Time::Now() - base::TimeDelta::FromDays(1000);
   fake_update_engine_client_->set_eol_date(eol_passed_date);
