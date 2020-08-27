@@ -73,9 +73,9 @@
 
 - (void)setFrame:(CGRect)rect {
   if (@available(iOS 13, *)) {
-    if (!IsIPadIdiom() && (rect.origin.x < 0 || rect.origin.y < 0)) {
+    if (!IsIPadIdiom() && (rect.origin.x != 0 || rect.origin.y != 0)) {
       // skip, this rect is wrong and probably in portrait while
-      // display is in landscape.
+      // display is in landscape or vice-versa.
     } else {
       [super setFrame:rect];
     }
