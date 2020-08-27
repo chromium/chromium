@@ -280,8 +280,7 @@ void WaylandConnection::Global(void* data,
     }
     zxdg_shell_v6_add_listener(connection->shell_v6_.get(), &shell_v6_listener,
                                connection);
-  } else if (!connection->shell_v6_ && !connection->shell_ &&
-             strcmp(interface, "xdg_wm_base") == 0) {
+  } else if (!connection->shell_ && strcmp(interface, "xdg_wm_base") == 0) {
     connection->shell_ = wl::Bind<xdg_wm_base>(
         registry, name, std::min(version, kMaxXdgShellVersion));
     if (!connection->shell_) {
