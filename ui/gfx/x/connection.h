@@ -149,6 +149,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
     FutureBase::ResponseCallback callback;
   };
 
+  void InitRootDepthAndVisual();
+
   void AddRequest(unsigned int sequence, FutureBase::ResponseCallback callback);
 
   bool HasNextResponse() const;

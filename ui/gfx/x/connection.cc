@@ -238,16 +238,7 @@ Connection::Connection(const std::string& address)
         xcb_get_setup(XcbConnection())));
     setup_ = Read<Setup>(&buf);
     default_screen_ = &setup_.roots[DefaultScreenId()];
-    default_root_depth_ = &*std::find_if(
-        default_screen_->allowed_depths.begin(),
-        default_screen_->allowed_depths.end(), [&](const Depth& depth) {
-          return depth.depth == default_screen_->root_depth;
-        });
-    default_root_visual_ = &*std::find_if(
-        default_root_depth_->visuals.begin(),
-        default_root_depth_->visuals.end(), [&](const VisualType visual) {
-          return visual.visual_id == default_screen_->root_visual;
-        });
+    InitRootDepthAndVisual();
   } else {
     // Default-initialize the setup data so we always have something to return.
     setup_.roots.emplace_back();
@@ -468,6 +459,19 @@ void Connection::Dispatch(Delegate* delegate) {
       break;
     }
   }
+}
+
+void Connection::InitRootDepthAndVisual() {
+  for (auto& depth : default_screen_->allowed_depths) {
+    for (auto& visual : depth.visuals) {
+      if (visual.visual_id == default_screen_->root_visual) {
+        default_root_depth_ = &depth;
+        default_root_visual_ = &visual;
+        return;
+      }
+    }
+  }
+  NOTREACHED();
 }
 
 void Connection::AddRequest(unsigned int sequence,
