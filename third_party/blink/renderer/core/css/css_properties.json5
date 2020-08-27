@@ -3050,7 +3050,7 @@
       default_value: "nullptr",
       type_name: "QuotesData",
       converter: "ConvertQuotes",
-      keywords: ["none"],
+      keywords: ["auto", "none"],
       typedom_types: ["Keyword"]
     },
     {

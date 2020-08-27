@@ -1384,8 +1384,10 @@ scoped_refptr<QuotesData> StyleBuilderConverter::ConvertQuotes(
     }
     return quotes;
   }
-  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
-  return QuotesData::Create();
+  if (To<CSSIdentifierValue>(value).GetValueID() == CSSValueID::kNone)
+    return QuotesData::Create();
+  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kAuto);
+  return nullptr;
 }
 
 LengthSize StyleBuilderConverter::ConvertRadius(StyleResolverState& state,

@@ -1349,7 +1349,6 @@ crbug.com/753671 [ Mac ] external/wpt/css/css-content/quotes-014.html [ Failure 
 crbug.com/753671 [ Mac10.15 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/753671 external/wpt/css/css-content/quotes-021.html [ Failure ]
 crbug.com/753671 external/wpt/css/css-content/quotes-022.html [ Failure ]
-crbug.com/753671 external/wpt/css/css-content/quotes-033.html [ Failure ]
 crbug.com/989123 external/wpt/css/css-typed-om/the-stylepropertymap/computed/get-auto-min-size.html [ Failure ]
 
 crbug.com/995106 external/wpt/css/css-lists/inline-block-list.html [ Failure ]

@@ -4917,8 +4917,11 @@ void Position::ApplyInherit(StyleResolverState& state) const {
 const CSSValue* Quotes::ParseSingleValue(CSSParserTokenRange& range,
                                          const CSSParserContext& context,
                                          const CSSParserLocalContext&) const {
-  if (range.Peek().Id() == CSSValueID::kNone)
-    return css_parsing_utils::ConsumeIdent(range);
+  if (auto* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone>(
+              range)) {
+    return value;
+  }
   CSSValueList* values = CSSValueList::CreateSpaceSeparated();
   while (!range.AtEnd()) {
     CSSStringValue* parsed_value = css_parsing_utils::ConsumeString(range);
@@ -4936,11 +4939,8 @@ const CSSValue* Quotes::CSSValueFromComputedStyleInternal(
     const SVGComputedStyle&,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (!style.Quotes()) {
-    // TODO(ramya.v): We should return the quote values that we're actually
-    // using.
-    return nullptr;
-  }
+  if (!style.Quotes())
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
   if (style.Quotes()->size()) {
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
     for (int i = 0; i < style.Quotes()->size(); i++) {
