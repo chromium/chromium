@@ -133,6 +133,7 @@ crbug.com/angleproject/4417 [ win d3d11 ] conformance2/rendering/framebuffer-ren
 crbug.com/angleproject/4417 [ win d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 
 # Intel flaky issues
+crbug.com/1122744 [ win d3d11 intel ] conformance/textures/misc/texparameter-test.html [ RetryOnFailure ]
 crbug.com/912579 [ opengl win passthrough intel ] conformance2/rendering/out-of-bounds-index-buffers-after-copying.html [ RetryOnFailure ]
 crbug.com/1114780 [ win intel ] deqp/functional/gles3/multisample.html [ RetryOnFailure ]
 # Flakily times out on driver 26.20.100.8141.
