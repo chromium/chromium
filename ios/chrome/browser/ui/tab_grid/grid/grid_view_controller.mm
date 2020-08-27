@@ -455,7 +455,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   NSIndexPath* dropIndexPath = coordinator.destinationIndexPath;
   if (!dropIndexPath) {
-    dropIndexPath = [NSIndexPath indexPathForItem:self.items.count inSection:0];
+    dropIndexPath = [NSIndexPath indexPathForItem:(self.items.count - 1)
+                                        inSection:0];
   }
 
   NSUInteger destinationIndex =
