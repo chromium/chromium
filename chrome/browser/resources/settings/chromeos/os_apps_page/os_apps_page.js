@@ -12,8 +12,10 @@ Polymer({
 
   behaviors: [
     app_management.StoreClient,
+    DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
+    settings.RouteObserverBehavior,
   ],
 
   properties: {
@@ -74,10 +76,35 @@ Polymer({
      * @private
      */
     app_: Object,
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kManageAndroidPreferences,
+        chromeos.settings.mojom.Setting.kTurnOnPlayStore,
+      ]),
+    },
   },
 
   attached() {
     this.watch('app_', state => app_management.util.getSelectedApp(state));
+  },
+
+  /**
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   */
+  currentRouteChanged(route, oldRoute) {
+    // Does not apply to this page.
+    if (route !== settings.routes.APPS) {
+      return;
+    }
+
+    this.attemptDeepLink();
   },
 
   /**

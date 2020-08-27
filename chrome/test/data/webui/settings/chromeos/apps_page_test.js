@@ -21,6 +21,7 @@ suite('AppsPageTests', function() {
   teardown(function() {
     appsPage.remove();
     appsPage = null;
+    settings.Router.getInstance().resetRouteForTesting();
   });
 
   suite('Page Combinations', function() {
@@ -78,6 +79,41 @@ suite('AppsPageTests', function() {
       assertTrue(!!appsPage.$$('.subpage-arrow'));
     });
 
+    test('Deep link to manage android prefs', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      appsPage.havePlayStoreApp = false;
+      Polymer.dom.flush();
+
+      const params = new URLSearchParams;
+      params.append('settingId', '700');
+      settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
+
+      const deepLinkElement = appsPage.$$('#manageApps').$$('cr-icon-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Manage android prefs button should be focused for settingId=700.');
+    });
+
+    test('Deep link to turn on Play Store', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      const params = new URLSearchParams;
+      params.append('settingId', '702');
+      settings.Router.getInstance().navigateTo(settings.routes.APPS, params);
+
+      const deepLinkElement = appsPage.$$('#enable');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Turn on play store button should be focused for settingId=702.');
+    });
+
     // TODO(crbug.com/1006662): Test that setting playStoreEnabled to false
     // navigates back to the main apps section.
   });
@@ -92,6 +128,13 @@ suite('AppsPageTests', function() {
       subpage = document.createElement('settings-android-apps-subpage');
       document.body.appendChild(subpage);
       testing.Test.disableAnimationsAndTransitions();
+
+      // Because we can't simulate the loadTimeData value androidAppsVisible,
+      // this route doesn't exist for tests. Add it in for testing.
+      if (!settings.routes.ANDROID_APPS_DETAILS) {
+        settings.routes.ANDROID_APPS_DETAILS = settings.routes.APPS.createChild(
+            '/' + chromeos.settings.mojom.GOOGLE_PLAY_STORE_SUBPAGE_PATH);
+      }
 
       subpage.prefs = {arc: {enabled: {value: true}}};
       subpage.androidAppsInfo = {
@@ -191,6 +234,46 @@ suite('AppsPageTests', function() {
       button.click();
       Polymer.dom.flush();
       return promise;
+    });
+
+    test('Deep link to manage android prefs - subpage', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      subpage.androidAppsInfo = {
+        playStoreEnabled: false,
+        settingsAppAvailable: true,
+      };
+      Polymer.dom.flush();
+
+      const params = new URLSearchParams;
+      params.append('settingId', '700');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.ANDROID_APPS_DETAILS, params);
+
+      const deepLinkElement = subpage.$$('#manageApps').$$('cr-icon-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Manage android prefs button should be focused for settingId=700.');
+    });
+
+    test('Deep link to remove play store', async () => {
+      loadTimeData.overrideValues({
+        isDeepLinkingEnabled: true,
+      });
+
+      const params = new URLSearchParams;
+      params.append('settingId', '701');
+      settings.Router.getInstance().navigateTo(
+          settings.routes.ANDROID_APPS_DETAILS, params);
+
+      const deepLinkElement = subpage.$$('#remove cr-button');
+      await test_util.waitAfterNextRender(deepLinkElement);
+      assertEquals(
+          deepLinkElement, getDeepActiveElement(),
+          'Remove play store button should be focused for settingId=701.');
     });
   });
 });

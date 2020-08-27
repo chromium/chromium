@@ -302,6 +302,7 @@ var OSSettingsAppsPageTest = class extends OSSettingsBrowserTest {
     return super.extraLibraries.concat([
       '//ui/webui/resources/js/promise_resolver.js',
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       BROWSER_SETTINGS_PATH + 'chromeos/test_android_apps_browser_proxy.js',
       'apps_page_test.js',
     ]);

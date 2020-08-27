@@ -19,6 +19,7 @@ js_library("android_apps_browser_proxy") {
 js_library("android_apps_subpage") {
   deps = [
     ":android_apps_browser_proxy",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "../../prefs:prefs_behavior",
@@ -32,6 +33,7 @@ js_library("os_apps_page") {
   deps = [
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../../:router",
     "../../prefs:prefs_behavior",
