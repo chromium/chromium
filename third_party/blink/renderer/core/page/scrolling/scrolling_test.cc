@@ -231,6 +231,8 @@ TEST_P(ScrollingTest, fastScrollingByDefault) {
 }
 
 TEST_P(ScrollingTest, fastFractionalScrollingDiv) {
+  ScopedFractionalScrollOffsetsForTest fractional_scroll_offsets(true);
+
   RegisterMockedHttpURLLoad("fractional-scroll-div.html");
   NavigateTo(base_url_ + "fractional-scroll-div.html");
   ForceFullCompositingUpdate();
