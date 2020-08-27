@@ -558,6 +558,10 @@ bool IsDeepLinkingEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsDeepLinking);
 }
 
+bool IsDiagnosticsAppEnabled() {
+  return base::FeatureList::IsEnabled(kDiagnosticsApp);
+}
+
 bool IsImeSandboxEnabled() {
   return base::FeatureList::IsEnabled(kEnableImeSandbox);
 }
