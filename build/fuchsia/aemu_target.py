@@ -4,6 +4,7 @@
 
 """Implements commands for running and interacting with Fuchsia on AEMU."""
 
+import emu_target
 import os
 import platform
 import qemu_target
@@ -12,14 +13,17 @@ import logging
 from common import GetEmuRootForPlatform
 
 
-class AemuTarget(qemu_target.QemuTarget):
+def GetTargetType():
+  return AemuTarget
 
-  def __init__(self, output_dir, target_cpu, system_log_file, emu_type,
-               cpu_cores, require_kvm, ram_size_mb, enable_graphics,
-               hardware_gpu):
+
+class AemuTarget(qemu_target.QemuTarget):
+  EMULATOR_NAME = 'aemu'
+
+  def __init__(self, output_dir, target_cpu, system_log_file, cpu_cores,
+               require_kvm, ram_size_mb, enable_graphics, hardware_gpu):
     super(AemuTarget, self).__init__(output_dir, target_cpu, system_log_file,
-                                     emu_type, cpu_cores, require_kvm,
-                                     ram_size_mb)
+                                     cpu_cores, require_kvm, ram_size_mb)
 
     # TODO(crbug.com/1000907): Enable AEMU for arm64.
     if platform.machine() == 'aarch64':
@@ -27,12 +31,27 @@ class AemuTarget(qemu_target.QemuTarget):
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
 
+  @staticmethod
+  def RegisterArgs(arg_parser):
+    emu_target.EmuTarget.RegisterArgs(arg_parser)
+    aemu_args = arg_parser.add_argument_group('aemu', 'AEMU Arguments')
+    aemu_args.add_argument('--enable-graphics',
+                           action='store_true',
+                           default=False,
+                           help='Start AEMU with graphics instead of '\
+                                'headless.')
+    aemu_args.add_argument('--hardware-gpu',
+                           action='store_true',
+                           default=False,
+                           help='Use local GPU hardware instead of '\
+                                'Swiftshader.')
+
   def _EnsureEmulatorExists(self, path):
     assert os.path.exists(path), \
-          'This checkout is missing %s.' % (self._emu_type)
+          'This checkout is missing %s.' % (self.EMULATOR_NAME)
 
   def _BuildCommand(self):
-    aemu_folder = GetEmuRootForPlatform(self._emu_type)
+    aemu_folder = GetEmuRootForPlatform(self.EMULATOR_NAME)
 
     self._EnsureEmulatorExists(aemu_folder)
     aemu_path = os.path.join(aemu_folder, 'emulator')
@@ -77,7 +96,7 @@ class AemuTarget(qemu_target.QemuTarget):
     return aemu_command
 
   def _GetVulkanIcdFile(self):
-    return os.path.join(GetEmuRootForPlatform(self._emu_type), 'lib64',
+    return os.path.join(GetEmuRootForPlatform(self.EMULATOR_NAME), 'lib64',
                         'vulkan', 'vk_swiftshader_icd.json')
 
   def _SetEnv(self):

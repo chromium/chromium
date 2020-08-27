@@ -23,40 +23,38 @@ from common import SDK_ROOT, EnsurePathExists, GetHostToolPathFromPlatform
 
 # The maximum times to attempt mDNS resolution when connecting to a freshly
 # booted Fuchsia instance before aborting.
-_BOOT_DISCOVERY_ATTEMPTS = 30
+BOOT_DISCOVERY_ATTEMPTS = 30
 
-# Number of seconds to wait when querying a list of all devices over mDNS.
-_LIST_DEVICES_TIMEOUT_SECS = 3
-
-#Number of failed connection attempts before redirecting system logs to stdout.
+# Number of failed connection attempts before redirecting system logs to stdout.
 CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
 
 TARGET_HASH_FILE_PATH = '/data/.hash'
 
+# Number of seconds to wait when querying a list of all devices over mDNS.
+_LIST_DEVICES_TIMEOUT_SECS = 3
+
+# Time between a reboot command is issued and when connection attempts from the
+# host begin.
+_REBOOT_SLEEP_PERIOD = 20
+
+
+def GetTargetType():
+  return DeviceTarget
+
+
 class DeviceTarget(target.Target):
   """Prepares a device to be used as a deployment target. Depending on the
   command line parameters, it automatically handling a number of preparatory
-  steps relating to address resolution, device provisioning, and SDK
-  versioning.
+  steps relating to address resolution.
 
   If |_node_name| is unset:
-    If there is one running device, use it for deployment and execution. The
-    device's SDK version is checked unless --os-check=ignore is set.
-    If --os-check=update is set, then the target device is repaved if the SDK
-    version doesn't match.
+    If there is one running device, use it for deployment and execution.
 
     If there are more than one running devices, then abort and instruct the
     user to re-run the command with |_node_name|
 
-    Otherwise, if there are no running devices, then search for a device
-    running Zedboot, and pave it.
-
-
   If |_node_name| is set:
     If there is a running device with a matching nodename, then it is used
-    for deployment and execution.
-
-    Otherwise, attempt to pave a device with a matching nodename, and use it
     for deployment and execution.
 
   If |_host| is set:
@@ -85,7 +83,9 @@ class DeviceTarget(target.Target):
     self._port = port if port else 22
     self._system_log_file = system_log_file
     self._host = host
-    self._fuchsia_out_dir = fuchsia_out_dir
+    self._fuchsia_out_dir = None
+    if fuchsia_out_dir:
+      self._fuchsia_out_dir = os.path.expanduser(fuchsia_out_dir)
     self._node_name = node_name
     self._os_check = os_check
     self._amber_repo = None
@@ -113,6 +113,39 @@ class DeviceTarget(target.Target):
       boot_data.ProvisionSSH(output_dir)
       self._ssh_config_path = boot_data.GetSSHConfigPath(output_dir)
 
+  @staticmethod
+  def RegisterArgs(arg_parser):
+    target.Target.RegisterArgs(arg_parser)
+    device_args = arg_parser.add_argument_group('device', 'Device Arguments')
+    device_args.add_argument('--host',
+                             help='The IP of the target device. Optional.')
+    device_args.add_argument('--node-name',
+                             help='The node-name of the device to boot or '
+                             'deploy to. Optional, will use the first '
+                             'discovered device if omitted.')
+    device_args.add_argument('--port',
+                             '-p',
+                             type=int,
+                             default=22,
+                             help='The port of the SSH service running on the '
+                             'device. Optional.')
+    device_args.add_argument('--ssh-config',
+                             '-F',
+                             help='The path to the SSH configuration used for '
+                             'connecting to the target device.')
+    device_args.add_argument('--fuchsia-out-dir',
+                             help='Path to a Fuchsia build output directory. '
+                             'Equivalent to setting --ssh_config and '
+                             '--os-check=ignore')
+    device_args.add_argument(
+        '--os_check',
+        choices=['check', 'update', 'ignore'],
+        default='update',
+        help="Sets the OS version enforcement policy. If 'check', then the "
+        "deployment process will halt if the target\'s version doesn\'t "
+        "match. If 'update', then the target device will automatically "
+        "be repaved. If 'ignore', then the OS version won\'t be checked.")
+
   def _SDKHashMatches(self):
     """Checks if /data/.hash on the device matches SDK_ROOT/.hash.
 
@@ -127,7 +160,10 @@ class DeviceTarget(target.Target):
 
       return filecmp.cmp(tmp.name, os.path.join(SDK_ROOT, '.hash'), False)
 
-  def __Discover(self):
+  def _ProvisionDeviceIfNecessary(self):
+    pass
+
+  def _Discover(self):
     """Queries mDNS for the IP address of a booted Fuchsia instance whose name
     matches |_node_name| on the local area network. If |_node_name| isn't
     specified, and there is only one device on the network, then returns the
@@ -186,32 +222,10 @@ class DeviceTarget(target.Target):
   def Start(self):
     if self._host:
       self._WaitUntilReady()
-
     else:
-      should_provision = False
-
-      if self.__Discover():
-        self._WaitUntilReady()
-
-        if self._os_check != 'ignore':
-          if self._SDKHashMatches():
-            if self._os_check == 'update':
-              logging.info( 'SDK hash does not match; rebooting and repaving.')
-              self.RunCommand(['dm', 'reboot'])
-              should_provision = True
-            elif self._os_check == 'check':
-              raise Exception('Target device SDK version does not match.')
-
-      else:
-        should_provision = True
-
-      if should_provision:
-        boot_data.AssertBootImagesExist(self._GetTargetSdkArch(), 'generic')
-        self.__ProvisionDevice()
-
+      self._ProvisionDeviceIfNecessary()
       assert self._node_name
       assert self._host
-
 
   def GetAmberRepo(self):
     if not self._amber_repo:
@@ -226,39 +240,9 @@ class DeviceTarget(target.Target):
 
     return self._amber_repo
 
-
-  def __ProvisionDevice(self):
-    """Netboots a device with Fuchsia. If |_node_name| is set, then only a
-    device with a matching node name is used.
-
-    The device is up and reachable via SSH when the function is successfully
-    completes."""
-
-    bootserver_path = GetHostToolPathFromPlatform('bootserver')
-    bootserver_command = [
-        bootserver_path,
-        '-1',
-        '--fvm',
-        EnsurePathExists(
-            boot_data.GetTargetFile('storage-sparse.blk',
-                                    self._GetTargetSdkArch(),
-                                    boot_data.TARGET_TYPE_GENERIC)),
-        EnsurePathExists(boot_data.GetBootImage(self._output_dir,
-                                                self._GetTargetSdkArch(),
-                                                boot_data.TARGET_TYPE_GENERIC))]
-
-    if self._node_name:
-      bootserver_command += ['-n', self._node_name]
-
-    bootserver_command += ['--']
-    bootserver_command += boot_data.GetKernelArgs(self._output_dir)
-
-    logging.debug(' '.join(bootserver_command))
-    stdout = subprocess.check_output(bootserver_command,
-                                     stderr=subprocess.STDOUT)
-
+  def _ParseNodename(self, output):
     # Parse the nodename from bootserver stdout.
-    m = re.search(r'.*Proceeding with nodename (?P<nodename>.*)$', stdout,
+    m = re.search(r'.*Proceeding with nodename (?P<nodename>.*)$', output,
                   re.MULTILINE)
     if not m:
       raise Exception('Couldn\'t parse nodename from bootserver output.')
@@ -286,3 +270,10 @@ class DeviceTarget(target.Target):
 
   def _GetSshConfigPath(self):
     return self._ssh_config_path
+
+  def Restart(self):
+    """Restart the device."""
+
+    self.RunCommandPiped('dm reboot')
+    time.sleep(_REBOOT_SLEEP_PERIOD)
+    self.Start()

@@ -9,6 +9,7 @@ ciopfs
 /cros_cache/
 /Debug
 /Debug_x64
+/fuchsia/internal/
 /goma
 /gomacc.lock
 /ipch/

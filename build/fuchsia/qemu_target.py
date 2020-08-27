@@ -33,18 +33,20 @@ GUEST_MAC_ADDRESS = '52:54:00:63:5e:7b'
 EXTENDED_BLOBSTORE_SIZE = 1073741824  # 1GB
 
 
+def GetTargetType():
+  return QemuTarget
+
+
 class QemuTarget(emu_target.EmuTarget):
-  def __init__(self, output_dir, target_cpu, system_log_file,
-               emu_type, cpu_cores, require_kvm, ram_size_mb):
+  EMULATOR_NAME = 'qemu'
+
+  def __init__(self, output_dir, target_cpu, system_log_file, cpu_cores,
+               require_kvm, ram_size_mb):
     super(QemuTarget, self).__init__(output_dir, target_cpu,
                                      system_log_file)
-    self._emu_type=emu_type
     self._cpu_cores=cpu_cores
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
-
-  def _GetEmulatorName(self):
-    return self._emu_type
 
   def _IsKvmEnabled(self):
     kvm_supported = sys.platform.startswith('linux') and \
@@ -131,8 +133,7 @@ class QemuTarget(emu_target.EmuTarget):
         kvm_command.append('host,migratable=no,+invtsc')
     else:
       logging.warning('Unable to launch %s with KVM acceleration.'
-                       % (self._emu_type) +
-                      'The guest VM will be slow.')
+                      'The guest VM will be slow.' % (self.EMULATOR_NAME))
       if self._target_cpu == 'arm64':
         kvm_command = ['-cpu', 'cortex-a53']
       else:
@@ -158,8 +159,10 @@ class QemuTarget(emu_target.EmuTarget):
 
   def _BuildCommand(self):
     qemu_exec = 'qemu-system-'+self._GetTargetSdkLegacyArch()
-    qemu_command = [os.path.join(GetEmuRootForPlatform(self._emu_type), 'bin',
-                                 qemu_exec)]
+    qemu_command = [
+        os.path.join(GetEmuRootForPlatform(self.EMULATOR_NAME), 'bin',
+                     qemu_exec)
+    ]
     qemu_command.extend(self._BuildQemuConfig())
     qemu_command.append('-nographic')
     return qemu_command

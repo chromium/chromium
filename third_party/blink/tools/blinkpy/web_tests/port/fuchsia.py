@@ -135,7 +135,6 @@ class _TargetHost(object):
                 'system_log_file': None,
                 'cpu_cores': CPU_CORES,
                 'require_kvm': True,
-                'emu_type': target_device,
                 'ram_size_mb': 8192
             }
             if target_device == 'qemu':

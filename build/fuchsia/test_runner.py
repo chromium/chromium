@@ -7,15 +7,9 @@
 """Deploys and runs a test package on a Fuchsia target."""
 
 import argparse
-import json
-import logging
 import os
 import runner_logs
-import socket
-import subprocess
 import sys
-import tempfile
-import time
 
 from common_args import AddCommonArgs, ConfigureLogging, GetDeploymentTargetForArgs
 from net_test_server import SetupTestServer
@@ -63,7 +57,7 @@ def main():
                       type=int,
                       help='Sets the limit of test batch to run in a single '
                       'process.')
-  # --test-launcher-filter-file is specified relative to --output-directory,
+  # --test-launcher-filter-file is specified relative to --output-dir,
   # so specifying type=os.path.* will break it.
   parser.add_argument('--test-launcher-filter-file',
                       default=None,
@@ -87,9 +81,9 @@ def main():
                       help='Arguments for the test process.')
   args = parser.parse_args()
 
-  # Flag output_directory is required for tests launched with this script.
-  if not args.output_directory:
-    raise ValueError("output-directory must be specified.")
+  # Flag output_dir is required for tests launched with this script.
+  if not args.output_dir:
+    raise ValueError("output-dir must be specified.")
 
   ConfigureLogging(args)
 
@@ -120,7 +114,7 @@ def main():
     if args.device == 'device':
       test_concurrency = DEFAULT_TEST_SERVER_CONCURRENCY
     else:
-      test_concurrency = args.qemu_cpu_cores
+      test_concurrency = args.cpu_cores
   if test_concurrency:
     child_args.append('--test-launcher-jobs=%d' % test_concurrency)
 
@@ -143,7 +137,7 @@ def main():
     child_args.extend(args.child_args)
 
   try:
-    with GetDeploymentTargetForArgs(args) as target, \
+    with GetDeploymentTargetForArgs() as target, \
          SystemLogReader() as system_logger, \
          RunnerLogManager(args.runner_logs_dir, BuildIdsPaths(args.package)):
       target.Start()
@@ -163,9 +157,8 @@ def main():
                                       args.package_name)
 
       run_package_args = RunPackageArgs.FromCommonArgs(args)
-      returncode = RunPackage(
-          args.output_directory, target, args.package, args.package_name,
-          child_args, run_package_args)
+      returncode = RunPackage(args.output_dir, target, args.package,
+                              args.package_name, child_args, run_package_args)
 
       if test_server:
         test_server.Stop()

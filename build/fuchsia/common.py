@@ -5,9 +5,12 @@
 import logging
 import os
 import platform
+import signal
 import socket
 import subprocess
 import sys
+import time
+import threading
 
 DIR_SOURCE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -92,3 +95,42 @@ def GetAvailableTcpPort():
   port = sock.getsockname()[1]
   sock.close()
   return port
+
+
+def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
+  """Helper function for running a command.
+
+  Args:
+    command: The command to run.
+    silent: If true, stdout and stderr of the command will not be printed.
+    timeout_secs: Maximum amount of time allowed for the command to finish.
+
+  Returns:
+    A tuple of (return code, stdout, stderr) of the command. Raises
+    an exception if the subprocess times out.
+  """
+
+  if silent:
+    devnull = open(os.devnull, 'w')
+    process = subprocess.Popen(command, stdout=devnull, stderr=devnull)
+  else:
+    process = subprocess.Popen(command,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
+  timeout_timer = None
+  if timeout_secs:
+
+    def interrupt_process():
+      process.send_signal(signal.SIGKILL)
+
+    timeout_timer = threading.Timer(timeout_secs, interrupt_process)
+    timeout_timer.start()
+
+  out, err = process.communicate()
+  if timeout_timer:
+    timeout_timer.cancel()
+
+  if process.returncode == -9:
+    raise Exception('Timeout when executing \"%s\".' % ' '.join(command))
+
+  return process.returncode, out, err

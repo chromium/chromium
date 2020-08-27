@@ -7,6 +7,8 @@ import os
 import subprocess
 import threading
 
+from common import SubprocessCallWithTimeout
+
 _SSH = ['ssh']
 _SCP = ['scp', '-C']  # Use gzip compression.
 _SSH_LOGGER = logging.getLogger('ssh')
@@ -54,29 +56,8 @@ class CommandRunner(object):
 
     ssh_command = self._GetSshCommandLinePrefix() + command
     _SSH_LOGGER.debug('ssh exec: ' + ' '.join(ssh_command))
-    if silent:
-      devnull = open(os.devnull, 'w')
-      process = subprocess.Popen(ssh_command, stdout=devnull, stderr=devnull)
-    else:
-      process = subprocess.Popen(ssh_command, stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT)
-
-    timeout_timer = None
-    if timeout_secs:
-      timeout_timer = threading.Timer(timeout_secs, process.kill)
-      timeout_timer.start()
-
-    if not silent:
-      for line in process.stdout:
-        print(line)
-
-    process.wait()
-    if timeout_timer:
-      timeout_timer.cancel()
-    if process.returncode == -9:
-      raise Exception('Timeout when executing \"%s\".' % ' '.join(command))
-
-    return process.returncode
+    retval, _, _ = SubprocessCallWithTimeout(ssh_command, silent, timeout_secs)
+    return retval
 
 
   def RunCommandPiped(self, command, stdout, stderr, ssh_args = None, **kwargs):

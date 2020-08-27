@@ -27,10 +27,12 @@ def main():
   args, gpu_test_args = parser.parse_known_args()
   ConfigureLogging(args)
 
-  # If output directory is not set, assume the script is being launched
+  additional_target_args = {}
+
+  # If output_dir is not set, assume the script is being launched
   # from the output directory.
-  if not args.output_directory:
-    args.output_directory = os.getcwd()
+  if not args.output_dir:
+    args.output_dir = os.getcwd()
 
   # Create a temporary log file that Telemetry will look to use to build
   # an artifact when tests fail.
@@ -38,10 +40,10 @@ def main():
   if not args.system_log_file:
     args.system_log_file = os.path.join(tempfile.mkdtemp(), 'system-log')
     temp_log_file = True
+    additional_target_args['system_log_file'] = args.system_log_file
 
   package_names = ['web_engine', 'web_engine_shell']
-  web_engine_dir = os.path.join(args.output_directory, 'gen', 'fuchsia',
-                                'engine')
+  web_engine_dir = os.path.join(args.output_dir, 'gen', 'fuchsia', 'engine')
   gpu_script = [
       os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test', 'gpu',
                    'run_gpu_integration_test.py')
@@ -50,10 +52,10 @@ def main():
   # Pass all other arguments to the gpu integration tests.
   gpu_script.extend(gpu_test_args)
   try:
-    with GetDeploymentTargetForArgs(args) as target:
+    with GetDeploymentTargetForArgs(additional_target_args) as target:
       target.Start()
       _, fuchsia_ssh_port = target._GetEndpoint()
-      gpu_script.extend(['--fuchsia-ssh-config-dir', args.output_directory])
+      gpu_script.extend(['--fuchsia-ssh-config-dir', args.output_dir])
       gpu_script.extend(['--fuchsia-ssh-port', str(fuchsia_ssh_port)])
       gpu_script.extend(['--fuchsia-system-log-file', args.system_log_file])
       if args.verbose:

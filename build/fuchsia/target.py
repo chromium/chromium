@@ -2,17 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import boot_data
 import common
 import json
 import logging
 import os
 import remote_cmd
 import runner_logs
-import shutil
 import subprocess
-import sys
-import tempfile
 import time
 
 
@@ -70,6 +66,20 @@ class Target(object):
     self._dry_run = False
     self._target_cpu = target_cpu
     self._command_runner = None
+
+  @staticmethod
+  def RegisterArgs(arg_parser):
+    common_args = arg_parser.add_argument_group(
+        'target', 'Arguments that apply to all targets.')
+    common_args.add_argument(
+        '--output-dir',
+        type=os.path.realpath,
+        default=os.getcwd(),
+        help=('Path to the directory in which build files are located. '
+              'Defaults to current directory.'))
+    common_args.add_argument('--system-log-file',
+                             help='File to write system logs to. Specify '
+                             '- to log to stdout.')
 
   # Functions used by the Python context manager for teardown.
   def __enter__(self):

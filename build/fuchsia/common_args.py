@@ -2,14 +2,67 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
+import importlib
 import logging
 import os
 import sys
 
-from aemu_target import AemuTarget
-from device_target import DeviceTarget
-from qemu_target import QemuTarget
 from common import GetHostArchFromPlatform
+
+
+def _AddTargetSpecificationArgs(arg_parser):
+  """Returns a parser that handles the target type used for the test run."""
+
+  device_args = arg_parser.add_argument_group(
+      'target', 'Arguments specifying the Fuchsia target type.')
+  device_args.add_argument('--target-cpu',
+                           default=GetHostArchFromPlatform(),
+                           help='GN target_cpu setting for the build. Defaults '
+                           'to the same architecture as host cpu.')
+  device_args.add_argument('--device',
+                           default=None,
+                           choices=['aemu', 'qemu', 'device', 'ext'],
+                           help='Choose to run on aemu|qemu|device. '
+                           'By default, Fuchsia will run on AEMU on x64 '
+                           'hosts and QEMU on arm64 hosts. Alternatively, '
+                           'setting to ext will require specifying the '
+                           'subclass of Target class used via the '
+                           '--ext-device-path flag.')
+  device_args.add_argument('-d',
+                           action='store_const',
+                           dest='device',
+                           const='device',
+                           help='Run on device instead of emulator.')
+  device_args.add_argument('--ext-device-path',
+                           default=None,
+                           help='Specify path to file that contains the '
+                           'subclass of Target that will be used. Only '
+                           'needed if device specific operations such as '
+                           'paving is required.')
+
+
+def _GetTargetClass(args):
+  """Gets the target class to be used for the test run."""
+
+  if args.device == 'ext':
+    if not args.ext_device_path:
+      raise Exception('--ext-device-path flag must be set when device flag '
+                      'set to ext.')
+    target_path = args.ext_device_path
+  else:
+    if not args.device:
+      args.device = 'aemu' if args.target_cpu == 'x64' else 'qemu'
+    target_path = '%s_target' % args.device
+
+  try:
+    loaded_target = importlib.import_module(target_path)
+  except ImportError:
+    logging.error('Cannot import from %s. Make sure that --ext-device-path '
+                  'is pointing to a file containing a target '
+                  'module.' % target_path)
+    raise
+  return loaded_target.GetTargetType()
 
 
 def AddCommonArgs(arg_parser):
@@ -18,6 +71,15 @@ def AddCommonArgs(arg_parser):
 
   Args:
     arg_parser: an ArgumentParser object."""
+
+  _AddTargetSpecificationArgs(arg_parser)
+
+  # Parse the args used to specify target
+  module_args, _ = arg_parser.parse_known_args()
+
+  # Determine the target class and register target specific args.
+  target_class = _GetTargetClass(module_args)
+  target_class.RegisterArgs(arg_parser)
 
   package_args = arg_parser.add_argument_group('package', 'Fuchsia Packages')
   package_args.add_argument(
@@ -30,47 +92,11 @@ def AddCommonArgs(arg_parser):
       help='Name of the package to execute, defined in ' + 'package metadata.')
 
   common_args = arg_parser.add_argument_group('common', 'Common arguments')
-  common_args.add_argument(
-      '--output-directory',
-      type=os.path.realpath,
-      default=None,
-      help=('Path to the directory in which build files are located. '))
-  common_args.add_argument(
-      '--target-cpu',
-      default=GetHostArchFromPlatform(),
-      help=('GN target_cpu setting for the build. Defaults to the same '
-            'architecture as host cpu.'))
   common_args.add_argument('--target-staging-path',
                            help='target path under which to stage packages '
                            'during deployment.', default='/data')
-  common_args.add_argument('--device', default=None,
-                           choices=['aemu','qemu','device'],
-                           help='Choose to run on aemu|qemu|device. ' +
-                                'By default, Fuchsia will run in QEMU.')
-  common_args.add_argument('-d', action='store_const', dest='device',
-                           const='device',
-                           help='Run on device instead of emulator.')
-  common_args.add_argument('--host', help='The IP of the target device. ' +
-                           'Optional.')
-  common_args.add_argument('--node-name',
-                           help='The node-name of the device to boot or deploy '
-                                'to. Optional, will use the first discovered '
-                                'device if omitted.')
-  common_args.add_argument('--port', '-p', type=int, default=22,
-                           help='The port of the SSH service running on the ' +
-                                'device. Optional.')
-  common_args.add_argument('--ssh-config', '-F',
-                           help='The path to the SSH configuration used for '
-                                'connecting to the target device.')
-  common_args.add_argument('--fuchsia-out-dir',
-                           help='Path to a Fuchsia build output directory. '
-                                'Equivalent to setting --ssh_config and '
-                                '---os-check=ignore')
   common_args.add_argument('--runner-logs-dir',
                            help='Directory to write test runner logs to.')
-  common_args.add_argument('--system-log-file',
-                           help='File to write system logs to. Specify - to '
-                                'log to stdout.')
   common_args.add_argument('--exclude-system-logs',
                            action='store_false',
                            dest='include_system_logs',
@@ -78,38 +104,6 @@ def AddCommonArgs(arg_parser):
   common_args.add_argument('--verbose', '-v', default=False,
                            action='store_true',
                            help='Enable debug-level logging.')
-  common_args.add_argument(
-      '--qemu-cpu-cores',
-      type=int,
-      default=4,
-      help='Sets the number of CPU cores to provide if launching in a VM.')
-  common_args.add_argument('--memory', type=int, default=2048,
-                           help='Sets the RAM size (MB) if launching in a VM'),
-  common_args.add_argument(
-      '--allow-no-kvm',
-      action='store_false',
-      dest='require_kvm',
-      default=True,
-      help='Do not require KVM acceleration for emulators.')
-  common_args.add_argument(
-      '--os_check', choices=['check', 'update', 'ignore'],
-      default='update',
-      help='Sets the OS version enforcement policy. If \'check\', then the '
-           'deployment process will halt if the target\'s version doesn\'t '
-           'match. If \'update\', then the target device will automatically '
-           'be repaved. If \'ignore\', then the OS version won\'t be checked.')
-
-  aemu_args = arg_parser.add_argument_group('aemu', 'AEMU Arguments')
-  aemu_args.add_argument(
-      '--enable-graphics',
-      action='store_true',
-      default=False,
-      help='Start AEMU with graphics instead of headless.')
-  aemu_args.add_argument(
-      '--hardware-gpu',
-      action='store_true',
-      default=False,
-      help='Use local GPU hardware instead of Swiftshader.')
 
 
 def ConfigureLogging(args):
@@ -129,47 +123,29 @@ def ConfigureLogging(args):
       logging.DEBUG if args.verbose else logging.WARN)
 
 
-def GetDeploymentTargetForArgs(args):
-  """Constructs a deployment target object using parameters taken from
-  command line arguments."""
-  if args.system_log_file == '-':
-    system_log_file = sys.stdout
-  elif args.system_log_file:
-    system_log_file = open(args.system_log_file, 'w')
-  else:
-    system_log_file = None
+# TODO(crbug.com/1121763): remove the need for additional_args
+def GetDeploymentTargetForArgs(additional_args=None):
+  """Constructs a deployment target object using command line arguments.
+     If needed, an additional_args dict can be used to supplement the
+     command line arguments."""
 
-  # Allow fuchsia to run on emulator if device not explicitly chosen.
-  # AEMU is the default emulator for x64 Fuchsia, and QEMU for others.
-  if not args.device:
-    if args.target_cpu == 'x64':
-      args.device = 'aemu'
-    else:
-      args.device = 'qemu'
+  # Determine target type from command line arguments.
+  device_type_parser = argparse.ArgumentParser()
+  _AddTargetSpecificationArgs(device_type_parser)
+  module_args, _ = device_type_parser.parse_known_args()
+  target_class = _GetTargetClass(module_args)
 
-  target_args = { 'output_dir':args.output_directory,
-                  'target_cpu':args.target_cpu,
-                  'system_log_file':system_log_file }
-  if args.device == 'device':
-    target_args.update({ 'host':args.host,
-                         'node_name':args.node_name,
-                         'port':args.port,
-                         'ssh_config':args.ssh_config,
-                         'fuchsia_out_dir':args.fuchsia_out_dir,
-                         'os_check':args.os_check })
-    return DeviceTarget(**target_args)
-  else:
-    target_args.update({
-        'cpu_cores': args.qemu_cpu_cores,
-        'require_kvm': args.require_kvm,
-        'emu_type': args.device,
-        'ram_size_mb': args.memory
-    })
-    if args.device == 'qemu':
-      return QemuTarget(**target_args)
-    else:
-      target_args.update({
-          'enable_graphics': args.enable_graphics,
-          'hardware_gpu': args.hardware_gpu
-      })
-      return AemuTarget(**target_args)
+  # Process command line args needed to initialize target in separate arg
+  # parser.
+  target_arg_parser = argparse.ArgumentParser()
+  target_class.RegisterArgs(target_arg_parser)
+  known_args, _ = target_arg_parser.parse_known_args()
+  target_args = vars(known_args)
+
+  # target_cpu is needed to determine target type, so we need to add
+  # it here to the args used to initialize the Target.
+  target_args.update({'target_cpu': module_args.target_cpu})
+
+  if additional_args:
+    target_args.update(additional_args)
+  return target_class(**target_args)
