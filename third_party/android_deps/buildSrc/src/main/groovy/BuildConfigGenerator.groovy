@@ -433,6 +433,17 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  jar_excluded_patterns = [ "*xmlpull*" ]\n')
                 break
             case 'androidx_preference_preference':
+                sb.append("""\
+                |  deps += [ "//third_party/android_deps/local_modifications/androidx_preference_preference:androidx_preference_preference_prebuilt_java" ]
+                |  # Omit these files since we use our own copy from AndroidX master, included above.
+                |  # We can remove this once we migrate to AndroidX master for all libraries.
+                |  jar_excluded_patterns = [
+                |    "androidx/preference/PreferenceDialogFragmentCompat*",
+                |    "androidx/preference/PreferenceFragmentCompat*",
+                |  ]
+                |
+                |""".stripMargin())
+                // fallthrough
             case 'com_android_support_preference_v7':
                 // Replace broad library -keep rules with a more limited set in
                 // chrome/android/java/proguard.flags instead.

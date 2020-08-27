@@ -1,0 +1,10 @@
+This directory contains PreferenceFragmentCompat.java and
+PreferenceDialogFragmentCompat.java, copied without changes from the AndroidX
+preference library at commit beeb6fb. These files contain two changes (commits
+72c0381 and beeb6fb) that we want in Chromium, but are not yet in an official
+preference library release.
+
+To pull in these changes, we exclude PreferenceFragmentCompat and
+PreferenceDialogFragmentCompat from the androidx_preference_preference library
+in CIPD (which is from an official release), and add a dependency from that
+library to a prebuilt jar file containing the two classes we want to update.
