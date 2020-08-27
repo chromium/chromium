@@ -332,11 +332,6 @@ void PrerenderLinkManager::StartPrerenders() {
       abandoned_prerenders.pop_front();
     }
 
-    if (!(blink::kPrerenderRelTypePrerender & pending_prerender->rel_types)) {
-      prerenders_.erase(it);
-      continue;
-    }
-
     std::unique_ptr<PrerenderHandle> handle =
         manager_->AddPrerenderFromLinkRelPrerender(
             pending_prerender->launcher_render_process_id,
