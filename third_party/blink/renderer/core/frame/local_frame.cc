@@ -1128,27 +1128,25 @@ void LocalFrame::WindowSegmentsChanged(
   if (!RuntimeEnabledFeatures::CSSFoldablesEnabled())
     return;
 
+  DCHECK(IsLocalRoot());
+
   // A change in the window segments requires re-evaluation of media queries
   // for the local frame subtree (the segments affect the "screen-spanning"
   // feature).
   MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange::kOther);
 
-  // Also need to update the environment variables related to window segments
-  // on the local frame subtree.
+  // Also need to update the environment variables related to window segments.
   UpdateCSSFoldEnvironmentVariables(window_segments);
-  for (Frame* child = Tree().FirstChild(); child;
-       child = child->Tree().NextSibling()) {
-    if (auto* child_local_frame = DynamicTo<LocalFrame>(child))
-      child_local_frame->UpdateCSSFoldEnvironmentVariables(window_segments);
-  }
 }
 
 void LocalFrame::UpdateCSSFoldEnvironmentVariables(
     const WebVector<WebRect>& window_segments) {
   DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
 
-  DocumentStyleEnvironmentVariables& vars =
-      GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+  // Update the variable values on the root instance so that documents that
+  // are created after the values change automatically have the right values.
+  StyleEnvironmentVariables& vars =
+      StyleEnvironmentVariables::GetRootInstance();
 
   // CSS environment variables related to window segments currently only
   // expose values for a single fold (i.e. if there are two segments). In all

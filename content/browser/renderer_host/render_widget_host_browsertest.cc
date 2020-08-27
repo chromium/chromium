@@ -825,6 +825,44 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
       EvalJs(shell(), "getComputedStyle(target).opacity").ExtractString());
 }
 
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
+                       FoldablesCSSWithReload) {
+  const char kTestPageURL[] =
+      R"HTML(data:text/html,<!DOCTYPE html>
+      <style>
+        @media (screen-spanning: single-fold-vertical) {
+          div { margin-left: env(fold-left, 10px); }
+        }
+      </style>
+      <div id='target'></div>)HTML";
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kTestPageURL)));
+
+  const gfx::Size root_view_size = view()->GetVisibleViewportSize();
+  const int kDisplayFeatureLength = 10;
+  DisplayFeature emulated_display_feature{
+      DisplayFeature::Orientation::kVertical,
+      /* offset */ root_view_size.width() / 2 - kDisplayFeatureLength / 2,
+      /* mask_length */ kDisplayFeatureLength};
+  view()->SetDisplayFeatureForTesting(emulated_display_feature);
+  host()->SynchronizeVisualProperties();
+
+  EXPECT_EQ(
+      base::NumberToString(emulated_display_feature.offset) + "px",
+      EvalJs(shell(), "getComputedStyle(target).marginLeft").ExtractString());
+
+  // Ensure that the environment variables have the correct values in the new
+  // document that is created on reloading the page.
+  WindowedNotificationObserver load_stop_observer(
+      NOTIFICATION_LOAD_STOP, NotificationService::AllSources());
+  shell()->Reload();
+  load_stop_observer.Wait();
+
+  EXPECT_EQ(
+      base::NumberToString(emulated_display_feature.offset) + "px",
+      EvalJs(shell(), "getComputedStyle(target).marginLeft").ExtractString());
+}
+
 class RenderWidgetHostDelegatedInkMetadataTest
     : public RenderWidgetHostTouchEmulatorBrowserTest {
  public:
