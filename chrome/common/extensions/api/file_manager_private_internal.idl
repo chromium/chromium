@@ -85,6 +85,7 @@ namespace fileManagerPrivateInternal {
     static void getFileTasks(DOMString[] urls,
                              GetFileTasksCallback callback);
     static void getDownloadUrl(DOMString url, GetUrlCallback callback);
+    static void copyImageToClipboard(DOMString url, SimpleCallback callback);
     static void startCopy(DOMString url,
                           DOMString parentUrl,
                           DOMString newName,

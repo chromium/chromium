@@ -40,19 +40,6 @@ void CopyImageToClipboard(scoped_refptr<base::RefCountedString> png_data,
   }
 }
 
-void DecodeFileAndCopyToClipboard(
-    scoped_refptr<base::RefCountedString> png_data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Decode the image in sandboxed process because |png_data| comes from
-  // external storage.
-  data_decoder::DecodeImageIsolated(
-      std::vector<uint8_t>(png_data->data().begin(), png_data->data().end()),
-      data_decoder::mojom::ImageCodec::DEFAULT, false,
-      data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
-      base::BindOnce(&CopyImageToClipboard, png_data));
-}
-
 }  // namespace
 
 void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file) {
@@ -66,6 +53,19 @@ void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file) {
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DecodeFileAndCopyToClipboard, png_data));
+      FROM_HERE, base::BindOnce(&DecodeImageFileAndCopyToClipboard, png_data));
+}
+
+void DecodeImageFileAndCopyToClipboard(
+    scoped_refptr<base::RefCountedString> png_data) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Decode the image in sandboxed process because |png_data| comes from
+  // external storage.
+  data_decoder::DecodeImageIsolated(
+      std::vector<uint8_t>(png_data->data().begin(), png_data->data().end()),
+      data_decoder::mojom::ImageCodec::DEFAULT, false,
+      data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
+      base::BindOnce(&CopyImageToClipboard, png_data));
 }
 }  // namespace clipboard_util

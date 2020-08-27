@@ -210,6 +210,12 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     fileManagerPrivateInternal.getDownloadUrl(url, callback);
   });
 
+  apiFunctions.setHandleRequest('copyImageToClipboard', function(
+        entry, callback) {
+    var url = getEntryURL(entry);
+    fileManagerPrivateInternal.copyImageToClipboard(url, callback);
+  });
+
   apiFunctions.setHandleRequest('startCopy', function(
         entry, parentEntry, newName, callback) {
     var url = getEntryURL(entry);

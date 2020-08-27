@@ -1056,6 +1056,12 @@ interface Functions {
   // |callback|
   static void getVolumeMetadataList(GetVolumeMetadataListCallback callback);
 
+  // Copies an image to the system clipboard.
+  // |entry| Entry of the image to copy to the system clipboard.
+  [nocompile]
+  static void copyImageToClipboard([instanceof=Entry] object entry,
+                                   SimpleCallback callback);
+
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.
   // |entry| Entry of the source entry to be copied.
