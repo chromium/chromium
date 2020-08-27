@@ -1450,6 +1450,7 @@ test("content_browsertests") {
   } else {
     # Non-Android.
     sources += [
+      "../browser/direct_sockets/direct_sockets_browsertest.cc",
       "../browser/host_zoom_map_impl_browsertest.cc",
       "../browser/serial/serial_browsertest.cc",
       "../browser/speech/speech_recognition_browsertest.cc",

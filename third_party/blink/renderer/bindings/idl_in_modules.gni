@@ -582,6 +582,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/quota/storage_usage_details.idl",
           "//third_party/blink/renderer/modules/quota/window_quota.idl",
           "//third_party/blink/renderer/modules/quota/worker_navigator_storage_quota.idl",
+          "//third_party/blink/renderer/modules/direct_sockets/navigator_socket.idl",
+          "//third_party/blink/renderer/modules/direct_sockets/socket_options.idl",
           "//third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.idl",
           "//third_party/blink/renderer/modules/remoteplayback/remote_playback.idl",
           "//third_party/blink/renderer/modules/sanitizer_api/sanitizer.idl",

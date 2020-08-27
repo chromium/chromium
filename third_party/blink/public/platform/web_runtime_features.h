@@ -154,6 +154,7 @@ class WebRuntimeFeatures {
   BLINK_PLATFORM_EXPORT static void EnablePresentationAPI(bool);
   BLINK_PLATFORM_EXPORT static void EnablePushMessaging(bool);
   BLINK_PLATFORM_EXPORT static void EnablePushSubscriptionChangeEvent(bool);
+  BLINK_PLATFORM_EXPORT static void EnableDirectSockets(bool);
   BLINK_PLATFORM_EXPORT static void EnableRemotePlaybackAPI(bool);
   BLINK_PLATFORM_EXPORT static void
   EnableRestrictAutomaticLazyFrameLoadingToDataSaver(bool);

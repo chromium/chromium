@@ -623,6 +623,9 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   WebRuntimeFeatures::EnableBackForwardCache(
       content::IsBackForwardCacheEnabled());
 
+  if (base::FeatureList::IsEnabled(features::kDirectSockets))
+    WebRuntimeFeatures::EnableDirectSockets(true);
+
   if (base::FeatureList::IsEnabled(
           blink::features::kAppCacheRequireOriginTrial)) {
     // The kAppCacheRequireOriginTrial is a flag that controls whether or not

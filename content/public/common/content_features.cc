@@ -507,6 +507,10 @@ const base::Feature kProactivelySwapBrowsingInstance{
 const base::Feature kPushSubscriptionChangeEvent{
     "PushSubscriptionChangeEvent", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Direct Sockets API.
+const base::Feature kDirectSockets{"DirectSockets",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether FileURLLoaderFactory can fetch additional files based on the
 // isolated world's origin. This feature is disabled by default because we want
 // content scripts to have the same permissions as the page they are injected

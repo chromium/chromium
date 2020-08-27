@@ -96,9 +96,10 @@ enum class WebSchedulerTrackedFeature {
   kSpeechSynthesis = 50,
   kKeyboardLock = 51,
   kSmsService = 52,
+  kOutstandingNetworkRequestDirectSocket = 53,
 
   // NB: This enum is used in a bitmask, so kMaxValue must be less than 64.
-  kMaxValue = kSmsService
+  kMaxValue = kOutstandingNetworkRequestDirectSocket
 };
 
 static_assert(static_cast<uint32_t>(WebSchedulerTrackedFeature::kMaxValue) < 64,

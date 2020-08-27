@@ -74445,6 +74445,7 @@ Called by update_scheduler_enums.py.-->
   <int value="50" label="SpeechSynthesis"/>
   <int value="51" label="KeyboardLock"/>
   <int value="52" label="SmsService"/>
+  <int value="53" label="OutstandingNetworkRequestDirectSocket"/>
 </enum>
 
 <enum name="WebShareMethod">

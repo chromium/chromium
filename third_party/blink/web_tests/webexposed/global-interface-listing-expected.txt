@@ -5529,6 +5529,8 @@ interface Navigator
     method getInstalledRelatedApps
     method getUserMedia
     method javaEnabled
+    method openTCPSocket
+    method openUDPSocket
     method registerProtocolHandler
     method requestMIDIAccess
     method requestMediaKeySystemAccess

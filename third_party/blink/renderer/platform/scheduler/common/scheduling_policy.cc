@@ -12,10 +12,11 @@ bool SchedulingPolicy::IsFeatureSticky(SchedulingPolicy::Feature feature) {
     case Feature::kWebSocket:
     case Feature::kWebRTC:
     case Feature::kDedicatedWorkerOrWorklet:
-    case Feature::kOutstandingNetworkRequestFetch:
-    case Feature::kOutstandingNetworkRequestXHR:
-    case Feature::kOutstandingNetworkRequestOthers:
     case Feature::kOutstandingIndexedDBTransaction:
+    case Feature::kOutstandingNetworkRequestDirectSocket:
+    case Feature::kOutstandingNetworkRequestFetch:
+    case Feature::kOutstandingNetworkRequestOthers:
+    case Feature::kOutstandingNetworkRequestXHR:
     case Feature::kBroadcastChannel:
     case Feature::kIndexedDBConnection:
     case Feature::kWebGL:

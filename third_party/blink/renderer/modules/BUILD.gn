@@ -136,6 +136,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/presentation",
     "//third_party/blink/renderer/modules/push_messaging",
     "//third_party/blink/renderer/modules/quota",
+    "//third_party/blink/renderer/modules/direct_sockets",
     "//third_party/blink/renderer/modules/remoteplayback",
     "//third_party/blink/renderer/modules/sanitizer_api",
     "//third_party/blink/renderer/modules/scheduler",

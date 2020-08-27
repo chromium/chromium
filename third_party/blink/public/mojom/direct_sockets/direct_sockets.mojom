@@ -1,0 +1,40 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Explainer for the Direct Sockets API:
+// https://github.com/WICG/raw-sockets/blob/master/docs/explainer.md
+
+struct DirectSocketOptions {
+  string? local_hostname;
+  uint16 local_port = 0;
+
+  string? remote_hostname;
+  uint16 remote_port = 0;
+
+  int32 send_buffer_size = 0;
+  int32 receive_buffer_size = 0;
+
+  // These are only relevant for TCP:
+  bool keep_alive = false;
+  bool no_delay = false;
+};
+
+// This wraps network.mojom.NetworkContext and handles extra work such as
+// permission checking, chooser showing, etc.
+// The browser process implements the interface, and the renderer process
+// sends messages to it.
+// The return values are net::Error codes. 0 indicates success.
+interface DirectSocketsService {
+  // TODO(crbug.com/905818): Return TCP socket details
+  OpenTcpSocket(
+      DirectSocketOptions options)
+      => (int32 result);
+
+  // TODO(crbug.com/1119620): Return UDP socket details
+  OpenUdpSocket(
+      DirectSocketOptions options)
+      => (int32 result);
+};

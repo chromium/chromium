@@ -121,6 +121,7 @@
 #include "third_party/blink/public/public_buildflags.h"
 
 #if !defined(OS_ANDROID)
+#include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/installedapp/installed_app_provider_impl.h"
 #include "content/public/common/content_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -739,6 +740,10 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::CredentialManager>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
 #if !defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kDirectSockets)) {
+    map->Add<blink::mojom::DirectSocketsService>(
+        base::BindRepeating(&DirectSocketsServiceImpl::CreateForFrame));
+  }
   map->Add<media::mojom::SpeechRecognitionContext>(base::BindRepeating(
       &EmptyBinderForFrame<media::mojom::SpeechRecognitionContext>));
 #endif

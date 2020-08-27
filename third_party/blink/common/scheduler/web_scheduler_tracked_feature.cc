@@ -109,6 +109,8 @@ const char* FeatureToString(WebSchedulerTrackedFeature feature) {
       return "KeyboardLock";
     case WebSchedulerTrackedFeature::kSmsService:
       return "SMSService";
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
+      return "outstanding network request (direct socket)";
   }
 }
 

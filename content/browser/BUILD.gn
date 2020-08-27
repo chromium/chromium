@@ -838,6 +838,8 @@ source_set("browser") {
     "devtools/shared_worker_devtools_manager.h",
     "devtools/worker_devtools_agent_host.cc",
     "devtools/worker_devtools_agent_host.h",
+    "direct_sockets/direct_sockets_service_impl.cc",
+    "direct_sockets/direct_sockets_service_impl.h",
     "display_cutout/display_cutout_constants.h",
     "display_cutout/display_cutout_host_impl.cc",
     "display_cutout/display_cutout_host_impl.h",
