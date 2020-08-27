@@ -39,7 +39,7 @@
   // The next decode request must be for a keyframe.
   //
   // TODO(sandersd): Move the keyframe rule into the bytestream registry.
-  [RaisesException] void configure(EncodedVideoConfig config);
+  [RaisesException] void configure(VideoDecoderConfig config);
 
   // Request decoding of an input chunk.
   //
