@@ -120,7 +120,8 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
     @LAUNCH_JOBKEY_LABEL : GetServiceLaunchdLabel(),
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
       base::SysUTF8ToNSString(updater_path.value()),
-      MakeProgramArgument(kServerSwitch)
+      MakeProgramArgument(kServerSwitch),
+      @"--vmodule=*/updater/*=2",
     ],
     @LAUNCH_JOBKEY_MACHSERVICES : @{GetServiceMachName() : @YES},
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,
@@ -164,7 +165,8 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateControlLaunchdPlist(
     @LAUNCH_JOBKEY_LABEL : GetControlLaunchdLabel(),
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
       base::SysUTF8ToNSString(updater_path.value()),
-      MakeProgramArgument(kServerSwitch)
+      MakeProgramArgument(kServerSwitch),
+      @"--vmodule=*/updater/*=2",
     ],
     @LAUNCH_JOBKEY_MACHSERVICES : @{GetVersionedServiceMachName() : @YES},
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,

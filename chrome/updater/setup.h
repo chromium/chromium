@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/test/test_app/test_app.h"
-
-#include "base/notreached.h"
+#ifndef CHROME_UPDATER_SETUP_H_
+#define CHROME_UPDATER_SETUP_H_
 
 namespace updater {
 
-int InstallUpdater() {
-  // TODO(1068693): Implement TestApp Functionality.
-  NOTIMPLEMENTED();
-  return 0;
-}
+int InstallCandidate(bool is_machine);
 
 }  // namespace updater
+
+#endif  // CHROME_UPDATER_SETUP_H_

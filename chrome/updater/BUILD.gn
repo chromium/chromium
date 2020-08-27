@@ -83,10 +83,14 @@ if (is_win || is_mac) {
     sources = [
       "app/app.cc",
       "app/app.h",
+      "app/app_register.cc",
+      "app/app_register.h",
       "app/app_server.cc",
       "app/app_server.h",
       "app/app_uninstall.cc",
       "app/app_uninstall.h",
+      "app/app_update.cc",
+      "app/app_update.h",
       "app/app_wake.cc",
       "app/app_wake.h",
       "configurator.cc",
@@ -103,6 +107,7 @@ if (is_win || is_mac) {
       "prefs.cc",
       "prefs.h",
       "prefs_impl.h",
+      "setup.h",
       "tag.cc",
       "tag.h",
       "update_service_in_process.cc",
@@ -130,6 +135,7 @@ if (is_win || is_mac) {
         "mac/update_service_out_of_process.mm",
         "prefs_mac.mm",
         "service_factory_mac.mm",
+        "setup_mac.cc",
       ]
     }
 
@@ -148,6 +154,7 @@ if (is_win || is_mac) {
         "lib_util_win.cc",
         "prefs_win.cc",
         "service_factory_win.cc",
+        "setup_win.cc",
       ]
     }
 
@@ -224,10 +231,6 @@ if (is_win || is_mac) {
   # TODO(sorin): https://crbug.com/1014311
   source_set("app_install") {
     sources = [ "app/app_install.h" ]
-
-    if (is_mac) {
-      sources += [ "mac/setup/app_install.cc" ]
-    }
 
     if (is_win) {
       sources += [ "win/app_install.cc" ]
@@ -309,6 +312,7 @@ if (is_win || is_mac) {
       "//chrome/common:constants",
       "//chrome/updater/device_management:unittest",
       "//chrome/updater/test/test_app",
+      "//chrome/updater/test/test_app:version_header",
       "//chrome/updater/tools:unittest",
       "//components/prefs:test_support",
       "//components/update_client",
@@ -341,6 +345,8 @@ if (is_win || is_mac) {
         "mac/scoped_xpc_service_mock.mm",
         "mac/update_service_out_of_process_test.mm",
         "test/integration_tests_mac.mm",
+        "test/test_app/constants.cc",
+        "test/test_app/constants.h",
       ]
 
       deps += [
@@ -355,7 +361,10 @@ if (is_win || is_mac) {
         "//third_party/ocmock",
       ]
 
-      data_deps = [ "//chrome/updater/mac:updater_bundle" ]
+      data_deps = [
+        "//chrome/updater/mac:updater_bundle",
+        "//chrome/updater/test/test_app:test_app",
+      ]
     }
   }
 }

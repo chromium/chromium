@@ -17,6 +17,7 @@ const char kComServiceSwitch[] = "com-service";
 const char kCrashMeSwitch[] = "crash-me";
 const char kCrashHandlerSwitch[] = "crash-handler";
 const char kUpdateSwitch[] = "update";
+const char kRegisterSwitch[] = "register";
 const char kInstallSwitch[] = "install";
 const char kUninstallSwitch[] = "uninstall";
 const char kSystemSwitch[] = "system";
@@ -25,7 +26,8 @@ const char kInitDoneNotifierSwitch[] = "init-done-notifier";
 const char kNoRateLimitSwitch[] = "no-rate-limit";
 const char kEnableLoggingSwitch[] = "enable-logging";
 const char kLoggingModuleSwitch[] = "vmodule";
-const char kAppIdSwitch[] = "appid";
+const char kAppIdSwitch[] = "app-id";
+const char kAppVersionSwitch[] = "app-version";
 const char kWakeSwitch[] = "wake";
 
 #if defined(OS_WIN)

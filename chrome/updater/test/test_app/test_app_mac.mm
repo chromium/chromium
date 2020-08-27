@@ -14,6 +14,7 @@
 #include "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #include "base/process/launch.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/test/test_app/constants.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
@@ -21,9 +22,6 @@
 namespace updater {
 
 namespace {
-
-constexpr char kInstallCommand[] = "install";
-constexpr char kSwapAppCommand[] = "swap-updater";
 
 base::FilePath GetUpdaterAppName() {
   return base::FilePath(UPDATER_APP_FULLNAME_STRING ".app");
@@ -33,38 +31,9 @@ base::FilePath GetTestAppFrameworkName() {
   return base::FilePath(TEST_APP_FULLNAME_STRING " Framework.framework");
 }
 
-base::FilePath GetUpdateFolderName() {
-  return base::FilePath(TEST_APP_COMPANY_NAME_STRING)
-      .AppendASCII(UPDATER_APP_FULLNAME_STRING);
-}
-
-base::FilePath GetUpdaterAppExecutablePath() {
-  return base::FilePath("Contents/MacOS")
-      .AppendASCII(UPDATER_APP_FULLNAME_STRING);
-}
-
-void SwapUpdater(const base::FilePath& updater_bundle_path) {
-  base::FilePath updater_executable_path =
-      base::mac::GetUserLibraryPath()
-          .Append(GetUpdateFolderName())
-          .Append(GetUpdaterAppName())
-          .Append(GetUpdaterAppExecutablePath());
-
-  base::CommandLine swap_command(updater_executable_path);
-  swap_command.AppendSwitch(kSwapAppCommand);
-
-  std::string output;
-  int exit_code = 0;
-  base::GetAppOutputWithExitCode(swap_command, &output, &exit_code);
-
-  if (exit_code != 0) {
-    LOG(ERROR) << "Couldn't swap the updater. Exit code: " << exit_code;
-  }
-}
-
 }  // namespace
 
-void InstallUpdater() {
+int InstallUpdater() {
   // The updater executable is in
   // C.app/Contents/Frameworks/C.framework/Versions/V/Helpers/CUpdater.app.
   base::FilePath updater_bundle_path =
@@ -78,8 +47,9 @@ void InstallUpdater() {
           .Append(GetUpdaterAppName());
 
   if (!base::PathExists(updater_bundle_path)) {
-    LOG(ERROR) << "Path to the updater app does not exist!";
-    return;
+    LOG(ERROR) << "Path to the updater app does not exist! path: "
+               << updater_bundle_path;
+    return -1;
   }
 
   base::FilePath updater_executable_path =
@@ -89,11 +59,14 @@ void InstallUpdater() {
 
   if (!base::PathExists(updater_executable_path)) {
     LOG(ERROR) << "Path to the updater app does not exist!";
-    return;
+    return -2;
   }
 
   base::CommandLine command(updater_executable_path);
-  command.AppendSwitch(kInstallCommand);
+  command.AppendSwitch(kRegisterSwitch);
+  command.AppendSwitchASCII(kAppIdSwitch, TEST_APP_FULLNAME_STRING);
+  command.AppendSwitchASCII(kAppVersionSwitch, TEST_APP_VERSION_STRING);
+  command.AppendSwitchASCII("--vmodule", "*/updater/*=2");
 
   std::string output;
   int exit_code = 0;
@@ -101,11 +74,10 @@ void InstallUpdater() {
 
   if (exit_code != 0) {
     LOG(ERROR) << "Couldn't install the updater. Exit code: " << exit_code;
-    return;
+    return exit_code;
   }
 
-  // Now that the updater is installed successfully, we should swap.
-  SwapUpdater(updater_bundle_path);
+  return 0;
 }
 
 }  // namespace updater

@@ -7,6 +7,7 @@
 namespace updater {
 
 const char kInstallUpdaterSwitch[] = "install-updater";
+const char kRegisterUpdaterSwitch[] = "register-updater";
 const char kRegisterToUpdaterSwitch[] = "ipc-register";
 const char kForegroundUpdateSwitch[] = "ipc-update";
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/app/app_install.h"
+#include "chrome/updater/app/app_update.h"
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
@@ -12,19 +12,17 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/mac/setup/setup.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/setup.h"
 #include "chrome/updater/updater_version.h"
 
 namespace updater {
 
-namespace {
-
-class AppInstall : public App {
+class AppUpdate : public App {
  private:
-  ~AppInstall() override = default;
+  ~AppUpdate() override = default;
   void Initialize() override;
   void Uninitialize() override;
   void FirstTaskRun() override;
@@ -34,21 +32,21 @@ class AppInstall : public App {
   scoped_refptr<Configurator> config_;
 };
 
-void AppInstall::Initialize() {
+void AppUpdate::Initialize() {
   config_ = base::MakeRefCounted<Configurator>(CreateGlobalPrefs());
 }
 
-void AppInstall::Uninitialize() {
+void AppUpdate::Uninitialize() {
   PrefsCommitPendingWrites(config_->GetPrefService());
 }
 
-void AppInstall::FirstTaskRun() {
+void AppUpdate::FirstTaskRun() {
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallCandidate),
-      base::BindOnce(&AppInstall::SetupDone, this));
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallCandidate, false),
+      base::BindOnce(&AppUpdate::SetupDone, this));
 }
 
-void AppInstall::SetupDone(int result) {
+void AppUpdate::SetupDone(int result) {
   if (result != 0) {
     Shutdown(result);
     return;
@@ -64,10 +62,8 @@ void AppInstall::SetupDone(int result) {
   Shutdown(0);
 }
 
-}  // namespace
-
-scoped_refptr<App> MakeAppInstall() {
-  return base::MakeRefCounted<AppInstall>();
+scoped_refptr<App> MakeAppUpdate() {
+  return base::MakeRefCounted<AppUpdate>();
 }
 
 }  // namespace updater

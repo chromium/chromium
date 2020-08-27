@@ -56,6 +56,9 @@ extern const char kCrashHandlerSwitch[];
 // Updates the updater.
 extern const char kUpdateSwitch[];
 
+// Registers an app with the updater. Installs the bundled updater if needed.
+extern const char kRegisterSwitch[];
+
 // Installs the updater.
 extern const char kInstallSwitch[];
 
@@ -96,6 +99,9 @@ extern const char kLoggingModuleSwitch[];
 
 // Specifies the application that the Updater needs to install.
 extern const char kAppIdSwitch[];
+
+// Specifies the version of the application that the updater needs to register.
+extern const char kAppVersionSwitch[];
 
 // URLs.
 //

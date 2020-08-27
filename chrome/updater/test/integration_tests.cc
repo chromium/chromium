@@ -5,6 +5,7 @@
 #include "chrome/updater/test/integration_tests.h"
 
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
@@ -65,6 +66,17 @@ TEST_F(IntegrationTest, InstallAndPromote) {
   ExpectActive();
   Uninstall();
 }
+
+#if defined(OS_MAC)
+TEST_F(IntegrationTest, RegisterTestApp) {
+  RegisterTestApp();
+  ExpectInstalled();
+  ExpectQualified();
+  ExpectActiveVersion(UPDATER_VERSION_STRING);
+  ExpectActive();
+  Uninstall();
+}
+#endif
 
 #endif  // !defined(COMPONENT_BUILD)
 

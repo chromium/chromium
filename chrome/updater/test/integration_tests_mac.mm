@@ -12,6 +12,8 @@
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/mac/xpc_service_names.h"
+#include "chrome/updater/test/test_app/constants.h"
+#include "chrome/updater/test/test_app/test_app_version.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +33,17 @@ base::FilePath GetExecutablePath() {
       .Append(FILE_PATH_LITERAL("Contents"))
       .Append(FILE_PATH_LITERAL("MacOS"))
       .Append(FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING));
+}
+
+base::FilePath GetTestAppExecutablePath() {
+  base::FilePath test_executable;
+  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
+    return base::FilePath();
+  return test_executable.DirName()
+      .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING ".App"))
+      .Append(FILE_PATH_LITERAL("Contents"))
+      .Append(FILE_PATH_LITERAL("MacOS"))
+      .Append(FILE_PATH_LITERAL(TEST_APP_FULLNAME_STRING));
 }
 
 base::FilePath GetProductPath() {
@@ -115,7 +128,7 @@ void Install() {
   const base::FilePath path = GetExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
-  command_line.AppendSwitch(kInstallSwitch);
+  command_line.AppendSwitch(kUpdateSwitch);
   int exit_code = -1;
   ASSERT_TRUE(Run(command_line, &exit_code));
   EXPECT_EQ(0, exit_code);
@@ -126,6 +139,16 @@ void ExpectActive() {
   EXPECT_TRUE(base::PathExists(GetProductPath()));
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(Launchd::User, Launchd::Agent,
                                                   CopyServiceLaunchdName()));
+}
+
+void RegisterTestApp() {
+  const base::FilePath path = GetTestAppExecutablePath();
+  ASSERT_FALSE(path.empty());
+  base::CommandLine command_line(path);
+  command_line.AppendSwitch(kRegisterUpdaterSwitch);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(command_line, &exit_code));
+  EXPECT_EQ(0, exit_code);
 }
 
 void RunWake(int expected_exit_code) {

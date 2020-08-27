@@ -14,32 +14,36 @@ namespace test {
 // the test left the updater in an installed or partially installed state.
 void Clean();
 
-// Expect that the system is in a clean state, i.e. no updater is installed and
+// Expects that the system is in a clean state, i.e. no updater is installed and
 // no traces of an updater exist. Should be run at the start and end of each
 // test.
 void ExpectClean();
 
-// Place the updater into test mode (use local servers and disable CUP).
+// Places the updater into test mode (use local servers and disable CUP).
 void EnterTestMode();
 
-// Expect that the updater is installed on the system.
+// Expects that the updater is installed on the system.
 void ExpectInstalled();
 
-// Install the updater.
+// Installs the updater.
 void Install();
 
-// Expect that the updater is installed on the system and the launchd tasks
+// Expects that the updater is installed on the system and the launchd tasks
 // are updated correctly.
 void ExpectActive();
 
-// Uninstall the updater. If the updater was installed during the test, it
+// Uninstalls the updater. If the updater was installed during the test, it
 // should be uninstalled before the end of the test to avoid having an actual
 // live updater on the machine that ran the test.
 void Uninstall();
 
-// Run the wake client and wait for it to exit. Assert that it exits with
+// Runs the wake client and wait for it to exit. Assert that it exits with
 // |exit_code|. The server should exit a few seconds after.
 void RunWake(int exit_code);
+
+// Registers the test app. As a result, the bundled updater is installed,
+// promoted and registered.
+void RegisterTestApp();
 
 }  // namespace test
 

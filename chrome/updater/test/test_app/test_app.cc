@@ -97,12 +97,17 @@ void TestApp::ParseCommandLine() {
   update_client = UpdateClient::Create();
 
   if (command_line->HasSwitch(kInstallUpdaterSwitch)) {
-    InstallUpdater();
-    Shutdown(0);
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallUpdater),
+        base::BindOnce(&TestApp::Shutdown, this));
   } else if (command_line->HasSwitch(kRegisterToUpdaterSwitch)) {
     Register();
   } else if (command_line->HasSwitch(kForegroundUpdateSwitch)) {
     DoForegroundUpdate();
+  } else if (command_line->HasSwitch(kRegisterUpdaterSwitch)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce(&InstallUpdater),
+        base::BindOnce(&TestApp::Shutdown, this));
   } else {
     Shutdown(0);
   }

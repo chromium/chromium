@@ -13,7 +13,9 @@
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_install.h"
+#include "chrome/updater/app/app_register.h"
 #include "chrome/updater/app/app_uninstall.h"
+#include "chrome/updater/app/app_update.h"
 #include "chrome/updater/app/app_wake.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
@@ -99,18 +101,20 @@ int HandleUpdaterCommands(const base::CommandLine* command_line) {
 #endif
   }
 
-#if defined(OS_MAC)
   if (command_line->HasSwitch(kUpdateSwitch))
-    return MakeAppInstall()->Run();
-#endif  // OS_MAC
+    return MakeAppUpdate()->Run();
+
+  if (command_line->HasSwitch(kRegisterSwitch) &&
+      command_line->HasSwitch(kAppIdSwitch))
+    return MakeAppRegister()->Run();
 
 #if defined(OS_WIN)
   if (command_line->HasSwitch(kComServiceSwitch))
     return ServiceMain::RunComService(command_line);
-#endif  // OS_WIN
 
   if (command_line->HasSwitch(kInstallSwitch))
     return MakeAppInstall()->Run();
+#endif  // OS_WIN
 
   if (command_line->HasSwitch(kUninstallSwitch))
     return MakeAppUninstall()->Run();

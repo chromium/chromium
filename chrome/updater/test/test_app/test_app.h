@@ -8,7 +8,7 @@
 namespace updater {
 
 // Installs the updater.
-void InstallUpdater();
+int InstallUpdater();
 
 int TestAppMain(int argc, const char** argv);
 

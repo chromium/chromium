@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/test/test_app/test_app.h"
+#ifndef CHROME_UPDATER_APP_APP_UPDATE_H_
+#define CHROME_UPDATER_APP_APP_UPDATE_H_
 
-#include "base/notreached.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace updater {
 
-int InstallUpdater() {
-  // TODO(1068693): Implement TestApp Functionality.
-  NOTIMPLEMENTED();
-  return 0;
-}
+class App;
+
+scoped_refptr<App> MakeAppUpdate();
 
 }  // namespace updater
+
+#endif  // CHROME_UPDATER_APP_APP_UPDATE_H_

@@ -19,21 +19,8 @@
 #include "base/version.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
+#import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/test/test_app/test_app_version.h"
-
-namespace {
-
-NSString* GetLaunchdServiceName() {
-  return base::SysUTF8ToNSString(
-      base::StrCat({UPDATER_APP_BUNDLE_IDENTIFIER_STRING, ".service"}));
-}
-
-NSString* GetMachServiceName() {
-  return [GetLaunchdServiceName()
-      stringByAppendingFormat:@".%lu", [GetLaunchdServiceName() hash]];
-}
-
-}  // namespace
 
 @interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateChecking> {
   base::scoped_nsobject<NSXPCConnection> _xpcConnection;
@@ -48,7 +35,7 @@ NSString* GetMachServiceName() {
 - (instancetype)init {
   if (self = [super init]) {
     _xpcConnection.reset([[NSXPCConnection alloc]
-        initWithMachServiceName:GetMachServiceName()
+        initWithMachServiceName:updater::GetServiceMachName()
                         options:0]);
 
     _xpcConnection.get().remoteObjectInterface =

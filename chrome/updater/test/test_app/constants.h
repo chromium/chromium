@@ -13,6 +13,9 @@ namespace updater {
 // Installs the updater.
 extern const char kInstallUpdaterSwitch[];
 
+// On Mac: Tries to register with the updater. Installs the updater if needed.
+extern const char kRegisterUpdaterSwitch[];
+
 // Registers the test app to the updater through IPC.
 extern const char kRegisterToUpdaterSwitch[];
 
