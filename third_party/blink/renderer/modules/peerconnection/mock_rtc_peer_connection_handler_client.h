@@ -35,6 +35,11 @@ class MockRTCPeerConnectionHandlerClient
                     const String& url,
                     int error_code,
                     const String& error_text));
+  MOCK_METHOD4(DidChangeSessionDescriptions,
+               void(RTCSessionDescriptionPlatform*,
+                    RTCSessionDescriptionPlatform*,
+                    RTCSessionDescriptionPlatform*,
+                    RTCSessionDescriptionPlatform*));
   MOCK_METHOD1(DidChangeSignalingState,
                void(webrtc::PeerConnectionInterface::SignalingState state));
   MOCK_METHOD1(DidChangeIceGatheringState,

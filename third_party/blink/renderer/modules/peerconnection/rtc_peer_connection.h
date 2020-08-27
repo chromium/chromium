@@ -183,9 +183,9 @@ class MODULES_EXPORT RTCPeerConnection final
       const RTCSessionDescriptionInit*,
       V8VoidFunction*,
       V8RTCPeerConnectionErrorCallback* = nullptr);
-  RTCSessionDescription* localDescription();
-  RTCSessionDescription* currentLocalDescription();
-  RTCSessionDescription* pendingLocalDescription();
+  RTCSessionDescription* localDescription() const;
+  RTCSessionDescription* currentLocalDescription() const;
+  RTCSessionDescription* pendingLocalDescription() const;
 
   ScriptPromise setRemoteDescription(ScriptState*,
                                      const RTCSessionDescriptionInit*,
@@ -195,9 +195,9 @@ class MODULES_EXPORT RTCPeerConnection final
       const RTCSessionDescriptionInit*,
       V8VoidFunction*,
       V8RTCPeerConnectionErrorCallback* = nullptr);
-  RTCSessionDescription* remoteDescription();
-  RTCSessionDescription* currentRemoteDescription();
-  RTCSessionDescription* pendingRemoteDescription();
+  RTCSessionDescription* remoteDescription() const;
+  RTCSessionDescription* currentRemoteDescription() const;
+  RTCSessionDescription* pendingRemoteDescription() const;
 
   String signalingState() const;
 
@@ -337,6 +337,11 @@ class MODULES_EXPORT RTCPeerConnection final
                            const String& url,
                            int error_code,
                            const String& error_text) override;
+  void DidChangeSessionDescriptions(
+      RTCSessionDescriptionPlatform* pending_local_description,
+      RTCSessionDescriptionPlatform* current_local_description,
+      RTCSessionDescriptionPlatform* pending_remote_description,
+      RTCSessionDescriptionPlatform* current_remote_description) override;
   void DidChangeSignalingState(
       webrtc::PeerConnectionInterface::SignalingState) override;
   void DidChangeIceGatheringState(
@@ -571,6 +576,10 @@ class MODULES_EXPORT RTCPeerConnection final
 
   HeapHashSet<Member<RTCIceTransport>> ActiveIceTransports() const;
 
+  Member<RTCSessionDescription> pending_local_description_;
+  Member<RTCSessionDescription> current_local_description_;
+  Member<RTCSessionDescription> pending_remote_description_;
+  Member<RTCSessionDescription> current_remote_description_;
   webrtc::PeerConnectionInterface::SignalingState signaling_state_;
   webrtc::PeerConnectionInterface::IceGatheringState ice_gathering_state_;
   webrtc::PeerConnectionInterface::IceConnectionState ice_connection_state_;

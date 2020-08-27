@@ -6,6 +6,6 @@ FAIL Set created offer other than last offer should reject with InvalidModificat
 PASS Creating and setting offer multiple times should succeed
 PASS Setting previously generated offer after a call to createAnswer should work
 PASS Negotiation works when there has been a repeated setLocalDescription(offer)
-FAIL setLocalDescription(offer) should update internal state with a queued task, in the right order assert_equals: pendingRemoteDescription should never be set due to sLD expected null but got object "[object RTCSessionDescription]"
+PASS setLocalDescription(offer) should update internal state with a queued task, in the right order
 Harness: the test ran to completion.
 

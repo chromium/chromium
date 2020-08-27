@@ -154,29 +154,6 @@ void RunSynchronousRepeatingClosure(const base::RepeatingClosure& closure,
   event->Signal();
 }
 
-// Initializes |description| if |description_callback| returns non-null,
-// otherwise does nothing.
-void GetRTCSessionDescriptionPlatformFromSessionDescriptionCallback(
-    CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-        description_callback,
-    std::string* out_type,
-    std::string* out_sdp,
-    bool* success) {
-  DCHECK(out_type);
-  DCHECK(out_sdp);
-  DCHECK(success);
-
-  const webrtc::SessionDescriptionInterface* description =
-      std::move(description_callback).Run();
-  if (description) {
-    std::string sdp;
-    description->ToString(&sdp);
-    *out_type = description->type();
-    *out_sdp = sdp;
-    *success = true;
-  }
-}
-
 // Converter functions from Blink types to WebRTC types.
 
 absl::optional<bool> ConstraintToOptional(
@@ -702,19 +679,14 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
           pending_local_description(states.pending_local_description.release());
       std::unique_ptr<webrtc::SessionDescriptionInterface>
           current_local_description(states.current_local_description.release());
+      std::unique_ptr<webrtc::SessionDescriptionInterface>
+          pending_remote_description(
+              states.pending_remote_description.release());
+      std::unique_ptr<webrtc::SessionDescriptionInterface>
+          current_remote_description(
+              states.current_remote_description.release());
 
-      // Process the rest of the state changes differently depending on SDP
-      // semantics.
-      if (sdp_semantics_ == webrtc::SdpSemantics::kPlanB) {
-        ProcessStateChangesPlanB(std::move(states));
-      } else {
-        DCHECK_EQ(sdp_semantics_, webrtc::SdpSemantics::kUnifiedPlan);
-        ProcessStateChangesUnifiedPlan(std::move(states));
-      }
-
-      // |handler_| can become null after this call.
-      handler_->OnSignalingChange(signaling_state);
-
+      // Track result in chrome://webrtc-internals/.
       if (tracker_ && handler_) {
         StringBuilder value;
         if (action_ ==
@@ -754,6 +726,24 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
         tracker_->TrackSessionDescriptionCallback(
             handler_.get(), action_, "OnSuccess", value.ToString());
       }
+
+      handler_->OnSessionDescriptionsUpdated(
+          std::move(pending_local_description),
+          std::move(current_local_description),
+          std::move(pending_remote_description),
+          std::move(current_remote_description));
+
+      // Process the rest of the state changes differently depending on SDP
+      // semantics.
+      if (sdp_semantics_ == webrtc::SdpSemantics::kPlanB) {
+        ProcessStateChangesPlanB(std::move(states));
+      } else {
+        DCHECK_EQ(sdp_semantics_, webrtc::SdpSemantics::kUnifiedPlan);
+        ProcessStateChangesUnifiedPlan(std::move(states));
+      }
+
+      // |handler_| can become null after this call.
+      handler_->OnSignalingChange(signaling_state);
     }
     if (action_ == PeerConnectionTracker::ACTION_SET_REMOTE_DESCRIPTION) {
       // Resolve the promise in a post to ensure any events scheduled for
@@ -1495,81 +1485,6 @@ void RTCPeerConnectionHandler::SetRemoteDescription(
           CrossThreadUnretained("SetRemoteDescription")));
 }
 
-RTCSessionDescriptionPlatform* RTCPeerConnectionHandler::LocalDescription() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::localDescription");
-
-  CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-      description_cb = CrossThreadBindOnce(
-          &webrtc::PeerConnectionInterface::local_description,
-          native_peer_connection_);
-  return GetRTCSessionDescriptionPlatformOnSignalingThread(
-      std::move(description_cb), "localDescription");
-}
-
-RTCSessionDescriptionPlatform* RTCPeerConnectionHandler::RemoteDescription() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::remoteDescription");
-
-  CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-      description_cb = CrossThreadBindOnce(
-          &webrtc::PeerConnectionInterface::remote_description,
-          native_peer_connection_);
-  return GetRTCSessionDescriptionPlatformOnSignalingThread(
-      std::move(description_cb), "remoteDescription");
-}
-
-RTCSessionDescriptionPlatform*
-RTCPeerConnectionHandler::CurrentLocalDescription() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::currentLocalDescription");
-
-  CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-      description_cb = CrossThreadBindOnce(
-          &webrtc::PeerConnectionInterface::current_local_description,
-          native_peer_connection_);
-  return GetRTCSessionDescriptionPlatformOnSignalingThread(
-      std::move(description_cb), "currentLocalDescription");
-}
-
-RTCSessionDescriptionPlatform*
-RTCPeerConnectionHandler::CurrentRemoteDescription() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::currentRemoteDescription");
-
-  CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-      description_cb = CrossThreadBindOnce(
-          &webrtc::PeerConnectionInterface::current_remote_description,
-          native_peer_connection_);
-  return GetRTCSessionDescriptionPlatformOnSignalingThread(
-      std::move(description_cb), "currentRemoteDescription");
-}
-
-RTCSessionDescriptionPlatform*
-RTCPeerConnectionHandler::PendingLocalDescription() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::pendingLocalDescription");
-
-  CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-      description_cb = CrossThreadBindOnce(
-          &webrtc::PeerConnectionInterface::pending_local_description,
-          native_peer_connection_);
-  return GetRTCSessionDescriptionPlatformOnSignalingThread(
-      std::move(description_cb), "pendingLocalDescription");
-}
-
-RTCSessionDescriptionPlatform*
-RTCPeerConnectionHandler::PendingRemoteDescription() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::pendingRemoteDescription");
-  CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-      description_cb = CrossThreadBindOnce(
-          &webrtc::PeerConnectionInterface::pending_remote_description,
-          native_peer_connection_);
-  return GetRTCSessionDescriptionPlatformOnSignalingThread(
-      std::move(description_cb), "pendingRemoteDescription");
-}
-
 const webrtc::PeerConnectionInterface::RTCConfiguration&
 RTCPeerConnectionHandler::GetConfiguration() const {
   return configuration_;
@@ -1620,6 +1535,14 @@ void RTCPeerConnectionHandler::AddICECandidate(
   auto callback_on_task_runner =
       [](base::WeakPtr<RTCPeerConnectionHandler> handler_weak_ptr,
          base::WeakPtr<PeerConnectionTracker> tracker_weak_ptr,
+         std::unique_ptr<webrtc::SessionDescriptionInterface>
+             pending_local_description,
+         std::unique_ptr<webrtc::SessionDescriptionInterface>
+             current_local_description,
+         std::unique_ptr<webrtc::SessionDescriptionInterface>
+             pending_remote_description,
+         std::unique_ptr<webrtc::SessionDescriptionInterface>
+             current_remote_description,
          RTCIceCandidatePlatform* candidate, webrtc::RTCError result,
          RTCVoidRequest* request) {
         // Inform tracker (chrome://webrtc-internals).
@@ -1627,6 +1550,14 @@ void RTCPeerConnectionHandler::AddICECandidate(
           tracker_weak_ptr->TrackAddIceCandidate(
               handler_weak_ptr.get(), candidate,
               PeerConnectionTracker::SOURCE_REMOTE, result.ok());
+        }
+        // Update session descriptions.
+        if (handler_weak_ptr) {
+          handler_weak_ptr->OnSessionDescriptionsUpdated(
+              std::move(pending_local_description),
+              std::move(current_local_description),
+              std::move(pending_remote_description),
+              std::move(current_remote_description));
         }
         // Resolve promise.
         if (result.ok())
@@ -1637,12 +1568,26 @@ void RTCPeerConnectionHandler::AddICECandidate(
 
   native_peer_connection_->AddIceCandidate(
       std::move(native_candidate),
-      [task_runner = task_runner_,
+      [pc = native_peer_connection_, task_runner = task_runner_,
        handler_weak_ptr = weak_factory_.GetWeakPtr(),
        tracker_weak_ptr = peer_connection_tracker_, candidate,
        persistent_request = WrapCrossThreadPersistent(request),
        callback_on_task_runner =
            std::move(callback_on_task_runner)](webrtc::RTCError result) {
+        // Grab a snapshot of all the session descriptions. AddIceCandidate may
+        // have modified the remote description.
+        std::unique_ptr<webrtc::SessionDescriptionInterface>
+            pending_local_description =
+                CopySessionDescription(pc->pending_local_description());
+        std::unique_ptr<webrtc::SessionDescriptionInterface>
+            current_local_description =
+                CopySessionDescription(pc->current_local_description());
+        std::unique_ptr<webrtc::SessionDescriptionInterface>
+            pending_remote_description =
+                CopySessionDescription(pc->pending_remote_description());
+        std::unique_ptr<webrtc::SessionDescriptionInterface>
+            current_remote_description =
+                CopySessionDescription(pc->current_remote_description());
         // This callback is invoked on the webrtc signaling thread (this is true
         // in production, not in rtc_peer_connection_handler_test.cc which uses
         // a fake |native_peer_connection_|). Jump back to the renderer thread.
@@ -1650,8 +1595,12 @@ void RTCPeerConnectionHandler::AddICECandidate(
             *task_runner, FROM_HERE,
             WTF::CrossThreadBindOnce(
                 std::move(callback_on_task_runner), handler_weak_ptr,
-                tracker_weak_ptr, WrapCrossThreadPersistent(candidate),
-                std::move(result), std::move(persistent_request)));
+                tracker_weak_ptr, std::move(pending_local_description),
+                std::move(current_local_description),
+                std::move(pending_remote_description),
+                std::move(current_remote_description),
+                WrapCrossThreadPersistent(candidate), std::move(result),
+                std::move(persistent_request)));
       });
 }
 
@@ -2224,6 +2173,32 @@ void RTCPeerConnectionHandler::RunSynchronousRepeatingClosureOnSignalingThread(
   }
 }
 
+void RTCPeerConnectionHandler::OnSessionDescriptionsUpdated(
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        pending_local_description,
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        current_local_description,
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        pending_remote_description,
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        current_remote_description) {
+  if (!client_ || is_closed_)
+    return;
+  client_->DidChangeSessionDescriptions(
+      pending_local_description
+          ? CreateWebKitSessionDescription(pending_local_description.get())
+          : nullptr,
+      current_local_description
+          ? CreateWebKitSessionDescription(current_local_description.get())
+          : nullptr,
+      pending_remote_description
+          ? CreateWebKitSessionDescription(pending_remote_description.get())
+          : nullptr,
+      current_remote_description
+          ? CreateWebKitSessionDescription(current_remote_description.get())
+          : nullptr);
+}
+
 void RTCPeerConnectionHandler::OnSignalingChange(
     webrtc::PeerConnectionInterface::SignalingState new_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -2705,35 +2680,6 @@ scoped_refptr<base::SingleThreadTaskRunner>
 RTCPeerConnectionHandler::signaling_thread() const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   return dependency_factory_->GetWebRtcSignalingTaskRunner();
-}
-
-RTCSessionDescriptionPlatform*
-RTCPeerConnectionHandler::GetRTCSessionDescriptionPlatformOnSignalingThread(
-    CrossThreadOnceFunction<const webrtc::SessionDescriptionInterface*()>
-        description_cb,
-    const char* log_text) {
-  // Since the webrtc::PeerConnectionInterface::*_description() functions
-  // return a pointer to a non-reference-counted object that lives on the
-  // signaling thread, we cannot fetch a pointer to it and use it directly
-  // here.
-  // Instead, we access the object completely on the signaling thread.
-  // Initializing |description| on the signaling thread is safe because we
-  // own it and wait for it to be initialized here.
-
-  std::string type, sdp;
-  bool success = false;
-  RunSynchronousOnceClosureOnSignalingThread(
-      CrossThreadBindOnce(
-          &GetRTCSessionDescriptionPlatformFromSessionDescriptionCallback,
-          std::move(description_cb), CrossThreadUnretained(&type),
-          CrossThreadUnretained(&sdp), CrossThreadUnretained(&success)),
-      log_text);
-
-  if (!success)
-    return nullptr;
-
-  return MakeGarbageCollected<RTCSessionDescriptionPlatform>(
-      String::FromUTF8(type), String::FromUTF8(sdp));
 }
 
 void RTCPeerConnectionHandler::ReportICEState(

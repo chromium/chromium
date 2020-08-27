@@ -154,13 +154,6 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   virtual void SetRemoteDescription(blink::RTCVoidRequest* request,
                                     RTCSessionDescriptionPlatform* description);
 
-  virtual RTCSessionDescriptionPlatform* LocalDescription();
-  virtual RTCSessionDescriptionPlatform* RemoteDescription();
-  virtual RTCSessionDescriptionPlatform* CurrentLocalDescription();
-  virtual RTCSessionDescriptionPlatform* CurrentRemoteDescription();
-  virtual RTCSessionDescriptionPlatform* PendingLocalDescription();
-  virtual RTCSessionDescriptionPlatform* PendingRemoteDescription();
-
   virtual const webrtc::PeerConnectionInterface::RTCConfiguration&
   GetConfiguration() const;
   virtual webrtc::RTCErrorType SetConfiguration(
@@ -259,6 +252,15 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   class SetLocalDescriptionRequest;
   friend class SetLocalDescriptionRequest;
 
+  void OnSessionDescriptionsUpdated(
+      std::unique_ptr<webrtc::SessionDescriptionInterface>
+          pending_local_description,
+      std::unique_ptr<webrtc::SessionDescriptionInterface>
+          current_local_description,
+      std::unique_ptr<webrtc::SessionDescriptionInterface>
+          pending_remote_description,
+      std::unique_ptr<webrtc::SessionDescriptionInterface>
+          current_remote_description);
   void OnSignalingChange(
       webrtc::PeerConnectionInterface::SignalingState new_state);
   void OnIceConnectionChange(

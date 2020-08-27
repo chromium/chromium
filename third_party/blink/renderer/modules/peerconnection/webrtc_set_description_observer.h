@@ -30,6 +30,14 @@
 
 namespace blink {
 
+// Copies the session description.
+// Note: At the time of writing, third_party/webrtc/pc/sdp_utils.h's
+// webrtc::CloneSessionDescription() creates a copy that does not include
+// candidates added with AddIceCandidate. This is why we need our own copy
+// function, which copies everything.
+std::unique_ptr<webrtc::SessionDescriptionInterface> CopySessionDescription(
+    const webrtc::SessionDescriptionInterface* description);
+
 // The blink layer correspondent of the setLocalDescription() observer
 // (webrtc::SetSessionDescriptionObserver) and setRemoteDescription() observer
 // (webrtc::SetRemoteDescriptionObserverInterface). The implementation should
@@ -51,15 +59,14 @@ class MODULES_EXPORT WebRtcSetDescriptionObserver
     webrtc::PeerConnectionInterface::SignalingState signaling_state;
     blink::WebRTCSctpTransportSnapshot sctp_transport_state;
     std::vector<blink::RtpTransceiverState> transceiver_states;
-    // For now, the session descriptions are only surfaced for the sake of
-    // showing up in chrome://webrtc-internals/ when implicit
-    // setLocalDescription() resolves.
-    // TODO(https://crbug.com/788558): Surface all states to blink at the same,
-    // time, including [current/pending][Local/Remote]Description.
     std::unique_ptr<webrtc::SessionDescriptionInterface>
         pending_local_description;
     std::unique_ptr<webrtc::SessionDescriptionInterface>
         current_local_description;
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        pending_remote_description;
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        current_remote_description;
 
     DISALLOW_COPY_AND_ASSIGN(States);
   };
@@ -117,7 +124,11 @@ class MODULES_EXPORT WebRtcSetDescriptionObserverHandlerImpl
       std::unique_ptr<webrtc::SessionDescriptionInterface>
           pending_local_description,
       std::unique_ptr<webrtc::SessionDescriptionInterface>
-          current_local_description);
+          current_local_description,
+      std::unique_ptr<webrtc::SessionDescriptionInterface>
+          pending_remote_description,
+      std::unique_ptr<webrtc::SessionDescriptionInterface>
+          current_remote_description);
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner_;

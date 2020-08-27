@@ -286,36 +286,6 @@ void MockRTCPeerConnectionHandlerPlatform::SetRemoteDescription(
     RTCVoidRequest*,
     RTCSessionDescriptionPlatform*) {}
 
-RTCSessionDescriptionPlatform*
-MockRTCPeerConnectionHandlerPlatform::LocalDescription() {
-  return nullptr;
-}
-
-RTCSessionDescriptionPlatform*
-MockRTCPeerConnectionHandlerPlatform::RemoteDescription() {
-  return nullptr;
-}
-
-RTCSessionDescriptionPlatform*
-MockRTCPeerConnectionHandlerPlatform::CurrentLocalDescription() {
-  return nullptr;
-}
-
-RTCSessionDescriptionPlatform*
-MockRTCPeerConnectionHandlerPlatform::CurrentRemoteDescription() {
-  return nullptr;
-}
-
-RTCSessionDescriptionPlatform*
-MockRTCPeerConnectionHandlerPlatform::PendingLocalDescription() {
-  return nullptr;
-}
-
-RTCSessionDescriptionPlatform*
-MockRTCPeerConnectionHandlerPlatform::PendingRemoteDescription() {
-  return nullptr;
-}
-
 const webrtc::PeerConnectionInterface::RTCConfiguration&
 MockRTCPeerConnectionHandlerPlatform::GetConfiguration() const {
   static const webrtc::PeerConnectionInterface::RTCConfiguration configuration;

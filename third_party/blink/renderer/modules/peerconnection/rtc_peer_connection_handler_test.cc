@@ -676,8 +676,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescription) {
 
   pc_handler_->SetLocalDescription(nullptr /*RTCVoidRequest*/, description);
   RunMessageLoopsUntilIdle();
-  EXPECT_EQ(description->GetType(), pc_handler_->LocalDescription()->GetType());
-  EXPECT_EQ(description->Sdp(), pc_handler_->LocalDescription()->Sdp());
 
   std::string sdp_string;
   ASSERT_TRUE(mock_peer_connection_->local_description());
@@ -711,8 +709,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescriptionParseError) {
   mock_dependency_factory_->SetFailToCreateSessionDescription(true);
   pc_handler_->SetLocalDescription(nullptr /*RTCVoidRequest*/, description);
   RunMessageLoopsUntilIdle();
-  // A description that failed to be applied shouldn't be stored.
-  EXPECT_TRUE(!pc_handler_->LocalDescription());
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescription) {
@@ -730,9 +726,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescription) {
 
   pc_handler_->SetRemoteDescription(nullptr /*RTCVoidRequest*/, description);
   RunMessageLoopsUntilIdle();
-  EXPECT_EQ(description->GetType(),
-            pc_handler_->RemoteDescription()->GetType());
-  EXPECT_EQ(description->Sdp(), pc_handler_->RemoteDescription()->Sdp());
 
   std::string sdp_string;
   ASSERT_TRUE(mock_peer_connection_->remote_description());
@@ -766,8 +759,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescriptionParseError) {
   mock_dependency_factory_->SetFailToCreateSessionDescription(true);
   pc_handler_->SetRemoteDescription(nullptr /*RTCVoidRequest*/, description);
   RunMessageLoopsUntilIdle();
-  // A description that failed to be applied shouldn't be stored.
-  EXPECT_TRUE(!pc_handler_->RemoteDescription());
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, setConfiguration) {
