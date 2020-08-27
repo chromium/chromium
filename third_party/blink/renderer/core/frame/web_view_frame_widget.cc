@@ -416,8 +416,6 @@ void WebViewFrameWidget::SetScreenInfoAndSize(
   DCHECK(!web_view_->AutoResizeMode());
 
   UpdateScreenInfo(screen_info);
-
-  Client()->UpdateCompositingToLCDTextPreference();
   widget_base_->SetVisibleViewportSize(visible_viewport_size);
   Client()->SetSize(widget_size);
 }

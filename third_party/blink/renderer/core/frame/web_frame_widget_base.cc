@@ -21,6 +21,7 @@
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -2104,6 +2105,17 @@ void WebFrameWidgetBase::DidUpdateSurfaceAndScreen(
     View()->SetZoomFactorForDeviceScaleFactor(screen_info.device_scale_factor);
   } else {
     View()->SetDeviceScaleFactor(screen_info.device_scale_factor);
+  }
+
+  if (Client()->ShouldAutoDetermineCompositingToLCDTextSetting()) {
+    // This causes compositing state to be modified which dirties the
+    // document lifecycle. Android Webview relies on the document
+    // lifecycle being clean after the RenderWidget is initialized, in
+    // order to send IPCs that query and change compositing state. So
+    // WebFrameWidgetBase::Resize() must come after this call, as it runs the
+    // entire document lifecycle.
+    View()->GetSettings()->SetPreferCompositingToLCDTextEnabled(
+        widget_base_->ComputePreferCompositingToLCDText());
   }
 
   // When the device scale changes, the size and position of the popup would

@@ -240,7 +240,6 @@ class CONTENT_EXPORT RenderWidget
   void Show(blink::WebNavigationPolicy) override;
   void SetWindowRect(const gfx::Rect&) override;
   void SetSize(const gfx::Size&) override;
-  void UpdateCompositingToLCDTextPreference() override;
   void ConvertViewportToWindow(blink::WebRect* rect) override;
   void ConvertViewportToWindow(blink::WebFloatRect* rect) override;
   void ConvertWindowToViewport(blink::WebFloatRect* rect) override;

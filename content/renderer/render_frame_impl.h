@@ -793,10 +793,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   media::MediaPermission* GetMediaPermission();
 
-  // Proxies the call to set the prefer compositing flag over to the
-  // RenderViewImpl. Meant to be called by the |render_widget_| in order to get
-  // access to the RenderViewImpl.
-  void SetPreferCompositingToLCDTextEnabledOnRenderView(bool prefer);
   // Proxies the call to set the device scale factor over to the RenderViewImpl.
   // Meant to be called by the |render_widget_| in order to get access to the
   // RenderViewImpl.

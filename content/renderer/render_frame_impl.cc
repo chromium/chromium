@@ -2976,11 +2976,6 @@ void RenderFrameImpl::SetSelectedText(const base::string16& selection_text,
                                          static_cast<uint32_t>(offset), range));
 }
 
-void RenderFrameImpl::SetPreferCompositingToLCDTextEnabledOnRenderView(
-    bool prefer) {
-  render_view_->SetPreferCompositingToLCDTextEnabled(prefer);
-}
-
 void RenderFrameImpl::SetDeviceScaleFactorOnRenderView(
     bool use_zoom_for_dsf,
     float device_scale_factor) {

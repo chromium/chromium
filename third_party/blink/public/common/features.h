@@ -310,6 +310,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT
 extern const char kBackForwardCacheABExperimentGroup[];
 
+BLINK_COMMON_EXPORT extern const base::Feature kPreferCompositingToLCDText;
+
 }  // namespace features
 }  // namespace blink
 

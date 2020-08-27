@@ -1358,10 +1358,6 @@ void RenderViewImpl::ZoomLevelChanged() {
     observer.OnZoomLevelChanged();
 }
 
-void RenderViewImpl::SetPreferCompositingToLCDTextEnabled(bool prefer) {
-  GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(prefer);
-}
-
 void RenderViewImpl::SetDeviceScaleFactor(bool use_zoom_for_dsf,
                                           float device_scale_factor) {
   if (use_zoom_for_dsf)

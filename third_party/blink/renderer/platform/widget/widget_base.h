@@ -216,6 +216,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
           void(blink::mojom::PointerLockResult,
                CrossVariantMojoRemote<
                    mojom::blink::PointerLockContextInterfaceBase>)> callback);
+  bool ComputePreferCompositingToLCDText();
 
   const viz::LocalSurfaceIdAllocation&
   local_surface_id_allocation_from_parent() {

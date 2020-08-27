@@ -754,5 +754,10 @@ const base::Feature kBackForwardCacheABExperimentControl{
 const char kBackForwardCacheABExperimentGroup[] =
     "experiment_group_for_http_header";
 
+// Whether we should composite a PLSA (paint layer scrollable area) even if it
+// means losing lcd text.
+const base::Feature kPreferCompositingToLCDText = {
+    "PreferCompositingToLCDText", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

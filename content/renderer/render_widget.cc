@@ -212,34 +212,6 @@ blink::WebTextInputType ConvertTextInputType(ui::TextInputType type) {
 }
 #endif
 
-static bool ComputePreferCompositingToLCDText(
-    CompositorDependencies* compositor_deps,
-    float device_scale_factor) {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kDisablePreferCompositingToLCDText))
-    return false;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
-  // On Android, we never have subpixel antialiasing. On Chrome OS we prefer to
-  // composite all scrollers for better scrolling performance.
-  return true;
-#else
-  // Prefer compositing if the device scale is high enough that losing subpixel
-  // antialiasing won't have a noticeable effect on text quality.
-  // Note: We should keep kHighDPIDeviceScaleFactorThreshold in
-  // cc/metrics/lcd_text_metrics_reporter.cc the same as the value below.
-  if (device_scale_factor >= 1.5f)
-    return true;
-  if (command_line.HasSwitch(switches::kEnablePreferCompositingToLCDText))
-    return true;
-  if (!compositor_deps->IsLcdTextEnabled())
-    return true;
-  if (base::FeatureList::IsEnabled(features::kPreferCompositingToLCDText))
-    return true;
-  return false;
-#endif
-}
-
 viz::FrameSinkId GetRemoteFrameSinkId(const blink::WebHitTestResult& result) {
   const blink::WebNode& node = result.GetNode();
   DCHECK(!node.IsNull());
@@ -461,21 +433,6 @@ void RenderWidget::UpdateVisualProperties(
           visual_properties.local_surface_id_allocation.value_or(
               viz::LocalSurfaceIdAllocation()),
           new_compositor_viewport_pixel_rect, visual_properties.screen_info);
-
-      if (for_frame()) {
-        RenderFrameImpl* render_frame =
-            RenderFrameImpl::FromWebFrame(GetFrameWidget()->LocalRoot());
-        // This causes compositing state to be modified which dirties the
-        // document lifecycle. Android Webview relies on the document
-        // lifecycle being clean after the RenderWidget is initialized, in
-        // order to send IPCs that query and change compositing state. So
-        // ResizeWebWidget() must come after this call, as it runs the entire
-        // document lifecycle.
-        render_frame->SetPreferCompositingToLCDTextEnabledOnRenderView(
-            ComputePreferCompositingToLCDText(
-                compositor_deps_,
-                GetWebWidget()->GetScreenInfo().device_scale_factor));
-      }
 
       // Store this even when auto-resizing, it is the size of the full viewport
       // used for clipping, and this value is propagated down the RenderWidget
@@ -940,28 +897,6 @@ void RenderWidget::SetSize(const gfx::Size& new_size) {
   ResizeWebWidget();
 }
 
-void RenderWidget::UpdateCompositingToLCDTextPreference() {
-  if (!for_frame())
-    return;
-  RenderFrameImpl* render_frame =
-      RenderFrameImpl::FromWebFrame(GetFrameWidget()->LocalRoot());
-  // UpdateScreenInfo() changes properties including the device scale
-  // factor, which changes PreferCompositingToLCDText decisions.
-  // TODO(danakj): Do this in UpdateScreenInfo? But requires a Resize
-  // to happen after (see comment on
-  // SetPreferCompositingToLCDTextEnabledOnRenderView).
-  //
-  // This causes compositing state to be modified which dirties the document
-  // lifecycle. Android Webview relies on the document lifecycle being clean
-  // after the RenderWidget is initialized, in order to send IPCs that query
-  // and change compositing state. So ResizeWebWidget() must come after this
-  // call, as it runs the entire document lifecycle.
-  render_frame->SetPreferCompositingToLCDTextEnabledOnRenderView(
-      ComputePreferCompositingToLCDText(
-          compositor_deps_,
-          GetWebWidget()->GetScreenInfo().device_scale_factor));
-}
-
 void RenderWidget::ImeSetCompositionForPepper(
     const blink::WebString& text,
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
@@ -1252,12 +1187,6 @@ void RenderWidget::SetDeviceScaleFactorForTesting(float factor) {
       gfx::Rect(viewport_pixel_size), info);
   if (!AutoResizeMode())
     ResizeWebWidget();  // This picks up the new device scale factor in |info|.
-
-  RenderFrameImpl* render_frame =
-      RenderFrameImpl::FromWebFrame(GetFrameWidget()->LocalRoot());
-  render_frame->SetPreferCompositingToLCDTextEnabledOnRenderView(
-      ComputePreferCompositingToLCDText(compositor_deps_,
-                                        info.device_scale_factor));
 }
 
 void RenderWidget::SetWindowRectSynchronouslyForTesting(

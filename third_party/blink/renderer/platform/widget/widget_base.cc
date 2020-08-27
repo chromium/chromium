@@ -1137,4 +1137,30 @@ gfx::Rect WidgetBase::CompositorViewportRect() const {
   return LayerTreeHost()->device_viewport_rect();
 }
 
+bool WidgetBase::ComputePreferCompositingToLCDText() {
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(switches::kDisablePreferCompositingToLCDText))
+    return false;
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+  // On Android, we never have subpixel antialiasing. On Chrome OS we prefer to
+  // composite all scrollers for better scrolling performance.
+  return true;
+#else
+  // Prefer compositing if the device scale is high enough that losing subpixel
+  // antialiasing won't have a noticeable effect on text quality.
+  // Note: We should keep kHighDPIDeviceScaleFactorThreshold in
+  // cc/metrics/lcd_text_metrics_reporter.cc the same as the value below.
+  if (screen_info_.device_scale_factor >= 1.5f)
+    return true;
+  if (command_line.HasSwitch(switches::kEnablePreferCompositingToLCDText))
+    return true;
+  if (!Platform::Current()->IsLcdTextEnabled())
+    return true;
+  if (base::FeatureList::IsEnabled(features::kPreferCompositingToLCDText))
+    return true;
+  return false;
+#endif
+}
+
 }  // namespace blink

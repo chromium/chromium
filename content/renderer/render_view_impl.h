@@ -153,9 +153,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   void AddObserver(RenderViewObserver* observer);
   void RemoveObserver(RenderViewObserver* observer);
 
-  // Passes along the prefer compositing preference to the WebView's settings.
-  void SetPreferCompositingToLCDTextEnabled(bool prefer);
-
   // Passes along the device scale factor to the WebView.
   void SetDeviceScaleFactor(bool use_zoom_for_dsf, float device_scale_factor);
 

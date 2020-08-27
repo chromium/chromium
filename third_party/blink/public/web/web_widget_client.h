@@ -296,9 +296,9 @@ class WebWidgetClient {
       bool emulator_enabled,
       const VisualProperties& visual_properties) {}
 
-  // After screen info has been updated the compositing to LCD text preference
-  // may need to be recalculated.
-  virtual void UpdateCompositingToLCDTextPreference() {}
+  // Whether compositing to LCD text should be auto determined. This can be
+  // overridden by tests to disable this.
+  virtual bool ShouldAutoDetermineCompositingToLCDTextSetting() { return true; }
 };
 
 }  // namespace blink

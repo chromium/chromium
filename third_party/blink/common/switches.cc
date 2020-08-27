@@ -29,6 +29,10 @@ const char kDisableLowResTiling[] = "disable-low-res-tiling";
 // the use of persistent gpu memory buffers.
 const char kDisablePartialRaster[] = "disable-partial-raster";
 
+// Disable the creation of compositing layers when it would prevent LCD text.
+const char kDisablePreferCompositingToLCDText[] =
+    "disable-prefer-compositing-to-lcd-text";
+
 // Disables RGBA_4444 textures.
 const char kDisableRGBA4444Textures[] = "disable-rgba-4444-textures";
 
@@ -42,6 +46,10 @@ const char kEnableGpuMemoryBufferCompositorResources[] =
 // When using CPU rasterizing generate low resolution tiling. Low res
 // tiles may be displayed during fast scrolls especially on slower devices.
 const char kEnableLowResTiling[] = "enable-low-res-tiling";
+
+// Enable the creation of compositing layers when it would prevent LCD text.
+const char kEnablePreferCompositingToLCDText[] =
+    "enable-prefer-compositing-to-lcd-text";
 
 // Enables RGBA_4444 textures.
 const char kEnableRGBA4444Textures[] = "enable-rgba-4444-textures";

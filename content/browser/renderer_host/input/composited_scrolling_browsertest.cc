@@ -28,6 +28,7 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 
 namespace {
@@ -74,7 +75,7 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
   ~CompositedScrollingBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    cmd->AppendSwitch(switches::kEnablePreferCompositingToLCDText);
+    cmd->AppendSwitch(blink::switches::kEnablePreferCompositingToLCDText);
   }
 
   RenderWidgetHostImpl* GetWidgetHost() {
@@ -197,7 +198,7 @@ class CompositedScrollingMetricTest : public CompositedScrollingBrowserTest,
   void SetUpCommandLine(base::CommandLine* cmd) override {
     const bool enable_composited_scrolling = GetParam();
     if (enable_composited_scrolling)
-      cmd->AppendSwitch(switches::kEnablePreferCompositingToLCDText);
+      cmd->AppendSwitch(blink::switches::kEnablePreferCompositingToLCDText);
     else
       cmd->AppendSwitch(switches::kDisableThreadedScrolling);
   }
