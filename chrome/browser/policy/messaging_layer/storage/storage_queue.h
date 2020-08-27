@@ -262,6 +262,10 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // file will be created and assigned to be the last one.
   StatusOr<scoped_refptr<SingleFile>> AssignLastFile(size_t size);
 
+  // Helper method for Write() and Read(): creates and opens a new empty
+  // writeable file, adding it to |files_|.
+  StatusOr<scoped_refptr<SingleFile>> OpenNewWriteableFile();
+
   // Helper method for Write(): composes record header and writes it to the
   // file, followed by data.
   Status WriteHeaderAndBlock(base::span<const uint8_t> data,

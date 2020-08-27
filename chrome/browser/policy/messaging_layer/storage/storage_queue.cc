@@ -307,22 +307,27 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>> StorageQueue::AssignLastFile(
     // The last file will become too large, asynchronously close it and add
     // new.
     last_file->Close();
-    auto insert_result = files_.emplace(
-        next_seq_number_,
-        base::MakeRefCounted<SingleFile>(
-            options_.directory()
-                .Append(options_.file_prefix())
-                .AddExtensionASCII(base::NumberToString(next_seq_number_)),
-            /*size=*/0));
-    if (!insert_result.second) {
-      return Status(
-          error::ALREADY_EXISTS,
-          base::StrCat({"Sequence number already assigned: '",
-                        base::NumberToString(next_seq_number_), "'"}));
-    }
-    last_file = insert_result.first->second;
+    ASSIGN_OR_RETURN(last_file, OpenNewWriteableFile());
   }
   return last_file;
+}
+
+StatusOr<scoped_refptr<StorageQueue::SingleFile>>
+StorageQueue::OpenNewWriteableFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+  auto new_file = base::MakeRefCounted<SingleFile>(
+      options_.directory()
+          .Append(options_.file_prefix())
+          .AddExtensionASCII(base::NumberToString(next_seq_number_)),
+      /*size=*/0);
+  RETURN_IF_ERROR(new_file->Open(/*read_only=*/false));
+  auto insert_result = files_.emplace(next_seq_number_, new_file);
+  if (!insert_result.second) {
+    return Status(error::ALREADY_EXISTS,
+                  base::StrCat({"Sequence number already assigned: '",
+                                base::NumberToString(next_seq_number_), "'"}));
+  }
+  return new_file;
 }
 
 Status StorageQueue::WriteHeaderAndBlock(
@@ -676,18 +681,7 @@ Status StorageQueue::SwitchLastFileIfNotEmpty() {
     return Status::StatusOK();  // Already empty.
   }
   files_.rbegin()->second->Close();
-  auto insert_result = files_.emplace(
-      next_seq_number_,
-      base::MakeRefCounted<SingleFile>(
-          options_.directory()
-              .Append(options_.file_prefix())
-              .AddExtensionASCII(base::NumberToString(next_seq_number_)),
-          /*size=*/0));
-  if (!insert_result.second) {
-    return Status(error::ALREADY_EXISTS,
-                  base::StrCat({"Sequence number already assigned: '",
-                                base::NumberToString(next_seq_number_), "'"}));
-  }
+  ASSIGN_OR_RETURN(scoped_refptr<SingleFile> last_file, OpenNewWriteableFile());
   return Status::StatusOK();
 }
 
