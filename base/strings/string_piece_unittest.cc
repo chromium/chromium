@@ -474,11 +474,7 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.substr(23, 99), c);
   ASSERT_EQ(a.substr(0), a);
   ASSERT_EQ(a.substr(3, 2), TestFixture::as_string("de"));
-  // empty string nonsense
-  ASSERT_EQ(a.substr(99, 2), e);
-  ASSERT_EQ(d.substr(99), e);
   ASSERT_EQ(d.substr(0, 99), e);
-  ASSERT_EQ(d.substr(99, 99), e);
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckCustom) {
@@ -677,6 +673,11 @@ TEST(StringPieceTest, OutOfBoundsDeath) {
   {
     StringPiece piece;
     ASSERT_DEATH_IF_SUPPORTED(piece.remove_prefix(1), "");
+  }
+
+  {
+    StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece.substr(1), "");
   }
 }
 

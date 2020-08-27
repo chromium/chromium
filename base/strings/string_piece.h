@@ -325,8 +325,7 @@ template <typename STRING_TYPE> class BasicStringPiece {
   constexpr BasicStringPiece substr(
       size_type pos,
       size_type n = BasicStringPiece::npos) const {
-    // TODO(crbug.com/1049498): Be less lenient here and CHECK(pos <= size()).
-    pos = std::min(pos, size());
+    CHECK_LE(pos, size());
     return {data() + pos, std::min(n, size() - pos)};
   }
 

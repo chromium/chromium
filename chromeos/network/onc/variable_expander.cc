@@ -4,6 +4,8 @@
 
 #include "chromeos/network/onc/variable_expander.h"
 
+#include <algorithm>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -86,8 +88,8 @@ bool Expand(base::StringPiece variable_name,
       }
     }
 
-    const base::StringPiece replacement_part =
-        replacement.substr(replacement_start, replacement_count);
+    const base::StringPiece replacement_part = replacement.substr(
+        std::min(replacement_start, replacement.size()), replacement_count);
     // Don't use ReplaceSubstringsAfterOffset here, it can lead to a doubling
     // of tokens, see VariableExpanderTest.DoesNotRecurse test.
     base::ReplaceFirstSubstringAfterOffset(str, token_start, full_token,

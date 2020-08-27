@@ -5,6 +5,8 @@
 #ifndef BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 #define BASE_STRINGS_STRING_UTIL_INTERNAL_H_
 
+#include <algorithm>
+
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -130,7 +132,7 @@ BasicStringPiece<Str> TrimStringPieceT(BasicStringPiece<Str> input,
   size_t end = (positions & TRIM_TRAILING)
                    ? input.find_last_not_of(trim_chars) + 1
                    : input.size();
-  return input.substr(begin, end - begin);
+  return input.substr(std::min(begin, input.size()), end - begin);
 }
 
 template <typename STR>

@@ -4,6 +4,8 @@
 
 #include "google_apis/gaia/oauth_multilogin_result.h"
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -59,7 +61,7 @@ OAuthMultiloginResult::OAuthMultiloginResult(
 base::StringPiece OAuthMultiloginResult::StripXSSICharacters(
     const std::string& raw_data) {
   base::StringPiece body(raw_data);
-  return body.substr(body.find('\n'));
+  return body.substr(std::min(body.find('\n'), body.size()));
 }
 
 void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
