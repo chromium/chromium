@@ -179521,7 +179521,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tab.Screenshot.Action" enum="TabScreenshotAction"
-    expires_after="2020-09-01">
+    expires_after="2021-08-24">
   <owner>ramyan@chromium.org</owner>
   <owner>cyflee@chromium.org</owner>
   <summary>
@@ -179534,7 +179534,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tab.Screenshot.ScreenshotsPerPage" units="screenshots"
-    expires_after="2020-09-01">
+    expires_after="2021-08-24">
   <owner>ramyan@chromium.org</owner>
   <owner>cyflee@chromium.org</owner>
   <summary>
