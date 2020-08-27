@@ -1077,6 +1077,7 @@ public class StartSurfaceLayoutTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisabledTest(message = "https://crbug.com/1122657")
     public void testThumbnailAspectRatio_default() {
         prepareTabs(2, 0, mUrl);
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -1087,6 +1088,7 @@ public class StartSurfaceLayoutTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75"})
+    @DisabledTest(message = "https://crbug.com/1122657")
     public void testThumbnailAspectRatio_point75() {
         prepareTabs(2, 0, mUrl);
         enterTabSwitcher(mActivityTestRule.getActivity());
