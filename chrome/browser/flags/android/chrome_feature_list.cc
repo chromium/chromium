@@ -231,6 +231,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &net::features::kCookiesWithoutSameSiteMustBeSecure,
     &paint_preview::kPaintPreviewDemo,
     &paint_preview::kPaintPreviewShowOnStartup,
+    &language::kDetailedLanguageSettings,
     &language::kExplicitLanguageAsk,
     &ntp_snippets::kArticleSuggestionsFeature,
     &offline_pages::kOfflineIndicatorFeature,

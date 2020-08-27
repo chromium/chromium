@@ -36,6 +36,9 @@ extern const base::Feature kNotifySyncOnLanguageDetermined;
 // This feature uses the existing UI for translate bubble.
 extern const base::Feature kUseButtonTranslateBubbleUi;
 
+// This feature enables setting the application language on Android.
+extern const base::Feature kDetailedLanguageSettings;
+
 enum class OverrideLanguageModel {
   DEFAULT,
   FLUENT,
