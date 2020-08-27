@@ -2285,7 +2285,6 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, BoundsChanged) {
 
 // Tests that simplified domain hover duration histogram is recorded correctly.
 TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverHistogram) {
-  base::HistogramTester histograms;
   base::SimpleTestClock clock;
   constexpr int kHoverTimeMs = 1000;
   SetUpSimplifiedDomainTest();
@@ -2294,21 +2293,78 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverHistogram) {
 
   // Hover over the omnibox and then exit and check that the histogram is
   // recorded correctly.
-  omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
-  OmniboxViewViews::ElideAnimation* unelide_animation =
-      omnibox_view()->GetHoverElideOrUnelideAnimationForTesting();
-  ASSERT_TRUE(unelide_animation);
-  EXPECT_TRUE(unelide_animation->IsAnimating());
-  clock.Advance(base::TimeDelta::FromMilliseconds(kHoverTimeMs / 2));
-  // Call OnMouseMoved() again halfway through the hover time to ensure that the
-  // histogram is only recorded once per continuous hover.
-  omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
-  clock.Advance(base::TimeDelta::FromMilliseconds(kHoverTimeMs / 2));
-  omnibox_view()->OnMouseExited(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
-  auto samples = histograms.GetAllSamples("Omnibox.HoverTime");
-  ASSERT_EQ(1u, samples.size());
-  histograms.ExpectTimeBucketCount(
-      "Omnibox.HoverTime", base::TimeDelta::FromMilliseconds(kHoverTimeMs), 1);
+  {
+    base::HistogramTester histograms;
+    omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    OmniboxViewViews::ElideAnimation* unelide_animation =
+        omnibox_view()->GetHoverElideOrUnelideAnimationForTesting();
+    ASSERT_TRUE(unelide_animation);
+    EXPECT_TRUE(unelide_animation->IsAnimating());
+    clock.Advance(base::TimeDelta::FromMilliseconds(kHoverTimeMs / 2));
+    // Call OnMouseMoved() again halfway through the hover time to ensure that
+    // the histogram is only recorded once per continuous hover.
+    omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    clock.Advance(base::TimeDelta::FromMilliseconds(kHoverTimeMs / 2));
+    omnibox_view()->OnMouseExited(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    auto samples = histograms.GetAllSamples("Omnibox.HoverTime");
+    ASSERT_EQ(1u, samples.size());
+    histograms.ExpectTimeBucketCount(
+        "Omnibox.HoverTime", base::TimeDelta::FromMilliseconds(kHoverTimeMs),
+        1);
+
+    // Focusing the omnibox while not hovering should not record another sample.
+    omnibox_view()->OnFocus();
+    samples = histograms.GetAllSamples("Omnibox.HoverTime");
+    ASSERT_EQ(1u, samples.size());
+  }
+
+  // Hover over the omnibox and then focus it, and check that the histogram is
+  // recorded correctly.
+  {
+    base::HistogramTester histograms;
+    omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    OmniboxViewViews::ElideAnimation* unelide_animation =
+        omnibox_view()->GetHoverElideOrUnelideAnimationForTesting();
+    ASSERT_TRUE(unelide_animation);
+    EXPECT_TRUE(unelide_animation->IsAnimating());
+    clock.Advance(base::TimeDelta::FromMilliseconds(kHoverTimeMs));
+    omnibox_view()->OnFocus();
+    auto samples = histograms.GetAllSamples("Omnibox.HoverTime");
+    ASSERT_EQ(1u, samples.size());
+    histograms.ExpectTimeBucketCount(
+        "Omnibox.HoverTime", base::TimeDelta::FromMilliseconds(kHoverTimeMs),
+        1);
+
+    // Moving the mouse, focusing again, and exiting from the omnibox after
+    // focusing it should not record any more samples.
+    omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    omnibox_view()->OnFocus();
+    omnibox_view()->OnMouseExited(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    samples = histograms.GetAllSamples("Omnibox.HoverTime");
+    ASSERT_EQ(1u, samples.size());
+
+    // Hovering and exiting again should record another sample.
+    omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    omnibox_view()->OnMouseExited(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    samples = histograms.GetAllSamples("Omnibox.HoverTime");
+    ASSERT_EQ(2u, samples.size());
+  }
+
+  // Hovering over the omnibox while focused should not record a histogram,
+  // because no elide animation happens while focused.
+  {
+    base::HistogramTester histograms;
+    omnibox_view()->RequestFocus();
+    omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    OmniboxViewViews::ElideAnimation* unelide_animation =
+        omnibox_view()->GetHoverElideOrUnelideAnimationForTesting();
+    ASSERT_TRUE(unelide_animation);
+    EXPECT_FALSE(unelide_animation->IsAnimating());
+    clock.Advance(base::TimeDelta::FromMilliseconds(kHoverTimeMs));
+    omnibox_view()->OnMouseExited(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
+    auto samples = histograms.GetAllSamples("Omnibox.HoverTime");
+    ASSERT_EQ(0u, samples.size());
+  }
 }
 
 // Tests that the simplified domain animation doesn't crash when it's cancelled.

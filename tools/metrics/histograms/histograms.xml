@@ -117611,9 +117611,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
-    The time duration that the user hovers the mouse over the omnibox. Recorded
-    each time the user's mouse exits the omnibox, as a delta from a timestamp
-    noted when the user's mouse first entered it.
+    The time duration that the user hovers the mouse over the omnibox before
+    exiting the hover or focusing the omnibox. Whenever the user's mouse enters
+    the omnibox, this histogram is recorded when the mouse next exits or the
+    omnibox is focused, whichever comes first. The recorded value is a delta
+    from a timestamp noted when the user's mouse first entered the omnibox.
   </summary>
 </histogram>
 

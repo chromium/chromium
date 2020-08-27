@@ -1285,15 +1285,18 @@ void OmniboxViewViews::OnMouseMoved(const ui::MouseEvent& event) {
   if (location_bar_view_)
     location_bar_view_->OnOmniboxHovered(true);
 
-  if (hover_start_time_ == base::Time()) {
+  if (model()->ShouldPreventElision())
+    return;
+
+  if (!IsURLEligibleForSimplifiedDomainEliding())
+    return;
+
+  if (hover_start_time_ == base::Time() &&
+      IsURLEligibleForSimplifiedDomainEliding()) {
     hover_start_time_ = clock_->Now();
   }
 
-  if (!OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover() ||
-      model()->ShouldPreventElision()) {
-    return;
-  }
-  if (!IsURLEligibleForSimplifiedDomainEliding())
+  if (!OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover())
     return;
 
   if (elide_after_web_contents_interaction_animation_)
@@ -1373,8 +1376,13 @@ void OmniboxViewViews::OnMouseExited(const ui::MouseEvent& event) {
   if (location_bar_view_)
     location_bar_view_->OnOmniboxHovered(false);
 
-  UmaHistogramTimes("Omnibox.HoverTime", clock_->Now() - hover_start_time_);
+  // A histogram records the duration that the user has hovered continuously
+  // over the omnibox without focusing it.
+  if (hover_start_time_ != base::Time() && !recorded_hover_on_focus_) {
+    UmaHistogramTimes("Omnibox.HoverTime", clock_->Now() - hover_start_time_);
+  }
   hover_start_time_ = base::Time();
+  recorded_hover_on_focus_ = false;
 
   if (!OmniboxFieldTrial::ShouldRevealPathQueryRefOnHover() ||
       model()->ShouldPreventElision()) {
@@ -1796,6 +1804,14 @@ void OmniboxViewViews::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
 void OmniboxViewViews::OnFocus() {
   views::Textfield::OnFocus();
+
+  // A histogram records the duration that the user has hovered continuously
+  // over the omnibox without focusing it.
+  if (hover_start_time_ != base::Time() && !recorded_hover_on_focus_) {
+    recorded_hover_on_focus_ = true;
+    UmaHistogramTimes("Omnibox.HoverTime", clock_->Now() - hover_start_time_);
+  }
+
   // TODO(tommycli): This does not seem like it should be necessary.
   // Investigate why it's needed and see if we can remove it.
   model()->ResetDisplayTexts();

@@ -594,8 +594,13 @@ class OmniboxViewViews : public OmniboxView,
 
   // The time that the mouse begins hovering over the omnibox, used for
   // recording metrics related to simplified domain field trials. Set in
-  // OnMouseMoved() and cleared in OnMouseExited().
+  // OnMouseMoved() and cleared when the mouse exits the hover.
   base::Time hover_start_time_;
+  // A histogram is recorded for each continuous hover over the omnibox, ended
+  // by either focusing or exiting the mouse. This is set to true if the
+  // histogram was recorded due to the omnibox being focused, so that it won't
+  // be recorded again for the same continuous hover when the mouse exits.
+  bool recorded_hover_on_focus_ = false;
   base::Clock* clock_;
 
   // Selection persisted across temporary text changes, like popup suggestions.
