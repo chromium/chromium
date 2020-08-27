@@ -81,14 +81,6 @@ enum VideoPixelFormat {
   [MinVersion=2] PIXEL_FORMAT_XBGR = 28,
 };
 
-[Extensible]
-enum DecodeStatus {
-  // The values must match to the values in media::DecodeStatus
-  OK = 0,
-  ABORTED = 1,
-  DECODE_ERROR = 2,
-};
-
 // The offset and stride of a video frame plane. Both offset and stride must
 // be non negative.
 struct VideoFramePlane {

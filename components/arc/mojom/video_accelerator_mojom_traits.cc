@@ -170,48 +170,6 @@ bool EnumTraits<arc::mojom::VideoPixelFormat, media::VideoPixelFormat>::
   return false;
 }
 
-// Make sure values in arc::mojom::DecodeStatus match to the values in
-// media::DecodeStatus.
-#define CHECK_DECODE_STATUS_ENUM(value)                              \
-  static_assert(static_cast<int>(arc::mojom::DecodeStatus::value) == \
-                    static_cast<int>(media::DecodeStatus::value),    \
-                "enum ##value mismatch")
-
-CHECK_DECODE_STATUS_ENUM(OK);
-CHECK_DECODE_STATUS_ENUM(ABORTED);
-CHECK_DECODE_STATUS_ENUM(DECODE_ERROR);
-
-#undef CHECK_DECODE_STATUS_ENUM
-
-// static
-arc::mojom::DecodeStatus
-EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus>::ToMojom(
-    media::DecodeStatus input) {
-  switch (input) {
-    case media::DecodeStatus::OK:
-    case media::DecodeStatus::ABORTED:
-    case media::DecodeStatus::DECODE_ERROR:
-      return static_cast<arc::mojom::DecodeStatus>(input);
-  }
-  NOTREACHED() << "unknown status: " << static_cast<int>(input);
-  return arc::mojom::DecodeStatus::DECODE_ERROR;
-}
-
-// static
-bool EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus>::FromMojom(
-    arc::mojom::DecodeStatus input,
-    media::DecodeStatus* output) {
-  switch (input) {
-    case arc::mojom::DecodeStatus::OK:
-    case arc::mojom::DecodeStatus::ABORTED:
-    case arc::mojom::DecodeStatus::DECODE_ERROR:
-      *output = static_cast<media::DecodeStatus>(input);
-      return true;
-  }
-  NOTREACHED() << "unknown status: " << static_cast<int>(input);
-  return false;
-}
-
 // static
 bool StructTraits<arc::mojom::VideoFramePlaneDataView, arc::VideoFramePlane>::
     Read(arc::mojom::VideoFramePlaneDataView data, arc::VideoFramePlane* out) {

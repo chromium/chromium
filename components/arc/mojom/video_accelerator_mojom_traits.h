@@ -10,7 +10,6 @@
 #include "components/arc/mojom/video_common.mojom.h"
 #include "components/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/color_plane_layout.h"
-#include "media/base/decode_status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
@@ -130,14 +129,6 @@ struct StructTraits<arc::mojom::VideoFrameLayoutDataView,
 
   static bool Read(arc::mojom::VideoFrameLayoutDataView data,
                    std::unique_ptr<media::VideoFrameLayout>* out);
-};
-
-template <>
-struct EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus> {
-  static arc::mojom::DecodeStatus ToMojom(media::DecodeStatus input);
-
-  static bool FromMojom(arc::mojom::DecodeStatus input,
-                        media::DecodeStatus* output);
 };
 
 }  // namespace mojo
