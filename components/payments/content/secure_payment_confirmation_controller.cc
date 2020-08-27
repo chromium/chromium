@@ -165,6 +165,8 @@ void SecurePaymentConfirmationController::OnDismiss() {
 }
 
 void SecurePaymentConfirmationController::OnCancel() {
+  CloseDialog();
+
   if (!request_)
     return;
 
