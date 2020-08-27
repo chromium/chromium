@@ -261,7 +261,7 @@ let instance = null;
 /**
  * Creates the App object and starts camera stream.
  */
-document.addEventListener('DOMContentLoaded', async () => {
+(async () => {
   if (instance !== null) {
     return;
   }
@@ -319,4 +319,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   instance = new App(
       /** @type {!BackgroundOps} */ (bgOps));
   await instance.start();
-});
+})();

@@ -98,6 +98,7 @@ copy("chrome_camera_app_js") {
     "src/js/chrome_util.js",
     "src/js/error.js",
     "src/js/gallerybutton.js",
+    "src/js/init.js",
     "src/js/intent.js",
     "src/js/main.js",
     "src/js/metrics.js",

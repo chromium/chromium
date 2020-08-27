@@ -29,6 +29,7 @@ js_library("compile_resources") {
     "device/device_info_updater.js",
     "error.js",
     "gallerybutton.js",
+    "init.js",
     "intent.js",
     "lib/comlink.js",
     "lib/ffmpeg.js",
