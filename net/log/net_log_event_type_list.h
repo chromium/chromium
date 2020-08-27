@@ -2602,6 +2602,15 @@ EVENT_TYPE(AUTH_CONTROLLER)
 //  }
 EVENT_TYPE(AUTH_BOUND_TO_CONTROLLER)
 
+// Record the result of attempting to create a HttpAuthHandler.
+//
+//  {
+//      "scheme": <scheme>
+//      "net_error": <Net Error. Only present in case of error.>
+//      "challenge": <challenge string, if NetLogCaptureIncludesSensitive>
+//  }
+EVENT_TYPE(AUTH_HANDLER_CREATE_RESULT)
+
 // Record the initialization of an HttpAuthHandler derivative.
 //
 // The END phase has the following parameters:

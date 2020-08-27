@@ -26,6 +26,23 @@
 #include "net/http/http_auth_handler_negotiate.h"
 #endif
 
+namespace {
+
+base::Value NetLogParamsForCreateAuth(const std::string& scheme,
+                                      const std::string& challenge,
+                                      const int net_error,
+                                      net::NetLogCaptureMode capture_mode) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("scheme", scheme);
+  if (net::NetLogCaptureIncludesSensitive(capture_mode))
+    dict.SetStringKey("challenge", challenge);
+  if (net_error < 0)
+    dict.SetIntKey("net_error", net_error);
+  return dict;
+}
+
+}  // namespace
+
 namespace net {
 
 int HttpAuthHandlerFactory::CreateAuthHandlerFromString(
@@ -206,19 +223,32 @@ int HttpAuthHandlerRegistryFactory::CreateAuthHandler(
     HostResolver* host_resolver,
     std::unique_ptr<HttpAuthHandler>* handler) {
   auto scheme = challenge->auth_scheme();
+
+  int net_error;
+
   if (scheme.empty()) {
     handler->reset();
-    return ERR_INVALID_RESPONSE;
+    net_error = ERR_INVALID_RESPONSE;
+  } else {
+    auto it = factory_map_.find(scheme);
+    if (it == factory_map_.end()) {
+      handler->reset();
+      net_error = ERR_UNSUPPORTED_AUTH_SCHEME;
+    } else {
+      DCHECK(it->second);
+      net_error = it->second->CreateAuthHandler(
+          challenge, target, ssl_info, network_isolation_key, origin, reason,
+          digest_nonce_count, net_log, host_resolver, handler);
+    }
   }
-  auto it = factory_map_.find(scheme);
-  if (it == factory_map_.end()) {
-    handler->reset();
-    return ERR_UNSUPPORTED_AUTH_SCHEME;
-  }
-  DCHECK(it->second);
-  return it->second->CreateAuthHandler(
-      challenge, target, ssl_info, network_isolation_key, origin, reason,
-      digest_nonce_count, net_log, host_resolver, handler);
+
+  net_log.AddEvent(NetLogEventType::AUTH_HANDLER_CREATE_RESULT,
+                   [&](NetLogCaptureMode capture_mode) {
+                     return NetLogParamsForCreateAuth(
+                         scheme, challenge->challenge_text(), net_error,
+                         capture_mode);
+                   });
+  return net_error;
 }
 
 }  // namespace net
