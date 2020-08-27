@@ -781,9 +781,13 @@ void LocalFrame::HookBackForwardCacheEviction() {
   DCHECK(RuntimeEnabledFeatures::BackForwardCacheEnabled());
   Vector<scoped_refptr<DOMWrapperWorld>> worlds;
   DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
+  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
   for (const auto& world : worlds) {
+    if (!world->IsMainWorld() && !world->IsIsolatedWorld()) {
+      // Only main & isolated worlds can have ScriptStates.
+      continue;
+    }
     ScriptState* script_state = ToScriptState(this, *world);
-    ScriptState::Scope scope(script_state);
     script_state->GetContext()->SetAbortScriptExecution(
         [](v8::Isolate* isolate, v8::Local<v8::Context> context) {
           ScriptState* script_state = ScriptState::From(context);
@@ -800,9 +804,13 @@ void LocalFrame::RemoveBackForwardCacheEviction() {
   DCHECK(RuntimeEnabledFeatures::BackForwardCacheEnabled());
   Vector<scoped_refptr<DOMWrapperWorld>> worlds;
   DOMWrapperWorld::AllWorldsInCurrentThread(worlds);
+  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
   for (const auto& world : worlds) {
+    if (!world->IsMainWorld() && !world->IsIsolatedWorld()) {
+      // Only main & isolated worlds can have ScriptStates.
+      continue;
+    }
     ScriptState* script_state = ToScriptState(this, *world);
-    ScriptState::Scope scope(script_state);
     script_state->GetContext()->SetAbortScriptExecution(nullptr);
   }
 }
