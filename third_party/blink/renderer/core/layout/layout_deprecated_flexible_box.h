@@ -50,8 +50,6 @@ class LayoutDeprecatedFlexibleBox final : public LayoutBlock {
  private:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
 
-  LayoutUnit AllowedChildFlex(LayoutBox* child, bool expanding);
-
   void ApplyLineClamp(bool relayout_children);
   void ClearLineClamp();
 };
