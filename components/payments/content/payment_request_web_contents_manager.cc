@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "components/payments/content/content_payment_request_delegate.h"
-#include "components/payments/content/payment_credential.h"
+#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/content/secure_payment_confirmation_payment_request_delegate.h"
@@ -90,9 +90,10 @@ void PaymentRequestWebContentsManager::DestroyRequest(PaymentRequest* request) {
 }
 
 void PaymentRequestWebContentsManager::CreatePaymentCredential(
+    scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
     mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
   payment_credential_ =
-      std::make_unique<PaymentCredential>(std::move(receiver));
+      std::make_unique<PaymentCredential>(web_data_sevice, std::move(receiver));
 }
 
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(

@@ -4,8 +4,11 @@
 
 #include "chrome/browser/payments/payment_credential_factory.h"
 
-#include "base/feature_list.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_data_service_factory.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -20,7 +23,11 @@ void CreatePaymentCredential(
   if (!web_contents)
     return;
   PaymentRequestWebContentsManager::GetOrCreateForWebContents(web_contents)
-      ->CreatePaymentCredential(std::move(receiver));
+      ->CreatePaymentCredential(
+          WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
+              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+              ServiceAccessType::EXPLICIT_ACCESS),
+          std::move(receiver));
 }
 
 }  // namespace payments

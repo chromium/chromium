@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/payments/content/payment_credential.h"
 #include "components/payments/content/payment_request.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,6 +27,7 @@ class WebContents;
 namespace payments {
 
 class ContentPaymentRequestDelegate;
+class PaymentManifestWebDataService;
 
 // This class owns the PaymentRequest associated with a given WebContents.
 //
@@ -46,8 +48,8 @@ class PaymentRequestWebContentsManager
   static PaymentRequestWebContentsManager* GetOrCreateForWebContents(
       content::WebContents* web_contents);
 
-  // Creates the PaymentRequest that will interact with this |render_frame_host|
-  // and the associated |web_contents|.
+  // Creates the PaymentRequest that will interact with this `render_frame_host`
+  // and the associated `web_contents`.
   void CreatePaymentRequest(
       content::RenderFrameHost* render_frame_host,
       content::WebContents* web_contents,
@@ -55,10 +57,13 @@ class PaymentRequestWebContentsManager
       mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
       PaymentRequest::ObserverForTest* observer_for_testing);
 
-  // Destroys the given |request|.
+  // Destroys the given `request`.
   void DestroyRequest(PaymentRequest* request);
 
+  // Creates the mojo IPC endpoint that will receive requests from the renderer
+  // to store payment credential in user's profle.
   void CreatePaymentCredential(
+      scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
       mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver);
 
   // WebContentsObserver::

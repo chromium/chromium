@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -46,7 +47,7 @@ std::string getInvokePaymentRequestSnippet() {
 }
 
 #if !defined(OS_ANDROID)
-static constexpr char kCreatePaymentCredential[] =
+static constexpr char kPaymentCreationOptions[] =
     "var PAYMENT_INSTRUMENT = {"
     "    displayName: 'display_name_for_instrument',"
     "    icon: 'https://pics.acme.com/00/p/aBjjjpqPb.png'"
@@ -64,7 +65,9 @@ static constexpr char kCreatePaymentCredential[] =
     "    instrument: PAYMENT_INSTRUMENT,"
     "    challenge: new TextEncoder().encode('climb a mountain'),"
     "    pubKeyCredParams: PUBLIC_KEY_PARAMETERS,"
-    "};"
+    "};";
+
+static constexpr char kCreatePaymentCredential[] =
     "navigator.credentials.create({ payment : PAYMENT_CREATION_OPTIONS })"
     "    .then(c => window.domAutomationController.send("
     "              'paymentCredential: OK'),"
@@ -273,8 +276,10 @@ class SecurePaymentConfirmationCreationTest
 // test should work on all non-Android platforms. There is a Windows failure
 // that still needs to be investigated.
 #define MAYBE_CreatePaymentCredential DISABLED_CreatePaymentCredential
+#define MAYBE_LookupPaymentCredential DISABLED_LookupPaymentCredential
 #else
 #define MAYBE_CreatePaymentCredential CreatePaymentCredential
+#define MAYBE_LookupPaymentCredential LookupPaymentCredential
 #endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        MAYBE_CreatePaymentCredential) {
@@ -283,8 +288,52 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      GetActiveWebContents(), kCreatePaymentCredential, &result));
+      GetActiveWebContents(),
+      base::StrCat({kPaymentCreationOptions, kCreatePaymentCredential}),
+      &result));
   EXPECT_EQ(result, "paymentCredential: OK");
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+                       MAYBE_LookupPaymentCredential) {
+  ReplaceFidoDiscoveryFactory();
+  NavigateTo("a.com", "/payment_handler_status.html");
+  std::string credentialIdentifier =
+      content::EvalJs(
+          GetActiveWebContents(),
+          base::StrCat(
+              {"async function createPaymentCredential() {",
+               kPaymentCreationOptions,
+               "  const c = await navigator.credentials.create("
+               "    {payment: PAYMENT_CREATION_OPTIONS});"
+               "  return btoa(String.fromCharCode(...new Uint8Array(c.rawId)));"
+               "};"
+               "createPaymentCredential();"}))
+          .ExtractString();
+  std::string script = content::JsReplace(
+      "getStatusForMethodData([{"
+      "  supportedMethods: 'secure-payment-confirmation',"
+      "  data: {"
+      "    action: 'authenticate',"
+      "    credentialIds: [Uint8Array.from(atob($1), b => b.charCodeAt(0))],"
+      "    networkData: new TextEncoder().encode('network_data'),"
+      "    timeout: 60000,"
+      "    fallbackUrl: 'https://fallback.example/url'"
+      "}}])",
+      credentialIdentifier);
+
+  test_controller()->SetHasAuthenticator(true);
+  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
+
+  // ExecJs starts executing JavaScript and immediately returns, not waiting for
+  // any promise to return.
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), script));
+
+  WaitForObservedEvent();
+  ASSERT_FALSE(test_controller()->app_descriptions().empty());
+  EXPECT_EQ(1u, test_controller()->app_descriptions().size());
+  EXPECT_EQ("display_name_for_instrument",
+            test_controller()->app_descriptions().front().label);
 }
 #endif  // !defined(OS_ANDROID)
 
