@@ -450,8 +450,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // Managed devices and supervised users can have restrictions on history
   // deletion.
   PrefService* prefs = profile_->GetPrefs();
-  bool may_delete_history = prefs->GetBoolean(
-      prefs::kAllowDeletingBrowserHistory);
+  bool may_delete_history =
+      prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory);
 
   // All the UI entry points into the BrowsingDataRemoverImpl should be
   // disabled, but this will fire if something was missed or added.
@@ -547,8 +547,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         WebDataServiceFactory::GetAutofillWebDataForProfile(
             profile_, ServiceAccessType::EXPLICIT_ACCESS);
     if (web_data_service.get()) {
-      web_data_service->RemoveOriginURLsModifiedBetween(
-          delete_begin_, delete_end_);
+      web_data_service->RemoveOriginURLsModifiedBetween(delete_begin_,
+                                                        delete_end_);
       // Ask for a call back when the above call is finished.
       web_data_service->GetDBTaskRunner()->PostTaskAndReply(
           FROM_HERE, base::DoNothing(),
@@ -892,6 +892,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
           CreateTaskCompletionCallback(TracingDataType::kAccountPasswordsSynced,
                                        DATA_TYPE_PASSWORDS));
+      account_store->RemoveCompromisedCredentialsByUrlAndTime(
+          nullable_filter, delete_begin_, delete_end_,
+          CreateTaskCompletionClosure(
+              TracingDataType::kAccountCompromisedCredentials));
     }
 
     BrowserContext::GetDefaultStoragePartition(profile_)
@@ -939,8 +943,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
   if (remove_mask & DATA_TYPE_HISTORY) {
     password_manager::PasswordStore* password_store =
-        PasswordStoreFactory::GetForProfile(
-            profile_, ServiceAccessType::EXPLICIT_ACCESS).get();
+        PasswordStoreFactory::GetForProfile(profile_,
+                                            ServiceAccessType::EXPLICIT_ACCESS)
+            .get();
 
     if (password_store) {
       password_store->RemoveStatisticsByOriginAndTime(
@@ -964,9 +969,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     if (web_data_service.get()) {
       web_data_service->RemoveFormElementsAddedBetween(delete_begin_,
-          delete_end_);
-      web_data_service->RemoveAutofillDataModifiedBetween(
-          delete_begin_, delete_end_);
+                                                       delete_end_);
+      web_data_service->RemoveAutofillDataModifiedBetween(delete_begin_,
+                                                          delete_end_);
       // Clear out the Autofill StrikeDatabase in its entirety.
       // TODO(crbug.com/884817): Respect |delete_begin_| and |delete_end_| and
       // only clear out entries whose last strikes were created in that
@@ -1117,8 +1122,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     if (filter_builder->MatchesAllOriginsAndDomains()) {
       DCHECK(!plugin_data_remover_);
-      plugin_data_remover_.reset(
-          content::PluginDataRemover::Create(profile_));
+      plugin_data_remover_.reset(content::PluginDataRemover::Create(profile_));
       base::WaitableEvent* event =
           plugin_data_remover_->StartRemoving(delete_begin_);
 

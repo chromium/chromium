@@ -9217,6 +9217,7 @@ histogram as enum -->
   <int value="36" label="kMediaFeeds"/>
   <int value="37" label="kAccountPasswords"/>
   <int value="38" label="kAccountPasswordsSynced"/>
+  <int value="39" label="kAccountCompromisedCredentials"/>
 </enum>
 
 <enum name="ChromeChannelForHistogram">

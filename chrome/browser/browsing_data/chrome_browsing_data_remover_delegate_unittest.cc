@@ -174,8 +174,8 @@ using testing::ByRef;
 using testing::Eq;
 using testing::FloatEq;
 using testing::Invoke;
-using testing::Matcher;
 using testing::MakeMatcher;
+using testing::Matcher;
 using testing::MatcherInterface;
 using testing::MatchResultListener;
 using testing::Return;
@@ -234,7 +234,7 @@ GURL DSEOrigin() {
 #if defined(OS_ANDROID)
 class TestWebappRegistry : public WebappRegistry {
  public:
-  TestWebappRegistry() : WebappRegistry() { }
+  TestWebappRegistry() : WebappRegistry() {}
 
   void UnregisterWebappsForUrls(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter) override {
@@ -1221,9 +1221,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
     content::BrowsingDataRemoverCompletionObserver completion_observer(
         remover_);
-    remover_->RemoveAndReply(
-        delete_begin, delete_end, remove_mask, origin_type_mask,
-        &completion_observer);
+    remover_->RemoveAndReply(delete_begin, delete_end, remove_mask,
+                             origin_type_mask, &completion_observer);
     base::ThreadPoolInstance::Get()->FlushForTesting();
     completion_observer.BlockUntilCompletion();
     return completion_observer.failed_data_types();
@@ -1258,9 +1257,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
   network::NetworkContext* network_context() { return network_context_.get(); }
 
-  TestingProfile* GetProfile() {
-    return profile_.get();
-  }
+  TestingProfile* GetProfile() { return profile_.get(); }
 
   bool Match(const GURL& origin,
              uint64_t mask,
@@ -1476,8 +1473,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY |
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS;
 
-  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
-                                removal_mask, false);
+  BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(), removal_mask,
+                                false);
   EXPECT_EQ(removal_mask, GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
@@ -1975,8 +1972,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 // ChromeDownloadManagerDelegate is correctly created and shut down.
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDownloads) {
   RemoveDownloadsTester tester(GetProfile());
-  EXPECT_CALL(
-      *tester.download_manager(), RemoveDownloadsByURLAndTime(_, _, _));
+  EXPECT_CALL(*tester.download_manager(), RemoveDownloadsByURLAndTime(_, _, _));
 
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
@@ -2143,6 +2139,30 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       *tester.profile_store(),
       RemoveCompromisedCredentialsByUrlAndTimeImpl(
           ProbablySameFilter(empty_filter), base::Time(), base::Time::Max()));
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS, false);
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       RemoveCompromisedCredentialsByTimeOnly_WithAccountStore) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kEnablePasswordsAccountStorage);
+
+  RemovePasswordsTester tester(GetProfile());
+  base::RepeatingCallback<bool(const GURL&)> empty_filter;
+
+  EXPECT_CALL(
+      *tester.profile_store(),
+      RemoveCompromisedCredentialsByUrlAndTimeImpl(
+          ProbablySameFilter(empty_filter), base::Time(), base::Time::Max()));
+
+  EXPECT_CALL(
+      *tester.account_store(),
+      RemoveCompromisedCredentialsByUrlAndTimeImpl(
+          ProbablySameFilter(empty_filter), base::Time(), base::Time::Max()));
+
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_PASSWORDS, false);
@@ -3111,11 +3131,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
 #if defined(OS_ANDROID)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeOriginVerifierData) {
   int before =
-    customtabs::OriginVerifier::GetClearBrowsingDataCallCountForTesting();
+      customtabs::OriginVerifier::GetClearBrowsingDataCallCountForTesting();
   BlockUntilBrowsingDataRemoved(
       base::Time(), base::Time::Max(),
       ChromeBrowsingDataRemoverDelegate::DATA_TYPE_HISTORY, false);
-  EXPECT_EQ(before + 1,
+  EXPECT_EQ(
+      before + 1,
       customtabs::OriginVerifier::GetClearBrowsingDataCallCountForTesting());
 }
 #endif  // defined(OS_ANDROID)
