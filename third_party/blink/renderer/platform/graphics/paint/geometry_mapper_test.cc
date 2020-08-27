@@ -25,8 +25,7 @@ class GeometryMapperTest : public testing::Test,
       const PropertyTreeState& ancestor_property_tree_state) {
     GeometryMapperClipCache::ClipAndTransform clip_and_transform(
         &ancestor_property_tree_state.Clip(),
-        &ancestor_property_tree_state.Transform(),
-        kIgnorePlatformOverlayScrollbarSize);
+        &ancestor_property_tree_state.Transform(), kIgnoreOverlayScrollbarSize);
     return descendant_clip.GetClipCache().GetCachedClip(clip_and_transform);
   }
 
@@ -36,9 +35,8 @@ class GeometryMapperTest : public testing::Test,
       FloatClipRect& mapping_rect,
       bool& success) {
     GeometryMapper::LocalToAncestorVisualRectInternal(
-        local_state, ancestor_state, mapping_rect,
-        kIgnorePlatformOverlayScrollbarSize, kNonInclusiveIntersect,
-        kDontExpandVisualRectForAnimation, success);
+        local_state, ancestor_state, mapping_rect, kIgnoreOverlayScrollbarSize,
+        kNonInclusiveIntersect, kDontExpandVisualRectForAnimation, success);
   }
 
   void CheckMappings();
@@ -95,7 +93,7 @@ void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
   actual_visual_rect = FloatClipRect(input_rect);
   GeometryMapper::LocalToAncestorVisualRect(
       local_state, ancestor_state, actual_visual_rect,
-      kIgnorePlatformOverlayScrollbarSize, kNonInclusiveIntersect,
+      kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect,
       kExpandVisualRectForAnimation);
   EXPECT_CLIP_RECT_EQ(expected_visual_rect_expanded_for_animation
                           ? *expected_visual_rect_expanded_for_animation
@@ -382,9 +380,9 @@ TEST_P(GeometryMapperTest, SimpleClipOverlayScrollbars) {
   // Check that not passing kExcludeOverlayScrollbarSizeForHitTesting gives
   // a different result.
   actual_visual_rect = FloatClipRect(input_rect);
-  GeometryMapper::LocalToAncestorVisualRect(
-      local_state, ancestor_state, actual_visual_rect,
-      kIgnorePlatformOverlayScrollbarSize);
+  GeometryMapper::LocalToAncestorVisualRect(local_state, ancestor_state,
+                                            actual_visual_rect,
+                                            kIgnoreOverlayScrollbarSize);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(FloatRect(10, 10, 50, 50)),
                       actual_visual_rect);
 
@@ -396,7 +394,7 @@ TEST_P(GeometryMapperTest, SimpleClipOverlayScrollbars) {
   // Check that not passing kExcludeOverlayScrollbarSizeForHitTesting gives
   // a different result.
   actual_clip_rect = GeometryMapper::LocalToAncestorClipRect(
-      local_state, ancestor_state, kIgnorePlatformOverlayScrollbarSize);
+      local_state, ancestor_state, kIgnoreOverlayScrollbarSize);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(FloatRect(10, 10, 50, 50)),
                       actual_clip_rect);
 }
@@ -408,7 +406,7 @@ TEST_P(GeometryMapperTest, SimpleClipInclusiveIntersect) {
   FloatClipRect actual_clip_rect(FloatRect(60, 10, 10, 10));
   GeometryMapper::LocalToAncestorVisualRect(
       local_state, ancestor_state, actual_clip_rect,
-      kIgnorePlatformOverlayScrollbarSize, kInclusiveIntersect);
+      kIgnoreOverlayScrollbarSize, kInclusiveIntersect);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(FloatRect(60, 10, 0, 10)),
                       actual_clip_rect);
 
@@ -417,7 +415,7 @@ TEST_P(GeometryMapperTest, SimpleClipInclusiveIntersect) {
   actual_clip_rect.SetRect(FloatRect(60, 10, 10, 10));
   GeometryMapper::LocalToAncestorVisualRect(
       local_state, ancestor_state, actual_clip_rect,
-      kIgnorePlatformOverlayScrollbarSize, kNonInclusiveIntersect);
+      kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(FloatRect()), actual_clip_rect);
 }
 
@@ -446,7 +444,7 @@ TEST_P(GeometryMapperTest, SimpleClipPlusOpacityInclusiveIntersect) {
   FloatClipRect actual_clip_rect(FloatRect(10, 10, 10, 0));
   auto intersects = GeometryMapper::LocalToAncestorVisualRect(
       local_state, ancestor_state, actual_clip_rect,
-      kIgnorePlatformOverlayScrollbarSize, kInclusiveIntersect);
+      kIgnoreOverlayScrollbarSize, kInclusiveIntersect);
 
   EXPECT_TRUE(actual_clip_rect.Rect().IsEmpty());
   EXPECT_TRUE(intersects);

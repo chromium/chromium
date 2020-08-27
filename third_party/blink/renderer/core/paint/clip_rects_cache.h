@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/paint/clip_rects.h"
 
 #if DCHECK_IS_ON()
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"  // For OverlayScrollbarClipBehavior.
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #endif
 
 namespace blink {
@@ -37,7 +37,7 @@ class ClipRectsCache {
         : root(nullptr)
 #if DCHECK_IS_ON()
           ,
-          overlay_scrollbar_clip_behavior(kIgnorePlatformOverlayScrollbarSize)
+          overlay_scrollbar_clip_behavior(kIgnoreOverlayScrollbarSize)
 #endif
     {
     }

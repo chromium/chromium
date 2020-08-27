@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -215,6 +215,10 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual void ContentsResized();
 
+  // This is for platform overlay scrollbars only, doesn't include
+  // overflow:overlay scrollbars. Probably this should be renamed to
+  // HasPlatformOverlayScrollbars() but we don't bother it because
+  // overflow:overlay might be deprecated soon.
   bool HasOverlayScrollbars() const;
   void SetScrollbarOverlayColorTheme(ScrollbarOverlayColorTheme);
   void RecalculateScrollbarOverlayColorTheme(Color);
@@ -465,9 +469,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   IntSize ExcludeScrollbars(const IntSize&) const;
 
   virtual int VerticalScrollbarWidth(
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize) const;
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   virtual int HorizontalScrollbarHeight(
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize) const;
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
 
   virtual LayoutBox* GetLayoutBox() const { return nullptr; }
 

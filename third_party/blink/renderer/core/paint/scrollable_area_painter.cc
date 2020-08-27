@@ -54,7 +54,7 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
 
   // Draw a frame around the resizer (1px grey line) if there are any scrollbars
   // present.  Clipping will exclude the right and bottom edges of this frame.
-  if (GetScrollableArea().HasNonOverlayOverflowControls()) {
+  if (GetScrollableArea().NeedsScrollCorner()) {
     GraphicsContextStateSaver state_saver(context);
     context.Clip(visual_rect);
     IntRect larger_corner = visual_rect;

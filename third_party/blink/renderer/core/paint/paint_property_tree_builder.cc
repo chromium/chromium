@@ -1637,19 +1637,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
     context_.current.clip = border_radius_clip;
 }
 
-static PhysicalRect OverflowClipRect(const LayoutBox& box,
-                                     const PhysicalOffset& offset) {
-  // TODO(pdr): We should ignore CSS overlay scrollbars for non-root scrollers
-  // but cannot due to compositing bugs (crbug.com/984167). This special-case is
-  // here instead of LayoutBox::OverflowClipRect because the layout size of the
-  // scrolling content is still affected by overlay scrollbar behavior, just not
-  // the clip.
-  auto behavior = IsA<LayoutView>(box)
-                      ? kIgnorePlatformAndCSSOverlayScrollbarSize
-                      : kIgnorePlatformOverlayScrollbarSize;
-  return box.OverflowClipRect(offset, behavior);
-}
-
 static bool CanOmitOverflowClip(const LayoutObject& object) {
   DCHECK(NeedsOverflowClip(object));
 
@@ -1672,7 +1659,7 @@ static bool CanOmitOverflowClip(const LayoutObject& object) {
 
   // We need OverflowClip for hit-testing if the clip rect excluding overlay
   // scrollbars is different from the normal clip rect.
-  auto clip_rect = OverflowClipRect(*block, PhysicalOffset());
+  auto clip_rect = block->OverflowClipRect(PhysicalOffset());
   auto clip_rect_excluding_overlay_scrollbars = block->OverflowClipRect(
       PhysicalOffset(), kExcludeOverlayScrollbarSizeForHitTesting);
   if (clip_rect != clip_rect_excluding_overlay_scrollbars)
@@ -1735,8 +1722,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
           state.SetClipRect(adjusted_clip_rect, adjusted_clip_rect);
         }
       } else if (object_.IsBox()) {
-        const auto& clip_rect = OverflowClipRect(ToLayoutBox(object_),
-                                                 context_.current.paint_offset);
+        const auto& clip_rect = ToLayoutBox(object_).OverflowClipRect(
+            context_.current.paint_offset);
         state.SetClipRect(FloatRoundedRect(FloatRect(clip_rect)),
                           ToSnappedClipRect(clip_rect));
 

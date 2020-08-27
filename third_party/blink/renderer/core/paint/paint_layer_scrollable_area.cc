@@ -703,11 +703,10 @@ IntSize PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
   if (this == controller.RootScrollerArea()) {
     visible_size = controller.RootScrollerVisibleArea();
   } else {
-    visible_size =
-        PixelSnappedIntRect(GetLayoutBox()->OverflowClipRect(
-                                GetLayoutBox()->Location(),
-                                kIgnorePlatformAndCSSOverlayScrollbarSize))
-            .Size();
+    visible_size = PixelSnappedIntRect(GetLayoutBox()->OverflowClipRect(
+                                           GetLayoutBox()->Location(),
+                                           kIgnoreOverlayScrollbarSize))
+                       .Size();
   }
 
   // TODO(skobes): We should really ASSERT that contentSize >= visibleSize
@@ -839,9 +838,9 @@ void PaintLayerScrollableArea::ScrollbarVisibilityChanged() {
 }
 
 void PaintLayerScrollableArea::ScrollbarFrameRectChanged() {
-  // Size of non-overlay scrollbar affects overflow clip rect.
-  if (!HasOverlayScrollbars())
-    GetLayoutBox()->SetNeedsPaintPropertyUpdate();
+  // Size of non-overlay scrollbar affects overflow clip rect. Size of overlay
+  // scrollbar effects hit testing rect excluding overlay scrollbars.
+  GetLayoutBox()->SetNeedsPaintPropertyUpdate();
 }
 
 bool PaintLayerScrollableArea::ScrollbarsCanBeActive() const {
@@ -1255,9 +1254,8 @@ bool PaintLayerScrollableArea::HasHorizontalOverflow() const {
   // converse problem seems to happen much less frequently in practice, so we
   // bias the logic towards preventing unwanted horizontal scrollbars, which
   // are more common and annoying.
-  LayoutUnit client_width =
-      LayoutContentRect(kIncludeScrollbars).Width() -
-      VerticalScrollbarWidth(kIgnorePlatformAndCSSOverlayScrollbarSize);
+  LayoutUnit client_width = LayoutContentRect(kIncludeScrollbars).Width() -
+                            VerticalScrollbarWidth(kIgnoreOverlayScrollbarSize);
   if (NeedsRelayout() && !HadVerticalScrollbarBeforeRelayout())
     client_width += VerticalScrollbarWidth();
   LayoutUnit scroll_width(ScrollWidth());
@@ -1269,7 +1267,7 @@ bool PaintLayerScrollableArea::HasHorizontalOverflow() const {
 bool PaintLayerScrollableArea::HasVerticalOverflow() const {
   LayoutUnit client_height =
       LayoutContentRect(kIncludeScrollbars).Height() -
-      HorizontalScrollbarHeight(kIgnorePlatformAndCSSOverlayScrollbarSize);
+      HorizontalScrollbarHeight(kIgnoreOverlayScrollbarSize);
   LayoutUnit scroll_height(ScrollHeight());
   LayoutUnit box_y = GetLayoutBox()->Location().Y();
   return SnapSizeToPixel(scroll_height, box_y) >
@@ -1747,14 +1745,11 @@ int PaintLayerScrollableArea::VerticalScrollbarWidth(
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   if (!HasVerticalScrollbar())
     return 0;
-  if (overlay_scrollbar_clip_behavior ==
-          kIgnorePlatformAndCSSOverlayScrollbarSize &&
+  if (overlay_scrollbar_clip_behavior == kIgnoreOverlayScrollbarSize &&
       GetLayoutBox()->StyleRef().OverflowY() == EOverflow::kOverlay) {
     return 0;
   }
-  if ((overlay_scrollbar_clip_behavior == kIgnorePlatformOverlayScrollbarSize ||
-       overlay_scrollbar_clip_behavior ==
-           kIgnorePlatformAndCSSOverlayScrollbarSize ||
+  if ((overlay_scrollbar_clip_behavior == kIgnoreOverlayScrollbarSize ||
        !VerticalScrollbar()->ShouldParticipateInHitTesting()) &&
       VerticalScrollbar()->IsOverlayScrollbar()) {
     return 0;
@@ -1766,14 +1761,11 @@ int PaintLayerScrollableArea::HorizontalScrollbarHeight(
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   if (!HasHorizontalScrollbar())
     return 0;
-  if (overlay_scrollbar_clip_behavior ==
-          kIgnorePlatformAndCSSOverlayScrollbarSize &&
+  if (overlay_scrollbar_clip_behavior == kIgnoreOverlayScrollbarSize &&
       GetLayoutBox()->StyleRef().OverflowX() == EOverflow::kOverlay) {
     return 0;
   }
-  if ((overlay_scrollbar_clip_behavior == kIgnorePlatformOverlayScrollbarSize ||
-       overlay_scrollbar_clip_behavior ==
-           kIgnorePlatformAndCSSOverlayScrollbarSize ||
+  if ((overlay_scrollbar_clip_behavior == kIgnoreOverlayScrollbarSize ||
        !HorizontalScrollbar()->ShouldParticipateInHitTesting()) &&
       HorizontalScrollbar()->IsOverlayScrollbar()) {
     return 0;
@@ -1857,11 +1849,20 @@ bool PaintLayerScrollableArea::HasOverflowControls() const {
 }
 
 bool PaintLayerScrollableArea::HasOverlayOverflowControls() const {
-  return HasOverlayScrollbars() ||
-         (!HasScrollbar() && GetLayoutBox()->CanResize());
+  if (HasOverlayScrollbars())
+    return true;
+  if (!HasScrollbar() && GetLayoutBox()->CanResize())
+    return true;
+  if (GetLayoutBox()->StyleRef().OverflowX() == EOverflow::kOverlay ||
+      GetLayoutBox()->StyleRef().OverflowY() == EOverflow::kOverlay)
+    return true;
+  return false;
 }
 
-bool PaintLayerScrollableArea::HasNonOverlayOverflowControls() const {
+bool PaintLayerScrollableArea::NeedsScrollCorner() const {
+  // This is one of the differences between platform overlay scrollbars and
+  // overflow:overlay scrollbars: the former don't need scroll corner, while
+  // the latter do. HasOverlayScrollbars doesn't include overflow:overlay.
   return HasScrollbar() && !HasOverlayScrollbars();
 }
 
@@ -1910,7 +1911,7 @@ void PaintLayerScrollableArea::PositionOverflowControls() {
 }
 
 void PaintLayerScrollableArea::UpdateScrollCornerStyle() {
-  if (!HasNonOverlayOverflowControls()) {
+  if (!NeedsScrollCorner()) {
     if (scroll_corner_) {
       scroll_corner_->Destroy();
       scroll_corner_ = nullptr;
@@ -2891,8 +2892,9 @@ ScrollbarTheme& PaintLayerScrollableArea::GetPageScrollbarTheme() const {
 void PaintLayerScrollableArea::DidAddScrollbar(
     Scrollbar& scrollbar,
     ScrollbarOrientation orientation) {
-  // Z-order of reparented scrollbar is updated along with the z-order lists.
-  if (scrollbar.IsOverlayScrollbar())
+  // Z-order of recordered overflow controls is updated along with the z-order
+  // lists.
+  if (HasOverlayOverflowControls())
     layer_->DirtyStackingContextZOrderLists();
 
   ScrollableArea::DidAddScrollbar(scrollbar, orientation);
@@ -2902,8 +2904,8 @@ void PaintLayerScrollableArea::WillRemoveScrollbar(
     Scrollbar& scrollbar,
     ScrollbarOrientation orientation) {
   if (layer_->NeedsReorderOverlayOverflowControls()) {
-    // Z-order of reparented scrollbar is updated along with the z-order lists.
-    DCHECK(scrollbar.IsOverlayScrollbar());
+    // Z-order of recordered overflow controls is updated along with the z-order
+    // lists.
     layer_->DirtyStackingContextZOrderLists();
   }
 

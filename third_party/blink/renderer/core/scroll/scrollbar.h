@@ -118,7 +118,13 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   void Paint(GraphicsContext&, const IntPoint& paint_offset) const;
 
   virtual bool IsSolidColor() const;
+
+  // Returns true if the scrollbar is a overlay scrollbar. This doesn't include
+  // overflow:overlay scrollbars. Probably this should be renamed to
+  // IsPlatformOverlayScrollbar() but we don't bother it because
+  // overflow:overlay might be deprecated soon.
   virtual bool IsOverlayScrollbar() const;
+
   bool ShouldParticipateInHitTesting();
 
   bool IsWindowActive() const;

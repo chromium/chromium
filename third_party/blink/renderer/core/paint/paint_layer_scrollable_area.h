@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -399,7 +399,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   bool HasOverflowControls() const;
 
   bool HasOverlayOverflowControls() const;
-  bool HasNonOverlayOverflowControls() const;
+  bool NeedsScrollCorner() const;
 
   bool HasOverflow() const {
     return HasHorizontalOverflow() || HasVerticalOverflow();
@@ -418,12 +418,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
   LayoutUnit ScrollWidth() const;
   LayoutUnit ScrollHeight() const;
 
-  int VerticalScrollbarWidth(
-      OverlayScrollbarClipBehavior =
-          kIgnorePlatformOverlayScrollbarSize) const override;
-  int HorizontalScrollbarHeight(
-      OverlayScrollbarClipBehavior =
-          kIgnorePlatformOverlayScrollbarSize) const override;
+  int VerticalScrollbarWidth(OverlayScrollbarClipBehavior =
+                                 kIgnoreOverlayScrollbarSize) const override;
+  int HorizontalScrollbarHeight(OverlayScrollbarClipBehavior =
+                                    kIgnoreOverlayScrollbarSize) const override;
 
   DoubleSize AdjustedScrollOffset() const {
     return ToDoubleSize(DoublePoint(ScrollOrigin()) + scroll_offset_);

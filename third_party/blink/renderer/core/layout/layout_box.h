@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 
 namespace blink {
 
@@ -1325,14 +1325,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Returns the intersection of all overflow clips which apply.
   virtual PhysicalRect OverflowClipRect(
       const PhysicalOffset& location,
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize) const;
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   PhysicalRect ClipRect(const PhysicalOffset& location) const;
 
   // This version is for legacy code that has not switched to the new physical
   // geometry yet.
   LayoutRect OverflowClipRect(const LayoutPoint& location,
                               OverlayScrollbarClipBehavior behavior =
-                                  kIgnorePlatformOverlayScrollbarSize) const {
+                                  kIgnoreOverlayScrollbarSize) const {
     return OverflowClipRect(PhysicalOffset(location), behavior).ToLayoutRect();
   }
 
@@ -1801,7 +1801,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void ExcludeScrollbars(
       PhysicalRect&,
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize) const;
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
 
   LayoutUnit ContainingBlockLogicalWidthForPositioned(
       const LayoutBoxModelObject* containing_block,

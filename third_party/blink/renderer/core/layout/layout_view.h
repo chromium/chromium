@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -161,10 +161,9 @@ class CORE_EXPORT LayoutView final : public LayoutBlockFlow {
                      MapCoordinatesFlags mode = 0) const override;
 
   PhysicalRect ViewRect() const override;
-  PhysicalRect OverflowClipRect(
-      const PhysicalOffset& location,
-      OverlayScrollbarClipBehavior =
-          kIgnorePlatformOverlayScrollbarSize) const override;
+  PhysicalRect OverflowClipRect(const PhysicalOffset& location,
+                                OverlayScrollbarClipBehavior =
+                                    kIgnoreOverlayScrollbarSize) const override;
 
   // If either direction has a non-auto mode, the other must as well.
   void SetAutosizeScrollbarModes(mojom::blink::ScrollbarMode h_mode,

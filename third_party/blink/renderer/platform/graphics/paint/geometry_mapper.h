@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_H_
 
 #include "base/optional.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -211,15 +211,14 @@ class PLATFORM_EXPORT GeometryMapper {
   static FloatClipRect LocalToAncestorClipRect(
       const PropertyTreeStateOrAlias& local_state,
       const PropertyTreeStateOrAlias& ancestor_state,
-      OverlayScrollbarClipBehavior behavior =
-          kIgnorePlatformOverlayScrollbarSize) {
+      OverlayScrollbarClipBehavior behavior = kIgnoreOverlayScrollbarSize) {
     return LocalToAncestorClipRect(local_state.Unalias(),
                                    ancestor_state.Unalias(), behavior);
   }
   static FloatClipRect LocalToAncestorClipRect(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize);
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize);
 
   // Maps from a rect in |local_state| to its visual rect in |ancestor_state|.
   // If there is no effect node between |local_state| (included) and
@@ -260,7 +259,7 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeStateOrAlias& local_state,
       const PropertyTreeStateOrAlias& ancestor_state,
       FloatClipRect& mapping_rect,
-      OverlayScrollbarClipBehavior clip = kIgnorePlatformOverlayScrollbarSize,
+      OverlayScrollbarClipBehavior clip = kIgnoreOverlayScrollbarSize,
       InclusiveIntersectOrNot intersect = kNonInclusiveIntersect,
       ExpandVisualRectForAnimationOrNot animation =
           kDontExpandVisualRectForAnimation) {
@@ -272,7 +271,7 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize,
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       InclusiveIntersectOrNot = kNonInclusiveIntersect,
       ExpandVisualRectForAnimationOrNot = kDontExpandVisualRectForAnimation);
 

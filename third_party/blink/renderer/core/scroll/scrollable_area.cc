@@ -827,7 +827,7 @@ float ScrollableArea::PercentageStep(ScrollbarOrientation orientation) const {
 
 int ScrollableArea::VerticalScrollbarWidth(
     OverlayScrollbarClipBehavior behavior) const {
-  DCHECK_EQ(behavior, kIgnorePlatformOverlayScrollbarSize);
+  DCHECK_EQ(behavior, kIgnoreOverlayScrollbarSize);
   if (Scrollbar* vertical_bar = VerticalScrollbar())
     return !vertical_bar->IsOverlayScrollbar() ? vertical_bar->Width() : 0;
   return 0;
@@ -835,7 +835,7 @@ int ScrollableArea::VerticalScrollbarWidth(
 
 int ScrollableArea::HorizontalScrollbarHeight(
     OverlayScrollbarClipBehavior behavior) const {
-  DCHECK_EQ(behavior, kIgnorePlatformOverlayScrollbarSize);
+  DCHECK_EQ(behavior, kIgnoreOverlayScrollbarSize);
   if (Scrollbar* horizontal_bar = HorizontalScrollbar())
     return !horizontal_bar->IsOverlayScrollbar() ? horizontal_bar->Height() : 0;
   return 0;

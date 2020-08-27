@@ -58,8 +58,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_stacking_node.h"
 #include "third_party/blink/renderer/core/paint/paint_result.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
 #include "third_party/blink/renderer/platform/graphics/squashing_disallowed_reasons.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -986,7 +986,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
       PaintLayerFragments&,
       const PaintLayer* root_layer,
       const CullRect* cull_rect,
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize,
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldRespectOverflowClipType = kRespectOverflowClip,
       const PhysicalOffset* offset_from_root = nullptr,
       const PhysicalOffset& sub_pixel_accumulation = PhysicalOffset()) const;
@@ -995,7 +995,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
       PaintLayerFragments&,
       const PaintLayer* root_layer,
       const CullRect* cull_rect,
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize,
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldRespectOverflowClipType = kRespectOverflowClip,
       const PhysicalOffset* offset_from_root = nullptr,
       const PhysicalOffset& sub_pixel_accumulation = PhysicalOffset()) const;

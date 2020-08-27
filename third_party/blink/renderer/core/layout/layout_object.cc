@@ -1752,7 +1752,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
     FloatClipRect clip_rect((FloatRect(rect)));
     intersects = GeometryMapper::LocalToAncestorVisualRect(
         container_properties, ancestor->FirstFragment().ContentsProperties(),
-        clip_rect, kIgnorePlatformOverlayScrollbarSize,
+        clip_rect, kIgnoreOverlayScrollbarSize,
         (visual_rect_flags & kEdgeInclusive) ? kInclusiveIntersect
                                              : kNonInclusiveIntersect);
     rect = PhysicalRect::EnclosingRect(clip_rect.Rect());

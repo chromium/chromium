@@ -475,7 +475,7 @@ void PaintLayerClipper::CalculateBackgroundClipRectWithGeometryMapper(
         context.overlay_scrollbar_clip_behavior;
 
     if (is_clipping_root)
-      clip_behavior = kIgnorePlatformOverlayScrollbarSize;
+      clip_behavior = kIgnoreOverlayScrollbarSize;
 
     FloatClipRect clip_rect(FloatRect(LocalVisualRect(context)));
     clip_rect.MoveBy(FloatPoint(fragment_data.PaintOffset()));

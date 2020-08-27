@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -472,10 +472,9 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutUnit ConvertStyleLogicalHeightToComputedHeight(
       const Length& style_logical_height) const;
 
-  PhysicalRect OverflowClipRect(
-      const PhysicalOffset& location,
-      OverlayScrollbarClipBehavior =
-          kIgnorePlatformOverlayScrollbarSize) const override;
+  PhysicalRect OverflowClipRect(const PhysicalOffset& location,
+                                OverlayScrollbarClipBehavior =
+                                    kIgnoreOverlayScrollbarSize) const override;
 
   void ComputeVisualOverflow(bool recompute_floats) final;
 

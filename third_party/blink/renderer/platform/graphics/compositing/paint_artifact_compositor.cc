@@ -518,7 +518,7 @@ FloatRect PaintArtifactCompositor::PendingLayer::VisualRectForOverlapTesting()
   FloatClipRect visual_rect(bounds);
   GeometryMapper::LocalToAncestorVisualRect(
       property_tree_state, PropertyTreeState::Root(), visual_rect,
-      kIgnorePlatformOverlayScrollbarSize, kNonInclusiveIntersect,
+      kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect,
       kExpandVisualRectForAnimation);
   return visual_rect.Rect();
 }

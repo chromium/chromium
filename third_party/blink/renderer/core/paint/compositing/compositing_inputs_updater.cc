@@ -481,7 +481,7 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
         .CalculateBackgroundClipRect(
             ClipRectsContext(root_layer_,
                              &root_layer_->GetLayoutObject().FirstFragment(),
-                             cache_slot, kIgnorePlatformOverlayScrollbarSize,
+                             cache_slot, kIgnoreOverlayScrollbarSize,
                              kIgnoreOverflowClipAndScroll),
             clip_rect);
     IntRect snapped_clip_rect = PixelSnappedIntRect(clip_rect.Rect());

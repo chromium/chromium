@@ -442,7 +442,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
     // offsets for each layer fragment.
     paint_layer_.CollectFragments(
         layer_fragments, local_painting_info.root_layer,
-        &local_painting_info.cull_rect, kIgnorePlatformOverlayScrollbarSize,
+        &local_painting_info.cull_rect, kIgnoreOverlayScrollbarSize,
         respect_overflow_clip, &offset_from_root,
         local_painting_info.sub_pixel_accumulation);
 

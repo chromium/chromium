@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_container_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
-#include "third_party/blink/renderer/platform/graphics/scroll_types.h"
+#include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -167,7 +167,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // and change them to use NG geometry types once LayoutNG supports overflow.
   PhysicalRect OverflowClipRect(
       const PhysicalOffset& location,
-      OverlayScrollbarClipBehavior = kIgnorePlatformOverlayScrollbarSize) const;
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
   LayoutSize PixelSnappedScrolledContentOffset() const;
   PhysicalSize ScrollSize() const;
 
