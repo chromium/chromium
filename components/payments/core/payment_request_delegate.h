@@ -14,8 +14,15 @@ class PaymentRequest;
 
 class PaymentRequestDelegate : public PaymentRequestBaseDelegate {
  public:
+  enum class DialogType {
+    PAYMENT_REQUEST,
+    SECURE_PAYMENT_CONFIRMATION,
+  };
+
   PaymentRequestDelegate();
   ~PaymentRequestDelegate() override;
+
+  void set_dialog_type(DialogType dialog_type) { dialog_type_ = dialog_type; }
 
   // Shows the Payment Request dialog for the given |request|.
   virtual void ShowDialog(PaymentRequest* request) = 0;
@@ -38,6 +45,9 @@ class PaymentRequestDelegate : public PaymentRequestBaseDelegate {
 
   // Returns a weak pointer to this delegate.
   base::WeakPtr<PaymentRequestDelegate> GetWeakPtr();
+
+ protected:
+  DialogType dialog_type_ = DialogType::PAYMENT_REQUEST;
 
  private:
   base::WeakPtrFactory<PaymentRequestDelegate> weak_ptr_factory_{this};

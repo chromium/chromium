@@ -168,6 +168,14 @@ bool SecurePaymentConfirmationDialogView::ShouldShowCloseButton() const {
   return false;
 }
 
+bool SecurePaymentConfirmationDialogView::Accept() {
+  views::DialogDelegateView::Accept();
+  // Returning "false" to keep the dialog open after "Confirm" button is
+  // pressed, so the dialog can show a progress bar and wait for the user to use
+  // their authenticator device.
+  return false;
+}
+
 base::WeakPtr<SecurePaymentConfirmationDialogView>
 SecurePaymentConfirmationDialogView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

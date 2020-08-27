@@ -1070,9 +1070,6 @@ extern const char kPassiveMixedContentWarningDescription[];
 extern const char kPasswordImportName[];
 extern const char kPasswordImportDescription[];
 
-extern const char kForceSecurePaymentConfirmationDialogName[];
-extern const char kForceSecurePaymentConfirmationDialogDescription[];
-
 extern const char kForceWebContentsDarkModeName[];
 extern const char kForceWebContentsDarkModeDescription[];
 

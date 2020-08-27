@@ -27,6 +27,7 @@
 #include "components/payments/core/payment_details.h"
 #include "components/payments/core/payment_details_validation.h"
 #include "components/payments/core/payment_prefs.h"
+#include "components/payments/core/payment_request_delegate.h"
 #include "components/payments/core/payments_experimental_features.h"
 #include "components/payments/core/payments_validators.h"
 #include "components/payments/core/url_util.h"
@@ -217,6 +218,11 @@ void PaymentRequest::Init(
           spec_->url_payment_method_identifiers().end());
 
   payment_handler_host_.set_payment_request_id_for_logs(*spec_->details().id);
+
+  if (spec_->IsSecurePaymentConfirmationRequested()) {
+    delegate_->set_dialog_type(
+        PaymentRequestDelegate::DialogType::SECURE_PAYMENT_CONFIRMATION);
+  }
 }
 
 void PaymentRequest::Show(bool is_user_gesture, bool wait_for_updated_details) {

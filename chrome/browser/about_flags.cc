@@ -3521,12 +3521,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppStoreBillingDebugName,
      flag_descriptions::kAppStoreBillingDebugDescription, kOsAll,
      FEATURE_VALUE_TYPE(payments::features::kAppStoreBillingDebug)},
-    {"force-secure-payment-confirmation-dialog",
-     flag_descriptions::kForceSecurePaymentConfirmationDialogName,
-     flag_descriptions::kForceSecurePaymentConfirmationDialogDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         payments::features::kForceSecurePaymentConfirmationDialog)},
     {"fill-on-account-select", flag_descriptions::kFillOnAccountSelectName,
      flag_descriptions::kFillOnAccountSelectDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kFillOnAccountSelect)},

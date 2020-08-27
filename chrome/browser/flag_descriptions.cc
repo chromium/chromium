@@ -1848,13 +1848,6 @@ const char kPasswordImportName[] = "Password import";
 const char kPasswordImportDescription[] =
     "Import functionality in password settings.";
 
-const char kForceSecurePaymentConfirmationDialogName[] =
-    "Force Secure Payment Confirmation Dialog";
-const char kForceSecurePaymentConfirmationDialogDescription[] =
-    "All calls into PaymentRequest API will display the experimental Secure "
-    "Payment Confirmation dialog without any functionality, for demonstration "
-    "purposes only.";
-
 const char kForceWebContentsDarkModeName[] = "Force Dark Mode for Web Contents";
 const char kForceWebContentsDarkModeDescription[] =
     "Automatically render all web contents using a dark theme.";

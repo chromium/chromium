@@ -11,7 +11,7 @@ TestSecurePaymentConfirmationPaymentRequestDelegate::
         content::WebContents* web_contents,
         base::WeakPtr<SecurePaymentConfirmationModel> model,
         SecurePaymentConfirmationDialogView::ObserverForTest* observer)
-    : SecurePaymentConfirmationPaymentRequestDelegate(nullptr),
+    : ChromePaymentRequestDelegate(web_contents),
       web_contents_(web_contents),
       model_(model),
       dialog_view_(
