@@ -1952,6 +1952,7 @@ static_library("ui") {
       "ash/launcher/shelf_spinner_item_controller.h",
       "ash/login_screen_client.cc",
       "ash/login_screen_client.h",
+      "ash/login_screen_shown_observer.h",
       "ash/media_client_impl.cc",
       "ash/media_client_impl.h",
       "ash/media_notification_provider_impl.cc",

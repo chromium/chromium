@@ -27804,7 +27804,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
-    The time spent before the multiprofile account picker is ready.
+    The time spent before the web UI vesion of the multiprofile account picker
+    is ready.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.UserAddingScreen.LoadTimeViewsBased" units="ms"
+    expires_after="2021-01-07">
+  <owner>tellier@google.com</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The time spent before the views-based version of the multiprofile account
+    picker is ready.
   </summary>
 </histogram>
 

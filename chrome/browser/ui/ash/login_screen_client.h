@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/ash/login_screen_shown_observer.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 namespace base {
@@ -77,6 +78,9 @@ class LoginScreenClient : public ash::LoginScreenClient {
   void AddSystemTrayFocusObserver(ash::SystemTrayFocusObserver* observer);
   void RemoveSystemTrayFocusObserver(ash::SystemTrayFocusObserver* observer);
 
+  void AddLoginScreenShownObserver(LoginScreenShownObserver* observer);
+  void RemoveLoginScreenShownObserver(LoginScreenShownObserver* observer);
+
   // ash::LoginScreenClient:
   void AuthenticateUserWithPasswordOrPin(
       const AccountId& account_id,
@@ -113,6 +117,7 @@ class LoginScreenClient : public ash::LoginScreenClient {
   void ShowParentAccessHelpApp(gfx::NativeWindow parent_window) override;
   void ShowLockScreenNotificationSettings() override;
   void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnLoginScreenShown() override;
   void OnUserActivity() override;
 
  private:
@@ -135,6 +140,8 @@ class LoginScreenClient : public ash::LoginScreenClient {
 
   base::ObserverList<ash::SystemTrayFocusObserver>::Unchecked
       system_tray_focus_observers_;
+
+  base::ObserverList<LoginScreenShownObserver> login_screen_shown_observers_;
 
   base::WeakPtrFactory<LoginScreenClient> weak_ptr_factory_{this};
 

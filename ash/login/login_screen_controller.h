@@ -144,6 +144,8 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   LoginDataDispatcher* data_dispatcher() { return &login_data_dispatcher_; }
 
+  void NotifyLoginScreenShown();
+
  private:
   void OnAuthenticateComplete(OnAuthenticateCallback callback, bool success);
 

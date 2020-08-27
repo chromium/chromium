@@ -150,6 +150,9 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
   // reversed direction.
   virtual void OnFocusLeavingSystemTray(bool reverse) = 0;
 
+  // Called when the lock screen is shown.
+  virtual void OnLoginScreenShown() = 0;
+
   // Used by Ash to signal that user activity occurred on the login screen.
   virtual void OnUserActivity() = 0;
 

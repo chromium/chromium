@@ -191,6 +191,8 @@ void LockScreen::ShowWidgetUponWallpaperReady() {
   swap(instance_->on_shown_callbacks_, on_shown_callbacks);
   for (auto& callback : on_shown_callbacks)
     std::move(callback).Run();
+
+  Shell::Get()->login_screen_controller()->NotifyLoginScreenShown();
 }
 
 }  // namespace ash
