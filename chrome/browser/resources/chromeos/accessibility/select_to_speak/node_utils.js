@@ -168,7 +168,7 @@ class NodeUtils {
       return false;
     }
 
-    if (RectUtils.overlaps(node.location, rect)) {
+    if (RectUtil.overlaps(node.location, rect)) {
       if (!node.children || node.children.length == 0 ||
           node.children[0].role != RoleType.INLINE_TEXT_BOX) {
         // Only add a node if it has no inlineTextBox children. If

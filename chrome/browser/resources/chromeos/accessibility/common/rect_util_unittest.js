@@ -363,3 +363,36 @@ TEST_F('RectUtilUnitTest', 'Intersection', function() {
       RectUtil.equal(expected, RectUtil.intersection(rect2, rect1)),
       'Intersection should be symmetric');
 });
+
+TEST_F('RectUtilUnitTest', 'Overlaps', function() {
+  var rect1 = {left: 0, top: 0, width: 100, height: 100};
+  var rect2 = {left: 80, top: 0, width: 100, height: 20};
+  var rect3 = {left: 0, top: 80, width: 20, height: 100};
+
+  assertTrue(RectUtil.overlaps(rect1, rect1));
+  assertTrue(RectUtil.overlaps(rect2, rect2));
+  assertTrue(RectUtil.overlaps(rect3, rect3));
+  assertTrue(RectUtil.overlaps(rect1, rect2));
+  assertTrue(RectUtil.overlaps(rect1, rect3));
+  assertFalse(RectUtil.overlaps(rect2, rect3));
+});
+
+TEST_F('RectUtilUnitTest', 'RectFromPoints', function() {
+  var rect = {left: 10, top: 20, width: 50, height: 60};
+
+  assertNotEquals(
+      JSON.stringify(rect),
+      JSON.stringify(RectUtil.rectFromPoints(0, 0, 10, 10)));
+  assertEquals(
+      JSON.stringify(rect),
+      JSON.stringify(RectUtil.rectFromPoints(10, 20, 60, 80)));
+  assertEquals(
+      JSON.stringify(rect),
+      JSON.stringify(RectUtil.rectFromPoints(60, 20, 10, 80)));
+  assertEquals(
+      JSON.stringify(rect),
+      JSON.stringify(RectUtil.rectFromPoints(10, 80, 60, 20)));
+  assertEquals(
+      JSON.stringify(rect),
+      JSON.stringify(RectUtil.rectFromPoints(60, 80, 10, 20)));
+});

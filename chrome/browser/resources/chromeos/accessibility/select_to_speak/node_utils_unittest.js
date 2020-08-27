@@ -13,7 +13,7 @@ SelectToSpeakNodeUtilsUnitTest.prototype.extraLibraries = [
   'paragraph_utils.js',
   'node_utils.js',
   'word_utils.js',
-  'rect_utils.js',
+  '../common/rect_util.js',
 ];
 
 

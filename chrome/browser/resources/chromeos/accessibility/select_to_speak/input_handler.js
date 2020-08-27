@@ -92,7 +92,7 @@ class InputHandler {
         return false;
       }
 
-      var rect = RectUtils.rectFromPoints(
+      var rect = RectUtil.rectFromPoints(
           this.mouseStart_.x, this.mouseStart_.y, evt.screenX, evt.screenY);
       this.callbacks_.onSelectionChanged(rect);
       return false;
@@ -179,7 +179,7 @@ class InputHandler {
    * @public
    */
   getMouseRect() {
-    return RectUtils.rectFromPoints(
+    return RectUtil.rectFromPoints(
         this.mouseStart_.x, this.mouseStart_.y, this.mouseEnd_.x,
         this.mouseEnd_.y);
   }

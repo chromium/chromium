@@ -14,6 +14,24 @@ const RectUtil = {
   ZERO_RECT: {top: 0, left: 0, width: 0, height: 0},
 
   /**
+   * Return the rect that encloses two points.
+   * @param {number} x1 The first x coordinate.
+   * @param {number} y1 The first y coordinate.
+   * @param {number} x2 The second x coordinate.
+   * @param {number} y2 The second x coordinate.
+   * @return {!ScreenRect}
+   */
+  rectFromPoints: (x1, y1, x2, y2) => {
+    const left = Math.min(x1, x2);
+    const right = Math.max(x1, x2);
+    const top = Math.min(y1, y2);
+    const bottom = Math.max(y1, y2);
+    const width = right - left;
+    const height = bottom - top;
+    return {left, top, width, height};
+  },
+
+  /**
    * @param {!ScreenRect} rect1
    * @param {!ScreenRect} rect2
    * @return {boolean}
@@ -92,10 +110,7 @@ const RectUtil = {
       return outer;
     }
 
-    if (outer.left >= RectUtil.right(subtrahend) ||
-        RectUtil.right(outer) <= subtrahend.left ||
-        outer.top >= RectUtil.bottom(subtrahend) ||
-        RectUtil.bottom(outer) <= subtrahend.top) {
+    if (!RectUtil.overlaps(outer, subtrahend)) {
       // If the rectangles do not overlap, return the outer rect.
       return outer;
     }
@@ -238,6 +253,19 @@ const RectUtil = {
     const height = bottom - top;
 
     return {left, top, width, height};
+  },
+
+  /**
+   * Returns true if |rect1| and |rect2| overlap.
+   * @param {!ScreenRect} rect1
+   * @param {!ScreenRect} rect2
+   * @return {boolean} True if the rects overlap.
+   */
+  overlaps: (rect1, rect2) => {
+    return rect1.left < RectUtil.right(rect2) &&
+        rect2.left < RectUtil.right(rect1) &&
+        rect1.top < RectUtil.bottom(rect2) &&
+        rect2.top < RectUtil.bottom(rect1);
   },
 
   /**
