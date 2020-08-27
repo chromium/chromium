@@ -28,7 +28,8 @@ oncalls {
 }
 oncalls {
   name: "Trooper"
-  url: "https://rota-ng.appspot.com/legacy/trooper.json"
+  url: "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-ops-client-infra"
+  show_primary_secondary_labels: true
 }
 links {
   name: "Builds"
