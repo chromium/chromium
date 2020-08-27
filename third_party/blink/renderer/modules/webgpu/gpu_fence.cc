@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_fence.h"
 
+#include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_callback.h"
@@ -55,6 +56,10 @@ ScriptPromise GPUFence::onCompletion(ScriptState* script_state,
 
   GetProcs().fenceOnCompletion(GetHandle(), value, callback->UnboundCallback(),
                                callback->AsUserdata());
+
+  // WebGPU guarantees that submitted commands finish in finite time so we
+  // flush commands to the GPU process now.
+  device_->GetInterface()->FlushCommands();
 
   return promise;
 }
