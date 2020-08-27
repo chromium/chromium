@@ -903,6 +903,9 @@ extern const char
 extern const char kOmniboxLocalEntitySuggestionsName[];
 extern const char kOmniboxLocalEntitySuggestionsDescription[];
 
+extern const char kOmniboxLocalZeroSuggestFrecencyRankingName[];
+extern const char kOmniboxLocalZeroSuggestFrecencyRankingDescription[];
+
 extern const char kOmniboxMostVisitedTilesName[];
 extern const char kOmniboxMostVisitedTilesDescription[];
 

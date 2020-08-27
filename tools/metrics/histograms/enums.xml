@@ -40245,6 +40245,8 @@ from previous Chrome versions.
   <int value="-2013124655" label="EnableEphemeralFlashPermission:disabled"/>
   <int value="-2012990889" label="SpannableInlineAutocomplete:enabled"/>
   <int value="-2012449550" label="OmniboxMostVisitedTiles:enabled"/>
+  <int value="-2012266745"
+      label="OmniboxLocalZeroSuggestFrecencyRanking:disabled"/>
   <int value="-2011532551" label="SignedExchangeSubresourcePrefetch:disabled"/>
   <int value="-2010634516" label="OmniboxLocalEntitySuggestions:disabled"/>
   <int value="-2009622663" label="WebRtcHWH264Encoding:enabled"/>
@@ -42511,6 +42513,8 @@ from previous Chrome versions.
   <int value="342431487" label="VizForWebView:enabled"/>
   <int value="342960463" label="SharingQRCodeGenerator:enabled"/>
   <int value="343445783" label="AllowScrollSettings:enabled"/>
+  <int value="345611669"
+      label="OmniboxLocalZeroSuggestFrecencyRanking:enabled"/>
   <int value="345664265" label="BlinkHeapIncrementalMarking:disabled"/>
   <int value="346711293" label="enable-save-password-bubble"/>
   <int value="347981012" label="TabToGTSAnimation:disabled"/>

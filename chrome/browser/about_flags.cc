@@ -3717,6 +3717,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxLocalEntitySuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxLocalEntitySuggestions)},
 
+    {"omnibox-local-zero-suggest-frecency-ranking",
+     flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingName,
+     flag_descriptions::kOmniboxLocalZeroSuggestFrecencyRankingDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxLocalZeroSuggestFrecencyRanking)},
+
     {"omnibox-experimental-suggest-scoring",
      flag_descriptions::kOmniboxExperimentalSuggestScoringName,
      flag_descriptions::kOmniboxExperimentalSuggestScoringDescription, kOsAll,
