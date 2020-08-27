@@ -5,8 +5,10 @@
 #include <vector>
 
 #include "base/path_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/test_data_source.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/data/grit/webui_test_resources.h"
@@ -21,6 +23,52 @@
 class WebUIResourceBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
+    // Setup chrome://test/ data source.
+    content::WebContents* tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
+    content::URLDataSource::Add(profile,
+                                std::make_unique<TestDataSource>("webui"));
+  }
+
+  void LoadTestUrl(const std::string& file) {
+    GURL url(std::string("chrome://test/") + file);
+    RunTest(url);
+  }
+
+ private:
+  void RunTest(const GURL& url) {
+    ui_test_utils::NavigateToURL(browser(), url);
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents, {}));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelTest) {
+  LoadTestUrl("array_data_model_test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
+  LoadTestUrl("cr_test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
+  LoadTestUrl("cr_reload_test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetTest) {
+  LoadTestUrl("event_target_test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
+  LoadTestUrl("i18n_process_css_test.html");
+}
+
+class WebUIResourceBrowserTestV0 : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
     // Load resources that are only used by browser_tests.
     base::FilePath pak_path;
     ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
@@ -31,19 +79,20 @@ class WebUIResourceBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(yoichio): This is temporary switch to support chrome internal
+    // components migration from the old web APIs.
+    // After completion of the migration, we should remove this.
+    // See crbug.com/911943 for detail.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "HTMLImports");
+  }
+
   // Runs all test functions in |file|, waiting for them to complete.
   void LoadFile(const std::string& file) {
     GURL test_url =
         embedded_test_server()->GetURL(std::string("/webui/") + file);
     RunTest(test_url);
-  }
-
-  void LoadResource(int idr) {
-    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-    scoped_refptr<base::RefCountedMemory> resource =
-        bundle.LoadDataResourceBytes(idr);
-    RunTest(GURL(std::string("data:text/html,") +
-                 std::string(resource->front_as<char>(), resource->size())));
   }
 
   // Queues the library corresponding to |resource_id| for injection into the
@@ -67,50 +116,6 @@ class WebUIResourceBrowserTest : public InProcessBrowserTest {
   std::vector<int> include_libraries_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_EVENT_TARGET);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL);
-  LoadFile("array_data_model_test.html");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_EVENT_TARGET);
-  LoadFile("cr_test.html");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_UI);
-  // Loading cr.js again on purpose to check whether it overwrites the cr
-  // namespace.
-  AddLibrary(IDR_WEBUI_JS_CR);
-  LoadFile("cr_reload_test.html");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_EVENT_TARGET);
-  LoadFile("event_target_test.html");
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
-  LoadResource(IDR_WEBUI_TEST_I18N_PROCESS_CSS_TEST);
-}
-
-class WebUIResourceBrowserTestV0 : public WebUIResourceBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(yoichio): This is temporary switch to support chrome internal
-    // components migration from the old web APIs.
-    // After completion of the migration, we should remove this.
-    // See crbug.com/911943 for detail.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "HTMLImports");
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTestV0, I18nProcessTest) {
   AddLibrary(IDR_WEBUI_JS_LOAD_TIME_DATA);
   AddLibrary(IDR_WEBUI_JS_I18N_TEMPLATE_NO_PROCESS);
@@ -119,135 +124,67 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTestV0, I18nProcessTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_EVENT_TARGET);
-  AddLibrary(IDR_WEBUI_JS_CR_UI);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST_ITEM);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST_SELECTION_CONTROLLER);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST_SELECTION_MODEL);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST);
-  LoadFile("list_test.html");
+  LoadTestUrl("list_test.html");
 }
 
 #if defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_EVENT_TARGET);
-  AddLibrary(IDR_WEBUI_JS_CR_UI);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_ARRAY_DATA_MODEL);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST_ITEM);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST_SELECTION_CONTROLLER);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST_SELECTION_MODEL);
-  // Grid must be the last addition as it depends on list libraries.
-  AddLibrary(IDR_WEBUI_JS_CR_UI_GRID);
-  LoadFile("grid_test.html");
+  LoadTestUrl("grid_test.html");
 }
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_EVENT_TARGET);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST_SELECTION_MODEL);
-  LoadFile("list_selection_model_test.html");
+  LoadTestUrl("list_selection_model_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSingleSelectionModelTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_EVENT_TARGET);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_LIST_SINGLE_SELECTION_MODEL);
-  LoadFile("list_single_selection_model_test.html");
+  LoadTestUrl("list_single_selection_model_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuTest) {
-  AddLibrary(IDR_WEBUI_JS_ASSERT);
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_UI);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_COMMAND);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_MENU_ITEM);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_MENU);
-  LoadFile("menu_test.html");
+  LoadTestUrl("menu_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
-  LoadFile("mock_timer_test.html");
+  LoadTestUrl("mock_timer_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ParseHtmlSubsetTest) {
-  AddLibrary(IDR_WEBUI_JS_PARSE_HTML_SUBSET);
-  LoadFile("parse_html_subset_test.html");
+  LoadTestUrl("parse_html_subset_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_POSITION_UTIL);
-  LoadFile("position_util_test.html");
+  LoadTestUrl("position_util_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandTest) {
-  AddLibrary(IDR_WEBUI_JS_ASSERT);
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_UI);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_KEYBOARD_SHORTCUT_LIST);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_COMMAND);
-  LoadFile("command_test.html");
+  LoadTestUrl("command_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerTest) {
-  AddLibrary(IDR_WEBUI_JS_ASSERT);
-  AddLibrary(IDR_WEBUI_JS_EVENT_TRACKER);
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_EVENT_TARGET);
-  AddLibrary(IDR_WEBUI_JS_CR_UI);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_POSITION_UTIL);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_MENU_ITEM);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_MENU_BUTTON);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_MENU);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_CONTEXT_MENU_HANDLER);
-  LoadFile("context_menu_handler_test.html");
+  LoadTestUrl("context_menu_handler_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonTest) {
-  AddLibrary(IDR_WEBUI_JS_ASSERT);
-  AddLibrary(IDR_WEBUI_JS_EVENT_TRACKER);
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_UI);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_POSITION_UTIL);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_MENU_BUTTON);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_MENU_ITEM);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_MENU);
-  LoadFile("menu_button_test.html");
+  LoadTestUrl("menu_button_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_CR_UI);
-  AddLibrary(IDR_WEBUI_JS_CR_UI_SPLITTER);
-  LoadFile("splitter_test.html");
+  LoadTestUrl("splitter_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, UtilTest) {
-  AddLibrary(IDR_WEBUI_JS_UTIL);
-  LoadFile("util_test.html");
+  LoadTestUrl("util_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, IconTest) {
-  AddLibrary(IDR_WEBUI_JS_CR);
-  AddLibrary(IDR_WEBUI_JS_UTIL);
-  AddLibrary(IDR_WEBUI_JS_ICON);
-  LoadFile("icon_test.html");
+  LoadTestUrl("icon_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PromiseResolverTest) {
-  AddLibrary(IDR_WEBUI_JS_ASSERT);
-  AddLibrary(IDR_WEBUI_JS_PROMISE_RESOLVER);
-  LoadFile("promise_resolver_test.html");
+  LoadTestUrl("promise_resolver_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nBehaviorTest) {
-  AddLibrary(IDR_WEBUI_JS_LOAD_TIME_DATA);
-  AddLibrary(IDR_WEBUI_JS_PARSE_HTML_SUBSET);
-  AddLibrary(IDR_WEBUI_JS_I18N_BEHAVIOR);
-  LoadFile("i18n_behavior_test.html");
+  LoadTestUrl("i18n_behavior_test.html");
 }

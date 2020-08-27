@@ -1,44 +1,8 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script>
-
-function testMembersReadOnly() {
-  const resolver = new PromiseResolver;
-  assertThrows(function() { resolver.promise = new Promise; });
-  assertThrows(function() { resolver.resolve = function() {}; });
-  assertThrows(function() { resolver.reject = function() {}; });
-}
-
-function testResolves(done) {
-  const resolver = new PromiseResolver;
-  resolver.promise.then(done);
-  resolver.resolve();
-}
-
-function testRejects(done) {
-  const resolver = new PromiseResolver;
-  resolver.promise.catch(done);
-  resolver.reject();
-}
-
-function testisFulfilled() {
-  const resolver1 = new PromiseResolver;
-  assertFalse(resolver1.isFulfilled);
-  resolver1.resolve();
-  assertTrue(resolver1.isFulfilled);
-
-  const resolver2 = new PromiseResolver;
-  assertFalse(resolver2.isFulfilled);
-  resolver2.resolve(true);
-  assertTrue(resolver2.isFulfilled);
-
-  const resolver3 = new PromiseResolver;
-  assertFalse(resolver3.isFulfilled);
-  resolver3.reject(new Error);
-  assertTrue(resolver3.isFulfilled);
-}
-
-</script>
+<script src="chrome://resources/js/assert.js"></script>
+<script src="chrome://resources/js/promise_resolver.js"></script>
+<script src="promise_resolver_test.js"></script>
 </body>
 </html>
