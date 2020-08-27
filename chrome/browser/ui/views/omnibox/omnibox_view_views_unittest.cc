@@ -2232,13 +2232,33 @@ TEST_P(OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,
   // Focusing a non-editable node should not run the fade-out animation.
   content::FocusedNodeDetails details;
   details.is_editable_node = false;
+  details.focus_type = blink::mojom::FocusType::kMouse;
   omnibox_view()->OnFocusChangedInPage(&details);
   OmniboxViewViews::ElideAnimation* elide_animation =
       omnibox_view()->GetElideAfterInteractionAnimationForTesting();
   EXPECT_FALSE(elide_animation);
 
+  // Focusing via keypress should not run the fade-out animation.
+  details.is_editable_node = true;
+  details.focus_type = blink::mojom::FocusType::kForward;
+  omnibox_view()->OnFocusChangedInPage(&details);
+  elide_animation =
+      omnibox_view()->GetElideAfterInteractionAnimationForTesting();
+  EXPECT_FALSE(elide_animation);
+
+  // Other ways that an element can be focused, such as element.focus() in
+  // JavaScript, have a focus type of kNone and should not run the fade-out
+  // animation.
+  details.is_editable_node = true;
+  details.focus_type = blink::mojom::FocusType::kNone;
+  omnibox_view()->OnFocusChangedInPage(&details);
+  elide_animation =
+      omnibox_view()->GetElideAfterInteractionAnimationForTesting();
+  EXPECT_FALSE(elide_animation);
+
   // Focusing an editable node should run the fade-out animation.
   details.is_editable_node = true;
+  details.focus_type = blink::mojom::FocusType::kMouse;
   omnibox_view()->OnFocusChangedInPage(&details);
   elide_animation =
       omnibox_view()->GetElideAfterInteractionAnimationForTesting();

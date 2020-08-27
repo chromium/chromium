@@ -2040,8 +2040,17 @@ void OmniboxViewViews::DidGetUserInteraction(
 
 void OmniboxViewViews::OnFocusChangedInPage(
     content::FocusedNodeDetails* details) {
-  if (details->is_editable_node)
+  // Elide the URL to the simplified domain (the most security-critical
+  // information) when the user focuses a form text field, which is a key moment
+  // for making security decisions. Ignore the focus event if it didn't come
+  // from a mouse click/tap. Focus via keyboard will trigger elision from
+  // DidGetUserInteraction(), and we want to ignore focuses that aren't from an
+  // explicit user action (e.g., input fields that are autofocused on page
+  // load).
+  if (details->is_editable_node &&
+      details->focus_type == blink::mojom::FocusType::kMouse) {
     MaybeElideURLWithAnimationFromInteraction();
+  }
 }
 
 base::string16 OmniboxViewViews::GetSelectionClipboardText() const {
