@@ -4,8 +4,11 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/native_file_system/native_file_system_permission_context_factory.h"
@@ -18,21 +21,25 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
+#include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/web_ui_browsertest_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/webui/webui_allowlist.h"
 
 using safe_browsing::ClientDownloadRequest;
 
@@ -715,6 +722,173 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTest,
   EXPECT_EQ("prompt",
             content::EvalJs(third_party_iframe,
                             "self.entry.queryPermission({mode: 'read'})"));
+}
+
+// The helper methods in this class uses ExecuteScriptXXX, because WebUI has
+// a Content Security Policy that interferes with ExecJs and EvalJs.
+class NativeFileSystemBrowserTestForWebUI : public InProcessBrowserTest {
+ public:
+  NativeFileSystemBrowserTestForWebUI() {
+    native_file_system_feature_.InitAndEnableFeature(
+        blink::features::kNativeFileSystemAPI);
+
+    content::WebUIControllerFactory::RegisterFactory(&factory_);
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(temp_dir_.CreateUniqueTempDir());
+  }
+
+  ~NativeFileSystemBrowserTestForWebUI() override {
+    content::WebUIControllerFactory::UnregisterFactoryForTesting(&factory_);
+  }
+
+  // Return the evaluated value of a JavaScript |statement| as a std::string.
+  // The statement can be a Promise that resolves to a string. If errors are
+  // encountered during evaluation, returns the error's message.
+  std::string GetJsStatementValueAsString(content::WebContents* web_contents,
+                                          const std::string& statement) {
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents,
+        base::StrCat({"Promise.resolve(", statement, ").then(",
+                      "  result => domAutomationController.send(result),"
+                      "  error => domAutomationController.send(error.message)"
+                      ");"}),
+        &result));
+    return result;
+  }
+
+  content::WebContents* SetUpAndNavigateToTestWebUI() {
+    const GURL kWebUITestUrl = content::GetWebUIURL("webui/title1.html");
+    WebUIAllowlist::GetOrCreate(browser()->profile())
+        ->RegisterAutoGrantedPermissions(
+            url::Origin::Create(kWebUITestUrl),
+            {ContentSettingsType::FILE_SYSTEM_READ_GUARD,
+             ContentSettingsType::FILE_SYSTEM_WRITE_GUARD});
+
+    ui_test_utils::NavigateToURL(browser(), kWebUITestUrl);
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void TestFilePermissionInDirectory(content::WebContents* web_contents,
+                                     const base::FilePath& dir_path) {
+    // Create a test file in the directory.
+    base::FilePath test_file_path;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_path, &test_file_path));
+      ASSERT_TRUE(base::WriteFile(test_file_path, "test"));
+    }
+
+    // Write permissions are granted to the test WebUI with WebUIAllowlist in
+    // SetUpAndNavigateToTestWebUI. Users should not get permission prompts. We
+    // auto-deny them if they show up.
+    NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+        ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
+
+    // Open the dialog and choose the file.
+    ui::SelectFileDialog::SetFactory(
+        new FakeSelectFileDialogFactory({test_file_path}));
+    EXPECT_EQ("ok",
+              GetJsStatementValueAsString(web_contents,
+                                          "window.showOpenFilePicker().then("
+                                          "  handles => {"
+                                          "    window.file_handle = handles[0];"
+                                          "    return 'ok';"
+                                          "})"));
+
+    EXPECT_EQ("file", GetJsStatementValueAsString(web_contents,
+                                                  "window.file_handle.kind"));
+
+    // Check permission descriptors.
+    EXPECT_EQ("granted",
+              GetJsStatementValueAsString(
+                  web_contents,
+                  "window.file_handle.queryPermission({ mode: 'read' })"));
+    EXPECT_EQ("granted",
+              GetJsStatementValueAsString(
+                  web_contents,
+                  "window.file_handle.queryPermission({ mode: 'readwrite' })"));
+  }
+
+  void TestDirectoryPermission(content::WebContents* web_contents,
+                               const base::FilePath& dir_path) {
+    // Write permissions are granted to the test WebUI with WebUIAllowlist in
+    // SetUpAndNavigateToTestWebUI. Users should not get permission prompts. We
+    // auto-deny them if they show up.
+    NativeFileSystemPermissionRequestManager::FromWebContents(web_contents)
+        ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
+
+    // Open the dialog and choose the directory.
+    ui::SelectFileDialog::SetFactory(
+        new FakeSelectFileDialogFactory({dir_path}));
+
+    EXPECT_EQ("ok",
+              GetJsStatementValueAsString(web_contents,
+                                          "window.showDirectoryPicker().then("
+                                          "  handle => {"
+                                          "    window.dir_handle = handle;"
+                                          "    return 'ok';"
+                                          "})"));
+
+    EXPECT_EQ("directory", GetJsStatementValueAsString(
+                               web_contents, "window.dir_handle.kind"));
+
+    // Check permission descriptors.
+    EXPECT_EQ("granted",
+              GetJsStatementValueAsString(
+                  web_contents,
+                  "window.dir_handle.queryPermission({ mode: 'read' })"));
+    EXPECT_EQ("granted",
+              GetJsStatementValueAsString(
+                  web_contents,
+                  "window.dir_handle.queryPermission({ mode: 'readwrite' })"));
+  }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+
+ private:
+  base::test::ScopedFeatureList native_file_system_feature_;
+  content::TestWebUIControllerFactory factory_;
+};
+
+IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
+                       OpenFilePicker_NormalPath) {
+  content::WebContents* web_contents = SetUpAndNavigateToTestWebUI();
+  TestFilePermissionInDirectory(web_contents, temp_dir_.GetPath());
+}
+
+IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
+                       OpenFilePicker_FileInSensitivePath) {
+  base::ScopedPathOverride downloads_override(
+      chrome::DIR_DEFAULT_DOWNLOADS, temp_dir_.GetPath(), /*is_absolute*/ true,
+      /*create*/ false);
+
+  content::WebContents* web_contents = SetUpAndNavigateToTestWebUI();
+  TestFilePermissionInDirectory(web_contents, temp_dir_.GetPath());
+}
+
+IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
+                       OpenDirectoryPicker_NormalPath) {
+  content::WebContents* web_contents = SetUpAndNavigateToTestWebUI();
+  TestDirectoryPermission(web_contents, temp_dir_.GetPath());
+}
+
+IN_PROC_BROWSER_TEST_F(NativeFileSystemBrowserTestForWebUI,
+                       OpenDirectoryPicker_DirectoryInSensitivePath) {
+  base::ScopedPathOverride downloads_override(
+      chrome::DIR_DEFAULT_DOWNLOADS, temp_dir_.GetPath(), /*is_absolute*/ true,
+      /*create*/ false);
+
+  base::FilePath test_dir_path = temp_dir_.GetPath().AppendASCII("folder");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(CreateDirectory(test_dir_path));
+  }
+
+  content::WebContents* web_contents = SetUpAndNavigateToTestWebUI();
+  TestDirectoryPermission(web_contents, test_dir_path);
 }
 
 // TODO(mek): Add more end-to-end test including other bits of UI.

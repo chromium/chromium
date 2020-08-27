@@ -368,6 +368,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerWebAppInfoBrowserTest,
   histograms.ExpectUniqueSample("Apps.DefaultAppLaunch.FromAppListGrid", 39, 1);
 }
 
+// The helper methods in this class uses ExecuteScriptXXX instead of ExecJs and
+// EvalJs because of some quirks surrounding origin trials and content security
+// policies.
 class SystemWebAppManagerFileHandlingBrowserTestBase
     : public SystemWebAppManagerBrowserTestBase,
       public ::testing::WithParamInterface<ProviderTypeAndInstallationType> {
@@ -472,8 +475,6 @@ class SystemWebAppManagerLaunchFilesBrowserTest
 };
 
 // Check launch files are passed to application.
-// Note: This test uses ExecuteScriptXXX instead of ExecJs and EvalJs because of
-// some quirks surrounding origin trials and content security policies.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
                        LaunchFilesForSystemWebApp) {
   WaitForTestSystemAppInstall();
@@ -512,6 +513,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
                                         "window.launchParams2.files[0].name"));
 }
 
+// The helper methods in this class uses ExecuteScriptXXX instead of ExecJs and
+// EvalJs because of some quirks surrounding origin trials and content security
+// policies.
 class SystemWebAppManagerLaunchDirectoryBrowserTest
     : public SystemWebAppManagerFileHandlingBrowserTestBase {
  public:
@@ -654,10 +658,6 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
   }
 };
 
-// Launching behavior for apps that do not want to received launch directory are
-// tested in |SystemWebAppManagerBrowserTestBase.LaunchFilesForSystemWebApp|.
-// Note: This test uses ExecuteScriptXXX instead of ExecJs and EvalJs because of
-// some quirks surrounding origin trials and content security policies.
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        LaunchDirectoryForSystemWebApp) {
   WaitForTestSystemAppInstall();
