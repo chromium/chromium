@@ -52,6 +52,11 @@ int DesktopDragDropClientWin::StartDragAndDrop(
                        MOUSEEVENTF_RIGHTDOWN | MOUSEEVENTF_ABSOLUTE);
     ui::SendMouseEvent(screen_point, MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE);
     desktop_host_->SetInTouchDrag(true);
+    // Gesture state gets left in a state where you can't start
+    // another drag, unless it's cleaned up. Cleaning it up before starting
+    // drag drop also fixes an issue with getting two kGestureScrollBegin events
+    // in a row. See crbug.com/1120809.
+    source_window->CleanupGestureState();
   }
   base::WeakPtr<DesktopDragDropClientWin> alive(weak_factory_.GetWeakPtr());
 
@@ -69,9 +74,6 @@ int DesktopDragDropClientWin::StartDragAndDrop(
       ui::DragDropTypes::DragOperationToDropEffect(operation), &effect);
   if (alive && source == ui::mojom::DragEventSource::kTouch) {
     desktop_host_->SetInTouchDrag(false);
-    // Gesture state gets left in a state where you can't start
-    // another drag, unless it's cleaned up.
-    source_window->CleanupGestureState();
   }
   drag_source_copy->set_data(nullptr);
 
