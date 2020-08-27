@@ -81,9 +81,6 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
     if (request.GetURL().path().find("prefetch_meta.js") != std::string::npos) {
       script_executed_ = true;
     }
-    if (request.GetURL().path().find("alert.html") != std::string::npos) {
-      link_rel_next_started_ = true;
-    }
 
     // The default handlers will take care of this request.
     return nullptr;
@@ -106,7 +103,6 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
 
   std::unique_ptr<base::RunLoop> prerendered_page_fetched_;
   std::unique_ptr<base::RunLoop> script_resource_fetched_;
-  bool link_rel_next_started_ = false;
   bool script_fetched_ = false;
   bool script_executed_ = false;
   std::string purpose_header_value_;
@@ -199,14 +195,14 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   prerendered_page_fetched_->Run();
 }
 
-// link-rel="next" doesn't happen when NoStatePrefetch has been disabled.
+// link-rel="next" happens even when NoStatePrefetch has been disabled.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, LinkRelNextWithNSPDisabled) {
   GetProfile()->SetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED,
                                   false);
-  NavigateToPageAndWaitForTitleChange(
-      GURL(https_server_->GetURL("/parent_page.html")),
-      base::ASCIIToUTF16("Parent Page"));
-  EXPECT_FALSE(link_rel_next_started_);
+  NavigateAndWaitForCompletion(
+      GURL(https_server_->GetURL("/link_rel_next_parent.html")), shell());
+
+  prerendered_page_fetched_->Run();
 }
 
 }  // namespace weblayer

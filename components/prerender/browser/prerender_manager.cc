@@ -509,12 +509,14 @@ bool PrerenderManager::IsLowEndDevice() const {
 bool PrerenderManager::IsPredictionEnabled(Origin origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // <link rel=prerender> origins ignore the network state and the privacy
+  // <link rel=prerender> and <link rel=next> origins ignore the network state
+  // and the privacy
   // settings. Web developers should be able prefetch with all possible privacy
   // settings. This would avoid web devs coming up with creative ways to
   // prefetch in cases they are not allowed to do so.
   if (origin == ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN ||
-      origin == ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN) {
+      origin == ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN ||
+      origin == ORIGIN_LINK_REL_NEXT) {
     return true;
   }
 
