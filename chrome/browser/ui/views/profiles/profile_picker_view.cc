@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/google_chrome_strings.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -64,7 +65,8 @@ void ProfilePicker::Hide() {
 }
 
 ProfilePickerView::ProfilePickerView()
-    : web_view_(nullptr), initialized_(InitState::kNotInitialized) {
+    : keep_alive_(KeepAliveOrigin::USER_MANAGER_VIEW,
+                  KeepAliveRestartOption::DISABLED) {
   SetHasWindowSizeControls(true);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetTitle(IDS_PRODUCT_NAME);

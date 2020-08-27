@@ -7,6 +7,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -56,8 +57,9 @@ class ProfilePickerView : public views::DialogDelegateView,
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
 
-  views::WebView* web_view_;
-  InitState initialized_;
+  ScopedKeepAlive keep_alive_;
+  views::WebView* web_view_ = nullptr;
+  InitState initialized_ = InitState::kNotInitialized;
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfilePickerView);
