@@ -305,7 +305,9 @@ void OptOutOfAccountStorageAndClearSettingsForAccount(
 
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service) {
-  return !sync_service->IsSyncFeatureEnabled() &&
+  // `sync_service` is null in incognito mode, or if --disable-sync was
+  // specified on the command-line.
+  return sync_service && !sync_service->IsSyncFeatureEnabled() &&
          (IsOptedInForAccountStorage(pref_service, sync_service) ||
           IsUserEligibleForAccountStorage(sync_service));
 }
