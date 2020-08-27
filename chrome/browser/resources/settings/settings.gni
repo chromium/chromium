@@ -116,8 +116,6 @@ settings_namespace_rewrites = [
   "settings.SystemPageBrowserProxy|SystemPageBrowserProxy",
   "settings.RouteObserverBehavior|RouteObserverBehavior",
   "settings.WebsiteUsageBrowserProxy|WebsiteUsageBrowserProxy",
-  "nearby_share.NearbyShareSettingsBehavior|NearbyShareSettingsBehavior",
-
   "action_link.m.js|action_link.js",
 
   # TODO(1026426): Add more entries above as needed.

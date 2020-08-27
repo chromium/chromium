@@ -11,6 +11,7 @@ os_settings_namespace_rewrites = settings_namespace_rewrites +
                                  cr_components_chromeos_namespace_rewrites +
                                  cr_elements_chromeos_namespace_rewrites + [
                                    "// #polymer3 |",
+                                   "nearby_share.NearbyShareSettingsBehavior|NearbyShareSettingsBehavior",
                                    "parental_controls.ParentalControlsBrowserProxy|ParentalControlsBrowserProxy",
                                    "settings.AccountManagerBrowserProxy|AccountManagerBrowserProxy",
                                    "settings.AmbientModeBrowserProxy|AmbientModeBrowserProxy",
