@@ -82370,6 +82370,32 @@
        {}
       ]
      ],
+     "selection-overlay-and-grammar-001.html": [
+      "e4fe6e682e63f9382f920fbabf2126fc80640308",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/reference/selection-overlay-and-grammar-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selection-overlay-and-spelling-001.html": [
+      "64129ab5f56b85ba901645f1128e35e27a9c64c2",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/reference/selection-overlay-and-spelling-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "selection-text-shadow-016.html": [
       "44403c1b5f5fb2bf7245c73f5eb5c15ffd19a98a",
       [
@@ -183406,6 +183432,14 @@
        "3ead305bfb8eaf08424b789f40efa73c26d8dfe3",
        []
       ],
+      "selection-overlay-and-grammar-001-ref.html": [
+       "f5a416ecef3547a3eca8749cdfc530a4fca5ced0",
+       []
+      ],
+      "selection-overlay-and-spelling-001-ref.html": [
+       "5dffca9f358026645bc6f8fdd0cf145250fd05bd",
+       []
+      ],
       "selection-textarea-011-ref.html": [
        "825a4247a202dac2bc3dde257ddff81f2e8eded8",
        []
@@ -239841,7 +239875,7 @@
        []
       ],
       "conftest.py": [
-       "dffae0b98cd67c664883f4e4efd608415c82b179",
+       "5ee8ae1c741a9c75658d36d774e0c2523913c6d5",
        []
       ],
       "support": {
@@ -323928,7 +323962,7 @@
          ]
         ],
         "canvas-createPutGetImageData-colorManaged.html": [
-         "a6b202e8f2bd671ce5074146d127abf6d2baf910",
+         "f153a983d93d5ee33893fd23340dfcc5b26e098a",
          [
           null,
           {}
@@ -323956,21 +323990,14 @@
          ]
         ],
         "canvas-getImageData-e_srgb.html": [
-         "f5f0e629dd19f4d65531b15bf39595e587ded974",
+         "c38da7c95c0d48fd009c9073697f0232379918f9",
          [
           null,
           {}
          ]
         ],
         "imageData-colorManagedBehavior.html": [
-         "6bc55b7ca70e9cc0fe28e4e0f27a5e094fd725cb",
-         [
-          null,
-          {}
-         ]
-        ],
-        "imageData-colorSpace.html": [
-         "9023cbea3620686b04aeed15120284bdf9a41478",
+         "dda9f9cc28f051114f21b27fe470aafe1ce2b06e",
          [
           null,
           {}
@@ -427005,7 +427032,7 @@
        ]
       ],
       "pointer.py": [
-       "d021eee7c9404cf09194a41632b6093c72ce961d",
+       "fcb1e5b1bf0014ad66d6bedc40a0c2986a96519c",
        [
         null,
         {
