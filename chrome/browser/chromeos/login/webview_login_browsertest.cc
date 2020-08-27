@@ -242,8 +242,10 @@ class ErrorScreenWatcher : public OobeUI::Observer {
 class WebviewLoginTest : public OobeBaseTest {
  public:
   WebviewLoginTest() {
+    // TODO(https://crbug.com/1121910) Migrate to the kChildSpecificSignin
+    // enabled.
     scoped_feature_list_.InitWithFeatures(
-        {features::kGaiaActionButtons, features::kChildSpecificSignin}, {});
+        {features::kGaiaActionButtons}, {features::kChildSpecificSignin});
   }
   ~WebviewLoginTest() override = default;
 
@@ -426,7 +428,17 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, BackButton) {
   test::WaitForPrimaryUserSessionStart();
 }
 
-IN_PROC_BROWSER_TEST_F(WebviewLoginTest, BackToUserCreationScreen) {
+class WebviewLoginTestWithChildSigninEnabled : public WebviewLoginTest {
+ public:
+  WebviewLoginTestWithChildSigninEnabled() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGaiaActionButtons, features::kChildSpecificSignin}, {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithChildSigninEnabled,
+                       BackToUserCreationScreen) {
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   // Start with identifier page.
@@ -1333,14 +1345,8 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, DISABLED_ProxyAuthTransfer) {
   ExpectIdentifierPage();
 }
 
-class WebviewLoginTestWithChildSigninDisabled : public WebviewLoginTest {
- public:
-  WebviewLoginTestWithChildSigninDisabled() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({features::kGaiaActionButtons},
-                                          {features::kChildSpecificSignin});
-  }
-};
+
+using WebviewLoginTestWithChildSigninDisabled = WebviewLoginTest;
 
 IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithChildSigninDisabled,
                        ErrorScreenOnGaiaError) {
