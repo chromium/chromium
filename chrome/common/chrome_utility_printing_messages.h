@@ -27,7 +27,7 @@ IPC_STRUCT_TRAITS_BEGIN(printing::PrinterCapsAndDefaults)
 IPC_STRUCT_TRAITS_END()
 
 IPC_ENUM_TRAITS_MAX_VALUE(printing::mojom::ColorModel,
-                          printing::mojom::ColorModel::kProcessColorModelRGB)
+                          printing::mojom::ColorModel::kColorModelLast)
 
 IPC_STRUCT_TRAITS_BEGIN(printing::PrinterSemanticCapsAndDefaults::Paper)
   IPC_STRUCT_TRAITS_MEMBER(display_name)
