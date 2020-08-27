@@ -148,8 +148,8 @@ void DMClient::PostRegisterRequest(DMRequestCallback request_callback) {
   }
 
   if (result != RequestResult::kSuccess) {
-    LOG(ERROR) << "Device registration skipped with DM error: "
-               << static_cast<int>(result);
+    VLOG(1) << "Device registration skipped with DM error: "
+            << static_cast<int>(result);
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(request_callback_), result));
     return;
@@ -197,20 +197,20 @@ void DMClient::OnRegisterRequestComplete(
   RequestResult request_result = RequestResult::kSuccess;
 
   if (net_error != 0) {
-    LOG(ERROR) << "DM register failed due to net error: " << net_error;
+    VLOG(1) << "DM register failed due to net error: " << net_error;
     request_result = RequestResult::kNetworkError;
   } else if (http_status_code_ == kHTTPStatusGone) {
     VLOG(1) << "Device is now de-registered.";
     storage_->DeregisterDevice();
   } else if (http_status_code_ != kHTTPStatusOK) {
-    LOG(ERROR) << "DM device registration failed due to http error: "
-               << http_status_code_;
+    VLOG(1) << "DM device registration failed due to http error: "
+            << http_status_code_;
     request_result = RequestResult::kHttpError;
   } else {
     const std::string dm_token =
         ParseDeviceRegistrationResponse(*response_body);
     if (dm_token.empty()) {
-      LOG(ERROR) << "Failed to parse DM token from registration response.";
+      VLOG(1) << "Failed to parse DM token from registration response.";
       request_result = RequestResult::kUnexpectedResponse;
     } else {
       VLOG(1) << "Register request completed, got DM token: " << dm_token;
@@ -241,8 +241,8 @@ void DMClient::PostPolicyFetchRequest(DMRequestCallback request_callback) {
   }
 
   if (result != RequestResult::kSuccess) {
-    LOG(ERROR) << "Policy fetch skipped with DM error: "
-               << static_cast<int>(result);
+    VLOG(1) << "Policy fetch skipped with DM error: "
+            << static_cast<int>(result);
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(request_callback_), result));
     return;
@@ -278,14 +278,14 @@ void DMClient::OnPolicyFetchRequestComplete(
   RequestResult request_result = RequestResult::kSuccess;
 
   if (net_error != 0) {
-    LOG(ERROR) << "DM policy fetch failed due to net error: " << net_error;
+    VLOG(1) << "DM policy fetch failed due to net error: " << net_error;
     request_result = RequestResult::kNetworkError;
   } else if (http_status_code_ == kHTTPStatusGone) {
     VLOG(1) << "Device is now de-registered.";
     storage_->DeregisterDevice();
   } else if (http_status_code_ != kHTTPStatusOK) {
-    LOG(ERROR) << "DM policy fetch failed due to http error: "
-               << http_status_code_;
+    VLOG(1) << "DM policy fetch failed due to http error: "
+            << http_status_code_;
     request_result = RequestResult::kHttpError;
   } else {
     DMPolicyMap policies = ParsePolicyFetchResponse(

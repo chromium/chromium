@@ -26,7 +26,7 @@ bool VerifySHA256Signature(const std::string& data,
   if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
                            base::as_bytes(base::make_span(signature)),
                            base::as_bytes(base::make_span(key)))) {
-    DLOG(ERROR) << "Invalid verification signature/key format.";
+    VLOG(1) << "Invalid verification signature/key format.";
     return false;
   }
   verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
