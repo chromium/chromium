@@ -781,7 +781,7 @@ PaintLayer* LayoutObject::EnclosingLayer() const {
 PaintLayer* LayoutObject::PaintingLayer() const {
   auto FindContainer = [](const LayoutObject& object) -> const LayoutObject* {
     if (object.IsRenderedLegend())
-      return LayoutFieldset::FindLegendContainer(ToLayoutBox(object));
+      return LayoutFieldset::FindLegendContainingBlock(ToLayoutBox(object));
     // Use ContainingBlock() instead of ParentCrossingFrames() for floating
     // objects to omit any self-painting layers of inline objects that don't
     // paint the floating object. This is only needed for inline-level floats
@@ -1339,6 +1339,9 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   LayoutObject* object;
   if (IsColumnSpanAll()) {
     object = SpannerPlaceholder()->ContainingBlock();
+  } else if (IsRenderedLegend()) {
+    return LayoutFieldset::FindLegendContainingBlock(ToLayoutBox(*this),
+                                                     skip_info);
   } else {
     object = Parent();
     if (!object && IsLayoutCustomScrollbarPart()) {
@@ -3247,11 +3250,9 @@ LayoutObject* LayoutObject::Container(AncestorSkipInfo* skip_info) const {
     return multicol_container;
   }
 
-  if (IsFloating() && !IsInLayoutNGInlineFormattingContext())
+  if ((IsFloating() && !IsInLayoutNGInlineFormattingContext()) ||
+      IsRenderedLegend())
     return ContainingBlock(skip_info);
-
-  if (IsRenderedLegend())
-    return LayoutFieldset::FindLegendContainer(ToLayoutBox(*this));
 
   return Parent();
 }
