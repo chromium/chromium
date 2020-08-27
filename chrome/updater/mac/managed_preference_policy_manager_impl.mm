@@ -16,6 +16,7 @@ static NSString* kUpdatesSuppressedStartMinuteKey =
     @"UpdatesSuppressedStartMin";
 static NSString* kUpdatesSuppressedDurationMinuteKey =
     @"UpdatesSuppressedDurationMin";
+static NSString* kTargetChannelKey = @"TargetChannel";
 static NSString* kTargetVersionPrefixKey = @"TargetVersionPrefix";
 static NSString* kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
 
@@ -119,11 +120,13 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
 
 /// Class that manages policies for a single App.
 @interface CRUManagedPreferenceAppPolicySettings : NSObject {
+  base::scoped_nsobject<NSString> _targetChannel;
   base::scoped_nsobject<NSString> _targetVersionPrefix;
 }
 
 @property(nonatomic, readonly) int updatePolicy;
 @property(nonatomic, readonly) int rollbackToTargetVersion;
+@property(nonatomic, readonly, nullable) NSString* targetChannel;
 @property(nonatomic, readonly, nullable) NSString* targetVersionPrefix;
 
 @end
@@ -137,6 +140,8 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
   if (([super init])) {
     _updatePolicy =
         updater::ReadPolicyInteger([policyDict objectForKey:kUpdateDefaultKey]);
+    _targetChannel =
+        updater::ReadPolicyString([policyDict objectForKey:kTargetChannelKey]);
     _targetVersionPrefix = updater::ReadPolicyString(
         [policyDict objectForKey:kTargetVersionPrefixKey]);
     _rollbackToTargetVersion = updater::ReadPolicyInteger(
@@ -144,6 +149,14 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
   }
 
   return self;
+}
+
+- (NSString*)targetChannel {
+  if (_targetChannel) {
+    return [NSString stringWithString:_targetChannel];
+  } else {
+    return nil;
+  }
 }
 
 - (NSString*)targetVersionPrefix {
@@ -231,6 +244,11 @@ base::scoped_nsobject<NSString> ReadPolicyString(id value) {
   if (![_appPolicies objectForKey:appid])
     return kPolicyNotSet;
   return [_appPolicies objectForKey:appid].updatePolicy;
+}
+
+- (NSString*)targetChannel:(NSString*)appid {
+  appid = appid.lowercaseString;
+  return [_appPolicies objectForKey:appid].targetChannel;
 }
 
 - (NSString*)targetVersionPrefix:(NSString*)appid {

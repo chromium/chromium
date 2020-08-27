@@ -2,24 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_GROUP_POLICY_MANAGER_H_
-#define CHROME_UPDATER_WIN_GROUP_POLICY_MANAGER_H_
+#ifndef CHROME_UPDATER_POLICY_SERVICE_H_
+#define CHROME_UPDATER_POLICY_SERVICE_H_
 
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "base/win/registry.h"
 #include "chrome/updater/policy_manager.h"
 
 namespace updater {
 
-// The GroupPolicyManager returns policies for domain-joined machines.
-class GroupPolicyManager : public PolicyManagerInterface {
+// The PolicyService returns policies for enterprise managed machines from the
+// source with the highest priority where the policy available.
+class PolicyService : public PolicyManagerInterface {
  public:
-  GroupPolicyManager();
-  GroupPolicyManager(const GroupPolicyManager&) = delete;
-  GroupPolicyManager& operator=(const GroupPolicyManager&) = delete;
-  ~GroupPolicyManager() override;
+  PolicyService();
+  PolicyService(const PolicyService&) = delete;
+  PolicyService& operator=(const PolicyService&) = delete;
+  ~PolicyService() override;
 
   // Overrides for PolicyManagerInterface.
   std::string source() const override;
@@ -50,13 +51,31 @@ class GroupPolicyManager : public PolicyManagerInterface {
   bool GetProxyPacUrl(std::string* proxy_pac_url) const override;
   bool GetProxyServer(std::string* proxy_server) const override;
 
- private:
-  bool ReadValue(const base::char16* name, std::string* value) const;
-  bool ReadValueDW(const base::char16* name, int* value) const;
+  const std::vector<std::unique_ptr<PolicyManagerInterface>>&
+  policy_managers() {
+    return policy_managers_;
+  }
 
-  base::win::RegKey key_;
+  void SetPolicyManagersForTesting(
+      std::vector<std::unique_ptr<PolicyManagerInterface>> managers);
+  const PolicyManagerInterface& GetActivePolicyManager();
+
+ private:
+  bool ShouldFallbackToDefaultManager() const;
+
+  // Sets the policy manager that is managed and has the highest priority as the
+  // active policy manager. If no manager is managed, use the default policy
+  // manager as the active one.
+  void UpdateActivePolicyManager();
+  // List of policy managers in descending order of priority. The first policy
+  // manager's policies takes precedence over the following.
+  std::vector<std::unique_ptr<PolicyManagerInterface>> policy_managers_;
+  std::unique_ptr<PolicyManagerInterface> default_policy_manager_;
+  const PolicyManagerInterface* active_policy_manager_;
 };
+
+std::unique_ptr<PolicyService> GetUpdaterPolicyService();
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_GROUP_POLICY_MANAGER_H_
+#endif  // CHROME_UPDATER_POLICY_SERVICE_H_

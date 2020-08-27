@@ -47,6 +47,8 @@ class DMPolicyManager : public PolicyManagerInterface {
   bool GetTargetVersionPrefix(
       const std::string& app_id,
       std::string* target_version_prefix) const override;
+  bool GetTargetChannel(const std::string& app_id,
+                        std::string* channel) const override;
   bool IsRollbackToTargetVersionAllowed(const std::string& app_id,
                                         bool* rollback_allowed) const override;
 

@@ -129,6 +129,24 @@ message ApplicationSettings {
   // specified by "Target version prefix override" will be downgraded to the
   // highest available version that matches the target version.
   optional RollbackToTargetVersionValue rollback_to_target_version = 6;
+
+  // Gcpw specific application setting which contains a list of domains from
+  // which the user is allowed to login.
+  optional GcpwSpecificApplicationSettings gcpw_application_settings = 7;
+
+  // Target Channel
+  //
+  // Specifies the channel to which <app> should be updated.
+  //
+  // When this policy is set, the binaries returned by Google Update will be the
+  // binaries for the specified channel. If this policy is not set, the default
+  // channel will be used.
+  optional string target_channel = 8;
+}
+
+message GcpwSpecificApplicationSettings {
+  // List of domains from which the user is allowed to login.
+  repeated string domains_allowed_to_login = 1;
 }
 
 message OmahaSettingsClientProto {

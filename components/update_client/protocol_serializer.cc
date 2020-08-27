@@ -193,6 +193,7 @@ protocol_request::App MakeProtocolApp(
     const std::string& cohort,
     const std::string& cohort_hint,
     const std::string& cohort_name,
+    const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
     base::Optional<protocol_request::UpdateCheck> update_check,
     base::Optional<protocol_request::Ping> ping) {
@@ -205,6 +206,7 @@ protocol_request::App MakeProtocolApp(
   app.cohort = cohort;
   app.cohort_hint = cohort_hint;
   app.cohort_name = cohort_name;
+  app.release_channel = release_channel;
   app.enabled = disabled_reasons.empty();
   app.disabled_reasons = disabled_reasons;
   app.update_check = std::move(update_check);

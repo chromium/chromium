@@ -48,6 +48,7 @@ const base::char16 kRegValueInstallAppPrefix[] = L"Install";
 const base::char16 kRegValueUpdateAppsDefault[] = L"UpdateDefault";
 const base::char16 kRegValueUpdateAppPrefix[] = L"Update";
 const base::char16 kRegValueTargetVersionPrefix[] = L"TargetVersionPrefix";
+const base::char16 kRegValueTargetChannel[] = L"TargetChannel";
 const base::char16 kRegValueRollbackToTargetVersion[] =
     L"RollbackToTargetVersion";
 
@@ -110,6 +111,13 @@ bool GroupPolicyManager::GetEffectivePolicyForAppUpdates(
   return ReadValueDW(app_value_name.c_str(), update_policy)
              ? true
              : ReadValueDW(kRegValueUpdateAppsDefault, update_policy);
+}
+
+bool GroupPolicyManager::GetTargetChannel(const std::string& app_id,
+                                          std::string* channel) const {
+  base::string16 app_value_name(kRegValueTargetChannel);
+  app_value_name.append(base::SysUTF8ToWide(app_id));
+  return ReadValue(app_value_name.c_str(), channel);
 }
 
 bool GroupPolicyManager::GetTargetVersionPrefix(

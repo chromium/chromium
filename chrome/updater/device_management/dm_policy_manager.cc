@@ -202,6 +202,16 @@ bool DMPolicyManager::GetTargetVersionPrefix(
   return true;
 }
 
+bool DMPolicyManager::GetTargetChannel(const std::string& app_id,
+                                       std::string* channel) const {
+  const auto* app_settings = GetAppSettings(app_id);
+  if (!app_settings || !app_settings->has_target_channel())
+    return false;
+
+  *channel = app_settings->target_channel();
+  return true;
+}
+
 bool DMPolicyManager::IsRollbackToTargetVersionAllowed(
     const std::string& app_id,
     bool* rollback_allowed) const {

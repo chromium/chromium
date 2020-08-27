@@ -103,6 +103,8 @@ struct App {
   std::string cohort_hint;  // Server may use to move the app to a new cohort.
   std::string cohort_name;  // Human-readable interpretation of the cohort.
 
+  std::string release_channel;
+
   base::Optional<bool> enabled;
   base::Optional<std::vector<int>> disabled_reasons;
 

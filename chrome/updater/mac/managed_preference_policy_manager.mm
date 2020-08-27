@@ -52,6 +52,8 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
   bool GetProxyMode(std::string* proxy_mode) const override;
   bool GetProxyPacUrl(std::string* proxy_pac_url) const override;
   bool GetProxyServer(std::string* proxy_server) const override;
+  bool GetTargetChannel(const std::string& app_id,
+                        std::string* channel) const override;
 
  private:
   base::scoped_nsobject<CRUManagedPreferencePolicyManager> impl_;
@@ -182,6 +184,18 @@ bool ManagedPreferencePolicyManager::GetProxyServer(
   NSString* value = [impl_ proxyServer];
   if (value) {
     *proxy_server = base::SysNSStringToUTF8(value);
+    return true;
+  }
+
+  return false;
+}
+
+bool ManagedPreferencePolicyManager::GetTargetChannel(
+    const std::string& app_id,
+    std::string* channel) const {
+  NSString* value = [impl_ targetChannel:base::SysUTF8ToNSString(app_id)];
+  if (value) {
+    *channel = base::SysNSStringToUTF8(value);
     return true;
   }
 

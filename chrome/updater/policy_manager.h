@@ -84,6 +84,10 @@ class PolicyManagerInterface {
 
   // Returns a proxy server.
   virtual bool GetProxyServer(std::string* proxy_server) const = 0;
+
+  // Returns a channel, for example {stable|beta|dev}.
+  virtual bool GetTargetChannel(const std::string& app_id,
+                                std::string* channel) const = 0;
 };
 
 std::unique_ptr<PolicyManagerInterface> GetPolicyManager();

@@ -44,6 +44,8 @@ class DefaultPolicyManager : public PolicyManagerInterface {
   bool GetProxyMode(std::string* proxy_mode) const override;
   bool GetProxyPacUrl(std::string* proxy_pac_url) const override;
   bool GetProxyServer(std::string* proxy_server) const override;
+  bool GetTargetChannel(const std::string& app_id,
+                        std::string* channel) const override;
 };
 
 DefaultPolicyManager::DefaultPolicyManager() = default;
@@ -116,6 +118,11 @@ bool DefaultPolicyManager::GetProxyPacUrl(std::string* proxy_pac_url) const {
 }
 
 bool DefaultPolicyManager::GetProxyServer(std::string* proxy_server) const {
+  return false;
+}
+
+bool DefaultPolicyManager::GetTargetChannel(const std::string& app_id,
+                                            std::string* channel) const {
   return false;
 }
 

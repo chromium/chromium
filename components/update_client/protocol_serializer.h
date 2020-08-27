@@ -60,6 +60,7 @@ protocol_request::App MakeProtocolApp(
     const std::string& cohort,
     const std::string& cohort_hint,
     const std::string& cohort_name,
+    const std::string& release_channel,
     const std::vector<int>& disabled_reasons,
     base::Optional<protocol_request::UpdateCheck> update_check,
     base::Optional<protocol_request::Ping> ping);

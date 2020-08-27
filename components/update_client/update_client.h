@@ -315,6 +315,11 @@ struct CrxComponent {
   // For extensions, this information is inferred from the extension
   // registry.
   std::string install_location;
+
+  // Information about the channel to send to the update server when updating
+  // the component. This optional field is typically populated by policy and is
+  // only populated on managed devices.
+  std::string channel;
 };
 
 // Called when a non-blocking call of UpdateClient completes.

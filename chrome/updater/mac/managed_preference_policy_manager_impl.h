@@ -67,6 +67,7 @@ struct CRUUpdatesSuppressed {
 
 // App-level policies.
 - (int)appUpdatePolicy:(nonnull NSString*)appid;
+- (nullable NSString*)targetChannel:(nonnull NSString*)appid;
 - (nullable NSString*)targetVersionPrefix:(nonnull NSString*)appid;
 - (int)rollbackToTargetVersion:(nonnull NSString*)appid;
 

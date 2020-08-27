@@ -104,6 +104,8 @@ if (is_win || is_mac) {
       "installer.cc",
       "installer.h",
       "lib_util.h",
+      "policy_service.cc",
+      "policy_service.h",
       "prefs.cc",
       "prefs.h",
       "prefs_impl.h",
@@ -183,6 +185,7 @@ if (is_win || is_mac) {
     if (is_mac) {
       deps += [
         "//chrome/updater/app/server/mac:protocol",
+        "//chrome/updater/mac:enterprise",
         "//chrome/updater/mac:installer_sources",
         "//chrome/updater/mac:network_fetcher_sources",
         "//chrome/updater/mac:updater_setup_sources",
@@ -290,6 +293,7 @@ if (is_win || is_mac) {
       "lib_util_unittest.cc",
       "persisted_data_unittest.cc",
       "policy_manager_unittest.cc",
+      "policy_service_unittest.cc",
       "prefs_unittest.cc",
       "run_all_unittests.cc",
       "service_scope_unittest.cc",
