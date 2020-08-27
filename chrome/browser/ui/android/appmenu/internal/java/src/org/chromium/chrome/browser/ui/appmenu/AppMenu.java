@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -37,6 +38,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.ui.widget.Toast;
@@ -70,6 +72,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
     private int mCurrentScreenRotation = -1;
     private boolean mIsByPermanentButton;
     private AnimatorSet mMenuItemEnterAnimator;
+    private long mMenuShownTimeMs;
+    private boolean mSelectedItemBeforeDismiss;
 
     /**
      * Creates and sets up the App Menu.
@@ -185,6 +189,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
         }
 
         mPopup.setOnDismissListener(() -> {
+            recordTimeToTakeActionHistogram();
             if (anchorView instanceof ImageButton) {
                 ((ImageButton) anchorView).setSelected(false);
             }
@@ -282,6 +287,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
         mPopup.setContentView(contentView);
         mPopup.showAtLocation(
                 anchorView.getRootView(), Gravity.NO_GRAVITY, popupPosition[0], popupPosition[1]);
+        mSelectedItemBeforeDismiss = false;
+        mMenuShownTimeMs = SystemClock.elapsedRealtime();
 
         mListView.setOnItemClickListener(this);
         mListView.setItemsCanFocus(true);
@@ -368,6 +375,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
     @Override
     public void onItemClick(MenuItem menuItem) {
         if (menuItem.isEnabled()) {
+            mSelectedItemBeforeDismiss = true;
             dismiss();
             mHandler.onOptionsItemSelected(menuItem);
         }
@@ -376,6 +384,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
     @Override
     public boolean onItemLongClick(MenuItem menuItem, View view) {
         if (!menuItem.isEnabled()) return false;
+        mSelectedItemBeforeDismiss = true;
         CharSequence titleCondensed = menuItem.getTitleCondensed();
         CharSequence message =
                 TextUtils.isEmpty(titleCondensed) ? menuItem.getTitle() : titleCondensed;
@@ -562,5 +571,12 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuAdapter.OnCl
     @VisibleForTesting
     void finishAnimationsForTests() {
         if (mMenuItemEnterAnimator != null) mMenuItemEnterAnimator.end();
+    }
+
+    private void recordTimeToTakeActionHistogram() {
+        final String histogramName = "Mobile.AppMenu.TimeToTakeAction."
+                + (mSelectedItemBeforeDismiss ? "SelectedItem" : "Abandoned");
+        final long timeToTakeActionMs = SystemClock.elapsedRealtime() - mMenuShownTimeMs;
+        RecordHistogram.recordMediumTimesHistogram(histogramName, timeToTakeActionMs);
     }
 }

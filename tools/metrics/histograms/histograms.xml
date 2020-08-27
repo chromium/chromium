@@ -88656,6 +88656,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
+    expires_after="M93">
+  <owner>gangwu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The time it takes for the user to abandon the app menu after it's shown by
+    pressing back or touching outside the menu. This is only logged if the menu
+    is abandoned. See Mobile.AppMenu.TimeToTakeAction.SelectedItem for the cases
+    where it is closed as a result of user interaction with the menu. Android
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.AppMenu.TimeToTakeAction.SelectedItem" units="ms"
+    expires_after="M93">
+  <owner>gangwu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The time it takes for the user to select an item. This is only logged if the
+    menu is closed as a result of the user clicking a menu item. See
+    Mobile.AppMenu.TimeToTakeAction.Abandoned for the cases where it is
+    abandoned by the user. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Mobile.CanonicalURLResult" enum="CanonicalURLResult"
     expires_after="M87">
   <owner>pkl@chromium.org</owner>
