@@ -740,6 +740,7 @@ component("base") {
     "threading/scoped_thread_priority.cc",
     "threading/scoped_thread_priority.h",
     "threading/sequence_bound.h",
+    "threading/sequence_bound_internal.h",
     "threading/sequence_local_storage_map.cc",
     "threading/sequence_local_storage_map.h",
     "threading/sequence_local_storage_slot.cc",
