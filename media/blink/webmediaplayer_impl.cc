@@ -19,6 +19,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
@@ -59,6 +60,7 @@
 #include "media/remoting/remoting_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/data_url.h"
+#include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
@@ -428,10 +430,20 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   // Report a false "EncrytpedEvent" here as a baseline.
   RecordEncryptedEvent(false);
 
+  auto on_audio_source_provider_set_client_callback = base::BindOnce(
+      [](base::WeakPtr<WebMediaPlayerImpl> self,
+         blink::WebMediaPlayerDelegate* const delegate, int delegate_id) {
+        if (!self)
+          return;
+        delegate->DidDisableAudioOutputSinkChanges(self->delegate_id_);
+      },
+      weak_this_, delegate_, delegate_id_);
+
   // TODO(xhwang): When we use an external Renderer, many methods won't work,
   // e.g. GetCurrentFrameFromCompositor(). See http://crbug.com/434861
   audio_source_provider_ = new blink::WebAudioSourceProviderImpl(
-      params->audio_renderer_sink(), media_log_.get());
+      params->audio_renderer_sink(), media_log_.get(),
+      std::move(on_audio_source_provider_set_client_callback));
 
   if (observer_)
     observer_->SetClient(this);

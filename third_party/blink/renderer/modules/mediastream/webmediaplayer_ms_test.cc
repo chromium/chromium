@@ -188,6 +188,10 @@ class FakeWebMediaPlayerDelegate
     EXPECT_EQ(delegate_id_, delegate_id);
   }
 
+  void DidDisableAudioOutputSinkChanges(int delegate_id) override {
+    EXPECT_EQ(delegate_id_, delegate_id);
+  }
+
  private:
   int delegate_id_ = 1234;
   Observer* observer_ = nullptr;

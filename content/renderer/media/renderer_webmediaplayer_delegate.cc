@@ -229,6 +229,9 @@ void RendererWebMediaPlayerDelegate::DidAudioOutputSinkChange(
       routing_id(), delegate_id, hashed_device_id));
 }
 
+void RendererWebMediaPlayerDelegate::DidDisableAudioOutputSinkChanges(
+    int delegate_id) {}
+
 void RendererWebMediaPlayerDelegate::DidBufferUnderflow(int player_id) {
   Send(new MediaPlayerDelegateHostMsg_OnBufferUnderflow(routing_id(),
                                                         player_id));
