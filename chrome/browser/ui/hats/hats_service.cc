@@ -106,7 +106,8 @@ enum class ShouldShowSurveyReasons {
   kNoThirdPartyCookiesBlocked = 11,  // Unused.
   kNoSurveyUnreachable = 12,
   kNoSurveyOverCapacity = 13,
-  kMaxValue = kNoSurveyOverCapacity,
+  kNoSurveyAlreadyInProgress = 14,
+  kMaxValue = kNoSurveyAlreadyInProgress,
 };
 
 }  // namespace
@@ -160,9 +161,8 @@ HatsService::HatsService(Profile* profile) : profile_(profile) {
           features::kHappinessTrackingSurveysForDesktopMigration)
           ? kHatsNextSurveyTriggerIDTesting
           : kHatsSurveyEnSiteIDDefault;
-  survey_configs_by_triggers_.emplace(
-      kHatsSurveyTriggerTesting,
-      SurveyConfig(kHatsSurveyProbabilityDefault, default_survey_id));
+  survey_configs_by_triggers_.emplace(kHatsSurveyTriggerTesting,
+                                      SurveyConfig(1.0f, default_survey_id));
 }
 
 HatsService::~HatsService() = default;
@@ -235,6 +235,10 @@ void HatsService::RecordSurveyAsShown(std::string survey_id) {
                         version_info::GetVersion().components()[0]);
   pref_data->SetPath(GetLastSurveyStartedTime(trigger),
                      util::TimeToValue(base::Time::Now()));
+}
+
+void HatsService::HatsNextDialogClosed() {
+  hats_next_dialog_exists_ = false;
 }
 
 void HatsService::SetSurveyMetadataForTesting(
@@ -350,6 +354,14 @@ void HatsService::LaunchSurveyForBrowser(const std::string& trigger,
 }
 
 bool HatsService::ShouldShowSurvey(const std::string& trigger) const {
+  // Do not show if a survey dialog already exists.
+  if (hats_next_dialog_exists_) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kHatsShouldShowSurveyReasonHistogram,
+        ShouldShowSurveyReasons::kNoSurveyAlreadyInProgress);
+    return false;
+  }
+
   // Survey should not be loaded if the corresponding survey config is
   // unavailable.
   if (survey_configs_by_triggers_.find(trigger) ==
@@ -458,8 +470,10 @@ void HatsService::CheckSurveyStatusAndMaybeShow(Browser* browser,
     // Bypass the checker for showing HaTS Next surveys as the survey website
     // itself will determine eligibility. This is communicated via updates to
     // HatsNextWebDialog::OnSurveyStateUpdateReceived.
+    DCHECK(!hats_next_dialog_exists_);
     browser->window()->ShowHatsBubble(
         survey_configs_by_triggers_[trigger].en_site_id_);
+    hats_next_dialog_exists_ = true;
   } else {
     if (!checker_)
       checker_ = std::make_unique<HatsSurveyStatusChecker>(profile_);

@@ -8,6 +8,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/search/search.h"
 #include "content/public/browser/web_contents.h"
 
@@ -20,12 +21,17 @@ HatsHelper::HatsHelper(content::WebContents* web_contents)
 
 void HatsHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
                                const GURL& validated_url) {
-  if (!render_frame_host->GetParent() && search::IsInstantNTP(web_contents())) {
+  const bool demo_enabled = base::FeatureList::IsEnabled(
+      features::kHappinessTrackingSurveysForDesktopDemo);
+  if (!render_frame_host->GetParent() &&
+      (search::IsInstantNTP(web_contents()) || demo_enabled)) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
         profile(), /*create_if_necessary=*/true);
 
-    if (hats_service)
-      hats_service->LaunchSurvey(kHatsSurveyTriggerSatisfaction);
+    if (hats_service) {
+      hats_service->LaunchSurvey(demo_enabled ? kHatsSurveyTriggerTesting
+                                              : kHatsSurveyTriggerSatisfaction);
+    }
   }
 }
 

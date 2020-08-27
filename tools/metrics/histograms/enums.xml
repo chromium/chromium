@@ -34404,6 +34404,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="13" label="Survey over capacity">
     The survey is over its capacity.
   </int>
+  <int value="14" label="A survey is already in progress"/>
 </enum>
 
 <enum name="HardwareVerifierQualificationStatus">

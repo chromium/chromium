@@ -130,6 +130,10 @@ class HatsService : public KeyedService {
   // Next, and the site ID for HaTS v1.
   void RecordSurveyAsShown(std::string survey_id);
 
+  // Indicates to the service that the HaTS Next dialog has been closed.
+  // Virtual to allow mocking in tests.
+  virtual void HatsNextDialogClosed();
+
   void SetSurveyMetadataForTesting(const SurveyMetadata& metadata);
   void GetSurveyMetadataForTesting(HatsService::SurveyMetadata* metadata) const;
   void SetSurveyCheckerForTesting(
@@ -138,6 +142,7 @@ class HatsService : public KeyedService {
 
  private:
   friend class DelayedSurveyTask;
+  FRIEND_TEST_ALL_PREFIXES(HatsServiceHatsNext, SingleHatsNextDialog);
 
   void LaunchSurveyForWebContents(const std::string& trigger,
                                   content::WebContents* web_contents);
@@ -166,6 +171,10 @@ class HatsService : public KeyedService {
   std::set<DelayedSurveyTask> pending_tasks_;
 
   base::flat_map<std::string, SurveyConfig> survey_configs_by_triggers_;
+
+  // Whether a HaTS Next dialog currently exists (regardless of whether it
+  // is being shown to the user).
+  bool hats_next_dialog_exists_ = false;
 
   base::WeakPtrFactory<HatsService> weak_ptr_factory_{this};
 

@@ -62282,9 +62282,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Feedback.HappinessTrackingSurvey.ShouldShowSurveyReason"
-    enum="HappinessTrackingSurveyShouldShowSurveyReasons" expires_after="M82">
-  <owner>weili@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
+    enum="HappinessTrackingSurveyShouldShowSurveyReasons" expires_after="M90">
+  <owner>sauski@google.com</owner>
+  <owner>msramek@chromium.org</owner>
   <summary>
     Records the first reason why the Happiness Tracking Surveys (HaTS) bubble
     was or was not shown. While the request to show may not meet multiple

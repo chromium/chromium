@@ -59,6 +59,7 @@ class HatsNextWebDialog : public ui::WebDialogDelegate,
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
  protected:
+  friend class MockHatsNextWebDialog;
   FRIEND_TEST_ALL_PREFIXES(HatsNextWebDialogBrowserTest, SurveyLoaded);
 
   HatsNextWebDialog(Browser* browser,
@@ -68,6 +69,10 @@ class HatsNextWebDialog : public ui::WebDialogDelegate,
 
   class WebContentsDelegate;
   class WebContentsObserver;
+
+  // Closes the HaTS Next widget and informs the service that the dialog was
+  // shut.
+  void CloseWidgetAndInformService();
 
   // Fired by the observer when the survey page has pushed state to the window
   // via URL fragments.

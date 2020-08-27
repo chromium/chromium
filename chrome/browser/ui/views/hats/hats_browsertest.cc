@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/hats/hats_bubble_view.h"
@@ -198,6 +199,15 @@ class MockHatsNextWebDialog : public HatsNextWebDialog {
   MOCK_METHOD0(ShowWidget, void());
   MOCK_METHOD0(CloseWidget, void());
   MOCK_METHOD1(UpdateWidgetSize, void(gfx::Size));
+
+  void WaitForClose() {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*this, CloseWidget).WillOnce([&]() {
+      widget_->Close();
+      run_loop.Quit();
+    });
+    run_loop.Run();
+  }
 };
 
 class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
@@ -207,8 +217,17 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
         features::kHappinessTrackingSurveysForDesktopMigration);
   }
 
+  void SetUpOnMainThread() override {
+    hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
+  }
+
+  MockHatsService* hats_service() { return hats_service_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  MockHatsService* hats_service_;
 };
 
 // Test that the web dialog correctly receives change to history state that
@@ -221,10 +240,6 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
       std::string(kHatsSurveyTriggerTesting) + ".last_survey_started_time";
   const std::string kLastMajorVersion =
       std::string(kHatsSurveyTriggerTesting) + ".last_major_version";
-
-  // Ensure the HatsService has been created, as the Web Dialog relies on it
-  // to record a survey has been shown.
-  HatsServiceFactory::GetForProfile(browser()->profile(), true);
 
   auto* dialog = new MockHatsNextWebDialog(
       browser(), kHatsNextSurveyTriggerIDTesting,
@@ -269,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "close_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
@@ -276,11 +292,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
 
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey window should be closed.
-  base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, CloseWidget).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
-  run_loop.Run();
+  dialog->WaitForClose();
 }
 
 // Test that if the survey does not indicate it is ready for display before the
@@ -288,16 +300,13 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyClosed) {
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyTimeout) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "invalid_test",
       embedded_test_server()->GetURL("/hats/non_existent.html"),
       base::TimeDelta::FromMilliseconds(1));
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, CloseWidget).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
-  run_loop.Run();
+  dialog->WaitForClose();
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, UnknownURLFragment) {
@@ -305,16 +314,13 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, UnknownURLFragment) {
 
   // Check that providing an unknown URL fragment results in the dialog being
   // closed.
+  EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "invalid_url_fragment_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100));
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, CloseWidget).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
-  run_loop.Run();
+  dialog->WaitForClose();
 }
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
@@ -327,11 +333,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, NewWebContents) {
 
   // The mock hats dialog will push a close state after it has attempted to
   // open another web contents.
-  base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, CloseWidget).WillOnce(testing::Invoke([&run_loop]() {
-    run_loop.Quit();
-  }));
-  run_loop.Run();
+  EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
+  dialog->WaitForClose();
 
   // Check that a tab with http://foo.com (defined in hats_next_mock.html) has
   // been opened in the regular browser and is active.
@@ -361,14 +364,11 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, InvalidSize) {
 
   // Check that providing a size which is too large results in the dialog being
   // closed.
+  EXPECT_CALL(*hats_service(), HatsNextDialogClosed);
   auto* dialog = new MockHatsNextWebDialog(
       browser(), "invalid_size_for_testing",
       embedded_test_server()->GetURL("/hats/hats_next_mock.html"),
       base::TimeDelta::FromSeconds(100));
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, CloseWidget).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
-  run_loop.Run();
+  dialog->WaitForClose();
 }

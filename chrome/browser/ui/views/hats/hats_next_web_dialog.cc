@@ -221,6 +221,10 @@ HatsNextWebDialog::~HatsNextWebDialog() {
     otr_profile_->RemoveObserver(this);
     ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
   }
+  auto* service = HatsServiceFactory::GetForProfile(browser_->profile(), false);
+  DCHECK(service);
+  service->HatsNextDialogClosed();
+
   // Explicitly clear the delegate to ensure it is not invalid between now and
   // when the web contents is destroyed in the base class.
   web_view_->web_contents()->SetDelegate(nullptr);

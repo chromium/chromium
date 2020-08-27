@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/optional.h"
@@ -545,4 +546,35 @@ IN_PROC_BROWSER_TEST_F(HatsServiceImprovedCookieControlsEnabled,
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSatisfaction);
   WaitForSurveyStatusCallback();
   EXPECT_TRUE(HatsBubbleShown());
+}
+
+class HatsServiceHatsNext : public HatsServiceProbabilityOne {
+ public:
+  HatsServiceHatsNext() {
+    feature_list_.InitAndEnableFeature(
+        features::kHappinessTrackingSurveysForDesktopMigration);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Check that once a HaTS Next dialog has been created, ShouldShowSurvey
+// returns false until the service has been informed the dialog was closed.
+IN_PROC_BROWSER_TEST_F(HatsServiceHatsNext, SingleHatsNextDialog) {
+  SetMetricsConsent(true);
+  EXPECT_TRUE(GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerTesting));
+  GetHatsService()->LaunchSurvey(kHatsSurveyTriggerTesting);
+
+  // At this point a HaTS Next dialog is created and is attempting to contact
+  // the wrapper website (which will fail as requests to non-localhost addresses
+  // are disallowed in browser tests). Regardless of the outcome of the network
+  // request, the dialog waits for a timeout posted to the UI thread before
+  // closing itself. Since this test is also on the UI thread, these checks,
+  // which rely on the dialog still being open, will not race.
+  EXPECT_FALSE(GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerTesting));
+
+  // Inform the service directly that the dialog has been closed.
+  GetHatsService()->HatsNextDialogClosed();
+  EXPECT_TRUE(GetHatsService()->ShouldShowSurvey(kHatsSurveyTriggerTesting));
 }

@@ -33,6 +33,7 @@ class MockHatsService : public HatsService {
                content::WebContents* web_contents,
                int timeout_ms),
               (override));
+  MOCK_METHOD(void, HatsNextDialogClosed, (), (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockHatsService(
