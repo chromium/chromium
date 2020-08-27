@@ -75,14 +75,6 @@ ConversionStorageSql::ConversionStorageSql(
       weak_factory_(this) {
   DCHECK(delegate_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
-
-  if (g_run_in_memory_) {
-    db_init_status_ = DbStatus::kDeferringCreation;
-  } else {
-    db_init_status_ = base::PathExists(path_to_database_)
-                          ? DbStatus::kDeferringOpen
-                          : DbStatus::kDeferringCreation;
-  }
 }
 
 ConversionStorageSql::~ConversionStorageSql() {
@@ -626,7 +618,18 @@ bool ConversionStorageSql::HasCapacityForStoringConversion(
 }
 
 bool ConversionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
-  switch (db_init_status_) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!db_init_status_) {
+    if (g_run_in_memory_) {
+      db_init_status_ = DbStatus::kDeferringCreation;
+    } else {
+      db_init_status_ = base::PathExists(path_to_database_)
+                            ? DbStatus::kDeferringOpen
+                            : DbStatus::kDeferringCreation;
+    }
+  }
+
+  switch (*db_init_status_) {
     // If the database file has not been created, we defer creation until
     // storage needs to be used for an operation which needs to operate even on
     // an empty database.

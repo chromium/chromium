@@ -99,8 +99,9 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
 
   // Current status of the database initialization. Tracks what stage |this| is
   // at for lazy initialization, and used as a signal for if the database is
-  // closed.
-  DbStatus db_init_status_;
+  // closed. This is initialized in the first call to LazyInit() to avoid doing
+  // additional work in the constructor, see https://crbug.com/1121307.
+  base::Optional<DbStatus> db_init_status_;
 
   // May be null if the database:
   //  - could not be opened
