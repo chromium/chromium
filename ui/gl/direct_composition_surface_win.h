@@ -21,16 +21,12 @@
 namespace gl {
 class DCLayerTree;
 class DirectCompositionChildSurfaceWin;
-class GLSurfacePresentationHelper;
-class VSyncThreadWin;
 
 class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
-                                              public VSyncObserver,
                                               public ui::GpuSwitchingObserver {
  public:
   using VSyncCallback =
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
-
   using OverlayHDRInfoUpdateCallback = base::RepeatingClosure;
 
   struct Settings {
@@ -42,9 +38,8 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   };
 
   DirectCompositionSurfaceWin(
-      std::unique_ptr<gfx::VSyncProvider> vsync_provider,
-      VSyncCallback vsync_callback,
       HWND parent_window,
+      VSyncCallback vsync_callback,
       const DirectCompositionSurfaceWin::Settings& settings);
 
   // Returns true if direct composition is supported.  We prefer to use direct
@@ -140,9 +135,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   bool ScheduleDCLayer(const ui::DCRendererLayerParams& params) override;
   void SetFrameRate(float frame_rate) override;
 
-  // VSyncObserver implementation.
-  void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
-
   // Implements GpuSwitchingObserver.
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
   void OnDisplayAdded() override;
@@ -165,56 +157,14 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   ~DirectCompositionSurfaceWin() override;
 
  private:
-  struct PendingFrame {
-    PendingFrame(Microsoft::WRL::ComPtr<ID3D11Query> query,
-                 PresentationCallback callback);
-    PendingFrame(PendingFrame&& other);
-    ~PendingFrame();
-    PendingFrame& operator=(PendingFrame&& other);
-
-    // Event query issued after frame is presented.
-    Microsoft::WRL::ComPtr<ID3D11Query> query;
-
-    // Presentation callback enqueued in SwapBuffers().
-    PresentationCallback callback;
-  };
-
-  void EnqueuePendingFrame(PresentationCallback callback);
-  void CheckPendingFrames();
-
-  bool VSyncCallbackEnabled() const;
-
-  void StartOrStopVSyncThread();
-  void HandleVSyncOnMainThread(base::TimeTicks vsync_time,
-                               base::TimeDelta interval);
-
   HWND window_ = nullptr;
   ChildWindowWin child_window_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   scoped_refptr<DirectCompositionChildSurfaceWin> root_surface_;
   std::unique_ptr<DCLayerTree> layer_tree_;
-  std::unique_ptr<GLSurfacePresentationHelper> presentation_helper_;
-
-  std::unique_ptr<gfx::VSyncProvider> vsync_provider_;
-
-  const VSyncCallback vsync_callback_;
-  mutable base::Lock vsync_callback_lock_;
-  bool GUARDED_BY(vsync_callback_lock_) vsync_callback_enabled_ = false;
-  VSyncThreadWin* vsync_thread_ = nullptr;
-
-  base::TimeTicks last_vsync_time_;
-  base::TimeDelta last_vsync_interval_;
-
-  // Queue of pending presentation callbacks.
-  base::circular_deque<PendingFrame> pending_frames_;
-  const size_t max_pending_frames_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device_;
-
-  base::WeakPtr<DirectCompositionSurfaceWin> weak_ptr_;
-  base::WeakPtrFactory<DirectCompositionSurfaceWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DirectCompositionSurfaceWin);
 };

@@ -187,10 +187,6 @@ namespace features {
 const base::Feature kDirectCompositionForceFullDamage{
     "DirectCompositionForceFullDamage", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use IDXGIOutput::WaitForVBlank() to drive begin frames.
-const base::Feature kDirectCompositionGpuVSync{
-    "DirectCompositionGpuVSync", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Use presentation feedback event queries (must be enabled) to limit latency.
 const base::Feature kDirectCompositionLowLatencyPresentation{
     "DirectCompositionLowLatencyPresentation",
@@ -199,11 +195,6 @@ const base::Feature kDirectCompositionLowLatencyPresentation{
 // Overrides preferred overlay format to NV12 instead of YUY2.
 const base::Feature kDirectCompositionPreferNV12Overlays{
     "DirectCompositionPreferNV12Overlays", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Use per-present event queries to issue presentation feedback to clients.
-// Also needs DirectCompositionGpuVSync.
-const base::Feature kDirectCompositionPresentationFeedback{
-    "DirectCompositionPresentationFeedback", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allow overlay swapchain to present on all GPUs even if they only support
 // software overlays.

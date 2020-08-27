@@ -36,6 +36,8 @@ class GL_EXPORT VSyncThreadWin {
   void AddObserver(VSyncObserver* obs);
   void RemoveObserver(VSyncObserver* obs);
 
+  gfx::VSyncProvider* vsync_provider() { return &vsync_provider_; }
+
  private:
   friend struct base::DefaultSingletonTraits<VSyncThreadWin>;
 

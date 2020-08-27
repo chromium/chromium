@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/win/windows_version.h"
@@ -25,6 +26,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/scoped_make_current.h"
+#include "ui/gl/vsync_thread_win.h"
 
 #ifndef EGL_ANGLE_flexible_surface_compatibility
 #define EGL_ANGLE_flexible_surface_compatibility 1
@@ -47,11 +49,33 @@ namespace {
 IDCompositionSurface* g_current_surface = nullptr;
 
 bool g_direct_composition_swap_chain_failed = false;
+
+bool SupportsLowLatencyPresentation() {
+  return base::FeatureList::IsEnabled(
+      features::kDirectCompositionLowLatencyPresentation);
+}
 }  // namespace
 
+DirectCompositionChildSurfaceWin::PendingFrame::PendingFrame(
+    Microsoft::WRL::ComPtr<ID3D11Query> query,
+    PresentationCallback callback)
+    : query(std::move(query)), callback(std::move(callback)) {}
+DirectCompositionChildSurfaceWin::PendingFrame::PendingFrame(
+    PendingFrame&& other) = default;
+DirectCompositionChildSurfaceWin::PendingFrame::~PendingFrame() = default;
+DirectCompositionChildSurfaceWin::PendingFrame&
+DirectCompositionChildSurfaceWin::PendingFrame::operator=(
+    PendingFrame&& other) = default;
+
 DirectCompositionChildSurfaceWin::DirectCompositionChildSurfaceWin(
-    bool use_angle_texture_offset)
-    : use_angle_texture_offset_(use_angle_texture_offset) {}
+    VSyncCallback vsync_callback,
+    bool use_angle_texture_offset,
+    size_t max_pending_frames)
+    : vsync_callback_(std::move(vsync_callback)),
+      use_angle_texture_offset_(use_angle_texture_offset),
+      max_pending_frames_(max_pending_frames),
+      vsync_thread_(VSyncThreadWin::GetInstance()),
+      task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
 DirectCompositionChildSurfaceWin::~DirectCompositionChildSurfaceWin() {
   Destroy();
@@ -185,6 +209,13 @@ bool DirectCompositionChildSurfaceWin::ReleaseDrawTexture(bool will_discard) {
 }
 
 void DirectCompositionChildSurfaceWin::Destroy() {
+  for (auto& frame : pending_frames_)
+    std::move(frame.callback).Run(gfx::PresentationFeedback::Failure());
+  pending_frames_.clear();
+
+  if (vsync_thread_started_)
+    vsync_thread_->RemoveObserver(this);
+
   if (default_surface_) {
     if (!eglDestroySurface(GetDisplay(), default_surface_)) {
       DLOG(ERROR) << "eglDestroySurface failed with error "
@@ -225,13 +256,12 @@ gfx::SwapResult DirectCompositionChildSurfaceWin::SwapBuffers(
     PresentationCallback callback) {
   TRACE_EVENT1("gpu", "DirectCompositionChildSurfaceWin::SwapBuffers", "size",
                size_.ToString());
-  // PresentationCallback is handled by DirectCompositionSurfaceWin. The child
-  // surface doesn't need to provide presentation feedback.
-  DCHECK(!callback);
 
-  return ReleaseDrawTexture(false /* will_discard */)
-             ? gfx::SwapResult::SWAP_ACK
-             : gfx::SwapResult::SWAP_FAILED;
+  gfx::SwapResult swap_result = ReleaseDrawTexture(false /* will_discard */)
+                                    ? gfx::SwapResult::SWAP_ACK
+                                    : gfx::SwapResult::SWAP_FAILED;
+  EnqueuePendingFrame(std::move(callback));
+  return swap_result;
 }
 
 gfx::SurfaceOrigin DirectCompositionChildSurfaceWin::GetOrigin() const {
@@ -517,6 +547,128 @@ void DirectCompositionChildSurfaceWin::SetSwapChainPresentDuration() {
     if (FAILED(hr))
       DLOG(ERROR) << "SetPresentDuration failed with error " << std::hex << hr;
   }
+}
+
+gfx::VSyncProvider* DirectCompositionChildSurfaceWin::GetVSyncProvider() {
+  return vsync_thread_->vsync_provider();
+}
+
+bool DirectCompositionChildSurfaceWin::SupportsGpuVSync() const {
+  return true;
+}
+
+void DirectCompositionChildSurfaceWin::SetGpuVSyncEnabled(bool enabled) {
+  {
+    base::AutoLock auto_lock(vsync_callback_enabled_lock_);
+    vsync_callback_enabled_ = enabled;
+  }
+  StartOrStopVSyncThread();
+}
+
+void DirectCompositionChildSurfaceWin::OnVSync(base::TimeTicks vsync_time,
+                                               base::TimeDelta interval) {
+  // Main thread will run vsync callback in low latency presentation mode.
+  if (VSyncCallbackEnabled() && !SupportsLowLatencyPresentation()) {
+    DCHECK(vsync_callback_);
+    vsync_callback_.Run(vsync_time, interval);
+  }
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DirectCompositionChildSurfaceWin::HandleVSyncOnMainThread,
+                     weak_factory_.GetWeakPtr(), vsync_time, interval));
+}
+
+void DirectCompositionChildSurfaceWin::HandleVSyncOnMainThread(
+    base::TimeTicks vsync_time,
+    base::TimeDelta interval) {
+  last_vsync_time_ = vsync_time;
+  last_vsync_interval_ = interval;
+
+  CheckPendingFrames();
+
+  UMA_HISTOGRAM_COUNTS_100("GPU.DirectComposition.NumPendingFrames",
+                           pending_frames_.size());
+
+  if (SupportsLowLatencyPresentation() && VSyncCallbackEnabled() &&
+      pending_frames_.size() < max_pending_frames_) {
+    DCHECK(vsync_callback_);
+    vsync_callback_.Run(vsync_time, interval);
+  }
+}
+
+void DirectCompositionChildSurfaceWin::StartOrStopVSyncThread() {
+  bool start_vsync_thread = VSyncCallbackEnabled() || !pending_frames_.empty();
+  if (vsync_thread_started_ == start_vsync_thread)
+    return;
+  vsync_thread_started_ = start_vsync_thread;
+  if (start_vsync_thread) {
+    vsync_thread_->AddObserver(this);
+  } else {
+    vsync_thread_->RemoveObserver(this);
+  }
+}
+
+bool DirectCompositionChildSurfaceWin::VSyncCallbackEnabled() const {
+  base::AutoLock auto_lock(vsync_callback_enabled_lock_);
+  return vsync_callback_enabled_;
+}
+
+void DirectCompositionChildSurfaceWin::CheckPendingFrames() {
+  TRACE_EVENT1("gpu", "DirectCompositionChildSurfaceWin::CheckPendingFrames",
+               "num_pending_frames", pending_frames_.size());
+
+  if (pending_frames_.empty())
+    return;
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+  d3d11_device_->GetImmediateContext(&context);
+  while (!pending_frames_.empty()) {
+    auto& frame = pending_frames_.front();
+    // Query isn't created if there was no damage for previous frame.
+    if (frame.query) {
+      HRESULT hr = context->GetData(frame.query.Get(), nullptr, 0,
+                                    D3D11_ASYNC_GETDATA_DONOTFLUSH);
+      // When the GPU completes execution past the event query, GetData() will
+      // return S_OK, and S_FALSE otherwise.  Do not use SUCCEEDED() because
+      // S_FALSE is also a success code.
+      if (hr != S_OK)
+        break;
+    }
+    std::move(frame.callback)
+        .Run(
+            gfx::PresentationFeedback(last_vsync_time_, last_vsync_interval_,
+                                      gfx::PresentationFeedback::kVSync |
+                                          gfx::PresentationFeedback::kHWClock));
+    pending_frames_.pop_front();
+  }
+
+  StartOrStopVSyncThread();
+}
+
+void DirectCompositionChildSurfaceWin::EnqueuePendingFrame(
+    PresentationCallback callback) {
+  Microsoft::WRL::ComPtr<ID3D11Query> query;
+
+  // Do not create query for empty damage so that 3D engine is not used when
+  // only presenting video in overlay. Callback will be dequeued on next vsync.
+  if (!swap_rect_.IsEmpty()) {
+    D3D11_QUERY_DESC desc = {};
+    desc.Query = D3D11_QUERY_EVENT;
+    HRESULT hr = d3d11_device_->CreateQuery(&desc, &query);
+    if (SUCCEEDED(hr)) {
+      Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+      d3d11_device_->GetImmediateContext(&context);
+      context->End(query.Get());
+      context->Flush();
+    } else {
+      DLOG(ERROR) << "CreateQuery failed with error 0x" << std::hex << hr;
+    }
+  }
+
+  pending_frames_.emplace_back(std::move(query), std::move(callback));
+
+  StartOrStopVSyncThread();
 }
 
 // static
