@@ -9,13 +9,11 @@
   ImplementedAs=NavigatorSocket,
   RuntimeEnabled=DirectSockets
 ] partial interface Navigator {
-  // TODO(crbug.com/1119681): Add Measure annotation to each method.
-
   // TODO(crbug.com/905818): Return Promise<TCPSocket>
-  [SecureContext, RaisesException, CallWith=ScriptState]
+  [SecureContext, RaisesException, CallWith=ScriptState, Measure]
   Promise<void> openTCPSocket(optional SocketOptions options = {});
 
   // TODO(crbug.com/1119620): Return Promise<UDPSocket>
-  [SecureContext, RaisesException, CallWith=ScriptState]
+  [SecureContext, RaisesException, CallWith=ScriptState, Measure]
   Promise<void> openUDPSocket(optional SocketOptions options = {});
 };
