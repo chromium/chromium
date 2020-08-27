@@ -6,6 +6,8 @@ settings = struct(
     project = "chromium",
     # Switch this to False for branches
     is_master = True,
+    # Switch this to True for LTC/LTS branches
+    is_lts_branch = False,
     ref = "refs/heads/master",
     ci_bucket = "ci",
     ci_poller = "master-gitiles-trigger",
@@ -38,10 +40,6 @@ def _generate_project_pyl(ctx):
     ])
 
 lucicfg.generator(_generate_project_pyl)
-
-def master_only_exec(f):
-    if settings.is_master:
-        exec(f)
 
 # The branch numbers of branches that we have builders running for (including
 # milestone-specific projects)

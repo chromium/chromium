@@ -6,7 +6,7 @@
 # See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md
 # for information on starlark/lucicfg
 
-load("//project.star", "master_only_exec")
+load("//lib/branches.star", "branches")
 
 lucicfg.check_version(
     min = "1.18.4",
@@ -29,4 +29,4 @@ lucicfg.config(
     fail_on_warnings = True,
 )
 
-master_only_exec("//dev/dev.star")
+branches.exec("//dev/dev.star")
