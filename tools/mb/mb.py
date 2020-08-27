@@ -368,32 +368,8 @@ class MetaBuildWrapper(object):
     return self.RunGNAnalyze(vals)
 
   def CmdExport(self):
-    self.ReadConfigFile(self.args.config_file)
-    obj = {}
-    for master, builders in self.masters.items():
-      obj[master] = {}
-      for builder in builders:
-        config = self.masters[master][builder]
-        if not config:
-          continue
-
-        if isinstance(config, dict):
-          args = {
-              k: FlattenConfig(self.configs, self.mixins, v)['gn_args']
-              for k, v in config.items()
-          }
-        elif config.startswith('//'):
-          args = config
-        else:
-          args = FlattenConfig(self.configs, self.mixins, config)['gn_args']
-          if 'error' in args:
-            continue
-
-        obj[master][builder] = args
-
-    # Dump object and trim trailing whitespace.
-    s = '\n'.join(l.rstrip() for l in
-                  json.dumps(obj, sort_keys=True, indent=2).splitlines())
+    obj = self._ToJsonish()
+    s = json.dumps(obj, sort_keys=True, indent=2, separators=(',', ': '))
     self.Print(s)
     return 0
 
@@ -661,6 +637,39 @@ class MetaBuildWrapper(object):
     return [('pool', 'chromium.tests'),
             ('cpu', 'x86-64'),
             os_dim]
+
+  def _ToJsonish(self):
+    """Dumps the config file into a json-friendly expanded dict.
+
+    Returns:
+      A dict with master -> builder -> all GN args mapping.
+    """
+    self.ReadConfigFile(
+        self.args.config_file if self.args.config_file else self.default_config)
+    obj = {}
+    for master, builders in self.masters.items():
+      obj[master] = {}
+      for builder in builders:
+        config = self.masters[master][builder]
+        if not config:
+          continue
+        if isinstance(config, dict):
+          args = {
+              k: FlattenConfig(self.configs, self.mixins, v)['gn_args']
+              for k, v in config.items()
+          }
+        elif config.startswith('//'):
+          args = config
+        else:
+          flattened_config = FlattenConfig(self.configs, self.mixins, config)
+          if 'error' in flattened_config['gn_args']:
+            continue
+          args = {'gn_args': gn_helpers.FromGNArgs(flattened_config['gn_args'])}
+          if flattened_config.get('args_file'):
+            args['args_file'] = flattened_config['args_file']
+        obj[master][builder] = args
+
+    return obj
 
   def CmdValidate(self, print_ok=True):
     errs = []
