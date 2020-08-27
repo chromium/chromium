@@ -2669,14 +2669,8 @@ String AXNodeObject::TextAlternative(bool recursive,
       return String();
   }
 
-  String text_alternative = AriaTextAlternative(
-      recursive, in_aria_labelled_by_traversal, visited, name_from,
-      related_objects, name_sources, &found_text_alternative);
-  if (found_text_alternative && !name_sources)
-    return text_alternative;
-
   // Step 2E from: http://www.w3.org/TR/accname-aam-1.1 -- value from control
-  if (recursive && !in_aria_labelled_by_traversal && CanSetValueAttribute()) {
+  if (recursive && CanSetValueAttribute()) {
     // No need to set any name source info in a recursive call.
     if (IsTextControl())
       return GetText();
@@ -2708,6 +2702,12 @@ String AXNodeObject::TextAlternative(bool recursive,
     }
     return accumulated_text.ToString();
   }
+
+  String text_alternative = AriaTextAlternative(
+      recursive, in_aria_labelled_by_traversal, visited, name_from,
+      related_objects, name_sources, &found_text_alternative);
+  if (found_text_alternative && !name_sources)
+    return text_alternative;
 
   // Step 2D from: http://www.w3.org/TR/accname-aam-1.1
   text_alternative =
