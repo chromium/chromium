@@ -36,6 +36,9 @@ namespace {
 const char kWiFi1ServicePath[] = "/service/wifi1";
 const char kWiFi1Guid[] = "wifi1_guid";
 
+const char kWiFiUnconfiguredServicePath[] = "/service/wifi_unconfigured";
+const char kWiFiUnconfiguredGuid[] = "wifi_unconfigured_guid";
+
 const char kCellular1DevicePath[] = "/device/stub_cellular_device1";
 const char kCellular1ServicePath[] = "/service/cellular1";
 const char kCellular1Guid[] = "cellular1_guid";
@@ -144,6 +147,21 @@ class NetworkConnectTest : public testing::Test {
     service_test_->SetServiceProperty(
         kWiFi1ServicePath, shill::kPassphraseProperty, base::Value("password"));
 
+    // Create an unconfigured wifi network.
+    service_test_->AddService(kWiFiUnconfiguredServicePath,
+                              kWiFiUnconfiguredGuid, "wifi_unconfigured",
+                              shill::kTypeWifi, shill::kStateIdle,
+                              add_to_visible);
+    service_test_->SetServiceProperty(kWiFiUnconfiguredServicePath,
+                                      shill::kSecurityClassProperty,
+                                      base::Value(shill::kSecurityWep));
+    service_test_->SetServiceProperty(kWiFiUnconfiguredServicePath,
+                                      shill::kConnectableProperty,
+                                      base::Value(false));
+    service_test_->SetServiceProperty(kWiFiUnconfiguredServicePath,
+                                      shill::kErrorProperty,
+                                      base::Value("bad-password"));
+
     // Create a cellular network.
     service_test_->AddService(kCellular1ServicePath, kCellular1Guid,
                               "cellular1", shill::kTypeCellular,
@@ -186,6 +204,14 @@ TEST_F(NetworkConnectTest, ConnectToNetworkId_NoConfiguration) {
   EXPECT_CALL(*mock_delegate_, ShowNetworkConnectError(_, _)).Times(0);
 
   NetworkConnect::Get()->ConnectToNetworkId("bad guid");
+}
+
+TEST_F(NetworkConnectTest, ConnectToNetworkId_Unconfigured) {
+  EXPECT_CALL(*mock_delegate_, ShowNetworkConfigure(_)).Times(1);
+  EXPECT_CALL(*mock_delegate_, ShowNetworkConnectError(_, _)).Times(0);
+
+  NetworkConnect::Get()->ConnectToNetworkId(kWiFiUnconfiguredGuid);
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(NetworkConnectTest, ConfigureAndConnectToNetwork_NoConfiguration) {
