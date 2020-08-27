@@ -44,6 +44,7 @@ defaults.pool.set("luci.chromium.webrtc.fyi")
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 defaults.triggered_by.set(["webrtc-gitiles-trigger-master"])
+defaults.goma_use_luci_auth.set(True)
 
 # Builders are defined in lexicographic order by name
 
