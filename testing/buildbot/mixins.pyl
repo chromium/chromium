@@ -207,13 +207,6 @@
       'service_account': 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  'chromium-tests-ios14': {
-    'swarming': {
-      'dimensions': {
-        'pool': 'chromium.tests.ios14',
-      },
-    },
-  },
   'dawn_end2end_gpu_test': {
     '$mixin_append': {
       'args': [
