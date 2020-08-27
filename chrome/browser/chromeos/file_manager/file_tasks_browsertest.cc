@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
+#include "chrome/browser/chromeos/web_applications/test/profile_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
@@ -99,7 +100,8 @@ scoped_refptr<const extensions::Extension> InstallTiffHandlerChromeApp(
       profile, "extensions/api_test/file_browser/app_file_handler");
 }
 
-class FileTasksBrowserTestBase : public InProcessBrowserTest {
+class FileTasksBrowserTestBase
+    : public TestProfileTypeMixin<InProcessBrowserTest> {
  public:
   void SetUpOnMainThread() override {
     test::AddDefaultComponentExtensionsOnMainThread(browser()->profile());
@@ -217,7 +219,7 @@ constexpr Expectation kUnchangedExpectations[] = {
 }  // namespace
 
 // Test file extensions correspond to mime types where expected.
-IN_PROC_BROWSER_TEST_F(FileTasksBrowserTest, ExtensionToMimeMapping) {
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
   constexpr struct {
     const char* file_extension;
     bool has_mime = true;
@@ -287,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(FileTasksBrowserTest, ExtensionToMimeMapping) {
 // resolution mechanism is "sort by extension ID", which has the desired result.
 // If desires change, we'll need to update ChooseAndSetDefaultTask() with some
 // additional logic.
-IN_PROC_BROWSER_TEST_F(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
   //  With the Media App disabled, all images should be handled by Gallery.
   std::vector<Expectation> expectations = {
       // Images.
@@ -303,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
 
 // Spot test the default handlers for selections that include multiple different
 // file types. Only tests combinations of interest to the Media App.
-IN_PROC_BROWSER_TEST_F(FileTasksBrowserTest, MultiSelectDefaultHandler) {
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
   std::vector<Expectation> expectations = {
       {"jpg/gif", kGalleryAppId},
       {"jpg/mp4", kGalleryAppId},
@@ -313,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(FileTasksBrowserTest, MultiSelectDefaultHandler) {
 }
 
 // Tests the default handlers with the Media App installed.
-IN_PROC_BROWSER_TEST_F(FileTasksBrowserTestWithMediaApp,
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
                        DefaultHandlerChangeDetector) {
   // With the Media App enabled, images should be handled by it by default (but
   // video, which it also handles should be unchanged).
@@ -331,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(FileTasksBrowserTestWithMediaApp,
 
 // Spot test the default handlers for selections that include multiple different
 // file types with the Media App installed.
-IN_PROC_BROWSER_TEST_F(FileTasksBrowserTestWithMediaApp,
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
                        MultiSelectDefaultHandler) {
   std::vector<Expectation> expectations = {
       {"jpg/gif", kMediaAppId},
@@ -350,27 +352,56 @@ IN_PROC_BROWSER_TEST_F(FileTasksBrowserTestWithMediaApp,
 
 // Sanity check: the tiff-specific file handler is preferred when MediaApp is
 // not enabled.
-IN_PROC_BROWSER_TEST_F(FileTasksBrowserTest, InstalledAppsAreImplicitDefaults) {
-  auto extension = InstallTiffHandlerChromeApp(browser()->profile());
-  TestExpectationsAgainstDefaultTasks({{"tiff", extension->id().c_str()}});
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, InstalledAppsAreImplicitDefaults) {
+  if (GetParam() == TestProfileType::kRegular) {
+    auto extension = InstallTiffHandlerChromeApp(browser()->profile());
+    TestExpectationsAgainstDefaultTasks({{"tiff", extension->id().c_str()}});
+  } else if (GetParam() == TestProfileType::kGuest) {
+    // The extension can't be installed in guest mode. (FATAL check under
+    // ExtensionService::AddNewOrUpdatedExtension()). There should be no tiff
+    // handler.
+    TestExpectationsAgainstDefaultTasks({{"tiff", nullptr}});
+  } else {
+    // The extension installs in incognito, but doesn't register a file handler.
+    // So, also no tiff handler.
+    InstallTiffHandlerChromeApp(browser()->profile());
+    TestExpectationsAgainstDefaultTasks({{"tiff", nullptr}});
+  }
 }
 
 // If the media app is enabled, it will be preferred over a chrome app with a
 // specific extension, unless that app is set default via prefs.
-IN_PROC_BROWSER_TEST_F(FileTasksBrowserTestWithMediaApp,
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
                        MediaAppPreferredOverChromeApps) {
+  if (GetParam() == TestProfileType::kGuest) {
+    // The provided file system can't install in guest mode. Just check that
+    // MediaApp handles tiff.
+    TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
+    return;
+  }
   Profile* profile = browser()->profile();
   auto extension = InstallTiffHandlerChromeApp(profile);
   TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
 
   UpdateDefaultTask(profile->GetPrefs(), extension->id() + "|app|tiffAction",
                     {"tiff"}, {"image/tiff"});
-  TestExpectationsAgainstDefaultTasks({{"tiff", extension->id().c_str()}});
+  if (GetParam() == TestProfileType::kIncognito) {
+    // In incognito, the provided file system can exist, but the file handler
+    // preference can't be changed.
+    TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
+  } else {
+    TestExpectationsAgainstDefaultTasks({{"tiff", extension->id().c_str()}});
+  }
 }
 
 // Test expectations for files coming from provided file systems.
-IN_PROC_BROWSER_TEST_F(FileTasksBrowserTestWithMediaApp,
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTestWithMediaApp,
                        ProvidedFileSystemFileSource) {
+  if (GetParam() == TestProfileType::kGuest) {
+    // Provided file systems don't exist in guest. This test seems to work OK in
+    // incognito mode though.
+    return;
+  }
   // The current test expectation: a GIF file in the provided file system called
   // "readwrite.gif" should open with the MediaApp.
   const char kTestFile[] = "readwrite.gif";
@@ -414,6 +445,20 @@ IN_PROC_BROWSER_TEST_F(FileTasksBrowserTestWithMediaApp,
   run_loop.Run();
   EXPECT_EQ(remaining_expectations, 0);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FileTasksBrowserTest,
+                         ::testing::Values(TestProfileType::kRegular,
+                                           TestProfileType::kIncognito,
+                                           TestProfileType::kGuest),
+                         TestProfileTypeToString);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FileTasksBrowserTestWithMediaApp,
+                         ::testing::Values(TestProfileType::kRegular,
+                                           TestProfileType::kIncognito,
+                                           TestProfileType::kGuest),
+                         TestProfileTypeToString);
 
 }  // namespace file_tasks
 }  // namespace file_manager
