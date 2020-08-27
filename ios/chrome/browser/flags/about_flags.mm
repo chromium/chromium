@@ -704,15 +704,16 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
                                     web::BuildMobileUserAgent(product));
   }
 
-  // Shared policy dictionary for all enterprise experimental flags.
+  // Shared variables for all enterprise experimental flags.
   NSMutableDictionary* testing_policies = [[NSMutableDictionary alloc] init];
+  NSMutableArray* allowed_experimental_policies = [[NSMutableArray alloc] init];
 
-  // Set some sample policy values for testing if EnableSamplePolicies is
-  // enabled.
+  // Set some sample policy values for testing if EnableSamplePolicies is set to
+  // true.
   if ([defaults boolForKey:@"EnableSamplePolicies"]) {
-    // List the sample policies to enable as experimental. This is necessary for
-    // the flag to work on Beta.
-    NSArray* experimental_policies = @[
+    // Some of the sample policies are still marked as experimental and must be
+    // explicitly allowed, otherwise they will be ignored in Beta and Stable.
+    [allowed_experimental_policies addObjectsFromArray:@[
       base::SysUTF8ToNSString(policy::key::kAutofillAddressEnabled),
       base::SysUTF8ToNSString(policy::key::kAutofillCreditCardEnabled),
       base::SysUTF8ToNSString(policy::key::kChromeVariations),
@@ -724,13 +725,10 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
       base::SysUTF8ToNSString(policy::key::kSafeBrowsingProtectionLevel),
       base::SysUTF8ToNSString(policy::key::kSearchSuggestEnabled),
       base::SysUTF8ToNSString(policy::key::kTranslateEnabled)
-    ];
+    ]];
 
     // Define sample policies to enable.
     [testing_policies addEntriesFromDictionary:@{
-      base::SysUTF8ToNSString(policy::key::kEnableExperimentalPolicies) :
-          experimental_policies,
-
       base::SysUTF8ToNSString(policy::key::kAutofillAddressEnabled) : @NO,
 
       base::SysUTF8ToNSString(policy::key::kAutofillCreditCardEnabled) : @NO,
@@ -761,14 +759,25 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   }
 
   // If a CBCM enrollment token is provided, force Chrome Browser Cloud
-  // Management to enabled and add the token to the list of policies.
+  // Management to enabled, add the token to the list of policies, and allow
+  // the CloudReportingEnabled experimental policy.
   NSString* token_key =
       base::SysUTF8ToNSString(policy::key::kCloudManagementEnrollmentToken);
   NSString* token = [defaults stringForKey:token_key];
 
   if ([token length] > 0) {
     command_line->AppendSwitch(switches::kEnableChromeBrowserCloudManagement);
+    [allowed_experimental_policies
+        addObject:base::SysUTF8ToNSString(policy::key::kCloudReportingEnabled)];
     [testing_policies setValue:token forKey:token_key];
+  }
+
+  // If any experimental policy was allowed, set the EnableExperimentalPolicies
+  // policy.
+  if ([allowed_experimental_policies count] > 0) {
+    [testing_policies setValue:allowed_experimental_policies
+                        forKey:base::SysUTF8ToNSString(
+                                   policy::key::kEnableExperimentalPolicies)];
   }
 
   // If some policies were set, commit them to the app's registration defaults.
