@@ -96,6 +96,14 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   // Overridden from views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
+  // Utility function that creates a row containing a toggle button, label,
+  // and icon. All passed in views will be added to the returned row view.
+  std::unique_ptr<views::View> CreateToggleButtonRow(
+      std::unique_ptr<views::ImageView> icon,
+      std::unique_ptr<views::Label> label,
+      std::unique_ptr<views::ToggleButton> toggle_button);
+
+  views::ToggleButton* app_badging_toggle_ = nullptr;
   views::ImageView* quiet_mode_icon_ = nullptr;
   views::ToggleButton* quiet_mode_toggle_ = nullptr;
   views::View* header_view_ = nullptr;

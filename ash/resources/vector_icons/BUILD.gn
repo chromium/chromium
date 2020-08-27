@@ -246,6 +246,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "system_power_button_menu_power_off.icon",
     "system_power_button_menu_sign_out.icon",
     "system_tray_accessibility.icon",
+    "system_tray_app_badging.icon",
     "system_tray_caps_lock.icon",
     "system_tray_cast.icon",
     "system_tray_do_not_disturb.icon",

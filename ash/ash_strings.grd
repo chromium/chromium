@@ -2276,6 +2276,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME" desc="The spoken feedback name for when accessible focus moves to the message center">
         Notification Center
       </message>
+      <message name="IDS_ASH_MESSAGE_CENTER_APP_BADGING_BUTTON_TOOLTIP" desc="The tooltip text for the app badging toggle button.">
+        App badging
+      </message>
       <message name="IDS_ASH_MESSAGE_CENTER_QUIET_MODE_BUTTON_TOOLTIP" desc="The tooltip text for the do not disturb button.">
         Do not disturb
       </message>
