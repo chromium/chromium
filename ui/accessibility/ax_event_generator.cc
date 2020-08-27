@@ -60,7 +60,27 @@ void RemoveEventsDueToIgnoredChanged(
   RemoveEvent(node_events, AXEventGenerator::Event::CHILDREN_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::DESCRIPTION_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::NAME_CHANGED);
+  RemoveEvent(node_events, AXEventGenerator::Event::OBJECT_ATTRIBUTE_CHANGED);
+  RemoveEvent(node_events, AXEventGenerator::Event::SORT_CHANGED);
   RemoveEvent(node_events, AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED);
+  RemoveEvent(node_events,
+              AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED);
+}
+
+// Add a particular AXEventGenerator::IgnoredChangedState to
+// |ignored_changed_states|.
+void AddIgnoredChangedState(
+    AXEventGenerator::IgnoredChangedStatesBitset& ignored_changed_states,
+    AXEventGenerator::IgnoredChangedState state) {
+  ignored_changed_states.set(static_cast<size_t>(state));
+}
+
+// Returns true if |ignored_changed_states| contains a particular
+// AXEventGenerator::IgnoredChangedState.
+bool HasIgnoredChangedState(
+    AXEventGenerator::IgnoredChangedStatesBitset& ignored_changed_states,
+    AXEventGenerator::IgnoredChangedState state) {
+  return ignored_changed_states[static_cast<size_t>(state)];
 }
 
 }  // namespace
@@ -696,7 +716,8 @@ bool AXEventGenerator::ShouldFireLoadEvents(AXNode* node) {
 
 void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
     AXNode* node,
-    std::map<AXNode*, bool>& ancestor_ignored_changed_map) {
+    std::map<AXNode*, IgnoredChangedStatesBitset>&
+        ancestor_ignored_changed_map) {
   DCHECK(node);
 
   // Recursively compute and cache ancestor ignored changed results in
@@ -708,37 +729,86 @@ void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
                                           ancestor_ignored_changed_map);
   }
 
-  // If an ancestor of |node| changed to ignored state, update the corresponding
-  // entry in the map for |node| based on the ancestor result (i.e. if an
-  // ancestor changed to ignored state, set the entry in the map to true for the
-  // current node). If |node|'s state changed to ignored as well, we want to
-  // remove its IGNORED_CHANGED event.
-  const auto& map_iter = ancestor_ignored_changed_map.find(node->parent());
-  const auto& events_iter = tree_events_.find(node);
-  if (map_iter != ancestor_ignored_changed_map.end() && map_iter->second) {
-    ancestor_ignored_changed_map.insert(std::make_pair(node, true));
-    if (node->IsIgnored() && events_iter != tree_events_.end()) {
-      RemoveEvent(&(events_iter->second), Event::IGNORED_CHANGED);
-      RemoveEventsDueToIgnoredChanged(&(events_iter->second));
+  // If an ancestor of |node| changed to ignored state (hide), append hide state
+  // to the corresponding entry in the map for |node|. Similarly, if an ancestor
+  // of |node| removed its ignored state (show), we append show state to the
+  // corresponding entry in map for |node| as well. If |node| flipped its
+  // ignored state as well, we want to remove various events related to
+  // IGNORED_CHANGED event.
+  const auto& parent_map_iter =
+      ancestor_ignored_changed_map.find(node->parent());
+  const auto& curr_events_iter = tree_events_.find(node);
+
+  // Initialize |ancestor_ignored_changed_map[node]| with an empty bitset,
+  // representing neither |node| nor its ancestor has IGNORED_CHANGED.
+  IgnoredChangedStatesBitset& ancestor_ignored_changed_states =
+      ancestor_ignored_changed_map[node];
+
+  // If |ancestor_ignored_changed_map| contains an entry for |node|'s
+  // ancestor's and the ancestor has either show/hide state, we want to populate
+  // |node|'s show/hide state in the map based on its cached ancestor result.
+  // An empty entry in |ancestor_ignored_changed_map| for |node| means that
+  // neither |node| nor its ancestor has IGNORED_CHANGED.
+  if (parent_map_iter != ancestor_ignored_changed_map.end()) {
+    // Propagate ancestor's show/hide states to |node|'s entry in the map.
+    if (HasIgnoredChangedState(parent_map_iter->second,
+                               IgnoredChangedState::kHide)) {
+      AddIgnoredChangedState(ancestor_ignored_changed_states,
+                             IgnoredChangedState::kHide);
     }
+    if (HasIgnoredChangedState(parent_map_iter->second,
+                               IgnoredChangedState::kShow)) {
+      AddIgnoredChangedState(ancestor_ignored_changed_states,
+                             IgnoredChangedState::kShow);
+    }
+
+    // If |node| has IGNORED changed with show/hide state that matches one of
+    // its ancestors' IGNORED changed show/hide states, we want to remove
+    // |node|'s IGNORED_CHANGED related events.
+    if (curr_events_iter != tree_events_.end() &&
+        HasEvent(curr_events_iter->second, Event::IGNORED_CHANGED)) {
+      if ((HasIgnoredChangedState(parent_map_iter->second,
+                                  IgnoredChangedState::kHide) &&
+           node->IsIgnored()) ||
+          (HasIgnoredChangedState(parent_map_iter->second,
+                                  IgnoredChangedState::kShow) &&
+           !node->IsIgnored())) {
+        RemoveEvent(&(curr_events_iter->second), Event::IGNORED_CHANGED);
+        RemoveEventsDueToIgnoredChanged(&(curr_events_iter->second));
+      }
+
+      if (node->IsIgnored()) {
+        AddIgnoredChangedState(ancestor_ignored_changed_states,
+                               IgnoredChangedState::kHide);
+      } else {
+        AddIgnoredChangedState(ancestor_ignored_changed_states,
+                               IgnoredChangedState::kShow);
+      }
+    }
+
     return;
   }
 
-  // If ignored changed results are not cached, calculate the corresponding
-  // entry for |node| in the map using the ignored states and events of |node|.
-  if (events_iter != tree_events_.end() &&
-      HasEvent(events_iter->second, Event::IGNORED_CHANGED) &&
-      node->IsIgnored()) {
-    ancestor_ignored_changed_map.insert(std::make_pair(node, true));
+  // If ignored changed results for ancestors are not cached, calculate the
+  // corresponding entry for |node| in the map using the ignored states and
+  // events of |node|.
+  if (curr_events_iter != tree_events_.end() &&
+      HasEvent(curr_events_iter->second, Event::IGNORED_CHANGED)) {
+    if (node->IsIgnored()) {
+      AddIgnoredChangedState(ancestor_ignored_changed_states,
+                             IgnoredChangedState::kHide);
+    } else {
+      AddIgnoredChangedState(ancestor_ignored_changed_states,
+                             IgnoredChangedState::kShow);
+    }
+
     return;
   }
-
-  ancestor_ignored_changed_map.insert(std::make_pair(node, false));
 }
 
 void AXEventGenerator::PostprocessEvents() {
-  std::map<AXNode*, bool> ancestor_ignored_changed_map;
-
+  std::map<AXNode*, IgnoredChangedStatesBitset> ancestor_ignored_changed_map;
+  std::set<AXNode*> removed_subtree_created_nodes;
   auto iter = tree_events_.begin();
   while (iter != tree_events_.end()) {
     AXNode* node = iter->first;
@@ -752,10 +822,10 @@ void AXEventGenerator::PostprocessEvents() {
     }
 
     if (HasEvent(node_events, Event::IGNORED_CHANGED)) {
-      // If a node toggled its ignored state from show to hide, we only want to
-      // fire IGNORED_CHANGED event on the top most ancestor where this ignored
-      // state change takes place and suppress all the descendants's
-      // IGNORED_CHANGED events.
+      // If a node toggled its ignored state, we only want to fire
+      // IGNORED_CHANGED event on the top most ancestor where this ignored state
+      // change takes place and suppress all the descendants's IGNORED_CHANGED
+      // events.
       TrimEventsDueToAncestorIgnoredChanged(node, ancestor_ignored_changed_map);
       RemoveEventsDueToIgnoredChanged(&node_events);
     }
@@ -781,13 +851,18 @@ void AXEventGenerator::PostprocessEvents() {
 
     // Don't fire subtree created on this node if any of its ancestors also has
     // subtree created.
-    while (parent && HasEvent(node_events, Event::SUBTREE_CREATED) &&
-           tree_events_.find(parent) != tree_events_.end()) {
-      if (HasEvent(tree_events_[parent], Event::SUBTREE_CREATED)) {
-        RemoveEvent(&node_events, Event::SUBTREE_CREATED);
-        break;
+    if (HasEvent(node_events, Event::SUBTREE_CREATED)) {
+      while (parent &&
+             (tree_events_.find(parent) != tree_events_.end() ||
+              base::Contains(removed_subtree_created_nodes, parent))) {
+        if (base::Contains(removed_subtree_created_nodes, parent) ||
+            HasEvent(tree_events_[parent], Event::SUBTREE_CREATED)) {
+          RemoveEvent(&node_events, Event::SUBTREE_CREATED);
+          removed_subtree_created_nodes.insert(node);
+          break;
+        }
+        parent = parent->GetUnignoredParent();
       }
-      parent = parent->GetUnignoredParent();
     }
 
     // If this was the only event, remove the node entirely from the

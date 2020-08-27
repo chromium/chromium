@@ -101,6 +101,10 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     WIN_IACCESSIBLE_STATE_CHANGED,
   };
 
+  // For distinguishing between show and hide state when a node has
+  // IGNORED_CHANGED event.
+  enum class IgnoredChangedState : uint8_t { kShow, kHide, kCount = 2 };
+
   struct EventParams {
     EventParams(Event event,
                 ax::mojom::EventFrom event_from,
@@ -140,6 +144,16 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     std::set<EventParams>::const_iterator set_iter_;
   };
 
+  // For storing ignored changed states for a particular node. We use bitset as
+  // the underlying data structure to improve memory usage.
+  // We use the index of AXEventGenerator::IgnoredChangedState enum
+  // to access the bitset data.
+  // e.g. AXEventGenerator::IgnoredChangedState::kShow has index 0 in the
+  // IgnoredChangedState enum. If |IgnoredChangedStatesBitset[0]| is set, it
+  // means IgnoredChangedState::kShow is present. Similarly, kHide has index 1
+  // in the enum, and it corresponds to |IgnoredChangedStatesBitset[1]|.
+  using IgnoredChangedStatesBitset =
+      std::bitset<static_cast<size_t>(IgnoredChangedState::kCount)>;
   using const_iterator = Iterator;
   using iterator = Iterator;
   using value_type = TargetedEvent;
@@ -240,17 +254,23 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   void FireRelationSourceEvents(AXTree* tree, AXNode* target_node);
   bool ShouldFireLoadEvents(AXNode* node);
   // Remove excessive events for a tree update containing node.
-  // We remove certain events on a node when it changes to IGNORED state and one
-  // of the node's ancestor has also changed to IGNORED in the same tree update.
+  // We remove certain events on a node when it flips its IGNORED state to
+  // either show/hide and one of the node's ancestor has also flipped its
+  // IGNORED state in the same way (show/hide) in the tree update.
   // |ancestor_has_ignored_map| contains if a node's ancestor has changed to
   // IGNORED state.
-  // Map's key is: an ax node.
-  // Map's value is:
-  // - True if an ancestor of node changed to IGNORED state.
-  // - False if no ancestor of node changed to IGNORED state.
+  // Map's key is an AXNode.
+  // Map's value is a std::bitset containing IgnoredChangedStates(kShow/kHide).
+  // - Map's value IgnoredChangedStatesBitset contains kShow if an ancestor
+  //   of node removed its IGNORED state.
+  // - Map's value IgnoredChangedStatesBitset contains kHide if an ancestor
+  //   of node changed to IGNORED state.
+  // - When IgnoredChangedStatesBitset is not set, it means neither the
+  //   node nor its ancestor has IGNORED_CHANGED.
   void TrimEventsDueToAncestorIgnoredChanged(
       AXNode* node,
-      std::map<AXNode*, bool>& ancestor_has_ignored_map);
+      std::map<AXNode*, IgnoredChangedStatesBitset>&
+          ancestor_ignored_changed_map);
   void PostprocessEvents();
   static void GetRestrictionStates(ax::mojom::Restriction restriction,
                                    bool* is_enabled,

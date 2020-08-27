@@ -1102,8 +1102,7 @@ TEST(AXEventGeneratorTest, SubtreeBecomesUnignored) {
               UnorderedElementsAre(
                   HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 1),
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 2),
-                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 2),
-                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 3)));
+                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 2)));
 }
 
 TEST(AXEventGeneratorTest, TwoNodesSwapIgnored) {
@@ -1169,6 +1168,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly1) {
   //   1 (IGN)
   //  / \
   // 2   3 (IGN)
+
   // AFTER
   //   1 (IGN)
   //  /      \
@@ -1211,6 +1211,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly2) {
   //   2
   //  / \
   // 3   4 (IGN)
+
   // AFTER
   //   1
   //   |
@@ -1259,6 +1260,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly3) {
   //   2 ___
   //  /      \
   // 3 (IGN)  4
+
   // AFTER
   //   1 (IGN)
   //   |
@@ -1314,6 +1316,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly4) {
   //    ____ 5  _____
   //  /       |       \
   // 6 (IGN)  7 (IGN)  8
+
   // AFTER
   //         1 (IGN)
   //         |
@@ -1396,6 +1399,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly5) {
   //    ____ 5  _____
   //  /       |       \
   // 6 (IGN)  7        8
+
   // AFTER
   //         1 (IGN)
   //         |
@@ -1476,6 +1480,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly6) {
   //    ____ 5  _____
   //  /       |       \
   // 6 (IGN)  7 (IGN)  8
+
   // AFTER
   //         1
   //         |
@@ -1489,7 +1494,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly6) {
   //  /       |       \
   // 6        7        8 (IGN)
 
-  // IGNORED_CHANGED expected on #1, #6, #7, #8
+  // IGNORED_CHANGED expected on #1, #8
 
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
@@ -1542,8 +1547,6 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly6) {
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 6),
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 7),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 1),
-                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 6),
-                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 7),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 8)));
 }
 
@@ -1558,6 +1561,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly7) {
   //    __ 4 ___
   //  /          \
   // 5 (IGN)      6 (IGN)
+
   // AFTER
   //       1
   //       |
@@ -1569,7 +1573,7 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly7) {
   //  /           \
   // 5 (IGN)       6 (IGN)
 
-  // IGNORED_CHANGED expected on #1, #2, #3
+  // IGNORED_CHANGED expected on #1, #3
 
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
@@ -1613,8 +1617,89 @@ TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly7) {
               UnorderedElementsAre(
                   HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 1),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 1),
-                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 2),
                   HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 3)));
+}
+
+TEST(AXEventGeneratorTest, IgnoredChangedFiredOnAncestorOnly8) {
+  // BEFORE
+  //         ____ 1 ____
+  //       |            |
+  //       2 (IGN)      7
+  //       |
+  //       3 (IGN)
+  //       |
+  //       4 (IGN)
+  //       |
+  //       5 (IGN)
+  //       |
+  //       6 (IGN)
+
+  // AFTER
+  //         ____ 1 ____
+  //       |            |
+  //       2            7 (IGN)
+  //       |
+  //       3
+  //       |
+  //       4
+  //       |
+  //       5
+  //       |
+  //       6
+
+  // IGNORED_CHANGED expected on #2, #7
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(7);
+  initial_state.nodes[0].id = 1;
+  initial_state.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  initial_state.nodes[0].child_ids = {2, 7};
+
+  initial_state.nodes[1].id = 2;
+  initial_state.nodes[1].role = ax::mojom::Role::kGroup;
+  initial_state.nodes[1].child_ids = {3};
+  initial_state.nodes[1].AddState(ax::mojom::State::kIgnored);
+
+  initial_state.nodes[2].id = 3;
+  initial_state.nodes[2].role = ax::mojom::Role::kGroup;
+  initial_state.nodes[2].child_ids = {4};
+  initial_state.nodes[2].AddState(ax::mojom::State::kIgnored);
+
+  initial_state.nodes[3].id = 4;
+  initial_state.nodes[3].role = ax::mojom::Role::kGroup;
+  initial_state.nodes[3].child_ids = {5};
+  initial_state.nodes[3].AddState(ax::mojom::State::kIgnored);
+
+  initial_state.nodes[4].id = 5;
+  initial_state.nodes[4].role = ax::mojom::Role::kGroup;
+  initial_state.nodes[4].child_ids = {6};
+  initial_state.nodes[4].AddState(ax::mojom::State::kIgnored);
+
+  initial_state.nodes[5].id = 5;
+  initial_state.nodes[5].role = ax::mojom::Role::kStaticText;
+  initial_state.nodes[5].AddState(ax::mojom::State::kIgnored);
+
+  initial_state.nodes[6].id = 7;
+  initial_state.nodes[6].role = ax::mojom::Role::kStaticText;
+
+  AXTree tree(initial_state);
+
+  AXEventGenerator event_generator(&tree);
+  AXTreeUpdate update = initial_state;
+  update.nodes[1].RemoveState(ax::mojom::State::kIgnored);
+  update.nodes[2].RemoveState(ax::mojom::State::kIgnored);
+  update.nodes[3].RemoveState(ax::mojom::State::kIgnored);
+  update.nodes[4].RemoveState(ax::mojom::State::kIgnored);
+  update.nodes[5].RemoveState(ax::mojom::State::kIgnored);
+  update.nodes[6].AddState(ax::mojom::State::kIgnored);
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(event_generator,
+              UnorderedElementsAre(
+                  HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 1),
+                  HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 2),
+                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 2),
+                  HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 7)));
 }
 
 TEST(AXEventGeneratorTest, ActiveDescendantChangeOnDescendant) {
