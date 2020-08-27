@@ -425,6 +425,7 @@
 
     // Remove mid attr
     offer.sdp = offer.sdp.replace("a=mid:", "a=unknownattr:");
+    offer.sdp = offer.sdp.replace("a=group:", "a=unknownattr:");
     await pc2.setRemoteDescription(offer);
 
     hasPropsAndUniqueMids(pc2.getTransceivers(),
