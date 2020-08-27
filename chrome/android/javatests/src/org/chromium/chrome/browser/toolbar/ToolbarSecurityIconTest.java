@@ -9,22 +9,33 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import androidx.test.filters.SmallTest;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeJavaTest;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
  * Unit tests for {@link LocationBarLayout} class.
  */
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public final class ToolbarSecurityIconTest {
     private static final boolean IS_SMALL_DEVICE = true;
     private static final boolean IS_OFFLINE_PAGE = true;
@@ -34,6 +45,9 @@ public final class ToolbarSecurityIconTest {
             new int[] {ConnectionSecurityLevel.NONE, ConnectionSecurityLevel.WARNING,
                     ConnectionSecurityLevel.DANGEROUS, ConnectionSecurityLevel.SECURE};
 
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
     @Mock
     private TabImpl mTab;
     @Mock
@@ -42,23 +56,20 @@ public final class ToolbarSecurityIconTest {
     @Mock
     private LocationBarModel mLocationBarModel;
 
-    @CalledByNative
-    private ToolbarSecurityIconTest() {}
-
-    @CalledByNative
+    @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        SecurityStateModelJni.TEST_HOOKS.setInstanceForTesting(mSecurityStateMocks);
+
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+
+        mocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateMocks);
         mLocationBarModel = spy(new LocationBarModel(ContextUtils.getApplicationContext()));
         mLocationBarModel.initializeWithNative();
     }
 
-    @CalledByNative
-    public void tearDown() {
-        SecurityStateModelJni.TEST_HOOKS.setInstanceForTesting(null);
-    }
-
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testGetSecurityLevel() {
         assertEquals(ConnectionSecurityLevel.NONE,
                 mLocationBarModel.getSecurityLevel(null, !IS_OFFLINE_PAGE, null));
@@ -91,7 +102,9 @@ public final class ToolbarSecurityIconTest {
                 mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE, null));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testGetSecurityIconResource() {
         when(mSecurityStateMocks.shouldShowDangerTriangleForWarningLevel()).thenReturn(false);
         for (int securityLevel : SECURITY_LEVELS) {
@@ -168,7 +181,9 @@ public final class ToolbarSecurityIconTest {
                         !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PREVIEW, !IS_PAINT_PREVIEW));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
+    @UiThreadTest
     public void testGetSecurityIconResourceForMarkHttpAsDangerWarning() {
         when(mSecurityStateMocks.shouldShowDangerTriangleForWarningLevel()).thenReturn(false);
         assertEquals(0,

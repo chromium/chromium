@@ -8,15 +8,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeJavaTest;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.components.payments.PayerData;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.SupportedDelegations;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -30,6 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Tests for the native Android payment app finder. */
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class AndroidPaymentAppUnitTest {
     @Mock
     private AndroidPaymentApp.Launcher mLauncherMock;
@@ -41,10 +50,14 @@ public class AndroidPaymentAppUnitTest {
     private boolean mReadyToPayQueryFinished;
     private boolean mInvokePaymentAppFinished;
 
-    @CalledByNative
-    private AndroidPaymentAppUnitTest() {}
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
 
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
+    @UiThreadTest
     public void testSuccessfulPaymentWithoutIsReadyToPayService() throws Exception {
         runTest(Activity.RESULT_OK);
         Assert.assertNull(mErrorMessage);
@@ -52,7 +65,9 @@ public class AndroidPaymentAppUnitTest {
         Assert.assertEquals("{}", mPaymentDetails);
     }
 
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
+    @UiThreadTest
     public void testCancelledPaymentWithoutIsReadyToPayService() throws Exception {
         runTest(Activity.RESULT_CANCELED);
         Assert.assertEquals("Payment app returned RESULT_CANCELED code. This is how payment apps "

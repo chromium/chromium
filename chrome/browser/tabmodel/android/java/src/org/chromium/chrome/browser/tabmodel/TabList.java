@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.annotations.MockedInTests;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * A read only list of {@link Tab}s. This list understands the concept of an incognito list as
  * well as a currently selected tab (see {@link #index}).
  */
+@MockedInTests
 public interface TabList {
     // Keep this in sync with chrome/browser/ui/android/tab_model/tab_model.cc
     public static final int INVALID_TAB_INDEX = -1;

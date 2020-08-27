@@ -4,21 +4,32 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
-import org.junit.Assert;
+import androidx.test.filters.SmallTest;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeJavaTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
  * Unit tests for {@link PartnerBrowserCustomizations}.
  */
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class PartnerBrowserCustomizationsUnitTest {
-    @CalledByNative
-    private PartnerBrowserCustomizationsUnitTest() {}
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
 
     @Feature({"Homepage"})
-    @CalledByNativeJavaTest
+    @SmallTest
+    @Test
     public void testIsValidHomepage() {
         Assert.assertTrue(PartnerBrowserCustomizations.isValidHomepage(
                 "chrome-native://newtab/path#fragment"));

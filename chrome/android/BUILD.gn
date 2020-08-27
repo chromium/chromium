@@ -949,7 +949,6 @@ android_library("chrome_test_java") {
     ":browser_java_test_support",
     ":chrome_app_java_resources",
     ":chrome_test_util_java",
-    ":native_java_unittests_java",
     ":partner_location_descriptor_proto_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
@@ -975,6 +974,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/contextmenu:java",
     "//chrome/browser/download/android:java",
     "//chrome/browser/engagement/android:java",
     "//chrome/browser/enterprise/util:java",
@@ -1053,6 +1053,7 @@ android_library("chrome_test_java") {
     "//components/download/public/common:public_java",
     "//components/embedder_support/android:browser_context_java",
     "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:embedder_support_javatests",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
@@ -1092,6 +1093,7 @@ android_library("chrome_test_java") {
     "//components/schema_org/common:mojom_java",
     "//components/search_engines/android:java",
     "//components/security_interstitials/content/android:java",
+    "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
     "//components/signin/core/browser:signin_enums_java",
     "//components/signin/core/browser/android:java",
@@ -3205,78 +3207,6 @@ generate_jni("chrome_jni_headers") {
   if (enable_vr) {
     sources += [ "java/src/org/chromium/chrome/browser/component_updater/VrAssetsComponentInstaller.java" ]
   }
-}
-
-native_java_unittests_tests = [
-  "native_java_unittests/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulatorTest.java",
-  "native_java_unittests/src/org/chromium/chrome/browser/installedapp/InstalledAppProviderTest.java",
-  "native_java_unittests/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeUnitTest.java",
-  "native_java_unittests/src/org/chromium/chrome/browser/partnercustomizations/PartnerBrowserCustomizationsUnitTest.java",
-  "native_java_unittests/src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinderUnitTest.java",
-  "native_java_unittests/src/org/chromium/chrome/browser/payments/AndroidPaymentAppUnitTest.java",
-  "native_java_unittests/src/org/chromium/chrome/browser/payments/PaymentManifestVerifierTest.java",
-  "native_java_unittests/src/org/chromium/chrome/browser/tabmodel/TabPersistentStoreUnitTest.java",
-  "native_java_unittests/src/org/chromium/chrome/browser/toolbar/ToolbarSecurityIconTest.java",
-]
-
-android_library("native_java_unittests_java") {
-  testonly = true
-  deps = [
-    ":browser_java_test_support",
-    ":chrome_app_java_resources",
-    ":chrome_test_util_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base:jni_java",
-    "//base/test:test_support_java",
-    "//chrome/android:chrome_java",
-    "//chrome/browser/contextmenu:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/image_fetcher:java",
-    "//chrome/browser/preferences:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/tab:java",
-    "//chrome/browser/tabmodel:java",
-    "//chrome/browser/ui/android/favicon:java",
-    "//chrome/browser/util:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//components/embedder_support/android:context_menu_java",
-    "//components/embedder_support/android:util_java",
-    "//components/omnibox/browser:browser_java",
-    "//components/payments/content/android:java",
-    "//components/payments/mojom:mojom_java",
-    "//components/query_tiles:java",
-    "//components/search_engines/android:java",
-    "//components/security_state/content/android:java",
-    "//components/security_state/core:security_state_enums_java",
-    "//content/public/android:content_java",
-    "//content/public/test/android:android_test_message_pump_support_java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:androidx_collection_collection_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/blink/public:blink_headers_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java",
-    "//ui/android:ui_java_test_support",
-    "//url:gurl_java",
-    "//url:origin_java",
-    "//url/mojom:url_mojom_gurl_java",
-  ]
-
-  sources = native_java_unittests_tests
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-}
-
-# See https://bugs.chromium.org/p/chromium/issues/detail?id=908819 for why we
-# can't put 'java' in the name here.
-generate_jni("native_j_unittests_jni_headers") {
-  testonly = true
-  sources = native_java_unittests_tests
-  feature_list_file = "//chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java"
 }
 
 # Used by android-binary-size trybot to validate expectations.
