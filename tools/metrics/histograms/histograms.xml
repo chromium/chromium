@@ -73029,8 +73029,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.decision" enum="SecurityInterstitialDecision"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
+    expires_after="M89">
+  <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
     User decision when presented with a security interstitial. As of M44,
@@ -73054,8 +73054,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="M85">
-  <owner>felt@chromium.org</owner>
+    enum="SecurityInterstitialInteraction" expires_after="M89">
+  <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
     User interactions with a security interstitial. As of M44, subresource
@@ -73098,7 +73098,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="interstitial.ssl.cause.nonoverridable" enum="SSLErrorCauses"
     expires_after="M90">
-  <owner>felt@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
     Possible non-attack causes of the non-overridable SSL interstitial. Many
@@ -73114,8 +73114,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl.cause.overridable" enum="SSLErrorCauses"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
+    expires_after="M89">
+  <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
     Possible non-attack causes of the overridable SSL interstitial. Many errors
@@ -73319,9 +73319,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl_error_handler" enum="SSLErrorHandlerEvent"
-    expires_after="M85">
+    expires_after="M89">
   <owner>meacer@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
   <summary>The type of action that the SSL error handler takes.</summary>
 </histogram>
 
@@ -73356,8 +73357,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="interstitial.ssl_error_type" enum="SSLErrorTypes"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
+    expires_after="M89">
+  <owner>estark@chromium.org</owner>
   <owner>carlosil@chromium.org</owner>
   <summary>
     The type of SSL error that the user encounters. This is recorded for all SSL
@@ -92145,8 +92146,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Navigation.EngagementTime.HTTP" units="ms" expires_after="M85">
-  <owner>felt@chromium.org</owner>
+<histogram name="Navigation.EngagementTime.HTTP" units="ms" expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
   <summary>
     The amount of time that an HTTP page was in the foreground. Recorded on
     every page close/transition.
@@ -92154,16 +92156,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.EngagementTime.HTTPS" units="ms"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
+    expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
   <summary>
     The amount of time that an HTTPS page was in the foreground. Recorded on
     every page close/transition.
   </summary>
 </histogram>
 
-<histogram name="Navigation.EngagementTime.Ratio" units="%" expires_after="M85">
-  <owner>felt@chromium.org</owner>
+<histogram name="Navigation.EngagementTime.Ratio" units="%" expires_after="M89">
+  <owner>estark@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
   <summary>
     The percentage of time that HTTPS pages were in the foreground, as compared
     to total foreground time. Recorded whenever user metrics are uploaded.
@@ -93078,8 +93082,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NavigationSuggestion.Event" enum="NavigationSuggestionEvent"
-    expires_after="M85">
+    expires_after="M89">
   <owner>meacer@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
   <summary>
     Tracks events when the currently navigated domain name is a lookalike to one
     of the top 10K domains or a domain that the user interacted with, resulting
