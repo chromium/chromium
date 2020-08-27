@@ -60,18 +60,16 @@ class LabColorFilter : public DarkModeColorFilter {
   }
 
   SkColor InvertColor(SkColor color) const override {
-    blink::FloatPoint3D rgb = {SkColorGetR(color) / 255.0f,
-                               SkColorGetG(color) / 255.0f,
-                               SkColorGetB(color) / 255.0f};
-    blink::FloatPoint3D lab = transformer_.sRGBToLab(rgb);
-    float invertedL = std::min(110.0f - lab.X(), 100.0f);
-    lab.SetX(invertedL);
+    SkV3 rgb = {SkColorGetR(color) / 255.0f, SkColorGetG(color) / 255.0f,
+                SkColorGetB(color) / 255.0f};
+    SkV3 lab = transformer_.sRGBToLab(rgb);
+    lab.x = std::min(110.0f - lab.x, 100.0f);
     rgb = transformer_.LabToSRGB(lab);
 
     SkColor inverted_color = SkColorSetARGB(
-        SkColorGetA(color), static_cast<unsigned int>(rgb.X() * 255 + 0.5),
-        static_cast<unsigned int>(rgb.Y() * 255 + 0.5),
-        static_cast<unsigned int>(rgb.Z() * 255 + 0.5));
+        SkColorGetA(color), static_cast<unsigned int>(rgb.x * 255 + 0.5),
+        static_cast<unsigned int>(rgb.y * 255 + 0.5),
+        static_cast<unsigned int>(rgb.z * 255 + 0.5));
     return AdjustGray(inverted_color);
   }
 

@@ -3,21 +3,16 @@
 
 namespace LabColorSpace {
 
-using blink::FloatPoint3D;
-
-static constexpr FloatPoint3D rgbReferenceWhite =
-    FloatPoint3D(1.0f, 1.0f, 1.0f);
-static constexpr FloatPoint3D labReferenceWhite =
-    FloatPoint3D(100.0f, 0.0f, 0.0f);
+static constexpr SkV3 rgbReferenceWhite = {1.0f, 1.0f, 1.0f};
+static constexpr SkV3 labReferenceWhite = {100.0f, 0.0f, 0.0f};
 static constexpr float epsilon = 0.0001;
 
 class LabColorSpaceTest : public testing::Test {
  public:
-  void AssertColorsEqual(const FloatPoint3D& color1,
-                         const FloatPoint3D& color2) {
-    EXPECT_NEAR(color1.X(), color2.X(), epsilon);
-    EXPECT_NEAR(color1.Y(), color2.Y(), epsilon);
-    EXPECT_NEAR(color1.Z(), color2.Z(), epsilon);
+  void AssertColorsEqual(const SkV3& color1, const SkV3& color2) {
+    EXPECT_NEAR(color1.x, color2.x, epsilon);
+    EXPECT_NEAR(color1.y, color2.y, epsilon);
+    EXPECT_NEAR(color1.z, color2.z, epsilon);
   }
 };
 
@@ -25,10 +20,10 @@ TEST_F(LabColorSpaceTest, XYZTranslation) {
   sRGBColorSpace colorSpace = sRGBColorSpace();
 
   // Check whether white transformation is correct
-  FloatPoint3D xyzWhite = colorSpace.toXYZ(rgbReferenceWhite);
+  SkV3 xyzWhite = colorSpace.ToXYZ(rgbReferenceWhite);
   AssertColorsEqual(xyzWhite, kIlluminantD50);
 
-  FloatPoint3D rgbWhite = colorSpace.fromXYZ(kIlluminantD50);
+  SkV3 rgbWhite = colorSpace.FromXYZ(kIlluminantD50);
   AssertColorsEqual(rgbWhite, rgbReferenceWhite);
 
   // Check whether transforming sRGB to XYZ and back gives the same RGB values
@@ -36,9 +31,9 @@ TEST_F(LabColorSpaceTest, XYZTranslation) {
   for (unsigned r = 0; r <= 255; r += 40) {
     for (unsigned g = 0; r <= 255; r += 50) {
       for (unsigned b = 0; r <= 255; r += 60) {
-        FloatPoint3D rgb = FloatPoint3D(r / 255.0f, g / 255.0f, b / 255.0f);
-        FloatPoint3D xyz = colorSpace.toXYZ(rgb);
-        AssertColorsEqual(rgb, colorSpace.fromXYZ(xyz));
+        SkV3 rgb = {r / 255.0f, g / 255.0f, b / 255.0f};
+        SkV3 xyz = colorSpace.ToXYZ(rgb);
+        AssertColorsEqual(rgb, colorSpace.FromXYZ(xyz));
       }
     }
   }
@@ -48,10 +43,10 @@ TEST_F(LabColorSpaceTest, LabTranslation) {
   RGBLABTransformer transformer = RGBLABTransformer();
 
   // Check whether white transformation is correct
-  FloatPoint3D labWhite = transformer.sRGBToLab(rgbReferenceWhite);
+  SkV3 labWhite = transformer.sRGBToLab(rgbReferenceWhite);
   AssertColorsEqual(labWhite, labReferenceWhite);
 
-  FloatPoint3D rgbWhite = transformer.LabToSRGB(labReferenceWhite);
+  SkV3 rgbWhite = transformer.LabToSRGB(labReferenceWhite);
   AssertColorsEqual(rgbWhite, rgbReferenceWhite);
 
   // Check whether transforming sRGB to Lab and back gives the same RGB values
@@ -59,8 +54,8 @@ TEST_F(LabColorSpaceTest, LabTranslation) {
   for (unsigned r = 0; r <= 255; r += 40) {
     for (unsigned g = 0; r <= 255; r += 50) {
       for (unsigned b = 0; r <= 255; r += 60) {
-        FloatPoint3D rgb = FloatPoint3D(r / 255.0f, g / 255.0f, b / 255.0f);
-        FloatPoint3D lab = transformer.sRGBToLab(rgb);
+        SkV3 rgb = {r / 255.0f, g / 255.0f, b / 255.0f};
+        SkV3 lab = transformer.sRGBToLab(rgb);
         AssertColorsEqual(rgb, transformer.LabToSRGB(lab));
       }
     }
