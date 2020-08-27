@@ -77,6 +77,10 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   void OnAudioOutputSinkChanged(const MediaPlayerId& id,
                                 const std::string& raw_device_id);
 
+  // Called when the ability to switch audio output devices for the player |id|
+  // has been disabled.
+  void OnAudioOutputSinkChangingDisabled(const MediaPlayerId& id);
+
  private:
   using ControllersMap =
       std::map<MediaPlayerId, std::unique_ptr<MediaSessionController>>;

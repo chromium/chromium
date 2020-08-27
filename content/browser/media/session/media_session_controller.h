@@ -81,6 +81,9 @@ class CONTENT_EXPORT MediaSessionController
   // Called when the audio output device has changed.
   void OnAudioOutputSinkChanged(const std::string& raw_device_id);
 
+  // Called when the ability to switch audio output devices has been disabled.
+  void OnAudioOutputSinkChangingDisabled();
+
  private:
   bool IsMediaSessionNeeded() const;
 

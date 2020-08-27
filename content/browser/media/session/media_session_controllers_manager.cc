@@ -122,6 +122,15 @@ void MediaSessionControllersManager::OnAudioOutputSinkChanged(
   controller->OnAudioOutputSinkChanged(raw_device_id);
 }
 
+void MediaSessionControllersManager::OnAudioOutputSinkChangingDisabled(
+    const MediaPlayerId& id) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnAudioOutputSinkChangingDisabled();
+}
+
 MediaSessionController* MediaSessionControllersManager::FindOrCreateController(
     const MediaPlayerId& id) {
   auto it = controllers_map_.find(id);

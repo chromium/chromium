@@ -166,6 +166,8 @@ void MediaSessionController::OnAudioOutputSinkChanged(
   media_session_->OnAudioOutputSinkIdChanged();
 }
 
+void MediaSessionController::OnAudioOutputSinkChangingDisabled() {}
+
 bool MediaSessionController::IsMediaSessionNeeded() const {
   if (!is_playback_in_progress_)
     return false;
