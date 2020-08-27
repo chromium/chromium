@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/network_resources_data.h"
+#include "third_party/blink/renderer/core/inspector/request_debug_header_scope.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
@@ -1009,6 +1010,22 @@ void InspectorNetworkAgent::PrepareRequest(
   }
   if (bypass_service_worker_.Get())
     request.SetSkipServiceWorker(true);
+
+  if (debug_header_enabled_.Get() &&
+      request.HttpHeaderField(RequestDebugHeaderScope::kHeaderName).IsNull()) {
+    ExecutionContext* context = nullptr;
+    if (worker_global_scope_) {
+      context = worker_global_scope_.Get();
+    } else if (loader && loader->GetFrame()) {
+      context = loader->GetFrame()->GetDocument()->ExecutingWindow();
+    }
+    String header =
+        RequestDebugHeaderScope::CaptureHeaderForCurrentLocation(context);
+    if (!header.IsNull()) {
+      request.SetHttpHeaderField(RequestDebugHeaderScope::kHeaderName,
+                                 AtomicString(header));
+    }
+  }
 }
 
 void InspectorNetworkAgent::WillSendRequest(
@@ -1522,6 +1539,13 @@ Response InspectorNetworkAgent::setExtraHTTPHeaders(
   return Response::Success();
 }
 
+Response InspectorNetworkAgent::setAttachDebugHeader(bool enabled) {
+  if (enabled && !enabled_.Get())
+    return Response::InvalidParams("Domain must be enabled");
+  debug_header_enabled_.Set(enabled);
+  return Response::Success();
+}
+
 bool InspectorNetworkAgent::CanGetResponseBodyBlob(const String& request_id) {
   NetworkResourcesData::ResourceData const* resource_data =
       resources_data_->Data(request_id);
@@ -1857,6 +1881,7 @@ InspectorNetworkAgent::InspectorNetworkAgent(
       bypass_service_worker_(&agent_state_, /*default_value=*/false),
       blocked_urls_(&agent_state_, /*default_value=*/false),
       extra_request_headers_(&agent_state_, /*default_value=*/WTF::String()),
+      debug_header_enabled_(&agent_state_, /*default_value=*/false),
       total_buffer_size_(&agent_state_,
                          /*default_value=*/kDefaultTotalBufferSize),
       resource_buffer_size_(&agent_state_,

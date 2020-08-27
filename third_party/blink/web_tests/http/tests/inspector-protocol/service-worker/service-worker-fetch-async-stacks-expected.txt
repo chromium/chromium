@@ -1,0 +1,27 @@
+Async stack trace for service worker fetch.
+Navigated, registering service worker
+
+Service worker activated, reloading
+
+Reloaded, continue
+enable debug header: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+
+Evaluate:
+
+      debugger;
+      fetch("foo.json");
+      //# sourceURL=test.js
+
+Paused in page, step over
+Run stepInto with breakOnAsyncCall flag
+
+Paused in service worker
+(anonymous) at http://127.0.0.1:8000/inspector-protocol/service-worker/resources/service-worker-fetch.js:1:2
+--network request--
+(anonymous) at test.js:2:6
+

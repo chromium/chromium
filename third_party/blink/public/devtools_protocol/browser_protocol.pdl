@@ -5050,6 +5050,12 @@ domain Network
       # Map with extra HTTP headers.
       Headers headers
 
+  # Specifies whether to sned a debug header to all outgoing requests.
+  experimental command setAttachDebugHeader
+    parameters
+      # Whether to send a debug header.
+      boolean enabled
+
   # Sets the requests to intercept that match the provided patterns and optionally resource types.
   # Deprecated, please use Fetch.enable instead.
   experimental deprecated command setRequestInterception

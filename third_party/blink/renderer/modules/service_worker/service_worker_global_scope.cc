@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/request_debug_header_scope.h"
 #include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
@@ -1509,6 +1510,12 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
       !params->request->is_main_resource_load ? String() : params->client_id);
   event_init->setIsReload(params->request->is_reload);
 
+  mojom::blink::FetchAPIRequest& fetch_request = *params->request;
+  auto debug_header_it =
+      fetch_request.headers.find(RequestDebugHeaderScope::kHeaderName);
+  auto stack_string = debug_header_it == fetch_request.headers.end()
+                          ? String()
+                          : debug_header_it->value;
   Request* request = Request::Create(
       ScriptController()->GetScriptState(), std::move(params->request),
       Request::ForServiceWorkerFetchEvent::kTrue);
@@ -1532,6 +1539,7 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
 
   NoteNewFetchEvent(request->url());
 
+  RequestDebugHeaderScope debug_header_scope(this, stack_string);
   DispatchExtendableEventWithRespondWith(fetch_event, wait_until_observer,
                                          respond_with_observer);
 }
