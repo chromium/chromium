@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
 #include "url/gurl.h"
 
@@ -47,6 +48,7 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
 
   // network::mojom::CrossOriginEmbedderPolicyReporter implementation.
   void QueueCorpViolationReport(const GURL& blocked_url,
+                                network::mojom::RequestDestination destination,
                                 bool report_only) override;
   void Clone(
       mojo::PendingReceiver<network::mojom::CrossOriginEmbedderPolicyReporter>

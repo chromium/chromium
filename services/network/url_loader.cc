@@ -1083,7 +1083,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response, request_mode_,
               factory_params_->request_initiator_origin_lock,
-              cross_origin_embedder_policy, coep_reporter_)) {
+              request_destination_, cross_origin_embedder_policy,
+              coep_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     DeleteSelf();
@@ -1296,7 +1297,8 @@ void URLLoader::ContinueOnResponseStarted() {
               url_request_->url(), url_request_->original_url(),
               url_request_->initiator(), *response_, request_mode_,
               factory_params_->request_initiator_origin_lock,
-              cross_origin_embedder_policy, coep_reporter_)) {
+              request_destination_, cross_origin_embedder_policy,
+              coep_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
     DeleteSelf();

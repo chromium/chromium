@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 PASS [document] same-origin
 PASS [document] blocked by CORP: same-origin
-FAIL [document] blocked due to COEP assert_equals: expected (string) "https://www1.web-platform.test:8444/common/text-plain.txt" but got (undefined) undefined
-FAIL [document] blocked during redirect assert_equals: expected (string) "https://web-platform.test:8444/common/redirect.py?location=https%3A%2F%2Fwww1.web-platform.test%3A8444%2Fcommon%2Ftext-plain.txt" but got (undefined) undefined
+PASS [document] blocked due to COEP
+PASS [document] blocked during redirect
 PASS [dedicated worker] same-origin
 PASS [dedicated worker] blocked by CORP: same-origin
 FAIL [dedicated worker] blocked due to COEP assert_equals: expected 2 but got 0
@@ -13,12 +13,12 @@ FAIL [shared worker] blocked due to COEP assert_equals: expected 2 but got 0
 FAIL [shared worker] blocked during redirect assert_equals: expected 2 but got 0
 PASS [service worker] same-origin
 PASS [service worker] blocked by CORP: same-origin
-FAIL [service worker] blocked due to COEP assert_equals: expected (string) "https://www1.web-platform.test:8444/common/text-plain.txt" but got (undefined) undefined
-FAIL [service worker] blocked during redirect assert_equals: expected (string) "https://web-platform.test:8444/common/redirect.py?location=https%3A%2F%2Fwww1.web-platform.test%3A8444%2Fcommon%2Ftext-plain.txt" but got (undefined) undefined
+PASS [service worker] blocked due to COEP
+PASS [service worker] blocked during redirect
 PASS [between service worker and page] same-origin
 PASS [between service worker and page] blocked by CORP: same-origin
-FAIL [between service worker and page] blocked due to COEP assert_equals: expected (string) "https://www1.web-platform.test:8444/common/text-plain.txt" but got (undefined) undefined
-FAIL [between service worker and page] blocked during redirect assert_equals: expected (string) "https://web-platform.test:8444/common/redirect.py?location=https%3A%2F%2Fwww1.web-platform.test%3A8444%2Fcommon%2Ftext-plain.txt" but got (undefined) undefined
-FAIL destination: script assert_equals: expected 2 but got 0
+PASS [between service worker and page] blocked due to COEP
+PASS [between service worker and page] blocked during redirect
+PASS destination: script
 Harness: the test ran to completion.
 

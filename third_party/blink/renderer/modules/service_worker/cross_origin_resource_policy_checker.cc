@@ -26,6 +26,7 @@ CrossOriginResourcePolicyChecker::CrossOriginResourcePolicyChecker(
 bool CrossOriginResourcePolicyChecker::IsBlocked(
     const url::Origin& initiator_origin,
     network::mojom::RequestMode request_mode,
+    network::mojom::RequestDestination request_destination,
     const blink::Response& response) {
   if (response.InternalURLList().IsEmpty()) {
     // The response is synthesized in the service worker, so it's considered as
@@ -43,7 +44,8 @@ bool CrossOriginResourcePolicyChecker::IsBlocked(
   return network::CrossOriginResourcePolicy::IsBlockedByHeaderValue(
              response.InternalURLList().back(),
              response.InternalURLList().front(), initiator_origin,
-             corp_header_value, request_mode, initiator_origin, policy_,
+             corp_header_value, request_mode, initiator_origin,
+             request_destination, policy_,
              reporter_ ? reporter_.get() : nullptr)
       .has_value();
 }

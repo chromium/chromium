@@ -44,7 +44,7 @@ const reportsForReportOnly = [];
 pollReports('endpoint', reports);
 pollReports('report-only-endpoint', reportsForReportOnly);
 
-function checkCorpReportExistence(reports, blockedUrl, contextUrl, disposition) {
+function checkCorpReportExistence(reports, blockedUrl, contextUrl, destination, disposition) {
   blockedUrl = new URL(blockedUrl, location).href;
   contextUrl = new URL(contextUrl, location).href;
   for (const report of reports) {
@@ -54,7 +54,7 @@ function checkCorpReportExistence(reports, blockedUrl, contextUrl, disposition) 
     }
     if (report.body.blockedURL === blockedUrl &&
         report.body.disposition === disposition) {
-      assert_equals(report.body.destination, '');
+      assert_equals(report.body.destination, destination);
       return;
     }
   }
@@ -97,9 +97,9 @@ async_test(async (t) => {
     // Wait 3 seconds for reports to settle.
     await wait(3000);
 
-    checkCorpReportExistence(reports, url, iframe.src, 'enforce');
+    checkCorpReportExistence(reports, url, iframe.src, '', 'enforce');
     checkCorpReportExistence(
-      reportsForReportOnly, url, iframe.src, 'reporting');
+      reportsForReportOnly, url, iframe.src, '', 'reporting');
 
     t.done();
   } catch (e) {
@@ -134,9 +134,9 @@ async_test(async (t) => {
     // Wait 3 seconds for reports to settle.
     await wait(3000);
 
-    checkCorpReportExistence(reports, url, iframe.src, 'enforce');
+    checkCorpReportExistence(reports, url, iframe.src, 'iframe', 'enforce');
     checkCorpReportExistence(
-      reportsForReportOnly, url, iframe.src, 'reporting');
+      reportsForReportOnly, url, iframe.src, 'iframe', 'reporting');
 
     t.done();
   } catch (e) {

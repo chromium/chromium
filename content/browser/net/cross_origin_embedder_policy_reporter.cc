@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
@@ -40,11 +41,18 @@ CrossOriginEmbedderPolicyReporter::~CrossOriginEmbedderPolicyReporter() =
 
 void CrossOriginEmbedderPolicyReporter::QueueCorpViolationReport(
     const GURL& blocked_url,
+    network::mojom::RequestDestination destination,
     bool report_only) {
   GURL url_to_pass = StripUsernameAndPassword(blocked_url);
-  QueueAndNotify({std::make_pair("type", "corp"),
-                  std::make_pair("blocked-url", url_to_pass.spec())},
-                 report_only);
+  // We're migrating from "blocked-url" to "blockedURL".
+  // TODO(crbug.com/1119676): Remove "blocked-url" in M90.
+  QueueAndNotify(
+      {std::make_pair("type", "corp"),
+       std::make_pair("blocked-url", url_to_pass.spec()),
+       std::make_pair("blockedURL", url_to_pass.spec()),
+       std::make_pair("destination",
+                      network::RequestDestinationToString(destination))},
+      report_only);
 }
 
 void CrossOriginEmbedderPolicyReporter::BindObserver(
@@ -56,8 +64,11 @@ void CrossOriginEmbedderPolicyReporter::QueueNavigationReport(
     const GURL& blocked_url,
     bool report_only) {
   GURL url_to_pass = StripUsernameAndPassword(blocked_url);
+  // We're migrating from "blocked-url" to "blockedURL".
+  // TODO(crbug.com/1119676): Remove "blocked-url" in M90.
   QueueAndNotify({std::make_pair("type", "navigation"),
-                  std::make_pair("blocked-url", url_to_pass.spec())},
+                  std::make_pair("blocked-url", url_to_pass.spec()),
+                  std::make_pair("blockedURL", url_to_pass.spec())},
                  report_only);
 }
 
@@ -72,6 +83,7 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
     bool report_only) {
   const base::Optional<std::string>& endpoint =
       report_only ? report_only_endpoint_ : endpoint_;
+  const char* const disposition = report_only ? "reporting" : "enforce";
   if (observer_) {
     std::vector<blink::mojom::ReportBodyElementPtr> list;
 
@@ -79,6 +91,8 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
       list.push_back(blink::mojom::ReportBodyElement::New(
           pair.first.as_string(), pair.second.as_string()));
     }
+    list.push_back(
+        blink::mojom::ReportBodyElement::New("disposition", disposition));
 
     observer_->Notify(blink::mojom::Report::New(
         kType, context_url_, blink::mojom::ReportBody::New(std::move(list))));
@@ -88,6 +102,7 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
     for (const auto& pair : body) {
       body_to_pass.SetString(pair.first, pair.second);
     }
+    body_to_pass.SetString("disposition", disposition);
     storage_partition_->GetNetworkContext()->QueueReport(
         kType, *endpoint, context_url_, /*user_agent=*/base::nullopt,
         std::move(body_to_pass));

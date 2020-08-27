@@ -19,10 +19,15 @@ namespace {
 class TestCoepReporter final : public mojom::CrossOriginEmbedderPolicyReporter {
  public:
   struct Report {
-    Report(const GURL& blocked_url, bool report_only)
-        : blocked_url(blocked_url), report_only(report_only) {}
+    Report(const GURL& blocked_url,
+           mojom::RequestDestination destination,
+           bool report_only)
+        : blocked_url(blocked_url),
+          destination(destination),
+          report_only(report_only) {}
 
     const GURL blocked_url;
+    const mojom::RequestDestination destination;
     const bool report_only;
   };
 
@@ -33,8 +38,9 @@ class TestCoepReporter final : public mojom::CrossOriginEmbedderPolicyReporter {
 
   // mojom::CrossOriginEmbedderPolicyReporter implementation.
   void QueueCorpViolationReport(const GURL& blocked_url,
+                                mojom::RequestDestination destination,
                                 bool report_only) override {
-    reports_.push_back(Report(blocked_url, report_only));
+    reports_.emplace_back(blocked_url, destination, report_only);
   }
   void Clone(
       mojo::PendingReceiver<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -177,8 +183,8 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
           "HTTP/1.1 200 OK\n"
           "cross-origin-resource-policy: cross-origin\n"));
 
-  GURL original_destination("https://original.example.com/x/y");
-  GURL destination("https://www.example.com/z/u");
+  const GURL original_url("https://original.example.com/x/y");
+  const GURL final_url("https://www.example.com/z/u");
 
   url::Origin destination_origin =
       url::Origin::Create(GURL("https://www.example.com"));
@@ -186,6 +192,7 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
       url::Origin::Create(GURL("https://www2.example.com"));
 
   constexpr auto kAllow = base::nullopt;
+  using mojom::RequestDestination;
   using mojom::RequestMode;
 
   struct TestCase {
@@ -229,26 +236,29 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
          test_case.expectation_with_coep_require_corp);
 
     // COEP: none, COEP-report-only: none
-    EXPECT_EQ(test_case.expectation_with_coep_none,
-              CrossOriginResourcePolicy::IsBlocked(
-                  destination, original_destination, test_case.origin,
-                  *test_case.response_info, test_case.request_mode,
-                  test_case.origin, embedder_policy, &reporter));
+    EXPECT_EQ(
+        test_case.expectation_with_coep_none,
+        CrossOriginResourcePolicy::IsBlocked(
+            final_url, original_url, test_case.origin, *test_case.response_info,
+            test_case.request_mode, test_case.origin,
+            RequestDestination::kImage, embedder_policy, &reporter));
 
     EXPECT_TRUE(reporter.reports().empty());
 
     reporter.ClearReports();
     // COEP: require-corp, COEP-report-only: none
     embedder_policy.value = mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-    EXPECT_EQ(test_case.expectation_with_coep_require_corp,
-              CrossOriginResourcePolicy::IsBlocked(
-                  destination, original_destination, test_case.origin,
-                  *test_case.response_info, test_case.request_mode,
-                  test_case.origin, embedder_policy, &reporter));
+    EXPECT_EQ(
+        test_case.expectation_with_coep_require_corp,
+        CrossOriginResourcePolicy::IsBlocked(
+            final_url, original_url, test_case.origin, *test_case.response_info,
+            test_case.request_mode, test_case.origin,
+            RequestDestination::kImage, embedder_policy, &reporter));
     if (should_be_blocked_due_to_coep) {
       ASSERT_EQ(1u, reporter.reports().size());
       EXPECT_FALSE(reporter.reports()[0].report_only);
-      EXPECT_EQ(reporter.reports()[0].blocked_url, original_destination);
+      EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
+      EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kImage);
     } else {
       EXPECT_TRUE(reporter.reports().empty());
     }
@@ -258,15 +268,17 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
     embedder_policy.value = mojom::CrossOriginEmbedderPolicyValue::kNone;
     embedder_policy.report_only_value =
         mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-    EXPECT_EQ(test_case.expectation_with_coep_none,
-              CrossOriginResourcePolicy::IsBlocked(
-                  destination, original_destination, test_case.origin,
-                  *test_case.response_info, test_case.request_mode,
-                  test_case.origin, embedder_policy, &reporter));
+    EXPECT_EQ(
+        test_case.expectation_with_coep_none,
+        CrossOriginResourcePolicy::IsBlocked(
+            final_url, original_url, test_case.origin, *test_case.response_info,
+            test_case.request_mode, test_case.origin,
+            RequestDestination::kScript, embedder_policy, &reporter));
     if (should_be_blocked_due_to_coep) {
       ASSERT_EQ(1u, reporter.reports().size());
       EXPECT_TRUE(reporter.reports()[0].report_only);
-      EXPECT_EQ(reporter.reports()[0].blocked_url, original_destination);
+      EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
+      EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kScript);
     } else {
       EXPECT_TRUE(reporter.reports().empty());
     }
@@ -276,17 +288,20 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
     embedder_policy.value = mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
     embedder_policy.report_only_value =
         mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-    EXPECT_EQ(test_case.expectation_with_coep_require_corp,
-              CrossOriginResourcePolicy::IsBlocked(
-                  destination, original_destination, test_case.origin,
-                  *test_case.response_info, test_case.request_mode,
-                  test_case.origin, embedder_policy, &reporter));
+    EXPECT_EQ(
+        test_case.expectation_with_coep_require_corp,
+        CrossOriginResourcePolicy::IsBlocked(
+            final_url, original_url, test_case.origin, *test_case.response_info,
+            test_case.request_mode, test_case.origin,
+            RequestDestination::kEmpty, embedder_policy, &reporter));
     if (should_be_blocked_due_to_coep) {
       ASSERT_EQ(2u, reporter.reports().size());
       EXPECT_TRUE(reporter.reports()[0].report_only);
-      EXPECT_EQ(reporter.reports()[0].blocked_url, original_destination);
+      EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
+      EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kEmpty);
       EXPECT_FALSE(reporter.reports()[1].report_only);
-      EXPECT_EQ(reporter.reports()[1].blocked_url, original_destination);
+      EXPECT_EQ(reporter.reports()[1].blocked_url, original_url);
+      EXPECT_EQ(reporter.reports()[1].destination, RequestDestination::kEmpty);
     } else {
       EXPECT_TRUE(reporter.reports().empty());
     }
@@ -311,8 +326,8 @@ TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
           "HTTP/1.1 200 OK\n"
           "cross-origin-resource-policy: cross-origin\n"));
 
-  GURL original_destination("https://original.example.com/x/y");
-  GURL destination("https://www.example.com/z/u");
+  GURL original_url("https://original.example.com/x/y");
+  GURL final_url("https://www.example.com/z/u");
 
   url::Origin destination_origin =
       url::Origin::Create(GURL("https://www.example.com"));
@@ -320,6 +335,7 @@ TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
       url::Origin::Create(GURL("https://www2.example.com"));
 
   constexpr auto kAllow = base::nullopt;
+  using mojom::RequestDestination;
   using mojom::RequestMode;
 
   struct TestCase {
@@ -357,9 +373,9 @@ TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
     // COEP: none, COEP-report-only: none
     EXPECT_EQ(test_case.expectation_with_coep_none,
               CrossOriginResourcePolicy::IsNavigationBlocked(
-                  destination, original_destination, test_case.origin,
-                  *test_case.response_info, test_case.origin, embedder_policy,
-                  &reporter));
+                  final_url, original_url, test_case.origin,
+                  *test_case.response_info, test_case.origin,
+                  RequestDestination::kImage, embedder_policy, &reporter));
 
     EXPECT_TRUE(reporter.reports().empty());
 
@@ -368,13 +384,14 @@ TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
     embedder_policy.value = mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
     EXPECT_EQ(test_case.expectation_with_coep_require_corp,
               CrossOriginResourcePolicy::IsNavigationBlocked(
-                  destination, original_destination, test_case.origin,
-                  *test_case.response_info, test_case.origin, embedder_policy,
-                  &reporter));
+                  final_url, original_url, test_case.origin,
+                  *test_case.response_info, test_case.origin,
+                  RequestDestination::kImage, embedder_policy, &reporter));
     if (should_be_blocked_due_to_coep) {
       ASSERT_EQ(1u, reporter.reports().size());
       EXPECT_FALSE(reporter.reports()[0].report_only);
-      EXPECT_EQ(reporter.reports()[0].blocked_url, original_destination);
+      EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
+      EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kImage);
     } else {
       EXPECT_TRUE(reporter.reports().empty());
     }
@@ -386,13 +403,14 @@ TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
         mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
     EXPECT_EQ(test_case.expectation_with_coep_none,
               CrossOriginResourcePolicy::IsNavigationBlocked(
-                  destination, original_destination, test_case.origin,
-                  *test_case.response_info, test_case.origin, embedder_policy,
-                  &reporter));
+                  final_url, original_url, test_case.origin,
+                  *test_case.response_info, test_case.origin,
+                  RequestDestination::kScript, embedder_policy, &reporter));
     if (should_be_blocked_due_to_coep) {
       ASSERT_EQ(1u, reporter.reports().size());
       EXPECT_TRUE(reporter.reports()[0].report_only);
-      EXPECT_EQ(reporter.reports()[0].blocked_url, original_destination);
+      EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
+      EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kScript);
     } else {
       EXPECT_TRUE(reporter.reports().empty());
     }
@@ -404,15 +422,17 @@ TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
         mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
     EXPECT_EQ(test_case.expectation_with_coep_require_corp,
               CrossOriginResourcePolicy::IsNavigationBlocked(
-                  destination, original_destination, test_case.origin,
-                  *test_case.response_info, test_case.origin, embedder_policy,
-                  &reporter));
+                  final_url, original_url, test_case.origin,
+                  *test_case.response_info, test_case.origin,
+                  RequestDestination::kEmpty, embedder_policy, &reporter));
     if (should_be_blocked_due_to_coep) {
       ASSERT_EQ(2u, reporter.reports().size());
       EXPECT_TRUE(reporter.reports()[0].report_only);
-      EXPECT_EQ(reporter.reports()[0].blocked_url, original_destination);
+      EXPECT_EQ(reporter.reports()[0].blocked_url, original_url);
+      EXPECT_EQ(reporter.reports()[0].destination, RequestDestination::kEmpty);
       EXPECT_FALSE(reporter.reports()[1].report_only);
-      EXPECT_EQ(reporter.reports()[1].blocked_url, original_destination);
+      EXPECT_EQ(reporter.reports()[1].blocked_url, original_url);
+      EXPECT_EQ(reporter.reports()[1].destination, RequestDestination::kEmpty);
     } else {
       EXPECT_TRUE(reporter.reports().empty());
     }

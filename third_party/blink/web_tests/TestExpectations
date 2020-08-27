@@ -6645,7 +6645,5 @@ crbug.com/1117613 media/video-error-networkState.html [ Failure Timeout ]
 # Sheriff 2020-0-21
 crbug.com/1120330 virtual/threaded/external/wpt/feature-policy/experimental-features/vertical-scroll-disabled-scrollbar-tentative.html [ Pass Failure ]
 
-crbug.com/1119676 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure ]
-
 # Sheriff 2020-08-26
 crbug.com/1122106 external/wpt/webrtc/protocol/crypto-suite.https.html [ Pass Timeout ]

@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "url/mojom/url.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
 
 // https://mikewest.github.io/corpp/#integration-html
 enum CrossOriginEmbedderPolicyValue {
@@ -16,7 +17,9 @@ enum CrossOriginEmbedderPolicyValue {
 // in the network service. Implemented in the browser process.
 interface CrossOriginEmbedderPolicyReporter {
   // Queues a report of a CORP violation caused by COEP.
-  QueueCorpViolationReport(url.mojom.Url blocked_url, bool report_only);
+  QueueCorpViolationReport(url.mojom.Url blocked_url,
+                           network.mojom.RequestDestination destination,
+                           bool report_only);
 
   // Connects a new pipe to this instance.
   Clone(pending_receiver<CrossOriginEmbedderPolicyReporter> receiver);

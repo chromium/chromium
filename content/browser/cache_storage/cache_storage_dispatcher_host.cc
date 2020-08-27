@@ -145,8 +145,8 @@ bool ResponseBlockedByCrossOriginResourcePolicy(
   return CrossOriginResourcePolicy::IsBlockedByHeaderValue(
              response->url_list.back(), response->url_list.front(),
              document_origin, corp_header_value, RequestMode::kNoCors,
-             document_origin, document_coep,
-             coep_reporter ? coep_reporter.get() : nullptr)
+             document_origin, network::mojom::RequestDestination::kEmpty,
+             document_coep, coep_reporter ? coep_reporter.get() : nullptr)
       .has_value();
 }
 

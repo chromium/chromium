@@ -185,7 +185,7 @@ promise_test(async (t) => {
     }
   });
   observer.observe();
-  const url = `${REMOTE_ORIGIN}$/common/utils.js`;
+  const url = `${REMOTE_ORIGIN}/common/utils.js`;
   const script = frame.contentDocument.createElement('script');
   script.src = url;
   frame.contentDocument.body.appendChild(script);

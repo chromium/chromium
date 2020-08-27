@@ -312,7 +312,7 @@ void FetchRespondWithObserver::OnResponseFulfilled(
     if (corp_checker_ &&
         corp_checker_->IsBlocked(
             url::Origin::Create(GURL(service_worker_global_scope->Url())),
-            request_mode_, *response)) {
+            request_mode_, request_destination_, *response)) {
       OnResponseRejected(ServiceWorkerResponseError::kDisallowedByCorp);
       return;
     }

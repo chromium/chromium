@@ -37,6 +37,7 @@ class CrossOriginResourcePolicyChecker {
 
   bool IsBlocked(const url::Origin& initiator_origin,
                  network::mojom::RequestMode request_mode,
+                 network::mojom::RequestDestination request_destination,
                  const Response& response);
 
   base::WeakPtr<CrossOriginResourcePolicyChecker> GetWeakPtr();

@@ -11,6 +11,7 @@
 #include "content/public/test/test_storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/reporting_observer.mojom.h"
@@ -19,6 +20,7 @@ namespace content {
 namespace {
 
 using network::CrossOriginEmbedderPolicy;
+using network::mojom::RequestDestination;
 
 class TestNetworkContext : public network::TestNetworkContext {
  public:
@@ -80,25 +82,34 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
 
   StoragePartition* storage_partition() { return &storage_partition_; }
   const TestNetworkContext& network_context() const { return network_context_; }
-  base::Value CreateBodyForCorp(base::StringPiece s) const {
+  base::Value CreateBodyForCorp(base::StringPiece blocked_url,
+                                RequestDestination destination,
+                                base::StringPiece disposition) const {
     base::Value dict(base::Value::Type::DICTIONARY);
-    for (const auto& pair : CreateBodyForCorpInternal(s)) {
+    for (const auto& pair :
+         CreateBodyForCorpInternal(blocked_url, destination, disposition)) {
       dict.SetKey(std::move(pair.first), base::Value(std::move(pair.second)));
     }
     return dict;
   }
 
-  base::Value CreateBodyForNavigation(base::StringPiece s) {
+  base::Value CreateBodyForNavigation(base::StringPiece blocked_url,
+                                      base::StringPiece disposition) {
     base::Value dict(base::Value::Type::DICTIONARY);
-    for (const auto& pair : CreateBodyForNavigationInternal(s)) {
+    for (const auto& pair :
+         CreateBodyForNavigationInternal(blocked_url, disposition)) {
       dict.SetKey(std::move(pair.first), base::Value(std::move(pair.second)));
     }
     return dict;
   }
 
-  blink::mojom::ReportBodyPtr CreateMojomBodyForCorp(base::StringPiece s) {
+  blink::mojom::ReportBodyPtr CreateMojomBodyForCorp(
+      base::StringPiece blocked_url,
+      RequestDestination destination,
+      base::StringPiece disposition) {
     auto body = blink::mojom::ReportBody::New();
-    for (const auto& pair : CreateBodyForCorpInternal(s)) {
+    for (const auto& pair :
+         CreateBodyForCorpInternal(blocked_url, destination, disposition)) {
       body->body.push_back(blink::mojom::ReportBodyElement::New(
           std::move(pair.first), std::move(pair.second)));
     }
@@ -106,9 +117,11 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   }
 
   blink::mojom::ReportBodyPtr CreateMojomBodyForNavigation(
-      base::StringPiece s) {
+      base::StringPiece blocked_url,
+      base::StringPiece disposition) {
     auto body = blink::mojom::ReportBody::New();
-    for (const auto& pair : CreateBodyForNavigationInternal(s)) {
+    for (const auto& pair :
+         CreateBodyForNavigationInternal(blocked_url, disposition)) {
       body->body.push_back(blink::mojom::ReportBodyElement::New(
           std::move(pair.first), std::move(pair.second)));
     }
@@ -117,15 +130,24 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
 
  private:
   std::vector<std::pair<std::string, std::string>> CreateBodyForCorpInternal(
-      base::StringPiece s) const {
+      base::StringPiece blocked_url,
+      RequestDestination destination,
+      base::StringPiece disposition) const {
     return {std::make_pair("type", "corp"),
-            std::make_pair("blocked-url", s.as_string())};
+            std::make_pair("blocked-url", blocked_url.as_string()),
+            std::make_pair("blockedURL", blocked_url.as_string()),
+            std::make_pair("destination",
+                           network::RequestDestinationToString(destination)),
+            std::make_pair("disposition", disposition.as_string())};
   }
 
   std::vector<std::pair<std::string, std::string>>
-  CreateBodyForNavigationInternal(base::StringPiece s) const {
+  CreateBodyForNavigationInternal(base::StringPiece blocked_url,
+                                  base::StringPiece disposition) const {
     return {std::make_pair("type", "navigation"),
-            std::make_pair("blocked-url", s.as_string())};
+            std::make_pair("blocked-url", blocked_url.as_string()),
+            std::make_pair("blockedURL", blocked_url.as_string()),
+            std::make_pair("disposition", disposition.as_string())};
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -139,8 +161,10 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, NullEndpointsForCorp) {
                                              base::nullopt, base::nullopt);
 
   reporter.QueueCorpViolationReport(GURL("https://www1.example.com/y"),
+                                    RequestDestination::kEmpty,
                                     /*report_only=*/false);
   reporter.QueueCorpViolationReport(GURL("https://www2.example.com/x"),
+                                    RequestDestination::kEmpty,
                                     /*report_only=*/true);
 
   EXPECT_TRUE(network_context().reports().empty());
@@ -153,8 +177,10 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, BasicCorp) {
 
   reporter.QueueCorpViolationReport(
       GURL("https://www1.example.com/x#foo?bar=baz"),
+      RequestDestination::kScript,
       /*report_only=*/false);
   reporter.QueueCorpViolationReport(GURL("http://www2.example.com:41/y"),
+                                    RequestDestination::kEmpty,
                                     /*report_only=*/true);
 
   ASSERT_EQ(2u, network_context().reports().size());
@@ -164,12 +190,14 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, BasicCorp) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
-  EXPECT_EQ(r1.body,
-            CreateBodyForCorp("https://www1.example.com/x#foo?bar=baz"));
+  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x#foo?bar=baz",
+                                       RequestDestination::kScript, "enforce"));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.group, "e2");
   EXPECT_EQ(r2.url, kContextUrl);
-  EXPECT_EQ(r2.body, CreateBodyForCorp("http://www2.example.com:41/y"));
+  EXPECT_EQ(r2.body,
+            CreateBodyForCorp("http://www2.example.com:41/y",
+                              RequestDestination::kEmpty, "reporting"));
 }
 
 TEST_F(CrossOriginEmbedderPolicyReporterTest, UserAndPassForCorp) {
@@ -178,8 +206,10 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, UserAndPassForCorp) {
                                              "e1", "e2");
 
   reporter.QueueCorpViolationReport(GURL("https://u:p@www1.example.com/x"),
+                                    RequestDestination::kImage,
                                     /*report_only=*/false);
   reporter.QueueCorpViolationReport(GURL("https://u:p@www2.example.com/y"),
+                                    RequestDestination::kScript,
                                     /*report_only=*/true);
 
   ASSERT_EQ(2u, network_context().reports().size());
@@ -189,11 +219,14 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, UserAndPassForCorp) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
-  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x"));
+  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x",
+                                       RequestDestination::kImage, "enforce"));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.group, "e2");
   EXPECT_EQ(r2.url, kContextUrl);
-  EXPECT_EQ(r2.body, CreateBodyForCorp("https://www2.example.com/y"));
+  EXPECT_EQ(r2.body,
+            CreateBodyForCorp("https://www2.example.com/y",
+                              RequestDestination::kScript, "reporting"));
 }
 
 TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForCorp) {
@@ -205,8 +238,10 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForCorp) {
                                              base::nullopt, base::nullopt);
   reporter.BindObserver(std::move(observer_remote));
   reporter.QueueCorpViolationReport(GURL("https://u:p@www1.example.com/x"),
+                                    RequestDestination::kImage,
                                     /*report_only=*/false);
   reporter.QueueCorpViolationReport(GURL("https://u:p@www2.example.com/y"),
+                                    RequestDestination::kEmpty,
                                     /*report_only=*/true);
 
   observer.FlushForTesting();
@@ -217,11 +252,14 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForCorp) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.url, kContextUrl);
   EXPECT_TRUE(mojo::Equals(
-      r1.body, CreateMojomBodyForCorp("https://www1.example.com/x")));
+      r1.body, CreateMojomBodyForCorp("https://www1.example.com/x",
+                                      RequestDestination::kImage, "enforce")));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.url, kContextUrl);
   EXPECT_TRUE(mojo::Equals(
-      r2.body, CreateMojomBodyForCorp("https://www2.example.com/y")));
+      r2.body,
+      CreateMojomBodyForCorp("https://www2.example.com/y",
+                             RequestDestination::kEmpty, "reporting")));
 }
 
 TEST_F(CrossOriginEmbedderPolicyReporterTest, Clone) {
@@ -233,8 +271,10 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, Clone) {
   reporter.Clone(remote.BindNewPipeAndPassReceiver());
 
   remote->QueueCorpViolationReport(GURL("https://www1.example.com/x"),
+                                   RequestDestination::kIframe,
                                    /*report_only=*/false);
   remote->QueueCorpViolationReport(GURL("https://www2.example.com/y"),
+                                   RequestDestination::kScript,
                                    /*report_only=*/true);
 
   remote.FlushForTesting();
@@ -246,11 +286,14 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, Clone) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
-  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x"));
+  EXPECT_EQ(r1.body, CreateBodyForCorp("https://www1.example.com/x",
+                                       RequestDestination::kIframe, "enforce"));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.group, "e2");
   EXPECT_EQ(r2.url, kContextUrl);
-  EXPECT_EQ(r2.body, CreateBodyForCorp("https://www2.example.com/y"));
+  EXPECT_EQ(r2.body,
+            CreateBodyForCorp("https://www2.example.com/y",
+                              RequestDestination::kScript, "reporting"));
 }
 
 TEST_F(CrossOriginEmbedderPolicyReporterTest, NullEndpointsForNavigation) {
@@ -286,12 +329,13 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, BasicNavigation) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
-  EXPECT_EQ(r1.body,
-            CreateBodyForNavigation("https://www1.example.com/x#foo?bar=baz"));
+  EXPECT_EQ(r1.body, CreateBodyForNavigation(
+                         "https://www1.example.com/x#foo?bar=baz", "enforce"));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.group, "e2");
   EXPECT_EQ(r2.url, kContextUrl);
-  EXPECT_EQ(r2.body, CreateBodyForNavigation("http://www2.example.com:41/y"));
+  EXPECT_EQ(r2.body, CreateBodyForNavigation("http://www2.example.com:41/y",
+                                             "reporting"));
 }
 
 TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForNavigation) {
@@ -315,12 +359,13 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, ObserverForNavigation) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.url, kContextUrl);
   EXPECT_TRUE(mojo::Equals(
-      r1.body,
-      CreateMojomBodyForNavigation("https://www1.example.com/x#foo?bar=baz")));
+      r1.body, CreateMojomBodyForNavigation(
+                   "https://www1.example.com/x#foo?bar=baz", "enforce")));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.url, kContextUrl);
-  EXPECT_TRUE(mojo::Equals(
-      r2.body, CreateMojomBodyForNavigation("http://www2.example.com:41/y")));
+  EXPECT_TRUE(
+      mojo::Equals(r2.body, CreateMojomBodyForNavigation(
+                                "http://www2.example.com:41/y", "reporting")));
 }
 
 TEST_F(CrossOriginEmbedderPolicyReporterTest, UserAndPassForNavigation) {
@@ -339,11 +384,13 @@ TEST_F(CrossOriginEmbedderPolicyReporterTest, UserAndPassForNavigation) {
   EXPECT_EQ(r1.type, "coep");
   EXPECT_EQ(r1.group, "e1");
   EXPECT_EQ(r1.url, kContextUrl);
-  EXPECT_EQ(r1.body, CreateBodyForNavigation("https://www1.example.com/x"));
+  EXPECT_EQ(r1.body,
+            CreateBodyForNavigation("https://www1.example.com/x", "enforce"));
   EXPECT_EQ(r2.type, "coep");
   EXPECT_EQ(r2.group, "e2");
   EXPECT_EQ(r2.url, kContextUrl);
-  EXPECT_EQ(r2.body, CreateBodyForNavigation("https://www2.example.com/y"));
+  EXPECT_EQ(r2.body,
+            CreateBodyForNavigation("https://www2.example.com/y", "reporting"));
 }
 
 }  // namespace
