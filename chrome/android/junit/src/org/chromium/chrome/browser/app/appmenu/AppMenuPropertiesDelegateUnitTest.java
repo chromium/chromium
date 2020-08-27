@@ -10,13 +10,16 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import android.view.Menu;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.PopupMenu;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -31,12 +34,15 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
@@ -49,6 +55,9 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AppMenuPropertiesDelegateUnitTest {
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
     @Mock
     private ActivityTabProvider mActivityTabProvider;
     @Mock
@@ -207,7 +216,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.translate_id, R.id.share_row_menu_id, R.id.find_in_page_id,
                 R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
                 R.id.preferences_id, R.id.help_id};
+        Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
+                R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
+        assertActionBarItemsAreEqual(menu, expectedActionBarItems);
     }
 
     @Test
@@ -321,7 +333,76 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.find_in_page_id, R.id.translate_id, R.id.add_to_homescreen_id,
                 R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
                 R.id.help_id};
+        Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
+                R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
+        assertActionBarItemsAreEqual(menu, expectedActionBarItems);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testPageMenuItems_Phone_RegularPage_backward_button_action_bar() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP, true);
+        AppMenuPropertiesDelegateImpl.ACTION_BAR_VARIATION.setForTesting("backward_button");
+        setUpMocksForPageMenu();
+        when(mTab.getUrlString()).thenReturn("https://google.com");
+        when(mTab.isNativePage()).thenReturn(false);
+        doReturn(false)
+                .when(mAppMenuPropertiesDelegate)
+                .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
+        doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowTranslateMenuItem(any(Tab.class));
+        doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowRegroupedMenu();
+        doReturn(R.string.menu_add_to_homescreen)
+                .when(mAppMenuPropertiesDelegate)
+                .getAddToHomeScreenTitle();
+
+        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
+                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
+                R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
+                R.id.divider_line_id, R.id.share_row_menu_id, R.id.find_in_page_id,
+                R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
+                R.id.divider_line_id, R.id.preferences_id, R.id.info_id, R.id.help_id};
+        Integer[] expectedActionBarItems = {R.id.backward_menu_id, R.id.forward_menu_id,
+                R.id.offline_page_id, R.id.bookmark_this_page_id, R.id.reload_menu_id};
+        assertMenuItemsAreEqual(menu, expectedItems);
+        assertActionBarItemsAreEqual(menu, expectedActionBarItems);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    public void testPageMenuItems_Phone_RegularPage_share_button_action_bar() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP, true);
+        AppMenuPropertiesDelegateImpl.ACTION_BAR_VARIATION.setForTesting("share_button");
+        setUpMocksForPageMenu();
+        when(mTab.getUrlString()).thenReturn("https://google.com");
+        when(mTab.isNativePage()).thenReturn(false);
+        doReturn(false)
+                .when(mAppMenuPropertiesDelegate)
+                .shouldShowPaintPreview(anyBoolean(), any(Tab.class), anyBoolean());
+        doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowTranslateMenuItem(any(Tab.class));
+        doReturn(true).when(mAppMenuPropertiesDelegate).shouldShowRegroupedMenu();
+        doReturn(R.string.menu_add_to_homescreen)
+                .when(mAppMenuPropertiesDelegate)
+                .getAddToHomeScreenTitle();
+
+        Assert.assertEquals(MenuGroup.PAGE_MENU, mAppMenuPropertiesDelegate.getMenuGroup());
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+
+        Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
+                R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
+                R.id.downloads_menu_id, R.id.all_bookmarks_menu_id, R.id.recent_tabs_menu_id,
+                R.id.divider_line_id, R.id.find_in_page_id, R.id.translate_id,
+                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
+                R.id.divider_line_id, R.id.preferences_id, R.id.info_id, R.id.help_id};
+        Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
+                R.id.offline_page_id, R.id.share_menu_button_id, R.id.reload_menu_id};
+        assertMenuItemsAreEqual(menu, expectedItems);
+        assertActionBarItemsAreEqual(menu, expectedActionBarItems);
     }
 
     @Test
@@ -400,6 +481,19 @@ public class AppMenuPropertiesDelegateUnitTest {
 
         Assert.assertThat("Populated menu items were:" + getMenuTitles(menu), actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
+    }
+
+    private void assertActionBarItemsAreEqual(Menu menu, Integer... expectedItems) {
+        SubMenu actionBar = menu.findItem(R.id.icon_row_menu_id).getSubMenu();
+        List<Integer> actualItems = new ArrayList<>();
+        for (int i = 0; i < actionBar.size(); i++) {
+            if (actionBar.getItem(i).isVisible()) {
+                actualItems.add(actionBar.getItem(i).getItemId());
+            }
+        }
+
+        Assert.assertThat("Populated action bar  items were:" + getMenuTitles(actionBar),
+                actualItems, Matchers.containsInAnyOrder(expectedItems));
     }
 
     private void assertMenuItemsHaveIcons(Menu menu, Integer... expectedItems) {

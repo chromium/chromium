@@ -1967,6 +1967,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // All the code below assumes currentTab is not null, so return early if it is null.
         if (currentTab == null) {
             return false;
+        } else if (id == R.id.backward_menu_id) {
+            if (currentTab.canGoBack()) {
+                currentTab.goBack();
+                RecordUserAction.record("MobileMenuBackward");
+            }
         } else if (id == R.id.forward_menu_id) {
             if (currentTab.canGoForward()) {
                 currentTab.goForward();
@@ -1986,7 +1991,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 currentTab.reload();
                 RecordUserAction.record("MobileMenuReload");
             }
-        } else if (id == R.id.info_menu_id) {
+        } else if (id == R.id.info_menu_id || id == R.id.info_id) {
             WebContents webContents = currentTab.getWebContents();
             PageInfoController.show(this, webContents, null,
                     PageInfoController.OpenedFromSource.MENU,

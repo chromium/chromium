@@ -41401,6 +41401,7 @@ from previous Chrome versions.
   <int value="-880201293" label="OmniboxAssistantVoiceSearch:disabled"/>
   <int value="-879055117" label="ClipboardContentSetting:enabled"/>
   <int value="-879031960" label="FetchKeepaliveTimeoutSetting:disabled"/>
+  <int value="-876773120" label="TabbedAppOverflowMenuActionBar:enabled"/>
   <int value="-876148583" label="ArcBootCompletedBroadcast:disabled"/>
   <int value="-875217114"
       label="OmniboxEnableClipboardProviderTextSuggestions:enabled"/>
@@ -41464,6 +41465,7 @@ from previous Chrome versions.
   <int value="-806480547" label="SyncDeviceInfoInTransportMode:enabled"/>
   <int value="-805480822" label="RemoteCopyImageNotification:disabled"/>
   <int value="-803233334" label="AutofillRefreshStyleAndroid:disabled"/>
+  <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>

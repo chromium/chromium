@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.flags;
 import android.text.TextUtils;
 
 import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -83,6 +84,7 @@ public class ChromeCachedFlags {
 
         // clang-format off
         List<CachedFieldTrialParameter> fieldTrialsToCache = Arrays.asList(
+                AppMenuPropertiesDelegateImpl.ACTION_BAR_VARIATION,
                 BottomToolbarVariationManager.BOTTOM_TOOLBAR_VARIATION,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD,

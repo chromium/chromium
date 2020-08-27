@@ -9,6 +9,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import androidx.test.filters.SmallTest;
@@ -33,13 +34,17 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.share.ShareUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -63,6 +68,7 @@ public class TabbedAppMenuTest {
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     private static final String TEST_URL = UrlUtils.encodeHtmlDataUri("<html>foo</html>");
+    private static final String TEST_URL2 = UrlUtils.encodeHtmlDataUri("<html>bar</html>");
 
     private AppMenuHandler mAppMenuHandler;
 
@@ -262,6 +268,84 @@ public class TabbedAppMenuTest {
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:action_bar/backward_button"})
+    public void
+    testBackButtonMenuItem() throws IOException {
+        MenuItem backArrow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                                     .findItem(R.id.backward_menu_id);
+        Assert.assertFalse("Backward button item should be disabled.", backArrow.isEnabled());
+        Assert.assertEquals("Incorrect content description.",
+                mActivityTestRule.getActivity().getString(R.string.back),
+                backArrow.getTitleCondensed());
+        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_backward_diabled");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        mActivityTestRule.loadUrl(TEST_URL2);
+        showAppMenuAndAssertMenuShown();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        backArrow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                            .findItem(R.id.backward_menu_id);
+        Assert.assertTrue("Backward button item should be enabled.", backArrow.isEnabled());
+
+        LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
+        Assert.assertEquals(5, actionBar.getChildCount());
+
+        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_backward_enabled");
+
+        selectMenuItem(R.id.backward_menu_id);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        ShareUtils shareUtils = new ShareUtils();
+        CriteriaHelper.pollUiThread(() -> {
+            Tab tab = mActivityTestRule.getActivity().getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+            Criteria.checkThat(tab.getUrlString(), Matchers.is(TEST_URL));
+            Criteria.checkThat(shareUtils.shouldEnableShare(tab), Matchers.is(false));
+        });
+        showAppMenuAndAssertMenuShown();
+        backArrow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                            .findItem(R.id.backward_menu_id);
+        Assert.assertFalse("Backward button item should be disabled.", backArrow.isEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "Main", "RenderTest"})
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @EnableFeatures({ChromeFeatureList.TABBED_APP_OVERFLOW_MENU_REGROUP + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:action_bar/share_button"})
+    public void
+    testShareButtonMenuItem() throws IOException {
+        MenuItem shareButton = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                                       .findItem(R.id.share_menu_button_id);
+        Assert.assertFalse("Share button item should be disabled.", shareButton.isEnabled());
+        Assert.assertEquals("Incorrect content description.",
+                mActivityTestRule.getActivity().getString(R.string.share),
+                shareButton.getTitleCondensed());
+        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_share_diabled");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(
+                "/chrome/test/data/android/contextualsearch/tap_test.html"));
+        showAppMenuAndAssertMenuShown();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        shareButton = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
+                              .findItem(R.id.share_menu_button_id);
+        Assert.assertTrue("Share button item should be enabled.", shareButton.isEnabled());
+
+        LinearLayout actionBar = (LinearLayout) getListView().getChildAt(0);
+        Assert.assertEquals(5, actionBar.getChildCount());
+        mRenderTestRule.render(getListView().getChildAt(0), "icon_row_share_enabled");
+    }
+
     private void showAppMenuAndAssertMenuShown() {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 ()
@@ -324,5 +408,10 @@ public class TabbedAppMenuTest {
 
     private ListView getListView() {
         return AppMenuTestSupport.getListView(mActivityTestRule.getAppMenuCoordinator());
+    }
+
+    private void selectMenuItem(int id) {
+        CriteriaHelper.pollUiThread(
+                () -> { mActivityTestRule.getActivity().onMenuOrKeyboardAction(id, true); });
     }
 }

@@ -1810,6 +1810,16 @@ const FeatureEntry::FeatureVariation
          kOmniboxImageSearchSuggestionThumbnailVariationConstant,
          base::size(kOmniboxImageSearchSuggestionThumbnailVariationConstant),
          nullptr}};
+
+const FeatureEntry::FeatureParam kTabbedAppOverflowMenuRegroupBackward[] = {
+    {"action_bar", "backward_button"}};
+const FeatureEntry::FeatureParam kTabbedAppOverflowMenuRegroupShare[] = {
+    {"action_bar", "share_button"}};
+const FeatureEntry::FeatureVariation kTabbedAppOverflowMenuRegroupVariations[] =
+    {{"(backward button)", kTabbedAppOverflowMenuRegroupBackward,
+      base::size(kTabbedAppOverflowMenuRegroupBackward), nullptr},
+     {"(share button)", kTabbedAppOverflowMenuRegroupShare,
+      base::size(kTabbedAppOverflowMenuRegroupShare), nullptr}};
 #endif  // OS_ANDROID
 
 const FeatureEntry::FeatureVariation
@@ -3849,7 +3859,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"tabbed-app-overflow-menu-regroup",
      flag_descriptions::kTabbedAppOverflowMenuRegroupName,
      flag_descriptions::kTabbedAppOverflowMenuRegroupDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabbedAppOverflowMenuRegroup)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kTabbedAppOverflowMenuRegroup,
+         kTabbedAppOverflowMenuRegroupVariations,
+         "TabbedAppOverflowMenuRegroup")},
 #endif  // OS_ANDROID
 
     {"omnibox-display-title-for-current-url",

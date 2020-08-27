@@ -395,7 +395,8 @@ public class RootUiCoordinator
                 RecordUserAction.record("MobileShortcutFindInPage");
             }
             return true;
-        } else if (id == R.id.share_menu_id || id == R.id.direct_share_menu_id) {
+        } else if (id == R.id.share_menu_button_id || id == R.id.share_menu_id
+                || id == R.id.direct_share_menu_id) {
             onShareMenuItemSelected(id == R.id.direct_share_menu_id,
                     mActivity.getTabModelSelector().isIncognitoSelected());
         } else if (id == R.id.paint_preview_show_id) {

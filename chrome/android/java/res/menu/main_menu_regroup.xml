@@ -20,6 +20,10 @@
         <item android:id="@+id/icon_row_menu_id"
             android:title="@null">
             <menu>
+              <item android:id="@+id/backward_menu_id"
+                android:title="@string/accessibility_toolbar_btn_back"
+                android:titleCondensed="@string/back"
+                android:icon="@drawable/btn_back"/>
               <item android:id="@+id/forward_menu_id"
                 android:title="@string/accessibility_menu_forward"
                 android:titleCondensed="@string/menu_forward"
@@ -32,6 +36,10 @@
                 android:title="@string/download_page"
                 android:titleCondensed="@string/menu_download"
                 android:icon="@drawable/ic_file_download_white_24dp"/>
+              <item android:id="@+id/share_menu_button_id"
+                android:title="@string/share"
+                android:titleCondensed="@string/share"
+                android:icon="@drawable/ic_share_white_24dp" />
               <item android:id="@+id/info_menu_id"
                 android:title="@string/accessibility_menu_info"
                 android:titleCondensed="@string/menu_page_info"
@@ -114,6 +122,9 @@
         <item android:id="@+id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />
+        <item android:id="@+id/info_id"
+            android:title="@string/menu_page_info"
+            android:icon="@drawable/btn_info" />
         <item android:id="@+id/help_id"
             android:title="@string/menu_help"
             android:icon="@drawable/help_outline" />
