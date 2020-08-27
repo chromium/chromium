@@ -216,7 +216,12 @@ Polymer({
    * @private
    */
   showTechnology_() {
-    return this.getTechnology_() !== '' && this.showTechnologyBadge;
+    if (!this.networkState) {
+      return false;
+    }
+    return OncMojo.connectionStateIsConnected(
+               this.networkState.connectionState) &&
+        this.getTechnology_() !== '' && this.showTechnologyBadge;
   },
 
   /**
