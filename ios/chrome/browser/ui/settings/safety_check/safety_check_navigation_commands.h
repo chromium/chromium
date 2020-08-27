@@ -12,8 +12,8 @@
 // Shows password issues page.
 - (void)showPasswordIssuesPage;
 
-// Opens Chrome page in App Store for updates.
-- (void)showUpdateOnAppStorePage;
+// Opens update page at |location|.
+- (void)showUpdateAtLocation:(NSString*)location;
 
 // Shows page with Safe Browsing preference toggle.
 - (void)showSafeBrowsingPreferencePage;

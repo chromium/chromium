@@ -328,6 +328,36 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PAGE_HEADER" desc="Informational header at the top of the safety check page">
         Chromium can help keep you safe from data breaches, unsafe websites and more.
       </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_CHANNEL_CANARY_DESC" desc="Description text for when the app is on Canary and unable to run the check">
+        Not supported on Chromium Canary
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_CHANNEL_BETA_DESC" desc="Description text for when the app is on Beta and unable to run the check">
+        Not supported on Chromium Beta
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_UP_TO_DATE_DESC" desc="Description text for when Chromium is up to date">
+        Chromium is up to date
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OUT_OF_DATE_DESC" desc="Description text for when Chromium is out of date">
+        Chromium is out of date
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OFFLINE_DESC" desc="Description text for when updates can't be checked because the user is offline">
+        Offline, Chromium can't check for updates
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_OFFLINE_INFO" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="The user has no internet connection and can't check for updates.">
+        Chromium couldn't check for updates. Try checking your internet connection.
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_ERROR_DESC" desc="Description text for when updates can't be checked because there was an issue with the check">
+        Chromium can't check for updates
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_ERROR_INFO" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="An error occured while performing the update check.">
+        Chromium couldn't check for updates. Try again later.
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_UNABLE_DESC" desc="Description text for when the device is not able to update to the newest version">
+        Chromium can't update
+      </message>
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_UPDATES_UNABLE_INFO" desc="Text inside popover which is shown when the user wants to see detailed information about the error. [iOS only]" meaning="The device is not able to update to the newest version.">
+        Chromium is out of date. If no update is available in the <ph name="BEGIN_LINK">BEGIN_LINK</ph>App Store<ph name="END_LINK">END_LINK</ph>, it's possible that your device doesn't support new versions of Chromium anymore.
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECK_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Chromium can't check your passwords
       </message>
