@@ -470,6 +470,27 @@
             ]
         }
     ],
+    "AutofillSkipFillingFieldsWithChangedValues": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "enabled",
+                    "enable_features": [
+                        "AutofillSkipFillingFieldsWithChangedValues"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillSmallFormSupport": [
         {
             "platforms": [
