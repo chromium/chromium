@@ -212,11 +212,11 @@ String ExceptionState::AddExceptionContext(const String& message) const {
       case kIndexedDeletionContext:
         return ExceptionMessages::FailedToDeleteIndexed(i, m);
       case kNamedGetterContext:
-        break;
+        return ExceptionMessages::FailedToGetNamed(i, m);
       case kNamedSetterContext:
-        break;
+        return ExceptionMessages::FailedToSetNamed(i, m);
       case kNamedDeletionContext:
-        break;
+        return ExceptionMessages::FailedToDeleteNamed(i, m);
       case kUnknownContext:
         break;
     }
@@ -245,11 +245,11 @@ String ExceptionState::AddExceptionContext(const String& message) const {
       case kIndexedDeletionContext:
         return ExceptionMessages::FailedToDeleteIndexed(i, m);
       case kNamedGetterContext:
-        break;
+        return ExceptionMessages::FailedToGetNamed(i, m);
       case kNamedSetterContext:
-        break;
+        return ExceptionMessages::FailedToSetNamed(i, m);
       case kNamedDeletionContext:
-        break;
+        return ExceptionMessages::FailedToDeleteNamed(i, m);
       case kUnknownContext:
         break;
     }
