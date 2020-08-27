@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.content_capture.ContentCaptureConsumerImpl;
+import org.chromium.components.content_capture.ExperimentContentCaptureConsumer;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -189,7 +190,9 @@ public class CompositorViewHolder extends FrameLayout
 
     // Indicates if ContentCaptureConsumer should be created, we only try to create it once.
     private boolean mShouldCreateContentCaptureConsumer = true;
-    private ContentCaptureConsumer mContentCaptureConsumer;
+    // TODO: (crbug.com/1119663) Move consumers out of this class while support multiple consumers.
+    private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers =
+            new ArrayList<ContentCaptureConsumer>();
 
     private Set<Runnable> mOnCompositorLayoutCallbacks = new HashSet<>();
     private Set<Runnable> mDidSwapFrameCallbacks = new HashSet<>();
@@ -533,10 +536,10 @@ public class CompositorViewHolder extends FrameLayout
             mInsetObserverView.removeObserver(this);
             mInsetObserverView = null;
         }
-        if (mContentCaptureConsumer != null) {
-            mContentCaptureConsumer.onWebContentsChanged(null);
-            mContentCaptureConsumer = null;
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            consumer.onWebContentsChanged(null);
         }
+        mContentCaptureConsumers.clear();
         if (mContentView != null) {
             mContentView.removeOnHierarchyChangeListener(this);
         }
@@ -1320,15 +1323,20 @@ public class CompositorViewHolder extends FrameLayout
 
         if (mTabVisible != null) initializeTab(mTabVisible);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (mShouldCreateContentCaptureConsumer) {
-                mContentCaptureConsumer =
+        if (mShouldCreateContentCaptureConsumer) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ContentCaptureConsumer consumer =
                         ContentCaptureConsumerImpl.create(getContext(), this, getWebContents());
-                mShouldCreateContentCaptureConsumer = false;
+                if (consumer != null) mContentCaptureConsumers.add(consumer);
             }
-        }
-        if (mContentCaptureConsumer != null) {
-            mContentCaptureConsumer.onWebContentsChanged(getWebContents());
+            ContentCaptureConsumer consumer =
+                    ExperimentContentCaptureConsumer.create(getWebContents());
+            if (consumer != null) mContentCaptureConsumers.add(consumer);
+            mShouldCreateContentCaptureConsumer = false;
+        } else {
+            for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+                consumer.onWebContentsChanged(getWebContents());
+            }
         }
     }
 

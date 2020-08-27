@@ -9,6 +9,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -18,7 +19,8 @@ public class ContentCaptureReceiverManager {
     private static final String TAG = "ContentCapture";
     private static Boolean sDump;
 
-    private ContentCaptureConsumer mContentCaptureConsumer;
+    private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers =
+            new ArrayList<ContentCaptureConsumer>();
 
     public static ContentCaptureReceiverManager createOrGet(WebContents webContents) {
         return ContentCaptureReceiverManagerJni.get().createOrGet(webContents);
@@ -29,22 +31,30 @@ public class ContentCaptureReceiverManager {
         if (sDump == null) sDump = ContentCaptureFeatures.isDumpForTestingEnabled();
     }
 
-    public void setContentCaptureConsumer(ContentCaptureConsumer consumer) {
-        mContentCaptureConsumer = consumer;
+    public void addContentCaptureConsumer(ContentCaptureConsumer consumer) {
+        mContentCaptureConsumers.add(consumer);
     }
 
     @CalledByNative
     private void didCaptureContent(Object[] session, ContentCaptureData data) {
-        if (mContentCaptureConsumer != null) {
-            mContentCaptureConsumer.onContentCaptured(toFrameSession(session), data);
+        FrameSession frameSession = toFrameSession(session);
+        String[] urls = buildUrls(frameSession, data);
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) {
+                consumer.onContentCaptured(frameSession, data);
+            }
         }
         if (sDump.booleanValue()) Log.i(TAG, "Captured Content: %s", data);
     }
 
     @CalledByNative
     private void didUpdateContent(Object[] session, ContentCaptureData data) {
-        if (mContentCaptureConsumer != null) {
-            mContentCaptureConsumer.onContentUpdated(toFrameSession(session), data);
+        FrameSession frameSession = toFrameSession(session);
+        String[] urls = buildUrls(frameSession, data);
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) {
+                consumer.onContentUpdated(frameSession, data);
+            }
         }
         if (sDump.booleanValue()) Log.i(TAG, "Updated Content: %s", data);
     }
@@ -52,8 +62,11 @@ public class ContentCaptureReceiverManager {
     @CalledByNative
     private void didRemoveContent(Object[] session, long[] data) {
         FrameSession frameSession = toFrameSession(session);
-        if (mContentCaptureConsumer != null) {
-            mContentCaptureConsumer.onContentRemoved(frameSession, data);
+        String[] urls = buildUrls(frameSession, null);
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) {
+                consumer.onContentRemoved(frameSession, data);
+            }
         }
         if (sDump.booleanValue()) {
             Log.i(TAG, "Removed Content: %s", frameSession.get(0) + " " + Arrays.toString(data));
@@ -63,7 +76,12 @@ public class ContentCaptureReceiverManager {
     @CalledByNative
     private void didRemoveSession(Object[] session) {
         FrameSession frameSession = toFrameSession(session);
-        if (mContentCaptureConsumer != null) mContentCaptureConsumer.onSessionRemoved(frameSession);
+        String[] urls = buildUrls(frameSession, null);
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer.shouldCapture(urls)) {
+                consumer.onSessionRemoved(frameSession);
+            }
+        }
         if (sDump.booleanValue()) Log.i(TAG, "Removed Session: %s", frameSession.get(0));
     }
 
@@ -71,6 +89,19 @@ public class ContentCaptureReceiverManager {
         FrameSession frameSession = new FrameSession(session.length);
         for (Object s : session) frameSession.add((ContentCaptureData) s);
         return frameSession;
+    }
+
+    private String[] buildUrls(FrameSession session, ContentCaptureData data) {
+        ArrayList<String> urls = new ArrayList<String>();
+        if (session != null) {
+            for (ContentCaptureData d : session) {
+                urls.add(d.getValue());
+            }
+        }
+        if (data != null) urls.add(data.getValue());
+        String[] result = new String[urls.size()];
+        urls.toArray(result);
+        return result;
     }
 
     @NativeMethods

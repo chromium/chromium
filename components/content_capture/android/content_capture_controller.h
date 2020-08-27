@@ -35,6 +35,9 @@ class ContentCaptureController {
                     const base::android::JavaParamRef<jbooleanArray>& jtype);
   void SetJavaPeer(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& jcaller);
+  bool ShouldCapture(JNIEnv* env,
+                     const base::android::JavaParamRef<jobject>& jcaller,
+                     const base::android::JavaParamRef<jobjectArray>& urls);
 
  private:
   virtual ~ContentCaptureController();
