@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
+import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Intent;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.ViewGroup;
@@ -28,18 +33,22 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -60,8 +69,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SwitchToTabTest {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     private static final int INVALID_INDEX = -1;
 
     private EmbeddedTestServer mTestServer;
@@ -266,9 +274,44 @@ public class SwitchToTabTest {
             Tab tab = mActivityTestRule.getActivity().getActivityTab();
             Criteria.checkThat(tab, Matchers.notNullValue());
             Criteria.checkThat(tab, Matchers.is(aboutTab));
-            // Make sure tab is in either upload page or result page. cannot only verify one of
-            // them since on fast device tab jump to result page really quick but on slow device
-            // may stay on upload page for a really long time.
+            Criteria.checkThat(tab.getUrlString(), Matchers.is(testHttpsUrl1));
+        });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.N)
+    @EnableFeatures("OmniboxTabSwitchSuggestions")
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
+    public void testSwitchToTabSuggestionWhenIncognitoTabOnTop() throws InterruptedException {
+        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
+                InstrumentationRegistry.getInstrumentation().getContext(),
+                ServerCertificate.CERT_OK);
+        final String testHttpsUrl1 = mTestServer.getURL("/chrome/test/data/android/about.html");
+        final String testHttpsUrl2 = mTestServer.getURL("/chrome/test/data/android/ok.txt");
+        final String testHttpsUrl3 = mTestServer.getURL("/chrome/test/data/android/test.html");
+        mActivityTestRule.loadUrlInNewTab(testHttpsUrl2);
+        mActivityTestRule.loadUrlInNewTab(testHttpsUrl3);
+        final Tab aboutTab = mActivityTestRule.loadUrlInNewTab(testHttpsUrl1);
+
+        // Move "about.html" page to cta2 and create an incognito tab on top of "about.html".
+        final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta1,
+                R.id.move_to_other_window_menu_id);
+        final ChromeTabbedActivity2 cta2 = waitForSecondChromeTabbedActivity();
+        createTabs(cta2, true, 1);
+        moveActivityToFront(cta1);
+
+        // Switch back to cta1, and try to switch to "about.html" in cta2.
+        LocationBarLayout locationBarLayout =
+                (LocationBarLayout) cta1.findViewById(R.id.location_bar);
+        typeAndClickMatchingTabMatchSuggestion(cta1, locationBarLayout, aboutTab);
+
+        CriteriaHelper.pollUiThread(() -> {
+            Tab tab = cta2.getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+            Criteria.checkThat(tab, Matchers.is(aboutTab));
             Criteria.checkThat(tab.getUrlString(), Matchers.is(testHttpsUrl1));
         });
     }
