@@ -6102,6 +6102,21 @@
             ]
         }
     ],
+    "SafeBrowsingRealTimeUrlLookupEnabledIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingRealTimeUrlLookupEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingRealTimeUrlLookupEnabledWithToken": [
         {
             "platforms": [
