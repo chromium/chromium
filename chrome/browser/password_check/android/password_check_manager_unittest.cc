@@ -436,3 +436,18 @@ TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {
                                                 base::ASCIIToUTF16(kPassword1)),
           password_manager::IsLeaked(false));
 }
+
+TEST_F(PasswordCheckManagerTest, DoesntUpdateNonExistingProgress) {
+  InitializeManager();
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  store().AddLogin(MakeSavedPassword(kExampleOrg, kUsername1, kPassword1));
+  store().AddLogin(MakeSavedPassword(kExampleCom, kUsername2));
+  RunUntilIdle();
+
+  EXPECT_CALL(mock_observer(), OnPasswordCheckProgressChanged).Times(0);
+  static_cast<password_manager::BulkLeakCheckDelegateInterface*>(service())
+      ->OnFinishedCredential(
+          password_manager::LeakCheckCredential(base::ASCIIToUTF16(kUsername1),
+                                                base::ASCIIToUTF16(kPassword1)),
+          password_manager::IsLeaked(false));
+}
