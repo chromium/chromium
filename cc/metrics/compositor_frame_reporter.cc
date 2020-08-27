@@ -300,11 +300,13 @@ CompositorFrameReporter::CompositorFrameReporter(
     const ActiveTrackers& active_trackers,
     const viz::BeginFrameArgs& args,
     LatencyUkmReporter* latency_ukm_reporter,
-    bool should_report_metrics)
+    bool should_report_metrics,
+    SmoothThread smooth_thread)
     : should_report_metrics_(should_report_metrics),
       args_(args),
       active_trackers_(active_trackers),
-      latency_ukm_reporter_(latency_ukm_reporter) {}
+      latency_ukm_reporter_(latency_ukm_reporter),
+      smooth_thread_(smooth_thread) {}
 
 std::unique_ptr<CompositorFrameReporter>
 CompositorFrameReporter::CopyReporterAtBeginImplStage() const {
@@ -315,7 +317,8 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() const {
     return nullptr;
   }
   auto new_reporter = std::make_unique<CompositorFrameReporter>(
-      active_trackers_, args_, latency_ukm_reporter_, should_report_metrics_);
+      active_trackers_, args_, latency_ukm_reporter_, should_report_metrics_,
+      smooth_thread_);
   new_reporter->did_finish_impl_frame_ = did_finish_impl_frame_;
   new_reporter->impl_frame_finish_time_ = impl_frame_finish_time_;
   new_reporter->main_frame_abort_time_ = main_frame_abort_time_;
@@ -484,6 +487,9 @@ void CompositorFrameReporter::TerminateReporter() {
       else
         dropped_frame_counter_->AddGoodFrame();
     }
+
+    if (IsDroppedFrameAffectingSmoothness())
+      dropped_frame_counter_->AddDroppedFrameAffectingSmoothness();
   }
 }
 
@@ -1031,6 +1037,27 @@ base::TimeDelta CompositorFrameReporter::SumOfStageHistory() const {
 
 base::TimeTicks CompositorFrameReporter::Now() const {
   return tick_clock_->NowTicks();
+}
+
+bool CompositorFrameReporter::IsDroppedFrameAffectingSmoothness() const {
+  // If the frame was not shown, then it hurt smoothness only if either of the
+  // threads is affecting smoothness (e.g. running an animation, scroll, pinch,
+  // etc.).
+  if (TestReportType(FrameReportType::kDroppedFrame)) {
+    return smooth_thread_ != SmoothThread::kSmoothNone;
+  }
+
+  // If the frame was shown, but included only partial updates, then it hurt
+  // smoothness only if the main-thread is affecting smoothness (e.g. running an
+  // animation, or scroll etc.).
+  if (has_partial_update_) {
+    return smooth_thread_ == SmoothThread::kSmoothMain ||
+           smooth_thread_ == SmoothThread::kSmoothBoth;
+  }
+
+  // If the frame was shown, and did not include partial updates, then this
+  // frame did not hurt smoothness.
+  return false;
 }
 
 }  // namespace cc

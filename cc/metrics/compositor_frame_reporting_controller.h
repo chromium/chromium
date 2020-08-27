@@ -76,8 +76,11 @@ class CC_EXPORT CompositorFrameReportingController {
 
   void SetUkmManager(UkmManager* manager);
 
-  virtual void AddActiveTracker(FrameSequenceTrackerType type);
-  virtual void RemoveActiveTracker(FrameSequenceTrackerType type);
+  void AddActiveTracker(FrameSequenceTrackerType type);
+  void RemoveActiveTracker(FrameSequenceTrackerType type);
+
+  void SetThreadAffectsSmoothness(FrameSequenceMetrics::ThreadType thread_type,
+                                  bool affects_smoothness);
 
   void set_tick_clock(const base::TickClock* tick_clock) {
     DCHECK(tick_clock);
@@ -113,12 +116,16 @@ class CC_EXPORT CompositorFrameReportingController {
   bool CanSubmitMainFrame(const viz::BeginFrameId& id) const;
   std::unique_ptr<CompositorFrameReporter> RestoreReporterAtBeginImpl(
       const viz::BeginFrameId& id);
+  CompositorFrameReporter::SmoothThread GetSmoothThread() const;
 
   const bool should_report_metrics_;
   viz::BeginFrameId last_submitted_frame_id_;
 
   bool next_activate_has_invalidation_ = false;
   CompositorFrameReporter::ActiveTrackers active_trackers_;
+
+  bool is_compositor_thread_driving_smoothness_ = false;
+  bool is_main_thread_driving_smoothness_ = false;
 
   // The latency reporter passed to each CompositorFrameReporter. Owned here
   // because it must be common among all reporters.

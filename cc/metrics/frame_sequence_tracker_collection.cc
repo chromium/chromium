@@ -66,6 +66,25 @@ FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
     DCHECK_NE(scrolling_thread, ThreadType::kUnknown);
     metrics->SetScrollingThread(scrolling_thread);
   }
+
+  if (type != FrameSequenceTrackerType::kUniversal) {
+    if (metrics->GetEffectiveThread() == ThreadType::kCompositor) {
+      if (compositor_frame_reporting_controller_ &&
+          compositor_thread_driving_smoothness_ == 0) {
+        compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
+            ThreadType::kCompositor, true);
+      }
+      ++compositor_thread_driving_smoothness_;
+    } else {
+      DCHECK_EQ(metrics->GetEffectiveThread(), ThreadType::kMain);
+      if (compositor_frame_reporting_controller_ &&
+          main_thread_driving_smoothness_ == 0) {
+        compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
+            ThreadType::kMain, true);
+      }
+      ++main_thread_driving_smoothness_;
+    }
+  }
   return frame_trackers_[key].get();
 }
 
@@ -108,12 +127,31 @@ void FrameSequenceTrackerCollection::StopSequence(
   if (!frame_trackers_.contains(key))
     return;
 
-  std::unique_ptr<FrameSequenceTracker> tracker =
-      std::move(frame_trackers_[key]);
-
-  if (compositor_frame_reporting_controller_)
+  auto tracker = std::move(frame_trackers_[key]);
+  if (compositor_frame_reporting_controller_) {
     compositor_frame_reporting_controller_->RemoveActiveTracker(
         tracker->type());
+  }
+
+  if (type != FrameSequenceTrackerType::kUniversal) {
+    if (tracker->metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
+      DCHECK_GT(compositor_thread_driving_smoothness_, 0u);
+      --compositor_thread_driving_smoothness_;
+      if (compositor_frame_reporting_controller_ &&
+          compositor_thread_driving_smoothness_ == 0) {
+        compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
+            ThreadType::kCompositor, false);
+      }
+    } else {
+      DCHECK_GT(main_thread_driving_smoothness_, 0u);
+      --main_thread_driving_smoothness_;
+      if (compositor_frame_reporting_controller_ &&
+          main_thread_driving_smoothness_ == 0) {
+        compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
+            ThreadType::kMain, false);
+      }
+    }
+  }
 
   frame_trackers_.erase(key);
   tracker->ScheduleTerminate();

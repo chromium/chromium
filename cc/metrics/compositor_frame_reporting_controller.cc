@@ -13,6 +13,7 @@
 
 namespace cc {
 namespace {
+using SmoothThread = CompositorFrameReporter::SmoothThread;
 using StageType = CompositorFrameReporter::StageType;
 using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 }  // namespace
@@ -69,7 +70,7 @@ void CompositorFrameReportingController::WillBeginImplFrame(
   }
   auto reporter = std::make_unique<CompositorFrameReporter>(
       active_trackers_, args, latency_ukm_reporter_.get(),
-      should_report_metrics_);
+      should_report_metrics_, GetSmoothThread());
   reporter->set_tick_clock(tick_clock_);
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                        begin_time);
@@ -96,7 +97,7 @@ void CompositorFrameReportingController::WillBeginMainFrame(
     // deadline yet). So will start a new reporter at BeginMainFrame.
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers_, args, latency_ukm_reporter_.get(),
-        should_report_metrics_);
+        should_report_metrics_, GetSmoothThread());
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kSendBeginMainFrameToCommit, Now());
     reporter->SetDroppedFrameCounter(dropped_frame_counter_);
@@ -347,6 +348,17 @@ void CompositorFrameReportingController::RemoveActiveTracker(
   active_trackers_.reset(static_cast<size_t>(type));
 }
 
+void CompositorFrameReportingController::SetThreadAffectsSmoothness(
+    FrameSequenceMetrics::ThreadType thread_type,
+    bool affects_smoothness) {
+  if (thread_type == FrameSequenceMetrics::ThreadType::kCompositor) {
+    is_compositor_thread_driving_smoothness_ = affects_smoothness;
+  } else {
+    DCHECK_EQ(thread_type, FrameSequenceMetrics::ThreadType::kMain);
+    is_main_thread_driving_smoothness_ = affects_smoothness;
+  }
+}
+
 void CompositorFrameReportingController::AdvanceReporterStage(
     PipelineStage start,
     PipelineStage target) {
@@ -399,6 +411,18 @@ CompositorFrameReportingController::RestoreReporterAtBeginImpl(
 
 void CompositorFrameReportingController::SetUkmManager(UkmManager* manager) {
   latency_ukm_reporter_->set_ukm_manager(manager);
+}
+
+CompositorFrameReporter::SmoothThread
+CompositorFrameReportingController::GetSmoothThread() const {
+  if (is_main_thread_driving_smoothness_) {
+    return is_compositor_thread_driving_smoothness_ ? SmoothThread::kSmoothBoth
+                                                    : SmoothThread::kSmoothMain;
+  }
+
+  return is_compositor_thread_driving_smoothness_
+             ? SmoothThread::kSmoothCompositor
+             : SmoothThread::kSmoothNone;
 }
 
 }  // namespace cc

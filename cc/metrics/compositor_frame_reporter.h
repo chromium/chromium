@@ -7,13 +7,13 @@
 
 #include <bitset>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/optional.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
-#include "cc/base/base_export.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
@@ -133,13 +133,21 @@ class CC_EXPORT CompositorFrameReporter {
     ~StageData();
   };
 
+  enum SmoothThread {
+    kSmoothNone,
+    kSmoothCompositor,
+    kSmoothMain,
+    kSmoothBoth
+  };
+
   using ActiveTrackers =
       std::bitset<static_cast<size_t>(FrameSequenceTrackerType::kMaxType)>;
 
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
                           const viz::BeginFrameArgs& args,
                           LatencyUkmReporter* latency_ukm_reporter,
-                          bool should_report_metrics);
+                          bool should_report_metrics,
+                          SmoothThread smooth_thread);
   ~CompositorFrameReporter();
 
   CompositorFrameReporter(const CompositorFrameReporter& reporter) = delete;
@@ -245,6 +253,8 @@ class CC_EXPORT CompositorFrameReporter {
 
   base::TimeTicks Now() const;
 
+  bool IsDroppedFrameAffectingSmoothness() const;
+
   const bool should_report_metrics_;
   const viz::BeginFrameArgs args_;
 
@@ -296,6 +306,8 @@ class CC_EXPORT CompositorFrameReporter {
 
   DroppedFrameCounter* dropped_frame_counter_ = nullptr;
   bool has_partial_update_ = false;
+
+  const SmoothThread smooth_thread_;
 };
 
 }  // namespace cc
