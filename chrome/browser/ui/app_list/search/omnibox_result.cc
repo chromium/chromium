@@ -232,7 +232,8 @@ ash::SearchResultType OmniboxResult::GetSearchResultType() const {
     case AutocompleteMatchType::HISTORY_BODY:
     case AutocompleteMatchType::TILE_SUGGESTION:
     case AutocompleteMatchType::NUM_TYPES:
-      NOTREACHED() << match_.type;
+      // TODO(crbug.com/1028447): Add a NOTREACHED here once we are confident we
+      // know all possible types for this result.
       return ash::SEARCH_RESULT_TYPE_BOUNDARY;
   }
 }
