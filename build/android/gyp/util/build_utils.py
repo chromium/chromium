@@ -38,9 +38,6 @@ JAVAP_PATH = os.path.join(JAVA_HOME, 'bin', 'javap')
 RT_JAR_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'extras',
                            'java_8', 'jre', 'lib', 'rt.jar')
 
-# TODO(agrieve): Remove once safe to do so.
-JAVA_PATH = os.path.join(JAVA_HOME, 'bin', 'java')
-
 try:
   string_types = basestring
 except NameError:
