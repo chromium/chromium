@@ -110,6 +110,13 @@ class PolymerModulizerTest(unittest.TestCase):
                    'dom_module.js', 'dom_module.m.js',
                    'dom_module_with_if_expr_expected.js')
 
+  # Test case where HTML has some comment before the first <link rel="import"> \
+  # and also uses <if expr> for imports.
+  def testDomModuleImportsWithCopyrightPrefix(self):
+    self._run_test('dom-module', 'dom_module_with_copyright.html',
+                   'dom_module.js', 'dom_module.m.js',
+                   'dom_module_with_if_expr_expected.js')
+
   # Test case where HTML is extracted from a Polymer2 style module.
   def testStyleModule(self):
     self._run_test(

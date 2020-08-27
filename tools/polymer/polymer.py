@@ -179,24 +179,26 @@ class Dependency:
 
 def _generate_js_imports(html_file):
   output = []
+  imports_start_offset = -1
   imports_end_index = -1
   imports_found = False
   with io.open(html_file, encoding='utf-8', mode='r') as f:
     lines = f.readlines()
-    deps = []
     for i, line in enumerate(lines):
       match = re.search(r'\s*<link rel="import" href="(.*)"', line)
       if match:
         if not imports_found:
           imports_found = True
+          imports_start_offset = i
           # Include the previous line if it is an opening <if> tag.
           if (i > 0):
             previous_line = lines[i - 1]
             if re.search(r'^\s*<if', previous_line):
+              imports_start_offset -= 1
               previous_line = '// ' + previous_line
               output.append(previous_line.rstrip('\n'))
 
-        imports_end_index = i
+        imports_end_index = i - imports_start_offset
 
         # Convert HTML import URL to equivalent JS import URL.
         dep = Dependency(html_file, match.group(1))
