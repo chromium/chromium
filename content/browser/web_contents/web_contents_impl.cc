@@ -458,6 +458,16 @@ base::flat_set<WebContentsImpl*>* FullscreenContentsSet(
   return set_holder->set();
 }
 
+// Returns true if |host| has the Window Placement permission granted.
+bool WindowPlacementGranted(RenderFrameHost* host) {
+  auto* controller =
+      PermissionControllerImpl::FromBrowserContext(host->GetBrowserContext());
+  return controller && controller->GetPermissionStatusForFrame(
+                           PermissionType::WINDOW_PLACEMENT, host,
+                           host->GetLastCommittedURL()) ==
+                           blink::mojom::PermissionStatus::GRANTED;
+}
+
 // Adjust the requested |bounds| for opening or placing a window. The bounds
 // may not extend outside a single screen's work area, and the |host| requires
 // permission to specify bounds on a screen other than its current screen.
@@ -474,15 +484,8 @@ gfx::Rect AdjustRequestedWindowBounds(gfx::Rect bounds, RenderFrameHost* host) {
   // Check, but do not prompt, for permission to place windows on other screens.
   // Sites generally need permission to get such bounds in the first place.
   // Also clamp offscreen bounds to the window's current screen.
-  auto* controller =
-      PermissionControllerImpl::FromBrowserContext(host->GetBrowserContext());
-  if (!bounds.Intersects(display.bounds()) || !controller ||
-      controller->GetPermissionStatusForFrame(PermissionType::WINDOW_PLACEMENT,
-                                              host,
-                                              host->GetLastCommittedURL()) !=
-          blink::mojom::PermissionStatus::GRANTED) {
+  if (!bounds.Intersects(display.bounds()) || !WindowPlacementGranted(host))
     display = screen->GetDisplayNearestView(host->GetNativeView());
-  }
 
   bounds.AdjustToFit(display.work_area());
   return bounds;
@@ -3438,11 +3441,15 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
   });
 
   // Any new WebContents opened while this WebContents is in fullscreen can be
-  // used to confuse the user, so drop fullscreen.
-  base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
-  // The new contents will be independent of this contents, so release the
-  // fullscreen block.
-  fullscreen_block.RunAndReset();
+  // used to confuse the user, so drop fullscreen. Sites with Window Placement
+  // permission granted are excepted to support multi-screen window management.
+  // TODO(crbug.com/1120746): Prevent interference with fullscreen security UI.
+  if (!WindowPlacementGranted(opener)) {
+    base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
+    // The new contents will be independent of this contents, so release the
+    // fullscreen block.
+    fullscreen_block.RunAndReset();
+  }
 
   if (params.opener_suppressed) {
     // When the opener is suppressed, the original renderer cannot access the
