@@ -13,6 +13,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
+import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {Error, State} from '../data/state.js';
 import {SettingsBehavior} from './settings_behavior.js';
 
@@ -53,7 +54,8 @@ Polymer({
    */
   isPdfOrDrive_() {
     return this.destination &&
-        (this.destination.id === Destination.GooglePromotedId.SAVE_AS_PDF ||
+        (getPrinterTypeForDestination(this.destination) ===
+             PrinterType.PDF_PRINTER ||
          this.destination.id === Destination.GooglePromotedId.DOCS);
   },
 

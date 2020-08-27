@@ -43,6 +43,12 @@ export const originToType = function(origin) {
  * @return {!PrinterType} Map the destination to a PrinterType.
  */
 export function getPrinterTypeForDestination(destination) {
+  // <if expr="chromeos">
+  if (destination.id === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+    return PrinterType.PDF_PRINTER;
+  }
+  // </if>
+
   if (destination.id === Destination.GooglePromotedId.SAVE_AS_PDF) {
     return PrinterType.PDF_PRINTER;
   }
@@ -123,10 +129,14 @@ export class DestinationMatch {
    * @private
    */
   isVirtualDestination_(destination) {
-    if (destination.origin === DestinationOrigin.LOCAL) {
-      return destination.id === Destination.GooglePromotedId.SAVE_AS_PDF;
+    // <if expr="chromeos">
+    if (destination.id === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+      return true;
     }
-    return destination.id === Destination.GooglePromotedId.DOCS;
+    // </if>
+
+    return destination.id === Destination.GooglePromotedId.DOCS ||
+        destination.id === Destination.GooglePromotedId.SAVE_AS_PDF;
   }
 
   /**

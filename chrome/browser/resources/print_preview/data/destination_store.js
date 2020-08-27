@@ -414,8 +414,7 @@ export class DestinationStore extends EventTarget {
 
     const serializedSystemDefault = {
       id: this.systemDefaultDestinationId_,
-      origin: this.systemDefaultDestinationId_ ===
-              Destination.GooglePromotedId.SAVE_AS_PDF ?
+      origin: this.isDestinationLocal_(this.systemDefaultDestinationId_) ?
           DestinationOrigin.LOCAL :
           this.platformOrigin_,
       account: '',
@@ -434,6 +433,20 @@ export class DestinationStore extends EventTarget {
 
     return this.fetchPreselectedDestination_(
         serializedSystemDefault, /*autoselect=*/ true);
+  }
+
+  /**
+   * @param {?string} destinationId
+   * @return {boolean}
+   */
+  isDestinationLocal_(destinationId) {
+    // <if expr="chromeos">
+    if (destinationId === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+      return true;
+    }
+    // </if>
+
+    return destinationId === Destination.GooglePromotedId.SAVE_AS_PDF;
   }
 
   /** Removes all events being tracked from the tracker. */

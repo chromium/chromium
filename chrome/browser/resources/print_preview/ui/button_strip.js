@@ -13,6 +13,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination} from '../data/destination.js';
+import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {State} from '../data/state.js';
 
 Polymer({
@@ -83,7 +84,8 @@ Polymer({
    */
   isPdfOrDrive_() {
     return this.destination &&
-        (this.destination.id === Destination.GooglePromotedId.SAVE_AS_PDF ||
+        (getPrinterTypeForDestination(this.destination) ===
+             PrinterType.PDF_PRINTER ||
          this.destination.id === Destination.GooglePromotedId.DOCS);
   },
 

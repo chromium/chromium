@@ -174,6 +174,11 @@ Polymer({
 
     // Check for the Docs or Save as PDF ids first.
     const keyParams = this.selectedValue.split('/');
+    // <if expr="chromeos">
+    if (keyParams[0] === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+      return 'print-preview:save-to-drive';
+    }
+    // </if>
     if (keyParams[0] === Destination.GooglePromotedId.DOCS) {
       return 'print-preview:save-to-drive';
     }

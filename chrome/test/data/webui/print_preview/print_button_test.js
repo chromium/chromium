@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayer, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
+import {Destination, NativeLayer, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
 import {getDefaultInitialSettings} from 'chrome://test/print_preview/print_preview_test_utils.js';
@@ -14,6 +14,7 @@ print_button_test.suiteName = 'PrintButtonTest';
 print_button_test.TestNames = {
   LocalPrintHidePreview: 'local print hide preview',
   PDFPrintVisiblePreview: 'pdf print visible preview',
+  SaveToDriveVisiblePreviewCros: 'save to drive visible preview cros',
 };
 
 suite(print_button_test.suiteName, function() {
@@ -131,4 +132,45 @@ suite(print_button_test.suiteName, function() {
           return nativeLayer.whenCalled('dialogClose');
         });
   });
+
+  // Tests that hidePreview() is not called if Save to Drive is selected on
+  // Chrome OS and the user clicks print while the preview is loading because
+  // when the flag |kPrintSaveToDrive| is enabled, Save to Drive needs to be
+  // treated like Save as PDF.
+  test(
+      assert(print_button_test.TestNames.SaveToDriveVisiblePreviewCros),
+      function() {
+        printBeforePreviewReady = false;
+
+        return waitForInitialPreview()
+            .then(function() {
+              nativeLayer.reset();
+              // Setup to print before the preview loads.
+              printBeforePreviewReady = true;
+
+              // Select Save as PDF destination
+              const destinationSettings =
+                  page.$$('print-preview-sidebar')
+                      .$$('print-preview-destination-settings');
+              const driveDestination =
+                  destinationSettings.destinationStore_.destinations().find(
+                      d => d.id ===
+                          Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS);
+              assertTrue(!!driveDestination);
+              destinationSettings.destinationStore_.selectDestination(
+                  driveDestination);
+
+              // Reload preview and wait for print.
+              return nativeLayer.whenCalled('print');
+            })
+            .then(function(printTicket) {
+              assertFalse(previewHidden);
+
+              // Verify that the printer name is correct.
+              assertEquals(
+                  Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS,
+                  JSON.parse(printTicket).deviceName);
+              return nativeLayer.whenCalled('dialogClose');
+            });
+      });
 });

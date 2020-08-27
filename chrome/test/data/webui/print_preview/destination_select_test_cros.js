@@ -415,7 +415,11 @@ suite(destination_select_test_cros.suiteName, function() {
           compareIcon(selectEl, 'print');
           destinationSelect.driveDestinationKey = driveKey;
 
-          return selectOption(destinationSelect, driveKey);
+          return selectOption(
+              destinationSelect,
+              loadTimeData.getBoolean('printSaveToDrive') ?
+                  SAVE_TO_DRIVE_CROS_DESTINATION_KEY :
+                  driveKey);
         })
         .then(() => {
           // Icon updates early based on the ID.

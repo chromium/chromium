@@ -186,7 +186,8 @@
       <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_MATCH_JS"
                  file="data/destination_match.js"
                  compress="false"
-                 type="chrome_html" />
+                 type="chrome_html"
+                 preprocess="true" />
       <if expr="chromeos">
         <structure name="IDR_PRINT_PREVIEW_DATA_DESTINATION_POLICIES_JS"
                    file="data/destination_policies.js"

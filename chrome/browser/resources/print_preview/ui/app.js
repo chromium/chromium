@@ -19,6 +19,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 import {Destination, DestinationOrigin} from '../data/destination.js';
+import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {DocumentSettings} from '../data/document_info.js';
 import {Margins} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
@@ -442,7 +443,8 @@ Polymer({
       this.nativeLayer_.dialogClose(this.cancelled_);
     } else if (this.state === State.HIDDEN) {
       if (this.destination_.isLocal &&
-          this.destination_.id !== Destination.GooglePromotedId.SAVE_AS_PDF) {
+          getPrinterTypeForDestination(this.destination_) !==
+              PrinterType.PDF_PRINTER) {
         // Only hide the preview for local, non PDF destinations.
         this.nativeLayer_.hidePreview();
       }
@@ -453,8 +455,8 @@ Polymer({
               destination, this.openPdfInPreview_,
               this.showSystemDialogBeforePrint_));
       if (destination.isLocal) {
-        const onError =
-            destination.id === Destination.GooglePromotedId.SAVE_AS_PDF ?
+        const onError = getPrinterTypeForDestination(destination) ===
+                PrinterType.PDF_PRINTER ?
             this.onFileSelectionCancel_.bind(this) :
             this.onPrintFailed_.bind(this);
         whenPrintDone.then(this.close_.bind(this), onError);

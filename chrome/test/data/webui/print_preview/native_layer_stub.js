@@ -187,7 +187,8 @@ export class NativeLayerStub extends TestBrowserProxy {
         this.multipleCapabilitiesPromise_ = null;
       }
     }
-    if (printerId === Destination.GooglePromotedId.SAVE_AS_PDF) {
+    if (printerId === Destination.GooglePromotedId.SAVE_AS_PDF ||
+        printerId === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
       return Promise.resolve(getPdfPrinter());
     }
     if (type !== PrinterType.LOCAL_PRINTER) {

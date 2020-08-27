@@ -17,7 +17,8 @@ model_test.TestNames = {
   SetPolicySettings: 'set policy settings',
   GetPrintTicket: 'get print ticket',
   GetCloudPrintTicket: 'get cloud print ticket',
-  ChangeDestination: 'change destination'
+  ChangeDestination: 'change destination',
+  PrintToGoogleDriveCros: 'print to google drive cros',
 };
 
 suite(model_test.suiteName, function() {
@@ -524,5 +525,18 @@ suite(model_test.suiteName, function() {
     assertEquals('ISO_A4', model.getSettingValue('mediaSize').name);
     assertEquals(400, model.getSettingValue('dpi').horizontal_dpi);
     assertEquals(false, model.getSettingValue('duplex'));
+  });
+
+  // Tests that printToGoogleDrive is set correctly on the print ticket for Save
+  // to Drive CrOS.
+  test(assert(model_test.TestNames.PrintToGoogleDriveCros), function() {
+    const driveDestination = new Destination(
+        Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS, DestinationType.LOCAL,
+        DestinationOrigin.LOCAL, 'Save to Google Drive',
+        DestinationConnectionStatus.ONLINE);
+    initializeModel();
+    model.destination = driveDestination;
+    const ticket = model.createPrintTicket(driveDestination, false, false);
+    assertTrue(JSON.parse(ticket).printToGoogleDrive);
   });
 });

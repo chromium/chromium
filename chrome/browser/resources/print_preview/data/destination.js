@@ -752,6 +752,11 @@ export class Destination {
     if (this.shouldShowDeprecatedPrinterWarning) {
       return 'print-preview:printer-not-supported';
     }
+    // <if expr="chromeos">
+    if (this.id_ === Destination.GooglePromotedId.SAVE_TO_DRIVE_CROS) {
+      return 'print-preview:save-to-drive';
+    }
+    // </if>
     if (this.id_ === Destination.GooglePromotedId.DOCS) {
       return 'print-preview:save-to-drive';
     }
