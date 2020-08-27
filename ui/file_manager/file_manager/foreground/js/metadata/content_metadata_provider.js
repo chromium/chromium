@@ -371,14 +371,12 @@ class ContentMetadataProvider extends MetadataProvider {
    * Returns an 'error' MetadataItem.
    * @param {string} url File entry.
    * @param {string} step Step that failed.
-   * @param {string} errorDescription Error description.
+   * @param {string} cause Error cause.
    * @return {!MetadataItem} Error metadata
    * @private
    */
-  createError_(url, step, errorDescription) {
-    // For error case, fill all fields with error object.
-    const error =
-        new ContentMetadataProvider.Error(url, step, errorDescription);
+  createError_(url, step, cause) {
+    const error = new ContentMetadataProvider.Error(url, step, cause);
     const item = new MetadataItem();
     item.contentImageTransformError = error;
     item.contentThumbnailTransformError = error;
@@ -394,10 +392,10 @@ ContentMetadataProvider.Error = class extends Error {
   /**
    * @param {string} url File Entry.
    * @param {string} step Step that failed.
-   * @param {string} errorDescription Error description.
+   * @param {string} cause Error cause.
    */
-  constructor(url, step, errorDescription) {
-    super(errorDescription);
+  constructor(url, step, cause) {
+    super(cause);
 
     /** @public @const {string} */
     this.url = url;
@@ -406,7 +404,7 @@ ContentMetadataProvider.Error = class extends Error {
     this.step = step;
 
     /** @public @const {string} */
-    this.errorDescription = errorDescription;
+    this.errorDescription = cause;
   }
 };
 
