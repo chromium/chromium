@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -15,11 +16,17 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_urls.h"
 
+#if defined(OS_CHROMEOS)
+#include "components/arc/arc_prefs.h"
+#endif  // defined(OS_CHROMEOS)
+
 namespace extensions {
 
 ForceInstalledTracker::ForceInstalledTracker(ExtensionRegistry* registry,
                                              Profile* profile)
-    : registry_(registry),
+    : extension_management_(
+          ExtensionManagementFactory::GetForBrowserContext(profile)),
+      registry_(registry),
       profile_(profile),
       pref_service_(profile->GetPrefs()) {
   // Load immediately if PolicyService is ready, or wait for it to finish
@@ -174,6 +181,50 @@ void ForceInstalledTracker::OnExtensionDownloadCacheStatusRetrieved(
 
 bool ForceInstalledTracker::IsReady() const {
   return status_ == kComplete;
+}
+
+bool ForceInstalledTracker::IsMisconfiguration(
+    const InstallStageTracker::InstallationData& installation_data,
+    const ExtensionId& id) const {
+  if (installation_data.install_error_detail) {
+    CrxInstallErrorDetail detail =
+        installation_data.install_error_detail.value();
+    if (detail == CrxInstallErrorDetail::KIOSK_MODE_ONLY)
+      return true;
+
+    if (installation_data.extension_type &&
+        detail == CrxInstallErrorDetail::DISALLOWED_BY_POLICY &&
+        !extension_management_->IsAllowedManifestType(
+            installation_data.extension_type.value(), id)) {
+      return true;
+    }
+  }
+
+#if defined(OS_CHROMEOS)
+  // REPLACED_BY_ARC_APP error is a misconfiguration if ARC++ is enabled for
+  // the device.
+  if (profile_->GetPrefs()->IsManagedPreference(arc::prefs::kArcEnabled) &&
+      profile_->GetPrefs()->GetBoolean(arc::prefs::kArcEnabled) &&
+      installation_data.failure_reason ==
+          InstallStageTracker::FailureReason::REPLACED_BY_ARC_APP) {
+    return true;
+  }
+#endif  // defined(OS_CHROMEOS)
+
+  if (installation_data.failure_reason ==
+      InstallStageTracker::FailureReason::NOT_PERFORMING_NEW_INSTALL) {
+    return true;
+  }
+  if (installation_data.failure_reason ==
+      InstallStageTracker::FailureReason::CRX_FETCH_URL_EMPTY) {
+    DCHECK(installation_data.no_updates_info);
+    if (installation_data.no_updates_info.value() ==
+        InstallStageTracker::NoUpdatesInfo::kEmpty) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 policy::PolicyService* ForceInstalledTracker::policy_service() {

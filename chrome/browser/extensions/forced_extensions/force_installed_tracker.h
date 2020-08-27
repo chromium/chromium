@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observer.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -127,6 +128,13 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
     return extensions_;
   }
 
+  // Returns true only in case of some well-known admin side misconfigurations
+  // which are easy to detect. Can return false for misconfigurations which are
+  // hard to distinguish with other errors.
+  bool IsMisconfiguration(
+      const InstallStageTracker::InstallationData& installation_data,
+      const ExtensionId& id) const;
+
  private:
   policy::PolicyService* policy_service();
 
@@ -151,6 +159,8 @@ class ForceInstalledTracker : public ExtensionRegistryObserver,
 
   // Loads list of force-installed extensions if available. Only called once.
   void OnForcedExtensionsPrefReady();
+
+  const ExtensionManagement* extension_management_;
 
   // Unowned, but guaranteed to outlive this object.
   ExtensionRegistry* registry_;

@@ -330,8 +330,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsInstallationTimedOut) {
   histogram_tester_.ExpectUniqueSample(kTimedOutNotInstalledStats, 1, 1);
   histogram_tester_.ExpectTotalCount(kFailureReasonsCWS, 1);
   histogram_tester_.ExpectUniqueSample(
-      kFailureReasonsCWS, InstallStageTracker::FailureReason::UNKNOWN, 1);
-  histogram_tester_.ExpectTotalCount(kInstallationStages, 0);
+      kFailureReasonsCWS, InstallStageTracker::FailureReason::IN_PROGRESS, 1);
+  histogram_tester_.ExpectTotalCount(kInstallationStages, 1);
   histogram_tester_.ExpectTotalCount(kFailureCrxInstallErrorStats, 0);
   histogram_tester_.ExpectUniqueSample(
       kTotalCountStats,

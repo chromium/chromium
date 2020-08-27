@@ -47,6 +47,7 @@ constexpr char kInstallationStage[] = "installationStage";
 constexpr char kExtensionType[] = "extensionType";
 constexpr char kUserType[] = "userType";
 constexpr char kIsNewUser[] = "isNewUser";
+constexpr char kIsMisconfigurationFailure[] = "isMisconfigurationFailure";
 
 // Calculates hash for the given |event| and |context|, and stores the hash in
 // |hash|. Returns true if |event| and |context| are json serializable and
@@ -192,6 +193,12 @@ base::Value ConvertExtensionEventToValue(
   if (extension_install_report_log_event.has_extension_type()) {
     event.SetIntKey(kExtensionType,
                     extension_install_report_log_event.extension_type());
+  }
+
+  if (extension_install_report_log_event.has_is_misconfiguration_failure()) {
+    event.SetBoolKey(
+        kIsMisconfigurationFailure,
+        extension_install_report_log_event.is_misconfiguration_failure());
   }
 
   base::Value wrapper(base::Value::Type::DICTIONARY);

@@ -9,8 +9,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -21,7 +19,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "components/arc/arc_prefs.h"
 #endif  // defined(OS_CHROMEOS)
 
 namespace extensions {
@@ -105,49 +102,6 @@ bool ForceInstalledMetrics::IsStatusGood(ExtensionStatus status) {
     default:
       NOTREACHED();
   }
-  return false;
-}
-
-bool ForceInstalledMetrics::IsMisconfiguration(
-    const InstallStageTracker::InstallationData& installation_data,
-    const ExtensionId& id) {
-  if (installation_data.install_error_detail) {
-    ExtensionManagement* management =
-        ExtensionManagementFactory::GetForBrowserContext(profile_);
-    CrxInstallErrorDetail detail =
-        installation_data.install_error_detail.value();
-    if (detail == CrxInstallErrorDetail::KIOSK_MODE_ONLY)
-      return true;
-
-    if (installation_data.extension_type &&
-        detail == CrxInstallErrorDetail::DISALLOWED_BY_POLICY &&
-        !management->IsAllowedManifestType(
-            installation_data.extension_type.value(), id)) {
-      return true;
-    }
-  }
-#if defined(OS_CHROMEOS)
-  // REPLACED_BY_ARC_APP error is a misconfiguration if it ARC++ is enabled for
-  // the device.
-  if (profile_->GetPrefs()->IsManagedPreference(arc::prefs::kArcEnabled) &&
-      profile_->GetPrefs()->GetBoolean(arc::prefs::kArcEnabled) &&
-      installation_data.failure_reason == FailureReason::REPLACED_BY_ARC_APP) {
-    return true;
-  }
-#endif  // defined(OS_CHROMEOS)
-
-  if (installation_data.failure_reason ==
-      FailureReason::NOT_PERFORMING_NEW_INSTALL) {
-    return true;
-  }
-  if (installation_data.failure_reason == FailureReason::CRX_FETCH_URL_EMPTY) {
-    DCHECK(installation_data.no_updates_info);
-    if (installation_data.no_updates_info.value() ==
-        InstallStageTracker::NoUpdatesInfo::kEmpty) {
-      return true;
-    }
-  }
-
   return false;
 }
 
@@ -286,7 +240,7 @@ void ForceInstalledMetrics::ReportMetrics() {
             "Extensions.ForceInstalledDownloadingStage", downloading_stage);
       }
     }
-    if (IsMisconfiguration(installation, extension_id))
+    if (tracker_->IsMisconfiguration(installation, extension_id))
       misconfigured_extensions++;
     FailureReason failure_reason =
         installation.failure_reason.value_or(FailureReason::UNKNOWN);

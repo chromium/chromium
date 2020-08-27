@@ -5,10 +5,13 @@
 #include "chrome/browser/chromeos/policy/extension_install_event_log_collector.h"
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -23,6 +26,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -125,6 +129,7 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
     registry_ = extensions::ExtensionRegistry::Get(profile_.get());
     install_stage_tracker_ =
         extensions::InstallStageTracker::Get(profile_.get());
+    InitExtensionSystem();
     service_test_ = chromeos::DBusThreadManager::Get()
                         ->GetShillServiceClient()
                         ->GetTestInterface();
@@ -143,6 +148,16 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
     chromeos::PowerManagerClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+  }
+
+  void InitExtensionSystem() {
+    extensions::TestExtensionSystem* extension_system =
+        static_cast<extensions::TestExtensionSystem*>(
+            extensions::ExtensionSystem::Get(profile_.get()));
+    extension_system->CreateExtensionService(
+        base::CommandLine::ForCurrentProcess(),
+        base::FilePath() /* install_directory */,
+        false /* autoupdate_enabled */);
   }
 
   void SetNetworkState(
@@ -198,6 +213,9 @@ class ExtensionInstallEventLogCollectorTest : public testing::Test {
   extensions::ExtensionRegistry* registry() { return registry_; }
   FakeExtensionInstallEventLogCollectorDelegate* delegate() {
     return &delegate_;
+  }
+  extensions::InstallStageTracker* install_stage_tracker() {
+    return install_stage_tracker_;
   }
 
   chromeos::ShillServiceClient::TestInterface* service_test_ = nullptr;
@@ -400,13 +418,18 @@ TEST_F(ExtensionInstallEventLogCollectorTest, ConnectivityChanges) {
   EXPECT_EQ(0, delegate()->add_count());
 }
 
-TEST_F(ExtensionInstallEventLogCollectorTest, ExtensionInstallFailed) {
+TEST_F(ExtensionInstallEventLogCollectorTest,
+       ExtensionInstallFailedWithoutMisconfiguration) {
   std::unique_ptr<ExtensionInstallEventLogCollector> collector =
       std::make_unique<ExtensionInstallEventLogCollector>(
           registry(), delegate(), profile());
 
   // One extension failed.
-  collector->OnExtensionInstallationFailed(
+  install_stage_tracker()->ReportManifestUpdateCheckStatus(kExtensionId1,
+                                                           "noupdate");
+  install_stage_tracker()->ReportInfoOnNoUpdatesFailure(kExtensionId1,
+                                                        "rate limit");
+  install_stage_tracker()->ReportFailure(
       kExtensionId1,
       extensions::InstallStageTracker::FailureReason::CRX_FETCH_URL_EMPTY);
   ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
@@ -415,6 +438,29 @@ TEST_F(ExtensionInstallEventLogCollectorTest, ExtensionInstallFailed) {
             delegate()->last_request().event.event_type());
   EXPECT_EQ(em::ExtensionInstallReportLogEvent::CRX_FETCH_URL_EMPTY,
             delegate()->last_request().event.failure_reason());
+  EXPECT_FALSE(delegate()->last_request().event.is_misconfiguration_failure());
+}
+
+TEST_F(ExtensionInstallEventLogCollectorTest,
+       ExtensionInstallFailedWithMisconfiguration) {
+  std::unique_ptr<ExtensionInstallEventLogCollector> collector =
+      std::make_unique<ExtensionInstallEventLogCollector>(
+          registry(), delegate(), profile());
+
+  // One extension failed.
+  install_stage_tracker()->ReportManifestUpdateCheckStatus(kExtensionId1,
+                                                           "noupdate");
+  install_stage_tracker()->ReportInfoOnNoUpdatesFailure(kExtensionId1, "");
+  install_stage_tracker()->ReportFailure(
+      kExtensionId1,
+      extensions::InstallStageTracker::FailureReason::CRX_FETCH_URL_EMPTY);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,
+            delegate()->last_request().event.event_type());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::CRX_FETCH_URL_EMPTY,
+            delegate()->last_request().event.failure_reason());
+  EXPECT_TRUE(delegate()->last_request().event.is_misconfiguration_failure());
 }
 
 // Simulate failure after unpacking, so extension type should be reported.

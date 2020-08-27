@@ -3004,6 +3004,10 @@ message ExtensionInstallReportLogEvent {
 
   // Whether the current user is new.
   optional bool is_new_user = 12;
+
+  // Whether the current failure is a admin side miconfiguration failure. Set
+  // for event type INSTALLATION_FAILED.
+  optional bool is_misconfiguration_failure = 13;
 }
 
 // A single entry in the push-install log for an app.

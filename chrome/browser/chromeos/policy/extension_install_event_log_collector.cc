@@ -9,6 +9,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/enterprise/reporting/extension_info.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_handler.h"
@@ -16,6 +18,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
+#include "extensions/browser/extension_system.h"
 
 namespace em = enterprise_management;
 
@@ -302,12 +305,20 @@ void ExtensionInstallEventLogCollector::OnExtensionInstallationFailed(
   event->set_event_type(
       em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED);
   event->set_failure_reason(ConvertFailureReasonToProto(reason));
+  extensions::InstallStageTracker* install_stage_tracker =
+      extensions::InstallStageTracker::Get(profile_);
   extensions::InstallStageTracker::InstallationData data =
-      extensions::InstallStageTracker::Get(profile_)->Get(extension_id);
+      install_stage_tracker->Get(extension_id);
   if (data.extension_type) {
     event->set_extension_type(enterprise_reporting::ConvertExtensionTypeToProto(
         data.extension_type.value()));
   }
+  extensions::ForceInstalledTracker* force_installed_tracker =
+      extensions::ExtensionSystem::Get(profile_)
+          ->extension_service()
+          ->force_installed_tracker();
+  event->set_is_misconfiguration_failure(
+      force_installed_tracker->IsMisconfiguration(data, extension_id));
   delegate_->Add(extension_id, true /* gather_disk_space_info */,
                  std::move(event));
   delegate_->OnExtensionInstallationFinished(extension_id);
