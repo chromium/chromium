@@ -1188,7 +1188,8 @@
     ],
 
     'android_cronet_release_trybot_arm64': [
-      'android', 'cronet_android', 'release_trybot', 'arm64', 'strip_debug_info',
+      'android', 'cronet_android', 'official_optimize', 'release_trybot', 'arm64',
+      'strip_debug_info',
     ],
 
     'android_debug_bot': [
