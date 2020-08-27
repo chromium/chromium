@@ -50,10 +50,6 @@ class MODULES_EXPORT CredentialManagerProxy
 
   payments::mojom::blink::PaymentCredential* PaymentCredential();
 
-  void FlushCredentialManagerConnectionForTesting() {
-    credential_manager_.FlushForTesting();
-  }
-
   void Trace(Visitor*) const override;
 
   // Must be called only with argument representing a valid
@@ -61,18 +57,10 @@ class MODULES_EXPORT CredentialManagerProxy
   static CredentialManagerProxy* From(ScriptState*);
 
  private:
-  HeapMojoRemote<mojom::blink::Authenticator,
-                 HeapMojoWrapperMode::kForceWithoutContextObserver>
-      authenticator_;
-  HeapMojoRemote<mojom::blink::CredentialManager,
-                 HeapMojoWrapperMode::kForceWithoutContextObserver>
-      credential_manager_;
-  HeapMojoRemote<mojom::blink::SmsReceiver,
-                 HeapMojoWrapperMode::kForceWithoutContextObserver>
-      sms_receiver_;
-  HeapMojoRemote<payments::mojom::blink::PaymentCredential,
-                 HeapMojoWrapperMode::kForceWithoutContextObserver>
-      payment_credential_;
+  HeapMojoRemote<mojom::blink::Authenticator> authenticator_;
+  HeapMojoRemote<mojom::blink::CredentialManager> credential_manager_;
+  HeapMojoRemote<mojom::blink::SmsReceiver> sms_receiver_;
+  HeapMojoRemote<payments::mojom::blink::PaymentCredential> payment_credential_;
 };
 
 }  // namespace blink

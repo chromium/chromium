@@ -334,12 +334,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Reload) {
   MockSmsProvider* mock_provider_ptr = provider.get();
   BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
 
-  std::string script = R"(
-    // kicks off the sms receiver, adding the service
-    // to the observer's list.
-    navigator.credentials.get({otp: {transport: ["sms"]}});
-  )";
-
   base::RunLoop loop;
 
   EXPECT_CALL(*mock_provider_ptr, Retrieve(_)).WillOnce(Invoke([&loop]() {
@@ -348,26 +342,22 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Reload) {
     loop.Quit();
   }));
 
-  EXPECT_TRUE(ExecJs(shell(), script));
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    navigator.credentials.get({otp: {transport: ["sms"]}});
+  )"));
 
   loop.Run();
 
   ASSERT_TRUE(GetSmsFetcher()->HasSubscribers());
+  ASSERT_TRUE(mock_provider_ptr->HasObservers());
 
-  // Wait for UKM to be recorded to avoid race condition between outcome
-  // capture and evaluation.
-  base::RunLoop ukm_loop;
-  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
-                                        ukm_loop.QuitClosure());
-
-  // Reload the page.
+  // Reload the page. This destroys the ExecutionContext and resets any HeapMojo
+  // connections.
   EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  ukm_loop.Run();
 
   ASSERT_FALSE(GetSmsFetcher()->HasSubscribers());
 
-  ExpectOutcomeUKM(url, blink::SMSReceiverOutcome::kTimeout);
+  ExpectNoOutcomeUKM();
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, Close) {

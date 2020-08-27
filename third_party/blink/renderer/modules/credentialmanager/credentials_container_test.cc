@@ -171,7 +171,6 @@ TEST(CredentialsContainerTest,
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
-  auto* proxy = CredentialManagerProxy::From(context.GetScriptState());
   auto promise = MakeGarbageCollected<CredentialsContainer>()->get(
       context.GetScriptState(), CredentialRequestOptions::Create());
   mock_credential_manager.WaitForCallToGet();
@@ -179,7 +178,6 @@ TEST(CredentialsContainerTest,
   context.Frame()->DomWindow()->FrameDestroyed();
 
   mock_credential_manager.InvokeGetCallback();
-  proxy->FlushCredentialManagerConnectionForTesting();
 
   EXPECT_EQ(v8::Promise::kPending,
             promise.V8Value().As<v8::Promise>()->State());
