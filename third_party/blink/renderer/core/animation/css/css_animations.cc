@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/css_to_style_map.h"
@@ -487,6 +488,34 @@ const KeyframeEffectModelBase* GetKeyframeEffectModelBase(
   if (!model || !model->IsKeyframeEffectModel())
     return nullptr;
   return To<KeyframeEffectModelBase>(model);
+}
+
+bool ComputedValuesEqual(const PropertyHandle& property,
+                         const ComputedStyle& a,
+                         const ComputedStyle& b) {
+  // If zoom hasn't changed, compare internal values (stored with zoom applied)
+  // for speed. Custom properties are never zoomed so they are checked here too.
+  if (a.EffectiveZoom() == b.EffectiveZoom() ||
+      property.IsCSSCustomProperty()) {
+    return CSSPropertyEquality::PropertiesEqual(property, a, b);
+  }
+
+  // If zoom has changed, we must construct and compare the unzoomed
+  // computed values.
+  if (property.GetCSSProperty().PropertyID() == CSSPropertyID::kTransform) {
+    // Transform lists require special handling in this case to deal with
+    // layout-dependent interpolation which does not yet have a CSSValue.
+    return a.Transform().Zoom(1 / a.EffectiveZoom()) ==
+           b.Transform().Zoom(1 / b.EffectiveZoom());
+  } else {
+    const CSSValue* a_val =
+        ComputedStyleUtils::ComputedPropertyValue(property.GetCSSProperty(), a);
+    const CSSValue* b_val =
+        ComputedStyleUtils::ComputedPropertyValue(property.GetCSSProperty(), b);
+    DCHECK(a_val);
+    DCHECK(b_val);
+    return *a_val == *b_val;
+  }
 }
 
 }  // namespace
@@ -969,8 +998,7 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
     if (active_transition_iter != state.active_transitions->end()) {
       const RunningTransition* running_transition =
           active_transition_iter->value;
-      if (CSSPropertyEquality::PropertiesEqual(property, state.style,
-                                               *running_transition->to)) {
+      if (ComputedValuesEqual(property, state.style, *running_transition->to)) {
         if (!state.transition_data) {
           if (!running_transition->animation->FinishedInternal()) {
             UseCounter::Count(
@@ -989,7 +1017,7 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
              !state.animating_element->GetElementAnimations()
                   ->IsAnimationStyleChange());
 
-      if (CSSPropertyEquality::PropertiesEqual(
+      if (ComputedValuesEqual(
               property, state.style,
               *running_transition->reversing_adjusted_start_value)) {
         interrupted_transition = running_transition;
@@ -1033,8 +1061,7 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
     }
   }
 
-  if (CSSPropertyEquality::PropertiesEqual(property, *state.before_change_style,
-                                           state.style)) {
+  if (ComputedValuesEqual(property, *state.before_change_style, state.style)) {
     return;
   }
 
