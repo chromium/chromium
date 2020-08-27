@@ -468,27 +468,28 @@ bool WindowPlacementGranted(RenderFrameHost* host) {
                            blink::mojom::PermissionStatus::GRANTED;
 }
 
-// Adjust the requested |bounds| for opening or placing a window. The bounds
-// may not extend outside a single screen's work area, and the |host| requires
-// permission to specify bounds on a screen other than its current screen.
+// Adjust the requested |bounds| for opening or placing a window and return the
+// id of the display where the window will be placed. The bounds may not extend
+// outside a single screen's work area, and the |host| requires permission to
+// specify bounds on a screen other than its current screen.
 // TODO(crbug.com/897300): These adjustments are inaccurate for window.open(),
 // which specifies the inner content size, and for window.moveTo, resizeTo, etc.
 // calls on newly created windows, which may pass empty sizes or positions to
 // indicate uninitialized placement information in the renderer. Constraints
 // enforced later should resolve most inaccuracies, but this early enforcement
 // is needed to ensure bounds indicate the appropriate display.
-gfx::Rect AdjustRequestedWindowBounds(gfx::Rect bounds, RenderFrameHost* host) {
+int64_t AdjustRequestedWindowBounds(gfx::Rect* bounds, RenderFrameHost* host) {
   auto* screen = display::Screen::GetScreen();
-  auto display = screen->GetDisplayMatching(bounds);
+  auto display = screen->GetDisplayMatching(*bounds);
 
   // Check, but do not prompt, for permission to place windows on other screens.
   // Sites generally need permission to get such bounds in the first place.
   // Also clamp offscreen bounds to the window's current screen.
-  if (!bounds.Intersects(display.bounds()) || !WindowPlacementGranted(host))
+  if (!bounds->Intersects(display.bounds()) || !WindowPlacementGranted(host))
     display = screen->GetDisplayNearestView(host->GetNativeView());
 
-  bounds.AdjustToFit(display.work_area());
-  return bounds;
+  bounds->AdjustToFit(display.work_area());
+  return display.id();
 }
 
 }  // namespace
@@ -3440,17 +3441,6 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
                                   true);  // renderer_initiated
   });
 
-  // Any new WebContents opened while this WebContents is in fullscreen can be
-  // used to confuse the user, so drop fullscreen. Sites with Window Placement
-  // permission granted are excepted to support multi-screen window management.
-  // TODO(crbug.com/1120746): Prevent interference with fullscreen security UI.
-  if (!WindowPlacementGranted(opener)) {
-    base::ScopedClosureRunner fullscreen_block = ForSecurityDropFullscreen();
-    // The new contents will be independent of this contents, so release the
-    // fullscreen block.
-    fullscreen_block.RunAndReset();
-  }
-
   if (params.opener_suppressed) {
     // When the opener is suppressed, the original renderer cannot access the
     // new window.  As a result, we need to show and navigate the window here.
@@ -3578,6 +3568,22 @@ void WebContentsImpl::ShowCreatedWindow(RenderFrameHost* opener,
   // from, to control how to show the newly created window.
   WebContentsDelegate* delegate = GetDelegate();
 
+  // Individual members of |initial_rect| may be 0 to indicate that the
+  // window.open() feature string did not specify a value. This code does not
+  // have the ability to distinguish between an unspecified value and 0.
+  // Assume that if any single value is non-zero, all values should be used.
+  // TODO(crbug.com/897300): Plumb values as specified; set defaults here?
+  gfx::Rect adjusted_rect = initial_rect;
+  int64_t display_id = display::kInvalidDisplayId;
+  if (adjusted_rect != gfx::Rect())
+    display_id = AdjustRequestedWindowBounds(&adjusted_rect, opener);
+
+  // Drop fullscreen when opening a WebContents to prohibit deceptive behavior.
+  // Only drop fullscreen on the specific destination display, if it is known.
+  // This supports sites using cross-screen window placement capabilities to
+  // retain fullscreen and open a window on another screen.
+  ForSecurityDropFullscreen(display_id).RunAndReset();
+
   // The delegate can be null in tests, so we must check for it :(.
   if (delegate) {
     // Mark the web contents as pending resume, then immediately do
@@ -3585,15 +3591,6 @@ void WebContentsImpl::ShowCreatedWindow(RenderFrameHost* opener,
     created->is_resume_pending_ = true;
     if (delegate->ShouldResumeRequestsForCreatedWindow())
       created->ResumeLoadingCreatedWebContents();
-
-    // Individual members of |initial_rect| may be 0 to indicate that the
-    // window.open() feature string did not specify a value. This code does not
-    // have the ability to distinguish between an unspecified value and 0.
-    // Assume that if any single value is non-zero, all values should be used.
-    // TODO(crbug.com/897300): Plumb values as specified; set defaults here?
-    gfx::Rect adjusted_rect = initial_rect;
-    if (adjusted_rect != gfx::Rect())
-      adjusted_rect = AdjustRequestedWindowBounds(adjusted_rect, opener);
 
     base::WeakPtr<WebContentsImpl> weak_created =
         created->weak_factory_.GetWeakPtr();
@@ -4699,7 +4696,8 @@ void WebContentsImpl::ExitFullscreen(bool will_cause_resize) {
   ExitFullscreenMode(will_cause_resize);
 }
 
-base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen() {
+base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
+    int64_t display_id) {
   // Kick WebContentses that are "related" to this WebContents out of
   // fullscreen. This needs to be done with two passes, because it is simple to
   // walk _up_ the chain of openers and outer contents, but it not simple to
@@ -4711,13 +4709,19 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen() {
   // contentses x each one's opener length) but neither of those is expected to
   // ever be a large number.
 
+  auto* screen = display::Screen::GetScreen();
+
   auto fullscreen_set_copy = *FullscreenContentsSet(GetBrowserContext());
   for (auto* fullscreen_contents : fullscreen_set_copy) {
     // Checking IsFullscreen() for tabs in the fullscreen set may seem
     // redundant, but teeeeechnically fullscreen is run by the delegate, and
     // it's possible that the delegate's notion of fullscreen may have changed
     // outside of WebContents's notice.
-    if (fullscreen_contents->IsFullscreen()) {
+    if (fullscreen_contents->IsFullscreen() &&
+        (display_id == display::kInvalidDisplayId || !screen ||
+         display_id ==
+             screen->GetDisplayNearestView(fullscreen_contents->GetNativeView())
+                 .id())) {
       auto opener_contentses = GetAllOpeningWebContents(fullscreen_contents);
       if (opener_contentses.count(this))
         fullscreen_contents->ExitFullscreen(true);
@@ -4735,7 +4739,10 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen() {
 
   for (auto* opener : GetAllOpeningWebContents(this)) {
     // Drop fullscreen if the WebContents is in it, and...
-    if (opener->IsFullscreen())
+    if (opener->IsFullscreen() &&
+        (display_id == display::kInvalidDisplayId || !screen ||
+         display_id ==
+             screen->GetDisplayNearestView(opener->GetNativeView()).id()))
       opener->ExitFullscreen(true);
 
     // ...block the WebContents from entering fullscreen until further notice.
@@ -6517,7 +6524,14 @@ void WebContentsImpl::RequestSetBounds(const gfx::Rect& new_bounds) {
     bounds.set_size(GetContainerBounds().size());
 
   // Only requests from the main frame, not subframes, should reach this code.
-  bounds = AdjustRequestedWindowBounds(bounds, GetMainFrame());
+  int64_t display_id = AdjustRequestedWindowBounds(&bounds, GetMainFrame());
+
+  // Drop fullscreen when placing a WebContents to prohibit deceptive behavior.
+  // Only drop fullscreen on the specific destination display, which is known.
+  // This supports sites using cross-screen window placement capabilities to
+  // retain fullscreen and place a window on another screen.
+  ForSecurityDropFullscreen(display_id).RunAndReset();
+
   delegate_->SetContentsBounds(this, bounds);
 }
 

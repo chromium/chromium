@@ -43,6 +43,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -1033,8 +1034,13 @@ class WebContents : public PageNavigator,
   // Otherwise, if the action should cause fullscreen to be prohibited for a
   // span of time (e.g. a UI element attached to the WebContents), keep the
   // closure alive for that duration.
-  virtual base::ScopedClosureRunner ForSecurityDropFullscreen()
-      WARN_UNUSED_RESULT = 0;
+  //
+  // If |display_id| is valid, only WebContentses on that specific screen will
+  // exit fullscreen; the scoped prohibition will still apply to all displays.
+  // This supports sites using cross-screen window placement capabilities to
+  // retain fullscreen and open or place a window on another screen.
+  virtual base::ScopedClosureRunner ForSecurityDropFullscreen(
+      int64_t display_id = display::kInvalidDisplayId) WARN_UNUSED_RESULT = 0;
 
   // Unblocks requests from renderer for a newly created window. This is
   // used in showCreatedWindow() or sometimes later in cases where
