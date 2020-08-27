@@ -16403,6 +16403,17 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="8" label="Network show large rows off"/>
 </enum>
 
+<enum name="DevToolsSidebarPane">
+  <int value="0" label="Other sidebar pane"/>
+  <int value="1" label="Elements - Styles"/>
+  <int value="2" label="Elements - Computed"/>
+  <int value="3" label="Elements - Layout"/>
+  <int value="4" label="Elements - Event Listeners"/>
+  <int value="5" label="Elements - DOM Breakpoints"/>
+  <int value="6" label="Elements - Properties"/>
+  <int value="7" label="Elements - Accessibility"/>
+</enum>
+
 <enum name="DiagnosticsRecoveryRun">
   <int value="0" label="Recovery not run"/>
   <int value="1" label="Recovery run because of crash"/>

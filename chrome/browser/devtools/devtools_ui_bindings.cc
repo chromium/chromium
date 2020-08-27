@@ -102,6 +102,8 @@ static const char kTitleFormat[] = "DevTools - %s";
 static const char kDevToolsActionTakenHistogram[] = "DevTools.ActionTaken";
 static const char kDevToolsPanelShownHistogram[] = "DevTools.PanelShown";
 static const char kDevToolsPanelClosedHistogram[] = "DevTools.PanelClosed";
+static const char kDevToolsSidebarPaneShownHistogram[] =
+    "DevTools.SidebarPaneShown";
 static const char kDevToolsKeyboardShortcutFiredHistogram[] =
     "DevTools.KeyboardShortcutFired";
 static const char kDevToolsIssuesPanelOpenedFromHistogram[] =
@@ -1270,6 +1272,8 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
   else if (name == kDevToolsPanelShownHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else if (name == kDevToolsPanelClosedHistogram)
+    base::UmaHistogramExactLinear(name, sample, boundary_value);
+  else if (name == kDevToolsSidebarPaneShownHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);
   else if (name == kDevToolsKeyboardShortcutFiredHistogram)
     base::UmaHistogramExactLinear(name, sample, boundary_value);

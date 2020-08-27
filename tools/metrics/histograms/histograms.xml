@@ -40087,6 +40087,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Specified DevTools setting was changed.</summary>
 </histogram>
 
+<histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
+    expires_after="2021-07-31">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Specified DevTools sidebar pane was shown.</summary>
+</histogram>
+
 <histogram name="Diagnostics.Recovery.ConflictingDlls" enum="DiagnosticsResult"
     expires_after="2016-04-29">
   <obsolete>
