@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_DESK_ANIMATION_BASE_H_
 
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "ui/compositor/throughput_tracker.h"
 
@@ -32,6 +33,10 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
   // potential race conditions that might happen if one animator finished phase
   // (1) of the animation while other animators are still being constructed.
   void Launch();
+
+  // Replaces a current animation with an animation to an adjacent desk. By
+  // default returns false as most animations do not support replacement.
+  virtual bool Replace(bool moving_left, DesksSwitchSource source);
 
   // RootWindowDeskSwitchAnimator::Delegate:
   void OnStartingDeskScreenshotTaken(int ending_desk_index) override;
@@ -61,7 +66,7 @@ class DeskAnimationBase : public RootWindowDeskSwitchAnimator::Delegate {
       desk_switch_animators_;
 
   // The index of the desk that will be active after this animation ends.
-  const int ending_desk_index_;
+  int ending_desk_index_;
 
  private:
   // ThroughputTracker used for measuring this animation smoothness.

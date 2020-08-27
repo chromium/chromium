@@ -28,8 +28,9 @@ constexpr char kDeskRemovalSmoothnessHistogramName[] =
 
 DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
                                                  int starting_desk_index,
-                                                 int ending_desk_index)
-    : DeskAnimationBase(controller, ending_desk_index) {
+                                                 int ending_desk_index,
+                                                 DesksSwitchSource source)
+    : DeskAnimationBase(controller, ending_desk_index), switch_source_(source) {
   for (auto* root : Shell::GetAllRootWindows()) {
     desk_switch_animators_.emplace_back(
         std::make_unique<RootWindowDeskSwitchAnimator>(
@@ -39,6 +40,25 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
 }
 
 DeskActivationAnimation::~DeskActivationAnimation() = default;
+
+bool DeskActivationAnimation::Replace(bool moving_left,
+                                      DesksSwitchSource source) {
+  // Replacing an animation of a different switch source is not supported.
+  if (source != switch_source_)
+    return false;
+
+  const int new_ending_desk_index = ending_desk_index_ + (moving_left ? -1 : 1);
+  // Already at the leftmost or rightmost desk, nothing to replace.
+  if (new_ending_desk_index < 0 ||
+      new_ending_desk_index >= int{controller_->desks().size()}) {
+    return false;
+  }
+
+  ending_desk_index_ = new_ending_desk_index;
+  for (const auto& animator : desk_switch_animators_)
+    animator->ReplaceAnimation(new_ending_desk_index);
+  return true;
+}
 
 void DeskActivationAnimation::OnStartingDeskScreenshotTakenInternal(
     int ending_desk_index) {
@@ -70,6 +90,15 @@ void DeskActivationAnimation::OnStartingDeskScreenshotTakenInternal(
       /*update_window_activation=*/true);
 
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
+}
+
+void DeskActivationAnimation::OnDeskSwitchAnimationFinishedInternal() {
+  // During a chained animation we may not switch desks if a replaced target
+  // desk does not require a new screenshot. If that is the case, activate the
+  // proper desk here.
+  controller_->ActivateDeskInternal(
+      controller_->desks()[ending_desk_index_].get(),
+      /*update_window_activation=*/true);
 }
 
 metrics_util::ReportCallback DeskActivationAnimation::GetReportCallback()

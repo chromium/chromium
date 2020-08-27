@@ -29,9 +29,6 @@ ui::Compositor* GetSelectedCompositorForAnimationSmoothness() {
 
 }  // namespace
 
-// -----------------------------------------------------------------------------
-// DeskAnimationBase:
-
 DeskAnimationBase::DeskAnimationBase(DesksController* controller,
                                      int ending_desk_index)
     : controller_(controller),
@@ -64,6 +61,10 @@ void DeskAnimationBase::Launch() {
   DCHECK(!desk_switch_animators_.empty());
   for (auto& animator : desk_switch_animators_)
     animator->TakeStartingDeskScreenshot();
+}
+
+bool DeskAnimationBase::Replace(bool moving_left, DesksSwitchSource source) {
+  return false;
 }
 
 void DeskAnimationBase::OnStartingDeskScreenshotTaken(int ending_desk_index) {

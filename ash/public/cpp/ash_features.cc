@@ -59,6 +59,9 @@ const base::Feature kDockedMagnifier{"DockedMagnifier",
 const base::Feature kDragToSnapInClamshellMode{
     "DragToSnapInClamshellMode", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kEnhancedDeskAnimations{"EnhancedDeskAnimations",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kLimitAltTabToActiveDesk{"LimitAltTabToActiveDesk",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -182,6 +185,10 @@ bool IsCaptureModeEnabled() {
 
 bool IsDarkLightModeEnabled() {
   return base::FeatureList::IsEnabled(kDarkLightMode);
+}
+
+bool IsEnhancedDeskAnimations() {
+  return base::FeatureList::IsEnabled(kEnhancedDeskAnimations);
 }
 
 bool IsHideArcMediaNotificationsEnabled() {

@@ -17,15 +17,21 @@ class DeskActivationAnimation : public DeskAnimationBase {
  public:
   DeskActivationAnimation(DesksController* controller,
                           int starting_desk_index,
-                          int ending_desk_index);
+                          int ending_desk_index,
+                          DesksSwitchSource source);
   DeskActivationAnimation(const DeskActivationAnimation&) = delete;
   DeskActivationAnimation& operator=(const DeskActivationAnimation&) = delete;
   ~DeskActivationAnimation() override;
 
   // DeskAnimationBase:
+  bool Replace(bool moving_left, DesksSwitchSource source) override;
   void OnStartingDeskScreenshotTakenInternal(int ending_desk_index) override;
-  void OnDeskSwitchAnimationFinishedInternal() override {}
+  void OnDeskSwitchAnimationFinishedInternal() override;
   metrics_util::ReportCallback GetReportCallback() const override;
+
+ private:
+  // The switch source that requested this animation.
+  const DesksSwitchSource switch_source_;
 };
 
 class DeskRemovalAnimation : public DeskAnimationBase {

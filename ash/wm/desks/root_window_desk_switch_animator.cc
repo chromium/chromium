@@ -4,9 +4,11 @@
 
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/logging.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -116,6 +118,8 @@ RootWindowDeskSwitchAnimator::RootWindowDeskSwitchAnimator(
   DCHECK(root_window_);
   DCHECK_NE(starting_desk_index_, ending_desk_index_);
   DCHECK(delegate_);
+
+  screenshot_layers_.resize(desks_util::kMaxNumberOfDesks);
 }
 
 RootWindowDeskSwitchAnimator::~RootWindowDeskSwitchAnimator() {
@@ -167,7 +171,7 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
   DCHECK(ending_desk_screenshot_taken_);
   DCHECK(!animation_finished_);
 
-  gfx::Transform animation_layer_ending_transfrom;
+  gfx::Transform animation_layer_ending_transform;
 
   if (starting_desk_index_ < ending_desk_index_) {
     // Starting desk is one the left, so the ending transform of the parent
@@ -191,7 +195,7 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
     //                          ^
     //               `x_translation_offset_`
     //
-    animation_layer_ending_transfrom.Translate(-x_translation_offset_, 0);
+    animation_layer_ending_transform.Translate(-x_translation_offset_, 0);
   }
 
   // Animate the parent "animation layer" towards the ending transform.
@@ -202,7 +206,7 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
   settings.AddObserver(this);
   settings.SetTransitionDuration(kAnimationDuration);
   settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-  animation_layer->SetTransform(animation_layer_ending_transfrom);
+  animation_layer->SetTransform(animation_layer_ending_transform);
 
   if (for_remove_) {
     DCHECK(old_windows_layer_tree_owner_);
@@ -221,9 +225,26 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
   }
 }
 
+void RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
+  DCHECK(features::IsEnhancedDeskAnimations());
+  DCHECK(!for_remove_);
+  DCHECK_NE(new_ending_desk_index, ending_desk_index_);
+
+  starting_desk_index_ = ending_desk_index_;
+  ending_desk_index_ = new_ending_desk_index;
+
+  // TODO(sammiequon): Change this function to return a boolean. The caller will
+  // then start the animation, or take a new screenshot.
+  if (!!screenshot_layers_[ending_desk_index_]) {
+    return;
+  }
+
+  ending_desk_screenshot_retries_ = 0;
+  ending_desk_screenshot_taken_ = false;
+}
+
 void RootWindowDeskSwitchAnimator::OnImplicitAnimationsCompleted() {
   StopObservingImplicitAnimations();
-
   animation_finished_ = true;
   delegate_->OnDeskSwitchAnimationFinished();
 }
@@ -233,8 +254,9 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
   DCHECK(layer);
 
   ui::Layer* starting_desk_screenshot_layer = layer.release();
+  screenshot_layers_[starting_desk_index_] = starting_desk_screenshot_layer;
   gfx::Rect screenshot_bounds(root_window_->layer()->size());
-  gfx::Transform animation_layer_starting_transfrom;
+  gfx::Transform animation_layer_starting_transform;
 
   if (starting_desk_index_ > ending_desk_index_) {
     // Starting desk is one the right, so we need to offset the screenshot layer
@@ -261,14 +283,14 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
     // However the parent "animation layer" is startingly translated by the same
     // amount in the opposite direction such that starting desk screenshot is
     // the one shown on the screen.
-    animation_layer_starting_transfrom.Translate(-x_translation_offset_, 0);
+    animation_layer_starting_transform.Translate(-x_translation_offset_, 0);
   }
 
   starting_desk_screenshot_layer->SetName("Starting desk screenshot");
   starting_desk_screenshot_layer->SetBounds(screenshot_bounds);
   auto* animation_layer = animation_layer_owner_->root();
   animation_layer->Add(starting_desk_screenshot_layer);
-  animation_layer->SetTransform(animation_layer_starting_transfrom);
+  animation_layer->SetTransform(animation_layer_starting_transform);
 
   // Add the layers on top of everything, so that things that result from desk
   // activation (such as showing and hiding windows, exiting overview mode ...
@@ -342,7 +364,7 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
 
   ui::Layer* ending_desk_screenshot_layer =
       CreateLayerFromScreenshotResult(std::move(copy_result)).release();
-
+  screenshot_layers_[ending_desk_index_] = ending_desk_screenshot_layer;
   gfx::Rect screenshot_bounds(root_window_->layer()->size());
 
   if (starting_desk_index_ < ending_desk_index_) {

@@ -46,6 +46,11 @@ ASH_PUBLIC_EXPORT extern const base::Feature kDockedMagnifier;
 // TODO(crbug.com/890029): Remove this when the feature is fully launched.
 ASH_PUBLIC_EXPORT extern const base::Feature kDragToSnapInClamshellMode;
 
+// Enables chaining of keyboard and touchpad swipe induced desk animations.
+// Enables continuous touchpad swiping to switch desks.
+// TODO(crbug.com/1111445): Remove this when the feature is fully launched.
+ASH_PUBLIC_EXPORT extern const base::Feature kEnhancedDeskAnimations;
+
 // Limits the windows listed in Alt-Tab to the ones in the currently active
 // desk.
 ASH_PUBLIC_EXPORT extern const base::Feature kLimitAltTabToActiveDesk;
@@ -189,6 +194,8 @@ ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
 ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDarkLightModeEnabled();
+
+ASH_PUBLIC_EXPORT bool IsEnhancedDeskAnimations();
 
 ASH_PUBLIC_EXPORT bool IsHideArcMediaNotificationsEnabled();
 

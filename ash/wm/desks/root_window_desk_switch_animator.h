@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 
@@ -179,7 +178,9 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
                                int ending_desk_index,
                                Delegate* delegate,
                                bool for_remove);
-
+  RootWindowDeskSwitchAnimator(const RootWindowDeskSwitchAnimator&) = delete;
+  RootWindowDeskSwitchAnimator& operator=(const RootWindowDeskSwitchAnimator&) =
+      delete;
   ~RootWindowDeskSwitchAnimator() override;
 
   bool starting_desk_screenshot_taken() const {
@@ -207,6 +208,10 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   // finishes.
   void StartAnimation();
 
+  // Replace the current animation with one that goes to
+  // |new_ending_desk_index|.
+  void ReplaceAnimation(int new_ending_desk_index);
+
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
@@ -230,10 +235,10 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   aura::Window* const root_window_;
 
   // The index of the active desk at the start of the animation.
-  const int starting_desk_index_;
+  int starting_desk_index_;
 
   // The index of the desk to activate and animate to with this animator.
-  const int ending_desk_index_;
+  int ending_desk_index_;
 
   Delegate* const delegate_;
 
@@ -246,6 +251,15 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   // The owner of the layer tree that contains the parent "animation layer" and
   // both its child starting and ending desks "screenshot layers".
   std::unique_ptr<ui::LayerTreeOwner> animation_layer_owner_;
+
+  // Stores the layers of taken screenshots. This vector is the same size as
+  // desks_util::kMaxNumberOfDesks and the screenshot at index i will correspond
+  // to desk i but the layers will be nullptr until they are needed. For
+  // example, for a desk activation animation from desk index 0 -> 1 will have
+  // screenshots of desk 0 and desk 1 stored at indices 0 and 1, but the
+  // remaining indices will have nullptr. The layers, if not null are owned by
+  // |animation_layer_owner_|.
+  std::vector<ui::Layer*> screenshot_layers_;
 
   // The amount by which the animation layer will be translated horizontally
   // either startingly or at the end of the animation, depending on the value of
@@ -270,8 +284,6 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   bool animation_finished_ = false;
 
   base::WeakPtrFactory<RootWindowDeskSwitchAnimator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RootWindowDeskSwitchAnimator);
 };
 
 }  // namespace ash

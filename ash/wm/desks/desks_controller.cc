@@ -136,7 +136,8 @@ void MaybeUpdateShelfItems(
 
 }  // namespace
 
-DesksController::DesksController() {
+DesksController::DesksController()
+    : is_enhanced_desk_animations_(features::IsEnhancedDeskAnimations()) {
   Shell::Get()->activation_client()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 
@@ -266,6 +267,7 @@ void DesksController::RemoveDesk(const Desk* desk,
 
 void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   DCHECK(HasDesk(desk));
+  DCHECK(animations_.empty());
 
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
@@ -300,21 +302,31 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
 
   const int starting_desk_index = GetDeskIndex(active_desk());
   animations_.emplace_back(std::make_unique<DeskActivationAnimation>(
-      this, starting_desk_index, target_desk_index));
+      this, starting_desk_index, target_desk_index, source));
   animations_.back()->Launch();
 }
 
 bool DesksController::ActivateAdjacentDesk(bool going_left,
                                            DesksSwitchSource source) {
-  // An on-going desk switch animation might be in progress. For now skip this
-  // accelerator or touchpad event. Later we might want to consider queueing
-  // these animations, or cancelling the on-going ones and start over.
-  // TODO(afakhry): Discuss with UX.
-  if (AreDesksBeingModified())
+  // An on-going desk switch animation might be in progress. Skip this
+  // accelerator or touchpad event if enhanced desk animations are not enabled.
+  if (!is_enhanced_desk_animations_ && AreDesksBeingModified())
     return false;
 
   if (Shell::Get()->session_controller()->IsUserSessionBlocked())
     return false;
+
+  // Try replacing an ongoing desk animation of the same source.
+  if (is_enhanced_desk_animations_) {
+    for (const auto& animation : animations_) {
+      if (animation->Replace(going_left, source))
+        return true;
+    }
+    // If there is no current animation of the same source but there is an
+    // animation running, skip this animation.
+    if (!animations_.empty())
+      return false;
+  }
 
   const Desk* desk_to_activate = going_left ? GetPreviousDesk() : GetNextDesk();
   if (desk_to_activate) {
