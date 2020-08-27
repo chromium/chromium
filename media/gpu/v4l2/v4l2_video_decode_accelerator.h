@@ -431,6 +431,15 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // Image processor notifies an error.
   void ImageProcessorError();
 
+  // TODO(crbug.com/1109312): some pages with lots of small videos are causing
+  // crashes, so limit the number of simultaneous decoder instances for now.
+  // |num_instances_| tracks the number of simultaneous decoders.
+  // |can_use_decoder_| is true iff we haven't reached the maximum number of
+  // instances at the time this decoder is created.
+  static constexpr int kMaxNumOfInstances = 10;
+  static base::AtomicRefCount num_instances_;
+  const bool can_use_decoder_;
+
   // Our original calling task runner for the child thread.
   scoped_refptr<base::SingleThreadTaskRunner> child_task_runner_;
 
