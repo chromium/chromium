@@ -9,8 +9,6 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {TestWallpaperBrowserProxy} from './test_wallpaper_browser_proxy.m.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 let personalizationPage = null;
@@ -57,7 +55,6 @@ suite('PersonalizationHandler', function() {
 
   teardown(function() {
     personalizationPage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
   });
 
   test('wallpaperManager', async () => {
@@ -90,22 +87,6 @@ suite('PersonalizationHandler', function() {
     assertTrue(personalizationPage.$$('#wallpaperButton').disabled);
   });
 
-  test('Deep link to open wallpaper button', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
-    const params = new URLSearchParams;
-    params.append('settingId', '500');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.PERSONALIZATION, params);
-
-    const deepLinkElement = personalizationPage.$.wallpaperButton.$$('#icon');
-    await test_util.waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Wallpaper button should be focused for settingId=500.');
-  });
-
   test('changePicture', function() {
     const row = personalizationPage.$.changePictureRow;
     assertTrue(!!row);
@@ -113,28 +94,6 @@ suite('PersonalizationHandler', function() {
     assertEquals(
         settings.routes.CHANGE_PICTURE,
         settings.Router.getInstance().getCurrentRoute());
-  });
-
-  test('Deep link to change account picture', async () => {
-    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
-    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
-
-    const params = new URLSearchParams;
-    params.append('settingId', '503');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CHANGE_PICTURE, params);
-
-    await test_util.waitAfterNextRender(personalizationPage);
-
-    const changePicturePage = personalizationPage.$$('settings-change-picture');
-    assertTrue(!!changePicturePage);
-    const deepLinkElement = changePicturePage.$$('#pictureList')
-                                .$$('#selector')
-                                .$$('[class="iron-selected"]');
-    await test_util.waitAfterNextRender(deepLinkElement);
-    assertEquals(
-        deepLinkElement, getDeepActiveElement(),
-        'Account picture elem should be focused for settingId=503.');
   });
 
   test('ambientMode', function() {
