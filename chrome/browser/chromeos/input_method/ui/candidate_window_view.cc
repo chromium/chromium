@@ -152,6 +152,15 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   set_parent_window(parent);
   set_margins(gfx::Insets());
 
+  // When BubbleDialogDelegateView creates its frame view it will create a
+  // bubble border with a non-zero corner radius by default.
+  // This class replaces the frame view's bubble border later on with its own
+  // |CandidateWindowBorder| with a radius of 0.
+  // We want to disable the use of round corners here to ensure that the radius
+  // of the frame view created by the BubbleDialogDelegateView is consistent
+  // with what CandidateWindowView expects.
+  set_use_round_corners(false);
+
   SetBorder(views::CreateSolidBorder(
       1, GetNativeTheme()->GetSystemColor(
              ui::NativeTheme::kColorId_MenuBorderColor)));
