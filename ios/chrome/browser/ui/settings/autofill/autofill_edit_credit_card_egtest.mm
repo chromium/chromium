@@ -87,7 +87,7 @@ id<GREYMatcher> NavigationBarEditButton() {
 // Tests that editing the credit card nickname is possible.
 - (void)testValidNickname {
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
-      performAction:grey_typeText(@"Nickname")];
+      performAction:grey_replaceText(@"Nickname")];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(), grey_enabled(),
