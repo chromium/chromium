@@ -111,6 +111,8 @@ TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/1);
   SimulateUserActionAndExpectRecording(/*bucket=*/1);
+  histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
+                                 /*count=*/0);
 
   // Activate an incognito browser instance of the guest profile.
   // Note: Creating a non-incognito guest browser instance is not possible.
@@ -118,6 +120,8 @@ TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/0, /*count=*/1);
   SimulateUserActionAndExpectRecording(/*bucket=*/0);
+  histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
+                                   /*bucket=*/1, /*count=*/1);
 
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 2);
 }
@@ -135,6 +139,8 @@ TEST_F(ProfileActivityMetricsRecorderTest, IncognitoProfile) {
                                   /*bucket=*/1, /*count=*/2);
 
   histograms()->ExpectTotalCount("Profile.BrowserActive.PerProfile", 2);
+  histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
+                                 /*count=*/0);
 }
 
 TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
@@ -160,6 +166,9 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/1, /*count=*/2);
   SimulateUserActionAndExpectRecording(/*bucket=*/1);
+  // No profile switch, so far.
+  histograms()->ExpectTotalCount("Profile.NumberOfProfilesAtProfileSwitch",
+                                 /*count=*/0);
 
   // Profile 1: Session lasts 2 minutes.
   task_environment()->FastForwardBy(base::TimeDelta::FromMinutes(2));
@@ -170,6 +179,8 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/2, /*count=*/1);
   SimulateUserActionAndExpectRecording(/*bucket=*/2);
+  histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
+                                   /*bucket=*/3, /*count=*/1);
 
   // Profile 1: Session ended. The duration(2 minutes) is recorded.
   histograms()->ExpectBucketCount("Profile.SessionDuration.PerProfile",
@@ -184,6 +195,8 @@ TEST_F(ProfileActivityMetricsRecorderTest, MultipleProfiles) {
   histograms()->ExpectBucketCount("Profile.BrowserActive.PerProfile",
                                   /*bucket=*/3, /*count=*/1);
   SimulateUserActionAndExpectRecording(/*bucket=*/3);
+  histograms()->ExpectUniqueSample("Profile.NumberOfProfilesAtProfileSwitch",
+                                   /*bucket=*/3, /*count=*/2);
 
   // Profile 3: Session ended. The duration(2 minutes) is recorded.
   histograms()->ExpectBucketCount("Profile.SessionDuration.PerProfile",
