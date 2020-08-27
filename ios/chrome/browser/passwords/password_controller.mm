@@ -379,7 +379,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   for (size_t i = 0; i < count; i++) {
     InfoBarIOS* infobar =
         static_cast<InfoBarIOS*>(infoBarManager->infobar_at(i));
-    if (infobar->InfobarUIDelegate().infobarType == infobarType &&
+    if (infobar->infobar_type() == infobarType &&
         infobar->skip_banner() == manual)
       return infobar;
   }
