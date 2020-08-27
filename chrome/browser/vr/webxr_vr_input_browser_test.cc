@@ -8,7 +8,6 @@
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
-#include "third_party/openvr/src/headers/openvr.h"
 
 // Browser test equivalent of
 // chrome/android/javatests/src/.../browser/vr/WebXrVrInputTest.java.
@@ -355,139 +354,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInputSourcesChange) {
   t->EndTest();
 }
 
-// Ensure that when an input source's profiles array changes, an input source
-// change event is fired and a new input source is created.
-// OpenVR-only since WMR/OpenXR only supports one kind of gamepad, so it's not
-// possible to update the connected gamepad functionality to force the profiles
-// array to change.
-IN_PROC_BROWSER_TEST_F(WebXrVrOpenVrBrowserTest, TestInputProfilesChange) {
-  WebXrControllerInputMock my_mock;
-  unsigned int controller_index = my_mock.CreateAndConnectMinimalGamepad();
-
-  LoadFileAndAwaitInitialization("test_webxr_input_same_object");
-  EnterSessionWithUserGestureOrFail();
-
-  // Wait for the first changed event
-  PollJavaScriptBooleanOrFail("inputChangeEvents === 1",
-                              WebXrVrBrowserTestBase::kPollTimeoutShort);
-
-  // We only expect one input source, cache it.
-  RunJavaScriptOrFail("validateInputSourceLength(1)");
-  RunJavaScriptOrFail("updateCachedInputSource(0)");
-
-  // Add a touchpad so that the profiles array changes and verify that we get a
-  // change event.
-  uint64_t supported_buttons =
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrigger) |
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrackpad);
-  std::map<device::XrButtonId, unsigned int> axis_types = {
-      {device::XrButtonId::kAxisTrackpad, device::XrAxisType::kTrackpad},
-      {device::XrButtonId::kAxisTrigger, device::XrAxisType::kTrigger},
-  };
-  my_mock.UpdateControllerSupport(controller_index, axis_types,
-                                  supported_buttons);
-
-  PollJavaScriptBooleanOrFail("inputChangeEvents === 2",
-                              WebXrVrBrowserTestBase::kPollTimeoutShort);
-  RunJavaScriptOrFail("validateCachedSourcePresence(false)");
-  RunJavaScriptOrFail("validateInputSourceLength(1)");
-  RunJavaScriptOrFail("done()");
-  EndTest();
-}
-
-// Ensure that changes to a gamepad object respect that it is the same object
-// and that if whether or not an input source has a gamepad changes that the
-// input source change event is fired and a new input source is created.
-// OpenVR-only since WMR/OpenXR doesn't support the notion of an incomplete
-// gamepad except if using voice input.
-IN_PROC_BROWSER_TEST_F(WebXrVrOpenVrBrowserTest, TestInputGamepadSameObject) {
-  WebXrControllerInputMock my_mock;
-
-  // Create a set of buttons and axes that don't have enough data to be made
-  // into an xr-standard gamepad (which we expect the runtimes to not report).
-  // Even just setting the select trigger is now enough to create an xr-standard
-  // gamepad, so we only set the grip trigger in this case.
-  uint64_t insufficient_buttons =
-      device::XrButtonMaskFromId(device::XrButtonId::kGrip);
-  std::map<device::XrButtonId, unsigned int> insufficient_axis_types = {};
-
-  // Create a set of buttons and axes that we expect to have enough data to be
-  // made into an xr-standard gamepad (which we expect the runtimes to report).
-  uint64_t sufficient_buttons =
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrigger) |
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrackpad);
-  std::map<device::XrButtonId, unsigned int> sufficient_axis_types = {
-      {device::XrButtonId::kAxisTrackpad, device::XrAxisType::kTrackpad},
-      {device::XrButtonId::kAxisTrigger, device::XrAxisType::kTrigger},
-  };
-
-  // Start off without a gamepad.
-  unsigned int controller_index = my_mock.CreateAndConnectController(
-      device::ControllerRole::kControllerRoleRight, insufficient_axis_types,
-      insufficient_buttons);
-
-  LoadFileAndAwaitInitialization("test_webxr_input_same_object");
-  EnterSessionWithUserGestureOrFail();
-
-  // We should only have seen the first change indicating we have input sources.
-  PollJavaScriptBooleanOrFail("inputChangeEvents === 1", kPollTimeoutShort);
-
-  // We only expect one input source, cache it.
-  RunJavaScriptOrFail("validateInputSourceLength(1)");
-  RunJavaScriptOrFail("updateCachedInputSource(0)");
-
-  // Toggle a button and confirm that the controller is still the same.
-  my_mock.ToggleButtons(controller_index, insufficient_buttons);
-  RunJavaScriptOrFail("validateCachedSourcePresence(true)");
-  RunJavaScriptOrFail("validateCurrentAndCachedGamepadMatch()");
-
-  // Update the controller to now support a gamepad and verify that we get a
-  // change event and that the old controller isn't present.  Then cache the new
-  // one.
-  my_mock.UpdateControllerSupport(controller_index, sufficient_axis_types,
-                                  sufficient_buttons);
-  PollJavaScriptBooleanOrFail("inputChangeEvents === 2", kPollTimeoutShort);
-  RunJavaScriptOrFail("validateCachedSourcePresence(false)");
-  RunJavaScriptOrFail("validateInputSourceLength(1)");
-  RunJavaScriptOrFail("updateCachedInputSource(0)");
-
-  // Toggle a button and confirm that the controller is still the same.
-  my_mock.PressReleasePrimaryTrigger(controller_index);
-  RunJavaScriptOrFail("validateCachedSourcePresence(true)");
-  RunJavaScriptOrFail("validateCurrentAndCachedGamepadMatch()");
-
-  // Switch back to the insufficient gamepad and confirm that we get the change.
-  my_mock.UpdateControllerSupport(controller_index, insufficient_axis_types,
-                                  insufficient_buttons);
-  PollJavaScriptBooleanOrFail("inputChangeEvents === 3", kPollTimeoutShort);
-  RunJavaScriptOrFail("validateCachedSourcePresence(false)");
-  RunJavaScriptOrFail("validateInputSourceLength(1)");
-  RunJavaScriptOrFail("done()");
-  EndTest();
-}
-
-// Ensure that if the controller lacks enough data to be considered a Gamepad
-// that the input source that it is associated with does not have a Gamepad.
-// OpenVR-only because WMR/OpenXR does not currently support the notion of
-// incomplete gamepads other than voice input.
-IN_PROC_BROWSER_TEST_F(WebXrVrOpenVrBrowserTest, TestGamepadIncompleteData) {
-  WebXrControllerInputMock my_mock;
-
-  // Create a controller that only supports select, i.e. it lacks enough data
-  // to be considered a gamepad.
-  uint64_t supported_buttons =
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrigger);
-  my_mock.CreateAndConnectController(
-      device::ControllerRole::kControllerRoleRight, {}, supported_buttons);
-
-  LoadFileAndAwaitInitialization("test_webxr_gamepad_support");
-  EnterSessionWithUserGestureOrFail();
-  PollJavaScriptBooleanOrFail("inputSourceHasNoGamepad()", kPollTimeoutShort);
-  PollJavaScriptBooleanOrFail("isProfileCountEqualTo(0)", kPollTimeoutShort);
-  RunJavaScriptOrFail("done()");
-  EndTest();
-}
-
 // Ensure that if a Gamepad has the minimum required number of axes/buttons to
 // be considered an xr-standard Gamepad, that it is exposed as such, and that
 // we can check the state of it's priamry axes/button.
@@ -530,10 +396,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadMinimumData) {
     VerifyInputSourceProfilesArray(
         t, {"windows-mixed-reality",
             "generic-trigger-squeeze-touchpad-thumbstick"});
-  } else if (t->GetRuntimeType() ==
-             XrBrowserTestBase::RuntimeType::RUNTIME_OPENVR) {
-    VerifyInputSourceProfilesArray(
-        t, {"test-value-test-value", "generic-trigger"});
   } else if (t->GetRuntimeType() ==
              XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
     // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
@@ -612,10 +474,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestMultipleGamepads) {
     VerifyInputSourceProfilesArray(
         t, {"windows-mixed-reality",
             "generic-trigger-squeeze-touchpad-thumbstick"});
-  } else if (t->GetRuntimeType() ==
-             XrBrowserTestBase::RuntimeType::RUNTIME_OPENVR) {
-    VerifyInputSourceProfilesArray(
-        t, {"test-value-test-value", "generic-trigger"});
   } else if (t->GetRuntimeType() ==
              XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
     // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
@@ -721,11 +579,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadCompleteData) {
         t, {"windows-mixed-reality",
             "generic-trigger-squeeze-touchpad-thumbstick"});
   } else if (t->GetRuntimeType() ==
-             XrBrowserTestBase::RuntimeType::RUNTIME_OPENVR) {
-    VerifyInputSourceProfilesArray(
-        t, {"test-value-test-value",
-            "generic-trigger-squeeze-touchpad-thumbstick"});
-  } else if (t->GetRuntimeType() ==
              XrBrowserTestBase::RuntimeType::RUNTIME_OPENXR) {
     // OpenXR will still report having squeeze, menu, touchpad, and thumbstick
     // because it only supports that type of controller and fills in default
@@ -737,161 +590,6 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadCompleteData) {
 
   t->RunJavaScriptOrFail("done()");
   t->EndTest();
-}
-
-// Tests that axes data is still reported on the secondary axes even if
-// the button is not supported (we see this case with WMR through OpenVR where
-// the secondary axes button is reserved by the system, but we still get valid
-// data for the axes, there may be other controllers where this is the case).
-// Because this is specifically a bug in the OpenVR runtime/with configurable
-// controllers, not testing WMR/OpenXR.
-IN_PROC_BROWSER_TEST_F(WebXrVrOpenVrBrowserTest, TestInputAxesWithNoButton) {
-  WebXrControllerInputMock my_mock;
-
-  // Create a controller that supports all reserved buttons, except the
-  // secondary axis. (Though it is a valid axis)
-  uint64_t supported_buttons =
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrigger) |
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrackpad) |
-      device::XrButtonMaskFromId(device::XrButtonId::kGrip);
-
-  std::map<device::XrButtonId, unsigned int> axis_types = {
-      {device::XrButtonId::kAxisTrackpad, device::XrAxisType::kTrackpad},
-      {device::XrButtonId::kAxisTrigger, device::XrAxisType::kTrigger},
-      {device::XrButtonId::kAxisThumbstick, device::XrAxisType::kJoystick},
-  };
-
-  unsigned int controller_index = my_mock.CreateAndConnectController(
-      device::ControllerRole::kControllerRoleRight, axis_types,
-      supported_buttons);
-
-  LoadFileAndAwaitInitialization("test_webxr_gamepad_support");
-  EnterSessionWithUserGestureOrFail();
-
-  VerifyInputCounts(this, 1, 1);
-
-  // Setup some state on the optional buttons (as TestGamepadMinimumData should
-  // ensure proper state on the required buttons).
-  // Set a value on the secondary set of axes.
-  my_mock.SetAxes(controller_index, device::XrButtonId::kAxisThumbstick, 0.25,
-                  -0.25);
-  // Controller should meet the requirements for the 'xr-standard' mapping.
-  PollJavaScriptBooleanOrFail("isMappingEqualTo('xr-standard')",
-                              WebXrVrBrowserTestBase::kPollTimeoutShort);
-
-  // Controller should have all required and optional xr-standard buttons
-  PollJavaScriptBooleanOrFail("isButtonCountEqualTo(4)",
-                              WebXrVrBrowserTestBase::kPollTimeoutShort);
-
-  // The secondary set of axes should be set appropriately.
-  PollJavaScriptBooleanOrFail("areAxesValuesEqualTo(1, 0.25, -0.25)",
-                              WebXrVrBrowserTestBase::kPollTimeoutShort);
-
-  // If we have a non-zero axis value, the button should be touched.
-  PollJavaScriptBooleanOrFail("isButtonTouchedEqualTo(3, true)",
-                              WebXrVrBrowserTestBase::kPollTimeoutShort);
-
-  RunJavaScriptOrFail("done()");
-  EndTest();
-}
-
-// Ensure that if a Gamepad has all required buttons, an extra button not
-// mapped in the xr-standard specification, and is missing reserved buttons
-// from the XR Standard specification, that the extra button does not appear
-// in either of the reserved button slots. OpenVR-only since WMR/OpenXR only
-// supports one controller type.
-IN_PROC_BROWSER_TEST_F(WebXrVrOpenVrBrowserTest, TestGamepadReservedData) {
-  WebXrControllerInputMock my_mock;
-
-  // Create a controller that is missing reserved buttons, but supports an
-  // extra button to guarantee that the reserved button is held.
-  uint64_t supported_buttons =
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrigger) |
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrackpad) |
-      device::XrButtonMaskFromId(device::XrButtonId::kA);
-
-  std::map<device::XrButtonId, unsigned int> axis_types = {
-      {device::XrButtonId::kAxisTrackpad, device::XrAxisType::kTrackpad},
-      {device::XrButtonId::kAxisTrigger, device::XrAxisType::kTrigger},
-  };
-
-  unsigned int controller_index = my_mock.CreateAndConnectController(
-      device::ControllerRole::kControllerRoleRight, axis_types,
-      supported_buttons);
-
-  LoadFileAndAwaitInitialization("test_webxr_gamepad_support");
-  EnterSessionWithUserGestureOrFail();
-
-  VerifyInputCounts(this, 1, 1);
-
-  // Claim that all buttons are pressed, note that any non-supported buttons
-  // should be ignored.
-  my_mock.ToggleButtons(controller_index, UINT64_MAX);
-
-  // Index 1 and 3 are reserved for the grip and joystick.
-  // As our controller doesn't support them, they should be present but not
-  // pressed, and our "extra" button should be index 4 and should be pressed.
-  PollJavaScriptBooleanOrFail("isMappingEqualTo('xr-standard')",
-                              kPollTimeoutShort);
-  PollJavaScriptBooleanOrFail("isButtonCountEqualTo(5)", kPollTimeoutShort);
-  PollJavaScriptBooleanOrFail("isButtonPressedEqualTo(0, true)",
-                              kPollTimeoutShort);
-  PollJavaScriptBooleanOrFail("isButtonPressedEqualTo(1, false)",
-                              kPollTimeoutShort);
-  PollJavaScriptBooleanOrFail("isButtonPressedEqualTo(2, true)",
-                              kPollTimeoutShort);
-  PollJavaScriptBooleanOrFail("isButtonPressedEqualTo(3, false)",
-                              kPollTimeoutShort);
-  PollJavaScriptBooleanOrFail("isButtonPressedEqualTo(4, true)",
-                              kPollTimeoutShort);
-
-  VerifyInputSourceProfilesArray(
-      this, {"test-value-test-value", "generic-trigger-touchpad"});
-
-  RunJavaScriptOrFail("done()");
-  EndTest();
-}
-
-// Ensure that if a gamepad has a grip, but not any extra buttons or a secondary
-// axis, that no trailing placeholder button is added.  This is a slight
-// variation on TestGamepadMinimalData, but won't re-test whether or not buttons
-// get sent up.  Note that since WMR/OpenXR always builds the WMR/OpenXR
-// controller which supports all required and optional buttons specified by the
-// xr-standard mapping, this test is OpenVR-only.
-IN_PROC_BROWSER_TEST_F(WebXrVrOpenVrBrowserTest, TestGamepadOptionalData) {
-  WebXrControllerInputMock my_mock;
-
-  // Create a controller that supports the trigger, primary axis, and grip
-  uint64_t supported_buttons =
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrigger) |
-      device::XrButtonMaskFromId(device::XrButtonId::kAxisTrackpad) |
-      device::XrButtonMaskFromId(device::XrButtonId::kGrip);
-
-  std::map<device::XrButtonId, unsigned int> axis_types = {
-      {device::XrButtonId::kAxisTrackpad, device::XrAxisType::kTrackpad},
-      {device::XrButtonId::kAxisTrigger, device::XrAxisType::kTrigger},
-  };
-
-  my_mock.CreateAndConnectController(
-      device::ControllerRole::kControllerRoleRight, axis_types,
-      supported_buttons);
-
-  LoadFileAndAwaitInitialization("test_webxr_gamepad_support");
-  EnterSessionWithUserGestureOrFail();
-
-  VerifyInputCounts(this, 1, 1);
-
-  // There should be enough buttons for an xr-standard mapping, and it should
-  // have one optional button, but not the other.
-  PollJavaScriptBooleanOrFail("isMappingEqualTo('xr-standard')",
-                              kPollTimeoutShort);
-  PollJavaScriptBooleanOrFail("isButtonCountEqualTo(3)", kPollTimeoutShort);
-
-  VerifyInputSourceProfilesArray(
-      this, {"test-value-test-value", "generic-trigger-squeeze-touchpad"});
-
-  RunJavaScriptOrFail("done()");
-  EndTest();
 }
 
 #if BUILDFLAG(ENABLE_OPENXR)
@@ -1000,8 +698,6 @@ IN_PROC_BROWSER_TEST_F(WebXrVrWmrBrowserTest, TestVoiceSelectRegistered) {
 // Equivalent to
 // WebXrVrInputTest#testControllerClicksRegisteredOnDaydream_WebXr.
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestControllerInputRegistered) {
-  // TODO(crbug.com/1033087): Test is flaky on OpenVR
-  WEBXR_VR_DISABLE_TEST_ON(XrBrowserTestBase::RuntimeType::RUNTIME_OPENVR);
   WebXrControllerInputMock my_mock;
 
   unsigned int controller_index = my_mock.CreateAndConnectMinimalGamepad();

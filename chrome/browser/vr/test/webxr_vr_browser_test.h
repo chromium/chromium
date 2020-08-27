@@ -53,7 +53,7 @@ class WebXrVrBrowserTestBase : public WebXrBrowserTestBase {
           permissions::PermissionRequestManager::ACCEPT_ALL;
 };
 
-// Test class with OpenVR disabled.
+// Test class with all runtimes disabled.
 class WebXrVrRuntimelessBrowserTest : public WebXrVrBrowserTestBase {
  public:
   WebXrVrRuntimelessBrowserTest();
@@ -65,16 +65,8 @@ class WebXrVrRuntimelessBrowserTestSensorless
   WebXrVrRuntimelessBrowserTestSensorless();
 };
 
-// OpenVR and WMR feature only defined on Windows.
+// WMR feature only defined on Windows.
 #ifdef OS_WIN
-// OpenVR-specific subclass of WebXrVrBrowserTestBase.
-class WebXrVrOpenVrBrowserTestBase : public WebXrVrBrowserTestBase {
- public:
-  WebXrVrOpenVrBrowserTestBase();
-  XrBrowserTestBase::RuntimeType GetRuntimeType() const override;
-  gfx::Vector3dF GetControllerOffset() const override;
-};
-
 // WMR-specific subclass of WebXrVrBrowserTestBase.
 class WebXrVrWmrBrowserTestBase : public WebXrVrBrowserTestBase {
  public:
@@ -102,12 +94,6 @@ class WebXrVrOpenXrBrowserTestBase : public WebXrVrBrowserTestBase {
 };
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 
-// Test class with standard features enabled: WebXR and OpenVR.
-class WebXrVrOpenVrBrowserTest : public WebXrVrOpenVrBrowserTestBase {
- public:
-  WebXrVrOpenVrBrowserTest();
-};
-
 class WebXrVrWmrBrowserTest : public WebXrVrWmrBrowserTestBase {
  public:
   WebXrVrWmrBrowserTest();
@@ -119,13 +105,6 @@ class WebXrVrOpenXrBrowserTest : public WebXrVrOpenXrBrowserTestBase {
   WebXrVrOpenXrBrowserTest();
 };
 #endif  // BUILDFLAG(ENABLE_OPENXR)
-
-// Test classes with WebXR disabled.
-class WebXrVrOpenVrBrowserTestWebXrDisabled
-    : public WebXrVrOpenVrBrowserTestBase {
- public:
-  WebXrVrOpenVrBrowserTestWebXrDisabled();
-};
 
 class WebXrVrWmrBrowserTestWebXrDisabled : public WebXrVrWmrBrowserTestBase {
  public:

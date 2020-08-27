@@ -12,14 +12,6 @@
 #include "device/base/features.h"
 #include "device/vr/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_OPENVR)
-#include "device/vr/openvr/openvr_device.h"
-#endif
-
-#if BUILDFLAG(ENABLE_OCULUS_VR)
-#include "device/vr/oculus/oculus_device.h"
-#endif
-
 #if BUILDFLAG(ENABLE_WINDOWS_MR)
 #include "device/vr/windows_mixed_reality/mixed_reality_device.h"
 #include "device/vr/windows_mixed_reality/mixed_reality_statics.h"
@@ -128,24 +120,6 @@ void IsolatedXRRuntimeProvider::PollForDeviceChanges() {
   }
 #endif
 
-#if BUILDFLAG(ENABLE_OCULUS_VR)
-  if (!preferred_device_enabled && IsOculusVrHardwareAvailable()) {
-    SetOculusVrRuntimeStatus(RuntimeStatus::kEnable);
-    preferred_device_enabled = true;
-  } else {
-    SetOculusVrRuntimeStatus(RuntimeStatus::kDisable);
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_OPENVR)
-  if (!preferred_device_enabled && IsOpenVrHardwareAvailable()) {
-    SetOpenVrRuntimeStatus(RuntimeStatus::kEnable);
-    preferred_device_enabled = true;
-  } else {
-    SetOpenVrRuntimeStatus(RuntimeStatus::kDisable);
-  }
-#endif
-
   // Schedule this function to run again later.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
@@ -161,22 +135,6 @@ void IsolatedXRRuntimeProvider::SetupPollingForDeviceChanges() {
   // If none of the following runtimes are enabled,
   // we'll get an error for 'command_line' being unused.
   ALLOW_UNUSED_LOCAL(command_line);
-
-#if BUILDFLAG(ENABLE_OCULUS_VR)
-  if (IsEnabled(command_line, device::features::kOculusVR,
-                switches::kWebXrRuntimeOculus)) {
-    should_check_oculus_ = device::OculusDevice::IsApiAvailable();
-    any_runtimes_available |= should_check_oculus_;
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_OPENVR)
-  if (IsEnabled(command_line, device::features::kOpenVR,
-                switches::kWebXrRuntimeOpenVr)) {
-    should_check_openvr_ = device::OpenVRDevice::IsApiAvailable();
-    any_runtimes_available |= should_check_openvr_;
-  }
-#endif
 
 #if BUILDFLAG(ENABLE_WINDOWS_MR)
   if (IsEnabled(command_line, device::features::kWindowsMixedReality,
@@ -210,34 +168,6 @@ void IsolatedXRRuntimeProvider::RequestDevices(
   SetupPollingForDeviceChanges();
   client_->OnDevicesEnumerated();
 }
-
-#if BUILDFLAG(ENABLE_OCULUS_VR)
-bool IsolatedXRRuntimeProvider::IsOculusVrHardwareAvailable() {
-  return should_check_oculus_ &&
-         ((oculus_device_ && oculus_device_->IsAvailable()) ||
-          device::OculusDevice::IsHwAvailable());
-}
-
-void IsolatedXRRuntimeProvider::SetOculusVrRuntimeStatus(RuntimeStatus status) {
-  SetRuntimeStatus(client_.get(), status,
-                   base::BindOnce(&CreateDevice<device::OculusDevice>),
-                   &oculus_device_);
-}
-#endif  // BUILDFLAG(ENABLE_OCULUS_VR)
-
-#if BUILDFLAG(ENABLE_OPENVR)
-bool IsolatedXRRuntimeProvider::IsOpenVrHardwareAvailable() {
-  return should_check_openvr_ &&
-         ((openvr_device_ && openvr_device_->IsAvailable()) ||
-          device::OpenVRDevice::IsHwAvailable());
-}
-
-void IsolatedXRRuntimeProvider::SetOpenVrRuntimeStatus(RuntimeStatus status) {
-  SetRuntimeStatus(client_.get(), status,
-                   base::BindOnce(&CreateDevice<device::OpenVRDevice>),
-                   &openvr_device_);
-}
-#endif  // BUILDFLAG(ENABLE_OPENVR)
 
 #if BUILDFLAG(ENABLE_WINDOWS_MR)
 bool IsolatedXRRuntimeProvider::IsWMRHardwareAvailable() {

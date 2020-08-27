@@ -28,12 +28,6 @@ DEVICE_BASE_EXPORT extern const base::Feature kWebXrOrientationSensorDevice;
 // New features should be added to the device::features namespace.
 
 namespace features {
-#if BUILDFLAG(ENABLE_OCULUS_VR)
-DEVICE_BASE_EXPORT extern const base::Feature kOculusVR;
-#endif  // ENABLE_OCULUS_VR
-#if BUILDFLAG(ENABLE_OPENVR)
-DEVICE_BASE_EXPORT extern const base::Feature kOpenVR;
-#endif  // ENABLE_OPENVR
 #if BUILDFLAG(ENABLE_OPENXR)
 DEVICE_BASE_EXPORT extern const base::Feature kOpenXR;
 #endif  // ENABLE_OPENXR

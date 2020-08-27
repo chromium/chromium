@@ -99,28 +99,6 @@ WebXrVrRuntimelessBrowserTestSensorless::
 
 #if defined(OS_WIN)
 
-WebXrVrOpenVrBrowserTestBase::WebXrVrOpenVrBrowserTestBase() {
-  enable_features_.push_back(device::features::kOpenVR);
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
-  disable_features_.push_back(device::features::kWindowsMixedReality);
-#endif
-#if BUILDFLAG(ENABLE_OPENXR)
-  disable_features_.push_back(device::features::kOpenXR);
-#endif
-}
-
-XrBrowserTestBase::RuntimeType WebXrVrOpenVrBrowserTestBase::GetRuntimeType()
-    const {
-  return XrBrowserTestBase::RuntimeType::RUNTIME_OPENVR;
-}
-
-gfx::Vector3dF WebXrVrOpenVrBrowserTestBase::GetControllerOffset() const {
-  // The 0.08f comes from the slight adjustment we perform in
-  // openvr_render_loop.cc to account for OpenVR reporting the controller
-  // position at the tip, but WebXR using the position at the grip.
-  return gfx::Vector3dF(0, 0, 0.08f);
-}
-
 WebXrVrWmrBrowserTestBase::WebXrVrWmrBrowserTestBase() {
 #if BUILDFLAG(ENABLE_WINDOWS_MR)
   enable_features_.push_back(device::features::kWindowsMixedReality);
@@ -159,12 +137,6 @@ XrBrowserTestBase::RuntimeType WebXrVrOpenXrBrowserTestBase::GetRuntimeType()
 }
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 
-WebXrVrOpenVrBrowserTest::WebXrVrOpenVrBrowserTest() {
-  // We know at this point that we're going to be running with both OpenVR and
-  // WebXR enabled, so enforce the DirectX 11.1 requirement.
-  runtime_requirements_.push_back(XrTestRequirement::DIRECTX_11_1);
-}
-
 WebXrVrWmrBrowserTest::WebXrVrWmrBrowserTest() {
   runtime_requirements_.push_back(XrTestRequirement::DIRECTX_11_1);
 }
@@ -176,10 +148,6 @@ WebXrVrOpenXrBrowserTest::WebXrVrOpenXrBrowserTest() {
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 
 // Test classes with WebXR disabled.
-WebXrVrOpenVrBrowserTestWebXrDisabled::WebXrVrOpenVrBrowserTestWebXrDisabled() {
-  disable_features_.push_back(features::kWebXr);
-}
-
 WebXrVrWmrBrowserTestWebXrDisabled::WebXrVrWmrBrowserTestWebXrDisabled() {
   disable_features_.push_back(features::kWebXr);
 }

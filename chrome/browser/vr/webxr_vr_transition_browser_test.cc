@@ -37,14 +37,12 @@ IN_PROC_BROWSER_TEST_F(WebXrVrRuntimelessBrowserTest,
 #ifdef OS_WIN
 
 #if BUILDFLAG(ENABLE_OPENXR)
-IN_PROC_MULTI_CLASS_BROWSER_TEST_F3(WebXrVrOpenVrBrowserTestWebXrDisabled,
-                                    WebXrVrWmrBrowserTestWebXrDisabled,
+IN_PROC_MULTI_CLASS_BROWSER_TEST_F2(WebXrVrWmrBrowserTestWebXrDisabled,
                                     WebXrVrOpenXrBrowserTestWebXrDisabled,
                                     WebXrVrBrowserTestBase,
                                     TestWebXrDisabledWithoutFlagSet) {
 #else
-IN_PROC_MULTI_CLASS_BROWSER_TEST_F2(WebXrVrOpenVrBrowserTestWebXrDisabled,
-                                    WebXrVrWmrBrowserTestWebXrDisabled,
+IN_PROC_MULTI_CLASS_BROWSER_TEST_F1(WebXrVrWmrBrowserTestWebXrDisabled,
                                     WebXrVrBrowserTestBase,
                                     TestWebXrDisabledWithoutFlagSet) {
 #endif  // BUILDFLAG(ENABLE_OPENXR)

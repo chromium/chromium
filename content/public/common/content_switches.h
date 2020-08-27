@@ -248,8 +248,6 @@ CONTENT_EXPORT extern const char kDisableScrollToTextFragment[];
 CONTENT_EXPORT extern const char kWebXrForceRuntime[];
 CONTENT_EXPORT extern const char kWebXrRuntimeNone[];
 CONTENT_EXPORT extern const char kWebXrRuntimeOrientationSensors[];
-CONTENT_EXPORT extern const char kWebXrRuntimeOculus[];
-CONTENT_EXPORT extern const char kWebXrRuntimeOpenVr[];
 CONTENT_EXPORT extern const char kWebXrRuntimeOpenXr[];
 CONTENT_EXPORT extern const char kWebXrRuntimeWMR[];
 

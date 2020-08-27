@@ -73,7 +73,6 @@ class XrBrowserTestBase : public InProcessBrowserTest {
 
   enum class RuntimeType {
     RUNTIME_NONE = 0,
-    RUNTIME_OPENVR = 1,
     RUNTIME_WMR = 2,
     RUNTIME_OPENXR = 3
   };

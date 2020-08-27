@@ -13,8 +13,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace device {
-class OculusDevice;
-class OpenVRDevice;
 class MixedRealityDevice;
 class MixedRealityDeviceStatics;
 class OpenXrDevice;
@@ -36,20 +34,6 @@ class IsolatedXRRuntimeProvider
  private:
   void PollForDeviceChanges();
   void SetupPollingForDeviceChanges();
-
-#if BUILDFLAG(ENABLE_OCULUS_VR)
-  bool IsOculusVrHardwareAvailable();
-  void SetOculusVrRuntimeStatus(RuntimeStatus status);
-  bool should_check_oculus_ = false;
-  std::unique_ptr<device::OculusDevice> oculus_device_;
-#endif
-
-#if BUILDFLAG(ENABLE_OPENVR)
-  bool IsOpenVrHardwareAvailable();
-  void SetOpenVrRuntimeStatus(RuntimeStatus status);
-  bool should_check_openvr_ = false;
-  std::unique_ptr<device::OpenVRDevice> openvr_device_;
-#endif
 
 #if BUILDFLAG(ENABLE_WINDOWS_MR)
   bool IsWMRHardwareAvailable();
