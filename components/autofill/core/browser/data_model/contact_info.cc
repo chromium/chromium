@@ -346,26 +346,16 @@ void CompanyInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
 }
 
 bool CompanyInfo::IsValidOrVerified(const base::string16& value) const {
-  if (profile_ && profile_->IsVerified()) {
-    return true;
-  }
-  // |value| is a birthyear:
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillRejectCompanyBirthyear) &&
-      MatchesPattern(value, base::UTF8ToUTF16("^(19|20)\\d{2}$"))) {
-    return false;
-  }
-  // |value| is a social title:
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillRejectCompanySocialTitle) &&
-      MatchesPattern(value, base::UTF8ToUTF16(
-                                "^(Ms\\.?|Mrs\\.?|Mr\\.?|Miss|Mistress|Mister|"
-                                "Frau|Herr|"
-                                "Mlle|Mme|M\\.|"
-                                "Dr\\.?|Prof\\.?)$"))) {
-    return false;
-  }
-  return true;
+  // TODO(crbug/1117296): retrieve regular expressions dynamically.
+  static const char* kBirthyearRe = "^(19|20)\\d{2}$";
+  static const char* kSocialTitleRe =
+      "^(Ms\\.?|Mrs\\.?|Mr\\.?|Miss|Mistress|Mister|"
+      "Frau|Herr|"
+      "Mlle|Mme|M\\.|"
+      "Dr\\.?|Prof\\.?)$";
+  return (profile_ && profile_->IsVerified()) ||
+         (!MatchesPattern(value, base::UTF8ToUTF16(kBirthyearRe)) &&
+          !MatchesPattern(value, base::UTF8ToUTF16(kSocialTitleRe)));
 }
 
 }  // namespace autofill

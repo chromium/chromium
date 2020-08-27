@@ -179,9 +179,6 @@ extern const char kAutofillProfileClientValidationDescription[];
 extern const char kAutofillProfileServerValidationName[];
 extern const char kAutofillProfileServerValidationDescription[];
 
-extern const char kAutofillRejectCompanyBirthyearName[];
-extern const char kAutofillRejectCompanyBirthyearDescription[];
-
 extern const char kAutofillPruneSuggestionsName[];
 extern const char kAutofillPruneSuggestionsDescription[];
 

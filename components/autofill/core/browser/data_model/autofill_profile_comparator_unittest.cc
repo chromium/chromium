@@ -1005,12 +1005,6 @@ TEST_P(AutofillProfileComparatorTest, MergeEmailAddresses) {
 }
 
 TEST_P(AutofillProfileComparatorTest, MergeCompanyNames) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{autofill::features::
-                                kAutofillRejectCompanyBirthyear},
-      /*disabled_features=*/{});
-
   static const char kCompanyA[] = "Some Company";
   static const char kCompanyB[] = "SÔMÈ ÇÖMPÁÑÝ";
   static const char kCompanyC[] = "SÔMÈ ÇÖMPÁÑÝ A.G.";

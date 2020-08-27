@@ -294,29 +294,6 @@
             ]
         }
     ],
-    "AutofillCompany": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "RejectBirthyearAndSocialTitleAsCompany_20200210",
-                    "enable_features": [
-                        "AutofillEnableCompanyName",
-                        "AutofillRejectCompanyBirthyear",
-                        "AutofillRejectCompanySocialTitle"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillCreditCardAuthentication": [
         {
             "platforms": [

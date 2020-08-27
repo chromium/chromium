@@ -299,12 +299,6 @@ const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
 
-const char kAutofillRejectCompanyBirthyearName[] =
-    "Autofill Rejects Invalid Company Names";
-const char kAutofillRejectCompanyBirthyearDescription[] =
-    "Autofill rejects using non-verified company names that are in the "
-    "format of a birthyear.";
-
 const char kAutofillRestrictUnownedFieldsToFormlessCheckoutName[] =
     "Restrict formless form extraction";
 const char kAutofillRestrictUnownedFieldsToFormlessCheckoutDescription[] =

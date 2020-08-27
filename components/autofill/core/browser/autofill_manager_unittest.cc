@@ -3205,10 +3205,6 @@ TEST_P(AutofillManagerStructuredProfileTest,
 // Test that if a company is of a format of a birthyear and the relevant feature
 // is enabled, we would not fill it.
 TEST_P(AutofillManagerStructuredProfileTest, FillAddressForm_CompanyBirthyear) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillRejectCompanyBirthyear);
-
   // Set up our form data.
   FormData address_form;
   address_form.name = ASCIIToUTF16("MyForm");
