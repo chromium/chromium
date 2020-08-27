@@ -1207,8 +1207,6 @@ ci.chromiumos_builder(
     ),
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     main_console_view = settings.main_console_name,
-    # TODO(crbug.com/1104291): Enable tree closing.
-    tree_closing = False,
 )
 
 ci.chromiumos_builder(
