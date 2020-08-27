@@ -1284,10 +1284,19 @@ WebContentsView* WebContentsImpl::GetView() const {
   return view_.get();
 }
 
-void WebContentsImpl::OnScreensChange() {
+void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
+  // Send |is_multi_screen_changed| events to all visible frames, but limit
+  // other events to frames with the Window Placement permission. This obviates
+  // the most pressing need for sites to poll isMultiScreen(), which is exposed
+  // without explicit permission, while also protecting privacy.
+  // TODO(crbug.com/1109989): Postpone events; refine utility/privacy balance.
   for (FrameTreeNode* node : frame_tree_.Nodes()) {
     RenderFrameHostImpl* rfh = node->current_frame_host();
-    rfh->GetAssociatedLocalFrame()->OnScreensChange();
+    if ((is_multi_screen_changed &&
+         rfh->GetVisibilityState() == PageVisibilityState::kVisible) ||
+        WindowPlacementGranted(rfh)) {
+      rfh->GetAssociatedLocalFrame()->OnScreensChange();
+    }
   }
 }
 

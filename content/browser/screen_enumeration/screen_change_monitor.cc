@@ -9,7 +9,8 @@
 
 namespace content {
 
-ScreenChangeMonitor::ScreenChangeMonitor(base::RepeatingClosure callback)
+ScreenChangeMonitor::ScreenChangeMonitor(
+    base::RepeatingCallback<void(bool)> callback)
     : callback_(callback) {
 // TODO(crbug.com/1071233): Investigate test failures (crashes?) on Fuchsia.
 #if !defined(OS_FUCHSIA)
@@ -31,8 +32,10 @@ void ScreenChangeMonitor::OnScreensChange() {
     if (cached_displays_ == displays)
       return;
 
+    const bool is_multi_screen_changed =
+        (cached_displays_.size() > 1) != (displays.size() > 1);
     cached_displays_ = displays;
-    callback_.Run();
+    callback_.Run(is_multi_screen_changed);
   }
 }
 

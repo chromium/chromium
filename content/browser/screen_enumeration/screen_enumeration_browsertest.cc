@@ -200,11 +200,14 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsMultiScreenFaked) {
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
 #if defined(OS_ANDROID) || defined(OS_WIN)
-#define MAYBE_OnScreensChange DISABLED_OnScreensChange
+#define MAYBE_OnScreensChangeNoPermission DISABLED_OnScreensChangeNoPermission
 #else
-#define MAYBE_OnScreensChange OnScreensChange
+#define MAYBE_OnScreensChangeNoPermission OnScreensChangeNoPermission
 #endif
-IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_OnScreensChange) {
+// Sites with no permission only get an event if isMultiScreen() changes.
+// TODO(crbug.com/1119974): Need content_browsertests permission controls.
+IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
+                       MAYBE_OnScreensChangeNoPermission) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true,
             EvalJs(test_shell()->web_contents(), "'onscreenschange' in self"));
@@ -214,20 +217,34 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_OnScreensChange) {
   )";
   EXPECT_EQ(0, EvalJs(test_shell()->web_contents(), kSetOnScreensChange));
 
+  // isMultiScreen() changes from false to true here, so an event is sent.
+  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
-                                      display::DisplayList::Type::PRIMARY);
+                                      display::DisplayList::Type::NOT_PRIMARY);
+  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
   EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
 
+  // isMultiScreen() remains unchanged, so no event is sent.
   screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ("2", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
+  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
 
+  // isMultiScreen() remains unchanged, so no event is sent.
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(
                     {2, gfx::Rect(902, 100, 801, 802)}));
-  EXPECT_EQ("3", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
+  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
 
+  // isMultiScreen() remains unchanged, so no event is sent.
   screen()->display_list().RemoveDisplay(2);
-  EXPECT_EQ("4", EvalJs(test_shell()->web_contents(), "document.title"));
+  EXPECT_EQ(true, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
+  EXPECT_EQ("1", EvalJs(test_shell()->web_contents(), "document.title"));
+
+  // isMultiScreen() changes from true to false here, so an event is sent.
+  screen()->display_list().RemoveDisplay(1);
+  EXPECT_EQ(false, EvalJs(test_shell()->web_contents(), kIsMultiScreenScript));
+  EXPECT_EQ("2", EvalJs(test_shell()->web_contents(), "document.title"));
 }
 
 }  // namespace content
