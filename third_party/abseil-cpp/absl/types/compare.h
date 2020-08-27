@@ -88,8 +88,7 @@ enum class ncmp : value_type { unordered = -127 };
 
 #define ABSL_COMPARE_INLINE_BASECLASS_DECL(name)
 
-#define ABSL_COMPARE_INLINE_SUBCLASS_DECL(type, name) \
-  static const type name
+#define ABSL_COMPARE_INLINE_SUBCLASS_DECL(type, name) static const type name;
 
 #define ABSL_COMPARE_INLINE_INIT(type, name, init) \
   inline constexpr type type::name(init)
@@ -156,8 +155,8 @@ class weak_equality
   friend struct compare_internal::weak_equality_base<weak_equality>;
 
  public:
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_equality, equivalent);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_equality, nonequivalent);
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_equality, equivalent)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_equality, nonequivalent)
 
   // Comparisons
   friend constexpr bool operator==(
@@ -200,10 +199,10 @@ class strong_equality
   friend struct compare_internal::strong_equality_base<strong_equality>;
 
  public:
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_equality, equal);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_equality, nonequal);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_equality, equivalent);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_equality, nonequivalent);
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_equality, equal)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_equality, nonequal)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_equality, equivalent)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_equality, nonequivalent)
 
   // Conversion
   constexpr operator weak_equality() const noexcept {  // NOLINT
@@ -263,10 +262,10 @@ class partial_ordering
   }
 
  public:
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(partial_ordering, less);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(partial_ordering, equivalent);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(partial_ordering, greater);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(partial_ordering, unordered);
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(partial_ordering, less)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(partial_ordering, equivalent)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(partial_ordering, greater)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(partial_ordering, unordered)
 
   // Conversion
   constexpr operator weak_equality() const noexcept {  // NOLINT
@@ -351,9 +350,9 @@ class weak_ordering
   friend struct compare_internal::weak_ordering_base<weak_ordering>;
 
  public:
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_ordering, less);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_ordering, equivalent);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_ordering, greater);
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_ordering, less)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_ordering, equivalent)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(weak_ordering, greater)
 
   // Conversions
   constexpr operator weak_equality() const noexcept {  // NOLINT
@@ -441,10 +440,10 @@ class strong_ordering
   friend struct compare_internal::strong_ordering_base<strong_ordering>;
 
  public:
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_ordering, less);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_ordering, equal);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_ordering, equivalent);
-  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_ordering, greater);
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_ordering, less)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_ordering, equal)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_ordering, equivalent)
+  ABSL_COMPARE_INLINE_SUBCLASS_DECL(strong_ordering, greater)
 
   // Conversions
   constexpr operator weak_equality() const noexcept {  // NOLINT
