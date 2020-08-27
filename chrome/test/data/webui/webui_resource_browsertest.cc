@@ -47,7 +47,7 @@ class WebUIResourceBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ArrayDataModelTest) {
-  LoadTestUrl("array_data_model_test.html");
+  LoadTestUrl("js/cr/ui/array_data_model_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrTest) {
@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CrReloadTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, EventTargetTest) {
-  LoadTestUrl("event_target_test.html");
+  LoadTestUrl("js/cr/event_target_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nProcessCssTest) {
@@ -124,25 +124,25 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTestV0, I18nProcessTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListTest) {
-  LoadTestUrl("list_test.html");
+  LoadTestUrl("js/cr/ui/list_test.html");
 }
 
 #if defined(OS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, GridTest) {
-  LoadTestUrl("grid_test.html");
+  LoadTestUrl("js/cr/ui/grid_test.html");
 }
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSelectionModelTest) {
-  LoadTestUrl("list_selection_model_test.html");
+  LoadTestUrl("js/cr/ui/list_selection_model_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ListSingleSelectionModelTest) {
-  LoadTestUrl("list_single_selection_model_test.html");
+  LoadTestUrl("js/cr/ui/list_single_selection_model_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuTest) {
-  LoadTestUrl("menu_test.html");
+  LoadTestUrl("js/cr/ui/menu_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
@@ -154,23 +154,23 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ParseHtmlSubsetTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilTest) {
-  LoadTestUrl("position_util_test.html");
+  LoadTestUrl("js/cr/ui/position_util_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, CommandTest) {
-  LoadTestUrl("command_test.html");
+  LoadTestUrl("js/cr/ui/command_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, ContextMenuHandlerTest) {
-  LoadTestUrl("context_menu_handler_test.html");
+  LoadTestUrl("js/cr/ui/context_menu_handler_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuButtonTest) {
-  LoadTestUrl("menu_button_test.html");
+  LoadTestUrl("js/cr/ui/menu_button_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, SplitterTest) {
-  LoadTestUrl("splitter_test.html");
+  LoadTestUrl("js/cr/ui/splitter_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, UtilTest) {
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, UtilTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, IconTest) {
-  LoadTestUrl("icon_test.html");
+  LoadTestUrl("js/icon_test.html");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PromiseResolverTest) {
