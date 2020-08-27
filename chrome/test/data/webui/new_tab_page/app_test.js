@@ -411,8 +411,10 @@ suite('NewTabPageAppTest', () => {
       data: {
         frameType: 'one-google-bar',
         messageType: 'execute-browser-command',
-        commandId,
-        clickInfo,
+        data: {
+          commandId,
+          clickInfo,
+        },
       },
       source: window,
       origin: window.origin,

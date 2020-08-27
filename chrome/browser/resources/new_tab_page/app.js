@@ -728,7 +728,7 @@ class AppElement extends PolymerElement {
       $$(this, '#oneGoogleBar').style.zIndex = '0';
     } else if (data.messageType === 'execute-browser-command') {
       this.executePromoBrowserCommand_(
-          /** @type CommandData */ (data), event.source, event.origin);
+          /** @type {!CommandData} */ (data.data), event.source, event.origin);
     }
   }
 
@@ -756,7 +756,7 @@ class AppElement extends PolymerElement {
       this.pageHandler_.onPromoLinkClicked();
     } else if (data.messageType === 'execute-browser-command') {
       this.executePromoBrowserCommand_(
-          /** @type CommandData */ (data), event.source, event.origin);
+          /** @type {!CommandData} */ (data), event.source, event.origin);
     }
   }
 
