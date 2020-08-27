@@ -256,11 +256,11 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "chromeos-kevin-compile-rel",
-    main_list_view = "try",
 )
 
 try_.chromium_chromiumos_builder(
     name = "chromeos-kevin-rel",
+    main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/build/chromeos/.+",
@@ -268,7 +268,6 @@ try_.chromium_chromiumos_builder(
             ".+/[+]/chromeos/CHROMEOS_LKGM",
         ],
     ),
-    main_list_view = "try",
 )
 
 # TODO(crbug.com/1116180): Clean this up once linux-lacros-rel is up.
@@ -278,6 +277,7 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "linux-lacros-rel",
+    main_list_view = "try",
     tryjob = try_.job(),
 )
 
