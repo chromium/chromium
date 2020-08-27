@@ -2943,3 +2943,51 @@ TEST_F('ChromeVoxBackgroundTest', 'AudioVideo', function() {
             .replay();
       });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'AlertNoAnnouncement', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
+    <button></button>
+  `,
+      function(root) {
+        ChromeVoxState.addObserver(new class {
+          onCurrentRangeChanged(range) {
+            assertNotReached('Range was changed unexpectedly.');
+          }
+        }());
+        const button = root.find({role: RoleType.BUTTON});
+        const alertEvt =
+            new CustomAutomationEvent(EventType.ALERT, button, '', []);
+        mockFeedback
+            .call(DesktopAutomationHandler.instance.onAlert.bind(
+                DesktopAutomationHandler.instance, alertEvt))
+            .call(() => assertFalse(mockFeedback.utteranceInQueue('Alert')))
+            .replay();
+      });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(
+      `
+    <button>hello world</button>
+  `,
+      function(root) {
+        ChromeVoxState.addObserver(new class {
+          onCurrentRangeChanged(range) {
+            assertNotReached('Range was changed unexpectedly.');
+          }
+        }());
+
+        const button = root.find({role: RoleType.BUTTON});
+        const alertEvt =
+            new CustomAutomationEvent(EventType.ALERT, button, '', []);
+        mockFeedback
+            .call(DesktopAutomationHandler.instance.onAlert.bind(
+                DesktopAutomationHandler.instance, alertEvt))
+            .expectSpeech('Alert')
+            .expectSpeech('hello world')
+            .replay();
+      });
+});

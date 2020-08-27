@@ -2091,7 +2091,7 @@ Output = class {
    */
   toString() {
     return this.speechBuffer_.reduce(function(prev, cur) {
-      if (prev === null) {
+      if (prev === null || prev == '') {
         return cur.toString();
       }
       prev += ' ' + cur.toString();

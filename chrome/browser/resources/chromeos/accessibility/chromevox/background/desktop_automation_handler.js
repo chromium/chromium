@@ -152,10 +152,14 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     const node = evt.target;
     const range = cursors.Range.fromNode(node);
 
-    new Output()
-        .withSpeechCategory(TtsCategory.LIVE)
-        .withSpeechAndBraille(range, null, evt.type)
-        .go();
+    const output = new Output()
+                       .withSpeechCategory(TtsCategory.LIVE)
+                       .withSpeechAndBraille(range, null, evt.type);
+
+    // A workaround for alert nodes that contain no actual content.
+    if (output.toString() != (Msgs.getMsg('role_alert'))) {
+      output.go();
+    }
   }
 
   onBlur(evt) {
