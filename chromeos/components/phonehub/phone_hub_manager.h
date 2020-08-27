@@ -8,6 +8,7 @@
 namespace chromeos {
 namespace phonehub {
 
+class DoNotDisturbController;
 class FeatureStatusProvider;
 class NotificationAccessManager;
 class NotificationManager;
@@ -24,6 +25,7 @@ class PhoneHubManager {
   PhoneHubManager& operator=(const PhoneHubManager&) = delete;
 
   // Getters for sub-elements.
+  virtual DoNotDisturbController* GetDoNotDisturbController() = 0;
   virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;
   virtual NotificationAccessManager* GetNotificationAccessManager() = 0;
   virtual NotificationManager* GetNotificationManager() = 0;

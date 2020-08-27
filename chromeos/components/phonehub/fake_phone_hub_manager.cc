@@ -11,6 +11,10 @@ FakePhoneHubManager::FakePhoneHubManager() = default;
 
 FakePhoneHubManager::~FakePhoneHubManager() = default;
 
+DoNotDisturbController* FakePhoneHubManager::GetDoNotDisturbController() {
+  return &fake_do_not_disturb_controller_;
+}
+
 FeatureStatusProvider* FakePhoneHubManager::GetFeatureStatusProvider() {
   return &fake_feature_status_provider_;
 }

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chromeos/components/phonehub/fake_do_not_disturb_controller.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/components/phonehub/fake_notification_manager.h"
@@ -22,6 +23,10 @@ class FakePhoneHubManager : public PhoneHubManager {
  public:
   FakePhoneHubManager();
   ~FakePhoneHubManager() override;
+
+  FakeDoNotDisturbController* fake_do_not_disturb_controller() {
+    return &fake_do_not_disturb_controller_;
+  }
 
   FakeFeatureStatusProvider* fake_feature_status_provider() {
     return &fake_feature_status_provider_;
@@ -43,12 +48,14 @@ class FakePhoneHubManager : public PhoneHubManager {
 
  private:
   // PhoneHubManager:
+  DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   NotificationAccessManager* GetNotificationAccessManager() override;
   NotificationManager* GetNotificationManager() override;
   PhoneModel* GetPhoneModel() override;
   TetherController* GetTetherController() override;
 
+  FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
   FakeNotificationAccessManager fake_notification_access_manager_;
   FakeNotificationManager fake_notification_manager_;

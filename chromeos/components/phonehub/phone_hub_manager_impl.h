@@ -34,6 +34,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   ~PhoneHubManagerImpl() override;
 
   // PhoneHubManager:
+  DoNotDisturbController* GetDoNotDisturbController() override;
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   NotificationAccessManager* GetNotificationAccessManager() override;
   NotificationManager* GetNotificationManager() override;
@@ -44,6 +45,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
+  std::unique_ptr<DoNotDisturbController> do_not_disturb_controller_;
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<NotificationAccessManager> notification_access_manager_;
   std::unique_ptr<NotificationManager> notification_manager_;
