@@ -206,15 +206,16 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
         // This is the correct account now.
         final Account account = AccountUtils.createAccountFromName(newName);
 
-        mSigninManager.signIn(SigninAccessPoint.ACCOUNT_RENAMED, account, new SignInCallback() {
-            @Override
-            public void onSignInComplete() {
-                validateAccountsInternal(true);
-            }
+        mSigninManager.signinAndEnableSync(
+                SigninAccessPoint.ACCOUNT_RENAMED, account, new SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        validateAccountsInternal(true);
+                    }
 
-            @Override
-            public void onSignInAborted() {}
-        });
+                    @Override
+                    public void onSignInAborted() {}
+                });
     }
 
     private static boolean accountExists(Account account) {

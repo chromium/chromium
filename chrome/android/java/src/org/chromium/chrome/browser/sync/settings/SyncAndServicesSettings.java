@@ -538,7 +538,8 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
                             ()
                                     -> IdentityServicesProvider.get()
                                                .getSigninManager(getProfile())
-                                               .signIn(SigninAccessPoint.SYNC_ERROR_CARD, account,
+                                               .signinAndEnableSync(
+                                                       SigninAccessPoint.SYNC_ERROR_CARD, account,
                                                        null),
                             false);
             return;

@@ -566,7 +566,7 @@ public class HistoryActivityTest {
             IdentityServicesProvider.get().getSigninManager(profile).onFirstRunCheckDone();
             IdentityServicesProvider.get().getSigninManager(profile).addSignInStateObserver(
                     mTestObserver);
-            IdentityServicesProvider.get().getSigninManager(profile).signIn(
+            IdentityServicesProvider.get().getSigninManager(profile).signinAndEnableSync(
                     SigninAccessPoint.UNKNOWN, account, null);
         });
 

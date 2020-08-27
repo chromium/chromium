@@ -414,20 +414,21 @@ public class SyncTestRule extends ChromeActivityTestRule<ChromeActivity> {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signIn(SigninAccessPoint.UNKNOWN, account, new SigninManager.SignInCallback() {
-                        @Override
-                        public void onSignInComplete() {
-                            if (setFirstSetupComplete) {
-                                mProfileSyncService.setFirstSetupComplete(
-                                        SyncFirstSetupCompleteSource.BASIC_FLOW);
-                            }
-                        }
+                    .signinAndEnableSync(
+                            SigninAccessPoint.UNKNOWN, account, new SigninManager.SignInCallback() {
+                                @Override
+                                public void onSignInComplete() {
+                                    if (setFirstSetupComplete) {
+                                        mProfileSyncService.setFirstSetupComplete(
+                                                SyncFirstSetupCompleteSource.BASIC_FLOW);
+                                    }
+                                }
 
-                        @Override
-                        public void onSignInAborted() {
-                            Assert.fail("Sign-in was aborted");
-                        }
-                    });
+                                @Override
+                                public void onSignInAborted() {
+                                    Assert.fail("Sign-in was aborted");
+                                }
+                            });
             // Outside of tests, URL-keyed anonymized data collection is enabled by sign-in UI.
             UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                     Profile.getLastUsedRegularProfile(), true);

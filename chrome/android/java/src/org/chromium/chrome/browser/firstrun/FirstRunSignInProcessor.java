@@ -81,28 +81,29 @@ public final class FirstRunSignInProcessor {
         }
 
         final boolean setUp = getFirstRunFlowSignInSetup();
-        signinManager.signIn(SigninAccessPoint.START_PAGE, account, new SignInCallback() {
-            @Override
-            public void onSignInComplete() {
-                UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                        Profile.getLastUsedRegularProfile(), true);
-                // Show sync settings if user pressed the "Settings" button.
-                if (setUp) {
-                    openSignInSettings(activity);
-                } else {
-                    ProfileSyncService.get().setFirstSetupComplete(
-                            SyncFirstSetupCompleteSource.BASIC_FLOW);
-                }
-                setFirstRunFlowSignInComplete(true);
-            }
+        signinManager.signinAndEnableSync(
+                SigninAccessPoint.START_PAGE, account, new SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                                Profile.getLastUsedRegularProfile(), true);
+                        // Show sync settings if user pressed the "Settings" button.
+                        if (setUp) {
+                            openSignInSettings(activity);
+                        } else {
+                            ProfileSyncService.get().setFirstSetupComplete(
+                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+                        }
+                        setFirstRunFlowSignInComplete(true);
+                    }
 
-            @Override
-            public void onSignInAborted() {
-                // Set FRE as complete even if signin fails because the user has already seen and
-                // accepted the terms of service.
-                setFirstRunFlowSignInComplete(true);
-            }
-        });
+                    @Override
+                    public void onSignInAborted() {
+                        // Set FRE as complete even if signin fails because the user has already
+                        // seen and accepted the terms of service.
+                        setFirstRunFlowSignInComplete(true);
+                    }
+                });
     }
 
     /**

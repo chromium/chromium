@@ -113,7 +113,7 @@ public class AccountPickerDelegateTest {
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
                 .create(mProfileMock, coreAccountInfo, mDelegate);
         calledInOrder.verify(mSigninManagerMock)
-                .signIn(eq(SigninAccessPoint.WEB_SIGNIN), eq(coreAccountInfo), any());
+                .signinAndEnableSync(eq(SigninAccessPoint.WEB_SIGNIN), eq(coreAccountInfo), any());
         mDelegate.onSigninSucceded();
         verify(mChromeActivityMock.getActivityTab()).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
@@ -131,7 +131,7 @@ public class AccountPickerDelegateTest {
             return null;
         })
                 .when(mSigninManagerMock)
-                .signIn(eq(SigninAccessPoint.WEB_SIGNIN), eq(coreAccountInfo), any());
+                .signinAndEnableSync(eq(SigninAccessPoint.WEB_SIGNIN), eq(coreAccountInfo), any());
         mDelegate.signIn(coreAccountInfo, error -> {});
         verify(mWebSigninBridgeMock).destroy();
     }

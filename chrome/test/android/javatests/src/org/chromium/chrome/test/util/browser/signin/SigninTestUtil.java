@@ -49,7 +49,7 @@ final class SigninTestUtil {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                     Profile.getLastUsedRegularProfile());
             signinManager.onFirstRunCheckDone(); // Allow sign-in
-            signinManager.signIn(
+            signinManager.signinAndEnableSync(
                     SigninAccessPoint.UNKNOWN, account, new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {

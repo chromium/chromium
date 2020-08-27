@@ -251,7 +251,7 @@ public class SigninManager
 
     /**
      * Logs the access point when the user see the view of choosing account to sign in. Sign-in
-     * completion histogram is recorded by {@link #signIn}.
+     * completion histogram is recorded by {@link #signinAndEnableSync}.
      *
      * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
      */
@@ -367,14 +367,15 @@ public class SigninManager
      * @param accountInfo The account to sign in to.
      * @param callback Optional callback for when the sign-in process is finished.
      */
-    public void signIn(@SigninAccessPoint int accessPoint, CoreAccountInfo accountInfo,
+    public void signinAndEnableSync(@SigninAccessPoint int accessPoint, CoreAccountInfo accountInfo,
             @Nullable SignInCallback callback) {
         assert accountInfo != null;
-        signIn(accessPoint, AccountUtils.createAccountFromName(accountInfo.getEmail()), callback);
+        signinAndEnableSync(
+                accessPoint, AccountUtils.createAccountFromName(accountInfo.getEmail()), callback);
     }
 
     /**
-     * @deprecated use {@link #signIn(int, CoreAccountInfo, SignInCallback)} instead.
+     * @deprecated use {@link #signinAndEnableSync(int, CoreAccountInfo, SignInCallback)} instead.
      * TODO(crbug.com/1002056): Remove this version after migrating all callers to CoreAccountInfo.
      *
      * Starts the sign-in flow, and executes the callback when finished.
@@ -392,7 +393,7 @@ public class SigninManager
      * @param callback Optional callback for when the sign-in process is finished.
      */
     @Deprecated
-    public void signIn(@SigninAccessPoint int accessPoint, Account account,
+    public void signinAndEnableSync(@SigninAccessPoint int accessPoint, Account account,
             @Nullable SignInCallback callback) {
         assert isSignInAllowed() : "Sign-in isn't allowed!";
         if (account == null) {

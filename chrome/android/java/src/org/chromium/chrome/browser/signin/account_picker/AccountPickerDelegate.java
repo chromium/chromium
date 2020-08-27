@@ -69,7 +69,7 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
         mOnSignInErrorCallback = onSignInErrorCallback;
         mWebSigninBridge = mWebSigninBridgeFactory.create(
                 Profile.getLastUsedRegularProfile(), coreAccountInfo, this);
-        mSigninManager.signIn(
+        mSigninManager.signinAndEnableSync(
                 SigninAccessPoint.WEB_SIGNIN, coreAccountInfo, new SigninManager.SignInCallback() {
                     @Override
                     public void onSignInComplete() {

@@ -85,7 +85,7 @@ public final class ForcedSigninProcessor {
                 Log.d(TAG, "Incorrect number of accounts (%d)", accounts.size());
                 return;
             }
-            signinManager.signIn(SigninAccessPoint.FORCED_SIGNIN, accounts.get(0),
+            signinManager.signinAndEnableSync(SigninAccessPoint.FORCED_SIGNIN, accounts.get(0),
                     new SigninManager.SignInCallback() {
                         @Override
                         public void onSignInComplete() {

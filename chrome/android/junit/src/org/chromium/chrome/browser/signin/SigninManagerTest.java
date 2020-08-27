@@ -99,7 +99,7 @@ public class SigninManagerTest {
                         eq(mAccount.getEmail()));
 
         mSigninManager.onFirstRunCheckDone();
-        mSigninManager.signIn(SigninAccessPoint.START_PAGE, mAccount, null);
+        mSigninManager.signinAndEnableSync(SigninAccessPoint.START_PAGE, mAccount, null);
 
         verify(mNativeMock).fetchAndApplyCloudPolicy(anyLong(), eq(mAccount), any());
     }
@@ -251,7 +251,7 @@ public class SigninManagerTest {
 
         mSigninManager.onFirstRunCheckDone(); // Allow sign-in.
 
-        mSigninManager.signIn(SigninAccessPoint.UNKNOWN, account, null);
+        mSigninManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN, account, null);
         assertTrue(mSigninManager.isOperationInProgress());
         AtomicInteger callCount = new AtomicInteger(0);
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
@@ -280,7 +280,7 @@ public class SigninManagerTest {
 
         mSigninManager.onFirstRunCheckDone(); // Allow sign-in.
 
-        mSigninManager.signIn(SigninAccessPoint.UNKNOWN, account, null);
+        mSigninManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN, account, null);
         assertTrue(mSigninManager.isOperationInProgress());
 
         // The following should throw an assertion error

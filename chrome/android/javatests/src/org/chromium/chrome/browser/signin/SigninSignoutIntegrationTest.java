@@ -229,8 +229,9 @@ public class SigninSignoutIntegrationTest {
     private void signIn() {
         Account account = mAccountManagerTestRule.addAccountAndWaitForSeeding(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSigninManager.signIn(SigninAccessPoint.SETTINGS, account, null); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSigninManager.signinAndEnableSync(SigninAccessPoint.SETTINGS, account, null);
+        });
         assertSignedIn();
     }
 
