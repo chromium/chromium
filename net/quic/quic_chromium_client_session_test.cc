@@ -1111,7 +1111,7 @@ TEST_P(QuicChromiumClientSessionTest, MaxNumStreams) {
 
   // Close a stream and ensure I can now open a new one.
   quic::QuicStreamId stream_id = streams[0]->id();
-  session_->CloseStream(stream_id);
+  session_->ResetStream(stream_id, quic::QUIC_RST_ACKNOWLEDGEMENT);
 
   // Pump data, bringing in the max-stream-id
   base::RunLoop().RunUntilIdle();
@@ -1302,7 +1302,7 @@ TEST_P(QuicChromiumClientSessionTest, ClosePendingStream) {
   quic::QuicStreamFrame data(id, false, 1, quiche::QuicheStringPiece("SP"));
   session_->OnStreamFrame(data);
   EXPECT_EQ(0u, session_->GetNumActiveStreams());
-  session_->CloseStream(id);
+  session_->ResetStream(id, quic::QUIC_STREAM_NO_ERROR);
 }
 
 TEST_P(QuicChromiumClientSessionTest, CancelPushWhenPendingValidation) {
@@ -1362,7 +1362,8 @@ TEST_P(QuicChromiumClientSessionTest, CancelPushWhenPendingValidation) {
   EXPECT_TRUE(session_->GetPromisedByUrl(pushed_url.spec()));
 
   // Reset the stream now before tear down.
-  session_->CloseStream(GetNthClientInitiatedBidirectionalStreamId(0));
+  session_->ResetStream(GetNthClientInitiatedBidirectionalStreamId(0),
+                        quic::QUIC_RST_ACKNOWLEDGEMENT);
 }
 
 TEST_P(QuicChromiumClientSessionTest, CancelPushBeforeReceivingResponse) {
@@ -1530,7 +1531,7 @@ TEST_P(QuicChromiumClientSessionTest, MaxNumStreamsViaRequest) {
 
   // Close a stream and ensure I can now open a new one.
   quic::QuicStreamId stream_id = streams[0]->id();
-  session_->CloseStream(stream_id);
+  session_->ResetStream(stream_id, quic::QUIC_RST_ACKNOWLEDGEMENT);
   quic::QuicRstStreamFrame rst1(quic::kInvalidControlFrameId, stream_id,
                                 quic::QUIC_STREAM_NO_ERROR, 0);
   session_->OnRstStream(rst1);

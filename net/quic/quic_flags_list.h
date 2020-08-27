@@ -446,3 +446,10 @@ QUIC_FLAG(bool,
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_enable_mtu_discovery_at_server,
           false)
+
+// If true, while reading an IETF quic packet, start peer migration immediately
+// when detecting the existence of any non-probing frame instead of at the end
+// of the packet.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_start_peer_migration_earlier,
+          false)
