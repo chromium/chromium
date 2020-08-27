@@ -59,9 +59,10 @@ class NearbyShareLocalDeviceDataManager {
   // not yet been set from an UpdateDevice RPC response.
   virtual base::Optional<std::string> GetIconUrl() const = 0;
 
-  // Uses the UpdateDevice RPC to change the local device name in the Nearby
-  // Share server and in local storage. Must be UTF-8. Observers are notified
-  // via OnLocalDeviceDataChanged() if the device name changes.
+  // Sets and persists the device name in prefs. The device name is *not*
+  // uploaded to the Nearby Share server; the UpdateDevice proto device_name
+  // field in an artifact. Observers are notified via OnLocalDeviceDataChanged()
+  // if the device name changes.
   virtual void SetDeviceName(const std::string& name) = 0;
 
   // Makes an UpdateDevice RPC call to the Nearby Share server to retrieve all

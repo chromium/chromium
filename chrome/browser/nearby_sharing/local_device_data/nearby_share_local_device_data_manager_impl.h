@@ -72,10 +72,7 @@ class NearbyShareLocalDeviceDataManagerImpl
                      const base::Optional<std::string>& value);
 
   void OnDownloadDeviceDataRequested();
-  void OnUploadDeviceNameRequested();
   void OnDownloadDeviceDataFinished(
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response);
-  void OnUploadDeviceNameFinished(
       const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response);
   void OnUploadContactsFinished(
       UploadCompleteCallback callback,
@@ -89,7 +86,6 @@ class NearbyShareLocalDeviceDataManagerImpl
   PrefService* pref_service_ = nullptr;
   std::unique_ptr<NearbyShareDeviceDataUpdater> device_data_updater_;
   std::unique_ptr<NearbyShareScheduler> download_device_data_scheduler_;
-  std::unique_ptr<NearbyShareScheduler> upload_device_name_scheduler_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_LOCAL_DEVICE_DATA_NEARBY_SHARE_LOCAL_DEVICE_DATA_MANAGER_IMPL_H_

@@ -8,13 +8,11 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_device_data_updater.h"
 
 NearbyShareDeviceDataUpdater::Request::Request(
-    base::Optional<std::string> device_name,
     base::Optional<std::vector<nearbyshare::proto::Contact>> contacts,
     base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>
         certificates,
     ResultCallback callback)
-    : device_name(std::move(device_name)),
-      contacts(std::move(contacts)),
+    : contacts(std::move(contacts)),
       certificates(std::move(certificates)),
       callback(std::move(callback)) {}
 
@@ -34,13 +32,12 @@ NearbyShareDeviceDataUpdater::NearbyShareDeviceDataUpdater(
 NearbyShareDeviceDataUpdater::~NearbyShareDeviceDataUpdater() = default;
 
 void NearbyShareDeviceDataUpdater::UpdateDeviceData(
-    base::Optional<std::string> device_name,
     base::Optional<std::vector<nearbyshare::proto::Contact>> contacts,
     base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>
         certificates,
     ResultCallback callback) {
-  pending_requests_.emplace(std::move(device_name), std::move(contacts),
-                            std::move(certificates), std::move(callback));
+  pending_requests_.emplace(std::move(contacts), std::move(certificates),
+                            std::move(callback));
   ProcessRequestQueue();
 }
 

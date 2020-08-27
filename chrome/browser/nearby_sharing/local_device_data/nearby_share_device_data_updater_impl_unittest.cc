@@ -23,7 +23,6 @@ namespace {
 
 const char kDeviceIdPrefix[] = "users/me/devices/";
 const char kTestDeviceId[] = "test_device_id";
-const char kTestDeviceName[] = "test_device_name";
 const char kTestContactEmail1[] = "test1@gmail.com";
 const char kTestContactEmail2[] = "test2@gmail.com";
 const char kTestCertificateId1[] = "cert_id_1";
@@ -68,7 +67,6 @@ const nearbyshare::proto::UpdateDeviceResponse& TestResponse() {
 }
 
 void VerifyRequest(
-    const base::Optional<std::string>& expected_device_name,
     const base::Optional<std::vector<nearbyshare::proto::Contact>>&
         expected_contacts,
     const base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>&
@@ -77,12 +75,10 @@ void VerifyRequest(
   std::vector<std::string> field_mask{request.update_mask().paths().begin(),
                                       request.update_mask().paths().end()};
 
-  EXPECT_EQ(static_cast<size_t>(expected_device_name.has_value()) +
-                static_cast<size_t>(expected_contacts.has_value()) +
+  EXPECT_EQ(static_cast<size_t>(expected_contacts.has_value()) +
                 static_cast<size_t>(expected_certificates.has_value()),
             field_mask.size());
-  EXPECT_EQ(expected_device_name.has_value(),
-            base::Contains(field_mask, "device.display_name"));
+
   EXPECT_EQ(expected_contacts.has_value(),
             base::Contains(field_mask, "device.contacts"));
   EXPECT_EQ(expected_certificates.has_value(),
@@ -90,9 +86,6 @@ void VerifyRequest(
 
   EXPECT_EQ(std::string(kDeviceIdPrefix) + kTestDeviceId,
             request.device().name());
-
-  EXPECT_EQ(expected_device_name.value_or(std::string()),
-            request.device().display_name());
 
   if (expected_contacts) {
     ASSERT_EQ(static_cast<int>(expected_contacts->size()),
@@ -145,18 +138,16 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
   }
 
   void CallUpdateDeviceData(
-      const base::Optional<std::string>& device_name,
       const base::Optional<std::vector<nearbyshare::proto::Contact>>& contacts,
       const base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>&
           certificates) {
     updater_->UpdateDeviceData(
-        device_name, contacts, certificates,
+        contacts, certificates,
         base::BindOnce(&NearbyShareDeviceDataUpdaterImplTest::OnResult,
                        base::Unretained(this)));
   }
 
   void ProcessNextUpdateDeviceDataRequest(
-      const base::Optional<std::string>& expected_device_name,
       const base::Optional<std::vector<nearbyshare::proto::Contact>>&
           expected_contacts,
       const base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>&
@@ -166,8 +157,7 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
     ASSERT_FALSE(fake_client_factory_.instances().empty());
     FakeNearbyShareClient* client = fake_client_factory_.instances().back();
     ASSERT_EQ(1u, client->update_device_requests().size());
-    VerifyRequest(expected_device_name, expected_contacts,
-                  expected_certificates,
+    VerifyRequest(expected_contacts, expected_certificates,
                   client->update_device_requests()[0].request);
 
     // Send and verify the response.
@@ -214,72 +204,55 @@ class NearbyShareDeviceDataUpdaterImplTest : public ::testing::Test {
 };
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_NoParameters) {
-  CallUpdateDeviceData(/*device_name=*/base::nullopt,
-                       /*contacts=*/base::nullopt,
+  CallUpdateDeviceData(/*contacts=*/base::nullopt,
                        /*certificates=*/base::nullopt);
   ProcessNextUpdateDeviceDataRequest(
-      /*expected_device_name=*/base::nullopt,
       /*expected_contacts=*/base::nullopt,
       /*expected_certificates=*/base::nullopt,
       UpdateDeviceRequestResult::kSuccess);
 }
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_AllParameters) {
-  CallUpdateDeviceData(kTestDeviceName, TestContactList(),
-                       TestCertificateList());
-  ProcessNextUpdateDeviceDataRequest(kTestDeviceName, TestContactList(),
-                                     TestCertificateList(),
+  CallUpdateDeviceData(TestContactList(), TestCertificateList());
+  ProcessNextUpdateDeviceDataRequest(TestContactList(), TestCertificateList(),
                                      UpdateDeviceRequestResult::kSuccess);
 }
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Success_OneParameter) {
-  CallUpdateDeviceData(kTestDeviceName,
-                       /*contacts=*/base::nullopt,
+  CallUpdateDeviceData(TestContactList(),
                        /*certificates=*/base::nullopt);
-  ProcessNextUpdateDeviceDataRequest(kTestDeviceName,
-                                     /*expected_contacts=*/base::nullopt,
+  ProcessNextUpdateDeviceDataRequest(TestContactList(),
                                      /*expected_certificates=*/base::nullopt,
                                      UpdateDeviceRequestResult::kSuccess);
 }
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Failure_Timeout) {
-  CallUpdateDeviceData(kTestDeviceName, TestContactList(),
-                       TestCertificateList());
-  ProcessNextUpdateDeviceDataRequest(kTestDeviceName, TestContactList(),
-                                     TestCertificateList(),
+  CallUpdateDeviceData(TestContactList(), TestCertificateList());
+  ProcessNextUpdateDeviceDataRequest(TestContactList(), TestCertificateList(),
                                      UpdateDeviceRequestResult::kTimeout);
 }
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, Failure_HttpError) {
-  CallUpdateDeviceData(kTestDeviceName, TestContactList(),
-                       TestCertificateList());
-  ProcessNextUpdateDeviceDataRequest(kTestDeviceName, TestContactList(),
-                                     TestCertificateList(),
+  CallUpdateDeviceData(TestContactList(), TestCertificateList());
+  ProcessNextUpdateDeviceDataRequest(TestContactList(), TestCertificateList(),
                                      UpdateDeviceRequestResult::kHttpFailure);
 }
 
 TEST_F(NearbyShareDeviceDataUpdaterImplTest, QueuedRequests) {
   // Queue requests while waiting to process.
-  CallUpdateDeviceData(/*device_name=*/base::nullopt,
-                       /*contacts=*/base::nullopt,
+  CallUpdateDeviceData(/*contacts=*/base::nullopt,
                        /*certificates=*/base::nullopt);
-  CallUpdateDeviceData(kTestDeviceName, TestContactList(),
-                       TestCertificateList());
-  CallUpdateDeviceData(kTestDeviceName,
-                       /*contacts=*/base::nullopt,
-                       /*certificates=*/base::nullopt);
+  CallUpdateDeviceData(TestContactList(), TestCertificateList());
+  CallUpdateDeviceData(/*contacts=*/base::nullopt, TestCertificateList());
 
   // Requests are processed in the order they are received.
   ProcessNextUpdateDeviceDataRequest(
-      /*expected_device_name=*/base::nullopt,
       /*expected_contacts=*/base::nullopt,
       /*expected_certificates=*/base::nullopt,
       UpdateDeviceRequestResult::kSuccess);
-  ProcessNextUpdateDeviceDataRequest(kTestDeviceName, TestContactList(),
-                                     TestCertificateList(),
+  ProcessNextUpdateDeviceDataRequest(TestContactList(), TestCertificateList(),
                                      UpdateDeviceRequestResult::kTimeout);
-  ProcessNextUpdateDeviceDataRequest(kTestDeviceName,
-                                     /*expected_contacts=*/base::nullopt,
-                                     /*expected_certificates=*/base::nullopt,
+  ProcessNextUpdateDeviceDataRequest(/*expected_contacts=*/base::nullopt,
+                                     TestCertificateList(),
                                      UpdateDeviceRequestResult::kHttpFailure);
 }

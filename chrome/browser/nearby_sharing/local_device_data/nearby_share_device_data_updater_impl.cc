@@ -11,7 +11,6 @@
 namespace {
 
 const char kDeviceIdPrefix[] = "users/me/devices/";
-const char kDeviceNameFieldMaskPath[] = "device.display_name";
 const char kContactsFieldMaskPath[] = "device.contacts";
 const char kCertificatesFieldMaskPath[] = "device.public_certificates";
 
@@ -63,11 +62,6 @@ void NearbyShareDeviceDataUpdaterImpl::HandleNextRequest() {
 
   nearbyshare::proto::UpdateDeviceRequest request;
   request.mutable_device()->set_name(kDeviceIdPrefix + device_id_);
-  if (pending_requests_.front().device_name) {
-    request.mutable_device()->set_display_name(
-        *pending_requests_.front().device_name);
-    request.mutable_update_mask()->add_paths(kDeviceNameFieldMaskPath);
-  }
   if (pending_requests_.front().contacts) {
     *request.mutable_device()->mutable_contacts() = {
         pending_requests_.front().contacts->begin(),

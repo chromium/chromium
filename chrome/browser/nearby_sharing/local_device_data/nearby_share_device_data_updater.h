@@ -18,6 +18,11 @@
 // overriding HandleNextRequest(), which is invoked when the next request is
 // ready to be run. Implementations should call FinishAttempt() with the result
 // of the attempt and possibly the response.
+//
+// NOTE: We do *not* support upload of the device name. This field of the proto
+// appears to be a relic of the old Nearby Share model. Upload of the field
+// could be a privacy concern that we want to avoid.
+//
 // TODO(crbug.com/1105547): Instead of queuing requests, hold a single pending
 // request and update the fields as other UpdateDeviceData() call are made.
 // Then, queue up all of callbacks from the merged requests in the Request
@@ -31,8 +36,7 @@ class NearbyShareDeviceDataUpdater {
           response)>;
 
   struct Request {
-    Request(base::Optional<std::string> device_name,
-            base::Optional<std::vector<nearbyshare::proto::Contact>> contacts,
+    Request(base::Optional<std::vector<nearbyshare::proto::Contact>> contacts,
             base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>
                 certificates,
             ResultCallback callback);
@@ -42,7 +46,6 @@ class NearbyShareDeviceDataUpdater {
     Request& operator=(const Request&) = delete;
     ~Request();
 
-    base::Optional<std::string> device_name;
     base::Optional<std::vector<nearbyshare::proto::Contact>> contacts;
     base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>
         certificates;
@@ -58,8 +61,6 @@ class NearbyShareDeviceDataUpdater {
   // Queue up an UpdateDevice RPC request to update the following fields on the
   // Nearby server if the parameter is not base::nullopt:
   //
-  // |device_name|: The device display name, for example, "Joe's Pixel".
-  //
   // |contacts|: The list of contacts that the Nearby server will send
   //             all-contacts-visibility certificates to. Contacts marked
   //             is_selected will be sent selected-contacts-visibility
@@ -71,7 +72,6 @@ class NearbyShareDeviceDataUpdater {
   // If only the UpdateDevice RPC response data is desired, set all
   // aforementioned parameters to base::nullopt.
   void UpdateDeviceData(
-      base::Optional<std::string> device_name,
       base::Optional<std::vector<nearbyshare::proto::Contact>> contacts,
       base::Optional<std::vector<nearbyshare::proto::PublicCertificate>>
           certificates,

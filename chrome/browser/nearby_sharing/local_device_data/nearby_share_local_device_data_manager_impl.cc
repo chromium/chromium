@@ -81,15 +81,6 @@ NearbyShareLocalDeviceDataManagerImpl::NearbyShareLocalDeviceDataManagerImpl(
               pref_service_,
               base::BindRepeating(&NearbyShareLocalDeviceDataManagerImpl::
                                       OnDownloadDeviceDataRequested,
-                                  base::Unretained(this)))),
-      upload_device_name_scheduler_(
-          NearbyShareSchedulerFactory::CreateOnDemandScheduler(
-              /*retry_failures=*/true,
-              /*require_connectivity=*/true,
-              prefs::kNearbySharingSchedulerUploadDeviceNamePrefName,
-              pref_service_,
-              base::BindRepeating(&NearbyShareLocalDeviceDataManagerImpl::
-                                      OnUploadDeviceNameRequested,
                                   base::Unretained(this)))) {}
 
 NearbyShareLocalDeviceDataManagerImpl::
@@ -132,7 +123,6 @@ void NearbyShareLocalDeviceDataManagerImpl::SetDeviceName(
 
   // TODO(b/161297140): Perform input validation.
   SetStringPref(prefs::kNearbySharingDeviceNamePrefName, name);
-  upload_device_name_scheduler_->MakeImmediateRequest();
 
   NotifyLocalDeviceDataChanged(/*did_device_name_change=*/true,
                                /*did_full_name_change=*/false,
@@ -147,7 +137,7 @@ void NearbyShareLocalDeviceDataManagerImpl::UploadContacts(
     std::vector<nearbyshare::proto::Contact> contacts,
     UploadCompleteCallback callback) {
   device_data_updater_->UpdateDeviceData(
-      /*device_name=*/base::nullopt, std::move(contacts),
+      std::move(contacts),
       /*certificates=*/base::nullopt,
       base::BindOnce(
           &NearbyShareLocalDeviceDataManagerImpl::OnUploadContactsFinished,
@@ -158,7 +148,6 @@ void NearbyShareLocalDeviceDataManagerImpl::UploadCertificates(
     std::vector<nearbyshare::proto::PublicCertificate> certificates,
     UploadCompleteCallback callback) {
   device_data_updater_->UpdateDeviceData(
-      /*device_name=*/base::nullopt,
       /*contacts=*/base::nullopt, std::move(certificates),
       base::BindOnce(
           &NearbyShareLocalDeviceDataManagerImpl::OnUploadCertificatesFinished,
@@ -169,13 +158,10 @@ void NearbyShareLocalDeviceDataManagerImpl::OnStart() {
   // This schedules an immediate download of the full name and icon URL from the
   // server if that has never happened before.
   download_device_data_scheduler_->Start();
-
-  upload_device_name_scheduler_->Start();
 }
 
 void NearbyShareLocalDeviceDataManagerImpl::OnStop() {
   download_device_data_scheduler_->Stop();
-  upload_device_name_scheduler_->Stop();
 }
 
 base::Optional<std::string>
@@ -199,21 +185,10 @@ void NearbyShareLocalDeviceDataManagerImpl::SetStringPref(
 
 void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataRequested() {
   device_data_updater_->UpdateDeviceData(
-      /*device_name=*/base::nullopt,
       /*contacts=*/base::nullopt,
       /*certificates=*/base::nullopt,
       base::BindOnce(
           &NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished,
-          base::Unretained(this)));
-}
-
-void NearbyShareLocalDeviceDataManagerImpl::OnUploadDeviceNameRequested() {
-  device_data_updater_->UpdateDeviceData(
-      GetDeviceName(),
-      /*contacts=*/base::nullopt,
-      /*certificates=*/base::nullopt,
-      base::BindOnce(
-          &NearbyShareLocalDeviceDataManagerImpl::OnUploadDeviceNameFinished,
           base::Unretained(this)));
 }
 
@@ -223,15 +198,6 @@ void NearbyShareLocalDeviceDataManagerImpl::OnDownloadDeviceDataFinished(
     HandleUpdateDeviceResponse(response);
 
   download_device_data_scheduler_->HandleResult(
-      /*success=*/response.has_value());
-}
-
-void NearbyShareLocalDeviceDataManagerImpl::OnUploadDeviceNameFinished(
-    const base::Optional<nearbyshare::proto::UpdateDeviceResponse>& response) {
-  if (response)
-    HandleUpdateDeviceResponse(response);
-
-  upload_device_name_scheduler_->HandleResult(
       /*success=*/response.has_value());
 }
 

@@ -112,7 +112,11 @@ message Device {
   // identity of the requester.
   string name = 1;
 
-  // The device name to show members of this contact. Ex: "Joe's Pixel"
+  // The device name to show members of this contact. Ex: "Joe's Pixel".
+  //
+  // NOTE: Do not use on Chrome. This appears to be an artifact of the old
+  // Nearby Share model, and could be a privacy risk that we want to avoid.
+  // The display name is instead included in the certificate encrypted metadata.
   string display_name = 2;
 
   // Users that this user has added to indicate that they may see this

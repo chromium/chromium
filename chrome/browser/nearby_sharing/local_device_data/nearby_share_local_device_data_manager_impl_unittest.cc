@@ -118,30 +118,6 @@ class NearbyShareLocalDeviceDataManagerImplTest
     manager_.reset();
   }
 
-  void SetDeviceName(
-      const std::string& device_name,
-      const base::Optional<nearbyshare::proto::UpdateDeviceResponse>&
-          response) {
-    manager_->SetDeviceName(device_name);
-    EXPECT_EQ(device_name, manager_->GetDeviceName());
-
-    // The scheduler requests an upload of the device name to the server.
-    EXPECT_TRUE(updater()->pending_requests().empty());
-    device_name_scheduler()->InvokeRequestCallback();
-    EXPECT_FALSE(updater()->pending_requests().empty());
-    EXPECT_EQ(device_name, updater()->pending_requests().front().device_name);
-    EXPECT_FALSE(updater()->pending_requests().front().contacts);
-    EXPECT_FALSE(updater()->pending_requests().front().certificates);
-
-    size_t num_handled_results =
-        device_name_scheduler()->handled_results().size();
-    updater()->RunNextRequest(response);
-    EXPECT_EQ(num_handled_results + 1,
-              device_name_scheduler()->handled_results().size());
-    EXPECT_EQ(response.has_value(),
-              device_name_scheduler()->handled_results().back());
-  }
-
   void DownloadDeviceData(
       const base::Optional<nearbyshare::proto::UpdateDeviceResponse>&
           response) {
@@ -152,7 +128,6 @@ class NearbyShareLocalDeviceDataManagerImplTest
     device_data_scheduler()->InvokeRequestCallback();
     EXPECT_FALSE(updater()->pending_requests().empty());
 
-    EXPECT_FALSE(updater()->pending_requests().front().device_name);
     EXPECT_FALSE(updater()->pending_requests().front().contacts);
     EXPECT_FALSE(updater()->pending_requests().front().certificates);
 
@@ -175,7 +150,6 @@ class NearbyShareLocalDeviceDataManagerImplTest
                           bool success) { *returned_success = success; },
                        &returned_success));
 
-    EXPECT_FALSE(updater()->pending_requests().front().device_name);
     EXPECT_FALSE(updater()->pending_requests().front().certificates);
     std::vector<nearbyshare::proto::Contact> fake_contacts;
     for (size_t i = 0; i < fake_contacts.size(); ++i) {
@@ -201,7 +175,6 @@ class NearbyShareLocalDeviceDataManagerImplTest
                           bool success) { *returned_success = success; },
                        &returned_success));
 
-    EXPECT_FALSE(updater()->pending_requests().front().device_name);
     EXPECT_FALSE(updater()->pending_requests().front().contacts);
     std::vector<nearbyshare::proto::PublicCertificate> fake_certificates;
     for (size_t i = 0; i < fake_certificates.size(); ++i) {
@@ -225,11 +198,6 @@ class NearbyShareLocalDeviceDataManagerImplTest
   FakeNearbyShareDeviceDataUpdater* updater() {
     return updater_factory_.instances().back();
   }
-  FakeNearbyShareScheduler* device_name_scheduler() {
-    return scheduler_factory_.pref_name_to_on_demand_instance()
-        .at(prefs::kNearbySharingSchedulerUploadDeviceNamePrefName)
-        .fake_scheduler;
-  }
   FakeNearbyShareScheduler* device_data_scheduler() {
     return scheduler_factory_.pref_name_to_periodic_instance()
         .at(prefs::kNearbySharingSchedulerDownloadDeviceDataPrefName)
@@ -245,16 +213,6 @@ class NearbyShareLocalDeviceDataManagerImplTest
     ASSERT_EQ(num_manager_creations_, updater_factory_.instances().size());
     EXPECT_EQ(manager_->GetId(),
               updater_factory_.instances().back()->device_id());
-
-    // Verify device name scheduler input parameters.
-    FakeNearbyShareSchedulerFactory::OnDemandInstance
-        device_name_scheduler_instance =
-            scheduler_factory_.pref_name_to_on_demand_instance().at(
-                prefs::kNearbySharingSchedulerUploadDeviceNamePrefName);
-    EXPECT_TRUE(device_name_scheduler_instance.fake_scheduler);
-    EXPECT_TRUE(device_name_scheduler_instance.retry_failures);
-    EXPECT_TRUE(device_name_scheduler_instance.require_connectivity);
-    EXPECT_EQ(&pref_service_, device_name_scheduler_instance.pref_service);
 
     // Verify device data scheduler input parameters.
     FakeNearbyShareSchedulerFactory::PeriodicInstance
@@ -294,50 +252,18 @@ TEST_F(NearbyShareLocalDeviceDataManagerImplTest, DeviceId) {
   EXPECT_EQ(id, manager()->GetId());
 }
 
-TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName_Success) {
+TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName) {
   CreateManager();
-  EXPECT_FALSE(manager()->GetDeviceName());
-  EXPECT_FALSE(manager()->GetFullName());
-  EXPECT_FALSE(manager()->GetIconUrl());
   EXPECT_TRUE(notifications().empty());
-  SetDeviceName(kFakeDeviceName, CreateResponse(kFakeFullName, kFakeIconUrl));
+  manager()->SetDeviceName(kFakeDeviceName);
   EXPECT_EQ(kFakeDeviceName, manager()->GetDeviceName());
-  EXPECT_EQ(kFakeFullName, manager()->GetFullName());
-  EXPECT_EQ(kFakeIconUrl, manager()->GetIconUrl());
-  EXPECT_EQ(2u, notifications().size());
-  EXPECT_EQ(ObserverNotification(/*did_device_name_change=*/true,
-                                 /*did_full_name_change=*/false,
-                                 /*did_icon_url_change=*/false),
-            notifications()[0]);
-  EXPECT_EQ(ObserverNotification(/*did_device_name_change=*/false,
-                                 /*did_full_name_change=*/true,
-                                 /*did_icon_url_change=*/true),
-            notifications()[1]);
-
-  // The data is persisted.
-  DestroyManager();
-  CreateManager();
-  EXPECT_EQ(kFakeDeviceName, manager()->GetDeviceName());
-  EXPECT_EQ(kFakeFullName, manager()->GetFullName());
-  EXPECT_EQ(kFakeIconUrl, manager()->GetIconUrl());
-}
-
-TEST_F(NearbyShareLocalDeviceDataManagerImplTest, SetDeviceName_Failure) {
-  CreateManager();
-  SetDeviceName(kFakeDeviceName, /*response=*/base::nullopt);
-  EXPECT_EQ(kFakeDeviceName, manager()->GetDeviceName());
-
-  // No full name or icon URL set because response was null.
-  EXPECT_EQ(base::nullopt, manager()->GetFullName());
-  EXPECT_EQ(base::nullopt, manager()->GetIconUrl());
-
   EXPECT_EQ(1u, notifications().size());
   EXPECT_EQ(ObserverNotification(/*did_device_name_change=*/true,
                                  /*did_full_name_change=*/false,
                                  /*did_icon_url_change=*/false),
             notifications()[0]);
 
-  // The device name is still persisted even if upload fails.
+  // The data is persisted.
   DestroyManager();
   CreateManager();
   EXPECT_EQ(kFakeDeviceName, manager()->GetDeviceName());

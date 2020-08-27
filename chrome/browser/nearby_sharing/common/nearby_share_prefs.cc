@@ -34,8 +34,6 @@ const char kNearbySharingSchedulerContactUploadPrefName[] =
     "nearby_sharing.scheduler.contact_upload";
 const char kNearbySharingSchedulerDownloadDeviceDataPrefName[] =
     "nearby_sharing.scheduler.download_device_data";
-const char kNearbySharingSchedulerUploadDeviceNamePrefName[] =
-    "nearby_sharing.scheduler.upload_device_name";
 const char kNearbySharingPublicCertificateExpirationDictPrefName[] =
     "nearbyshare.public_certificate_expiration_dict";
 const char kNearbySharingPrivateCertificateListPrefName[] =
@@ -73,8 +71,6 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
       prefs::kNearbySharingSchedulerContactUploadPrefName);
   registry->RegisterDictionaryPref(
       prefs::kNearbySharingSchedulerDownloadDeviceDataPrefName);
-  registry->RegisterDictionaryPref(
-      prefs::kNearbySharingSchedulerUploadDeviceNamePrefName);
   registry->RegisterTimePref(
       prefs::kNearbySharingOnboardingDismissedTimePrefName,
       /*default_value=*/base::Time());
