@@ -6,6 +6,7 @@
 // Functions from libva used in chromium code.
 //------------------------------------------------
 VAStatus vaBeginPicture(VADisplay dpy, VAContextID context, VASurfaceID render_target);
+const char *vaConfigAttribTypeStr(VAConfigAttribType configAttribType);
 VAStatus vaCreateBuffer(VADisplay dpy, VAContextID context, VABufferType type, unsigned int size, unsigned int num_elements, void *data, VABufferID *buf_id);
 VAStatus vaCreateConfig(VADisplay dpy, VAProfile profile, VAEntrypoint entrypoint, VAConfigAttrib *attrib_list, int num_attribs, VAConfigID *config_id);
 VAStatus vaCreateContext(VADisplay dpy, VAConfigID config_id, int picture_width, int picture_height, int flag, VASurfaceID *render_targets, int num_render_targets, VAContextID *context);
@@ -38,6 +39,7 @@ VAStatus vaQueryConfigProfiles(VADisplay dpy, VAProfile *profile_list, int *num_
 VAStatus vaQueryImageFormats(VADisplay dpy, VAImageFormat *format_list, int *num_formats);
 VAStatus vaQuerySurfaceAttributes(VADisplay dpy, VAConfigID config, VASurfaceAttrib *attrib_list, unsigned int *num_attribs);
 const char* vaQueryVendorString(VADisplay dpy);
+VAStatus vaQueryVideoProcPipelineCaps(VADisplay dpy, VAContextID context, VABufferID *filters, unsigned int num_filters, VAProcPipelineCaps *pipeline_caps);
 VAStatus vaRenderPicture(VADisplay dpy, VAContextID context, VABufferID *buffers, int num_buffers);
 VAStatus vaSyncSurface(VADisplay dpy, VASurfaceID render_target);
 VAStatus vaTerminate(VADisplay dpy);
