@@ -822,7 +822,9 @@
     {
       name: "FontAccess",
       origin_trial_feature_name: "FontAccess",
-      status: "experimental",
+      // No status because this blink runtime feature doesn't work by itself.
+      // It's controlled by the corresponding Chromium feature which needs to
+      // be enabled to make the whole feature work.
     },
     {
       name: "FontSrcLocalMatching",
