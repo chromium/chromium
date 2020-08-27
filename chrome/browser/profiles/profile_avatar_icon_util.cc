@@ -623,7 +623,7 @@ gfx::Image GetPlaceholderAvatarIconWithColors(SkColor fill_color,
   gfx::ImageSkia icon_with_background(
       std::make_unique<ImageWithBackgroundSource>(icon_without_background,
                                                   fill_color),
-      size);
+      gfx::Size(size, size));
   return gfx::Image(icon_with_background);
 }
 
