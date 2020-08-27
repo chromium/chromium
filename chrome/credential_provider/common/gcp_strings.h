@@ -78,6 +78,8 @@ extern const wchar_t kRegUpdaterClientsAppPath[];
 extern const wchar_t kRegUninstallStringField[];
 extern const wchar_t kRegUninstallArgumentsField[];
 extern const wchar_t kRegUsageStatsName[];
+extern const wchar_t kRegUpdateTracksName[];
+extern const wchar_t kRegVersionName[];
 
 // These are command line switches passed to chrome to start it as a process
 // used as a logon stub.

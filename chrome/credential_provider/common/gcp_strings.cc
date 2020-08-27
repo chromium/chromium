@@ -54,6 +54,8 @@ const wchar_t kRegUpdaterClientsAppPath[] =
 const wchar_t kRegUninstallStringField[] = L"UninstallString";
 const wchar_t kRegUninstallArgumentsField[] = L"UninstallArguments";
 const wchar_t kRegUsageStatsName[] = L"usagestats";
+const wchar_t kRegUpdateTracksName[] = L"ap";
+const wchar_t kRegVersionName[] = L"pv";
 
 // Chrome is being opened to show the credential provider logon page.  This
 // page is always shown in incognito mode.

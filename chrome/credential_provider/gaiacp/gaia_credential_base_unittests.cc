@@ -3311,5 +3311,140 @@ INSTANTIATE_TEST_SUITE_P(All,
                                             ::testing::Bool(),
                                             ::testing::Bool()));
 
+// Test that correct Omaha update tracks are set when auto update policies are
+// defined.
+// Parameters are:
+// 1. bool   : Whether cloud policies feature is enabled.
+// 2. bool   : Whether GCPW auto update policy is enabled.
+// 3. string : GCPW pinned version policy set through the cloud policy.
+// 4. string : Existing update channel (Ex. 'beta') specified in the Omaha
+//             update track registry entry for GCPW application. Empty value
+//             is stable channel.
+// 5. string : Current value of GCPW pinned version.
+class GcpGaiaCredentialBaseOmahaUpdatePolicyTest
+    : public GcpGaiaCredentialBaseTest,
+      public ::testing::WithParamInterface<std::tuple<bool,
+                                                      bool,
+                                                      const wchar_t*,
+                                                      const wchar_t*,
+                                                      const wchar_t*>> {};
+
+TEST_P(GcpGaiaCredentialBaseOmahaUpdatePolicyTest, EnforceUpdatePolicy) {
+  bool cloud_policies_enabled = std::get<0>(GetParam());
+  bool enable_gcpw_auto_update = std::get<1>(GetParam());
+  base::string16 gcpw_pinned_version(std::get<2>(GetParam()));
+  base::string16 update_channel(std::get<3>(GetParam()));
+  base::string16 current_pinned_version(std::get<4>(GetParam()));
+
+  FakeDevicePoliciesManager fake_device_policies_manager(
+      cloud_policies_enabled);
+
+  DevicePolicies device_policies;
+  device_policies.enable_gcpw_auto_update = enable_gcpw_auto_update;
+  device_policies.gcpw_pinned_version =
+      GcpwVersion(base::UTF16ToUTF8(gcpw_pinned_version));
+  fake_device_policies_manager.SetDevicePolicies(device_policies);
+
+  const base::string16 current_gcpw_version(L"80.1.422.2");
+
+  // Add expected Omaha registry paths
+  base::win::RegKey clientsKey, clientsStateKey;
+  EXPECT_EQ(ERROR_SUCCESS,
+            clientsKey.Create(HKEY_LOCAL_MACHINE, kRegUpdaterClientsAppPath,
+                              KEY_SET_VALUE | KEY_WOW64_32KEY));
+  EXPECT_EQ(ERROR_SUCCESS, clientsKey.WriteValue(kRegVersionName,
+                                                 current_gcpw_version.c_str()));
+  EXPECT_EQ(
+      ERROR_SUCCESS,
+      clientsStateKey.Create(HKEY_LOCAL_MACHINE, kRegUpdaterClientStateAppPath,
+                             KEY_SET_VALUE | KEY_WOW64_32KEY));
+
+  // Set existing update tracks including the currently pinned version.
+  base::string16 current_update_track = current_pinned_version;
+  if (!update_channel.empty())
+    current_update_track = update_channel + L"-" + current_pinned_version;
+
+  if (!current_update_track.empty()) {
+    EXPECT_EQ(ERROR_SUCCESS,
+              clientsStateKey.WriteValue(kRegUpdateTracksName,
+                                         current_update_track.c_str()));
+  }
+
+  // Create a fake user associated to a gaia id.
+  CComBSTR sid;
+  ASSERT_EQ(S_OK,
+            fake_os_user_manager()->CreateTestOSUser(
+                kDefaultUsername, L"password", L"Full Name", L"comment",
+                base::UTF8ToUTF16(kDefaultGaiaId), base::string16(), &sid));
+
+  // Change token response to an valid one.
+  SetDefaultTokenHandleResponse(kDefaultValidTokenHandleResponse);
+
+  // Create provider and start logon.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  ASSERT_EQ(S_OK, StartLogonProcessAndWait());
+
+  // Finish logon successfully.
+  ASSERT_EQ(S_OK, FinishLogonProcess(true, true, 0));
+
+  ASSERT_EQ(S_OK, ReleaseProvider());
+
+  base::win::RegKey key;
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_LOCAL_MACHINE, kRegUpdaterClientStateAppPath,
+                     KEY_READ | KEY_WOW64_32KEY));
+
+  std::wstring update_track_value;
+  LONG status = key.ReadValue(kRegUpdateTracksName, &update_track_value);
+
+  if (cloud_policies_enabled) {
+    if (device_policies.enable_gcpw_auto_update) {
+      if (device_policies.gcpw_pinned_version.IsValid()) {
+        // Check if pinned version is set.
+        ASSERT_EQ(ERROR_SUCCESS, status);
+        base::string16 expected_ap_value = gcpw_pinned_version;
+        if (!update_channel.empty())
+          expected_ap_value = update_channel + L"-" + gcpw_pinned_version;
+        ASSERT_EQ(expected_ap_value, update_track_value);
+      } else {
+        // Update track should be reset to the channel it was on before.
+        if (update_channel.empty()) {
+          ASSERT_NE(ERROR_SUCCESS, status);
+        } else {
+          ASSERT_EQ(ERROR_SUCCESS, status);
+          ASSERT_EQ(update_channel, update_track_value);
+        }
+      }
+    } else {
+      // Auto update is turned off.
+      ASSERT_EQ(ERROR_SUCCESS, status);
+      base::string16 expected_ap_value = current_gcpw_version;
+      if (!update_channel.empty())
+        expected_ap_value = update_channel + L"-" + current_gcpw_version;
+      ASSERT_EQ(expected_ap_value, update_track_value);
+    }
+  } else {
+    // There should be no change to existing update tracks.
+    if (current_update_track.empty()) {
+      ASSERT_NE(ERROR_SUCCESS, status);
+    } else {
+      ASSERT_EQ(ERROR_SUCCESS, status);
+      ASSERT_EQ(current_update_track, update_track_value);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GcpGaiaCredentialBaseOmahaUpdatePolicyTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Bool(),
+                       ::testing::Values(L"", L"81.1.33.42"),
+                       ::testing::Values(L"", L"beta"),
+                       ::testing::Values(L"", L"80.2.35.4")));
+
 }  // namespace testing
 }  // namespace credential_provider

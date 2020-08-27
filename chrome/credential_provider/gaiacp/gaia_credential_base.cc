@@ -38,6 +38,7 @@
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/auth_utils.h"
+#include "chrome/credential_provider/gaiacp/device_policies_manager.h"
 #include "chrome/credential_provider/gaiacp/event_logs_upload_manager.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
@@ -2080,6 +2081,11 @@ HRESULT CGaiaCredentialBase::PerformPostSigninActions(
     hr = credential_provider::EnrollToGoogleMdmIfNeeded(properties);
     if (FAILED(hr))
       LOGFN(ERROR) << "EnrollToGoogleMdmIfNeeded hr=" << putHR(hr);
+  }
+
+  // Ensure GCPW gets updated to the correct version.
+  if (DevicePoliciesManager::Get()->CloudPoliciesEnabled()) {
+    DevicePoliciesManager::Get()->EnforceGcpwUpdatePolicy();
   }
 
   // TODO(crbug.com/976744): Use the down scoped kKeyMdmAccessToken instead

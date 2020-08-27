@@ -22,6 +22,9 @@ class DevicePoliciesManager {
   // policies of all the existing users on the device.
   virtual void GetDevicePolicies(DevicePolicies* device_policies);
 
+  // Make sure GCPW update is set up correctly.
+  void EnforceGcpwUpdatePolicy();
+
  protected:
   // Returns the storage used for the instance pointer.
   static DevicePoliciesManager** GetInstanceStorage();

@@ -13,7 +13,7 @@ namespace credential_provider {
 // A structure to hold the version of GCPW.
 class GcpwVersion {
  public:
-  // Create a default with the current GCPW version.
+  // Create a default version which is not valid.
   GcpwVersion();
 
   // Construct using the given version string specified in
@@ -22,6 +22,9 @@ class GcpwVersion {
 
   // Copy constructor.
   GcpwVersion(const GcpwVersion& other);
+
+  // Gets the installed version of the GCPW client on this device.
+  static GcpwVersion GetCurrentVersion();
 
   // Returns a formatted string.
   std::string ToString() const;
@@ -45,6 +48,9 @@ class GcpwVersion {
 
   // Returns true when this version is less than |other| version.
   bool operator<(const GcpwVersion& other) const;
+
+  // Returns true if this is a valid version.
+  bool IsValid() const;
 
  private:
   std::array<unsigned, 4> version_;
