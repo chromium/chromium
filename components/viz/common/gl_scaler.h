@@ -191,7 +191,7 @@ class VIZ_COMMON_EXPORT GLScaler : public ContextLostObserver {
     ~Parameters();
   };
 
-  explicit GLScaler(scoped_refptr<ContextProvider> context_provider);
+  explicit GLScaler(ContextProvider* context_provider);
 
   ~GLScaler() final;
 
@@ -474,7 +474,7 @@ class VIZ_COMMON_EXPORT GLScaler : public ContextLostObserver {
 
   // The provider of the GL context. This is non-null while the GL context is
   // valid and GLScaler is observing for context loss.
-  scoped_refptr<ContextProvider> context_provider_;
+  ContextProvider* context_provider_;
 
   // Set by Configure() to the resolved set of Parameters.
   Parameters params_;

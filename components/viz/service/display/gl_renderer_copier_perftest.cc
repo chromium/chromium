@@ -61,15 +61,15 @@ base::FilePath GetTestFilePath(const base::FilePath::CharType* basename) {
 class GLRendererCopierPerfTest : public testing::Test {
  public:
   GLRendererCopierPerfTest() {
-    auto context_provider = base::MakeRefCounted<TestInProcessContextProvider>(
+    context_provider_ = base::MakeRefCounted<TestInProcessContextProvider>(
         /*enable_gpu_rasterization=*/false,
         /*enable_oop_rasterization=*/false, /*support_locking=*/false);
-    gpu::ContextResult result = context_provider->BindToCurrentThread();
+    gpu::ContextResult result = context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
-    gl_ = context_provider->ContextGL();
+    gl_ = context_provider_->ContextGL();
     texture_deleter_ =
         std::make_unique<TextureDeleter>(base::ThreadTaskRunnerHandle::Get());
-    copier_ = std::make_unique<GLRendererCopier>(std::move(context_provider),
+    copier_ = std::make_unique<GLRendererCopier>(context_provider_.get(),
                                                  texture_deleter_.get());
   }
 
@@ -259,6 +259,7 @@ class GLRendererCopierPerfTest : public testing::Test {
 
  private:
   gpu::gles2::GLES2Interface* gl_ = nullptr;
+  scoped_refptr<TestInProcessContextProvider> context_provider_;
   std::unique_ptr<TextureDeleter> texture_deleter_;
   std::unique_ptr<GLRendererCopier> copier_;
   GLuint source_texture_ = 0;

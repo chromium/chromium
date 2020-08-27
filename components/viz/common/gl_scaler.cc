@@ -42,8 +42,8 @@ std::ostream& operator<<(std::ostream& out, const RelativeSize& size) {
 
 }  // namespace
 
-GLScaler::GLScaler(scoped_refptr<ContextProvider> context_provider)
-    : context_provider_(std::move(context_provider)) {
+GLScaler::GLScaler(ContextProvider* context_provider)
+    : context_provider_(context_provider) {
   if (context_provider_) {
     DCHECK(context_provider_->ContextGL());
     context_provider_->AddObserver(this);

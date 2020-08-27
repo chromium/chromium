@@ -99,7 +99,7 @@ TEST_F(GLScalerTest, AddAndRemovesSelfAsContextLossObserver) {
       .WillOnce(SaveArg<0>(&registered_observer));
   EXPECT_CALL(provider, RemoveObserver(Eq(ByRef(registered_observer))))
       .InSequence(s);
-  GLScaler scaler(base::WrapRefCounted(&provider));
+  GLScaler scaler(&provider);
 }
 
 TEST_F(GLScalerTest, RemovesObserverWhenContextIsLost) {
@@ -111,7 +111,7 @@ TEST_F(GLScalerTest, RemovesObserverWhenContextIsLost) {
       .WillOnce(SaveArg<0>(&registered_observer));
   EXPECT_CALL(provider, RemoveObserver(Eq(ByRef(registered_observer))))
       .InSequence(s);
-  GLScaler scaler(base::WrapRefCounted(&provider));
+  GLScaler scaler(&provider);
   static_cast<ContextLostObserver&>(scaler).OnContextLost();
   // Verify RemoveObserver() was called before |scaler| goes out-of-scope.
   Mock::VerifyAndClearExpectations(&provider);

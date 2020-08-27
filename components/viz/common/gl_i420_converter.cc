@@ -10,16 +10,17 @@
 
 namespace viz {
 
-GLI420Converter::GLI420Converter(
-    scoped_refptr<ContextProvider> context_provider)
-    : GLI420Converter(std::move(context_provider), true) {}
+GLI420Converter::GLI420Converter(ContextProvider* context_provider)
+    : GLI420Converter(context_provider, true) {
+  DCHECK(context_provider_);
+}
 
-GLI420Converter::GLI420Converter(
-    scoped_refptr<ContextProvider> context_provider,
-    bool allow_mrt_path)
-    : context_provider_(std::move(context_provider)),
+GLI420Converter::GLI420Converter(ContextProvider* context_provider,
+                                 bool allow_mrt_path)
+    : context_provider_(context_provider),
       step1_(context_provider_),
       step2_(context_provider_) {
+  DCHECK(context_provider_);
   context_provider_->AddObserver(this);
   if (!allow_mrt_path || step1_.GetMaxDrawBuffersSupported() < 2) {
     step3_ = std::make_unique<GLScaler>(context_provider_);

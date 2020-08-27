@@ -62,11 +62,11 @@ class GLRendererCopierTest : public testing::Test {
   using ReusableThings = GLRendererCopier::ReusableThings;
 
   void SetUp() override {
-    auto context_provider = TestContextProvider::Create(
+    context_provider_ = TestContextProvider::Create(
         std::make_unique<CopierTestGLES2Interface>());
-    context_provider->BindToCurrentThread();
-    copier_ = std::make_unique<GLRendererCopier>(std::move(context_provider),
-                                                 nullptr);
+    context_provider_->BindToCurrentThread();
+    copier_ =
+        std::make_unique<GLRendererCopier>(context_provider_.get(), nullptr);
   }
 
   void TearDown() override { copier_.reset(); }
@@ -102,6 +102,7 @@ class GLRendererCopierTest : public testing::Test {
   static constexpr int kKeepalivePeriod = GLRendererCopier::kKeepalivePeriod;
 
  private:
+  scoped_refptr<ContextProvider> context_provider_;
   std::unique_ptr<GLRendererCopier> copier_;
 };
 

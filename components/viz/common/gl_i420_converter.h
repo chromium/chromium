@@ -76,7 +76,7 @@ class VIZ_COMMON_EXPORT GLI420Converter : public ContextLostObserver {
   // GLI420Converter uses the exact same parameters as GLScaler.
   using Parameters = GLScaler::Parameters;
 
-  explicit GLI420Converter(scoped_refptr<ContextProvider> context_provider);
+  explicit GLI420Converter(ContextProvider* context_provider);
   ~GLI420Converter() final;
 
   // Returns true if the GL context provides the necessary support for enabling
@@ -145,8 +145,7 @@ class VIZ_COMMON_EXPORT GLI420Converter : public ContextLostObserver {
  private:
   friend class GLI420ConverterPixelTest;
 
-  GLI420Converter(scoped_refptr<ContextProvider> context_provider,
-                  bool allow_mrt_path);
+  GLI420Converter(ContextProvider* context_provider, bool allow_mrt_path);
 
   bool is_using_mrt_path() const { return !step3_; }
 
@@ -159,7 +158,7 @@ class VIZ_COMMON_EXPORT GLI420Converter : public ContextLostObserver {
 
   // The provider of the GL context. This is non-null while the GL context is
   // valid and GLI420Converter is observing for context loss.
-  scoped_refptr<ContextProvider> context_provider_;
+  ContextProvider* context_provider_;
 
   // Scales the source content and produces either:
   //   * MRT path: NV61-format output in two textures.
