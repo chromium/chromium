@@ -38,10 +38,6 @@ def _generate_project_pyl(ctx):
 
 lucicfg.generator(_generate_project_pyl)
 
-def master_only_exec(f):
-    if settings.is_master:
-        exec(f)
-
 # The branch numbers of branches that we have builders running for (including
 # milestone-specific projects)
 # Branch numbers for milestones can be viewed in the chromium column at

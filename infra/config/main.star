@@ -6,7 +6,8 @@
 # See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md
 # for information on starlark/lucicfg
 
-load("//project.star", "master_only_exec", "settings")
+load("//lib/branches.star", "branches")
+load("//project.star", "settings")
 
 lucicfg.check_version(
     min = "1.18.4",
@@ -121,12 +122,12 @@ exec("//recipes.star")
 exec("//notifiers.star")
 
 exec("//subprojects/chromium/subproject.star")
-master_only_exec("//subprojects/codesearch/subproject.star")
-master_only_exec("//subprojects/findit/subproject.star")
-master_only_exec("//subprojects/goma/subproject.star")
-master_only_exec("//subprojects/webrtc/subproject.star")
+branches.exec("//subprojects/codesearch/subproject.star")
+branches.exec("//subprojects/findit/subproject.star")
+branches.exec("//subprojects/goma/subproject.star")
+branches.exec("//subprojects/webrtc/subproject.star")
 
-master_only_exec("//generators/cq-builders-md.star")
+branches.exec("//generators/cq-builders-md.star")
 
 # This should be exec'ed before exec'ing scheduler-noop-jobs.star because
 # attempting to read the buildbucket field that is not set for the noop jobs
@@ -135,7 +136,7 @@ master_only_exec("//generators/cq-builders-md.star")
 # problems when the number of builders with the same name goes from 1 to >1 or
 # vice-versa. This generator makes sure both the bucketed and non-bucketed IDs
 # work so that there aren't transient failures when the configuration changes
-master_only_exec("//generators/scheduler-bucketed-jobs.star")
+branches.exec("//generators/scheduler-bucketed-jobs.star")
 
 # TODO(https://crbug.com/819899) There are a number of noop jobs for dummy
 # builders defined due to legacy requirements that trybots mirror CI bots

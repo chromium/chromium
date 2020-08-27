@@ -148,9 +148,9 @@ luci.cq_group(
         repo = "https://chromium.googlesource.com/chromium/src",
         refs = (
             # \D - non-digit, match any branch that is not entirely numeric
-            [r"refs/branch-heads/.*\D.*"] +
+            [r"^refs/branch-heads/.*\D.*$"] +
             [
-                "refs/branch-heads/" + regex
+                "^refs/branch-heads/{}$".format(regex)
                 for regex in _get_fallback_branch_number_regexes()
             ]
         ),
