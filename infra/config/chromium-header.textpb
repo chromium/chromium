@@ -154,12 +154,12 @@ links {
   }
 }
 console_groups {
-  console_ids: "chromium/chromium"
-  console_ids: "chromium/chromium.win"
-  console_ids: "chromium/chromium.mac"
-  console_ids: "chromium/chromium.linux"
-  console_ids: "chromium/chromium.chromiumos"
-  console_ids: "chromium/chromium.memory"
-  console_ids: "chromium/chromium.gpu"
-  console_ids: "chromium/chromium.android"
+  console_ids: "chromium-m86/chromium"
+  console_ids: "chromium-m86/chromium.win"
+  console_ids: "chromium-m86/chromium.mac"
+  console_ids: "chromium-m86/chromium.linux"
+  console_ids: "chromium-m86/chromium.chromiumos"
+  console_ids: "chromium-m86/chromium.memory"
+  console_ids: "chromium-m86/chromium.gpu"
+  console_ids: "chromium-m86/chromium.android"
 }
