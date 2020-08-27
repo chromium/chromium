@@ -241,6 +241,12 @@ TEST_F(WidgetTest, ChangeActivation) {
 
 // Tests visibility of child widgets.
 TEST_F(WidgetTest, Visibility) {
+#if defined(OS_MAC)
+  if (base::mac::IsAtLeastOS11()) {
+    GTEST_SKIP() << "Window visibility notifications aren't delivered on "
+                    "macOS 11. See https://crbug.com/1114243.";
+  }
+#endif
   WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
   gfx::NativeView parent = toplevel->GetNativeView();
   Widget* child = CreateChildPlatformWidget(parent);
@@ -964,6 +970,12 @@ TEST_F(DesktopWidgetObserverTest, OnWidgetMovedWhenOriginChangesNative) {
 // Test correct behavior when widgets close themselves in response to visibility
 // changes.
 TEST_F(WidgetObserverTest, ClosingOnHiddenParent) {
+#if defined(OS_MAC)
+  if (base::mac::IsAtLeastOS11()) {
+    GTEST_SKIP() << "Window visibility notifications aren't delivered on "
+                    "macOS 11. See https://crbug.com/1114243.";
+  }
+#endif
   WidgetAutoclosePtr parent(NewWidget());
   Widget* child = CreateChildPlatformWidget(parent->GetNativeView());
 
