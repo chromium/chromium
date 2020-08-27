@@ -2629,7 +2629,7 @@
   {
     "name": "fullscreen-controller-browser-scoped",
     "owners": [ "thegreenfrog", "bling-flags" ],
-    "expiry_milestone": 85
+    "expiry_milestone": 87
   },
   {
     "name": "fullscreen-viewport-adjustment-experiment",
