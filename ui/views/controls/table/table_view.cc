@@ -937,7 +937,11 @@ gfx::Rect TableView::GetCellBounds(int row, int visible_column_index) const {
 }
 
 gfx::Rect TableView::GetActiveCellBounds() const {
-  return GetCellBounds(selection_model_.active(), active_visible_column_index_);
+  if (selection_model_.active() == ui::ListSelectionModel::kUnselectedIndex) {
+    return gfx::Rect();
+  }
+  return GetCellBounds(ModelToView(selection_model_.active()),
+                       active_visible_column_index_);
 }
 
 void TableView::AdjustCellBoundsForText(int visible_column_index,

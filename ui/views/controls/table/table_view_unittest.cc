@@ -71,6 +71,14 @@ class TableViewTestHelper {
     return table_->GetVirtualAccessibilityCell(row, visible_column_index);
   }
 
+  gfx::Rect GetCellBounds(int row, int visible_column_index) const {
+    return table_->GetCellBounds(row, visible_column_index);
+  }
+
+  gfx::Rect GetActiveCellBounds() const {
+    return table_->GetActiveCellBounds();
+  }
+
   std::vector<std::vector<gfx::Rect>> GenerateExpectedBounds() {
     // Generates the expected bounds for |table_|'s rows and cells. Each vector
     // represents a row. The first entry in each child vector is the bounds for
@@ -886,6 +894,50 @@ TEST_P(TableViewTest, SortOnSpaceBar) {
   EXPECT_EQ(0, table_->sort_descriptors()[1].column_id);
   EXPECT_TRUE(table_->sort_descriptors()[0].ascending);
   EXPECT_FALSE(table_->sort_descriptors()[1].ascending);
+}
+
+TEST_P(TableViewTest, ActiveCellBoundsFollowColumnSorting) {
+  table_->RequestFocus();
+  ASSERT_TRUE(table_->sort_descriptors().empty());
+
+  ui::ListSelectionModel new_selection;
+  new_selection.SetSelectedIndex(1);
+  helper_->SetSelectionModel(new_selection);
+
+  // Toggle the sort order of the first column. Shouldn't change the order.
+  table_->ToggleSortOrder(0);
+  ClickOnRow(0, 0);
+  EXPECT_EQ(helper_->GetCellBounds(0, 0), helper_->GetActiveCellBounds());
+  EXPECT_EQ(0, table_->ViewToModel(0));
+
+  ClickOnRow(1, 0);
+  EXPECT_EQ(helper_->GetCellBounds(1, 0), helper_->GetActiveCellBounds());
+  EXPECT_EQ(1, table_->ViewToModel(1));
+
+  ClickOnRow(2, 0);
+  EXPECT_EQ(helper_->GetCellBounds(2, 0), helper_->GetActiveCellBounds());
+  EXPECT_EQ(2, table_->ViewToModel(2));
+
+  // Toggle the sort order of the second column. The active row will stay in
+  // sync with the view index, meanwhile the model's change which shows that
+  // the list order has changed.
+  table_->ToggleSortOrder(1);
+  ClickOnRow(0, 0);
+  EXPECT_EQ(helper_->GetCellBounds(0, 0), helper_->GetActiveCellBounds());
+  EXPECT_EQ(3, table_->ViewToModel(0));
+
+  ClickOnRow(1, 0);
+  EXPECT_EQ(helper_->GetCellBounds(1, 0), helper_->GetActiveCellBounds());
+  EXPECT_EQ(0, table_->ViewToModel(1));
+
+  ClickOnRow(2, 0);
+  EXPECT_EQ(helper_->GetCellBounds(2, 0), helper_->GetActiveCellBounds());
+  EXPECT_EQ(1, table_->ViewToModel(2));
+
+  // Verifying invalid active indexes return an empty rect.
+  new_selection.Clear();
+  helper_->SetSelectionModel(new_selection);
+  EXPECT_EQ(gfx::Rect(), helper_->GetActiveCellBounds());
 }
 
 TEST_P(TableViewTest, Tooltip) {
