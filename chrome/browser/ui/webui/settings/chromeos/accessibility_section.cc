@@ -303,8 +303,8 @@ bool IsCursorColorAllowed() {
 }
 
 bool IsSwitchAccessAllowed() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableExperimentalAccessibilitySwitchAccess);
+  // TODO(anastasi): Remove this method.
+  return true;
 }
 
 bool IsSwitchAccessTextAllowed() {

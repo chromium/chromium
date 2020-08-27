@@ -12,8 +12,6 @@
 #include "ash/system/accessibility/switch_access_menu_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/command_line.h"
-#include "ui/accessibility/accessibility_switches.h"
 
 namespace ash {
 
@@ -29,8 +27,6 @@ class SwitchAccessMenuBubbleControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableExperimentalAccessibilitySwitchAccess);
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->SetSwitchAccessEnabled(true);
   }

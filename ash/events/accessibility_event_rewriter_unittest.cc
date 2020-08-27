@@ -11,9 +11,7 @@
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/command_line.h"
 #include "base/macros.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -446,8 +444,6 @@ class SwitchAccessAccessibilityEventRewriterTest : public AshTestBase {
         accessibility_event_rewriter_.get());
 
     controller_ = Shell::Get()->accessibility_controller();
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableExperimentalAccessibilitySwitchAccess);
     controller_->SetAccessibilityEventRewriter(
         accessibility_event_rewriter_.get());
     controller_->SetSwitchAccessEnabled(true);
