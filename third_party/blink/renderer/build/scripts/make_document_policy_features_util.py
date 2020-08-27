@@ -25,4 +25,4 @@ def parse_default_value(default_value,
         return "PolicyValue::CreateMinPolicyValue({})".format(
             policy_value_type)
 
-    return "PolicyValue({}, {})".format(default_value, policy_value_type)
+    return "PolicyValue::Create{}({})".format(value_type, default_value)

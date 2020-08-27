@@ -10,20 +10,23 @@ namespace blink {
 
 PolicyValue::PolicyValue() : type_(mojom::PolicyValueType::kNull) {}
 
-PolicyValue::PolicyValue(mojom::PolicyValueType type) : type_(type) {
-  DCHECK_EQ(type, mojom::PolicyValueType::kNull);
+// static
+PolicyValue PolicyValue::CreateBool(bool value) {
+  return PolicyValue(value);
+}
+
+// static
+PolicyValue PolicyValue::CreateDecDouble(double value) {
+  return PolicyValue(value, mojom::PolicyValueType::kDecDouble);
+}
+
+// static
+PolicyValue PolicyValue::CreateEnum(int32_t value) {
+  return PolicyValue(value, mojom::PolicyValueType::kEnum);
 }
 
 PolicyValue::PolicyValue(bool bool_value)
     : type_(mojom::PolicyValueType::kBool), bool_value_(bool_value) {}
-
-PolicyValue::PolicyValue(double double_value)
-    : type_(mojom::PolicyValueType::kDecDouble), double_value_(double_value) {}
-
-PolicyValue::PolicyValue(bool bool_value, mojom::PolicyValueType type)
-    : type_(type), bool_value_(bool_value) {
-  DCHECK_EQ(type, mojom::PolicyValueType::kBool);
-}
 
 PolicyValue::PolicyValue(double double_value, mojom::PolicyValueType type)
     : type_(type), double_value_(double_value) {

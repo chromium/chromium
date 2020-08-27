@@ -18,10 +18,9 @@ class MakeDocumentPolicyFeaturesTest(unittest.TestCase):
             "PolicyValue::CreateMinPolicyValue(mojom::PolicyValueType::kDecDouble)"
         )
         self.assertEqual(parse_default_value("false", "Bool"),
-                         "PolicyValue(false, mojom::PolicyValueType::kBool)")
-        self.assertEqual(
-            parse_default_value("0.5", "DecDouble"),
-            "PolicyValue(0.5, mojom::PolicyValueType::kDecDouble)")
+                         "PolicyValue::CreateBool(false)")
+        self.assertEqual(parse_default_value("0.5", "DecDouble"),
+                         "PolicyValue::CreateDecDouble(0.5)")
 
         with self.assertRaises(ValueError):
             parse_default_value("max", "NotImplemented")

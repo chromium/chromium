@@ -51,7 +51,7 @@ base::Optional<PolicyValue> ItemToPolicyValue(
   switch (type) {
     case mojom::blink::PolicyValueType::kBool: {
       if (item.is_boolean()) {
-        return PolicyValue(item.GetBoolean());
+        return PolicyValue::CreateBool(item.GetBoolean());
       } else {
         return base::nullopt;
       }
@@ -59,9 +59,10 @@ base::Optional<PolicyValue> ItemToPolicyValue(
     case mojom::blink::PolicyValueType::kDecDouble:
       switch (item.Type()) {
         case net::structured_headers::Item::ItemType::kIntegerType:
-          return PolicyValue(static_cast<double>(item.GetInteger()));
+          return PolicyValue::CreateDecDouble(
+              static_cast<double>(item.GetInteger()));
         case net::structured_headers::Item::ItemType::kDecimalType:
-          return PolicyValue(item.GetDecimal());
+          return PolicyValue::CreateDecDouble(item.GetDecimal());
         default:
           return base::nullopt;
       }

@@ -312,18 +312,18 @@ TEST_F(DocumentLoaderSimTest, DocumentPolicyNoEffectWhenFlagNotSet) {
   // Unoptimized-lossless-images should still be allowed in main document.
   EXPECT_TRUE(Window().IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue(2.0)));
+      PolicyValue::CreateDecDouble(2.0)));
   EXPECT_TRUE(Window().IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue(1.0)));
+      PolicyValue::CreateDecDouble(1.0)));
 
   // Unoptimized-lossless-images should still be allowed in child document.
   EXPECT_TRUE(child_window->IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue(2.0)));
+      PolicyValue::CreateDecDouble(2.0)));
   EXPECT_TRUE(child_window->IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue(1.0)));
+      PolicyValue::CreateDecDouble(1.0)));
 }
 
 // When runtime feature DocumentPolicyNegotiation is not enabled, specifying
@@ -374,19 +374,19 @@ TEST_F(DocumentLoaderSimTest, DocumentPolicyNegotiationNoEffectWhenFlagNotSet) {
   // Unoptimized-lossless-images should still be allowed in main document.
   EXPECT_TRUE(Window().IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue(2.0)));
+      PolicyValue::CreateDecDouble(2.0)));
   EXPECT_TRUE(Window().IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue(1.0)));
+      PolicyValue::CreateDecDouble(1.0)));
 
   // Unoptimized-lossless-images should NOT be allowed in child document,
   // with the threshold value specified in Document-Policy header.
   EXPECT_FALSE(child_window->IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue(2.0)));
+      PolicyValue::CreateDecDouble(2.0)));
   EXPECT_TRUE(child_window->IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kLosslessImagesMaxBpp,
-      PolicyValue(1.0)));
+      PolicyValue::CreateDecDouble(1.0)));
 }
 
 TEST_F(DocumentLoaderSimTest, ReportDocumentPolicyHeaderParsingError) {

@@ -209,7 +209,7 @@ bool SecurityContext::IsFeatureEnabled(
     mojom::blink::DocumentPolicyFeature feature) const {
   DCHECK(GetDocumentPolicyFeatureInfoMap().at(feature).default_value.Type() ==
          mojom::blink::PolicyValueType::kBool);
-  return IsFeatureEnabled(feature, PolicyValue(true)).enabled;
+  return IsFeatureEnabled(feature, PolicyValue::CreateBool(true)).enabled;
 }
 
 SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(

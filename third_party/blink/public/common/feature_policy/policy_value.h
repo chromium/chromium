@@ -22,13 +22,9 @@ class BLINK_COMMON_EXPORT PolicyValue {
  public:
   PolicyValue();
 
-  explicit PolicyValue(mojom::PolicyValueType);
-
-  explicit PolicyValue(bool bool_value);
-  explicit PolicyValue(double double_value);
-  PolicyValue(bool bool_value, mojom::PolicyValueType type);
-  PolicyValue(int32_t int_value, mojom::PolicyValueType type);
-  PolicyValue(double double_value, mojom::PolicyValueType type);
+  static PolicyValue CreateBool(bool);
+  static PolicyValue CreateDecDouble(double);
+  static PolicyValue CreateEnum(int32_t);
 
   // A 'max' PolicyValue is the most permissive value for the policy.
   static PolicyValue CreateMaxPolicyValue(mojom::PolicyValueType type);
@@ -63,6 +59,10 @@ class BLINK_COMMON_EXPORT PolicyValue {
   bool IsCompatibleWith(const PolicyValue& required) const;
 
  private:
+  explicit PolicyValue(bool bool_value);
+  PolicyValue(int32_t int_value, mojom::PolicyValueType type);
+  PolicyValue(double double_value, mojom::PolicyValueType type);
+
   mojom::PolicyValueType type_;
   bool bool_value_ = false;
   double double_value_ = 0.0;

@@ -476,8 +476,8 @@ bool ExecutionContext::IsFeatureEnabled(
     const String& source_file) const {
   DCHECK(GetDocumentPolicyFeatureInfoMap().at(feature).default_value.Type() ==
          mojom::blink::PolicyValueType::kBool);
-  return IsFeatureEnabled(feature, PolicyValue(true), report_option, message,
-                          source_file);
+  return IsFeatureEnabled(feature, PolicyValue::CreateBool(true), report_option,
+                          message, source_file);
 }
 
 bool ExecutionContext::IsFeatureEnabled(
