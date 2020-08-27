@@ -4799,6 +4799,14 @@ Unknown properties are collapsed to zero. -->
   <int value="1681" label="ADDRESS_HOME_FLOOR: accepted"/>
   <int value="1696" label="ADDRESS_HOME_OTHER_SUBUNIT: edited"/>
   <int value="1697" label="ADDRESS_HOME_OTHER_SUBUNIT: accepted"/>
+  <int value="1712" label="NAME_LAST_FIRST: edited"/>
+  <int value="1713" label="NAME_LAST_FIRST: accepted"/>
+  <int value="1728" label="NAME_LAST_CONJUNCTION: edited"/>
+  <int value="1729" label="NAME_LAST_CONJUNCTION: accepted"/>
+  <int value="1744" label="NAME_LAST_SECOND: edited"/>
+  <int value="1745" label="NAME_LAST_SECOND: accepted"/>
+  <int value="1760" label="NAME_HONORIFIC_PREFIX: edited"/>
+  <int value="1761" label="NAME_HONORIFIC_PREFIX: accepted"/>
 </enum>
 
 <enum name="AutofillExperimentId">
