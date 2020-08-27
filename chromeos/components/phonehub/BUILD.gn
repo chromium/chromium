@@ -18,6 +18,8 @@ static_library("phonehub") {
     "feature_status_provider_impl.h",
     "mutable_phone_model.cc",
     "mutable_phone_model.h",
+    "notification.cc",
+    "notification.h",
     "notification_access_manager.cc",
     "notification_access_manager.h",
     "notification_access_manager_impl.cc",

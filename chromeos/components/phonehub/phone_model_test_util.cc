@@ -12,12 +12,6 @@ namespace phonehub {
 
 const char kFakeMobileProviderName[] = "Fake Mobile Provider";
 
-const char kFakeBrowserTabUrl1[] = "https://www.example.com/tab1";
-const char kFakeBrowserTabName1[] = "Tab 1";
-
-const char kFakeBrowserTabUrl2[] = "https://www.example.com/tab2";
-const char kFakeBrowserTabName2[] = "Tab 2";
-
 const PhoneStatusModel::MobileConnectionMetadata&
 CreateFakeMobileConnectionMetadata() {
   static const base::NoDestructor<PhoneStatusModel::MobileConnectionMetadata>
@@ -36,6 +30,11 @@ const PhoneStatusModel& CreateFakePhoneStatusModel() {
       /*battery_percentage=*/100u};
   return *fake_phone_status_model;
 }
+
+const char kFakeBrowserTabUrl1[] = "https://www.example.com/tab1";
+const char kFakeBrowserTabName1[] = "Tab 1";
+const char kFakeBrowserTabUrl2[] = "https://www.example.com/tab2";
+const char kFakeBrowserTabName2[] = "Tab 2";
 
 const BrowserTabsModel::BrowserTabMetadata& CreateFakeBrowserTabMetadata() {
   static const base::NoDestructor<BrowserTabsModel::BrowserTabMetadata>
@@ -56,6 +55,32 @@ const BrowserTabsModel& CreateFakeBrowserTabsModel() {
       *second_browser_tab_metadata};
 
   return *fake_browser_tabs_model;
+}
+
+const char kFakeAppVisibleName[] = "Fake App";
+const char kFakeAppPackageName[] = "com.fakeapp";
+const int64_t kFakeAppId = 1234567890;
+const int64_t kFakeInlineReplyId = 1337;
+const char kFakeNotificationTitle[] = "Fake Title";
+const char kFakeNotificationText[] = "Fake Text";
+
+const Notification::AppMetadata& CreateFakeAppMetadata() {
+  static const base::NoDestructor<Notification::AppMetadata> fake_app_metadata{
+      base::UTF8ToUTF16(kFakeAppVisibleName), kFakeAppPackageName,
+      gfx::Image()};
+  return *fake_app_metadata;
+}
+
+const Notification& CreateFakeNotification() {
+  static const base::NoDestructor<Notification> fake_notification{
+      kFakeAppId,
+      CreateFakeAppMetadata(),
+      base::Time(),
+      Notification::Importance::kDefault,
+      kFakeInlineReplyId,
+      base::UTF8ToUTF16(kFakeNotificationTitle),
+      base::UTF8ToUTF16(kFakeNotificationText)};
+  return *fake_notification;
 }
 
 }  // namespace phonehub
