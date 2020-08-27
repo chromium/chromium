@@ -187,22 +187,6 @@ security_state::SecurityLevel GetLevelForPassiveMixedContent() {
              : security_state::NONE;
 }
 
-blink::SecurityStyle GetSecurityStyleForHttp() {
-  bool http_danger_warning_enabled = false;
-  if (base::FeatureList::IsEnabled(
-          security_state::features::kMarkHttpAsFeature)) {
-    std::string parameter = base::GetFieldTrialParamValueByFeature(
-        security_state::features::kMarkHttpAsFeature,
-        security_state::features::kMarkHttpAsFeatureParameterName);
-    if (parameter ==
-        security_state::features::kMarkHttpAsParameterDangerWarning) {
-      http_danger_warning_enabled = true;
-    }
-  }
-  return http_danger_warning_enabled ? blink::SecurityStyle::kInsecure
-                                     : blink::SecurityStyle::kNeutral;
-}
-
 // A delegate class that allows emulating selection of a file for an
 // INPUT TYPE=FILE form field.
 class FileChooserDelegate : public content::WebContentsDelegate {
@@ -1129,9 +1113,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, SecurityStyleForHttpPage) {
   ui_test_utils::NavigateToURL(browser(), http_url);
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
   EXPECT_EQ(0u, observer.latest_explanations().neutral_explanations.size());
-  // The below expectation is based on the feature flag set in the field trial
-  // testing config.
-  EXPECT_EQ(GetSecurityStyleForHttp(), observer.latest_security_style());
+  EXPECT_EQ(blink::SecurityStyle::kInsecure, observer.latest_security_style());
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
@@ -1158,9 +1140,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest,
   // Ensure that WebContentsObservers don't show an incorrect Form Not Secure
   // explanation. Regression test for https://crbug.com/691412.
   EXPECT_EQ(0u, observer.latest_explanations().neutral_explanations.size());
-  // The below expectation is based on the feature flag set in the field trial
-  // testing config.
-  EXPECT_EQ(GetSecurityStyleForHttp(), observer.latest_security_style());
+  EXPECT_EQ(blink::SecurityStyle::kInsecure, observer.latest_security_style());
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
@@ -1296,9 +1276,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFtpEnabled,
   // Ensure that WebContentsObservers don't show an incorrect Form Not Secure
   // explanation. Regression test for https://crbug.com/691412.
   EXPECT_EQ(0u, observer.latest_explanations().neutral_explanations.size());
-  // The below expectation is based on the feature flag set in the field trial
-  // testing config.
-  EXPECT_EQ(GetSecurityStyleForHttp(), observer.latest_security_style());
+  EXPECT_EQ(blink::SecurityStyle::kInsecure, observer.latest_security_style());
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
@@ -1523,22 +1501,10 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFormsDangerous,
   ASSERT_EQ(security_state::WARNING, helper->GetSecurityLevel());
 }
 
-class SecurityStateTabHelperTestWithHttpWarningsDisabled
-    : public SecurityStateTabHelperTest {
- public:
-  SecurityStateTabHelperTestWithHttpWarningsDisabled() {
-    feature_list_.InitAndDisableFeature(
-        security_state::features::kMarkHttpAsFeature);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that the security level of a HTTP page is downgraded from
 // WARNING to DANGEROUS after editing a form field in the relevant
 // configurations.
-IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithHttpWarningsDisabled,
+IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTestWithFormsDangerous,
                        SecurityLevelDowngradedAfterFileSelection) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();

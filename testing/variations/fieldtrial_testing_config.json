@@ -2988,30 +2988,6 @@
             ]
         }
     ],
-    "HTTPDangerWarning": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled",
-                    "params": {
-                        "treatment": "danger-warning"
-                    },
-                    "enable_features": [
-                        "MarkHttpAs"
-                    ]
-                }
-            ]
-        }
-    ],
     "HappinessTrackingSurveysForDesktopSettings": [
         {
             "platforms": [

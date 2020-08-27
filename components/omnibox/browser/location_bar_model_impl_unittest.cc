@@ -294,33 +294,8 @@ TEST_F(LocationBarModelImplTest, MAYBE_PreventElisionWorks) {
 }
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
-// Tests GetVectorIcon returns the correct security indicator icon when the
-// danger-warning experiment is disabled.
-TEST_F(LocationBarModelImplTest, GetVectorIcon_DefaultWarning) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      security_state::features::kMarkHttpAsFeature);
-
-  delegate()->SetSecurityLevel(security_state::SecurityLevel::WARNING);
-
-  gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
-      omnibox::kHttpIcon, gfx::kFaviconSize, gfx::kPlaceholderColor);
-
-  gfx::ImageSkia icon = gfx::CreateVectorIcon(
-      model()->GetVectorIcon(), gfx::kFaviconSize, gfx::kPlaceholderColor);
-
-  EXPECT_EQ(icon.bitmap(), expected_icon.bitmap());
-}
-
-// Tests GetVectorIcon returns the correct security indicator icon when the
-// danger-warning experiment is enabled.
-TEST_F(LocationBarModelImplTest, GetVectorIcon_DangerWarning) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      security_state::features::kMarkHttpAsFeature,
-      {{security_state::features::kMarkHttpAsFeatureParameterName,
-        security_state::features::kMarkHttpAsParameterDangerWarning}});
-
+// Tests GetVectorIcon returns the correct security indicator icon.
+TEST_F(LocationBarModelImplTest, GetVectorIcon) {
   delegate()->SetSecurityLevel(security_state::SecurityLevel::WARNING);
 
   gfx::ImageSkia expected_icon =

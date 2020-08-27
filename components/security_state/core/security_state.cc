@@ -24,24 +24,20 @@ namespace {
 // For nonsecure pages, returns a SecurityLevel based on the
 // provided information and the kMarkHttpAsFeature field trial.
 SecurityLevel GetSecurityLevelForNonSecureFieldTrial(
-    bool is_error_page,
     const InsecureInputEventData& input_events) {
   if (base::FeatureList::IsEnabled(features::kMarkHttpAsFeature)) {
     std::string parameter = base::GetFieldTrialParamValueByFeature(
         features::kMarkHttpAsFeature,
         features::kMarkHttpAsFeatureParameterName);
-
     if (parameter == features::kMarkHttpAsParameterDangerous) {
       return DANGEROUS;
     }
-    if (parameter == features::kMarkHttpAsParameterDangerWarning) {
-      return WARNING;
+    if (parameter ==
+        features::kMarkHttpAsParameterWarningAndDangerousOnFormEdits) {
+      return input_events.insecure_field_edited ? DANGEROUS : WARNING;
     }
   }
-
-  // Default to dangerous on editing form fields and otherwise
-  // warning.
-  return input_events.insecure_field_edited ? DANGEROUS : WARNING;
+  return WARNING;
 }
 
 std::string GetHistogramSuffixForSecurityLevel(
@@ -182,7 +178,6 @@ SecurityLevel GetSecurityLevel(
       }
 #endif  // !defined(OS_ANDROID)
       return GetSecurityLevelForNonSecureFieldTrial(
-          visible_security_state.is_error_page,
           visible_security_state.insecure_input_events);
     }
     return NONE;
@@ -333,10 +328,7 @@ bool IsSHA1InChain(const VisibleSecurityState& visible_security_state) {
 // TODO(crbug.com/1015626): Clean this up once the experiment is fully
 // launched.
 bool ShouldShowDangerTriangleForWarningLevel() {
-  return base::GetFieldTrialParamValueByFeature(
-             features::kMarkHttpAsFeature,
-             features::kMarkHttpAsFeatureParameterName) ==
-         security_state::features::kMarkHttpAsParameterDangerWarning;
+  return true;
 }
 
 }  // namespace security_state
