@@ -13,6 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,18 +21,24 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/download/public/common/mock_download_item.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "content/public/browser/download_item_utils.h"
+#include "content/public/test/mock_download_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -96,7 +103,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   HoldingSpaceKeyedServiceTest()
       : fake_user_manager_(new chromeos::FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
+        download_manager_(new testing::NiceMock<content::MockDownloadManager>) {
     scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
   }
   HoldingSpaceKeyedServiceTest(const HoldingSpaceKeyedServiceTest& other) =
@@ -230,9 +238,31 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     return result;
   }
 
+  std::unique_ptr<download::MockDownloadItem> CreateMockInProgressDownload(
+      base::FilePath full_file_path) {
+    std::unique_ptr<download::MockDownloadItem> item(
+        new testing::NiceMock<download::MockDownloadItem>());
+    ON_CALL(*item, GetId()).WillByDefault(testing::Return(1));
+    ON_CALL(*item, GetGuid())
+        .WillByDefault(testing::ReturnRefOfCopy(
+            std::string("14CA04AF-ECEC-4B13-8829-817477EFAB83")));
+    ON_CALL(*item, GetFullPath())
+        .WillByDefault(testing::ReturnRefOfCopy(full_file_path));
+    ON_CALL(*item, GetURL())
+        .WillByDefault(testing::ReturnRefOfCopy(GURL("foo/bar")));
+    ON_CALL(*item, GetMimeType()).WillByDefault(testing::Return(std::string()));
+    content::DownloadItemUtils::AttachInfo(item.get(), GetProfile(), nullptr);
+
+    return item;
+  }
+
+  content::MockDownloadManager* manager() { return download_manager_.get(); }
+
  private:
   chromeos::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
+
+  std::unique_ptr<content::MockDownloadManager> download_manager_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -444,6 +474,72 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
         << "\n\tActual: " << item->id()
         << "\n\tPersisted: " << persisted_item->id();
   }
+}
+
+TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
+  TestingProfile* profile = GetProfile();
+  // Create a test downloads mount point.
+  ScopedDownloadsMountPoint downloads_mount(profile);
+  ASSERT_TRUE(downloads_mount.IsValid());
+
+  const base::FilePath download_item_virtual_path("Download 1.png");
+  // Create a fake download file on the local file system - later parts of the
+  // test will try to resolve the file's file system URL, which fails if the
+  // file does not exist.
+  const base::FilePath download_item_full_path =
+      CreateFile(downloads_mount, download_item_virtual_path, "download 1");
+
+  content::MockDownloadManager* mock_download_manager = manager();
+  std::unique_ptr<download::MockDownloadItem> item(
+      CreateMockInProgressDownload(download_item_full_path));
+
+  HoldingSpaceKeyedService* const holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+  holding_space_service->SetDownloadManagerForTesting(mock_download_manager);
+
+  download::MockDownloadItem* mock_download_item = item.get();
+  EXPECT_CALL(*mock_download_manager, MockCreateDownloadItem(testing::_))
+      .WillRepeatedly(
+          testing::DoAll(testing::InvokeWithoutArgs([&holding_space_service,
+                                                     mock_download_manager,
+                                                     mock_download_item]() {
+                           holding_space_service->OnDownloadCreated(
+                               mock_download_manager, mock_download_item);
+                         }),
+                         testing::Return(item.get())));
+
+  std::vector<GURL> url_chain;
+  url_chain.push_back(item->GetURL());
+  mock_download_manager->CreateDownloadItem(
+      base::GenerateGUID(), item->GetId(), item->GetFullPath(),
+      item->GetFullPath(), url_chain, GURL(), GURL(), GURL(), GURL(),
+      url::Origin(), item->GetMimeType(), item->GetMimeType(),
+      base::Time::Now(), base::Time::Now(), "", "", 10, 10, "",
+      download::DownloadItem::IN_PROGRESS,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      download::DOWNLOAD_INTERRUPT_REASON_NONE, false, base::Time::Now(), false,
+      std::vector<download::DownloadItem::ReceivedSlice>());
+
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  EXPECT_CALL(*item, GetState())
+      .WillRepeatedly(testing::Return(download::DownloadItem::IN_PROGRESS));
+  item->NotifyObserversDownloadUpdated();
+
+  ASSERT_EQ(0u, model->items().size());
+
+  EXPECT_CALL(*item, GetState())
+      .WillRepeatedly(testing::Return(download::DownloadItem::COMPLETE));
+  item->NotifyObserversDownloadUpdated();
+
+  ASSERT_EQ(1u, model->items().size());
+
+  const HoldingSpaceItem* download_item = model->items()[0].get();
+  EXPECT_EQ(download_item_full_path, download_item->file_path());
+  EXPECT_EQ(download_item_virtual_path,
+            GetVirtualPathFromUrl(download_item->file_system_url(),
+                                  downloads_mount.name()));
 }
 
 }  // namespace ash

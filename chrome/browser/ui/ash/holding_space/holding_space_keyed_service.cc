@@ -9,6 +9,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,9 +41,26 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(
   holding_space_model_observer_.Add(&holding_space_model_);
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
       account_id, &holding_space_client_, &holding_space_model_);
+
+  // Observe the profile manager to get notified when the profile creation
+  // finishes to start handling user downloads. The keyed service is created
+  // with the profile, and at this stage the download manager may not be
+  // ready to be used.
+  if (g_browser_process->profile_manager()->IsValidProfile(
+          Profile::FromBrowserContext(browser_context_))) {
+    download_manager_ =
+        content::BrowserContext::GetDownloadManager(browser_context_);
+    download_manager_->AddObserver(this);
+  } else {
+    observed_profile_manager_.Add(g_browser_process->profile_manager());
+  }
 }
 
 HoldingSpaceKeyedService::~HoldingSpaceKeyedService() = default;
+
+void HoldingSpaceKeyedService::Shutdown() {
+  RemoveDownloadManagerObservers();
+}
 
 // static
 void HoldingSpaceKeyedService::RegisterProfilePrefs(
@@ -60,6 +78,18 @@ void HoldingSpaceKeyedService::AddScreenshot(
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kScreenshot, screenshot_file, file_system_url,
       image);
+  holding_space_model_.AddItem(std::move(item));
+}
+
+void HoldingSpaceKeyedService::AddDownload(
+    const base::FilePath& download_file) {
+  GURL file_system_url = ResolveFileSystemUrl(download_file);
+  if (file_system_url.is_empty())
+    return;
+
+  auto item = HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kDownload, download_file, file_system_url,
+      ResolveImage(download_file));
   holding_space_model_.AddItem(std::move(item));
 }
 
@@ -118,6 +148,68 @@ GURL HoldingSpaceKeyedService::ResolveFileSystemUrl(
 gfx::ImageSkia HoldingSpaceKeyedService::ResolveImage(
     const base::FilePath& file_path) const {
   return GetIconForPath(file_path);
+}
+
+void HoldingSpaceKeyedService::SetDownloadManagerForTesting(
+    content::DownloadManager* manager) {
+  RemoveDownloadManagerObservers();
+  download_manager_ = manager;
+  download_manager_->AddObserver(this);
+}
+
+void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
+  if (!profile->IsSameOrParent(Profile::FromBrowserContext(browser_context_)))
+    return;
+
+  observed_profile_manager_.RemoveAll();
+
+  // Download Manager may have been already set in tests.
+  if (download_manager_)
+    return;
+
+  download_manager_ =
+      content::BrowserContext::GetDownloadManager(browser_context_);
+  download_manager_->AddObserver(this);
+}
+
+void HoldingSpaceKeyedService::OnDownloadCreated(
+    content::DownloadManager* manager,
+    download::DownloadItem* item) {
+  download_items_observer_.Add(item);
+}
+
+void HoldingSpaceKeyedService::OnDownloadDropped(
+    content::DownloadManager* manager) {}
+
+void HoldingSpaceKeyedService::OnManagerInitialized() {}
+
+void HoldingSpaceKeyedService::ManagerGoingDown(
+    content::DownloadManager* manager) {
+  RemoveDownloadManagerObservers();
+  download_manager_ = nullptr;
+}
+
+void HoldingSpaceKeyedService::OnDownloadUpdated(download::DownloadItem* item) {
+  download::DownloadItem::DownloadState state = item->GetState();
+  if (state == download::DownloadItem::COMPLETE ||
+      state == download::DownloadItem::CANCELLED ||
+      state == download::DownloadItem::INTERRUPTED) {
+    // Stop observing now to ensure we only send one complete/fail notification.
+    download_items_observer_.Remove(item);
+
+    if (state == download::DownloadItem::COMPLETE) {
+      const base::FilePath download_path = item->GetFullPath();
+      AddDownload(download_path);
+    }
+  }
+}
+
+void HoldingSpaceKeyedService::RemoveDownloadManagerObservers() {
+  if (!download_manager_)
+    return;
+
+  download_manager_->RemoveObserver(this);
+  download_items_observer_.RemoveAll();
 }
 
 }  // namespace ash
