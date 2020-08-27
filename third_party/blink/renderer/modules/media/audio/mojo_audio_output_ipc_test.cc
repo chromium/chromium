@@ -22,7 +22,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 using testing::_;
@@ -224,8 +223,6 @@ class MockDelegate : public media::AudioOutputIPCDelegate {
 }  // namespace
 
 TEST(MojoAudioOutputIPC, AuthorizeWithoutFactory_CallsAuthorizedWithError) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   StrictMock<MockDelegate> delegate;
 
@@ -247,8 +244,6 @@ TEST(MojoAudioOutputIPC, AuthorizeWithoutFactory_CallsAuthorizedWithError) {
 
 TEST(MojoAudioOutputIPC,
      CreateWithoutAuthorizationWithoutFactory_CallsAuthorizedWithError) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   StrictMock<MockDelegate> delegate;
 
   std::unique_ptr<media::AudioOutputIPC> ipc =
@@ -265,8 +260,6 @@ TEST(MojoAudioOutputIPC,
 }
 
 TEST(MojoAudioOutputIPC, DeviceAuthorized_Propagates) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   TestRemoteFactory stream_factory;
   StrictMock<MockDelegate> delegate;
@@ -290,8 +283,6 @@ TEST(MojoAudioOutputIPC, DeviceAuthorized_Propagates) {
 }
 
 TEST(MojoAudioOutputIPC, OnDeviceCreated_Propagates) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   TestRemoteFactory stream_factory;
   StrictMock<MockStream> stream;
@@ -319,8 +310,6 @@ TEST(MojoAudioOutputIPC, OnDeviceCreated_Propagates) {
 
 TEST(MojoAudioOutputIPC,
      CreateWithoutAuthorization_RequestsAuthorizationFirst) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   TestRemoteFactory stream_factory;
   StrictMock<MockStream> stream;
   StrictMock<MockDelegate> delegate;
@@ -348,8 +337,6 @@ TEST(MojoAudioOutputIPC,
 }
 
 TEST(MojoAudioOutputIPC, IsReusable) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   TestRemoteFactory stream_factory;
   StrictMock<MockStream> stream;
@@ -381,8 +368,6 @@ TEST(MojoAudioOutputIPC, IsReusable) {
 }
 
 TEST(MojoAudioOutputIPC, IsReusableAfterError) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   TestRemoteFactory stream_factory;
   StrictMock<MockStream> stream;
@@ -436,8 +421,6 @@ TEST(MojoAudioOutputIPC, IsReusableAfterError) {
 }
 
 TEST(MojoAudioOutputIPC, DeviceNotAuthorized_Propagates) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   TestRemoteFactory stream_factory;
   StrictMock<MockDelegate> delegate;
@@ -469,8 +452,6 @@ TEST(MojoAudioOutputIPC,
   // The authorization IPC message might be aborted by the remote end
   // disconnecting. In this case, the MojoAudioOutputIPC object must still
   // send a notification to unblock the AudioOutputIPCDelegate.
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   TestRemoteFactory stream_factory;
   StrictMock<MockDelegate> delegate;
@@ -501,8 +482,6 @@ TEST(MojoAudioOutputIPC,
   // This test makes sure that the MojoAudioOutputIPC doesn't callback for
   // authorization when the factory disconnects if it already got a callback
   // for authorization.
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   TestRemoteFactory stream_factory;
   stream_factory.PrepareProviderForAuthorization(
@@ -529,8 +508,6 @@ TEST(MojoAudioOutputIPC,
 }
 
 TEST(MojoAudioOutputIPC, AuthorizeNoClose_DCHECKs) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   TestRemoteFactory stream_factory;
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   StrictMock<MockDelegate> delegate;
@@ -551,8 +528,6 @@ TEST(MojoAudioOutputIPC, AuthorizeNoClose_DCHECKs) {
 }
 
 TEST(MojoAudioOutputIPC, CreateNoClose_DCHECKs) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   TestRemoteFactory stream_factory;
   StrictMock<MockDelegate> delegate;
   StrictMock<MockStream> stream;
@@ -575,8 +550,6 @@ TEST(MojoAudioOutputIPC, CreateNoClose_DCHECKs) {
 }
 
 TEST(MojoAudioOutputIPC, Play_Plays) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   TestRemoteFactory stream_factory;
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   StrictMock<MockStream> stream;
@@ -605,8 +578,6 @@ TEST(MojoAudioOutputIPC, Play_Plays) {
 }
 
 TEST(MojoAudioOutputIPC, Pause_Pauses) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   TestRemoteFactory stream_factory;
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   StrictMock<MockStream> stream;
@@ -635,8 +606,6 @@ TEST(MojoAudioOutputIPC, Pause_Pauses) {
 }
 
 TEST(MojoAudioOutputIPC, SetVolume_SetsVolume) {
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
   TestRemoteFactory stream_factory;
   const base::UnguessableToken session_id = base::UnguessableToken::Create();
   StrictMock<MockStream> stream;
