@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/base_paths.h"
+#include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -21,29 +23,51 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+// Resonse body for requests sent to web::test::HttpServer.
+const char kHelloWorld[] = "Hello World";
+
+}  // namespave
+
+using web::test::HttpServer;
+
 // A test fixture for verifying the behavior of web::test::HttpServer.
-typedef web::WebIntTest HttpServerTest;
+class HttpServerTest : public web::WebIntTest {
+ protected:
+  void SetUp() override {
+    web::WebIntTest::SetUp();
+
+    std::unique_ptr<web::StringResponseProvider> provider(
+        new web::StringResponseProvider(kHelloWorld));
+
+    HttpServer& server = HttpServer::GetSharedInstance();
+    base::FilePath test_data_dir;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    server.StartOrDie(test_data_dir.Append("."));
+    server.AddResponseProvider(std::move(provider));
+  }
+
+  ~HttpServerTest() override {
+    HttpServer& server = HttpServer::GetSharedInstance();
+    if (server.IsRunning()) {
+      server.Stop();
+    }
+  }
+};
 
 // Tests that a web::test::HttpServer can be started and can send and receive
 // requests and response from |TestResponseProvider|.
 TEST_F(HttpServerTest, StartAndInterfaceWithResponseProvider) {
-  const std::string kHelloWorld = "Hello World";
-  std::unique_ptr<web::StringResponseProvider> provider(
-      new web::StringResponseProvider(kHelloWorld));
-
-  web::test::HttpServer& server = web::test::HttpServer::GetSharedInstance();
-  ASSERT_TRUE(server.IsRunning());
-  server.AddResponseProvider(std::move(provider));
-
   __block NSString* page_result;
   id completion_handler =
       ^(NSData* data, NSURLResponse* response, NSError* error) {
         page_result =
             [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
       };
-  NSURL* url = net::NSURLWithGURL(server.MakeUrl("http://whatever"));
+  GURL url = HttpServer::GetSharedInstance().MakeUrl("http://whatever");
   NSURLSessionDataTask* data_task =
-      [[NSURLSession sharedSession] dataTaskWithURL:url
+      [[NSURLSession sharedSession] dataTaskWithURL:net::NSURLWithGURL(url)
                                   completionHandler:completion_handler];
   [data_task resume];
   base::test::ios::WaitUntilCondition(^bool() {

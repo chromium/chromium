@@ -4,14 +4,11 @@
 
 #import "ios/web/test/web_int_test.h"
 
-#include "base/base_paths.h"
 #import "base/ios/block_types.h"
 #include "base/memory/ptr_util.h"
-#include "base/path_service.h"
 #include "base/scoped_observer.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/web_view_creation_util.h"
-#import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/web_state_observer.h"
 
@@ -59,14 +56,6 @@ WebIntTest::~WebIntTest() {}
 void WebIntTest::SetUp() {
   WebTest::SetUp();
 
-  // Start the http server.
-  web::test::HttpServer& server = web::test::HttpServer::GetSharedInstance();
-  ASSERT_FALSE(server.IsRunning());
-
-  base::FilePath test_data_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
-  server.StartOrDie(test_data_dir.Append("."));
-
   // Remove any previously existing WKWebView data.
   RemoveWKWebViewCreatedData([WKWebsiteDataStore defaultDataStore],
                              [WKWebsiteDataStore allWebsiteDataTypes]);
@@ -86,10 +75,6 @@ void WebIntTest::SetUp() {
 void WebIntTest::TearDown() {
   RemoveWKWebViewCreatedData([WKWebsiteDataStore defaultDataStore],
                              [WKWebsiteDataStore allWebsiteDataTypes]);
-
-  web::test::HttpServer& server = web::test::HttpServer::GetSharedInstance();
-  server.Stop();
-  EXPECT_FALSE(server.IsRunning());
 
   WebTest::TearDown();
 }

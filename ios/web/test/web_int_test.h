@@ -19,7 +19,7 @@ class GURL;
 
 namespace web {
 
-// A test fixture for integration tests that need to bring up the HttpServer.
+// A test fixture for integration tests that need a WebState which loads pages.
 class WebIntTest : public WebTest {
  protected:
   WebIntTest();

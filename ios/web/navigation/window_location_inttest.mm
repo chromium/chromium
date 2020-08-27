@@ -8,12 +8,11 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/test/web_int_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
@@ -35,8 +34,7 @@ namespace {
 //   and is removed once a button is tapped.  Verifying that the onload text is
 //   visible after tapping a button is equivalent to checking that a load has
 //   occurred as the result of the button tap.
-const char kWindowLocationTestURL[] =
-    "http://ios/testing/data/http_server_files/window_location.html";
+const char kWindowLocationTestURL[] = "/window_location.html";
 
 // Button IDs used in the window.location test page.
 const char kWindowLocationAssignID[] = "location-assign";
@@ -51,8 +49,7 @@ NSString* const kOnLoadCheckScript = @"isOnLoadTextVisible()";
 NSString* const kNoOpCheckScript = @"isNoOpTextVisible()";
 
 // URL of a sample file-based page.
-const char kSampleFileBasedURL[] =
-    "http://ios/testing/data/http_server_files/chromium_logo_page.html";
+const char kSampleFileBasedURL[] = "/chromium_logo_page.html";
 
 }  // namespace
 
@@ -62,9 +59,13 @@ class WindowLocationTest : public web::WebIntTest {
   void SetUp() override {
     web::WebIntTest::SetUp();
 
+    test_server_ = std::make_unique<net::EmbeddedTestServer>();
+    test_server_->ServeFilesFromSourceDirectory(
+        base::FilePath("ios/testing/data/http_server_files/"));
+    ASSERT_TRUE(test_server_->Start());
+
     // Load the window.location test page.
-    window_location_url_ =
-        web::test::HttpServer::MakeUrl(kWindowLocationTestURL);
+    window_location_url_ = test_server_->GetURL(kWindowLocationTestURL);
     ASSERT_TRUE(LoadUrl(window_location_url()));
   }
 
@@ -102,6 +103,8 @@ class WindowLocationTest : public web::WebIntTest {
     return [text_visible boolValue];
   }
 
+  std::unique_ptr<net::EmbeddedTestServer> test_server_;
+
  private:
   GURL window_location_url_;
 };
@@ -127,7 +130,7 @@ TEST_F(WindowLocationTest, MAYBE_Assign) {
 
   // Set the window.location test URL and tap the window.location.assign()
   // button.
-  GURL sample_url = web::test::HttpServer::MakeUrl(kSampleFileBasedURL);
+  GURL sample_url = test_server_->GetURL(kSampleFileBasedURL);
   SetWindowLocationUrl(sample_url);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, ^{
     ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(),
@@ -171,7 +174,7 @@ TEST_F(WindowLocationTest, DISABLED_Replace) {
 
   // Set the window.location test URL and tap the window.location.replace()
   // button.
-  GURL sample_url = web::test::HttpServer::MakeUrl(kSampleFileBasedURL);
+  GURL sample_url = test_server_->GetURL(kSampleFileBasedURL);
   SetWindowLocationUrl(sample_url);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, ^{
     ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(),
@@ -248,7 +251,7 @@ TEST_F(WindowLocationTest, MAYBE_WindowLocationSetToDOMString) {
 
   // Set the window.location test URL and tap the window.location.assign()
   // button.
-  GURL sample_url = web::test::HttpServer::MakeUrl(kSampleFileBasedURL);
+  GURL sample_url = test_server_->GetURL(kSampleFileBasedURL);
   SetWindowLocationUrl(sample_url);
   ASSERT_TRUE(ExecuteBlockAndWaitForLoad(sample_url, ^{
     ASSERT_TRUE(web::test::TapWebViewElementWithId(

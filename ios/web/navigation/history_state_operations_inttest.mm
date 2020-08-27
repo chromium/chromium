@@ -11,12 +11,11 @@
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/test/web_int_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "url/url_canon.h"
@@ -41,8 +40,7 @@ namespace {
 //   and is removed once a button is tapped.  Verifying that the onload text is
 //   visible after tapping a button is equivalent to checking that a load has
 //   occurred as the result of the button tap.
-const char kHistoryStateOperationsTestUrl[] =
-    "http://ios/testing/data/http_server_files/state_operations.html";
+const char kHistoryStateOperationsTestUrl[] = "/state_operations.html";
 
 // Button IDs used in the window.location test page.
 const char kPushStateId[] = "push-state";
@@ -67,8 +65,13 @@ class HistoryStateOperationsTest : public web::WebIntTest {
     web::WebIntTest::SetUp();
 
     // Load the history state test page.
+    test_server_ = std::make_unique<net::EmbeddedTestServer>();
+    test_server_->ServeFilesFromSourceDirectory(
+        base::FilePath("ios/testing/data/http_server_files/"));
+    ASSERT_TRUE(test_server_->Start());
+
     state_operations_url_ =
-        web::test::HttpServer::MakeUrl(kHistoryStateOperationsTestUrl);
+        test_server_->GetURL(kHistoryStateOperationsTestUrl);
     ASSERT_TRUE(LoadUrl(state_operations_url()));
   }
 
@@ -122,6 +125,8 @@ class HistoryStateOperationsTest : public web::WebIntTest {
         });
     EXPECT_TRUE(completed) << "NoOp text failed to be visible.";
   }
+
+  std::unique_ptr<net::EmbeddedTestServer> test_server_;
 
  private:
   GURL state_operations_url_;
@@ -198,8 +203,7 @@ TEST_F(HistoryStateOperationsTest, NoOpPushDifferentOrigin) {
   // occurred as the result of the pushState() call.
   std::string empty_state;
   std::string empty_title;
-  std::string new_port_string = base::NumberToString(
-      web::test::HttpServer::GetSharedInstance().GetPort() + 1);
+  std::string new_port_string = base::NumberToString(test_server_->port() + 1);
   url::Replacements<char> port_replacement;
   port_replacement.SetPort(new_port_string.c_str(),
                            url::Component(0, new_port_string.length()));
@@ -220,8 +224,7 @@ TEST_F(HistoryStateOperationsTest, NoOpReplaceDifferentOrigin) {
   // occurred as the result of the pushState() call.
   std::string empty_state;
   std::string empty_title;
-  std::string new_port_string = base::NumberToString(
-      web::test::HttpServer::GetSharedInstance().GetPort() + 1);
+  std::string new_port_string = base::NumberToString(test_server_->port() + 1);
   url::Replacements<char> port_replacement;
   port_replacement.SetPort(new_port_string.c_str(),
                            url::Component(0, new_port_string.length()));
@@ -451,12 +454,9 @@ TEST_F(HistoryStateOperationsTest, ReplaceStateNoHashChangeEvent) {
 
 // Regression test for crbug.com/788464.
 TEST_F(HistoryStateOperationsTest, ReplaceStateThenReload) {
-  GURL url = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/"
-      "onload_replacestate_reload.html");
+  GURL url = test_server_->GetURL("/onload_replacestate_reload.html");
   ASSERT_TRUE(LoadUrl(url));
-  GURL new_url = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  GURL new_url = test_server_->GetURL("/pony.html");
   BOOL completed = base::test::ios::WaitUntilConditionOrTimeout(
       kWaitForStateUpdateTimeout, ^{
         return GetLastCommittedItem()->GetURL() == new_url;
