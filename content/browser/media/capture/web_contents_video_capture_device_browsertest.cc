@@ -409,7 +409,7 @@ INSTANTIATE_TEST_SUITE_P(
 #define MAYBE_CapturesContentChanges CapturesContentChanges
 #endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
-                       CapturesContentChanges) {
+                       MAYBE_CapturesContentChanges) {
   SCOPED_TRACE(testing::Message()
                << "Test parameters: "
                << (IsSoftwareCompositingTest() ? "Software Compositing"
