@@ -44,6 +44,11 @@ class ASH_EXPORT ClipboardHistoryController {
   // Returns the history which tracks what is being copied to the clipboard.
   const ClipboardHistory* history() const { return clipboard_history_.get(); }
 
+  // Do not use it. Will be removed soon.
+  const std::vector<ClipboardHistoryItem>& clipboard_items() const {
+    return clipboard_items_;
+  }
+
   // Returns the resource manager which gets labels and images for items copied
   // to the clipboard.
   const ClipboardHistoryResourceManager* resource_manager() const {

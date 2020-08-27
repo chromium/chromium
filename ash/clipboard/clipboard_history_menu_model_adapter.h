@@ -54,6 +54,11 @@ class ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
  private:
+  // views::MenuModelAdapter:
+  views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
+                                      ui::MenuModel* model,
+                                      int index) override;
+
   // The model which holds the contents of the menu.
   std::unique_ptr<ui::SimpleMenuModel> const model_;
   // The root MenuItemView which contains all child MenuItemViews. Owned by

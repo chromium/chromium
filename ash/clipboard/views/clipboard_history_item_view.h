@@ -5,7 +5,7 @@
 #ifndef ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_ITEM_VIEW_H_
 #define ASH_CLIPBOARD_VIEWS_CLIPBOARD_HISTORY_ITEM_VIEW_H_
 
-#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_targeter_delegate.h"
 
 namespace views {
@@ -31,18 +31,51 @@ class ClipboardHistoryItemView : public views::View,
   // Initializes the menu item.
   void Init();
 
+  // Called when the selection state will change. `target_is_selected` indicates
+  // the target selection state.
+  void SelectionWillChange(bool target_is_selected);
+
  protected:
+  // The button to delete the menu item and its corresponding clipboard data.
+  class DeleteButton : public views::ImageButton {
+   public:
+    explicit DeleteButton(views::ButtonListener* listener);
+    DeleteButton(const DeleteButton& rhs) = delete;
+    DeleteButton& operator=(const DeleteButton& rhs) = delete;
+    ~DeleteButton() override;
+
+   private:
+    // views::ImageButton:
+    const char* GetClassName() const override;
+  };
+
   // Used by subclasses to draw contents, such as text or bitmaps.
   class ContentsView : public views::View, public views::ViewTargeterDelegate {
    public:
-    ContentsView();
+    explicit ContentsView(ClipboardHistoryItemView* container);
     ContentsView(const ContentsView& rhs) = delete;
     ContentsView& operator=(const ContentsView& rhs) = delete;
     ~ContentsView() override;
 
+    // Install DeleteButton on the contents view.
+    void InstallDeleteButton();
+
+    // Called when the parent's selection state will change.
+    void SelectionWillChange(bool target_is_selected);
+
+   protected:
+    virtual DeleteButton* CreateDeleteButton() = 0;
+
+    // The parent of ContentsView.
+    ClipboardHistoryItemView* const container_;
+
+   private:
     // views::ViewTargeterDelegate:
     bool DoesIntersectRect(const views::View* target,
                            const gfx::Rect& rect) const override;
+
+    // Owned by the view hierarchy.
+    DeleteButton* delete_button_ = nullptr;
   };
 
   explicit ClipboardHistoryItemView(views::MenuItemView* container);
@@ -58,6 +91,8 @@ class ClipboardHistoryItemView : public views::View,
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   views::MenuItemView* const container_;
+
+  ContentsView* contents_view_ = nullptr;
 };
 
 }  // namespace ash

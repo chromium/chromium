@@ -362,8 +362,9 @@ class VIEWS_EXPORT MenuController
   ~MenuController() override;
 
   // Invokes AcceleratorPressed() on the hot tracked view if there is one.
-  // Returns true if AcceleratorPressed() was invoked.
-  bool SendAcceleratorToHotTrackedView();
+  // Returns true if AcceleratorPressed() was invoked. |event_flags| is the
+  // flags of the received key event.
+  bool SendAcceleratorToHotTrackedView(int event_flags);
 
   void UpdateInitialLocation(const gfx::Rect& bounds,
                              MenuAnchorPosition position,

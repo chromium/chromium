@@ -1542,7 +1542,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
 // On Mac, treat space the same as return.
 #if !defined(OS_APPLE)
     case ui::VKEY_SPACE:
-      SendAcceleratorToHotTrackedView();
+      SendAcceleratorToHotTrackedView(event.flags());
       break;
 #endif
 
@@ -1574,7 +1574,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
             OpenSubmenuChangeSelectionIfCan();
         } else {
           handled_key_code = true;
-          if (!SendAcceleratorToHotTrackedView() &&
+          if (!SendAcceleratorToHotTrackedView(event.flags()) &&
               pending_state_.item->GetEnabled()) {
             Accept(pending_state_.item, event.flags());
           }
@@ -1654,13 +1654,13 @@ MenuController::~MenuController() {
   CHECK(!IsInObserverList());
 }
 
-bool MenuController::SendAcceleratorToHotTrackedView() {
+bool MenuController::SendAcceleratorToHotTrackedView(int event_flags) {
   Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
   if (!hot_view)
     return false;
 
   base::WeakPtr<MenuController> this_ref = AsWeakPtr();
-  ui::Accelerator accelerator(ui::VKEY_RETURN, ui::EF_NONE);
+  ui::Accelerator accelerator(ui::VKEY_RETURN, event_flags);
   hot_view->AcceleratorPressed(accelerator);
   // An accelerator may have canceled the menu after activation.
   if (this_ref) {

@@ -4,6 +4,9 @@
 
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
+#include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ash/shell.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -55,6 +58,28 @@ gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()
     const {
   DCHECK(root_view_);
   return root_view_->GetSubmenu()->GetBoundsInScreen();
+}
+
+views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
+    views::MenuItemView* menu,
+    ui::MenuModel* model,
+    int index) {
+  const int item_index = model->GetCommandIdAt(index);
+  views::MenuItemView* container = menu->AppendMenuItem(item_index);
+
+  // Margins are managed by `ClipboardHistoryItemView`.
+  container->SetMargins(/*top_margin=*/0, /*bottom_margin=*/0);
+
+  const auto& items =
+      Shell::Get()->clipboard_history_controller()->clipboard_items();
+
+  std::unique_ptr<ClipboardHistoryItemView> item_view =
+      ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
+          items[item_index], container);
+  item_view->Init();
+  container->AddChildView(std::move(item_view));
+
+  return container;
 }
 
 }  // namespace ash

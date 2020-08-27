@@ -7,8 +7,6 @@
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 
-class SkBitmap;
-
 namespace views {
 class ImageView;
 }  // namespace views
@@ -27,6 +25,8 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
   ~ClipboardHistoryBitmapItemView() override;
 
  private:
+  class BitmapContentsView;
+
   // ClipboardHistoryItemView:
   const char* GetClassName() const override;
   std::unique_ptr<ContentsView> CreateContentsView() override;
@@ -35,8 +35,8 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
   // Calculates the target size of the image to show.
   gfx::Size CalculateTargetImageSize() const;
 
-  // Bitmap stored in the clipboard data.
-  const SkBitmap* const original_bitmap_;
+  // The image from the bitmap which is stored in the clipboard data.
+  const gfx::ImageSkia original_image_;
 
   // Owned by view hierarchy.
   views::ImageView* image_view_ = nullptr;

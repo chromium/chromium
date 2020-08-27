@@ -139,10 +139,6 @@ void ClipboardHistoryController::ExecuteSelectedMenuItem(int event_flags) {
   DCHECK(IsMenuShowing());
   auto command = context_menu_->GetSelectedMenuItemCommand();
 
-  // Force close the context menu. Failure to do so before dispatching our
-  // synthetic key event will result in the context menu consuming the event.
-  context_menu_->Cancel();
-
   // If no menu item is currently selected, we'll fallback to the first item.
   menu_delegate_->ExecuteCommand(command.value_or(0), event_flags);
 }
@@ -157,20 +153,8 @@ void ClipboardHistoryController::ShowMenu() {
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model =
       std::make_unique<ui::SimpleMenuModel>(menu_delegate_.get());
-  menu_model->AddTitle(
-      ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-          IDS_CLIPBOARD_MENU_CLIPBOARD));
-  int index = 0;
-  for (const auto& item : clipboard_items_) {
-    menu_model->AddItemWithIcon(index++, resource_manager_->GetLabel(item),
-                                resource_manager_->GetImageModel(item));
-  }
-  menu_model->AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
-  menu_model->AddItemWithIcon(
-      index++,
-      ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-          IDS_CLIPBOARD_MENU_DELETE_ALL),
-      ui::ImageModel::FromVectorIcon(ash::kDeleteIcon));
+  for (size_t i = 0; i < clipboard_items_.size(); ++i)
+    menu_model->AddItem(i, base::string16());
 
   context_menu_ =
       std::make_unique<ClipboardHistoryMenuModelAdapter>(std::move(menu_model));
@@ -179,14 +163,13 @@ void ClipboardHistoryController::ShowMenu() {
 
 void ClipboardHistoryController::MenuOptionSelected(int index,
                                                     int event_flags) {
+  // Force close the context menu. Failure to do so before dispatching our
+  // synthetic key event will result in the context menu consuming the event.
+  DCHECK(context_menu_);
+  context_menu_->Cancel();
+
   auto selected_item = clipboard_items_.begin();
   std::advance(selected_item, index);
-
-  if (selected_item == clipboard_items_.end()) {
-    // The last option in the menu is used to delete history.
-    clipboard_history_->Clear();
-    return;
-  }
 
   auto* clipboard = GetClipboard();
   std::unique_ptr<ui::ClipboardData> original_data;

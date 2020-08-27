@@ -25,6 +25,8 @@ class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
   ~ClipboardHistoryTextItemView() override;
 
  private:
+  class TextContentsView;
+
   // ClipboardHistoryItemView:
   const char* GetClassName() const override;
   std::unique_ptr<ContentsView> CreateContentsView() override;
