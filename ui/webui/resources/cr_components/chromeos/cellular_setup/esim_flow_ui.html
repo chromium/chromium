@@ -1,5 +1,6 @@
 <link rel="import" href="../../../html/polymer.html">
 <link rel="import" href="../../../html/i18n_behavior.html">
+<link rel="import" href="../../../cr_elements/cr_input/cr_input.html">
 <link rel="import" href="subflow_behavior.html">
 <link rel="import" href="cellular_types.html">
 
@@ -7,13 +8,26 @@
   <template>
     <style include="iron-flex">
       :host {
+        align-content: space-between;
         display: flex;
         flex: 1 1 auto;
         flex-direction: column;
       }
+
+      #esim-qrcode-detection {
+        /* TODO(crbug.com/1093185): Remove When QR code detection is added */
+        background-color: darkgray;
+        height: 200px;
+        margin: 10px 0;
+      }
     </style>
-    <!-- TODO(crbug.com/1093185): Add eSIM UI-->
-    <p>TODO(eSIM flow)</p>
+    [[i18n('scanQRCode')]]
+    <!-- TODO(crbug.com/1093185): Add QR code detection-->
+    <div id="esim-qrcode-detection"></div>
+    <cr-input id="activation-code"
+        label="[[i18n('activationCode')]]"
+        value="{{activationCode_}}">
+    </cr-input>
   </template>
   <script src="esim_flow_ui.js"></script>
 </dom-module>

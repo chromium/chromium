@@ -19,7 +19,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
   });
 
   test('Base test', function() {
-    const p = eSimPage.$$('p');
-    assertTrue(!!p);
+    const crInput = eSimPage.$$('cr-input');
+    assertTrue(!!crInput);
   });
 });

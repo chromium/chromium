@@ -10,8 +10,17 @@ Polymer({
   is: 'esim-flow-ui',
 
   behaviors: [
+    I18nBehavior,
     SubflowBehavior,
   ],
+
+  properties: {
+    /**
+     * @type {string}
+     * @private
+     */
+    activationCode_: String,
+  },
 
   initSubflow() {
     this.buttonState = {
