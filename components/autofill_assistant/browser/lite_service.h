@@ -35,6 +35,8 @@ class LiteService : public Service {
   LiteService(const LiteService&) = delete;
   LiteService& operator=(const LiteService&) = delete;
 
+  bool IsLiteService() const override;
+
   // |LiteService| will return the hard-coded response without communicating
   // with the backend.
   void GetScriptsForUrl(const GURL& url,

@@ -41,6 +41,8 @@ class ServiceImpl : public Service {
   static std::unique_ptr<ServiceImpl> Create(content::BrowserContext* context,
                                              Client* client);
 
+  bool IsLiteService() const override;
+
   // |context| and |access_token_fetcher| must remain valid for the lifetime of
   // the service instance.
   ServiceImpl(content::BrowserContext* context,

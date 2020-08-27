@@ -148,6 +148,10 @@ void ServiceImpl::GetScriptsForUrl(const GURL& url,
       std::move(callback)));
 }
 
+bool ServiceImpl::IsLiteService() const {
+  return false;
+}
+
 void ServiceImpl::GetActions(const std::string& script_path,
                              const GURL& url,
                              const TriggerContext& trigger_context,

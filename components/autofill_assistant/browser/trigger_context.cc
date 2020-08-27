@@ -16,10 +16,6 @@ const char kOverlayColorParameterName[] = "OVERLAY_COLORS";
 // TODO(b/151401974): Eliminate duplicate parameter definitions.
 const char kPasswordChangeUsernameParameterName[] = "PASSWORD_CHANGE_USERNAME";
 
-// Parameter that contains the path of the lite script currently being run, if
-// any.
-const char kLiteScriptPathParamaterName[] = "TRIGGER_SCRIPT_USED";
-
 // static
 std::unique_ptr<TriggerContext> TriggerContext::CreateEmpty() {
   return std::make_unique<TriggerContextImpl>();
@@ -36,10 +32,6 @@ std::unique_ptr<TriggerContext> TriggerContext::Create(
 std::unique_ptr<TriggerContext> TriggerContext::Merge(
     std::vector<const TriggerContext*> contexts) {
   return std::make_unique<MergedTriggerContext>(contexts);
-}
-
-bool TriggerContext::is_lite_script() const {
-  return GetParameter(kLiteScriptPathParamaterName).has_value();
 }
 
 TriggerContext::TriggerContext() {}

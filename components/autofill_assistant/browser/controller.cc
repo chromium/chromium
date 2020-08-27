@@ -1933,14 +1933,14 @@ void Controller::WriteUserData(
 }
 
 bool Controller::StateNeedsUI(AutofillAssistantState state) {
-  if (!trigger_context_ || !trigger_context_->is_lite_script()) {
-    return StateNeedsUiInRegularScript(state, browse_mode_invisible_);
+  if (IsRunningLiteScript()) {
+    return StateNeedsUiInLiteScript(state);
   }
-  return StateNeedsUiInLiteScript(state);
+  return StateNeedsUiInRegularScript(state, browse_mode_invisible_);
 }
 
 bool Controller::IsRunningLiteScript() const {
-  return trigger_context_ ? trigger_context_->is_lite_script() : false;
+  return service_ ? service_->IsLiteService() : false;
 }
 
 ElementArea* Controller::touchable_element_area() {
