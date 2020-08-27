@@ -14,6 +14,8 @@
 #elif defined(OS_WIN)
 #include "base/util/memory_pressure/system_memory_pressure_evaluator_win.h"
 #include "base/win/windows_version.h"
+#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#include "base/util/memory_pressure/system_memory_pressure_evaluator_linux.h"
 #endif
 
 namespace util {
@@ -43,6 +45,9 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
     evaluator->CreateOSSignalPressureEvaluator(monitor->CreateVoter());
   }
   return evaluator;
+#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  return std::make_unique<util::linux::SystemMemoryPressureEvaluator>(
+      monitor->CreateVoter());
 #endif
   return nullptr;
 }
