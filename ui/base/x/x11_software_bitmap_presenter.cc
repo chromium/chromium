@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/task/current_thread.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -218,6 +217,9 @@ void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
         .offset = 0,
     });
     needs_swap_ = true;
+    // Flush now to ensure the X server gets the request as early as
+    // possible to reduce frame-to-frame latency.
+    connection_->Flush();
     return;
   }
   if (surface_)
@@ -229,6 +231,10 @@ void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
   if (composite_ &&
       CompositeBitmap(connection_, widget_, rect.x(), rect.y(), rect.width(),
                       rect.height(), depth_, gc_, skia_pixmap.addr())) {
+    // Flush now to ensure the X server gets the request as early as
+    // possible to reduce frame-to-frame latency.
+
+    connection_->Flush();
     return;
   }
 
@@ -236,8 +242,9 @@ void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
   DrawPixmap(connection, visual_, widget_, gc_, skia_pixmap, rect.x(), rect.y(),
              rect.x(), rect.y(), rect.width(), rect.height());
 
-  // We must be running on a UI thread so that the connection will be flushed.
-  DCHECK(base::CurrentUIThread::IsSet());
+  // Flush now to ensure the X server gets the request as early as
+  // possible to reduce frame-to-frame latency.
+  connection_->Flush();
 }
 
 void X11SoftwareBitmapPresenter::OnSwapBuffers(
