@@ -975,6 +975,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/xr/xr_anchor.idl",
           "//third_party/blink/renderer/modules/xr/xr_anchor_set.idl",
           "//third_party/blink/renderer/modules/xr/xr_bounded_reference_space.idl",
+          "//third_party/blink/renderer/modules/xr/xr_depth_information.idl",
           "//third_party/blink/renderer/modules/xr/xr_dom_overlay_init.idl",
           "//third_party/blink/renderer/modules/xr/xr_dom_overlay_state.idl",
           "//third_party/blink/renderer/modules/xr/xr_frame.idl",

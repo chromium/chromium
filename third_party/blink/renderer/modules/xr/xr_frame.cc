@@ -128,6 +128,10 @@ XRLightEstimate* XRFrame::getLightEstimate(
   return light_probe->getLightEstimate();
 }
 
+XRDepthInformation* XRFrame::getDepthInformation(XRView* view) const {
+  return nullptr;
+}
+
 // Return an XRPose that has a transform of basespace_from_space, while
 // accounting for the base pose matrix of this frame. If computing a transform
 // isn't possible, return nullptr.

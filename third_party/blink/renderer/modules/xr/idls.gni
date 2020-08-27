@@ -8,6 +8,7 @@ modules_idl_files = [
   "xr_anchor.idl",
   "xr_anchor_set.idl",
   "xr_bounded_reference_space.idl",
+  "xr_depth_information.idl",
   "xr_dom_overlay_state.idl",
   "xr_frame.idl",
   "xr_input_source.idl",

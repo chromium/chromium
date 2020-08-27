@@ -11371,6 +11371,13 @@ interface XRDOMOverlayState
     attribute @@toStringTag
     getter type
     method constructor
+interface XRDepthInformation
+    attribute @@toStringTag
+    getter data
+    getter height
+    getter width
+    method constructor
+    method getDepth
 interface XRFrame
     attribute @@toStringTag
     getter session
@@ -11378,6 +11385,7 @@ interface XRFrame
     getter worldInformation
     method constructor
     method createAnchor
+    method getDepthInformation
     method getHitTestResults
     method getHitTestResultsForTransientInput
     method getLightEstimate

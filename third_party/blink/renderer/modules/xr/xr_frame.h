@@ -19,6 +19,7 @@ namespace blink {
 
 class ExceptionState;
 class XRAnchorSet;
+class XRDepthInformation;
 class XRHitTestResult;
 class XRHitTestSource;
 class XRInputSource;
@@ -31,6 +32,7 @@ class XRSession;
 class XRSpace;
 class XRTransientInputHitTestResult;
 class XRTransientInputHitTestSource;
+class XRView;
 class XRViewerPose;
 class XRWorldInformation;
 
@@ -47,6 +49,7 @@ class XRFrame final : public ScriptWrappable {
   XRWorldInformation* worldInformation() const { return world_information_; }
   XRAnchorSet* trackedAnchors() const;
   XRLightEstimate* getLightEstimate(XRLightProbe*, ExceptionState&) const;
+  XRDepthInformation* getDepthInformation(XRView* view) const;
 
   void Trace(Visitor*) const override;
 

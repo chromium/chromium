@@ -217,6 +217,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebXRHitTest, features::kWebXrHitTest, kUseFeatureState},
     {wf::EnableWebXRAnchors, features::kWebXrIncubations, kEnableOnly},
     {wf::EnableWebXRCameraAccess, features::kWebXrIncubations, kEnableOnly},
+    {wf::EnableWebXRDepth, features::kWebXrIncubations, kEnableOnly},
     {wf::EnableWebXRLightEstimation, features::kWebXrIncubations, kEnableOnly},
     {wf::EnableWebXRPlaneDetection, features::kWebXrIncubations, kEnableOnly},
     {wf::EnableWebXRReflectionEstimation, features::kWebXrIncubations,

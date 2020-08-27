@@ -2124,6 +2124,11 @@
       status: "experimental",
     },
     {
+      name: "WebXRDepth",
+      depends_on: ["WebXRARModule"],
+      status: "experimental",
+    },
+    {
       name: "WebXRHitTest",
       depends_on: ["WebXRARModule"],
       status: "stable",
