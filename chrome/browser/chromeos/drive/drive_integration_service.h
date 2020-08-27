@@ -219,6 +219,9 @@ class DriveIntegrationService : public KeyedService,
   // complete before adding the mount point.
   void AddDriveMountPoint();
 
+  // Mounts Drive if the directory exists.
+  void MaybeMountDrive(bool data_directory_exists);
+
   // Registers remote file system for drive mount point.
   bool AddDriveMountPointAfterMounted();
 

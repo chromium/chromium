@@ -288,6 +288,10 @@ DriveMountStatus ConvertMountFailure(
   NOTREACHED();
 }
 
+bool EnsureDirectoryExists(const base::FilePath& path) {
+  return base::DirectoryExists(path) || base::CreateDirectory(path);
+}
+
 void UmaEmitMountStatus(DriveMountStatus status) {
   UMA_HISTOGRAM_ENUMERATION("DriveCommon.Lifecycle.Mount", status);
 }
@@ -463,6 +467,9 @@ class DriveIntegrationService::DriveFsHolder
   }
 
   std::string GetObfuscatedAccountId() override {
+    if (!GetAccountId().HasAccountIdKey()) {
+      return "";
+    }
     return base::MD5String(GetProfileSalt() + "-" +
                            GetAccountId().GetAccountIdKey());
   }
@@ -781,9 +788,22 @@ void DriveIntegrationService::AddDriveMountPoint() {
     if (mount_start_.is_null() || was_ever_mounted) {
       mount_start_ = base::TimeTicks::Now();
     }
-    drivefs_holder_->drivefs_host()->Mount();
+    base::PostTaskAndReplyWithResult(
+        blocking_task_runner_.get(), FROM_HERE,
+        base::BindOnce(&EnsureDirectoryExists,
+                       drivefs_holder_->drivefs_host()->GetDataPath()),
+        base::BindOnce(&DriveIntegrationService::MaybeMountDrive,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     AddDriveMountPointAfterMounted();
+  }
+}
+
+void DriveIntegrationService::MaybeMountDrive(bool data_directory_exists) {
+  if (!data_directory_exists) {
+    LOG(ERROR) << "Could not create DriveFS data directory";
+  } else {
+    drivefs_holder_->drivefs_host()->Mount();
   }
 }
 
