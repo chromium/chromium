@@ -87,6 +87,8 @@ class WebAudioSourceProviderImplTest : public testing::Test,
     return true;
   }
 
+  MOCK_METHOD0(OnClientSet, void());
+
   // WebAudioSourceProviderClient implementation.
   MOCK_METHOD2(SetFormat, void(uint32_t numberOfChannels, float sampleRate));
 
@@ -113,6 +115,8 @@ class WebAudioSourceProviderImplTest : public testing::Test,
   media::NullMediaLog media_log_;
   scoped_refptr<media::MockAudioRendererSink> mock_sink_;
   scoped_refptr<WebAudioSourceProviderImpl> wasp_impl_;
+
+  base::WeakPtrFactory<WebAudioSourceProviderImplTest> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebAudioSourceProviderImplTest);
 };
@@ -318,6 +322,34 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_FALSE(CompareBusses(bus1.get(), bus2.get()));
+}
+
+TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
+  wasp_impl_ = new WebAudioSourceProviderImpl(
+      mock_sink_, &media_log_,
+      base::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
+                     weak_factory_.GetWeakPtr()));
+  // SetClient with a nullptr client should not trigger the callback if no
+  // client is set.
+  EXPECT_CALL(*this, OnClientSet()).Times(0);
+  wasp_impl_->SetClient(nullptr);
+  ::testing::Mock::VerifyAndClearExpectations(this);
+
+  // SetClient when called with a valid client should trigger the callback once.
+  EXPECT_CALL(*this, OnClientSet()).Times(1);
+  wasp_impl_->SetClient(this);
+  base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(this);
+
+  // Future calls to set client should not trigger the callback.
+  EXPECT_CALL(*this, OnClientSet()).Times(0);
+  wasp_impl_->SetClient(this);
+  base::RunLoop().RunUntilIdle();
+  wasp_impl_->SetClient(nullptr);
+  base::RunLoop().RunUntilIdle();
+  wasp_impl_->SetClient(this);
+  base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(this);
 }
 
 }  // namespace blink

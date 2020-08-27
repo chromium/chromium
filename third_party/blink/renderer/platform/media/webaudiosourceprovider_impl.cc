@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -130,13 +131,15 @@ class WebAudioSourceProviderImpl::TeeFilter
 
 WebAudioSourceProviderImpl::WebAudioSourceProviderImpl(
     scoped_refptr<media::SwitchableAudioRendererSink> sink,
-    media::MediaLog* media_log)
+    media::MediaLog* media_log,
+    base::OnceClosure on_set_client_callback /* = base::OnceClosure()*/)
     : volume_(1.0),
       state_(kStopped),
       client_(nullptr),
       sink_(std::move(sink)),
       tee_filter_(new TeeFilter()),
-      media_log_(media_log) {}
+      media_log_(media_log),
+      on_set_client_callback_(std::move(on_set_client_callback)) {}
 
 WebAudioSourceProviderImpl::~WebAudioSourceProviderImpl() = default;
 
@@ -170,6 +173,10 @@ void WebAudioSourceProviderImpl::SetClient(
     // ensures we have the same locking order when calling into |client_|.
     if (tee_filter_->initialized())
       set_format_cb_.Run();
+
+    if (on_set_client_callback_)
+      std::move(on_set_client_callback_).Run();
+
     return;
   }
 
