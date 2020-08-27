@@ -972,8 +972,11 @@ void CSSAnimations::CalculateTransitionUpdateForProperty(
       if (CSSPropertyEquality::PropertiesEqual(property, state.style,
                                                *running_transition->to)) {
         if (!state.transition_data) {
-          UseCounter::Count(state.animating_element->GetDocument(),
-                            WebFeature::kCSSTransitionCancelledByRemovingStyle);
+          if (!running_transition->animation->FinishedInternal()) {
+            UseCounter::Count(
+                state.animating_element->GetDocument(),
+                WebFeature::kCSSTransitionCancelledByRemovingStyle);
+          }
           // TODO(crbug.com/934700): Add a return to this branch to correctly
           // continue transitions under default settings (all 0s) in the absence
           // of a change in base computed style.
