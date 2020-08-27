@@ -418,7 +418,7 @@ source_set("unit_tests") {
     "//chromeos/network:test_support",
     "//chromeos/system:system",
     "//components/account_id",
-    "//components/arc/video_accelerator",
+    "//components/arc/video_accelerator:common",
     "//components/keyed_service/content",
     "//components/prefs:test_support",
     "//components/session_manager/core:core",

@@ -6,11 +6,7 @@
 
 #include <vector>
 
-#include "base/files/file_util.h"
-#include "base/stl_util.h"
 #include "components/arc/mojom/video_common.mojom.h"
-#include "components/arc/video_accelerator/arc_video_accelerator_util.h"
-#include "components/arc/video_accelerator/decoder_buffer.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -98,29 +94,6 @@ TEST(VideoAcceleratorStructTraitsTest, ConvertNullVideoFrame) {
   mojo::test::SerializeAndDeserialize<arc::mojom::VideoFrame>(&input, &output);
 
   EXPECT_FALSE(output);
-}
-
-TEST(VideoAcceleratorStructTraitsTest, ConvertDecoderBuffer) {
-  const std::string kData = "TESTING_STRING";
-  const uint32_t kOffset = 3;
-  const uint32_t kDataSize = kData.size() - kOffset;
-  constexpr bool kEndOfStream = false;
-
-  arc::DecoderBuffer input(arc::CreateTempFileForTesting(kData), kOffset,
-                           kDataSize, kEndOfStream,
-                           base::TimeDelta::FromMilliseconds(kTimestamp));
-  arc::DecoderBuffer output;
-  mojo::test::SerializeAndDeserialize<arc::mojom::DecoderBuffer>(&input,
-                                                                 &output);
-
-  EXPECT_EQ(output.end_of_stream, input.end_of_stream);
-  EXPECT_EQ(output.timestamp, input.timestamp);
-  EXPECT_EQ(output.offset, input.offset);
-  EXPECT_EQ(output.payload_size, input.payload_size);
-
-  scoped_refptr<media::DecoderBuffer> buf =
-      std::move(output).ToMediaDecoderBuffer();
-  EXPECT_EQ(memcmp(kData.c_str() + kOffset, buf->data(), kDataSize), 0);
 }
 
 }  // namespace mojo

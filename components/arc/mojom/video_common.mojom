@@ -130,21 +130,3 @@ struct VideoFrame {
   // timestamp in milliseconds.
   int64 timestamp;
 };
-
-// Struct for storing bitstream buffer.
-struct DecoderBuffer {
-  // Field for a physical buffer. This buffer is passed over an interface from
-  // ARC++ to Chrome, with a callback method that will be run when the buffer is
-  // used and the file descriptor is closed.
-  handle handle_fd;
-  // Distance in bytes between the beginning of the buffer pointed by
-  // |handle_fd| and the beginning of bitstream buffer.
-  uint32 offset;
-  // Bitstream buffer size in bytes. The buffer length referred by |handle_fd|
-  // can be more than |offset| + |payload_size|.
-  uint32 payload_size;
-  // Whether the buffer is an end-of-stream (EOS) buffer.
-  bool end_of_stream;
-  // Timestamp in microseconds.
-  int64 timestamp;
-};

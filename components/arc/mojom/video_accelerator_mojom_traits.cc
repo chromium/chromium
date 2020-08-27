@@ -4,9 +4,6 @@
 
 #include "components/arc/mojom/video_accelerator_mojom_traits.h"
 
-#include "base/files/platform_file.h"
-#include "mojo/public/cpp/system/platform_handle.h"
-
 namespace mojo {
 
 // Make sure values in arc::mojom::VideoCodecProfile match to the values in
@@ -296,24 +293,6 @@ bool StructTraits<arc::mojom::VideoFrameDataView,
       media::PIXEL_FORMAT_I420, mailbox_holders,
       media::VideoFrame::ReleaseMailboxCB(), visible_rect.size(), visible_rect,
       visible_rect.size(), base::TimeDelta::FromMilliseconds(data.timestamp()));
-  return true;
-}
-
-// static
-bool StructTraits<arc::mojom::DecoderBufferDataView, arc::DecoderBuffer>::Read(
-    arc::mojom::DecoderBufferDataView data,
-    arc::DecoderBuffer* out) {
-  base::PlatformFile platform_file = base::kInvalidPlatformFile;
-  if (mojo::UnwrapPlatformFile(data.TakeHandleFd(), &platform_file) !=
-      MOJO_RESULT_OK) {
-    return false;
-  }
-
-  out->handle_fd = base::ScopedFD(platform_file);
-  out->offset = data.offset();
-  out->payload_size = data.payload_size();
-  out->end_of_stream = data.end_of_stream();
-  out->timestamp = base::TimeDelta::FromMilliseconds(data.timestamp());
   return true;
 }
 
