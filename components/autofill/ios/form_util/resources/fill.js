@@ -2320,7 +2320,10 @@ __gCrWeb.fill['setUpForUniqueIDs'] = function(nextAvailableID) {
 __gCrWeb.fill.setUniqueIDIfNeeded = function(element) {
   try {
     const uniqueID = Symbol.for(__gCrWeb.fill.UNIQUE_ID_SYMBOL_NAME);
-    if (typeof element[uniqueID] === 'undefined') {
+    // Do not assign element id value if the base value for the document
+    // is not set.
+    if (typeof document[uniqueID] !== 'undefined' &&
+        typeof element[uniqueID] === 'undefined') {
       element[uniqueID] = document[uniqueID]++;
     }
   } catch (e) {
