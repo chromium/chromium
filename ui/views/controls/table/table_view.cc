@@ -150,7 +150,9 @@ class TableView::HighlightPathGenerator : public views::HighlightPathGenerator {
       return SkPath();
 
     // Draw a focus indicator around the active cell.
-    return SkPath().addRect(gfx::RectToSkRect(table->GetActiveCellBounds()));
+    gfx::Rect bounds = table->GetActiveCellBounds();
+    bounds.set_x(table->GetMirroredXForRect(bounds));
+    return SkPath().addRect(gfx::RectToSkRect(bounds));
   }
 
  private:
@@ -496,17 +498,17 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
 
     case ui::VKEY_LEFT:
       if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+        const AdvanceDirection direction = base::i18n::IsRTL()
+                                               ? AdvanceDirection::kIncrement
+                                               : AdvanceDirection::kDecrement;
         if (IsCmdOrCtrl(event)) {
           if (active_visible_column_index_ != -1 && header_) {
-            const AdvanceDirection direction =
-                base::i18n::IsRTL() ? AdvanceDirection::kIncrement
-                                    : AdvanceDirection::kDecrement;
             header_->ResizeColumnViaKeyboard(active_visible_column_index_,
                                              direction);
             focus_ring_->SchedulePaint();
           }
         } else {
-          AdvanceActiveVisibleColumn(AdvanceDirection::kDecrement);
+          AdvanceActiveVisibleColumn(direction);
         }
         return true;
       }
@@ -514,17 +516,17 @@ bool TableView::OnKeyPressed(const ui::KeyEvent& event) {
 
     case ui::VKEY_RIGHT:
       if (PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
+        const AdvanceDirection direction = base::i18n::IsRTL()
+                                               ? AdvanceDirection::kDecrement
+                                               : AdvanceDirection::kIncrement;
         if (IsCmdOrCtrl(event)) {
           if (active_visible_column_index_ != -1 && header_) {
-            const AdvanceDirection direction =
-                base::i18n::IsRTL() ? AdvanceDirection::kDecrement
-                                    : AdvanceDirection::kIncrement;
             header_->ResizeColumnViaKeyboard(active_visible_column_index_,
                                              direction);
             focus_ring_->SchedulePaint();
           }
         } else {
-          AdvanceActiveVisibleColumn(AdvanceDirection::kIncrement);
+          AdvanceActiveVisibleColumn(direction);
         }
         return true;
       }
