@@ -941,6 +941,24 @@
       "transform": 3
     },
     {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 135],
+      "bounds": [135, 15],
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [135, 0],
+      "bounds": [15, 135],
+      "transform": 3
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [135, 135],
+      "bounds": [15, 15],
+      "transform": 3
+    },
+    {
       "name": "Scrolling Contents Layer",
       "bounds": [4000, 20060],
       "invalidations": [
@@ -1249,24 +1267,6 @@
         }
       ],
       "transform": 4
-    },
-    {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
-      "position": [0, 135],
-      "bounds": [135, 15],
-      "transform": 3
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [135, 0],
-      "bounds": [15, 135],
-      "transform": 3
-    },
-    {
-      "name": "Scroll Corner Layer",
-      "position": [135, 135],
-      "bounds": [15, 15],
-      "transform": 3
     }
   ],
   "transforms": [

@@ -12,15 +12,15 @@
       "transform": 2
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [345, 2020],
-      "transform": 3
-    },
-    {
       "name": "ContentsLayer for Vertical Scrollbar Layer",
       "position": [345, 0],
       "bounds": [15, 640],
       "transform": 2
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [345, 2020],
+      "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (sticky positioned) DIV id='sticky'",

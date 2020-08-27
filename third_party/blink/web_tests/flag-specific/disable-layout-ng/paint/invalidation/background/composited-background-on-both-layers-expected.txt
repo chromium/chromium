@@ -17,17 +17,6 @@
       "transform": 1
     },
     {
-      "name": "Scrolling Contents Layer",
-      "position": [20, 20],
-      "bounds": [185, 3000],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "invalidations": [
-        [0, 0, 185, 3000]
-      ],
-      "transform": 1
-    },
-    {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
       "position": [20, 205],
       "bounds": [185, 15],
@@ -43,6 +32,17 @@
       "name": "Scroll Corner Layer",
       "position": [205, 205],
       "bounds": [15, 15],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [20, 20],
+      "bounds": [185, 3000],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "invalidations": [
+        [0, 0, 185, 3000]
+      ],
       "transform": 1
     }
   ],

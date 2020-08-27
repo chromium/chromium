@@ -13,14 +13,6 @@
       "transform": 1
     },
     {
-      "name": "Scrolling Contents Layer",
-      "position": [1, 1],
-      "bounds": [189, 328],
-      "contentsOpaque": true,
-      "backgroundColor": "#CCCCCC",
-      "transform": 2
-    },
-    {
       "name": "ContentsLayer for Vertical Scrollbar Layer",
       "position": [190, 1],
       "bounds": [15, 109],
@@ -33,8 +25,28 @@
       "transform": 1
     },
     {
+      "name": "Scrolling Contents Layer",
+      "position": [1, 1],
+      "bounds": [189, 328],
+      "contentsOpaque": true,
+      "backgroundColor": "#CCCCCC",
+      "transform": 2
+    },
+    {
       "name": "LayoutTextControl TEXTAREA",
       "bounds": [206, 126],
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [190, 1],
+      "bounds": [15, 109],
+      "transform": 3
+    },
+    {
+      "name": "Scroll Corner Layer",
+      "position": [190, 110],
+      "bounds": [15, 15],
       "transform": 3
     },
     {
@@ -44,18 +56,6 @@
       "contentsOpaque": true,
       "backgroundColor": "#CCCCCC",
       "transform": 4
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [190, 1],
-      "bounds": [15, 109],
-      "transform": 3
-    },
-    {
-      "name": "Scroll Corner Layer",
-      "position": [190, 110],
-      "bounds": [15, 15],
-      "transform": 3
     }
   ],
   "transforms": [

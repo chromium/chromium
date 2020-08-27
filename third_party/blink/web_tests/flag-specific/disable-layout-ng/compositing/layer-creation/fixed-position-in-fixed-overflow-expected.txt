@@ -12,6 +12,12 @@
       "transform": 1
     },
     {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "transform": 1
+    },
+    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 1000],
       "transform": 1
@@ -22,12 +28,6 @@
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00"
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [785, 0],
-      "bounds": [15, 600],
-      "transform": 1
     }
   ],
   "transforms": [

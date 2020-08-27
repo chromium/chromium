@@ -13,23 +13,6 @@
       "transform": 1
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [3000, 3000],
-      "transform": 2
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV",
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#FF0000",
-      "transform": 2
-    },
-    {
-      "name": "LayoutBlockFlow DIV id='container' (foreground) Layer",
-      "bounds": [3000, 3000],
-      "transform": 2
-    },
-    {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
       "position": [0, 285],
       "bounds": [285, 15],
@@ -46,6 +29,23 @@
       "position": [285, 285],
       "bounds": [15, 15],
       "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [3000, 3000],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='container' (foreground) Layer",
+      "bounds": [3000, 3000],
+      "transform": 2
     }
   ],
   "transforms": [

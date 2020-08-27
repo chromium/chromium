@@ -12,26 +12,20 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='vertical' class='content tall'",
-      "bounds": [10, 200],
-      "drawsContent": false,
-      "transform": 1
-    },
-    {
       "name": "ContentsLayer for Vertical Scrollbar Layer",
       "position": [85, 0],
       "bounds": [15, 100],
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='container'",
-      "bounds": [100, 100],
-      "transform": 2
+      "name": "LayoutBlockFlow (positioned) DIV id='vertical' class='content tall'",
+      "bounds": [10, 200],
+      "drawsContent": false,
+      "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='horizontal' class='content wide'",
-      "bounds": [200, 10],
-      "drawsContent": false,
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
+      "bounds": [100, 100],
       "transform": 2
     },
     {
@@ -41,14 +35,14 @@
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='container'",
-      "bounds": [100, 100],
-      "transform": 3
+      "name": "LayoutBlockFlow (positioned) DIV id='horizontal' class='content wide'",
+      "bounds": [200, 10],
+      "drawsContent": false,
+      "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='both' class='content wide tall'",
-      "bounds": [200, 200],
-      "drawsContent": false,
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
+      "bounds": [100, 100],
       "transform": 3
     },
     {
@@ -70,20 +64,26 @@
       "transform": 3
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='corner' class='container resizeWidget'",
-      "bounds": [100, 100],
-      "transform": 4
+      "name": "LayoutBlockFlow (positioned) DIV id='both' class='content wide tall'",
+      "bounds": [200, 200],
+      "drawsContent": false,
+      "transform": 3
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='content'",
-      "bounds": [10, 10],
-      "drawsContent": false,
+      "name": "LayoutBlockFlow (positioned) DIV id='corner' class='container resizeWidget'",
+      "bounds": [100, 100],
       "transform": 4
     },
     {
       "name": "Scroll Corner Layer",
       "position": [85, 85],
       "bounds": [15, 15],
+      "transform": 4
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='content'",
+      "bounds": [10, 10],
+      "drawsContent": false,
       "transform": 4
     }
   ],

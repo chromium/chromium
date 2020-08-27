@@ -119,7 +119,7 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   GraphicsLayer* MaskLayer() const { return mask_layer_.get(); }
 
   GraphicsLayer* ParentForSublayers() const;
-  void SetSublayers(const GraphicsLayerVector&);
+  void SetSublayers(GraphicsLayerVector);
 
   // Returns the GraphicsLayer that |layer| is squashed into, which may be
   // NonScrollingSquashingLayer or ScrollingContentsLayer.
@@ -405,16 +405,17 @@ class CORE_EXPORT CompositedLayerMapping final : public GraphicsLayerClient {
   // looks like this:
   //
   //    + graphics_layer_
+  //      + layer_for_vertical_scrollbar_ [OPTIONAL][*]
+  //      + layer_for_horizontal_scrollbar_ [OPTIONAL][*]
+  //      + layer_for_scroll_corner_ [OPTIONAL][*]
   //      + contents layers (or contents layers under scrolling_contents_layer_)
-  //      + layer_for_vertical_scrollbar_ [OPTIONAL]
-  //      + layer_for_horizontal_scrollbar_ [OPTIONAL]
-  //      + layer_for_scroll_corner_ [OPTIONAL]
   //      + decoration_outline_layer_ [OPTIONAL]
   //      + mask_layer_ [ OPTIONAL ]
   //      + non_scrolling_squashing_layer_ [ OPTIONAL ]
   //
-  // The overflow controls may need to be repositioned in the graphics layer
-  // tree by the RLC to ensure that they stack above scrolling content.
+  // [*] Overlay overflow controls may be placed above
+  //     scrolling_contents_layer_, or repositioned in the graphics layer tree
+  //     to ensure that they stack above scrolling content.
   //
   // Contents layers are directly under |graphics_layer_|, or under
   // |scrolling_contents_layer_| when the layer is using composited scrolling.

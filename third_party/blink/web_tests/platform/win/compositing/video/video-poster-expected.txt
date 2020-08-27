@@ -54,7 +54,7 @@ Case: Displaying movie
       "transform": 1
     },
     {
-      "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-scrubbing'",
+      "name": "LayoutNGFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-scrubbing'",
       "bounds": [352, 288],
       "transform": 1
     },

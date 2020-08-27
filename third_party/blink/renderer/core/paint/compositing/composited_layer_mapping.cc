@@ -893,7 +893,11 @@ void CompositedLayerMapping::UpdateInternalHierarchy() {
   // layers in SetSubLayers(), so it's not inserted here.
   graphics_layer_->RemoveFromParent();
 
-  if (scrolling_contents_layer_)
+  bool overflow_controls_after_scrolling_contents =
+      owning_layer_.IsRootLayer() ||
+      (owning_layer_.GetScrollableArea() &&
+       owning_layer_.GetScrollableArea()->HasOverlayOverflowControls());
+  if (overflow_controls_after_scrolling_contents && scrolling_contents_layer_)
     graphics_layer_->AddChild(scrolling_contents_layer_.get());
 
   if (layer_for_horizontal_scrollbar_)
@@ -902,6 +906,9 @@ void CompositedLayerMapping::UpdateInternalHierarchy() {
     graphics_layer_->AddChild(layer_for_vertical_scrollbar_.get());
   if (layer_for_scroll_corner_)
     graphics_layer_->AddChild(layer_for_scroll_corner_.get());
+
+  if (!overflow_controls_after_scrolling_contents && scrolling_contents_layer_)
+    graphics_layer_->AddChild(scrolling_contents_layer_.get());
 
   if (decoration_outline_layer_)
     graphics_layer_->AddChild(decoration_outline_layer_.get());
@@ -1462,32 +1469,36 @@ GraphicsLayer* CompositedLayerMapping::ParentForSublayers() const {
   return graphics_layer_.get();
 }
 
-void CompositedLayerMapping::SetSublayers(
-    const GraphicsLayerVector& sublayers) {
+void CompositedLayerMapping::SetSublayers(GraphicsLayerVector sublayers) {
   GraphicsLayer* parent = ParentForSublayers();
 
   // TODO(szager): Remove after diagnosing crash crbug.com/1092673
   CHECK(parent);
 
-  // Some layers are managed by CompositedLayerMapping under |parent| need to
-  // be reattached after SetChildren() below which will clobber all children.
-  GraphicsLayerVector layers_needing_reattachment;
-  auto add_layer_needing_reattachment =
-      [parent, &layers_needing_reattachment](GraphicsLayer* layer) {
-        if (layer && layer->Parent() == parent)
-          layers_needing_reattachment.push_back(layer);
-      };
-  add_layer_needing_reattachment(layer_for_horizontal_scrollbar_.get());
-  add_layer_needing_reattachment(layer_for_vertical_scrollbar_.get());
-  add_layer_needing_reattachment(layer_for_scroll_corner_.get());
-  add_layer_needing_reattachment(decoration_outline_layer_.get());
-  add_layer_needing_reattachment(mask_layer_.get());
-  add_layer_needing_reattachment(non_scrolling_squashing_layer_.get());
+  // The caller should have inserted |foreground_layer_| into |sublayers|.
+  DCHECK(!foreground_layer_ || sublayers.Contains(foreground_layer_.get()));
+
+  if (parent == graphics_layer_.get()) {
+    // SetChildren() below will clobber all layers in |parent|, so we need to
+    // add layers that should stay in the children list into |sublayers|.
+    if (!NeedsToReparentOverflowControls()) {
+      if (layer_for_horizontal_scrollbar_)
+        sublayers.insert(0, layer_for_horizontal_scrollbar_.get());
+      if (layer_for_vertical_scrollbar_)
+        sublayers.insert(0, layer_for_vertical_scrollbar_.get());
+      if (layer_for_scroll_corner_)
+        sublayers.insert(0, layer_for_scroll_corner_.get());
+    }
+
+    if (decoration_outline_layer_)
+      sublayers.push_back(decoration_outline_layer_.get());
+    if (mask_layer_)
+      sublayers.push_back(mask_layer_.get());
+    if (non_scrolling_squashing_layer_)
+      sublayers.push_back(non_scrolling_squashing_layer_.get());
+  }
 
   parent->SetChildren(sublayers);
-
-  for (GraphicsLayer* layer : layers_needing_reattachment)
-    parent->AddChild(layer);
 }
 
 GraphicsLayerUpdater::UpdateType CompositedLayerMapping::UpdateTypeForChildren(

@@ -171,8 +171,10 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
                                                     item.second + offset);
     }
 
-    if (!this_layer_children.IsEmpty())
-      current_composited_layer_mapping->SetSublayers(this_layer_children);
+    if (!this_layer_children.IsEmpty()) {
+      current_composited_layer_mapping->SetSublayers(
+          std::move(this_layer_children));
+    }
 
     if (ShouldAppendLayer(layer)) {
       child_layers.push_back(
