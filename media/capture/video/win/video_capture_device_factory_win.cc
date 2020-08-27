@@ -430,6 +430,10 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceFilterDirectShow(
   DCHECK(capture_filter);
   DCHECK(!*capture_filter);
 
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (http://crbug/973868).
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   HRESULT hr = moniker->BindToObject(0, 0, IID_PPV_ARGS(capture_filter));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to bind camera filter: "
