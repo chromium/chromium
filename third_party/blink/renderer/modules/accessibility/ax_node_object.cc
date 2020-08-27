@@ -1728,9 +1728,6 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
   KURL link_url = anchor->HrefURL();
   if (!link_url.IsValid())
     return AXObject::InPageLinkTarget();
-  String fragment = link_url.FragmentIdentifier();
-  if (fragment.IsEmpty())
-    return AXObject::InPageLinkTarget();
 
   KURL document_url = GetDocument()->Url();
   if (!document_url.IsValid() ||
@@ -1738,8 +1735,9 @@ AXObject* AXNodeObject::InPageLinkTarget() const {
     return AXObject::InPageLinkTarget();
   }
 
+  String fragment = link_url.FragmentIdentifier();
   TreeScope& tree_scope = anchor->GetTreeScope();
-  Element* target = tree_scope.FindAnchor(fragment);
+  Node* target = tree_scope.FindAnchor(fragment);
   if (!target)
     return AXObject::InPageLinkTarget();
   // If the target is not in the accessibility tree, get the first unignored

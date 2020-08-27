@@ -113,7 +113,7 @@ TEST_F('ChromeVoxOutputE2ETest', 'Links', function() {
     const o = new Output().withSpeechAndBraille(range, null, 'navigate');
     assertEqualsJSON(
         {
-          string_: 'Click here|Link|Press Search+Space to activate',
+          string_: 'Click here|Internal link|Press Search+Space to activate',
           'spans_': [
             // Attributes.
             {value: 'name', start: 0, end: 10},
@@ -121,14 +121,13 @@ TEST_F('ChromeVoxOutputE2ETest', 'Links', function() {
             // Link earcon (based on the name).
             {value: {earconId: 'LINK'}, start: 0, end: 10},
 
-            {value: 'role', start: 11, end: 15},
-            {value: {'delay': true}, start: 16, end: 46}
+            {value: {'delay': true}, start: 25, end: 55}
           ]
         },
         o.speechOutputForTest);
     checkBrailleOutput(
-        'Click here lnk', [{value: new Output.NodeSpan(el), start: 0, end: 14}],
-        o);
+        'Click here intlnk',
+        [{value: new Output.NodeSpan(el), start: 0, end: 17}], o);
   });
 });
 

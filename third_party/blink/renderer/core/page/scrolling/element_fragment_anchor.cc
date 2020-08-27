@@ -19,22 +19,6 @@
 
 namespace blink {
 
-namespace {
-
-Node* FindAnchorFromFragment(const String& fragment, Document& doc) {
-  Element* anchor_node = doc.FindAnchor(fragment);
-
-  // Implement the rule that "" and "top" both mean top of page as in other
-  // browsers.
-  if (!anchor_node &&
-      (fragment.IsEmpty() || EqualIgnoringASCIICase(fragment, "top")))
-    return &doc;
-
-  return anchor_node;
-}
-
-}  // namespace
-
 ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
                                                         LocalFrame& frame,
                                                         bool should_scroll) {
@@ -51,28 +35,17 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
     return nullptr;
 
   String fragment = url.FragmentIdentifier();
-
-  Node* anchor_node = nullptr;
-
-  // Try the raw fragment for HTML documents, but skip it for `svgView()`:
-  if (!doc.IsSVGDocument())
-    anchor_node = FindAnchorFromFragment(fragment, doc);
-
-  // https://html.spec.whatwg.org/C/#the-indicated-part-of-the-document
-  // 5. Let decodedFragment be the result of running UTF-8 decode without BOM
-  // on fragmentBytes.
-  if (!anchor_node) {
-    fragment = DecodeURLEscapeSequences(fragment, DecodeURLMode::kUTF8);
-    anchor_node = FindAnchorFromFragment(fragment, doc);
-  }
+  Node* anchor_node = doc.FindAnchor(fragment);
 
   // Setting to null will clear the current target.
   auto* target = DynamicTo<Element>(anchor_node);
   doc.SetCSSTarget(target);
 
   if (doc.IsSVGDocument()) {
-    if (auto* svg = DynamicTo<SVGSVGElement>(doc.documentElement()))
-      svg->SetupInitialView(fragment, target);
+    if (auto* svg = DynamicTo<SVGSVGElement>(doc.documentElement())) {
+      String decoded = DecodeURLEscapeSequences(fragment, DecodeURLMode::kUTF8);
+      svg->SetupInitialView(decoded, target);
+    }
   }
 
   if (target) {

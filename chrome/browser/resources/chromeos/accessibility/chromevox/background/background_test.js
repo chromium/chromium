@@ -1334,18 +1334,18 @@ TEST_F('ChromeVoxBackgroundTest', 'NodeVsSubnode', function() {
         }
 
         mockFeedback.call(outputLinkRange(0, 0))
-            .expectSpeech('test', 'Link')
+            .expectSpeech('test', 'Internal link')
             .call(outputLinkRange(0, 1))
             .expectSpeech('t')
             .call(outputLinkRange(1, 1))
-            .expectSpeech('test', 'Link')
+            .expectSpeech('test', 'Internal link')
             .call(outputLinkRange(1, 2))
             .expectSpeech('e')
             .call(outputLinkRange(1, 3))
-            .expectNextSpeechUtteranceIsNot('Link')
+            .expectNextSpeechUtteranceIsNot('Internal link')
             .expectSpeech('es')
             .call(outputLinkRange(0, 4))
-            .expectSpeech('test', 'Link')
+            .expectSpeech('test', 'Internal link')
             .replay();
       });
 });
@@ -1770,9 +1770,9 @@ TEST_F('ChromeVoxBackgroundTest', 'GestureGranularity', function() {
             .call(doGesture('swipeLeft3'))
             .expectSpeech('Link')
             .call(doGesture('swipeDown1'))
-            .expectSpeech('greetings', 'Link')
+            .expectSpeech('greetings', 'Internal link')
             .call(doGesture('swipeUp1'))
-            .expectSpeech('there', 'Link')
+            .expectSpeech('there', 'Internal link')
 
             .call(doGesture('swipeLeft3'))
             .expectSpeech('Heading')
@@ -1791,7 +1791,7 @@ TEST_F('ChromeVoxBackgroundTest', 'GestureGranularity', function() {
             .call(doGesture('swipeRight3'))
             .expectSpeech('Heading')
             .call(doGesture('swipeRight3'))
-            .expectSpeech('Link')
+            .expectSpeech('Internal link')
             .call(doGesture('swipeRight3'))
             .expectSpeech('Form field control')
             .call(doGesture('swipeRight3'))

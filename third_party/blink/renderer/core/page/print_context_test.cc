@@ -135,8 +135,8 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
                                          int y,
                                          int width,
                                          int height,
-                                         const char* url,
-                                         const char* children = nullptr) {
+                                         String url,
+                                         String children = String()) {
     WTF::TextStream ts;
     ts << "<a style='position: absolute; left: " << x << "px; top: " << y
        << "px; width: " << width << "px; height: " << height << "px' href='"
@@ -144,17 +144,13 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     return ts.Release();
   }
 
-  static String InlineHtmlForLink(const char* url,
-                                  const char* children = nullptr) {
+  static String InlineHtmlForLink(String url, String children = String()) {
     WTF::TextStream ts;
     ts << "<a href='" << url << "'>" << (children ? children : url) << "</a>";
     return ts.Release();
   }
 
-  static String HtmlForAnchor(int x,
-                              int y,
-                              const char* name,
-                              const char* text_content) {
+  static String HtmlForAnchor(int x, int y, String name, String text_content) {
     WTF::TextStream ts;
     ts << "<a name='" << name << "' style='position: absolute; left: " << x
        << "px; top: " << y << "px'>" << text_content << "</a>";
@@ -288,26 +284,60 @@ TEST_P(PrintContextTest, LinkTargetSvg) {
 TEST_P(PrintContextTest, LinkedTarget) {
   MockPageContextCanvas canvas;
   GetDocument().SetBaseURLOverride(KURL("http://a.com/"));
+  // Careful about locations, the page is 800x600 and only one page is printed.
   SetBodyInnerHTML(
       AbsoluteBlockHtmlForLink(
-          50, 60, 70, 80,
+          50, 60, 10, 10,
           "#fragment")  // Generates a Link_Named_Dest_Key annotation
-      + AbsoluteBlockHtmlForLink(150, 160, 170, 180,
+      + AbsoluteBlockHtmlForLink(50, 160, 10, 10,
                                  "#not-found")  // Generates no annotation
+      + AbsoluteBlockHtmlForLink(
+            50, 260, 10, 10,
+            u"#\u00F6")  // Generates a Link_Named_Dest_Key annotation
+      + AbsoluteBlockHtmlForLink(
+            50, 360, 10, 10,
+            "#")  // Generates a Link_Named_Dest_Key annotation
+      + AbsoluteBlockHtmlForLink(
+            50, 460, 10, 10,
+            "#t%6Fp")  // Generates a Link_Named_Dest_Key annotation
       +
-      HtmlForAnchor(250, 260, "fragment",
+      HtmlForAnchor(450, 60, "fragment",
                     "fragment")  // Generates a Define_Named_Dest_Key annotation
-      + HtmlForAnchor(350, 360, "fragment-not-used",
-                      "fragment-not-used"));  // Generates no annotation
+      + HtmlForAnchor(450, 160, "fragment-not-used",
+                      "fragment-not-used")  // Generates no annotation
+      + HtmlForAnchor(450, 260, u"\u00F6",
+                      "O")  // Generates a Define_Named_Dest_Key annotation
+      // TODO(1117212): The escaped version currently takes precedence.
+      //+ HtmlForAnchor(450, 360, "%C3%B6",
+      //                "O2")  // Generates a Define_Named_Dest_Key annotation
+  );
   PrintSinglePage(canvas);
 
   const Vector<MockPageContextCanvas::Operation>& operations =
       canvas.RecordedOperations();
-  ASSERT_EQ(2u, operations.size());
+  for (const auto& operation : operations) {
+    LOG(INFO) << (operation.type ? "Point" : "Rect") << operation.rect;
+  }
+  ASSERT_EQ(8u, operations.size());
+  // The DrawRect operations come from a stable iterator.
   EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[0].type);
-  EXPECT_SKRECT_EQ(50, 60, 70, 80, operations[0].rect);
-  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[1].type);
-  EXPECT_SKRECT_EQ(250, 260, 0, 0, operations[1].rect);
+  EXPECT_SKRECT_EQ(50, 60, 10, 10, operations[0].rect);
+  EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[1].type);
+  EXPECT_SKRECT_EQ(50, 260, 10, 10, operations[1].rect);
+  EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[2].type);
+  EXPECT_SKRECT_EQ(50, 360, 10, 10, operations[2].rect);
+  EXPECT_EQ(MockPageContextCanvas::kDrawRect, operations[3].type);
+  EXPECT_SKRECT_EQ(50, 460, 10, 10, operations[3].rect);
+
+  // The DrawPoint operations come from an unstable iterator.
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[4].type);
+  EXPECT_SKRECT_EQ(450, 260, 0, 0, operations[4].rect);
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[5].type);
+  EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[5].rect);
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[6].type);
+  EXPECT_SKRECT_EQ(0, 0, 0, 0, operations[6].rect);
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, operations[7].type);
+  EXPECT_SKRECT_EQ(450, 60, 0, 0, operations[7].rect);
 }
 
 TEST_P(PrintContextTest, EmptyLinkedTarget) {

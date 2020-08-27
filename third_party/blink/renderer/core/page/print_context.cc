@@ -219,8 +219,8 @@ void PrintContext::CollectLinkedDestinations(Node* node) {
   if (url.HasFragmentIdentifier() &&
       EqualIgnoringFragmentIdentifier(url, node->GetDocument().BaseURL())) {
     String name = url.FragmentIdentifier();
-    if (Element* element = node->GetDocument().FindAnchor(name))
-      linked_destinations_.Set(name, element);
+    if (Node* target = node->GetDocument().FindAnchor(name))
+      linked_destinations_.Set(name, target);
   }
 }
 

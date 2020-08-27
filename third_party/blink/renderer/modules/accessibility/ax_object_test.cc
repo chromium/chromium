@@ -517,6 +517,71 @@ TEST_F(AccessibilityTest, AxNodeObjectContainsInPageLinkTarget) {
   EXPECT_EQ(anchor->Url(), KURL("http://test.com/#target"));
 }
 
+TEST_F(AccessibilityTest, AxNodeObjectInPageLinkTargetNonAscii) {
+  GetDocument().SetURL(KURL("http://test.com"));
+  // ö is U+00F6 which URI encodes to %C3%B6
+  //
+  // This file is forced to be UTF-8 by the build system,
+  // the uR"" will create char16_t[] of UTF-16,
+  // WTF::String will wrap the char16_t* as UTF-16.
+  // All this is checked by ensuring a match against u"\u00F6".
+  //
+  // TODO(1117212): The escaped version currently takes precedence.
+  //  <h1 id="%C3%B6">O2</h1>
+  SetBodyInnerHTML(
+      uR"HTML(
+    <a href="#ö" id="anchor">O</a>
+    <h1 id="ö">O</h1>"
+    <a href="#t%6Fp" id="top_test">top</a>"
+    <a href="#" id="empty_test">also top</a>");
+  )HTML");
+
+  {
+    // anchor
+    const AXObject* anchor = GetAXObjectByElementId("anchor");
+    ASSERT_NE(nullptr, anchor);
+
+    EXPECT_FALSE(anchor->Url().IsEmpty());
+    EXPECT_EQ(anchor->Url(), KURL(u"http://test.com/#\u00F6"));
+
+    const AXObject* target = anchor->InPageLinkTarget();
+    ASSERT_NE(nullptr, target);
+
+    auto* targetElement = DynamicTo<Element>(target->GetNode());
+    ASSERT_NE(nullptr, target);
+    ASSERT_TRUE(targetElement->HasID());
+    EXPECT_EQ(targetElement->IdForStyleResolution(), String(u"\u00F6"));
+  }
+
+  {
+    // top_test
+    const AXObject* anchor = GetAXObjectByElementId("top_test");
+    ASSERT_NE(nullptr, anchor);
+
+    EXPECT_FALSE(anchor->Url().IsEmpty());
+    EXPECT_EQ(anchor->Url(), KURL(u"http://test.com/#t%6Fp"));
+
+    const AXObject* target = anchor->InPageLinkTarget();
+    ASSERT_NE(nullptr, target);
+
+    EXPECT_EQ(&GetDocument(), target->GetNode());
+  }
+
+  {
+    // empty_test
+    const AXObject* anchor = GetAXObjectByElementId("empty_test");
+    ASSERT_NE(nullptr, anchor);
+
+    EXPECT_FALSE(anchor->Url().IsEmpty());
+    EXPECT_EQ(anchor->Url(), KURL(u"http://test.com/#"));
+
+    const AXObject* target = anchor->InPageLinkTarget();
+    ASSERT_NE(nullptr, target);
+
+    EXPECT_EQ(&GetDocument(), target->GetNode());
+  }
+}
+
 TEST_P(ParameterizedAccessibilityTest, NextOnLine) {
   SetBodyInnerHTML(R"HTML(
     <style>

@@ -333,4 +333,41 @@ TEST_F(ElementFragmentAnchorTest, SVGDocumentDoesntCreateFragment) {
   ASSERT_FALSE(view->GetFragmentAnchor());
 }
 
+// This test ensures that we correctly scroll the fragment into view in the
+// case that the fragment has characters which need to be URL encoded.
+TEST_F(ElementFragmentAnchorTest, HasURLEncodedCharacters) {
+  SimRequest main_resource(u"https://example.com/t.html#\u00F6", "text/html");
+  LoadURL(u"https://example.com/t.html#\u00F6");
+
+  main_resource.Complete(
+      u"<html>\n"
+      // SimRequest sends UTF-8 to parser but the parser defaults to UTF-16.
+      u"    <head><meta charset=\"UTF-8\"></head>\n"
+      u"    <body>\n"
+      u"        <div style=\"height: 50cm;\">blank space</div>\n"
+      u"        <h1 id=\"\u00F6\">\u00D6</h1>\n"
+      // TODO(1117212): The escaped version currently takes precedence.
+      // u"     <div style=\"height: 50cm;\">blank space</div>\n"
+      // u"     <h1 id=\"%C3%B6\">\u00D62</h1>\n"
+      u"        <div style=\"height: 50cm;\">blank space</div>\n"
+      u"        <h1 id=\"non-umlaut\">non-umlaut</h1>\n"
+      u"    </body>\n"
+      u"</html>");
+
+  Compositor().BeginFrame();
+
+  ScrollableArea* viewport = GetDocument().View()->LayoutViewport();
+  Element* fragment = GetDocument().getElementById(u"\u00F6");
+  ASSERT_NE(nullptr, fragment);
+
+  IntRect fragment_rect_in_frame(
+      fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
+  IntRect viewport_rect(IntPoint(), viewport->VisibleContentRect().Size());
+
+  EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
+      << "Fragment element at [" << fragment_rect_in_frame.ToString()
+      << "] was not scrolled into viewport rect [" << viewport_rect.ToString()
+      << "]";
+}
+
 }  // namespace blink

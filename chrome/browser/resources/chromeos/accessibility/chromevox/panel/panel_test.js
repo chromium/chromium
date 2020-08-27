@@ -139,9 +139,9 @@ TEST_F('ChromeVoxPanelTest', 'LinkMenu', function() {
     this.fireMockEvent('ArrowLeft')();
     this.assertActiveMenuItem('role_landmark', 'No items');
     this.fireMockEvent('ArrowRight')();
-    this.assertActiveMenuItem('role_link', 'apple Link');
+    this.assertActiveMenuItem('role_link', 'apple Internal link');
     this.fireMockEvent('ArrowUp')();
-    this.assertActiveMenuItem('role_link', 'banana Link');
+    this.assertActiveMenuItem('role_link', 'banana Internal link');
   });
 });
 
