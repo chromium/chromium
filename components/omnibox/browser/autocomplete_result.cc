@@ -400,9 +400,11 @@ void AutocompleteResult::ConvertInSuggestionPedalMatches(
   provider->set_field_trial_triggered(false);
 
   for (auto& match : matches_) {
-    // Skip matches that have already detected their pedal.
-    if (match.pedal)
+    // Skip matches that have already detected their Pedal, and avoid attaching
+    // to matches with types that don't mix well with Pedals (e.g. entities).
+    if (match.pedal || !AutocompleteMatch::IsPedalCompatibleType(match.type)) {
       continue;
+    }
 
     OmniboxPedal* const pedal = provider->FindPedalMatch(match.contents);
     if (pedal) {

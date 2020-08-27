@@ -647,6 +647,13 @@ bool AutocompleteMatch::IsSearchHistoryType(Type type) {
 }
 
 // static
+bool AutocompleteMatch::IsPedalCompatibleType(Type type) {
+  // Note: There is a PEDAL type, but it is deprecated because Pedals always
+  // attach to matches of other types instead of creating dedicated matches.
+  return type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY;
+}
+
+// static
 bool AutocompleteMatch::ShouldBeSkippedForGroupBySearchVsUrl(Type type) {
   return type == AutocompleteMatchType::CLIPBOARD_URL ||
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||
@@ -1134,7 +1141,8 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
   }
 
   // Take the |pedal|, if any, so that it will be presented instead of buried.
-  if (!pedal && duplicate_match.pedal) {
+  if (!pedal && duplicate_match.pedal &&
+      AutocompleteMatch::IsPedalCompatibleType(type)) {
     pedal = duplicate_match.pedal;
     duplicate_match.pedal = nullptr;
   }
