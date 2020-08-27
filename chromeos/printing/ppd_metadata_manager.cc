@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -238,8 +239,7 @@ class MetadataLocaleFinder {
   // |browser_locale_|. For example, "en-GB" is a parent of "en-GB-foo."
   bool IsParentOfBrowserLocale(base::StringPiece locale) const {
     const std::string locale_with_trailing_hyphen = base::StrCat({locale, "-"});
-    return base::StringPiece(browser_locale_)
-        .starts_with(locale_with_trailing_hyphen);
+    return base::StartsWith(browser_locale_, locale_with_trailing_hyphen);
   }
 
   // Updates our |best_distant_relative_locale_| to |locale| if we find
