@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_content.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -23,7 +22,6 @@
 #include "components/download/public/common/download_source.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_response_info.h"
-#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -428,9 +426,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadValidationMetrics(
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadConnectionSecurity(
     const GURL& download_url,
     const std::vector<GURL>& url_chain);
-
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadSourcePageTransitionType(
-    const base::Optional<ui::PageTransition>& transition);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadHttpResponseCode(
     int response_code,

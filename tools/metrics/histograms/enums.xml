@@ -12675,6 +12675,9 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <enum name="CorePageTransition">
+  <obsolete>
+    Removed 08/2020
+  </obsolete>
   <summary>
     The core value of PageTransition. See ui/base/page_transition_types.h.
   </summary>

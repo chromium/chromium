@@ -94,8 +94,6 @@ void DownloadResponseHandler::OnReceiveResponse(
   cert_status_ = head->cert_status;
 
   // TODO(xingliu): Do not use http cache.
-  // Sets page transition type correctly and call
-  // |RecordDownloadSourcePageTransitionType| here.
   if (head->headers) {
     has_strong_validators_ = head->headers->HasStrongValidators();
     RecordDownloadHttpResponseCode(head->headers->response_code(),

@@ -46877,6 +46877,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.PageTransition" enum="CorePageTransition"
     expires_after="M85">
+  <obsolete>
+    Removed 08/2020
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <summary>
     The core page transition type for navigation initiated downloads. Not
