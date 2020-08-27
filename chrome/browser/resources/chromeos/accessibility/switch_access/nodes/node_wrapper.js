@@ -356,11 +356,11 @@ class RootNodeWrapper extends SARootNode {
    * @return {!RootNodeWrapper}
    */
   static buildTree(rootNode) {
-    if (SwitchAccessPredicate.isWindow(rootNode)) {
-      return WindowRootNode.buildTree(rootNode);
-    }
     if (rootNode.role === chrome.automation.RoleType.KEYBOARD) {
       return KeyboardRootNode.buildTree();
+    }
+    if (SwitchAccessPredicate.isWindow(rootNode)) {
+      return WindowRootNode.buildTree(rootNode);
     }
 
     const root = new RootNodeWrapper(rootNode);
