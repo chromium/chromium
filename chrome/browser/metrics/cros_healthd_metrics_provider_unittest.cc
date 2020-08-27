@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
@@ -31,8 +32,8 @@ class CrosHealthdMetricsProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
- private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(CrosHealthdMetricsProviderTest, EndToEnd) {
@@ -104,4 +105,21 @@ TEST_F(CrosHealthdMetricsProviderTest, EndToEnd) {
     run_loop.Quit();
   }));
   run_loop.Run();
+}
+
+TEST_F(CrosHealthdMetricsProviderTest, EndToEndTimeout) {
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()->SetCallbackDelay(
+      CrosHealthdMetricsProvider::GetTimeout() +
+      base::TimeDelta::FromSeconds(5));
+
+  base::RunLoop run_loop;
+  CrosHealthdMetricsProvider provider;
+  provider.AsyncInit(base::BindOnce(
+      [](base::OnceClosure callback) { std::move(callback).Run(); },
+      run_loop.QuitClosure()));
+
+  // FastForward by timeout period.
+  task_environment_.FastForwardBy(CrosHealthdMetricsProvider::GetTimeout());
+  run_loop.Run();
+  ASSERT_FALSE(provider.IsInitialized());
 }

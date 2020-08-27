@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_METRICS_CROS_HEALTHD_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_CROS_HEALTHD_METRICS_PROVIDER_H_
 
+#include "base/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/metrics/metrics_provider.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,16 +25,24 @@ class CrosHealthdMetricsProvider : public metrics::MetricsProvider {
   void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
+  bool IsInitialized();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CrosHealthdMetricsProviderTest, EndToEndTimeout);
+
   chromeos::cros_healthd::mojom::CrosHealthdProbeService* GetService();
   void OnDisconnect();
-  void OnProbeDone(base::OnceClosure done_callback,
-                   chromeos::cros_healthd::mojom::TelemetryInfoPtr ptr);
+  void OnProbeDone(chromeos::cros_healthd::mojom::TelemetryInfoPtr ptr);
+  void OnProbeTimeout();
+
+  static base::TimeDelta GetTimeout();
 
   mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService> service_;
   std::vector<metrics::SystemProfileProto::Hardware::InternalStorageDevice>
       devices_;
+
+  base::OnceClosure init_callback_;
+  bool initialized_ = false;
 
   base::WeakPtrFactory<CrosHealthdMetricsProvider> weak_ptr_factory_{this};
 };

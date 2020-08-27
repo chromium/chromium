@@ -4,11 +4,15 @@
 
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -17,41 +21,80 @@
 
 using metrics::SystemProfileProto;
 
+namespace {
+
+constexpr base::TimeDelta kServiceDiscoveryTimeout =
+    base::TimeDelta::FromSeconds(5);
+
+}  // namespace
+
 CrosHealthdMetricsProvider::CrosHealthdMetricsProvider() = default;
 CrosHealthdMetricsProvider::~CrosHealthdMetricsProvider() = default;
+
+base::TimeDelta CrosHealthdMetricsProvider::GetTimeout() {
+  return kServiceDiscoveryTimeout;
+}
 
 void CrosHealthdMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   const std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>
       categories_to_probe = {chromeos::cros_healthd::mojom::ProbeCategoryEnum::
                                  kNonRemovableBlockDevices};
+  DCHECK(init_callback_.is_null());
+  init_callback_ = std::move(done_callback);
+  initialized_ = false;
+
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&CrosHealthdMetricsProvider::OnProbeTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      GetTimeout());
   GetService()->ProbeTelemetryInfo(
       categories_to_probe,
       base::BindOnce(&CrosHealthdMetricsProvider::OnProbeDone,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool CrosHealthdMetricsProvider::IsInitialized() {
+  return initialized_;
+}
+
+void CrosHealthdMetricsProvider::OnProbeTimeout() {
+  base::ScopedClosureRunner runner(std::move(init_callback_));
+  DVLOG(1) << "cros_healthd: endpoint is not found.";
+
+  // Invalidate OnProbeDone callback.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  devices_.clear();
+  initialized_ = false;
 }
 
 void CrosHealthdMetricsProvider::OnProbeDone(
-    base::OnceClosure done_callback,
     chromeos::cros_healthd::mojom::TelemetryInfoPtr ptr) {
-  base::ScopedClosureRunner runner(std::move(done_callback));
+  base::ScopedClosureRunner runner(std::move(init_callback_));
+
+  // Invalidate OnProbeTimeout callback.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   devices_.clear();
+  initialized_ = true;
 
   if (ptr.is_null()) {
-    LOG(ERROR) << "cros_healthd: Empty response";
+    DVLOG(1) << "cros_healthd: Empty response";
     return;
   }
 
   const auto& block_device_result = ptr->block_device_result;
   if (block_device_result.is_null()) {
-    LOG(ERROR) << "cros_healthd: No block device info";
+    DVLOG(1) << "cros_healthd: No block device info";
     return;
   }
 
   auto tag = block_device_result->which();
   if (tag == chromeos::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
                  ERROR) {
-    LOG(ERROR) << "cros_healthd: Error getting block device info: "
-               << block_device_result->get_error()->msg;
+    DVLOG(1) << "cros_healthd: Error getting block device info: "
+             << block_device_result->get_error()->msg;
     return;
   }
   DCHECK_EQ(tag, chromeos::cros_healthd::mojom::NonRemovableBlockDeviceResult::
