@@ -28,13 +28,14 @@ class FakeErrorTolerantBleAdvertisement : public ErrorTolerantBleAdvertisement {
   void InvokeStopCallback();
 
   // ErrorTolerantBleAdvertisement:
-  void Stop(const base::Closure& callback) override;
+  void Stop(base::OnceClosure callback) override;
   bool HasBeenStopped() override;
 
  private:
   base::UnguessableToken id_;
   base::OnceCallback<void(const DeviceIdPair&)> destructor_callback_;
-  base::Closure stop_callback_;
+  base::OnceClosure stop_callback_;
+  bool stopped_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeErrorTolerantBleAdvertisement);
 };

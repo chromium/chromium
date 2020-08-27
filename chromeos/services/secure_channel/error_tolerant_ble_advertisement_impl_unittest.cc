@@ -97,7 +97,7 @@ class SecureChannelErrorTolerantBleAdvertisementImplTest
   }
 
   void CallStop() {
-    advertisement_->Stop(base::Bind(
+    advertisement_->Stop(base::BindOnce(
         &SecureChannelErrorTolerantBleAdvertisementImplTest::OnStopped,
         base::Unretained(this)));
   }

@@ -56,7 +56,7 @@ class ErrorTolerantBleAdvertisementImpl
       BleSynchronizerBase* ble_synchronizer);
 
   // ErrorTolerantBleAdvertisement:
-  void Stop(const base::Closure& callback) override;
+  void Stop(base::OnceClosure callback) override;
   bool HasBeenStopped() override;
 
   // device::BluetoothAdvertisement::Observer
@@ -93,7 +93,8 @@ class ErrorTolerantBleAdvertisementImpl
 
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;
 
-  base::Closure stop_callback_;
+  bool stopped_ = false;
+  base::OnceClosure stop_callback_;
 
   base::WeakPtrFactory<ErrorTolerantBleAdvertisementImpl> weak_ptr_factory_{
       this};

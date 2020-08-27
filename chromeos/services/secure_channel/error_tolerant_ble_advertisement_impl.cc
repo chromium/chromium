@@ -67,16 +67,18 @@ ErrorTolerantBleAdvertisementImpl::~ErrorTolerantBleAdvertisementImpl() {
     advertisement_->RemoveObserver(this);
 }
 
-void ErrorTolerantBleAdvertisementImpl::Stop(const base::Closure& callback) {
+void ErrorTolerantBleAdvertisementImpl::Stop(base::OnceClosure callback) {
   // Stop() should only be called once per instance.
+  DCHECK(!stopped_);
   DCHECK(stop_callback_.is_null());
 
-  stop_callback_ = callback;
+  stopped_ = true;
+  stop_callback_ = std::move(callback);
   UpdateRegistrationStatus();
 }
 
 bool ErrorTolerantBleAdvertisementImpl::HasBeenStopped() {
-  return !stop_callback_.is_null();
+  return stopped_;
 }
 
 void ErrorTolerantBleAdvertisementImpl::AdvertisementReleased(
@@ -119,9 +121,10 @@ void ErrorTolerantBleAdvertisementImpl::AttemptRegistration() {
 
   ble_synchronizer_->RegisterAdvertisement(
       std::move(advertisement_data),
-      base::Bind(&ErrorTolerantBleAdvertisementImpl::OnAdvertisementRegistered,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(
+      base::BindOnce(
+          &ErrorTolerantBleAdvertisementImpl::OnAdvertisementRegistered,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
           &ErrorTolerantBleAdvertisementImpl::OnErrorRegisteringAdvertisement,
           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -140,10 +143,10 @@ void ErrorTolerantBleAdvertisementImpl::AttemptUnregistration() {
 
   ble_synchronizer_->UnregisterAdvertisement(
       advertisement_,
-      base::Bind(
+      base::BindOnce(
           &ErrorTolerantBleAdvertisementImpl::OnAdvertisementUnregistered,
           weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(
+      base::BindOnce(
           &ErrorTolerantBleAdvertisementImpl::OnErrorUnregisteringAdvertisement,
           weak_ptr_factory_.GetWeakPtr()));
 }
@@ -207,7 +210,7 @@ void ErrorTolerantBleAdvertisementImpl::OnAdvertisementUnregistered() {
   advertisement_ = nullptr;
 
   DCHECK(!stop_callback_.is_null());
-  stop_callback_.Run();
+  std::move(stop_callback_).Run();
 }
 
 void ErrorTolerantBleAdvertisementImpl::OnErrorUnregisteringAdvertisement(

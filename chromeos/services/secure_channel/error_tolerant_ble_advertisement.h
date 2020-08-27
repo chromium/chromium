@@ -28,7 +28,7 @@ class ErrorTolerantBleAdvertisement {
   // of simply deleting an ErrorTolerantBleAdvertisement object. Clients should
   // not assume that advertising has actually stopped until |callback| has been
   // invoked.
-  virtual void Stop(const base::Closure& callback) = 0;
+  virtual void Stop(base::OnceClosure callback) = 0;
 
   // Returns whether Stop() has been called.
   virtual bool HasBeenStopped() = 0;
