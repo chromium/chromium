@@ -5,14 +5,20 @@
 #ifndef ASH_SYSTEM_UNIFIED_NOTIFICATION_COUNTER_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_NOTIFICATION_COUNTER_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/macros.h"
 
 namespace ash {
 
+// Maximum count of notification shown by a number label. "+" icon is shown
+// instead if it exceeds this limit.
+constexpr size_t kTrayNotificationMaxCount = 9;
+
 // A notification counter view in UnifiedSystemTray button.
-class NotificationCounterView : public TrayItemView, public SessionObserver {
+class ASH_EXPORT NotificationCounterView : public TrayItemView,
+                                           public SessionObserver {
  public:
   explicit NotificationCounterView(Shelf* shelf);
   ~NotificationCounterView() override;
@@ -30,6 +36,8 @@ class NotificationCounterView : public TrayItemView, public SessionObserver {
 
   // views::TrayItemView:
   const char* GetClassName() const override;
+
+  int count_for_display_for_testing() const { return count_for_display_; }
 
  private:
   // The type / number of the icon that is currently set to the image view.

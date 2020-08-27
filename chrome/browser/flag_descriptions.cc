@@ -4190,6 +4190,11 @@ const char kMediaAppName[] = "Media App";
 const char kMediaAppDescription[] =
     "Enables the chrome://media-app System Web App (SWA)";
 
+const char kMediaNotificationsCounterName[] = "Media Notifications Counter";
+const char kMediaNotificationsCounterDescription[] =
+    "Remove media notifications from the notification counter in the status "
+    "area";
+
 const char kMediaSessionNotificationsName[] = "Media session notifications";
 const char kMediaSessionNotificationsDescription[] =
     "Shows notifications for media sessions showing the currently playing "

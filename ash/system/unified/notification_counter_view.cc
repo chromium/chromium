@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/media/media_notification_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -26,10 +27,6 @@
 namespace ash {
 
 namespace {
-
-// Maximum count of notification shown by a number label. "+" icon is shown
-// instead if it exceeds this limit.
-constexpr size_t kTrayNotificationMaxCount = 9;
 
 constexpr double kTrayNotificationCircleIconRadius = 8;
 
@@ -107,6 +104,20 @@ void NotificationCounterView::Update() {
       Shell::Get()->session_controller();
   size_t notification_count =
       message_center::MessageCenter::Get()->NotificationCount();
+
+  // If flag is set, do not include media notifications in count.
+  // TODO(crbug.com/1111881) This code can be removed when OS media controls are
+  // launched (expected by M90).
+  if (base::FeatureList::IsEnabled(features::kMediaNotificationsCounter)) {
+    const message_center::NotificationList::Notifications& visible =
+        message_center::MessageCenter::Get()->GetVisibleNotifications();
+    notification_count = std::count_if(
+        visible.begin(), visible.end(),
+        [](message_center::Notification* notification) {
+          return notification->notifier_id().id != kMediaSessionNotifierId;
+        });
+  }
+
   if (notification_count == 0 ||
       message_center::MessageCenter::Get()->IsQuietMode() ||
       !session_controller->ShouldShowNotificationTray() ||

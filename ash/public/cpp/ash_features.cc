@@ -87,6 +87,9 @@ const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
 const base::Feature kMediaSessionNotification{"MediaSessionNotification",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kMediaNotificationsCounter{
+    "MediaNotificationsCounter", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kMovablePartialScreenshot{
     "MovablePartialScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
 

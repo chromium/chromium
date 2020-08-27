@@ -2067,6 +2067,7 @@ test("ash_unittests") {
     "system/tray/tray_info_label_unittest.cc",
     "system/tray/tri_view_unittest.cc",
     "system/unified/feature_pods_container_view_unittest.cc",
+    "system/unified/notification_counter_view_unittest.cc",
     "system/unified/page_indicator_view_unittest.cc",
     "system/unified/quiet_mode_feature_pod_controller_unittest.cc",
     "system/unified/top_shortcuts_view_unittest.cc",
