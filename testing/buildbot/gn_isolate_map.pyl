@@ -46,8 +46,11 @@
 #  : the test is a python script; the path to the script is specified in
 #    the "script" field.
 #  "generated_script"
-#  : the test is a script generated at build time; the path to the script
-#    *relative to the output directory* is specified in the "script" field.
+#  : the test is a script generated at build time; the script *should* be
+#    in output_dir/bin/run_$target (or output_dir\bin\run_$target.bat on
+#    Windows), but an alternative path *may* be specified,
+#    in the "script" field, as *relative to the output directory*.
+#    TODO(crbug.com/816629): remove support for "script".
 #  "unknown"
 #  : (the default), which indicates that we don't know what the command line
 #    needs to be (this is a fatal error).
@@ -58,9 +61,10 @@
 # On Windows, ".exe" will be automatically appended if need be, so
 # the executable name (and target name) should not contain an ".exe".
 #
-# The optional "args" field can be used to append extra command line
-# args onto the command line determined by the "type". If not specified,
-# it defaults to an empty list (no extra args).
+# The optional "args" field may be specified for "windowed_test_launcher",
+# "console_test_launcher", and "script"-type tests, and can be used to
+# append extra command line args onto the command line determined by the
+# "type". If not specified, it defaults to an empty list (no extra args).
 #
 # The optional "label_type" field can be used in conjunction with
 # "type" == "console_test_launcher" or "type" == "windowed_test_launcher"
@@ -487,7 +491,6 @@
   "chrome_sizes": {
     "label": "//chrome/test:chrome_sizes",
     "type": "generated_script",
-    "script": "bin/run_chrome_sizes",
   },
   "chromedriver": {
     "label": "//chrome/test/chromedriver:chromedriver",
@@ -647,7 +650,6 @@
   "cronet_sizes": {
     "label": "//components/cronet/android:cronet_sizes",
     "type": "generated_script",
-    "script": "bin/run_cronet_sizes",
   },
   "cronet_smoketests_missing_native_library_instrumentation_apk": {
     "label": "//components/cronet/android:cronet_smoketests_missing_native_library_instrumentation_apk",
@@ -660,7 +662,6 @@
   "cronet_test": {
     "label": "//components/cronet/ios/test:cronet_test",
     "type": "generated_script",
-    "script": "bin/run_cronet_test"
   },
   "cronet_test_instrumentation_apk": {
     "label": "//components/cronet/android:cronet_test_instrumentation_apk",
@@ -896,21 +897,15 @@
     "type": "windowed_test_launcher",
   },
   "ios_chrome_bookmarks_egtests": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey:ios_chrome_bookmarks_egtests",
-    "script": "bin/run_ios_chrome_bookmarks_egtests",
     "type": "generated_script",
   },
   "ios_chrome_integration_egtests": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey:ios_chrome_integration_egtests",
-    "script": "bin/run_ios_chrome_integration_egtests",
     "type": "generated_script",
   },
   "ios_chrome_reading_list_egtests": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey:ios_chrome_reading_list_egtests",
-    "script": "bin/run_ios_chrome_reading_list_egtests",
     "type": "generated_script",
   },
   "ios_chrome_settings_egtests": {
@@ -918,162 +913,110 @@
       "--enable-features=ClearSyncedData",
     ],
     "label": "//ios/chrome/test/earl_grey:ios_chrome_settings_egtests",
-    "script": "bin/run_ios_chrome_settings_egtests",
     "type": "generated_script",
   },
   "ios_chrome_signin_egtests": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey:ios_chrome_signin_egtests",
-    "script": "bin/run_ios_chrome_signin_egtests",
     "type": "generated_script",
   },
   "ios_chrome_translate_egtests": {
     "label": "//ios/chrome/test/earl_grey:ios_chrome_translate_egtests",
-    "script": "bin/run_ios_chrome_translate_egtests",
     "type": "generated_script",
   },
   "ios_chrome_smoke_egtests": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey:ios_chrome_smoke_egtests",
-    "script": "bin/run_ios_chrome_smoke_egtests",
     "type": "generated_script",
   },
   "ios_chrome_ui_egtests": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey:ios_chrome_ui_egtests",
-    "script": "bin/run_ios_chrome_ui_egtests",
     "type": "generated_script",
   },
   "ios_chrome_unittests": {
-    "args": [],
     "label": "//ios/chrome/test:ios_chrome_unittests",
-    "script": "bin/run_ios_chrome_unittests",
     "type": "generated_script",
   },
   "ios_chrome_web_egtests": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey:ios_chrome_web_egtests",
-    "script": "bin/run_ios_chrome_web_egtests",
     "type": "generated_script",
   },
   "ios_chrome_bookmarks_eg2tests_module": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module",
-    "script": "bin/run_ios_chrome_bookmarks_eg2tests_module",
     "type": "generated_script",
   },
   "ios_chrome_integration_eg2tests_module": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
-    "script": "bin/run_ios_chrome_integration_eg2tests_module",
     "type": "generated_script",
   },
   "ios_chrome_settings_eg2tests_module": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module",
-    "script": "bin/run_ios_chrome_settings_eg2tests_module",
     "type": "generated_script",
   },
   "ios_chrome_signin_eg2tests_module": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module",
-    "script": "bin/run_ios_chrome_signin_eg2tests_module",
     "type": "generated_script",
   },
   "ios_chrome_smoke_eg2tests_module": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module",
-    "script": "bin/run_ios_chrome_smoke_eg2tests_module",
     "type": "generated_script",
   },
   "ios_chrome_ui_eg2tests_module": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module",
-    "script": "bin/run_ios_chrome_ui_eg2tests_module",
     "type": "generated_script",
   },
   "ios_chrome_web_eg2tests_module": {
-    "args": [],
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module",
-    "script": "bin/run_ios_chrome_web_eg2tests_module",
     "type": "generated_script",
   },
   "ios_crash_xcuitests_module": {
-    "args": [],
     "label": "//third_party/crashpad/crashpad/test/ios:ios_crash_xcuitests_module",
-    "script": "bin/run_ios_crash_xcuitests_module",
     "type": "generated_script",
   },
   "ios_components_unittests": {
-    "args": [],
     "label": "//ios/components:ios_components_unittests",
-    "script": "bin/run_ios_components_unittests",
     "type": "generated_script",
   },
   "ios_net_unittests": {
-    "args": [],
     "label": "//ios/net:ios_net_unittests",
-    "script": "bin/run_ios_net_unittests",
     "type": "generated_script",
   },
   "ios_remoting_unittests": {
-    "args": [],
     "label": "//remoting/ios:ios_remoting_unittests",
-    "script": "bin/run_ios_remoting_unittests",
     "type": "generated_script",
   },
   "ios_showcase_egtests": {
-    "args": [],
     "label": "//ios/showcase:ios_showcase_egtests",
-    "script": "bin/run_ios_showcase_egtests",
     "type": "generated_script",
   },
   "ios_showcase_eg2tests_module": {
-    "args":[],
     "label": "//ios/showcase:ios_showcase_eg2tests_module",
-    "script": "bin/run_ios_showcase_eg2tests_module",
     "type": "generated_script",
   },
   "ios_testing_unittests": {
-    "args": [],
     "label": "//ios/testing:ios_testing_unittests",
-    "script": "bin/run_ios_testing_unittests",
     "type": "generated_script",
   },
   "ios_web_inttests": {
-    "args": [],
     "label": "//ios/web:ios_web_inttests",
-    "script": "bin/run_ios_web_inttests",
     "type": "generated_script",
   },
   "ios_web_shell_eg2tests_module": {
-    "args": [],
     "label": "//ios/web/shell/test:ios_web_shell_eg2tests_module",
-    "script": "bin/run_ios_web_shell_eg2tests_module",
     "type": "generated_script",
   },
   "ios_web_shell_egtests": {
-    "args": [],
     "label": "//ios/web/shell/test:ios_web_shell_egtests",
-    "script": "bin/run_ios_web_shell_egtests",
     "type": "generated_script",
   },
   "ios_web_unittests": {
-    "args": [],
     "label": "//ios/web:ios_web_unittests",
-    "script": "bin/run_ios_web_unittests",
     "type": "generated_script",
   },
   "ios_web_view_inttests": {
-    "args": [],
     "label": "//ios/web_view:ios_web_view_inttests",
-    "script": "bin/run_ios_web_view_inttests",
     "type": "generated_script",
   },
   "ios_web_view_unittests": {
-    "args": [],
     "label": "//ios/web_view:ios_web_view_unittests",
-    "script": "bin/run_ios_web_view_unittests",
     "type": "generated_script",
   },
   "ipc_tests": {

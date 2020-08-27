@@ -1388,12 +1388,11 @@ class MetaBuildWrapper(object):
       cmdline = []
 
     if test_type == 'generated_script' or is_ios or is_lacros:
-      script = isolate_map[target].get('script', 'bin/run_{}'.format(target))
-      # TODO(crbug.com/816629): the 'script' in gn_isolate_map.pyl
-      # has a unix-style command line that won't work on win. We need to
-      # get rid of it.
       if is_win:
-        script = script.replace("bin/", "bin\\") + ".bat"
+        default_script = 'bin\\run_{}.bat'.format(target)
+      else:
+        default_script = 'bin/run_{}'.format(target)
+      script = isolate_map[target].get('script', default_script)
       cmdline += [script]
       return cmdline, []
 
