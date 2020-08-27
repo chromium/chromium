@@ -1844,6 +1844,24 @@
             ]
         }
     ],
+    "DesktopTabGroupsCollapse": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabGroupsCollapse"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesynchronizedScrolling": [
         {
             "platforms": [
