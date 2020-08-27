@@ -4,19 +4,66 @@
 
 #include "chrome/browser/nearby_sharing/sharesheet/nearby_share_action.h"
 
+#include <memory>
+#include <vector>
+
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
+#include "chrome/browser/nearby_sharing/attachment.h"
+#include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/webview/webview.h"
+#include "url/gurl.h"
+
+namespace {
+
+std::vector<base::FilePath> ResolveFileUrls(
+    Profile* profile,
+    const std::vector<GURL>& file_urls) {
+  std::vector<base::FilePath> file_paths;
+  storage::FileSystemContext* fs_context =
+      file_manager::util::GetFileSystemContextForExtensionId(
+          profile, file_manager::kFileManagerAppId);
+  for (const auto& file_url : file_urls) {
+    storage::FileSystemURL fs_url = fs_context->CrackURL(file_url);
+    file_paths.push_back(fs_url.path());
+  }
+  return file_paths;
+}
+
+std::vector<std::unique_ptr<Attachment>> CreateAttachmentsFromIntent(
+    Profile* profile,
+    apps::mojom::IntentPtr intent) {
+  std::vector<std::unique_ptr<Attachment>> attachments;
+
+  // TODO(knollr): Support other attachment types.
+  if (intent->file_urls) {
+    std::vector<base::FilePath> file_paths =
+        ResolveFileUrls(profile, *intent->file_urls);
+    for (auto& file_path : file_paths) {
+      attachments.push_back(
+          std::make_unique<FileAttachment>(std::move(file_path)));
+    }
+  }
+
+  return attachments;
+}
+
+}  // namespace
 
 namespace {
 
@@ -72,7 +119,8 @@ void NearbyShareAction::LaunchAction(
   DCHECK(nearby_ui_ != nullptr);
 
   nearby_ui_->AddObserver(this);
-  nearby_ui_->SetShareIntent(std::move(intent));
+  nearby_ui_->SetAttachments(
+      CreateAttachmentsFromIntent(profile, std::move(intent)));
 }
 
 void NearbyShareAction::OnClose() {

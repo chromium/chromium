@@ -18,30 +18,31 @@ class FileAttachment : public Attachment {
  public:
   using Type = sharing::mojom::FileMetadata::Type;
 
-  FileAttachment(std::string file_name,
-                 Type type,
-                 int64_t size,
-                 base::Optional<base::FilePath> file_path,
-                 std::string mime_type);
+  explicit FileAttachment(base::FilePath file_path);
   FileAttachment(int64_t id,
-                 std::string file_name,
-                 Type type,
                  int64_t size,
-                 std::string mime_type);
+                 std::string file_name,
+                 std::string mime_type,
+                 Type type);
   FileAttachment(const FileAttachment&);
+  FileAttachment(FileAttachment&&);
   FileAttachment& operator=(const FileAttachment&);
+  FileAttachment& operator=(FileAttachment&&);
   ~FileAttachment() override;
 
   const std::string& file_name() const { return file_name_; }
+  const std::string& mime_type() const { return mime_type_; }
   Type type() const { return type_; }
   const base::Optional<base::FilePath>& file_path() const { return file_path_; }
-  const std::string& mime_type() const { return mime_type_; }
+
+  // Attachment:
+  void MoveToShareTarget(ShareTarget& share_target) override;
 
  private:
   std::string file_name_;
+  std::string mime_type_;
   Type type_;
   base::Optional<base::FilePath> file_path_;
-  std::string mime_type_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_FILE_ATTACHMENT_H_

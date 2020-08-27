@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARING_SERVICE_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARING_SERVICE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -87,13 +88,10 @@ class NearbySharingService : public KeyedService {
   virtual StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) = 0;
 
-  // Sends text to the remote |share_target|.
-  virtual StatusCodes SendText(const ShareTarget& share_target,
-                               std::string text) = 0;
-
-  // Sends files to the remote |share_target|.
-  virtual StatusCodes SendFiles(const ShareTarget& share_target,
-                                const std::vector<base::FilePath>& files) = 0;
+  // Sends |attachments| to the remote |share_target|.
+  virtual StatusCodes SendAttachments(
+      const ShareTarget& share_target,
+      std::vector<std::unique_ptr<Attachment>> attachments) = 0;
 
   // Accepts incoming share from the remote |share_target|.
   virtual void Accept(const ShareTarget& share_target,

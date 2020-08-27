@@ -1503,6 +1503,7 @@ static_library("ui") {
       "//chrome/browser:theme_properties",
       "//chrome/browser/media/kaleidoscope/mojom",
       "//chrome/browser/media/router",
+      "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
       "//chrome/browser/nearby_sharing/client",
       "//chrome/browser/nearby_sharing/contacts",

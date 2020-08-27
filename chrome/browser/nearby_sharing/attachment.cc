@@ -23,6 +23,10 @@ Attachment::Attachment(int64_t id, Family family, int64_t size)
 
 Attachment::Attachment(const Attachment&) = default;
 
+Attachment::Attachment(Attachment&&) = default;
+
 Attachment& Attachment::operator=(const Attachment&) = default;
+
+Attachment& Attachment::operator=(Attachment&&) = default;
 
 Attachment::~Attachment() = default;

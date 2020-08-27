@@ -79,10 +79,9 @@ class NearbySharingServiceImpl
                                      ReceiveSurfaceState state) override;
   StatusCodes UnregisterReceiveSurface(
       TransferUpdateCallback* transfer_callback) override;
-  StatusCodes SendText(const ShareTarget& share_target,
-                       std::string text) override;
-  StatusCodes SendFiles(const ShareTarget& share_target,
-                        const std::vector<base::FilePath>& files) override;
+  StatusCodes SendAttachments(
+      const ShareTarget& share_target,
+      std::vector<std::unique_ptr<Attachment>> attachments) override;
   void Accept(const ShareTarget& share_target,
               StatusCodesCallback status_codes_callback) override;
   void Reject(const ShareTarget& share_target,
@@ -166,7 +165,6 @@ class NearbySharingServiceImpl
   StatusCodes ReceivePayloads(const ShareTarget& share_target);
   StatusCodes SendPayloads(const ShareTarget& share_target);
 
-  StatusCodes SendAttachments(ShareTarget share_target);
   void OnOutgoingConnection(const ShareTarget& share_target,
                             NearbyConnection* connection);
   void SendIntroduction(const ShareTarget& share_target,

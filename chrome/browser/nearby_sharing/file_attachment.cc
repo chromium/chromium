@@ -2,33 +2,68 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 
-FileAttachment::FileAttachment(std::string file_name,
-                               Type type,
-                               int64_t size,
-                               base::Optional<base::FilePath> file_path,
-                               std::string mime_type)
-    : Attachment(Attachment::Family::kFile, size),
-      file_name_(std::move(file_name)),
-      type_(type),
-      file_path_(std::move(file_path)),
-      mime_type_(std::move(mime_type)) {}
+#include <utility>
+
+#include "base/strings/string_util.h"
+#include "chrome/browser/nearby_sharing/share_target.h"
+#include "net/base/mime_util.h"
+
+namespace {
+
+FileAttachment::Type FileAttachmentTypeFromMimeType(
+    const std::string& mime_type) {
+  if (base::StartsWith(mime_type, "image/"))
+    return FileAttachment::Type::kImage;
+
+  if (base::StartsWith(mime_type, "video/"))
+    return FileAttachment::Type::kVideo;
+
+  if (base::StartsWith(mime_type, "audio/"))
+    return FileAttachment::Type::kAudio;
+
+  return FileAttachment::Type::kUnknown;
+}
+
+std::string MimeTypeFromPath(const base::FilePath& path) {
+  std::string mime_type = "application/octet-stream";
+  base::FilePath::StringType ext = path.Extension();
+  if (!ext.empty())
+    net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
+
+  return mime_type;
+}
+
+}  // namespace
+
+FileAttachment::FileAttachment(base::FilePath file_path)
+    : Attachment(Attachment::Family::kFile, /*size=*/0),
+      file_name_(file_path.BaseName().AsUTF8Unsafe()),
+      mime_type_(MimeTypeFromPath(file_path)),
+      type_(FileAttachmentTypeFromMimeType(mime_type_)),
+      file_path_(std::move(file_path)) {}
 
 FileAttachment::FileAttachment(int64_t id,
-                               std::string file_name,
-                               Type type,
                                int64_t size,
-                               std::string mime_type)
+                               std::string file_name,
+                               std::string mime_type,
+                               Type type)
     : Attachment(id, Attachment::Family::kFile, size),
       file_name_(std::move(file_name)),
-      type_(type),
-      mime_type_(std::move(mime_type)) {}
+      mime_type_(std::move(mime_type)),
+      type_(type) {}
 
 FileAttachment::FileAttachment(const FileAttachment&) = default;
 
+FileAttachment::FileAttachment(FileAttachment&&) = default;
+
 FileAttachment& FileAttachment::operator=(const FileAttachment&) = default;
 
+FileAttachment& FileAttachment::operator=(FileAttachment&&) = default;
+
 FileAttachment::~FileAttachment() = default;
+
+void FileAttachment::MoveToShareTarget(ShareTarget& share_target) {
+  share_target.file_attachments.push_back(std::move(*this));
+}

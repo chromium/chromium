@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
@@ -58,10 +60,8 @@ TextAttachment CreateTextAttachment(TextAttachment::Type type) {
 }
 
 FileAttachment CreateFileAttachment(FileAttachment::Type type) {
-  return FileAttachment(/*file_name=*/"file.jpg", type,
-                        /*size=*/10,
-                        /*file_path=*/base::nullopt,
-                        /*mime_type=*/"example");
+  return FileAttachment(/*id=*/0, /*size=*/10, /*file_name=*/"file.jpg",
+                        /*mime_type=*/"example", type);
 }
 
 std::unique_ptr<KeyedService> CreateMockNearbySharingService(
@@ -96,50 +96,17 @@ SkBitmap CreateTestSkBitmap() {
   return bitmap;
 }
 
-ShareTarget CreateIncomingShareTarget(int text_attachments,
-                                      int image_attachments,
-                                      int other_file_attachments) {
-  ShareTarget share_target;
-  share_target.is_incoming = true;
-  for (int i = 0; i < text_attachments; i++) {
-    share_target.text_attachments.push_back(
-        CreateTextAttachment(TextAttachment::Type::kText));
-  }
-
-  for (int i = 0; i < image_attachments; i++) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath file_path;
-    base::CreateTemporaryFile(&file_path);
-    SkBitmap image = CreateTestSkBitmap();
-
-    std::vector<unsigned char> png_data;
-    EXPECT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
-        image, /*discard_transparency=*/true, &png_data));
-    char* data = reinterpret_cast<char*>(&png_data[0]);
-    int size = static_cast<int>(png_data.size());
-    base::WriteFile(file_path, data, size);
-
-    FileAttachment attachment(/*file_name=*/"file.jpg",
-                              FileAttachment::Type::kImage,
-                              /*size=*/10,
-                              /*file_path=*/file_path,
-                              /*mime_type=*/"example");
-
-    share_target.file_attachments.push_back(std::move(attachment));
-  }
-
-  for (int i = 0; i < other_file_attachments; i++) {
-    share_target.file_attachments.push_back(
-        CreateFileAttachment(FileAttachment::Type::kVideo));
-  }
-  return share_target;
-}
-
 class NearbyNotificationManagerTest : public testing::Test {
  public:
   NearbyNotificationManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharing);
     RegisterNearbySharingPrefs(pref_service_.registry());
+  }
+
+  ~NearbyNotificationManagerTest() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     notification_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(&profile_);
     nearby_service_ = CreateAndUseMockNearbySharingService(&profile_);
@@ -155,9 +122,12 @@ class NearbyNotificationManagerTest : public testing::Test {
             std::make_unique<ChromeDownloadManagerDelegate>(&profile_));
 
     ui::TestClipboard::CreateForCurrentThread();
+
+    // From now on we don't allow any blocking tasks anymore.
+    disallow_blocking_ = std::make_unique<base::ScopedDisallowBlocking>();
   }
 
-  ~NearbyNotificationManagerTest() override {
+  void TearDown() override {
     DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
         ->SetDownloadManagerDelegateForTesting(nullptr);
     ui::Clipboard::DestroyClipboardForCurrentThread();
@@ -178,17 +148,52 @@ class NearbyNotificationManagerTest : public testing::Test {
         &profile_);
   }
 
+  ShareTarget CreateIncomingShareTarget(int text_attachments,
+                                        int image_attachments,
+                                        int other_file_attachments) {
+    ShareTarget share_target;
+    share_target.is_incoming = true;
+    for (int i = 0; i < text_attachments; i++) {
+      share_target.text_attachments.push_back(
+          CreateTextAttachment(TextAttachment::Type::kText));
+    }
+
+    for (int i = 0; i < image_attachments; i++) {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      std::string name = base::StrCat({base::NumberToString(i), ".png"});
+      base::FilePath file_path = temp_dir_.GetPath().AppendASCII(name);
+      SkBitmap image = CreateTestSkBitmap();
+
+      std::vector<unsigned char> png_data;
+      EXPECT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
+          image, /*discard_transparency=*/true, &png_data));
+      char* data = reinterpret_cast<char*>(&png_data[0]);
+      int size = static_cast<int>(png_data.size());
+      base::WriteFile(file_path, data, size);
+
+      FileAttachment attachment(file_path);
+      share_target.file_attachments.push_back(std::move(attachment));
+    }
+
+    for (int i = 0; i < other_file_attachments; i++) {
+      share_target.file_attachments.push_back(
+          CreateFileAttachment(FileAttachment::Type::kVideo));
+    }
+    return share_target;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
   TestingProfile profile_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   MockNearbySharingService* nearby_service_;
+  std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<NearbyNotificationManager> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  base::ScopedDisallowBlocking disallow_blocking_;
 };
 
 struct AttachmentsTestParamInternal {
