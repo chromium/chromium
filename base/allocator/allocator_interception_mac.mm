@@ -77,13 +77,14 @@ void DeprotectMallocZone(ChromeMallocZone* default_zone,
   MACH_CHECK(result == KERN_SUCCESS, result) << "vm_region_64";
 
   // The kernel always returns a null object for VM_REGION_BASIC_INFO_64, but
-  // balance it with a deallocate in case this ever changes. See 10.9.2
-  // xnu-2422.90.20/osfmk/vm/vm_map.c vm_map_region.
+  // balance it with a deallocate in case this ever changes. See
+  // the VM_REGION_BASIC_INFO_64 case in vm_map_region() in 10.15's
+  // https://opensource.apple.com/source/xnu/xnu-6153.11.26/osfmk/vm/vm_map.c .
   mach_port_deallocate(mach_task_self(), unused);
 
   // Does the region fully enclose the zone pointers? Possibly unwarranted
-  // simplification used: using the size of a full version 8 malloc zone rather
-  // than the actual smaller size if the passed-in zone is not version 8.
+  // simplification used: using the size of a full version 10 malloc zone rather
+  // than the actual smaller size if the passed-in zone is not version 10.
   CHECK(*reprotection_start <= reinterpret_cast<vm_address_t>(default_zone));
   vm_size_t zone_offset = reinterpret_cast<vm_address_t>(default_zone) -
                           reinterpret_cast<vm_address_t>(*reprotection_start);
@@ -147,8 +148,8 @@ void* oom_killer_memalign(struct _malloc_zone_t* zone,
                           size_t size) {
   void* result = g_old_zone.memalign(zone, alignment, size);
   // Only die if posix_memalign would have returned ENOMEM, since there are
-  // other reasons why NULL might be returned (see
-  // http://opensource.apple.com/source/Libc/Libc-583/gen/malloc.c ).
+  // other reasons why null might be returned. See posix_memalign() in 10.15's
+  // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
       base::bits::IsPowerOfTwo(alignment)) {
     TerminateBecauseOutOfMemory(size);
@@ -197,8 +198,8 @@ void* oom_killer_memalign_purgeable(struct _malloc_zone_t* zone,
                                     size_t size) {
   void* result = g_old_purgeable_zone.memalign(zone, alignment, size);
   // Only die if posix_memalign would have returned ENOMEM, since there are
-  // other reasons why NULL might be returned (see
-  // http://opensource.apple.com/source/Libc/Libc-583/gen/malloc.c ).
+  // other reasons why null might be returned. See posix_memalign() in 10.15's
+  // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
       base::bits::IsPowerOfTwo(alignment)) {
     TerminateBecauseOutOfMemory(size);
@@ -363,11 +364,11 @@ void InterceptAllocationsMac() {
 // === C malloc/calloc/valloc/realloc/posix_memalign ===
 
 // This approach is not perfect, as requests for amounts of memory larger than
-// MALLOC_ABSOLUTE_MAX_SIZE (currently SIZE_T_MAX - (2 * PAGE_SIZE)) will
-// still fail with a NULL rather than dying (see
-// http://opensource.apple.com/source/Libc/Libc-583/gen/malloc.c for details).
-// Unfortunately, it's the best we can do. Also note that this does not affect
-// allocations from non-default zones.
+// MALLOC_ABSOLUTE_MAX_SIZE (currently SIZE_T_MAX - (2 * PAGE_SIZE)) will still
+// fail with a NULL rather than dying (see malloc_zone_malloc() in
+// https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c for
+// details). Unfortunately, it's the best we can do. Also note that this does
+// not affect allocations from non-default zones.
 
 #if !defined(ADDRESS_SANITIZER)
   // Don't do anything special on OOM for the malloc zones replaced by
