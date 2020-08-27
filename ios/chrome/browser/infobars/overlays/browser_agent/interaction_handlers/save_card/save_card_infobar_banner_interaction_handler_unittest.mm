@@ -60,3 +60,11 @@ TEST_F(SaveCardInfobarBannerInteractionHandlerTest, SaveCredentials) {
   handler_.SaveCredentials(infobar_.get(), cardholder_name,
                            expiration_date_month, expiration_date_year);
 }
+
+// Test that dismissing the banner does not call
+// InfobarDelegate::InfobarDismissed(), which is a behavior for the other
+// Infobars.
+TEST_F(SaveCardInfobarBannerInteractionHandlerTest, DismissalNoDelegateCall) {
+  EXPECT_CALL(mock_delegate(), InfoBarDismissed()).Times(0);
+  handler_.BannerDismissedByUser(infobar_.get());
+}

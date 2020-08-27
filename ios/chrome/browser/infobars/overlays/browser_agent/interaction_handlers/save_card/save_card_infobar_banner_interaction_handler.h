@@ -31,6 +31,10 @@ class SaveCardInfobarBannerInteractionHandler
                                base::string16 expiration_date_month,
                                base::string16 expiration_date_year);
 
+  // Overrides InfobarBannerInteractionHandler implementation because a banner
+  // dismissal should not call InfoBarDismissed();
+  void BannerDismissedByUser(InfoBarIOS* infobar) override {}
+
  private:
   // InfobarBannerInteractionHandler:
   std::unique_ptr<InfobarBannerOverlayRequestCallbackInstaller>

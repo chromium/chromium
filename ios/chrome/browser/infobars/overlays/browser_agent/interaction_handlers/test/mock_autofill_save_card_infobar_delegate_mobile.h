@@ -39,6 +39,7 @@ class MockAutofillSaveCardInfoBarDelegateMobile
                     base::string16 expiration_date_month,
                     base::string16 expiration_date_year));
   MOCK_METHOD1(OnLegalMessageLinkClicked, void(GURL url));
+  MOCK_METHOD0(InfoBarDismissed, void());
 };
 
 class MockAutofillSaveCardInfoBarDelegateMobileFactory {
