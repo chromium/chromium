@@ -841,19 +841,26 @@ bool UiControllerAndroid::OnBackButtonClicked(
 
   // For BROWSE state the back button should react in its default way.
   if (ui_delegate_ != nullptr &&
-      ui_delegate_->GetState() == AutofillAssistantState::BROWSE) {
+      (ui_delegate_->GetState() == AutofillAssistantState::BROWSE)) {
     return false;
   }
 
   if (ui_delegate_ == nullptr ||
-      ui_delegate_->GetState() == AutofillAssistantState::STOPPED) {
+      ui_delegate_->GetState() == AutofillAssistantState::STOPPED ||
+      ui_delegate_->IsRunningLiteScript()) {
     if (client_->GetWebContents() != nullptr &&
         client_->GetWebContents()->GetController().CanGoBack()) {
       client_->GetWebContents()->GetController().GoBack();
     }
-    DestroySelf();  // Destroying UI here because Shutdown does not do so in
-                    // all cases.
-    Shutdown(Metrics::DropOutReason::BACK_BUTTON_CLICKED);
+
+    // Lite scripts should not shut down here. The navigation will be handled
+    // by the lite script coordinator.
+    if (!ui_delegate_ || !ui_delegate_->IsRunningLiteScript()) {
+      // Destroying UI here because Shutdown does not do so in all cases.
+      DestroySelf();
+      Shutdown(Metrics::DropOutReason::BACK_BUTTON_CLICKED);
+    }
+
     return true;
   }
 

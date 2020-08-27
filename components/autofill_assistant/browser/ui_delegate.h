@@ -241,8 +241,11 @@ class UiDelegate {
   // hidden.
   virtual bool ShouldShowOverlay() const = 0;
 
-  // Notifies the UI deleagate that it should shut down.
+  // Notifies the UI delegate that it should shut down.
   virtual void ShutdownIfNecessary() = 0;
+
+  // Returns whether the UI delegate is currently running a lite script or not.
+  virtual bool IsRunningLiteScript() const = 0;
 
  protected:
   UiDelegate() = default;

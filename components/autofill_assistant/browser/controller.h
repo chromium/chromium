@@ -239,6 +239,7 @@ class Controller : public ScriptExecutorDelegate,
   const GenericUserInterfaceProto* GetGenericUiProto() const override;
   bool ShouldShowOverlay() const override;
   void ShutdownIfNecessary() override;
+  bool IsRunningLiteScript() const override;
 
  private:
   friend ControllerTest;
@@ -341,7 +342,6 @@ class Controller : public ScriptExecutorDelegate,
   void PerformDelayedShutdownIfNecessary();
 
   bool StateNeedsUI(AutofillAssistantState state);
-  bool IsRunningLiteScript() const;
 
   ClientSettings settings_;
   Client* const client_;
