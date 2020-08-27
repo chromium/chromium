@@ -2464,10 +2464,6 @@ crbug.com/1002514 external/wpt/web-share/share-sharePromise-internal-slot.https.
 
 crbug.com/1029514 external/wpt/html/semantics/embedded-content/the-video-element/resize-during-playback.html [ Pass Failure ]
 
-# css-pseudo-4 ::spelling-error and ::grammar-error not implemented
-crbug.com/1035708 external/wpt/css/css-pseudo/spelling-error-001.html [ Failure ]
-crbug.com/1035708 external/wpt/css/css-pseudo/grammar-error-001.html [ Failure ]
-
 # css-pseudo-4 opacity not applied to ::first-line
 crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Failure ]
 
@@ -2562,8 +2558,6 @@ crbug.com/1110512 external/wpt/css/css-pseudo/selection-contenteditable-011.html
 crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-pseudo/selection-overlay-and-grammar-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-pseudo/selection-overlay-and-spelling-001.html [ Failure ]
 crbug.com/626703 [ Win7 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-016.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-021.tentative.html [ Failure ]
