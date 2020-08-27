@@ -3005,6 +3005,7 @@ test("base_unittests") {
       "win/object_watcher_unittest.cc",
       "win/pe_image_reader_unittest.cc",
       "win/pe_image_unittest.cc",
+      "win/post_async_results_unittest.cc",
       "win/reference_unittest.cc",
       "win/registry_unittest.cc",
       "win/scoped_bstr_unittest.cc",

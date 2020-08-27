@@ -65,6 +65,7 @@ AsyncResultsT<T> GetAsyncResults(
   if (FAILED(hr)) {
     VLOG(2) << "GetAsyncResults failed: "
             << logging::SystemErrorCodeToString(hr);
+    return AsyncResultsT<T>{};
   }
 
   return results;
