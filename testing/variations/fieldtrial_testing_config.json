@@ -2239,6 +2239,21 @@
             ]
         }
     ],
+    "EnableAutofillPasswordReauthIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAutofillPasswordReauthIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableContextMenuPerformanceHints": [
         {
             "platforms": [
