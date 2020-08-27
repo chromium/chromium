@@ -253,7 +253,6 @@ def _OptimizeWithR8(options,
 
     cmd = build_utils.JavaCmd(options.warnings_as_errors) + [
         '-Dcom.android.tools.r8.allowTestProguardOptions=1',
-        '-Dcom.android.tools.r8.enableVerticalClassMerging=1',
     ]
     if options.disable_outlining:
       cmd += ['-Dcom.android.tools.r8.disableOutlining=1']
