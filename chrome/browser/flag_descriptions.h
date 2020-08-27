@@ -2433,6 +2433,9 @@ extern const char kLockScreenNotificationDescription[];
 extern const char kMediaAppName[];
 extern const char kMediaAppDescription[];
 
+extern const char kMediaNotificationsCounterName[];
+extern const char kMediaNotificationsCounterDescription[];
+
 extern const char kMediaSessionNotificationsName[];
 extern const char kMediaSessionNotificationsDescription[];
 

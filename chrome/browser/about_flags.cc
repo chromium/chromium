@@ -5169,6 +5169,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHideArcMediaNotificationsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHideArcMediaNotifications)},
 
+    {"media-notifications-counter",
+     flag_descriptions::kMediaNotificationsCounterName,
+     flag_descriptions::kMediaNotificationsCounterDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMediaNotificationsCounter)},
+
     {"reduce-display-notifications",
      flag_descriptions::kReduceDisplayNotificationsName,
      flag_descriptions::kReduceDisplayNotificationsDescription, kOsCrOS,
