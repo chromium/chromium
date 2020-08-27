@@ -736,6 +736,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/webcodecs/audio_frame.idl",
           "//third_party/blink/renderer/modules/webcodecs/audio_frame_init.idl",
           "//third_party/blink/renderer/modules/webcodecs/audio_frame_output_callback.idl",
+          "//third_party/blink/renderer/modules/webcodecs/codec_state.idl",
           "//third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.idl",
           "//third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk_init.idl",
           "//third_party/blink/renderer/modules/webcodecs/encoded_audio_config.idl",

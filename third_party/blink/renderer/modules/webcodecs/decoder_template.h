@@ -13,6 +13,7 @@
 #include "media/base/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_codecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -44,6 +45,7 @@ class MODULES_EXPORT DecoderTemplate : public ScriptWrappable {
   ScriptPromise flush(ExceptionState&);
   void reset(ExceptionState&);
   void close(ExceptionState&);
+  String state() const { return state_; }
 
   // GarbageCollected override.
   void Trace(Visitor*) const override;
@@ -87,6 +89,9 @@ class MODULES_EXPORT DecoderTemplate : public ScriptWrappable {
   void OnResetDone();
   void OnOutput(scoped_refptr<MediaOutputType>);
 
+  // Helper function making it easier to check |state_|.
+  bool IsClosed();
+
   Member<ScriptState> script_state_;
   Member<OutputCallbackType> output_cb_;
   Member<V8WebCodecsErrorCallback> error_cb_;
@@ -94,6 +99,9 @@ class MODULES_EXPORT DecoderTemplate : public ScriptWrappable {
   HeapDeque<Member<Request>> requests_;
   int32_t requested_decodes_ = 0;
   int32_t requested_resets_ = 0;
+
+  // Which state the codec is in, determining which calls we can receive.
+  V8CodecState state_;
 
   // An in-flight, mutually-exclusive request.
   // Could be a configure, flush, or reset. Decodes go in |pending_decodes_|.
@@ -105,7 +113,6 @@ class MODULES_EXPORT DecoderTemplate : public ScriptWrappable {
   // duplicates can be elided.
   std::unique_ptr<MediaDecoderType> decoder_;
   bool initializing_sync_ = false;
-  bool is_closed_ = false;
 
   // TODO(sandersd): Can this just be a HashSet by ptr comparison?
   uint32_t pending_decode_id_ = 0;

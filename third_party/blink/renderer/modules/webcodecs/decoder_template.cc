@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -42,7 +43,7 @@ template <typename Traits>
 DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
                                          const InitType* init,
                                          ExceptionState& exception_state)
-    : script_state_(script_state) {
+    : script_state_(script_state), state_(V8CodecState::Enum::kUnconfigured) {
   DVLOG(1) << __func__;
   DCHECK(init->hasOutput());
   DCHECK(init->hasError());
@@ -61,14 +62,16 @@ int32_t DecoderTemplate<Traits>::decodeQueueSize() {
 }
 
 template <typename Traits>
+bool DecoderTemplate<Traits>::IsClosed() {
+  return state_ == V8CodecState::Enum::kClosed;
+}
+
+template <typename Traits>
 void DecoderTemplate<Traits>::configure(const ConfigType* config,
                                         ExceptionState& exception_state) {
   DVLOG(1) << __func__;
-  if (is_closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot configure a closed codec.");
+  if (ThrowIfCodecStateClosed(state_, "decode", exception_state))
     return;
-  }
 
   auto media_config = std::make_unique<MediaConfigType>();
   String console_message;
@@ -88,6 +91,8 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
       break;
   }
 
+  state_ = V8CodecState(V8CodecState::Enum::kConfigured);
+
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kConfigure;
   request->media_config = std::move(media_config);
@@ -99,11 +104,11 @@ template <typename Traits>
 void DecoderTemplate<Traits>::decode(const InputType* chunk,
                                      ExceptionState& exception_state) {
   DVLOG(3) << __func__;
-  if (is_closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot decode with a closed codec.");
+  if (ThrowIfCodecStateClosed(state_, "decode", exception_state))
     return;
-  }
+
+  if (ThrowIfCodecStateUnconfigured(state_, "decode", exception_state))
+    return;
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kDecode;
@@ -116,11 +121,11 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 template <typename Traits>
 ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
   DVLOG(3) << __func__;
-  if (is_closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot flush a closed codec.");
+  if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
     return ScriptPromise();
-  }
+
+  if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
+    return ScriptPromise();
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kFlush;
@@ -135,11 +140,13 @@ ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
 template <typename Traits>
 void DecoderTemplate<Traits>::reset(ExceptionState& exception_state) {
   DVLOG(3) << __func__;
-  if (is_closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot reset a closed codec.");
+  if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
-  }
+
+  if (state_ == V8CodecState::Enum::kUnconfigured)
+    return;
+
+  state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kReset;
@@ -151,18 +158,16 @@ void DecoderTemplate<Traits>::reset(ExceptionState& exception_state) {
 template <typename Traits>
 void DecoderTemplate<Traits>::close(ExceptionState& exception_state) {
   DVLOG(3) << __func__;
-  if (is_closed_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Codec is already closed.");
+  if (ThrowIfCodecStateClosed(state_, "close", exception_state))
     return;
-  }
+
   Shutdown(false);
 }
 
 template <typename Traits>
 void DecoderTemplate<Traits>::ProcessRequests() {
   DVLOG(3) << __func__;
-  DCHECK(!is_closed_);
+  DCHECK(!IsClosed());
   while (!pending_request_ && !requests_.IsEmpty()) {
     Request* request = requests_.front();
     switch (request->type) {
@@ -190,7 +195,7 @@ void DecoderTemplate<Traits>::ProcessRequests() {
 template <typename Traits>
 bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   DVLOG(3) << __func__;
-  DCHECK(!is_closed_);
+  DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK(request->media_config);
@@ -242,7 +247,7 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
 template <typename Traits>
 bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   DVLOG(3) << __func__;
-  DCHECK(!is_closed_);
+  DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kDecode);
   DCHECK(request->chunk);
@@ -287,7 +292,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
 template <typename Traits>
 bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
   DVLOG(3) << __func__;
-  DCHECK(!is_closed_);
+  DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kFlush);
 
@@ -317,7 +322,7 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
 template <typename Traits>
 bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
   DVLOG(3) << __func__;
-  DCHECK(!is_closed_);
+  DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kReset);
   DCHECK_GT(requested_resets_, 0);
@@ -333,7 +338,7 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
 template <typename Traits>
 void DecoderTemplate<Traits>::HandleError() {
   DVLOG(1) << __func__;
-  if (is_closed_)
+  if (IsClosed())
     return;
 
   Shutdown(true);
@@ -342,14 +347,14 @@ void DecoderTemplate<Traits>::HandleError() {
 template <typename Traits>
 void DecoderTemplate<Traits>::Shutdown(bool is_error) {
   DVLOG(3) << __func__;
-  DCHECK(!is_closed_);
+  DCHECK(!IsClosed());
 
   // Store the error callback so that we can use it after clearing state.
   V8WebCodecsErrorCallback* error_cb = error_cb_.Get();
 
   // Prevent any new public API calls during teardown.
   // This should make it safe to call into JS synchronously.
-  is_closed_ = true;
+  state_ = V8CodecState(V8CodecState::Enum::kClosed);
 
   // Prevent any late callbacks running.
   output_cb_.Release();
@@ -381,7 +386,7 @@ void DecoderTemplate<Traits>::Shutdown(bool is_error) {
 template <typename Traits>
 void DecoderTemplate<Traits>::OnConfigureFlushDone(media::DecodeStatus status) {
   DVLOG(3) << __func__;
-  if (is_closed_)
+  if (IsClosed())
     return;
 
   DCHECK(pending_request_);
@@ -402,7 +407,7 @@ void DecoderTemplate<Traits>::OnConfigureFlushDone(media::DecodeStatus status) {
 template <typename Traits>
 void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
   DVLOG(3) << __func__;
-  if (is_closed_)
+  if (IsClosed())
     return;
 
   DCHECK(pending_request_);
@@ -425,7 +430,7 @@ template <typename Traits>
 void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id,
                                            media::DecodeStatus status) {
   DVLOG(3) << __func__;
-  if (is_closed_)
+  if (IsClosed())
     return;
 
   if (status != media::DecodeStatus::OK &&
@@ -443,7 +448,7 @@ void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id,
 template <typename Traits>
 void DecoderTemplate<Traits>::OnFlushDone(media::DecodeStatus status) {
   DVLOG(3) << __func__;
-  if (is_closed_)
+  if (IsClosed())
     return;
 
   DCHECK(pending_request_);
@@ -461,7 +466,7 @@ void DecoderTemplate<Traits>::OnFlushDone(media::DecodeStatus status) {
 template <typename Traits>
 void DecoderTemplate<Traits>::OnResetDone() {
   DVLOG(3) << __func__;
-  if (is_closed_)
+  if (IsClosed())
     return;
 
   DCHECK(pending_request_);
@@ -474,8 +479,9 @@ void DecoderTemplate<Traits>::OnResetDone() {
 template <typename Traits>
 void DecoderTemplate<Traits>::OnOutput(scoped_refptr<MediaOutputType> output) {
   DVLOG(3) << __func__;
-  if (is_closed_)
+  if (state_.AsEnum() != V8CodecState::Enum::kConfigured)
     return;
+
   output_cb_->InvokeAndReportException(
       nullptr, MakeGarbageCollected<OutputType>(output));
 }

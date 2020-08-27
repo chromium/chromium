@@ -34,6 +34,8 @@ async_test(async (t) => {
     numberOfChannels: 2
   }
 
+  assert_equals(decoder.state, "unconfigured");
+
   // Empty codec rejected.
   config.codec = '';
   assert_throws_js(TypeError, () => { decoder.configure(config); });
@@ -54,7 +56,101 @@ async_test(async (t) => {
   config.codec = 'opus';
   decoder.configure(config);
 
+  assert_equals(decoder.state, "configured");
+
+  // Test we can configure after a reset.
+  decoder.reset()
+  assert_equals(decoder.state, "unconfigured");
+
+  decoder.configure(config);
+  assert_equals(decoder.state, "configured");
+
   asyncDone(t);
 }, 'Test AudioDecoder.configure() codec validity');
+
+function getFakeChunk() {
+  return new EncodedAudioChunk({
+    type:'key',
+    timestamp:0,
+    data:Uint8Array.of(0)
+  });
+}
+
+promise_test(t => {
+  let decoder = new AudioDecoder({
+    output(frame) {
+      t.step(() => {
+        throw "unexpected output";
+      });
+    },
+    error(e) {
+      t.step(() => {
+        throw "unexpected error";
+      });
+    }
+  });
+
+  decoder.close();
+
+  assert_equals(decoder.state, "closed");
+
+  let config = {
+    sampleRate: 48000,
+    numberOfChannels: 2,
+    codec: 'opus'
+  }
+
+  let fakeChunk = getFakeChunk();
+
+  assert_throws_dom("InvalidStateError",
+                    () => decoder.configure(config),
+                    "configure");
+  assert_throws_dom("InvalidStateError",
+                    () => decoder.decode(fakeChunk),
+                    "decode");
+  assert_throws_dom("InvalidStateError",
+                    () => decoder.reset(),
+                    "reset");
+  assert_throws_dom("InvalidStateError",
+                    () => decoder.close(),
+                    "close");
+  return promise_rejects_dom(t, 'InvalidStateError', decoder.flush(), 'flush');
+}, 'Closed decoder');
+
+promise_test(t => {
+  let decoder = new AudioDecoder({
+    output(frame) {
+      t.step(() => {
+        throw "unexpected output";
+      });
+    },
+    error(e) {
+      t.step(() => {
+        throw "unexpected error";
+      });
+    }
+  });
+
+  assert_equals(decoder.state, "unconfigured");
+
+  // Reseting an unconfigured encoder is a no-op.
+  decoder.reset();
+  assert_equals(decoder.state, "unconfigured");
+
+  let config = {
+    sampleRate: 48000,
+    numberOfChannels: 2,
+    codec: 'opus'
+  }
+
+  let fakeChunk = getFakeChunk();
+
+  assert_throws_dom("InvalidStateError",
+                    () => decoder.decode(fakeChunk),
+                    "decode");
+  return promise_rejects_dom(t, 'InvalidStateError', decoder.flush(), 'flush');
+}, 'Unconfigured decoder');
+
+
 </script>
 </html>

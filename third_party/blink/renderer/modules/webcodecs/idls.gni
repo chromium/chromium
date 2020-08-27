@@ -41,6 +41,8 @@ modules_dictionary_idl_files = [
   "video_track_writer_parameters.idl",
 ]
 
+modules_typedefs_enums_only_idl_files = [ "codec_state.idl" ]
+
 # IDL files that either define partial interfaces or target (right side of)
 # `includes`.
 modules_dependency_idl_files = []

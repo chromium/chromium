@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_metadata.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
@@ -106,7 +107,7 @@ VideoEncoder* VideoEncoder::Create(ScriptState* script_state,
 VideoEncoder::VideoEncoder(ScriptState* script_state,
                            const VideoEncoderInit* init,
                            ExceptionState& exception_state)
-    : script_state_(script_state) {
+    : state_(V8CodecState::Enum::kUnconfigured), script_state_(script_state) {
   output_callback_ = init->output();
   if (init->hasError())
     error_callback_ = init->error();
@@ -229,6 +230,9 @@ void VideoEncoder::configure(const VideoEncoderConfig* config,
                              ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (ThrowIfCodecStateClosed(state_, "configure", exception_state))
+    return;
+
   auto parsed_config = ParseConfig(config, exception_state);
 
   if (!parsed_config) {
@@ -244,6 +248,8 @@ void VideoEncoder::configure(const VideoEncoderConfig* config,
   // TODO(https://crbug.com/1119892): flush |media_encoder_| if it already
   // exists, otherwise might could lose frames in flight.
 
+  state_ = V8CodecState(V8CodecState::Enum::kConfigured);
+
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kConfigure;
   request->config = std::move(parsed_config);
@@ -254,11 +260,12 @@ void VideoEncoder::encode(VideoFrame* frame,
                           const VideoEncoderEncodeOptions* opts,
                           ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!media_encoder_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Encoder is not configured yet.");
+
+  if (ThrowIfCodecStateClosed(state_, "encode", exception_state))
     return;
-  }
+
+  if (ThrowIfCodecStateUnconfigured(state_, "encode", exception_state))
+    return;
 
   // This will fail if |frame| is already destroyed.
   auto* internal_frame = frame->clone(exception_state);
@@ -296,22 +303,25 @@ void VideoEncoder::encode(VideoFrame* frame,
 
 void VideoEncoder::close(ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!media_encoder_)
+
+  if (ThrowIfCodecStateClosed(state_, "close", exception_state))
     return;
 
-  reset(exception_state);
+  state_ = V8CodecState(V8CodecState::Enum::kClosed);
+
+  ClearRequests();
   media_encoder_.reset();
   output_callback_.Clear();
   error_callback_.Clear();
 }
 
-ScriptPromise VideoEncoder::flush(ExceptionState&) {
+ScriptPromise VideoEncoder::flush(ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!media_encoder_) {
-    auto* ex = MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "Encoder is not configured yet.");
-    return ScriptPromise::RejectWithDOMException(script_state_, ex);
-  }
+  if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
+    return ScriptPromise();
+
+  if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
+    return ScriptPromise();
 
   Request* request = MakeGarbageCollected<Request>();
   request->resolver =
@@ -321,10 +331,19 @@ ScriptPromise VideoEncoder::flush(ExceptionState&) {
   return request->resolver->Promise();
 }
 
-void VideoEncoder::reset(ExceptionState&) {
+void VideoEncoder::reset(ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO: Not fully implemented yet
+  if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
+    return;
 
+  ClearRequests();
+
+  state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
+}
+
+void VideoEncoder::ClearRequests() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (!requests_.empty()) {
     Request* pending_req = requests_.TakeFirst();
     DCHECK(pending_req);
@@ -337,7 +356,8 @@ void VideoEncoder::reset(ExceptionState&) {
 }
 
 void VideoEncoder::CallOutputCallback(EncodedVideoChunk* chunk) {
-  if (!script_state_->ContextIsValid() || !output_callback_)
+  if (!script_state_->ContextIsValid() || !output_callback_ ||
+      state_.AsEnum() != V8CodecState::Enum::kConfigured)
     return;
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk);
@@ -346,6 +366,10 @@ void VideoEncoder::CallOutputCallback(EncodedVideoChunk* chunk) {
 void VideoEncoder::HandleError(DOMException* ex) {
   // Save a temp before we clear the callback.
   V8WebCodecsErrorCallback* error_callback = error_callback_.Get();
+
+  state_ = V8CodecState(V8CodecState::Enum::kClosed);
+
+  ClearRequests();
 
   // Errors are permanent. Shut everything down.
   error_callback_.Clear();
@@ -391,6 +415,8 @@ void VideoEncoder::ProcessRequests() {
 
 void VideoEncoder::ProcessEncode(Request* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
+  DCHECK(media_encoder_);
   DCHECK_EQ(request->type, Request::Type::kEncode);
   DCHECK_GT(requested_encodes_, 0);
 
@@ -405,11 +431,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
     }
     self->ProcessRequests();
   };
-
-  if (!media_encoder_) {
-    HandleError(DOMExceptionCode::kOperationError, "Encoder is not configured");
-    return;
-  }
 
   scoped_refptr<media::VideoFrame> frame = request->frame->frame();
   if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
@@ -432,6 +453,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
 }
 
 void VideoEncoder::ProcessConfigure(Request* request) {
+  DCHECK_NE(state_.AsEnum(), V8CodecState::Enum::kClosed);
   DCHECK(request->config);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -481,6 +503,8 @@ void VideoEncoder::ProcessConfigure(Request* request) {
 
 void VideoEncoder::ProcessFlush(Request* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
+  DCHECK(media_encoder_);
   DCHECK_EQ(request->type, Request::Type::kFlush);
 
   auto done_callback = [](VideoEncoder* self, Request* req,
@@ -501,14 +525,6 @@ void VideoEncoder::ProcessFlush(Request* request) {
     self->stall_request_processing_ = false;
     self->ProcessRequests();
   };
-
-  if (!media_encoder_) {
-    auto* ex = MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, "Encoder is not configured");
-    HandleError(ex);
-    request->resolver.Release()->Reject(ex);
-    return;
-  }
 
   stall_request_processing_ = true;
   media_encoder_->Flush(WTF::Bind(done_callback, WrapWeakPersistent(this),

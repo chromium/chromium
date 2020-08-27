@@ -13,6 +13,7 @@
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_output_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_codecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -57,6 +58,8 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
   void reset(ExceptionState&);
 
   void close(ExceptionState&);
+
+  String state() { return state_; }
 
   // GarbageCollected override.
   void Trace(Visitor*) const override;
@@ -103,6 +106,8 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
   void ProcessConfigure(Request* request);
   void ProcessFlush(Request* request);
 
+  void ClearRequests();
+
   void MediaEncoderOutputCallback(media::VideoEncoderOutput output);
 
   std::unique_ptr<ParsedConfig> ParseConfig(const VideoEncoderConfig*,
@@ -111,6 +116,8 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
 
   gfx::Size frame_size_;
   std::unique_ptr<media::VideoEncoder> media_encoder_;
+
+  V8CodecState state_;
 
   Member<ScriptState> script_state_;
   Member<V8VideoEncoderOutputCallback> output_callback_;

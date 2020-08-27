@@ -68,6 +68,8 @@ async_test(async (t) => {
     error(error) { t.unreached_func("Unexpected error:" + error).call(); },
   });
 
+  assert_equals(decoder.state, "unconfigured");
+
   asyncDone(t);
 }, 'Test VideoDecoder construction');
 
@@ -76,7 +78,6 @@ async_test(async (t) => {
     output(chunk) { t.unreached_func("Unexpected output").call(); },
     error(error) { t.unreached_func("Unexpected error:" + error).call(); },
   });
-
 
   let config = {};
 
@@ -99,6 +100,27 @@ async_test(async (t) => {
   // Valid unambiguous codec accepted.
   config.codec = 'vp09.00.10.08';
   decoder.configure(config);
+
+  assert_equals(decoder.state, "configured");
+
+  // Verify a failed reconfigure does not affect the current configuration.
+  config.codec = 'bogus';
+  assert_throws_js(TypeError, () => { decoder.configure(config); });
+
+  assert_equals(decoder.state, "configured");
+
+  // Verify we can reconfigure.
+  config.codec = 'vp09.00.10.08';
+  decoder.configure(config);
+
+  assert_equals(decoder.state, "configured");
+
+  // Test we can configure after a reset.
+  decoder.reset()
+  assert_equals(decoder.state, "unconfigured");
+
+  decoder.configure(config);
+  assert_equals(decoder.state, "configured");
 
   asyncDone(t);
 }, 'Test VideoDecoder.configure() codec validity');
@@ -152,13 +174,15 @@ promise_test(t => {
 
   decoder.close();
 
+  assert_equals(decoder.state, "closed");
+
   let fakeChunk = getFakeChunk();
   assert_throws_dom("InvalidStateError",
                     () => decoder.configure({codec: vp9.codec}),
                     "configure");
   assert_throws_dom("InvalidStateError",
                     () => decoder.decode(fakeChunk),
-                    "reset");
+                    "decode");
   assert_throws_dom("InvalidStateError",
                     () => decoder.reset(),
                     "reset");
@@ -169,7 +193,6 @@ promise_test(t => {
 }, 'Closed decoder');
 
 promise_test(t => {
-  let numErrors = 0;
   let decoder = new VideoDecoder({
     output(frame) {
       t.step(() => {
@@ -177,17 +200,24 @@ promise_test(t => {
       });
     },
     error(e) {
-      numErrors++;
+      t.step(() => {
+        throw "unexpected error";
+      });
     }
   });
 
-  let fakeChunk = getFakeChunk();
-  decoder.decode(fakeChunk);
+  assert_equals(decoder.state, "unconfigured");
 
-  return decoder.flush().then(
-      () => { throw "flush succeeded unexpectedly"; },
-      () => { assert_equals(numErrors, 1, "errors"); });
-}, 'Decode without configure');
+  // Reseting an unconfigured encoder is a no-op.
+  decoder.reset();
+  assert_equals(decoder.state, "unconfigured");
+
+  let fakeChunk = getFakeChunk();
+  assert_throws_dom("InvalidStateError",
+                    () => decoder.decode(fakeChunk),
+                    "decode");
+  return promise_rejects_dom(t, 'InvalidStateError', decoder.flush(), 'flush');
+}, 'Unconfigured decoder');
 
 promise_test(t => {
   let numErrors = 0;
@@ -209,7 +239,10 @@ promise_test(t => {
 
   return decoder.flush().then(
       () => { throw "flush succeeded unexpectedly"; },
-      () => { assert_equals(numErrors, 1, "errors"); });
+      () => {
+        assert_equals(numErrors, 1, "errors");
+        assert_equals(decoder.state, "closed");
+      });
 }, 'Decode corrupt VP9 frame');
 
 promise_test(t => {

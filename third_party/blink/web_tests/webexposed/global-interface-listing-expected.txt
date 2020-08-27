@@ -271,6 +271,7 @@ interface AudioContext : BaseAudioContext
 interface AudioDecoder
     attribute @@toStringTag
     getter decodeQueueSize
+    getter state
     method close
     method configure
     method constructor
@@ -8778,6 +8779,7 @@ interface ValidityState
 interface VideoDecoder
     attribute @@toStringTag
     getter decodeQueueSize
+    getter state
     method close
     method configure
     method constructor
@@ -8787,6 +8789,7 @@ interface VideoDecoder
 interface VideoEncoder
     attribute @@toStringTag
     getter encodeQueueSize
+    getter state
     method close
     method configure
     method constructor

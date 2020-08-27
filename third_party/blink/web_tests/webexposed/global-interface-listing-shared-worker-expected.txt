@@ -18,6 +18,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface AudioDecoder
 [Worker]     attribute @@toStringTag
 [Worker]     getter decodeQueueSize
+[Worker]     getter state
 [Worker]     method close
 [Worker]     method configure
 [Worker]     method constructor

@@ -17,6 +17,7 @@ interface AbortSignal : EventTarget
 interface AudioDecoder
     attribute @@toStringTag
     getter decodeQueueSize
+    getter state
     method close
     method configure
     method constructor

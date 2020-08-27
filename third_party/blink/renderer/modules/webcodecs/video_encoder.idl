@@ -54,4 +54,7 @@
     // rejected.
     [RaisesException]
     void close();
+
+    // Which state the decoder is in, indicating which methods can be called.
+    readonly attribute CodecState state;
 };

@@ -18,7 +18,7 @@
   // |init| includes an |output| callback for emitting VideoFrames and an
   // |error| callback for emitting decode errors.
   //
-  // When in an error state, methods other than reset() will fail.
+  // When in an closed state, all methods will fail.
   //
   // TODO(sandersd): Consider adding a state or last error attribute.
   [CallWith=ScriptState, RaisesException] constructor(VideoDecoderInit init);
@@ -73,4 +73,7 @@
   //
   // Not recoverable: make a new VideoDecoder if needed.
   [RaisesException] void close();
+
+  // Which state the decoder is in, indicating which methods can be called.
+  readonly attribute CodecState state;
 };
