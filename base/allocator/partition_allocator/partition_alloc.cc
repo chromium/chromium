@@ -62,6 +62,9 @@ static_assert(!(kPartitionPageSize % kSystemPageSize),
 static_assert(sizeof(internal::PartitionPage<internal::ThreadSafe>) <=
                   kPageMetadataSize,
               "PartitionPage should not be too big");
+static_assert(sizeof(internal::PartitionBucket<internal::ThreadSafe>) <=
+                  kPageMetadataSize,
+              "PartitionBucket should not be too big");
 static_assert(kPageMetadataSize * kNumPartitionPagesPerSuperPage <=
                   kSystemPageSize,
               "page metadata fits in hole");
