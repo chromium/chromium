@@ -4548,7 +4548,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-OutOfProcessPPAPITest.TrueTypeFont"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.content_browsertests.filter"
         ],
         "merge": {
           "args": [],
