@@ -7,16 +7,15 @@
 
 #include <memory>
 
+#include "chromeos/components/phonehub/fake_feature_status_provider.h"
+#include "chromeos/components/phonehub/fake_notification_access_manager.h"
+#include "chromeos/components/phonehub/fake_notification_manager.h"
+#include "chromeos/components/phonehub/fake_tether_controller.h"
+#include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 
 namespace chromeos {
-
 namespace phonehub {
-
-class FakeFeatureStatusProvider;
-class FakeNotificationAccessManager;
-class MutablePhoneModel;
-class FakeTetherController;
 
 // This class initializes fake versions of the core business logic of Phone Hub.
 class FakePhoneHubManager : public PhoneHubManager {
@@ -25,33 +24,36 @@ class FakePhoneHubManager : public PhoneHubManager {
   ~FakePhoneHubManager() override;
 
   FakeFeatureStatusProvider* fake_feature_status_provider() {
-    return fake_feature_status_provider_.get();
+    return &fake_feature_status_provider_;
   }
 
   FakeNotificationAccessManager* fake_notification_access_manager() {
-    return fake_notification_access_manager_.get();
+    return &fake_notification_access_manager_;
   }
 
-  MutablePhoneModel* mutable_phone_model() {
-    return mutable_phone_model_.get();
+  FakeNotificationManager* fake_notification_manager() {
+    return &fake_notification_manager_;
   }
+
+  MutablePhoneModel* mutable_phone_model() { return &mutable_phone_model_; }
 
   FakeTetherController* fake_tether_controller() {
-    return fake_tether_controller_.get();
+    return &fake_tether_controller_;
   }
 
  private:
   // PhoneHubManager:
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   NotificationAccessManager* GetNotificationAccessManager() override;
+  NotificationManager* GetNotificationManager() override;
   PhoneModel* GetPhoneModel() override;
   TetherController* GetTetherController() override;
 
-  std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
-  std::unique_ptr<FakeNotificationAccessManager>
-      fake_notification_access_manager_;
-  std::unique_ptr<MutablePhoneModel> mutable_phone_model_;
-  std::unique_ptr<FakeTetherController> fake_tether_controller_;
+  FakeFeatureStatusProvider fake_feature_status_provider_;
+  FakeNotificationAccessManager fake_notification_access_manager_;
+  FakeNotificationManager fake_notification_manager_;
+  MutablePhoneModel mutable_phone_model_;
+  FakeTetherController fake_tether_controller_;
 };
 
 }  // namespace phonehub

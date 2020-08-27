@@ -10,6 +10,7 @@ namespace phonehub {
 
 class FeatureStatusProvider;
 class NotificationAccessManager;
+class NotificationManager;
 class PhoneModel;
 class TetherController;
 
@@ -22,12 +23,11 @@ class PhoneHubManager {
   PhoneHubManager(const PhoneHubManager&) = delete;
   PhoneHubManager& operator=(const PhoneHubManager&) = delete;
 
+  // Getters for sub-elements.
   virtual FeatureStatusProvider* GetFeatureStatusProvider() = 0;
-
   virtual NotificationAccessManager* GetNotificationAccessManager() = 0;
-
+  virtual NotificationManager* GetNotificationManager() = 0;
   virtual PhoneModel* GetPhoneModel() = 0;
-
   virtual TetherController* GetTetherController() = 0;
 
  protected:

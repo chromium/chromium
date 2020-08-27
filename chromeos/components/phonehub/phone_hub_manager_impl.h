@@ -36,6 +36,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   // PhoneHubManager:
   FeatureStatusProvider* GetFeatureStatusProvider() override;
   NotificationAccessManager* GetNotificationAccessManager() override;
+  NotificationManager* GetNotificationManager() override;
   PhoneModel* GetPhoneModel() override;
   TetherController* GetTetherController() override;
 
@@ -45,6 +46,7 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
 
   std::unique_ptr<FeatureStatusProvider> feature_status_provider_;
   std::unique_ptr<NotificationAccessManager> notification_access_manager_;
+  std::unique_ptr<NotificationManager> notification_manager_;
   std::unique_ptr<PhoneModel> phone_model_;
   std::unique_ptr<TetherController> tether_controller_;
 };

@@ -7,6 +7,7 @@
 #include "chromeos/components/phonehub/feature_status_provider_impl.h"
 #include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
+#include "chromeos/components/phonehub/notification_manager_impl.h"
 #include "chromeos/components/phonehub/tether_controller_impl.h"
 
 namespace chromeos {
@@ -21,6 +22,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           multidevice_setup_client)),
       notification_access_manager_(
           std::make_unique<NotificationAccessManagerImpl>(pref_service)),
+      notification_manager_(std::make_unique<NotificationManagerImpl>()),
       phone_model_(std::make_unique<MutablePhoneModel>()),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(multidevice_setup_client)) {}
@@ -33,6 +35,10 @@ FeatureStatusProvider* PhoneHubManagerImpl::GetFeatureStatusProvider() {
 
 NotificationAccessManager* PhoneHubManagerImpl::GetNotificationAccessManager() {
   return notification_access_manager_.get();
+}
+
+NotificationManager* PhoneHubManagerImpl::GetNotificationManager() {
+  return notification_manager_.get();
 }
 
 PhoneModel* PhoneHubManagerImpl::GetPhoneModel() {
