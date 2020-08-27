@@ -60,8 +60,8 @@ class QemuTarget(emu_target.EmuTarget):
           kvm_error = 'File /dev/kvm does not exist. Please install KVM first.'
         else:
           kvm_error = 'To use KVM acceleration, add user to the kvm group '\
-                      'through editing /etc/groups. Log out and back in for '\
-                      'the change to take effect.'
+                      'with "sudo usermod -a -G kvm $USER". Log out and back '\
+                      'in for the change to take effect.'
         raise FuchsiaTargetException(kvm_error)
       else:
         raise FuchsiaTargetException('KVM unavailable when CPU architecture of'\
