@@ -12,6 +12,7 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  *   isSyncing: boolean,
  *   gaiaName: string,
  *   userName: string,
+ *   isManaged: boolean,
  *   avatarIcon: string,
  * }}
  */

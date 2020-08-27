@@ -78,6 +78,11 @@
           type="chrome_html"
           compress="false"/>
       <structure
+          name="IDR_SIGNIN_ICONS_JS"
+          file="../signin_icons.js"
+          type="chrome_html"
+          compress="false"/>
+      <structure
           name="IDR_PROFILE_PICKER_LAZY_LOAD_JS"
           file="profile_creation_flow/lazy_load.js"
           type="chrome_html"

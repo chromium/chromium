@@ -117,7 +117,7 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kProfilePickerResources, kProfilePickerResourcesSize),
       generated_path, IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
-
+  html_source->AddResourcePath("signin_icons.js", IDR_SIGNIN_ICONS_JS);
   AddStrings(html_source);
   content::WebUIDataSource::Add(profile, html_source);
 }
