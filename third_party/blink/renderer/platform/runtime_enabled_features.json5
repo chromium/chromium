@@ -1983,7 +1983,6 @@
     },
     {
       name: "WebAppManifestDisplayOverride",
-      status: "test",
     },
     {
       name: "WebAssemblySimd",
