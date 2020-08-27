@@ -10,8 +10,12 @@ details on the presubmit API built into gcl.
 
 
 def RunUnittests(input_api, output_api):
-  return input_api.canned_checks.RunUnitTests(input_api, output_api,
-      [input_api.os_path.join('grit', 'test_suite_all.py')])
+  presubmit_path = input_api.PresubmitLocalPath()
+  return input_api.canned_checks.RunUnitTests(input_api, output_api, [
+      input_api.os_path.join('grit', 'test_suite_all.py'),
+      input_api.os_path.join(input_api.PresubmitLocalPath(),
+                             'preprocess_grit_test.py')
+  ])
 
 
 def CheckChangeOnUpload(input_api, output_api):
