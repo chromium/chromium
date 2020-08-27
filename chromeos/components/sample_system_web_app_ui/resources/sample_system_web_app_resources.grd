@@ -15,9 +15,7 @@
       <if expr="is_official_build == false">
         <!-- Privileged app host contents. -->
         <include name="IDR_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML" file="index.html" type="BINDATA" />
-        <include name="IDR_SAMPLE_SYSTEM_WEB_APP_PWA_HTML" file="pwa.html" type="BINDATA" />
         <include name="IDR_SAMPLE_SYSTEM_WEB_APP_SANDBOX_HTML" file="sandbox.html" type="BINDATA" />
-        <include name="IDR_SAMPLE_SYSTEM_WEB_APP_MANIFEST" file="manifest.json" type="BINDATA" compress="gzip" />
         <include name="IDR_SAMPLE_SYSTEM_WEB_APP_ICON_192" file="app_icon_192.png" type="BINDATA" />
 
         <!-- Untrusted app contents. -->

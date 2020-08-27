@@ -6,15 +6,13 @@
 
 #include <memory>
 
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/common/web_application_info.h"
 #include "chromeos/components/sample_system_web_app_ui/url_constants.h"
 #include "chromeos/grit/chromeos_sample_system_web_app_resources.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
   std::unique_ptr<WebApplicationInfo> info =

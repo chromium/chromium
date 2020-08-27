@@ -36,12 +36,8 @@ SampleSystemWebAppUI::SampleSystemWebAppUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(kChromeUISampleSystemWebAppHost));
 
   trusted_source->AddResourcePath("", IDR_SAMPLE_SYSTEM_WEB_APP_INDEX_HTML);
-  trusted_source->AddResourcePath("pwa.html",
-                                  IDR_SAMPLE_SYSTEM_WEB_APP_PWA_HTML);
   trusted_source->AddResourcePath("sandbox.html",
                                   IDR_SAMPLE_SYSTEM_WEB_APP_SANDBOX_HTML);
-  trusted_source->AddResourcePath("manifest.json",
-                                  IDR_SAMPLE_SYSTEM_WEB_APP_MANIFEST);
   trusted_source->AddResourcePath("app_icon_192.png",
                                   IDR_SAMPLE_SYSTEM_WEB_APP_ICON_192);
 
