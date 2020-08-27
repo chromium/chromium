@@ -7,11 +7,18 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace content {
+struct ContextMenuParams;
+class RenderFrameHost;
+}  // namespace content
+
 // Dialog widget that contains the Desktop Profile picker webui.
-class ProfilePickerView : public views::DialogDelegateView {
+class ProfilePickerView : public views::DialogDelegateView,
+                          public content::WebContentsDelegate {
  private:
   friend class ProfilePicker;
 
@@ -44,6 +51,10 @@ class ProfilePickerView : public views::DialogDelegateView {
 
   // views::View;
   gfx::Size GetMinimumSize() const override;
+
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                         const content::ContextMenuParams& params) override;
 
   views::WebView* web_view_;
   InitState initialized_;

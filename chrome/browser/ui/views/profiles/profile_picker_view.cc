@@ -16,6 +16,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/google_chrome_strings.h"
+#include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -112,6 +114,7 @@ void ProfilePickerView::OnSystemProfileCreated(ProfilePicker::Page init_page,
 void ProfilePickerView::Init(ProfilePicker::Page init_page,
                              Profile* system_profile) {
   web_view_ = new views::WebView(system_profile);
+  web_view_->GetWebContents()->SetDelegate(this);
   AddChildView(web_view_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -156,4 +159,11 @@ gfx::Size ProfilePickerView::GetMinimumSize() const {
   gfx::Size minimum_size = GetPreferredSize();
   minimum_size.SetToMin(ProfilePickerUI::GetMinimumSize());
   return minimum_size;
+}
+
+bool ProfilePickerView::HandleContextMenu(
+    content::RenderFrameHost* render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Ignores context menu.
+  return true;
 }
