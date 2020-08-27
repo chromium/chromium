@@ -703,8 +703,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SupportOAuthOutageInDice) {
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   task_runner->FastForwardBy(
       base::TimeDelta::FromHours((kLockAccountReconcilorTimeoutHours + 1) / 2));
-  // Check that the reconcilor was unblocked.
-  EXPECT_EQ(1, reconcilor_unblocked_count_);
+  // Wait until reconcilor is unblocked.
+  WaitForReconcilorUnblockedCount(1);
 }
 
 // Checks that re-auth on Gaia triggers the fetch for a refresh token.
