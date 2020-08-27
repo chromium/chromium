@@ -6,7 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_MESSAGING_PROXY_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/workers/threaded_worklet_messaging_proxy.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
@@ -22,7 +24,8 @@ class WorkerThread;
 // AudioWorkletMessagingProxy is a main thread interface for
 // AudioWorkletGlobalScope. The proxy communicates with the associated global
 // scope via AudioWorkletObjectProxy.
-class AudioWorkletMessagingProxy final : public ThreadedWorkletMessagingProxy {
+class MODULES_EXPORT AudioWorkletMessagingProxy final
+    : public ThreadedWorkletMessagingProxy {
  public:
   AudioWorkletMessagingProxy(ExecutionContext*, AudioWorklet*);
 
@@ -58,6 +61,15 @@ class AudioWorkletMessagingProxy final : public ThreadedWorkletMessagingProxy {
 
   // Returns a WorkerThread object backs the AudioWorkletThread instance.
   WorkerThread* GetBackingWorkerThread();
+
+  // Create a Worklet backing thread based on constraints:
+  // 1. AudioContext && top-level frame (or RT thread flag): RT priority thread
+  // 2. AudioContext && sub frame: DISPLAY priority thread
+  // 3. OfflineAudioContext: BACKGROUND priority thread
+  static std::unique_ptr<WorkerThread> CreateWorkletThreadWithConstraints(
+      WorkerReportingProxy&,
+      const bool has_realtime_constraint,
+      const bool is_top_level_frame);
 
   void Trace(Visitor*) const override;
 

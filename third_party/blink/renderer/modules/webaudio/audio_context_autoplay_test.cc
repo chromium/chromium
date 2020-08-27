@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_worklet_thread.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"

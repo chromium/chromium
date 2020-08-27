@@ -17,7 +17,7 @@ enum class ThreadType {
   kSharedWorkerThread = 4,
   kAnimationAndPaintWorkletThread = 5,
   kServiceWorkerThread = 6,
-  kAudioWorkletThread = 7,
+  // 7 was kAudioWorkletThread, which was deleted (crbug.com/1051992)
   kFileThread = 8,
   kDatabaseThread = 9,
   // 10 was kWebAudioThread, which was deleted (crbug.com/965093)
@@ -28,8 +28,11 @@ enum class ThreadType {
   kTestThread = 15,
   kAudioEncoderThread = 16,
   kVideoEncoderThread = 17,
+  kOfflineAudioWorkletThread = 18,
+  kRealtimeAudioWorkletThread = 19,
+  kSemiRealtimeAudioWorkletThread = 20,
 
-  kCount = 18
+  kCount = 21
 };
 
 BLINK_PLATFORM_EXPORT const char* GetNameForThreadType(ThreadType);

@@ -13,8 +13,8 @@
 
 namespace blink {
 
-// WorkletThreadHolder is a template class which is designed for singleton
-// instance of DerivedWorkletThread (i.e. AnimationWorkletThread,
+// WorkletThreadHolder is a template class which is designed for per-process
+// singleton instance of DerivedWorkletThread (i.e. AnimationWorkletThread,
 // AudioWorkletThread).
 template <class DerivedWorkletThread>
 class WorkletThreadHolder {

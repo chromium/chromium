@@ -1159,7 +1159,9 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/modules/webaudio/audio_worklet_thread.cc'
+            'third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.cc',
+            'third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.cc',
+            'third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.cc',
         ],
         'allowed': ['base::ThreadPriority'],
     },
