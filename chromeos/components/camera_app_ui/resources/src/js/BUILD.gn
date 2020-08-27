@@ -5,13 +5,17 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
-  closure_flags = default_closure_args + [
-                    "language_in=ECMASCRIPT_2018",
-                    "jscomp_error=lintChecks",
-                    "hide_warnings_for=mojo/public/js/",
-                    "hide_warnings_for=gen/",
-                    "hide_warnings_for=src/js/lib/",
-                  ]
+  closure_flags =
+      default_closure_args + [
+        "language_in=ECMASCRIPT_2018",
+        "jscomp_error=lintChecks",
+        "conformance_configs=" +
+            rebase_path("externs/conformance_config.textproto", root_build_dir),
+        "jscomp_error=conformanceViolations",
+        "hide_warnings_for=mojo/public/js/",
+        "hide_warnings_for=gen/",
+        "hide_warnings_for=src/js/lib/",
+      ]
   deps = [ ":compile_resources" ]
 }
 
