@@ -1682,5 +1682,12 @@ Polymer({
     this.clickPrimaryActionButtonForTesting_ = false;
     button.click();
   },
+
+  /**
+   * Called when focus is returned.
+   */
+  onFocusReturned() {
+    this.focusActiveFrame_();
+  },
 });
 })();
