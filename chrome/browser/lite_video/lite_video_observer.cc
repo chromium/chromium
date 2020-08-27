@@ -17,7 +17,11 @@
 #include "chrome/browser/lite_video/lite_video_switches.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
 #include "chrome/browser/lite_video/lite_video_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/optimization_guide/optimization_guide_decider.h"
+#include "components/optimization_guide/proto/lite_video_metadata.pb.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -62,6 +66,7 @@ void LiteVideoObserver::MaybeCreateForWebContents(
 LiteVideoObserver::LiteVideoObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
   lite_video_decider_ = GetLiteVideoDeciderFromWebContents(web_contents);
+  routing_ids_to_notify_ = {};
 }
 
 LiteVideoObserver::~LiteVideoObserver() {
@@ -86,6 +91,7 @@ void LiteVideoObserver::DidFinishNavigation(
 
   if (navigation_handle->IsInMainFrame()) {
     FlushUKMMetrics();
+    routing_ids_to_notify_.clear();
     nav_metrics_ = lite_video::LiteVideoNavigationMetrics(
         navigation_handle->GetNavigationId(),
         lite_video::LiteVideoDecision::kUnknown, blocklist_reason,
@@ -96,6 +102,7 @@ void LiteVideoObserver::DidFinishNavigation(
   auto* render_frame_host = navigation_handle->GetRenderFrameHost();
   if (!render_frame_host)
     return;
+
   lite_video_decider_->CanApplyLiteVideo(
       navigation_handle,
       base::BindOnce(&LiteVideoObserver::OnHintAvailable,
@@ -106,26 +113,44 @@ void LiteVideoObserver::DidFinishNavigation(
 }
 
 void LiteVideoObserver::OnHintAvailable(
-    content::GlobalFrameRoutingId render_frame_host_routing_id,
+    const content::GlobalFrameRoutingId& render_frame_host_routing_id,
     base::Optional<lite_video::LiteVideoHint> hint,
-    lite_video::LiteVideoBlocklistReason blocklist_reason) {
+    lite_video::LiteVideoBlocklistReason blocklist_reason,
+    optimization_guide::OptimizationGuideDecision opt_guide_decision) {
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_frame_host_routing_id);
   if (!render_frame_host)
     return;
 
+  bool is_mainframe = render_frame_host->GetMainFrame() == render_frame_host;
+  if (!is_mainframe &&
+      opt_guide_decision ==
+          optimization_guide::OptimizationGuideDecision::kUnknown) {
+    // If this is a subframe and the decision was unknown, then the decision
+    // from the optimization guide (queried only for the mainframe) has not
+    // returned.
+    //
+    // TODO(crbug/1121833): Add histogram to capture the size of the set of
+    // routing ids.
+    routing_ids_to_notify_.insert(render_frame_host_routing_id);
+    return;
+  }
   lite_video::LiteVideoDecision decision = MakeLiteVideoDecision(hint);
 
   LOCAL_HISTOGRAM_BOOLEAN("LiteVideo.Navigation.HasHint", hint ? true : false);
-
-  if (nav_metrics_ && render_frame_host->GetMainFrame()) {
+  // TODO(crbug/1117064): Add a global blocklist check to ensure that the host
+  // commited of the committed URL is allowed to have LiteVideos applied.
+  if (nav_metrics_ && is_mainframe) {
     nav_metrics_->SetDecision(decision);
     nav_metrics_->SetBlocklistReason(blocklist_reason);
   }
 
   // Only proceed to passing hints if the decision is allowed.
-  if (decision != lite_video::LiteVideoDecision::kAllowed)
+  if (decision != lite_video::LiteVideoDecision::kAllowed &&
+      opt_guide_decision !=
+          optimization_guide::OptimizationGuideDecision::kTrue) {
     return;
+  }
 
   if (!hint)
     return;
@@ -133,16 +158,41 @@ void LiteVideoObserver::OnHintAvailable(
   if (!render_frame_host || !render_frame_host->GetProcess())
     return;
 
+  // At this stage, the following criteria for the render frame should be true:
+  // 1. The render frame for the routing id is valid.
+  // 2. The current navigation within the frame is not blocked.
+  // 3. The decision to apply a LiteVideo is true.
+  // 4. A LiteVideo hint is available.
+  SendHintToRenderFrameAgentForID(render_frame_host_routing_id, *hint);
+
+  if (is_mainframe) {
+    // Given that this is the mainframe, we need to notify all the subframes
+    // that have requested LiteVideo hints but the optimization guide had
+    // not returned a decision.
+    for (const auto& routing_id : routing_ids_to_notify_)
+      SendHintToRenderFrameAgentForID(routing_id, *hint);
+    routing_ids_to_notify_.clear();
+    return;
+  }
+}
+
+void LiteVideoObserver::SendHintToRenderFrameAgentForID(
+    const content::GlobalFrameRoutingId& routing_id,
+    const lite_video::LiteVideoHint& hint) {
+  auto* render_frame_host = content::RenderFrameHost::FromID(routing_id);
+  if (!render_frame_host)
+    return;
+
   mojo::AssociatedRemote<blink::mojom::PreviewsResourceLoadingHintsReceiver>
       loading_hints_agent;
 
   auto hint_ptr = blink::mojom::LiteVideoHint::New();
   hint_ptr->target_downlink_bandwidth_kbps =
-      hint->target_downlink_bandwidth_kbps();
+      hint.target_downlink_bandwidth_kbps();
   hint_ptr->kilobytes_to_buffer_before_throttle =
-      hint->kilobytes_to_buffer_before_throttle();
-  hint_ptr->target_downlink_rtt_latency = hint->target_downlink_rtt_latency();
-  hint_ptr->max_throttling_delay = hint->max_throttling_delay();
+      hint.kilobytes_to_buffer_before_throttle();
+  hint_ptr->target_downlink_rtt_latency = hint.target_downlink_rtt_latency();
+  hint_ptr->max_throttling_delay = hint.max_throttling_delay();
 
   if (render_frame_host->GetRemoteAssociatedInterfaces()) {
     render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(

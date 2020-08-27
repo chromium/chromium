@@ -1,0 +1,38 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "LiteVideoMetadataProto";
+
+package optimization_guide.proto;
+
+import "common_types.proto";
+
+message LiteVideoHint {
+  // The target video resolution for throttling. Initially unused.
+  optional int64 target_video_resolution = 1;
+  // The network downlink bandwidth target in kilobits per second used to
+  // calculate the throttling delay on media requests.
+  optional int64 target_downlink_bandwidth_kbps = 2;
+  // The network downlink rtt target latency used to calculate the
+  // throttling delay on media requests.
+  optional Duration target_downlink_rtt_latency = 3;
+  // The number of kilobytes for media to be observed before starting to
+  // throttle requests.
+  optional int64 kilobytes_to_buffer_before_throttle = 4;
+  // The maximum delay a throttle can introduce for a media request in
+  // milliseconds.
+  optional Duration max_throttling_delay = 5;
+}
+
+// Optimization metadata associated with LiteVideos.
+//
+// This is only populated for the LITE_VIDEO optimization type.
+message LiteVideoMetadata {
+  // A LiteVideo hint.
+  optional LiteVideoHint lite_video_hint = 1;
+}

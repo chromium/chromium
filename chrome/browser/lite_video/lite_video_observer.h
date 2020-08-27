@@ -24,6 +24,10 @@ class LiteVideoDecider;
 class LiteVideoHint;
 }  // namespace lite_video
 
+namespace optimization_guide {
+enum class OptimizationGuideDecision;
+}  // namespace optimization_guide
+
 class LiteVideoObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<LiteVideoObserver> {
@@ -58,9 +62,16 @@ class LiteVideoObserver
   // Callback run after a hint and blocklist reason is available for use
   // within the agent associated with |render_frame_host_routing_id|.
   void OnHintAvailable(
-      content::GlobalFrameRoutingId render_frame_host_routing_id,
+      const content::GlobalFrameRoutingId& render_frame_host_routing_id,
       base::Optional<lite_video::LiteVideoHint> hint,
-      lite_video::LiteVideoBlocklistReason blocklist_reason);
+      lite_video::LiteVideoBlocklistReason blocklist_reason,
+      optimization_guide::OptimizationGuideDecision opt_guide_decision);
+
+  // Sends the |hint| to the render frame agent corresponding to the
+  // provided global frame routing id.
+  void SendHintToRenderFrameAgentForID(
+      const content::GlobalFrameRoutingId& routing_id,
+      const lite_video::LiteVideoHint& hint);
 
   // The decider capable of making decisions about whether LiteVideos should be
   // applied and the params to use when throttling media requests.
@@ -75,6 +86,11 @@ class LiteVideoObserver
   // |is_coinflip_holdback_| is updated each time a mainframe navigation
   // commits.
   bool is_coinflip_holdback_ = false;
+
+  // The set of routing ids corresponding to render frames that are waiting
+  // for the decision of whether to throttle media requests that
+  // occur within that frame.
+  std::set<content::GlobalFrameRoutingId> routing_ids_to_notify_;
 
   // Used to get a weak pointer to |this|.
   base::WeakPtrFactory<LiteVideoObserver> weak_ptr_factory_{this};
