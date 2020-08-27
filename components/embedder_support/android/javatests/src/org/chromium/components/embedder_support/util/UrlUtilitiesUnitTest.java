@@ -4,20 +4,31 @@
 
 package org.chromium.components.embedder_support.util;
 
-import org.junit.Assert;
+import androidx.test.filters.SmallTest;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeJavaTest;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
  * Unit tests for {@link UrlUtilities}.
  */
+@RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @SuppressWarnings(value = "AuthLeak")
 public class UrlUtilitiesUnitTest {
-    @CalledByNative
-    private UrlUtilitiesUnitTest() {}
+    @Before
+    public void setUp() {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testIsHttpOrHttps() {
         Assert.assertTrue(
                 UrlUtilities.isHttpOrHttps("https://user:pass@awesome.com:9000/bad-scheme/#fake"));
@@ -47,7 +58,8 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(UrlUtilities.isHttpOrHttps(""));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testStripPath() {
         Assert.assertEquals("https://example.com:9000",
                 UrlUtilities.stripPath("https://user:pass@example.com:9000/path/#extra"));
@@ -57,7 +69,8 @@ public class UrlUtilitiesUnitTest {
         Assert.assertEquals("http://", UrlUtilities.stripPath("http:"));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testStripScheme() {
         // Only scheme gets stripped.
         Assert.assertEquals("cs.chromium.org", UrlUtilities.stripScheme("https://cs.chromium.org"));
@@ -73,7 +86,8 @@ public class UrlUtilitiesUnitTest {
                 "cs.chromium.org", UrlUtilities.stripScheme("  https://cs.chromium.org  "));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testIsAcceptedScheme() {
         Assert.assertTrue(UrlUtilities.isAcceptedScheme("about:awesome"));
         Assert.assertTrue(UrlUtilities.isAcceptedScheme("data:data"));
@@ -95,7 +109,8 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(UrlUtilities.isAcceptedScheme(""));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testIsDownloadableScheme() {
         Assert.assertTrue(UrlUtilities.isDownloadableScheme("data:data"));
         Assert.assertTrue(UrlUtilities.isDownloadableScheme(
@@ -119,7 +134,8 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(UrlUtilities.isDownloadableScheme(""));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testIsValidForIntentFallbackUrl() {
         Assert.assertTrue(UrlUtilities.isValidForIntentFallbackNavigation(
                 "https://user:pass@awesome.com:9000/bad-scheme:#fake:"));
@@ -134,7 +150,8 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(UrlUtilities.isValidForIntentFallbackNavigation(""));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testIsUrlWithinScope() {
         String scope = "http://www.example.com/sub";
         Assert.assertTrue(UrlUtilities.isUrlWithinScope(scope, scope));
@@ -150,7 +167,8 @@ public class UrlUtilitiesUnitTest {
                 "https://www.google.com.evil.com", "https://www.google.com"));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testUrlsMatchIgnoringFragments() {
         String url = "http://www.example.com/path";
         Assert.assertTrue(UrlUtilities.urlsMatchIgnoringFragments(url, url));
@@ -164,7 +182,8 @@ public class UrlUtilitiesUnitTest {
                 url + "#fragment", "http://example.com:443/path#fragment"));
     }
 
-    @CalledByNativeJavaTest
+    @Test
+    @SmallTest
     public void testUrlsFragmentsDiffer() {
         String url = "http://www.example.com/path";
         Assert.assertFalse(UrlUtilities.urlsFragmentsDiffer(url, url));
