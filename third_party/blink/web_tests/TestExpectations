@@ -4182,7 +4182,7 @@ crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/containing-block-g
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/flex-and-content-sized-resolution-columns.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/flex-and-intrinsic-sizes.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/flex-content-sized-column-use-available-width.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/flex-content-sized-columns-resize.html [ Failure ]
+crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/flex-content-sized-columns-resize.html [ Failure Timeout ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/floating-empty-grids.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-auto-columns-rows-auto-flow-resolution.html [ Failure Crash ]
 crbug.com/1045599 virtual/layout-ng-grid/fast/css-grid-layout/grid-auto-columns-rows-get-set.html [ Failure ]
