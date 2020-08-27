@@ -202,6 +202,7 @@ uint8_t PartitionBucket<thread_safe>::get_system_pages_per_slot_span() {
 template <bool thread_safe>
 void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
   slot_size = new_slot_size;
+  slot_size_reciprocal = kReciprocalMask / new_slot_size + 1;
   active_pages_head = PartitionPage<thread_safe>::get_sentinel_page();
   empty_pages_head = nullptr;
   decommitted_pages_head = nullptr;

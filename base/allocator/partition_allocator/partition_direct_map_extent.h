@@ -30,7 +30,12 @@ PartitionDirectMapExtent<thread_safe>::FromPage(
     PartitionPage<thread_safe>* page) {
   PA_DCHECK(page->bucket->is_direct_mapped());
   return reinterpret_cast<PartitionDirectMapExtent<thread_safe>*>(
-      reinterpret_cast<char*>(page) + 3 * kPageMetadataSize);
+      reinterpret_cast<char*>(page) +
+      kPageMetadataSize +  // sizeof(PartitionSuperPageExtentEntry)
+                           // TODO(crbug.com/787153): Refactor the code to have
+                           // a more robust offset calculation.
+      sizeof(PartitionPage<thread_safe>) +
+      sizeof(PartitionBucket<thread_safe>));
 }
 
 }  // namespace internal

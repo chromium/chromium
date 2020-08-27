@@ -30,6 +30,24 @@ struct PartitionBucket {
   uint32_t num_system_pages_per_slot_span : 8;
   uint32_t num_full_pages : 24;
 
+  // `slot_size_reciprocal` is used to improve the performance of
+  // `GetSlotOffset`. It is computed as `(1 / size) * (2 ** M)` where M is
+  // chosen to provide the desired accuracy. As a result, we can replace a slow
+  // integer division (or modulo) operation with a pair of multiplication and a
+  // bit shift, i.e. `value / size` becomes `(value * size_reciprocal) >> M`.
+  uint64_t slot_size_reciprocal;
+
+  // This is `M` from the formula above. For accurate results, both `value` and
+  // `size`, which are bound by `kMaxBucketed` for our purposes, must be less
+  // than `2 ** (M / 2)`. On the other hand, the result of the expression
+  // `3 * M / 2` must be less than 64, otherwise integer overflow can occur.
+  static constexpr uint64_t kReciprocalShift = 42;
+  static constexpr uint64_t kReciprocalMask = (1ull << kReciprocalShift) - 1;
+  static_assert(
+      kMaxBucketed < (1 << (kReciprocalShift / 2)),
+      "GetSlotOffset may produce an incorrect result when kMaxBucketed is too "
+      "large.");
+
   // Public API.
   void Init(uint32_t new_slot_size);
 
@@ -81,6 +99,27 @@ struct PartitionBucket {
   //
   // This is where the guts of the bucket maintenance is done!
   bool SetNewActivePage();
+
+  // Returns an offset within an allocation slot.
+  ALWAYS_INLINE size_t GetSlotOffset(size_t offset_in_slot_span) {
+    // Knowing that slots are tightly packed in a slot span, calculate an offset
+    // using an equivalent of a modulo operation.
+
+    // See the static assertion for `kReciprocalShift` above.
+    PA_DCHECK(offset_in_slot_span <= kMaxBucketed);
+    PA_DCHECK(slot_size <= kMaxBucketed);
+
+    // Calculate `decimal_part{offset_in_slot / size} * (2 ** M)` first.
+    uint64_t offset_in_slot =
+        (offset_in_slot_span * slot_size_reciprocal) & kReciprocalMask;
+
+    // (decimal_part * size) * (2 ** M) == offset_in_slot_span % size * (2 ** M)
+    // Divide by `2 ** M` using a bit shift.
+    offset_in_slot = (offset_in_slot * slot_size) >> kReciprocalShift;
+    PA_DCHECK(offset_in_slot_span % slot_size == offset_in_slot);
+
+    return static_cast<size_t>(offset_in_slot);
+  }
 
  private:
   static NOINLINE void OnFull();
