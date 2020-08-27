@@ -122,6 +122,7 @@
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -2621,6 +2622,8 @@ const views::Widget* BrowserView::GetWidget() const {
 }
 
 void BrowserView::CreateTabSearchBubble() {
+  // TODO(tluk): This should be triggering the TabSearchButton in the tab strip
+  // rather than creating the Tab Search bubble directly.
   TabSearchBubbleView::CreateTabSearchBubble(browser_->profile(),
                                              tabstrip_->tab_search_button());
   base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",

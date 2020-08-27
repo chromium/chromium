@@ -45,6 +45,10 @@ class TabSearchButton : public NewTabButton,
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;
 
+  bool IsBubbleVisible() const;
+
+  views::Widget* bubble_for_testing() { return bubble_; }
+
  protected:
   // NewTabButton:
   void PaintIcon(gfx::Canvas* canvas) override;

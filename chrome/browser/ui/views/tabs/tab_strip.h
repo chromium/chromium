@@ -45,6 +45,7 @@ class NewTabButton;
 class StackedTabStripLayout;
 class Tab;
 class TabHoverCardBubbleView;
+class TabSearchButton;
 class TabStripController;
 class TabStripObserver;
 class TabStripLayoutHelper;
@@ -201,6 +202,12 @@ class TabStrip : public views::AccessiblePaneView,
   // Attempts to move the specified group to the right.
   void ShiftGroupRight(const tab_groups::TabGroupId& group);
 
+  // While the Tab Search bubble is open, the |tab_controls_container_| is kept
+  // in a fixed position in the tab strip. This is called when the bubble is
+  // closed to allow the |tab_controls_container_| to animate to the correct
+  // position.
+  void OnTabSearchBubbleClosed();
+
   // Returns true if the tab is not partly or fully clipped (due to overflow),
   // and the tab couldn't become partly clipped due to changing the selected tab
   // (for example, if currently the strip has the last tab selected, and
@@ -238,7 +245,7 @@ class TabStrip : public views::AccessiblePaneView,
   NewTabButton* new_tab_button() { return new_tab_button_; }
 
   // Returns the TabSearchButton.
-  NewTabButton* tab_search_button() { return tab_search_button_; }
+  TabSearchButton* tab_search_button() { return tab_search_button_; }
 
   // Returns the index of the specified view in the model coordinate system, or
   // -1 if view is closing or not a tab.
@@ -700,7 +707,7 @@ class TabStrip : public views::AccessiblePaneView,
   NewTabButton* new_tab_button_ = nullptr;
   // |tab_search_button_| will be null if features::kTabSearch is disabled or if
   // the current profile is an incognito profile.
-  NewTabButton* tab_search_button_ = nullptr;
+  TabSearchButton* tab_search_button_ = nullptr;
 
   // Ideal bounds of container holding the tab controls.
   gfx::Rect tab_controls_container_ideal_bounds_;

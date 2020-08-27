@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tab_search/tab_search_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/stacked_tab_strip_layout.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_helper.h"
@@ -104,12 +106,6 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
-#endif
-
-#if BUILDFLAG(ENABLE_TAB_SEARCH)
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/tab_search/tab_search_bubble_view.h"
-#include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #endif
 
 namespace {
@@ -1447,6 +1443,11 @@ void TabStrip::ShiftGroupRight(const tab_groups::TabGroupId& group) {
   ShiftGroupRelative(group, 1);
 }
 
+void TabStrip::OnTabSearchBubbleClosed() {
+  UpdateIdealBounds();
+  AnimateToIdealBounds();
+}
+
 bool TabStrip::ShouldTabBeVisible(const Tab* tab) const {
   // Detached tabs should always be invisible (as they close).
   if (tab->detached())
@@ -2451,7 +2452,6 @@ void TabStrip::Init() {
   new_tab_button_ =
       tab_controls_container_->AddChildView(std::move(new_tab_button));
 
-#if BUILDFLAG(ENABLE_TAB_SEARCH)
   if (base::FeatureList::IsEnabled(features::kTabSearch) &&
       !controller_->GetProfile()->IsIncognitoProfile()) {
     auto tab_search_button = std::make_unique<TabSearchButton>(this, this);
@@ -2466,7 +2466,6 @@ void TabStrip::Init() {
     tab_search_button_ =
         tab_controls_container_->AddChildView(std::move(tab_search_button));
   }
-#endif
 
   UpdateNewTabButtonBorder();
   tab_controls_container_ideal_bounds_.set_size(
@@ -3373,9 +3372,13 @@ void TabStrip::UpdateIdealBounds() {
         base::FeatureList::IsEnabled(features::kScrollableTabStrip)
             ? trailing_x
             : std::min(available_width_for_tabs, trailing_x);
-
-    tab_controls_container_ideal_bounds_.set_origin(
-        gfx::Point(ntb_x_offset + TabToNewTabButtonSpacing(), 0));
+    // We want to lock the |tab_controls_container_| in place if the Tab Search
+    // bubble is open to prevent the UI sliding across the screen as the tab
+    // strip changes.
+    if (!tab_search_button_ || !tab_search_button_->IsBubbleVisible()) {
+      tab_controls_container_ideal_bounds_.set_origin(
+          gfx::Point(ntb_x_offset + TabToNewTabButtonSpacing(), 0));
+    }
   }
 }
 

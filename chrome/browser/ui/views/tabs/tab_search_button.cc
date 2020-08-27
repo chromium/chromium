@@ -71,6 +71,11 @@ void TabSearchButton::OnWidgetClosing(views::Widget* widget) {
   observed_bubble_widget_.Remove(bubble_);
   bubble_ = nullptr;
   pressed_lock_.reset();
+  tab_strip()->OnTabSearchBubbleClosed();
+}
+
+bool TabSearchButton::IsBubbleVisible() const {
+  return bubble_ && bubble_->IsVisible();
 }
 
 void TabSearchButton::PaintIcon(gfx::Canvas* canvas) {
