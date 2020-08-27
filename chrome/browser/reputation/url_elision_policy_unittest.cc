@@ -15,14 +15,20 @@ namespace test {
 #include "components/url_formatter/spoof_checks/common_words/common_words_test-inc.cc"
 }
 
+namespace {
+
+// Note: This number is arbitrary; we just need to be able to build
+// hostnames that are reliably shorter/longer than the limit.
+const char* kMaxUnelidedHostLengthParam = "20";
+
+}  // namespace
+
 class UrlElisionPolicyTest : public testing::Test {
  public:
   UrlElisionPolicyTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{omnibox::kMaybeElideToRegistrableDomain,
-          // Note: This number is arbitrary; we just need to be able to build
-          // hostnames that are reliably shorter/longer than the limit.
-          {{"max_unelided_host_length", "20"}}}},
+          {{"max_unelided_host_length", kMaxUnelidedHostLengthParam}}}},
         {});
     url_formatter::common_words::SetCommonWordDAFSAForTesting(
         test::kDafsa, sizeof(test::kDafsa));
@@ -97,4 +103,40 @@ TEST_F(UrlElisionPolicyTest, ElidesKeywordedDomainsAppropriately) {
   // Nor on non-HTTP(s)
   EXPECT_FALSE(
       ShouldElideToRegistrableDomain(GURL("ftp://google.login.com/xyz")));
+}
+
+class UrlElisionKeywordPolicyTest : public UrlElisionPolicyTest,
+                                    public testing::WithParamInterface<bool> {
+ public:
+  UrlElisionKeywordPolicyTest() {
+    if (!GetParam()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{omnibox::kMaybeElideToRegistrableDomain,
+            {{"max_unelided_host_length", kMaxUnelidedHostLengthParam}}}},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{omnibox::kMaybeElideToRegistrableDomain,
+            {{"max_unelided_host_length", kMaxUnelidedHostLengthParam},
+             {"enable_keyword_elision", "false"}}}},
+          {});
+    }
+  }
+
+  ~UrlElisionKeywordPolicyTest() override = default;
+
+  bool IsKeywordElisionEnabled() { return !GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(UrlElisionKeywordPolicyTest);
+};
+
+INSTANTIATE_TEST_SUITE_P(All, UrlElisionKeywordPolicyTest, testing::Bool());
+
+// Verify that keyword elision follows the feature parameter.
+TEST_P(UrlElisionKeywordPolicyTest, ElidesOnKeywords) {
+  EXPECT_EQ(IsKeywordElisionEnabled(),
+            ShouldElideToRegistrableDomain(GURL("http://google-evil.com/xyz")));
 }
