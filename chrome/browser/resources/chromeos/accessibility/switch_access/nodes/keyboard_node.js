@@ -90,6 +90,11 @@ class KeyboardRootNode extends RootNodeWrapper {
     AutoScanManager.setInKeyboard(false);
   }
 
+  /** @override */
+  refreshChildren() {
+    KeyboardRootNode.findAndSetChildren_(this);
+  }
+
   // ================= Static methods =================
 
   /**
