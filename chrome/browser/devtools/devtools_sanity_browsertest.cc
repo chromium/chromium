@@ -105,6 +105,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
@@ -2562,3 +2563,25 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                       std::to_string(websocket_port).c_str());
   CloseDevToolsWindow();
 }
+
+class DevToolsLocalizationTest : public DevToolsSanityTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(switches::kLang, "es-ES");
+  }
+};
+
+// Make it run on Windows only since the browser language on Mac
+// is tied to the OS language and --lang flag won't work
+#if defined(OS_WIN)
+IN_PROC_BROWSER_TEST_F(DevToolsLocalizationTest, testNavigatorLanguage) {
+  bool result = false;
+  OpenDevToolsWindow("about:blank", true);
+  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
+      main_web_contents(),
+      "window.domAutomationController.send(window.navigator.language === "
+      "'es-ES')",
+      &result));
+  EXPECT_TRUE(result);
+  CloseDevToolsWindow();
+}
+#endif  // defined(OS_WIN)
