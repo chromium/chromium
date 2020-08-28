@@ -843,7 +843,7 @@ public class TabGridDialogTest {
         // Verify the initial content description.
         RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);
         View firstItem = recyclerView.findViewHolderForAdapterPosition(0).itemView;
-        String targetString = "Expand  tab group with 3 tabs.";
+        String targetString = "Expand tab group with 3 tabs.";
         assertEquals(targetString, firstItem.getContentDescription());
 
         // Content description should update with group title.

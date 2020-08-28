@@ -1339,8 +1339,11 @@ class TabListMediator {
             String title = getLatestTitleForTab(pseudoTab);
             title = title.equals(pseudoTab.getTitle(mTitleProvider)) ? "" : title;
             model.set(TabProperties.CONTENT_DESCRIPTION_STRING,
-                    mContext.getString(R.string.accessibility_expand_tab_group, title,
-                            String.valueOf(numOfRelatedTabs)));
+                    title.isEmpty() ? mContext.getString(R.string.accessibility_expand_tab_group,
+                            String.valueOf(numOfRelatedTabs))
+                                    : mContext.getString(
+                                            R.string.accessibility_expand_tab_group_with_group_name,
+                                            title, String.valueOf(numOfRelatedTabs)));
         } else {
             model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
         }
