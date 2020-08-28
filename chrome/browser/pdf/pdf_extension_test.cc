@@ -1065,7 +1065,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 // Service worker tests are regression tests for
 // https://crbug.com/916514.
-class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTestBase {
+class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTest {
  public:
   ~PDFExtensionServiceWorkerJSTest() override = default;
 
@@ -1090,21 +1090,25 @@ class PDFExtensionServiceWorkerJSTest : public PDFExtensionJSTestBase {
 
 // Test navigating to a PDF in the scope of a service worker with no fetch event
 // handler.
-IN_PROC_BROWSER_TEST_F(PDFExtensionServiceWorkerJSTest, NoFetchHandler) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, NoFetchHandler) {
   RunServiceWorkerTest("empty.js");
 }
 
 // Test navigating to a PDF when a service worker intercepts the request and
 // then falls back to network by not calling FetchEvent.respondWith().
-IN_PROC_BROWSER_TEST_F(PDFExtensionServiceWorkerJSTest, NetworkFallback) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, NetworkFallback) {
   RunServiceWorkerTest("network_fallback_worker.js");
 }
 
 // Test navigating to a PDF when a service worker intercepts the request and
 // provides a response.
-IN_PROC_BROWSER_TEST_F(PDFExtensionServiceWorkerJSTest, Interception) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionServiceWorkerJSTest, Interception) {
   RunServiceWorkerTest("respond_with_fetch_worker.js");
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PDFExtensionServiceWorkerJSTest,
+                         testing::Bool());
 
 // Ensure that the internal PDF plugin application/x-google-chrome-pdf won't be
 // loaded if it's not loaded in the chrome extension page.
