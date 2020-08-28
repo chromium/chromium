@@ -3370,15 +3370,13 @@ void AXNodeObject::InsertChild(AXObject* child, unsigned index) {
   if (!child || !CanHaveChildren())
     return;
 
-  // If the parent is asking for this child's children, then either it's the
-  // first time (and clearing is a no-op), or its visibility has changed. In
-  // the latter case, this child may have a stale child cached.  This can
-  // prevent aria-hidden changes from working correctly. Hence, whenever a
-  // parent is getting children, ensure data is not stale.
-  child->ClearChildren();
-
   if (!child->AccessibilityIsIncludedInTree()) {
-    // Re-computes child's children.
+    // Child is ignored and not in the tree.
+    // Recompute the child's children now as we skip over the ignored object.
+    child->SetNeedsToUpdateChildren();
+    // Get the ignored child's children and add to children of ancestor
+    // included in tree. This will recurse if necessary, skipping levels of
+    // unignored descendants as it goes.
     const auto& children = child->ChildrenIncludingIgnored();
     wtf_size_t length = children.size();
     for (wtf_size_t i = 0; i < length; ++i)

@@ -840,6 +840,9 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
   if (!IsActive(GetDocument()) || tree_updates_paused_)
     return;
 
+  if (obj->IsDetached())
+    return;
+
   Document& tree_update_document = *obj->GetDocument();
 
   // Ensure the tree update document is in a good state.
@@ -1010,17 +1013,18 @@ void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {
     return;
   }
 
-  if (layout_object->GetNode() || Get(layout_object)) {
-    DeferTreeUpdate(&AXObjectCacheImpl::TextChangedWithCleanLayout,
-                    layout_object->GetNode(), Get(layout_object));
+  if (Get(layout_object)) {
+    DeferTreeUpdate(&AXObjectCacheImpl::TextChangedWithCleanLayout, nullptr,
+                    Get(layout_object));
   }
 }
 
 void AXObjectCacheImpl::TextChangedWithCleanLayout(
     Node* optional_node_for_relation_update,
     AXObject* obj) {
-  if (!obj && !optional_node_for_relation_update)
+  if (obj ? obj->IsDetached() : !optional_node_for_relation_update)
     return;
+
 #if DCHECK_IS_ON()
   Document* document = obj ? obj->GetDocument()
                            : &optional_node_for_relation_update->GetDocument();
@@ -1118,6 +1122,7 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
   if (!layout_object)
     return;
 
+  // Update using nearest node (walking ancestors if necessary).
   Node* node = GetClosestNodeForLayoutObject(layout_object);
 
   if (node) {
@@ -1126,12 +1131,49 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
       return;
 
     DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, node);
-    return;
+
+    if (layout_object->GetNode() == node)
+      return;  // Node matched the layout object passed in, no further updates.
+
+    // Node was for an ancestor of an anonymous layout object passed in.
+    // layout object was anonymous. Fall through to continue updating
+    // descendants of the matching AXObject for the layout object.
   }
 
-  if (AXObject* obj = Get(layout_object)) {
-    DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, nullptr,
-                    obj);
+  // Update using layout object.
+  // Only using the layout object when no node could be found to update.
+  AXObject* ax_layout_obj = Get(layout_object);
+  if (!ax_layout_obj)
+    return;
+
+  if (ax_layout_obj->AccessibilityIsIncludedInTree()) {
+    // Participates in tree: update children if they haven't already been.
+    DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout,
+                    ax_layout_obj->GetNode(), ax_layout_obj);
+  }
+
+  // Invalidate child ax objects below an anonymous layout object.
+  // The passed-in layout object was anonymous, e.g. anonymous block flow
+  // inserted by blink as an inline's parent when it had a block sibling.
+  // If children change on an anonymous layout object, this can
+  // mean that child AXObjects actually had their children change.
+  // Therefore, invalidate any of those children as well, using the nearest
+  // parent that participates in the tree.
+  // In this example, if ChildrenChanged() is called on the anonymous block,
+  // then we also process ChildrenChanged() on the <div> and <a>:
+  // <div>
+  //  |    \
+  // <p>  Anonymous block
+  //         \
+  //         <a>
+  //           \
+  //           text
+  AXObject* ax_parent = ax_layout_obj->ParentObjectIncludedInTree();
+  if (ax_parent) {
+    for (const auto& ax_child : ax_parent->CachedChildrenIncludingIgnored()) {
+      DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout,
+                      ax_child->GetNode(), ax_child);
+    }
   }
 }
 
@@ -1163,7 +1205,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* node) {
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
                                                        AXObject* obj) {
-  if (!obj && !optional_node)
+  if (obj ? obj->IsDetached() : !optional_node)
     return;
 
 #if DCHECK_IS_ON()
@@ -1172,7 +1214,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (obj)
+  if (obj && !obj->IsDetached())
     obj->ChildrenChanged();
 
   if (optional_node) {
@@ -1606,9 +1648,6 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
     // If role changes on a table, invalidate the entire table subtree as many
     // objects may suddenly need to change, because presentation is inherited
     // from the table to rows and cells.
-    // TODO(aleventhal) A size change on a select means the children may need to
-    // switch between AXMenuListOption and AXListBoxOption.
-    // For some reason we don't get attribute changes for @size, though.
     LayoutObject* layout_object = node->GetLayoutObject();
     if (layout_object && layout_object->IsTable())
       InvalidateTableSubtree(obj);
@@ -1641,10 +1680,9 @@ void AXObjectCacheImpl::HandleRoleChangeIfNotEditableWithCleanLayout(
   // However, doing that would require
   // waiting for layout to complete, as ComputeAccessibilityRole() looks at
   // layout objects.
-  if (AXObject* obj = Get(node)) {
-    if (!obj->IsTextControl())
-      HandleRoleChangeWithCleanLayout(node);
-  }
+  AXObject* obj = Get(node);
+  if (!obj || !obj->IsTextControl())
+    HandleRoleChangeWithCleanLayout(node);
 }
 
 void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,

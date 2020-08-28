@@ -868,6 +868,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // accessibility tree.
   const AXObjectVector& ChildrenIncludingIgnored() const;
   const AXObjectVector& ChildrenIncludingIgnored();
+  const AXObjectVector& CachedChildrenIncludingIgnored() const {
+    return children_;
+  }
 
   // Returns the node's unignored descendants that are one level deeper than
   // this node, after removing all accessibility ignored nodes from the tree.

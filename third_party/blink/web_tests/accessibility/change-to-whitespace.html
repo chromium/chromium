@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="container">
+  <ol id="list1">
+    $<li>A</li>
+    <li>B</li>$
+  </ol>
+  $<ul id="list2" style="list-style-type:none">
+    <li>A</li>
+    <li>B</li>
+  </ul>$
+</div>
+
+<script>
+function axElementById(id) {
+    return accessibilityController.accessibleElementById(id);
+}
+
+function convertDollarToWhitespace(node) {
+  let child = node.firstChild;
+  while (child) {
+    if (child.nodeType == Node.ELEMENT_NODE)
+      convertDollarToWhitespace(child);
+    else if (child.nodeType == Node.TEXT_NODE && child.data.indexOf('$') >= 0)
+      child.data = '  \n ';
+    child = child.nextSibling;
+  }
+}
+
+test(function(t) {
+    const container = axElementById('container');
+    assert_equals(container.childrenCount, 4);
+    const axList1 = axElementById("list1");
+    assert_equals(axList1.childrenCount, 4);
+    const axList2 = axElementById("list2");
+    assert_equals(axList2.childrenCount, 2);
+
+    convertDollarToWhitespace(document.getElementById('container'));
+
+    assert_equals(container.childrenCount, 2);
+    assert_equals(axList1.childrenCount, 2);
+    assert_equals(axList2.childrenCount, 2);
+}, "Changing text to whitespace-only should remove it from ax object tree");
+
+</script>
