@@ -57,8 +57,8 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
       const std::string& public_key,
       multidevice::SoftwareFeature software_feature,
       bool enabled,
-      const base::Closure& success_callback,
-      const base::Callback<void(NetworkRequestError)>& error_callback,
+      base::OnceClosure success_callback,
+      base::OnceCallback<void(NetworkRequestError)> error_callback,
       bool is_exclusive = false) override;
   void SetFeatureStatus(
       const std::string& device_id,
@@ -68,10 +68,10 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
       base::OnceCallback<void(NetworkRequestError)> error_callback) override;
   void FindEligibleDevices(
       multidevice::SoftwareFeature software_feature,
-      const base::Callback<void(
-          const std::vector<cryptauth::ExternalDeviceInfo>&,
-          const std::vector<cryptauth::IneligibleDevice>&)>& success_callback,
-      const base::Callback<void(NetworkRequestError)>& error_callback) override;
+      base::OnceCallback<void(const std::vector<cryptauth::ExternalDeviceInfo>&,
+                              const std::vector<cryptauth::IneligibleDevice>&)>
+          success_callback,
+      base::OnceCallback<void(NetworkRequestError)> error_callback) override;
 
  private:
   enum class RequestType {
@@ -83,8 +83,8 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
   struct Request {
     // Used for kSetSoftwareFeature Requests.
     Request(std::unique_ptr<cryptauth::ToggleEasyUnlockRequest> toggle_request,
-            const base::Closure& set_software_success_callback,
-            const base::Callback<void(NetworkRequestError)> error_callback);
+            base::OnceClosure set_software_success_callback,
+            base::OnceCallback<void(NetworkRequestError)> error_callback);
 
     // Used for kSetFeatureStatus Requests.
     Request(const std::string& device_id,
@@ -97,11 +97,11 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
     // Used for kFindEligibleMultideviceHosts Requests.
     Request(std::unique_ptr<cryptauth::FindEligibleUnlockDevicesRequest>
                 find_request,
-            const base::Callback<
+            base::OnceCallback<
                 void(const std::vector<cryptauth::ExternalDeviceInfo>&,
                      const std::vector<cryptauth::IneligibleDevice>&)>
                 find_hosts_success_callback,
-            const base::Callback<void(NetworkRequestError)> error_callback);
+            base::OnceCallback<void(NetworkRequestError)> error_callback);
 
     ~Request();
 
@@ -109,11 +109,11 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
 
     // Set for kSetSoftwareFeature and kFindEligibleMultideviceHosts; unset
     // otherwise.
-    const base::Callback<void(NetworkRequestError)> error_callback;
+    base::OnceCallback<void(NetworkRequestError)> error_callback;
 
     // Set for kSetSoftwareFeature; unset otherwise.
     std::unique_ptr<cryptauth::ToggleEasyUnlockRequest> toggle_request;
-    const base::Closure set_software_success_callback;
+    base::OnceClosure set_software_success_callback;
 
     // Set for kSetFeatureStatus; unset otherwise.
     std::string device_id;
@@ -125,8 +125,8 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
 
     // Set for kFindEligibleMultideviceHosts; unset otherwise.
     std::unique_ptr<cryptauth::FindEligibleUnlockDevicesRequest> find_request;
-    const base::Callback<void(const std::vector<cryptauth::ExternalDeviceInfo>&,
-                              const std::vector<cryptauth::IneligibleDevice>&)>
+    base::OnceCallback<void(const std::vector<cryptauth::ExternalDeviceInfo>&,
+                            const std::vector<cryptauth::IneligibleDevice>&)>
         find_hosts_success_callback;
   };
 

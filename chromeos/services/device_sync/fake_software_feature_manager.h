@@ -35,16 +35,16 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
         const std::string& public_key,
         multidevice::SoftwareFeature software_feature,
         bool enabled,
-        const base::Closure& success_callback,
-        const base::Callback<void(NetworkRequestError)>& error_callback,
+        base::OnceClosure success_callback,
+        base::OnceCallback<void(NetworkRequestError)> error_callback,
         bool is_exclusive);
     ~SetSoftwareFeatureStateArgs();
 
     std::string public_key;
     multidevice::SoftwareFeature software_feature;
     bool enabled;
-    base::Closure success_callback;
-    base::Callback<void(NetworkRequestError)> error_callback;
+    base::OnceClosure success_callback;
+    base::OnceCallback<void(NetworkRequestError)> error_callback;
     bool is_exclusive;
 
    private:
@@ -73,17 +73,17 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
   struct FindEligibleDevicesArgs {
     FindEligibleDevicesArgs(
         multidevice::SoftwareFeature software_feature,
-        const base::Callback<void(
+        base::OnceCallback<void(
             const std::vector<cryptauth::ExternalDeviceInfo>&,
-            const std::vector<cryptauth::IneligibleDevice>&)>& success_callback,
-        const base::Callback<void(NetworkRequestError)>& error_callback);
+            const std::vector<cryptauth::IneligibleDevice>&)> success_callback,
+        base::OnceCallback<void(NetworkRequestError)> error_callback);
     ~FindEligibleDevicesArgs();
 
     multidevice::SoftwareFeature software_feature;
-    base::Callback<void(const std::vector<cryptauth::ExternalDeviceInfo>&,
-                        const std::vector<cryptauth::IneligibleDevice>&)>
+    base::OnceCallback<void(const std::vector<cryptauth::ExternalDeviceInfo>&,
+                            const std::vector<cryptauth::IneligibleDevice>&)>
         success_callback;
-    base::Callback<void(NetworkRequestError)> error_callback;
+    base::OnceCallback<void(NetworkRequestError)> error_callback;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(FindEligibleDevicesArgs);
@@ -114,8 +114,8 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
       const std::string& public_key,
       multidevice::SoftwareFeature software_feature,
       bool enabled,
-      const base::Closure& success_callback,
-      const base::Callback<void(NetworkRequestError)>& error_callback,
+      base::OnceClosure success_callback,
+      base::OnceCallback<void(NetworkRequestError)> error_callback,
       bool is_exclusive = false) override;
   void SetFeatureStatus(
       const std::string& device_id,
@@ -125,10 +125,10 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
       base::OnceCallback<void(NetworkRequestError)> error_callback) override;
   void FindEligibleDevices(
       multidevice::SoftwareFeature software_feature,
-      const base::Callback<void(
-          const std::vector<cryptauth::ExternalDeviceInfo>&,
-          const std::vector<cryptauth::IneligibleDevice>&)>& success_callback,
-      const base::Callback<void(NetworkRequestError)>& error_callback) override;
+      base::OnceCallback<void(const std::vector<cryptauth::ExternalDeviceInfo>&,
+                              const std::vector<cryptauth::IneligibleDevice>&)>
+          success_callback,
+      base::OnceCallback<void(NetworkRequestError)> error_callback) override;
 
  private:
   Delegate* delegate_ = nullptr;

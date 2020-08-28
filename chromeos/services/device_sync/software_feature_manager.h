@@ -34,8 +34,8 @@ class SoftwareFeatureManager {
       const std::string& public_key,
       multidevice::SoftwareFeature software_feature,
       bool enabled,
-      const base::Closure& success_callback,
-      const base::Callback<void(NetworkRequestError)>& error_callback,
+      base::OnceClosure success_callback,
+      base::OnceCallback<void(NetworkRequestError)> error_callback,
       bool is_exclusive = false) = 0;
 
   // Enables or disables |feature| for the device with Instance ID |device_id|.
@@ -55,10 +55,10 @@ class SoftwareFeatureManager {
   // |software_feature|.
   virtual void FindEligibleDevices(
       multidevice::SoftwareFeature software_feature,
-      const base::Callback<void(
-          const std::vector<cryptauth::ExternalDeviceInfo>&,
-          const std::vector<cryptauth::IneligibleDevice>&)>& success_callback,
-      const base::Callback<void(NetworkRequestError)>& error_callback) = 0;
+      base::OnceCallback<void(const std::vector<cryptauth::ExternalDeviceInfo>&,
+                              const std::vector<cryptauth::IneligibleDevice>&)>
+          success_callback,
+      base::OnceCallback<void(NetworkRequestError)> error_callback) = 0;
 };
 
 }  // namespace device_sync

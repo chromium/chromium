@@ -188,11 +188,11 @@ class DeviceSyncSoftwareFeatureManagerImplTest
                                bool is_exclusive = false) {
     software_feature_manager_->SetSoftwareFeatureState(
         device_info.public_key(), feature, enabled,
-        base::Bind(&DeviceSyncSoftwareFeatureManagerImplTest::
-                       OnSoftwareFeatureStateSet,
-                   base::Unretained(this)),
-        base::Bind(&DeviceSyncSoftwareFeatureManagerImplTest::OnError,
-                   base::Unretained(this)),
+        base::BindOnce(&DeviceSyncSoftwareFeatureManagerImplTest::
+                           OnSoftwareFeatureStateSet,
+                       base::Unretained(this)),
+        base::BindOnce(&DeviceSyncSoftwareFeatureManagerImplTest::OnError,
+                       base::Unretained(this)),
         is_exclusive);
   }
 
@@ -211,11 +211,11 @@ class DeviceSyncSoftwareFeatureManagerImplTest
   void FindEligibleDevices(multidevice::SoftwareFeature feature) {
     software_feature_manager_->FindEligibleDevices(
         feature,
-        base::Bind(
+        base::BindOnce(
             &DeviceSyncSoftwareFeatureManagerImplTest::OnEligibleDevicesFound,
             base::Unretained(this)),
-        base::Bind(&DeviceSyncSoftwareFeatureManagerImplTest::OnError,
-                   base::Unretained(this)));
+        base::BindOnce(&DeviceSyncSoftwareFeatureManagerImplTest::OnError,
+                       base::Unretained(this)));
   }
 
   void VerifyLastSetFeatureStatusRequest(
