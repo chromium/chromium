@@ -75,9 +75,9 @@ constexpr const char* kMhtml = "mhtml";
 constexpr const char* kPng = "png";
 constexpr const char* kJpeg = "jpeg";
 constexpr int kDefaultScreenshotQuality = 80;
-constexpr int kFrameRetryDelayMs = 100;
+constexpr int kFrameRetryDelayMs = 20;
 constexpr int kCaptureRetryLimit = 2;
-constexpr int kMaxScreencastFramesInFlight = 2;
+constexpr int kMaxScreencastFramesInFlight = 10;
 
 Binary EncodeImage(const gfx::Image& image,
                    const std::string& format,
