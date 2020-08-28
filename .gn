@@ -73,7 +73,6 @@ no_check_targets = [
   "//chrome/browser/updates:*",  # 21 errors
   "//chrome/browser:*",  # 780 errors
   "//chrome/child:*",  # 3 errors
-  "//chrome/credential_provider/gaiacp:*",  # 1 error
   "//chrome/install_static:*",  # 4 errors
   "//chrome/notification_helper:*",  # 4 errors
   "//chrome/renderer:*",  # 42 errors
