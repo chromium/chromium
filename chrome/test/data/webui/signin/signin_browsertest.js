@@ -90,6 +90,16 @@ var ProfileCreationFlowTest = class extends SigninBrowserTest {
   get browsePreload() {
     return 'chrome://profile-picker/test_loader.html?module=signin/profile_creation_flow_test.js';
   }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kSignInProfileCreationFlow',
+        'features::kNewProfilePicker',
+      ]
+    };
+  }
 };
 
 TEST_F('ProfileCreationFlowTest', 'Buttons', function() {
@@ -110,7 +120,12 @@ var ProfilePickerAppTest = class extends SigninBrowserTest {
 
   /** @override */
   get featureList() {
-    return {enabled: ['features::kSignInProfileCreationFlow']};
+    return {
+      enabled: [
+        'features::kSignInProfileCreationFlow',
+        'features::kNewProfilePicker',
+      ]
+    };
   }
 };
 

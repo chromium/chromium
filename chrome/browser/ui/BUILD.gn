@@ -2754,6 +2754,8 @@ static_library("ui") {
       "webui/settings/system_handler.h",
       "webui/signin/inline_login_handler_impl.cc",
       "webui/signin/inline_login_handler_impl.h",
+      "webui/signin/profile_creation_customize_themes_handler.cc",
+      "webui/signin/profile_creation_customize_themes_handler.h",
       "webui/signin/profile_picker_handler.cc",
       "webui/signin/profile_picker_handler.h",
       "webui/signin/profile_picker_ui.cc",
@@ -2798,7 +2800,10 @@ static_library("ui") {
       "webui/welcome/welcome_ui.h",
     ]
 
-    deps += [ "//components/country_codes" ]
+    deps += [
+      "//components/country_codes",
+      "//ui/webui/resources/cr_components/customize_themes:mojom",
+    ]
 
     if (enable_dice_support) {
       sources += [

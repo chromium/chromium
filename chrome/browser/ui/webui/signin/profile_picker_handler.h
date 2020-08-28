@@ -36,6 +36,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // TODO(crbug.com/1115056): Move to new handler for profile creation.
   void HandleLoadSignInProfileCreationFlow(const base::ListValue* args);
   void HandleGetNewProfileSuggestedThemeInfo(const base::ListValue* args);
+  void HandleGetProfileThemeInfo(const base::ListValue* args);
   void HandleCreateProfile(const base::ListValue* args);
 
   void GatherProfileStatistics(Profile* profile);
@@ -44,11 +45,11 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnSwitchToProfileComplete(bool open_settings,
                                  Profile* profile,
                                  Profile::CreateStatus profile_create_status);
-  void OnProfileCreated(SkColor profile_color,
+  void OnProfileCreated(base::Optional<SkColor> profile_color,
                         bool create_shortcut,
                         Profile* profile,
                         Profile::CreateStatus status);
-  void OnProfileCreationSuccess(SkColor profile_color,
+  void OnProfileCreationSuccess(base::Optional<SkColor> profile_color,
                                 bool create_shortcut,
                                 Profile* profile);
   void PushProfilesList();

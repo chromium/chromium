@@ -139,6 +139,11 @@
 #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
 #endif
 
+#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
+#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
@@ -671,6 +676,14 @@ void PopulateChromeWebUIFrameBinders(
         nearby_share::NearbyShareDialogUI>(map);
   }
 #endif  // defined(OS_CHROMEOS)
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+    RegisterWebUIControllerInterfaceBinder<
+        customize_themes::mojom::CustomizeThemesHandlerFactory,
+        ProfilePickerUI>(map);
+  }
+#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 }
 
 }  // namespace internal
