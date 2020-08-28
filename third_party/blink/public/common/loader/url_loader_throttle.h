@@ -19,13 +19,11 @@
 class GURL;
 
 namespace net {
-class HttpRequestHeaders;
 struct RedirectInfo;
 }
 
 namespace network {
 struct ResourceRequest;
-struct URLLoaderCompletionStatus;
 }  // namespace network
 
 namespace blink {

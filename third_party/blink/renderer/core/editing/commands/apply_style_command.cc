@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/editing/commands/apply_style_command.h"
 
-#include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"

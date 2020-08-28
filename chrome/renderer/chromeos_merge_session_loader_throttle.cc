@@ -10,8 +10,6 @@
 #include "base/command_line.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
-#include "net/url_request/redirect_info.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 // static

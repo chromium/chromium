@@ -5,7 +5,6 @@
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 
 #include "base/bits.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"

@@ -17,7 +17,6 @@ namespace blink {
 
 class IDBAny;
 class IDBKeyRange;
-class IDBValue;
 class ScriptState;
 
 class IDBObservation final : public ScriptWrappable {

@@ -42,7 +42,6 @@ class WebContents;
 }  // namespace content
 
 namespace network {
-struct ResourceRequest;
 namespace mojom {
 class NetworkContext;
 }
@@ -50,10 +49,6 @@ class NetworkContext;
 
 namespace update_client {
 class UpdateClient;
-}
-
-namespace url {
-class Origin;
 }
 
 namespace extensions {
