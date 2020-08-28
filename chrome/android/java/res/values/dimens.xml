@@ -148,11 +148,14 @@
     <!-- First Run Experience dimensions -->
     <dimen name="fre_content_margin">24dp</dimen>
     <dimen name="fre_vertical_spacing">32dp</dimen>
-    <dimen name="fre_button_bar_height">52dp</dimen>
+    <dimen name="fre_landscape_top_padding">72dp</dimen>
+    <dimen name="fre_button_bar_height">62dp</dimen>
+    <dimen name="fre_bottom_vertical_margin">10dp</dimen>
     <dimen name="fre_button_padding">12dp</dimen>
     <dimen name="fre_margin">24dp</dimen>
-    <dimen name="fre_image_height">120dp</dimen>
+    <dimen name="fre_image_height">110dp</dimen>
     <dimen name="fre_tos_checkbox_padding">12dp</dimen>
+    <dimen name="fre_loading_spinner_size">48dp</dimen>
 
     <!-- Account Signin dimensions -->
     <!-- The Account Signin page appears in the First Run Experience (amongst other places), so uses

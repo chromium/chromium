@@ -191,7 +191,7 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
     // Exposed methods for ToSAndUMACCTFirstRunFragment
 
     protected void setTosAndUmaVisible(boolean isVisible) {
-        int visibility = isVisible ? View.VISIBLE : View.INVISIBLE;
+        int visibility = isVisible ? View.VISIBLE : View.GONE;
 
         mAcceptButton.setVisibility(visibility);
         mTosAndPrivacy.setVisibility(visibility);

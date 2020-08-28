@@ -254,8 +254,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     }
 
     private void assertUIState(@FragmentState int fragmentState) {
-        int tosVisibility =
-                (fragmentState == FragmentState.NO_POLICY) ? View.VISIBLE : View.INVISIBLE;
+        int tosVisibility = (fragmentState == FragmentState.NO_POLICY) ? View.VISIBLE : View.GONE;
         int spinnerVisibility = (fragmentState == FragmentState.LOADING) ? View.VISIBLE : View.GONE;
 
         CriteriaHelper.pollUiThread(

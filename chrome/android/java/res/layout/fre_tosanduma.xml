@@ -4,64 +4,64 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<org.chromium.chrome.browser.firstrun.FirstRunView
+<!-- Most of the placement in this layout is controlled by TosAndUmaFragmentView#onMeasure. When changing the layout in this file, be sure to also check on the view object to see what is changing to avoid unexpected behavior. -->
+<org.chromium.chrome.browser.firstrun.TosAndUmaFragmentView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/fre_button_bar_height"
         android:fillViewport="true">
 
+        <!-- The orientation of this view is changed dynamically to give a nicer layout when in
+        landscape mode on devices with small screens. -->
         <LinearLayout
             android:id="@+id/fre_main_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:animateLayoutChanges="true"
+            android:gravity="center_horizontal|center_vertical">
 
-            <TextView
-                android:id="@+id/title"
-                android:text="@string/fre_welcome"
-                style="@style/FreTitle" />
-            
-            <!-- The orientation of this view is changed dynamically to give a nicer layout when in
-            landscape mode on devices with small screens. -->
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/fre_image_height"
+                android:layout_marginHorizontal="@dimen/fre_vertical_spacing"
+                android:layout_marginBottom="@dimen/fre_vertical_spacing"
+                android:importantForAccessibility="no"
+                android:src="@drawable/fre_product_logo" />
+
             <LinearLayout
-                android:id="@+id/fre_image_and_content"
+                android:id="@+id/fre_title_and_content"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="@dimen/fre_vertical_spacing">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/fre_image_height"
-                    tools:ignore="ContentDescription"
-                    android:src="@drawable/fre_product_logo" />
+                <TextView
+                    android:id="@+id/title"
+                    android:text="@string/fre_welcome"
+                    style="@style/FreTitle" />
 
                 <org.chromium.components.browser_ui.widget.LoadingView
                     android:id="@+id/progress_spinner_large"
                     style="@style/Widget.AppCompat.ProgressBar"
-                    android:layout_marginTop="@dimen/fre_vertical_spacing"
-                    android:layout_gravity="bottom|center_horizontal"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_height="@dimen/fre_loading_spinner_size"
+                    android:layout_width="@dimen/fre_loading_spinner_size"
                     android:visibility="gone"/>
 
                 <LinearLayout
                     android:id="@+id/fre_content_wrapper"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:layout_marginTop="@dimen/fre_vertical_spacing"
                     android:layout_marginEnd="@dimen/fre_content_margin"
-                    android:layout_marginStart="@dimen/fre_content_margin"
+                    android:gravity="bottom"
                     android:orientation="vertical" >
 
                     <org.chromium.ui.widget.TextViewWithClickableSpans
@@ -69,7 +69,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/fre_vertical_spacing"
-                        android:gravity="center"
                         android:lineSpacingMultiplier="1.4"
                         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
@@ -80,31 +79,51 @@
                         android:lineSpacingMultiplier="1.4"
                         android:text="@string/fre_send_report_check"
                         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <!-- fre_button_bar_height = 52dp = layout_height + layout_marginBottom -->
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/terms_accept"
+    <!-- fre_button_bar_height = 62dp = layout_height + layout_marginVertical * 2 -->
+    <ImageView
+        android:id="@+id/shadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_shadow_height"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/fre_button_bar_height"
+        android:background="@drawable/modern_toolbar_shadow"
+        android:scaleY="-1"
+        android:visibility="gone"
+        android:importantForAccessibility="no" />
+
+    <FrameLayout
+        android:id="@+id/fre_bottom_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:paddingStart="@dimen/fre_button_padding"
-        android:paddingEnd="@dimen/fre_button_padding"
-        android:text="@string/fre_accept_continue"
-        style="@style/FilledButton.Flat" />
+        android:layout_marginHorizontal="@dimen/fre_content_margin"
+        android:animateLayoutChanges="true">
 
-    <!-- Same location as the button; marginButtom is adjusted for the different size. -->
-    <ProgressBar
-        android:id="@+id/progress_spinner"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_marginBottom="22dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_width="24dp"
-        android:layout_height="24dp" />
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/terms_accept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/fre_bottom_vertical_margin"
+            android:layout_marginBottom="@dimen/fre_bottom_vertical_margin"
+            android:layout_gravity="bottom|center_horizontal"
+            android:paddingStart="@dimen/fre_button_padding"
+            android:paddingEnd="@dimen/fre_button_padding"
+            android:text="@string/fre_accept_continue"
+            style="@style/FilledButton.Flat" />
+
+        <!-- Same location as the button; marginButtom is adjusted for the different size. -->
+        <ProgressBar
+            android:id="@+id/progress_spinner"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_marginBottom="22dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+    </FrameLayout>
 
     <!-- Place holder for privacy disclosure. -->
     <TextView
@@ -114,4 +133,4 @@
         android:layout_gravity="bottom|center"
         android:text="@string/fre_browser_managed_by_organization"
         android:visibility="gone"/>
-</org.chromium.chrome.browser.firstrun.FirstRunView>
+</org.chromium.chrome.browser.firstrun.TosAndUmaFragmentView>
