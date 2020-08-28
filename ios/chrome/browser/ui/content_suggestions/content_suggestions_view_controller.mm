@@ -472,6 +472,11 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
             @"%@%li",
             kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
             indexPath.row];
+    // Apple doesn't handle the transparency of the background during animations
+    // linked to context menus. To prevent the cell from turning black during
+    // animations, its background is set to be the same as the NTP background.
+    // See: crbug.com/1120321.
+    cell.backgroundColor = ntp_home::kNTPBackgroundColor();
     [self.collectionViewModel itemAtIndexPath:indexPath]
         .accessibilityIdentifier = cell.accessibilityIdentifier;
   }
