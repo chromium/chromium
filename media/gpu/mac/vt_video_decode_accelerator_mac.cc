@@ -34,6 +34,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/version.h"
 #include "components/crash/core/common/crash_key.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/filters/vp9_parser.h"
@@ -1260,7 +1261,8 @@ void VTVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_id) {
   // Drop references to allow the underlying buffer to be released.
   PictureInfo* picture_info = it->second.get();
   gl_client_.bind_image.Run(picture_info->client_texture_id,
-                            GL_TEXTURE_RECTANGLE_ARB, nullptr, false);
+                            gpu::GetPlatformSpecificTextureTarget(), nullptr,
+                            false);
   picture_info->gl_image = nullptr;
   picture_info->bitstream_id = 0;
 
@@ -1455,7 +1457,7 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
                << frame.image_size.ToString() << ")";
       client_->ProvidePictureBuffers(kNumPictureBuffers, PIXEL_FORMAT_UNKNOWN,
                                      1, frame.image_size,
-                                     GL_TEXTURE_RECTANGLE_ARB);
+                                     gpu::GetPlatformSpecificTextureTarget());
       return false;
     }
     if (!SendFrame(frame))
@@ -1496,7 +1498,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   gl_image->SetColorSpaceForYUVToRGBConversion(color_space);
 
   if (!gl_client_.bind_image.Run(picture_info->client_texture_id,
-                                 GL_TEXTURE_RECTANGLE_ARB, gl_image, false)) {
+                                 gpu::GetPlatformSpecificTextureTarget(),
+                                 gl_image, false)) {
     DLOG(ERROR) << "Failed to bind image";
     NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
     return false;
