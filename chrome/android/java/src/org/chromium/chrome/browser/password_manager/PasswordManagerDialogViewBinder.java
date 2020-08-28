@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.password_manager.PasswordManagerDialog
 
 import android.view.View;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -28,6 +29,11 @@ class PasswordManagerDialogViewBinder {
         } else if (ILLUSTRATION_VISIBLE == propertyKey) {
             dialogView.updateIllustrationVisibility(model.get(ILLUSTRATION_VISIBLE));
             dialogView.updateHelpIcon(!model.get(ILLUSTRATION_VISIBLE));
+            // TODO(crbug.com/1092444): Depending on feature status, remove this or inline the
+            //  cropping into password_manager_dialog_with_help_button.xml.
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_CHECK)) {
+                dialogView.cropImageToText();
+            }
         } else if (TITLE == propertyKey) {
             dialogView.setTitle(model.get(TITLE));
         } else if (DETAILS == propertyKey) {
