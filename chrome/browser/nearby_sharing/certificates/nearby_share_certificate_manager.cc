@@ -28,10 +28,9 @@ void NearbyShareCertificateManager::Stop() {
   OnStop();
 }
 
-void NearbyShareCertificateManager::NotifyPublicCertificatesDownloaded(
-    bool new_certs_added) {
+void NearbyShareCertificateManager::NotifyPublicCertificatesDownloaded() {
   for (auto& observer : observers_)
-    observer.OnPublicCertificatesDownloaded(new_certs_added);
+    observer.OnPublicCertificatesDownloaded();
 }
 
 void NearbyShareCertificateManager::NotifyPrivateCertificatesChanged() {

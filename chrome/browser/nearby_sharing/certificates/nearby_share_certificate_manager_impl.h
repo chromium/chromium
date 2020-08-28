@@ -10,6 +10,8 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -27,6 +29,10 @@ class NearbyShareLocalDeviceDataManager;
 class NearbyShareScheduler;
 class PrefService;
 
+namespace device {
+class BluetoothAdapter;
+}  // namespace device
+
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
@@ -37,7 +43,16 @@ class ListPublicCertificatesResponse;
 }  // namespace proto
 }  // namespace nearbyshare
 
-// TODO(nohle): Add description after class is fully implemented.
+// An implementation of the NearbyShareCertificateManager that handles
+//   1) creating, storing, and uploading local device certificates, as well as
+//      removing expired/revoked local device certificates;
+//   2) downloading, storing, and decrypting public certificates from trusted
+//      contacts, as well as removing expired public certificates.
+//
+// TODO(https://crbug.com/1121443): Add the following if we remove
+// GetValidPrivateCertificate() and perform all private certificate crypto
+// operations internally: "This implementation also provides the high-level
+// interface for performing cryptographic operations related to certificates."
 class NearbyShareCertificateManagerImpl : public NearbyShareCertificateManager {
  public:
   class Factory {
@@ -89,6 +104,20 @@ class NearbyShareCertificateManagerImpl : public NearbyShareCertificateManager {
   void OnStart() override;
   void OnStop() override;
 
+  // Removes expired privates certificates, ensures that at least
+  // kNearbyShareNumPrivateCertificates are present for each visibility with
+  // contiguous validity periods, and uploads any changes to the Nearby Share
+  // server.
+  base::Time NextPrivateCertificateExpirationTime();
+  void OnPrivateCertificateExpiration();
+  void FinishPrivateCertificateRefresh(
+      std::vector<NearbySharePrivateCertificate> new_certs,
+      base::flat_map<NearbyShareVisibility, size_t> num_valid_certs,
+      base::flat_map<NearbyShareVisibility, base::Time> latest_not_after,
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+  void OnLocalDeviceCertificateUploadRequest();
+  void OnLocalDeviceCertificateUploadFinished(bool success);
+
   void OnDownloadPublicCertificatesRequest(
       base::Optional<std::string> page_token);
   void OnRpcSuccess(
@@ -103,9 +132,15 @@ class NearbyShareCertificateManagerImpl : public NearbyShareCertificateManager {
   PrefService* pref_service_ = nullptr;
   NearbyShareClientFactory* client_factory_ = nullptr;
   base::Clock* clock_ = nullptr;
+  std::unique_ptr<NearbyShareScheduler>
+      private_certificate_expiration_scheduler_;
+  std::unique_ptr<NearbyShareScheduler>
+      upload_local_device_certificates_scheduler_;
   std::unique_ptr<NearbyShareScheduler> download_public_certificates_scheduler_;
   std::unique_ptr<NearbyShareCertificateStorage> cert_store_;
   std::unique_ptr<NearbyShareClient> client_;
+  base::WeakPtrFactory<NearbyShareCertificateManagerImpl> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_CERTIFICATE_MANAGER_IMPL_H_

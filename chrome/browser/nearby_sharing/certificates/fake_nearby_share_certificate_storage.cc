@@ -99,7 +99,7 @@ FakeNearbyShareCertificateStorage::NextPublicCertificateExpirationTime() const {
 
 void FakeNearbyShareCertificateStorage::ReplacePrivateCertificates(
     const std::vector<NearbySharePrivateCertificate>& private_certificates) {
-  replace_private_certificates_calls_.push_back(private_certificates);
+  private_certificates_ = private_certificates;
 }
 
 void FakeNearbyShareCertificateStorage::ReplacePublicCertificates(

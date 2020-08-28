@@ -248,7 +248,7 @@ std::vector<uint8_t> NearbySharePrivateCertificate::HashAuthenticationToken(
 }
 
 base::Optional<nearbyshare::proto::PublicCertificate>
-NearbySharePrivateCertificate::ToPublicCertificate() {
+NearbySharePrivateCertificate::ToPublicCertificate() const {
   std::vector<uint8_t> public_key;
   if (!key_pair_->ExportPublicKey(&public_key)) {
     NS_LOG(ERROR) << "Failed to export public key.";
@@ -423,7 +423,7 @@ NearbySharePrivateCertificate::GenerateUnusedSalt() {
 }
 
 base::Optional<std::vector<uint8_t>>
-NearbySharePrivateCertificate::EncryptMetadata() {
+NearbySharePrivateCertificate::EncryptMetadata() const {
   // Init() keeps a reference to the input key, so that reference must outlive
   // the lifetime of |aead|.
   std::vector<uint8_t> derived_key = DeriveNearbyShareKey(

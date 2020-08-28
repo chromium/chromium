@@ -37,6 +37,7 @@ source_set("certificates") {
     "//components/leveldb_proto",
     "//components/prefs",
     "//crypto",
+    "//device/bluetooth",
   ]
 }
 
@@ -59,6 +60,7 @@ source_set("test_support") {
     "//components/leveldb_proto",
     "//components/prefs",
     "//crypto",
+    "//device/bluetooth/public/cpp",
   ]
 }
 
@@ -87,6 +89,8 @@ source_set("unit_tests") {
     "//components/leveldb_proto:test_support",
     "//components/prefs:test_support",
     "//crypto",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
     "//testing/gtest",
   ]
 }

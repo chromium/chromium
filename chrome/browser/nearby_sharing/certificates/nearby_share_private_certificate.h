@@ -96,7 +96,8 @@ class NearbySharePrivateCertificate {
   // Converts this private certificate to a public certificate proto that can be
   // shared with select contacts. Returns base::nullopt if the conversion was
   // unsuccessful.
-  base::Optional<nearbyshare::proto::PublicCertificate> ToPublicCertificate();
+  base::Optional<nearbyshare::proto::PublicCertificate> ToPublicCertificate()
+      const;
 
   // Converts this private certificate to a dictionary value for storage
   // in Prefs.
@@ -120,7 +121,7 @@ class NearbySharePrivateCertificate {
 
   // Encrypts |unencrypted_metadata_| with the |metadata_encryption_key_|, using
   // the |secret_key_| as salt.
-  base::Optional<std::vector<uint8_t>> EncryptMetadata();
+  base::Optional<std::vector<uint8_t>> EncryptMetadata() const;
 
   // Specifies which contacts can receive the public certificate corresponding
   // to this private certificate.

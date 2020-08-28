@@ -30,7 +30,7 @@ class NearbyShareCertificateManager {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnPublicCertificatesDownloaded(bool new_certs_added) = 0;
+    virtual void OnPublicCertificatesDownloaded() = 0;
     virtual void OnPrivateCertificatesChanged() = 0;
   };
 
@@ -80,7 +80,7 @@ class NearbyShareCertificateManager {
   virtual void OnStart() = 0;
   virtual void OnStop() = 0;
 
-  void NotifyPublicCertificatesDownloaded(bool new_certs_added);
+  void NotifyPublicCertificatesDownloaded();
   void NotifyPrivateCertificatesChanged();
 
  private:

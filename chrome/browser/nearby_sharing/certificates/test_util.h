@@ -20,6 +20,9 @@
 extern const char kTestMetadataFullName[];
 extern const char kTestMetadataIconUrl[];
 
+// Test Bluetooth MAC address in the format "XX:XX:XX:XX:XX:XX".
+extern const char kTestUnparsedBluetoothMacAddress[];
+
 std::unique_ptr<crypto::ECPrivateKey> GetNearbyShareTestP256KeyPair();
 const std::vector<uint8_t>& GetNearbyShareTestP256PublicKey();
 
