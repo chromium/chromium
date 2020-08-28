@@ -93,10 +93,8 @@ class ContentMetadataProvider extends MetadataProvider {
 
     const type = FileType.getType(entry);
 
-    // TODO(ryoh): mediaGalleries API does not handle image metadata correctly.
-    // We parse it in our pure js parser.
-    // chrome/browser/media_galleries/fileapi/supported_image_type_validator.cc
     if (type && type.type === 'image') {
+      // Parse the image using the Worker image metadata parsers.
       const url = entry.toURL();
       if (this.callbacks_[url]) {
         this.callbacks_[url].push(callback);
@@ -158,51 +156,81 @@ class ContentMetadataProvider extends MetadataProvider {
       }
     }
 
-    this.getFromMediaGalleries_(entry, names).then(callback);
+    const fileEntry = /** @type {!FileEntry} */ (entry);
+    this.getContentMetadata_(fileEntry, names).then(callback);
   }
 
   /**
-   * Gets a metadata from mediaGalleries API
+   * Gets the content metadata for a file entry consisting of the content mime
+   * type. For audio and video file content mime types, additional metadata is
+   * extacted if requested, such as metadata tags and images.
    *
-   * @param {!Entry} entry File entry.
-   * @param {!Array<string>} names Requested metadata type.
-   * @return {!Promise<!MetadataItem>}  Promise that resolves with the metadata
-   *     of
-   *    the entry.
+   * @param {!FileEntry} entry File entry.
+   * @param {!Array<string>} names Requested metadata types.
+   * @return {!Promise<!MetadataItem>} Promise that resolves with the content
+   *     metadata of the file entry.
    * @private
    */
-  getFromMediaGalleries_(entry, names) {
-    const self = this;
-    return new Promise((resolve, reject) => {
-      entry.file(
-          blob => {
-            let metadataType = 'mimeTypeOnly';
-            if (names.indexOf('mediaArtist') !== -1 ||
-                names.indexOf('mediaTitle') !== -1 ||
-                names.indexOf('mediaTrack') !== -1 ||
-                names.indexOf('mediaYearRecorded') !== -1) {
-              metadataType = 'mimeTypeAndTags';
-            }
-            if (names.indexOf('contentThumbnailUrl') !== -1) {
-              metadataType = 'all';
-            }
-            chrome.mediaGalleries.getMetadata(
-                blob, {metadataType: metadataType}, metadata => {
-                  if (chrome.runtime.lastError) {
-                    resolve(self.createError_(
-                        entry.toURL(), 'resolving metadata',
-                        chrome.runtime.lastError.toString()));
-                  } else {
-                    self.convertMediaMetadataToMetadataItem_(entry, metadata)
-                        .then(resolve, reject);
-                  }
-                });
-          },
-          err => {
-            resolve(self.createError_(
-                entry.toURL(), 'loading file entry',
-                'failed to open file entry'));
-          });
+  getContentMetadata_(entry, names) {
+    /**
+     * First step is to determine the sniffed content mime type of |entry|.
+     * @const {!Promise<!MetadataItem>}
+     */
+    const getContentMimeType = new Promise((resolve, reject) => {
+      chrome.fileManagerPrivate.getContentMimeType(entry, resolve);
+    }).then(mimeType => {
+      if (chrome.runtime.lastError) {
+        const error = chrome.runtime.lastError.toString();
+        return this.createError_(entry.toURL(), 'sniff mime type', error);
+      }
+      const item = new MetadataItem();
+      item.contentMimeType = mimeType;
+      item.mediaMimeType = mimeType;
+      return item;
+    });
+
+    /**
+     * Once the content mime type sniff step is done, search |names| for any
+     * remaining media metadata to extract from the file. Note mediaMimeType
+     * is excluded since it is used for the sniff step.
+     * @param {!Array<string>} names Requested metadata types.
+     * @param {(string|undefined)} type File entry content mime type.
+     * @return {?boolean} Media metadata type: false for metadata tags, true
+     *    for metadata tags and images. A null return means there is no more
+     *    media metadata that needs to be extracted.
+     */
+    function getMediaMetadataType(names, type) {
+      if (!type || !names.length) {
+        return null;
+      } else if (!type.startsWith('audio/') && !type.startsWith('video/')) {
+        return null;  // Only audio and video are supported.
+      } else if (names.includes('contentThumbnailUrl')) {
+        return true;  // Metadata tags and images.
+      } else if (names.find((name) =>
+          name.startsWith('media') && name !== 'mediaMimeType')) {
+        return false;  // Metadata tags only.
+      }
+      return null;
+    }
+
+    return getContentMimeType.then(item => {
+      const extract = getMediaMetadataType(names, item.contentMimeType);
+      if (extract === null) {
+        return item;  // done: no more media metadata to extract.
+      }
+      return new Promise((resolve, reject) => {
+        const contentMimeType = assert(item.contentMimeType);
+        chrome.fileManagerPrivate.getContentMetadata(
+            entry, contentMimeType, !!extract, resolve);
+      }).then(metadata => {
+        if (chrome.runtime.lastError) {
+          const error = chrome.runtime.lastError.toString();
+          return this.createError_(entry.toURL(), 'content metadata', error);
+        }
+        return this.convertMediaMetadataToMetadataItem_(entry, metadata);
+      }).catch((_, error = 'Conversion failed') => {
+        return this.createError_(entry.toURL(), 'convert metadata', error);
+      });
     });
   }
 
@@ -281,9 +309,9 @@ class ContentMetadataProvider extends MetadataProvider {
   }
 
   /**
-   * Dispatches a message from MediaGalleries API to the appropriate on* method.
-   * @param {!Entry} entry File entry.
-   * @param {!Object} metadata The metadata from MediaGalleries API.
+   * Converts fileManagerPrivate.MediaMetadata |metadata| to a MetadataItem.
+   * @param {!FileEntry} entry File entry.
+   * @param {!chrome.fileManagerPrivate.MediaMetadata} metadata The metadata.
    * @return {!Promise<!MetadataItem>} Promise that resolves with the
    *    converted metadata item.
    * @private
@@ -292,14 +320,15 @@ class ContentMetadataProvider extends MetadataProvider {
     return new Promise((resolve, reject) => {
       if (!metadata) {
         resolve(this.createError_(
-            entry.toURL(), 'Reading a thumbnail image',
-            'Failed to parse metadata'));
+            entry.toURL(), 'metadata result', 'Failed to parse metadata'));
         return;
       }
+
       const item = new MetadataItem();
       const mimeType = metadata['mimeType'];
       item.contentMimeType = mimeType;
       item.mediaMimeType = mimeType;
+
       const trans = {scaleX: 1, scaleY: 1, rotate90: 0};
       if (metadata.rotation) {
         switch (metadata.rotation) {
@@ -324,6 +353,7 @@ class ContentMetadataProvider extends MetadataProvider {
       if (metadata.rotation) {
         item.contentImageTransform = item.contentThumbnailTransform = trans;
       }
+
       item.imageHeight = metadata['height'];
       item.imageWidth = metadata['width'];
       item.mediaAlbum = metadata['album'];
@@ -331,6 +361,7 @@ class ContentMetadataProvider extends MetadataProvider {
       item.mediaDuration = metadata['duration'];
       item.mediaGenre = metadata['genre'];
       item.mediaTitle = metadata['title'];
+
       if (metadata['track']) {
         item.mediaTrack = '' + metadata['track'];
       }
@@ -348,21 +379,12 @@ class ContentMetadataProvider extends MetadataProvider {
           }
         });
       }
+
       if (metadata.attachedImages && metadata.attachedImages.length > 0) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          item.contentThumbnailUrl = e.target.result;
-          resolve(item);
-        };
-        reader.onerror = e => {
-          resolve(this.createError_(
-              entry.toURL(), 'Reading a thumbnail image',
-              reader.error.toString()));
-        };
-        reader.readAsDataURL(metadata.attachedImages[0]);
-      } else {
-        resolve(item);
+        item.contentThumbnailUrl = metadata.attachedImages[0].data;
       }
+
+      resolve(item);
     });
   }
 
