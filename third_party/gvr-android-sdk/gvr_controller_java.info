@@ -8,6 +8,7 @@ has_native_libraries = false
 has_proguard_flags = false
 has_r_text_file = false
 is_manifest_empty = true
+manifest_package = "com.google.vr.sdk.controller"
 resources = []
 subjar_tuples = []
 subjars = []

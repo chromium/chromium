@@ -4197,10 +4197,8 @@ if (enable_java_templates) {
         rebase_path(invoker.aar_path, root_build_dir),
         "--output-dir",
         rebase_path(_output_path, root_build_dir),
-
-        # TODO(dewittj): Re-enable after internal roll updating the info files.
-        #"--assert-info-file",
-        #rebase_path(_info_path, root_build_dir),
+        "--assert-info-file",
+        rebase_path(_info_path, root_build_dir),
       ]
       if (_strip_resources) {
         args += [ "--ignore-resources" ]

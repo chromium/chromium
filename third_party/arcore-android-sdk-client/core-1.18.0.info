@@ -8,6 +8,7 @@ has_native_libraries = true
 has_proguard_flags = true
 has_r_text_file = true
 is_manifest_empty = false
+manifest_package = "com.google.ar.core"
 native_libraries = [
   "jni/arm64-v8a/libarcore_sdk_c.so",
   "jni/arm64-v8a/libarcore_sdk_jni.so",

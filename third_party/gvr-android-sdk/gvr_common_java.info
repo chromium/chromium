@@ -8,6 +8,7 @@ has_native_libraries = false
 has_proguard_flags = false
 has_r_text_file = true
 is_manifest_empty = true
+manifest_package = "com.google.vr.cardboard"
 resources = [
   "res/drawable-hdpi-v4/quantum_ic_close_white_24.png",
   "res/drawable-hdpi-v4/quantum_ic_settings_white_24.png",
