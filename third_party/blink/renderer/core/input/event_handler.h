@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_EVENT_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_EVENT_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -81,6 +80,8 @@ class WebMouseWheelEvent;
 class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
  public:
   explicit EventHandler(LocalFrame&);
+  EventHandler(const EventHandler&) = delete;
+  EventHandler& operator=(const EventHandler&) = delete;
   void Trace(Visitor*) const;
 
   void Clear();
@@ -459,8 +460,6 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   FRIEND_TEST_ALL_PREFIXES(EventHandlerTest,
                            CursorForInlineVerticalWritingMode);
   FRIEND_TEST_ALL_PREFIXES(EventHandlerTest, CursorForBlockVerticalWritingMode);
-
-  DISALLOW_COPY_AND_ASSIGN(EventHandler);
 };
 
 }  // namespace blink

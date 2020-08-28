@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "cc/input/snap_fling_controller.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -42,6 +41,8 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
                                   public cc::SnapFlingClient {
  public:
   explicit ScrollManager(LocalFrame&);
+  ScrollManager(const ScrollManager&) = delete;
+  ScrollManager& operator=(const ScrollManager&) = delete;
   virtual ~ScrollManager() = default;
   void Trace(Visitor*) const;
 
@@ -191,8 +192,6 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
 
   LayoutSize
       offset_from_resize_corner_;  // In the coords of m_resizeScrollableArea.
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollManager);
 };
 
 }  // namespace blink

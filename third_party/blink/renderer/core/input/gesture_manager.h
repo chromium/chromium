@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_GESTURE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_GESTURE_MANAGER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
@@ -30,6 +29,8 @@ class CORE_EXPORT GestureManager final
                  MouseEventManager&,
                  PointerEventManager&,
                  SelectionController&);
+  GestureManager(const GestureManager&) = delete;
+  GestureManager& operator=(const GestureManager&) = delete;
   void Trace(Visitor*) const;
 
   void Clear();
@@ -78,8 +79,6 @@ class CORE_EXPORT GestureManager final
   bool long_tap_should_invoke_context_menu_;
 
   const Member<SelectionController> selection_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureManager);
 };
 
 }  // namespace blink
