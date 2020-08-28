@@ -59,13 +59,13 @@ void FakeNearbyConnectionsManager::Connect(
     NearbyConnectionCallback callback) {
   DCHECK(!is_shutdown());
   connected_data_usage_ = data_usage;
-  connection_endpoint_info_ = std::move(endpoint_info);
+  connection_endpoint_infos_.emplace(endpoint_id, std::move(endpoint_info));
   std::move(callback).Run(connection_);
 }
 
 void FakeNearbyConnectionsManager::Disconnect(const std::string& endpoint_id) {
   DCHECK(!is_shutdown());
-  connection_endpoint_info_.reset();
+  connection_endpoint_infos_.erase(endpoint_id);
 }
 
 void FakeNearbyConnectionsManager::Send(const std::string& endpoint_id,
@@ -80,7 +80,8 @@ void FakeNearbyConnectionsManager::RegisterPayloadStatusListener(
     int64_t payload_id,
     PayloadStatusListener* listener) {
   DCHECK(!is_shutdown());
-  // TODO(alexchau): Implement.
+
+  payload_status_listeners_[payload_id] = listener;
 }
 
 void FakeNearbyConnectionsManager::RegisterPayloadPath(
@@ -88,14 +89,33 @@ void FakeNearbyConnectionsManager::RegisterPayloadPath(
     const base::FilePath& file_path,
     ConnectionsCallback callback) {
   DCHECK(!is_shutdown());
-  // TODO(alexchau): Implement.
+
+  registered_payload_paths_[payload_id] = file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::File file(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
+                                   base::File::Flags::FLAG_READ |
+                                   base::File::Flags::FLAG_WRITE);
+  }
+
+  auto it = payload_path_status_.find(payload_id);
+  if (it == payload_path_status_.end()) {
+    std::move(callback).Run(
+        location::nearby::connections::mojom::Status::kPayloadUnknown);
+    return;
+  }
+
+  std::move(callback).Run(it->second);
 }
 
 FakeNearbyConnectionsManager::Payload*
 FakeNearbyConnectionsManager::GetIncomingPayload(int64_t payload_id) {
   DCHECK(!is_shutdown());
-  // TODO(alexchau): Implement.
-  return nullptr;
+  auto it = incoming_payloads_.find(payload_id);
+  if (it == incoming_payloads_.end())
+    return nullptr;
+
+  return it->second.get();
 }
 
 void FakeNearbyConnectionsManager::Cancel(int64_t payload_id) {
@@ -105,7 +125,10 @@ void FakeNearbyConnectionsManager::Cancel(int64_t payload_id) {
 
 void FakeNearbyConnectionsManager::ClearIncomingPayloads() {
   DCHECK(!is_shutdown());
-  // TODO(alexchau): Implement.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  incoming_payloads_.clear();
+  payload_status_listeners_.clear();
 }
 
 base::Optional<std::vector<uint8_t>>
@@ -160,4 +183,34 @@ bool FakeNearbyConnectionsManager::DidUpgradeBandwidth(
     const std::string& endpoint_id) const {
   return upgrade_bandwidth_endpoint_ids_.find(endpoint_id) !=
          upgrade_bandwidth_endpoint_ids_.end();
+}
+
+void FakeNearbyConnectionsManager::SetPayloadPathStatus(
+    int64_t payload_id,
+    ConnectionsStatus status) {
+  payload_path_status_[payload_id] = status;
+}
+
+FakeNearbyConnectionsManager::PayloadStatusListener*
+FakeNearbyConnectionsManager::GetRegisteredPayloadStatusListener(
+    int64_t payload_id) {
+  auto it = payload_status_listeners_.find(payload_id);
+  if (it != payload_status_listeners_.end())
+    return it->second;
+
+  return nullptr;
+}
+
+void FakeNearbyConnectionsManager::SetIncomingPayload(int64_t payload_id,
+                                                      PayloadPtr payload) {
+  incoming_payloads_[payload_id] = std::move(payload);
+}
+
+base::Optional<base::FilePath>
+FakeNearbyConnectionsManager::GetRegisteredPayloadPath(int64_t payload_id) {
+  auto it = registered_payload_paths_.find(payload_id);
+  if (it == registered_payload_paths_.end())
+    return base::nullopt;
+
+  return it->second;
 }

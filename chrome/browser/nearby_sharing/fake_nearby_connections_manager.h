@@ -72,6 +72,10 @@ class FakeNearbyConnectionsManager
   bool IsAdvertising() const;
   bool IsDiscovering() const;
   bool DidUpgradeBandwidth(const std::string& endpoint_id) const;
+  void SetPayloadPathStatus(int64_t payload_id, ConnectionsStatus status);
+  PayloadStatusListener* GetRegisteredPayloadStatusListener(int64_t payload_id);
+  void SetIncomingPayload(int64_t payload_id, PayloadPtr payload);
+  base::Optional<base::FilePath> GetRegisteredPayloadPath(int64_t payload_id);
 
   bool is_shutdown() const { return is_shutdown_; }
   DataUsage advertising_data_usage() const { return advertising_data_usage_; }
@@ -89,9 +93,17 @@ class FakeNearbyConnectionsManager
   const base::Optional<std::vector<uint8_t>>& adverting_endpoint_info() {
     return adverting_endpoint_info_;
   }
-  const base::Optional<std::vector<uint8_t>>& connection_endpoint_info() {
-    return connection_endpoint_info_;
+
+  base::Optional<std::vector<uint8_t>> connection_endpoint_info(
+      const std::string& endpoint_id) {
+    auto it = connection_endpoint_infos_.find(endpoint_id);
+    if (it == connection_endpoint_infos_.end())
+      return base::nullopt;
+
+    return it->second;
   }
+
+  bool has_incoming_payloads() { return !incoming_payloads_.empty(); }
 
  private:
   IncomingConnectionListener* advertising_listener_ = nullptr;
@@ -105,7 +117,15 @@ class FakeNearbyConnectionsManager
   DataUsage connected_data_usage_ = DataUsage::kUnknown;
   base::RepeatingCallback<void(PayloadPtr payload)> send_payload_callback_;
   base::Optional<std::vector<uint8_t>> adverting_endpoint_info_;
-  base::Optional<std::vector<uint8_t>> connection_endpoint_info_;
+  std::set<std::string> disconnected_endpoints_;
+
+  // Maps endpoint_id to endpoint_info.
+  std::map<std::string, std::vector<uint8_t>> connection_endpoint_infos_;
+
+  std::map<int64_t, ConnectionsStatus> payload_path_status_;
+  std::map<int64_t, PayloadStatusListener*> payload_status_listeners_;
+  std::map<int64_t, PayloadPtr> incoming_payloads_;
+  std::map<int64_t, base::FilePath> registered_payload_paths_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_FAKE_NEARBY_CONNECTIONS_MANAGER_H_

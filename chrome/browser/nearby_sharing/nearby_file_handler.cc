@@ -37,13 +37,12 @@ std::vector<NearbyFileHandler::FileInfo> DoOpenFiles(
 }
 
 NearbyFileHandler::CreateFileResult DoCreateFile(base::FilePath file_path) {
-  base::FilePath unique_path = base::GetUniquePath(file_path);
   NearbyFileHandler::CreateFileResult result;
   result.output_file.Initialize(
-      unique_path,
+      file_path,
       base::File::Flags::FLAG_CREATE_ALWAYS | base::File::Flags::FLAG_WRITE);
   result.input_file.Initialize(
-      unique_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+      file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
   return result;
 }
 
@@ -57,6 +56,15 @@ void NearbyFileHandler::OpenFiles(std::vector<base::FilePath> file_paths,
                                   OpenFilesCallback callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoOpenFiles, std::move(file_paths)),
+      std::move(callback));
+}
+
+void NearbyFileHandler::GetUniquePath(const base::FilePath& file_path,
+                                      GetUniquePathCallback callback) {
+  // TODO(crbug.com/1085068) - Confirm if this should be run on
+  // DownloadManager's task runner.
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::GetUniquePath, file_path),
       std::move(callback));
 }
 
@@ -74,4 +82,13 @@ void NearbyFileHandler::CreateFile(const base::FilePath& file_path,
                                    CreateFileCallback callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoCreateFile, file_path), std::move(callback));
+}
+
+void NearbyFileHandler::DeleteFilesFromDisk(std::vector<base::FilePath> paths) {
+  task_runner_->PostTask(FROM_HERE, base::BindOnce(
+                                        [](std::vector<base::FilePath> paths) {
+                                          for (const auto& path : paths)
+                                            base::DeleteFile(path);
+                                        },
+                                        std::move(paths)));
 }

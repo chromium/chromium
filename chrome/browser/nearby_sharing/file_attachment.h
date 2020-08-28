@@ -38,6 +38,10 @@ class FileAttachment : public Attachment {
   // Attachment:
   void MoveToShareTarget(ShareTarget& share_target) override;
 
+  void set_file_path(base::Optional<base::FilePath> path) {
+    file_path_ = std::move(path);
+  }
+
  private:
   std::string file_name_;
   std::string mime_type_;

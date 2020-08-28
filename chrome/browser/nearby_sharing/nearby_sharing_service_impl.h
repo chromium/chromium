@@ -165,8 +165,22 @@ class NearbySharingServiceImpl
   void OnTransferComplete();
   void OnTransferStarted(bool is_incoming);
 
-  StatusCodes ReceivePayloads(const ShareTarget& share_target);
+  void ReceivePayloads(ShareTarget share_target,
+                       StatusCodesCallback status_codes_callback);
   StatusCodes SendPayloads(const ShareTarget& share_target);
+  void OnUniquePathFetched(
+      int64_t attachment_id,
+      int64_t payload_id,
+      base::OnceCallback<void(location::nearby::connections::mojom::Status)>
+          callback,
+      base::FilePath path);
+  void OnPayloadPathRegistered(
+      base::ScopedClosureRunner closure_runner,
+      bool* aggregated_success,
+      location::nearby::connections::mojom::Status status);
+  void OnPayloadPathsRegistered(const ShareTarget& share_target,
+                                std::unique_ptr<bool> aggregated_success,
+                                StatusCodesCallback status_codes_callback);
 
   void OnOutgoingConnection(const ShareTarget& share_target,
                             NearbyConnection* connection);
@@ -244,6 +258,12 @@ class NearbySharingServiceImpl
       const sharing::mojom::AdvertisementPtr& advertisement,
       base::Optional<NearbyShareDecryptedPublicCertificate> certificate,
       bool is_incoming);
+
+  void OnPayloadTransferUpdate(ShareTarget share_target,
+                               TransferMetadata metadata);
+  bool OnIncomingPayloadsComplete(ShareTarget& share_target);
+  void OnPayloadsFailed(ShareTarget share_target);
+  void Disconnect(const ShareTarget& share_target, TransferMetadata metadata);
 
   ShareTargetInfo& GetOrCreateShareTargetInfo(const ShareTarget& share_target,
                                               const std::string& endpoint_id);

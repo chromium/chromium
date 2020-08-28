@@ -121,3 +121,8 @@ TextAttachment::~TextAttachment() = default;
 void TextAttachment::MoveToShareTarget(ShareTarget& share_target) {
   share_target.text_attachments.push_back(std::move(*this));
 }
+
+void TextAttachment::set_text_body(std::string text_body) {
+  text_body_ = std::move(text_body);
+  text_title_ = GetTextTitle(text_body_, type_);
+}

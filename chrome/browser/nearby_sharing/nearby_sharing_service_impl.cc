@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -453,10 +454,12 @@ void NearbySharingServiceImpl::Accept(
     return;
   }
 
-  StatusCodes status_code = share_target.is_incoming
-                                ? ReceivePayloads(share_target)
-                                : SendPayloads(share_target);
-  std::move(status_codes_callback).Run(status_code);
+  if (share_target.is_incoming) {
+    ReceivePayloads(share_target, std::move(status_codes_callback));
+    return;
+  }
+
+  std::move(status_codes_callback).Run(SendPayloads(share_target));
 }
 
 void NearbySharingServiceImpl::Reject(
@@ -1326,14 +1329,102 @@ void NearbySharingServiceImpl::OnTransferStarted(bool is_incoming) {
   InvalidateSurfaceState();
 }
 
-NearbySharingService::StatusCodes NearbySharingServiceImpl::ReceivePayloads(
-    const ShareTarget& share_target) {
+void NearbySharingServiceImpl::ReceivePayloads(
+    ShareTarget share_target,
+    StatusCodesCallback status_codes_callback) {
   mutual_acceptance_timeout_alarm_.Cancel();
+
+  // Register payload path for all valid file payloads.
+  base::flat_map<int64_t, base::FilePath> valid_file_payloads;
+  for (auto& file : share_target.file_attachments) {
+    base::Optional<int64_t> payload_id = GetAttachmentPayloadId(file.id());
+    if (!payload_id) {
+      NS_LOG(WARNING)
+          << __func__
+          << ": Failed to register payload path for attachment id - "
+          << file.id();
+      continue;
+    }
+
+    base::FilePath download_path =
+        DownloadPrefs::FromDownloadManager(
+            content::BrowserContext::GetDownloadManager(profile_))
+            ->DownloadPath()
+            .AppendASCII(file.file_name());
+
+    valid_file_payloads.emplace(file.id(), std::move(download_path));
+  }
+
+  auto aggregated_success = std::make_unique<bool>(true);
+  bool* aggregated_success_ptr = aggregated_success.get();
+
+  if (valid_file_payloads.empty()) {
+    OnPayloadPathsRegistered(share_target, std::move(aggregated_success),
+                             std::move(status_codes_callback));
+    return;
+  }
+
+  auto all_paths_registered_callback = base::BarrierClosure(
+      valid_file_payloads.size(),
+      base::BindOnce(&NearbySharingServiceImpl::OnPayloadPathsRegistered,
+                     weak_ptr_factory_.GetWeakPtr(), share_target,
+                     std::move(aggregated_success),
+                     std::move(status_codes_callback)));
+
+  for (const auto& payload : valid_file_payloads) {
+    base::Optional<int64_t> payload_id = GetAttachmentPayloadId(payload.first);
+    DCHECK(payload_id);
+
+    file_handler_.GetUniquePath(
+        payload.second,
+        base::BindOnce(
+            &NearbySharingServiceImpl::OnUniquePathFetched,
+            weak_ptr_factory_.GetWeakPtr(), payload.first, *payload_id,
+            base::BindOnce(
+                &NearbySharingServiceImpl::OnPayloadPathRegistered,
+                weak_ptr_factory_.GetWeakPtr(),
+                base::ScopedClosureRunner(all_paths_registered_callback),
+                aggregated_success_ptr)));
+  }
+}
+
+void NearbySharingServiceImpl::OnUniquePathFetched(
+    int64_t attachment_id,
+    int64_t payload_id,
+    base::OnceCallback<void(location::nearby::connections::mojom::Status)>
+        callback,
+    base::FilePath path) {
+  attachment_info_map_[attachment_id].file_path = path;
+  nearby_connections_manager_->RegisterPayloadPath(payload_id, path,
+                                                   std::move(callback));
+}
+
+void NearbySharingServiceImpl::OnPayloadPathRegistered(
+    base::ScopedClosureRunner closure_runner,
+    bool* aggregated_success,
+    location::nearby::connections::mojom::Status status) {
+  if (status != location::nearby::connections::mojom::Status::kSuccess)
+    *aggregated_success = false;
+}
+
+void NearbySharingServiceImpl::OnPayloadPathsRegistered(
+    const ShareTarget& share_target,
+    std::unique_ptr<bool> aggregated_success,
+    StatusCodesCallback status_codes_callback) {
+  DCHECK(aggregated_success);
+  if (!*aggregated_success) {
+    NS_LOG(WARNING)
+        << __func__
+        << ": Not all payload paths could be registered successfully.";
+    std::move(status_codes_callback).Run(StatusCodes::kError);
+    return;
+  }
 
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info || !info->connection()) {
     NS_LOG(WARNING) << __func__ << ": Accept invoked for unknown share target";
-    return StatusCodes::kOutOfOrderApiCall;
+    std::move(status_codes_callback).Run(StatusCodes::kOutOfOrderApiCall);
+    return;
   }
   NearbyConnection* connection = info->connection();
 
@@ -1342,11 +1433,16 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::ReceivePayloads(
                     << ": Accept invoked for share target without transfer "
                        "update callback. Disconnecting.";
     connection->Close();
-    return StatusCodes::kOutOfOrderApiCall;
+    std::move(status_codes_callback).Run(StatusCodes::kOutOfOrderApiCall);
+    return;
   }
 
-  // TODO(himanshujaju) - Implement payload tracker.
+  info->set_payload_tracker(std::make_unique<PayloadTracker>(
+      share_target, attachment_info_map_,
+      base::BindRepeating(&NearbySharingServiceImpl::OnPayloadTransferUpdate,
+                          weak_ptr_factory_.GetWeakPtr())));
 
+  // Register status listener for all payloads.
   for (int64_t attachment_id : share_target.GetAttachmentIds()) {
     base::Optional<int64_t> payload_id = GetAttachmentPayloadId(attachment_id);
     if (!payload_id) {
@@ -1359,7 +1455,10 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::ReceivePayloads(
     NS_LOG(VERBOSE) << __func__
                     << ": Started listening for progress on payload - "
                     << *payload_id;
-    // TODO(himanshujaju) - Register payload listener.
+
+    nearby_connections_manager_->RegisterPayloadStatusListener(
+        *payload_id, info->payload_tracker());
+
     NS_LOG(VERBOSE) << __func__
                     << ": Accepted incoming files from share target - "
                     << share_target.device_name;
@@ -1383,10 +1482,11 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::ReceivePayloads(
                     << ": Failed to initiate bandwidth upgrade. No endpoint_id "
                        "found for target - "
                     << share_target.device_name;
-    return StatusCodes::kOutOfOrderApiCall;
+    std::move(status_codes_callback).Run(StatusCodes::kOutOfOrderApiCall);
+    return;
   }
 
-  return StatusCodes::kOk;
+  std::move(status_codes_callback).Run(StatusCodes::kOk);
 }
 
 NearbySharingService::StatusCodes NearbySharingServiceImpl::SendPayloads(
@@ -2267,17 +2367,19 @@ void NearbySharingServiceImpl::OnReceiveConnectionResponse(
                             .set_status(TransferMetadata::Status::kInProgress)
                             .build());
 
-      // TODO(himanshujaju) - Implement payload tracker.
-      // PayloadTracker tracker = new PayloadTracker(shareTarget, callback);
-      NearbyConnectionsManager::PayloadStatusListener* tracker = nullptr;
+      info->set_payload_tracker(std::make_unique<PayloadTracker>(
+          share_target, attachment_info_map_,
+          base::BindRepeating(
+              &NearbySharingServiceImpl::OnPayloadTransferUpdate,
+              weak_ptr_factory_.GetWeakPtr())));
 
       for (auto& payload : info->ExtractTextPayloads()) {
-        nearby_connections_manager_->Send(*info->endpoint_id(),
-                                          std::move(payload), tracker);
+        nearby_connections_manager_->Send(
+            *info->endpoint_id(), std::move(payload), info->payload_tracker());
       }
       for (auto& payload : info->ExtractFilePayloads()) {
-        nearby_connections_manager_->Send(*info->endpoint_id(),
-                                          std::move(payload), tracker);
+        nearby_connections_manager_->Send(
+            *info->endpoint_id(), std::move(payload), info->payload_tracker());
       }
       NS_LOG(VERBOSE)
           << __func__
@@ -2562,6 +2664,164 @@ base::Optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
   }
 
   return target;
+}
+
+void NearbySharingServiceImpl::OnPayloadTransferUpdate(
+    ShareTarget share_target,
+    TransferMetadata metadata) {
+  if (metadata.status() == TransferMetadata::Status::kComplete &&
+      share_target.is_incoming && !OnIncomingPayloadsComplete(share_target)) {
+    metadata = TransferMetadataBuilder()
+                   .set_status(TransferMetadata::Status::kFailed)
+                   .build();
+
+    // Reset file paths for file attachments.
+    for (auto& file : share_target.file_attachments)
+      file.set_file_path(base::nullopt);
+
+    // Reset body of text attachments.
+    for (auto& text : share_target.text_attachments)
+      text.set_text_body(std::string());
+  }
+
+  if (TransferMetadata::IsFinalStatus(metadata.status())) {
+    if (metadata.status() != TransferMetadata::Status::kComplete)
+      OnPayloadsFailed(share_target);
+
+    Disconnect(share_target, metadata);
+  }
+
+  if (share_target.is_incoming) {
+    OnIncomingTransferUpdate(share_target, metadata);
+  } else {
+    // TODO(crbug.com/1085067): Add call for outgoing transfer.
+  }
+}
+
+void NearbySharingServiceImpl::OnPayloadsFailed(ShareTarget share_target) {
+  if (!share_target.is_incoming)
+    return;
+
+  nearby_connections_manager_->ClearIncomingPayloads();
+  std::vector<base::FilePath> files_for_deletion;
+  for (const auto& file : share_target.file_attachments) {
+    auto it = attachment_info_map_.find(file.id());
+    if (it == attachment_info_map_.end())
+      continue;
+
+    files_for_deletion.push_back(it->second.file_path);
+  }
+
+  file_handler_.DeleteFilesFromDisk(std::move(files_for_deletion));
+}
+
+bool NearbySharingServiceImpl::OnIncomingPayloadsComplete(
+    ShareTarget& share_target) {
+  DCHECK(share_target.is_incoming);
+
+  ShareTargetInfo* info = GetShareTargetInfo(share_target);
+  if (!info || !info->connection()) {
+    NS_LOG(VERBOSE) << __func__ << ": Connection not found for target - "
+                    << share_target.device_name;
+
+    return false;
+  }
+  NearbyConnection* connection = info->connection();
+
+  connection->SetDisconnectionListener(
+      base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
+                     weak_ptr_factory_.GetWeakPtr(), share_target));
+
+  for (auto& file : share_target.file_attachments) {
+    AttachmentInfo& attachment_info = attachment_info_map_[file.id()];
+    base::Optional<int64_t> payload_id = attachment_info.payload_id;
+    if (!payload_id) {
+      NS_LOG(WARNING) << __func__ << ": No payload id found for file - "
+                      << file.id();
+      return false;
+    }
+
+    location::nearby::connections::mojom::Payload* incoming_payload =
+        nearby_connections_manager_->GetIncomingPayload(*payload_id);
+    if (!incoming_payload || !incoming_payload->content ||
+        !incoming_payload->content->is_file()) {
+      NS_LOG(WARNING) << __func__ << ": No payload found for file - "
+                      << file.id();
+      return false;
+    }
+
+    file.set_file_path(attachment_info.file_path);
+  }
+
+  for (auto& text : share_target.text_attachments) {
+    AttachmentInfo& attachment_info = attachment_info_map_[text.id()];
+    base::Optional<int64_t> payload_id = attachment_info.payload_id;
+    if (!payload_id) {
+      NS_LOG(WARNING) << __func__ << ": No payload id found for text - "
+                      << text.id();
+      return false;
+    }
+
+    location::nearby::connections::mojom::Payload* incoming_payload =
+        nearby_connections_manager_->GetIncomingPayload(*payload_id);
+    if (!incoming_payload || !incoming_payload->content ||
+        !incoming_payload->content->is_bytes()) {
+      NS_LOG(WARNING) << __func__ << ": No payload found for text - "
+                      << text.id();
+      return false;
+    }
+
+    std::vector<uint8_t>& bytes = incoming_payload->content->get_bytes()->bytes;
+    if (bytes.empty()) {
+      NS_LOG(WARNING)
+          << __func__
+          << ": Incoming bytes is empty for text payload with payload_id - "
+          << *payload_id;
+      return false;
+    }
+
+    std::string text_body(bytes.begin(), bytes.end());
+    text.set_text_body(text_body);
+
+    attachment_info.text_body = std::move(text_body);
+  }
+  return true;
+}
+
+void NearbySharingServiceImpl::Disconnect(const ShareTarget& share_target,
+                                          TransferMetadata metadata) {
+  ShareTargetInfo* share_target_info = GetShareTargetInfo(share_target);
+  if (!share_target_info) {
+    NS_LOG(WARNING)
+        << __func__
+        << ": Failed to disconnect. No share target info found for target - "
+        << share_target.device_name;
+    return;
+  }
+
+  base::Optional<std::string> endpoint_id = share_target_info->endpoint_id();
+  if (!endpoint_id) {
+    NS_LOG(WARNING)
+        << __func__
+        << ": Failed to disconnect. No endpoint id found for share target - "
+        << share_target.device_name;
+    return;
+  }
+
+  // Failed to send or receive. No point in continuing, so disconnect
+  // immediately.
+  if (metadata.status() != TransferMetadata::Status::kComplete) {
+    nearby_connections_manager_->Disconnect(*endpoint_id);
+    return;
+  }
+
+  // Files received successfully. Receivers can immediately cancel.
+  if (share_target.is_incoming) {
+    nearby_connections_manager_->Disconnect(*endpoint_id);
+    return;
+  }
+
+  // TODO(crbug.com/1085067): Implement outgoing disconnection.
 }
 
 ShareTargetInfo& NearbySharingServiceImpl::GetOrCreateShareTargetInfo(

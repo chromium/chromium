@@ -966,48 +966,6 @@ TEST_F(NearbyConnectionsManagerImplTest, IncomingRegisterPayloadPath) {
   register_payload_run_loop.Run();
 }
 
-TEST_F(NearbyConnectionsManagerImplTest,
-       IncomingRegisterPayloadPathAlreadyExist) {
-  mojo::Remote<ConnectionLifecycleListener> connection_listener_remote;
-  testing::NiceMock<MockIncomingConnectionListener>
-      incoming_connection_listener;
-  StartAdvertising(connection_listener_remote, incoming_connection_listener);
-
-  mojo::Remote<PayloadListener> payload_listener_remote;
-  NearbyConnection* connection = OnIncomingConnection(
-      connection_listener_remote, incoming_connection_listener,
-      payload_listener_remote);
-  EXPECT_TRUE(connection);
-
-  base::File file;
-  base::FilePath path = InitializeTemporaryFile(file);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    file.Close();
-  }
-
-  base::RunLoop register_payload_run_loop;
-  EXPECT_CALL(nearby_connections_, RegisterPayloadFile)
-      .WillOnce(
-          [&](int64_t payload_id, base::File input_file, base::File output_file,
-              NearbyConnectionsMojom::RegisterPayloadFileCallback callback) {
-            EXPECT_EQ(kPayloadId, payload_id);
-            ASSERT_TRUE(input_file.IsValid());
-            ASSERT_TRUE(output_file.IsValid());
-            VerifyFileReadWrite(input_file, output_file);
-
-            std::move(callback).Run(Status::kSuccess);
-            register_payload_run_loop.Quit();
-          });
-
-  // Register a path that already exists.
-  base::MockCallback<NearbyConnectionsManager::ConnectionsCallback> callback;
-  EXPECT_CALL(callback, Run(testing::Eq(Status::kSuccess)));
-  nearby_connections_manager_.RegisterPayloadPath(kPayloadId, path,
-                                                  callback.Get());
-  register_payload_run_loop.Run();
-}
-
 TEST_F(NearbyConnectionsManagerImplTest, IncomingBytesPayload) {
   mojo::Remote<ConnectionLifecycleListener> connection_listener_remote;
   testing::NiceMock<MockIncomingConnectionListener>
