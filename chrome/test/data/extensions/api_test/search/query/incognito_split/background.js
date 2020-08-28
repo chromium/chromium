@@ -29,22 +29,33 @@ if (chrome.extension.inIncognitoContext) {
       });
     },
   ]);
-
-  var testHelper = (tabs, queryInfo) => {
-    assertEq(1, tabs.length);
-    const tab = tabs[0];
-    // The browser test should have spun up an incognito browser, which
-    // should be active.
-    assertTrue(tab.incognito);
-    chrome.search.query(queryInfo, () => {
-      assertNoLastError();
-      chrome.tabs.query({windowId: tab.windowId}, (tabs) => {
-        const tab = tabs[0];
-        const url = new URL(tab.pendingUrl || tab.url);
-        // The default search is google.
-        assertEq('www.google.com', url.hostname);
-        succeed();
-      });
-    });
-  };
 }
+
+var testHelper = (tabs, queryInfo) => {
+  assertEq(1, tabs.length);
+  const tab = tabs[0];
+  // The browser test should have spun up an incognito browser, which
+  // should be active.
+  assertTrue(tab.incognito);
+  addTabListener(tab.id);
+  chrome.search.query(queryInfo, () => {
+    assertNoLastError();
+    chrome.tabs.query({windowId: tab.windowId}, (tabs) => {});
+  });
+};
+
+let addTabListener = (tabIdExpected) => {
+  chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
+    if (tabId != tabIdExpected || changeInfo.status !== 'complete') {
+      return;  // Not our tab.
+    }
+    // Note: make sure to stop listening to future events, so that this
+    // doesn't affect future tests.
+    chrome.tabs.onUpdated.removeListener(listener);
+    // The tab finished loading. It should be on google (the default
+    // search engine).
+    const hostname = new URL(tab.url).hostname;
+    assertEq('www.google.com', hostname);
+    succeed();
+  });
+};

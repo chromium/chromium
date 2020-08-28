@@ -21,22 +21,18 @@ chrome.test.runTests([
     });
   },
 
-  // Display results in current tab if no disposition is provided.
   function QueryPopulatedDispositionEmpty() {
-    chrome.tabs.query({active: true}, (tabs) => {
-      chrome.search.query({search: SEARCH_WORDS}, () => {
-        didPerformQuery(tabs[0].id);
-      });
+    chrome.tabs.create({}, (tab) => {
+      addTabListener(tab.id);
+      chrome.search.query({search: SEARCH_WORDS}, () => {});
     });
   },
 
   // Display results in current tab if said disposition is provided.
   function QueryPopulatedDispositionCurrentTab() {
-    chrome.tabs.query({active: true}, (tabs) => {
-      chrome.search.query(
-          {search: SEARCH_WORDS, disposition: 'CURRENT_TAB'}, () => {
-            didPerformQuery(tabs[0].id);
-          });
+    chrome.tabs.create({}, (tab) => {
+      addTabListener(tab.id);
+      chrome.search.query({search: SEARCH_WORDS, disposition: 'CURRENT_TAB'});
     });
   },
 
@@ -44,13 +40,13 @@ chrome.test.runTests([
   function QueryPopulatedDispositionNewTab() {
     chrome.tabs.query({}, (initialTabs) => {
       let initialTabIds = initialTabs.map(tab => tab.id);
+      addAnyTabListener();
       chrome.search.query(
           {search: SEARCH_WORDS, disposition: 'NEW_TAB'}, () => {
             chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
               assertEq(1, tabs.length);
               // A new tab should have been created.
               assertFalse(initialTabIds.includes(tabs[0].id));
-              didPerformQuery(tabs[0].id);
             });
           });
     });
@@ -60,6 +56,7 @@ chrome.test.runTests([
   function QueryPopulatedDispositionNewWindow() {
     chrome.windows.getAll({}, (initialWindows) => {
       let initialWindowIds = initialWindows.map(window => window.id);
+      addAnyTabListener();
       chrome.search.query(
           {search: SEARCH_WORDS, disposition: 'NEW_WINDOW'}, () => {
             chrome.windows.getAll({}, (windows) => {
@@ -67,9 +64,6 @@ chrome.test.runTests([
               let window =
                   windows.find(window => !initialWindowIds.includes(window.id));
               assertTrue(!!window);
-              chrome.tabs.query({windowId: window.id}, (tabs) => {
-                didPerformQuery(tabs[0].id);
-              });
             });
           });
     });
@@ -78,9 +72,8 @@ chrome.test.runTests([
   // Display results in specified tab if said tabId is provided.
   function QueryPopulatedTabIDValid() {
     chrome.tabs.create({}, (tab) => {
-      chrome.search.query({search: SEARCH_WORDS, tabId: tab.id}, () => {
-        didPerformQuery(tab.id);
-      });
+      addTabListener(tab.id);
+      chrome.search.query({search: SEARCH_WORDS, tabId: tab.id});
     });
   },
 
@@ -105,13 +98,23 @@ chrome.test.runTests([
   },
 ]);
 
-var didPerformQuery = function(tabId) {
-  assertNoLastError();
-  chrome.tabs.get(tabId, (tab) => {
-    const tabUrl = tab.pendingUrl || tab.url;
-    const url = new URL(tabUrl);
-    // The default search is google.
-    assertEq('www.google.com', url.hostname);
+let addTabListener = (tabIdExpected) => {
+  chrome.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
+    if ((tabIdExpected != -1 && tabId != tabIdExpected) ||
+        changeInfo.status !== 'complete') {
+      return;  // Not our tab.
+    }
+    // Note: make sure to stop listening to future events, so that this
+    // doesn't affect future tests.
+    chrome.tabs.onUpdated.removeListener(listener);
+    // The tab finished loading. It should be on google (the default
+    // search engine).
+    const hostname = new URL(tab.url).hostname;
+    assertEq('www.google.com', hostname);
     succeed();
   });
-}
+};
+
+let addAnyTabListener = () => {
+  addTabListener(-1);
+};
