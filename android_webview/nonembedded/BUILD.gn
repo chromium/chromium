@@ -187,19 +187,10 @@ jinja_template("system_webview_manifest") {
 jinja_template("trichrome_webview_manifest") {
   input = "java/AndroidManifest.xml"
   output = trichrome_webview_android_manifest
-  variables = trichrome_jinja_variables + _webview_jinja_variables
-  if (android_64bit_target_cpu) {
-    variables += [
-      "use32bitAbi=",
-      "library=libmonochrome_64.so",
-      "trichrome_version=$trichrome_64_32_version_code",
-    ]
-  } else {
-    variables += [
-      "library=libmonochrome.so",
-      "trichrome_version=$trichrome_version_code",
-    ]
-  }
+  variables = trichrome_jinja_variables + _webview_jinja_variables + [
+                "trichrome_version=$trichrome_version_code",
+                "library=libmonochrome.so",
+              ]
 }
 
 if (android_64bit_target_cpu) {
@@ -210,15 +201,6 @@ if (android_64bit_target_cpu) {
                   "use32bitAbi=",
                   "trichrome_version=$trichrome_64_32_version_code",
                   "library=libmonochrome_64.so",
-                ]
-  }
-
-  jinja_template("trichrome_webview_32_64_manifest") {
-    input = "java/AndroidManifest.xml"
-    output = trichrome_webview_32_64_android_manifest
-    variables = trichrome_jinja_variables + _webview_jinja_variables + [
-                  "trichrome_version=$trichrome_32_64_version_code",
-                  "library=libmonochrome.so",
                 ]
   }
 

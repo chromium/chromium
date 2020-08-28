@@ -19,7 +19,6 @@ system_webview_android_manifest =
 trichrome_webview_android_manifest =
     "$root_gen_dir/android_webview/trichrome_webview_apk/AndroidManifest.xml"
 trichrome_webview_64_32_android_manifest = "$root_gen_dir/android_webview/trichrome_webview_64_32_apk/AndroidManifest.xml"
-trichrome_webview_32_64_android_manifest = "$root_gen_dir/android_webview/trichrome_webview_32_64_apk/AndroidManifest.xml"
 trichrome_webview_32_android_manifest =
     "$root_gen_dir/android_webview/trichrome_webview_32_apk/AndroidManifest.xml"
 

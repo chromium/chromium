@@ -141,8 +141,8 @@ template("trichrome_webview_tmpl") {
     use_trichrome_library = true
 
     if (android_64bit_target_cpu) {
-      is_64_bit_browser = true
-      include_32_bit_webview = true
+      is_64_bit_browser = false
+      include_64_bit_webview = true
     }
     static_library_provider = "//chrome/android:trichrome_library_apk"
   }
@@ -214,29 +214,6 @@ if (android_64bit_target_cpu) {
     uncompress_dex = true
   }
 
-  template("trichrome_webview_32_64_tmpl") {
-    system_webview_apk_or_module_tmpl(target_name) {
-      forward_variables_from(invoker, "*")
-      android_manifest = trichrome_webview_32_64_android_manifest
-      android_manifest_dep =
-          "//android_webview/nonembedded:trichrome_webview_32_64_manifest"
-      use_trichrome_library = true
-      is_64_bit_browser = false
-      include_32_bit_webview = true
-      include_64_bit_webview = true
-
-      min_sdk_version = 29
-
-      deps = upstream_only_webview_deps
-      static_library_provider = "//chrome/android:trichrome_library_32_64_apk"
-    }
-  }
-
-  trichrome_webview_32_64_tmpl("trichrome_webview_32_64_apk") {
-    apk_name = "TrichromeWebView3264"
-    uncompress_dex = true
-  }
-
   if (enable_webview_bundles) {
     trichrome_webview_64_32_tmpl("trichrome_webview_64_32_base_bundle_module") {
       target_type = "android_app_bundle_module"
@@ -250,20 +227,6 @@ if (android_64bit_target_cpu) {
       uncompress_dex = true
       min_sdk_version = 29
       static_library_provider = "//chrome/android:trichrome_library_64_32_apk"
-    }
-
-    trichrome_webview_32_64_tmpl("trichrome_webview_32_64_base_bundle_module") {
-      target_type = "android_app_bundle_module"
-      is_base_module = true
-      bundle_target = ":trichrome_webview_32_64_bundle"
-    }
-
-    system_webview_bundle("trichrome_webview_32_64_bundle") {
-      base_module_target = ":trichrome_webview_32_64_base_bundle_module"
-      bundle_name = "TrichromeWebView3264"
-      uncompress_dex = true
-      min_sdk_version = 29
-      static_library_provider = "//chrome/android:trichrome_library_32_64_apk"
     }
   }
 
