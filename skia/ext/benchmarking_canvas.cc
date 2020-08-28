@@ -264,14 +264,7 @@ std::unique_ptr<base::Value> AsValue(const SkPath& path) {
   size_t index = static_cast<size_t>(path.getFillType());
   DCHECK_LT(index, SK_ARRAY_COUNT(gFillStrings));
   val->SetString("fill-type", gFillStrings[index]);
-
-  static const char* gConvexityStrings[] = { "Unknown", "Convex", "Concave" };
-  DCHECK_LT(static_cast<size_t>(path.getConvexityType()),
-            SK_ARRAY_COUNT(gConvexityStrings));
-  val->SetString(
-      "convexity",
-      gConvexityStrings[static_cast<size_t>(path.getConvexityType())]);
-
+  val->SetBoolean("convex", path.isConvex());
   val->SetBoolean("is-rect", path.isRect(nullptr));
   val->Set("bounds", AsValue(path.getBounds()));
 

@@ -176,20 +176,6 @@ String FillTypeName(SkPathFillType type) {
   };
 }
 
-String ConvexityName(SkPathConvexityType convexity) {
-  switch (convexity) {
-    case SkPathConvexityType::kUnknown:
-      return "Unknown";
-    case SkPathConvexityType::kConvex:
-      return "Convex";
-    case SkPathConvexityType::kConcave:
-      return "Concave";
-    default:
-      NOTREACHED();
-      return "?";
-  };
-}
-
 VerbParams SegmentParams(SkPath::Verb verb) {
   switch (verb) {
     case SkPath::kMove_Verb:
@@ -215,7 +201,7 @@ VerbParams SegmentParams(SkPath::Verb verb) {
 std::unique_ptr<JSONObject> ObjectForSkPath(const SkPath& path) {
   auto path_item = std::make_unique<JSONObject>();
   path_item->SetString("fillType", FillTypeName(path.getFillType()));
-  path_item->SetString("convexity", ConvexityName(path.getConvexityType()));
+  path_item->SetBoolean("convex", path.isConvex());
   path_item->SetBoolean("isRect", path.isRect(nullptr));
   SkPath::RawIter iter(path);
   SkPoint points[4];
