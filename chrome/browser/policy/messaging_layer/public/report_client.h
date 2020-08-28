@@ -18,6 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/util/shared_queue.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
+#include "components/policy/proto/record.pb.h"
 
 namespace reporting {
 
@@ -50,13 +51,10 @@ class ReportingClient {
     Uploader(const Uploader& other) = delete;
     Uploader& operator=(const Uploader& other) = delete;
 
-    // TODO(chromium:1078512) Priority is unused, remove it.
-    void ProcessBlob(Priority priority,
-                     StatusOr<base::span<const uint8_t>> data,
-                     base::OnceCallback<void(bool)> processed_cb) override;
+    void ProcessRecord(StatusOr<EncryptedRecord> data,
+                       base::OnceCallback<void(bool)> processed_cb) override;
 
-    // TODO(chromium:1078512) Priority is unused, remove it.
-    void Completed(Priority priority, Status final_status) override;
+    void Completed(Status final_status) override;
 
    private:
     explicit Uploader(UploadCallback upload_callback_);

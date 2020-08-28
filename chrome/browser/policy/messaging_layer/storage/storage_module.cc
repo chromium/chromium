@@ -25,11 +25,7 @@ StorageModule::~StorageModule() = default;
 void StorageModule::AddRecord(EncryptedRecord record,
                               Priority priority,
                               base::OnceCallback<void(Status)> callback) {
-  size_t record_size = record.ByteSizeLong();
-  auto data = std::make_unique<uint8_t[]>(record_size);
-  record.SerializeToArray(data.get(), record_size);
-  storage_->Write(priority, base::make_span(data.get(), record_size),
-                  std::move(callback));
+  storage_->Write(priority, std::move(record), std::move(callback));
 }
 
 void StorageModule::ReportSuccess(

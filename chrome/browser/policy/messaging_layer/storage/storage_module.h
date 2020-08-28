@@ -29,8 +29,9 @@ class StorageModule : public base::RefCountedThreadSafe<StorageModule> {
   StorageModule(const StorageModule& other) = delete;
   StorageModule& operator=(const StorageModule& other) = delete;
 
-  // AddRecord will add |record| to the |StorageModule| according to the
-  // provided |priority|. On completion, |callback| will be called.
+  // AddRecord will add |record| (taking ownership) to the |StorageModule|
+  // according to the provided |priority|. On completion, |callback| will be
+  // called.
   virtual void AddRecord(reporting::EncryptedRecord record,
                          reporting::Priority priority,
                          base::OnceCallback<void(Status)> callback);

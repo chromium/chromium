@@ -30,6 +30,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "components/policy/proto/record.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_CHROMEOS)
@@ -122,63 +123,42 @@ StatusOr<std::unique_ptr<Uploader>> Uploader::Create(
   return uploader;
 }
 
-void Uploader::ProcessBlob(Priority priority,
-                           StatusOr<base::span<const uint8_t>> data,
-                           base::OnceCallback<void(bool)> processed_cb) {
+void Uploader::ProcessRecord(StatusOr<EncryptedRecord> data,
+                             base::OnceCallback<void(bool)> processed_cb) {
   if (completed_ || !data.ok()) {
     std::move(processed_cb).Run(false);
     return;
   }
 
-  class ProcessBlobContext : public TaskRunnerContext<bool> {
+  class ProcessRecordContext : public TaskRunnerContext<bool> {
    public:
-    ProcessBlobContext(
-        base::span<const uint8_t> data,
+    ProcessRecordContext(
+        EncryptedRecord record,
         std::vector<EncryptedRecord>* records,
         base::OnceCallback<void(bool)> processed_callback,
         scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
         : TaskRunnerContext<bool>(std::move(processed_callback),
                                   sequenced_task_runner),
           records_(records),
-          data_(data.begin(), data.end()) {}
+          record_(std::move(record)) {}
 
    private:
-    ~ProcessBlobContext() override = default;
+    ~ProcessRecordContext() override = default;
 
     void OnStart() override {
-      if (data_.empty()) {
-        Complete(true);
-        return;
-      }
-      ProcessBlob();
-    }
-
-    void ProcessBlob() {
-      EncryptedRecord record;
-      if (!record.ParseFromArray(data_.data(), data_.size())) {
-        Complete(false);
-        return;
-      }
-      records_->push_back(record);
-      Complete(true);
-    }
-
-    void Complete(bool success) {
-      if (!success) {
-        LOG(ERROR) << "Unable to process blob";
-      }
-      Response(success);
+      records_->emplace_back(std::move(record_));
+      Response(true);
     }
 
     std::vector<EncryptedRecord>* const records_;
-    const std::vector<uint8_t> data_;
+    const EncryptedRecord record_;
   };
 
-  Start<ProcessBlobContext>(data.ValueOrDie(), encrypted_records_.get(),
-                            std::move(processed_cb), sequenced_task_runner_);
+  Start<ProcessRecordContext>(data.ValueOrDie(), encrypted_records_.get(),
+                              std::move(processed_cb), sequenced_task_runner_);
 }
 
-void Uploader::Completed(Priority priority, Status final_status) {
+void Uploader::Completed(Status final_status) {
   if (!final_status.ok()) {
     // No work to do - something went wrong with storage and it no longer wants
     // to upload the records. Let the records die with |this|.

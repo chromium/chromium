@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/storage/storage_queue.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
+#include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
 
 namespace reporting {
@@ -38,17 +38,16 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
    public:
     virtual ~UploaderInterface() = default;
 
-    // Asynchronously processes every record (e.g. serializes and adds to the
-    // network message). Expects |processed_cb| to be called after the record
-    // has been processed, with true if next record needs to be delivered and
-    // false if the Uploader should stop.
-    virtual void ProcessBlob(Priority priority,
-                             StatusOr<base::span<const uint8_t>> data,
-                             base::OnceCallback<void(bool)> processed_cb) = 0;
+    // Unserializes every record and hands ownership over for processing (e.g.
+    // to add to the network message). Expects |processed_cb| to be called after
+    // the record or error status has been processed, with true if next record
+    // needs to be delivered and false if the Uploader should stop.
+    virtual void ProcessRecord(StatusOr<EncryptedRecord> record,
+                               base::OnceCallback<void(bool)> processed_cb) = 0;
 
     // Finalizes the upload (e.g. sends the message to the server and gets
     // response).
-    virtual void Completed(Priority priority, Status final_status) = 0;
+    virtual void Completed(Status final_status) = 0;
   };
 
   // Callback type for UploadInterface provider for specified queue.
@@ -82,11 +81,12 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
       StartUploadCb start_upload_cb,
       base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb);
 
-  // Writes data blob into the Storage (the last file of it) according to the
+  // Serializes EncryptedRecord (taking ownership of it) and writes the
+  // resulting blob into the Storage (the last file of it) according to the
   // priority with the next sequencing number assigned. If file is going to
   // become too large, it is closed and new file is created.
   void Write(Priority priority,
-             base::span<const uint8_t> data,
+             EncryptedRecord record,
              base::OnceCallback<void(Status)> completion_cb);
 
   // Confirms acceptance of the records according to the priority up to
@@ -123,7 +123,7 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Returns OK or error status, if anything failed to initialize.
   Status Init();
 
-  // Helper function that selects queue by priority. Returns error
+  // Helper method that selects queue by priority. Returns error
   // if priority does not match any queue.
   // Note: queues_ never change after initialization is finished, so there is no
   // need to protect or serialize access to it.
