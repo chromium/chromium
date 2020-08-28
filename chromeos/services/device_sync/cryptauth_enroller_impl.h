@@ -47,7 +47,7 @@ class CryptAuthEnrollerImpl : public CryptAuthEnroller {
               const std::string& user_private_key,
               const cryptauth::GcmDeviceInfo& device_info,
               cryptauth::InvocationReason invocation_reason,
-              const EnrollmentFinishedCallback& callback) override;
+              EnrollmentFinishedCallback callback) override;
 
  private:
   // Callbacks for SetupEnrollment.
@@ -95,6 +95,9 @@ class CryptAuthEnrollerImpl : public CryptAuthEnroller {
 
   // Callback invoked when the enrollment is done.
   EnrollmentFinishedCallback callback_;
+
+  // True if Enroll() has been called.
+  bool enroll_called_ = false;
 
   // The derived ephemeral symmetric key.
   std::string symmetric_key_;

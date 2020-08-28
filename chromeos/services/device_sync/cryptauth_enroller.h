@@ -28,12 +28,12 @@ class CryptAuthEnroller {
   // |invocation_reason|: The reason why the enrollment occurred.
   // |callback|: Called will be called with true if the enrollment
   //     succeeds and false otherwise.
-  typedef base::Callback<void(bool)> EnrollmentFinishedCallback;
+  typedef base::OnceCallback<void(bool)> EnrollmentFinishedCallback;
   virtual void Enroll(const std::string& user_public_key,
                       const std::string& user_private_key,
                       const cryptauth::GcmDeviceInfo& device_info,
                       cryptauth::InvocationReason invocation_reason,
-                      const EnrollmentFinishedCallback& callback) = 0;
+                      EnrollmentFinishedCallback callback) = 0;
 };
 
 // Interface for creating CryptAuthEnroller instances.

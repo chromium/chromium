@@ -114,8 +114,8 @@ class DeviceSyncCryptAuthEnrollerTest
 
     // This call is actually synchronous.
     secure_message_delegate_->GenerateKeyPair(
-        base::Bind(&DeviceSyncCryptAuthEnrollerTest::OnKeyPairGenerated,
-                   base::Unretained(this)));
+        base::BindOnce(&DeviceSyncCryptAuthEnrollerTest::OnKeyPairGenerated,
+                       base::Unretained(this)));
   }
 
   // Starts the enroller.
@@ -124,8 +124,8 @@ class DeviceSyncCryptAuthEnrollerTest
     enroller_result_.reset();
     enroller_.Enroll(
         user_public_key_, user_private_key_, device_info, kInvocationReason,
-        base::Bind(&DeviceSyncCryptAuthEnrollerTest::OnEnrollerCompleted,
-                   base::Unretained(this)));
+        base::BindOnce(&DeviceSyncCryptAuthEnrollerTest::OnEnrollerCompleted,
+                       base::Unretained(this)));
   }
 
   // Verifies that |serialized_message| is a valid SecureMessage sent with the
@@ -138,7 +138,7 @@ class DeviceSyncCryptAuthEnrollerTest
     std::string symmetric_key;
     secure_message_delegate_->DeriveKey(
         server_session_private_key, kClientSessionPublicKey,
-        base::Bind(&SaveDerivedKey, &symmetric_key));
+        base::BindOnce(&SaveDerivedKey, &symmetric_key));
 
     std::string inner_message;
     std::string inner_payload;
@@ -151,7 +151,8 @@ class DeviceSyncCryptAuthEnrollerTest
       unwrap_options.signature_scheme = securemessage::HMAC_SHA256;
       secure_message_delegate_->UnwrapSecureMessage(
           serialized_message, symmetric_key, unwrap_options,
-          base::Bind(&SaveUnwrapResults, &verified, &inner_message, &header));
+          base::BindOnce(&SaveUnwrapResults, &verified, &inner_message,
+                         &header));
       EXPECT_TRUE(verified);
 
       cryptauth::GcmMetadata metadata;
@@ -169,7 +170,8 @@ class DeviceSyncCryptAuthEnrollerTest
       unwrap_options.signature_scheme = securemessage::ECDSA_P256_SHA256;
       secure_message_delegate_->UnwrapSecureMessage(
           inner_message, user_public_key_, unwrap_options,
-          base::Bind(&SaveUnwrapResults, &verified, &inner_payload, &header));
+          base::BindOnce(&SaveUnwrapResults, &verified, &inner_payload,
+                         &header));
       EXPECT_TRUE(verified);
       EXPECT_EQ(user_public_key_, header.verification_key_id());
     }
