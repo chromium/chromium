@@ -40,8 +40,8 @@ class Arguments;
 }  // namespace gin
 
 namespace content {
-class BlinkTestRunner;
 class TestRunner;
+class WebViewTestProxy;
 class WebWidgetTestProxy;
 
 // Key event location code introduced in DOM Level 3.
@@ -122,7 +122,7 @@ class EventSender {
   };
 
   TestRunner* test_runner();
-  BlinkTestRunner* blink_test_runner();
+  WebViewTestProxy* web_view_proxy();
   const blink::WebView* view() const;
   blink::WebView* view();
   blink::WebWidget* widget();

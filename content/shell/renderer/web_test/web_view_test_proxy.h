@@ -84,11 +84,25 @@ class WebViewTestProxy : public RenderViewImpl {
   void Reset();
   void Install(blink::WebLocalFrame* frame);
 
+  // Convert the provided relative path into an absolute path.
+  blink::WebString GetAbsoluteWebStringFromUTF8Path(const std::string& path);
+
+  // True if the RenderView is hosting a frame tree fragment that is part of the
+  // web test harness' main window.
+  bool is_main_window() const { return is_main_window_; }
+  // Sets this view as being part of the main test window. The main test window
+  // doesn't change, so once set this remains always true.
+  void set_is_main_window() { is_main_window_ = true; }
+
  private:
   // RenderViewImpl has no public destructor.
   ~WebViewTestProxy() override;
 
   TestRunner* const test_runner_;
+
+  // True if the RenderView is hosting a frame tree fragment that is part of the
+  // web test harness' main window.
+  bool is_main_window_ = false;
 
   BlinkTestRunner blink_test_runner_{this};
 

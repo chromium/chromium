@@ -12,6 +12,8 @@
 #include "content/shell/renderer/web_test/mock_screen_orientation_client.h"
 #include "content/shell/renderer/web_test/test_runner.h"
 #include "content/shell/renderer/web_test/web_frame_test_proxy.h"
+#include "net/base/filename_util.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -87,6 +89,18 @@ void WebViewTestProxy::Reset() {
 void WebViewTestProxy::Install(blink::WebLocalFrame* frame) {
   accessibility_controller_.Install(frame);
   text_input_controller_.Install(frame);
+}
+
+blink::WebString WebViewTestProxy::GetAbsoluteWebStringFromUTF8Path(
+    const std::string& utf8_path) {
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(utf8_path);
+  if (!path.IsAbsolute()) {
+    GURL base_url = net::FilePathToFileURL(
+        blink_test_runner_.test_config().current_working_directory.Append(
+            FILE_PATH_LITERAL("foo")));
+    net::FileURLToFilePath(base_url.Resolve(utf8_path), &path);
+  }
+  return blink::FilePathToWebString(path);
 }
 
 }  // namespace content

@@ -92,9 +92,7 @@ class WebFrameTestProxy : public RenderFrameImpl,
       mojom::WebTestRunTestConfigurationPtr config) override;
   void ReplicateTestConfiguration(
       mojom::WebTestRunTestConfigurationPtr config) override;
-  void SetupRendererProcessForNonTestWindow() override;
   void ResetRendererAfterWebTest() override;
-  void FinishTestInMainWindow() override;
 
   void BindReceiver(
       mojo::PendingAssociatedReceiver<mojom::WebTestRenderFrame> receiver);

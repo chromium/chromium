@@ -98,6 +98,8 @@ class TestRunner {
   // This does *not* run as part of loading finishing because that happens in
   // the middle of blink call stacks that have inconsistent state.
   void FinishTestIfReady();
+  // Notification that another renderer has explicitly asked the test to end.
+  void TestFinishedFromSecondaryRenderer();
 
   // Track the set of all main frames in the process, which is also the set of
   // windows rooted in this process.
@@ -235,9 +237,6 @@ class TestRunner {
   // new filesystem id.
   blink::WebString RegisterIsolatedFileSystem(
       const std::vector<base::FilePath>& file_paths);
-
-  // Convert the provided relative path into an absolute path.
-  blink::WebString GetAbsoluteWebStringFromUTF8Path(const std::string& path);
 
   blink::WebEffectiveConnectionType effective_connection_type() const {
     return effective_connection_type_;

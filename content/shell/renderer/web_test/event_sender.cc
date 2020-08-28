@@ -2114,7 +2114,7 @@ void EventSender::BeginDragWithFiles(const std::vector<std::string>& files) {
     WebDragData::Item item;
     item.storage_type = WebDragData::Item::kStorageTypeFilename;
     item.filename_data =
-        blink_test_runner()->GetAbsoluteWebStringFromUTF8Path(file_path);
+        web_view_proxy()->GetAbsoluteWebStringFromUTF8Path(file_path);
     items.emplace_back(item);
   }
 
@@ -2976,8 +2976,8 @@ TestRunner* EventSender::test_runner() {
   return web_widget_test_proxy_->GetWebViewTestProxy()->GetTestRunner();
 }
 
-BlinkTestRunner* EventSender::blink_test_runner() {
-  return web_widget_test_proxy_->GetWebViewTestProxy()->blink_test_runner();
+WebViewTestProxy* EventSender::web_view_proxy() {
+  return web_widget_test_proxy_->GetWebViewTestProxy();
 }
 
 const blink::WebView* EventSender::view() const {

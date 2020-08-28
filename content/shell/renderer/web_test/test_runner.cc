@@ -2207,8 +2207,7 @@ TestRunner::~TestRunner() = default;
 
 void TestRunner::Install(WebFrameTestProxy* frame,
                          SpellCheckClient* spell_check) {
-  bool is_main_test_window =
-      frame->GetWebViewTestProxy()->blink_test_runner()->is_main_window();
+  bool is_main_test_window = frame->GetWebViewTestProxy()->is_main_window();
   TestRunnerBindings::Install(this, frame, spell_check,
                               IsWebPlatformTestsMode(), is_main_test_window);
   mock_screen_orientation_client_.OverrideAssociatedInterfaceProviderForFrame(
@@ -2548,6 +2547,10 @@ void TestRunner::FinishTestIfReady() {
   FinishTest();
 }
 
+void TestRunner::TestFinishedFromSecondaryRenderer() {
+  NotifyDone();
+}
+
 void TestRunner::AddMainFrame(WebFrameTestProxy* frame) {
   main_frames_.insert(frame);
 }
@@ -2609,7 +2612,7 @@ WebFrameTestProxy* TestRunner::FindInProcessMainWindowMainFrame() {
   for (WebFrameTestProxy* main_frame : main_frames_) {
     WebViewTestProxy* view = main_frame->GetWebViewTestProxy();
     DCHECK_EQ(view->GetMainRenderFrame(), main_frame);
-    if (view->blink_test_runner()->is_main_window())
+    if (view->is_main_window())
       return main_frame;
   }
   return nullptr;
@@ -3137,13 +3140,110 @@ void TestRunner::FinishTest() {
   // renderers. So in this case the test should finish when frames finish
   // loading in the primary renderer, and we don't finish the test from a
   // secondary renderer unless it is asked for explicitly via NotifyDone.
+  //
+  // This will bounce through the browser to the renderer process hosting the
+  // main window's main frame. There it will come back to this method, but hit
+  // the other path.
   if (!main_frame) {
     if (did_notify_done_)
       GetWebTestControlHostRemote()->TestFinishedInSecondaryRenderer();
     return;
   }
 
-  main_frame->GetWebViewTestProxy()->blink_test_runner()->TestFinished();
+  // Avoid a situation where TestFinished is called twice, because
+  // of a racey test where multiple renderers call notifyDone(), or a test that
+  // calls notifyDone() more than once.
+  if (!test_is_running_)
+    return;
+  test_is_running_ = false;
+
+  // Now we know that we're in the main frame, we should generate dump results.
+  // Clean out the lifecycle if needed before capturing the web tree
+  // dump and pixels from the compositor.
+  auto* web_frame = main_frame->GetWebFrame();
+  web_frame->FrameWidget()->UpdateAllLifecyclePhases(
+      blink::DocumentUpdateReason::kTest);
+
+  const mojom::WebTestRunTestConfiguration& test_config =
+      main_frame->GetWebViewTestProxy()->blink_test_runner()->test_config();
+
+  // Initialize a new dump results object which we will populate in the calls
+  // below.
+  auto dump_result = mojom::WebTestRendererDumpResult::New();
+
+  bool browser_should_dump_back_forward_list = ShouldDumpBackForwardList();
+  bool browser_should_dump_pixels = false;
+
+  if (ShouldDumpAsAudio()) {
+    TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalAudioDump");
+    dump_result->audio = GetAudioData();
+  } else {
+    TextResultType text_result_type = ShouldGenerateTextResults();
+    bool pixel_result = ShouldGeneratePixelResults();
+
+    std::string spec = GURL(test_config.test_url).spec();
+    size_t path_start = spec.rfind("web_tests/");
+    if (path_start != std::string::npos)
+      spec = spec.substr(path_start);
+
+    std::string mime_type =
+        web_frame->GetDocumentLoader()->GetResponse().MimeType().Utf8();
+
+    // In a text/plain document, and in a dumpAsText/ subdirectory, we generate
+    // text results no matter what the test may previously have requested.
+    if (mime_type == "text/plain" ||
+        spec.find("/dumpAsText/") != std::string::npos) {
+      text_result_type = TextResultType::kText;
+      pixel_result = false;
+    }
+
+    // If possible we grab the layout dump locally because a round trip through
+    // the browser would give javascript a chance to run and change the layout.
+    // We only go to the browser if we can not do it locally, because we want to
+    // dump more than just the local main frame. Those tests must be written to
+    // not modify layout after signalling the test is finished.
+    //
+    // The CustomTextDump always takes precedence if it's been specified by the
+    // test.
+    std::string custom_text_dump;
+    if (HasCustomTextDump(&custom_text_dump)) {
+      dump_result->layout = custom_text_dump + "\n";
+    } else if (!IsRecursiveLayoutDumpRequested()) {
+      TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalLayoutDump");
+      dump_result->layout = DumpLayoutAsString(web_frame, text_result_type);
+    }
+
+    if (pixel_result) {
+      if (CanDumpPixelsFromRenderer()) {
+        TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalPixelsDump");
+        SkBitmap actual =
+            DumpPixelsInRenderer(main_frame->GetWebViewTestProxy());
+        DCHECK_GT(actual.info().width(), 0);
+        DCHECK_GT(actual.info().height(), 0);
+
+        base::MD5Digest digest;
+        base::MD5Sum(actual.getPixels(), actual.computeByteSize(), &digest);
+        dump_result->actual_pixel_hash = base::MD5DigestToBase16(digest);
+
+        if (dump_result->actual_pixel_hash != test_config.expected_pixel_hash)
+          dump_result->pixels = std::move(actual);
+      } else {
+        browser_should_dump_pixels = true;
+        if (ShouldDumpSelectionRect()) {
+          TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalSelectionRect");
+          dump_result->selection_rect =
+              web_frame->GetSelectionBoundsRectForTesting();
+        }
+      }
+    }
+  }
+
+  // Informs the browser that the test is done, passing along any test results
+  // that have been generated locally. The browser may collect further results
+  // from this and other renderer processes before moving on to the next test.
+  GetWebTestControlHostRemote()->InitiateCaptureDump(
+      std::move(dump_result), browser_should_dump_back_forward_list,
+      browser_should_dump_pixels);
 }
 
 mojo::AssociatedRemote<mojom::WebTestControlHost>&

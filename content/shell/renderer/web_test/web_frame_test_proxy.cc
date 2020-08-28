@@ -176,7 +176,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
       test_runner()->AddMainFrame(frame_proxy());
 
       // Looking for navigations to about:blank after a test completes.
-      blink_test_runner()->DidCommitNavigationInMainFrame();
+      blink_test_runner()->DidCommitNavigationInMainFrame(frame_proxy());
     }
   }
 
@@ -465,7 +465,7 @@ void WebFrameTestProxy::WillSendRequest(blink::WebURLRequest& request,
         ((site_for_cookies.scheme() != url::kHttpScheme &&
           site_for_cookies.scheme() != url::kHttpsScheme) ||
          IsLocalHost(site_for_cookies.registrable_domain())) &&
-        !blink_test_runner()->AllowExternalPages()) {
+        !blink_test_runner()->test_config().allow_external_pages) {
       test_runner()->PrintMessage(
           std::string("Blocked access to external URL ") +
           url.possibly_invalid_spec() + "\n");
@@ -751,24 +751,18 @@ void WebFrameTestProxy::DumpFrameLayout(DumpFrameLayoutCallback callback) {
 
 void WebFrameTestProxy::ReplicateTestConfiguration(
     mojom::WebTestRunTestConfigurationPtr config) {
+  web_view_test_proxy_->set_is_main_window();
   blink_test_runner()->OnReplicateTestConfiguration(std::move(config));
 }
 
 void WebFrameTestProxy::SetTestConfiguration(
     mojom::WebTestRunTestConfigurationPtr config) {
+  web_view_test_proxy_->set_is_main_window();
   blink_test_runner()->OnSetTestConfiguration(std::move(config));
-}
-
-void WebFrameTestProxy::SetupRendererProcessForNonTestWindow() {
-  blink_test_runner()->OnSetupRendererProcessForNonTestWindow();
 }
 
 void WebFrameTestProxy::ResetRendererAfterWebTest() {
   blink_test_runner()->OnResetRendererAfterWebTest();
-}
-
-void WebFrameTestProxy::FinishTestInMainWindow() {
-  blink_test_runner()->OnFinishTestInMainWindow();
 }
 
 void WebFrameTestProxy::BindReceiver(

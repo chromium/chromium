@@ -34,8 +34,10 @@ class WebTestRenderThreadObserver : public RenderThreadObserver,
 
  private:
   // mojom::WebTestRenderThread implementation.
+  void SetupRendererProcessForNonTestWindow() override;
   void ReplicateWebTestRuntimeFlagsChanges(
       base::Value changed_layout_test_runtime_flags) override;
+  void TestFinishedFromSecondaryRenderer() override;
 
   // Helper to bind this class as the mojom::WebTestRenderThread.
   void OnWebTestRenderThreadAssociatedRequest(

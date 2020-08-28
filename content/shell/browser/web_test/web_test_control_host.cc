@@ -806,9 +806,9 @@ void WebTestControlHost::InitiateCaptureDump(
 }
 
 void WebTestControlHost::TestFinishedInSecondaryRenderer() {
-  GetWebTestRenderFrameRemote(
-      main_window_->web_contents()->GetRenderViewHost()->GetMainFrame())
-      ->FinishTestInMainWindow();
+  GetWebTestRenderThreadRemote(
+      main_window_->web_contents()->GetRenderViewHost()->GetProcess())
+      ->TestFinishedFromSecondaryRenderer();
 }
 
 // Enqueue an image copy output request.
@@ -1166,9 +1166,10 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
     render_process_host_observer_.Add(process_host);
     all_observed_render_process_hosts_.insert(process_host);
 
-    if (!main_window)
-      GetWebTestRenderFrameRemote(frame)
+    if (!main_window) {
+      GetWebTestRenderThreadRemote(process_host)
           ->SetupRendererProcessForNonTestWindow();
+    }
 
     GetWebTestRenderThreadRemote(process_host)
         ->ReplicateWebTestRuntimeFlagsChanges(

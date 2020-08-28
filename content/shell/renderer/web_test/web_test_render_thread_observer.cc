@@ -65,4 +65,14 @@ void WebTestRenderThreadObserver::ReplicateWebTestRuntimeFlagsChanges(
       *changed_web_test_runtime_flags_dictionary);
 }
 
+void WebTestRenderThreadObserver::TestFinishedFromSecondaryRenderer() {
+  test_runner_->TestFinishedFromSecondaryRenderer();
+}
+
+void WebTestRenderThreadObserver::SetupRendererProcessForNonTestWindow() {
+  // Allows the window to receive replicated WebTestRuntimeFlags and to
+  // control or end the test.
+  test_runner_->SetTestIsRunning(true);
+}
+
 }  // namespace content
