@@ -2276,10 +2276,11 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       break;
 
     case ui::VKEY_SPACE: {
-      if (!control && !alt && !shift && SelectionAtEnd()) {
-        OmniboxPopupModel* popup_model = model()->popup_model();
-        if (popup_model && popup_model->TriggerSelectionAction(
-                               popup_model->selection(), event.time_stamp())) {
+      OmniboxPopupModel* popup_model = model()->popup_model();
+      if (popup_model && !control && !alt && !shift &&
+          popup_model->selection().IsButtonFocused()) {
+        if (popup_model->TriggerSelectionAction(popup_model->selection(),
+                                                event.time_stamp())) {
           return true;
         }
       }
