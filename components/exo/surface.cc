@@ -1043,8 +1043,18 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
     damage_rect.Inset(-1, -1);
     damage_rect += origin.OffsetFromOrigin();
     damage_rect.Intersect(output_rect);
-    render_pass->damage_rect.Union(
-        gfx::ConvertRectToPixel(device_scale_factor, damage_rect));
+    if (device_scale_factor <= 1) {
+      render_pass->damage_rect.Union(
+          gfx::ConvertRectToPixel(device_scale_factor, damage_rect));
+    } else {
+      // The damage will eventually be rescaled by 1/device_scale_factor. Since
+      // that scale factor is <1, taking the enclosed rect here means that that
+      // rescaled RectF is <1px smaller than |damage_rect| in each dimension,
+      // which makes the enclosing rect equal to |damage_rect|.
+      gfx::RectF scaled_damage(damage_rect);
+      scaled_damage.Scale(device_scale_factor);
+      render_pass->damage_rect.Union(gfx::ToEnclosedRect(scaled_damage));
+    }
   }
   damage_.Clear();
 
