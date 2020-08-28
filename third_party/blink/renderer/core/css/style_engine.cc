@@ -597,6 +597,8 @@ bool StyleEngine::NeedsActiveStyleUpdate() const {
 
 void StyleEngine::UpdateActiveStyle() {
   DCHECK(GetDocument().IsActive());
+  DCHECK(IsMainThread());
+  TRACE_EVENT0("blink", "Document::updateActiveStyle");
   UpdateViewport();
   UpdateActiveStyleSheets();
   UpdateGlobalRuleSet();

@@ -1386,7 +1386,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetResizedForViewportUnits();
   void ClearResizedForViewportUnits();
 
-  void UpdateActiveStyle();
   void InvalidateStyleAndLayoutForFontUpdates();
 
   void Trace(Visitor*) const override;

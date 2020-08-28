@@ -2451,7 +2451,7 @@ void Document::UpdateStyleAndLayoutTree() {
 
   UpdateDistributionForLegacyDistributedNodes();
 
-  UpdateActiveStyle();
+  GetStyleEngine().UpdateActiveStyle();
   InvalidateStyleAndLayoutForFontUpdates();
   UpdateStyleInvalidationIfNeeded();
   UpdateStyle();
@@ -2473,13 +2473,6 @@ void Document::UpdateStyleAndLayoutTree() {
 #if DCHECK_IS_ON()
   AssertLayoutTreeUpdated(*this);
 #endif
-}
-
-void Document::UpdateActiveStyle() {
-  DCHECK(IsActive());
-  DCHECK(IsMainThread());
-  TRACE_EVENT0("blink", "Document::updateActiveStyle");
-  GetStyleEngine().UpdateActiveStyle();
 }
 
 void Document::InvalidateStyleAndLayoutForFontUpdates() {
@@ -2879,7 +2872,7 @@ scoped_refptr<const ComputedStyle> Document::StyleForPage(int page_index) {
       page_name = mapper->NamedPageAtIndex(page_index);
   }
 
-  UpdateActiveStyle();
+  GetStyleEngine().UpdateActiveStyle();
   return GetStyleEngine().GetStyleResolver().StyleForPage(page_index,
                                                           page_name);
 }

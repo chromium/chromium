@@ -136,7 +136,7 @@ ScriptPromise FontFaceSetDocument::ready(ScriptState* script_state) {
 const HeapLinkedHashSet<Member<FontFace>>&
 FontFaceSetDocument::CSSConnectedFontFaceList() const {
   Document* document = this->GetDocument();
-  document->UpdateActiveStyle();
+  document->GetStyleEngine().UpdateActiveStyle();
   return GetFontSelector()->GetFontFaceCache()->CssConnectedFontFaces();
 }
 
