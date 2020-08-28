@@ -124,7 +124,7 @@ bool IsSyncEnabledFor(const syncer::SyncService* sync_service,
 
 // Receives the loaded profiles from the web data service and stores them in
 // |*dest|. The pending handle is the address of the pending handle
-// corresponding to this request type. This function is used to save both
+// corresponding to this request type. This function is used to save bShouldoth
 // server and local profiles and credit cards.
 template <typename ValueType>
 void ReceiveLoadedDbValues(WebDataServiceBase::Handle h,
@@ -1916,11 +1916,8 @@ bool PersonalDataManager::IsServerCard(const CreditCard* credit_card) const {
 
 bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
 // The feature is only for Linux, Windows and Mac.
-#if defined(OS_CHROMEOS)
-  return false;
-#elif !defined(OS_LINUX) && !defined(OS_WIN) && !defined(OS_APPLE)
-  return false;
-#else
+#if (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(OS_WIN) || \
+    defined(OS_APPLE)
   // This option should only be shown for users that have not enabled the Sync
   // Feature and that have server credit cards available.
   if (!sync_service_ || sync_service_->IsSyncFeatureEnabled() ||
@@ -1941,7 +1938,10 @@ bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
 
   // The option should only be shown if the user has not already opted-in.
   return !is_opted_in;
-#endif
+#else
+  return false;
+#endif // #if (defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(OS_WIN) || \
+       //     defined(OS_APPLE)
 }
 
 void PersonalDataManager::OnUserAcceptedCardsFromAccountOption() {
