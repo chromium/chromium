@@ -185,6 +185,12 @@ bool WebDialogView::CanResize() const {
   return true;
 }
 
+bool WebDialogView::CanMaximize() const {
+  if (delegate_)
+    return delegate_->CanMaximizeDialog();
+  return false;
+}
+
 base::string16 WebDialogView::GetWindowTitle() const {
   if (delegate_)
     return delegate_->GetDialogTitle();
@@ -421,6 +427,27 @@ bool WebDialogView::IsWebContentsCreationOverridden(
     const GURL& target_url) {
   if (delegate_)
     return delegate_->HandleShouldOverrideWebContentsCreation();
+  return false;
+}
+
+void WebDialogView::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  if (delegate_) {
+    delegate_->RequestMediaAccessPermission(web_contents, request,
+                                            std::move(callback));
+  }
+}
+
+bool WebDialogView::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& security_origin,
+    blink::mojom::MediaStreamType type) {
+  if (delegate_) {
+    return delegate_->CheckMediaAccessPermission(render_frame_host,
+                                                 security_origin, type);
+  }
   return false;
 }
 

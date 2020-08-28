@@ -76,6 +76,10 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // returns true.
   virtual bool CanResizeDialog() const;
 
+  // Returns true if the dialog can ever be maximized. Default implementation
+  // returns false.
+  virtual bool CanMaximizeDialog() const;
+
   // A callback to notify the delegate that |source|'s loading state has
   // changed.
   virtual void OnLoadingStateChanged(content::WebContents* source) {}
@@ -165,7 +169,17 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   virtual void OnMainFrameResourceLoadComplete(
       const blink::mojom::ResourceLoadInfo& resource_load_info) {}
 
-  virtual ~WebDialogDelegate() {}
+  virtual void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) {}
+
+  virtual bool CheckMediaAccessPermission(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& security_origin,
+      blink::mojom::MediaStreamType type);
+
+  virtual ~WebDialogDelegate() = default;
 };
 
 }  // namespace ui

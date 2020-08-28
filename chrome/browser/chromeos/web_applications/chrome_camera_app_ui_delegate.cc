@@ -11,12 +11,71 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/web_applications/default_web_app_ids.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
+#include "chromeos/components/camera_app_ui/url_constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/gfx/native_widget_types.h"
+
+namespace {
+
+constexpr int kDefaultWindowWidth = 864;
+constexpr int kDefaultWindowHeight = 486;
+
+}  // namespace
+
+// static
+void ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
+    const std::string& queries,
+    gfx::NativeWindow parent) {
+  CameraAppDialog* dialog =
+      new CameraAppDialog(chromeos::kChromeUICameraAppMainURL + queries);
+  dialog->ShowSystemDialog(parent);
+}
+
+ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
+    const std::string& url)
+    : chromeos::SystemWebDialogDelegate(GURL(url), /*title=*/base::string16()) {
+}
+
+ChromeCameraAppUIDelegate::CameraAppDialog::~CameraAppDialog() {}
+
+ui::ModalType ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogModalType()
+    const {
+  return ui::MODAL_TYPE_WINDOW;
+}
+
+bool ChromeCameraAppUIDelegate::CameraAppDialog::CanMaximizeDialog() const {
+  return true;
+}
+
+void ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogSize(
+    gfx::Size* size) const {
+  size->SetSize(kDefaultWindowWidth, kDefaultWindowHeight);
+}
+
+void ChromeCameraAppUIDelegate::CameraAppDialog::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), /* extension */ nullptr);
+}
+
+bool ChromeCameraAppUIDelegate::CameraAppDialog::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& security_origin,
+    blink::mojom::MediaStreamType type) {
+  return MediaCaptureDevicesDispatcher::GetInstance()
+      ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
+}
 
 ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
     : web_ui_(web_ui) {}

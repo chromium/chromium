@@ -95,6 +95,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   // WidgetDelegate:
   bool OnCloseRequested(Widget::ClosedReason close_reason) override;
   bool CanResize() const override;
+  bool CanMaximize() const override;
   base::string16 GetWindowTitle() const override;
   base::string16 GetAccessibleWindowTitle() const override;
   std::string GetWindowName() const override;
@@ -156,6 +157,13 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const GURL& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
 
  private:
   friend class WebDialogViewUnitTest;
