@@ -48,6 +48,18 @@ class ASH_EXPORT WmGestureHandler {
   // the middle of scrolls and when scrolls have ended.
   bool MoveOverviewSelection(int finger_count, float scroll_x, float scroll_y);
 
+  // Tries to move the window cycle list selector. Returns true if successful.
+  // Called in the middle of scrolls and when scrolls have ended.
+  bool MoveWindowCycleListSelection(int finger_count,
+                                    float scroll_x,
+                                    float scroll_y);
+
+  // Returns whether or not the selector for a given session of overview/window
+  // cycle list should horizontally scroll.
+  bool ShouldHorizontallyScrollSelector(bool in_session,
+                                        float scroll_x,
+                                        float scroll_y);
+
   // Contains the data during a scroll session. Empty is no scroll is underway.
   base::Optional<ScrollData> scroll_data_;
 

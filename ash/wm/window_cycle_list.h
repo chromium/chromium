@@ -57,6 +57,7 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
  private:
   friend class WindowCycleControllerTest;
+  friend class InteractiveWindowCycleListGestureHandlerTest;
 
   static void DisableInitialDelayForTesting();
 

@@ -4,10 +4,12 @@
 
 #include "ash/wm/gestures/wm_gesture_handler.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/window_cycle_controller.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -90,10 +92,14 @@ bool WmGestureHandler::ProcessScrollEvent(const ui::ScrollEvent& event) {
 
   scroll_data_->scroll_x += event.x_offset();
   scroll_data_->scroll_y += event.y_offset();
-  // If the requirements to move the overview selector are met, reset
-  // |scroll_data_|.
-  const bool moved = MoveOverviewSelection(finger_count, scroll_data_->scroll_x,
-                                           scroll_data_->scroll_y);
+  // If the requirements to move the overview selector or the window cycle list
+  // selector are met, reset |scroll_data_|. If both are open, move the cycle
+  // list's selector.
+  const bool moved =
+      MoveWindowCycleListSelection(finger_count, scroll_data_->scroll_x,
+                                   scroll_data_->scroll_y) ||
+      MoveOverviewSelection(finger_count, scroll_data_->scroll_x,
+                            scroll_data_->scroll_y);
   if (moved)
     scroll_data_ = base::make_optional(ScrollData());
   scroll_data_->finger_count = finger_count;
@@ -130,15 +136,41 @@ bool WmGestureHandler::MoveOverviewSelection(int finger_count,
 
   auto* overview_controller = Shell::Get()->overview_controller();
   const bool in_overview = overview_controller->InOverviewSession();
+  if (!ShouldHorizontallyScrollSelector(in_overview, scroll_x, scroll_y))
+    return false;
+
+  overview_controller->IncrementSelection(/*forward=*/scroll_x > 0);
+  return true;
+}
+
+bool WmGestureHandler::MoveWindowCycleListSelection(int finger_count,
+                                                    float scroll_x,
+                                                    float scroll_y) {
+  if (!features::IsInteractiveWindowCycleListEnabled() || finger_count != 3)
+    return false;
+
+  auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+  const bool is_cycling = window_cycle_controller->IsCycling();
+  if (!ShouldHorizontallyScrollSelector(is_cycling, scroll_x, scroll_y))
+    return false;
+
+  window_cycle_controller->HandleCycleWindow(
+      scroll_x > 0 ? WindowCycleController::FORWARD
+                   : WindowCycleController::BACKWARD);
+  return true;
+}
+
+bool WmGestureHandler::ShouldHorizontallyScrollSelector(bool in_session,
+                                                        float scroll_x,
+                                                        float scroll_y) {
   // Dominantly vertical scrolls and small horizontal scrolls do not move the
-  // overview selector.
-  if (!in_overview || std::fabs(scroll_x) < std::fabs(scroll_y))
+  // selector.
+  if (!in_session || std::fabs(scroll_x) < std::fabs(scroll_y))
     return false;
 
   if (std::fabs(scroll_x) < kHorizontalThresholdDp)
     return false;
 
-  overview_controller->IncrementSelection(/*forward=*/scroll_x > 0);
   return true;
 }
 
