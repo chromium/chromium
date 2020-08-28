@@ -38,6 +38,10 @@ import download_from_google_storage
 
 sys.path.remove(depot_tools_path)
 
+# Translation expectations file for the clank repo.
+INTERNAL_TRANSLATION_EXPECTATIONS_PATH = os.path.join(
+    'clank', 'tools', 'translation_expectations.pyl')
+
 # Translation expectations file for the Chromium repo.
 TRANSLATION_EXPECTATIONS_PATH = os.path.join('tools', 'gritsettings',
                                              'translation_expectations.pyl')
@@ -131,11 +135,20 @@ def main():
       '--dry-run',
       action='store_true',
       help='Don\'t actually upload the images')
+  parser.add_argument(
+      '-c',
+      '--clank_internal',
+      action='store_true',
+      help='Upload screenshots for strings in the downstream clank directory')
   args = parser.parse_args()
+  if args.clank_internal:
+    screenshots = find_screenshots(
+        os.path.join(src_path, "clank"),
+        os.path.join(src_path, INTERNAL_TRANSLATION_EXPECTATIONS_PATH))
 
-  screenshots = find_screenshots(src_path,
-                                 os.path.join(src_path,
-                                              TRANSLATION_EXPECTATIONS_PATH))
+  else:
+    screenshots = find_screenshots(
+        src_path, os.path.join(src_path, TRANSLATION_EXPECTATIONS_PATH))
   if not screenshots:
     print ("No screenshots found.\n\n"
            "- Screenshots must be located in the correct directory.\n"
