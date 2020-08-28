@@ -37,7 +37,7 @@ class CryptAuthKeyBundle {
     // has historically been used as a device identifier.
     kUserKeyPair,
     // Currently unused but required for CryptAuth v2 Enrollment.
-    kLegacyMasterKey,
+    kLegacyAuthzenKey,
     // Enrolling this asymmetric key adds the device to the user's DeviceSync v2
     // "DeviceSync:BetterTogether" group. This key is not to be confused with
     // the unenrolled kDeviceSyncBetterTogetherGroupKey.

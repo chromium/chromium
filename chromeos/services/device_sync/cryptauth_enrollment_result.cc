@@ -154,8 +154,8 @@ std::ostream& operator<<(
     case ResultCode::kErrorUserKeyPairCreationFailed:
       stream << "[Error: Failed to create user key pair]";
       break;
-    case ResultCode::kErrorLegacyMasterKeyCreationFailed:
-      stream << "[Error: Failed to create legacy master key]";
+    case ResultCode::kErrorLegacyAuthzenKeyCreationFailed:
+      stream << "[Error: Failed to create legacy authzen key]";
       break;
     case ResultCode::kErrorDeviceSyncBetterTogetherKeyCreationFailed:
       stream << "[Error: Failed to create DeviceSync:BetterTogether key pair]";

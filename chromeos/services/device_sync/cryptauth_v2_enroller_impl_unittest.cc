@@ -538,15 +538,15 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {
   CryptAuthKeyBundle expected_key_bundle_user_key_pair(
       *key_registry()->GetKeyBundle(CryptAuthKeyBundle::Name::kUserKeyPair));
 
-  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          kOldActiveSymmetricKey);
-  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          kOldInactiveSymmetricKey);
-  key_registry()->SetKeyDirective(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+  key_registry()->SetKeyDirective(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                                   GetOldKeyDirectiveForTest());
-  CryptAuthKeyBundle expected_key_bundle_legacy_master_key(
+  CryptAuthKeyBundle expected_key_bundle_legacy_authzen_key(
       *key_registry()->GetKeyBundle(
-          CryptAuthKeyBundle::Name::kLegacyMasterKey));
+          CryptAuthKeyBundle::Name::kLegacyAuthzenKey));
 
   // Start the enrollment flow.
   CallEnroll(GetClientMetadataForTest(),
@@ -560,7 +560,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {
   // For kUserKeyPair (special case):
   //   - active --> temporarily active during key creation
   //   - new --> same handle so overwrites active key with same material
-  // For kMasterLegacyKey:
+  // For kLegacyAuthzenKey:
   //   - active --> deleted
   //   - inactive --> temporarily active during key creation
   //   - new --> active after created
@@ -573,7 +573,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {
           KeyType::P256 /* new_key_type */,
           expected_new_key_directive /* new_key_directive */),
       SyncSingleKeyResponseData(
-          CryptAuthKeyBundle::Name::kLegacyMasterKey, key_registry(),
+          CryptAuthKeyBundle::Name::kLegacyAuthzenKey, key_registry(),
           {{kOldActiveSymmetricKeyHandle, SyncSingleKeyResponse::DELETE},
            {kOldInactiveSymmetricKeyHandle,
             SyncSingleKeyResponse::ACTIVATE}} /* handle_to_action_map */,
@@ -594,14 +594,15 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {
       expected_key_bundle_user_key_pair,
       *key_registry()->GetKeyBundle(CryptAuthKeyBundle::Name::kUserKeyPair));
 
-  // In kLegacyMasterKey bundle, former active key should have been deleted and
+  // In kLegacyAuthzenKey bundle, former active key should have been deleted and
   // former inactive key should now be active.
-  expected_key_bundle_legacy_master_key.DeleteKey(kOldActiveSymmetricKeyHandle);
-  expected_key_bundle_legacy_master_key.SetActiveKey(
+  expected_key_bundle_legacy_authzen_key.DeleteKey(
+      kOldActiveSymmetricKeyHandle);
+  expected_key_bundle_legacy_authzen_key.SetActiveKey(
       kOldInactiveSymmetricKeyHandle);
-  EXPECT_EQ(expected_key_bundle_legacy_master_key,
+  EXPECT_EQ(expected_key_bundle_legacy_authzen_key,
             *key_registry()->GetKeyBundle(
-                CryptAuthKeyBundle::Name::kLegacyMasterKey));
+                CryptAuthKeyBundle::Name::kLegacyAuthzenKey));
 
   // Verify the key creation data, and assume successful key creation.
   // Note: Since an active user key pair already exists, the same key material
@@ -612,7 +613,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {
                                 kOldActivePublicKey, kOldActivePrivateKey,
                                 CryptAuthKey::Status::kActive, KeyType::P256,
                                 kCryptAuthFixedUserKeyPairHandle))},
-                           {CryptAuthKeyBundle::Name::kLegacyMasterKey,
+                           {CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                             base::make_optional(CryptAuthKey(
                                 kNewSymmetricKey, CryptAuthKey::Status::kActive,
                                 KeyType::RAW256, kNewSymmetricKeyHandle))}};
@@ -631,8 +632,8 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {
       CryptAuthKeyBundle::Name::kUserKeyPair,
       *expected_new_keys.find(CryptAuthKeyBundle::Name::kUserKeyPair)->second);
   VerifyEnrollSingleKeyRequest(
-      CryptAuthKeyBundle::Name::kLegacyMasterKey,
-      *expected_new_keys.find(CryptAuthKeyBundle::Name::kLegacyMasterKey)
+      CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
+      *expected_new_keys.find(CryptAuthKeyBundle::Name::kLegacyAuthzenKey)
            ->second);
 
   // Assume a successful EnrollKeys() call.
@@ -656,12 +657,12 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {
   EXPECT_EQ(expected_key_bundle_user_key_pair,
             *key_registry()->GetKeyBundle(bundle_name));
 
-  bundle_name = CryptAuthKeyBundle::Name::kLegacyMasterKey;
-  expected_key_bundle_legacy_master_key.AddKey(
+  bundle_name = CryptAuthKeyBundle::Name::kLegacyAuthzenKey;
+  expected_key_bundle_legacy_authzen_key.AddKey(
       *expected_new_keys.find(bundle_name)->second);
-  expected_key_bundle_legacy_master_key.set_key_directive(
+  expected_key_bundle_legacy_authzen_key.set_key_directive(
       expected_new_key_directive);
-  EXPECT_EQ(expected_key_bundle_legacy_master_key,
+  EXPECT_EQ(expected_key_bundle_legacy_authzen_key,
             *key_registry()->GetKeyBundle(bundle_name));
 }
 
@@ -725,14 +726,14 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
 
 TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
        SuccessfulEnrollment_NoKeysCreated) {
-  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          kOldActiveSymmetricKey);
-  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          kOldInactiveSymmetricKey);
-  key_registry()->SetKeyDirective(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+  key_registry()->SetKeyDirective(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                                   GetOldKeyDirectiveForTest());
   CryptAuthKeyBundle expected_key_bundle(*key_registry()->GetKeyBundle(
-      CryptAuthKeyBundle::Name::kLegacyMasterKey));
+      CryptAuthKeyBundle::Name::kLegacyAuthzenKey));
 
   CallEnroll(GetClientMetadataForTest(),
              cryptauthv2::GetClientAppMetadataForTest(),
@@ -742,7 +743,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
   // but not create any new keys.
   SyncKeysResponse sync_keys_response =
       BuildSyncKeysResponse({SyncSingleKeyResponseData(
-          CryptAuthKeyBundle::Name::kLegacyMasterKey, key_registry(),
+          CryptAuthKeyBundle::Name::kLegacyAuthzenKey, key_registry(),
           {{kOldActiveSymmetricKeyHandle, SyncSingleKeyResponse::DEACTIVATE},
            {kOldInactiveSymmetricKeyHandle,
             SyncSingleKeyResponse::ACTIVATE}} /* handle_to_action_map */,
@@ -754,7 +755,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
   expected_key_bundle.SetActiveKey(kOldInactiveSymmetricKeyHandle);
   EXPECT_EQ(expected_key_bundle,
             *key_registry()->GetKeyBundle(
-                CryptAuthKeyBundle::Name::kLegacyMasterKey));
+                CryptAuthKeyBundle::Name::kLegacyAuthzenKey));
 
   EXPECT_EQ(CryptAuthEnrollmentResult(
                 CryptAuthEnrollmentResult::ResultCode::kSuccessNoNewKeysNeeded,
@@ -852,7 +853,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, Failure_InvalidKeyActions_Size) {
 
 TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
        Failure_InvalidKeyActions_NoActiveKey) {
-  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+  key_registry()->AddKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          kOldActiveAsymmetricKey);
 
   CallEnroll(GetClientMetadataForTest(),
@@ -862,7 +863,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
   // Try to deactivate the only active key.
   SyncKeysResponse sync_keys_response =
       BuildSyncKeysResponse({SyncSingleKeyResponseData(
-          CryptAuthKeyBundle::Name::kLegacyMasterKey, key_registry(),
+          CryptAuthKeyBundle::Name::kLegacyAuthzenKey, key_registry(),
           {{kOldActiveSymmetricKeyHandle,
             SyncSingleKeyResponse::DEACTIVATE}} /* handle_to_action_map */,
           SyncSingleKeyResponse::NONE /* new_key_creation */,
@@ -955,7 +956,7 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
 
   SyncKeysResponse sync_keys_response =
       BuildSyncKeysResponse({SyncSingleKeyResponseData(
-          CryptAuthKeyBundle::Name::kLegacyMasterKey, key_registry(),
+          CryptAuthKeyBundle::Name::kLegacyAuthzenKey, key_registry(),
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::RAW256 /* new_key_type */,
@@ -997,14 +998,14 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, Failure_KeyCreation_UserKeyPair) {
 }
 
 TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
-       Failure_KeyCreation_LegacyMasterKey) {
+       Failure_KeyCreation_LegacyAuthzenKey) {
   CallEnroll(GetClientMetadataForTest(),
              cryptauthv2::GetClientAppMetadataForTest(),
              GetPreviousClientDirectivePolicyReferenceForTest());
 
   SyncKeysResponse sync_keys_response =
       BuildSyncKeysResponse({SyncSingleKeyResponseData(
-          CryptAuthKeyBundle::Name::kLegacyMasterKey, key_registry(),
+          CryptAuthKeyBundle::Name::kLegacyAuthzenKey, key_registry(),
           {} /* handle_to_action_map */,
           SyncSingleKeyResponse::ACTIVE /* new_key_creation */,
           KeyType::RAW256 /* new_key_type */,
@@ -1013,11 +1014,11 @@ TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest,
 
   base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>
       expected_new_keys = {
-          {CryptAuthKeyBundle::Name::kLegacyMasterKey, base::nullopt}};
+          {CryptAuthKeyBundle::Name::kLegacyAuthzenKey, base::nullopt}};
   RunKeyCreator(expected_new_keys, kClientEphemeralDh);
 
   EXPECT_EQ(CryptAuthEnrollmentResult(CryptAuthEnrollmentResult::ResultCode::
-                                          kErrorLegacyMasterKeyCreationFailed,
+                                          kErrorLegacyAuthzenKeyCreationFailed,
                                       sync_keys_response.client_directive()),
             enrollment_result());
 }

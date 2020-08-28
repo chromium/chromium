@@ -241,9 +241,9 @@ message GcmDeviceInfo {
   // the device (e.g., to be used with EasyUnlock).
   optional string bluetooth_mac_address = 302;
 
-  // SHA-256 hash of the device master key (from the key exchange).
-  // Differs from DeviceInfo field 3, which contains the actual master key.
-  optional bytes device_master_key_hash = 103;
+  // SHA-256 hash of the device authzen key (from the key exchange).
+  // Differs from DeviceInfo field 3, which contains the actual symmetric key.
+  optional bytes device_authzen_key_hash = 103;
 
   // A SecureMessage.EcP256PublicKey.
   required bytes user_public_key = 4;
@@ -255,7 +255,7 @@ message GcmDeviceInfo {
   // device's locale
   optional string locale = 8;
 
-  // The handle for user_public_key (and implicitly, a master key).
+  // The handle for user_public_key (and implicitly, a authzen key).
   optional bytes key_handle = 9;
 
   // The initial counter value for the device, sent by the device.
@@ -445,7 +445,7 @@ enum InvocationReason {
   INVOCATION_REASON_UNKNOWN = 0;
   // First run of the software package invoking this call.
   INVOCATION_REASON_INITIALIZATION = 1;
-  // Ordinary periodic actions (e.g. monthly master key rotation).
+  // Ordinary periodic actions (e.g. monthly key rotation).
   INVOCATION_REASON_PERIODIC = 2;
   // Slow-cycle periodic action (e.g. yearly keypair rotation???).
   INVOCATION_REASON_SLOW_PERIODIC = 3;

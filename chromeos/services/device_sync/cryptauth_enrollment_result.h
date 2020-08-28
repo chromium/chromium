@@ -107,8 +107,8 @@ class CryptAuthEnrollmentResult {
     kErrorTimeoutWaitingForClientAppMetadata = 34,
     // Failed to create the user key pair to be enrolled.
     kErrorUserKeyPairCreationFailed = 35,
-    // Failed to create the legacy master key to be enrolled.
-    kErrorLegacyMasterKeyCreationFailed = 36,
+    // Failed to create the legacy authzen key to be enrolled.
+    kErrorLegacyAuthzenKeyCreationFailed = 36,
     // Failed to create the DeviceSync:BetterTogether key to be enrolled.
     kErrorDeviceSyncBetterTogetherKeyCreationFailed = 37,
     // Used for UMA logs.

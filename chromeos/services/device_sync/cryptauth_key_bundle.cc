@@ -29,7 +29,7 @@ const char kKeyDirectiveDictKey[] = "key_directive";
 const base::flat_set<CryptAuthKeyBundle::Name>& CryptAuthKeyBundle::AllNames() {
   static const base::NoDestructor<base::flat_set<CryptAuthKeyBundle::Name>>
       name_list({CryptAuthKeyBundle::Name::kUserKeyPair,
-                 CryptAuthKeyBundle::Name::kLegacyMasterKey,
+                 CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                  CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether,
                  CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey});
   return *name_list;
@@ -39,7 +39,7 @@ const base::flat_set<CryptAuthKeyBundle::Name>&
 CryptAuthKeyBundle::AllEnrollableNames() {
   static const base::NoDestructor<base::flat_set<CryptAuthKeyBundle::Name>>
       name_list({CryptAuthKeyBundle::Name::kUserKeyPair,
-                 CryptAuthKeyBundle::Name::kLegacyMasterKey,
+                 CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                  CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether});
   return *name_list;
 }
@@ -50,8 +50,8 @@ std::string CryptAuthKeyBundle::KeyBundleNameEnumToString(
   switch (name) {
     case CryptAuthKeyBundle::Name::kUserKeyPair:
       return kCryptAuthUserKeyPairName;
-    case CryptAuthKeyBundle::Name::kLegacyMasterKey:
-      return kCryptAuthLegacyMasterKeyName;
+    case CryptAuthKeyBundle::Name::kLegacyAuthzenKey:
+      return kCryptAuthLegacyAuthzenKeyName;
     case CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether:
       return kCryptAuthDeviceSyncBetterTogetherKeyName;
     case CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey:
@@ -64,8 +64,8 @@ base::Optional<CryptAuthKeyBundle::Name>
 CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
   if (name == kCryptAuthUserKeyPairName)
     return CryptAuthKeyBundle::Name::kUserKeyPair;
-  if (name == kCryptAuthLegacyMasterKeyName)
-    return CryptAuthKeyBundle::Name::kLegacyMasterKey;
+  if (name == kCryptAuthLegacyAuthzenKeyName)
+    return CryptAuthKeyBundle::Name::kLegacyAuthzenKey;
   if (name == kCryptAuthDeviceSyncBetterTogetherKeyName)
     return CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether;
   if (name == kDeviceSyncBetterTogetherGroupKeyName)

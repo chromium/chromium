@@ -87,7 +87,7 @@ message ClientMetadata {
 
     // First run of the software package invoking this call.
     INITIALIZATION = 1;
-    // Ordinary periodic actions (e.g., monthly master key rotation).
+    // Ordinary periodic actions (e.g., monthly key rotation).
     PERIODIC = 2;
     // Slow-cycle periodic action (e.g., yearly keypair rotation).
     SLOW_PERIODIC = 3;

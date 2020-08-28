@@ -185,7 +185,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, SymmetricKeyCreation) {
       kFakeSymmetricKeyHandle);
 
   base::flat_map<CryptAuthKeyBundle::Name, CryptAuthKeyCreator::CreateKeyData>
-      keys_to_create = {{CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      keys_to_create = {{CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          symmetric_key_to_create}};
 
   CryptAuthKey expected_client_ephemeral_dh(
@@ -195,7 +195,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, SymmetricKeyCreation) {
       CryptAuthKey::Status::kActive, cryptauthv2::KeyType::P256);
 
   CryptAuthKey expected_symmetric_key =
-      DeriveSymmetricKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      DeriveSymmetricKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          symmetric_key_to_create, expected_client_ephemeral_dh);
 
   fake_secure_message_delegate()->set_next_public_key(
@@ -203,7 +203,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, SymmetricKeyCreation) {
 
   CallCreateKeys(keys_to_create, fake_server_ephemeral_dh());
   VerifyKeyCreation(
-      {{CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      {{CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
         base::make_optional(expected_symmetric_key)}} /* expected_new_keys */,
       expected_client_ephemeral_dh);
 }
@@ -221,7 +221,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
                CryptAuthKey::Status::kActive, cryptauthv2::KeyType::P256,
                kFakeAsymmetricKeyHandle, kFakeProvidedPublicKeyMaterial,
                kFakeProvidedPrivateKeyMaterial)},
-          {CryptAuthKeyBundle::Name::kLegacyMasterKey,
+          {CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
            symmetric_key_to_create}};
 
   CryptAuthKey expected_client_ephemeral_dh(
@@ -236,7 +236,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
       kFakeAsymmetricKeyHandle);
 
   CryptAuthKey expected_symmetric_key =
-      DeriveSymmetricKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      DeriveSymmetricKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          symmetric_key_to_create, expected_client_ephemeral_dh);
 
   // There is no need to generate an asymmetric key for kUserKeyPair since we
@@ -248,7 +248,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
   VerifyKeyCreation(
       {{CryptAuthKeyBundle::Name::kUserKeyPair,
         base::make_optional(expected_asymmetric_key)},
-       {CryptAuthKeyBundle::Name::kLegacyMasterKey,
+       {CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
         base::make_optional(expected_symmetric_key)}} /* expected_new_keys */,
       expected_client_ephemeral_dh);
 }
@@ -277,7 +277,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
       kFakeSymmetricKeyHandle);
 
   base::flat_map<CryptAuthKeyBundle::Name, CryptAuthKeyCreator::CreateKeyData>
-      keys_to_create = {{CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      keys_to_create = {{CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          symmetric_key_to_create}};
 
   // Fail to create the client's ephemeral Diffie-Hellman key. An empty key
@@ -285,7 +285,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
   fake_secure_message_delegate()->set_next_public_key(std::string());
 
   CallCreateKeys(keys_to_create, fake_server_ephemeral_dh());
-  VerifyKeyCreation({{CryptAuthKeyBundle::Name::kLegacyMasterKey,
+  VerifyKeyCreation({{CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                       base::nullopt}} /* expected_new_keys */,
                     base::nullopt /* expected_client_ephemeral_dh */);
 }

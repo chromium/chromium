@@ -158,7 +158,7 @@ void CryptAuthEnrollerImpl::OnKeyDerived(const std::string& symmetric_key) {
   device_info_.set_key_handle(user_public_key_);
 
   // Hash the symmetric key and add it to the |device_info_| to be uploaded.
-  device_info_.set_device_master_key_hash(
+  device_info_.set_device_authzen_key_hash(
       crypto::SHA256HashString(symmetric_key));
 
   // The server verifies that the access token set here and in the header

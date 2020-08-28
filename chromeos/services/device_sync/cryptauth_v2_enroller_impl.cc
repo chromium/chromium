@@ -759,9 +759,9 @@ void CryptAuthV2EnrollerImpl::OnKeysCreated(
           result_code = CryptAuthEnrollmentResult::ResultCode::
               kErrorUserKeyPairCreationFailed;
           break;
-        case CryptAuthKeyBundle::Name::kLegacyMasterKey:
+        case CryptAuthKeyBundle::Name::kLegacyAuthzenKey:
           result_code = CryptAuthEnrollmentResult::ResultCode::
-              kErrorLegacyMasterKeyCreationFailed;
+              kErrorLegacyAuthzenKeyCreationFailed;
           break;
         case CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether:
           result_code = CryptAuthEnrollmentResult::ResultCode::
