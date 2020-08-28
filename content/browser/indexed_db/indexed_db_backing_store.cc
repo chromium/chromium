@@ -625,8 +625,11 @@ IndexedDBBackingStore::IndexedDBBackingStore(
       db_(std::move(db)),
       blob_files_cleaned_(std::move(blob_files_cleaned)) {
   DCHECK(idb_task_runner_->RunsTasksInCurrentSequence());
-  if (backing_store_mode == Mode::kInMemory)
+  if (backing_store_mode == Mode::kInMemory) {
     blob_path_ = FilePath();
+  } else {
+    DCHECK(filesystem_proxy_) << "On disk database must have a filesystem";
+  }
   active_blob_registry_ = std::make_unique<IndexedDBActiveBlobRegistry>(
       std::move(report_outstanding_blobs),
       base::BindRepeating(&IndexedDBBackingStore::ReportBlobUnused,
@@ -687,11 +690,10 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
         PutInt(write_batch.get(), data_version_key, db_data_version.Encode()));
     // If a blob directory already exists for this database, blow it away.  It's
     // leftover from a partially-purged previous generation of data.
-    if (filesystem_proxy_) {
-      if (!filesystem_proxy_->RemoveDirectoryRecursively(blob_path_)) {
-        INTERNAL_WRITE_ERROR_UNTESTED(SET_UP_METADATA);
-        return IOErrorStatus();
-      }
+    if (filesystem_proxy_ &&
+        !filesystem_proxy_->RemoveDirectoryRecursively(blob_path_)) {
+      INTERNAL_WRITE_ERROR_UNTESTED(SET_UP_METADATA);
+      return IOErrorStatus();
     }
   } else {
     if (db_schema_version > indexed_db::kLatestKnownSchemaVersion)
@@ -828,8 +830,10 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
 
   // Delete all empty files that resulted from the migration to v4. If this
   // fails it's not a big deal.
-  for (const auto& path : empty_blobs_to_delete) {
-    filesystem_proxy_->RemoveFile(path);
+  if (filesystem_proxy_) {
+    for (const auto& path : empty_blobs_to_delete) {
+      filesystem_proxy_->RemoveFile(path);
+    }
   }
 
   if (clean_active_journal) {
@@ -905,6 +909,8 @@ Status IndexedDBBackingStore::UpgradeBlobEntriesToV4(
     TransactionalLevelDBDatabase* db,
     LevelDBWriteBatch* write_batch,
     std::vector<base::FilePath>* empty_blobs_to_delete) {
+  DCHECK(filesystem_proxy_);
+
   Status status = leveldb::Status::OK();
   std::vector<base::string16> names;
   IndexedDBMetadataCoding metadata_coding;
@@ -1699,6 +1705,7 @@ FilePath IndexedDBBackingStore::GetBlobFileName(int64_t database_id,
 bool IndexedDBBackingStore::RemoveBlobFile(int64_t database_id,
                                            int64_t blob_number) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(idb_sequence_checker_);
+  DCHECK(filesystem_proxy_) << "Only call this for on disk databases";
   FilePath path = GetBlobFileName(database_id, blob_number);
 #if DCHECK_IS_ON()
   ++num_blob_files_deleted_;
@@ -1710,6 +1717,7 @@ bool IndexedDBBackingStore::RemoveBlobFile(int64_t database_id,
 
 bool IndexedDBBackingStore::RemoveBlobDirectory(int64_t database_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(idb_sequence_checker_);
+  DCHECK(filesystem_proxy_) << "Only call this for on disk databases";
   FilePath path = GetBlobDirectoryName(blob_path_, database_id);
   return filesystem_proxy_->RemoveDirectoryRecursively(path);
 }
@@ -1745,6 +1753,8 @@ Status IndexedDBBackingStore::CleanUpBlobJournalEntries(
   DCHECK_CALLED_ON_VALID_SEQUENCE(idb_sequence_checker_);
   IDB_TRACE("IndexedDBBackingStore::CleanUpBlobJournalEntries");
   if (journal.empty())
+    return Status::OK();
+  if (!filesystem_proxy_)
     return Status::OK();
   for (const auto& entry : journal) {
     int64_t database_id = entry.first;
