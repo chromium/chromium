@@ -225,6 +225,7 @@ constexpr const char* kAtomsToCache[] = {
     "chromium/x-web-custom-data",
     "chromium/x-webkit-paste",
     "image/png",
+    "image/svg+xml",
     "marker_event",
     "scaling mode",
     "text/html",

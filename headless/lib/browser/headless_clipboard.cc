@@ -126,6 +126,18 @@ void HeadlessClipboard::ReadHTML(ui::ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void HeadlessClipboard::ReadSvg(ui::ClipboardBuffer buffer,
+                                const ui::ClipboardDataEndpoint* data_dst,
+                                base::string16* result) const {
+  result->clear();
+  const DataStore& store = GetStore(buffer);
+  auto it = store.data.find(ui::ClipboardFormatType::GetSvgType());
+  if (it != store.data.end())
+    *result = base::UTF8ToUTF16(it->second);
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void HeadlessClipboard::ReadRTF(ui::ClipboardBuffer buffer,
                                 const ui::ClipboardDataEndpoint* data_dst,
                                 std::string* result) const {
@@ -225,6 +237,11 @@ void HeadlessClipboard::WriteHTML(const char* markup_data,
   GetDefaultStore().data[ui::ClipboardFormatType::GetHtmlType()] =
       base::UTF16ToUTF8(markup);
   GetDefaultStore().html_src_url = std::string(url_data, url_len);
+}
+
+void HeadlessClipboard::WriteSvg(const char* markup_data, size_t markup_len) {
+  std::string markup(markup_data, markup_len);
+  GetDefaultStore().data[ui::ClipboardFormatType::GetSvgType()] = markup;
 }
 
 void HeadlessClipboard::WriteRTF(const char* rtf_data, size_t data_len) {

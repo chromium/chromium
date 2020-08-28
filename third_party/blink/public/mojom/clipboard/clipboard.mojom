@@ -51,6 +51,9 @@ interface ClipboardHost {
                                       uint32 fragment_start,
                                       uint32 fragment_end);
 
+  // Read SVG from the OS clipboard.
+  ReadSvg(ClipboardBuffer buffer) => (mojo_base.mojom.BigString16 result);
+
   [Sync]
   ReadRtf(ClipboardBuffer buffer) => (string result);
 
@@ -68,6 +71,10 @@ interface ClipboardHost {
   WriteText(mojo_base.mojom.BigString16 text);
 
   WriteHtml(mojo_base.mojom.BigString16 markup, url.mojom.Url url);
+
+  // Takes sanitized SVG in a UTF16 string format and writes it to the
+  // OS clipboard.
+  WriteSvg(mojo_base.mojom.BigString16 markup);
 
   WriteSmartPasteMarker();
 

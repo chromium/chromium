@@ -5,6 +5,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 
 #include <shlobj.h>
+#include <urlmon.h>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
@@ -198,6 +199,13 @@ const ClipboardFormatType& ClipboardFormatType::GetFilenameType() {
 const ClipboardFormatType& ClipboardFormatType::GetHtmlType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(L"HTML Format"));
+  return *format;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::GetSvgType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ::RegisterClipboardFormat(CFSTR_MIME_SVG_XML));
   return *format;
 }
 

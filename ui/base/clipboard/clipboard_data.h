@@ -20,11 +20,12 @@ namespace ui {
 enum class ClipboardInternalFormat {
   kText = 1 << 0,
   kHtml = 1 << 1,
-  kRtf = 1 << 2,
-  kBookmark = 1 << 3,
-  kBitmap = 1 << 4,
-  kCustom = 1 << 5,
-  kWeb = 1 << 6,
+  kSvg = 1 << 2,
+  kRtf = 1 << 3,
+  kBookmark = 1 << 4,
+  kBitmap = 1 << 5,
+  kCustom = 1 << 6,
+  kWeb = 1 << 7,
 };
 
 // ClipboardData contains data copied to the Clipboard for a variety of formats.
@@ -53,6 +54,12 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   void set_markup_data(const std::string& markup_data) {
     markup_data_ = markup_data;
     format_ |= static_cast<int>(ClipboardInternalFormat::kHtml);
+  }
+
+  const std::string& svg_data() const { return svg_data_; }
+  void set_svg_data(const std::string& svg_data) {
+    svg_data_ = svg_data;
+    format_ |= static_cast<int>(ClipboardInternalFormat::kSvg);
   }
 
   const std::string& rtf_data() const { return rtf_data_; }
@@ -123,6 +130,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
 
   // WebKit smart paste data.
   bool web_smart_paste_;
+
+  // Svg data.
+  std::string svg_data_;
 
   int format_;
 

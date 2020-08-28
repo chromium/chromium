@@ -173,6 +173,20 @@ void TestClipboard::ReadHTML(ClipboardBuffer buffer,
   *fragment_end = base::checked_cast<uint32_t>(markup->size());
 }
 
+void TestClipboard::ReadSvg(ClipboardBuffer buffer,
+                            const ClipboardDataEndpoint* data_dst,
+                            base::string16* result) const {
+  const DataStore& store = GetStore(buffer);
+  if (dlp_controller_ &&
+      !dlp_controller_->IsDataReadAllowed(store.data_src.get(), data_dst))
+    return;
+
+  result->clear();
+  auto it = store.data.find(ClipboardFormatType::GetSvgType());
+  if (it != store.data.end())
+    *result = base::UTF8ToUTF16(it->second);
+}
+
 void TestClipboard::ReadRTF(ClipboardBuffer buffer,
                             const ClipboardDataEndpoint* data_dst,
                             std::string* result) const {
@@ -290,6 +304,13 @@ void TestClipboard::WriteHTML(const char* markup_data,
   GetDefaultStore().data[ClipboardFormatType::GetHtmlType()] =
       base::UTF16ToUTF8(markup);
   GetDefaultStore().html_src_url = std::string(url_data, url_len);
+}
+
+void TestClipboard::WriteSvg(const char* markup_data, size_t markup_len) {
+  base::string16 markup;
+  base::UTF8ToUTF16(markup_data, markup_len, &markup);
+  GetDefaultStore().data[ClipboardFormatType::GetSvgType()] =
+      base::UTF16ToUTF8(markup);
 }
 
 void TestClipboard::WriteRTF(const char* rtf_data, size_t data_len) {

@@ -47,6 +47,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // useful if the HTML fragment contains relative links.
   void WriteHTML(const base::string16& markup, const std::string& source_url);
 
+  // Adds SVG to the clipboard.
+  void WriteSvg(const base::string16& text);
+
   // Adds RTF to the clipboard.
   void WriteRTF(const std::string& rtf_data);
 

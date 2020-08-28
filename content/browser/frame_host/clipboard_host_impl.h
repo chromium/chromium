@@ -144,6 +144,8 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
                 ReadTextCallback callback) override;
   void ReadHtml(ui::ClipboardBuffer clipboard_buffer,
                 ReadHtmlCallback callback) override;
+  void ReadSvg(ui::ClipboardBuffer clipboard_buffer,
+               ReadSvgCallback callback) override;
   void ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                ReadRtfCallback callback) override;
   void ReadImage(ui::ClipboardBuffer clipboard_buffer,
@@ -153,6 +155,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
                       ReadCustomDataCallback callback) override;
   void WriteText(const base::string16& text) override;
   void WriteHtml(const base::string16& markup, const GURL& url) override;
+  void WriteSvg(const base::string16& markup) override;
   void WriteSmartPasteMarker() override;
   void WriteCustomData(
       const base::flat_map<base::string16, base::string16>& data) override;

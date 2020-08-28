@@ -142,6 +142,7 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
       return std::make_unique<ClipboardHistoryBitmapItemView>(item, container);
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kHtml:
+    case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:
     case ui::ClipboardInternalFormat::kBookmark:
     case ui::ClipboardInternalFormat::kWeb:

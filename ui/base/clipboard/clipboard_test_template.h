@@ -228,6 +228,25 @@ TYPED_TEST(ClipboardTest, HTMLTest) {
 #endif  // defined(OS_WIN)
 }
 
+TYPED_TEST(ClipboardTest, SvgTest) {
+  base::string16 markup(ASCIIToUTF16("<svg> <circle r=\"40\" /> </svg>"));
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteSvg(markup);
+  }
+
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      ClipboardFormatType::GetSvgType(), ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
+
+  base::string16 markup_result;
+  this->clipboard().ReadSvg(ClipboardBuffer::kCopyPaste,
+                            /* data_dst = */ nullptr, &markup_result);
+
+  EXPECT_EQ(markup, markup_result);
+}
+
 #if !defined(OS_ANDROID)
 // TODO(crbug/1064968): This test fails with ClipboardAndroid, but passes with
 // the TestClipboard as RTF isn't implemented in ClipboardAndroid.
@@ -1034,6 +1053,11 @@ TYPED_TEST(ClipboardTest, WriteTextEmptyParams) {
 TYPED_TEST(ClipboardTest, WriteHTMLEmptyParams) {
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
   scw.WriteHTML(base::string16(), std::string());
+}
+
+TYPED_TEST(ClipboardTest, EmptySvgTest) {
+  ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+  clipboard_writer.WriteSvg(base::string16());
 }
 
 TYPED_TEST(ClipboardTest, WriteRTFEmptyParams) {

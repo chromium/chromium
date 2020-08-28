@@ -48,6 +48,10 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
   ClipboardHistoryItemBuilder& SetMarkup(const std::string& markup);
   ClipboardHistoryItemBuilder& ClearMarkup();
 
+  // Sets/clears `svg_` data.
+  ClipboardHistoryItemBuilder& SetSvg(const std::string& svg);
+  ClipboardHistoryItemBuilder& ClearSvg();
+
   // Sets/clears `rtf_` data.
   ClipboardHistoryItemBuilder& SetRtf(const std::string& rtf);
   ClipboardHistoryItemBuilder& ClearRtf();
@@ -79,6 +83,7 @@ class ASH_EXPORT ClipboardHistoryItemBuilder {
   // `ui::ClipboardData` formats.
   base::Optional<std::string> text_;
   base::Optional<std::string> markup_;
+  base::Optional<std::string> svg_;
   base::Optional<std::string> rtf_;
   base::Optional<std::string> bookmark_title_;
   base::Optional<SkBitmap> bitmap_;

@@ -236,6 +236,24 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
           fragment_end, std::move(callback)));
 }
 
+void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
+                                ReadSvgCallback callback) {
+  base::string16 markup;
+  clipboard_->ReadSvg(clipboard_buffer, /*data_dst=*/nullptr, &markup);
+
+  std::string data = base::UTF16ToUTF8(markup);
+  PerformPasteIfAllowed(clipboard_->GetSequenceNumber(clipboard_buffer),
+                        ui::ClipboardFormatType::GetSvgType(), std::move(data),
+                        base::BindOnce(
+                            [](base::string16 markup, ReadSvgCallback callback,
+                               ClipboardPasteAllowed allowed) {
+                              if (!allowed)
+                                markup.clear();
+                              std::move(callback).Run(std::move(markup));
+                            },
+                            std::move(markup), std::move(callback)));
+}
+
 void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                                 ReadRtfCallback callback) {
   std::string result;
@@ -311,6 +329,10 @@ void ClipboardHostImpl::WriteText(const base::string16& text) {
 void ClipboardHostImpl::WriteHtml(const base::string16& markup,
                                   const GURL& url) {
   clipboard_writer_->WriteHTML(markup, url.spec());
+}
+
+void ClipboardHostImpl::WriteSvg(const base::string16& markup) {
+  clipboard_writer_->WriteSvg(markup);
 }
 
 void ClipboardHostImpl::WriteSmartPasteMarker() {

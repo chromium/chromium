@@ -140,6 +140,8 @@ void ClipboardMac::ReadAvailableTypes(
     types->push_back(base::UTF8ToUTF16(kMimeTypeText));
   if (IsFormatAvailable(ClipboardFormatType::GetHtmlType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+  if (IsFormatAvailable(ClipboardFormatType::GetSvgType(), buffer, data_dst))
+    types->push_back(base::UTF8ToUTF16(kMimeTypeSvg));
   if (IsFormatAvailable(ClipboardFormatType::GetRtfType(), buffer, data_dst))
     types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
 
@@ -237,6 +239,18 @@ void ClipboardMac::ReadHTML(ClipboardBuffer buffer,
   *fragment_start = 0;
   DCHECK_LE(markup->length(), std::numeric_limits<uint32_t>::max());
   *fragment_end = static_cast<uint32_t>(markup->length());
+}
+
+void ClipboardMac::ReadSvg(ClipboardBuffer buffer,
+                           const ClipboardDataEndpoint* data_dst,
+                           base::string16* result) const {
+  DCHECK(CalledOnValidThread());
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  RecordRead(ClipboardFormatMetric::kSvg);
+  NSPasteboard* pb = GetPasteboard();
+  NSString* contents = [pb stringForType:kImageSvg];
+
+  *result = base::SysNSStringToUTF16(contents);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -366,6 +380,14 @@ void ClipboardMac::WriteHTML(const char* markup_data,
   NSPasteboard* pb = GetPasteboard();
   [pb addTypes:@[ NSHTMLPboardType ] owner:nil];
   [pb setString:html_fragment forType:NSHTMLPboardType];
+}
+
+void ClipboardMac::WriteSvg(const char* markup_data, size_t markup_len) {
+  std::string svg_str(markup_data, markup_len);
+  NSString* svg = base::SysUTF8ToNSString(svg_str);
+  NSPasteboard* pb = GetPasteboard();
+  [pb addTypes:@[ kImageSvg ] owner:nil];
+  [pb setString:svg forType:kImageSvg];
 }
 
 void ClipboardMac::WriteRTF(const char* rtf_data, size_t data_len) {

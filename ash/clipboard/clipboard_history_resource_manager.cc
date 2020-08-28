@@ -115,6 +115,8 @@ base::string16 ClipboardHistoryResourceManager::GetLabel(
       return base::UTF8ToUTF16(data.text());
     case ui::ClipboardInternalFormat::kHtml:
       return base::UTF8ToUTF16(data.markup_data());
+    case ui::ClipboardInternalFormat::kSvg:
+      return base::UTF8ToUTF16(data.svg_data());
     case ui::ClipboardInternalFormat::kRtf:
       return GetLocalizedString(IDS_CLIPBOARD_MENU_RTF_CONTENT);
     case ui::ClipboardInternalFormat::kBookmark:

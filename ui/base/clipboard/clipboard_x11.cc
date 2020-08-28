@@ -644,6 +644,24 @@ void ClipboardX11::ReadHTML(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardX11::ReadSvg(ClipboardBuffer buffer,
+                           const ClipboardDataEndpoint* data_dst,
+                           base::string16* result) const {
+  DCHECK(CalledOnValidThread());
+  RecordRead(ClipboardFormatMetric::kSvg);
+
+  SelectionData data(x11_details_->RequestAndWaitForTypes(
+      buffer,
+      x11_details_->GetAtomsForFormat(ClipboardFormatType::GetSvgType())));
+  if (data.IsValid()) {
+    std::string markup;
+    data.AssignTo(&markup);
+    *result = base::UTF8ToUTF16(markup);
+  }
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardX11::ReadRTF(ClipboardBuffer buffer,
                            const ClipboardDataEndpoint* data_dst,
                            std::string* result) const {
@@ -783,6 +801,14 @@ void ClipboardX11::WriteHTML(const char* markup_data,
   scoped_refptr<base::RefCountedMemory> mem(
       base::RefCountedString::TakeString(&data));
   x11_details_->InsertMapping(kMimeTypeHTML, mem);
+}
+
+void ClipboardX11::WriteSvg(const char* markup_data, size_t markup_len) {
+  std::string str(markup_data, markup_len);
+  scoped_refptr<base::RefCountedMemory> mem(
+      base::RefCountedString::TakeString(&str));
+
+  x11_details_->InsertMapping(kMimeTypeSvg, mem);
 }
 
 void ClipboardX11::WriteRTF(const char* rtf_data, size_t data_len) {

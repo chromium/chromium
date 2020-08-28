@@ -37,6 +37,8 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
                 ReadTextCallback callback) override;
   void ReadHtml(mojom::ClipboardBuffer clipboard_buffer,
                 ReadHtmlCallback callback) override;
+  void ReadSvg(mojom::ClipboardBuffer clipboard_buffer,
+               ReadSvgCallback callback) override;
   void ReadRtf(mojom::ClipboardBuffer clipboard_buffer,
                ReadRtfCallback callback) override;
   void ReadImage(mojom::ClipboardBuffer clipboard_buffer,
@@ -46,6 +48,7 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
                       ReadCustomDataCallback callback) override;
   void WriteText(const String& text) override;
   void WriteHtml(const String& markup, const KURL& url) override;
+  void WriteSvg(const String& markup) override;
   void WriteSmartPasteMarker() override;
   void WriteCustomData(const HashMap<String, String>& data) override;
   void WriteBookmark(const String& url, const String& title) override;
@@ -59,6 +62,7 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   uint64_t sequence_number_ = 0;
   String plain_text_ = g_empty_string;
   String html_text_ = g_empty_string;
+  String svg_text_ = g_empty_string;
   KURL url_;
   SkBitmap image_;
   HashMap<String, String> custom_data_;

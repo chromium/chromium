@@ -21,6 +21,7 @@ void MockClipboardHost::Bind(
 void MockClipboardHost::Reset() {
   plain_text_ = base::string16();
   html_text_ = base::string16();
+  svg_text_ = base::string16();
   url_ = GURL();
   image_.reset();
   custom_data_.clear();
@@ -41,6 +42,8 @@ void MockClipboardHost::ReadAvailableTypes(
     types.push_back(base::ASCIIToUTF16("text/plain"));
   if (!html_text_.empty())
     types.push_back(base::ASCIIToUTF16("text/html"));
+  if (!svg_text_.empty())
+    types.push_back(base::ASCIIToUTF16("image/svg+xml"));
   if (!image_.isNull())
     types.push_back(base::ASCIIToUTF16("image/png"));
   for (auto& it : custom_data_) {
@@ -81,6 +84,11 @@ void MockClipboardHost::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(html_text_, url_, 0, html_text_.length());
 }
 
+void MockClipboardHost::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
+                                ReadSvgCallback callback) {
+  std::move(callback).Run(svg_text_);
+}
+
 void MockClipboardHost::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                                 ReadRtfCallback callback) {
   std::move(callback).Run(std::string());
@@ -111,6 +119,12 @@ void MockClipboardHost::WriteHtml(const base::string16& markup,
     Reset();
   html_text_ = markup;
   url_ = url;
+}
+
+void MockClipboardHost::WriteSvg(const base::string16& markup) {
+  if (needs_reset_)
+    Reset();
+  svg_text_ = markup;
 }
 
 void MockClipboardHost::WriteSmartPasteMarker() {

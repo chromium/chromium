@@ -28,6 +28,7 @@ ClipboardData::ClipboardData(const ClipboardData& other) {
   custom_data_format_ = other.custom_data_format_;
   custom_data_data_ = other.custom_data_data_;
   web_smart_paste_ = other.web_smart_paste_;
+  svg_data_ = other.svg_data_;
   src_ = other.src_ ? std::make_unique<ClipboardDataEndpoint>(*other.src_.get())
                     : nullptr;
 }
@@ -45,6 +46,7 @@ bool ClipboardData::operator==(const ClipboardData& that) const {
          custom_data_format_ == that.custom_data_format() &&
          custom_data_data_ == that.custom_data_data() &&
          web_smart_paste_ == that.web_smart_paste() &&
+         svg_data_ == that.svg_data() &&
          gfx::BitmapsAreEqual(bitmap_, that.bitmap()) &&
          (src_.get() ? (that.source() && *src_.get() == *that.source())
                      : !that.source());

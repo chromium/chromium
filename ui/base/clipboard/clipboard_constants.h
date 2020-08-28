@@ -32,6 +32,7 @@ extern const char kMimeTypeDownloadURL[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeMozillaURL[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeHTML[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeSvg[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeRTF[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypePNG[];
 
@@ -55,6 +56,10 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypePepperCustomData[];
 #else
 // MacOS-specific Uniform Type Identifiers.
+
+// SVG images.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern NSString* const kImageSvg;
 
 // Pickled data.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)

@@ -51,6 +51,9 @@ class HeadlessClipboard : public ui::Clipboard {
                 std::string* src_url,
                 uint32_t* fragment_start,
                 uint32_t* fragment_end) const override;
+  void ReadSvg(ui::ClipboardBuffer buffer,
+               const ui::ClipboardDataEndpoint* data_dst,
+               base::string16* result) const override;
   void ReadRTF(ui::ClipboardBuffer buffer,
                const ui::ClipboardDataEndpoint* data_dst,
                std::string* result) const override;
@@ -83,6 +86,7 @@ class HeadlessClipboard : public ui::Clipboard {
                  size_t markup_len,
                  const char* url_data,
                  size_t url_len) override;
+  void WriteSvg(const char* markup_data, size_t markup_len) override;
   void WriteRTF(const char* rtf_data, size_t data_len) override;
   void WriteBookmark(const char* title_data,
                      size_t title_len,

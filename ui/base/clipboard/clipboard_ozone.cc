@@ -459,6 +459,19 @@ void ClipboardOzone::ReadHTML(ClipboardBuffer buffer,
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
+void ClipboardOzone::ReadSvg(ClipboardBuffer buffer,
+                             const ClipboardDataEndpoint* data_dst,
+                             base::string16* result) const {
+  DCHECK(CalledOnValidThread());
+  RecordRead(ClipboardFormatMetric::kSvg);
+
+  auto clipboard_data =
+      async_clipboard_ozone_->ReadClipboardDataAndWait(buffer, kMimeTypeSvg);
+  *result = base::UTF8ToUTF16(base::StringPiece(
+      reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
+}
+
+// TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadRTF(ClipboardBuffer buffer,
                              const ClipboardDataEndpoint* data_dst,
                              std::string* result) const {
@@ -568,6 +581,11 @@ void ClipboardOzone::WriteHTML(const char* markup_data,
                                size_t url_len) {
   std::vector<uint8_t> data(markup_data, markup_data + markup_len);
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
+}
+
+void ClipboardOzone::WriteSvg(const char* markup_data, size_t markup_len) {
+  std::vector<uint8_t> data(markup_data, markup_data + markup_len);
+  async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeSvg});
 }
 
 void ClipboardOzone::WriteRTF(const char* rtf_data, size_t data_len) {

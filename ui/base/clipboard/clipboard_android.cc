@@ -485,6 +485,18 @@ void ClipboardAndroid::ReadHTML(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardAndroid::ReadSvg(ClipboardBuffer buffer,
+                               const ClipboardDataEndpoint* data_dst,
+                               base::string16* result) const {
+  DCHECK(CalledOnValidThread());
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+  std::string utf8 =
+      g_map.Get().Get(ClipboardFormatType::GetSvgType().GetName());
+  *result = base::UTF8ToUTF16(utf8);
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardAndroid::ReadRTF(ClipboardBuffer buffer,
                                const ClipboardDataEndpoint* data_dst,
                                std::string* result) const {
@@ -584,6 +596,11 @@ void ClipboardAndroid::WriteHTML(const char* markup_data,
                                  const char* url_data,
                                  size_t url_len) {
   g_map.Get().Set(ClipboardFormatType::GetHtmlType().GetName(),
+                  std::string(markup_data, markup_len));
+}
+
+void ClipboardAndroid::WriteSvg(const char* markup_data, size_t markup_len) {
+  g_map.Get().Set(ClipboardFormatType::GetSvgType().GetName(),
                   std::string(markup_data, markup_len));
 }
 

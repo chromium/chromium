@@ -180,6 +180,12 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                         uint32_t* fragment_start,
                         uint32_t* fragment_end) const = 0;
 
+  // Reads an SVG image from the clipboard, if available.
+  // TODO(crbug.com/1103614): Update |data_dst| in all references to its
+  // appropriate ClipboardDataEndpoint for web-originates uses.
+  virtual void ReadSvg(ClipboardBuffer buffer,
+                       const ClipboardDataEndpoint* data_dst,
+                       base::string16* result) const = 0;
   // Reads RTF from the clipboard, if available. Stores the result as a byte
   // vector.
   // TODO(crbug.com/1103614): Update |data_dst| in all references to its
@@ -255,6 +261,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     kText,
     kWebkit,
     kData,  // Arbitrary block of bytes.
+    kSvg,
   };
 
   // TODO (https://crbug.com/994928): Rename ObjectMap-related types.
@@ -330,6 +337,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                          size_t markup_len,
                          const char* url_data,
                          size_t url_len) = 0;
+
+  virtual void WriteSvg(const char* markup_data, size_t markup_len) = 0;
 
   virtual void WriteRTF(const char* rtf_data, size_t data_len) = 0;
 

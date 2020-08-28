@@ -61,6 +61,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   static const ClipboardFormatType& GetWebKitSmartPasteType();
   // Win: MS HTML Format, Other: Generic HTML format
   static const ClipboardFormatType& GetHtmlType();
+  static const ClipboardFormatType& GetSvgType();
   static const ClipboardFormatType& GetRtfType();
   static const ClipboardFormatType& GetBitmapType();
   // TODO(raymes): Unify web custom data and pepper custom data:

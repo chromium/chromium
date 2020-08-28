@@ -58,6 +58,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetFormat(
       return SetText("Text");
     case ui::ClipboardInternalFormat::kHtml:
       return SetMarkup("Markup");
+    case ui::ClipboardInternalFormat::kSvg:
+      return SetMarkup("Svg");
     case ui::ClipboardInternalFormat::kRtf:
       return SetRtf("Rtf");
     case ui::ClipboardInternalFormat::kBookmark:
@@ -79,6 +81,8 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearFormat(
       return ClearText();
     case ui::ClipboardInternalFormat::kHtml:
       return ClearMarkup();
+    case ui::ClipboardInternalFormat::kSvg:
+      return ClearSvg();
     case ui::ClipboardInternalFormat::kRtf:
       return ClearRtf();
     case ui::ClipboardInternalFormat::kBookmark:
@@ -113,6 +117,17 @@ ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetMarkup(
 
 ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearMarkup() {
   markup_ = base::nullopt;
+  return *this;
+}
+
+ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::SetSvg(
+    const std::string& svg) {
+  svg_ = svg;
+  return *this;
+}
+
+ClipboardHistoryItemBuilder& ClipboardHistoryItemBuilder::ClearSvg() {
+  svg_ = base::nullopt;
   return *this;
 }
 

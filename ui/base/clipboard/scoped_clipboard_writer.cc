@@ -67,6 +67,16 @@ void ScopedClipboardWriter::WriteHTML(const base::string16& markup,
   objects_[Clipboard::PortableFormat::kHtml] = parameters;
 }
 
+void ScopedClipboardWriter::WriteSvg(const base::string16& markup) {
+  RecordWrite(ClipboardFormatMetric::kSvg);
+  std::string utf8_markup = base::UTF16ToUTF8(markup);
+
+  Clipboard::ObjectMapParams parameters;
+  parameters.push_back(
+      Clipboard::ObjectMapParam(utf8_markup.begin(), utf8_markup.end()));
+  objects_[Clipboard::PortableFormat::kSvg] = parameters;
+}
+
 void ScopedClipboardWriter::WriteRTF(const std::string& rtf_data) {
   RecordWrite(ClipboardFormatMetric::kRtf);
   Clipboard::ObjectMapParams parameters;

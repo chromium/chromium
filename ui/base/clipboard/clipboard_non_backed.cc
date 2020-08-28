@@ -154,6 +154,19 @@ class ClipboardInternal {
     *fragment_end = static_cast<uint32_t>(markup->length());
   }
 
+  // Reads SVG from the ClipboardData.
+  void ReadSvg(base::string16* markup) const {
+    markup->clear();
+
+    if (!HasFormat(ClipboardInternalFormat::kSvg))
+      return;
+
+    const ClipboardData* data = GetData();
+    *markup = base::UTF8ToUTF16(data->svg_data());
+
+    DCHECK_LE(markup->length(), std::numeric_limits<uint32_t>::max());
+  }
+
   // Reads RTF from the ClipboardData.
   void ReadRTF(std::string* result) const {
     result->clear();
@@ -284,6 +297,11 @@ class ClipboardDataBuilder {
     data->set_url(std::string(url_data, url_len));
   }
 
+  static void WriteSvg(const char* markup_data, size_t markup_len) {
+    ClipboardData* data = GetCurrentData();
+    data->set_svg_data(std::string(markup_data, markup_len));
+  }
+
   static void WriteRTF(const char* rtf_data, size_t rtf_len) {
     ClipboardData* data = GetCurrentData();
     data->SetRTFData(std::string(rtf_data, rtf_len));
@@ -407,6 +425,9 @@ bool ClipboardNonBacked::IsFormatAvailable(
   if (format == ClipboardFormatType::GetHtmlType())
     return clipboard_internal_->IsFormatAvailable(
         ClipboardInternalFormat::kHtml);
+  if (format == ClipboardFormatType::GetSvgType())
+    return clipboard_internal_->IsFormatAvailable(
+        ClipboardInternalFormat::kSvg);
   if (format == ClipboardFormatType::GetRtfType())
     return clipboard_internal_->IsFormatAvailable(
         ClipboardInternalFormat::kRtf);
@@ -543,6 +564,18 @@ void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
 #endif
 }
 
+void ClipboardNonBacked::ReadSvg(ClipboardBuffer buffer,
+                                 const ClipboardDataEndpoint* data_dst,
+                                 base::string16* result) const {
+  DCHECK(CalledOnValidThread());
+
+  if (!clipboard_internal_->IsReadAllowed(data_dst))
+    return;
+
+  RecordRead(ClipboardFormatMetric::kSvg);
+  clipboard_internal_->ReadSvg(result);
+}
+
 void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
                                  const ClipboardDataEndpoint* data_dst,
                                  std::string* result) const {
@@ -662,6 +695,10 @@ void ClipboardNonBacked::WriteHTML(const char* markup_data,
                                    const char* url_data,
                                    size_t url_len) {
   ClipboardDataBuilder::WriteHTML(markup_data, markup_len, url_data, url_len);
+}
+
+void ClipboardNonBacked::WriteSvg(const char* markup_data, size_t markup_len) {
+  ClipboardDataBuilder::WriteSvg(markup_data, markup_len);
 }
 
 void ClipboardNonBacked::WriteRTF(const char* rtf_data, size_t data_len) {

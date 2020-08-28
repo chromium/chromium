@@ -72,6 +72,12 @@ const ClipboardFormatType& ClipboardFormatType::GetHtmlType() {
 }
 
 // static
+const ClipboardFormatType& ClipboardFormatType::GetSvgType() {
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeSvg);
+  return *type;
+}
+
+// static
 const ClipboardFormatType& ClipboardFormatType::GetRtfType() {
   static base::NoDestructor<ClipboardFormatType> type(kMimeTypeRTF);
   return *type;
