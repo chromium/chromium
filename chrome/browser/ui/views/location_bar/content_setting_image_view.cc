@@ -225,7 +225,7 @@ void ContentSettingImageView::UpdateImage() {
   gfx::Image icon = content_setting_image_model_->GetIcon(icon_color_.value_or(
       color_utils::DeriveDefaultIconColor(GetForegroundColor())));
   if (!icon.IsEmpty())
-    SetImage(icon.AsImageSkia());
+    SetImageModel(ui::ImageModel::FromImage(icon));
 }
 
 void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {

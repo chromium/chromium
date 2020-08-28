@@ -218,7 +218,7 @@ void PageActionIconView::UpdateIconImage() {
   const gfx::ImageSkia image = gfx::CreateVectorIconWithBadge(
       GetVectorIcon(), icon_size, icon_color, GetVectorIconBadge());
   if (!image.isNull())
-    SetImage(image);
+    SetImageModel(ui::ImageModel::FromImageSkia(image));
 }
 
 void PageActionIconView::InstallLoadingIndicator() {

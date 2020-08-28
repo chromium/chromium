@@ -54,7 +54,7 @@ class LocationIconView : public IconLabelBubbleView {
     const virtual LocationBarModel* GetLocationBarModel() const = 0;
 
     // Gets an icon for the location bar icon chip.
-    virtual gfx::ImageSkia GetLocationIcon(
+    virtual ui::ImageModel GetLocationIcon(
         IconFetchedCallback on_icon_fetched) const = 0;
   };
 

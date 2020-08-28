@@ -208,16 +208,16 @@ void LocationIconView::UpdateIcon() {
   // Cancel any previous outstanding icon requests, as they are now outdated.
   icon_fetch_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  gfx::ImageSkia icon = delegate_->GetLocationIcon(
+  ui::ImageModel icon = delegate_->GetLocationIcon(
       base::BindOnce(&LocationIconView::OnIconFetched,
                      icon_fetch_weak_ptr_factory_.GetWeakPtr()));
-  if (!icon.isNull())
-    SetImage(icon);
+  if (!icon.IsEmpty())
+    SetImageModel(icon);
 }
 
 void LocationIconView::OnIconFetched(const gfx::Image& image) {
   DCHECK(!image.IsEmpty());
-  SetImage(image.AsImageSkia());
+  SetImageModel(ui::ImageModel::FromImage(image));
 }
 
 void LocationIconView::Update(bool suppress_animations) {

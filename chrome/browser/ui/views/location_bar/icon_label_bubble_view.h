@@ -24,7 +24,6 @@
 
 namespace gfx {
 class FontList;
-class ImageSkia;
 }  // namespace gfx
 
 namespace ui {
@@ -141,7 +140,7 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   const gfx::FontList& font_list() const { return label()->font_list(); }
 
-  void SetImage(const gfx::ImageSkia& image);
+  void SetImageModel(const ui::ImageModel& image);
 
   gfx::Size GetSizeForLabelWidth(int label_width) const;
 

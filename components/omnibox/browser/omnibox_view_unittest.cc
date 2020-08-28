@@ -168,13 +168,13 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
 // Tests GetIcon returns the default search icon when the match is a search
 // query.
 TEST_F(OmniboxViewTest, GetIcon_Default) {
-  gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+  ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
       vector_icons::kSearchIcon, gfx::kFaviconSize, gfx::kPlaceholderColor);
 
-  gfx::ImageSkia icon = view()->GetIcon(
+  ui::ImageModel icon = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, base::DoNothing());
 
-  EXPECT_EQ(icon.bitmap(), expected_icon.bitmap());
+  EXPECT_EQ(expected_icon, icon);
 }
 
 // Tests GetIcon returns the bookmark icon when the match is bookmarked.
@@ -188,13 +188,13 @@ TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
   bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), 0,
                            base::ASCIIToUTF16("a bookmark"), kUrl);
 
-  gfx::ImageSkia expected_icon = gfx::CreateVectorIcon(
+  ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
       omnibox::kBookmarkIcon, gfx::kFaviconSize, gfx::kPlaceholderColor);
 
-  gfx::ImageSkia icon = view()->GetIcon(
+  ui::ImageModel icon = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, base::DoNothing());
 
-  EXPECT_EQ(icon.bitmap(), expected_icon.bitmap());
+  EXPECT_EQ(expected_icon, icon);
 }
 
 // Tests GetIcon returns the website's favicon when the match is a website.

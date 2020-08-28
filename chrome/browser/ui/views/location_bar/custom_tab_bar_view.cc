@@ -433,9 +433,9 @@ const LocationBarModel* CustomTabBarView::GetLocationBarModel() const {
   return delegate_->GetLocationBarModel();
 }
 
-gfx::ImageSkia CustomTabBarView::GetLocationIcon(
+ui::ImageModel CustomTabBarView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
-  return gfx::CreateVectorIcon(
+  return ui::ImageModel::FromVectorIcon(
       delegate_->GetLocationBarModel()->GetVectorIcon(),
       GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
       GetSecurityChipColor(GetLocationBarModel()->GetSecurityLevel()));

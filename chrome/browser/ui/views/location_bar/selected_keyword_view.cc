@@ -52,9 +52,9 @@ SelectedKeywordView::~SelectedKeywordView() {}
 void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
   using_custom_image_ = !image.IsEmpty();
   if (using_custom_image_) {
-    IconLabelBubbleView::SetImage(image.AsImageSkia());
+    IconLabelBubbleView::SetImageModel(ui::ImageModel::FromImage(image));
   } else {
-    IconLabelBubbleView::SetImage(gfx::CreateVectorIcon(
+    IconLabelBubbleView::SetImageModel(ui::ImageModel::FromVectorIcon(
         vector_icons::kSearchIcon, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
         GetForegroundColor()));
   }

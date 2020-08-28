@@ -40,9 +40,9 @@ class TestLocationIconDelegate : public IconLabelBubbleView::Delegate,
   const LocationBarModel* GetLocationBarModel() const override {
     return location_bar_model_;
   }
-  gfx::ImageSkia GetLocationIcon(
+  ui::ImageModel GetLocationIcon(
       IconFetchedCallback on_icon_fetched) const override {
-    return gfx::ImageSkia();
+    return ui::ImageModel();
   }
 
   void set_is_editing_or_empty(bool is_editing_or_empty) {

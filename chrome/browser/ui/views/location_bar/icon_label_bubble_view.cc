@@ -391,9 +391,9 @@ void IconLabelBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetNameExplicitlyEmpty();
 }
 
-void IconLabelBubbleView::SetImage(const gfx::ImageSkia& image_skia) {
-  DCHECK(!image_skia.isNull());
-  LabelButton::SetImage(STATE_NORMAL, image_skia);
+void IconLabelBubbleView::SetImageModel(const ui::ImageModel& image_model) {
+  DCHECK(!image_model.IsEmpty());
+  LabelButton::SetImageModel(STATE_NORMAL, image_model);
 }
 
 gfx::Size IconLabelBubbleView::GetSizeForLabelWidth(int label_width) const {

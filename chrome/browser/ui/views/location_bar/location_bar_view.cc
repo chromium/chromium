@@ -1294,11 +1294,11 @@ bool LocationBarView::ShowPageInfoDialog() {
   return true;
 }
 
-gfx::ImageSkia LocationBarView::GetLocationIcon(
+ui::ImageModel LocationBarView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
-  if (!omnibox_view_)
-    return gfx::ImageSkia();
-  return omnibox_view_->GetIcon(GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-                                location_icon_view_->GetForegroundColor(),
-                                std::move(on_icon_fetched));
+  return omnibox_view_
+             ? omnibox_view_->GetIcon(GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+                                      location_icon_view_->GetForegroundColor(),
+                                      std::move(on_icon_fetched))
+             : ui::ImageModel();
 }

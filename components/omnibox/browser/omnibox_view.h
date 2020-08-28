@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
@@ -92,7 +93,7 @@ class OmniboxView {
 
   // Returns the icon to display as the location icon. If a favicon is
   // available, |on_icon_fetched| may be called later asynchronously.
-  gfx::ImageSkia GetIcon(int dip_size,
+  ui::ImageModel GetIcon(int dip_size,
                          SkColor color,
                          IconFetchedCallback on_icon_fetched) const;
 

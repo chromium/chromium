@@ -230,7 +230,7 @@ class LocationBarView : public LocationBar,
   bool ShowPageInfoDialog() override;
   SkColor GetSecurityChipColor(
       security_state::SecurityLevel security_level) const override;
-  gfx::ImageSkia GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
+  ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
                                      on_icon_fetched) const override;
 
  private:
