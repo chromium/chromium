@@ -211,6 +211,7 @@ void OmniboxViewViews::ElideAnimation::Start(
       ranges_surrounding_simplified_domain.size() == 2
           ? ranges_surrounding_simplified_domain[1].start()
           : elide_to_bounds.end());
+  simplified_domain_bounds_ = gfx::Rect();
   for (auto rect : render_text_->GetSubstringBounds(simplified_domain_range)) {
     simplified_domain_bounds_.Union(rect - render_text_->GetLineOffset(0));
   }
