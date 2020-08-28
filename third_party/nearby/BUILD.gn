@@ -119,10 +119,12 @@ source_set("platform_v2_base") {
   public_configs = [ ":nearby_include_config" ]
   sources = [
     "src/cpp/platform_v2/base/base64_utils.cc",
+    "src/cpp/platform_v2/base/bluetooth_utils.cc",
     "src/cpp/platform_v2/base/prng.cc",
   ]
   public = [
     "src/cpp/platform_v2/base/base64_utils.h",
+    "src/cpp/platform_v2/base/bluetooth_utils.h",
     "src/cpp/platform_v2/base/byte_array.h",
     "src/cpp/platform_v2/base/callable.h",
     "src/cpp/platform_v2/base/exception.h",
@@ -213,10 +215,12 @@ source_set("platform_v2_public_types") {
 source_set("platform_v2_public_comm") {
   public_configs = [ ":nearby_include_config" ]
   sources = [
+    "src/cpp/platform_v2/public/ble.cc",
     "src/cpp/platform_v2/public/bluetooth_classic.cc",
     "src/cpp/platform_v2/public/wifi_lan.cc",
   ]
   public = [
+    "src/cpp/platform_v2/public/ble.h",
     "src/cpp/platform_v2/public/bluetooth_adapter.h",
     "src/cpp/platform_v2/public/bluetooth_classic.h",
     "src/cpp/platform_v2/public/webrtc.h",
@@ -250,6 +254,7 @@ source_set("core") {
   sources = [ "src/cpp/core_v2/core.cc" ]
   public = [ "src/cpp/core_v2/core.h" ]
   public_deps = [
+    ":connections_enums_proto",
     ":core_v2_internal",
     ":core_v2_types",
     ":platform_v2_public_comm",
@@ -273,6 +278,7 @@ source_set("core_v2_types") {
     "src/cpp/core_v2/strategy.h",
   ]
   public_deps = [
+    ":connections_enums_proto",
     ":platform_v2_base",
     ":platform_v2_public_comm",
     ":platform_v2_public_logging",
@@ -291,6 +297,7 @@ source_set("core_v2_internal") {
     "src/cpp/core_v2/internal/base_endpoint_channel.cc",
     "src/cpp/core_v2/internal/base_pcp_handler.cc",
     "src/cpp/core_v2/internal/ble_advertisement.cc",
+    "src/cpp/core_v2/internal/ble_endpoint_channel.cc",
     "src/cpp/core_v2/internal/bluetooth_device_name.cc",
     "src/cpp/core_v2/internal/bluetooth_endpoint_channel.cc",
     "src/cpp/core_v2/internal/client_proxy.cc",
@@ -316,6 +323,7 @@ source_set("core_v2_internal") {
     "src/cpp/core_v2/internal/base_endpoint_channel.h",
     "src/cpp/core_v2/internal/base_pcp_handler.h",
     "src/cpp/core_v2/internal/ble_advertisement.h",
+    "src/cpp/core_v2/internal/ble_endpoint_channel.h",
     "src/cpp/core_v2/internal/bluetooth_device_name.h",
     "src/cpp/core_v2/internal/bluetooth_endpoint_channel.h",
     "src/cpp/core_v2/internal/client_proxy.h",
@@ -374,6 +382,7 @@ source_set("core_v2_internal_mediums") {
   public_configs = [ ":nearby_include_config" ]
   sources = [
     "src/cpp/core_v2/internal/mediums/advertisement_read_result.cc",
+    "src/cpp/core_v2/internal/mediums/ble.cc",
     "src/cpp/core_v2/internal/mediums/ble_advertisement.cc",
     "src/cpp/core_v2/internal/mediums/ble_advertisement_header.cc",
     "src/cpp/core_v2/internal/mediums/ble_packet.cc",
@@ -387,6 +396,7 @@ source_set("core_v2_internal_mediums") {
   ]
   public = [
     "src/cpp/core_v2/internal/mediums/advertisement_read_result.h",
+    "src/cpp/core_v2/internal/mediums/ble.h",
     "src/cpp/core_v2/internal/mediums/ble_advertisement.h",
     "src/cpp/core_v2/internal/mediums/ble_advertisement_header.h",
     "src/cpp/core_v2/internal/mediums/ble_packet.h",

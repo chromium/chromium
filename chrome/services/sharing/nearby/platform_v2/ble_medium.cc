@@ -12,36 +12,36 @@ BleMedium::BleMedium() = default;
 
 BleMedium::~BleMedium() = default;
 
-bool BleMedium::StartAdvertising(absl::string_view service_id,
+bool BleMedium::StartAdvertising(const std::string& service_id,
                                  const ByteArray& advertisement) {
   // TODO(b/154845685): Implement this method.
   NOTIMPLEMENTED();
   return false;
 }
 
-void BleMedium::StopAdvertising(absl::string_view service_id) {
+bool BleMedium::StopAdvertising(const std::string& service_id) {
   // TODO(b/154845685): Implement this method.
   NOTIMPLEMENTED();
+  return false;
 }
 
-bool BleMedium::StartScanning(
-    absl::string_view service_id,
-    const api::BleMedium::DiscoveredPeripheralCallback&
-        discovered_peripheral_callback) {
+bool BleMedium::StartScanning(const std::string& service_id,
+                              api::BleMedium::DiscoveredPeripheralCallback
+                                  discovered_peripheral_callback) {
   // TODO(b/154848193): Implement this method.
   NOTIMPLEMENTED();
   return true;
 }
 
-void BleMedium::StopScanning(absl::string_view service_id) {
+bool BleMedium::StopScanning(const std::string& service_id) {
   // TODO(b/154848193): Implement this method.
   NOTIMPLEMENTED();
+  return false;
 }
 
 bool BleMedium::StartAcceptingConnections(
-    absl::string_view service_id,
-    const api::BleMedium::AcceptedConnectionCallback&
-        accepted_connection_callback) {
+    const std::string& service_id,
+    api::BleMedium::AcceptedConnectionCallback accepted_connection_callback) {
   // Do not actually start a GATT server, because BLE connections are not yet
   // supported in Chrome Nearby. However, return true in order to allow
   // BLE advertising to continue.
@@ -50,13 +50,14 @@ bool BleMedium::StartAcceptingConnections(
   return true;
 }
 
-void BleMedium::StopAcceptingConnections(const std::string& service_id) {
+bool BleMedium::StopAcceptingConnections(const std::string& service_id) {
   // Do nothing. BLE connections are not yet supported in Chrome Nearby.
+  return false;
 }
 
 std::unique_ptr<api::BleSocket> BleMedium::Connect(
-    api::BlePeripheral* ble_peripheral,
-    absl::string_view service_id) {
+    api::BlePeripheral& ble_peripheral,
+    const std::string& service_id) {
   // Do nothing. BLE connections are not yet supported in Chrome Nearby.
   return nullptr;
 }

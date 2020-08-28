@@ -21,10 +21,8 @@ class BlePeripheral : public api::BlePeripheral {
   BlePeripheral& operator=(const BlePeripheral&) = delete;
 
   // api::BlePeripheral:
-  api::BluetoothDevice& GetBluetoothDevice() override;
-
- private:
-  api::BluetoothDevice& bluetooth_device_;
+  std::string GetName() const override;
+  ByteArray GetAdvertisementBytes(const std::string& service_id) const override;
 };
 
 }  // namespace chrome

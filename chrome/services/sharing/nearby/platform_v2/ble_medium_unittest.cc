@@ -19,16 +19,6 @@ namespace {
 
 const char kServiceName[] = "NearbySharing";
 
-class FakeAcceptedConnectionCallback
-    : public BleMedium::AcceptedConnectionCallback {
- public:
-  ~FakeAcceptedConnectionCallback() override = default;
-
-  // BleMedium::AcceptedConnectionCallback:
-  void OnConnectionAccepted(std::unique_ptr<api::BleSocket> socket,
-                            absl::string_view service_id) override {}
-};
-
 }  // namespace
 
 class BleMediumTest : public testing::Test {
@@ -42,7 +32,6 @@ class BleMediumTest : public testing::Test {
 
  protected:
   std::unique_ptr<BleMedium> ble_medium_;
-  FakeAcceptedConnectionCallback fake_accepted_connection_callback_;
 
   base::test::TaskEnvironment task_environment_;
 };
@@ -57,8 +46,8 @@ TEST_F(BleMediumTest, TestScanning) {
 
 TEST_F(BleMediumTest, TestStartAcceptingConnections) {
   // StartAcceptingConnections() should do nothing but still return true.
-  EXPECT_TRUE(ble_medium_->StartAcceptingConnections(
-      kServiceName, fake_accepted_connection_callback_));
+  EXPECT_TRUE(
+      ble_medium_->StartAcceptingConnections(kServiceName, /*callback=*/{}));
 }
 
 TEST_F(BleMediumTest, TestConnect) {
@@ -66,7 +55,7 @@ TEST_F(BleMediumTest, TestConnect) {
   BlePeripheral ble_peripheral(bluetooth_device);
 
   // Connect() should do nothing and not return a valid api::BleSocket.
-  EXPECT_FALSE(ble_medium_->Connect(&ble_peripheral, kServiceName));
+  EXPECT_FALSE(ble_medium_->Connect(ble_peripheral, kServiceName));
 }
 
 }  // namespace chrome

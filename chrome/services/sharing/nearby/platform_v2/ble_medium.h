@@ -24,20 +24,20 @@ class BleMedium : public api::BleMedium {
   BleMedium& operator=(const BleMedium&) = delete;
 
   // api::BleMedium:
-  bool StartAdvertising(absl::string_view service_id,
+  bool StartAdvertising(const std::string& service_id,
                         const ByteArray& advertisement) override;
-  void StopAdvertising(absl::string_view service_id) override;
-  bool StartScanning(absl::string_view service_id,
-                     const DiscoveredPeripheralCallback&
-                         discovered_peripheral_callback) override;
-  void StopScanning(absl::string_view service_id) override;
+  bool StopAdvertising(const std::string& service_id) override;
+  bool StartScanning(
+      const std::string& service_id,
+      DiscoveredPeripheralCallback discovered_peripheral_callback) override;
+  bool StopScanning(const std::string& service_id) override;
   bool StartAcceptingConnections(
-      absl::string_view service_id,
-      const AcceptedConnectionCallback& accepted_connection_callback) override;
-  void StopAcceptingConnections(const std::string& service_id) override;
+      const std::string& service_id,
+      AcceptedConnectionCallback accepted_connection_callback) override;
+  bool StopAcceptingConnections(const std::string& service_id) override;
   std::unique_ptr<api::BleSocket> Connect(
-      api::BlePeripheral* ble_peripheral,
-      absl::string_view service_id) override;
+      api::BlePeripheral& ble_peripheral,
+      const std::string& service_id) override;
 };
 
 }  // namespace chrome

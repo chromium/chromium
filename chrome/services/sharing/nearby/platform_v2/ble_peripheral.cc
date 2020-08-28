@@ -8,13 +8,19 @@ namespace location {
 namespace nearby {
 namespace chrome {
 
-BlePeripheral::BlePeripheral(api::BluetoothDevice& bluetooth_device)
-    : bluetooth_device_(bluetooth_device) {}
+BlePeripheral::BlePeripheral(api::BluetoothDevice& bluetooth_device) {}
 
 BlePeripheral::~BlePeripheral() = default;
 
-api::BluetoothDevice& BlePeripheral::GetBluetoothDevice() {
-  return bluetooth_device_;
+std::string BlePeripheral::GetName() const {
+  // TODO(hansberry): Implement.
+  return std::string();
+}
+
+ByteArray BlePeripheral::GetAdvertisementBytes(
+    const std::string& service_id) const {
+  // TODO(hansberry): Implement.
+  return ByteArray();
 }
 
 }  // namespace chrome

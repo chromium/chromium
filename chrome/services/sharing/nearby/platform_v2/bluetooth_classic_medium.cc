@@ -111,6 +111,12 @@ BluetoothClassicMedium::ListenForService(const std::string& service_name,
   return nullptr;
 }
 
+BluetoothDevice* BluetoothClassicMedium::FindRemoteDevice(
+    const std::string& mac_address) {
+  // TODO(hansberry): Implement.
+  return nullptr;
+}
+
 void BluetoothClassicMedium::PresentChanged(bool present) {
   // TODO(hansberry): It is unclear to me how the API implementation can signal
   // to Core that |present| has become unexpectedly false. Need to ask

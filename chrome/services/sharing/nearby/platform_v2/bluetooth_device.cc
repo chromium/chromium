@@ -17,6 +17,11 @@ std::string BluetoothDevice::GetName() const {
   return device_info_->name_for_display;
 }
 
+std::string BluetoothDevice::GetMacAddress() const {
+  // TODO(hansberry): Implement.
+  return std::string();
+}
+
 std::string BluetoothDevice::GetAddress() const {
   return device_info_->address;
 }

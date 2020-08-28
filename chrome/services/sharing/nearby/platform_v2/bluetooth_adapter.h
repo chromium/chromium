@@ -32,6 +32,7 @@ class BluetoothAdapter : public api::BluetoothAdapter {
   bool SetScanMode(ScanMode scan_mode) override;
   std::string GetName() const override;
   bool SetName(absl::string_view name) override;
+  std::string GetMacAddress() const override;
 
  private:
   // This reference is owned by the top-level Nearby Connections interface and

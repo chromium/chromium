@@ -64,6 +64,11 @@ bool BluetoothAdapter::SetName(absl::string_view name) {
   return call_success && set_name_success;
 }
 
+std::string BluetoothAdapter::GetMacAddress() const {
+  // TODO(hansberry): Implement.
+  return std::string();
+}
+
 }  // namespace chrome
 }  // namespace nearby
 }  // namespace location

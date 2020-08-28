@@ -52,6 +52,9 @@ mojom::Status StatusToMojom(Status::Value status) {
       return mojom::Status::kNotConnectedToEndpoint;
     case Status::Value::kBluetoothError:
       return mojom::Status::kBluetoothError;
+    // TODO(alexchau): Add kBleError to mojo.
+    case Status::Value::kBleError:
+      return mojom::Status::kError;
     case Status::Value::kWifiLanError:
       return mojom::Status::kWifiLanError;
     case Status::Value::kPayloadUnknown:
