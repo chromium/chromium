@@ -136,7 +136,8 @@ int GetPixelSizeOrDefault(
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
     JNIEnv* env,
     const base::android::ScopedJavaLocalRef<jobject>& jcontext,
-    const DrawableProto& proto) {
+    const DrawableProto& proto,
+    const UserModel* user_model) {
   switch (proto.drawable_case()) {
     case DrawableProto::kResourceIdentifier:
       if (!Java_AssistantDrawable_isValidDrawableResource(
@@ -189,6 +190,20 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
     case DrawableProto::kBase64: {
       return Java_AssistantDrawable_createFromBase64(
           env, base::android::ToJavaByteArray(env, proto.base64()));
+    }
+    case DrawableProto::kFavicon: {
+      if (!user_model) {
+        VLOG(1) << "User model missing while trying to create a favicon.";
+        return nullptr;
+      }
+      int diameter_size_in_pixel =
+          ui_controller_android_utils::GetPixelSizeOrDefault(
+              env, jcontext, proto.favicon().diameter_size(), 0);
+      return Java_AssistantDrawable_createFromFavicon(
+          env,
+          base::android::ConvertUTF8ToJavaString(
+              env, user_model->GetCurrentURL().spec()),
+          diameter_size_in_pixel, proto.favicon().force_monogram());
     }
     case DrawableProto::DRAWABLE_NOT_SET:
       return nullptr;

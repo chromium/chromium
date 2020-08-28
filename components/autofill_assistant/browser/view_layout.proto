@@ -72,6 +72,12 @@ message BitmapDrawableProto {
   optional ClientDimensionProto height = 3;
 }
 
+message FaviconDrawableProto {
+  optional ClientDimensionProto diameter_size = 1;
+  // If true, we always use the monogram, even if the favicon is available.
+  optional bool force_monogram = 2;
+}
+
 // A drawable for use in backgrounds or in image views.
 message DrawableProto {
   enum Icon {
@@ -104,6 +110,8 @@ message DrawableProto {
     Icon icon = 4;
     // A Base64 encoded image string.
     bytes base64 = 5;
+    // The favicon for a given URL.
+    FaviconDrawableProto favicon = 6;
   }
 }
 

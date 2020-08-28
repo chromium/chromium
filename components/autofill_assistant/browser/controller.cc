@@ -731,7 +731,7 @@ void Controller::OnUrlChange() {
     PerformDelayedShutdownIfNecessary();
     return;
   }
-
+  user_model_.SetCurrentURL(GetCurrentURL());
   GetOrCheckScripts();
 }
 
@@ -1065,6 +1065,8 @@ void Controller::InitFromParameters() {
     mock_configuration.set_use_step_progress_bar(true);
     SetStepProgressBarConfiguration(mock_configuration);
   }
+
+  user_model_.SetCurrentURL(GetCurrentURL());
 }
 
 void Controller::Track(std::unique_ptr<TriggerContext> trigger_context,

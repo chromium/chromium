@@ -12,7 +12,9 @@
 #include "base/android/jni_android.h"
 #include "base/optional.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/view_layout.pb.h"
+#include "url/gurl.h"
 
 namespace autofill_assistant {
 namespace ui_controller_android_utils {
@@ -51,7 +53,8 @@ int GetPixelSizeOrDefault(
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
     JNIEnv* env,
     const base::android::ScopedJavaLocalRef<jobject>& jcontext,
-    const DrawableProto& proto);
+    const DrawableProto& proto,
+    const UserModel* user_model = nullptr);
 
 // Returns the java equivalent of |proto|.
 base::android::ScopedJavaLocalRef<jobject> ToJavaValue(JNIEnv* env,

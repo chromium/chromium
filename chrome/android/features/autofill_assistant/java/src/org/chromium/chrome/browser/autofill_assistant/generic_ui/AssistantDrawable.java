@@ -15,6 +15,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -24,6 +25,10 @@ import org.chromium.chrome.browser.autofill_assistant.drawable.AssistantDrawable
 import org.chromium.chrome.browser.image_fetcher.ImageFetcher;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherConfig;
 import org.chromium.chrome.browser.image_fetcher.ImageFetcherFactory;
+import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.url.GURL;
 
 /** Represents a view background. */
 @JNINamespace("autofill_assistant")
@@ -71,6 +76,12 @@ public abstract class AssistantDrawable {
     @CalledByNative
     public static AssistantDrawable createFromBase64(byte[] base64) {
         return new AssistantBase64Drawable(base64);
+    }
+
+    @CalledByNative
+    public static AssistantDrawable createFromFavicon(
+            String url, int diameterSizeInPixel, boolean forceMonogram) {
+        return new AssistantFaviconDrawable(url, diameterSizeInPixel, forceMonogram);
     }
 
     private static class AssistantRectangleDrawable extends AssistantDrawable {
@@ -216,6 +227,39 @@ public abstract class AssistantDrawable {
         public void getDrawable(Context context, Callback<Drawable> callback) {
             Bitmap icon = BitmapFactory.decodeByteArray(mBase64, /* offset= */ 0, mBase64.length);
             callback.onResult(new BitmapDrawable(context.getResources(), icon));
+        }
+    }
+
+    private static class AssistantFaviconDrawable extends AssistantDrawable {
+        private final String mUrl;
+        private final int mDiameterSizeInPixel;
+        private final Boolean mForceMonogram;
+
+        AssistantFaviconDrawable(String url, int diameterSizeInPixel, boolean forceMonogram) {
+            mUrl = url;
+            mDiameterSizeInPixel = diameterSizeInPixel;
+            mForceMonogram = forceMonogram;
+        }
+
+        @Override
+        public void getDrawable(Context context, Callback<Drawable> callback) {
+            final LargeIconBridge iconBridge =
+                    new LargeIconBridge(AutofillAssistantUiController.getProfile());
+            iconBridge.getLargeIconForUrl(new GURL(mUrl), mDiameterSizeInPixel,
+                    (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
+                            int iconType) -> {
+                        float fontSize = mDiameterSizeInPixel * 7f / 10f;
+                        RoundedIconGenerator roundedIconGenerator =
+                                new RoundedIconGenerator(mDiameterSizeInPixel, mDiameterSizeInPixel,
+                                        mDiameterSizeInPixel / 2,
+                                        ApiCompatibilityUtils.getColor(context.getResources(),
+                                                R.color.default_favicon_background_color),
+                                        fontSize);
+                        Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(
+                                mForceMonogram ? null : icon, mUrl, fallbackColor,
+                                roundedIconGenerator, context.getResources(), mDiameterSizeInPixel);
+                        callback.onResult(drawable);
+                    });
         }
     }
 }

@@ -231,7 +231,8 @@ base::android::ScopedJavaGlobalRef<jobject> CreateJavaView(
       break;
     case ViewProto::kImageView: {
       auto jimage = ui_controller_android_utils::CreateJavaDrawable(
-          env, jcontext, proto.image_view().image());
+          env, jcontext, proto.image_view().image(),
+          interaction_handler->GetUserModel());
       if (!jimage) {
         VLOG(1) << "Failed to create image for " << proto.identifier();
         return nullptr;

@@ -41,6 +41,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
     "//components/autofill/android:autofill_java",
@@ -69,6 +70,7 @@ android_library("java") {
     "//third_party/android_deps:material_design_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
   if (enable_chrome_android_internal) {

@@ -164,6 +164,10 @@ void UserModel::SetAutofillProfiles(
   }
 }
 
+void UserModel::SetCurrentURL(GURL current_url) {
+  current_url_ = current_url;
+}
+
 const autofill::CreditCard* UserModel::GetCreditCard(
     const std::string& guid) const {
   auto it = credit_cards_.find(guid);
@@ -180,6 +184,10 @@ const autofill::AutofillProfile* UserModel::GetProfile(
     return nullptr;
   }
   return it->second.get();
+}
+
+GURL UserModel::GetCurrentURL() const {
+  return current_url_;
 }
 
 }  // namespace autofill_assistant
