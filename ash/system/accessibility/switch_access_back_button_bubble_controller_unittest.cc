@@ -10,6 +10,8 @@
 #include "ash/system/accessibility/switch_access_back_button_view.h"
 #include "ash/system/accessibility/switch_access_menu_bubble_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -27,6 +29,8 @@ class SwitchAccessBackButtonBubbleControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kEnableExperimentalAccessibilitySwitchAccess);
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->SetSwitchAccessEnabled(true);
   }
