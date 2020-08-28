@@ -3,12 +3,27 @@
 # found in the LICENSE file.
 
 import("//third_party/protobuf/proto_library.gni")
+import("//tools/grit/grit_rule.gni")
 
 proto_library("chrome_track_event") {
   proto_in_dir = "//"
+  proto_out_dir = "base/tracing/protos"
   import_dirs = [ "//third_party/perfetto/" ]
   sources = [ "chrome_track_event.proto" ]
   generate_cc = false
   generate_python = false
   generate_descriptor = "chrome_track_event.descriptor"
+}
+
+grit("chrome_track_event_resources") {
+  source = "resources.grd"
+  outputs = [
+    "grit/tracing_proto_resources.h",
+    "tracing_proto_resources.pak",
+  ]
+  deps = [ ":chrome_track_event" ]
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
 }

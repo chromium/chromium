@@ -536,6 +536,9 @@
   "ash/public/cpp/resources/ash_public_unscaled_resources.grd": {
     "includes": [3140],
   },
+  "base/tracing/protos/resources.grd": {
+    "includes": [3150],
+  },
   "chromecast/renderer/resources/extensions_renderer_resources.grd": {
     "includes": [3160],
   },
