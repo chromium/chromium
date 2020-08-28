@@ -25,6 +25,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -140,6 +141,10 @@ class DownloadItemView : public views::View,
   // Update accessible status text, and announce it if desired.
   void UpdateAccessibleAlert(const base::string16& alert);
 
+  // Updates the animation used during deep scanning. The animation is started
+  // or stopped depending on the current mode.
+  void UpdateAnimationForDeepScanningMode();
+
   // Get the accessible alert text for a download that is currently in progress.
   base::string16 GetInProgressAccessibleAlertText() const;
 
@@ -161,6 +166,9 @@ class DownloadItemView : public views::View,
 
   // When not in normal mode, returns the current help/warning/error icon.
   ui::ImageModel GetIcon() const;
+
+  // When not in nromal mode, returns the bounds of the current icon.
+  gfx::RectF GetIconBounds() const;
 
   // Returns the text and style to use for the status label.
   std::pair<base::string16, int> GetStatusTextAndStyle() const;
@@ -269,6 +277,8 @@ class DownloadItemView : public views::View,
   base::TimeDelta indeterminate_progress_time_elapsed_;
 
   gfx::SlideAnimation complete_animation_{this};
+
+  gfx::ThrobAnimation scanning_animation_{this};
 
   // The tooltip.  Only displayed when not showing a warning dialog.
   base::string16 tooltip_text_;

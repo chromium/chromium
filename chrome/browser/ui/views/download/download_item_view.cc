@@ -303,6 +303,9 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   complete_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(2500));
   complete_animation_.SetTweenType(gfx::Tween::LINEAR);
 
+  scanning_animation_.SetThrobDuration(base::TimeDelta::FromMilliseconds(2500));
+  scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
+
   // Further configure default state, e.g. child visibility.
   OnDownloadUpdated();
 }
@@ -611,6 +614,15 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
         static_cast<uint8_t>(gfx::Tween::IntValueBetween(opacity, 0, 255)));
     PaintDownloadProgress(canvas, progress_bounds, base::TimeDelta(), 100);
     canvas->Restore();
+  } else if (scanning_animation_.is_animating()) {
+    DCHECK_EQ(Mode::kDeepScanning, mode_);
+    const double value = gfx::Tween::DoubleValueBetween(
+        scanning_animation_.GetCurrentValue(), 0, 2 * base::kPiDouble);
+    const double opacity = std::sin(value + base::kPiDouble / 2) / 2 + 0.5;
+    canvas->SaveLayerAlpha(
+        static_cast<uint8_t>(gfx::Tween::IntValueBetween(opacity, 0, 255)));
+    PaintDownloadProgress(canvas, GetIconBounds(), base::TimeDelta(), 100);
+    canvas->Restore();
   } else if (use_new_warnings) {
     file_icon = &file_icon_;
   }
@@ -628,14 +640,10 @@ void DownloadItemView::OnPaint(gfx::Canvas* canvas) {
 
   // Overlay the warning icon if appropriate.
   if (mode_ != Mode::kNormal) {
-    const int offset = use_new_warnings ? 8 : 0;
     const gfx::ImageSkia icon = ui::ThemedVectorIcon(GetIcon().GetVectorIcon())
                                     .GetImageSkia(GetNativeTheme());
-    const int icon_x =
-        GetMirroredXWithWidthInView(kStartPadding, icon.size().width()) +
-        offset;
-    const int icon_y = CenterY(icon.size().height()) + offset;
-    canvas->DrawImageInt(icon, icon_x, icon_y);
+    gfx::RectF bounds = GetIconBounds();
+    canvas->DrawImageInt(icon, bounds.x(), bounds.y());
   }
 
   OnPaintBorder(canvas);
@@ -683,6 +691,7 @@ void DownloadItemView::UpdateMode(Mode mode) {
   UpdateFilePathAndIcons();
   UpdateLabels();
   UpdateButtons();
+  UpdateAnimationForDeepScanningMode();
 
   // Update the accessible name to contain the status text, filename, and
   // warning message (if any). The name will be presented when the download item
@@ -870,6 +879,15 @@ void DownloadItemView::UpdateAccessibleAlert(
   }
 }
 
+void DownloadItemView::UpdateAnimationForDeepScanningMode() {
+  if (mode_ == Mode::kDeepScanning) {
+    // -1 to throb indefinitely.
+    scanning_animation_.StartThrobbing(-1);
+  } else {
+    scanning_animation_.End();
+  }
+}
+
 base::string16 DownloadItemView::GetInProgressAccessibleAlertText() const {
   // If opening when complete or there is a warning, use the full status text.
   if (model_->GetOpenWhenComplete() || has_warning_label(mode_))
@@ -1026,6 +1044,17 @@ ui::ImageModel DownloadItemView::GetIcon() const {
 
   NOTREACHED();
   return ui::ImageModel();
+}
+
+gfx::RectF DownloadItemView::GetIconBounds() const {
+  // TODO(drubery): When launching the new warnings, turn these numbers into
+  // appropriately named constants.
+  const int offset = UseNewWarnings() ? 8 : 0;
+  const gfx::Size size = GetIcon().Size();
+  const int icon_x =
+      GetMirroredXWithWidthInView(kStartPadding, size.width()) + offset;
+  const int icon_y = CenterY(size.height()) + offset;
+  return gfx::RectF(icon_x, icon_y, size.width(), size.height());
 }
 
 std::pair<base::string16, int> DownloadItemView::GetStatusTextAndStyle() const {
