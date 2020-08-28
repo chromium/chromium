@@ -254,8 +254,7 @@ const SwitchAccessPredicate = {
    * @return {function(!AutomationNode): boolean}
    */
   leaf(scope, cache) {
-    return (node) => node.state[StateType.INVISIBLE] ||
-        !SwitchAccessPredicate.isInterestingSubtree(node, cache) ||
+    return (node) => !SwitchAccessPredicate.isInterestingSubtree(node, cache) ||
         (scope !== node &&
          SwitchAccessPredicate.isInteresting(node, scope, cache));
   },
