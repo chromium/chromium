@@ -208034,6 +208034,10 @@
       "63b60e490f47f4db77d33d7a4ca2f5b9a4181de8",
       []
      ],
+     "coop-csp-sandbox-navigate.https-expected.txt": [
+      "1822ba4e3b05a17b48ad7165c565f84caadb3a40",
+      []
+     ],
      "coop-navigated-popup.https.html.headers": [
       "d83ed86fb9b5d159b9f380424887402edc96cb75",
       []
@@ -208258,15 +208262,19 @@
        []
       ],
       "common.js": [
-       "5a1744cd9ceaa438bdc2e50dea3f66acb8657eb3",
+       "18656cd9e6e1e9376d256548d817666841d213b3",
        []
       ],
       "coop-coep.py": [
-       "285b961e9969175161ffe51791c20afec5c4fdbb",
+       "04b673bf2d97322b6558e966e1c3c646ba12c266",
        []
       ],
       "coop-same-origin-repeated.asis": [
        "082478e1599eb8974319a31334e41f46ab0fb91d",
+       []
+      ],
+      "csp-sandbox.py": [
+       "ed415c431eca429be27ef883e44405160bd1e28f",
        []
       ],
       "iframe-popup.sub.html": [
@@ -337800,6 +337808,20 @@
        }
       ]
      ],
+     "coop-csp-sandbox-navigate.https.html": [
+      "bd3a55a2d8fdb046c66abb9da51abd433104dbe8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "coop-csp-sandbox.https.html": [
+      "259d484df2cbf708a14e7c73e1f6dedde3dbb732",
+      [
+       null,
+       {}
+      ]
+     ],
      "coop-navigated-history-popup.https.html": [
       "a061be992c1aa05ba8b0c1290f3562ab9a88904e",
       [
@@ -341076,6 +341098,13 @@
        ],
        "fieldset-multicol.html": [
         "bdb2c2fd94686b502ed5a663b1026180283af22f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "fieldset-overflow-cssomview.html": [
+        "c47c7cdd5d51c1fd9f508f927d1a2293af0dfcbb",
         [
          null,
          {}
