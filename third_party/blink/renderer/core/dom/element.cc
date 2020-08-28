@@ -356,8 +356,7 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
   }
 
   if (style.IsDeprecatedWebkitBox() &&
-      (!style.IsDeprecatedWebkitBoxWithVerticalLineClamp() ||
-       !RuntimeEnabledFeatures::BlockFlowHandlesWebkitLineClampEnabled())) {
+      !style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
     UseCounter::Count(
         document, WebFeature::kLegacyLayoutByWebkitBoxWithoutVerticalLineClamp);
     return true;

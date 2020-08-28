@@ -110,7 +110,6 @@ LayoutBlock* LayoutObjectFactory::CreateBlockForLineClamp(
     Node& node,
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  DCHECK(RuntimeEnabledFeatures::BlockFlowHandlesWebkitLineClampEnabled());
   return CreateObject<LayoutBlock, LayoutNGBlockFlow,
                       LayoutDeprecatedFlexibleBox>(node, style, legacy);
 }

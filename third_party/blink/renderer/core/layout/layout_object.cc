@@ -268,19 +268,14 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return LayoutObjectFactory::CreateTableCaption(*element, style, legacy);
     case EDisplay::kWebkitBox:
     case EDisplay::kWebkitInlineBox:
-      if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp() &&
-          RuntimeEnabledFeatures::BlockFlowHandlesWebkitLineClampEnabled()) {
+      if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
         return LayoutObjectFactory::CreateBlockForLineClamp(*element, style,
                                                             legacy);
       }
-      if (style.IsDeprecatedFlexboxUsingFlexLayout()) {
-        UseCounter::Count(element->GetDocument(),
-                          WebFeature::kLegacyLayoutByFlexBox);
-        return new LayoutFlexibleBox(element);
-      }
+
       UseCounter::Count(element->GetDocument(),
-                        WebFeature::kLegacyLayoutByDeprecatedFlexBox);
-      return new LayoutDeprecatedFlexibleBox(element);
+                        WebFeature::kLegacyLayoutByFlexBox);
+      return new LayoutFlexibleBox(element);
     case EDisplay::kFlex:
     case EDisplay::kInlineFlex:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSFlexibleBox);

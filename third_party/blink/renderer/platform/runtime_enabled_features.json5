@@ -265,10 +265,6 @@
       status: "stable",
     },
     {
-      name: "BlockFlowHandlesWebkitLineClamp",
-      status: "stable",
-    },
-    {
       name: "BlockHTMLParserOnStyleSheets",
     },
     {
