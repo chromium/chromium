@@ -95,8 +95,8 @@ TEST_F(DeviceSyncRemoteDeviceLoaderTest, LoadZeroDevices) {
 
   EXPECT_CALL(*this, LoadCompleted());
   loader.Load(
-      base::Bind(&DeviceSyncRemoteDeviceLoaderTest::OnRemoteDevicesLoaded,
-                 base::Unretained(this)));
+      base::BindOnce(&DeviceSyncRemoteDeviceLoaderTest::OnRemoteDevicesLoaded,
+                     base::Unretained(this)));
 
   EXPECT_EQ(0u, remote_devices_.size());
 }
@@ -109,8 +109,8 @@ TEST_F(DeviceSyncRemoteDeviceLoaderTest, LoadOneDevice) {
 
   EXPECT_CALL(*this, LoadCompleted());
   loader.Load(
-      base::Bind(&DeviceSyncRemoteDeviceLoaderTest::OnRemoteDevicesLoaded,
-                 base::Unretained(this)));
+      base::BindOnce(&DeviceSyncRemoteDeviceLoaderTest::OnRemoteDevicesLoaded,
+                     base::Unretained(this)));
 
   EXPECT_EQ(1u, remote_devices_.size());
   EXPECT_FALSE(remote_devices_[0].persistent_symmetric_key.empty());
@@ -141,8 +141,8 @@ TEST_F(DeviceSyncRemoteDeviceLoaderTest, LastUpdateTimeMillis) {
 
   EXPECT_CALL(*this, LoadCompleted());
   loader.Load(
-      base::Bind(&DeviceSyncRemoteDeviceLoaderTest::OnRemoteDevicesLoaded,
-                 base::Unretained(this)));
+      base::BindOnce(&DeviceSyncRemoteDeviceLoaderTest::OnRemoteDevicesLoaded,
+                     base::Unretained(this)));
 
   EXPECT_EQ(2u, remote_devices_.size());
 
@@ -174,8 +174,8 @@ TEST_F(DeviceSyncRemoteDeviceLoaderTest, SoftwareFeatures) {
 
   EXPECT_CALL(*this, LoadCompleted());
   loader.Load(
-      base::Bind(&DeviceSyncRemoteDeviceLoaderTest::OnRemoteDevicesLoaded,
-                 base::Unretained(this)));
+      base::BindOnce(&DeviceSyncRemoteDeviceLoaderTest::OnRemoteDevicesLoaded,
+                     base::Unretained(this)));
 
   EXPECT_EQ(1u, remote_devices_.size());
 

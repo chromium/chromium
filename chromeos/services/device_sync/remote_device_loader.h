@@ -66,9 +66,9 @@ class RemoteDeviceLoader {
   virtual ~RemoteDeviceLoader();
 
   // Loads the RemoteDevice objects. |callback| will be invoked upon completion.
-  typedef base::Callback<void(const multidevice::RemoteDeviceList&)>
+  typedef base::OnceCallback<void(const multidevice::RemoteDeviceList&)>
       RemoteDeviceCallback;
-  virtual void Load(const RemoteDeviceCallback& callback);
+  virtual void Load(RemoteDeviceCallback callback);
 
  private:
   // Called when the PSK is derived for each device. If the PSKs for all devices
