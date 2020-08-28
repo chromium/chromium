@@ -10,8 +10,8 @@ Polymer({
   is: 'settings-ambient-mode-page',
 
   behaviors: [
-    I18nBehavior, PrefsBehavior, settings.RouteObserverBehavior,
-    WebUIListenerBehavior
+    DeepLinkingBehavior, I18nBehavior, PrefsBehavior,
+    settings.RouteObserverBehavior, WebUIListenerBehavior
   ],
 
   properties: {
@@ -57,6 +57,18 @@ Polymer({
       value: AmbientModeTemperatureUnit.UNKNOWN,
       observer: 'onSelectedTemperatureUnitChanged_'
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kAmbientModeOnOff,
+        chromeos.settings.mojom.Setting.kAmbientModeSource,
+      ]),
+    },
   },
 
   listeners: {
@@ -89,6 +101,33 @@ Polymer({
   },
 
   /**
+   * Overridden from DeepLinkingBehavior.
+   * @param {!chromeos.settings.mojom.Setting} settingId
+   */
+  beforeDeepLinkAttempt(settingId) {
+    if (settingId !== chromeos.settings.mojom.Setting.kAmbientModeSource) {
+      // Continue with deep link attempt.
+      return true;
+    }
+
+    // Wait for element to load.
+    Polymer.RenderStatus.afterNextRender(this, () => {
+      Polymer.dom.flush();
+
+      const topicList = this.$$('topic-source-list');
+      const listItem = topicList && topicList.$$('topic-source-item');
+      if (listItem) {
+        this.showDeepLinkElement(listItem);
+        return;
+      }
+
+      console.warn(`Element with deep link id ${settingId} not focusable.`);
+    });
+    // Stop deep link attempt since we completed it manually.
+    return false;
+  },
+
+  /**
    * RouteObserverBehavior
    * @param {!settings.Route} currentRoute
    * @protected
@@ -99,6 +138,7 @@ Polymer({
     }
 
     this.browserProxy_.requestSettings();
+    this.attemptDeepLink();
   },
 
   /**

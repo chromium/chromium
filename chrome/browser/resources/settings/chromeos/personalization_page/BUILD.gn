@@ -18,8 +18,10 @@ js_type_check("closure_compile") {
 js_library("change_picture") {
   deps = [
     ":change_picture_browser_proxy",
+    "..:deep_linking_behavior",
     "..:metrics_recorder",
     "..:os_route",
+    "../..:router",
     "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
     "//third_party/polymer/v1_0/components-chromium/iron-selector:iron-selector-extracted",
     "//ui/webui/resources/cr_elements/chromeos/cr_picture:cr_picture_list",
@@ -40,6 +42,7 @@ js_library("change_picture_browser_proxy") {
 js_library("personalization_page") {
   deps = [
     ":wallpaper_browser_proxy",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "../../prefs",
@@ -68,6 +71,7 @@ js_library("change_picture.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/change_picture.m.js" ]
   deps = [
     ":change_picture_browser_proxy.m",
+    "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:router.m",
@@ -96,6 +100,7 @@ js_library("personalization_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/personalization_page.m.js" ]
   deps = [
     ":wallpaper_browser_proxy.m",
+    "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router.m",
     "../../prefs:prefs.m",
@@ -129,7 +134,7 @@ polymer_modulizer("change_picture") {
   namespace_rewrites = os_settings_namespace_rewrites +
                        [ "Polymer.IronA11yAnnouncer|IronA11yAnnouncer" ]
   auto_imports = os_settings_auto_imports + [
-                   "ui/webui/resources/html/assert.html|assertNotReached",
+                   "ui/webui/resources/html/assert.html|assert,assertNotReached",
                    "ui/webui/resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.html|IronA11yAnnouncer",
                  ]
 }

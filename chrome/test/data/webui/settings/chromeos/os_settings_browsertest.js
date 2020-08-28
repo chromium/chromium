@@ -235,10 +235,15 @@ var OSSettingsAmbientModePageTest = class extends OSSettingsBrowserTest {
   get extraLibraries() {
     return super.extraLibraries.concat([
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'ambient_mode_page_test.js',
     ]);
   }
 };
+
+TEST_F('OSSettingsAmbientModePageTest', 'AllJsTests', () => {
+  mocha.run();
+});
 
 // Tests for ambient mode photos page.
 // eslint-disable-next-line no-var
@@ -1379,15 +1384,27 @@ var OSSettingsPersonalizationPageTest = class extends OSSettingsBrowserTest {
     return super.extraLibraries.concat([
       '//ui/webui/resources/js/promise_resolver.js',
       BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       BROWSER_SETTINGS_PATH + 'chromeos/test_wallpaper_browser_proxy.js',
       'personalization_page_test.js',
     ]);
   }
 };
 
-TEST_F('OSSettingsPersonalizationPageTest', 'AllJsTests', () => {
-  mocha.run();
+TEST_F('OSSettingsPersonalizationPageTest', 'AllBuilds', () => {
+  mocha.grep('/^(?!PersonalizationTest_ReleaseOnly).*$/').run();
 });
+
+// This V3 test fails in debug mode, so run only on release builds. Suspected to
+// be a synchronization issue as this test passes if run by itself.
+// https://crbug.com/1122752
+GEN('#if defined(NDEBUG) && BUILDFLAG(OPTIMIZE_WEBUI)');
+TEST_F(
+    'OSSettingsPersonalizationPageTest', 'PersonalizationTest_ReleaseOnly',
+    () => {
+      mocha.grep('PersonalizationTest_ReleaseOnly').run();
+    });
+GEN('#endif');
 
 // Tests for the CUPS printer entry.
 // eslint-disable-next-line no-var

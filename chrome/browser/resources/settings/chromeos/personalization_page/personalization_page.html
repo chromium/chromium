@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="change_picture.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../i18n_setup.html">
@@ -28,7 +29,8 @@
             hidden="[[!showWallpaperRow_]]"
             on-click="openWallpaperManager_" label="$i18n{setWallpaper}"
             sub-label="$i18n{openWallpaperApp}"
-            disabled="[[isWallpaperPolicyControlled_]]" external>
+            disabled="[[isWallpaperPolicyControlled_]]" external
+            deep-link-focus-id$="[[Setting.kOpenWallpaper]]">
           <template is="dom-if" if="[[isWallpaperPolicyControlled_]]">
             <cr-policy-indicator id="wallpaperPolicyIndicator"
                 indicator-type="devicePolicy">

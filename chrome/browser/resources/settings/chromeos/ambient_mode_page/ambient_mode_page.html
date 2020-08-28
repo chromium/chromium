@@ -8,6 +8,7 @@
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="constants.html">
 <link rel="import" href="topic_source_list.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../prefs/prefs.html">
@@ -61,7 +62,8 @@
         class="primary-toggle"
         pref="{{prefs.settings.ambient_mode.enabled}}"
         label="[[getAmbientModeOnOffLabel_(
-            prefs.settings.ambient_mode.enabled.value)]]">
+            prefs.settings.ambient_mode.enabled.value)]]"
+        deep-link-focus-id$="[[Setting.kAmbientModeOnOff]]">
     </settings-toggle-button>
 
     <template is="dom-if" if="[[prefs.settings.ambient_mode.enabled.value]]">
