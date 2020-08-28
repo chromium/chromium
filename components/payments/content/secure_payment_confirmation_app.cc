@@ -21,6 +21,7 @@
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
 #include "content/public/common/content_features.h"
+#include "crypto/sha2.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -30,6 +31,50 @@ namespace payments {
 namespace {
 
 static constexpr int kDefaultTimeoutMinutes = 3;
+
+// Creates a SHA-256 hash over the Secure Payment Confirmation bundle, which is
+// a JSON string (without whitespace) with the following structure:
+//   {
+//     "merchantData" {
+//       "merchantOrigin": "https://merchant.example",
+//       "total": {
+//         "currency": "CAD",
+//         "value": "1.25",
+//        },
+//     },
+//     "networkData": "YW=",
+//   }
+// where "networkData" is the base64 encoding of the |networkData| specified in
+// the SecurePaymentConfirmationRequest.
+std::vector<uint8_t> GetSecurePaymentConfirmationChallenge(
+    const std::vector<uint8_t>& network_data,
+    const url::Origin& merchant_origin,
+    const mojom::PaymentCurrencyAmountPtr& amount) {
+  base::Value total(base::Value::Type::DICTIONARY);
+  total.SetKey("currency", base::Value(amount->currency));
+  total.SetKey("value", base::Value(amount->value));
+
+  base::Value merchant_data(base::Value::Type::DICTIONARY);
+  merchant_data.SetKey("merchantOrigin",
+                       base::Value(merchant_origin.Serialize()));
+  merchant_data.SetKey("total", std::move(total));
+
+  base::Value transaction_data(base::Value::Type::DICTIONARY);
+  transaction_data.SetKey("networkData",
+                          base::Value(base::Base64Encode(network_data)));
+  transaction_data.SetKey("merchantData", std::move(merchant_data));
+
+  // TODO(crbug.com/1123054): change to a more robust alternative that does not
+  // depend on the exact whitespace, escaping and ordering of the JSON
+  // serialization.
+  std::string json;
+  bool success = base::JSONWriter::Write(transaction_data, &json);
+  DCHECK(success) << "Failed to write JSON for " << transaction_data;
+
+  std::string sha256_hash = crypto::SHA256HashString(json);
+  std::vector<uint8_t> output_bytes(sha256_hash.begin(), sha256_hash.end());
+  return output_bytes;
+}
 
 }  // namespace
 
@@ -84,9 +129,9 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(Delegate* delegate) {
 
   options->allow_credentials = std::move(credentials);
 
-  // TODO(https://crbug.com/1110324): Combine |merchant_origin_|, |total_|, and
-  // |request_->network_data| into a challenge to invoke the authenticator.
-  options->challenge = request_->network_data;
+  // Create a new challenge that is a hash of the transaction data.
+  options->challenge = GetSecurePaymentConfirmationChallenge(
+      request_->network_data, merchant_origin_, total_);
 
   // We are nullifying the security check by design, and the origin that created
   // the credential isn't saved anywhere.

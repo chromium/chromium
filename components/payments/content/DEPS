@@ -11,6 +11,7 @@ include_rules = [
   "+components/url_formatter",
   "+components/webdata/common",
   "+content/public",
+  "+crypto",
   "+device/fido",
   "+mojo/public/cpp",
   "+net",
