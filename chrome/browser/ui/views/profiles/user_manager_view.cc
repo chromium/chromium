@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -167,6 +169,18 @@ void UserManager::Show(
     profiles::UserManagerAction user_manager_action) {
   DCHECK(profile_path_to_focus != ProfileManager::GetGuestProfilePath());
 
+  if (!signin_util::IsForceSigninEnabled() &&
+      (user_manager_action == profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION ||
+       user_manager_action == profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE) &&
+      base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+    // Use the new profile picker instead.
+    ProfilePicker::Show(user_manager_action ==
+                                profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE
+                            ? ProfilePicker::Page::kAddNewProfile
+                            : ProfilePicker::Page::kManageProfiles);
+    return;
+  }
+
   if (g_user_manager_view) {
     // If we are showing the User Manager after locking a profile, change the
     // active profile to Guest.
@@ -205,6 +219,9 @@ void UserManager::Show(
 
 // static
 void UserManager::Hide() {
+  // Hide the profile picker, in case it was opened by UserManager::Show().
+  ProfilePicker::Hide();
+
   if (g_user_manager_view)
     g_user_manager_view->GetWidget()->Close();
 }

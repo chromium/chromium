@@ -20,6 +20,9 @@ class ProfilePicker {
   // Hides the profile picker.
   static void Hide();
 
+  // Returns whether the profile picker is currently open.
+  static bool IsOpen();
+
  private:
   DISALLOW_COPY_AND_ASSIGN(ProfilePicker);
 };

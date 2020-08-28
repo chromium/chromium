@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -60,6 +61,9 @@ void DeleteProfileCallback(std::unique_ptr<ScopedKeepAlive> keep_alive,
 
 void OpenNewWindowForProfile(Profile* profile) {
   if (profiles::IsProfileLocked(profile->GetPath())) {
+    // The profile picker does not support locked profiles.
+    DCHECK(!ProfilePicker::IsOpen());
+
     if (signin_util::IsForceSigninEnabled()) {
       // If force-sign-in policy is enabled, UserManager will be displayed
       // without any sign-in dialog opened.
@@ -68,11 +72,18 @@ void OpenNewWindowForProfile(Profile* profile) {
       ShowUserManager(
           base::Bind(&ShowUnlockDialog, GetProfileUserName(profile)));
     }
-  } else {
-    profiles::FindOrCreateNewWindowForProfile(
-        profile, chrome::startup::IS_PROCESS_STARTUP,
-        chrome::startup::IS_FIRST_RUN, false);
+    return;
   }
+
+  if (ProfilePicker::IsOpen()) {
+    // If the profile picker is open, do not open a new browser automatically.
+    ProfilePicker::Show();
+    return;
+  }
+
+  profiles::FindOrCreateNewWindowForProfile(
+      profile, chrome::startup::IS_PROCESS_STARTUP,
+      chrome::startup::IS_FIRST_RUN, false);
 }
 
 void DeleteProfileAtPath(base::FilePath file_path,
