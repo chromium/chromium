@@ -38,11 +38,11 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/control_service.h"
 #include "chrome/updater/installer.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/update_service_in_process.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/win/install_progress_observer.h"
 #include "chrome/updater/win/setup/setup.h"
@@ -50,7 +50,6 @@
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/splash_screen.h"
 #include "chrome/updater/win/ui/util.h"
-#include "chrome/updater/win/update_service_out_of_process.h"
 #include "chrome/updater/win/util.h"
 #include "components/prefs/pref_service.h"
 
@@ -754,16 +753,25 @@ void AppInstall::SetupDone(int result) {
 void AppInstall::HandleAppId() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto app_id =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kAppIdSwitch);
-  if (app_id.empty()) {
-    Shutdown(0);
-    return;
-  }
-
   // This releases the prefs lock, and the RPC server can be started.
   global_prefs_ = nullptr;
   local_prefs_ = nullptr;
+
+  // If no app id is provided, then invoke ControlService::Run to wake
+  // this version of the updater, to do an update check, and possibly promote
+  // it as a result.
+  const std::string app_id =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(kAppIdSwitch);
+  if (app_id.empty()) {
+    // The instance of |CreateControlService| has sequence affinity. Bind it
+    // in the closure to ensure it is released in this sequence.
+    scoped_refptr<ControlService> control_service = CreateControlService();
+    control_service->Run(base::BindOnce(
+        [](scoped_refptr<ControlService> /*control_service*/,
+           scoped_refptr<AppInstall> app_install) { app_install->Shutdown(0); },
+        control_service, base::WrapRefCounted(this)));
+    return;
+  }
 
   app_install_controller_ = base::MakeRefCounted<AppInstallController>();
   app_install_controller_->InstallApp(
