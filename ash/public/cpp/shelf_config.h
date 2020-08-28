@@ -9,6 +9,7 @@
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/macros.h"
@@ -197,6 +198,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Uses alpha value from the provided base_color, returns base_color unchanged
   // if the wallpaper can not be used to generate a themed color.
   SkColor GetThemedColorFromWallpaper(SkColor base_color) const;
+
+  // Gets the base layer type for shelf color.
+  AshColorProvider::BaseLayerType GetShelfBaseLayerType() const;
 
   // Gets the default shelf color, calculated using the wallpaper color if
   // available.

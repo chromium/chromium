@@ -486,6 +486,24 @@ SkColor ShelfConfig::GetThemedColorFromWallpaper(SkColor base_color) const {
   return SkColorSetA(base_color, base_alpha);
 }
 
+AshColorProvider::BaseLayerType ShelfConfig::GetShelfBaseLayerType() const {
+  if (!chromeos::switches::ShouldShowShelfHotseat()) {
+    return in_tablet_mode_ ? AshColorProvider::BaseLayerType::kTransparent60
+                           : AshColorProvider::BaseLayerType::kTransparent80;
+  }
+
+  if (in_tablet_mode_) {
+    if (is_in_app()) {
+      return AshColorProvider::Get()->color_mode() ==
+                     AshColorProvider::AshColorMode::kLight
+                 ? AshColorProvider::BaseLayerType::kOpaque
+                 : AshColorProvider::BaseLayerType::kTransparent90;
+    }
+    return AshColorProvider::BaseLayerType::kTransparent60;
+  }
+  return AshColorProvider::BaseLayerType::kTransparent80;
+}
+
 SkColor ShelfConfig::GetDefaultShelfColor() const {
   if (!features::IsBackgroundBlurEnabled()) {
     return GetThemedColorFromWallpaper(
@@ -494,17 +512,7 @@ SkColor ShelfConfig::GetDefaultShelfColor() const {
             AshColorProvider::AshColorMode::kDark));
   }
 
-  AshColorProvider::BaseLayerType layer_type;
-  if (!chromeos::switches::ShouldShowShelfHotseat()) {
-    layer_type = in_tablet_mode_
-                     ? AshColorProvider::BaseLayerType::kTransparent60
-                     : AshColorProvider::BaseLayerType::kTransparent80;
-  } else if (in_tablet_mode_) {
-    layer_type = is_in_app() ? AshColorProvider::BaseLayerType::kTransparent90
-                             : AshColorProvider::BaseLayerType::kTransparent60;
-  } else {
-    layer_type = AshColorProvider::BaseLayerType::kTransparent80;
-  }
+  AshColorProvider::BaseLayerType layer_type = GetShelfBaseLayerType();
 
   SkColor final_color = AshColorProvider::Get()->GetBaseLayerColor(
       layer_type, AshColorProvider::AshColorMode::kDark);
