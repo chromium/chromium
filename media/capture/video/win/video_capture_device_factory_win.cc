@@ -13,6 +13,8 @@
 #include <wrl.h>
 #include <wrl/client.h>
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -61,6 +63,10 @@ const wchar_t* kVideoAndSensorCamerasAqsString =
     L"System.Devices.InterfaceClassGuid:="
     L"\"{24e552d7-6523-47f7-a647-d3465bf1f5ca}\" AND "
     L"System.Devices.InterfaceEnabled:=System.StructuredQueryType.Boolean#True";
+
+// Class GUID for KSCATEGORY_VIDEO_CAMERA. Only devices from that category will
+// contain this GUID in their |device_id|.
+const char kVideoCameraGuid[] = "e5323777-f976-4f5b-9b55-b94699c46e44";
 
 // Avoid enumerating and/or using certain devices due to they provoking crashes
 // or any other reason (http://crbug.com/378494). This enum is defined for the
@@ -269,6 +275,25 @@ bool IsEnclosureLocationSupported() {
   }
 
   return true;
+}
+
+void FindAndSetDefaultVideoCamera(
+    std::vector<VideoCaptureDeviceInfo>* devices_info) {
+  // When available, the default video camera should be external with
+  // MEDIA_VIDEO_FACING_NONE. Otherwise, it should be internal with
+  // MEDIA_VIDEO_FACING_USER. It occupies the first index in |devices_info|.
+  for (auto it = devices_info->begin(); it != devices_info->end(); ++it) {
+    // Default video camera belongs to KSCATEGORY_VIDEO_CAMERA.
+    if (it->descriptor.device_id.find(kVideoCameraGuid) != std::string::npos) {
+      if (it->descriptor.facing == VideoFacingMode::MEDIA_VIDEO_FACING_NONE) {
+        std::iter_swap(devices_info->begin(), it);
+        break;  // Stop iterating once an external video camera is found.
+      } else if (it->descriptor.facing ==
+                 VideoFacingMode::MEDIA_VIDEO_FACING_USER) {
+        std::iter_swap(devices_info->begin(), it);
+      }
+    }
+  }
 }
 
 }  // namespace
@@ -644,6 +669,8 @@ void VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP(
       }
     }
   }
+
+  FindAndSetDefaultVideoCamera(&devices_info);
 
   origin_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureDeviceFactoryWin::DeviceInfoReady,
