@@ -490,13 +490,17 @@ void VideoRendererImpl::SetLatencyHint(
         << "Video latency hint set:" << *latency_hint << ". "
         << "Effective buffering latency: 1 frame";
   } else {
-    // Non-zero latency hints are set here. This method will also be called
-    // for each frame in case |average_frame_druation| changes, facilitating
-    // re-computation of how many frames we should buffer to achieve the target
-    // latency. |is_latency_hint_media_logged_| ensures that we only MEDIA_LOG
-    // on the first application of this hint.
+    // Non-zero latency hints are set here. Update buffering caps immediately if
+    // we already have an algorithm_. Otherwise, the update will be applied as
+    // frames arrive and duration becomes known. The caps will be recalculated
+    // for each frame in case |average_frame_druation| changes.
+    // |is_latency_hint_media_logged_| ensures that we only MEDIA_LOG on the
+    // first application of this hint.
     is_latency_hint_media_logged_ = false;
-    UpdateLatencyHintBufferingCaps_Locked(algorithm_->average_frame_duration());
+    if (algorithm_) {
+      UpdateLatencyHintBufferingCaps_Locked(
+          algorithm_->average_frame_duration());
+    }
   }
 }
 

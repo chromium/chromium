@@ -1497,8 +1497,6 @@ TEST_F(VideoRendererLatencyHintTest, HaveEnough_LowLatencyHint) {
 
 // Test late HaveEnough transition when high latency hint is set.
 TEST_F(VideoRendererLatencyHintTest, HaveEnough_HighLatencyHint) {
-  Initialize();
-
   // We must provide a |buffer_duration_| for the latencyHint to take effect
   // immediately. The VideoRendererAlgorithm will eventually provide a PTS-delta
   // duration, but not until after we've started rendering.
@@ -1506,6 +1504,12 @@ TEST_F(VideoRendererLatencyHintTest, HaveEnough_HighLatencyHint) {
 
   // Set latencyHint to a large value.
   renderer_->SetLatencyHint(base::TimeDelta::FromMilliseconds(400));
+
+  // NOTE: other tests will SetLatencyHint after Initialize(). Either way should
+  // work. Initializing later is especially interesting for "high" hints because
+  // the renderer will try to set buffering caps based on stream state that
+  // isn't yet available.
+  Initialize();
 
   // Initial frames should trigger various callbacks.
   EXPECT_CALL(mock_cb_, FrameReceived(HasTimestampMatcher(0)));
