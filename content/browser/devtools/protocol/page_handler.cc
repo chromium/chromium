@@ -75,7 +75,7 @@ constexpr const char* kMhtml = "mhtml";
 constexpr const char* kPng = "png";
 constexpr const char* kJpeg = "jpeg";
 constexpr int kDefaultScreenshotQuality = 80;
-constexpr int kFrameRetryDelayMs = 20;
+constexpr int kFrameRetryDelayMs = 10;
 constexpr int kCaptureRetryLimit = 2;
 constexpr int kMaxScreencastFramesInFlight = 10;
 
