@@ -18,7 +18,8 @@ namespace blink {
 
 bool FeatureAvailable(const String& feature, ExecutionContext* ec) {
   return GetDefaultFeatureNameMap().Contains(feature) &&
-         (!DisabledByOriginTrial(feature, ec));
+         (!DisabledByOriginTrial(feature, ec)) &&
+         (!IsFeatureForMeasurementOnly(GetDefaultFeatureNameMap().at(feature)));
 }
 
 DOMFeaturePolicy::DOMFeaturePolicy(ExecutionContext* context)

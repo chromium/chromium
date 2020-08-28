@@ -607,6 +607,10 @@ void DisallowFeature(mojom::blink::FeaturePolicyFeature feature,
   DisallowFeatureIfNotPresent(feature, policy);
 }
 
+bool IsFeatureForMeasurementOnly(mojom::blink::FeaturePolicyFeature feature) {
+  return feature == mojom::blink::FeaturePolicyFeature::kWebShare;
+}
+
 void AllowFeatureEverywhere(mojom::blink::FeaturePolicyFeature feature,
                             ParsedFeaturePolicy& policy) {
   RemoveFeatureIfPresent(feature, policy);
@@ -616,8 +620,10 @@ void AllowFeatureEverywhere(mojom::blink::FeaturePolicyFeature feature,
 const Vector<String> GetAvailableFeatures(ExecutionContext* execution_context) {
   Vector<String> available_features;
   for (const auto& feature : GetDefaultFeatureNameMap()) {
-    if (!DisabledByOriginTrial(feature.key, execution_context))
+    if (!DisabledByOriginTrial(feature.key, execution_context) &&
+        !IsFeatureForMeasurementOnly(feature.value)) {
       available_features.push_back(feature.key);
+    }
   }
   return available_features;
 }
