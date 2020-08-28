@@ -103,21 +103,27 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // Force-installs the CRX file |crx_path|; under the hood, generates an update
   // manifest and serves it and the CRX file by the embedded test server.
   // |extension_id| - if non-null, will be set to the installed extension ID.
+  // |extension_version| - if non-null, will be set to the installed extension
+  // version.
   bool ForceInstallFromCrx(const base::FilePath& crx_path,
                            WaitMode wait_mode,
-                           extensions::ExtensionId* extension_id = nullptr);
+                           extensions::ExtensionId* extension_id = nullptr,
+                           base::Version* extension_version = nullptr);
   // Force-installs the extension from the given source directory (which should
   // contain the manifest.json file and all other files of the extension).
   // Under the hood, packs the directory into a CRX file and serves it like
   // ForceInstallFromCrx().
   // |pem_path| - if non-empty, will be used to load the private key for packing
-  // the extension; when empty, a random key will be generated. |extension_id| -
-  // if non-null, will be set to the installed extension ID.
+  // the extension; when empty, a random key will be generated.
+  // |extension_id| - if non-null, will be set to the installed extension ID.
+  // |extension_version| - if non-null, will be set to the installed extension
+  // version.
   bool ForceInstallFromSourceDir(
       const base::FilePath& extension_dir_path,
       const base::Optional<base::FilePath>& pem_path,
       WaitMode wait_mode,
-      extensions::ExtensionId* extension_id = nullptr);
+      extensions::ExtensionId* extension_id = nullptr,
+      base::Version* extension_version = nullptr);
 
   // Returns the extension, or null if it's not installed yet.
   const extensions::Extension* GetInstalledExtension(

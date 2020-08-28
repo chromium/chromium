@@ -398,7 +398,8 @@ void ExtensionForceInstallMixin::InitWithDevicePolicyCrosTestHelper(
 bool ExtensionForceInstallMixin::ForceInstallFromCrx(
     const base::FilePath& crx_path,
     WaitMode wait_mode,
-    extensions::ExtensionId* extension_id) {
+    extensions::ExtensionId* extension_id,
+    base::Version* extension_version) {
   DCHECK(profile_) << "Init not called";
   DCHECK(embedded_test_server_.Started()) << "Called before setup";
 
@@ -407,10 +408,14 @@ bool ExtensionForceInstallMixin::ForceInstallFromCrx(
     return false;
   if (extension_id)
     *extension_id = local_extension_id;
-  base::Version extension_version;
-  return ParseCrxInnerData(crx_path, &extension_version) &&
-         ServeExistingCrx(crx_path, local_extension_id, extension_version) &&
-         ForceInstallFromServedCrx(local_extension_id, extension_version,
+  base::Version local_extension_version;
+  if (!ParseCrxInnerData(crx_path, &local_extension_version))
+    return false;
+  if (extension_version)
+    *extension_version = local_extension_version;
+  return ServeExistingCrx(crx_path, local_extension_id,
+                          local_extension_version) &&
+         ForceInstallFromServedCrx(local_extension_id, local_extension_version,
                                    wait_mode);
 }
 
@@ -418,21 +423,24 @@ bool ExtensionForceInstallMixin::ForceInstallFromSourceDir(
     const base::FilePath& extension_dir_path,
     const base::Optional<base::FilePath>& pem_path,
     WaitMode wait_mode,
-    extensions::ExtensionId* extension_id) {
+    extensions::ExtensionId* extension_id,
+    base::Version* extension_version) {
   DCHECK(profile_) << "Init not called";
   DCHECK(embedded_test_server_.Started()) << "Called before setup";
 
-  base::Version extension_version;
-  if (!ParseExtensionManifestData(extension_dir_path, &extension_version))
+  base::Version local_extension_version;
+  if (!ParseExtensionManifestData(extension_dir_path, &local_extension_version))
     return false;
+  if (extension_version)
+    *extension_version = local_extension_version;
   extensions::ExtensionId local_extension_id;
-  if (!CreateAndServeCrx(extension_dir_path, pem_path, extension_version,
+  if (!CreateAndServeCrx(extension_dir_path, pem_path, local_extension_version,
                          &local_extension_id)) {
     return false;
   }
   if (extension_id)
     *extension_id = local_extension_id;
-  return ForceInstallFromServedCrx(local_extension_id, extension_version,
+  return ForceInstallFromServedCrx(local_extension_id, local_extension_version,
                                    wait_mode);
 }
 
