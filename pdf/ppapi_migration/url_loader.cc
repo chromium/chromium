@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
 #include "pdf/ppapi_migration/callback.h"
 #include "ppapi/c/pp_errors.h"
@@ -18,13 +19,28 @@
 #include "ppapi/cpp/url_loader.h"
 #include "ppapi/cpp/url_request_info.h"
 #include "ppapi/cpp/url_response_info.h"
+#include "ppapi/cpp/var.h"
 
 namespace chrome_pdf {
 
-UrlLoader::UrlLoader() = default;
+UrlRequest::UrlRequest() = default;
+UrlRequest::UrlRequest(const UrlRequest& other) = default;
+UrlRequest::UrlRequest(UrlRequest&& other) noexcept = default;
+UrlRequest& UrlRequest::operator=(const UrlRequest& other) = default;
+UrlRequest& UrlRequest::operator=(UrlRequest&& other) noexcept = default;
+UrlRequest::~UrlRequest() = default;
+
+UrlResponse::UrlResponse() = default;
+UrlResponse::UrlResponse(const UrlResponse& other) = default;
+UrlResponse::UrlResponse(UrlResponse&& other) noexcept = default;
+UrlResponse& UrlResponse::operator=(const UrlResponse& other) = default;
+UrlResponse& UrlResponse::operator=(UrlResponse&& other) noexcept = default;
+UrlResponse::~UrlResponse() = default;
+
+UrlLoader::UrlLoader() : plugin_instance_(0) {}
 
 UrlLoader::UrlLoader(pp::InstanceHandle plugin_instance)
-    : pepper_loader_(plugin_instance) {}
+    : plugin_instance_(plugin_instance), pepper_loader_(plugin_instance) {}
 
 UrlLoader::~UrlLoader() = default;
 
@@ -37,11 +53,27 @@ void UrlLoader::GrantUniversalAccess() {
     trusted_interface->GrantUniversalAccess(pepper_loader_.pp_resource());
 }
 
-void UrlLoader::Open(const pp::URLRequestInfo& request_info,
-                     ResultCallback callback) {
-  pp::CompletionCallback pp_callback =
-      PPCompletionCallbackFromResultCallback(std::move(callback));
-  int32_t result = pepper_loader_.Open(request_info, pp_callback);
+void UrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
+  pp::URLRequestInfo pp_request(plugin_instance_);
+  pp_request.SetURL(request.url);
+  pp_request.SetMethod(request.method);
+
+  if (request.ignore_redirects)
+    pp_request.SetFollowRedirects(false);
+
+  if (request.custom_referrer_url.has_value())
+    pp_request.SetCustomReferrerURL(request.custom_referrer_url.value());
+
+  if (request.headers.has_value())
+    pp_request.SetHeaders(request.headers.value());
+
+  if (!request.body.empty())
+    pp_request.AppendDataToBody(request.body.data(), request.body.size());
+
+  pp::CompletionCallback pp_callback = PPCompletionCallbackFromResultCallback(
+      base::BindOnce(&UrlLoader::DidOpen, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+  int32_t result = pepper_loader_.Open(pp_request, pp_callback);
   if (result != PP_OK_COMPLETIONPENDING)
     pp_callback.Run(result);
 }
@@ -50,10 +82,6 @@ bool UrlLoader::GetDownloadProgress(int64_t* bytes_received,
                                     int64_t* total_bytes_to_be_received) const {
   return pepper_loader_.GetDownloadProgress(bytes_received,
                                             total_bytes_to_be_received);
-}
-
-pp::URLResponseInfo UrlLoader::GetResponseInfo() const {
-  return pepper_loader_.GetResponseInfo();
 }
 
 void UrlLoader::ReadResponseBody(base::span<char> buffer,
@@ -68,6 +96,20 @@ void UrlLoader::ReadResponseBody(base::span<char> buffer,
 
 void UrlLoader::Close() {
   pepper_loader_.Close();
+}
+
+void UrlLoader::DidOpen(ResultCallback callback, int32_t result) {
+  pp::URLResponseInfo pp_response = pepper_loader_.GetResponseInfo();
+  response_.status_code = pp_response.GetStatusCode();
+
+  pp::Var headers_var = pp_response.GetHeaders();
+  if (headers_var.is_string()) {
+    response_.headers = headers_var.AsString();
+  } else {
+    response_.headers.reset();
+  }
+
+  std::move(callback).Run(result);
 }
 
 }  // namespace chrome_pdf

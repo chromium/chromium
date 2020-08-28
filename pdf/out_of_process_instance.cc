@@ -58,7 +58,6 @@
 #include "ppapi/cpp/rect.h"
 #include "ppapi/cpp/resource.h"
 #include "ppapi/cpp/size.h"
-#include "ppapi/cpp/url_request_info.h"
 #include "ppapi/cpp/var_array.h"
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
@@ -1443,10 +1442,10 @@ void OutOfProcessInstance::Print() {
 void OutOfProcessInstance::SubmitForm(const std::string& url,
                                       const void* data,
                                       int length) {
-  pp::URLRequestInfo request(this);
-  request.SetURL(url);
-  request.SetMethod("POST");
-  request.AppendDataToBody(reinterpret_cast<const char*>(data), length);
+  UrlRequest request;
+  request.url = url;
+  request.method = "POST";
+  request.body.assign(static_cast<const char*>(data), length);
 
   form_loader_ = CreateUrlLoaderInternal();
   form_loader_->Open(request, base::BindOnce(&OutOfProcessInstance::FormDidOpen,
@@ -2069,10 +2068,10 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
 
 void OutOfProcessInstance::LoadUrl(const std::string& url,
                                    bool is_print_preview) {
-  pp::URLRequestInfo request(this);
-  request.SetURL(url);
-  request.SetMethod("GET");
-  request.SetFollowRedirects(false);
+  UrlRequest request;
+  request.url = url;
+  request.method = "GET";
+  request.ignore_redirects = true;
 
   scoped_refptr<UrlLoader>& loader =
       is_print_preview ? embed_preview_loader_ : embed_loader_;

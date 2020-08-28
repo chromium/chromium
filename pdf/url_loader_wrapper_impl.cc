@@ -20,9 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "net/http/http_util.h"
 #include "pdf/ppapi_migration/url_loader.h"
-#include "ppapi/cpp/url_request_info.h"
-#include "ppapi/cpp/url_response_info.h"
-#include "ppapi/cpp/var.h"
 #include "ui/gfx/range/range.h"
 
 namespace chrome_pdf {
@@ -32,25 +29,22 @@ namespace {
 // We should read with delay to prevent block UI thread, and reduce CPU usage.
 constexpr base::TimeDelta kReadDelayMs = base::TimeDelta::FromMilliseconds(2);
 
-pp::URLRequestInfo MakeRangeRequest(pp::Instance* plugin_instance,
-                                    const std::string& url,
-                                    const std::string& referrer_url,
-                                    uint32_t position,
-                                    uint32_t size) {
-  pp::URLRequestInfo request(plugin_instance);
-  request.SetURL(url);
-  request.SetMethod("GET");
-  request.SetFollowRedirects(false);
-  request.SetCustomReferrerURL(referrer_url);
+UrlRequest MakeRangeRequest(const std::string& url,
+                            const std::string& referrer_url,
+                            uint32_t position,
+                            uint32_t size) {
+  UrlRequest request;
+  request.url = url;
+  request.method = "GET";
+  request.ignore_redirects = true;
+  request.custom_referrer_url = referrer_url;
 
   // According to rfc2616, byte range specifies position of the first and last
   // bytes in the requested range inclusively. Therefore we should subtract 1
   // from the position + size, to get index of the last byte that needs to be
   // downloaded.
-  std::string str_header =
+  request.headers =
       base::StringPrintf("Range: bytes=%d-%d", position, position + size - 1);
-  pp::Var header(str_header.c_str());
-  request.SetHeaders(header);
 
   return request;
 }
@@ -106,9 +100,8 @@ bool IsDoubleEndLineAtEnd(const char* buffer, int size) {
 
 }  // namespace
 
-URLLoaderWrapperImpl::URLLoaderWrapperImpl(pp::Instance* plugin_instance,
-                                           scoped_refptr<UrlLoader> url_loader)
-    : plugin_instance_(plugin_instance), url_loader_(std::move(url_loader)) {
+URLLoaderWrapperImpl::URLLoaderWrapperImpl(scoped_refptr<UrlLoader> url_loader)
+    : url_loader_(std::move(url_loader)) {
   SetHeadersFromLoader();
 }
 
@@ -136,7 +129,7 @@ std::string URLLoaderWrapperImpl::GetContentDisposition() const {
 }
 
 int URLLoaderWrapperImpl::GetStatusCode() const {
-  return url_loader_->GetResponseInfo().GetStatusCode();
+  return url_loader_->response().status_code;
 }
 
 bool URLLoaderWrapperImpl::IsMultipart() const {
@@ -167,7 +160,7 @@ void URLLoaderWrapperImpl::OpenRange(const std::string& url,
                                      uint32_t size,
                                      ResultCallback callback) {
   url_loader_->Open(
-      MakeRangeRequest(plugin_instance_, url, referrer_url, position, size),
+      MakeRangeRequest(url, referrer_url, position, size),
       base::BindOnce(&URLLoaderWrapperImpl::DidOpen, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
@@ -185,7 +178,7 @@ void URLLoaderWrapperImpl::ReadResponseBody(char* buffer,
 
 void URLLoaderWrapperImpl::ReadResponseBodyImpl(ResultCallback callback) {
   url_loader_->ReadResponseBody(
-      base::span<char>(buffer_, buffer_size_),
+      base::make_span(buffer_, buffer_size_),
       base::BindOnce(&URLLoaderWrapperImpl::DidRead, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }
@@ -299,10 +292,7 @@ void URLLoaderWrapperImpl::DidRead(ResultCallback callback, int32_t result) {
 }
 
 void URLLoaderWrapperImpl::SetHeadersFromLoader() {
-  pp::URLResponseInfo response = url_loader_->GetResponseInfo();
-  pp::Var headers_var = response.GetHeaders();
-
-  SetResponseHeaders(headers_var.is_string() ? headers_var.AsString() : "");
+  SetResponseHeaders(url_loader_->response().headers.value_or(""));
 }
 
 }  // namespace chrome_pdf

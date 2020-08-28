@@ -637,8 +637,8 @@ bool PDFiumEngine::HandleDocumentLoad(scoped_refptr<UrlLoader> loader) {
       base::FeatureList::IsEnabled(features::kPdfIncrementalLoading);
 
   if (!doc_loader_set_for_testing_) {
-    auto loader_wrapper = std::make_unique<URLLoaderWrapperImpl>(
-        GetPluginInstance(), std::move(loader));
+    auto loader_wrapper =
+        std::make_unique<URLLoaderWrapperImpl>(std::move(loader));
     loader_wrapper->SetResponseHeaders(headers_);
 
     doc_loader_ = std::make_unique<DocumentLoaderImpl>(this);
@@ -657,8 +657,7 @@ pp::Instance* PDFiumEngine::GetPluginInstance() {
 }
 
 std::unique_ptr<URLLoaderWrapper> PDFiumEngine::CreateURLLoader() {
-  return std::make_unique<URLLoaderWrapperImpl>(GetPluginInstance(),
-                                                client_->CreateUrlLoader());
+  return std::make_unique<URLLoaderWrapperImpl>(client_->CreateUrlLoader());
 }
 
 void PDFiumEngine::AppendPage(PDFEngine* engine, int index) {
