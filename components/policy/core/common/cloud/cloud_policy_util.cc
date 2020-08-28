@@ -81,9 +81,13 @@ std::string GetMachineName() {
     return hostname;
   return std::string();
 #elif defined(OS_APPLE)
-// TODO(crbug.com/1024115): Find a different replacement for -[NSHost
-// currentHost] on iOS.
-#if !defined(OS_IOS)
+
+#if defined(OS_IOS)
+  std::string ios_model_name = base::SysInfo::HardwareModelName();
+  if (!ios_model_name.empty()) {
+    return ios_model_name;
+  }
+#else
   // Do not use NSHost currentHost, as it's very slow. http://crbug.com/138570
   SCDynamicStoreContext context = {0, NULL, NULL, NULL};
   base::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
@@ -98,7 +102,7 @@ std::string GetMachineName() {
       SCDynamicStoreCopyComputerName(store.get(), NULL));
   if (computer_name.get())
     return base::SysCFStringRefToUTF8(computer_name.get());
-#endif  // !OS_IOS
+#endif  // defined(OS_IOS)
 
   // If all else fails, return to using a slightly nicer version of the
   // hardware model.
