@@ -269,11 +269,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Returns the currently focused Element or null if no element has focus.
   Element* FocusedElement() const;
 
-  WebViewClient* Client() { return AsView().client; }
+  WebViewClient* Client() { return web_view_client_; }
 
   // Returns the page object associated with this view. This may be null when
   // the page is shutting down, but will be valid at all other times.
-  Page* GetPage() const { return AsView().page.Get(); }
+  Page* GetPage() const { return page_.Get(); }
 
   WebDevToolsAgentImpl* MainFrameDevToolsAgentImpl();
 
@@ -467,11 +467,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   friend class WebViewFrameWidget;
   friend class WTF::RefCounted<WebViewImpl>;
 
-  // TODO(danakj): DCHECK in these that we're not inside a wrong API stackframe.
-  struct ViewData;
-  ViewData& AsView() { return as_view_; }
-  const ViewData& AsView() const { return as_view_; }
-
   // These are temporary methods to allow WebViewFrameWidget to delegate to
   // WebViewImpl. We expect to eventually move these out.
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool);
@@ -595,18 +590,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Sends any outstanding TrackedFeaturesUpdate messages to the browser.
   void ReportActiveSchedulerTrackedFeatures();
 
-  // These member variables should not be accessed within calls to WebWidget
-  // APIs. They can be called from within WebView APIs, and internal methods,
-  // though these need to be sorted as being for the view or the widget also.
-  struct ViewData {
-    ViewData(WebViewClient* client) : client(client) {}
-
-    // Can be null (e.g. unittests, shared workers, etc).
-    WebViewClient* client;
-    Persistent<Page> page;
-  } as_view_;
-
+  // Can be null (e.g. unittests, shared workers, etc).
+  WebViewClient* web_view_client_;
   Persistent<ChromeClient> chrome_client_;
+  Persistent<Page> page_;
 
   // This is the size of the page that the web contents will render into. This
   // is usually, but not necessarily the same as the VisualViewport size. The

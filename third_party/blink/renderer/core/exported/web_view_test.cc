@@ -2852,9 +2852,8 @@ TEST_F(WebViewTest, LongPressImage) {
             web_view->MainFrameWidget()->HandleInputEvent(
                 WebCoalescedInputEvent(event, ui::LatencyInfo())));
   EXPECT_TRUE(
-      web_view->AsView()
-          .page->GetContextMenuController()
-          .ContextMenuNodeForFrame(web_view->MainFrameImpl()->GetFrame()));
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
 }
 
 TEST_F(WebViewTest, LongPressVideo) {
@@ -5970,9 +5969,8 @@ TEST_F(WebViewTest, LongPressImageAndThenLongTapImage) {
             web_view->MainFrameWidget()->HandleInputEvent(
                 WebCoalescedInputEvent(event, ui::LatencyInfo())));
   EXPECT_TRUE(
-      web_view->AsView()
-          .page->GetContextMenuController()
-          .ContextMenuNodeForFrame(web_view->MainFrameImpl()->GetFrame()));
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
 
   WebGestureEvent tap_event(WebInputEvent::Type::kGestureLongTap,
                             WebInputEvent::kNoModifiers,
@@ -5984,9 +5982,8 @@ TEST_F(WebViewTest, LongPressImageAndThenLongTapImage) {
             web_view->MainFrameWidget()->HandleInputEvent(
                 WebCoalescedInputEvent(tap_event, ui::LatencyInfo())));
   EXPECT_TRUE(
-      web_view->AsView()
-          .page->GetContextMenuController()
-          .ContextMenuNodeForFrame(web_view->MainFrameImpl()->GetFrame()));
+      web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
+          web_view->MainFrameImpl()->GetFrame()));
 }
 
 }  // namespace blink
