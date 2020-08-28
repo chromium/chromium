@@ -2788,8 +2788,10 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionWithoutExpirationTimeTest,
 class PushSubscriptionChangeEventTest : public PushMessagingBrowserTest {
  public:
   PushSubscriptionChangeEventTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPushSubscriptionChangeEvent);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPushSubscriptionChangeEvent,
+         features::kPushSubscriptionWithExpirationTime},
+        {});
   }
 
   ~PushSubscriptionChangeEventTest() override = default;
@@ -2893,6 +2895,56 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest,
   EXPECT_EQ(old_subscription->endpoint.spec(), script_result);
   ASSERT_TRUE(RunScript("resultQueue.pop()", &script_result));
   EXPECT_EQ("null", script_result);
+
+  // Check that we record this case in UMA.
+  histogram_tester_.ExpectUniqueSample(
+      "PushMessaging.PushSubscriptionChangeStatus",
+      blink::mojom::PushEventStatus::SUCCESS, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PushSubscriptionChangeEventTest, OnInvalidation) {
+  std::string script_result;
+
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  ASSERT_TRUE(RunScript("hasSubscription()", &script_result));
+  EXPECT_EQ("true - subscribed", script_result);
+
+  ASSERT_TRUE(RunScript("isControlled()", &script_result));
+  ASSERT_EQ("false - is not controlled", script_result);
+  LoadTestPage();  // Reload to become controlled.
+  ASSERT_TRUE(RunScript("isControlled()", &script_result));
+  ASSERT_EQ("true - is controlled", script_result);
+
+  PushMessagingAppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+  ASSERT_FALSE(app_identifier.is_null());
+
+  base::RunLoop run_loop;
+  push_service()->SetInvalidationCallbackForTesting(run_loop.QuitClosure());
+  push_service()->OnSubscriptionInvalidation(app_identifier.app_id());
+  run_loop.Run();
+
+  // Old subscription should be gone
+  PushMessagingAppIdentifier deleted_identifier =
+      PushMessagingAppIdentifier::FindByAppId(GetBrowser()->profile(),
+                                              app_identifier.app_id());
+  EXPECT_TRUE(deleted_identifier.is_null());
+
+  // New subscription with a different app id should exist
+  PushMessagingAppIdentifier new_identifier =
+      PushMessagingAppIdentifier::FindByServiceWorker(
+          GetBrowser()->profile(), app_identifier.origin(),
+          app_identifier.service_worker_registration_id());
+  EXPECT_FALSE(new_identifier.is_null());
+
+  base::RunLoop().RunUntilIdle();
+
+  // Expect `pushsubscriptionchange` event that is not null
+  ASSERT_TRUE(RunScript("resultQueue.pop()", &script_result));
+  EXPECT_NE("null", script_result);
+  ASSERT_TRUE(RunScript("resultQueue.pop()", &script_result));
+  EXPECT_NE("null", script_result);
 
   // Check that we record this case in UMA.
   histogram_tester_.ExpectUniqueSample(

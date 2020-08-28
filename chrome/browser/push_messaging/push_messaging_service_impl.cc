@@ -1455,8 +1455,14 @@ void PushMessagingServiceImpl::DidUpdateSubscription(
   PushMessagingAppIdentifier new_app_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile_, new_app_id);
 
+  // Callback for testing
+  base::OnceClosure callback =
+      (invalidation_callback_for_testing_)
+          ? std::move(invalidation_callback_for_testing_)
+          : base::DoNothing();
+
   FirePushSubscriptionChange(
-      new_app_identifier, base::DoNothing(),
+      new_app_identifier, std::move(callback),
       blink::mojom::PushSubscription::New(
           endpoint, expiration_time, push_messaging::MakeOptions(sender_id),
           p256dh, auth),
@@ -1468,12 +1474,26 @@ void PushMessagingServiceImpl::DidUpdateSubscription(
 void PushMessagingServiceImpl::OnOldSubscriptionExpired(
     const std::string& app_id,
     const std::string& sender_id) {
-  NOTIMPLEMENTED();
+  // Unsubscribe without clearing SW database, since values of the new
+  // subscription are already saved there.
+  // After unsubscribing, the refresher will get notified.
+  UnsubscribeInternal(
+      blink::mojom::PushUnregistrationReason::REFRESH_FINISHED,
+      GURL::EmptyGURL() /* origin */, -1 /* service_worker_registration_id */,
+      app_id, sender_id,
+      base::BindOnce(&UnregisterCallbackToClosure,
+                     base::BindOnce(&PushMessagingRefresher::OnUnsubscribed,
+                                    refresher_.GetWeakPtr(), app_id)));
 }
 
 void PushMessagingServiceImpl::OnRefreshFinished(
     const PushMessagingAppIdentifier& app_identifier) {
-  NOTIMPLEMENTED();
+  // TODO(viviy): Log data in UMA
+}
+
+void PushMessagingServiceImpl::SetInvalidationCallbackForTesting(
+    base::OnceClosure callback) {
+  invalidation_callback_for_testing_ = std::move(callback);
 }
 
 // Helper methods --------------------------------------------------------------

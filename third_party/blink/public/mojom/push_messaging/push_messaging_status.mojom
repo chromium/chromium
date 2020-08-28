@@ -186,6 +186,10 @@ enum PushUnregistrationReason {
   // Only happens if features::kPushSubscriptionWithExpirationTime is enabled.
   SUBSCRIPTION_EXPIRED = 11,
 
+  // The subscription was successfully refreshed, which is why we want to remove
+  // the old subscription
+  REFRESH_FINISHED = 12,
+
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list
   // in tools/metrics/histograms/histograms.xml to keep it in sync.

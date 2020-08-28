@@ -52,6 +52,8 @@ class PushMessagingRefresher {
   base::Optional<PushMessagingAppIdentifier> FindActiveAppIdentifier(
       const std::string& app_id);
 
+  base::WeakPtr<PushMessagingRefresher> GetWeakPtr();
+
   // Observer for Refresh status updates
   class Observer : public base::CheckedObserver {
    public:

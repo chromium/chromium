@@ -162,6 +162,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   void SetMessageCallbackForTesting(const base::Closure& callback);
   void SetUnsubscribeCallbackForTesting(const base::Closure& callback);
+  void SetInvalidationCallbackForTesting(base::OnceClosure callback);
   void SetContentSettingChangedCallbackForTesting(
       base::RepeatingClosure callback);
   void SetServiceWorkerUnregisteredCallbackForTesting(
@@ -384,6 +385,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   base::Closure service_worker_unregistered_callback_for_testing_;
   base::Closure service_worker_database_wiped_callback_for_testing_;
   base::OnceClosure remove_expired_subscriptions_callback_for_testing_;
+  base::OnceClosure invalidation_callback_for_testing_;
 
   PushMessagingNotificationManager notification_manager_;
 

@@ -108,6 +108,10 @@ PushMessagingRefresher::FindActiveAppIdentifier(const std::string& app_id) {
   return app_identifier;
 }
 
+base::WeakPtr<PushMessagingRefresher> PushMessagingRefresher::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void PushMessagingRefresher::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
