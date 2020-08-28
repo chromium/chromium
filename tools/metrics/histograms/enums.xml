@@ -24422,6 +24422,7 @@ Called by update_extension_histograms.py.-->
   <int value="1500" label="FILEMANAGERPRIVATEINTERNAL_COPYIMAGETOCLIPBOARD"/>
   <int value="1501"
       label="AUTOTESTPRIVATE_WAITFORSYSTEMWEBAPPSINSTALLFUNCTION"/>
+  <int value="1502" label="AUTOTESTPRIVATE_GETREGISTEREDSYSTEMWEBAPPSFUNCTION"/>
 </enum>
 
 <enum name="ExtensionIconState">

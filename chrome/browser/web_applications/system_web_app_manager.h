@@ -213,6 +213,10 @@ class SystemWebAppManager {
   // doesn't specify a minimum.
   gfx::Size GetMinimumWindowSize(const AppId& app_id) const;
 
+  // Returns a list of registered system app infos, these apps will be installed
+  // on the system.
+  std::vector<SystemAppInfo> GetRegisteredSystemAppsForTesting() const;
+
   const base::OneShotEvent& on_apps_synchronized() const {
     return *on_apps_synchronized_;
   }

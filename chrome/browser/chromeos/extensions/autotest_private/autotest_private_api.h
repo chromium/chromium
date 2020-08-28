@@ -305,6 +305,18 @@ class AutotestPrivateWaitForSystemWebAppsInstallFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateGetRegisteredSystemWebAppsFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateGetRegisteredSystemWebAppsFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getRegisteredSystemWebApps",
+                             AUTOTESTPRIVATE_GETREGISTEREDSYSTEMWEBAPPSFUNCTION)
+
+ private:
+  ~AutotestPrivateGetRegisteredSystemWebAppsFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateLaunchArcAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.launchArcApp",

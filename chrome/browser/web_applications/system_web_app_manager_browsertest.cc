@@ -1123,21 +1123,13 @@ class SystemWebAppManagerUpgradeBrowserTest
   }
   ~SystemWebAppManagerUpgradeBrowserTest() override = default;
 
-  unsigned int GetExpectedNumberOfInstalledSystemApps() {
-#if defined(OFFICIAL_BUILD)
-    return 8;
-#else
-    return 10;
-#endif  // defined(OFFICIAL_BUILD)
-  }
-
  private:
   base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest, PRE_Upgrade) {
   WaitForTestSystemAppInstall();
-  EXPECT_GE(GetExpectedNumberOfInstalledSystemApps(),
+  EXPECT_GE(GetManager().GetRegisteredSystemAppsForTesting().size(),
             GetManager().GetAppIds().size());
 }
 
@@ -1145,7 +1137,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUpgradeBrowserTest, Upgrade) {
   WaitForTestSystemAppInstall();
   const auto& app_ids = GetManager().GetAppIds();
 
-  EXPECT_EQ(GetExpectedNumberOfInstalledSystemApps(), app_ids.size());
+  EXPECT_EQ(GetManager().GetRegisteredSystemAppsForTesting().size(),
+            app_ids.size());
 
   for (const auto& app_id : app_ids) {
     const auto type = GetManager().GetSystemAppTypeForAppId(app_id).value();

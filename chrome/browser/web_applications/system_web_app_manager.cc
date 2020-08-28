@@ -446,6 +446,17 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
   run_loop.Run();
 }
 
+std::vector<SystemAppInfo>
+SystemWebAppManager::GetRegisteredSystemAppsForTesting() const {
+  std::vector<SystemAppInfo> result;
+  result.reserve(system_app_infos_.size());
+
+  for (const auto& type_and_app_info : system_app_infos_)
+    result.push_back(type_and_app_info.second);
+
+  return result;
+}
+
 base::Optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
     SystemAppType id) const {
   auto app_url_it = system_app_infos_.find(id);

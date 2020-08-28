@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/connection_holder.h"
@@ -330,6 +331,25 @@ class AutotestPrivateStartStopTracing : public AutotestPrivateApiTest {
 IN_PROC_BROWSER_TEST_F(AutotestPrivateStartStopTracing, StartStopTracing) {
   ASSERT_TRUE(
       RunComponentExtensionTestWithArg("autotest_private", "startStopTracing"))
+      << message_;
+}
+
+class AutotestPrivateSystemWebAppsTest : public AutotestPrivateApiTest {
+ public:
+  AutotestPrivateSystemWebAppsTest() {
+    installation_ =
+        web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp(
+            true);
+  }
+  ~AutotestPrivateSystemWebAppsTest() override = default;
+
+ private:
+  std::unique_ptr<web_app::TestSystemWebAppInstallation> installation_;
+};
+
+IN_PROC_BROWSER_TEST_F(AutotestPrivateSystemWebAppsTest, SystemWebApps) {
+  ASSERT_TRUE(
+      RunComponentExtensionTestWithArg("autotest_private", "systemWebApps"))
       << message_;
 }
 

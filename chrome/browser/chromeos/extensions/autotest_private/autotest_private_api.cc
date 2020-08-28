@@ -1737,6 +1737,40 @@ AutotestPrivateWaitForSystemWebAppsInstallFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetRegisteredSystemWebAppsFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetRegisteredSystemWebAppsFunction::
+    AutotestPrivateGetRegisteredSystemWebAppsFunction() = default;
+
+AutotestPrivateGetRegisteredSystemWebAppsFunction::
+    ~AutotestPrivateGetRegisteredSystemWebAppsFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  web_app::WebAppProviderBase* provider =
+      web_app::WebAppProviderBase::GetProviderBase(profile);
+
+  if (!provider)
+    return RespondNow(Error("Web Apps are not available for profile."));
+
+  std::vector<api::autotest_private::SystemApp> result;
+
+  for (const auto& info :
+       provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
+    api::autotest_private::SystemApp system_app;
+    system_app.name_for_logging = info.name_for_logging;
+    system_app.url = info.install_url.GetOrigin().spec();
+    result.push_back(std::move(system_app));
+  }
+
+  return RespondNow(ArgumentList(
+      api::autotest_private::GetRegisteredSystemWebApps::Results::Create(
+          result)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateLaunchArcIntentFunction
 ///////////////////////////////////////////////////////////////////////////////
 
