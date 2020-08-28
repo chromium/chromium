@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_
 #define CHROMEOS_COMPONENTS_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_
 
+#include <string>
+
 namespace content {
 class WebUIDataSource;
 }
@@ -25,6 +27,9 @@ class CameraAppUIDelegate {
   // TODO(crbug.com/1113567): Remove this method once we migrate to use UMA to
   // collect metrics. Checks if the logging consent option is enabled.
   virtual bool IsMetricsAndCrashReportingEnabled() = 0;
+
+  // Opens the file in Downloads folder by its |name| in gallery.
+  virtual void OpenFileInGallery(const std::string& name) = 0;
 };
 
 #endif  // CHROMEOS_COMPONENTS_CAMERA_APP_UI_CAMERA_APP_UI_DELEGATE_H_

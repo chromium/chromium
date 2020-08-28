@@ -124,6 +124,11 @@ void CameraAppHelperImpl::CheckExternalScreenState() {
     external_screen_monitor_->Update(has_external_screen_);
 }
 
+void CameraAppHelperImpl::OpenFileInGallery(const std::string& name) {
+  DCHECK_NE(camera_app_ui_, nullptr);
+  camera_app_ui_->delegate()->OpenFileInGallery(name);
+}
+
 void CameraAppHelperImpl::OnTabletModeStarted() {
   if (tablet_monitor_.is_bound())
     tablet_monitor_->Update(true);

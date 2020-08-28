@@ -24,6 +24,7 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
   void SetLaunchDirectory() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   bool IsMetricsAndCrashReportingEnabled() override;
+  void OpenFileInGallery(const std::string& name) override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.

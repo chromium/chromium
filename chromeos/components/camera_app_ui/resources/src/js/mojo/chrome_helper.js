@@ -102,6 +102,14 @@ export class ChromeHelper {
   }
 
   /**
+   * Opens the file in Downloads folder by its |name| in gallery.
+   * @param {string} name Name of the target file.
+   */
+  openFileInGallery(name) {
+    this.remote_.openFileInGallery(name);
+  }
+
+  /**
    * Checks return value from |handleCameraResult|.
    * @param {string} caller Caller identifier.
    * @param {!Promise<{isSuccess: boolean}>|null} value

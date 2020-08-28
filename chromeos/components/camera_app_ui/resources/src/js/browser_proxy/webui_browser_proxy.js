@@ -115,7 +115,7 @@ class WebUIBrowserProxy {
 
   /** @override */
   async openGallery(file) {
-    throw new NotImplementedError();
+    ChromeHelper.getInstance().openFileInGallery(file.name);
   }
 
   /** @override */

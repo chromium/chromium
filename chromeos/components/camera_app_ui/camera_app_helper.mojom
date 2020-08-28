@@ -79,4 +79,9 @@ interface CameraAppHelper {
   // state changes.
   SetExternalScreenMonitor(pending_remote<ExternalScreenMonitor> monitor)
       => (bool has_external_screen);
+
+  // Opens the file in Downloads folder by its |name| in gallery. It is only
+  // usable for SWA version. For platform app version, we use Chrome
+  // FileManagerPrivate API.
+  OpenFileInGallery(string name);
 };
