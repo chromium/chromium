@@ -181,9 +181,11 @@ select#font-family-selection:focus {
 }
 
 #theme-selection ul {
+  column-gap: 16px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   list-style-type: none;
+  margin-inline-start: 16px;
 }
 
 .theme-option {
@@ -232,6 +234,7 @@ select#font-family-selection:focus {
 
 #font-size-wrapper {
   grid-area: size;
+  padding: 0 8px;
 }
 
 #font-size-selection {
