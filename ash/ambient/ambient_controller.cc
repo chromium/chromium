@@ -204,6 +204,9 @@ void AmbientController::OnAmbientUiVisibilityChanged(
           /*ui_mode=*/ambient_ui_model_.ui_mode(),
           /*tablet_mode=*/Shell::Get()->IsInTabletMode());
 
+      DCHECK(!start_time_);
+      start_time_ = base::Time::Now();
+
       // Resets the monitor and cancels the timer upon shown.
       inactivity_monitor_.reset();
 
@@ -236,6 +239,17 @@ void AmbientController::OnAmbientUiVisibilityChanged(
 
       // Should do nothing if the wake lock has already been released.
       ReleaseWakeLock();
+
+      // |start_time_| may be empty in case of |AmbientUiVisibility::kHidden| if
+      // ambient mode has just started.
+      if (start_time_) {
+        auto elapsed = base::Time::Now() - start_time_.value();
+        DVLOG(2) << "Exit ambient mode. Elapsed time: " << elapsed;
+        ambient::RecordAmbientModeTimeElapsed(
+            /*time_delta=*/elapsed,
+            /*tablet_mode=*/Shell::Get()->IsInTabletMode());
+        start_time_.reset();
+      }
 
       if (visibility == AmbientUiVisibility::kHidden) {
         // Creates the monitor and starts the auto-show timer upon hidden.

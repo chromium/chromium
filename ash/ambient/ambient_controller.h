@@ -187,6 +187,9 @@ class ASH_EXPORT AmbientController
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
+  // Used to record Ambient mode engagement metrics.
+  base::Optional<base::Time> start_time_ = base::nullopt;
+
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AmbientController);
 };

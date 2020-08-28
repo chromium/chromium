@@ -4,12 +4,32 @@
 
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 
+#include <string>
+
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 namespace ash {
 namespace ambient {
+
+namespace {
+
+// 144 == 24 * 60 / 10. Each histogram bucket therefore represents 10 minutes.
+constexpr int kAmbientModeElapsedTimeHistogramBuckets = 144;
+
+std::string GetHistogramName(const char* prefix, bool tablet_mode) {
+  std::string histogram = prefix;
+  if (tablet_mode)
+    histogram += ".TabletMode";
+  else
+    histogram += ".ClamshellMode";
+
+  return histogram;
+}
+
+}  // namespace
 
 AmbientModePhotoSource AmbientSettingsToPhotoSource(
     const AmbientSettings& settings) {
@@ -35,13 +55,18 @@ AmbientModePhotoSource AmbientSettingsToPhotoSource(
 }
 
 void RecordAmbientModeActivation(AmbientUiMode ui_mode, bool tablet_mode) {
-  std::string histogram_name = "Ash.AmbientMode.Activation.";
-  if (tablet_mode)
-    histogram_name += "TabletMode";
-  else
-    histogram_name += "ClamshellMode";
+  base::UmaHistogramEnumeration(
+      GetHistogramName("Ash.AmbientMode.Activation", tablet_mode), ui_mode);
+}
 
-  base::UmaHistogramEnumeration(histogram_name, ui_mode);
+void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
+                                  bool tablet_mode) {
+  base::UmaHistogramCustomTimes(
+      /*name=*/GetHistogramName("Ash.AmbientMode.EngagementTime", tablet_mode),
+      /*sample=*/time_delta,
+      /*min=*/base::TimeDelta::FromHours(0),
+      /*max=*/base::TimeDelta::FromHours(24),
+      /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
 }
 
 }  // namespace ambient
