@@ -106,7 +106,10 @@ FocusAutomationHandler = class extends BaseAutomationHandler {
     }
 
     if (evt.target.value) {
-      new Output().withString(evt.target.value).go();
+      const output = new Output();
+      output.format('$value @describe_index($posInSet, $setSize)', evt.target);
+      output.go();
+      return;
     }
   }
 };

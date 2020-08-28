@@ -1466,6 +1466,13 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   if (!SupportsARIAExpanded())
     return kExpandedUndefined;
 
+  if (RoleValue() == ax::mojom::blink::Role::kPopUpButton && GetNode() &&
+      IsA<HTMLSelectElement>(*GetNode())) {
+    return To<HTMLSelectElement>(GetNode())->PopupIsVisible()
+               ? kExpandedExpanded
+               : kExpandedCollapsed;
+  }
+
   if (GetNode() && IsA<HTMLSummaryElement>(*GetNode())) {
     if (GetNode()->parentNode() &&
         IsA<HTMLDetailsElement>(GetNode()->parentNode()))
@@ -2156,6 +2163,12 @@ ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
 }
 
 int AXNodeObject::PosInSet() const {
+  if (RoleValue() == ax::mojom::blink::Role::kPopUpButton && GetNode() &&
+      !AXObjectCache().UseAXMenuList()) {
+    if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode()))
+      return 1 + select_element->selectedIndex();
+  }
+
   if (SupportsARIASetSizeAndPosInSet()) {
     uint32_t pos_in_set;
     if (HasAOMPropertyOrARIAAttribute(AOMUIntProperty::kPosInSet, pos_in_set))
@@ -2165,6 +2178,12 @@ int AXNodeObject::PosInSet() const {
 }
 
 int AXNodeObject::SetSize() const {
+  if (RoleValue() == ax::mojom::blink::Role::kPopUpButton && GetNode() &&
+      !AXObjectCache().UseAXMenuList()) {
+    if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode()))
+      return static_cast<int>(select_element->length());
+  }
+
   if (SupportsARIASetSizeAndPosInSet()) {
     int32_t set_size;
     if (HasAOMPropertyOrARIAAttribute(AOMIntProperty::kSetSize, set_size))

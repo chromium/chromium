@@ -285,17 +285,17 @@ TEST_F(
       });
     });
 
-TEST_F('ChromeVoxBackgroundTest', 'DISABLED_SelectSingleBasic', function() {
+TEST_F('ChromeVoxBackgroundTest', 'SelectSingleBasic', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.formsDoc, function() {
     mockFeedback.expectSpeech('apple', 'has pop up', 'Collapsed')
         .expectBraille('apple btn +popup +')
         .call(press(40 /* ArrowDown */))
         .expectSpeech('grape', /2 of 3/)
-        .expectBraille('grape mnuitm 2/3 (x)')
+        .expectBraille('grape 2/3')
         .call(press(40 /* ArrowDown */))
         .expectSpeech('banana', /3 of 3/)
-        .expectBraille('banana mnuitm 3/3 (x)');
+        .expectBraille('banana 3/3');
     mockFeedback.replay();
   });
 });
@@ -726,7 +726,7 @@ TEST_F(
       });
     });
 
-TEST_F('ChromeVoxBackgroundTest', 'DISABLED_SelectOptionSelected', function() {
+TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `
@@ -739,12 +739,15 @@ TEST_F('ChromeVoxBackgroundTest', 'DISABLED_SelectOptionSelected', function() {
       function(root) {
         const select = root.find({role: RoleType.POP_UP_BUTTON});
         const clickSelect = select.doDefault.bind(select);
-        const lastOption = select.lastChild.lastChild;
-        const selectLastOption = lastOption.doDefault.bind(lastOption);
+        const selectLastOption = () => {
+          const options = select.findAll({role: RoleType.LIST_BOX_OPTION});
+          options[options.length - 1].doDefault();
+        };
 
         mockFeedback.call(clickSelect)
             .expectSpeech('apple')
             .expectSpeech('Button')
+            .expectSpeech('Expanded')
             .call(selectLastOption)
             .expectNextSpeechUtteranceIsNot('apple')
             .expectSpeech('grapefruit')
@@ -2814,7 +2817,7 @@ TEST_F('ChromeVoxBackgroundTest', 'SmartStickyModeJumpCommands', function() {
       });
 });
 
-TEST_F('ChromeVoxBackgroundTest', 'DISABLED_PopupButtonCollapsed', function() {
+TEST_F('ChromeVoxBackgroundTest', 'PopupButtonCollapsed', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(
       `
