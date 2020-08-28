@@ -134,7 +134,9 @@ public class PageInfoView extends FrameLayout implements OnClickListener, OnLong
          */
         public void toggleTruncation() {
             mIsShowingTruncatedText = !mIsShowingTruncatedText;
-            updateMaxLines();
+            if (mFullLinesToDisplay != null) {
+                updateMaxLines();
+            }
         }
 
         private boolean updateMaxLines() {
@@ -172,6 +174,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener, OnLong
         public CharSequence url;
         public CharSequence previewLoadOriginalMessage;
         public int urlOriginLength;
+        public CharSequence truncatedUrl;
     }
 
     /** Parameters to configure the permission info section */

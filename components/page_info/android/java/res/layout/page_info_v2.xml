@@ -22,6 +22,16 @@
         android:paddingEnd="@dimen/page_info_popup_padding_sides"
         android:paddingStart="@dimen/page_info_popup_padding_sides" >
 
+        <TextView
+            android:id="@+id/page_info_truncated_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lineSpacingExtra="6dp"
+            android:paddingTop="16dp"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
         <view class="org.chromium.components.page_info.PageInfoView$ElidedUrlTextView"
             android:id="@+id/page_info_url"
             android:layout_width="match_parent"

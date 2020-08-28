@@ -44,6 +44,7 @@ import org.chromium.components.page_info.PageInfoView.ConnectionInfoParams;
 import org.chromium.components.page_info.PageInfoView.PageInfoViewParams;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -55,12 +56,11 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
-import org.chromium.url.URI;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
-import java.net.URISyntaxException;
 
 /**
  * Java side of Android implementation of the page info UI.
@@ -189,11 +189,8 @@ public class PageInfoController
         // This can happen if an invalid chrome-distiller:// url was entered.
         if (mFullUrl == null) mFullUrl = "";
 
-        try {
-            mIsInternalPage = UrlUtilities.isInternalScheme(new URI(mFullUrl));
-        } catch (URISyntaxException e) {
-            // Ignore exception since this is for displaying some specific content on page info.
-        }
+        GURL url = new GURL(mFullUrl);
+        mIsInternalPage = UrlUtilities.isInternalScheme(url);
 
         String displayUrl = UrlFormatter.formatUrlForDisplayOmitUsernamePassword(mFullUrl);
         if (mDelegate.isShowingOfflinePage()) {
@@ -222,6 +219,9 @@ public class PageInfoController
                 mDisplayUrlBuilder.toString(), autocompleteSchemeClassifier);
         viewParams.urlOriginLength = mUrlOriginLength;
         autocompleteSchemeClassifier.destroy();
+
+        viewParams.truncatedUrl =
+                UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
         if (mDelegate.isSiteSettingsAvailable()) {
             viewParams.siteSettingsButtonClickCallback = () -> {

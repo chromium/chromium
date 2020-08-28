@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ public class PageInfoViewV2 extends PageInfoView {
     private PageInfoRowView mConnectionRow;
     private PageInfoRowView mPermissionsRow;
     private PageInfoRowView mCookiesRow;
+    private TextView mTruncatedUrlTitle;
 
     public PageInfoViewV2(Context context, PageInfoView.PageInfoViewParams params) {
         super(context);
@@ -38,8 +40,19 @@ public class PageInfoViewV2 extends PageInfoView {
     @Override
     protected void initUrlTitle(PageInfoView.PageInfoViewParams params) {
         super.initUrlTitle(params);
-        // Adjust the mUrlTitle
+        // Adjust the mUrlTitle for displaying the non-truncated URL.
         mUrlTitle.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        mUrlTitle.setAlpha(1.0f);
+        mUrlTitle.setVisibility(GONE);
+        mUrlTitle.toggleTruncation();
+        // Use a separate view for truncated URL display.
+        mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
+        mTruncatedUrlTitle.setText(params.truncatedUrl);
+        if (params.urlTitleLongClickCallback != null) {
+            mTruncatedUrlTitle.setOnLongClickListener(this);
+        }
+        initializePageInfoViewChild(
+                mTruncatedUrlTitle, params.urlTitleShown, 0f, params.urlTitleClickCallback);
     }
 
     @Override
@@ -78,12 +91,19 @@ public class PageInfoViewV2 extends PageInfoView {
         return mCookiesRow;
     }
 
+    @Override
+    public void toggleUrlTruncation() {
+        mUrlTitle.setVisibility(mTruncatedUrlTitle.getVisibility());
+        mTruncatedUrlTitle.setVisibility(mUrlTitle.getVisibility() == VISIBLE ? GONE : VISIBLE);
+    }
+
     /**
      * Create a list of all the views which we want to individually fade in.
      */
     @Override
     protected List<View> collectAnimatableViews() {
-        return Arrays.asList(mUrlTitle, mPreviewMessage, mPreviewLoadOriginal, mPreviewSeparator,
-                mInstantAppButton, mRowWrapper, mSiteSettingsButton);
+        // TODO(crbug.com/1077766): Sort and use rows instead of the rowWrapper.
+        return Arrays.asList(mTruncatedUrlTitle, mPreviewMessage, mPreviewLoadOriginal,
+                mPreviewSeparator, mInstantAppButton, mRowWrapper, mSiteSettingsButton);
     }
 }
