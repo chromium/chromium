@@ -41223,6 +41223,7 @@ from previous Chrome versions.
   <int value="-1064302126"
       label="OmniboxAlternateMatchDescriptionSeparator:enabled"/>
   <int value="-1062119671" label="enable-password-force-saving"/>
+  <int value="-1061203892" label="VideoToolboxVp9Decoding:disabled"/>
   <int value="-1060541241" label="ForcePreferredIntervalForVideo:enabled"/>
   <int value="-1060395248" label="PasswordSearchMobile:enabled"/>
   <int value="-1056860259"
@@ -41521,6 +41522,7 @@ from previous Chrome versions.
   <int value="-749048160" label="enable-panels"/>
   <int value="-748571227"
       label="AssistantEnableMediaSessionIntegration:enabled"/>
+  <int value="-747919789" label="VideoToolboxVp9Decoding:enabled"/>
   <int value="-747463111" label="ContentSuggestionsNotifications:disabled"/>
   <int value="-747072690" label="NtpRepeatableQueries:disabled"/>
   <int value="-746328467" label="ExpensiveBackgroundTimerThrottling:disabled"/>
