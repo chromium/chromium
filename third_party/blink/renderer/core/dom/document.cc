@@ -1882,7 +1882,7 @@ bool Document::IsPrefetchOnly() const {
   return prerenderer_client && prerenderer_client->IsPrefetchOnly();
 }
 
-String Document::visibilityState() const {
+AtomicString Document::visibilityState() const {
   return PageHiddenStateString(hidden());
 }
 

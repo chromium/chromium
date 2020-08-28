@@ -62,6 +62,8 @@ blink_core_sources("timing") {
     "task_attribution_timing.h",
     "time_clamper.cc",
     "time_clamper.h",
+    "visibility_state_entry.cc",
+    "visibility_state_entry.h",
     "window_performance.cc",
     "window_performance.h",
     "worker_global_scope_performance.cc",

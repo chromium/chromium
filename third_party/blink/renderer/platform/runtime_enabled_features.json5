@@ -1973,6 +1973,10 @@
       name: "VisibilityCollapseColumn",
     },
     {
+      name: "VisibilityStateEntry",
+      status: "experimental",
+    },
+    {
       name: "WakeLock",
       origin_trial_feature_name: "WakeLock",
       implied_by: ['ScreenWakeLock', 'SystemWakeLock'],

@@ -463,6 +463,7 @@ core_interface_idl_files_core_only =
                     "timing/performance_timing.idl",
                     "timing/profiler.idl",
                     "timing/task_attribution_timing.idl",
+                    "timing/visibility_state_entry.idl",
                     "trustedtypes/trusted_html.idl",
                     "trustedtypes/trusted_script.idl",
                     "trustedtypes/trusted_script_url.idl",

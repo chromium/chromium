@@ -300,6 +300,9 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
     case PerformanceEntry::kLargestContentfulPaint:
       entries.AppendVector(largest_contentful_paint_buffer_);
       break;
+    case PerformanceEntry::kVisibilityState:
+      entries.AppendVector(visibility_state_buffer_);
+      break;
     case PerformanceEntry::kInvalid:
       break;
   }
@@ -1043,6 +1046,7 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(layout_shift_buffer_);
   visitor->Trace(largest_contentful_paint_buffer_);
   visitor->Trace(longtask_buffer_);
+  visitor->Trace(visibility_state_buffer_);
   visitor->Trace(navigation_timing_);
   visitor->Trace(user_timing_);
   visitor->Trace(first_paint_timing_);

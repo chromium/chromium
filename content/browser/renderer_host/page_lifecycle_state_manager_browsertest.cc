@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/location.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -29,6 +30,12 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "VisibilityStateEntry");
+  }
+
   WebContentsImpl* web_contents() const {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
@@ -47,6 +54,23 @@ class PageLifecycleStateManagerBrowserTest : public ContentBrowserTest {
           window.testObservedEvents.push('document.' + result);
         });
       }
+    )"));
+  }
+
+  void StartPerformanceObserver(RenderFrameHostImpl* rfh, int numEntries) {
+    EXPECT_TRUE(ExecJs(rfh, R"(
+      window.performanceObserverEntries = [];
+      window.performanceObserverPromise = new Promise(resolve => {
+        new PerformanceObserver(entries => {
+          entries.getEntries().forEach(e => {
+            console.log(e.name + " " + e.startTime);
+            window.performanceObserverEntries.push(e.name);
+          });
+          if (window.performanceObserverEntries.length === )" +
+                                base::NumberToString(numEntries) + R"()
+            resolve(true);
+        }).observe({type: 'visibility-state', buffered: true});
+      });
     )"));
   }
 
@@ -94,13 +118,23 @@ IN_PROC_BROWSER_TEST_F(PageLifecycleStateManagerBrowserTest, SetVisibility) {
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   RenderFrameHostImpl* rfh = current_frame_host();
+  EXPECT_EQ(PageVisibilityState::kVisible, rfh->GetVisibilityState());
   StartRecordingEvents(rfh);
+  StartPerformanceObserver(rfh, 2);
 
   // Hide the page.
   shell()->web_contents()->WasHidden();
   EXPECT_EQ(PageVisibilityState::kHidden, rfh->GetVisibilityState());
 
   MatchEventList(rfh, ListValueOf("document.visibilitychange"));
+
+  EXPECT_TRUE(
+      EvalJs(
+          rfh,
+          "(async () => { return await window.performanceObserverPromise;})()")
+          .value.GetBool());
+  EXPECT_EQ(ListValueOf("visible", "hidden"),
+            EvalJs(rfh, "window.performanceObserverEntries"));
 }
 
 IN_PROC_BROWSER_TEST_F(PageLifecycleStateManagerBrowserTest,

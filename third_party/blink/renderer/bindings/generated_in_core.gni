@@ -1207,6 +1207,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_svg_view_element.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_task_attribution_timing.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_task_attribution_timing.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visibility_state_entry.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visibility_state_entry.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_report_body.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_test_report_body.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_text.cc",

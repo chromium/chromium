@@ -68,6 +68,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     kElement = 1 << 9,
     kLayoutShift = 1 << 10,
     kLargestContentfulPaint = 1 << 11,
+    kVisibilityState = 1 << 12,
   };
 
   const AtomicString& name() const { return name_; }

@@ -32,7 +32,7 @@
 
 namespace blink {
 
-String PageHiddenStateString(bool hidden) {
+AtomicString PageHiddenStateString(bool hidden) {
   if (hidden)
     return "hidden";
   return "visible";

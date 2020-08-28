@@ -631,6 +631,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/timing/profiler_stack.idl",
           "//third_party/blink/renderer/core/timing/profiler_trace.idl",
           "//third_party/blink/renderer/core/timing/task_attribution_timing.idl",
+          "//third_party/blink/renderer/core/timing/visibility_state_entry.idl",
           "//third_party/blink/renderer/core/timing/window_performance.idl",
           "//third_party/blink/renderer/core/timing/worker_global_scope_performance.idl",
           "//third_party/blink/renderer/core/trustedtypes/trusted_html.idl",

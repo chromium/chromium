@@ -74,6 +74,10 @@ Vector<AtomicString> PerformanceObserver::supportedEntryTypes(
     supportedEntryTypes.push_back(performance_entry_names::kPaint);
   }
   supportedEntryTypes.push_back(performance_entry_names::kResource);
+  if (RuntimeEnabledFeatures::VisibilityStateEntryEnabled() &&
+      execution_context->IsWindow()) {
+    supportedEntryTypes.push_back(performance_entry_names::kVisibilityState);
+  }
   return supportedEntryTypes;
 }
 

@@ -446,7 +446,7 @@ class CORE_EXPORT Document : public ContainerNode,
     has_xml_declaration_ = has_xml_declaration ? 1 : 0;
   }
 
-  String visibilityState() const;
+  AtomicString visibilityState() const;
   bool IsPageVisible() const;
   bool hidden() const;
   void DidChangeVisibilityState();
