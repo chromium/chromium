@@ -267,16 +267,16 @@ TEST_F(CupsPrintersHandlerTest, VerifyPrintManagementAppEntryPointHistogram) {
   web_ui_.HandleReceivedMessage("openPrintManagementApp",
                                 &base::Value::AsListValue(args));
   histogram_tester_.ExpectBucketCount(
-      "Printing.Cups.PrintManagementAppEntryPoint",
+      "Printing.CUPS.PrintManagementAppEntryPoint",
       PrintManagementAppEntryPoint::kSettings, 1);
   histogram_tester_.ExpectBucketCount(
-      "Printing.Cups.PrintManagementAppEntryPoint",
+      "Printing.CUPS.PrintManagementAppEntryPoint",
       PrintManagementAppEntryPoint::kNotification, 0);
   histogram_tester_.ExpectBucketCount(
-      "Printing.Cups.PrintManagementAppEntryPoint",
+      "Printing.CUPS.PrintManagementAppEntryPoint",
       PrintManagementAppEntryPoint::kLauncher, 0);
   histogram_tester_.ExpectBucketCount(
-      "Printing.Cups.PrintManagementAppEntryPoint",
+      "Printing.CUPS.PrintManagementAppEntryPoint",
       PrintManagementAppEntryPoint::kBrowser, 0);
 }
 

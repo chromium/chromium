@@ -44,10 +44,10 @@ namespace {
 
 void LogPrintManagementEntryPoints(apps::mojom::AppLaunchSource source) {
   if (source == apps::mojom::AppLaunchSource::kSourceAppLauncher) {
-    base::UmaHistogramEnumeration("Printing.Cups.PrintManagementAppEntryPoint",
+    base::UmaHistogramEnumeration("Printing.CUPS.PrintManagementAppEntryPoint",
                                   PrintManagementAppEntryPoint::kLauncher);
   } else if (source == apps::mojom::AppLaunchSource::kSourceIntentUrl) {
-    base::UmaHistogramEnumeration("Printing.Cups.PrintManagementAppEntryPoint",
+    base::UmaHistogramEnumeration("Printing.CUPS.PrintManagementAppEntryPoint",
                                   PrintManagementAppEntryPoint::kBrowser);
   }
 }

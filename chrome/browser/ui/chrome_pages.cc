@@ -521,7 +521,7 @@ void ShowPrintManagementApp(Profile* profile,
   DCHECK(entry_point == PrintManagementAppEntryPoint::kSettings ||
          entry_point == PrintManagementAppEntryPoint::kNotification);
 
-  base::UmaHistogramEnumeration("Printing.Cups.PrintManagementAppEntryPoint",
+  base::UmaHistogramEnumeration("Printing.CUPS.PrintManagementAppEntryPoint",
                                 entry_point);
   LaunchSystemWebApp(profile, web_app::SystemAppType::PRINT_MANAGEMENT,
                      GURL(chrome::kChromeUIPrintManagementUrl));
