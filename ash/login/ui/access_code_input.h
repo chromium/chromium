@@ -40,6 +40,10 @@ class AccessCodeInput : public views::View, public views::TextfieldController {
 
   virtual void SetInputEnabled(bool input_enabled) = 0;
 
+  // Makes the internal fields read only. In contrast to 'SetInputEnabled',
+  // the focus remain on the element.
+  virtual void SetReadOnly(bool read_only) = 0;
+
   // Clears the input field(s).
   virtual void ClearInput() = 0;
 };
@@ -80,6 +84,8 @@ class FlexCodeInput : public AccessCodeInput {
   void SetInputColor(SkColor color) override;
 
   void SetInputEnabled(bool input_enabled) override;
+
+  void SetReadOnly(bool read_only) override;
 
   // Clears text in input text field.
   void ClearInput() override;
@@ -204,9 +210,11 @@ class FixedLengthCodeInput : public AccessCodeInput {
   bool HandleGestureEvent(views::Textfield* sender,
                           const ui::GestureEvent& gesture_event) override;
 
-  // Enables/disables entering a PIN. Currently, there is no use-case the uses
+  // Enables/disables entering a PIN. Currently, there is no use-case that uses
   // this with fixed length PINs.
   void SetInputEnabled(bool input_enabled) override;
+
+  void SetReadOnly(bool read_only) override;
 
   // Clears the PIN fields.
   void ClearInput() override;

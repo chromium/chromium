@@ -113,6 +113,10 @@ void FlexCodeInput::SetInputEnabled(bool input_enabled) {
   code_field_->SetEnabled(input_enabled);
 }
 
+void FlexCodeInput::SetReadOnly(bool read_only) {
+  NOTIMPLEMENTED();
+}
+
 void FlexCodeInput::ClearInput() {
   code_field_->SetText(base::string16());
   on_input_change_.Run(false);
@@ -341,6 +345,9 @@ bool FixedLengthCodeInput::HandleKeyEvent(views::Textfield* sender,
   if (key_event.IsAltDown())
     return false;
 
+  if (sender->GetReadOnly())
+    return false;
+
   // FixedLengthCodeInput class responds to limited subset of key press
   // events. All key pressed events not handled below are ignored.
   const ui::KeyboardCode key_code = key_event.key_code();
@@ -414,6 +421,13 @@ bool FixedLengthCodeInput::HandleGestureEvent(
 void FixedLengthCodeInput::SetInputEnabled(bool input_enabled) {
   for (auto* field : input_fields_) {
     field->SetEnabled(input_enabled);
+  }
+}
+
+void FixedLengthCodeInput::SetReadOnly(bool read_only) {
+  for (auto* field : input_fields_) {
+    field->SetReadOnly(read_only);
+    field->SetCursorEnabled(!read_only);
   }
 }
 
