@@ -10,7 +10,7 @@
     android:clickable="true"
     android:textAppearance="@style/TextAppearance.TextSmall.Primary"
     android:layout_height="fill_parent"
-    android:layout_width="62sp"
+    android:layout_width="68sp"
     android:layout_marginStart="16dp"
     android:layout_marginTop="16dp"
     android:background="?attr/selectableItemBackground"
