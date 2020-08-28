@@ -87,3 +87,11 @@ TEST(ChromeBrowserMainWinTest, GetRestartCommand) {
             L" --enable-sandbox-audio"
             L" --restore-last-session");
 }
+
+// Test RegisterApplicationRestart to make sure there are no crashes.
+TEST(ChromeBrowserMainWinTest, RegisterRestart) {
+  const base::CommandLine command_line = base::CommandLine::FromString(
+      L"chrome.exe --enable-features=Exp2 --enable-foo -- "
+      L"http://www.chromium.org");
+  ChromeBrowserMainPartsWin::RegisterApplicationRestart(command_line);
+}
