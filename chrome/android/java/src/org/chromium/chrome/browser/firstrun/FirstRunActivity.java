@@ -85,8 +85,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private static final int FRE_PROGRESS_MAX = 7;
 
     private static FirstRunActivityObserver sObserver;
-    // TODO(wenyufu): Remove when MVP for crbug.com/1103476 is complete.
-    private static boolean sEnableEnterpriseCCT;
 
     private String mResultSignInAccountName;
     private boolean mResultIsDefaultAccount;
@@ -143,7 +141,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         //  use the subclass ToSAndUmaCCTFirstRunFragment. Instead, use the base class
         //  (ToSAndUMAFirstRunFragment) which simply shows a loading spinner while waiting for
         //  native to be loaded.
-        return sEnableEnterpriseCCT && mLaunchedFromCCT && !FirstRunStatus.shouldSkipWelcomePage();
+        return mLaunchedFromCCT && !FirstRunStatus.shouldSkipWelcomePage();
     }
 
     private void createPostNativePageSequence() {
@@ -574,10 +572,5 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public static void setObserverForTest(FirstRunActivityObserver observer) {
         assert sObserver == null;
         sObserver = observer;
-    }
-
-    @VisibleForTesting
-    public static void setEnableEnterpriseCCTForTest(boolean isEnabled) {
-        sEnableEnterpriseCCT = isEnabled;
     }
 }

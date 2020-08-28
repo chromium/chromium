@@ -93,7 +93,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         Assert.assertFalse(
                 CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE));
 
-        FirstRunActivity.setEnableEnterpriseCCTForTest(true);
         FirstRunAppRestrictionInfo.setInstanceForTest(mMockAppRestrictionInfo);
         PolicyServiceFactory.setPolicyServiceForTest(mPolicyService);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);
@@ -131,7 +130,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     @After
     public void tearDown() {
-        FirstRunActivity.setEnableEnterpriseCCTForTest(false);
         FirstRunAppRestrictionInfo.setInstanceForTest(null);
         PolicyServiceFactory.setPolicyServiceForTest(null);
         FirstRunUtilsJni.TEST_HOOKS.setInstanceForTesting(mFirstRunUtils);

@@ -96,7 +96,6 @@ public class FirstRunIntegrationTest {
 
     @After
     public void tearDown() {
-        FirstRunActivity.setEnableEnterpriseCCTForTest(false);
         FirstRunAppRestrictionInfo.setInstanceForTest(null);
         EnterpriseInfo.setInstanceForTest(null);
         if (mLastActivity != null) mLastActivity.finish();
@@ -270,7 +269,6 @@ public class FirstRunIntegrationTest {
     @MediumTest
     public void testExitFirstRunWithPolicy() {
         setHasAppRestrictionForMock();
-        FirstRunActivity.setEnableEnterpriseCCTForTest(true);
         Bundle restrictions = new Bundle();
         restrictions.putBoolean("CCTToSDialogEnabled", false);
         AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
