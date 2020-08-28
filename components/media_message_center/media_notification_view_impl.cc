@@ -81,7 +81,6 @@ const gfx::VectorIcon* GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kSkipAd:
     case MediaSessionAction::kSeekTo:
     case MediaSessionAction::kScrubTo:
-    case MediaSessionAction::kSwitchAudioDevice:
       NOTREACHED();
       break;
   }

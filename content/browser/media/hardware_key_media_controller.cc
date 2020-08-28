@@ -126,11 +126,13 @@ void HardwareKeyMediaController::PerformAction(MediaSessionAction action) {
       return;
     case MediaSessionAction::kPause:
       media_controller_remote_->Suspend();
-      ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kPause);
+      ui::RecordMediaHardwareKeyAction(
+          ui::MediaHardwareKeyAction::kPause);
       return;
     case MediaSessionAction::kNextTrack:
       media_controller_remote_->NextTrack();
-      ui::RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction::kNextTrack);
+      ui::RecordMediaHardwareKeyAction(
+          ui::MediaHardwareKeyAction::kNextTrack);
       return;
     case MediaSessionAction::kStop:
       media_controller_remote_->Stop();
@@ -143,7 +145,6 @@ void HardwareKeyMediaController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kScrubTo:
     case MediaSessionAction::kEnterPictureInPicture:
     case MediaSessionAction::kExitPictureInPicture:
-    case MediaSessionAction::kSwitchAudioDevice:
       NOTREACHED();
       return;
   }
@@ -191,7 +192,6 @@ HardwareKeyMediaController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kScrubTo:
     case MediaSessionAction::kEnterPictureInPicture:
     case MediaSessionAction::kExitPictureInPicture:
-    case MediaSessionAction::kSwitchAudioDevice:
       return base::nullopt;
   }
 }

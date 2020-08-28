@@ -280,10 +280,6 @@ class MediaSessionImpl : public MediaSession,
   // output device.
   void OnAudioOutputSinkIdChanged();
 
-  // Called when any of the normal players can no longer support audio output
-  // device switching.
-  void OnAudioOutputSinkChangingDisabled();
-
   // Returns whether the action should be routed to |routed_service_|.
   bool ShouldRouteAction(media_session::mojom::MediaSessionAction action) const;
 
@@ -404,8 +400,6 @@ class MediaSessionImpl : public MediaSession,
   // normal players. If the players are not all using the same audio output
   // device, the id of the default device will be returned.
   std::string GetSharedAudioOutputDeviceId() const;
-
-  bool IsAudioOutputDeviceSwitchingSupported() const;
 
   // Called when a MediaSessionAction is received. The action will be forwarded
   // to blink::MediaSession corresponding to the current routed service.

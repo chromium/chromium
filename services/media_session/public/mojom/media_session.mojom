@@ -31,7 +31,6 @@ enum MediaSessionAction {
   kScrubTo,
   kEnterPictureInPicture,
   kExitPictureInPicture,
-  kSwitchAudioDevice,
 };
 
 [Extensible]

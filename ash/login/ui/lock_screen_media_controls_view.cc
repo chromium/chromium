@@ -128,7 +128,6 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kScrubTo:
     case MediaSessionAction::kEnterPictureInPicture:
     case MediaSessionAction::kExitPictureInPicture:
-    case MediaSessionAction::kSwitchAudioDevice:
       NOTREACHED();
       break;
   }
