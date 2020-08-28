@@ -59,11 +59,10 @@ static STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes);
 template <typename T>
 static STGMEDIUM CreateStorageForString(const std::basic_string<T>& data);
 // Creates the contents of an Internet Shortcut file for the given URL.
-static void GetInternetShortcutFileContents(const GURL& url, std::string* data);
+static std::string GetInternetShortcutFileContents(const GURL& url);
 // Creates a valid file name given a suggested title and URL.
-static void CreateValidFileNameFromTitle(const GURL& url,
-                                         const base::string16& title,
-                                         base::string16* validated);
+static base::string16 CreateValidFileNameFromTitle(const GURL& url,
+                                                   const base::string16& title);
 // Creates a new STGMEDIUM object to hold files.
 static STGMEDIUM CreateStorageForFileNames(
     const std::vector<FileInfo>& filenames);
@@ -332,10 +331,8 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
       ClipboardFormatType::GetMozUrlType().ToFormatEtc(), storage));
 
   // Add a .URL shortcut file for dragging to Explorer.
-  base::string16 valid_file_name;
-  CreateValidFileNameFromTitle(url, title, &valid_file_name);
-  std::string shortcut_url_file_contents;
-  GetInternetShortcutFileContents(url, &shortcut_url_file_contents);
+  base::string16 valid_file_name = CreateValidFileNameFromTitle(url, title);
+  std::string shortcut_url_file_contents = GetInternetShortcutFileContents(url);
   SetFileContents(base::FilePath(valid_file_name), shortcut_url_file_contents);
 
   // Add a UniformResourceLocator link for apps like IE and Word.
@@ -1095,36 +1092,36 @@ static STGMEDIUM CreateStorageForString(const std::basic_string<T>& data) {
       (data.size() + 1) * sizeof(typename std::basic_string<T>::value_type));
 }
 
-static void GetInternetShortcutFileContents(const GURL& url,
-                                            std::string* data) {
-  DCHECK(data);
+static std::string GetInternetShortcutFileContents(const GURL& url) {
   static constexpr char kInternetShortcutFileStart[] =
       "[InternetShortcut]\r\nURL=";
   static constexpr char kInternetShortcutFileEnd[] = "\r\n";
-  *data = kInternetShortcutFileStart + url.spec() + kInternetShortcutFileEnd;
+  return kInternetShortcutFileStart + url.spec() + kInternetShortcutFileEnd;
 }
 
-static void CreateValidFileNameFromTitle(const GURL& url,
-                                         const base::string16& title,
-                                         base::string16* validated) {
+static base::string16 CreateValidFileNameFromTitle(
+    const GURL& url,
+    const base::string16& title) {
+  base::string16 validated;
   if (title.empty()) {
     if (url.is_valid()) {
-      *validated = net::GetSuggestedFilename(url, "", "", "", "",
-                                             std::string());
+      validated = net::GetSuggestedFilename(url, "", "", "", "", std::string());
     } else {
       // Nothing else can be done, just use a default.
-      *validated =
+      validated =
           l10n_util::GetStringUTF16(IDS_APP_UNTITLED_SHORTCUT_FILE_NAME);
     }
   } else {
-    *validated = title;
-    base::i18n::ReplaceIllegalCharactersInPath(validated, '-');
+    validated = title;
+    base::i18n::ReplaceIllegalCharactersInPath(&validated, '-');
   }
   static const wchar_t kExtension[] = L".url";
   static const size_t kMaxLength = MAX_PATH - base::size(kExtension);
-  if (validated->size() > kMaxLength)
-    validated->erase(kMaxLength);
-  *validated += kExtension;
+  if (validated.size() > kMaxLength)
+    validated.erase(kMaxLength);
+  validated += kExtension;
+
+  return validated;
 }
 
 static STGMEDIUM CreateStorageForFileNames(
