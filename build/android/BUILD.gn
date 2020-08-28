@@ -46,6 +46,7 @@ python_library("test_runner_py") {
     "${android_sdk_build_tools}/lib64/libc++.so",
     "${android_sdk_build_tools}/split-select",
     "${android_sdk_root}/platform-tools/adb",
+    "//third_party/requests/",
   ]
   data_deps = [ ":devil_chromium_py" ]
   if (build_with_chromium) {

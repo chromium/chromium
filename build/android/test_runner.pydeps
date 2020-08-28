@@ -154,6 +154,7 @@ pylib/base/environment.py
 pylib/base/environment_factory.py
 pylib/base/output_manager.py
 pylib/base/output_manager_factory.py
+pylib/base/result_sink.py
 pylib/base/test_collection.py
 pylib/base/test_exception.py
 pylib/base/test_instance.py
