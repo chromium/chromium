@@ -237,18 +237,18 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 
   const sync_pb::WebAppSpecifics& sync_data = local_data.sync_data();
 
-  // AppId is a hash of launch_url. Read launch_url first:
-  GURL launch_url(sync_data.launch_url());
-  if (launch_url.is_empty() || !launch_url.is_valid()) {
-    DLOG(ERROR) << "WebApp proto launch_url parse error: "
-                << launch_url.possibly_invalid_spec();
+  // AppId is a hash of start_url. Read start_url first:
+  GURL start_url(sync_data.start_url());
+  if (start_url.is_empty() || !start_url.is_valid()) {
+    DLOG(ERROR) << "WebApp proto start_url parse error: "
+                << start_url.possibly_invalid_spec();
     return nullptr;
   }
 
-  const AppId app_id = GenerateAppIdFromURL(launch_url);
+  const AppId app_id = GenerateAppIdFromURL(start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->SetLaunchUrl(launch_url);
+  web_app->SetLaunchUrl(start_url);
 
   // Required fields:
   if (!local_data.has_sources()) {

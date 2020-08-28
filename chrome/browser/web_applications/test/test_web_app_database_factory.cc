@@ -69,10 +69,10 @@ void TestWebAppDatabaseFactory::WriteProtos(
       store_->CreateWriteBatch();
 
   for (const std::unique_ptr<WebAppProto>& proto : protos) {
-    GURL launch_url(proto->sync_data().launch_url());
-    DCHECK(!launch_url.is_empty());
-    DCHECK(launch_url.is_valid());
-    AppId app_id = GenerateAppIdFromURL(launch_url);
+    GURL start_url(proto->sync_data().start_url());
+    DCHECK(!start_url.is_empty());
+    DCHECK(start_url.is_valid());
+    AppId app_id = GenerateAppIdFromURL(start_url);
     write_batch->WriteData(app_id, proto->SerializeAsString());
   }
 

@@ -66,21 +66,21 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   app->AddSource(Source::kSync);
 
   // app_id is a hash of launch_url. Parse launch_url first:
-  GURL launch_url(sync_data.launch_url());
-  if (launch_url.is_empty() || !launch_url.is_valid()) {
-    DLOG(ERROR) << "ApplySyncDataToApp: launch_url parse error.";
+  GURL start_url(sync_data.start_url());
+  if (start_url.is_empty() || !start_url.is_valid()) {
+    DLOG(ERROR) << "ApplySyncDataToApp: start_url parse error.";
     return;
   }
-  if (app->app_id() != GenerateAppIdFromURL(launch_url)) {
-    DLOG(ERROR) << "ApplySyncDataToApp: app_id doesn't match launch_url.";
+  if (app->app_id() != GenerateAppIdFromURL(start_url)) {
+    DLOG(ERROR) << "ApplySyncDataToApp: app_id doesn't match start_url.";
     return;
   }
 
   if (app->launch_url().is_empty()) {
-    app->SetLaunchUrl(std::move(launch_url));
-  } else if (app->launch_url() != launch_url) {
+    app->SetLaunchUrl(std::move(start_url));
+  } else if (app->launch_url() != start_url) {
     DLOG(ERROR)
-        << "ApplySyncDataToApp: existing launch_url doesn't match launch_url.";
+        << "ApplySyncDataToApp: existing start_url doesn't match start_url.";
     return;
   }
 
@@ -618,11 +618,11 @@ std::string WebAppSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
   DCHECK(entity_data.specifics.has_web_app());
 
-  const GURL launch_url(entity_data.specifics.web_app().launch_url());
-  DCHECK(!launch_url.is_empty());
-  DCHECK(launch_url.is_valid());
+  const GURL start_url(entity_data.specifics.web_app().start_url());
+  DCHECK(!start_url.is_empty());
+  DCHECK(start_url.is_valid());
 
-  return GenerateAppIdFromURL(launch_url);
+  return GenerateAppIdFromURL(start_url);
 }
 
 std::string WebAppSyncBridge::GetStorageKey(

@@ -157,8 +157,8 @@ class WebAppDatabaseTest : public WebAppTest {
     RandomHelper random(seed);
 
     const std::string seed_str = base::NumberToString(seed);
-    const auto launch_url = base_url + seed_str;
-    const AppId app_id = GenerateAppIdFromURL(GURL(launch_url));
+    const auto start_url = base_url + seed_str;
+    const AppId app_id = GenerateAppIdFromURL(GURL(start_url));
     const std::string name = "Name" + seed_str;
     const std::string description = "Description" + seed_str;
     const std::string scope = base_url + "/scope" + seed_str;
@@ -184,7 +184,7 @@ class WebAppDatabaseTest : public WebAppTest {
 
     app->SetName(name);
     app->SetDescription(description);
-    app->SetLaunchUrl(GURL(launch_url));
+    app->SetLaunchUrl(GURL(start_url));
     app->SetScope(GURL(scope));
     app->SetThemeColor(theme_color);
     app->SetBackgroundColor(background_color);
@@ -436,8 +436,8 @@ TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
 }
 
 TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
-  const GURL launch_url{"https://example.com/"};
-  const AppId app_id = GenerateAppIdFromURL(launch_url);
+  const GURL start_url{"https://example.com/"};
+  const AppId app_id = GenerateAppIdFromURL(start_url);
   const std::string name = "App Name";
   const auto user_display_mode = DisplayMode::kBrowser;
   const bool is_locally_installed = true;
@@ -449,7 +449,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
   auto proto = std::make_unique<WebAppProto>();
   {
     sync_pb::WebAppSpecifics sync_proto;
-    sync_proto.set_launch_url(launch_url.spec());
+    sync_proto.set_start_url(start_url.spec());
     sync_proto.set_user_display_mode(
         ToWebAppSpecificsUserDisplayMode(user_display_mode));
     *(proto->mutable_sync_data()) = std::move(sync_proto);
@@ -480,7 +480,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
 
   const WebApp* app = registrar().GetAppById(app_id);
   EXPECT_EQ(app_id, app->app_id());
-  EXPECT_EQ(launch_url, app->launch_url());
+  EXPECT_EQ(start_url, app->launch_url());
   EXPECT_EQ(name, app->name());
   EXPECT_EQ(user_display_mode, app->user_display_mode());
   EXPECT_EQ(is_locally_installed, app->is_locally_installed());
@@ -500,15 +500,15 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
 TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   controller().Init();
 
-  const auto launch_url = GURL("https://example.com/");
-  const AppId app_id = GenerateAppIdFromURL(GURL(launch_url));
+  const auto start_url = GURL("https://example.com/");
+  const AppId app_id = GenerateAppIdFromURL(GURL(start_url));
   const std::string name = "Name";
   const auto user_display_mode = DisplayMode::kBrowser;
 
   auto app = std::make_unique<WebApp>(app_id);
 
   // Required fields:
-  app->SetLaunchUrl(launch_url);
+  app->SetLaunchUrl(start_url);
   app->SetName(name);
   app->SetUserDisplayMode(user_display_mode);
   app->SetIsLocallyInstalled(false);
@@ -555,7 +555,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
 
   // Required fields were serialized:
   EXPECT_EQ(app_id, app_copy->app_id());
-  EXPECT_EQ(launch_url, app_copy->launch_url());
+  EXPECT_EQ(start_url, app_copy->launch_url());
   EXPECT_EQ(name, app_copy->name());
   EXPECT_EQ(user_display_mode, app_copy->user_display_mode());
   EXPECT_FALSE(app_copy->is_locally_installed());
