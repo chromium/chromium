@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/close_desk_button.h"
@@ -322,6 +324,11 @@ bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
   }
 
   DeskNameView::CommitChanges(GetWidget());
+
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+          IDS_ASH_DESKS_DESK_NAME_COMMIT, desk_->name()));
   return true;
 }
 
