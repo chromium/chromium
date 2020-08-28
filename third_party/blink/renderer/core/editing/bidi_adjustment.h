@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_INLINE_BOX_TRAVERSAL_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_INLINE_BOX_TRAVERSAL_H_
-
-// TODO(xiaochengh): Rename this file to |bidi_adjustment.h|
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_BIDI_ADJUSTMENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_BIDI_ADJUSTMENT_H_
 
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -48,4 +46,4 @@ TextDirection ParagraphDirectionOf(const NGPaintFragment&);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_INLINE_BOX_TRAVERSAL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_BIDI_ADJUSTMENT_H_

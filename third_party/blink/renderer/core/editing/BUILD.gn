@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("editing") {
   sources = [
+    "bidi_adjustment.cc",
+    "bidi_adjustment.h",
     "caret_display_item_client.cc",
     "caret_display_item_client.h",
     "commands/append_node_command.cc",
@@ -159,8 +161,6 @@ blink_core_sources("editing") {
     "ime/text_update_event.h",
     "inline_box_position.cc",
     "inline_box_position.h",
-    "inline_box_traversal.cc",
-    "inline_box_traversal.h",
     "iterators/backwards_character_iterator.cc",
     "iterators/backwards_character_iterator.h",
     "iterators/bit_stack.cc",

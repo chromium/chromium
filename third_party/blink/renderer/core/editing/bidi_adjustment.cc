@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/editing/inline_box_traversal.h"
+#include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 
 #include <unicode/ubidi.h>
 
@@ -15,8 +15,6 @@
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-
-// TODO(xiaochengh): Rename this file to |bidi_adjustment.cc|
 
 namespace blink {
 
