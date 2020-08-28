@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(TRACING_CPP) ReachedCodeDataSource
   ReachedCodeDataSource& operator=(ReachedCodeDataSource&&) = delete;
 
  private:
+  void WriteProfileData();
+
   std::unique_ptr<perfetto::TraceWriter> trace_writer_;
 };
 
