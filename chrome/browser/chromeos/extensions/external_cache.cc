@@ -67,17 +67,14 @@ base::Value ExternalCache::GetExtensionValueToCache(
 }
 
 // static
-bool ExternalCache::ShouldCacheImmediately(
-    const base::Value& extension,
-    const std::string& installed_version) {
+bool ExternalCache::ShouldCacheImmediately(const base::Value& extension) {
   DCHECK(extension.is_dict());
 
   const base::Value* keep_if_present_value =
       extension.FindKeyOfType(extensions::ExternalProviderImpl::kKeepIfPresent,
                               base::Value::Type::BOOLEAN);
 
-  return !installed_version.empty() ||
-         (keep_if_present_value && keep_if_present_value->GetBool()) ||
+  return (keep_if_present_value && keep_if_present_value->GetBool()) ||
          extension.FindKey(extensions::ExternalProviderImpl::kExternalCrx);
 }
 

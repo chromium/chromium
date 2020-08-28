@@ -27,12 +27,6 @@ class ExternalCacheDelegate {
 
   // Called when extension with |id| fails to load due to a download error.
   virtual void OnExtensionDownloadFailed(const extensions::ExtensionId& id);
-
-  // Cache needs to provide already installed extensions otherwise they
-  // will be removed. Cache calls this function to get version of installed
-  // extension or empty string if not installed.
-  virtual std::string GetInstalledExtensionVersion(
-      const extensions::ExtensionId& id);
 };
 
 }  // namespace chromeos

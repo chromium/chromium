@@ -215,15 +215,9 @@ bool ExternalCacheImpl::IsExtensionPending(const std::string& id) {
 bool ExternalCacheImpl::GetExtensionExistingVersion(const std::string& id,
                                                     std::string* version) {
   base::DictionaryValue* extension_dictionary = NULL;
-  if (cached_extensions_->GetDictionary(id, &extension_dictionary)) {
-    if (extension_dictionary->GetString(
-            extensions::ExternalProviderImpl::kExternalVersion, version)) {
-      return true;
-    }
-    *version = delegate_->GetInstalledExtensionVersion(id);
-    return !version->empty();
-  }
-  return false;
+  return cached_extensions_->GetDictionary(id, &extension_dictionary) &&
+         extension_dictionary->GetString(
+             extensions::ExternalProviderImpl::kExternalVersion, version);
 }
 
 void ExternalCacheImpl::UpdateExtensionLoader() {
@@ -272,9 +266,7 @@ void ExternalCacheImpl::CheckCache() {
       cached_extensions_->SetKey(
           entry.first,
           GetExtensionValueToCache(entry.second, file_path.value(), version));
-    } else if (ShouldCacheImmediately(
-                   entry.second,
-                   delegate_->GetInstalledExtensionVersion(entry.first))) {
+    } else if (ShouldCacheImmediately(entry.second)) {
       cached_extensions_->SetKey(entry.first, entry.second.Clone());
     }
   }
