@@ -10,8 +10,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -70,8 +69,8 @@ id<GREYMatcher> incognitoHelpContainsText() {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS 13.");
   }
   // Prepare a simple but known URL to avoid testing from the NTP.
-  const GURL simple_URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL simple_URL = self.testServer->GetURL("/destination.html");
 
   // Prepare a helper block to test Sad Tab navigating from and to normal pages.
   void (^loadAndCheckSimpleURL)() = ^void() {

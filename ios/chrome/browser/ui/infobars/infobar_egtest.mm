@@ -17,8 +17,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -95,11 +94,15 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
   return config;
 }
 
+- (void)setUp {
+  [super setUp];
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
+
 // Tests that page infobars don't persist on navigation.
 - (void)testInfobarsDismissOnNavigate {
   // Open a new tab and navigate to the test page.
-  const GURL testURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  const GURL testURL = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -126,10 +129,8 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
 // Tests that page infobars persist only on the tabs they are opened on, and
 // that navigation in other tabs doesn't affect them.
 - (void)testInfobarTabSwitch {
-  const GURL destinationURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
-  const GURL ponyURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  const GURL destinationURL = self.testServer->GetURL("/destination.html");
+  const GURL ponyURL = self.testServer->GetURL("/pony.html");
 
   // Create the first tab and navigate to the test page.
   [ChromeEarlGrey loadURL:destinationURL];
@@ -170,8 +171,7 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
 // Tests that the Infobar dissapears once the "OK" button is tapped.
 - (void)testInfobarButtonDismissal {
   // Open a new tab and navigate to the test page.
-  const GURL testURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  const GURL testURL = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -207,8 +207,7 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
 #endif
 
   // Open a new tab and navigate to the test page.
-  const GURL testURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  const GURL testURL = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -253,8 +252,7 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
 #endif
 
   // Open a new tab and navigate to the test page.
-  const GURL testURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  const GURL testURL = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:testURL];
   [ChromeEarlGrey waitForMainTabCount:1];
 

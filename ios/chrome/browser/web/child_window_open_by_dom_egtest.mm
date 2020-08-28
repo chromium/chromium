@@ -9,18 +9,16 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 using chrome_test_util::OmniboxText;
-using web::test::HttpServer;
 
 namespace {
 // Test link text and ids.
@@ -40,17 +38,9 @@ const char kSlowPath[] = "/slow.html";
 const char kSlowPathContent[] = "Slow Page";
 int kSlowPathDelay = 3;
 
-// net::EmbeddedTestServer handler for kWriteReloadPath and kSlowPath.
-std::unique_ptr<net::test_server::HttpResponse> WriteReloadHandler(
+// net::EmbeddedTestServer handler for kWriteReloadPath.
+std::unique_ptr<net::test_server::HttpResponse> ReloadHandler(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() == kSlowPath) {
-    auto slow_http_response =
-        std::make_unique<net::test_server::DelayedHttpResponse>(
-            base::TimeDelta::FromSeconds(kSlowPathDelay));
-    slow_http_response->set_content_type("text/html");
-    slow_http_response->set_content(kSlowPathContent);
-    return std::move(slow_http_response);
-  }
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_content_type("text/html");
   http_response->set_content(base::StringPrintf(
@@ -60,6 +50,17 @@ std::unique_ptr<net::test_server::HttpResponse> WriteReloadHandler(
       "type='button' /></body></html>",
       kSlowPath));
   return std::move(http_response);
+}
+
+// net::EmbeddedTestServer handler for kSlowPath.
+std::unique_ptr<net::test_server::HttpResponse> SlowResponseHandler(
+    const net::test_server::HttpRequest& request) {
+  auto slow_http_response =
+      std::make_unique<net::test_server::DelayedHttpResponse>(
+          base::TimeDelta::FromSeconds(kSlowPathDelay));
+  slow_http_response->set_content_type("text/html");
+  slow_http_response->set_content(kSlowPathContent);
+  return std::move(slow_http_response);
 }
 
 }  // namespace
@@ -95,10 +96,17 @@ std::unique_ptr<net::test_server::HttpResponse> WriteReloadHandler(
 
 - (void)setUp {
   [super setUp];
+  self.testServer->RegisterDefaultHandler(base::BindRepeating(
+      net::test_server::HandlePrefixedRequest, kWriteReloadPath,
+      base::BindRepeating(&ReloadHandler)));
+  self.testServer->RegisterDefaultHandler(
+      base::BindRepeating(net::test_server::HandlePrefixedRequest, kSlowPath,
+                          base::BindRepeating(&SlowResponseHandler)));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
   // Open the test page. There should only be one tab open.
-  const char kChildWindowTestURL[] =
-      "http://ios/testing/data/http_server_files/window_proxy.html";
-  [ChromeEarlGrey loadURL:HttpServer::MakeUrl(kChildWindowTestURL)];
+  const char kChildWindowTestURL[] = "/window_proxy.html";
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kChildWindowTestURL)];
   [ChromeEarlGrey waitForWebStateContainingText:(base::SysNSStringToUTF8(
                                                     kNamedWindowLink))];
   [ChromeEarlGrey waitForMainTabCount:1];
@@ -243,8 +251,6 @@ std::unique_ptr<net::test_server::HttpResponse> WriteReloadHandler(
 // Tests that reloading a window.open with a document.write does not leave a
 // dangling pending item. This is a regression test from crbug.com/1011898
 - (void)testWindowOpenWriteAndReload {
-  self.testServer->RegisterRequestHandler(base::Bind(&WriteReloadHandler));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kWriteReloadPath)];
   [ChromeEarlGrey tapWebStateElementWithID:@"button"];
   [ChromeEarlGrey reload];

@@ -20,10 +20,6 @@
 #endif
 
 namespace {
-// Directory containing the |kLogoPagePath| and |kLogoPageImageSourcePath|
-// resources.
-const char kServerFilesDir[] = "ios/testing/data/http_server_files/";
-
 // Id of the "Start Logging" button.
 NSString* const kStartLoggingButtonId = @"start-logging";
 // Id of the "Stop Logging" button.
@@ -100,8 +96,6 @@ ElementSelector* StartLoggingButton() {
 
 - (void)setUp {
   [super setUp];
-  self.testServer->ServeFilesFromSourceDirectory(
-      base::FilePath(kServerFilesDir));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 

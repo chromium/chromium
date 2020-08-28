@@ -21,6 +21,7 @@
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
 #include "net/http/http_response_headers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -110,8 +111,8 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
     EARL_GREY_TEST_SKIPPED(@"Tab Title not displayed on handset.");
   }
 
-  const GURL destinationURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationURL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey loadURL:destinationURL];
 
   // Add 3 for the "://" which is not considered part of the scheme
@@ -128,8 +129,8 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
     EARL_GREY_TEST_SKIPPED(@"Tab Title not displayed on handset.");
   }
 
-  const GURL destinationURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/testpage.pdf");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL destinationURL = self.testServer->GetURL("/testpage.pdf");
   [ChromeEarlGrey loadURL:destinationURL];
 
   // Add 3 for the "://" which is not considered part of the scheme

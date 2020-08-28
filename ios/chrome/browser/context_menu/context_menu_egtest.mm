@@ -38,7 +38,7 @@ using chrome_test_util::WebViewMatcher;
 namespace {
 // Directory containing the |kLogoPagePath| and |kLogoPageImageSourcePath|
 // resources.
-const char kServerFilesDir[] = "ios/testing/data/http_server_files/";
+// const char kServerFilesDir[] = "ios/testing/data/http_server_files/";
 // Path to a page containing the chromium logo and the text |kLogoPageText|.
 const char kLogoPagePath[] = "/chromium_logo_page.html";
 // Path to the chromium logo.
@@ -139,8 +139,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   [super setUp];
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
-  self.testServer->ServeFilesFromSourceDirectory(
-      base::FilePath(kServerFilesDir));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 

@@ -19,8 +19,8 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
 #include "net/base/net_errors.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -63,8 +63,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 // Verifies that adding a bookmark and removing a bookmark via the UI properly
 // updates the BookmarkModel.
 - (void)testAddRemoveBookmark {
-  const GURL bookmarkedURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
   std::string expectedURLContent = bookmarkedURL.GetContent();
   NSString* bookmarkTitle = @"my bookmark";
 
@@ -143,10 +144,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Test to set bookmarks in multiple tabs.
 - (void)testBookmarkMultipleTabs {
-  const GURL firstURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
-  const GURL secondURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  const GURL firstURL = self.testServer->GetURL("/pony.html");
+  const GURL secondURL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey loadURL:firstURL];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:secondURL];

@@ -8,9 +8,8 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
 #import "net/base/mac/url_conversions.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -47,6 +46,11 @@ void AssertHandoffURL(const GURL& gurl) {
 
 @implementation HandoffManagerTestCase
 
+- (void)setUp {
+  [super setUp];
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+}
+
 #pragma mark - Tests
 
 // Tests that an empty new tab page should result in no Handoff URL.
@@ -56,8 +60,7 @@ void AssertHandoffURL(const GURL& gurl) {
 
 // Tests that the simple case of Handoff URL for a single page.
 - (void)testTypicalURL {
-  const GURL destinationUrl = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
+  const GURL destinationUrl = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey loadURL:destinationUrl];
   AssertHandoffURL(destinationUrl);
 }
@@ -65,8 +68,7 @@ void AssertHandoffURL(const GURL& gurl) {
 // Tests Handoff URL for a new tab.
 - (void)testTypicalURLInNewTab {
   [ChromeEarlGrey openNewTab];
-  const GURL destinationUrl = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
   AssertHandoffURL(destinationUrl);
 }
@@ -75,15 +77,13 @@ void AssertHandoffURL(const GURL& gurl) {
 - (void)testTypicalURLInNewIncognitoTab {
   // Opens an incognito tab and loads a web page. Check that Handoff URL is nil.
   [ChromeEarlGrey openNewIncognitoTab];
-  const GURL destinationUrl = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
+  const GURL destinationUrl = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey loadURL:destinationUrl];
   AssertHandoffURL(GURL());
 
   // Loads a second URL on the same incognito tab. Handoff URL should still be
   // nil.
-  const GURL destinationUrl2 = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  const GURL destinationUrl2 = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl2];
   AssertHandoffURL(GURL());
 }
@@ -91,12 +91,9 @@ void AssertHandoffURL(const GURL& gurl) {
 // Tests the state for Handoff URL when creating, closing tab, and switching
 // tab.
 - (void)testMultipleSwitchingTabs {
-  const GURL tab1URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
-  const GURL tab2URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
-  const GURL tab3URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/chromium_logo_page.html");
+  const GURL tab1URL = self.testServer->GetURL("/destination.html");
+  const GURL tab2URL = self.testServer->GetURL("/pony.html");
+  const GURL tab3URL = self.testServer->GetURL("/chromium_logo_page.html");
 
   // Sets up the state for 3 tabs.
   [ChromeEarlGrey loadURL:tab1URL];
@@ -118,12 +115,9 @@ void AssertHandoffURL(const GURL& gurl) {
 // Tests the state for Handoff URL when switching between normal tabs and
 // incognito tabs.
 - (void)testSwitchBetweenNormalAndIncognitoTabs {
-  const GURL tab1URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/destination.html");
-  const GURL tab2URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
-  const GURL tab3URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/chromium_logo_page.html");
+  const GURL tab1URL = self.testServer->GetURL("/destination.html");
+  const GURL tab2URL = self.testServer->GetURL("/pony.html");
+  const GURL tab3URL = self.testServer->GetURL("/chromium_logo_page.html");
 
   // Loads one page.
   [ChromeEarlGrey loadURL:tab1URL];

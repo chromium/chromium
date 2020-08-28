@@ -15,9 +15,8 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/test/element_selector.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
 #import "ios/web/public/web_state.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -74,8 +73,8 @@ void AssertElementIsFocused(const std::string& element_id) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no hidden toolbar in tablet)");
   }
 
-  GURL URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/multi_field_form.html");
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  GURL URL = self.testServer->GetURL("/multi_field_form.html");
   [ChromeEarlGrey loadURL:URL];
 
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];

@@ -20,7 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -850,8 +850,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify that the bookmark that is going to be added is not in the
   // BookmarkModel.
-  const GURL bookmarkedURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/fullscreen.html");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL bookmarkedURL = self.testServer->GetURL("/fullscreen.html");
   NSString* const bookmarkedURLString =
       base::SysUTF8ToNSString(bookmarkedURL.spec());
   [BookmarkEarlGrey verifyBookmarksWithTitle:bookmarkedURLString
@@ -991,8 +991,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Test the creation of a bookmark and new folder (by tapping on the star).
 - (void)testAddBookmarkInNewFolder {
-  const GURL bookmarkedURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/pony.html");
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
   std::string expectedURLContent = bookmarkedURL.GetContent();
 
   [ChromeEarlGrey loadURL:bookmarkedURL];

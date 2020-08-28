@@ -551,7 +551,7 @@ source_set("eg2_tests") {
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/http_server",
+    "//net:test_support",
   ]
   frameworks = [ "UIKit.framework" ]
 }
