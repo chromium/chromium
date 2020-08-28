@@ -73,7 +73,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
 
   // Describes whether the current animation should INCREASE (thicken)
   // a bar or DECREASE it (thin).
-  enum AnimationChange { NONE, INCREASE, DECREASE };
+  enum class AnimationChange { NONE, INCREASE, DECREASE };
   float ThumbThicknessScaleAt(float progress);
 
   float AdjustScale(float new_value,

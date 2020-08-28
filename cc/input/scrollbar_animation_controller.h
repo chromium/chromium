@@ -95,7 +95,7 @@ class CC_EXPORT ScrollbarAnimationController {
 
  private:
   // Describes whether the current animation should FadeIn or FadeOut.
-  enum AnimationChange { NONE, FADE_IN, FADE_OUT };
+  enum class AnimationChange { NONE, FADE_IN, FADE_OUT };
 
   ScrollbarAnimationController(ElementId scroll_element_id,
                                ScrollbarAnimationControllerClient* client,

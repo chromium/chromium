@@ -50,7 +50,7 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       fade_duration_(fade_duration),
       need_trigger_scrollbar_fade_in_(false),
       is_animating_(false),
-      animation_change_(NONE),
+      animation_change_(AnimationChange::NONE),
       scroll_element_id_(scroll_element_id),
       opacity_(initial_opacity),
       show_scrollbars_on_scroll_gesture_(false),
@@ -70,7 +70,7 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       fade_duration_(fade_duration),
       need_trigger_scrollbar_fade_in_(false),
       is_animating_(false),
-      animation_change_(NONE),
+      animation_change_(AnimationChange::NONE),
       scroll_element_id_(scroll_element_id),
       opacity_(initial_opacity),
       show_scrollbars_on_scroll_gesture_(true),
@@ -102,7 +102,7 @@ ScrollbarAnimationController::GetScrollbarAnimationController(
 }
 
 void ScrollbarAnimationController::StartAnimation() {
-  DCHECK(animation_change_ != NONE);
+  DCHECK(animation_change_ != AnimationChange::NONE);
   delayed_scrollbar_animation_.Cancel();
   need_trigger_scrollbar_fade_in_ = false;
   is_animating_ = true;
@@ -114,7 +114,7 @@ void ScrollbarAnimationController::StopAnimation() {
   delayed_scrollbar_animation_.Cancel();
   need_trigger_scrollbar_fade_in_ = false;
   is_animating_ = false;
-  animation_change_ = NONE;
+  animation_change_ = AnimationChange::NONE;
 }
 
 void ScrollbarAnimationController::PostDelayedAnimation(
@@ -137,7 +137,7 @@ bool ScrollbarAnimationController::Animate(base::TimeTicks now) {
   }
 
   if (is_animating_) {
-    DCHECK(animation_change_ != NONE);
+    DCHECK(animation_change_ != AnimationChange::NONE);
     if (last_awaken_time_.is_null())
       last_awaken_time_ = now;
 
@@ -166,8 +166,8 @@ float ScrollbarAnimationController::AnimationProgressAtTime(
 void ScrollbarAnimationController::RunAnimationFrame(float progress) {
   float opacity;
 
-  DCHECK(animation_change_ != NONE);
-  if (animation_change_ == FADE_IN) {
+  DCHECK(animation_change_ != AnimationChange::NONE);
+  if (animation_change_ == AnimationChange::FADE_IN) {
     opacity = std::max(progress, opacity_);
   } else {
     opacity = std::min(1.f - progress, opacity_);
@@ -194,9 +194,9 @@ void ScrollbarAnimationController::UpdateScrollbarState() {
   // Overlay) and mouse is near or tickmarks show.
   if (need_thinning_animation_) {
     if (!MouseIsNearAnyScrollbar() && !tickmarks_showing_)
-      PostDelayedAnimation(FADE_OUT);
+      PostDelayedAnimation(AnimationChange::FADE_OUT);
   } else {
-    PostDelayedAnimation(FADE_OUT);
+    PostDelayedAnimation(AnimationChange::FADE_OUT);
   }
 
   if (need_thinning_animation_) {
@@ -251,7 +251,7 @@ void ScrollbarAnimationController::DidMouseUp() {
 
   if (!Captured()) {
     if (MouseIsNearAnyScrollbar() && ScrollbarsHidden()) {
-      PostDelayedAnimation(FADE_IN);
+      PostDelayedAnimation(AnimationChange::FADE_IN);
       need_trigger_scrollbar_fade_in_ = true;
     }
     return;
@@ -261,7 +261,7 @@ void ScrollbarAnimationController::DidMouseUp() {
   horizontal_controller_->DidMouseUp();
 
   if (!MouseIsNearAnyScrollbar() && !ScrollbarsHidden() && !tickmarks_showing_)
-    PostDelayedAnimation(FADE_OUT);
+    PostDelayedAnimation(AnimationChange::FADE_OUT);
 }
 
 void ScrollbarAnimationController::DidMouseLeave() {
@@ -277,7 +277,7 @@ void ScrollbarAnimationController::DidMouseLeave() {
   if (ScrollbarsHidden() || Captured() || tickmarks_showing_)
     return;
 
-  PostDelayedAnimation(FADE_OUT);
+  PostDelayedAnimation(AnimationChange::FADE_OUT);
 }
 
 void ScrollbarAnimationController::DidMouseMove(
@@ -304,7 +304,7 @@ void ScrollbarAnimationController::DidMouseMove(
     if (need_trigger_scrollbar_fade_in_before !=
         need_trigger_scrollbar_fade_in_) {
       if (need_trigger_scrollbar_fade_in_) {
-        PostDelayedAnimation(FADE_IN);
+        PostDelayedAnimation(AnimationChange::FADE_IN);
       } else {
         delayed_scrollbar_animation_.Cancel();
       }
@@ -314,7 +314,7 @@ void ScrollbarAnimationController::DidMouseMove(
       Show();
       StopAnimation();
     } else if (!is_animating_) {
-      PostDelayedAnimation(FADE_OUT);
+      PostDelayedAnimation(AnimationChange::FADE_OUT);
     }
   }
 }
