@@ -193,14 +193,11 @@ bool SVGAnimateMotionElement::CalculateFromAndToValues(
 bool SVGAnimateMotionElement::CalculateFromAndByValues(
     const String& from_string,
     const String& by_string) {
-  has_to_point_at_end_of_duration_ = false;
-  if (GetAnimationMode() == kByAnimation && !IsAdditive())
-    return false;
-  ParsePoint(from_string, from_point_);
-  FloatPoint by_point;
-  ParsePoint(by_string, by_point);
-  to_point_ = FloatPoint(from_point_.X() + by_point.X(),
-                         from_point_.Y() + by_point.Y());
+  CalculateFromAndToValues(from_string, by_string);
+  // Apply 'from' to 'to' to get 'by' semantics. If the animation mode
+  // is 'by', |from_string| will be the empty string and yield a point
+  // of (0,0).
+  to_point_ += from_point_;
   return true;
 }
 

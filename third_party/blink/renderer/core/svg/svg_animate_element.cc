@@ -414,14 +414,12 @@ bool SVGAnimateElement::CalculateFromAndToValues(const String& from_string,
 bool SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
                                                  const String& by_string) {
   DCHECK(targetElement());
+  DCHECK(GetAnimationMode() == kByAnimation ||
+         GetAnimationMode() == kFromByAnimation);
 
-  if (GetAnimationMode() == kByAnimation && !IsAdditive())
-    return false;
-
-  // from-by animation may only be used with attributes that support addition
+  // by/from-by animation may only be used with attributes that support addition
   // (e.g. most numeric attributes).
-  if (GetAnimationMode() == kFromByAnimation &&
-      !AnimatedPropertyTypeSupportsAddition())
+  if (!AnimatedPropertyTypeSupportsAddition())
     return false;
 
   DCHECK(!IsA<SVGSetElement>(*this));
