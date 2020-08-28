@@ -6,7 +6,11 @@ include_rules = [
   # components/ are not allowed.
   "-components",
 
-  # Components that wish to use the content API or IPC must explicitly declare 
+  # Components that wish to use the content API or IPC must explicitly declare
   # these dependencies; see ./README.
   "-ipc",
+
+  # TODO(crbug.com/470582): ApplicationStatus should be moved to //chrome. In the
+  # mean time, ban new usages.
+  "-base/android/java/src/org/chromium/base/ApplicationStatus.java",
 ]

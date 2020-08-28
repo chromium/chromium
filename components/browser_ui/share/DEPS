@@ -5,3 +5,10 @@ include_rules = [
   "+content/public/test/android/javatests",
   "+ui/android",
 ]
+
+specific_include_rules = {
+  "ShareImageFileUtils\.java": [
+    # TODO(crbug.com/470582): remove this exemption.
+    "+base/android/java/src/org/chromium/base/ApplicationStatus.java",
+  ]
+}
