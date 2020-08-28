@@ -46,13 +46,39 @@
 
 namespace {
 
-constexpr int kDesiredBorderHeight = 22;
-// TODO(999557): Change this to 32 when the font is changed to Roboto.
-constexpr int kDoubleDigitWidth = 30;
+// The distance to move a label so it appears "offscreen" - that is, the text
+// will be clipped by the border and not visible.
 constexpr int kOffscreenLabelDistance = 16;
 
 constexpr base::TimeDelta kFirstPartDuration =
     base::TimeDelta::FromMilliseconds(100);
+
+// Label to display a number of tabs. Because there is limited space within the
+// tab counter border, the font shrinks when the count is 10 or higher.
+class NumberLabel : public views::Label {
+ public:
+  NumberLabel() : Label(base::string16(), CONTEXT_WEB_UI_TAB_COUNTER) {
+    // Use the default font for single-digit tab counts.
+    single_digit_font_ = font_list();
+
+    // Use a size adjustment of -2 because -1 makes the font impossible to
+    // center in the view.
+    constexpr int kDoubleDigitSizeAdjustment = -2;
+    double_digit_font_ =
+        single_digit_font_.DeriveWithSizeDelta(kDoubleDigitSizeAdjustment);
+  }
+
+  ~NumberLabel() override {}
+
+  void SetText(const base::string16& text) override {
+    SetFontList(text.length() > 1 ? double_digit_font_ : single_digit_font_);
+    Label::SetText(text);
+  }
+
+ private:
+  gfx::FontList single_digit_font_;
+  gfx::FontList double_digit_font_;
+};
 
 // Animates the label and border. |border_view_| does a little bounce. At the
 // peak of |border_view_|'s bounce, the |disappearing_label_| begins to scroll
@@ -158,9 +184,15 @@ class TabCounterAnimator : public gfx::AnimationDelegate {
   }
 
  private:
-  int GetBorderTargetYDelta() const { return increasing_ ? 4 : -4; }
+  int GetBorderTargetYDelta() const {
+    constexpr int kBorderBounceDistance = 4;
+    return increasing_ ? kBorderBounceDistance : -kBorderBounceDistance;
+  }
 
-  int GetBorderOvershootYDelta() const { return increasing_ ? -2 : 2; }
+  int GetBorderOvershootYDelta() const {
+    constexpr int kBorderBounceOvershoot = 2;
+    return increasing_ ? -kBorderBounceOvershoot : kBorderBounceOvershoot;
+  }
 
   int GetAppearingLabelStartPosition() const {
     return increasing_ ? -kOffscreenLabelDistance : kOffscreenLabelDistance;
@@ -364,18 +396,17 @@ void WebUITabCounterButton::Init() {
       AddChildView(std::make_unique<views::InkDropContainerView>());
   ink_drop_container_->SetBoundsRect(GetLocalBounds());
 
+  throbber_ = AddChildView(std::make_unique<views::Throbber>());
+
   border_view_ = AddChildView(std::make_unique<views::View>());
 
-  appearing_label_ = border_view_->AddChildView(std::make_unique<views::Label>(
-      base::string16(), CONTEXT_WEB_UI_TAB_COUNTER));
+  appearing_label_ =
+      border_view_->AddChildView(std::make_unique<NumberLabel>());
   disappearing_label_ =
-      border_view_->AddChildView(std::make_unique<views::Label>(
-          base::string16(), CONTEXT_WEB_UI_TAB_COUNTER));
+      border_view_->AddChildView(std::make_unique<NumberLabel>());
 
   animator_ = std::make_unique<TabCounterAnimator>(
       appearing_label_, disappearing_label_, border_view_);
-
-  throbber_ = AddChildView(std::make_unique<views::Throbber>());
 
   set_context_menu_controller(this);
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
@@ -422,19 +453,28 @@ void WebUITabCounterButton::OnThemeChanged() {
 }
 
 void WebUITabCounterButton::Layout() {
-  const int button_height = GetLocalBounds().height();
-  const int inset_height = (button_height - kDesiredBorderHeight) / 2;
-  const int border_width = (num_tabs_ >= 10 && num_tabs_ < 100)
-                               ? kDoubleDigitWidth
-                               : kDesiredBorderHeight;
-  const int inset_width = (button_height - border_width) / 2;
-  border_view_->SetBounds(inset_width, inset_height, border_width,
-                          kDesiredBorderHeight);
-  appearing_label_->SetBounds(0, 0, border_width, kDesiredBorderHeight);
-  disappearing_label_->SetBounds(0, -kOffscreenLabelDistance, border_width,
-                                 kDesiredBorderHeight);
-  throbber_->SetBoundsRect(GetLocalBounds());
+  const gfx::Rect view_bounds = GetLocalBounds();
 
+  // Position views from the outside in (beacuse it's easier).
+  // Start with the throbber.
+  const int throbber_height = GetLayoutConstant(LOCATION_BAR_HEIGHT);
+  gfx::Rect throbber_rect = view_bounds;
+  throbber_rect.ClampToCenteredSize(
+      gfx::Size(throbber_height, throbber_height));
+  throbber_->SetBoundsRect(throbber_rect);
+
+  // Next is the rounded rect border around the counter.
+  constexpr gfx::Size kDesiredBorderSize(22, 22);
+  gfx::Rect border_bounds = view_bounds;
+  border_bounds.ClampToCenteredSize(kDesiredBorderSize);
+  border_view_->SetBoundsRect(border_bounds);
+
+  // Finally is the numbers themselves, which nest inside the label view.
+  appearing_label_->SetBoundsRect(gfx::Rect(kDesiredBorderSize));
+  disappearing_label_->SetBoundsRect(
+      gfx::Rect(gfx::Point(0, -kOffscreenLabelDistance), kDesiredBorderSize));
+
+  // Adjust label positions for animation.
   animator_->LayoutIfAnimating();
 }
 
