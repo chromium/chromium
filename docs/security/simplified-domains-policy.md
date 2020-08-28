@@ -8,8 +8,12 @@ the entire URL can often provide opportunities for spoofing (e.g.
 experiment](https://blog.chromium.org/2020/08/helping-people-spot-spoofs-url.html),
 Google Chrome may simplify the URL display to show only the most critical
 information for security, hiding parts of the URL that make it harder for users
-to make decisions about a site's identity and trustworthiness. This page
-explains the criteria Chrome uses when simplifying the URL.
+to make decisions about a site's identity and trustworthiness.
+
+This page explains the proposed criteria that Chrome will be using when simplifying
+the URL. Note that this criteria is tentative and may change as Chrome collects
+data from the
+[M86 simplified URL experiment](https://blog.chromium.org/2020/08/helping-people-spot-spoofs-url.html
 
 For more information about best practices for URL display in browsers, see our
 article on [Guidelines for URL
