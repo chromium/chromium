@@ -271,7 +271,7 @@ template<typename T>
 class HeapListHashSet : public ListHashSet<T, void, void, HeapAllocator> { };
 
 template<typename T>
-class HeapLinkedHashSet : public LinkedHashSet<T, void, void, HeapAllocator> {
+class HeapLinkedHashSet : public LinkedHashSet<T, void, HeapAllocator> {
 };
 
 template<typename T>
