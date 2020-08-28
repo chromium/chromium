@@ -2199,6 +2199,7 @@ test("content_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/common:font_enumeration_table_proto",
     "//third_party/icu",
     "//third_party/inspector_protocol:crdtp_test",
     "//third_party/leveldatabase",

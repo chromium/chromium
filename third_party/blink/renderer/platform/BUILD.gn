@@ -159,6 +159,7 @@ group("blink_platform_public_deps") {
     "//third_party:jpeg",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common",
+    "//third_party/blink/public/common:font_enumeration_table_proto",
     "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_blink",
     "//third_party/blink/renderer/platform/heap:blink_heap_buildflags",

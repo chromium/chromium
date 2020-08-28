@@ -244,3 +244,7 @@ if (is_android || is_win) {
     sources = [ "font_unique_name_lookup/font_unique_name_table.proto" ]
   }
 }
+
+proto_library("font_enumeration_table_proto") {
+  sources = [ "font_access/font_enumeration_table.proto" ]
+}

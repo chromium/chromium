@@ -1,0 +1,7 @@
+oyiptong@chromium.org
+jsbell@Chromium.org
+
+# COMPONENT: Blink>Storage>FontAccess
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

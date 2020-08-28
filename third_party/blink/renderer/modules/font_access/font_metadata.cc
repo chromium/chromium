@@ -13,11 +13,31 @@
 #include "third_party/blink/renderer/modules/font_access/font_table_map.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_global_context.h"
+#include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
 namespace blink {
+
+namespace {
+
+// Sets up internal FontUniqueLookup metadata that will allow matching
+// unique names, on platforms that apply.
+void SetUpFontUniqueLookupIfNecessary() {
+  FontUniqueNameLookup* unique_name_lookup =
+      FontGlobalContext::Get()->GetFontUniqueNameLookup();
+  if (!unique_name_lookup)
+    return;
+  // Contrary to what the method name might imply, this is not an idempotent
+  // method. It also initializes the state in the FontUniqueNameLookup object
+  // to either retrieve from tables on Windows 7, or direct lookups on
+  // Windows 10.
+  unique_name_lookup->IsFontUniqueNameLookupReadyForSyncLookup();
+}
+
+}  // namespace
 
 FontMetadata::FontMetadata(const FontEnumerationEntry& entry)
     : postscriptName_(entry.postscript_name),
@@ -34,7 +54,7 @@ ScriptPromise FontMetadata::blob(ScriptState* script_state) {
   ScriptPromise promise = resolver->Promise();
 
   Thread::Current()->GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::Bind(&FontMetadata::blobImpl, WrapPersistent(resolver),
+      FROM_HERE, WTF::Bind(&FontMetadata::BlobImpl, WrapPersistent(resolver),
                            postscriptName_));
 
   return promise;
@@ -46,15 +66,18 @@ void FontMetadata::Trace(blink::Visitor* visitor) const {
 
 
 // static
-void FontMetadata::blobImpl(ScriptPromiseResolver* resolver,
+void FontMetadata::BlobImpl(ScriptPromiseResolver* resolver,
                             const String& postscriptName) {
   if (!resolver->GetScriptState()->ContextIsValid())
     return;
 
+  SetUpFontUniqueLookupIfNecessary();
+
   FontDescription description;
   scoped_refptr<SimpleFontData> font_data =
-      FontCache::GetFontCache()->GetFontData(description,
-                                             AtomicString(postscriptName));
+      FontCache::GetFontCache()->GetFontData(
+          description, AtomicString(postscriptName),
+          AlternateFontName::kLocalUniqueFace);
   if (!font_data) {
     auto message = String::Format("The font %s could not be accessed.",
                                   postscriptName.Latin1().c_str());

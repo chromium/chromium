@@ -5,6 +5,17 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+enum FontEnumerationStatus {
+  kOk,
+  // The functionality has not been implemented yet.
+  kUnimplemented,
+  // The service failed due to an unexpected error.
+  kUnexpectedError,
+  // The site doesn't have permission for the requested operation.
+  kPermissionDenied,
+};
 
 // Implemented in the browser process to pass font data to windows
 // and workers in renderer processes.
@@ -12,6 +23,10 @@ import "third_party/blink/public/mojom/permissions/permission_status.mojom";
 interface FontAccessManager {
   // Provides a permission request response. Used on Mac because fonts are
   // enumerated in-renderer on that platform.
-  // TODO(crbug.com/1113876): [EnableIf=is_mac] since this only applies to Mac.
+  [EnableIf=is_mac]
   RequestPermission() => (PermissionStatus status);
+
+  // Enumerate locally installed fonts. Results will be gated by a permission
+  // check.
+  EnumerateLocalFonts() => (FontEnumerationStatus enumeration_status, mojo_base.mojom.ReadOnlySharedMemoryRegion? enumeration_table);
 };

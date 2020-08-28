@@ -63514,6 +63514,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Time to retrieve the fallback fonts on the system.</summary>
 </histogram>
 
+<histogram name="Fonts.AccessAPI.EnumerationCache.Dwrite.FamilyCount"
+    units="families" expires_after="M90">
+  <owner>oyiptong@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
+  <summary>
+    Records the number of font families observed by the font enumeration cache
+    as part of the Font Access API.
+  </summary>
+</histogram>
+
+<histogram
+    name="Fonts.AccessAPI.EnumerationCache.Dwrite.GetSystemFontCollectionResult"
+    enum="Hresult" expires_after="M90">
+  <owner>oyiptong@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
+  <summary>
+    Records errors returned when obtaining the list of system fonts from
+    DirectWrite's GetSystemFontCollection.
+  </summary>
+</histogram>
+
+<histogram
+    name="Fonts.AccessAPI.EnumerationCache.Dwrite.MostFrequentEnumerationFailure"
+    enum="Hresult" expires_after="M90">
+  <owner>oyiptong@chromium.org</owner>
+  <owner>storage-dev@chromium.org</owner>
+  <summary>
+    Records the most frequent failure to obtain metadata for a font family when
+    enumerating fonts as part of the Font Access API. Recorded in
+    FontEnumerationCacheWin when all fonts have been enumerated. Values are
+    Windows HRESULT error codes, and also includes custom values specific to
+    this implementation.
+  </summary>
+</histogram>
+
 <histogram name="ForceDiceMigration.RevokeTokenAction" enum="RevokeTokenAction"
     expires_after="2020-10-04">
   <owner>msalama@chromium.org</owner>
