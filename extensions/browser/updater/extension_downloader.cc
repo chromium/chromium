@@ -1065,7 +1065,7 @@ base::Optional<base::FilePath> ExtensionDownloader::GetCachedExtension(
   }
   // If manifest fetch is failed, we need not verify the version of the cache as
   // we will try to install the version present in the cache.
-  if (!manifest_fetch_failed && version != fetch_data.version) {
+  if (!manifest_fetch_failed && fetch_data.version != base::Version(version)) {
     delegate_->OnExtensionDownloadCacheStatusRetrieved(
         fetch_data.id,
         ExtensionDownloaderDelegate::CacheStatus::CACHE_OUTDATED);
@@ -1153,10 +1153,10 @@ void ExtensionDownloader::NotifyDelegateDownloadFinished(
     const base::FilePath& crx_path,
     bool file_ownership_passed) {
   // Dereference required params before passing a scoped_ptr.
-  const std::string& id = fetch_data->id;
+  const ExtensionId& id = fetch_data->id;
   const std::string& package_hash = fetch_data->package_hash;
   const GURL& url = fetch_data->url;
-  const std::string& version = fetch_data->version;
+  const base::Version& version = fetch_data->version;
   const std::set<int>& request_ids = fetch_data->request_ids;
   const crx_file::VerifierFormat required_format =
       extension_urls::IsWebstoreUpdateUrl(fetch_data->url)
@@ -1165,9 +1165,7 @@ void ExtensionDownloader::NotifyDelegateDownloadFinished(
   CRXFileInfo crx_info(crx_path, required_format);
   crx_info.expected_hash = package_hash;
   crx_info.extension_id = id;
-  // TODO(https://crbug.com/1076376): Change |version| in ExtensionFetch from
-  // std::string to base::Version.
-  crx_info.expected_version = base::Version(version);
+  crx_info.expected_version = version;
   delegate_->OnExtensionDownloadFinished(
       crx_info, file_ownership_passed, url, ping_results_[id], request_ids,
       from_cache ? base::BindRepeating(&ExtensionDownloader::CacheInstallDone,
@@ -1302,7 +1300,7 @@ void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
   const base::TimeDelta& backoff_delay = base::TimeDelta::FromMilliseconds(0);
 
   ExtensionFetch& active_request = *extensions_queue_.active_request();
-  const std::string& id = active_request.id;
+  const ExtensionId& id = active_request.id;
   if (!crx_path.empty()) {
     RETRY_HISTOGRAM("CrxFetchSuccess",
                     extensions_queue_.active_request_failure_count(),
@@ -1385,14 +1383,14 @@ void ExtensionDownloader::NotifyExtensionsManifestInvalidFailure(
 }
 
 void ExtensionDownloader::NotifyExtensionsDownloadStageChanged(
-    std::set<std::string> extension_ids,
+    ExtensionIdSet extension_ids,
     ExtensionDownloaderDelegate::Stage stage) {
   for (const auto& it : extension_ids) {
     delegate_->OnExtensionDownloadStageChanged(it, stage);
   }
 }
 void ExtensionDownloader::NotifyExtensionsDownloadFailed(
-    std::set<std::string> extension_ids,
+    ExtensionIdSet extension_ids,
     std::set<int> request_ids,
     ExtensionDownloaderDelegate::Error error) {
   NotifyExtensionsDownloadFailedWithFailureData(
@@ -1401,7 +1399,7 @@ void ExtensionDownloader::NotifyExtensionsDownloadFailed(
 }
 
 void ExtensionDownloader::NotifyExtensionsDownloadFailedWithFailureData(
-    std::set<std::string> extension_ids,
+    ExtensionIdSet extension_ids,
     std::set<int> request_ids,
     ExtensionDownloaderDelegate::Error error,
     const ExtensionDownloaderDelegate::FailureData& data) {

@@ -23,6 +23,7 @@
 #include "extensions/browser/updater/request_queue.h"
 #include "extensions/browser/updater/safe_manifest_parser.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -204,10 +205,10 @@ class ExtensionDownloader {
                    ManifestFetchData::FetchPriority fetch_priority);
     ~ExtensionFetch();
 
-    std::string id;
+    ExtensionId id;
     GURL url;
     std::string package_hash;
-    std::string version;
+    base::Version version;
     std::set<int> request_ids;
     ManifestFetchData::FetchPriority fetch_priority;
 
@@ -372,12 +373,12 @@ class ExtensionDownloader {
   // arguments because there is no guarantee that callback won't indirectly
   // change source of IDs.
   void NotifyExtensionsDownloadStageChanged(
-      std::set<std::string> extension_ids,
+      ExtensionIdSet extension_ids,
       ExtensionDownloaderDelegate::Stage stage);
 
   // Calls NotifyExtensionsDownloadFailedWithFailureData with empty failure
   // data.
-  void NotifyExtensionsDownloadFailed(std::set<std::string> id_set,
+  void NotifyExtensionsDownloadFailed(ExtensionIdSet id_set,
                                       std::set<int> request_ids,
                                       ExtensionDownloaderDelegate::Error error);
 
@@ -386,7 +387,7 @@ class ExtensionDownloader {
   // a copy of arguments because there is no guarantee that callback won't
   // indirectly change source of IDs.
   void NotifyExtensionsDownloadFailedWithFailureData(
-      std::set<std::string> extension_ids,
+      ExtensionIdSet extension_ids,
       std::set<int> request_ids,
       ExtensionDownloaderDelegate::Error error,
       const ExtensionDownloaderDelegate::FailureData& data);
@@ -468,7 +469,7 @@ class ExtensionDownloader {
   RequestQueue<ExtensionFetch> extensions_queue_;
 
   // Maps an extension-id to its PingResult data.
-  std::map<std::string, ExtensionDownloaderDelegate::PingResult> ping_results_;
+  std::map<ExtensionId, ExtensionDownloaderDelegate::PingResult> ping_results_;
 
   // Cache for .crx files.
   ExtensionCache* extension_cache_;
