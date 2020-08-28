@@ -5,6 +5,8 @@
 #ifndef UI_GL_VSYNC_OBSERVER_H_
 #define UI_GL_VSYNC_OBSERVER_H_
 
+#include "base/time/time.h"
+
 namespace gl {
 class GL_EXPORT VSyncObserver {
  public:

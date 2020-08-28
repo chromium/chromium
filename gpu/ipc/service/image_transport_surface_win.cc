@@ -21,6 +21,20 @@
 #include "ui/gl/vsync_provider_win.h"
 
 namespace gpu {
+namespace {
+gl::DirectCompositionSurfaceWin::Settings
+CreateDirectCompositionSurfaceSettings(
+    const GpuDriverBugWorkarounds& workarounds) {
+  gl::DirectCompositionSurfaceWin::Settings settings;
+  settings.disable_nv12_dynamic_textures =
+      workarounds.disable_nv12_dynamic_textures;
+  settings.disable_larger_than_screen_overlays =
+      workarounds.disable_larger_than_screen_overlays;
+  settings.disable_vp_scaling = workarounds.disable_vp_scaling;
+  settings.use_angle_texture_offset = features::IsUsingSkiaRenderer();
+  return settings;
+}
+}  // namespace
 
 // static
 scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
@@ -31,22 +45,12 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   scoped_refptr<gl::GLSurface> surface;
 
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    auto vsync_provider =
-        std::make_unique<gl::VSyncProviderWin>(surface_handle);
-
     if (gl::DirectCompositionSurfaceWin::IsDirectCompositionSupported()) {
-      const auto& workarounds = delegate->GetFeatureInfo()->workarounds();
-      gl::DirectCompositionSurfaceWin::Settings settings;
-      settings.disable_nv12_dynamic_textures =
-          workarounds.disable_nv12_dynamic_textures;
-      settings.disable_larger_than_screen_overlays =
-          workarounds.disable_larger_than_screen_overlays;
-      settings.disable_vp_scaling = workarounds.disable_vp_scaling;
-      settings.use_angle_texture_offset = features::IsUsingSkiaRenderer();
       auto vsync_callback = delegate->GetGpuVSyncCallback();
+      auto settings = CreateDirectCompositionSurfaceSettings(
+          delegate->GetFeatureInfo()->workarounds());
       auto dc_surface = base::MakeRefCounted<gl::DirectCompositionSurfaceWin>(
-          std::move(vsync_provider), std::move(vsync_callback), surface_handle,
-          settings);
+          surface_handle, std::move(vsync_callback), settings);
       if (!dc_surface->Initialize(gl::GLSurfaceFormat()))
         return nullptr;
       delegate->DidCreateAcceleratedSurfaceChildWindow(surface_handle,
@@ -55,7 +59,8 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
     } else {
       surface = gl::InitializeGLSurface(
           base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(
-              surface_handle, std::move(vsync_provider)));
+              surface_handle,
+              std::make_unique<gl::VSyncProviderWin>(surface_handle)));
       if (!surface)
         return nullptr;
     }

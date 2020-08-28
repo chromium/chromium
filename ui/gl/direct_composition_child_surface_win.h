@@ -10,14 +10,30 @@
 #include <dcomp.h>
 #include <wrl/client.h>
 
+#include "base/callback.h"
+#include "base/containers/circular_deque.h"
+#include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/vsync_observer.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace gl {
+class VSyncThreadWin;
 
-class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
+class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL,
+                                                   public VSyncObserver {
  public:
-  explicit DirectCompositionChildSurfaceWin(bool use_angle_texture_offset);
+  using VSyncCallback =
+      base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
+  DirectCompositionChildSurfaceWin(VSyncCallback vsync_callback,
+                                   bool use_angle_texture_offset,
+                                   size_t max_pending_frames);
 
   // GLSurfaceEGL implementation.
   bool Initialize(GLSurfaceFormat format) override;
@@ -39,6 +55,12 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
               bool has_alpha) override;
   bool SetEnableDCLayers(bool enable) override;
   void SetFrameRate(float frame_rate) override;
+  gfx::VSyncProvider* GetVSyncProvider() override;
+  bool SupportsGpuVSync() const override;
+  void SetGpuVSyncEnabled(bool enabled) override;
+
+  // VSyncObserver implementation.
+  void OnVSync(base::TimeTicks vsync_time, base::TimeDelta interval) override;
 
   static bool IsDirectCompositionSwapChainFailed();
 
@@ -59,16 +81,38 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
   ~DirectCompositionChildSurfaceWin() override;
 
  private:
+  struct PendingFrame {
+    PendingFrame(Microsoft::WRL::ComPtr<ID3D11Query> query,
+                 PresentationCallback callback);
+    PendingFrame(PendingFrame&& other);
+    ~PendingFrame();
+    PendingFrame& operator=(PendingFrame&& other);
+
+    // Event query issued after frame is presented.
+    Microsoft::WRL::ComPtr<ID3D11Query> query;
+
+    // Presentation callback enqueued in SwapBuffers().
+    PresentationCallback callback;
+  };
+
+  void EnqueuePendingFrame(PresentationCallback callback);
+  void CheckPendingFrames();
+
+  void StartOrStopVSyncThread();
+
+  bool VSyncCallbackEnabled() const;
+
+  void HandleVSyncOnMainThread(base::TimeTicks vsync_time,
+                               base::TimeDelta interval);
+
   // Release the texture that's currently being drawn to. If will_discard is
   // true then the surface should be discarded without swapping any contents
   // to it. Returns false if this fails.
   bool ReleaseDrawTexture(bool will_discard);
 
-  // This is called when a new swap chain is created, or when a new frame
-  // rate is received.
+  // This is called when a new swap chain is created, or when a new frame rate
+  // is received.
   void SetSwapChainPresentDuration();
-
-  const bool use_angle_texture_offset_;
 
   gfx::Size size_ = gfx::Size(1, 1);
   bool enable_dc_layers_ = false;
@@ -100,6 +144,25 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
 
   // Number of frames per second.
   float frame_rate_ = 0.f;
+
+  const VSyncCallback vsync_callback_;
+  const bool use_angle_texture_offset_;
+  const size_t max_pending_frames_;
+
+  VSyncThreadWin* const vsync_thread_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  bool vsync_thread_started_ = false;
+  bool vsync_callback_enabled_ GUARDED_BY(vsync_callback_enabled_lock_) = false;
+  mutable base::Lock vsync_callback_enabled_lock_;
+
+  // Queue of pending presentation callbacks.
+  base::circular_deque<PendingFrame> pending_frames_;
+
+  base::TimeTicks last_vsync_time_;
+  base::TimeDelta last_vsync_interval_;
+
+  base::WeakPtrFactory<DirectCompositionChildSurfaceWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DirectCompositionChildSurfaceWin);
 };
