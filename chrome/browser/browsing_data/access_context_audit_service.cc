@@ -55,6 +55,10 @@ bool AccessContextAuditService::Init(
 void AccessContextAuditService::RecordCookieAccess(
     const net::CookieList& accessed_cookies,
     const url::Origin& top_frame_origin) {
+  // Opaque top frame origins are not supported.
+  if (top_frame_origin.opaque())
+    return;
+
   auto now = clock_->Now();
   std::vector<AccessContextAuditDatabase::AccessRecord> access_records;
   for (const auto& cookie : accessed_cookies) {
@@ -76,6 +80,11 @@ void AccessContextAuditService::RecordStorageAPIAccess(
     const url::Origin& storage_origin,
     AccessContextAuditDatabase::StorageAPIType type,
     const url::Origin& top_frame_origin) {
+  // Opaque top frame origins are not supported.
+  if (top_frame_origin.opaque())
+    return;
+  DCHECK(!storage_origin.opaque());
+
   std::vector<AccessContextAuditDatabase::AccessRecord> access_record = {
       AccessContextAuditDatabase::AccessRecord(top_frame_origin, type,
                                                storage_origin, clock_->Now())};
