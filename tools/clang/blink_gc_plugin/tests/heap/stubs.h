@@ -102,7 +102,6 @@ class ListHashSet {
 };
 
 template <typename ValueArg,
-          typename HashArg = void,
           typename TraitsArg = void,
           typename Allocator = DefaultAllocator>
 class LinkedHashSet {
