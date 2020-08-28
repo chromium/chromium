@@ -13,6 +13,8 @@
 namespace chromeos {
 namespace bloom {
 
+class BloomInteractionObserver;
+
 // Main controller for the Bloom integration.
 class COMPONENT_EXPORT(BLOOM) BloomController {
  public:
@@ -27,9 +29,11 @@ class COMPONENT_EXPORT(BLOOM) BloomController {
   // Starts an interaction. This will ask the user for a screenshot, analyze the
   // content and display the result.
   virtual void StartInteraction() = 0;
+  virtual void StopInteraction(BloomInteractionResolution resolution) = 0;
 
-  // Returns the result of the last interaction.
-  virtual BloomInteractionResolution GetLastInteractionResolution() const = 0;
+  virtual void AddObserver(BloomInteractionObserver* observer) = 0;
+  virtual void AddObserver(
+      std::unique_ptr<BloomInteractionObserver> observer) = 0;
 };
 
 }  // namespace bloom

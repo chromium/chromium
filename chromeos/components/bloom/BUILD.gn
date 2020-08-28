@@ -8,6 +8,9 @@ source_set("bloom") {
     "bloom_controller_impl.h",
     "bloom_interaction.cc",
     "bloom_interaction.h",
+    "bloom_interaction_observer.h",
+    "bloom_interaction_observer_impl.cc",
+    "bloom_interaction_observer_impl.h",
     "screenshot_grabber.h",
   ]
 

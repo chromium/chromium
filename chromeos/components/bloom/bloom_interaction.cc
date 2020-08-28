@@ -4,7 +4,6 @@
 
 #include "chromeos/components/bloom/bloom_interaction.h"
 
-#include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/bloom/bloom_controller_impl.h"
@@ -34,7 +33,7 @@ void BloomInteraction::Start() {
 
 void BloomInteraction::StartAssistantInteraction(std::string&& access_token,
                                                  Screenshot&& screenshot) {
-  controller_->assistant_interaction_controller()->StartBloomInteraction();
+  controller_->ShowUI();
   // TODO(jeroendh): continue here by contacting the Bloom service.
 }
 

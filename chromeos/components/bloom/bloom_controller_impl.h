@@ -5,11 +5,12 @@
 #ifndef CHROMEOS_COMPONENTS_BLOOM_BLOOM_CONTROLLER_IMPL_H_
 #define CHROMEOS_COMPONENTS_BLOOM_BLOOM_CONTROLLER_IMPL_H_
 
-#include "chromeos/components/bloom/public/cpp/bloom_controller.h"
+#include <memory>
+#include <vector>
 
-namespace ash {
-class AssistantInteractionController;
-}  // namespace ash
+#include "base/observer_list.h"
+#include "chromeos/components/bloom/bloom_interaction_observer.h"
+#include "chromeos/components/bloom/public/cpp/bloom_controller.h"
 
 namespace signin {
 class IdentityManager;
@@ -23,37 +24,35 @@ class ScreenshotGrabber;
 
 class BloomControllerImpl : public BloomController {
  public:
-  BloomControllerImpl(
-      signin::IdentityManager* identity_manager,
-      ash::AssistantInteractionController* assistant_interaction_controller,
-      std::unique_ptr<ScreenshotGrabber> screenshot_grabber);
+  BloomControllerImpl(signin::IdentityManager* identity_manager,
+                      std::unique_ptr<ScreenshotGrabber> screenshot_grabber);
   BloomControllerImpl(const BloomControllerImpl&) = delete;
   BloomControllerImpl& operator=(const BloomControllerImpl&) = delete;
   ~BloomControllerImpl() override;
 
   // BloomController implementation:
   void StartInteraction() override;
-  BloomInteractionResolution GetLastInteractionResolution() const override;
+  void StopInteraction(BloomInteractionResolution resolution) override;
 
-  bool HasInteraction() const;
-  void StopInteraction(BloomInteractionResolution resolution);
+  void AddObserver(BloomInteractionObserver* observer) override;
+  void AddObserver(std::unique_ptr<BloomInteractionObserver> observer) override;
+
+  void ShowUI();
 
   ScreenshotGrabber* screenshot_grabber() { return screenshot_grabber_.get(); }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
-  ash::AssistantInteractionController* assistant_interaction_controller() {
-    return assistant_interaction_controller_;
-  }
 
   void SetScreenshotGrabberForTesting(std::unique_ptr<ScreenshotGrabber>);
 
  private:
   signin::IdentityManager* const identity_manager_;
-  ash::AssistantInteractionController* const assistant_interaction_controller_;
   std::unique_ptr<ScreenshotGrabber> screenshot_grabber_;
 
+  base::ObserverList<BloomInteractionObserver> interaction_observers_;
+  std::vector<std::unique_ptr<BloomInteractionObserver>>
+      owned_interaction_observers_;
+
   std::unique_ptr<BloomInteraction> current_interaction_;
-  BloomInteractionResolution last_interaction_resolution_ =
-      BloomInteractionResolution::kNormal;
 };
 
 }  // namespace bloom

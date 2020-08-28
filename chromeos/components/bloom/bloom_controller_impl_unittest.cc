@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/bloom/bloom_controller_impl.h"
-#include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/bloom/bloom_interaction_observer.h"
 #include "chromeos/components/bloom/public/cpp/bloom_interaction_resolution.h"
 #include "chromeos/components/bloom/screenshot_grabber.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
@@ -53,23 +53,66 @@ class ScreenshotGrabberMock : public ScreenshotGrabber {
   Callback callback_;
 };
 
-class AssistantInteractionControllerMock
-    : public ash::AssistantInteractionController {
+class BloomInteractionObserverMock : public BloomInteractionObserver {
  public:
-  MOCK_METHOD(const ash::AssistantInteractionModel*, GetModel, (), (const));
-  MOCK_METHOD(base::TimeDelta, GetTimeDeltaSinceLastInteraction, (), (const));
-  MOCK_METHOD(bool, HasHadInteraction, (), (const));
+  MOCK_METHOD(void, OnInteractionStarted, ());
+  MOCK_METHOD(void, OnShowUI, ());
+  MOCK_METHOD(void, OnShowResult, (const std::string& html));
   MOCK_METHOD(void,
-              StartTextInteraction,
-              (const std::string& query,
-               bool allow_tts,
-               chromeos::assistant::AssistantQuerySource source));
-  MOCK_METHOD(void, StartBloomInteraction, ());
+              OnInteractionFinished,
+              (BloomInteractionResolution resolution));
+};
+
+// Helper class that will track the state of the Bloom interaction,
+// So we can easily test if interactions are started/stopped correctly.
+class BloomInteractionTracker : public BloomInteractionObserver {
+ public:
+  void OnInteractionStarted() override {
+    EXPECT_FALSE(has_interaction_);
+    has_interaction_ = true;
+  }
+
+  void OnShowUI() override { EXPECT_TRUE(has_interaction_); }
+
+  void OnShowResult(const std::string& html) override {
+    EXPECT_TRUE(has_interaction_);
+  }
+
+  void OnInteractionFinished(BloomInteractionResolution resolution) override {
+    EXPECT_TRUE(has_interaction_);
+    has_interaction_ = false;
+    last_resolution_ = resolution;
+  }
+
+  bool HasInteraction() const { return has_interaction_; }
+  BloomInteractionResolution GetLastInteractionResolution() const {
+    return last_resolution_;
+  }
+
+ private:
+  bool has_interaction_ = false;
+  BloomInteractionResolution last_resolution_ =
+      BloomInteractionResolution::kNormal;
 };
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
 
 }  // namespace
+
+void PrintTo(const BloomInteractionResolution& value, std::ostream* output) {
+#define CASE(name)                         \
+  ({                                       \
+    case BloomInteractionResolution::name: \
+      *output << #name;                    \
+      break;                               \
+  })
+
+  switch (value) {
+    CASE(kNormal);
+    CASE(kNoScreenshot);
+    CASE(kNoAccessToken);
+  }
+}
 
 class BloomControllerImplTest : public testing::Test {
  public:
@@ -99,8 +142,18 @@ class BloomControllerImplTest : public testing::Test {
         controller_.screenshot_grabber());
   }
 
-  AssistantInteractionControllerMock& assistant_interaction_controller_mock() {
-    return assistant_interaction_controller_mock_;
+  BloomInteractionObserverMock* AddInteractionObserverMock() {
+    auto observer = std::make_unique<NiceMock<BloomInteractionObserverMock>>();
+    auto* raw_ptr = observer.get();
+    controller().AddObserver(std::move(observer));
+    return raw_ptr;
+  }
+
+  BloomInteractionTracker* AddInteractionTracker() {
+    auto observer = std::make_unique<BloomInteractionTracker>();
+    auto* raw_ptr = observer.get();
+    controller().AddObserver(std::move(observer));
+    return raw_ptr;
   }
 
   void IssueAccessToken(std::string token = std::string("<access-token>")) {
@@ -117,11 +170,8 @@ class BloomControllerImplTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
 
-  AssistantInteractionControllerMock assistant_interaction_controller_mock_;
-
   BloomControllerImpl controller_{
       identity_test_env_.identity_manager(),
-      &assistant_interaction_controller_mock_,
       std::make_unique<NiceMock<ScreenshotGrabberMock>>()};
 };
 
@@ -145,59 +195,80 @@ TEST_F(BloomControllerImplTest, ShouldTakeScreenshot) {
   controller().StartInteraction();
 }
 
-TEST_F(BloomControllerImplTest,
-       ShouldStartAssistantInteractionWhenAccessTokenAndScreenshotAreReady) {
-  EXPECT_CALL(assistant_interaction_controller_mock(), StartBloomInteraction);
-
-  controller().StartInteraction();
-  IssueAccessToken();
-  screenshot_grabber_mock().SendScreenshot();
-}
-
-TEST_F(BloomControllerImplTest,
-       ShouldNotStartAssistantInteractionBeforeAccessTokenArrives) {
-  EXPECT_NO_CALLS(assistant_interaction_controller_mock(),
-                  StartBloomInteraction);
-
-  controller().StartInteraction();
-  screenshot_grabber_mock().SendScreenshot();
-}
-
-TEST_F(BloomControllerImplTest,
-       ShouldNotStartAssistantInteractionBeforeScreenshotArrives) {
-  EXPECT_NO_CALLS(assistant_interaction_controller_mock(),
-                  StartBloomInteraction);
-
-  controller().StartInteraction();
-  IssueAccessToken();
-}
-
 TEST_F(BloomControllerImplTest, ShouldAbortWhenFetchingAccessTokenFails) {
-  EXPECT_NO_CALLS(assistant_interaction_controller_mock(),
-                  StartBloomInteraction);
+  auto* interaction_tracker = AddInteractionTracker();
 
   controller().StartInteraction();
   screenshot_grabber_mock().SendScreenshot();
 
   FailAccessToken();
 
-  EXPECT_FALSE(controller().HasInteraction());
+  EXPECT_FALSE(interaction_tracker->HasInteraction());
   EXPECT_EQ(BloomInteractionResolution::kNoAccessToken,
-            controller().GetLastInteractionResolution());
+            interaction_tracker->GetLastInteractionResolution());
 }
 
 TEST_F(BloomControllerImplTest, ShouldAbortWhenFetchingScreenshotFails) {
-  EXPECT_NO_CALLS(assistant_interaction_controller_mock(),
-                  StartBloomInteraction);
+  auto* interaction_tracker = AddInteractionTracker();
 
   controller().StartInteraction();
   IssueAccessToken();
 
   screenshot_grabber_mock().SendScreenshotFailed();
 
-  EXPECT_FALSE(controller().HasInteraction());
+  EXPECT_FALSE(interaction_tracker->HasInteraction());
   EXPECT_EQ(BloomInteractionResolution::kNoScreenshot,
-            controller().GetLastInteractionResolution());
+            interaction_tracker->GetLastInteractionResolution());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+///
+/// Below are the tests to ensure the BloomInteractionObserver is invoked.
+///
+////////////////////////////////////////////////////////////////////////////////
+
+using BloomInteractionObserverTest = BloomControllerImplTest;
+
+TEST_F(BloomInteractionObserverTest,
+       ShouldCallOnInteractionStartedWhenBloomInteractionStarts) {
+  auto* observer = AddInteractionObserverMock();
+  EXPECT_CALL(*observer, OnInteractionStarted);
+
+  controller().StartInteraction();
+}
+
+TEST_F(BloomInteractionObserverTest,
+       ShouldCallOnShowUIWhenAccessTokenAndScreenshotAreReady) {
+  auto* observer = AddInteractionObserverMock();
+  EXPECT_CALL(*observer, OnInteractionStarted);
+
+  EXPECT_CALL(*observer, OnShowUI);
+
+  controller().StartInteraction();
+  IssueAccessToken();
+  screenshot_grabber_mock().SendScreenshot();
+}
+
+TEST_F(BloomInteractionObserverTest,
+       ShouldNotCallOnShowUIBeforeAccessTokenArrives) {
+  auto* observer = AddInteractionObserverMock();
+  EXPECT_CALL(*observer, OnInteractionStarted);
+
+  EXPECT_NO_CALLS(*observer, OnShowUI);
+
+  controller().StartInteraction();
+  screenshot_grabber_mock().SendScreenshot();
+}
+
+TEST_F(BloomInteractionObserverTest,
+       ShouldNotCallOnShowUIBeforeScreenshotArrives) {
+  auto* observer = AddInteractionObserverMock();
+  EXPECT_CALL(*observer, OnInteractionStarted);
+
+  EXPECT_NO_CALLS(*observer, OnShowUI);
+
+  controller().StartInteraction();
+  IssueAccessToken();
 }
 
 }  // namespace bloom

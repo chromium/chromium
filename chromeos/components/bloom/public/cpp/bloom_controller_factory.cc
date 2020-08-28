@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "chromeos/components/bloom/bloom_controller_impl.h"
+#include "chromeos/components/bloom/bloom_interaction_observer_impl.h"
 #include "chromeos/components/bloom/screenshot_grabber.h"
 
 namespace chromeos {
@@ -26,9 +27,11 @@ std::unique_ptr<BloomController> BloomControllerFactory::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     ash::AssistantInteractionController* assistant_interaction_controller) {
-  return std::make_unique<BloomControllerImpl>(
-      identity_manager, assistant_interaction_controller,
-      std::make_unique<FakeScreenshotGrabber>());
+  auto result = std::make_unique<BloomControllerImpl>(
+      identity_manager, std::make_unique<FakeScreenshotGrabber>());
+  result->AddObserver(std::make_unique<BloomInteractionObserverImpl>(
+      assistant_interaction_controller));
+  return std::move(result);
 }
 
 }  // namespace bloom
