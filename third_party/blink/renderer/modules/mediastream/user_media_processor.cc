@@ -720,13 +720,13 @@ UserMediaProcessor::DetermineExistingAudioSessionId() {
   // Create a copy of the MediaStreamSource objects that are
   // associated to the same audio device capture based on its device ID.
   HeapVector<Member<MediaStreamSource>> matching_sources;
-  std::copy_if(local_sources_.begin(), local_sources_.end(),
-               std::back_inserter(matching_sources),
-               [&device_id](MediaStreamSource* source) {
-                 DCHECK(source);
-                 return source->GetType() == MediaStreamSource::kTypeAudio &&
-                        source->Id().Utf8() == device_id;
-               });
+  for (const auto& source : local_sources_) {
+    MediaStreamSource* source_copy = source;
+    if (source_copy->GetType() == MediaStreamSource::kTypeAudio &&
+        source_copy->Id().Utf8() == device_id) {
+      matching_sources.push_back(source_copy);
+    }
+  }
 
   // Return the session ID associated to the source that has the same settings
   // that have been previously selected, if one exists.
@@ -1722,6 +1722,7 @@ bool UserMediaProcessor::DeleteUserMediaRequest(
 }
 
 void UserMediaProcessor::StopAllProcessing() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (current_request_info_) {
     switch (current_request_info_->state()) {
       case RequestInfo::State::SENT_FOR_GENERATION:
@@ -1799,6 +1800,7 @@ void UserMediaProcessor::StopLocalSource(MediaStreamSource* source,
 }
 
 bool UserMediaProcessor::HasActiveSources() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return !local_sources_.IsEmpty();
 }
 
