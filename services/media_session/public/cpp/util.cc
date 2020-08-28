@@ -49,6 +49,7 @@ void PerformMediaSessionAction(
     case mojom::MediaSessionAction::kSkipAd:
     case mojom::MediaSessionAction::kSeekTo:
     case mojom::MediaSessionAction::kScrubTo:
+    case mojom::MediaSessionAction::kSwitchAudioDevice:
       break;
   }
 }

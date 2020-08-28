@@ -60,6 +60,7 @@ class CONTENT_EXPORT MediaSessionController
   bool IsPictureInPictureAvailable(int player_id) const override;
   bool HasVideo(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
+  bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
 
   // Test helpers.
   int get_player_id_for_testing() const { return player_id_; }
@@ -110,6 +111,7 @@ class CONTENT_EXPORT MediaSessionController
   bool is_picture_in_picture_available_ = false;
   std::string audio_output_sink_id_ =
       media::AudioDeviceDescription::kDefaultDeviceId;
+  bool supports_audio_output_device_switching_ = true;
   media::MediaContentType media_content_type_ =
       media::MediaContentType::Persistent;
 

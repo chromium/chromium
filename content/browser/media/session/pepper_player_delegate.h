@@ -39,6 +39,7 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   RenderFrameHost* render_frame_host() const override;
   bool HasVideo(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
+  bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
 
  private:
   void SetVolume(int player_id, double volume);

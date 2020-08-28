@@ -39,6 +39,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   RenderFrameHost* render_frame_host() const override;
   bool HasVideo(int player_id) const override;
   std::string GetAudioOutputSinkId(int player_id) const override;
+  bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
 
   // Simulate that a new player started.
   // Returns the player_id.
@@ -82,6 +83,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     bool is_in_picture_in_picture_;
     std::string audio_sink_id_ =
         media::AudioDeviceDescription::kDefaultDeviceId;
+    bool supports_device_switching_ = true;
   };
 
   // Basic representation of the players. The position in the vector is the

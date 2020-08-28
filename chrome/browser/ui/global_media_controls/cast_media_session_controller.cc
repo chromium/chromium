@@ -63,6 +63,7 @@ void CastMediaSessionController::Send(
     case media_session::mojom::MediaSessionAction::kScrubTo:
     case media_session::mojom::MediaSessionAction::kEnterPictureInPicture:
     case media_session::mojom::MediaSessionAction::kExitPictureInPicture:
+    case media_session::mojom::MediaSessionAction::kSwitchAudioDevice:
       NOTREACHED();
       return;
   }

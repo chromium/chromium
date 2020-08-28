@@ -57,6 +57,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   std::string GetAudioOutputSinkId(int player_id) const override { return ""; }
 
+  bool SupportsAudioOutputDeviceSwitching(int player_id) const override {
+    return false;
+  }
+
   RenderFrameHost* render_frame_host() const override {
     return render_frame_host_;
   }

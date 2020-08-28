@@ -44,6 +44,8 @@ fuchsia::media::sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
       return {};  // PlayerControl does not support skipping ads.
     case MediaSessionAction::kStop:
       return {};  // PlayerControl assumes that stop is always supported.
+    case MediaSessionAction::kSwitchAudioDevice:
+      return {};  // PlayerControl does not support switching audio device.
   }
 }
 
