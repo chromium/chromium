@@ -38,7 +38,7 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
   vpx_codec_ctx_t* codec_ = nullptr;
   bool is_vp9_ = false;
   vpx_codec_enc_cfg_t codec_config_ = {};
-  vpx_image_t* vpx_image_ = nullptr;
+  vpx_image_t vpx_image_ = {};
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   Options options_;
   OutputCB output_cb_;
