@@ -19,6 +19,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/download_manager.h"
+#include "url/gurl.h"
 
 class GURL;
 
@@ -37,6 +38,10 @@ class PrefRegistrySyncable;
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
+
+namespace storage {
+class FileSystemURL;
+}
 
 namespace ash {
 
@@ -66,11 +71,28 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Registers profile preferences for holding space.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Methods to add an item backed by the provided absolute file path.
+  // Adds a pinned file item identified by the provided file system URL.
+  void AddPinnedFile(const storage::FileSystemURL& file_system_url);
+
+  // Removes a pinned file item identified by the provided file system URL.
+  // No-op if the file is not present in the holding space.
+  void RemovePinnedFile(const storage::FileSystemURL& file_system_url);
+
+  // Returns whether the holding space contains a pinned file identified by a
+  // file system URL.
+  bool ContainsPinnedFile(const storage::FileSystemURL& file_system_url) const;
+
+  // Returns the list of pinned files in the holding space. It returns the files
+  // files system URLs as GURLs.
+  std::vector<GURL> GetPinnedFiles() const;
+
+  // Adds a screenshot item backed by the provided absolute file path.
   // The path is expected to be under a mount point path recognized by the file
   // manager app (otherwise, the item will be dropped silently).
   void AddScreenshot(const base::FilePath& screenshot_path,
                      const gfx::ImageSkia& image);
+
+  // Adds a download item backed by the provided absolute file path.
   void AddDownload(const base::FilePath& download_path);
 
   const HoldingSpaceClient* client_for_testing() const {

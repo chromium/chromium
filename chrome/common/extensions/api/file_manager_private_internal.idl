@@ -121,5 +121,7 @@ namespace fileManagerPrivateInternal {
                              GetThumbnailCallback callback);
     static void sharesheetHasTargets(DOMString[] urls, BooleanCallback callback);
     static void invokeSharesheet(DOMString[] urls, SimpleCallback callback);
+    static void toggleAddedToHoldingSpace(DOMString[] urls, boolean add,
+                                          optional SimpleCallback callback);
   };
 };

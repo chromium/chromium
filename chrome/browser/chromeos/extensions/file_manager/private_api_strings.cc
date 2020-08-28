@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/ash_features.h"
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
@@ -66,6 +67,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
       "DRIVE_BIDIRECTIONAL_NATIVE_MESSAGING_ENABLED",
       base::FeatureList::IsEnabled(
           chromeos::features::kDriveFsBidirectionalNativeMessaging));
+  dict->SetBoolean("HOLDING_SPACE_ENABLED",
+                   ash::features::IsTemporaryHoldingSpaceEnabled());
 
   dict->SetString("UI_LOCALE", extension_l10n_util::CurrentLocaleOrDefault());
 

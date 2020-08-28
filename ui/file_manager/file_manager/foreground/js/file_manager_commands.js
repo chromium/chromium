@@ -1609,6 +1609,88 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends Command {
   }
 };
 
+CommandHandler.COMMANDS_['toggle-holding-space'] = new class extends Command {
+  constructor() {
+    super();
+    /**
+     * Whether the command adds or removed items from holding space. The value
+     * is set in <code>canExecute()</code>. It will be true unless all selected
+     * items are already in the holding space.
+     * @private {boolean|undefined}
+     */
+    this.addsItems_;
+  }
+
+  execute(event, fileManager) {
+    if (this.addsItems_ === undefined) {
+      return;
+    }
+
+    const entries = fileManager.selectionHandler.selection.entries;
+    chrome.fileManagerPrivate.toggleAddedToHoldingSpace(
+        entries, this.addsItems_);
+  }
+
+  /** @override */
+  canExecute(event, fileManager) {
+    const command = event.command;
+
+    if (!util.isHoldingSpaceEnabled()) {
+      event.canExecute = false;
+      command.setHidden(true);
+      return;
+    }
+
+    const allowedVolumeTypes = [
+      VolumeManagerCommon.VolumeType.MY_FILES,
+      VolumeManagerCommon.VolumeType.DOWNLOADS,
+      VolumeManagerCommon.VolumeType.DRIVE,
+      VolumeManagerCommon.VolumeType.CROSTINI,
+      VolumeManagerCommon.VolumeType.ANDROID_FILES,
+    ];
+
+    const currentVolumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
+    if (!currentVolumeInfo ||
+        !allowedVolumeTypes.includes(currentVolumeInfo.volumeType)) {
+      event.canExecute = false;
+      command.setHidden(true);
+      return;
+    }
+
+    const entries = fileManager.selectionHandler.selection.entries;
+
+    if (!entries || entries.length === 0) {
+      event.canExecute = false;
+      command.setHidden(true);
+      return;
+    }
+
+    event.canExecute = true;
+    command.setHidden(false);
+
+    // Update the command to add or remove holding space items depending on the
+    // current holding space state - the command will remove items only if all
+    // currently selected items are already in the holding space.
+    chrome.fileManagerPrivate.getHoldingSpaceState((state) => {
+      if (!state) {
+        command.setHidden(true);
+        return;
+      }
+
+      const itemsSet = {};
+      state.itemUrls.forEach((item) => itemsSet[item] = true);
+
+      const selectedUrls = util.entriesToURLs(entries);
+      this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
+
+      // TODO(https://crbug.com/1122076): Update the labels when the wording
+      // gets finalized.
+      command.label = this.addsItems_ ? '[Needs l10n] Pin to shelf' :
+                                        '[Needs l10n] Unpin from shelf';
+    });
+  }
+};
+
 /**
  * Opens containing folder of the focused file.
  */

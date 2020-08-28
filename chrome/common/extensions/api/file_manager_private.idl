@@ -765,6 +765,11 @@ dictionary MediaMetadata {
   AttachedImages[] attachedImages;
 };
 
+dictionary HoldingSpaceState {
+  // File system URLs of items pinned to the holding space.
+  DOMString[] itemUrls;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -896,6 +901,9 @@ callback GetThumbnailCallback = void(DOMString thumbnailDataUrl);
 
 // |apps| List of Android picker apps.
 callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
+
+// |state| Describes the current holding space state.
+callback HoldingSpaceStateCallback = void(HoldingSpaceState state);
 
 interface Functions {
   // Logout the current user for navigating to the re-authentication screen for
@@ -1312,6 +1320,22 @@ interface Functions {
   [nocompile]
   static void invokeSharesheet([instanceof=Entry] object[] entries,
                                      SimpleCallback callback);
+
+  // Adds or removes a list of entries to temporary holding space. Any entries
+  // whose current holding space state matches the intended state will be
+  // skipped.
+  // |entries| The list of entries whose holding space needs to be updated.
+  // |add| Whether items should be added or removed from the holding space.
+  // |callback| Completion callback.
+  [nocompile]
+  static void toggleAddedToHoldingSpace([instanceOf=Entry] object[] entries,
+                                        boolean added,
+                                        optional SimpleCallback callback);
+
+  // Retrieves the current holding space state, for example the list of items
+  // the holding space currently contains.
+  // |callback| The result callback.
+  static void getHoldingSpaceState(HoldingSpaceStateCallback callback);
 };
 
 interface Events {

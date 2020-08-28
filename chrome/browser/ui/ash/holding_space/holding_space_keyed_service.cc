@@ -17,6 +17,7 @@
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {
 
@@ -60,6 +61,35 @@ HoldingSpaceKeyedService::~HoldingSpaceKeyedService() = default;
 void HoldingSpaceKeyedService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(kPersistencePath);
+}
+
+void HoldingSpaceKeyedService::AddPinnedFile(
+    const storage::FileSystemURL& file_system_url) {
+  auto item = HoldingSpaceItem::CreateFileBackedItem(
+      HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),
+      file_system_url.ToGURL(), gfx::ImageSkia());
+  holding_space_model_.AddItem(std::move(item));
+}
+
+void HoldingSpaceKeyedService::RemovePinnedFile(
+    const storage::FileSystemURL& file_system_url) {
+  holding_space_model_.RemoveItem(HoldingSpaceItem::GetFileBackedItemId(
+      HoldingSpaceItem::Type::kPinnedFile, file_system_url.path()));
+}
+
+bool HoldingSpaceKeyedService::ContainsPinnedFile(
+    const storage::FileSystemURL& file_system_url) const {
+  return holding_space_model_.GetItem(HoldingSpaceItem::GetFileBackedItemId(
+      HoldingSpaceItem::Type::kPinnedFile, file_system_url.path()));
+}
+
+std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
+  std::vector<GURL> pinned_files;
+  for (const auto& item : holding_space_model_.items()) {
+    if (item->type() == HoldingSpaceItem::Type::kPinnedFile)
+      pinned_files.push_back(item->file_system_url());
+  }
+  return pinned_files;
 }
 
 void HoldingSpaceKeyedService::AddScreenshot(

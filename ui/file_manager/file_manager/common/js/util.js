@@ -1728,3 +1728,9 @@ util.isSharesheetEnabled = () => {
   return loadTimeData.valueExists('SHARESHEET_ENABLED') &&
       loadTimeData.getBoolean('SHARESHEET_ENABLED');
 };
+
+/** @return {boolean} */
+util.isHoldingSpaceEnabled = () => {
+  return loadTimeData.valueExists('HOLDING_SPACE_ENABLED') &&
+      loadTimeData.getBoolean('HOLDING_SPACE_ENABLED');
+};

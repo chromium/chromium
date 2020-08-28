@@ -133,6 +133,7 @@
       <command id="more-actions" label="$i18n{MORE_ACTIONS_BUTTON_LABEL}">
       <command id="show-submenu" label="$i18n{MORE_ACTIONS_BUTTON_LABEL}">
       <command id="invoke-sharesheet" label="$i18n{MORE_ACTIONS_BUTTON_LABEL}">
+      <command id="toggle-holding-space">
       <command id="go-to-file-location"
                label="$i18n{GO_TO_FILE_LOCATION_BUTTON_LABEL}">
       <command id="zip-selection"
@@ -204,6 +205,8 @@
         <cr-menu-item command="#pin-folder"></cr-menu-item>
         <cr-menu-item command="#delete" class="hide-on-toolbar">$i18n{DELETE_BUTTON_LABEL}</cr-menu-item>
         <cr-menu-item command="#zip-selection"></cr-menu-item>
+        <cr-menu-item command="#toggle-holding-space" visibleif="full-page">
+            </cr-menu-item>
         <cr-menu-item command="#share-with-linux"></cr-menu-item>
         <cr-menu-item command="#manage-linux-sharing"></cr-menu-item>
         <cr-menu-item command="#share-with-plugin-vm"></cr-menu-item>

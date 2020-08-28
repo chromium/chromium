@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ash_features.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/path_service.h"
@@ -354,6 +355,25 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
   file_manager::EventRouter* event_router_ = nullptr;
 };
 
+// Parameterize by whether holding space feature is enabled.
+class FileManagerPrivateHoldingSpaceApiTest
+    : public FileManagerPrivateApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FileManagerPrivateHoldingSpaceApiTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        ash::features::kTemporaryHoldingSpace, GetParam());
+  }
+  ~FileManagerPrivateHoldingSpaceApiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(HoldingSpaceEnabled,
+                         FileManagerPrivateHoldingSpaceApiTest,
+                         testing::Bool());
+
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
   using chromeos::file_system_provider::IconSet;
   profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive, true);
@@ -589,4 +609,29 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
   function->RunWithValidation()->Execute();
   response_helper.WaitForResponse();
   EXPECT_TRUE(response_helper.GetResponse());
+}
+
+IN_PROC_BROWSER_TEST_P(FileManagerPrivateHoldingSpaceApiTest, HoldingSpace) {
+  const base::FilePath test_dir = temp_dir_.GetPath();
+  AddLocalFileSystem(browser()->profile(), test_dir);
+
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::File image_file(test_dir.Append("test_image.jpg"),
+                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(image_file.IsValid());
+    base::File audio_file(test_dir.Append("test_audio.mp3"),
+                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(audio_file.IsValid());
+    base::File video_file(test_dir.Append("test_video.mp4"),
+                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(video_file.IsValid());
+  }
+
+  if (GetParam()) {
+    EXPECT_TRUE(RunComponentExtensionTest("file_browser/holding_space"));
+  } else {
+    EXPECT_TRUE(
+        RunComponentExtensionTest("file_browser/holding_space_disabled"));
+  }
 }

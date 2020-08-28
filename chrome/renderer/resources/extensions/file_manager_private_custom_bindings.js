@@ -340,6 +340,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         });
         fileManagerPrivateInternal.invokeSharesheet(urls, callback);
       });
+
+  apiFunctions.setHandleRequest(
+      'toggleAddedToHoldingSpace', function(entries, added, callback) {
+        const urls = entries.map(entry => getEntryURL(entry));
+        fileManagerPrivateInternal.toggleAddedToHoldingSpace(
+            urls, added, callback);
+      });
 });
 
 bindingUtil.registerEventArgumentMassager(

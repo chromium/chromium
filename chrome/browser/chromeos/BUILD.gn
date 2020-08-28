@@ -2715,6 +2715,8 @@ source_set("chromeos") {
     "extensions/file_manager/private_api_drive.h",
     "extensions/file_manager/private_api_file_system.cc",
     "extensions/file_manager/private_api_file_system.h",
+    "extensions/file_manager/private_api_holding_space.cc",
+    "extensions/file_manager/private_api_holding_space.h",
     "extensions/file_manager/private_api_media_parser.cc",
     "extensions/file_manager/private_api_media_parser.h",
     "extensions/file_manager/private_api_media_parser_util.cc",

@@ -24423,6 +24423,9 @@ Called by update_extension_histograms.py.-->
   <int value="1501"
       label="AUTOTESTPRIVATE_WAITFORSYSTEMWEBAPPSINSTALLFUNCTION"/>
   <int value="1502" label="AUTOTESTPRIVATE_GETREGISTEREDSYSTEMWEBAPPSFUNCTION"/>
+  <int value="1503"
+      label="FILEMANAGERPRIVATEINTERNAL_TOGGLEADDEDTOHOLDINGSPACE"/>
+  <int value="1504" label="FILEMANAGERPRIVATEINTERNAL_GETHOLDINGSPACESTATE"/>
 </enum>
 
 <enum name="ExtensionIconState">
