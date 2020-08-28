@@ -37,6 +37,9 @@ constexpr int kHUDInset = 5;
 // in each graph ring buffer.
 static constexpr size_t kDefaultGraphWidth = 190;
 
+// Grid takes 1 pixel around, inset graph.
+constexpr int kGridLineWidth = 1;
+
 // HUD display modes.
 enum class DisplayMode {
   CPU_DISPLAY =

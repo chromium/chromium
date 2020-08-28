@@ -93,8 +93,10 @@ void HUDDisplayView::Toggle() {
   params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                       kShellWindowId_OverlayContainer);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  // Adjust for 1px grid width around the graph.
   params.bounds =
-      gfx::Rect(kDefaultGraphWidth + 2 * kHUDInset, kHUDViewDefaultHeight);
+      gfx::Rect(kDefaultGraphWidth + 2 * kHUDInset + 2 * kGridLineWidth,
+                kHUDViewDefaultHeight + 2 * kGridLineWidth);
   auto* widget = CreateViewTreeHostWidget(std::move(params));
   widget->GetLayer()->SetName("HUDDisplayView");
   widget->Show();

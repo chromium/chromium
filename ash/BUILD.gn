@@ -481,6 +481,8 @@ component("ash") {
     "hud_display/graph_page_view_base.h",
     "hud_display/graphs_container_view.cc",
     "hud_display/graphs_container_view.h",
+    "hud_display/grid.cc",
+    "hud_display/grid.h",
     "hud_display/hud_constants.h",
     "hud_display/hud_display.cc",
     "hud_display/hud_display.h",

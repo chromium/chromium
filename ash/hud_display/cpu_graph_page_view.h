@@ -11,12 +11,14 @@
 namespace ash {
 namespace hud_display {
 
+class Grid;
+
 // Draws CPU graphs;
 class CpuGraphPageView : public GraphPageViewBase {
  public:
   METADATA_HEADER(CpuGraphPageView);
 
-  CpuGraphPageView();
+  explicit CpuGraphPageView(const base::TimeDelta refresh_interval);
   CpuGraphPageView(const CpuGraphPageView&) = delete;
   CpuGraphPageView& operator=(const CpuGraphPageView&) = delete;
   ~CpuGraphPageView() override;
@@ -33,6 +35,8 @@ class CpuGraphPageView : public GraphPageViewBase {
   Graph cpu_system_;
   Graph cpu_user_;
   Graph cpu_idle_;
+
+  Grid* grid_ = nullptr;  // not owned.
 };
 
 }  // namespace hud_display

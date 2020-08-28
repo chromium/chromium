@@ -11,12 +11,14 @@
 namespace ash {
 namespace hud_display {
 
+class Grid;
+
 // MemoryGraphPageView class draws memory graphs.
 class MemoryGraphPageView : public GraphPageViewBase {
  public:
   METADATA_HEADER(MemoryGraphPageView);
 
-  MemoryGraphPageView();
+  explicit MemoryGraphPageView(const base::TimeDelta refresh_interval);
   MemoryGraphPageView(const MemoryGraphPageView&) = delete;
   MemoryGraphPageView& operator=(const MemoryGraphPageView&) = delete;
   ~MemoryGraphPageView() override;
@@ -28,6 +30,9 @@ class MemoryGraphPageView : public GraphPageViewBase {
   void UpdateData(const DataSource::Snapshot& snapshot) override;
 
  private:
+  // This is used to re-layout grid when total ram size is known.
+  double total_ram_ = 0;
+
   // --- Stacked:
   // Share of the total RAM occupied by Chrome browser private RSS.
   Graph graph_chrome_rss_private_;
@@ -48,6 +53,8 @@ class MemoryGraphPageView : public GraphPageViewBase {
   // Not stacked:
   // Share of the total RAM occupied by Chrome browser process shared RSS.
   Graph graph_chrome_rss_shared_;
+
+  Grid* grid_ = nullptr;  // not owned.
 };
 
 }  // namespace hud_display

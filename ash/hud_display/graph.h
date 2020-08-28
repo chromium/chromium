@@ -53,6 +53,8 @@ class Graph {
 
   const std::vector<SkPoint>& top_path() const { return top_path_; }
 
+  size_t GetDataBufferSize() const { return data_.BufferSize(); }
+
 #if !defined(NDEBUG)
   // Returns string representation os this object for debug.
   std::string DebugDump(const std::string& name) const;

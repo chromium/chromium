@@ -6,8 +6,10 @@
 
 #include <numeric>
 
+#include "ash/hud_display/grid.h"
 #include "ash/hud_display/hud_constants.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 namespace hud_display {
@@ -18,7 +20,7 @@ namespace hud_display {
 BEGIN_METADATA(CpuGraphPageView, GraphPageViewBase)
 END_METADATA()
 
-CpuGraphPageView::CpuGraphPageView()
+CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
     : cpu_other_(Graph::Baseline::BASELINE_BOTTOM,
                  Graph::Fill::SOLID,
                  SkColorSetA(SK_ColorMAGENTA, kHUDAlpha)),
@@ -30,7 +32,20 @@ CpuGraphPageView::CpuGraphPageView()
                 SkColorSetA(SK_ColorBLUE, kHUDAlpha)),
       cpu_idle_(Graph::Baseline::BASELINE_BOTTOM,
                 Graph::Fill::SOLID,
-                SkColorSetA(SK_ColorDKGRAY, kHUDAlpha)) {}
+                SkColorSetA(SK_ColorDKGRAY, kHUDAlpha)) {
+  // There is only one child which shoule be overlayed.
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  const int data_width = cpu_other_.GetDataBufferSize();
+  // -XX seconds on the left, 100% top, 0 seconds on the right, 0% on the
+  // bottom. Seconds and Gigabytes are dimentions. Number of data points is
+  // cpu_other_.GetDataBufferSize(), horizontal grid ticks are drawn every 10
+  // seconds.
+  grid_ = AddChildView(std::make_unique<Grid>(
+      /*left=*/static_cast<int>(-data_width * refresh_interval.InSecondsF()),
+      /*top=*/100, /*right=*/0, /*bottom=*/0, base::ASCIIToUTF16("s"),
+      base::ASCIIToUTF16("%"), data_width, 10 / refresh_interval.InSecondsF()));
+}
 
 CpuGraphPageView::~CpuGraphPageView() = default;
 
@@ -40,7 +55,9 @@ void CpuGraphPageView::OnPaint(gfx::Canvas* canvas) {
   // TODO: Should probably update last graph point more often than shift graph.
 
   // Layout graphs.
-  const gfx::Rect rect = GetContentsBounds();
+  gfx::Rect rect = GetContentsBounds();
+  // Adjust to grid width.
+  rect.Inset(kGridLineWidth, kGridLineWidth);
   cpu_other_.Layout(rect, nullptr /* base*/);
   cpu_system_.Layout(rect, &cpu_other_);
   cpu_user_.Layout(rect, &cpu_system_);

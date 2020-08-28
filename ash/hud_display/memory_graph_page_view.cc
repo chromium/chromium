@@ -6,8 +6,12 @@
 
 #include <numeric>
 
+#include "ash/hud_display/grid.h"
 #include "ash/hud_display/hud_constants.h"
+#include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 namespace hud_display {
@@ -18,7 +22,7 @@ namespace hud_display {
 BEGIN_METADATA(MemoryGraphPageView, GraphPageViewBase)
 END_METADATA()
 
-MemoryGraphPageView::MemoryGraphPageView()
+MemoryGraphPageView::MemoryGraphPageView(const base::TimeDelta refresh_interval)
     : graph_chrome_rss_private_(Graph::Baseline::BASELINE_BOTTOM,
                                 Graph::Fill::SOLID,
                                 SkColorSetA(SK_ColorRED, kHUDAlpha)),
@@ -42,7 +46,23 @@ MemoryGraphPageView::MemoryGraphPageView()
                         SkColorSetA(SK_ColorYELLOW, kHUDAlpha)),
       graph_chrome_rss_shared_(Graph::Baseline::BASELINE_BOTTOM,
                                Graph::Fill::NONE,
-                               SkColorSetA(SK_ColorBLUE, kHUDAlpha)) {}
+                               SkColorSetA(SK_ColorBLUE, kHUDAlpha)) {
+  // There is only one child which shoule be overlayed.
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  const int data_width = graph_arc_rss_private_.GetDataBufferSize();
+  // -XX seconds on the left, 0Gb top (will be updated later), 0 seconds on the
+  // right, 0 Gb on the bottom. Seconds and Gigabytes are dimentions. Number of
+  // data points is data_width. horizontal grid ticks are drawn every 10
+  // seconds.
+  grid_ = AddChildView(std::make_unique<Grid>(
+      static_cast<int>(/*left=*/-data_width * refresh_interval.InSecondsF()),
+      /*top=*/0, /*right=*/0, /*bottom=*/0, base::ASCIIToUTF16("s"),
+      base::ASCIIToUTF16("Gb"), data_width,
+      10 / refresh_interval.InSecondsF()));
+  // Hide grid until we know total memory size.
+  grid_->SetVisible(false);
+}
 
 MemoryGraphPageView::~MemoryGraphPageView() = default;
 
@@ -52,7 +72,9 @@ void MemoryGraphPageView::OnPaint(gfx::Canvas* canvas) {
   // TODO: Should probably update last graph point more often than shift graph.
 
   // Layout graphs.
-  const gfx::Rect rect = GetContentsBounds();
+  gfx::Rect rect = GetContentsBounds();
+  // Adjust to grid width.
+  rect.Inset(kGridLineWidth, kGridLineWidth);
   graph_chrome_rss_private_.Layout(rect, /*base=*/nullptr);
   graph_mem_free_.Layout(rect, &graph_chrome_rss_private_);
   graph_mem_used_unknown_.Layout(rect, &graph_mem_free_);
@@ -81,6 +103,13 @@ void MemoryGraphPageView::UpdateData(const DataSource::Snapshot& snapshot) {
   // Nothing to do if data is not available yet.
   if (total < 1)
     return;
+
+  if (total_ram_ != total) {
+    total_ram_ = total;
+    constexpr float one_gigabyte = 1024 * 1024 * 1024;
+    grid_->SetTopLabel(total / one_gigabyte);  // In Gigabytes.
+    grid_->SetVisible(true);
+  }
 
   const float chrome_rss_private =
       (snapshot.browser_rss - snapshot.browser_rss_shared) / total;
