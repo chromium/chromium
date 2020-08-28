@@ -2471,6 +2471,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "files-app-copy-image",
+    "owners": ["nohe", "lucmult", "weifangsun"],
+    "expiry_milestone": 90
+  },
+  {
     "name": "files-filters-in-recents",
     "owners": [ "fukino", "weifangsun" ],
     "expiry_milestone": 90

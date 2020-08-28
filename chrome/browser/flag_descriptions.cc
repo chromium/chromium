@@ -4039,6 +4039,10 @@ const char kExperimentalAccessibilityCursorColorsDescription[] =
     "Enable experimental feature which allows setting cursor color in "
     "Accessibility settings.";
 
+const char kFilesAppCopyImageName[] = "Enable Copy Images from Files App";
+const char kFilesAppCopyImageDescription[] =
+    "Enables the Files App to copy images selected to the system clipboard";
+
 const char kFilesNGName[] = "Enable Files App. NG.";
 const char kFilesNGDescription[] =
     "Enable the next generation UI style of the file manager.";
