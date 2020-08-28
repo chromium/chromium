@@ -238,6 +238,61 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Enables StrictMode to catch as much as reasonable. This selectively disables some StrictMode
+     * policies for some devices, as some manufacturers modify the Android framework in such a
+     * way as to unavoidably violate StrictMode (ex. the platform code which opens the 3-dots menu
+     * is not controlled by WebView or by WebView shell browser).
+     */
+    private void enableStrictMode() {
+        String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);
+
+        StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
+                new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath();
+
+        if (manufacturer.equals("samsung")) {
+            // See crbug.com/1056368, Samsung device has an internal method
+            // "android.util.GeneralUtil#isSupportedGloveModeInternal", which reads file and
+            // violates strict mode policy. This method is called when showing the dropdown menu
+            // after user clicks the 3-dots menu. However this showing code is part of Android
+            // framework and not controlled by this app, so we need to permit disk read for the UI
+            // thread.
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+            // See crbug.com/1082701 and https://crbug.com/1090841#c38, Samsung device uses OEM
+            // specific clipboard API, which will need to read the disk on UI thread. This app can't
+            // control it because it is in the framework. We need to permit disk write for the UI
+            // thread.
+            //
+            // Also: https://crbug.com/1090841#c31
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskWrites();
+        } else if (manufacturer.equals("htc")) {
+            // https://crbug.com/1090841#c30
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+        } else if (manufacturer.equals("huawei")) {
+            // https://crbug.com/1090841#c32
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+        } else if (manufacturer.equals("lge")) {
+            // https://crbug.com/1090841#c33
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+        } else if (manufacturer.equals("oneplus")) {
+            // https://crbug.com/1090841#c37
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+        }
+        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+
+        // Omissions:
+        // * detectCleartextNetwork() to permit testing http:// URLs
+        // * detectFileUriExposure() to permit testing file:// URLs
+        // * detectLeakedClosableObjects() because of drag and drop (https://crbug.com/1090841#c40)
+        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                .detectActivityLeaks()
+                .detectLeakedRegistrationObjects()
+                .detectLeakedSqlLiteObjects()
+                .penaltyLog()
+                .penaltyDeath()
+                .build());
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -255,32 +310,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         });
         findViewById(R.id.btn_load_url).setOnClickListener((view) -> loadUrlFromUrlBar(view));
 
-        StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
-                new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath();
-        if (Build.MANUFACTURER.toLowerCase(Locale.US).equals("samsung")) {
-            // See crbug.com/1056368, Samsung device has an internal method
-            // "android.util.GeneralUtil#isSupportedGloveModeInternal", which reads file and
-            // violates strict mode policy. This method is called when showing the dropdown menu
-            // after user clicks the 3-dots menu. However this showing code is part of Android
-            // framework and not controlled by this app, so we need to permit disk read for the UI
-            // thread.
-            threadPolicyBuilder.permitDiskReads();
-            // See crbug.com/1082701, Samsung device uses OEM specific clipboard API, which will
-            // need to read the disk on UI thread. This app can't control it because it is in the
-            // framework. We need to permit disk write for the UI thread.
-            threadPolicyBuilder.permitDiskWrites();
-        }
-        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
-        // Conspicuously omitted: detectCleartextNetwork() and detectFileUriExposure() to permit
-        // http:// and file:// origins.
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectActivityLeaks()
-                .detectLeakedClosableObjects()
-                .detectLeakedRegistrationObjects()
-                .detectLeakedSqlLiteObjects()
-                .penaltyLog()
-                .penaltyDeath()
-                .build());
+        enableStrictMode();
 
         createAndInitializeWebView();
 
