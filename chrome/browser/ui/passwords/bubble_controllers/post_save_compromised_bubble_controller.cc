@@ -31,7 +31,7 @@ PostSaveCompromisedBubbleController::PostSaveCompromisedBubbleController(
     default:
       NOTREACHED();
   }
-  base::UmaHistogramEnumeration("PasswordBubble.CompromisedBubbleType", type_);
+  base::UmaHistogramEnumeration("PasswordBubble.CompromisedBubble.Type", type_);
 }
 
 PostSaveCompromisedBubbleController::~PostSaveCompromisedBubbleController() {
@@ -132,6 +132,6 @@ base::string16 PostSaveCompromisedBubbleController::GetTitle() const {
 }
 
 void PostSaveCompromisedBubbleController::ReportInteractions() {
-  base::UmaHistogramBoolean("PasswordBubble.CompromisedBubbleCheckClicked",
+  base::UmaHistogramBoolean("PasswordBubble.CompromisedBubble.CheckClicked",
                             checked_clicked_);
 }

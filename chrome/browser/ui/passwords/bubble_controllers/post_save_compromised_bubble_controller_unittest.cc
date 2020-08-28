@@ -13,8 +13,8 @@
 namespace {
 
 constexpr char kCheckedHistogram[] =
-    "PasswordBubble.CompromisedBubbleCheckClicked";
-constexpr char kTypeHistogram[] = "PasswordBubble.CompromisedBubbleType";
+    "PasswordBubble.CompromisedBubble.CheckClicked";
+constexpr char kTypeHistogram[] = "PasswordBubble.CompromisedBubble.Type";
 
 using BubbleType = PostSaveCompromisedBubbleController::BubbleType;
 
