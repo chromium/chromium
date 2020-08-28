@@ -515,7 +515,7 @@ void AppServiceAppWindowLauncherController::RegisterWindow(
       static_cast<exo::ShellSurfaceBase*>(
           views::Widget::GetWidgetForNativeWindow(window)->widget_delegate())
           ->SetIcon(*ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_LOGO_PLUGIN_VM_DEFAULT_32));
+              IDR_LOGO_PLUGIN_VM_DEFAULT_192));
     }
   }
 }
