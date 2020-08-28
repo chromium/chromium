@@ -149,7 +149,7 @@ TEST_F(DrmDisplayTest, SetColorSpace) {
   drm_display_.SetColorSpace(kHDRColorSpace);
 
   const auto kSDRColorSpace = gfx::ColorSpace::CreateREC709();
-  constexpr float kSDRLevel = 0.75;
+  constexpr float kSDRLevel = 0.85;
   constexpr float kExponent = 1.2;
   EXPECT_CALL(*plane_manager,
               SetGammaCorrection(_, SizeIs(0),
@@ -177,7 +177,7 @@ TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionHDRDisplay) {
   ON_CALL(*plane_manager, SetGammaCorrection(_, _, _))
       .WillByDefault(::testing::Return(true));
 
-  constexpr float kSDRLevel = 0.75;
+  constexpr float kSDRLevel = 0.85;
   constexpr float kExponent = 1.2;
   EXPECT_CALL(*plane_manager,
               SetGammaCorrection(_, SizeIs(0),

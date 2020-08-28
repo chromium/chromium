@@ -276,7 +276,8 @@ void DrmDisplay::SetColorSpace(const gfx::ColorSpace& color_space) {
 
   // TODO(mcasas) This should be the inverse value of DisplayChangeObservers's
   // FillDisplayColorSpaces's kHDRLevel, move to a common place.
-  constexpr float kSDRLevel = 0.75;
+  // TODO(b/165822222): adjust this level based on the display brightness.
+  constexpr float kSDRLevel = 0.85;
   // TODO(mcasas): Retrieve this from the |drm_| HardwareDisplayPlaneManager.
   constexpr size_t kNumGammaSamples = 64ul;
   // Only using kSDRLevel of the available values shifts the contrast ratio, we
