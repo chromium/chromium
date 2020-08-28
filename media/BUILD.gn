@@ -182,6 +182,7 @@ test("media_unittests") {
 
   if (is_fuchsia) {
     deps += [ "//media/fuchsia/audio:unittests" ]
+    manifest = "//media/fuchsia/media_unittests.cmx"
   }
 
   if (enable_media_remoting) {
