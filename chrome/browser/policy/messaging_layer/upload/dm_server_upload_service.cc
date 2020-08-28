@@ -20,6 +20,8 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
@@ -218,14 +220,20 @@ DmServerUploadService::DmServerUploadService(
       upload_cb_(upload_cb),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
 
-DmServerUploadService::~DmServerUploadService() = default;
+DmServerUploadService::~DmServerUploadService() {
+  if (client_) {
+    base::PostTask(
+        FROM_HERE, {content::BrowserThread::UI},
+        base::BindOnce(
+            [](std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client) {
+              cloud_policy_client.reset();
+            },
+            std::move(client_)));
+  }
+}
 
 Status DmServerUploadService::EnqueueUpload(
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
-  if (!GetClient()->is_registered()) {
-    return Status(error::UNAVAILABLE, "DmServer is currently unavailable.");
-  }
-
   Start<DmServerUploader>(
       std::move(records), &record_handlers_,
       base::BindOnce(&DmServerUploadService::UploadCompletion,

@@ -22,6 +22,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
@@ -51,19 +52,14 @@ MATCHER_P(MatchValue, expected, "matches base::Value") {
 
 class TestCallbackWaiter {
  public:
-  TestCallbackWaiter()
-      : completed_(base::WaitableEvent::ResetPolicy::MANUAL,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+  TestCallbackWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
 
-  virtual void Signal() {
-    DCHECK(!completed_.IsSignaled());
-    completed_.Signal();
-  }
+  virtual void Signal() { run_loop_->Quit(); }
 
-  void Wait() { completed_.Wait(); }
+  void Wait() { run_loop_->Run(); }
 
  protected:
-  base::WaitableEvent completed_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 class AppInstallReportHandlerTest : public testing::Test {
@@ -76,8 +72,7 @@ class AppInstallReportHandlerTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_envrionment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_envrionment_;
 
   policy::MockCloudPolicyClient client_;
 };
@@ -104,7 +99,7 @@ TEST_F(AppInstallReportHandlerTest, AcceptsValidRecord) {
   TestCallbackWaiter waiter;
   TestRecord test_record;
   EXPECT_CALL(client_,
-              UploadAppInstallReport_(MatchValue(test_record.data()), _))
+              UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
       .WillOnce(WithArgs<1>(
           Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
             std::move(callback).Run(true);
@@ -118,7 +113,7 @@ TEST_F(AppInstallReportHandlerTest, AcceptsValidRecord) {
 }
 
 TEST_F(AppInstallReportHandlerTest, DeniesInvalidDestination) {
-  EXPECT_CALL(client_, UploadAppInstallReport_(_, _)).Times(0);
+  EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
   AppInstallReportHandler handler(&client_);
 
   TestRecord test_record;
@@ -130,7 +125,7 @@ TEST_F(AppInstallReportHandlerTest, DeniesInvalidDestination) {
 }
 
 TEST_F(AppInstallReportHandlerTest, DeniesInvalidData) {
-  EXPECT_CALL(client_, UploadAppInstallReport_(_, _)).Times(0);
+  EXPECT_CALL(client_, UploadExtensionInstallReport_(_, _)).Times(0);
   AppInstallReportHandler handler(&client_);
 
   TestRecord test_record;
@@ -145,7 +140,7 @@ TEST_F(AppInstallReportHandlerTest, ReportsUnsuccessfulCall) {
 
   TestRecord test_record;
   EXPECT_CALL(client_,
-              UploadAppInstallReport_(MatchValue(test_record.data()), _))
+              UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
       .WillOnce(WithArgs<1>(
           Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
             std::move(callback).Run(false);
@@ -164,13 +159,10 @@ class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
       : counter_limit_(counter_limit) {}
 
   void Signal() override {
-    DCHECK(!completed_.IsSignaled());
-    const int new_counter = --counter_limit_;
-    DCHECK_GE(new_counter, 0);
-    if (new_counter > 0) {
-      return;
+    DCHECK_GT(counter_limit_, 0);
+    if (--counter_limit_ == 0) {
+      run_loop_->Quit();
     }
-    completed_.Signal();
   }
 
  private:
@@ -183,7 +175,7 @@ TEST_F(AppInstallReportHandlerTest, AcceptsMultipleValidRecords) {
 
   TestRecord test_record;
   EXPECT_CALL(client_,
-              UploadAppInstallReport_(MatchValue(test_record.data()), _))
+              UploadExtensionInstallReport_(MatchValue(test_record.data()), _))
       .WillRepeatedly(WithArgs<1>(
           Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
             std::move(callback).Run(true);

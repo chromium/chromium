@@ -3,19 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+
+#include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/app_install_report_handler.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
-
-#include "base/bind.h"
-#include "base/files/file_path.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "components/account_id/account_id.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
 namespace reporting {
@@ -29,19 +30,14 @@ using testing::WithArgs;
 
 class TestCallbackWaiter {
  public:
-  TestCallbackWaiter()
-      : completed_(base::WaitableEvent::ResetPolicy::MANUAL,
-                   base::WaitableEvent::InitialState::NOT_SIGNALED) {}
+  TestCallbackWaiter() : run_loop_(std::make_unique<base::RunLoop>()) {}
 
-  virtual void Signal() {
-    DCHECK(!completed_.IsSignaled());
-    completed_.Signal();
-  }
+  virtual void Signal() { run_loop_->Quit(); }
 
-  void Wait() { completed_.Wait(); }
+  void Wait() { run_loop_->Run(); }
 
  protected:
-  base::WaitableEvent completed_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
@@ -50,10 +46,9 @@ class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
       : counter_limit_(counter_limit) {}
 
   void Signal() override {
-    DCHECK(!completed_.IsSignaled());
     DCHECK_GT(counter_limit_, 0);
     if (--counter_limit_ == 0) {
-      completed_.Signal();
+      run_loop_->Quit();
     }
   }
 
@@ -62,8 +57,7 @@ class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
 };
 
 TEST(UploadClientTest, CreateUploadClient) {
-  base::test::TaskEnvironment task_envrionment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_envrionment_;
 
   const int kExpectedCallTimes = 10;
   const uint64_t kGenerationId = 1234;
@@ -74,7 +68,7 @@ TEST(UploadClientTest, CreateUploadClient) {
   client->SetDMToken(
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
-  EXPECT_CALL(*client, UploadAppInstallReport_(_, _))
+  EXPECT_CALL(*client, UploadExtensionInstallReport_(_, _))
       .WillRepeatedly(WithArgs<1>(
           Invoke([&waiter](AppInstallReportHandler::ClientCallback& callback) {
             std::move(callback).Run(true);

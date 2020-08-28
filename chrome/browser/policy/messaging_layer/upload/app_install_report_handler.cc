@@ -24,6 +24,8 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace reporting {
 
@@ -111,7 +113,14 @@ void AppInstallReportUploader::OnPopResult(StatusOr<base::Value> pop_result) {
 void AppInstallReportUploader::StartUpload(base::Value record) {
   ClientCallback cb = base::BindOnce(
       &AppInstallReportUploader::OnUploadComplete, base::Unretained(this));
-  client_->UploadAppInstallReport(std::move(record), std::move(cb));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(
+                     [](policy::CloudPolicyClient* client, base::Value record,
+                        ClientCallback cb) {
+                       client->UploadExtensionInstallReport(std::move(record),
+                                                            std::move(cb));
+                     },
+                     client_, std::move(record), std::move(cb)));
 }
 
 void AppInstallReportUploader::OnUploadComplete(bool success) {

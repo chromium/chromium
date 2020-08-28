@@ -26,6 +26,7 @@
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/proto/record_constants.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -144,8 +145,7 @@ class ReportQueueTest : public testing::Test {
 
   MOCK_METHOD(Status, MockedPolicyCheck, (), ());
 
-  base::test::TaskEnvironment task_envrionment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_envrionment_;
 
   const Priority priority_;
 

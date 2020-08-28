@@ -37,43 +37,13 @@ namespace reporting {
 // }
 class ReportingClient {
  public:
-  // Uploader is passed to Storage in order to upload messages using the
-  // UploadClient.
-  class Uploader : public Storage::UploaderInterface {
-   public:
-    using UploadCallback = base::OnceCallback<Status(
-        std::unique_ptr<std::vector<EncryptedRecord>>)>;
-
-    static StatusOr<std::unique_ptr<Uploader>> Create(
-        UploadCallback upload_callback);
-
-    ~Uploader() override;
-    Uploader(const Uploader& other) = delete;
-    Uploader& operator=(const Uploader& other) = delete;
-
-    void ProcessRecord(StatusOr<EncryptedRecord> data,
-                       base::OnceCallback<void(bool)> processed_cb) override;
-
-    void Completed(Status final_status) override;
-
-   private:
-    explicit Uploader(UploadCallback upload_callback_);
-
-    void RunUpload();
-
-    UploadCallback upload_callback_;
-
-    bool completed_;
-    std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-  };
-
   struct Configuration {
     Configuration();
     ~Configuration();
 
-    scoped_refptr<StorageModule> storage_;
-    scoped_refptr<EncryptionModule> encryption_;
+    std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client;
+    scoped_refptr<StorageModule> storage;
+    scoped_refptr<EncryptionModule> encryption;
   };
 
   using CreateReportQueueResponse = StatusOr<std::unique_ptr<ReportQueue>>;
@@ -82,8 +52,11 @@ class ReportingClient {
       base::OnceCallback<void(CreateReportQueueResponse)>;
 
   using UpdateConfigurationCallback =
-      base::OnceCallback<void(const Configuration&,
+      base::OnceCallback<void(std::unique_ptr<Configuration>,
                               base::OnceCallback<void(Status)>)>;
+  using BuildCloudPolicyClientCallback = base::OnceCallback<void(
+      base::OnceCallback<void(
+          StatusOr<std::unique_ptr<policy::CloudPolicyClient>>)>)>;
 
   using InitCompleteCallback = base::OnceCallback<void(Status)>;
 
@@ -137,6 +110,7 @@ class ReportingClient {
   class InitializingContext : public TaskRunnerContext<Status> {
    public:
     InitializingContext(
+        BuildCloudPolicyClientCallback build_client_cb,
         Storage::StartUploadCb start_upload_cb,
         UpdateConfigurationCallback update_config_cb,
         InitCompleteCallback init_complete_cb,
@@ -151,6 +125,10 @@ class ReportingClient {
     void OnLeaderPromotionResult(
         StatusOr<InitializationStateTracker::ReleaseLeaderCallback>
             promo_result);
+
+    void ConfigureCloudPolicyClient();
+    void OnCloudPolicyClientConfigured(
+        StatusOr<std::unique_ptr<policy::CloudPolicyClient>> client_result);
 
     // ConfigureStorageModule will build a StorageModule and add it to the
     // |client_config_|.
@@ -169,12 +147,13 @@ class ReportingClient {
     // Complete calls response with |client_config_|
     void Complete(Status status);
 
+    BuildCloudPolicyClientCallback build_client_cb_;
     Storage::StartUploadCb start_upload_cb_;
     UpdateConfigurationCallback update_config_cb_;
     scoped_refptr<InitializationStateTracker> init_state_tracker_;
 
     InitializationStateTracker::ReleaseLeaderCallback release_leader_cb_;
-    Configuration client_config_;
+    std::unique_ptr<Configuration> client_config_;
   };
 
   ~ReportingClient();
@@ -194,11 +173,46 @@ class ReportingClient {
       std::unique_ptr<ReportQueueConfiguration> config,
       CreateReportQueueCallback create_cb);
 
+  // Sets up the ReportingClient for testing with a specified CloudPolicyClient.
+  static void Setup_test(std::unique_ptr<policy::CloudPolicyClient> client);
   // Resets the singleton object. Should only be used in tests when the current
   // TaskEnvironment will be invalidated.
   static void Reset_test();
 
  private:
+  // Uploader is passed to Storage in order to upload messages using the
+  // UploadClient.
+  class Uploader : public Storage::UploaderInterface {
+   public:
+    using UploadCallback = base::OnceCallback<Status(
+        std::unique_ptr<std::vector<EncryptedRecord>>)>;
+
+    static StatusOr<std::unique_ptr<Uploader>> Create(
+        UploadCallback upload_callback);
+
+    ~Uploader() override;
+    Uploader(const Uploader& other) = delete;
+    Uploader& operator=(const Uploader& other) = delete;
+
+    void ProcessRecord(StatusOr<EncryptedRecord> data,
+                       base::OnceCallback<void(bool)> processed_cb) override;
+
+    void Completed(Status final_status) override;
+
+   private:
+    explicit Uploader(UploadCallback upload_callback_);
+
+    static void RunUpload(
+        UploadCallback upload_callback,
+        std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records);
+
+    UploadCallback upload_callback_;
+
+    bool completed_{false};
+    std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
+    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  };
+
   // Holds the creation request for a ReportQueue.
   class CreateReportQueueRequest {
    public:
@@ -222,7 +236,7 @@ class ReportingClient {
 
   void OnPushComplete();
   void OnInitState(bool reporting_client_configured);
-  void OnConfigResult(const Configuration& config,
+  void OnConfigResult(std::unique_ptr<Configuration> config,
                       base::OnceCallback<void(Status)> continue_init_cb);
   void OnInitializationComplete(Status init_status);
 
@@ -236,13 +250,11 @@ class ReportingClient {
   // Queue for storing creation requests while the ReportingClient is
   // initializing.
   scoped_refptr<SharedQueue<CreateReportQueueRequest>> create_request_queue_;
-
   scoped_refptr<InitializationStateTracker> init_state_tracker_;
+  BuildCloudPolicyClientCallback build_cloud_policy_client_cb_;
 
-  scoped_refptr<StorageModule> storage_;
-  scoped_refptr<EncryptionModule> encryption_;
   std::unique_ptr<UploadClient> upload_client_;
-  Configuration config_;
+  std::unique_ptr<Configuration> config_;
 };
 
 }  // namespace reporting
