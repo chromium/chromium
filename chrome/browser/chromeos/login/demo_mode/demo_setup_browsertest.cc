@@ -596,8 +596,16 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowSuccess) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
+// TODO(https://crbug.com/1121422): Flaky on ChromeOS ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_OnlineSetupFlowSuccessWithCountryCustomization \
+  DISABLED_OnlineSetupFlowSuccessWithCountryCustomization
+#else
+#define MAYBE_OnlineSetupFlowSuccessWithCountryCustomization \
+  OnlineSetupFlowSuccessWithCountryCustomization
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       OnlineSetupFlowSuccessWithCountryCustomization) {
+                       MAYBE_OnlineSetupFlowSuccessWithCountryCustomization) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
@@ -1123,8 +1131,16 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickNetworkOnNetworkScreen) {
   EXPECT_TRUE(IsScreenShown(EulaView::kScreenId));
 }
 
+// TODO(https://crbug.com/1121422): Flaky on ChromeOS ASAN.
+#if defined(OS_CHROMEOS)
+#define MAYBE_ClickConnectedNetworkOnNetworkScreen \
+  DISABLED_ClickConnectedNetworkOnNetworkScreen
+#else
+#define MAYBE_ClickConnectedNetworkOnNetworkScreen \
+  ClickConnectedNetworkOnNetworkScreen
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       ClickConnectedNetworkOnNetworkScreen) {
+                       MAYBE_ClickConnectedNetworkOnNetworkScreen) {
   SimulateNetworkConnected();
   SkipToScreen(NetworkScreenView::kScreenId);
   EXPECT_TRUE(IsScreenDialogElementEnabled(NetworkScreenView::kScreenId,
