@@ -71,8 +71,8 @@ ClipboardHistoryResourceManager::ClipboardHistoryResourceManager(
 
 ClipboardHistoryResourceManager::~ClipboardHistoryResourceManager() {
   clipboard_history_->RemoveObserver(this);
-
-  CancelUnfinishedRequests();
+  if (ClipboardImageModelFactory::Get())
+    ClipboardImageModelFactory::Get()->OnShutdown();
 }
 
 ui::ImageModel ClipboardHistoryResourceManager::GetImageModel(
