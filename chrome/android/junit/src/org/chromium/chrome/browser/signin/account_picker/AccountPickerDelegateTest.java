@@ -40,7 +40,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -112,8 +111,7 @@ public class AccountPickerDelegateTest {
         InOrder calledInOrder = inOrder(mWebSigninBridgeFactoryMock, mSigninManagerMock);
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
                 .create(mProfileMock, coreAccountInfo, mDelegate);
-        calledInOrder.verify(mSigninManagerMock)
-                .signinAndEnableSync(eq(SigninAccessPoint.WEB_SIGNIN), eq(coreAccountInfo), any());
+        calledInOrder.verify(mSigninManagerMock).signin(eq(coreAccountInfo), any());
         mDelegate.onSigninSucceded();
         verify(mChromeActivityMock.getActivityTab()).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
@@ -126,12 +124,12 @@ public class AccountPickerDelegateTest {
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.toCoreAccountInfo(account.name);
         doAnswer(invocation -> {
-            SigninManager.SignInCallback callback = invocation.getArgument(2);
+            SigninManager.SignInCallback callback = invocation.getArgument(1);
             callback.onSignInAborted();
             return null;
         })
                 .when(mSigninManagerMock)
-                .signinAndEnableSync(eq(SigninAccessPoint.WEB_SIGNIN), eq(coreAccountInfo), any());
+                .signin(eq(coreAccountInfo), any());
         mDelegate.signIn(coreAccountInfo, error -> {});
         verify(mWebSigninBridgeMock).destroy();
     }

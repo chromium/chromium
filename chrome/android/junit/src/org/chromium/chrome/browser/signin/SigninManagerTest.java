@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -59,6 +60,7 @@ public class SigninManagerTest {
     private IdentityMutator mIdentityMutator;
     private SigninManager mSigninManager;
     private CoreAccountInfo mAccount;
+    private AndroidSyncSettings mAndroidSyncSettings;
 
     @Before
     public void setUp() {
@@ -75,33 +77,70 @@ public class SigninManagerTest {
         mIdentityManager = spy(
                 new IdentityManager(0 /* nativeIdentityManager */, null /* OAuth2TokenService */));
 
-        AndroidSyncSettings androidSyncSettings = mock(AndroidSyncSettings.class);
+        mAndroidSyncSettings = mock(AndroidSyncSettings.class);
 
         ExternalAuthUtils externalAuthUtils = mock(ExternalAuthUtils.class);
         // Pretend Google Play services are available as it is required for the sign-in
         doReturn(false).when(externalAuthUtils).isGooglePlayServicesMissing(any());
 
         doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
-        mSigninManager =
-                new SigninManager(0 /* nativeSigninManagerAndroid */, mAccountTrackerService,
-                        mIdentityManager, mIdentityMutator, androidSyncSettings, externalAuthUtils);
+        mSigninManager = new SigninManager(0 /* nativeSigninManagerAndroid */,
+                mAccountTrackerService, mIdentityManager, mIdentityMutator, mAndroidSyncSettings,
+                externalAuthUtils);
 
         mAccount = new CoreAccountInfo(
                 new CoreAccountId("gaia-id-user"), "user@domain.com", "gaia-id-user");
     }
 
     @Test
-    public void signInFromJava() {
+    public void signinAndTurnSyncOn() {
         doReturn(true).when(mAccountTrackerService).checkAndSeedSystemAccounts();
         doReturn(mAccount)
                 .when(mIdentityManager)
                 .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                         eq(mAccount.getEmail()));
+        doReturn(true).when(mIdentityMutator).setPrimaryAccount(any(), anyInt());
 
         mSigninManager.onFirstRunCheckDone();
-        mSigninManager.signinAndEnableSync(SigninAccessPoint.START_PAGE, mAccount, null);
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+        mSigninManager.signinAndEnableSync(SigninAccessPoint.START_PAGE, mAccount, callback);
 
         verify(mNativeMock).fetchAndApplyCloudPolicy(anyLong(), eq(mAccount), any());
+
+        mSigninManager.finishSignInAfterPolicyEnforced();
+        verify(mIdentityMutator).setPrimaryAccount(mAccount.getId(), ConsentLevel.SYNC);
+        verify(mAndroidSyncSettings).updateAccount(CoreAccountInfo.getAndroidAccountFrom(mAccount));
+        verify(mAndroidSyncSettings).enableChromeSync();
+        // Signin should be complete and callback should be invoked.
+        verify(callback).onSignInComplete();
+        verify(callback, never()).onSignInAborted();
+    }
+
+    @Test
+    public void signinNoTurnSyncOn() {
+        doReturn(true).when(mAccountTrackerService).checkAndSeedSystemAccounts();
+        doReturn(mAccount)
+                .when(mIdentityManager)
+                .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                        eq(mAccount.getEmail()));
+        doReturn(true).when(mIdentityMutator).setPrimaryAccount(any(), anyInt());
+
+        mSigninManager.onFirstRunCheckDone();
+
+        SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
+        mSigninManager.signin(mAccount, callback);
+
+        // Signin without turning on sync shouldn't apply policies.
+        verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());
+
+        verify(mIdentityMutator).setPrimaryAccount(mAccount.getId(), ConsentLevel.NOT_REQUIRED);
+
+        verify(mAndroidSyncSettings, never()).updateAccount(any());
+        verify(mAndroidSyncSettings, never()).enableChromeSync();
+        // Signin should be complete and callback should be invoked.
+        verify(callback).onSignInComplete();
+        verify(callback, never()).onSignInAborted();
     }
 
     @Test
@@ -246,7 +285,9 @@ public class SigninManagerTest {
             doReturn(account).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
             return true;
         };
-        doAnswer(setPrimaryAccountAnswer).when(mIdentityMutator).setPrimaryAccount(account.getId());
+        doAnswer(setPrimaryAccountAnswer)
+                .when(mIdentityMutator)
+                .setPrimaryAccount(account.getId(), ConsentLevel.SYNC);
         doNothing().when(mIdentityMutator).reloadAllAccountsFromSystemWithPrimaryAccount(any());
 
         mSigninManager.onFirstRunCheckDone(); // Allow sign-in.

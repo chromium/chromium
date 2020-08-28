@@ -113,7 +113,7 @@ public class SigninManager
      * cleared atomically, and all final fields to be set upon initialization.
      */
     private static class SignInState {
-        final @SigninAccessPoint int mAccessPoint;
+        private final @SigninAccessPoint Integer mAccessPoint;
         final Account mAccount;
         final SignInCallback mCallback;
 
@@ -132,15 +132,49 @@ public class SigninManager
         CoreAccountInfo mCoreAccountInfo;
 
         /**
+         * State for the sign-in flow that doesn't enable sync.
+         *
+         * @param account The account to sign in to.
+         * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
+         */
+        static SignInState createForSignin(Account account, @Nullable SignInCallback callback) {
+            return new SignInState(null, account, callback);
+        }
+
+        /**
+         * State for the sync consent flow.
+         *
          * @param accessPoint {@link SigninAccessPoint} that has initiated the sign-in.
          * @param account The account to sign in to.
          * @param callback Called when the sign-in process finishes or is cancelled. Can be null.
          */
-        SignInState(@SigninAccessPoint int accessPoint, Account account,
+        static SignInState createForSigninAndEnableSync(@SigninAccessPoint int accessPoint,
+                Account account, @Nullable SignInCallback callback) {
+            return new SignInState(accessPoint, account, callback);
+        }
+
+        private SignInState(@SigninAccessPoint Integer accessPoint, Account account,
                 @Nullable SignInCallback callback) {
             mAccessPoint = accessPoint;
             this.mAccount = account;
             this.mCallback = callback;
+        }
+
+        /**
+         * Getter for the access point that initiated sync consent flow. Shouldn't be called if
+         * {@link #shouldTurnSyncOn()} is false.
+         */
+        @SigninAccessPoint
+        int getAccessPoint() {
+            assert mAccessPoint != null : "Not going to enable sync - no access point!";
+            return mAccessPoint;
+        }
+
+        /**
+         * Whether this sign-in flow should also turn on sync.
+         */
+        boolean shouldTurnSyncOn() {
+            return mAccessPoint != null;
         }
     }
 
@@ -358,9 +392,27 @@ public class SigninManager
      * The sign-in flow goes through the following steps:
      *
      *   - Wait for AccountTrackerService to be seeded.
+     *   - Complete sign-in with the native IdentityManager.
+     *   - Call the callback if provided.
+     *
+     * @param accountInfo The account to sign in to.
+     * @param callback Optional callback for when the sign-in process is finished.
+     */
+    public void signin(CoreAccountInfo accountInfo, @Nullable SignInCallback callback) {
+        signinInternal(SignInState.createForSignin(
+                CoreAccountInfo.getAndroidAccountFrom(accountInfo), callback));
+    }
+
+    /**
+     * Starts the sign-in flow, enables sync and executes the callback when finished.
+     *
+     * The sign-in flow goes through the following steps:
+     *
+     *   - Wait for AccountTrackerService to be seeded.
      *   - Wait for policy to be checked for the account.
      *   - If managed, wait for the policy to be fetched.
      *   - Complete sign-in with the native IdentityManager.
+     *   - Enable sync.
      *   - Call the callback if provided.
      *
      * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
@@ -371,7 +423,7 @@ public class SigninManager
             @Nullable SignInCallback callback) {
         assert accountInfo != null;
         signinAndEnableSync(
-                accessPoint, AccountUtils.createAccountFromName(accountInfo.getEmail()), callback);
+                accessPoint, CoreAccountInfo.getAndroidAccountFrom(accountInfo), callback);
     }
 
     /**
@@ -395,32 +447,34 @@ public class SigninManager
     @Deprecated
     public void signinAndEnableSync(@SigninAccessPoint int accessPoint, Account account,
             @Nullable SignInCallback callback) {
+        signinInternal(SignInState.createForSigninAndEnableSync(accessPoint, account, callback));
+    }
+
+    public void signinInternal(SignInState signinState) {
         assert isSignInAllowed() : "Sign-in isn't allowed!";
-        if (account == null) {
+
+        // TODO(bsazonov): Replace this with an assert in the SigninState ctor
+        if (signinState.mAccount == null) {
             Log.w(TAG, "Ignoring sign-in request due to null account.");
-            if (callback != null) callback.onSignInAborted();
+            if (signinState.mCallback != null) signinState.mCallback.onSignInAborted();
             return;
         }
 
         if (mSignInState != null) {
             Log.w(TAG, "Ignoring sign-in request as another sign-in request is pending.");
-            if (callback != null) callback.onSignInAborted();
+            if (signinState.mCallback != null) signinState.mCallback.onSignInAborted();
             return;
         }
 
         if (mFirstRunCheckIsPending) {
             Log.w(TAG, "Ignoring sign-in request until the First Run check completes.");
-            if (callback != null) callback.onSignInAborted();
+            if (signinState.mCallback != null) signinState.mCallback.onSignInAborted();
             return;
         }
 
-        mSignInState = new SignInState(accessPoint, account, callback);
+        mSignInState = signinState;
         notifySignInAllowedChanged();
 
-        progressSignInFlowSeedSystemAccounts();
-    }
-
-    private void progressSignInFlowSeedSystemAccounts() {
         if (mAccountTrackerService.checkAndSeedSystemAccounts()) {
             progressSignInFlowCheckPolicy();
         } else {
@@ -445,9 +499,14 @@ public class SigninManager
         assert mSignInState.mCoreAccountInfo
                 != null : "CoreAccountInfo must be set and valid to progress.";
 
-        Log.d(TAG, "Checking if account has policy management enabled");
-        fetchAndApplyCloudPolicy(
-                mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
+        if (mSignInState.shouldTurnSyncOn()) {
+            Log.d(TAG, "Checking if account has policy management enabled");
+            fetchAndApplyCloudPolicy(
+                    mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
+        } else {
+            // Sign-in without sync doesn't enforce enterprise policy, so skip that step.
+            finishSignInAfterPolicyEnforced();
+        }
     }
 
     /**
@@ -462,18 +521,30 @@ public class SigninManager
         // The user should not be already signed in
         assert !mIdentityManager.hasPrimaryAccount();
 
-        if (!mIdentityMutator.setPrimaryAccount(mSignInState.mCoreAccountInfo.getId())) {
+        @ConsentLevel
+        int consentLevel =
+                mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.NOT_REQUIRED;
+        if (!mIdentityMutator.setPrimaryAccount(
+                    mSignInState.mCoreAccountInfo.getId(), consentLevel)) {
             Log.w(TAG, "Failed to set the PrimaryAccount in IdentityManager, aborting signin");
             abortSignIn();
             return;
         }
 
-        // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that uses
-        //                                  the sync account before the native is loaded.
-        SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(
-                mSignInState.mCoreAccountInfo.getEmail());
+        if (mSignInState.shouldTurnSyncOn()) {
+            // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
+            // uses the sync account before the native is loaded.
+            SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(
+                    mSignInState.mCoreAccountInfo.getEmail());
 
-        enableSync(mSignInState.mCoreAccountInfo);
+            enableSync(mSignInState.mCoreAccountInfo);
+
+            RecordUserAction.record("Signin_Signin_Succeed");
+            RecordHistogram.recordEnumeratedHistogram("Signin.SigninCompletedAccessPoint",
+                    mSignInState.getAccessPoint(), SigninAccessPoint.MAX);
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Signin.SigninReason", SigninReason.SIGNIN_PRIMARY_ACCOUNT, SigninReason.MAX);
+        }
 
         if (mSignInState.mCallback != null) {
             mSignInState.mCallback.onSignInComplete();
@@ -481,14 +552,6 @@ public class SigninManager
 
         // Trigger token requests via identity mutator.
         reloadAllAccountsFromSystem();
-
-        RecordUserAction.record("Signin_Signin_Succeed");
-        RecordHistogram.recordEnumeratedHistogram("Signin.SigninCompletedAccessPoint",
-                mSignInState.mAccessPoint, SigninAccessPoint.MAX);
-        // Log signin in reason as defined in signin_metrics.h. Right now only
-        // SIGNIN_PRIMARY_ACCOUNT available on Android.
-        RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SigninReason", SigninReason.SIGNIN_PRIMARY_ACCOUNT, SigninReason.MAX);
 
         Log.d(TAG, "Signin completed.");
         mSignInState = null;
@@ -593,7 +656,7 @@ public class SigninManager
      */
     void reloadAllAccountsFromSystem() {
         mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC)));
+                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.NOT_REQUIRED)));
     }
 
     /**

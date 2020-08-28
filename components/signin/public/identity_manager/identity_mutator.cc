@@ -6,6 +6,7 @@
 
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
@@ -23,12 +24,25 @@ JniIdentityMutator::JniIdentityMutator(IdentityMutator* identity_mutator)
 
 bool JniIdentityMutator::SetPrimaryAccount(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& primary_account_id) {
+    const base::android::JavaParamRef<jobject>& primary_account_id,
+    jint j_consent_level) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
-  return primary_account_mutator->SetPrimaryAccount(
-      ConvertFromJavaCoreAccountId(env, primary_account_id));
+  // TODO(https://crbug.com/1046746): Refactor PrimaryAccountMutator API and
+  //                                  pass ConsentLevel directly there.
+  switch (static_cast<ConsentLevel>(j_consent_level)) {
+    case ConsentLevel::kSync:
+      return primary_account_mutator->SetPrimaryAccount(
+          ConvertFromJavaCoreAccountId(env, primary_account_id));
+    case ConsentLevel::kNotRequired:
+      primary_account_mutator->SetUnconsentedPrimaryAccount(
+          ConvertFromJavaCoreAccountId(env, primary_account_id));
+      return true;
+    default:
+      NOTREACHED() << "Unknown consent level: " << j_consent_level;
+      return false;
+  }
 }
 
 bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env,

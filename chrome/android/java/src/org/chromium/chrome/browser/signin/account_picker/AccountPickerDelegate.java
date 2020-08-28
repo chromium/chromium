@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -69,8 +68,8 @@ public class AccountPickerDelegate implements WebSigninBridge.Listener {
         mOnSignInErrorCallback = onSignInErrorCallback;
         mWebSigninBridge = mWebSigninBridgeFactory.create(
                 Profile.getLastUsedRegularProfile(), coreAccountInfo, this);
-        mSigninManager.signinAndEnableSync(
-                SigninAccessPoint.WEB_SIGNIN, coreAccountInfo, new SigninManager.SignInCallback() {
+        mSigninManager.signin(
+                coreAccountInfo, new SigninManager.SignInCallback() {
                     @Override
                     public void onSignInComplete() {
                         // After the sign-in is finished in Chrome, we still need to wait for
