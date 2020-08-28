@@ -236,9 +236,10 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
   color_space_ = color_space;
   is_hdr_ = color_space_.IsHDR();
   size_ = size;
+  format_ = format;
   characterization_ = CreateSkSurfaceCharacterization(
-      size, GetResourceFormat(format), false /* mipmap */,
-      color_space_.ToSkColorSpace(), true /* is_root_render_pass */);
+      size, format, false /* mipmap */, color_space_.ToSkColorSpace(),
+      true /* is_root_render_pass */);
   RecreateRootRecorder();
 }
 
@@ -289,8 +290,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
   nway_canvas_->addCanvas(current_paint_->recorder()->getCanvas());
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
-      gfx::Size(characterization_.width(), characterization_.height()),
-      BGRA_8888, false /* mipmap */, characterization_.refColorSpace(),
+      gfx::Size(characterization_.width(), characterization_.height()), format_,
+      false /* mipmap */, characterization_.refColorSpace(),
       false /* is_root_render_pass */);
   if (characterization.isValid()) {
     overdraw_surface_recorder_.emplace(characterization);
@@ -493,7 +494,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   DCHECK(resource_sync_tokens_.empty());
 
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
-      surface_size, format, mipmap, std::move(color_space),
+      surface_size, BufferFormat(format), mipmap, std::move(color_space),
       false /* is_root_render_pass */);
   if (!characterization.isValid())
     return nullptr;
@@ -779,7 +780,7 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
 SkSurfaceCharacterization
 SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     const gfx::Size& surface_size,
-    ResourceFormat format,
+    gfx::BufferFormat format,
     bool mipmap,
     sk_sp<SkColorSpace> color_space,
     bool is_root_render_pass) {
@@ -791,15 +792,15 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
   SkSurfaceProps surface_props(0 /*flags */,
                                SkSurfaceProps::kLegacyFontHost_InitType);
   if (is_root_render_pass) {
-    auto color_type =
-        is_hdr_ && capabilities_.sk_color_type_for_hdr != kUnknown_SkColorType
-            ? capabilities_.sk_color_type_for_hdr
-            : capabilities_.sk_color_type;
-
-    const auto& backend_format =
-        is_hdr_ && capabilities_.gr_backend_format_for_hdr.isValid()
-            ? capabilities_.gr_backend_format_for_hdr
-            : capabilities_.gr_backend_format;
+    const auto format_index = static_cast<int>(format);
+    const auto& color_type = capabilities_.sk_color_types[format_index];
+    const auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
+        color_type, GrRenderable::kYes);
+    DCHECK(color_type != kUnknown_SkColorType)
+        << "SkColorType is invalid for buffer format_index: " << format_index;
+    DCHECK(backend_format.isValid())
+        << "GrBackendFormat is invalid for buffer format_index: "
+        << format_index;
     auto surface_origin =
         capabilities_.output_surface_origin == gfx::SurfaceOrigin::kBottomLeft
             ? kBottomLeft_GrSurfaceOrigin
@@ -838,8 +839,9 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
     return characterization;
   }
 
-  auto color_type =
-      ResourceFormatToClosestSkColorType(true /* gpu_compositing */, format);
+  auto resource_format = GetResourceFormat(format);
+  auto color_type = ResourceFormatToClosestSkColorType(
+      true /* gpu_compositing */, resource_format);
   auto backend_format = gr_context_thread_safe_->defaultBackendFormat(
       color_type, GrRenderable::kYes);
   DCHECK(backend_format.isValid());

@@ -65,7 +65,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
   SkiaOutputSurfaceDependency* dependency_;
   const bool supports_async_swap_;
 
-  ResourceFormat image_format_;
+  ResourceFormat image_format_ = RGBA_8888;
 
   // Shared Image factories
   gpu::SharedImageFactory shared_image_factory_;

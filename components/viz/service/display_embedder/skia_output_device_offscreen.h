@@ -51,6 +51,7 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
 
  private:
   gfx::Size size_;
+  gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
   uint64_t backbuffer_estimated_size_ = 0;
   sk_sp<SkColorSpace> sk_color_space_;
 
