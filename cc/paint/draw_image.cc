@@ -4,6 +4,8 @@
 
 #include "cc/paint/draw_image.h"
 
+#include <utility>
+
 namespace cc {
 namespace {
 
@@ -41,19 +43,22 @@ DrawImage::DrawImage(PaintImage image,
                      SkFilterQuality filter_quality,
                      const SkMatrix& matrix,
                      base::Optional<size_t> frame_index,
-                     const base::Optional<gfx::ColorSpace>& color_space)
+                     const base::Optional<gfx::ColorSpace>& color_space,
+                     float sdr_white_level)
     : paint_image_(std::move(image)),
       src_rect_(src_rect),
       filter_quality_(filter_quality),
       frame_index_(frame_index),
-      target_color_space_(color_space) {
+      target_color_space_(color_space),
+      sdr_white_level_(sdr_white_level) {
   matrix_is_decomposable_ = ExtractScale(matrix, &scale_);
 }
 
 DrawImage::DrawImage(const DrawImage& other,
                      float scale_adjustment,
                      size_t frame_index,
-                     const gfx::ColorSpace& color_space)
+                     const gfx::ColorSpace& color_space,
+                     float sdr_white_level)
     : paint_image_(other.paint_image_),
       src_rect_(other.src_rect_),
       filter_quality_(other.filter_quality_),
@@ -61,7 +66,11 @@ DrawImage::DrawImage(const DrawImage& other,
                           other.scale_.height() * scale_adjustment)),
       matrix_is_decomposable_(other.matrix_is_decomposable_),
       frame_index_(frame_index),
-      target_color_space_(color_space) {}
+      target_color_space_(color_space),
+      sdr_white_level_(sdr_white_level) {
+  if (sdr_white_level_ == gfx::ColorSpace::kDefaultSDRWhiteLevel)
+    sdr_white_level_ = other.sdr_white_level_;
+}
 
 DrawImage::DrawImage(const DrawImage& other) = default;
 DrawImage::DrawImage(DrawImage&& other) = default;
@@ -74,7 +83,8 @@ bool DrawImage::operator==(const DrawImage& other) const {
   return paint_image_ == other.paint_image_ && src_rect_ == other.src_rect_ &&
          filter_quality_ == other.filter_quality_ && scale_ == other.scale_ &&
          matrix_is_decomposable_ == other.matrix_is_decomposable_ &&
-         target_color_space_ == other.target_color_space_;
+         target_color_space_ == other.target_color_space_ &&
+         sdr_white_level_ == other.sdr_white_level_;
 }
 
 }  // namespace cc

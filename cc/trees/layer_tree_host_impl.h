@@ -535,6 +535,7 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) override;
   gfx::ColorSpace GetRasterColorSpace(
       gfx::ContentColorUsage content_color_usage) const override;
+  float GetSDRWhiteLevel() const override;
   void RequestImplSideInvalidationForCheckerImagedTiles() override;
   size_t GetFrameIndexForImage(const PaintImage& paint_image,
                                WhichTree tree) const override;

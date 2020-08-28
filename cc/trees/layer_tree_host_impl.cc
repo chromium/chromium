@@ -1766,11 +1766,14 @@ gfx::ColorSpace LayerTreeHostImpl::GetRasterColorSpace(
   }
 
   // The pending tree will has the most recently updated color space, so use it.
-  gfx::ColorSpace result;
+  gfx::DisplayColorSpaces display_cs;
   if (pending_tree_)
-    result = pending_tree_->display_color_spaces().GetScreenInfoColorSpace();
+    display_cs = pending_tree_->display_color_spaces();
   else if (active_tree_)
-    result = active_tree_->display_color_spaces().GetScreenInfoColorSpace();
+    display_cs = active_tree_->display_color_spaces();
+
+  auto result = display_cs.GetOutputColorSpace(gfx::ContentColorUsage::kHDR,
+                                               /*needs_alpha=*/false);
 
   // Always specify a color space if color correct rasterization is requested
   // (not specifying a color space indicates that no color conversion is
@@ -1784,6 +1787,20 @@ gfx::ColorSpace LayerTreeHostImpl::GetRasterColorSpace(
     return gfx::ColorSpace::CreateDisplayP3D65();
 
   return result;
+}
+
+float LayerTreeHostImpl::GetSDRWhiteLevel() const {
+  // If we are likely to software composite the resource, we use sRGB because
+  // software compositing is unable to perform color conversion.
+  if (!layer_tree_frame_sink_ || !layer_tree_frame_sink_->context_provider())
+    return gfx::ColorSpace::kDefaultSDRWhiteLevel;
+
+  // The pending tree will has the most recently updated color space, so use it.
+  if (pending_tree_)
+    return pending_tree_->display_color_spaces().GetSDRWhiteLevel();
+  if (active_tree_)
+    return active_tree_->display_color_spaces().GetSDRWhiteLevel();
+  return gfx::ColorSpace::kDefaultSDRWhiteLevel;
 }
 
 void LayerTreeHostImpl::RequestImplSideInvalidationForCheckerImagedTiles() {

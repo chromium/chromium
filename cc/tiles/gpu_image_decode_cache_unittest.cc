@@ -468,7 +468,8 @@ class GpuImageDecodeCacheTest
       gfx::ColorSpace* color_space = nullptr,
       SkFilterQuality filter_quality = kMedium_SkFilterQuality,
       SkIRect* src_rect = nullptr,
-      size_t frame_index = PaintImage::kDefaultFrameIndex) {
+      size_t frame_index = PaintImage::kDefaultFrameIndex,
+      float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel) {
     SkIRect src_rectangle;
     gfx::ColorSpace cs;
     if (!src_rect) {
@@ -481,7 +482,7 @@ class GpuImageDecodeCacheTest
       color_space = &cs;
     }
     return DrawImage(paint_image, *src_rect, filter_quality, matrix,
-                     frame_index, *color_space);
+                     frame_index, *color_space, sdr_white_level);
   }
 
   GPUImageDecodeTestMockContextProvider* context_provider() {
@@ -573,7 +574,8 @@ class GpuImageDecodeCacheTest
       const DrawImage& draw_image,
       const base::Optional<uint32_t> transfer_cache_id,
       const SkISize plane_sizes[SkYUVASizeInfo::kMaxCount],
-      SkColorType expected_type = kGray_8_SkColorType) {
+      SkColorType expected_type = kGray_8_SkColorType,
+      const SkColorSpace* expected_cs = nullptr) {
     for (size_t i = 0; i < SkYUVASizeInfo::kMaxCount; ++i) {
       // TODO(crbug.com/910276): Skip alpha plane until supported in cache.
       if (i != SkYUVAIndex::kA_Index) {
@@ -591,6 +593,12 @@ class GpuImageDecodeCacheTest
         ASSERT_TRUE(uploaded_plane);
         EXPECT_EQ(plane_sizes[i], uploaded_plane->dimensions());
         EXPECT_EQ(expected_type, uploaded_plane->colorType());
+        if (expected_cs && use_transfer_cache_) {
+          EXPECT_TRUE(
+              SkColorSpace::Equals(expected_cs, uploaded_plane->colorSpace()));
+        } else if (expected_cs) {
+          // In-process raster sets the ColorSpace on the composite SkImage.
+        }
       }
     }
   }
@@ -1104,8 +1112,11 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
                                     PaintImage::GetNextContentId())
                          .TakePaintImage();
 
+  constexpr float kCustomWhiteLevel = 200.f;
   DrawImage draw_image = CreateDrawImageInternal(
-      image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), &color_space);
+      image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), &color_space,
+      kMedium_SkFilterQuality, nullptr, PaintImage::kDefaultFrameIndex,
+      kCustomWhiteLevel);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_EQ(draw_image.target_color_space(), color_space);
@@ -1126,6 +1137,11 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
   EXPECT_TRUE(decoded_draw_image.image()->isTextureBacked());
   EXPECT_TRUE(decoded_draw_image.is_budgeted());
   EXPECT_EQ(decoded_draw_image.image()->colorType(), kRGBA_F16_SkColorType);
+
+  auto cs = gfx::ColorSpace(*decoded_draw_image.image()->colorSpace());
+  float sdr_white_level;
+  ASSERT_TRUE(cs.GetPQSDRWhiteLevel(&sdr_white_level));
+  EXPECT_FLOAT_EQ(sdr_white_level, kCustomWhiteLevel);
 
   EXPECT_FALSE(cache->DiscardableIsLockedForTesting(draw_image));
 
@@ -2974,20 +2990,32 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
   }
 
   auto decode_and_check_plane_sizes = [this](GpuImageDecodeCache* cache,
-                                             SkColorType yuv_color_type) {
+                                             SkColorType yuv_color_type,
+                                             gfx::ColorSpace target_cs) {
     SkFilterQuality filter_quality = kMedium_SkFilterQuality;
     SkSize requires_decode_at_original_scale = SkSize::Make(0.8f, 0.8f);
+
+    // When we're targeting HDR output, select a reasonable HDR color space for
+    // the decoded content.
+    gfx::ColorSpace decoded_cs;
+    if (target_cs.IsHDR())
+      decoded_cs = gfx::ColorSpace::CreateHDR10();
 
     // An unknown SkColorType means we expect fallback to RGB.
     PaintImage image =
         yuv_color_type == kUnknown_SkColorType
             ? CreatePaintImageForFallbackToRGB(GetNormalImageSize())
-            : CreatePaintImageInternal(GetNormalImageSize());
+            : CreatePaintImageInternal(GetNormalImageSize(),
+                                       decoded_cs.ToSkColorSpace());
 
-    DrawImage draw_image(image, SkIRect::MakeWH(image.width(), image.height()),
-                         filter_quality,
-                         CreateMatrix(requires_decode_at_original_scale),
-                         PaintImage::kDefaultFrameIndex, DefaultColorSpace());
+    float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+    if (target_cs.IsHDR())
+      ASSERT_TRUE(target_cs.GetPQSDRWhiteLevel(&sdr_white_level));
+
+    DrawImage draw_image(
+        image, SkIRect::MakeWH(image.width(), image.height()), filter_quality,
+        CreateMatrix(requires_decode_at_original_scale),
+        PaintImage::kDefaultFrameIndex, target_cs, sdr_white_level);
     ImageDecodeCache::TaskResult result = cache->GetTaskForImageAndRef(
         draw_image, ImageDecodeCache::TracingInfo());
     EXPECT_TRUE(result.need_unref);
@@ -3019,8 +3047,22 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                        true /* should_have_mips */);
       SkYUVASizeInfo yuv_size_info = GetYUVASizeInfo(
           GetNormalImageSize(), yuv_format_, yuv_bytes_per_pixel_);
+
+      // Decoded HDR images should have their SDR white level adjusted to match
+      // the display so we avoid scaling them by variable SDR brightness levels.
+      auto expected_cs = decoded_cs.IsHDR()
+                             ? decoded_cs.GetWithSDRWhiteLevel(sdr_white_level)
+                             : decoded_cs;
+
       VerifyUploadedPlaneSizes(cache, draw_image, transfer_cache_entry_id,
-                               yuv_size_info.fSizes, yuv_color_type);
+                               yuv_size_info.fSizes, yuv_color_type,
+                               expected_cs.ToSkColorSpace().get());
+
+      if (expected_cs.IsValid()) {
+        EXPECT_TRUE(
+            SkColorSpace::Equals(expected_cs.ToSkColorSpace().get(),
+                                 decoded_draw_image.image()->colorSpace()));
+      }
     } else {
       if (use_transfer_cache_) {
         EXPECT_FALSE(transfer_cache_helper_
@@ -3048,6 +3090,8 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     original_caps = context_provider_->ContextCapabilities();
   }
 
+  const auto hdr_cs = gfx::ColorSpace::CreateHDR10(/*sdr_white_level=*/200.0f);
+
   // Ensure that when R16 is supported, it's used and preferred over half-float.
   {
     auto r16_caps = original_caps;
@@ -3057,13 +3101,29 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     auto r16_cache = CreateCache();
 
     yuv_format_ = YUVSubsampling::k420;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType);
+    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+                                 DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k422;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType);
+    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+                                 DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k444;
-    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType);
+    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+                                 DefaultColorSpace());
+
+    // Verify HDR decoding has white level adjustment.
+    yuv_format_ = YUVSubsampling::k420;
+    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+                                 hdr_cs);
+
+    yuv_format_ = YUVSubsampling::k422;
+    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+                                 hdr_cs);
+
+    yuv_format_ = YUVSubsampling::k444;
+    decode_and_check_plane_sizes(r16_cache.get(), kA16_unorm_SkColorType,
+                                 hdr_cs);
   }
 
   // Verify that half-float is used when R16 is not available.
@@ -3075,13 +3135,29 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     auto f16_cache = CreateCache();
 
     yuv_format_ = YUVSubsampling::k420;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType);
+    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+                                 DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k422;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType);
+    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+                                 DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k444;
-    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType);
+    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+                                 DefaultColorSpace());
+
+    // Verify HDR decoding has white level adjustment.
+    yuv_format_ = YUVSubsampling::k420;
+    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+                                 hdr_cs);
+
+    yuv_format_ = YUVSubsampling::k422;
+    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+                                 hdr_cs);
+
+    yuv_format_ = YUVSubsampling::k444;
+    decode_and_check_plane_sizes(f16_cache.get(), kA16_float_SkColorType,
+                                 hdr_cs);
   }
 
   // Verify YUV16 is unsupported when neither R16 or half-float are available.
@@ -3093,13 +3169,16 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
     auto no_yuv16_cache = CreateCache();
 
     yuv_format_ = YUVSubsampling::k420;
-    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType);
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType,
+                                 DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k422;
-    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType);
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType,
+                                 DefaultColorSpace());
 
     yuv_format_ = YUVSubsampling::k444;
-    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType);
+    decode_and_check_plane_sizes(no_yuv16_cache.get(), kUnknown_SkColorType,
+                                 DefaultColorSpace());
   }
 }
 

@@ -329,6 +329,12 @@ TEST(ColorSpace, PQWhiteLevel) {
   EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
   EXPECT_TRUE(color_space.GetPQSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, kCustomWhiteLevel);
+
+  constexpr float kCustomWhiteLevel2 = kCustomWhiteLevel * 2;
+  color_space = color_space.GetWithSDRWhiteLevel(kCustomWhiteLevel2);
+  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
+  EXPECT_TRUE(color_space.GetPQSDRWhiteLevel(&sdr_white_level));
+  EXPECT_EQ(sdr_white_level, kCustomWhiteLevel2);
 }
 
 TEST(ColorSpace, LinearHDRWhiteLevel) {

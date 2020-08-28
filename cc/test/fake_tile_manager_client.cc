@@ -28,6 +28,10 @@ gfx::ColorSpace FakeTileManagerClient::GetRasterColorSpace(
   return color_space_;
 }
 
+float FakeTileManagerClient::GetSDRWhiteLevel() const {
+  return gfx::ColorSpace::kDefaultSDRWhiteLevel;
+}
+
 size_t FakeTileManagerClient::GetFrameIndexForImage(
     const PaintImage& paint_image,
     WhichTree tree) const {

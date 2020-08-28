@@ -595,7 +595,7 @@ ColorSpace ColorSpace::GetWithMatrixAndRange(MatrixID matrix,
 
 ColorSpace ColorSpace::GetWithSDRWhiteLevel(float sdr_white_level) const {
   ColorSpace result = *this;
-  if (transfer_ == TransferID::SMPTEST2084 && transfer_params_[0] == 0.f) {
+  if (transfer_ == TransferID::SMPTEST2084) {
     result.transfer_params_[0] = sdr_white_level;
   } else if (transfer_ == TransferID::LINEAR_HDR) {
     result.transfer_ = TransferID::CUSTOM_HDR;

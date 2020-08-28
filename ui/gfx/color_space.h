@@ -290,9 +290,9 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // the caller but replacing the matrix and range with the given values.
   ColorSpace GetWithMatrixAndRange(MatrixID matrix, RangeID range) const;
 
-  // If this color space has a PQ or scRGB linear transfer function that did not
-  // specify an SDR white level, then return |this| with its SDR white level set
-  // to |sdr_white_level|. Otherwise return |this| unmodified.
+  // If this color space has a PQ or scRGB linear transfer function, then return
+  // |this| with its SDR white level set to |sdr_white_level|. Otherwise return
+  // |this| unmodified.
   ColorSpace GetWithSDRWhiteLevel(float sdr_white_level) const;
 
   // This will return nullptr for non-RGB spaces, spaces with non-FULL

@@ -2071,6 +2071,12 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
     color_space = nullptr;
   }
 
+  // Will be nullptr for non-HDR images or when we're using the default level.
+  const bool needs_adjusted_color_space =
+      NeedsColorSpaceAdjustedForUpload(draw_image);
+  if (needs_adjusted_color_space)
+    decoded_target_colorspace = ColorSpaceForImageUpload(draw_image);
+
   if (image_data->mode == DecodedDataMode::kTransferCache) {
     DCHECK(use_transfer_cache_);
     if (image_data->decode.do_hardware_accelerated_decode()) {
@@ -2132,6 +2138,9 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
       SkPixmap pixmap;
       if (!image_data->decode.image()->peekPixels(&pixmap))
         return;
+      if (needs_adjusted_color_space)
+        pixmap.setColorSpace(decoded_target_colorspace);
+
       ClientImageTransferCacheEntry image_entry(&pixmap, color_space.get(),
                                                 image_data->needs_mips);
       InsertTransferCacheEntry(image_entry, image_data);
@@ -2232,6 +2241,12 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
     }
     // YUV decoding ends.
     return;
+  }
+
+  // TODO(crbug.com/1120719): The RGBX path is broken for HDR images.
+  if (needs_adjusted_color_space) {
+    uploaded_image =
+        uploaded_image->reinterpretColorSpace(decoded_target_colorspace);
   }
 
   // RGBX decoding is below.
@@ -2846,6 +2861,21 @@ sk_sp<SkColorSpace> GpuImageDecodeCache::ColorSpaceForImageDecode(
   return sk_ref_sp(image.paint_image().color_space());
 }
 
+bool GpuImageDecodeCache::NeedsColorSpaceAdjustedForUpload(
+    const DrawImage& image) const {
+  return image.sdr_white_level() != gfx::ColorSpace::kDefaultSDRWhiteLevel &&
+         image.paint_image().GetContentColorUsage() ==
+             gfx::ContentColorUsage::kHDR;
+}
+
+sk_sp<SkColorSpace> GpuImageDecodeCache::ColorSpaceForImageUpload(
+    const DrawImage& image) const {
+  DCHECK(NeedsColorSpaceAdjustedForUpload(image));
+  return gfx::ColorSpace(*image.paint_image().color_space())
+      .GetWithSDRWhiteLevel(image.sdr_white_level())
+      .ToSkColorSpace();
+}
+
 void GpuImageDecodeCache::CheckContextLockAcquiredIfNecessary() {
   if (!context_->GetLock())
     return;
@@ -2967,15 +2997,17 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
                 draw_image.target_color_space().IsValid()
             ? draw_image.target_color_space().ToSkColorSpace()
             : nullptr;
-    sk_sp<SkColorSpace> decoded_color_space =
-        ColorSpaceForImageDecode(draw_image, image_data->mode);
+    sk_sp<SkColorSpace> upload_color_space =
+        NeedsColorSpaceAdjustedForUpload(draw_image)
+            ? ColorSpaceForImageUpload(draw_image)
+            : ColorSpaceForImageDecode(draw_image, image_data->mode);
     DCHECK(image_data->yuv_color_space.has_value());
     sk_sp<SkImage> yuv_image_with_mips_owned =
         CreateImageFromYUVATexturesInternal(
             image_y_with_mips_owned.get(), image_u_with_mips_owned.get(),
             image_v_with_mips_owned.get(), width, height,
             image_data->yuv_color_space.value(), color_space,
-            decoded_color_space);
+            upload_color_space);
     // In case of lost context
     if (!yuv_image_with_mips_owned) {
       DLOG(WARNING) << "TODO(crbug.com/740737): Context was lost. Early out.";
@@ -3007,6 +3039,15 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
   // Need to generate mips. Take a reference on the image we're about to
   // delete, delaying deletion.
   sk_sp<SkImage> previous_image = image_data->upload.image();
+
+#if DCHECK_IS_ON()
+  // For already uploaded images, the correct color space should already have
+  // been set during the upload process.
+  if (NeedsColorSpaceAdjustedForUpload(draw_image)) {
+    DCHECK(SkColorSpace::Equals(previous_image->colorSpace(),
+                                ColorSpaceForImageUpload(draw_image).get()));
+  }
+#endif
 
   // Generate a new image from the previous, adding mips.
   sk_sp<SkImage> image_with_mips = previous_image->makeTextureImage(

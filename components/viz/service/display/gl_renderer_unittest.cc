@@ -181,8 +181,7 @@ class GLRendererShaderPixelTest : public cc::GLRendererPixelTest {
       const DirectRenderer::DrawingFrame& drawing_frame,
       bool validate_output_color_matrix) {
     renderer()->SetCurrentFrameForTesting(drawing_frame);
-    const size_t kNumSrcColorSpaces = 8;
-    gfx::ColorSpace src_color_spaces[kNumSrcColorSpaces] = {
+    const gfx::ColorSpace kSrcColorSpaces[] = {
         gfx::ColorSpace::CreateSRGB(),
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::ADOBE_RGB,
                         gfx::ColorSpace::TransferID::GAMMA28),
@@ -199,45 +198,43 @@ class GLRendererShaderPixelTest : public cc::GLRendererPixelTest {
         // This won't be, because it has a set SDR white level.
         gfx::ColorSpace::CreateHDR10(123.0f),
     };
-    const size_t kNumDstColorSpaces = 4;
-    gfx::ColorSpace dst_color_spaces[kNumDstColorSpaces] = {
+    const gfx::ColorSpace kDstColorSpaces[] = {
         gfx::ColorSpace::CreateSRGB(),
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::ADOBE_RGB,
                         gfx::ColorSpace::TransferID::GAMMA18),
         gfx::ColorSpace::CreateExtendedSRGB(),
         gfx::ColorSpace::CreateSCRGBLinear(),
     };
-    for (size_t i = 0; i < kNumDstColorSpaces; ++i) {
-      for (size_t j = 0; j < kNumSrcColorSpaces; ++j) {
-        const auto& src_color_space = src_color_spaces[j];
-        const auto& dst_color_space = dst_color_spaces[i];
-
+    // Note: Use ASSERT_XXX() and not EXPECT_XXX() below since the size of the
+    // loop will lead to useless timeout failures on the bots otherwise.
+    for (const auto& src_color_space : kSrcColorSpaces) {
+      for (const auto& dst_color_space : kDstColorSpaces) {
         renderer()->SetUseProgram(program_key, src_color_space, dst_color_space,
                                   /*adjust_src_white_level=*/true);
-        EXPECT_TRUE(renderer()->current_program_->initialized());
+        ASSERT_TRUE(renderer()->current_program_->initialized());
 
         if (src_color_space != dst_color_space) {
           auto adjusted_color_space = src_color_space;
-          // Only in the iteration where we use an HDR color space without
-          // specifying an SDR white level should the white level be set by the
-          // renderer.
-          if (src_color_space == gfx::ColorSpace::CreateSCRGBLinear() ||
-              src_color_space == gfx::ColorSpace::CreateHDR10()) {
+          if (src_color_space.IsHDR()) {
             adjusted_color_space = src_color_space.GetWithSDRWhiteLevel(
                 drawing_frame.display_color_spaces.GetSDRWhiteLevel());
-            EXPECT_NE(adjusted_color_space, src_color_space);
           }
+          SCOPED_TRACE(
+              base::StringPrintf("adjusted_color_space=%s, dst_color_space=%s",
+                                 adjusted_color_space.ToString().c_str(),
+                                 dst_color_space.ToString().c_str()));
+
           auto color_transform = gfx::ColorTransform::NewColorTransform(
               adjusted_color_space, dst_color_space,
               gfx::ColorTransform::Intent::INTENT_PERCEPTUAL);
-          EXPECT_EQ(color_transform->GetShaderSource(),
+          ASSERT_EQ(color_transform->GetShaderSource(),
                     renderer()
                         ->current_program_->color_transform_for_testing()
                         ->GetShaderSource());
         }
 
         if (validate_output_color_matrix) {
-          EXPECT_NE(
+          ASSERT_NE(
               -1, renderer()->current_program_->output_color_matrix_location());
         }
       }

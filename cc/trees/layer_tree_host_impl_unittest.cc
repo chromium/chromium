@@ -15842,6 +15842,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpace) {
   EXPECT_EQ(
       host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kWideColorGamut),
       gfx::ColorSpace::CreateDisplayP3D65());
+  EXPECT_EQ(gfx::ColorSpace::kDefaultSDRWhiteLevel,
+            host_impl_->GetSDRWhiteLevel());
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpaceSoftware) {
@@ -15856,6 +15858,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpaceSoftware) {
   EXPECT_EQ(
       host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kWideColorGamut),
       gfx::ColorSpace::CreateSRGB());
+  EXPECT_EQ(gfx::ColorSpace::kDefaultSDRWhiteLevel,
+            host_impl_->GetSDRWhiteLevel());
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorPrefersSRGB) {
@@ -15872,6 +15876,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorPrefersSRGB) {
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   host_impl_->active_tree()->SetDisplayColorSpaces(gfx::DisplayColorSpaces(p3));
   EXPECT_EQ(host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kSRGB), p3);
+  EXPECT_EQ(gfx::ColorSpace::kDefaultSDRWhiteLevel,
+            host_impl_->GetSDRWhiteLevel());
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpaceHDR) {
@@ -15890,6 +15896,23 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpaceHDR) {
       gfx::ColorSpace::CreateDisplayP3D65());
 
   EXPECT_EQ(host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kHDR), hdr);
+  EXPECT_EQ(gfx::ColorSpace::kDefaultSDRWhiteLevel,
+            host_impl_->GetSDRWhiteLevel());
+}
+
+TEST_P(ScrollUnifiedLayerTreeHostImplTest, SDRWhiteLevel) {
+  constexpr float kCustomWhiteLevel = 200.f;
+  auto hdr = gfx::ColorSpace::CreateHDR10();
+  auto display_cs = gfx::DisplayColorSpaces(hdr);
+  display_cs.SetSDRWhiteLevel(kCustomWhiteLevel);
+
+  LayerTreeSettings settings = DefaultSettings();
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  host_impl_->active_tree()->SetDisplayColorSpaces(display_cs);
+
+  // Non-HDR content should be rasterized in P3.
+  EXPECT_EQ(host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kHDR), hdr);
+  EXPECT_EQ(kCustomWhiteLevel, host_impl_->GetSDRWhiteLevel());
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatedTilingsForNonDrawingLayers) {

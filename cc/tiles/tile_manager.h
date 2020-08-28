@@ -85,6 +85,12 @@ class CC_EXPORT TileManagerClient {
   virtual gfx::ColorSpace GetRasterColorSpace(
       gfx::ContentColorUsage content_color_usage) const = 0;
 
+  // Return the SDR white level for rasterization. Some systems have variable
+  // white levels (e.g., Windows SDR brightness slider). This should return the
+  // level of the monitor on which the rasterized content will be displayed (and
+  // changing the SDR white level of the display will trigger a re-raster).
+  virtual float GetSDRWhiteLevel() const = 0;
+
   // Requests that a pending tree be scheduled to invalidate content on the
   // pending on active tree. This is currently used when tiles that are
   // rasterized with missing images need to be invalidated.
@@ -365,6 +371,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   scoped_refptr<TileTask> CreateRasterTask(
       const PrioritizedTile& prioritized_tile,
       const gfx::ColorSpace& raster_color_space,
+      float sdr_white_level,
       PrioritizedWorkToSchedule* work_to_schedule);
 
   std::unique_ptr<EvictionTilePriorityQueue>
@@ -398,6 +405,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void PartitionImagesForCheckering(
       const PrioritizedTile& prioritized_tile,
       const gfx::ColorSpace& raster_color_space,
+      float sdr_white_level,
       std::vector<DrawImage>* sync_decoded_images,
       std::vector<PaintImage>* checkered_images,
       const gfx::Rect* invalidated_rect,
@@ -405,6 +413,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void AddCheckeredImagesToDecodeQueue(
       const PrioritizedTile& prioritized_tile,
       const gfx::ColorSpace& raster_color_space,
+      float sdr_white_level,
       CheckerImageTracker::DecodeType decode_type,
       CheckerImageTracker::ImageDecodeQueue* image_decode_queue);
 

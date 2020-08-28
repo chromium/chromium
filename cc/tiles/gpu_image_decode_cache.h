@@ -675,6 +675,11 @@ class CC_EXPORT GpuImageDecodeCache
   sk_sp<SkColorSpace> ColorSpaceForImageDecode(const DrawImage& image,
                                                DecodedDataMode mode) const;
 
+  // HDR images need the SkColorSpace adjusted during upload to avoid white
+  // level issues on systems with variable SDR white levels (Windows).
+  bool NeedsColorSpaceAdjustedForUpload(const DrawImage& image) const;
+  sk_sp<SkColorSpace> ColorSpaceForImageUpload(const DrawImage& image) const;
+
   // Helper function to add a memory dump to |pmd| for a single texture
   // identified by |gl_id| with size |bytes| and |locked_size| equal to either
   // |bytes| or 0 depending on whether the texture is currently locked.

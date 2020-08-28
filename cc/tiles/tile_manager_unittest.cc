@@ -3452,9 +3452,13 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
     constexpr gfx::Size kTileSize(500, 500);
     Region invalidation((gfx::Rect(kLayerBounds)));
     SetupPendingTree(raster_source, kTileSize, invalidation);
-    pending_layer()->layer_tree_impl()->SetDisplayColorSpaces(
-        gfx::DisplayColorSpaces(raster_cs));
 
+    constexpr float kCustomWhiteLevel = 200.f;
+    auto display_cs = gfx::DisplayColorSpaces(raster_cs);
+    if (raster_cs.IsHDR())
+      display_cs.SetSDRWhiteLevel(kCustomWhiteLevel);
+
+    pending_layer()->layer_tree_impl()->SetDisplayColorSpaces(display_cs);
     PictureLayerTilingSet* tiling_set =
         pending_layer()->picture_layer_tiling_set();
     PictureLayerTiling* pending_tiling = tiling_set->tiling_at(0);
@@ -3468,6 +3472,21 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
 
     host_impl()->tile_manager()->PrepareTiles(host_impl()->global_tile_state());
     ASSERT_TRUE(host_impl()->tile_manager()->HasScheduledTileTasksForTesting());
+
+    auto pending_tiles = pending_tiling->AllTilesForTesting();
+    ASSERT_FALSE(pending_tiles.empty());
+
+    if (raster_cs.IsHDR()) {
+      // Only the last tile will have any pending tasks.
+      const auto& pending_tasks =
+          host_impl()->tile_manager()->decode_tasks_for_testing(
+              pending_tiles.back()->id());
+      EXPECT_FALSE(pending_tasks.empty());
+      for (const auto& draw_info : pending_tasks) {
+        EXPECT_EQ(draw_info.target_color_space(), raster_cs);
+        EXPECT_FLOAT_EQ(draw_info.sdr_white_level(), kCustomWhiteLevel);
+      }
+    }
 
     // Raster all tiles.
     static_cast<SynchronousTaskGraphRunner*>(task_graph_runner())
