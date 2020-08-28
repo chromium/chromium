@@ -469,10 +469,10 @@ def FilterDirsWithFiles(dirs_list, root):
   return [x for x in dirs_list if ContainsFiles(x, root)]
 
 
-def ProcessAdditionalReadmePathsJson(dirname, third_party_dirs):
+def ProcessAdditionalReadmePathsJson(root, dirname, third_party_dirs):
   """For a given directory, process the additional readme paths, and add to
     third_party_dirs."""
-  additional_paths_file = os.path.join(dirname, ADDITIONAL_PATHS_FILENAME)
+  additional_paths_file = os.path.join(root, dirname, ADDITIONAL_PATHS_FILENAME)
   if os.path.exists(additional_paths_file):
     with open(additional_paths_file) as paths_file:
       extra_paths = json.load(paths_file)
@@ -504,8 +504,7 @@ def FindThirdPartyDirs(prune_paths, root):
         if dirpath not in prune_paths:
           third_party_dirs.add(dirpath)
 
-        additional_paths_dir = os.path.join(root, dirpath)
-        ProcessAdditionalReadmePathsJson(additional_paths_dir, third_party_dirs)
+        ProcessAdditionalReadmePathsJson(root, dirpath, third_party_dirs)
 
       # Don't recurse into any subdirs from here.
       dirs[:] = []
@@ -519,8 +518,7 @@ def FindThirdPartyDirs(prune_paths, root):
   for dir in ADDITIONAL_PATHS:
     if dir not in prune_paths:
       third_party_dirs.add(dir)
-      additional_paths_dir = os.path.join(root, dir)
-      ProcessAdditionalReadmePathsJson(additional_paths_dir, third_party_dirs)
+      ProcessAdditionalReadmePathsJson(root, dir, third_party_dirs)
 
   return third_party_dirs
 
