@@ -178,13 +178,15 @@ struct DataSource {
   array<string> producer_name_filter;
 };
 
-// Allows to disable the built-in data sources implicitly enabled in the tracing service.
-// See comments in third_party/perfetto/protos/perfetto/config/trace_config.proto.
+// Allows to disable the built-in data sources implicitly enabled in the
+// tracing service. See comments in
+// third_party/perfetto/protos/perfetto/config/trace_config.proto.
 struct PerfettoBuiltinDataSource {
   bool disable_clock_snapshotting;
   bool disable_trace_config;
   bool disable_system_info;
   bool disable_service_events;
+  int32 primary_trace_clock_id;
 };
 
 struct IncrementalStateConfig {

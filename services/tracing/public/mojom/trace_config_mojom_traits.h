@@ -112,6 +112,11 @@ class StructTraits<tracing::mojom::PerfettoBuiltinDataSourceDataView,
     return src.disable_service_events();
   }
 
+  static int32_t primary_trace_clock_id(
+      const perfetto::TraceConfig::BuiltinDataSource& src) {
+    return src.primary_trace_clock();
+  }
+
   static bool Read(tracing::mojom::PerfettoBuiltinDataSourceDataView data,
                    perfetto::TraceConfig::BuiltinDataSource* out);
 };
