@@ -145,6 +145,10 @@ std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
 // Verifies that Frames are initially "hidden".
 IN_PROC_BROWSER_TEST_F(FrameImplTest, VisibilityState) {
   fuchsia::web::FramePtr frame = CreateFrame();
+  FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame);
+
+  // CreateView() will cause the AccessibilityBridge to be created.
+  frame_impl->set_semantics_manager_for_test(&fake_semantics_manager_);
 
   fuchsia::web::NavigationControllerPtr controller;
   frame->GetNavigationController(controller.NewRequest());
@@ -156,6 +160,14 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, VisibilityState) {
                                                  url::kAboutBlankURL);
 
   // Query the document.visibilityState before creating a View.
+  EXPECT_EQ(GetDocumentVisibilityState(frame.get()), "\"hidden\"");
+
+  // Query the document.visibilityState after creating the View, but without it
+  // actually "attached" to the view tree.
+  auto view_tokens = scenic::ViewTokenPair::New();
+  frame->CreateView(std::move(view_tokens.view_token));
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(GetDocumentVisibilityState(frame.get()), "\"hidden\"");
 }
 

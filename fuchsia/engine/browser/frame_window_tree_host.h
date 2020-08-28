@@ -9,18 +9,12 @@
 
 #include "ui/aura/window_tree_host_platform.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 // aura::WindowTreeHost implementation used to present web content inside
 // web.Frame.
 class FrameWindowTreeHost : public aura::WindowTreeHostPlatform {
  public:
-  // |web_contents| must to outlive |FrameWindowTreeHost|.
   FrameWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
-                      scenic::ViewRefPair view_ref_pair,
-                      content::WebContents* web_contents);
+                      scenic::ViewRefPair view_ref_pair);
   ~FrameWindowTreeHost() final;
 
   FrameWindowTreeHost(const FrameWindowTreeHost&) = delete;
@@ -38,7 +32,6 @@ class FrameWindowTreeHost : public aura::WindowTreeHostPlatform {
 
   fuchsia::ui::views::ViewRef view_ref_;
   std::unique_ptr<WindowParentingClientImpl> window_parenting_client_;
-  content::WebContents* web_contents_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_FRAME_WINDOW_TREE_HOST_H_

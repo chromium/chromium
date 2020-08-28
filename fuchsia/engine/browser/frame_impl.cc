@@ -779,6 +779,10 @@ void FrameImpl::EnableHeadlessRendering() {
   }
 
   window_tree_host_->SetBoundsInPixels(bounds);
+
+  // FrameWindowTreeHost will Show() itself when the View is attached, but
+  // in headless mode there is no View, so Show() it explicitly.
+  window_tree_host_->Show();
 }
 
 void FrameImpl::DisableHeadlessRendering() {
@@ -797,7 +801,7 @@ void FrameImpl::InitWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
   DCHECK(!window_tree_host_);
 
   window_tree_host_ = std::make_unique<FrameWindowTreeHost>(
-      std::move(view_token), std::move(view_ref_pair), web_contents_.get());
+      std::move(view_token), std::move(view_ref_pair));
   window_tree_host_->InitHost();
   root_window()->AddPreTargetHandler(&event_filter_);
 
@@ -818,7 +822,8 @@ void FrameImpl::InitWindowTreeHost(fuchsia::ui::views::ViewToken view_token,
   root_window()->AddChild(web_contents_->GetNativeView());
   web_contents_->GetNativeView()->Show();
 
-  window_tree_host_->Show();
+  // FrameWindowTreeHost will Show() itself when the View is actually attached
+  // to the view-tree to be displayed. See https://crbug.com/1109270
 }
 
 void FrameImpl::SetMediaSessionId(uint64_t session_id) {
