@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
@@ -188,7 +189,10 @@ public abstract class PersistedTabData implements UserData {
     abstract byte[] serialize();
 
     private byte[] serializeAndLog() {
-        byte[] res = serialize();
+        byte[] res;
+        try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
+            res = serialize();
+        }
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.PersistedTabData.Serialize." + getUmaTag(), res != null);
         return res;
@@ -202,7 +206,10 @@ public abstract class PersistedTabData implements UserData {
     abstract boolean deserialize(@Nullable byte[] bytes);
 
     private void deserializeAndLog(@Nullable byte[] bytes) {
-        boolean success = deserialize(bytes);
+        boolean success;
+        try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Deserialize")) {
+            success = deserialize(bytes);
+        }
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.PersistedTabData.Deserialize." + getUmaTag(), success);
     }
