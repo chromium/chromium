@@ -188,8 +188,8 @@ class TestURLLoader : public URLLoaderWrapper {
     data_->SetReadCallback(std::move(callback), buffer, buffer_size);
   }
 
-  bool GetDownloadProgress(int64_t* bytes_received,
-                           int64_t* total_bytes_to_be_received) const override {
+  bool GetDownloadProgress(int64_t& bytes_received,
+                           int64_t& total_bytes_to_be_received) const override {
     return false;
   }
 

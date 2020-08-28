@@ -64,8 +64,8 @@ class URLLoaderWrapper {
   // If false, progress is unknown, bytes_received/total_bytes_to_be_received
   // will be undefined.
   virtual bool GetDownloadProgress(
-      int64_t* bytes_received,
-      int64_t* total_bytes_to_be_received) const = 0;
+      int64_t& bytes_received,
+      int64_t& total_bytes_to_be_received) const = 0;
 };
 
 }  // namespace chrome_pdf

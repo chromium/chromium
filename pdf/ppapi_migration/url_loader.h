@@ -81,8 +81,8 @@ class UrlLoader : public base::RefCounted<UrlLoader> {
 
   // Mimic `pp::URLLoader`:
   void Open(const UrlRequest& request, ResultCallback callback);
-  bool GetDownloadProgress(int64_t* bytes_received,
-                           int64_t* total_bytes_to_be_received) const;
+  bool GetDownloadProgress(int64_t& bytes_received,
+                           int64_t& total_bytes_to_be_received) const;
   const UrlResponse& response() const { return response_; }
   void ReadResponseBody(base::span<char> buffer, ResultCallback callback);
   void Close();

@@ -110,8 +110,8 @@ bool DocumentLoaderImpl::Init(std::unique_ptr<URLLoaderWrapper> loader,
   int64_t bytes_received = 0;
   int64_t total_bytes_to_be_received = 0;
   if (GetDocumentSize() == 0 &&
-      loader_->GetDownloadProgress(&bytes_received,
-                                   &total_bytes_to_be_received)) {
+      loader_->GetDownloadProgress(bytes_received,
+                                   total_bytes_to_be_received)) {
     chunk_stream_.set_eof_pos(
         std::max(0, static_cast<int>(total_bytes_to_be_received)));
   }

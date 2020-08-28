@@ -143,8 +143,8 @@ bool URLLoaderWrapperImpl::GetByteRangeStart(int* start) const {
 }
 
 bool URLLoaderWrapperImpl::GetDownloadProgress(
-    int64_t* bytes_received,
-    int64_t* total_bytes_to_be_received) const {
+    int64_t& bytes_received,
+    int64_t& total_bytes_to_be_received) const {
   return url_loader_->GetDownloadProgress(bytes_received,
                                           total_bytes_to_be_received);
 }

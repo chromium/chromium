@@ -78,10 +78,10 @@ void UrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
     pp_callback.Run(result);
 }
 
-bool UrlLoader::GetDownloadProgress(int64_t* bytes_received,
-                                    int64_t* total_bytes_to_be_received) const {
-  return pepper_loader_.GetDownloadProgress(bytes_received,
-                                            total_bytes_to_be_received);
+bool UrlLoader::GetDownloadProgress(int64_t& bytes_received,
+                                    int64_t& total_bytes_to_be_received) const {
+  return pepper_loader_.GetDownloadProgress(&bytes_received,
+                                            &total_bytes_to_be_received);
 }
 
 void UrlLoader::ReadResponseBody(base::span<char> buffer,
