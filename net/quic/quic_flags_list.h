@@ -287,43 +287,6 @@ QUIC_FLAG(
 // If true, disable QUIC version h3-29.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_disable_version_draft_29, false)
 
-// When true, QuicDispatcher supports decapsulation of Legacy Version
-// Encapsulation packets.
-QUIC_FLAG(
-    bool,
-    FLAGS_quic_reloadable_flag_quic_dispatcher_legacy_version_encapsulation,
-    true)
-
-// If true, update packet size when the first frame gets queued.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_update_packet_size, true)
-
-// If true, consider frame expansion when calculating extra padding bytes to
-// meet minimum plaintext packet size required for header protection.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_extra_padding_bytes, true)
-
-// If true, do not try to close stream again if stream fails to be closed upon
-// connection close.
-QUIC_FLAG(
-    bool,
-    FLAGS_quic_reloadable_flag_quic_do_not_close_stream_again_on_connection_close,
-    true)
-
-// If true, determine a serialized packet's fate before the packet gets
-// serialized.
-QUIC_FLAG(
-    bool,
-    FLAGS_quic_reloadable_flag_quic_determine_serialized_packet_fate_early,
-    true)
-
-// If true, take the largest acked packet into account when computing the sent
-// packet number length.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_packet_number_length, true)
-
-// If true, retransmit unacked handshake data before PTO expiry.
-QUIC_FLAG(bool,
-          FLAGS_quic_reloadable_flag_quic_retransmit_handshake_data_early,
-          true)
-
 // If true, improve Bbr2Sender::AdjustNetworkParameters by 1) do not inject a
 // bandwidth sample to the bandwidth filter, and 2) re-calculate pacing rate
 // after cwnd updated..
@@ -422,16 +385,16 @@ QUIC_FLAG(
 
 // If true, QuicSession does not keep a separate zombie_streams. Instead, all
 // streams are stored in stream_map_.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_remove_zombie_streams, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_remove_zombie_streams, true)
 
 // If true, always send connection close for idle timeout if NSLC is received.
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_no_silent_close_for_idle_timeout,
-          false)
+          true)
 
 // If true, when server is silently closing connections due to idle timeout,
 // serialize the connection close packets which will be added to time wait list.
-QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_add_silent_idle_timeout, false)
+QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_add_silent_idle_timeout, true)
 
 // If true, do not send PING if ShouldKeepConnectionAlive is false.
 QUIC_FLAG(bool, FLAGS_quic_reloadable_flag_quic_fix_on_ping_timeout, true)
@@ -459,3 +422,13 @@ QUIC_FLAG(
     bool,
     FLAGS_quic_reloadable_flag_quic_neuter_initial_packet_in_coalescer_with_initial_key_discarded,
     true)
+
+// If true, convert bytes_left_for_batch_write_ to unsigned int.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_fix_bytes_left_for_batch_write,
+          false)
+
+// If true, add missing connected checks.
+QUIC_FLAG(bool,
+          FLAGS_quic_reloadable_flag_quic_add_missing_connected_checks,
+          true)
