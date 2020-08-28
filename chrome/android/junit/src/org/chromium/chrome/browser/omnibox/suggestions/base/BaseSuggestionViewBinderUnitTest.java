@@ -132,8 +132,8 @@ public class BaseSuggestionViewBinderUnitTest {
     @Test
     public void actionIcon_showIcon() {
         Runnable callback = mock(Runnable.class);
-        List<Action> list =
-                Arrays.asList(new Action(SuggestionDrawableState.Builder.forColor(0).build(),
+        List<Action> list = Arrays.asList(
+                new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
                         R.string.accessibility_omnibox_btn_refine, callback));
         mModel.set(BaseSuggestionViewProperties.ACTIONS, list);
 
@@ -156,13 +156,13 @@ public class BaseSuggestionViewBinderUnitTest {
         Runnable call2 = mock(Runnable.class);
         Runnable call3 = mock(Runnable.class);
 
-        List<Action> list =
-                Arrays.asList(new Action(SuggestionDrawableState.Builder.forColor(0).build(),
-                                      R.string.accessibility_omnibox_btn_refine, call1),
-                        new Action(SuggestionDrawableState.Builder.forColor(0).build(),
-                                R.string.accessibility_omnibox_btn_refine, call2),
-                        new Action(SuggestionDrawableState.Builder.forColor(0).build(),
-                                R.string.accessibility_omnibox_btn_refine, call3));
+        List<Action> list = Arrays.asList(
+                new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
+                        R.string.accessibility_omnibox_btn_refine, call1),
+                new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
+                        R.string.accessibility_omnibox_btn_refine, call2),
+                new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
+                        R.string.accessibility_omnibox_btn_refine, call3));
         mModel.set(BaseSuggestionViewProperties.ACTIONS, list);
 
         List<ImageView> actionButtons = mBaseView.getActionButtons();
@@ -189,13 +189,13 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void actionIcon_hideIcons() {
-        final List<Action> list =
-                Arrays.asList(new Action(SuggestionDrawableState.Builder.forColor(0).build(),
-                                      R.string.accessibility_omnibox_btn_refine, () -> {}),
-                        new Action(SuggestionDrawableState.Builder.forColor(0).build(),
-                                R.string.accessibility_omnibox_btn_refine, () -> {}),
-                        new Action(SuggestionDrawableState.Builder.forColor(0).build(),
-                                R.string.accessibility_omnibox_btn_refine, () -> {}));
+        final List<Action> list = Arrays.asList(
+                new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
+                        R.string.accessibility_omnibox_btn_refine, () -> {}),
+                new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
+                        R.string.accessibility_omnibox_btn_refine, () -> {}),
+                new Action(mActivity, SuggestionDrawableState.Builder.forColor(0).build(),
+                        R.string.accessibility_omnibox_btn_refine, () -> {}));
 
         final List<ImageView> actionButtons = mBaseView.getActionButtons();
         mModel.set(BaseSuggestionViewProperties.ACTIONS, list);

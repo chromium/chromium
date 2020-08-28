@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import android.content.Context;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
@@ -35,7 +37,7 @@ public class BaseSuggestionViewProperties {
     public static final class Action {
         public final SuggestionDrawableState icon;
         public final Runnable callback;
-        public final @StringRes int accessibilityDescription;
+        public final String accessibilityDescription;
 
         /**
          * Create a new action for suggestion.
@@ -44,10 +46,23 @@ public class BaseSuggestionViewProperties {
          * @param description Content description for the action view.
          * @param callback Callback to invoke when user interacts with the icon.
          */
-        public Action(SuggestionDrawableState icon, @StringRes int description, Runnable callback) {
+        public Action(SuggestionDrawableState icon, String description, Runnable callback) {
             this.icon = icon;
             this.accessibilityDescription = description;
             this.callback = callback;
+        }
+
+        /**
+         * Create a new action for suggestion, using Accessibility description from a resource.
+         *
+         * @param context Current context
+         * @param icon SuggestionDrawableState describing the icon to show.
+         * @param descriptionRes Resource to use as a content description for the action view.
+         * @param callback Callback to invoke when user interacts with the icon.
+         */
+        public Action(Context context, SuggestionDrawableState icon, @StringRes int descriptionRes,
+                Runnable callback) {
+            this(icon, context.getResources().getString(descriptionRes), callback);
         }
     }
 

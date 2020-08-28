@@ -80,8 +80,7 @@ public final class BaseSuggestionViewBinder<T extends View>
             final ImageView actionView = actionViews.get(index);
             final Action action = actions.get(index);
             actionView.setOnClickListener(v -> action.callback.run());
-            actionView.setContentDescription(
-                    view.getContext().getResources().getString(action.accessibilityDescription));
+            actionView.setContentDescription(action.accessibilityDescription);
             actionView.setBackground(copyDrawable(backgroundDrawable));
             updateIcon(actionView, action.icon,
                     ChromeColors.getPrimaryIconTintRes(!useDarkColors(model)));

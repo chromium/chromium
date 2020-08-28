@@ -38,6 +38,8 @@ import java.util.Arrays;
  * the rest of Chrome.
  */
 public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
+    private final Context mContext;
+
     /** The delegate for accessing the location bar for observation and modification. */
     private final UrlBarDelegate mUrlBarDelegate;
 
@@ -67,6 +69,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
             Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
         super(context, suggestionHost);
 
+        mContext = context;
         mUrlBarDelegate = locationBarDelegate;
         mIconBridgeSupplier = iconBridgeSupplier;
         mTabSupplier = tabSupplier;
@@ -132,27 +135,30 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
                         .build());
 
         setCustomActions(model,
-                Arrays.asList(new Action(SuggestionDrawableState.Builder
-                                                 .forDrawableRes(getContext(),
-                                                         R.drawable.ic_share_white_24dp)
-                                                 .setLarge(true)
-                                                 .setAllowTint(true)
-                                                 .build(),
+                Arrays.asList(new Action(mContext,
+                                      SuggestionDrawableState.Builder
+                                              .forDrawableRes(
+                                                      getContext(), R.drawable.ic_share_white_24dp)
+                                              .setLarge(true)
+                                              .setAllowTint(true)
+                                              .build(),
                                       R.string.menu_share_page, this::onShareLink),
-                        new Action(SuggestionDrawableState.Builder
-                                           .forDrawableRes(
-                                                   getContext(), R.drawable.ic_content_copy_black)
-                                           .setLarge(true)
-                                           .setAllowTint(true)
-                                           .build(),
+                        new Action(mContext,
+                                SuggestionDrawableState.Builder
+                                        .forDrawableRes(
+                                                getContext(), R.drawable.ic_content_copy_black)
+                                        .setLarge(true)
+                                        .setAllowTint(true)
+                                        .build(),
                                 R.string.copy_link, this::onCopyLink),
                         // TODO(https://crbug.com/1090187): do not re-use bookmark_item_edit here.
-                        new Action(SuggestionDrawableState.Builder
-                                           .forDrawableRes(
-                                                   getContext(), R.drawable.bookmark_edit_active)
-                                           .setLarge(true)
-                                           .setAllowTint(true)
-                                           .build(),
+                        new Action(mContext,
+                                SuggestionDrawableState.Builder
+                                        .forDrawableRes(
+                                                getContext(), R.drawable.bookmark_edit_active)
+                                        .setLarge(true)
+                                        .setAllowTint(true)
+                                        .build(),
                                 R.string.bookmark_item_edit, this::onEditLink)));
 
         fetchSuggestionFavicon(model, mLastProcessedSuggestionURL, mIconBridgeSupplier.get(), null);
