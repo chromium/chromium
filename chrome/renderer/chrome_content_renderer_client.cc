@@ -1495,8 +1495,6 @@ void ChromeContentRendererClient::
   // Mojo implementation (e.g. WebView).  Web Share is shipped on Android.
 #if defined(OS_CHROMEOS) || defined(OS_WIN)
   if (base::FeatureList::IsEnabled(features::kWebShare))
-#endif
-#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_ANDROID)
     blink::WebRuntimeFeatures::EnableWebShare(true);
 #endif
 

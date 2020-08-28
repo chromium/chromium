@@ -2082,10 +2082,9 @@
       origin_trial_feature_name: "WebScheduler",
       status: "experimental",
     },
-    // WebShare is enabled by default on Android.
     {
       name: "WebShare",
-      status: "test",
+      status:  {"Android": "stable", "default": "test"},
     },
     {
       name: "WebSocketStream",
