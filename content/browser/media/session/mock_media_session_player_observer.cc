@@ -177,6 +177,13 @@ std::string MockMediaSessionPlayerObserver::GetAudioOutputSinkId(
   return players_.at(player_id).audio_sink_id_;
 }
 
+bool MockMediaSessionPlayerObserver::SupportsAudioOutputDeviceSwitching(
+    int player_id) const {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  return players_.at(player_id).supports_device_switching_;
+}
+
 MockMediaSessionPlayerObserver::MockPlayer::MockPlayer(bool is_playing,
                                                        double volume_multiplier)
     : is_playing_(is_playing), volume_multiplier_(volume_multiplier) {}

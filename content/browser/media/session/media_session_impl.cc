@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
+#include "base/util/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
@@ -135,6 +136,8 @@ MediaSessionUserAction MediaSessionActionToUserAction(
       return MediaSessionUserAction::EnterPictureInPicture;
     case media_session::mojom::MediaSessionAction::kExitPictureInPicture:
       return MediaSessionUserAction::ExitPictureInPicture;
+    case media_session::mojom::MediaSessionAction::kSwitchAudioDevice:
+      return MediaSessionUserAction::SwitchAudioDevice;
   }
   NOTREACHED();
   return MediaSessionUserAction::Play;
@@ -1385,6 +1388,10 @@ void MediaSessionImpl::OnAudioOutputSinkIdChanged() {
   RebuildAndNotifyMediaSessionInfoChanged();
 }
 
+void MediaSessionImpl::OnAudioOutputSinkChangingDisabled() {
+  RebuildAndNotifyMediaSessionInfoChanged();
+}
+
 bool MediaSessionImpl::ShouldRouteAction(
     media_session::mojom::MediaSessionAction action) const {
   return routed_service_ && base::Contains(routed_service_->actions(), action);
@@ -1427,6 +1434,13 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
         media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
     actions.insert(
         media_session::mojom::MediaSessionAction::kExitPictureInPicture);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          media::kGlobalMediaControlsSeamlessTransfer) &&
+      IsAudioOutputDeviceSwitchingSupported()) {
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kSwitchAudioDevice);
   }
 
   // If we support kSeekTo then we support kScrubTo as well.
@@ -1520,6 +1534,16 @@ std::string MediaSessionImpl::GetSharedAudioOutputDeviceId() const {
   }
 
   return media::AudioDeviceDescription::kDefaultDeviceId;
+}
+
+bool MediaSessionImpl::IsAudioOutputDeviceSwitchingSupported() const {
+  if (normal_players_.empty())
+    return false;
+
+  return util::ranges::all_of(normal_players_, [](const auto& player) {
+    return player.first.observer->SupportsAudioOutputDeviceSwitching(
+        player.first.player_id);
+  });
 }
 
 MediaAudioVideoState MediaSessionImpl::GetMediaAudioVideoState() {

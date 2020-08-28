@@ -63,6 +63,9 @@ class MediaSessionPlayerObserver {
   // empty string if unavailable.
   virtual std::string GetAudioOutputSinkId(int player_id) const = 0;
 
+  // Returns true if the |player_id| supports audio output device switching.
+  virtual bool SupportsAudioOutputDeviceSwitching(int player_id) const = 0;
+
   // Returns the RenderFrameHost this player observer belongs to. Returns
   // nullptr if unavailable.
   virtual RenderFrameHost* render_frame_host() const = 0;

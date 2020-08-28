@@ -108,4 +108,9 @@ std::string PepperPlayerDelegate::GetAudioOutputSinkId(int player_id) const {
   return "";
 }
 
+bool PepperPlayerDelegate::SupportsAudioOutputDeviceSwitching(
+    int player_id) const {
+  return false;
+}
+
 }  // namespace content

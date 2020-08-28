@@ -459,6 +459,7 @@ void AssistantManagerServiceImpl::UpdateInternalMediaPlayerStatus(
     case MediaSessionAction::kScrubTo:
     case MediaSessionAction::kEnterPictureInPicture:
     case MediaSessionAction::kExitPictureInPicture:
+    case MediaSessionAction::kSwitchAudioDevice:
       NOTIMPLEMENTED();
       break;
   }

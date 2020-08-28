@@ -12,7 +12,7 @@
 
 namespace base {
 class TickClock;
-}  // base namespace
+}  // namespace base
 
 namespace content {
 
@@ -47,7 +47,8 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
     ScrubTo = 12,
     EnterPictureInPicture = 13,
     ExitPictureInPicture = 14,
-    kMaxValue = ExitPictureInPicture,
+    SwitchAudioDevice = 15,
+    kMaxValue = SwitchAudioDevice,
   };
 
   MediaSessionUmaHelper();
@@ -75,4 +76,4 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
 
 }  // namespace content
 
-#endif // CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_UMA_HELPER_H_
+#endif  // CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_UMA_HELPER_H_
