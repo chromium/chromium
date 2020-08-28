@@ -254,8 +254,6 @@ defaults = args.defaults(
     goma_enable_ats = args.COMPUTE,
     goma_jobs = None,
     goma_use_luci_auth = None,
-    # TODO(https://crbug.com/1109276) Remove mastername
-    mastername = None,
     os = None,
     project_trigger_overrides = None,
     pool = None,
@@ -290,8 +288,6 @@ def builder(
         cores = args.DEFAULT,
         cpu = args.DEFAULT,
         builder_group = args.DEFAULT,
-        # TODO(https://crbug.com/1109276) Remove mastername
-        mastername = args.DEFAULT,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
         bucketed_triggers = args.DEFAULT,
@@ -348,12 +344,6 @@ def builder(
         False.
       * builder_group - a string with the group of the builder. Emits a property
         of the form 'builder_group:<builder_group>'. By default, considered None.
-      * mastername - a string with the group of the builder. Emits a property
-        of the form 'mastername:<mastername>'. By default, considered None.
-        Other than the property emitted, should be treated the same as
-        builder_group. If builder_group is set, mastername is ignored except
-        that it is treated as an error if both builder_group and mastername are
-        set and are set to different values.
       * cores - an int indicating the number of cores the builder requires for the
         machines that run it. Emits a dimension of the form 'cores:<cores>' will
         be emitted. By default, considered None.
@@ -473,14 +463,8 @@ def builder(
         dimensions["cpu"] = cpu
 
     builder_group = defaults.get_value("builder_group", builder_group)
-    mastername = defaults.get_value("mastername", mastername)
-    if builder_group != None and mastername != None and builder_group != mastername:
-        fail("mastername ({}) does not match builder_group ({})".format(mastername, builder_group))
-
     if builder_group != None:
         properties["builder_group"] = builder_group
-    elif mastername != None:
-        properties["mastername"] = mastername
 
     pool = defaults.get_value("pool", pool)
     if pool:

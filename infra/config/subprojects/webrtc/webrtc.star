@@ -27,12 +27,12 @@ luci.bucket(
 )
 
 defaults.bucket.set("webrtc")
+defaults.builder_group.set("chromium.webrtc")
 defaults.builderless.set(False)
 defaults.build_numbers.set(True)
 defaults.cpu.set(cpu.X86_64)
 defaults.executable.set("recipe:chromium")
 defaults.execution_timeout.set(2 * time.hour)
-defaults.mastername.set("chromium.webrtc")
 defaults.os.set(os.LINUX_DEFAULT)
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])

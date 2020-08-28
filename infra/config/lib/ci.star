@@ -480,11 +480,7 @@ def ci_builder(
     if console_view_entry:
         console_view = defaults.get_value("console_view", console_view)
         if console_view == args.COMPUTE:
-            # The builder function guarantees that at most one of builder_group
-            # or mastername is set
-            builder_group = defaults.get_value_from_kwargs("builder_group", kwargs)
-            mastername = defaults.get_value_from_kwargs("mastername", kwargs)
-            console_view = builder_group or mastername
+            console_view = defaults.get_value_from_kwargs("builder_group", kwargs)
 
         if console_view:
             add_to_console_view = defaults.get_value(
@@ -536,25 +532,25 @@ def android_builder(
         **kwargs):
     return ci_builder(
         name = name,
+        builder_group = "chromium.android",
         goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = goma_jobs,
-        mastername = "chromium.android",
         **kwargs
     )
 
 def android_fyi_builder(*, name, **kwargs):
     return ci_builder(
         name = name,
+        builder_group = "chromium.android.fyi",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "chromium.android.fyi",
         **kwargs
     )
 
 def chromium_builder(*, name, tree_closing = True, **kwargs):
     return ci_builder(
         name = name,
+        builder_group = "chromium",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "chromium",
         tree_closing = tree_closing,
         **kwargs
     )
@@ -562,7 +558,7 @@ def chromium_builder(*, name, tree_closing = True, **kwargs):
 def chromiumos_builder(*, name, tree_closing = True, **kwargs):
     return ci_builder(
         name = name,
-        mastername = "chromium.chromiumos",
+        builder_group = "chromium.chromiumos",
         goma_backend = builders.goma.backend.RBE_PROD,
         tree_closing = tree_closing,
         **kwargs
@@ -575,13 +571,13 @@ def clang_builder(*, name, builderless = True, cores = 32, properties = None, **
     })
     return ci_builder(
         name = name,
+        builder_group = "chromium.clang",
         builderless = builderless,
         cores = cores,
         # Because these run ToT Clang, goma is not used.
         # Naturally the runtime will be ~4-8h on average, depending on config.
         # CFI builds will take even longer - around 11h.
         execution_timeout = 12 * time.hour,
-        mastername = "chromium.clang",
         properties = properties,
         **kwargs
     )
@@ -601,9 +597,9 @@ def clang_mac_builder(*, name, cores = 24, **kwargs):
 def dawn_builder(*, name, builderless = True, **kwargs):
     return ci.builder(
         name = name,
+        builder_group = "chromium.dawn",
         builderless = builderless,
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "chromium.dawn",
         service_account =
             "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
         **kwargs
@@ -612,8 +608,8 @@ def dawn_builder(*, name, builderless = True, **kwargs):
 def fuzz_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
+        builder_group = "chromium.fuzz",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "chromium.fuzz",
         notifies = ["chromesec-lkgr-failures"],
         **kwargs
     )
@@ -633,16 +629,16 @@ def fyi_builder(
         **kwargs):
     return ci.builder(
         name = name,
+        builder_group = "chromium.fyi",
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
-        mastername = "chromium.fyi",
         **kwargs
     )
 
 def fyi_celab_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
-        mastername = "chromium.fyi",
+        builder_group = "chromium.fyi",
         os = builders.os.WINDOWS_ANY,
         executable = "recipe:celab",
         goma_backend = builders.goma.backend.RBE_PROD,
@@ -718,7 +714,7 @@ def fyi_windows_builder(
 def gpu_fyi_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
-        mastername = "chromium.gpu.fyi",
+        builder_group = "chromium.gpu.fyi",
         service_account =
             "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
         **kwargs
@@ -778,8 +774,8 @@ def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
         notifies = (notifies or []) + ["gpu-tree-closer-email"]
     return ci.builder(
         name = name,
+        builder_group = "chromium.gpu",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "chromium.gpu",
         tree_closing = tree_closing,
         notifies = notifies,
         **kwargs
@@ -807,9 +803,9 @@ def linux_builder(
         **kwargs):
     return ci.builder(
         name = name,
+        builder_group = "chromium.linux",
         goma_backend = goma_backend,
         goma_jobs = goma_jobs,
-        mastername = "chromium.linux",
         tree_closing = tree_closing,
         notifies = list(notifies) + (extra_notifies or []),
         **kwargs
@@ -825,9 +821,9 @@ def mac_builder(
         **kwargs):
     return ci.builder(
         name = name,
+        builder_group = "chromium.mac",
         cores = cores,
         goma_backend = goma_backend,
-        mastername = "chromium.mac",
         os = os,
         tree_closing = tree_closing,
         **kwargs
@@ -870,9 +866,9 @@ def memory_builder(
 
     return ci.builder(
         name = name,
+        builder_group = "chromium.memory",
         goma_backend = builders.goma.backend.RBE_PROD,
         goma_jobs = goma_jobs,
-        mastername = "chromium.memory",
         notifies = notifies,
         tree_closing = tree_closing,
         **kwargs
@@ -882,8 +878,8 @@ def swangle_builder(*, name, builderless = True, pinned = True, **kwargs):
     builder_args = dict(kwargs)
     builder_args.update(
         name = name,
+        builder_group = "chromium.swangle",
         builderless = builderless,
-        mastername = "chromium.swangle",
         service_account =
             "chromium-ci-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     )
@@ -927,18 +923,12 @@ def thin_tester(
         *,
         name,
         triggered_by,
-        # TODO(https://crbug.com/1109276) Remove mastername and remove default
-        # for builder_group
-        builder_group = None,
-        mastername = None,
+        builder_group,
         tree_closing = True,
         **kwargs):
-    if builder_group == None and mastername == None:
-        fail("One of builder_group or mastername must be set")
     return ci.builder(
         name = name,
         builder_group = builder_group,
-        mastername = mastername,
         triggered_by = triggered_by,
         goma_backend = None,
         tree_closing = tree_closing,
@@ -953,8 +943,8 @@ def win_builder(
         **kwargs):
     return ci.builder(
         name = name,
+        builder_group = "chromium.win",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "chromium.win",
         os = os,
         tree_closing = tree_closing,
         **kwargs

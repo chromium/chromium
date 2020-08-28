@@ -649,7 +649,7 @@ ci.mac_builder(
 
 ci.thin_tester(
     name = "Mac10.10 Tests",
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "10",
@@ -659,7 +659,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.11 Tests",
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "11",
@@ -669,7 +669,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.12 Tests",
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "12",
@@ -679,7 +679,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.13 Tests",
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "13",
@@ -689,7 +689,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.14 Tests",
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "14",
@@ -699,7 +699,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.15 Tests",
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "15",
@@ -709,7 +709,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.13 Tests (dbg)",
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "debug",
         short_name = "13",
