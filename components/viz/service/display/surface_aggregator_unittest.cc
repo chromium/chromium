@@ -202,7 +202,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                                const gfx::Transform& transform,
                                bool can_use_backdrop_filter_cache) {
       Quad quad;
-      quad.material = DrawQuad::Material::kRenderPass;
+      quad.material = DrawQuad::Material::kCompositorRenderPass;
       quad.render_pass_id = id;
       quad.transform = transform;
       quad.can_use_backdrop_filter_cache = can_use_backdrop_filter_cache;
@@ -226,7 +226,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     SkColor color;
     gfx::Rect rect;
 
-    // Set when material==DrawQuad::Material::kRenderPass.
+    // Set when material==DrawQuad::Material::kCompositorRenderPass.
     RenderPassId render_pass_id;
     gfx::Transform transform;
     bool can_use_backdrop_filter_cache;
@@ -280,7 +280,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                        desc.rounded_corner_bounds, desc.is_fast_rounded_corner,
                        desc.allow_merge);
         break;
-      case DrawQuad::Material::kRenderPass:
+      case DrawQuad::Material::kCompositorRenderPass:
         AddRenderPassQuad(pass, desc.render_pass_id, desc.transform,
                           desc.can_use_backdrop_filter_cache);
         break;
@@ -320,7 +320,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
       }
       // Expected RenderPass quad will become AggregatedRenderPass after
       // aggregation.
-      case DrawQuad::Material::kRenderPass: {
+      case DrawQuad::Material::kCompositorRenderPass: {
         ASSERT_EQ(DrawQuad::Material::kAggregatedRenderPass, quad->material);
 
         const auto* render_pass_quad =

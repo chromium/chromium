@@ -1110,7 +1110,7 @@ void SurfaceAggregator::CopyQuadsToPass(
       }
 
       DrawQuad* dest_quad;
-      if (quad->material == DrawQuad::Material::kRenderPass) {
+      if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
         const auto* pass_quad = RenderPassDrawQuad::MaterialCast(quad);
         RenderPassId original_pass_id = pass_quad->render_pass_id;
         AggregatedRenderPassId remapped_pass_id =
@@ -1396,7 +1396,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
 
       if (quad_damage_rect.IsEmpty())
         continue;
-    } else if (quad->material == DrawQuad::Material::kRenderPass) {
+    } else if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
       auto* render_pass_quad = RenderPassDrawQuad::MaterialCast(quad);
 
       RenderPassId child_pass_id = render_pass_quad->render_pass_id;
@@ -2105,7 +2105,7 @@ void SurfaceAggregator::CreateDeJellyRenderPassQuads(
   gfx::RectF render_pass_visible_rect_f(state->visible_quad_layer_rect);
   // Next, if this is a RenderPass quad, find any filters and expand the
   // visible rect.
-  if (quad->material == DrawQuad::Material::kRenderPass) {
+  if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
     auto target_id = AggregatedRenderPassId(
         uint64_t{RenderPassDrawQuad::MaterialCast(quad)->render_pass_id});
     for (auto& rp : *dest_pass_list_) {
@@ -2204,7 +2204,7 @@ void SurfaceAggregator::AppendDeJellyQuadsForSharedQuadState(
   while (quad->shared_quad_state == state) {
     // Since we're dealing with post-aggregated passes, we should not have any
     // RenderPassDrawQuads.
-    DCHECK_NE(quad->material, DrawQuad::Material::kRenderPass);
+    DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
     if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
       const auto* pass_quad = AggregatedRenderPassDrawQuad::MaterialCast(quad);
       render_pass->CopyFromAndAppendRenderPassDrawQuad(pass_quad);

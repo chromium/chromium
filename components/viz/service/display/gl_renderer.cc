@@ -598,7 +598,7 @@ void GLRenderer::DoDrawQuad(const DrawQuad* quad,
       // PictureDrawQuad should only be used for resourceless software draws.
       NOTREACHED();
       break;
-    case DrawQuad::Material::kRenderPass:
+    case DrawQuad::Material::kCompositorRenderPass:
       // At this point, RenderPassDrawQuads should be replaced by
       // AggregatedRenderPassDrawQuad.
       NOTREACHED();

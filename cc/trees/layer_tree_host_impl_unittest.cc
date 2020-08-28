@@ -15089,7 +15089,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RemoveUnreferencedRenderPass) {
 
   // pass3 is referenced by pass2.
   auto* rpdq = pass2->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-  rpdq->material = viz::DrawQuad::Material::kRenderPass;
+  rpdq->material = viz::DrawQuad::Material::kCompositorRenderPass;
   rpdq->render_pass_id = pass3->id;
 
   // But pass2 is not referenced by pass1. So pass2 and pass3 should be culled.
@@ -15126,12 +15126,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RemoveEmptyRenderPass) {
 
   // pass3 is referenced by pass2.
   auto* rpdq = pass2->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-  rpdq->material = viz::DrawQuad::Material::kRenderPass;
+  rpdq->material = viz::DrawQuad::Material::kCompositorRenderPass;
   rpdq->render_pass_id = pass3->id;
 
   // pass2 is referenced by pass1.
   rpdq = pass1->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-  rpdq->material = viz::DrawQuad::Material::kRenderPass;
+  rpdq->material = viz::DrawQuad::Material::kCompositorRenderPass;
   rpdq->render_pass_id = pass2->id;
 
   // Since pass3 is empty it should be removed. Then pass2 is empty too, and
@@ -15169,12 +15169,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, DoNotRemoveEmptyRootRenderPass) {
 
   // pass3 is referenced by pass2.
   auto* rpdq = pass2->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-  rpdq->material = viz::DrawQuad::Material::kRenderPass;
+  rpdq->material = viz::DrawQuad::Material::kCompositorRenderPass;
   rpdq->render_pass_id = pass3->id;
 
   // pass2 is referenced by pass1.
   rpdq = pass1->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-  rpdq->material = viz::DrawQuad::Material::kRenderPass;
+  rpdq->material = viz::DrawQuad::Material::kCompositorRenderPass;
   rpdq->render_pass_id = pass2->id;
 
   // Since pass3 is empty it should be removed. Then pass2 is empty too, and

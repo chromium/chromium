@@ -307,7 +307,7 @@ bool SurfacesInstance::BackdropFiltersPreventMerge(
 
   const auto* root_pass = frame.render_pass_list.back().get();
   for (const auto* quad : root_pass->quad_list) {
-    if (quad->material != viz::DrawQuad::Material::kRenderPass)
+    if (quad->material != viz::DrawQuad::Material::kCompositorRenderPass)
       continue;
     const auto* pass_quad = viz::RenderPassDrawQuad::MaterialCast(quad);
     if (backdrop_filter_passes.find(pass_quad->render_pass_id) !=

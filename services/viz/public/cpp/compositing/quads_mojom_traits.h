@@ -80,7 +80,7 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
         return viz::mojom::DrawQuadStateDataView::Tag::DEBUG_BORDER_QUAD_STATE;
       case viz::DrawQuad::Material::kPictureContent:
         break;
-      case viz::DrawQuad::Material::kRenderPass:
+      case viz::DrawQuad::Material::kCompositorRenderPass:
         return viz::mojom::DrawQuadStateDataView::Tag::RENDER_PASS_QUAD_STATE;
       case viz::DrawQuad::Material::kSolidColor:
         return viz::mojom::DrawQuadStateDataView::Tag::SOLID_COLOR_QUAD_STATE;

@@ -1064,8 +1064,8 @@ void Display::RemoveOverdrawQuads(AggregatedFrame* frame) {
     cc::Region occlusion_in_quad_content_space;
     gfx::Rect render_pass_quads_in_content_space;
     for (auto quad = pass->quad_list.begin(); quad != quad_list_end;) {
-      // Sanity check: we should not have a RenderPassDrawQuad here.
-      DCHECK_NE(quad->material, DrawQuad::Material::kRenderPass);
+      // Sanity check: we should not have a Compositor RenderPassDrawQuad here.
+      DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
       // Skip quad if it is a RenderPassDrawQuad because RenderPassDrawQuad is a
       // special type of DrawQuad where the visible_rect of shared quad state is
       // not entirely covered by draw quads in it.

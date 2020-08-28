@@ -212,7 +212,7 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
                      filters_scale, filters_origin, tex_coord_rect,
                      force_anti_aliasing_off, backdrop_filter_quality,
                      can_use_backdrop_filter_cache, copied_render_pass_id);
-  EXPECT_EQ(DrawQuad::Material::kRenderPass, copy_quad->material);
+  EXPECT_EQ(DrawQuad::Material::kCompositorRenderPass, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(copied_render_pass_id, copy_quad->render_pass_id);
   EXPECT_EQ(mask_resource_id, copy_quad->mask_resource_id());
@@ -699,7 +699,7 @@ TEST(DrawQuadTest, LargestQuadType) {
       case DrawQuad::Material::kTextureContent:
         largest = std::max(largest, sizeof(TextureDrawQuad));
         break;
-      case DrawQuad::Material::kRenderPass:
+      case DrawQuad::Material::kCompositorRenderPass:
         largest = std::max(largest, sizeof(RenderPassDrawQuad));
         break;
       case DrawQuad::Material::kSolidColor:
@@ -746,7 +746,7 @@ TEST(DrawQuadTest, LargestQuadType) {
       case DrawQuad::Material::kTextureContent:
         LOG(ERROR) << "TextureDrawQuad " << sizeof(TextureDrawQuad);
         break;
-      case DrawQuad::Material::kRenderPass:
+      case DrawQuad::Material::kCompositorRenderPass:
         LOG(ERROR) << "RenderPassDrawQuad " << sizeof(RenderPassDrawQuad);
         break;
       case DrawQuad::Material::kSolidColor:

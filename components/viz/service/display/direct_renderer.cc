@@ -832,8 +832,9 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
       if (!backdrop_filter_output_rects_.empty() &&
           !root_damage_rect.IsEmpty()) {
         for (auto* quad : render_pass->quad_list) {
-          // Sanity check: we should not have a RenderPassDrawQuad here.
-          DCHECK_NE(quad->material, DrawQuad::Material::kRenderPass);
+          // Sanity check: we should not have a Compositor RenderPassDrawQuad
+          // here.
+          DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
           if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
             auto iter = backdrop_filter_output_rects_.find(
                 AggregatedRenderPassDrawQuad::MaterialCast(quad)

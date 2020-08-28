@@ -787,7 +787,7 @@
             "x": 0.0,
             "y": 0.0
          },
-         "material": "kRenderPass",
+         "material": "kCompositorRenderPass",
          "needs_blending": true,
          "rect": {
             "height": 1116,

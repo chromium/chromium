@@ -198,7 +198,7 @@ DrawQuad* RenderPass::CopyFromAndAppendDrawQuad(const DrawQuad* quad) {
       break;
     // RenderPass quads need to use specific CopyFrom function.
     case DrawQuad::Material::kAggregatedRenderPass:
-    case DrawQuad::Material::kRenderPass:
+    case DrawQuad::Material::kCompositorRenderPass:
     case DrawQuad::Material::kInvalid:
       // TODO(danakj): Why is this a check instead of dcheck, and validate from
       // IPC?
@@ -240,7 +240,7 @@ std::unique_ptr<RenderPass> RenderPass::DeepCopy() const {
     }
     DCHECK(quad->shared_quad_state == *sqs_iter);
 
-    if (quad->material == DrawQuad::Material::kRenderPass) {
+    if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
       const auto* pass_quad = RenderPassDrawQuad::MaterialCast(quad);
       copy_pass->CopyFromAndAppendRenderPassDrawQuad(pass_quad,
                                                      pass_quad->render_pass_id);

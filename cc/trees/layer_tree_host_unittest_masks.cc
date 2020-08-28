@@ -84,7 +84,7 @@ class LayerTreeTestMaskLayerForSurfaceWithContentRectNotAtOrigin
     EXPECT_EQ(viz::DrawQuad::Material::kSolidColor,
               root_pass->quad_list.back()->material);
 
-    EXPECT_EQ(viz::DrawQuad::Material::kRenderPass,
+    EXPECT_EQ(viz::DrawQuad::Material::kCompositorRenderPass,
               root_pass->quad_list.front()->material);
     const viz::RenderPassDrawQuad* render_pass_quad =
         viz::RenderPassDrawQuad::MaterialCast(root_pass->quad_list.front());
@@ -267,7 +267,7 @@ class LayerTreeTestMaskLayerForSurfaceWithClippedLayer : public LayerTreeTest {
               root_pass->quad_list.back()->material);
 
     // The surface is clipped to 10x20.
-    EXPECT_EQ(viz::DrawQuad::Material::kRenderPass,
+    EXPECT_EQ(viz::DrawQuad::Material::kCompositorRenderPass,
               root_pass->quad_list.front()->material);
     const viz::RenderPassDrawQuad* render_pass_quad =
         viz::RenderPassDrawQuad::MaterialCast(root_pass->quad_list.front());
@@ -375,7 +375,7 @@ class LayerTreeTestMaskLayerForSurfaceWithDifferentScale
 
     // The surface is clipped to 10x20, and then scaled by 2, which ends up
     // being 20x40.
-    EXPECT_EQ(viz::DrawQuad::Material::kRenderPass,
+    EXPECT_EQ(viz::DrawQuad::Material::kCompositorRenderPass,
               root_pass->quad_list.front()->material);
     const viz::RenderPassDrawQuad* render_pass_quad =
         viz::RenderPassDrawQuad::MaterialCast(root_pass->quad_list.front());
@@ -470,7 +470,7 @@ class LayerTreeTestMaskLayerWithScaling : public LayerTreeTest {
     EXPECT_EQ(viz::DrawQuad::Material::kSolidColor,
               root_pass->quad_list.back()->material);
 
-    EXPECT_EQ(viz::DrawQuad::Material::kRenderPass,
+    EXPECT_EQ(viz::DrawQuad::Material::kCompositorRenderPass,
               root_pass->quad_list.front()->material);
     const viz::RenderPassDrawQuad* render_pass_quad =
         viz::RenderPassDrawQuad::MaterialCast(root_pass->quad_list.front());
@@ -575,7 +575,7 @@ class LayerTreeTestMaskWithNonExactTextureSize : public LayerTreeTest {
               root_pass->quad_list.back()->material);
 
     // The surface is 100x100
-    EXPECT_EQ(viz::DrawQuad::Material::kRenderPass,
+    EXPECT_EQ(viz::DrawQuad::Material::kCompositorRenderPass,
               root_pass->quad_list.front()->material);
     const viz::RenderPassDrawQuad* render_pass_quad =
         viz::RenderPassDrawQuad::MaterialCast(root_pass->quad_list.front());

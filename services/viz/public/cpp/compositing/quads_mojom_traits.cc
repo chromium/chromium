@@ -22,7 +22,7 @@ viz::DrawQuad* AllocateAndConstruct(
       return quad;
     case viz::mojom::DrawQuadStateDataView::Tag::RENDER_PASS_QUAD_STATE:
       quad = list->AllocateAndConstruct<viz::RenderPassDrawQuad>();
-      quad->material = viz::DrawQuad::Material::kRenderPass;
+      quad->material = viz::DrawQuad::Material::kCompositorRenderPass;
       return quad;
     case viz::mojom::DrawQuadStateDataView::Tag::SOLID_COLOR_QUAD_STATE:
       quad = list->AllocateAndConstruct<viz::SolidColorDrawQuad>();

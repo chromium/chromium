@@ -142,7 +142,7 @@ DrawQuad* AggregatedRenderPass::CopyFromAndAppendDrawQuad(
       break;
     // RenderPass quads need to use specific CopyFrom function.
     case DrawQuad::Material::kAggregatedRenderPass:
-    case DrawQuad::Material::kRenderPass:
+    case DrawQuad::Material::kCompositorRenderPass:
     case DrawQuad::Material::kInvalid:
       // TODO(danakj): Why is this a check instead of dcheck, and validate from
       // IPC?

@@ -184,7 +184,7 @@ TEST(RenderPassIOTest, QuadList) {
       DrawQuad::Material::kVideoHole,
       DrawQuad::Material::kYuvVideoContent,
       DrawQuad::Material::kTextureContent,
-      DrawQuad::Material::kRenderPass,
+      DrawQuad::Material::kCompositorRenderPass,
       DrawQuad::Material::kTiledContent,
   };
   std::unique_ptr<RenderPass> render_pass0 = RenderPass::Create();

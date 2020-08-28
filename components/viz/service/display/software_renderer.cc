@@ -318,7 +318,7 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
     case DrawQuad::Material::kPictureContent:
       DrawPictureQuad(PictureDrawQuad::MaterialCast(quad));
       break;
-    case DrawQuad::Material::kRenderPass:
+    case DrawQuad::Material::kCompositorRenderPass:
       // At this point, all RenderPassDrawQuads should be converted to
       // AggregatedRenderPassDrawQuads.
       NOTREACHED();

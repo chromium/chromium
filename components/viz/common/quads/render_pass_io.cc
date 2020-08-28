@@ -892,7 +892,7 @@ const char* DrawQuadMaterialToString(DrawQuad::Material material) {
     MAP_MATERIAL_TO_STRING(kInvalid)
     MAP_MATERIAL_TO_STRING(kDebugBorder)
     MAP_MATERIAL_TO_STRING(kPictureContent)
-    MAP_MATERIAL_TO_STRING(kRenderPass)
+    MAP_MATERIAL_TO_STRING(kCompositorRenderPass)
     MAP_MATERIAL_TO_STRING(kSolidColor)
     MAP_MATERIAL_TO_STRING(kStreamVideoContent)
     MAP_MATERIAL_TO_STRING(kSurfaceContent)
@@ -914,7 +914,7 @@ int StringToDrawQuadMaterial(const std::string& str) {
   MAP_STRING_TO_MATERIAL(kInvalid)
   MAP_STRING_TO_MATERIAL(kDebugBorder)
   MAP_STRING_TO_MATERIAL(kPictureContent)
-  MAP_STRING_TO_MATERIAL(kRenderPass)
+  MAP_STRING_TO_MATERIAL(kCompositorRenderPass)
   MAP_STRING_TO_MATERIAL(kSolidColor)
   MAP_STRING_TO_MATERIAL(kStreamVideoContent)
   MAP_STRING_TO_MATERIAL(kSurfaceContent)
@@ -1181,7 +1181,7 @@ base::Value DrawQuadToDict(const DrawQuad* draw_quad,
   base::Value dict(base::Value::Type::DICTIONARY);
   DrawQuadCommonToDict(draw_quad, &dict, shared_quad_state_list);
   switch (draw_quad->material) {
-    WRITE_DRAW_QUAD_TYPE_FIELDS(kRenderPass, RenderPassDrawQuad)
+    WRITE_DRAW_QUAD_TYPE_FIELDS(kCompositorRenderPass, RenderPassDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kSolidColor, SolidColorDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kStreamVideoContent, StreamVideoDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kTextureContent, TextureDrawQuad)
@@ -1527,7 +1527,7 @@ bool QuadListFromList(const base::Value& list,
     if (!common)
       return false;
     switch (common->material) {
-      GET_QUAD_FROM_DICT(kRenderPass, RenderPassDrawQuad)
+      GET_QUAD_FROM_DICT(kCompositorRenderPass, RenderPassDrawQuad)
       GET_QUAD_FROM_DICT(kSolidColor, SolidColorDrawQuad)
       GET_QUAD_FROM_DICT(kStreamVideoContent, StreamVideoDrawQuad)
       GET_QUAD_FROM_DICT(kTextureContent, TextureDrawQuad)

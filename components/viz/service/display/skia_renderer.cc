@@ -254,7 +254,8 @@ bool IsAAForcedOff(const DrawQuad* quad) {
   switch (quad->material) {
     case DrawQuad::Material::kPictureContent:
       return PictureDrawQuad::MaterialCast(quad)->force_anti_aliasing_off;
-    case DrawQuad::Material::kRenderPass:
+    case DrawQuad::Material::kCompositorRenderPass:
+      // We should not have compositor render passes here.
       NOTREACHED();
       return RenderPassDrawQuad::MaterialCast(quad)->force_anti_aliasing_off;
     case DrawQuad::Material::kAggregatedRenderPass:
@@ -1000,7 +1001,7 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
       DCHECK(rpdq_params == nullptr);
       DrawPictureQuad(PictureDrawQuad::MaterialCast(quad), params);
       break;
-    case DrawQuad::Material::kRenderPass:
+    case DrawQuad::Material::kCompositorRenderPass:
       // RenderPassDrawQuads should be converted to
       // AggregatedRenderPassDrawQuads at this point.
       DrawUnsupportedQuad(quad, rpdq_params, params);
@@ -1364,8 +1365,8 @@ bool SkiaRenderer::CanExplicitlyScissor(
   if (!contents_device_transform.IsScaleOrTranslation())
     return false;
 
-  // Sanity check: we should not have a RenderPassDrawQuad here.
-  DCHECK_NE(quad->material, DrawQuad::Material::kRenderPass);
+  // Sanity check: we should not have a Compositor RenderPassDrawQuad here.
+  DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
   if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
     // If the renderpass has filters, the filters may modify the effective
     // geometry beyond the quad's visible_rect, so it's not safe to pre-clip.
@@ -1396,8 +1397,8 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // For simplicity in their draw implementations, debug borders, picture quads,
   // and nested render passes cannot bypass a render pass
   // (their draw functions do not accept DrawRPDQParams either).
-  if (quad->material == DrawQuad::Material::kRenderPass ||
-      quad->material == DrawQuad::Material::kAggregatedRenderPass ||
+  DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
+  if (quad->material == DrawQuad::Material::kAggregatedRenderPass ||
       quad->material == DrawQuad::Material::kDebugBorder ||
       quad->material == DrawQuad::Material::kPictureContent)
     return nullptr;
@@ -1587,8 +1588,8 @@ bool SkiaRenderer::MustFlushBatchedQuads(const DrawQuad* new_quad,
   if (rpdq_params)
     return true;
 
-  if (new_quad->material != DrawQuad::Material::kRenderPass &&
-      new_quad->material != DrawQuad::Material::kAggregatedRenderPass &&
+  DCHECK_NE(new_quad->material, DrawQuad::Material::kCompositorRenderPass);
+  if (new_quad->material != DrawQuad::Material::kAggregatedRenderPass &&
       new_quad->material != DrawQuad::Material::kStreamVideoContent &&
       new_quad->material != DrawQuad::Material::kTextureContent &&
       new_quad->material != DrawQuad::Material::kTiledContent)
