@@ -6798,6 +6798,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.LauncherSearchQueryLengthJumped" enum="Boolean"
+    expires_after="M90">
+  <owner>wrong@chromium.org</owner>
+  <owner>jiameng@chromium.org</owner>
+  <summary>
+    Whether or not the most recent Launcher search query differs from the
+    previous query in length by more than one character. Search queries are
+    issued incrementally as the user types, so this will approximately
+    differentiate between incremental and non-incremental search queries.
+    Emitted on each change to the launcher search query.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.OmniboxProvider.QueryTime" units="ms"
     expires_after="2020-12-31">
   <owner>jennyz@chromium.org</owner>

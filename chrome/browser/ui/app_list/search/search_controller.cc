@@ -37,6 +37,8 @@ namespace {
 
 constexpr char kLogDisplayTypeClickedResultZeroState[] =
     "Apps.LogDisplayTypeClickedResultZeroState";
+constexpr char kLauncherSearchQueryLengthJumped[] =
+    "Apps.LauncherSearchQueryLengthJumped";
 
 // TODO(931149): Move the string manipulation utilities into a helper class.
 
@@ -84,6 +86,12 @@ void SearchController::InitializeRankers() {
 void SearchController::Start(const base::string16& query) {
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
+  if (query.length() > 0) {
+    const int length_diff = query.length() >= last_query_.length()
+                                ? query.length() - last_query_.length()
+                                : last_query_.length() - query.length();
+    UMA_HISTOGRAM_BOOLEAN(kLauncherSearchQueryLengthJumped, length_diff > 1);
+  }
   for (const auto& provider : providers_)
     provider->Start(query);
 
