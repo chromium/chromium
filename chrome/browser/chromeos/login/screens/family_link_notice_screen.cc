@@ -4,15 +4,13 @@
 
 #include "chrome/browser/chromeos/login/screens/family_link_notice_screen.h"
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/family_link_notice_screen_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
 constexpr char kUserActionContinue[] = "continue";
@@ -64,11 +62,10 @@ void FamilyLinkNoticeScreen::ShowImpl() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (profile->GetProfilePolicyConnector()->IsManaged() &&
       !profile->IsChild()) {
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
-    view_->SetDomain(connector->GetEnterpriseDisplayDomain());
-    view_->SetDisplayEmail(
-        user_manager::UserManager::Get()->GetActiveUser()->GetDisplayEmail());
+    std::string display_email =
+        user_manager::UserManager::Get()->GetActiveUser()->GetDisplayEmail();
+    view_->SetDisplayEmail(display_email);
+    view_->SetDomain(gaia::ExtractDomainName(display_email));
   } else {
     view_->SetIsNewGaiaAccount(context()->is_child_gaia_account_new);
   }
