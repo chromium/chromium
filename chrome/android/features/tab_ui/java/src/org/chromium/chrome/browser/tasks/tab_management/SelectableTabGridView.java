@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -69,4 +70,12 @@ public class SelectableTabGridView extends SelectableItemView<Integer> {
 
     @Override
     protected void updateView(boolean animate) {}
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+
+        info.setCheckable(true);
+        info.setChecked(isChecked());
+    }
 }
