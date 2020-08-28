@@ -201,6 +201,14 @@ void ChromeSessionManager::Initialize(
     const base::CommandLine& parsed_command_line,
     Profile* profile,
     bool is_running_test) {
+  // If a forced powerwash was triggered and no confirmation from the user is
+  // necessary, we trigger the device wipe here before the user can log in again
+  // and return immediately because there is no need to show the login screen.
+  if (g_browser_process->local_state()->GetBoolean(prefs::kForceFactoryReset)) {
+    SessionManagerClient::Get()->StartDeviceWipe();
+    return;
+  }
+
   // Tests should be able to tune login manager before showing it. Thus only
   // show login UI (login and out-of-box) in normal (non-testing) mode with
   // --login-manager switch and if test passed --force-login-manager-in-tests.

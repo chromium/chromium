@@ -19,7 +19,6 @@
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chromeos/dbus/update_engine_client.h"
-#include "components/prefs/pref_service.h"
 
 class PrefRegistrySimple;
 
@@ -48,11 +47,6 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
 
   // Registers Local State preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Set preferences that will trigger the reset screen on next start and will
-  // force the user to powerwash when the reset screen is displayed by hiding
-  // the cancel button and leaving Powerwash as the only action.
-  static void SetPrefsForForcedPowerwash(PrefService* pref_service);
 
   using TpmFirmwareUpdateAvailabilityCallback = base::OnceCallback<void(
       const std::set<tpm_firmware_update::Mode>& modes)>;

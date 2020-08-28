@@ -43,7 +43,6 @@ class ResetView {
   virtual void SetShouldShowConfirmationDialog(bool value) = 0;
   virtual void SetConfirmationDialogClosed() = 0;
   virtual void SetScreenState(State value) = 0;
-  virtual void SetIsForcedPowerwash(bool value) = 0;
 
   virtual State GetScreenState() = 0;
   virtual tpm_firmware_update::Mode GetTpmFirmwareUpdateMode() = 0;
@@ -81,7 +80,6 @@ class ResetScreenHandler : public ResetView,
   void SetShouldShowConfirmationDialog(bool value) override;
   void SetConfirmationDialogClosed() override;
   void SetScreenState(State value) override;
-  void SetIsForcedPowerwash(bool value) override;
   State GetScreenState() override;
   tpm_firmware_update::Mode GetTpmFirmwareUpdateMode() override;
   bool GetIsRollbackAvailable() override;

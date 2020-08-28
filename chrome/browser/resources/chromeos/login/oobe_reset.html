@@ -80,9 +80,7 @@
         <div class="flex"></div>
         <!-- Cancel button, only disabled when reverting -->
         <oobe-text-button border on-tap="onCancelTap_" text-key="cancelButton"
-            id="resetCancel" disabled="[[inRevertState_]]"
-            hidden="[[isForcedPowerwash_]]">
-        </oobe-text-button>
+            id="resetCancel" disabled="[[inRevertState_]]"></oobe-text-button>
         <!-- Restart button -->
         <oobe-text-button inverse on-tap="onRestartTap_" class="focus-on-show"
             id="restart" text-key="resetButtonRestart"

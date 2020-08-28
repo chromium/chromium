@@ -73,6 +73,7 @@ namespace policy {
 // static
 void AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(
     PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kForceFactoryReset, false);
   registry->RegisterBooleanPref(
       prefs::kAdbSideloadingDisallowedNotificationShown, false);
   registry->RegisterTimePref(
@@ -278,9 +279,10 @@ void AdbSideloadingAllowanceModePolicyHandler::
   local_state_->SetBoolean(
       prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown, true);
 
-  // Set this right away to ensure the user is prompted to powerwash on next
+  // Set this right away to ensure the user is forced to powerwash on next
   // start even if they ignore the notification and do not click the button
-  chromeos::ResetScreen::SetPrefsForForcedPowerwash(local_state_);
+  local_state_->SetBoolean(prefs::kForceFactoryReset, true);
+  local_state_->CommitPendingWrite();
 
   adb_sideloading_policy_change_notification_->Show(
       NotificationType::kPowerwashOnNextReboot);
