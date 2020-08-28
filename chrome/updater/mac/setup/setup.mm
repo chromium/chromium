@@ -237,8 +237,15 @@ bool RemoveJobFromLaunchd(Launchd::Domain domain,
   // This may block while deleting the launchd plist file.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  Launchd::GetInstance()->RemoveJob(base::SysCFStringRefToUTF8(name));
-  return Launchd::GetInstance()->DeletePlist(domain, type, name);
+
+  // If the job doesn't exist return true.
+  if (!Launchd::GetInstance()->PlistExists(domain, type, name))
+    return true;
+
+  if (!Launchd::GetInstance()->DeletePlist(domain, type, name))
+    return false;
+
+  return Launchd::GetInstance()->RemoveJob(base::SysCFStringRefToUTF8(name));
 }
 
 bool RemoveClientJobFromLaunchd(base::ScopedCFTypeRef<CFStringRef> name) {
@@ -263,7 +270,7 @@ bool RemoveUpdateWakeJobFromLaunchd() {
 }
 
 bool RemoveUpdateControlJobFromLaunchd() {
-  return RemoveClientJobFromLaunchd(CopyControlLaunchdName());
+  return RemoveServiceJobFromLaunchd(CopyControlLaunchdName());
 }
 
 bool DeleteInstallFolder(const base::FilePath& installed_path) {
@@ -313,9 +320,15 @@ int InstallCandidate() {
 }
 
 int UninstallCandidate() {
-  RemoveUpdateControlJobFromLaunchd();
-  RemoveUpdateWakeJobFromLaunchd();
-  DeleteInstallFolder(GetVersionedUpdaterFolderPath());
+  if (!RemoveUpdateWakeJobFromLaunchd())
+    return setup_exit_codes::kFailedToRemoveWakeJobFromLaunchd;
+
+  if (!DeleteInstallFolder(GetVersionedUpdaterFolderPath()))
+    return setup_exit_codes::kFailedToDeleteFolder;
+
+  if (!RemoveUpdateControlJobFromLaunchd())
+    return setup_exit_codes::kFailedToRemoveControlJobFromLaunchd;
+
   return setup_exit_codes::kSuccess;
 }
 
