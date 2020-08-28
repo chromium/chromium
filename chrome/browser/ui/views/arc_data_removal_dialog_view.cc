@@ -107,7 +107,7 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
   // UI hierarchy owned.
   auto label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ARC_DATA_REMOVAL_CONFIRMATION_HEADING),
-      views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(std::move(label));

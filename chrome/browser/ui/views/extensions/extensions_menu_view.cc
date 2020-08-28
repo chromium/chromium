@@ -209,7 +209,7 @@ ExtensionsMenuView::CreateExtensionButtonsContainer() {
         // Add an emphasized short header explaining the section.
         auto header = std::make_unique<views::Label>(
             l10n_util::GetStringUTF16(section->header_string_id),
-            ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+            ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
             ChromeTextStyle::STYLE_EMPHASIZED);
         header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
         header->SetBorder(views::CreateEmptyBorder(
@@ -221,7 +221,7 @@ ExtensionsMenuView::CreateExtensionButtonsContainer() {
         // Add longer text that explains the section in more detail.
         auto description = std::make_unique<views::Label>(
             l10n_util::GetStringUTF16(section->description_string_id),
-            ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+            ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
             views::style::STYLE_PRIMARY);
         description->SetMultiLine(true);
         description->SetHorizontalAlignment(gfx::ALIGN_LEFT);

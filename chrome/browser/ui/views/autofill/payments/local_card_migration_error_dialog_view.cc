@@ -123,7 +123,7 @@ void LocalCardMigrationErrorDialogView::Init() {
       l10n_util::GetPluralStringFUTF16(
           IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_MESSAGE_ERROR,
           controller_->GetCardList().size()),
-      CONTEXT_BODY_TEXT_LARGE, ChromeTextStyle::STYLE_RED);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, ChromeTextStyle::STYLE_RED);
   error_view->AddChildView(error_message);
 
   AddChildView(error_view);

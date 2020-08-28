@@ -242,7 +242,7 @@ class CustomTabBarTitleOriginView : public views::View {
   ...
   SkColor GetLocationColor() const {
     return views::style::GetColor(
-        *this, CONTEXT_BODY_TEXT_SMALL,
+        *this, CONTEXT_DIALOG_BODY_TEXT_SMALL,
         views::style::TextStyle::STYLE_PRIMARY);
   }
   ...

@@ -147,7 +147,7 @@ LegalMessageView::CreateLegalMessageLineLabel(
     views::StyledLabelListener* listener) {
   auto label = std::make_unique<views::StyledLabel>(listener);
   label->SetText(line.text());
-  label->SetTextContext(CONTEXT_BODY_TEXT_LARGE);
+  label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   for (const LegalMessageLine::Link& link : line.links()) {
     label->AddStyleRange(link.range,

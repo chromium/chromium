@@ -97,8 +97,8 @@ views::View* VirtualCardSelectionDialogViewImpl::GetContentsView() {
           views::TEXT, views::CONTROL)));
 
   auto* instructions = AddChildView(std::make_unique<views::Label>(
-      controller_->GetContentExplanation(), CONTEXT_BODY_TEXT_LARGE,
-      views::style::STYLE_SECONDARY));
+      controller_->GetContentExplanation(),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   instructions->SetMultiLine(true);
   instructions->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 

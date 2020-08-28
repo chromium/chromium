@@ -23,7 +23,8 @@ void ExtensionPermissionsView::AddItem(
     const base::string16& permission_text,
     const base::string16& permission_details) {
   auto permission_label = std::make_unique<views::Label>(
-      permission_text, CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+      permission_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   permission_label->SetMultiLine(true);
   permission_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   permission_label->SizeToFit(available_width_);

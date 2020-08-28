@@ -34,7 +34,7 @@ PostSaveCompromisedBubbleView::PostSaveCompromisedBubbleView(
 
   auto label = std::make_unique<views::StyledLabel>(this);
   label->SetText(controller_.GetBody());
-  label->SetTextContext(CONTEXT_BODY_TEXT_LARGE);
+  label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   gfx::Range range = controller_.GetSettingLinkRange();
   if (!range.is_empty()) {

@@ -40,8 +40,8 @@ enum TextContext {
   // Text to label a control, usually next to it. "Body 2". Usually 12pt.
   CONTEXT_LABEL,
 
-  // Text used for body text in message boxes.
-  CONTEXT_MESSAGE_BOX_BODY_TEXT,
+  // Text used for body text in dialogs.
+  CONTEXT_DIALOG_BODY_TEXT,
 
   // Text in a table row.
   CONTEXT_TABLE_ROW,

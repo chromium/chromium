@@ -145,7 +145,7 @@ std::unique_ptr<views::View> CreateOriginView(const SharingDialogData& data) {
           url_formatter::FormatOriginForSecurityDisplay(
               *data.initiating_origin,
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)),
-      ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
       views::style::STYLE_SECONDARY);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetAllowCharacterBreak(true);

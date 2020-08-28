@@ -303,7 +303,8 @@ TEST_F(LayoutProviderTest, FontSizeRelativeToBase) {
   const int twelve = gfx::FontList().GetFontSize();
 #endif
 
-  EXPECT_EQ(twelve, GetFont(CONTEXT_BODY_TEXT_SMALL, kStyle).GetFontSize());
+  EXPECT_EQ(twelve,
+            GetFont(CONTEXT_DIALOG_BODY_TEXT_SMALL, kStyle).GetFontSize());
   EXPECT_EQ(twelve, GetFont(views::style::CONTEXT_LABEL, kStyle).GetFontSize());
   EXPECT_EQ(twelve,
             GetFont(views::style::CONTEXT_TEXTFIELD, kStyle).GetFontSize());
@@ -315,7 +316,9 @@ TEST_F(LayoutProviderTest, FontSizeRelativeToBase) {
   // Titles should be 15pt. Etc.
   EXPECT_EQ(twelve + 3,
             GetFont(views::style::CONTEXT_DIALOG_TITLE, kStyle).GetFontSize());
-  EXPECT_EQ(twelve + 1, GetFont(CONTEXT_BODY_TEXT_LARGE, kStyle).GetFontSize());
+  EXPECT_EQ(
+      twelve + 1,
+      GetFont(views::style::CONTEXT_DIALOG_BODY_TEXT, kStyle).GetFontSize());
 }
 
 // Ensure that line height can be overridden by Chrome's TypographyProvider for
@@ -335,8 +338,8 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
     int max;
   } kExpectedIncreases[] = {{CONTEXT_HEADLINE, 4, 8},
                             {views::style::CONTEXT_DIALOG_TITLE, 1, 4},
-                            {CONTEXT_BODY_TEXT_LARGE, 2, 4},
-                            {CONTEXT_BODY_TEXT_SMALL, 4, 5}};
+                            {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
+                            {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5}};
 
   for (size_t i = 0; i < base::size(kExpectedIncreases); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);
@@ -374,10 +377,11 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
   constexpr struct {
     int context;
     int line_height;
-  } kHarmonyHeights[] = {{CONTEXT_HEADLINE, 32},
-                         {views::style::CONTEXT_DIALOG_TITLE, 22},
-                         {CONTEXT_BODY_TEXT_LARGE, kBodyLineHeight},
-                         {CONTEXT_BODY_TEXT_SMALL, kBodyLineHeight}};
+  } kHarmonyHeights[] = {
+      {CONTEXT_HEADLINE, 32},
+      {views::style::CONTEXT_DIALOG_TITLE, 22},
+      {views::style::CONTEXT_DIALOG_BODY_TEXT, kBodyLineHeight},
+      {CONTEXT_DIALOG_BODY_TEXT_SMALL, kBodyLineHeight}};
 
   for (size_t i = 0; i < base::size(kHarmonyHeights); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);

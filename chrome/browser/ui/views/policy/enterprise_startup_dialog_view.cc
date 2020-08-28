@@ -59,7 +59,7 @@ std::unique_ptr<views::Label> CreateText(const base::string16& message) {
   text->SetFontList(gfx::FontList().Derive(kFontSizeDelta, gfx::Font::NORMAL,
                                            gfx::Font::Weight::MEDIUM));
   text->SetEnabledColor(
-      views::style::GetColor(*text, views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT,
+      views::style::GetColor(*text, views::style::CONTEXT_DIALOG_BODY_TEXT,
                              views::style::STYLE_PRIMARY));
   text->SetLineHeight(kLineHeight);
   return text;

@@ -25,11 +25,8 @@ enum ChromeTextContext {
   // Headline text. Usually 20pt. Never multi-line.
   CONTEXT_HEADLINE = CHROME_TEXT_CONTEXT_START,
 
-  // "Body 1". Usually 13pt.
-  CONTEXT_BODY_TEXT_LARGE,
-
-  // "Body 2". Usually 12pt.
-  CONTEXT_BODY_TEXT_SMALL,
+  // Smaller version of CONTEXT_DIALOG_BODY_TEXT. Usually 12pt.
+  CONTEXT_DIALOG_BODY_TEXT_SMALL,
 
   // Text of the page title in the tab hover card.
   CONTEXT_TAB_HOVER_CARD_TITLE,

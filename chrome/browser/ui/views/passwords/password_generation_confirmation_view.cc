@@ -34,7 +34,7 @@ PasswordGenerationConfirmationView::PasswordGenerationConfirmationView(
 
   auto label = std::make_unique<views::StyledLabel>(this);
   label->SetText(controller_.save_confirmation_text());
-  label->SetTextContext(CONTEXT_BODY_TEXT_LARGE);
+  label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   auto link_style = views::StyledLabel::RangeStyleInfo::CreateForLink();
   link_style.disable_line_wrapping = false;

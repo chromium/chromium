@@ -74,7 +74,7 @@ std::unique_ptr<views::View> CreateOriginView(const url::Origin& origin,
   base::string16 origin_text = l10n_util::GetStringFUTF16(
       text_id, url_formatter::FormatOriginForSecurityDisplay(origin));
   auto label = std::make_unique<views::Label>(
-      origin_text, ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+      origin_text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
       views::style::STYLE_SECONDARY);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetElideBehavior(gfx::ELIDE_HEAD);

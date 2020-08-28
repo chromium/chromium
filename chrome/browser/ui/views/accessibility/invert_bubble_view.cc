@@ -106,17 +106,18 @@ void InvertBubbleView::Init() {
 
   AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_HIGH_CONTRAST_HEADER),
-      CONTEXT_BODY_TEXT_LARGE));
+      views::style::CONTEXT_DIALOG_BODY_TEXT));
 
   auto* high_contrast = AddChildView(std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_HIGH_CONTRAST_EXT),
-      CONTEXT_BODY_TEXT_LARGE));
+      views::style::CONTEXT_DIALOG_BODY_TEXT));
   high_contrast->set_callback(base::BindRepeating(&InvertBubbleView::OpenLink,
                                                   base::Unretained(this),
                                                   kHighContrastExtensionUrl));
 
-  auto* dark_theme = AddChildView(std::make_unique<views::Link>(
-      l10n_util::GetStringUTF16(IDS_DARK_THEME), CONTEXT_BODY_TEXT_LARGE));
+  auto* dark_theme = AddChildView(
+      std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_DARK_THEME),
+                                    views::style::CONTEXT_DIALOG_BODY_TEXT));
   dark_theme->set_callback(base::BindRepeating(&InvertBubbleView::OpenLink,
                                                base::Unretained(this),
                                                kDarkThemeSearchUrl));

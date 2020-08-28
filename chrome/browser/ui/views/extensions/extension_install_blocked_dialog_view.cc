@@ -115,7 +115,7 @@ void ExtensionInstallBlockedDialogView::AddCustomMessageContents(
 
   auto* header_label =
       extension_info_container->AddChildView(std::make_unique<views::Label>(
-          custom_error_message, CONTEXT_BODY_TEXT_LARGE));
+          custom_error_message, views::style::CONTEXT_DIALOG_BODY_TEXT));
   header_label->SetMultiLine(true);
   header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   header_label->SizeToFit(content_width);

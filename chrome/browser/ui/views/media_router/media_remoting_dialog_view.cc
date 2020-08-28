@@ -118,7 +118,7 @@ MediaRemotingDialogView::~MediaRemotingDialogView() {
 void MediaRemotingDialogView::Init() {
   views::Label* body_text = new views::Label(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_REMOTING_DIALOG_BODY_TEXT),
-      views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT, views::style::STYLE_PRIMARY);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
   body_text->SetMultiLine(true);
   body_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(body_text);

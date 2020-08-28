@@ -229,7 +229,7 @@ void SessionCrashedBubbleView::Init() {
   // Description text label.
   auto text_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SESSION_CRASHED_VIEW_MESSAGE),
-      CONTEXT_BODY_TEXT_LARGE);
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
   text_label->SetMultiLine(true);
   text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(std::move(text_label));

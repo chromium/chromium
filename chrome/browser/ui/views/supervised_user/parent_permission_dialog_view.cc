@@ -118,7 +118,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
       auto select_parent_label = std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(
               IDS_PARENT_PERMISSION_PROMPT_SELECT_PARENT_LABEL),
-          CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_PRIMARY);
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
       select_parent_label->SetHorizontalAlignment(
           gfx::HorizontalAlignment::ALIGN_LEFT);
       view->AddChildView(std::move(select_parent_label));
@@ -164,14 +164,15 @@ class ParentPermissionInputSection : public views::TextfieldController {
       auto parent_account_label = std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(
               IDS_PARENT_PERMISSION_PROMPT_PARENT_ACCOUNT_LABEL),
-          CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_PRIMARY);
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
       parent_account_label->SetHorizontalAlignment(
           gfx::HorizontalAlignment::ALIGN_LEFT);
       view->AddChildView(std::move(parent_account_label));
 
-      auto parent_email_label = std::make_unique<views::Label>(
-          parent_permission_email_addresses[0], CONTEXT_BODY_TEXT_LARGE,
-          views::style::STYLE_SECONDARY);
+      auto parent_email_label =
+          std::make_unique<views::Label>(parent_permission_email_addresses[0],
+                                         views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                         views::style::STYLE_SECONDARY);
       parent_email_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       parent_email_label->SetMultiLine(true);
       parent_email_label->SizeToFit(available_width);
@@ -186,7 +187,7 @@ class ParentPermissionInputSection : public views::TextfieldController {
     base::string16 enter_password_string = l10n_util::GetStringUTF16(
         IDS_PARENT_PERMISSION_PROMPT_ENTER_PASSWORD_LABEL);
     auto enter_password_label = std::make_unique<views::Label>(
-        enter_password_string, CONTEXT_BODY_TEXT_LARGE,
+        enter_password_string, views::style::CONTEXT_DIALOG_BODY_TEXT,
         views::style::STYLE_SECONDARY);
     enter_password_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
@@ -435,8 +436,8 @@ void ParentPermissionDialogView::CreateContents() {
         IDS_PARENT_PERMISSION_PROMPT_CHILD_WANTS_TO_INSTALL_LABEL,
         GetActiveUserFirstName(), extension_type);
 
-    views::Label* permissions_header =
-        new views::Label(permission_header_label, CONTEXT_BODY_TEXT_LARGE);
+    views::Label* permissions_header = new views::Label(
+        permission_header_label, views::style::CONTEXT_DIALOG_BODY_TEXT);
     permissions_header->SetMultiLine(true);
     permissions_header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     permissions_header->SizeToFit(content_width);

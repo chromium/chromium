@@ -595,7 +595,7 @@ AutofillPopupItemView::ViewWithLabel AutofillPopupItemView::CreateValueLabel() {
 
   auto text_label = CreateLabelWithStyleAndContext(
       popup_view()->controller()->GetSuggestionValueAt(line_number()),
-      ChromeTextContext::CONTEXT_BODY_TEXT_LARGE, GetPrimaryTextStyle());
+      views::style::CONTEXT_DIALOG_BODY_TEXT, GetPrimaryTextStyle());
 
   const gfx::Font::Weight font_weight = GetPrimaryTextWeight();
   if (font_weight != text_label->font_list().GetFontWeight()) {
@@ -620,9 +620,9 @@ AutofillPopupItemView::CreateDescriptionLabel() {
 
 std::unique_ptr<views::Label> AutofillPopupItemView::CreateSecondaryLabel(
     const base::string16& text) const {
-  return CreateLabelWithStyleAndContext(
-      text, ChromeTextContext::CONTEXT_BODY_TEXT_LARGE,
-      views::style::STYLE_SECONDARY);
+  return CreateLabelWithStyleAndContext(text,
+                                        views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                        views::style::STYLE_SECONDARY);
 }
 
 std::unique_ptr<views::Label>
@@ -689,7 +689,7 @@ AutofillPopupSuggestionView::CreateSubtextLabel() {
     return ViewWithLabel();
 
   auto label = CreateLabelWithStyleAndContext(
-      label_text, ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+      label_text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
       views::style::STYLE_SECONDARY);
   ViewWithLabel result;
   result.second = label.get();
@@ -926,7 +926,7 @@ void AutofillPopupWarningView::CreateContent() {
 
   auto text_label = std::make_unique<views::Label>(
       controller->GetSuggestionValueAt(line_number()),
-      ChromeTextContext::CONTEXT_BODY_TEXT_LARGE, ChromeTextStyle::STYLE_RED);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, ChromeTextStyle::STYLE_RED);
   text_label->SetEnabledColor(popup_view()->GetWarningColor());
   text_label->SetMultiLine(true);
   text_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);

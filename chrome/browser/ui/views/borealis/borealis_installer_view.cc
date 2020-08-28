@@ -84,9 +84,9 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
   const int kPrimaryMessageHeight = views::style::GetLineHeight(
       CONTEXT_HEADLINE, views::style::STYLE_PRIMARY);
   const int kSecondaryMessageHeight = views::style::GetLineHeight(
-      CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   const int kInstallationProgressMessageHeight = views::style::GetLineHeight(
-      CONTEXT_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
   constexpr int kProgressBarHeight = 5;
   constexpr int kProgressBarTopMargin = 32;
 
@@ -128,9 +128,9 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
           views::BoxLayout::Orientation::kVertical,
           gfx::Insets(kSecondaryMessageHeight, 0, 0, 0)));
   upper_container_view->AddChildView(secondary_message_container_view);
-  secondary_message_label_ =
-      new views::Label(GetSecondaryMessage(), CONTEXT_BODY_TEXT_LARGE,
-                       views::style::STYLE_SECONDARY);
+  secondary_message_label_ = new views::Label(
+      GetSecondaryMessage(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   secondary_message_label_->SetMultiLine(true);
   secondary_message_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   secondary_message_container_view->AddChildView(secondary_message_label_);
@@ -141,8 +141,9 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
       gfx::Insets(kProgressBarTopMargin - kProgressBarHeight, 0, 0, 0));
   upper_container_view->AddChildView(progress_bar_);
 
-  installation_progress_message_label_ = new views::Label(
-      base::string16(), CONTEXT_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
+  installation_progress_message_label_ =
+      new views::Label(base::string16(), CONTEXT_DIALOG_BODY_TEXT_SMALL,
+                       views::style::STYLE_SECONDARY);
   installation_progress_message_label_->SetEnabledColor(gfx::kGoogleGrey700);
   installation_progress_message_label_->SetProperty(
       views::kMarginsKey,

@@ -123,7 +123,8 @@ bool CustomShadowsSupported() {
 
 std::unique_ptr<views::View> CreateAlertView(const TabAlertState& state) {
   auto alert_state_label = std::make_unique<views::Label>(
-      base::string16(), CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_PRIMARY);
+      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_PRIMARY);
   alert_state_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   alert_state_label->SetMultiLine(true);
   alert_state_label->SetVisible(true);
@@ -447,14 +448,16 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   title_fade_label_->SetMaxLines(kHoverCardTitleMaxLines);
 
   domain_label_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY,
+      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY,
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   domain_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   domain_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   domain_label_->SetMultiLine(false);
 
   domain_fade_label_ = AddChildView(std::make_unique<FadeLabel>(
-      base::string16(), CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY,
+      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY,
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   domain_fade_label_->SetElideBehavior(gfx::ELIDE_HEAD);
   domain_fade_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);

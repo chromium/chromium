@@ -86,7 +86,7 @@ NativeFileSystemPermissionView::NativeFileSystemPermissionView(
 
   AddChildView(native_file_system_ui_helper::CreateOriginPathLabel(
       GetMessageText(request_), request_.origin, request_.path,
-      CONTEXT_BODY_TEXT_SMALL,
+      CONTEXT_DIALOG_BODY_TEXT_SMALL,
       /*show_emphasis=*/true));
 }
 

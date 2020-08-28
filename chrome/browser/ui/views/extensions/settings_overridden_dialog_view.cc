@@ -67,7 +67,7 @@ SettingsOverriddenDialogView::SettingsOverriddenDialogView(
   }
 
   auto message_label = std::make_unique<views::Label>(
-      show_params.message, CONTEXT_BODY_TEXT_LARGE,
+      show_params.message, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

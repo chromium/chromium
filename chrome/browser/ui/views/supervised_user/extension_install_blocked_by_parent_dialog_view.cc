@@ -138,8 +138,8 @@ void ExtensionInstallBlockedByParentDialogView::CreateContents() {
   set_margins(gfx::Insets(content_insets.top(), content_insets.left(),
                           content_insets.bottom(), content_insets.right()));
 
-  auto* message_body_label = AddChildView(
-      std::make_unique<views::Label>(body_string, CONTEXT_BODY_TEXT_LARGE));
+  auto* message_body_label = AddChildView(std::make_unique<views::Label>(
+      body_string, views::style::CONTEXT_DIALOG_BODY_TEXT));
   message_body_label->SetMultiLine(true);
   message_body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }

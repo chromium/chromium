@@ -32,7 +32,8 @@ ExpandableContainerView::DetailsView::DetailsView(
 
   for (const auto& detail : details) {
     auto detail_label = std::make_unique<views::Label>(
-        detail, CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+        detail, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_SECONDARY);
     detail_label->SetMultiLine(true);
     detail_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     AddChildView(std::move(detail_label));

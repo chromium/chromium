@@ -31,7 +31,7 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
 
   label_ = std::make_unique<views::Label>(
                browser->app_controller()->GetFormattedUrlOrigin(),
-               ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
                ChromeTextStyle::STYLE_EMPHASIZED)
                .release();
   label_->SetElideBehavior(gfx::ELIDE_HEAD);

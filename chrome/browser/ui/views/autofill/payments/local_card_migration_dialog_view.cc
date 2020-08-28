@@ -104,7 +104,8 @@ std::unique_ptr<views::Label> CreateExplanationText(
     int card_list_size,
     const base::string16& user_email) {
   auto explanation_text = std::make_unique<views::Label>(
-      base::string16(), CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   switch (view_state) {
     case LocalCardMigrationDialogState::kOffered:
       DCHECK(!user_email.empty());
@@ -204,7 +205,7 @@ std::unique_ptr<views::View> CreateTip(
       views::ImageView::Alignment::kLeading);
   tip_text_container->AddChildView(lightbulb_outline_image);
 
-  auto* tip = new views::Label(tip_message, CONTEXT_BODY_TEXT_SMALL,
+  auto* tip = new views::Label(tip_message, CONTEXT_DIALOG_BODY_TEXT_SMALL,
                                views::style::STYLE_SECONDARY);
   tip->SetMultiLine(true);
   // If it is in dark mode, set the font color to GG200 since it is on a lighter

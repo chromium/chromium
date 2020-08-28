@@ -59,7 +59,8 @@ std::unique_ptr<views::ImageView> CreateIconView(
 // Returns a label containing the app name.
 std::unique_ptr<views::Label> CreateNameLabel(const base::string16& name) {
   auto name_label = std::make_unique<views::Label>(
-      name, CONTEXT_BODY_TEXT_LARGE, views::style::TextStyle::STYLE_PRIMARY);
+      name, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::TextStyle::STYLE_PRIMARY);
   name_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   name_label->SetElideBehavior(gfx::ELIDE_TAIL);
   return name_label;
@@ -69,7 +70,7 @@ std::unique_ptr<views::Label> CreateOriginLabel(const url::Origin& origin) {
   auto origin_label = std::make_unique<views::Label>(
       FormatOriginForSecurityDisplay(
           origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS),
-      CONTEXT_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY);
 
   origin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 

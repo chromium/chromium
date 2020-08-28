@@ -60,7 +60,7 @@ std::unique_ptr<views::View> CreateErrorLabelView(
   view->SetLayoutManager(std::move(layout));
 
   std::unique_ptr<views::Label> error_label =
-      std::make_unique<views::Label>(error, CONTEXT_BODY_TEXT_SMALL);
+      std::make_unique<views::Label>(error, CONTEXT_DIALOG_BODY_TEXT_SMALL);
   error_label->SetID(static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) + type);
   error_label->SetEnabledColor(error_label->GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_AlertSeverityHigh));

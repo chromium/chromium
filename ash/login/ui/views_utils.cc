@@ -104,7 +104,7 @@ views::Label* CreateBubbleLabel(const base::string16& message,
                                 int font_size_delta,
                                 gfx::Font::Weight font_weight) {
   views::Label* label =
-      new views::Label(message, views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT,
+      new views::Label(message, views::style::CONTEXT_DIALOG_BODY_TEXT,
                        views::style::STYLE_PRIMARY);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

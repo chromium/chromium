@@ -272,7 +272,7 @@ Label* BubbleDialogModelHost::AddOrUpdateBodyText(
   // TODO(pbos): Handle updating existing field.
 
   auto text_label = std::make_unique<Label>(
-      field->text(GetPassKey()), style::CONTEXT_MESSAGE_BOX_BODY_TEXT,
+      field->text(GetPassKey()), style::CONTEXT_DIALOG_BODY_TEXT,
       field->is_secondary(GetPassKey()) ? style::STYLE_SECONDARY
                                         : style::STYLE_PRIMARY);
   text_label->SetMultiLine(true);

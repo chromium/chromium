@@ -364,14 +364,16 @@ std::unique_ptr<views::View> SecurePaymentConfirmationDialogView::CreateRowView(
   layout->StartRow(views::GridLayout::kFixedSize, 0, kRowHeight);
 
   std::unique_ptr<views::Label> label_text = std::make_unique<views::Label>(
-      label, CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+      label, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   label_text->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   label_text->SetLineHeight(kRowViewLineHeight);
   label_text->SetID(static_cast<int>(label_id));
   layout->AddView(std::move(label_text));
 
   std::unique_ptr<views::Label> value_text = std::make_unique<views::Label>(
-      value, CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_PRIMARY);
+      value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_PRIMARY);
   value_text->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   value_text->SetLineHeight(kRowViewLineHeight);
   value_text->SetID(static_cast<int>(value_id));

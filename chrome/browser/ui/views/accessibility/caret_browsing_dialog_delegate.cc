@@ -47,7 +47,7 @@ CaretBrowsingDialogDelegate::CaretBrowsingDialogDelegate(
       l10n_util::GetStringUTF16(IDS_ENABLE_CARET_BROWSING_INFO);
 
   auto* message_label = AddChildView(std::make_unique<views::Label>(
-      message_text, views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT));
+      message_text, views::style::CONTEXT_DIALOG_BODY_TEXT));
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_label->SetMultiLine(true);
 

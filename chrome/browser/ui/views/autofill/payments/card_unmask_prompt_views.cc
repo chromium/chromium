@@ -138,7 +138,8 @@ void CardUnmaskPromptViews::GotVerificationResult(
       // The label of the overlay will now show the error in red.
       auto error_label = std::make_unique<views::Label>(error_message);
       const SkColor warning_text_color = views::style::GetColor(
-          *error_label, ChromeTextContext::CONTEXT_BODY_TEXT_SMALL, STYLE_RED);
+          *error_label, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+          STYLE_RED);
       error_label->SetEnabledColor(warning_text_color);
       error_label->SetMultiLine(true);
 
@@ -338,7 +339,7 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   auto instructions =
       std::make_unique<views::Label>(controller_->GetInstructionsMessage());
   instructions->SetEnabledColor(views::style::GetColor(
-      *instructions.get(), ChromeTextContext::CONTEXT_BODY_TEXT_LARGE,
+      *instructions.get(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY));
   instructions->SetMultiLine(true);
   instructions->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -395,7 +396,8 @@ void CardUnmaskPromptViews::InitIfNecessary() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   const SkColor warning_text_color = views::style::GetColor(
-      *instructions_, ChromeTextContext::CONTEXT_BODY_TEXT_SMALL, STYLE_RED);
+      *instructions_, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+      STYLE_RED);
   auto error_icon = std::make_unique<views::ImageView>();
   error_icon->SetImage(
       gfx::CreateVectorIcon(kBrowserToolsErrorIcon, warning_text_color));

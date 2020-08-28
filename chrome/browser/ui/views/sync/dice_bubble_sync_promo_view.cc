@@ -47,8 +47,8 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
 
   if (title_resource_id) {
     base::string16 title_text = l10n_util::GetStringUTF16(title_resource_id);
-    views::Label* title =
-        new views::Label(title_text, CONTEXT_BODY_TEXT_LARGE, text_style);
+    views::Label* title = new views::Label(
+        title_text, views::style::CONTEXT_DIALOG_BODY_TEXT, text_style);
     title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     title->SetMultiLine(true);
     AddChildView(title);

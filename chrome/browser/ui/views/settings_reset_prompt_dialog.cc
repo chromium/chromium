@@ -70,7 +70,7 @@ SettingsResetPromptDialog::SettingsResetPromptDialog(
   views::StyledLabel* dialog_label =
       AddChildView(std::make_unique<views::StyledLabel>());
   dialog_label->SetText(controller_->GetMainText());
-  dialog_label->SetTextContext(CONTEXT_BODY_TEXT_LARGE);
+  dialog_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   dialog_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   views::StyledLabel::RangeStyleInfo url_style;
   url_style.text_style = STYLE_EMPHASIZED_SECONDARY;

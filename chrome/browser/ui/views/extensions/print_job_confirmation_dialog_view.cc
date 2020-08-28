@@ -132,7 +132,7 @@ PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
       l10n_util::GetStringFUTF16(
           IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_BUBBLE_HEADING,
           extension_name, print_job_title, printer_name),
-      CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   heading->SetMultiLine(true);
   heading->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   heading->SetAllowCharacterBreak(true);

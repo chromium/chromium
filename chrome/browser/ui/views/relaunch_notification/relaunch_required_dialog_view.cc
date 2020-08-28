@@ -121,7 +121,7 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
   auto label = std::make_unique<views::Label>(
       l10n_util::GetPluralStringFUTF16(IDS_RELAUNCH_REQUIRED_BODY,
                                        BrowserList::GetIncognitoBrowserCount()),
-      views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 

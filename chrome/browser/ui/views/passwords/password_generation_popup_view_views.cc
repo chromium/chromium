@@ -84,7 +84,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
   layout->StartRow(views::GridLayout::kFixedSize, 0);
 
   suggestion_label_ = layout->AddView(std::make_unique<views::Label>(
-      controller_->SuggestedText(), ChromeTextContext::CONTEXT_BODY_TEXT_LARGE,
+      controller_->SuggestedText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       controller_->state() ==
               PasswordGenerationPopupController::kOfferGeneration
           ? views::style::STYLE_PRIMARY
@@ -92,7 +92,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
 
   DCHECK(!password_label_);
   password_label_ = layout->AddView(std::make_unique<views::Label>(
-      controller_->password(), ChromeTextContext::CONTEXT_BODY_TEXT_LARGE,
+      controller_->password(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       STYLE_SECONDARY_MONOSPACED));
 }
 
@@ -226,7 +226,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   PasswordSelectionUpdated();
 
   help_label_ = new views::Label(controller_->HelpText(),
-                                 ChromeTextContext::CONTEXT_BODY_TEXT_LARGE,
+                                 views::style::CONTEXT_DIALOG_BODY_TEXT,
                                  views::style::STYLE_SECONDARY);
   help_label_->SetMultiLine(true);
   help_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);

@@ -93,7 +93,7 @@ CredentialsItemView::CredentialsItemView(
 
   // TODO(tapted): Check these (and the STYLE_ values below) against the spec on
   // http://crbug.com/651681.
-  const int kLabelContext = CONTEXT_BODY_TEXT_SMALL;
+  const int kLabelContext = CONTEXT_DIALOG_BODY_TEXT_SMALL;
 
   views::View* text_container = nullptr;
   if (!upper_text.empty() || !lower_text.empty()) {

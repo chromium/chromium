@@ -187,9 +187,9 @@ std::unique_ptr<views::View> CreateManageButton(
 
 std::unique_ptr<views::Label> CreateUsernameLabel(
     const autofill::PasswordForm& form) {
-  auto label = std::make_unique<views::Label>(GetDisplayUsername(form),
-                                              CONTEXT_BODY_TEXT_LARGE,
-                                              views::style::STYLE_SECONDARY);
+  auto label = std::make_unique<views::Label>(
+      GetDisplayUsername(form), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return label;
 }
@@ -233,8 +233,8 @@ std::unique_ptr<views::Label> CreatePasswordLabel(
   int text_style = form.federation_origin.opaque()
                        ? STYLE_SECONDARY_MONOSPACED
                        : views::style::STYLE_SECONDARY;
-  auto label =
-      std::make_unique<views::Label>(text, CONTEXT_BODY_TEXT_LARGE, text_style);
+  auto label = std::make_unique<views::Label>(
+      text, views::style::CONTEXT_DIALOG_BODY_TEXT, text_style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   if (form.federation_origin.opaque() && !are_passwords_revealed)
     label->SetObscured(true);
@@ -287,7 +287,7 @@ void PasswordItemsView::PasswordRow::AddToLayout(
 void PasswordItemsView::PasswordRow::AddUndoRow(views::GridLayout* layout) {
   std::unique_ptr<views::Label> text = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_DELETED),
-      CONTEXT_BODY_TEXT_LARGE);
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
   text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   std::unique_ptr<views::LabelButton> undo_button =
       CreateUndoButton(this, GetDisplayUsername(*password_form_));

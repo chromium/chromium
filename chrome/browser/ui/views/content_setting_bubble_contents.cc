@@ -237,8 +237,9 @@ void ContentSettingBubbleContents::ListItemContainer::AddItem(
   if (item.image) {
     item_icon->SetBorder(
         views::CreateEmptyBorder(kTitleDescriptionListItemInset));
-    const SkColor icon_color = views::style::GetColor(
-        *item_icon, CONTEXT_BODY_TEXT_SMALL, views::style::STYLE_PRIMARY);
+    const SkColor icon_color =
+        views::style::GetColor(*item_icon, CONTEXT_DIALOG_BODY_TEXT_SMALL,
+                               views::style::STYLE_PRIMARY);
     item_icon->SetImage(CreateVectorIconWithBadge(
         *item.image, GetLayoutConstant(LOCATION_BAR_ICON_SIZE), icon_color,
         item.has_blocked_badge ? vector_icons::kBlockedBadgeIcon

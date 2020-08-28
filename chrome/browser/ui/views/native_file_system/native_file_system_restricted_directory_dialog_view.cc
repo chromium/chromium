@@ -95,7 +95,7 @@ NativeFileSystemRestrictedDirectoryDialogView::
       handle_type_ == HandleType::kDirectory
           ? IDS_NATIVE_FILE_SYSTEM_RESTRICTED_DIRECTORY_TEXT
           : IDS_NATIVE_FILE_SYSTEM_RESTRICTED_FILE_TEXT,
-      origin, CONTEXT_BODY_TEXT_LARGE, /*show_emphasis=*/true));
+      origin, views::style::CONTEXT_DIALOG_BODY_TEXT, /*show_emphasis=*/true));
 }
 
 void ShowNativeFileSystemRestrictedDirectoryDialog(

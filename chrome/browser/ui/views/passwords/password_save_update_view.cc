@@ -486,7 +486,7 @@ std::unique_ptr<views::View> PasswordSaveUpdateView::CreateFooterView() {
     return nullptr;
   auto label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
-      ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
       views::style::STYLE_SECONDARY);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

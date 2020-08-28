@@ -74,8 +74,8 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
       break;
   }
   auto message_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(message_id), CONTEXT_BODY_TEXT_LARGE,
-      views::style::STYLE_SECONDARY);
+      l10n_util::GetStringUTF16(message_id),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(message_label.release());

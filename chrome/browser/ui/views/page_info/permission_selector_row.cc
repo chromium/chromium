@@ -173,7 +173,7 @@ PermissionSelectorRow::PermissionSelectorRow(
   // Create the label that displays the permission type.
   auto label = std::make_unique<views::Label>(
       PageInfoUI::PermissionTypeToUIString(permission.type),
-      CONTEXT_BODY_TEXT_LARGE);
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
   label_ = layout->AddView(std::move(label));
   // Create the menu model.
   menu_model_ = std::make_unique<PermissionMenuModel>(

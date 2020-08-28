@@ -277,7 +277,8 @@ HungRendererDialogView::HungRendererDialogView() {
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::CONTROL));
   auto info_label = std::make_unique<views::Label>(
-      base::string16(), CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   info_label->SetMultiLine(true);
   info_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 

@@ -272,7 +272,8 @@ void InfoBarView::OnWillChangeFocus(View* focused_before, View* focused_now) {
 }
 
 views::Label* InfoBarView::CreateLabel(const base::string16& text) const {
-  views::Label* label = new views::Label(text, CONTEXT_BODY_TEXT_LARGE);
+  views::Label* label =
+      new views::Label(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(label);
   label->SetEnabledColor(GetColor(kInfoBarLabelTextColor));
   label->SetProperty(kLabelType, LabelType::kLabel);
@@ -280,7 +281,8 @@ views::Label* InfoBarView::CreateLabel(const base::string16& text) const {
 }
 
 views::Link* InfoBarView::CreateLink(const base::string16& text) {
-  views::Link* link = new views::Link(text, CONTEXT_BODY_TEXT_LARGE);
+  views::Link* link =
+      new views::Link(text, views::style::CONTEXT_DIALOG_BODY_TEXT);
   SetLabelDetails(link);
   link->set_callback(
       base::BindRepeating(&InfoBarView::LinkClicked, base::Unretained(this)));

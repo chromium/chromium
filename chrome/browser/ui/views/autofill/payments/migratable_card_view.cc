@@ -60,7 +60,7 @@ MigratableCardView::MigratableCardView(
   views::Label* checkbox_uncheck_text_ = new views::Label(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_LOCAL_CARD_MIGRATION_DIALOG_CHECKBOX_UNCHECK_WARNING),
-      CONTEXT_BODY_TEXT_SMALL, ChromeTextStyle::STYLE_RED);
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, ChromeTextStyle::STYLE_RED);
 
   checkbox_uncheck_text_container_->AddChildView(checkbox_uncheck_text_);
   checkbox_uncheck_text_container_->SetBackground(

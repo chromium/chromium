@@ -88,9 +88,9 @@ void AutoSigninFirstRunDialogView::InitWindow() {
       views::TEXT, views::TEXT));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto label = std::make_unique<views::Label>(controller_->GetAutoSigninText(),
-                                              CONTEXT_BODY_TEXT_LARGE,
-                                              views::style::STYLE_SECONDARY);
+  auto label = std::make_unique<views::Label>(
+      controller_->GetAutoSigninText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(label.release());

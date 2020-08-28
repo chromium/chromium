@@ -156,7 +156,7 @@ std::unique_ptr<views::View> CreateHeaderImage(int image_id) {
 std::unique_ptr<views::Label> CreateDescription() {
   auto description = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_HINT),
-      ChromeTextContext::CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_HINT);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_HINT);
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return description;

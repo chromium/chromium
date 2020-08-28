@@ -168,10 +168,10 @@ LocalCardMigrationBubbleViews::~LocalCardMigrationBubbleViews() = default;
 
 void LocalCardMigrationBubbleViews::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
-  auto* explanatory_message =
-      new views::Label(l10n_util::GetStringUTF16(
-                           IDS_AUTOFILL_LOCAL_CARD_MIGRATION_BUBBLE_BODY_TEXT),
-                       CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+  auto* explanatory_message = new views::Label(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_LOCAL_CARD_MIGRATION_BUBBLE_BODY_TEXT),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
   explanatory_message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   explanatory_message->SetMultiLine(true);
   AddChildView(explanatory_message);

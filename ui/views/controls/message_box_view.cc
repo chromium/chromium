@@ -91,7 +91,7 @@ MessageBoxView::MessageBoxView(const base::string16& message,
                        const base::string16& text, bool multi_line,
                        gfx::HorizontalAlignment alignment) {
     auto message_label =
-        std::make_unique<Label>(text, style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
+        std::make_unique<Label>(text, style::CONTEXT_DIALOG_BODY_TEXT);
     message_label->SetMultiLine(!text.empty());
     message_label->SetAllowCharacterBreak(true);
     message_label->SetHorizontalAlignment(alignment);

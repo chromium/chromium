@@ -156,8 +156,9 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
   // info.
   base::string16 explanation = controller_->GetExplanatoryMessage();
   if (!explanation.empty()) {
-    auto* explanation_label = new views::Label(
-        explanation, CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+    auto* explanation_label =
+        new views::Label(explanation, views::style::CONTEXT_DIALOG_BODY_TEXT,
+                         views::style::STYLE_SECONDARY);
     explanation_label->SetMultiLine(true);
     explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     view->AddChildView(explanation_label);
@@ -181,9 +182,9 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
   card_network_icon->set_tooltip_text(card.NetworkForDisplay());
   description_view->AddChildView(card_network_icon);
 
-  views::Label* label = description_view->AddChildView(
-      new views::Label(GetCardIdentifierString(), CONTEXT_BODY_TEXT_LARGE,
-                       views::style::STYLE_PRIMARY));
+  views::Label* label = description_view->AddChildView(new views::Label(
+      GetCardIdentifierString(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_PRIMARY));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   int label_width =
@@ -200,7 +201,7 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
 
     auto* expiration_date_label = new views::Label(
         card.AbbreviatedExpirationDateForDisplay(false),
-        CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
+        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
     expiration_date_label->SetID(DialogViewId::EXPIRATION_DATE_LABEL);
     description_view->AddChildView(expiration_date_label);
     constexpr int kExpirationDateLabelWidth = 60;
