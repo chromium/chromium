@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Lines 7-299 of this file were generated with
+# Used by FuzzedDataProvider::ConsumeRandomLengthString to break up lines.
+"\\"
+
+# The remaining lines 7-299 of this file were generated with
 # testing/libfuzzer/dictionary_generator.py using net_mime_sniffer_fuzzer
 # binary and RFC 2045.
 # The rest was created semimanually based on net/base/mime_sniffer.cc.
