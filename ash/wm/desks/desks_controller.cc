@@ -288,8 +288,7 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
     Shell::Get()
         ->accessibility_controller()
         ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-            IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_ACTIVATED,
-            base::NumberToString16(target_desk_index + 1)));
+            IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_ACTIVATED, desk->name()));
   }
 
   if (source == DesksSwitchSource::kDeskRemoved ||
@@ -380,9 +379,7 @@ bool DesksController::MoveWindowFromActiveDeskTo(
       ->accessibility_controller()
       ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
           IDS_ASH_VIRTUAL_DESKS_ALERT_WINDOW_MOVED_FROM_ACTIVE_DESK,
-          window->GetTitle(),
-          base::NumberToString16(GetDeskIndex(active_desk_) + 1),
-          base::NumberToString16(GetDeskIndex(target_desk) + 1)));
+          window->GetTitle(), active_desk_->name(), target_desk->name()));
 
   UMA_HISTOGRAM_ENUMERATION(kMoveWindowFromActiveDeskHistogramName, source);
   ReportNumberOfWindowsPerDeskHistogram();
@@ -660,9 +657,8 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   Shell::Get()
       ->accessibility_controller()
       ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-          IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED,
-          base::NumberToString16(removed_desk_number),
-          base::NumberToString16(active_desk_number)));
+          IDS_ASH_VIRTUAL_DESKS_ALERT_DESK_REMOVED, removed_desk->name(),
+          active_desk_->name()));
 
   desks_restore_util::UpdatePrimaryUserDesksPrefs();
 
