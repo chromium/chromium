@@ -758,7 +758,7 @@
 <translation id="1877377290348678128">Etiqueta (opcional)</translation>
 <translation id="1877520246462554164">No se pudo obtener el token de autenticación. Para volver a intentarlo, sal de la cuenta y vuelve a acceder.</translation>
 <translation id="1877860345998737529">Asignación de interruptores a acciones</translation>
-<translation id="1878155070920054810">Al parecer, tu Chromebook se quedará sin energía antes de completarse la actualización. Para evitar interrupciones, asegúrate de que se esté cargando correctamente.</translation>
+<translation id="1878155070920054810">Al parecer, tu Chromebook se quedará sin energía antes de que se complete la actualización. Para evitar interrupciones, asegúrate de que se cargue correctamente.</translation>
 <translation id="1879000426787380528">Acceder como</translation>
 <translation id="1880905663253319515">¿Eliminar certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Diseño del teclado</translation>
@@ -2288,7 +2288,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3732857534841813090">Información relacionada con el Asistente de Google</translation>
 <translation id="3733127536501031542">Servidor SLL con suplemento especial</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
-<translation id="3738632186060045350">Se borrarán los datos de la <ph name="DEVICE_TYPE" /> en 24 horas</translation>
+<translation id="3738632186060045350">Se borrarán los datos de <ph name="DEVICE_TYPE" /> en 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">¿Abrir <ph name="APPLICATION" />?</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
@@ -2890,7 +2890,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4480590691557335796">Chrome puede buscar software dañino en tu computadora y quitarlo</translation>
 <translation id="4481530544597605423">Dispositivos no sincronizados</translation>
 <translation id="4483049906298469269">no se pudo hacer ping en la puerta de enlace de la red no predeterminada</translation>
-<translation id="4487489714832036847">En lugar de software tradicional, las Chromebooks utilizan apps de productividad, entretenimiento y mucho más.</translation>
+<translation id="4487489714832036847">En lugar de software tradicional, las Chromebooks utilizan apps. Obtén apps de productividad, entretenimiento y mucho más.</translation>
 <translation id="4488502501195719518">¿Borrar todos los datos?</translation>
 <translation id="4493468155686877504">Recomendado (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">No mostrar en esta página</translation>
@@ -2971,9 +2971,9 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4573515936045019911">Para actualizar Linux, se requiere una conexión de red. Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="457386861538956877">Más...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="457564749856982089">Si agregas la cuenta de una institución educativa, el estudiante podrá acceder fácilmente a sitios web, extensiones y apps, mientras se siguen aplicando los controles parentales. No podrá acceder a los favoritos, las contraseñas y otros datos del navegador que se sincronizan con la cuenta de la institución educativa.&lt;br&gt;&lt;br&gt;
+<translation id="457564749856982089">Si agregas la cuenta de una institución educativa, el estudiante podrá acceder fácilmente a sitios web, extensiones y apps, mientras se siguen aplicando los controles parentales. No podrá acceder a los favoritos, las contraseñas ni otros datos del navegador que se sincronizan con la cuenta de la institución educativa.&lt;br&gt;&lt;br&gt;
     Si tu hijo usa una Chromebook en la institución educativa y deseas replicar la misma experiencia en el hogar para asegurarte de que tiene acceso a todos los materiales necesarios, sal de esta cuenta de Family Link y accede a la cuenta de la institución educativa desde la página de cuentas del Sistema operativo Chrome (nota: No se aplicarán los controles parentales de Family Link).&lt;br&gt;&lt;br&gt;
-    Si tu hijo no usa una Chromebook en la institución educativa o prefieres administrar su experiencia en el hogar con Family Link, haz clic en el botón Siguiente que se encuentra a continuación para agregar una cuenta de una institución educativa a este perfil.</translation>
+    Si tu hijo no usa una Chromebook en la institución educativa o prefieres administrar su experiencia en el hogar con Family Link, haz clic en el botón Siguiente que se encuentra a continuación para agregar una cuenta de institución educativa a este perfil.</translation>
 <translation id="4576541033847873020">Sincronizar dispositivo Bluetooth</translation>
 <translation id="4579453506923101210">Olvidar un teléfono conectado</translation>
 <translation id="4579581181964204535">No se puede transmitir <ph name="HOST_NAME" />.</translation>
@@ -3029,6 +3029,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4646675363240786305">Puertos</translation>
 <translation id="4646949265910132906">Conexión Wi-Fi segura</translation>
 <translation id="4647090755847581616">&amp;Cerrar pestaña</translation>
+<translation id="4647283074445570750">Paso <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Iniciar la app cuando accedas a tu cuenta en la tablet}computer{Iniciar la app cuando accedas a tu cuenta en la computadora}other{Iniciar la app cuando accedas a tu cuenta en el dispositivo}}</translation>
 <translation id="4647697156028544508">Ingresa el PIN para "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Permisos insuficientes</translation>
@@ -3739,7 +3740,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5548606607480005320">Verificación de seguridad</translation>
 <translation id="5551573675707792127">Entrada de texto y teclado</translation>
 <translation id="5553089923092577885">Asignaciones de directivas para certificados</translation>
-<translation id="5554403733534868102">A partir de ahora, no más esperas en las actualizaciones</translation>
+<translation id="5554403733534868102">A partir de ahora, ya no tendrás que esperar las actualizaciones</translation>
 <translation id="5554489410841842733">Este ícono será visible cuando la extensión pueda actuar en la página actual.</translation>
 <translation id="5554720593229208774">Entidad de certificación de correo electrónico</translation>
 <translation id="5556459405103347317">Cargar de nuevo</translation>
@@ -6177,7 +6178,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8546930481464505581">Personalizar la barra táctil</translation>
 <translation id="8547013269961688403">Habilitar lupa en pantalla completa</translation>
 <translation id="85486688517848470">Mantén presionada la tecla de búsqueda para cambiar el comportamiento de las teclas en la fila superior</translation>
-<translation id="8549316893834449916">Usarás tu Cuenta de Google para acceder a la Chromebook, la misma que usas para Gmail, Drive, YouTube y otros servicios.</translation>
+<translation id="8549316893834449916">Usarás tu Cuenta de Google para acceder a la Chromebook; es la misma que usas para Gmail, Drive, YouTube y otros servicios.</translation>
 <translation id="8551388862522347954">Licencias</translation>
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553342806078037065">Administrar otras personas</translation>

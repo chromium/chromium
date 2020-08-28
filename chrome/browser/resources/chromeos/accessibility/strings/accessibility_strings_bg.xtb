@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Няма предишна посетена връзка</translation>
 <translation id="4281245629646759298">светложълто</translation>
 <translation id="4289540628985791613">Общ преглед</translation>
+<translation id="4294967782363273192">Сортиране по възходящ ред</translation>
 <translation id="4300318234632215983">Съобщаване на URL адреса зад връзката</translation>
 <translation id="4322625298640984693">сиена</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{точка}=3{многоточие}other{# точки}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Гласове</translation>
 <translation id="6006050241733874051">Формуляр</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{обратна наклонена черта}other{# обратни наклонени черти}}</translation>
+<translation id="6010616110396250088">Сортиране по низходящ ред</translation>
 <translation id="6017514345406065928">зелено</translation>
 <translation id="602001110135236999">Превъртане наляво</translation>
 <translation id="6034000775414344507">светлосиво</translation>

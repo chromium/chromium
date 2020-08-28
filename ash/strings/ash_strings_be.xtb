@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Паліца</translation>
+<translation id="2841907151129139818">Уключаны рэжым планшэта</translation>
 <translation id="2844169650293029770">Прылада USB-C (пярэдні порт злева)</translation>
 <translation id="2865888419503095837">Інфармацыя аб сетцы</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">Што ты ўмееш?</translation>
 <translation id="3290356915286466215">Не абаронена</translation>
 <translation id="3294437725009624529">Госць</translation>
+<translation id="3307642347673023554">Уключаны рэжым ноўтбука</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> зможа ўвайсці пазней.</translation>
 <translation id="3321628682574733415">Няправільны бацькоўскі код</translation>
 <translation id="332587331255250389">Замяніце акумулятар</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">Пацвярджэнне канфігурацыі дысплэя</translation>
 <translation id="5083553833479578423">Адкрыйце больш функцый Памочніка.</translation>
 <translation id="5114495209940374989">Здымкі экрана</translation>
-<translation id="5123162024343028706">Замацаваць наверсе</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
 <translation id="5168181903108465623">Ёсць даступныя прылады для трансляцыі</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">PIN-код разумнай карткі</translation>
 <translation id="6501401484702599040">Ідзе трансляцыя экрана на <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Падчас гэтага абнаўлення экран будзе выключаным даўжэй, чым звычайна (да хвіліны). Не націскайце кнопку сілкавання, пакуль ідзе абнаўленне.</translation>
-<translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6528179044667508675">Не турбаваць</translation>
 <translation id="65320610082834431">Эмодзі</translation>
 <translation id="6537270692134705506">Зрабіць здымак экрана</translation>

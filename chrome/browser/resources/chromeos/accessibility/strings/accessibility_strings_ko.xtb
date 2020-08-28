@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">이전 방문한 링크가 없습니다</translation>
 <translation id="4281245629646759298">라이트 옐로우</translation>
 <translation id="4289540628985791613">개요</translation>
+<translation id="4294967782363273192">오름차순 정렬</translation>
 <translation id="4300318234632215983">링크 이면의 URL 알림</translation>
 <translation id="4322625298640984693">시에나</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{마침표}=3{생략 부호}other{마침표 #개}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">음성</translation>
 <translation id="6006050241733874051">양식</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{역슬래시}other{역슬래시 #개}}</translation>
+<translation id="6010616110396250088">내림차순 정렬</translation>
 <translation id="6017514345406065928">녹색</translation>
 <translation id="602001110135236999">왼쪽으로 스크롤</translation>
 <translation id="6034000775414344507">연한 회색</translation>

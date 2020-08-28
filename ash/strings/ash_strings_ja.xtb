@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">ログアウトします。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> は <ph name="SPECIFIED_RESOLUTION" /> に対応していません。解像度を <ph name="FALLBACK_RESOLUTION" /> に変更しました。</translation>
 <translation id="2825619548187458965">シェルフ</translation>
+<translation id="2841907151129139818">タブレット モードに切り替えました</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
 <translation id="2865888419503095837">ネットワーク情報</translation>
 <translation id="2872961005593481000">終了</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">何ができる？</translation>
 <translation id="3290356915286466215">保護なし</translation>
 <translation id="3294437725009624529">ゲスト</translation>
+<translation id="3307642347673023554">ノートパソコン モードに切り替えました</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
 <translation id="332587331255250389">バッテリーを交換してください</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">ディスプレイ設定の確定</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
 <translation id="5114495209940374989">スクリーンショット</translation>
-<translation id="5123162024343028706">上部に表示</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
 <translation id="5168181903108465623">キャスト デバイスを利用できます</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">スマートカードの PIN</translation>
 <translation id="6501401484702599040">画面を <ph name="RECEIVER_NAME" /> にキャスト中</translation>
 <translation id="652139407789908527">更新中は、空白の画面が通常より長く表示されます（最長 1 分）。更新中は電源ボタンを押さないでください。</translation>
-<translation id="6527303717912515753">共有</translation>
 <translation id="6528179044667508675">サイレント</translation>
 <translation id="65320610082834431">絵文字</translation>
 <translation id="6537270692134705506">画面をキャプチャ</translation>

@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">Сега ќе бидете одјавени.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата е сменета во <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полица</translation>
+<translation id="2841907151129139818">Се префрливте во режим на таблет</translation>
 <translation id="2844169650293029770">USB-Ц уред (предна порта од лева страна)</translation>
 <translation id="2865888419503095837">Информации за мрежа</translation>
 <translation id="2872961005593481000">Исклучи</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">Што можеш да направиш?</translation>
 <translation id="3290356915286466215">Незаштитена</translation>
 <translation id="3294437725009624529">Гостин</translation>
+<translation id="3307642347673023554">Се префрливте во режим на лаптоп</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> сепак ќе може да се најави подоцна.</translation>
 <translation id="3321628682574733415">Неточен код на родител</translation>
 <translation id="332587331255250389">Заменете ја батеријата</translation>
@@ -379,7 +381,6 @@
 <translation id="5035389544768382859">Потврдете ја конфигурацијата на екранот</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
 <translation id="5114495209940374989">Слики од екранот</translation>
-<translation id="5123162024343028706">Лебди одозгора</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
 <translation id="5168181903108465623">Достапни се уреди за емитување</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
@@ -493,7 +494,6 @@
 <translation id="649452524636452238">PIN-код на паметна картичка</translation>
 <translation id="6501401484702599040">Екранот се емитува на <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Вашиот екран ќе остане затемнет подолго од вообичаено (до една минута) при ова ажурирање. Не притискајте го копчето за вклучување додека ажурирањето е во тек.</translation>
-<translation id="6527303717912515753">Сподели</translation>
 <translation id="6528179044667508675">Не вознем.</translation>
 <translation id="65320610082834431">Емоџија</translation>
 <translation id="6537270692134705506">Снимајте екран</translation>

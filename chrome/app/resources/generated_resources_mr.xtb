@@ -71,7 +71,7 @@
 <translation id="1070705170564860382"><ph name="COUNTDOWN_SECONDS" /> सेकंदांमध्ये पर्यायी ब्राउझरमध्ये उघडत आहे</translation>
 <translation id="1071917609930274619">डेटा एनसिफरमेन्ट</translation>
 <translation id="1072700771426194907">USB डिव्हाइस आढळले आहे</translation>
-<translation id="107278043869924952">पासवर्डव्यतिरिक्त पिन वापरा</translation>
+<translation id="107278043869924952">पासवर्ड व्यतिरिक्त पिन वापरा</translation>
 <translation id="1076176485976385390">मजकुराचा कर्सर वापरून पेज नेव्हिगेट करा</translation>
 <translation id="1076698951459398590">थीम सुरू करा</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
@@ -3029,6 +3029,7 @@
 <translation id="4646675363240786305">पोर्ट</translation>
 <translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
 <translation id="4647090755847581616">टॅब &amp;बंद करा</translation>
+<translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> पैकी <ph name="CURRENT_STEP" /> पायरी</translation>
 <translation id="4647420311443994946">{0,select, tablet{तुम्ही तुमच्या टॅबलेटवर साइन इन कराल तेव्हा ॲप सुरू करा}computer{तुम्ही तुमच्या कॉंप्युटरवर साइन इन कराल तेव्हा ॲप सुरू करा}other{तुम्ही तुमच्या डिव्हाइसवर साइन इन कराल तेव्हा ॲप सुरू करा}}</translation>
 <translation id="4647697156028544508">कृपया "<ph name="DEVICE_NAME" />" साठी पिन प्रविष्‍ट करा:</translation>
 <translation id="4648491805942548247">अपुर्‍या परवानग्या</translation>

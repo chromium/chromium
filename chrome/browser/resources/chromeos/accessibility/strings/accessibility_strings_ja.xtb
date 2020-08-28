@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">前にアクセスしたリンクはありません</translation>
 <translation id="4281245629646759298">ライトイエロー</translation>
 <translation id="4289540628985791613">概要</translation>
+<translation id="4294967782363273192">昇順に並べ替え</translation>
 <translation id="4300318234632215983">リンクの URL を読み上げる</translation>
 <translation id="4322625298640984693">シエンナ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ドット}=3{三点リーダー}other{# 個のドット}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">音声</translation>
 <translation id="6006050241733874051">フォーム</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{バックスラッシュ}other{# 個のバックスラッシュ}}</translation>
+<translation id="6010616110396250088">降順で並べ替え</translation>
 <translation id="6017514345406065928">緑</translation>
 <translation id="602001110135236999">左にスクロール</translation>
 <translation id="6034000775414344507">ライトグレー</translation>

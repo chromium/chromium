@@ -109,7 +109,7 @@
 <translation id="2018630726571919839">给我讲个笑话</translation>
 <translation id="2050339315714019657">纵向</translation>
 <translation id="2067602449040652523">键盘亮度</translation>
-<translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚上好！</translation>
+<translation id="2083190527011054446"><ph name="GIVEN_NAME" />，晚安！</translation>
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2126242104232412123">新桌面</translation>
 <translation id="2127372758936585790">低功率充电器</translation>
@@ -325,7 +325,7 @@
 <translation id="4421231901400348175">正在通过远程协助与<ph name="HELPER_NAME" />共享您屏幕的控制权限。</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4450893287417543264">不再显示</translation>
-<translation id="445864333228800152">傍晚好！</translation>
+<translation id="445864333228800152">晚上好！</translation>
 <translation id="4458688154122353284">停止屏幕录制</translation>
 <translation id="4477350412780666475">下一曲</translation>
 <translation id="4477892968187500306">此设备可能包含未经 Google 验证的应用。</translation>
@@ -378,7 +378,6 @@
 <translation id="5035389544768382859">确认显示屏配置</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
 <translation id="5114495209940374989">屏幕截图</translation>
-<translation id="5123162024343028706">固定在顶部</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
 <translation id="5168181903108465623">有可用的投射设备</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
@@ -492,7 +491,6 @@
 <translation id="649452524636452238">智能卡 PIN 码</translation>
 <translation id="6501401484702599040">正在将屏幕投射到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="652139407789908527">在此次更新期间，您的屏幕变为空白的时间会比平时长（可长达 1 分钟）。在更新过程中，请不要按电源按钮。</translation>
-<translation id="6527303717912515753">分享</translation>
 <translation id="6528179044667508675">请勿打扰</translation>
 <translation id="65320610082834431">表情符号</translation>
 <translation id="6537270692134705506">获取屏幕截图</translation>
@@ -656,13 +654,13 @@
 <translation id="8351131234907093545">创建记事</translation>
 <translation id="8371779926711439835">前进一个字母</translation>
 <translation id="8375916635258623388">此<ph name="DEVICE_NAME" />将会自动连接到您的手机</translation>
-<translation id="8380784334203145311">晚上好！</translation>
+<translation id="8380784334203145311">晚安！</translation>
 <translation id="8388750414311082622">无法移除最后一个桌面。</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> 的“选项”菜单</translation>
 <translation id="8394567579869570560">您的家长锁定了此设备</translation>
 <translation id="8412677897383510995">显示“显示设置”部分</translation>
 <translation id="8425213833346101688">更改</translation>
-<translation id="8426708595819210923"><ph name="GIVEN_NAME" />，傍晚好！</translation>
+<translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚上好！</translation>
 <translation id="8427213022735114808">语音输入功能会将您的语音内容发送给 Google，以便能在任何文本字段中进行语音输入。</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8433186206711564395">网络设置</translation>

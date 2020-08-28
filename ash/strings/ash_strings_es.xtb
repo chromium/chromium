@@ -170,6 +170,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2819276065543622893">Tu sesión se cerrará ahora.</translation>
 <translation id="2825224105325558319">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" />. Se ha cambiado la resolución a <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Estantería</translation>
+<translation id="2841907151129139818">Se ha cambiado al modo tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB tipo C (puerto frontal izquierdo)</translation>
 <translation id="2865888419503095837">Información de red</translation>
 <translation id="2872961005593481000">Apagar</translation>
@@ -221,6 +222,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3255483164551725916">¿Qué puedes hacer?</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3294437725009624529">Invitado</translation>
+<translation id="3307642347673023554">Se ha cambiado al modo portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> podrá iniciar sesión después de la eliminación.</translation>
 <translation id="3321628682574733415">Código parental incorrecto</translation>
 <translation id="332587331255250389">Cambia la batería</translation>
@@ -379,7 +381,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5035389544768382859">Confirma la configuración de la pantalla</translation>
 <translation id="5083553833479578423">Descubre más funciones del Asistente.</translation>
 <translation id="5114495209940374989">Capturas de pantalla</translation>
-<translation id="5123162024343028706">Fijar en primer plano</translation>
 <translation id="5136175204352732067">Se ha conectado otro teclado</translation>
 <translation id="5168181903108465623">Dispositivos de transmisión disponibles</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
@@ -493,7 +494,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="649452524636452238">PIN de la tarjeta inteligente</translation>
 <translation id="6501401484702599040">Enviando la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Durante esta actualización, la pantalla se quedará en blanco durante más tiempo de lo habitual (hasta un minuto). No pulses el botón de encendido mientras se esté realizando la actualización.</translation>
-<translation id="6527303717912515753">Compartir</translation>
 <translation id="6528179044667508675">No molestar</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537270692134705506">Capturar pantalla</translation>

@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Không có đường liên kết đã truy cập nào trước đó</translation>
 <translation id="4281245629646759298">Màu vàng nhạt</translation>
 <translation id="4289540628985791613">Tổng quan</translation>
+<translation id="4294967782363273192">Sắp xếp theo thứ tự tăng dần</translation>
 <translation id="4300318234632215983">Thông báo URL ở sau liên kết</translation>
 <translation id="4322625298640984693">Màu hung đỏ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{dấu chấm}=3{dấu chấm lửng}other{# dấu chấm}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Giọng nói</translation>
 <translation id="6006050241733874051">Biểu mẫu</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{dấu gạch chéo ngược}other{# dấu gạch chéo ngược}}</translation>
+<translation id="6010616110396250088">Sắp xếp theo thứ tự giảm dần</translation>
 <translation id="6017514345406065928">Xanh lục</translation>
 <translation id="602001110135236999">Cuộn sang trái</translation>
 <translation id="6034000775414344507">Xám nhạt</translation>

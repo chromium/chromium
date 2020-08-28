@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">ବର୍ତ୍ତମାନ, ଆପଣଙ୍କୁ ସାଇନ୍‌ ଆଉଟ୍‌ କରିଦିଆଯିବ।</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />କୁ ସମର୍ଥନ କରେ ନାହିଁ। ରିଜୋଲ୍ୟୁସନକୁ <ph name="FALLBACK_RESOLUTION" />ରେ ବଦଳା ଯାଇଥିଲା।</translation>
 <translation id="2825619548187458965">ସେଲ୍ଫ</translation>
+<translation id="2841907151129139818">ଟାବଲେଟ୍ ମୋଡକୁ ସ୍ୱିଚ୍ କରାଯାଇଛି</translation>
 <translation id="2844169650293029770">USB-C ଡିଭାଇସ୍ (ବାମପଟ ସାମ୍ନା ପୋର୍ଟ)</translation>
 <translation id="2865888419503095837">ନେଟ୍‌ୱାର୍କ ସୂଚନା</translation>
 <translation id="2872961005593481000">ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">ଆପଣ କ’ଣ କରିପାରିବେ?</translation>
 <translation id="3290356915286466215">ଅସୁରକ୍ଷିତ</translation>
 <translation id="3294437725009624529">ଅତିଥି</translation>
+<translation id="3307642347673023554">ଲାପଟପ୍ ମୋଡକୁ ସ୍ୱିଚ୍ କରାଯାଇଛି</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ଏବେ ମଧ୍ୟ ପରେ ସାଇନ୍‍ ଇନ୍‌ କରିପାରିବେ।</translation>
 <translation id="3321628682574733415">ଅବୈଧ ପ୍ୟାରେଣ୍ଟ କୋଡ୍</translation>
 <translation id="332587331255250389">ଦୟାକରି ବ୍ୟାଟେରୀ ବଦଳାନ୍ତୁ</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">ଡିସପ୍ଲେ କନଫିଗରେସନ୍ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="5083553833479578423">ଆହୁରି ଆସିଷ୍ଟାଣ୍ଟ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
 <translation id="5114495209940374989">ସ୍କ୍ରିନସଟଗୁଡ଼ିକ</translation>
-<translation id="5123162024343028706">ଉପରେ ଫ୍ଲୋଟ୍ କରନ୍ତୁ</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">ସ୍ମାର୍ଟ କାର୍ଡ PIN</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />କୁ ସ୍କ୍ରିନ୍ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="652139407789908527">ଏହି ଅପଡେଟ୍ ସମୟରେ ଆପଣଙ୍କର ସ୍କ୍ରିନ୍ ସାଧାରଣ ଠାରୁ ଅଧିକ ସମୟ (ଏକ ମିନିଟ୍ ପର୍ଯ୍ୟନ୍ତ) ପାଇଁ ଖାଲି ରହିବ। ଦୟାକରି ଅପଡେଟ୍ ପ୍ରଗତିରେ ଥିବା ସମୟରେ ପାୱାର ବଟନ୍ ଦବାନ୍ତୁ ନାହିଁ।</translation>
-<translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="6528179044667508675">ବିରକ୍ତ କରନାହିଁ</translation>
 <translation id="65320610082834431">ଇମୋଜିଗୁଡ଼ିକ</translation>
 <translation id="6537270692134705506">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍ କରନ୍ତୁ</translation>

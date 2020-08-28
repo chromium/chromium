@@ -3029,6 +3029,7 @@
 <translation id="4646675363240786305">ወደቦች</translation>
 <translation id="4646949265910132906">ደህንነቱ የተጠበቀ የWiFi ግንኙነት</translation>
 <translation id="4647090755847581616">ትር &amp;ዝጋ</translation>
+<translation id="4647283074445570750">ደረጃ <ph name="CURRENT_STEP" /> ከ<ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{ወደ የእርስዎ ጡባዊ ሲገቡ መተግበሪያ ይጀምሩ}computer{ወደ የእርስዎ ኮምፒውተር ሲገቡ መተግበሪያ ይጀምሩ}other{ወደ የእርስዎ መሣሪያ ሲገቡ መተግበሪያ ይጀምሩ}}</translation>
 <translation id="4647697156028544508">እባክዎ የ«<ph name="DEVICE_NAME" />»ን ፒን ያስገቡ፦</translation>
 <translation id="4648491805942548247">በቂ ያልሆኑ ፍቃዶች</translation>

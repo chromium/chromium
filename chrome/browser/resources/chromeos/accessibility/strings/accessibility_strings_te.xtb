@@ -437,6 +437,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4278486392851938658">మునుపు సందర్శించిన లింక్ లేదు</translation>
 <translation id="4281245629646759298">లేత పసుపు రంగు</translation>
 <translation id="4289540628985791613">స్థూలదృష్టి</translation>
+<translation id="4294967782363273192">ఆరోహణ క్రమంలో క్రమపద్ధతిలో అమర్చబడింది</translation>
 <translation id="4300318234632215983">లింక్ వెనుక URLను తెలియజేయండి</translation>
 <translation id="4322625298640984693">ఎర్రని గోధుమ రంగు</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{చుక్క}=3{మూడు చుక్కలు}other{# చుక్కలు}}</translation>
@@ -645,6 +646,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5999630716831179808">వాయిస్‌లు</translation>
 <translation id="6006050241733874051">ఫారమ్</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{బ్యాక్‌స్లాష్ గుర్తు}other{# బ్యాక్‌స్లాష్ గుర్తులు}}</translation>
+<translation id="6010616110396250088">ఆవరోహణ క్రమంలో క్రమపద్ధతిలో అమర్చబడింది</translation>
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>
 <translation id="602001110135236999">ఎడమకు స్క్రోల్ చేయి</translation>
 <translation id="6034000775414344507">లేత బూడిద రంగు</translation>

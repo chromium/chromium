@@ -3028,6 +3028,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4646675363240786305">Ports</translation>
 <translation id="4646949265910132906">Sichere WLAN-Verbindung</translation>
 <translation id="4647090755847581616">&amp;Tab schließen</translation>
+<translation id="4647283074445570750">Schritt <ph name="CURRENT_STEP" /> von <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{App beim Anmelden am Tablet starten}computer{App beim Anmelden am Computer starten}other{App beim Anmelden am Gerät starten}}</translation>
 <translation id="4647697156028544508">Bitte geben Sie die PIN für "<ph name="DEVICE_NAME" />" ein:</translation>
 <translation id="4648491805942548247">Unzureichende Berechtigungen</translation>

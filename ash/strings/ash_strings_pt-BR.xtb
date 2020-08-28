@@ -170,6 +170,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2819276065543622893">Você sairá agora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> não é compatível com <ph name="SPECIFIED_RESOLUTION" />. A resolução foi modificada para <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Estante</translation>
+<translation id="2841907151129139818">Modo tablet ativado</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal da esquerda)</translation>
 <translation id="2865888419503095837">Informações de rede</translation>
 <translation id="2872961005593481000">Desligar</translation>
@@ -221,6 +222,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3255483164551725916">O que você pode fazer?</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3294437725009624529">Visitante</translation>
+<translation id="3307642347673023554">Modo laptop ativado</translation>
 <translation id="3308453408813785101">O usuário <ph name="USER_EMAIL_ADDRESS" /> ainda poderá fazer login mais tarde.</translation>
 <translation id="3321628682574733415">Código de pai/mãe incorreto</translation>
 <translation id="332587331255250389">Substitua a bateria</translation>
@@ -378,7 +380,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5035389544768382859">Confirmar configuração da tela</translation>
 <translation id="5083553833479578423">Desbloqueie mais recursos do Assistente.</translation>
 <translation id="5114495209940374989">Capturas de tela</translation>
-<translation id="5123162024343028706">Exibir por cima</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
@@ -493,7 +494,6 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="649452524636452238">PIN do cartão inteligente</translation>
 <translation id="6501401484702599040">Transmitindo tela para <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Sua tela ficará desligada por mais tempo que o normal (até um minuto) durante a atualização. Não pressione o botão liga/desliga enquanto a atualização está em andamento.</translation>
-<translation id="6527303717912515753">Compartilhar</translation>
 <translation id="6528179044667508675">Não perturbe</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537270692134705506">Capturar tela</translation>

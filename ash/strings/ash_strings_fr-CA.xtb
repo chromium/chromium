@@ -170,6 +170,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2819276065543622893">Vous allez maintenant être déconnecté.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> ne permet pas un affichage avec une résolution de <ph name="SPECIFIED_RESOLUTION" />. La résolution a donc été remise à <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Étagère</translation>
+<translation id="2841907151129139818">Passé en mode tablette</translation>
 <translation id="2844169650293029770">Appareil USB-C (port avant-gauche)</translation>
 <translation id="2865888419503095837">Information réseau</translation>
 <translation id="2872961005593481000">Arrêter</translation>
@@ -221,6 +222,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3255483164551725916">Que peux-tu faire?</translation>
 <translation id="3290356915286466215">Non sécurisé</translation>
 <translation id="3294437725009624529">Invité</translation>
+<translation id="3307642347673023554">Passé en mode ordinateur portable</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> peut toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
 <translation id="332587331255250389">Veuillez remplacer la pile</translation>
@@ -378,7 +380,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5035389544768382859">Confirmer la configuration de l'écran</translation>
 <translation id="5083553833479578423">Déverrouillez davantage de fonctionnalités de l'Assistant Google.</translation>
 <translation id="5114495209940374989">Captures d'écran</translation>
-<translation id="5123162024343028706">Flotter par-dessus</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
 <translation id="5168181903108465623">Appareils de diffusion disponibles</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
@@ -492,7 +493,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="649452524636452238">NIP de la carte à puce</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur <ph name="RECEIVER_NAME" /> en cours</translation>
 <translation id="652139407789908527">Votre écran restera éteint plus longtemps que d'habitude (jusqu'à une minute) le temps de la mise à jour. Veuillez ne pas appuyer sur l'interrupteur tant que la mise à jour n'est pas terminée.</translation>
-<translation id="6527303717912515753">Partager</translation>
 <translation id="6528179044667508675">Ne pas déranger</translation>
 <translation id="65320610082834431">Émojis</translation>
 <translation id="6537270692134705506">Effectuer une saisie d'écran</translation>

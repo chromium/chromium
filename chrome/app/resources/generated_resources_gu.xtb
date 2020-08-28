@@ -3028,6 +3028,7 @@
 <translation id="4646675363240786305">પોર્ટ</translation>
 <translation id="4646949265910132906">સુરક્ષિત વાઇ-ફાઇ કનેક્શન</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
+<translation id="4647283074445570750"><ph name="TOTAL_STEPS" />માંથી <ph name="CURRENT_STEP" /> પગલું</translation>
 <translation id="4647420311443994946">{0,select, tablet{તમે તમારા ટૅબ્લેટમાં સાઇન ઇન કરો, ત્યારે આ ઍપ શરૂ કરો}computer{તમે તમારા કમ્પ્યુટરમાં સાઇન ઇન કરો, ત્યારે આ ઍપ શરૂ કરો}other{તમે તમારા ડિવાઇસમાં સાઇન ઇન કરો, ત્યારે આ ઍપ શરૂ કરો}}</translation>
 <translation id="4647697156028544508">કૃપા કરીને "<ph name="DEVICE_NAME" />" માટે પિન દાખલ કરો:</translation>
 <translation id="4648491805942548247">અપર્યાપ્ત પરવાનગીઓ</translation>

@@ -170,6 +170,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2819276065543622893">Pecharase a túa sesión agora.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> non admite <ph name="SPECIFIED_RESOLUTION" />. A resolución cambiouse a <ph name="FALLBACK_RESOLUTION" /></translation>
 <translation id="2825619548187458965">Estante</translation>
+<translation id="2841907151129139818">Cambiouse ao modo de tableta</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porto esquerdo frontal)</translation>
 <translation id="2865888419503095837">Información da rede</translation>
 <translation id="2872961005593481000">Pechar</translation>
@@ -221,6 +222,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
 <translation id="3290356915286466215">Sen protección</translation>
 <translation id="3294437725009624529">Invitado</translation>
+<translation id="3307642347673023554">Cambiouse ao modo de ordenador portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> segue podendo iniciar sesión máis tarde.</translation>
 <translation id="3321628682574733415">O código de pai ou nai é incorrecto</translation>
 <translation id="332587331255250389">Substitúe a batería</translation>
@@ -379,7 +381,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5035389544768382859">Confirmar a configuración da pantalla</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
 <translation id="5114495209940374989">Capturas de pantalla</translation>
-<translation id="5123162024343028706">Fixar enriba</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
@@ -493,7 +494,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="649452524636452238">PIN da tarxeta intelixente</translation>
 <translation id="6501401484702599040">Emitindo pantalla en <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">A túa pantalla quedará en branco durante máis tempo do habitual (ata un minuto) durante a actualización. Non premas o botón de acendido mentres a actualización estea en curso.</translation>
-<translation id="6527303717912515753">Compartir</translation>
 <translation id="6528179044667508675">Non molestar</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537270692134705506">Capturar pantalla</translation>

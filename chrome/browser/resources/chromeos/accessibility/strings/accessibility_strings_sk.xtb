@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Žiadny predchádzajúci navštívený odkaz</translation>
 <translation id="4281245629646759298">Svetložltá</translation>
 <translation id="4289540628985791613">Prehľad</translation>
+<translation id="4294967782363273192">Zoradené vzostupne</translation>
 <translation id="4300318234632215983">Oznámiť webovú adresu za odkazom</translation>
 <translation id="4322625298640984693">Svetlohnedá</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{bodka}=3{výpustka}few{# bodky}many{# dots}other{# bodiek}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Hlasy</translation>
 <translation id="6006050241733874051">Formulár</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{opačná lomka}few{# opačné lomky}many{# backslashes}other{# opačných lomiek}}</translation>
+<translation id="6010616110396250088">Zoradené zostupne</translation>
 <translation id="6017514345406065928">Zelená</translation>
 <translation id="602001110135236999">Posunúť doľava</translation>
 <translation id="6034000775414344507">Svetlosivá</translation>

@@ -170,6 +170,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2819276065543622893">Do të dalësh nga llogaria tani.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nuk e mbështet <ph name="SPECIFIED_RESOLUTION" />. Rezolucioni është ndryshuar në <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Rafti</translation>
+<translation id="2841907151129139818">Kaloi në modalitetin e tabletit</translation>
 <translation id="2844169650293029770">Pajisja USB-C (porta e përparme, majtas)</translation>
 <translation id="2865888419503095837">Informacioni i rrjetit</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
@@ -221,6 +222,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3255483164551725916">Çfarë mund të bësh?</translation>
 <translation id="3290356915286466215">I pasiguruar</translation>
 <translation id="3294437725009624529">Vizitor</translation>
+<translation id="3307642347673023554">Kaloi në modalitetin e laptopit</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> mund të identifikohet përsëri më vonë.</translation>
 <translation id="3321628682574733415">Kod i gabuar prindi</translation>
 <translation id="332587331255250389">Zëvendëso baterinë</translation>
@@ -378,7 +380,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5035389544768382859">Konfirmo konfigurimin e ekranit</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
 <translation id="5114495209940374989">Pamjet e ekranit</translation>
-<translation id="5123162024343028706">Plusko në krye</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
@@ -492,7 +493,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="649452524636452238">Kodi PIN i kartës inteligjente</translation>
 <translation id="6501401484702599040">Po transmeton ekranin te <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Ekrani yt do të jetë bosh për një kohë më të gjatë se zakonisht (deri në një minutë) gjatë këtij përditësimi. Mos e shtyp butonin e energjisë kur përditësimi është në vazhdim.</translation>
-<translation id="6527303717912515753">Ndaj</translation>
 <translation id="6528179044667508675">Mos shqetëso</translation>
 <translation id="65320610082834431">Emoji</translation>
 <translation id="6537270692134705506">Regjistro ekranin</translation>

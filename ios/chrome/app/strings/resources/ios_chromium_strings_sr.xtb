@@ -19,6 +19,7 @@
 <translation id="2650312721222849884">Да бисте видели картице на било којем уређају на ком користите Chromium, укључите синхронизацију</translation>
 <translation id="2730884209570016437">Chromium не може да користи камеру зато што је већ користи друга апликација</translation>
 <translation id="2915596697727466327">Chromium користи Face ID да би лозинкама могле да приступају само овлашћене особе.</translation>
+<translation id="2977470724722393594">Chromium је ажуриран</translation>
 <translation id="3256316712990552818">Копирана у Chromium</translation>
 <translation id="3344973607274501920">Chromium није успео да вам провери лозинке. Проверите интернет везу.</translation>
 <translation id="3639997914391704523">Chromium може да вам проверава лозинке када се пријавите помоћу Google налога.</translation>
@@ -65,6 +66,7 @@
 <translation id="8586442755830160949">Ауторска права <ph name="YEAR" />. Аутори Chromium-а. Сва права задржана.</translation>
 <translation id="8776843108004031667">Овај налог и сви несачувани подаци уклониће се из Chromium-а.</translation>
 <translation id="9022552996538154597">Пријављивање на Chromium</translation>
+<translation id="9089354809943900324">Chromium је застарео</translation>
 <translation id="921174536258924340">Chromium није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

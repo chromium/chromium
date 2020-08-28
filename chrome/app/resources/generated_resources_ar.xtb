@@ -3029,6 +3029,7 @@
 <translation id="4646675363240786305">المنافذ</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi آمن</translation>
 <translation id="4647090755847581616">إغلاق &amp;علامة التبويب</translation>
+<translation id="4647283074445570750">الخطوة <ph name="CURRENT_STEP" /> من أصل <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{تشغيل التطبيق تلقائيًا عند تسجيل الدخول إلى الجهاز اللوحي}computer{تشغيل التطبيق تلقائيًا عند تسجيل الدخول إلى جهاز الكمبيوتر}other{تشغيل التطبيق تلقائيًا عند تسجيل الدخول إلى الجهاز}}</translation>
 <translation id="4647697156028544508">يُرجى إدخال رقم التعريف الشخصي لـ "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">أذونات غير كافية</translation>

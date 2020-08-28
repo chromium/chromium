@@ -47,6 +47,7 @@
 <translation id="1298077576058087471">Деректер трафигін 60%-ға дейін үнемдеңіз, бүгінгінің жаңалықтарын оқыңыз.</translation>
 <translation id="1303339473099049190">Ондай құпия сөзді табу мүмкін емес. Дұрыс жазылғанын тексеріп, қайта іздеп көріңіз.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – <ph name="DEVICE_NAME" /> құрылғысынан жіберілген.</translation>
+<translation id="1307205233980126133">Өкінішке орай, тіркелу деректері тексерілмеді.</translation>
 <translation id="1310482092992808703">Қойындыларды топтау</translation>
 <translation id="1311657260431405215">Бұл QR коды URL мекенжайы емес: <ph name="QRCODEVALUE" /></translation>
 <translation id="1327257854815634930">Навигация тарихы ашылды.</translation>
@@ -902,7 +903,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="7975379999046275268">Бетті алдын ала қарау <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Интернетте жылдамырақ шарлау және іздеу үшін беттерді алдын ала жүктеу</translation>
 <translation id="79859296434321399">Толықтырылған шындық мазмұнын көру үшін ARCore платформасын орнатыңыз</translation>
-<translation id="799806351373751710">Синхрондауды реттеуді бас тарту</translation>
+<translation id="799806351373751710">Синхрондауды реттеуден бас тарту</translation>
 <translation id="7998918019931843664">Жабық қойындыны қайта ашу</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8013372441983637696">Бұл құрылғыдан Chrome браузерінің деректерін де өшіру</translation>

@@ -3025,6 +3025,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4646675363240786305">Portlar</translation>
 <translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
 <translation id="4647090755847581616">&amp;Vərəqəni qapadın</translation>
+<translation id="4647283074445570750"><ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /> mərhələ</translation>
 <translation id="4647420311443994946">{0,select, tablet{Planşetə daxil olduqda tətbiqi başladın}computer{Kompüterə daxil olduqda tətbiqi başladın}other{Cihaza daxil olduqda tətbiqi başladın}}</translation>
 <translation id="4647697156028544508">"<ph name="DEVICE_NAME" />" üçün PIN daxil etməyiniz xahiş olunur:</translation>
 <translation id="4648491805942548247">Yetərsiz icazələr</translation>

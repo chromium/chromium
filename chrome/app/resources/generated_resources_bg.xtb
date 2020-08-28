@@ -3031,6 +3031,7 @@
 <translation id="4646675363240786305">Портове</translation>
 <translation id="4646949265910132906">Сигурна Wi-Fi връзка</translation>
 <translation id="4647090755847581616">&amp;Затваряне на раздела</translation>
+<translation id="4647283074445570750">Стъпка <ph name="CURRENT_STEP" /> от <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Стартиране на приложение, когато влизате с профила си на таблета си}computer{Стартиране на приложение, когато влизате с профила си на компютъра си}other{Стартиране на приложение, когато влизате с профила си на устройството си}}</translation>
 <translation id="4647697156028544508">Моля, въведете ПИН кода за „<ph name="DEVICE_NAME" />“:</translation>
 <translation id="4648491805942548247">Недостатъчни разрешения</translation>

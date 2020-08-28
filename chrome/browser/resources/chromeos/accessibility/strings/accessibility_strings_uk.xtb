@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Немає попереднього натиснутого посилання</translation>
 <translation id="4281245629646759298">Світло-жовтий</translation>
 <translation id="4289540628985791613">Огляд</translation>
+<translation id="4294967782363273192">Посортовано за зростанням</translation>
 <translation id="4300318234632215983">Повідомити URL-адресу посилання</translation>
 <translation id="4322625298640984693">Охра</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{крапка}=3{трикрапка}one{# крапка}few{# крапки}many{# крапок}other{# dots}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Голоси</translation>
 <translation id="6006050241733874051">Форма</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{обернена скісна риска}one{# обернена скісна риска}few{# обернені скісні риски}many{# обернених скісних рисок}other{# backslashes}}</translation>
+<translation id="6010616110396250088">Посортовано за спаданням</translation>
 <translation id="6017514345406065928">Зелений</translation>
 <translation id="602001110135236999">Прокрутити ліворуч</translation>
 <translation id="6034000775414344507">Світло-сірий</translation>

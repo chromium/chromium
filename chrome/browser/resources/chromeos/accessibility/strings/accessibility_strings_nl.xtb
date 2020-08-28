@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Geen vorige bezochte link</translation>
 <translation id="4281245629646759298">Lichtgeel</translation>
 <translation id="4289540628985791613">Overzicht</translation>
+<translation id="4294967782363273192">Oplopend sorteren</translation>
 <translation id="4300318234632215983">De URL achter een link melden</translation>
 <translation id="4322625298640984693">Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punt}=3{ellipsis}other{# punten}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Stemmen</translation>
 <translation id="6006050241733874051">Formulier</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{backslash}other{# backslashes}}</translation>
+<translation id="6010616110396250088">Aflopend sorteren</translation>
 <translation id="6017514345406065928">Groen</translation>
 <translation id="602001110135236999">Naar links scrollen</translation>
 <translation id="6034000775414344507">Lichtgrijs</translation>

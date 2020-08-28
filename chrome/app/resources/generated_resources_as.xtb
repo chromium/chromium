@@ -1072,7 +1072,7 @@
 <translation id="2270627217422354837">এই ড'মেইনসমূহত যিকোনো ডিভাইচৰ জৰিয়তে ডেটা সাল সলনি কৰক : <ph name="DOMAINS" /></translation>
 <translation id="2272570998639520080">মাৰ্টিনি গিলাছ</translation>
 <translation id="2273119997271134996">ড’ক ভিডিঅ’-প’ৰ্টৰ সমস্যা</translation>
-<translation id="2274840746523584236">আপোনাৰ Chromebook চাৰ্জ দিয়ক</translation>
+<translation id="2274840746523584236">আপোনাৰ Chromebook চাৰ্জ কৰক</translation>
 <translation id="2276503375879033601">অধিক এপ্‌ যোগ কৰক</translation>
 <translation id="2277255602909579701">সকলো কুকি আৰু ছাইট ডেটা</translation>
 <translation id="2277769717710009150">{COUNT,plural, =1{১টা বস্তু প্ৰতিলিপি কৰা হ'ল}one{#টা বস্তু প্ৰতিলিপি কৰা হ'ল}other{#টা বস্তু প্ৰতিলিপি কৰা হ'ল}}</translation>
@@ -3025,6 +3025,7 @@
 <translation id="4646675363240786305">প’ৰ্টসমূহ</translation>
 <translation id="4646949265910132906">সুৰক্ষিত ৱাই-ফাই সংযোগ</translation>
 <translation id="4647090755847581616">&amp;টেব বন্ধ কৰক</translation>
+<translation id="4647283074445570750"><ph name="TOTAL_STEPS" />টাৰ ভিতৰত <ph name="CURRENT_STEP" /> নম্বৰ পদক্ষেপ</translation>
 <translation id="4647420311443994946">{0,select, tablet{আপুনি নিজৰ টেবলেটত ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক}computer{আপুনি নিজৰ কম্পিউটাৰত ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক}other{আপুনি নিজৰ ডিভাইচত ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক}}</translation>
 <translation id="4647697156028544508">অনুগ্ৰহ কৰি "<ph name="DEVICE_NAME" />"ৰ পিনটো দিয়ক:</translation>
 <translation id="4648491805942548247">অপর্যাপ্ত অনুমতি</translation>

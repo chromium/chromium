@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Nav iepriekšējās apmeklētās saites.</translation>
 <translation id="4281245629646759298">Gaiši dzeltena</translation>
 <translation id="4289540628985791613">Kopsavilkums</translation>
+<translation id="4294967782363273192">Kārtošana augošā secībā</translation>
 <translation id="4300318234632215983">Paziņot par saites URL</translation>
 <translation id="4322625298640984693">Sarkanbrūna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punkts}=3{daudzpunkte}zero{# punktu}one{# punkts}other{# punkti}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Balss veidi</translation>
 <translation id="6006050241733874051">Veidlapa</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{atpakaļvērstā slīpsvītra}zero{# atpakaļvērsto slīpsvītru}one{# atpakaļvērstā slīpsvītra}other{# atpakaļvērstās slīpsvītras}}</translation>
+<translation id="6010616110396250088">Kārtošana dilstošā secībā</translation>
 <translation id="6017514345406065928">Zaļa</translation>
 <translation id="602001110135236999">Ritināt pa kreisi</translation>
 <translation id="6034000775414344507">Gaiši pelēka</translation>

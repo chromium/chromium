@@ -3032,6 +3032,7 @@
 <translation id="4646675363240786305">போர்ட்கள்</translation>
 <translation id="4646949265910132906">பாதுகாப்பான WiFi இணைப்பு</translation>
 <translation id="4647090755847581616">&amp;தாவலை மூடுக</translation>
+<translation id="4647283074445570750">படி <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{டேப்லெட்டில் உள்நுழையும்போது ஆப்ஸைத் தொடங்கு}computer{கம்ப்யூட்டரில் உள்நுழையும்போது ஆப்ஸைத் தொடங்கு}other{சாதனத்தில் உள்நுழையும்போது ஆப்ஸைத் தொடங்கு}}</translation>
 <translation id="4647697156028544508">"<ph name="DEVICE_NAME" />" க்கான PIN ஐ உள்ளிடுக:</translation>
 <translation id="4648491805942548247">போதிய அனுமதிகள் இல்லை</translation>

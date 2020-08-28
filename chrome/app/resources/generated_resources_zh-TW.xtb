@@ -3030,6 +3030,7 @@
 <translation id="4646675363240786305">通訊埠</translation>
 <translation id="4646949265910132906">安全的 WiFi 連線</translation>
 <translation id="4647090755847581616">關閉分頁(&amp;C)</translation>
+<translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
 <translation id="4647420311443994946">{0,select, tablet{在你登入平板電腦時啟動應用程式}computer{在你登入電腦時啟動應用程式}other{在你登入裝置時啟動應用程式}}</translation>
 <translation id="4647697156028544508">請輸入「<ph name="DEVICE_NAME" />」的 PIN：</translation>
 <translation id="4648491805942548247">權限不足</translation>

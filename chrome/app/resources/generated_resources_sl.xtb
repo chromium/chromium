@@ -3032,6 +3032,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4646675363240786305">Vrata</translation>
 <translation id="4646949265910132906">Varna povezava Wi-Fi</translation>
 <translation id="4647090755847581616">Zap&amp;ri zavihek</translation>
+<translation id="4647283074445570750"><ph name="CURRENT_STEP" />. korak od <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Zaženi aplikacijo ob prijavi v tablični računalnik}computer{Zaženi aplikacijo ob prijavi v računalnik}other{Zaženi aplikacijo ob prijavi v napravo}}</translation>
 <translation id="4647697156028544508">Vnesite PIN za napravo »<ph name="DEVICE_NAME" />«:</translation>
 <translation id="4648491805942548247">Nezadostna dovoljenja</translation>

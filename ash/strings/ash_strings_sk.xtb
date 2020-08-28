@@ -170,6 +170,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2819276065543622893">Teraz prebehne odhlásenie.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nepodporuje rozlíšenie <ph name="SPECIFIED_RESOLUTION" />. Preto bolo zmenené na <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Polička</translation>
+<translation id="2841907151129139818">Prepnuté na režim tabletu</translation>
 <translation id="2844169650293029770">Zariadenie USB-C (port vľavo vpredu)</translation>
 <translation id="2865888419503095837">Informácie o sieti</translation>
 <translation id="2872961005593481000">Vypnúť</translation>
@@ -221,6 +222,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3255483164551725916">Čo dokážeš?</translation>
 <translation id="3290356915286466215">Nezabezpečené</translation>
 <translation id="3294437725009624529">Hosť</translation>
+<translation id="3307642347673023554">Prepnuté na režim laptopu</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> sa bude môcť stále prihlásiť neskôr.</translation>
 <translation id="3321628682574733415">Nesprávny kód rodiča</translation>
 <translation id="332587331255250389">Vymeňte batériu</translation>
@@ -378,7 +380,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5035389544768382859">Potvrdenie konfigurácie zobrazenia</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
 <translation id="5114495209940374989">Snímky obrazovky</translation>
-<translation id="5123162024343028706">Plávať navrchu</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
 <translation id="5168181903108465623">Dostupné zariadenia na prenos</translation>
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
@@ -492,7 +493,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="649452524636452238">PIN inteligentnej karty</translation>
 <translation id="6501401484702599040">Prenášanie obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Počas tejto aktualizácie bude vaša obrazovka prázdna dlhšie ako zvyčajne (maximálne minútu). V priebehu aktualizácie nestláčajte vypínač.</translation>
-<translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6528179044667508675">Nerušiť</translation>
 <translation id="65320610082834431">Emodži</translation>
 <translation id="6537270692134705506">Nasnímať obrazovku</translation>

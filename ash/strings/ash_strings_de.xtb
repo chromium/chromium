@@ -170,6 +170,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2819276065543622893">Sie werden jetzt abgemeldet.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert.</translation>
 <translation id="2825619548187458965">Ablage</translation>
+<translation id="2841907151129139818">Zum Tabletmodus gewechselt</translation>
 <translation id="2844169650293029770">USB-C-Gerät (Port vorne links)</translation>
 <translation id="2865888419503095837">Netzwerkinformationen</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
@@ -221,6 +222,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3255483164551725916">Was kannst du alles tun?</translation>
 <translation id="3290356915286466215">Ungesichert</translation>
 <translation id="3294437725009624529">Gast</translation>
+<translation id="3307642347673023554">Zum Laptopmodus gewechselt</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kann sich später weiterhin anmelden.</translation>
 <translation id="3321628682574733415">Falscher Elterncode</translation>
 <translation id="332587331255250389">Bitte tauschen Sie die Batterien aus</translation>
@@ -378,7 +380,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5035389544768382859">Displaykonfiguration bestätigen</translation>
 <translation id="5083553833479578423">Möchten Sie weitere Assistant-Funktionen freischalten?</translation>
 <translation id="5114495209940374989">Screenshots</translation>
-<translation id="5123162024343028706">Unverankert im Vordergrund</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
 <translation id="5168181903108465623">Übertragungsgeräte verfügbar</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
@@ -492,7 +493,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="649452524636452238">Smartcard-PIN</translation>
 <translation id="6501401484702599040">Bildschirm wird an <ph name="RECEIVER_NAME" /> gestreamt</translation>
 <translation id="652139407789908527">Der Bildschirm wird während dieses Updates länger schwarz als gewöhnlich (bis zu einer Minute). Bitte nicht auf die Ein-/Aus-Taste drücken, solange das Update installiert wird.</translation>
-<translation id="6527303717912515753">Teilen</translation>
 <translation id="6528179044667508675">Nicht stören</translation>
 <translation id="65320610082834431">Emojis</translation>
 <translation id="6537270692134705506">Screenshot aufnehmen</translation>

@@ -182,6 +182,9 @@
 <translation id="1252536192437793850">允許網站要求使用者授予序列埠的存取權</translation>
 <translation id="1257550411839719984">設定預設的下載目錄</translation>
 <translation id="1265053460044691532">限制透過 SAML 驗證的使用者可離線登入的時間</translation>
+<translation id="1271840407438458464">如果將這項政策設為有效值，<ph name="PRODUCT_NAME" /> 不會使用低於指定版本的 SSL/TLS 版本。系統會忽略無法辨識的值。
+
+      如果未設定這項政策，則 <ph name="PRODUCT_NAME" /> 會使用預設的最低版本 TLS 1.0。</translation>
 <translation id="127264587838521316">啟用 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求</translation>
 <translation id="1290634681382861275">管理其他設定，包括 USB、藍牙、政策更新、開發人員模式等等。</translation>
 <translation id="1291880496936992484">警告：自 <ph name="PRODUCT_NAME" /> 52 版 (將於 2016 年 9 月左右推出) 起，系統將全面移除 RC4，屆時這項政策將停止運作。
@@ -412,6 +415,9 @@
       在 SAML 登入網頁授權存取錄影裝置。如果找不到
       相符的結果，系統會自動拒絕存取權。禁止使用
       萬用模式。</translation>
+<translation id="1634770710106162474">如果將這項政策設為啟用，當 <ph name="PRODUCT_NAME" /> 在不支援的電腦或作業系統上執行時，警告訊息不會顯示。
+
+      如果將這項政策設為停用或不設定，不支援的系統上會顯示警告訊息。</translation>
 <translation id="1634989431648355062">允許在這些網站上執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
 <translation id="1635112116013359810">將下載內容儲存至本機儲存空間之前，須檢查內容是否違反機密資料保護規則的網址模式清單。只有在 <ph name="CHECK_CONTENT_COMPLIANCE_POLICY_NAME" /> 設為啟用的情況下，系統才會使用這項政策。
 
@@ -1495,6 +1501,25 @@
 <translation id="3219421230122020860">可使用無痕模式</translation>
 <translation id="3220624000494482595">如果資訊站應用程式是 Android 應用程式，即使將這項政策設為 <ph name="TRUE" />，仍無法控制 <ph name="PRODUCT_OS_NAME" />版本。</translation>
 <translation id="322359555555487980">指定變化版本在 <ph name="PRODUCT_OS_NAME" />上的可用性</translation>
+<translation id="3231837273069128027">你可以透過這項政策來設定 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新的可用性和行為。
+
+      指定 JSON 屬性中的個別設定：
+
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH" />：如果設為 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH_TRUE" />，則使用者可觸發 Powerwash 流程來安裝 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新。
+
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" /> (適用於 <ph name="PRODUCT_NAME" /> 68 以上版本)：如果設為 <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" />，使用者可叫用 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新流程，這項流程會保留整個裝置的狀態 (包括企業註冊)，但會捨棄使用者資料。
+
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" /> (適用於 <ph name="PRODUCT_NAME" /> 75 以上版本)：控管如何針對具有安全漏洞的 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體強制執行自動 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新。所有流程均會保留本機裝置狀態。可設定的值：
+
+        * 如果設為 1 或不設定，系統不會強制執行 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新。
+
+        * 如果設為 2，系統將在使用者同意更新後，於下次重新啟動時更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。
+
+        * 如果設為 3，系統將在下次重新啟動時更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。
+
+        * 如果設為 4，系統將在裝置完成註冊後，於使用者登入前更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。
+
+      如果未設定這項政策，則系統無法更新 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體。</translation>
 <translation id="3236046242843493070">允許安裝擴充功能、應用程式和使用者指令碼的來源網址模式清單</translation>
 <translation id="3240609035816615922">印表機設定存取權政策。</translation>
 <translation id="324062325008698789">設定印表機清單。</translation>
@@ -1574,6 +1599,11 @@
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
+<translation id="3367868895271989224">如果將這項政策設為啟用，系統會隔離所有網站。(每個網站將各自以獨立程序執行)。如果將這項政策設為停用或不設定，系統不會停用網站隔離，但使用者可以選擇停用 (例如：在 chrome://flags 中透過停用網站隔離的方式進行停用)。
+
+      <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> 也可用於微調來源。請在 <ph name="PRODUCT_OS_NAME" /> 76 以下版本中，將 <ph name="DEVICE_LOGIN_SCREEN_SITE_PER_PROCESS_POLICY_NAME" /> 裝置政策設為相同值。(原因是如果兩者的值不相符，在進入使用者工作階段時可能會發生延遲。)
+
+      注意：在 Android 上請改用 <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="3373381043600809954">啟用「<ph name="PRODUCT_NAME" />」</translation>
 <translation id="3374587000313305002">設定 <ph name="PRODUCT_NAME" /> 用來儲存使用者資料的目錄。
 
@@ -1632,6 +1662,11 @@
       未來內嵌登入將完整支援所有 SSO 登入流程，屆時我們會移除這項實驗性設定。</translation>
 <translation id="3435796032110614169">允許刪除列印工作的歷史記錄</translation>
 <translation id="3437924696598384725">允許使用者管理 VPN 連線</translation>
+<translation id="3451951038162074887">如果將這項政策設為啟用或不設定，第三方軟體將無法在 <ph name="PRODUCT_NAME" /> 的處理程序中置入可執行的程式碼。
+
+      如果將這項政策設為停用，第三方軟體將可在 <ph name="PRODUCT_NAME" /> 的處理程序中置入這類程式碼。
+
+      如果是已加入 <ph name="MS_AD_NAME" /> 網域的裝置，無論這項政策的值為何，瀏覽器都無法禁止第三方軟體在其處理程序中置入可執行的程式碼。</translation>
 <translation id="3459509316159669723">列印</translation>
 <translation id="3461279434465463233">回報電源狀態</translation>
 <translation id="346731943813722404">指定是否延遲管理電源，以及是否在發現工作階段中產生第一個使用者活動後，才開始執行工作階段長度限制。
@@ -1691,6 +1726,11 @@
 <translation id="350443680860256679">設定 ARC</translation>
 <translation id="350797926066071931">啟用翻譯</translation>
 <translation id="3508047333410537654">在登入畫面上啟用單聲道音訊</translation>
+<translation id="3509819648242653622">你可以透過這項政策，禁止系統載入網址遭到禁止的網頁。這項政策可提供網址模式清單，用於指定要禁止的網址。如果未設定這項政策，則瀏覽器不會禁止任何網址。網址模式的格式如下：https://www.chromium.org/administrators/url-blacklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
+
+      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項設定只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript。動態載入資料的網頁內 JavaScript 網址不會受到這項政策影響。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
+
+      注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="3513655665999652754">Quirks Server 會提供特定硬體的設定檔，例如可調整螢幕校正功能的
        ICC 顯示器設定檔。
 
@@ -2185,6 +2225,9 @@
 
           注意：在 <ph name="CHARGE_START_TIME_FIELD_NAME" /> 和<ph name="CHARGE_END_TIME_FIELD_NAME" /> 的 <ph name="MINUTE_FIELD_NAME" /> 欄位中，允許的值為 0、15、30、45。</translation>
 <translation id="4224610387358583899">螢幕鎖定延遲</translation>
+<translation id="4228745249339680042">你可以透過這項政策指定網址和網域，當網站要求安全金鑰的認證憑證時，這些網址和網域不會顯示提示。系統也會傳送可能會使用個別認證的信號給安全金鑰。如果未設定這項政策，當網站要求安全金鑰的認證時，系統會向 <ph name="PRODUCT_NAME" /> 65 以上版本的使用者顯示提示。
+
+      網址只會以 U2F appID 進行比對。網域只會以 webauthn RP ID 進行比對。因此，如要涵蓋 U2F API 和 webauthn API，請列出指定網站的 appID 網址和網域。</translation>
 <translation id="4238997902172035160">這項政策可設定 <ph name="PRODUCT_NAME" /> 儲存設定檔漫遊副本的目錄。
 
       如果設定這項政策且啟用 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 政策，<ph name="PRODUCT_NAME" /> 會將設定檔的漫遊副本儲存在你所提供的目錄。如果停用 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 政策或不設定，則系統不會使用這項政策所儲存的值。
@@ -2731,6 +2774,13 @@
           如果未設定這項政策，系統會使用預設命令列。</translation>
 <translation id="5150323673529584553">不要掃描檔案</translation>
 <translation id="5152787786897382519">Chromium 和 Google Chrome 有部分政策群組具有相依關係，依此共同管控特定功能。這些組合如下列政策群組所示。由於政策可能具有多個來源，系統只會套用群組中最高優先來源所提供的值，忽略同個群組中優先順序較低的來源所提供的值。請參閱 <ph name="POLICY_PRIORITY_DOC_URL" /> 瞭解來源的優先順序。</translation>
+<translation id="515816885693899426">這項政策已遭淘汰，請改用「<ph name="URL_BLOCKLIST_POLICY_NAME" />」政策。
+
+      你可以透過這項政策，禁止系統載入網址遭到禁止的網頁。這項政策可提供網址模式清單，用於指定要禁止的網址。如果未設定這項政策，則瀏覽器不會禁止任何網址。網址模式的格式如下：https://www.chromium.org/administrators/url-blacklist-filter-format。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
+
+      自 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址。不過，這項設定只適用於在網址列 (或書籤小程式等) 輸入的 JavaScript。動態載入資料的網頁內 JavaScript 網址不會受到這項政策影響。舉例來說，即使你封鎖了 example.com/abc，example.com 仍可透過 XMLHTTPRequest 載入 example.com/abc。
+
+      注意：封鎖內部的 chrome://* 網址可能會導致非預期的錯誤。</translation>
 <translation id="5159469559091666409">監控網路封包的傳送頻率 (以毫秒為單位)。
 
       如果未設定這項政策，預設間隔為 3 分鐘。
@@ -3174,6 +3224,13 @@
       如果將這項政策設為 False，系統一律不會使用內建的 DNS 用戶端。
 
       如果不設定這項政策，macOS、Android (當不公開 DNS 和 VPN 皆未啟用時) 和 Chrome 作業系統在預設狀態下會啟用內建的 DNS 用戶端；使用者可以透過編輯 chrome://flags 或指定指令列旗標，來決定系統是否要使用內建的 DNS 用戶端。</translation>
+<translation id="5624946025057772960">你可以透過這項政策，針對列出的網址提供存取權，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，你可以使用「*」封鎖所有要求，並透過這項政策允許存取數量有限的列出網址。你可以透過這項政策，將特定機制、其他網域的子網域、通訊埠或特定路徑設為例外。最精確的篩選器會判定系統要封鎖還是允許網址。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。最多只能為這項政策輸入 1000 個項目。
+
+      你也可以透過這項政策列出「tel:」或「ssh:」等通訊協定，針對註冊為通訊協定處理常式的外部應用程式，啟用瀏覽器的自動叫用功能。
+
+      如果未設定這項政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 就不會有例外。
+
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>
 <translation id="5641279111657132737">這項政策已遭淘汰，請改用「<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />」政策。
@@ -3515,6 +3572,15 @@
 <translation id="6190022522129724693">預設彈出視視窗設定</translation>
 <translation id="6190367314942602985">回報使用者身分識別資訊</translation>
 <translation id="6195802366906945965">決定是否使用內建憑證驗證器來驗證伺服器憑證</translation>
+<translation id="6199780467005360782">這項政策已遭淘汰，請改用「<ph name="URL_ALLOWLIST_POLICY_NAME" />」政策。
+
+      你可以透過這項政策，針對列出的網址提供存取權，這些網址是網址封鎖清單的例外。請參閱該項政策的說明，瞭解這份清單所含項目的格式。舉例來說，你可以使用「*」封鎖所有要求，並透過這項政策允許存取數量有限的列出網址。你可以透過這項政策，將特定機制、其他網域的子網域、通訊埠或特定路徑設為例外。最精確的篩選器會判定系統要封鎖還是允許網址。允許清單的優先順序高於封鎖清單。最多只能為這項政策輸入 1000 個項目。
+
+      你也可以透過這項政策列出「tel:」或「ssh:」等通訊協定，針對註冊為通訊協定處理常式的外部應用程式，啟用瀏覽器的自動叫用功能。
+
+      如果未設定這項政策，就不會有例外。
+
+      在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
 <translation id="6205094657236844092">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的網頁應用程式清單；使用者無法解除安裝或停用這些網頁應用程式。
 
       這項政策的每個清單項目都是一個物件，由下列必要元素組成：<ph name="URL_LABEL" /> (要安裝的網頁應用程式網址) 和 2 個選擇性元素：<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (設定網頁應用程式的開啟方式，預設值是在新分頁中開啟) 和 <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (如要建立 <ph name="LINUX_OS_NAME" /> 和 Windows® 桌面捷徑，請設為 True)。
@@ -3799,6 +3865,13 @@
       如果將這項政策設為 True，系統會允許裝置觸發 Powerwash。
       如果不設定這項政策，系統會預設為 True，代表允許裝置執行 Powerwash。
       </translation>
+<translation id="6621839881150363218">如果將這項政策設為啟用，系統會隔離所有網站 (每個網站將各自以獨立程序執行)。如果將這項政策設為停用，系統不會特地執行網站隔離，並且會停用 IsolateOriginsAndroid 和 SitePerProcessAndroid 的實測。使用者仍可手動啟用這項政策。
+
+      如果未設定這項政策，使用者可變更這項設定。
+
+      如要進行隔離並降低對使用者的影響，請使用 <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> 列出要隔離的網站。
+
+      注意：目前 Android 的網站隔離支援可能會導致效能問題，但日後將會改善。執行 Chrome 的 Android 系統必須運行於 RAM 實際超過 1 GB 的裝置上，才適用這項政策。如要在非 Android 平台上套用這項政策，請使用 <ph name="SITE_PER_PROCESS_POLICY_NAME" />。</translation>
 <translation id="66265932317331474">回報 CPU 資訊</translation>
 <translation id="6628043374475466084">不須根據機密資料保護規則檢查上傳內容的網址模式</translation>
 <translation id="6628120204569232711">回報儲存空間狀態</translation>
@@ -4666,6 +4739,9 @@
           如果你啟用這項設定，則使用者在存取主機時，必須提供有效的雙重驗證碼。
 
           如果你停用這項設定或並未進行設置，系統就不會啟用雙重驗證機制，而預設行為則會改採用輸入使用者定義的 PIN。</translation>
+<translation id="7749402921503577264">如果將這項政策設為啟用或不設定，當使用者瀏覽具有 SSL 錯誤的網站時，可點閱 <ph name="PRODUCT_NAME" /> 顯示的警告頁面。
+
+      如果將這項政策設為停用，使用者無法點閱任何警告頁面。</translation>
 <translation id="7750991880413385988">開啟新分頁</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
 <translation id="7758378441185523981">為設定檔類型啟用背景驗證。</translation>

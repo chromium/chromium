@@ -3032,6 +3032,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4646675363240786305">Mga Port</translation>
 <translation id="4646949265910132906">Secure na Koneksyon sa WiFi</translation>
 <translation id="4647090755847581616">&amp;Isara ang Tab</translation>
+<translation id="4647283074445570750">Hakbang <ph name="CURRENT_STEP" /> ng <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Buksan ang app kapag nag-sign in ka sa iyong tablet}computer{Buksan ang app kapag nag-sign in ka sa iyong computer}other{Buksan ang app kapag nag-sign in ka sa iyong device}}</translation>
 <translation id="4647697156028544508">Pakilagay ang PIN para sa "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Hindi sapat na mga pagpapahintulot</translation>

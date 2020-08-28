@@ -3032,6 +3032,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4646675363240786305">Porti</translation>
 <translation id="4646949265910132906">Drošs Wi-Fi savienojums</translation>
 <translation id="4647090755847581616">&amp;Aizvērt cilni</translation>
+<translation id="4647283074445570750"><ph name="CURRENT_STEP" />. darbība no <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Palaist lietotni, kad pierakstāties savā planšetdatorā}computer{Palaist lietotni, kad pierakstāties savā datorā}other{Palaist lietotni, kad pierakstāties savā ierīcē}}</translation>
 <translation id="4647697156028544508">Ievadiet PIN ierīcei <ph name="DEVICE_NAME" />:</translation>
 <translation id="4648491805942548247">Nav pietiekamu atļauju.</translation>

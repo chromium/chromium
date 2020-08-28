@@ -3032,6 +3032,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4646675363240786305">Bağlantı Noktaları</translation>
 <translation id="4646949265910132906">Güvenli Kablosuz Bağlantı</translation>
 <translation id="4647090755847581616">Sekmeyi Ka&amp;pat</translation>
+<translation id="4647283074445570750">Adım <ph name="CURRENT_STEP" />/<ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Tabletimde oturum açtığımda uygulama başlat}computer{Bilgisayarımda oturum açtığımda uygulamayı başlat}other{Cihazımda oturum açtığımda uygulamayı başlat}}</translation>
 <translation id="4647697156028544508">Lütfen "<ph name="DEVICE_NAME" />" için PIN'i girin:</translation>
 <translation id="4648491805942548247">İzinler yetersiz</translation>

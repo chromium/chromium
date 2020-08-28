@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">No hay vínculos visitados anteriores</translation>
 <translation id="4281245629646759298">Amarillo claro</translation>
 <translation id="4289540628985791613">Descripción general</translation>
+<translation id="4294967782363273192">Orden ascendente</translation>
 <translation id="4300318234632215983">Indicar URL de un enlace</translation>
 <translation id="4322625298640984693">Siena</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{punto}=3{puntos suspensivos}other{# puntos}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Voces</translation>
 <translation id="6006050241733874051">Formulario</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{barra diagonal inversa}other{# barras diagonales inversas}}</translation>
+<translation id="6010616110396250088">Orden descendente</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="602001110135236999">Desplazar hacia la izquierda</translation>
 <translation id="6034000775414344507">Gris claro</translation>

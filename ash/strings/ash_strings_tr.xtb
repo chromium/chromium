@@ -170,6 +170,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2819276065543622893">Şimdi çıkış yapacaksınız.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi.</translation>
 <translation id="2825619548187458965">Raf</translation>
+<translation id="2841907151129139818">Tablet moduna geçildi</translation>
 <translation id="2844169650293029770">USB-C cihaz (sol ön bağlantı noktası)</translation>
 <translation id="2865888419503095837">Ağ bilgisi</translation>
 <translation id="2872961005593481000">Kapat</translation>
@@ -221,6 +222,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3255483164551725916">Neler yapabilirsin?</translation>
 <translation id="3290356915286466215">Güvenli değil</translation>
 <translation id="3294437725009624529">Misafir</translation>
+<translation id="3307642347673023554">Dizüstü bilgisayar moduna geçildi</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> daha sonra yine oturum açabilir.</translation>
 <translation id="3321628682574733415">Ebeveyn kodu yanlış</translation>
 <translation id="332587331255250389">Lütfen pili değiştirin</translation>
@@ -378,7 +380,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5035389544768382859">Ekran Yapılandırmasını Onaylayın</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
 <translation id="5114495209940374989">Ekran görüntüleri</translation>
-<translation id="5123162024343028706">Üstte kayan</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
@@ -493,7 +494,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="649452524636452238">Akıllı kart PIN'i</translation>
 <translation id="6501401484702599040">Ekran, <ph name="RECEIVER_NAME" /> üzerinde yayınlanıyor</translation>
 <translation id="652139407789908527">Bu güncelleme sırasında normalden daha uzun süre (bir dakikaya kadar) boş ekran görüntülenebilir. Güncelleme devam ederken lütfen güç düğmesine basmayın.</translation>
-<translation id="6527303717912515753">Paylaş</translation>
 <translation id="6528179044667508675">Rahatsız etme</translation>
 <translation id="65320610082834431">Emoji'ler</translation>
 <translation id="6537270692134705506">Ekran görüntüsünü kaydet</translation>

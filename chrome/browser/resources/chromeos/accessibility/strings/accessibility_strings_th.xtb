@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">ไม่มีลิงก์ที่เคยเข้าชมก่อนหน้า</translation>
 <translation id="4281245629646759298">สีเหลืองอ่อน</translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
+<translation id="4294967782363273192">จัดเรียงจากน้อยไปมาก</translation>
 <translation id="4300318234632215983">แจ้ง URL ของลิงก์</translation>
 <translation id="4322625298640984693">สีน้ำตาลดิน</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{จุด}=3{จุดไข่ปลา}other{# จุด}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">เสียง</translation>
 <translation id="6006050241733874051">ฟอร์ม</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{เครื่องหมายแบ็คสแลช}other{# เครื่องหมายแบ็คสแลช}}</translation>
+<translation id="6010616110396250088">จัดเรียงจากมากไปน้อย</translation>
 <translation id="6017514345406065928">สีเขียว</translation>
 <translation id="602001110135236999">เลื่อนไปทางซ้าย</translation>
 <translation id="6034000775414344507">เทาอ่อน</translation>

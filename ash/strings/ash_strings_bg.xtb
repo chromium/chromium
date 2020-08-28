@@ -11,7 +11,7 @@
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Мобилно устройство: <ph name="ADDRESS" /></translation>
-<translation id="1087110696012418426">Добър ден, <ph name="GIVEN_NAME" /></translation>
+<translation id="1087110696012418426">Добър ден, <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">„I’m bored“ („Скучно ми е“)</translation>
 <translation id="1104084341931202936">Показване на настройките за достъпност</translation>
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
@@ -109,7 +109,7 @@
 <translation id="2018630726571919839">Tell me a joke</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2067602449040652523">Яркост на клавиатурата</translation>
-<translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" /></translation>
+<translation id="2083190527011054446">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Няма връзка с мрежа</translation>
 <translation id="2126242104232412123">Нов работен кът</translation>
 <translation id="2127372758936585790">Зарядно устройство с малка мощност</translation>
@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">Ще излезете сега.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" />. Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Лавица</translation>
+<translation id="2841907151129139818">Превключихте към режима на таблет</translation>
 <translation id="2844169650293029770">Устройство с USB-C (предният ляв порт)</translation>
 <translation id="2865888419503095837">Информация за мрежата</translation>
 <translation id="2872961005593481000">Изключване</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">„What can you do?“ („Какво можеш да правиш?“)</translation>
 <translation id="3290356915286466215">незащитена</translation>
 <translation id="3294437725009624529">Гост</translation>
+<translation id="3307642347673023554">Превключихте към режима на лаптоп</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> пак може да влезе в профила си по-късно.</translation>
 <translation id="3321628682574733415">Неправилен код на родител</translation>
 <translation id="332587331255250389">Моля, заменете батерията</translation>
@@ -308,7 +310,7 @@
 <translation id="4261870227682513959">Показване на настройките за известия. Известията са изключени</translation>
 <translation id="4269883910223712419">Администраторът на това устройство може:</translation>
 <translation id="4279490309300973883">Дублиране</translation>
-<translation id="4294319844246081198">Добро утро, <ph name="GIVEN_NAME" /></translation>
+<translation id="4294319844246081198">Добро утро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Изчистване на всичките <ph name="COUNT" /> известия</translation>
 <translation id="4303223480529385476">Разгъване на лентата на състоянието</translation>
 <translation id="4321179778687042513">ctrl</translation>
@@ -325,7 +327,7 @@
 <translation id="4421231901400348175">Споделяте с/ъс <ph name="HELPER_NAME" /> контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="4430019312045809116">Звук</translation>
 <translation id="4450893287417543264">Да не се показва отново</translation>
-<translation id="445864333228800152">Добър вечер</translation>
+<translation id="445864333228800152">Добър вечер,</translation>
 <translation id="4458688154122353284">Спиране на записа на екрана</translation>
 <translation id="4477350412780666475">Следващ запис</translation>
 <translation id="4477892968187500306">На това устройство може да са инсталирани приложения, които не са потвърдени от Google.</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">Потвърждаване на конфигурацията на дисплея</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
 <translation id="5114495209940374989">Екранни снимки</translation>
-<translation id="5123162024343028706">Фиксиране на преден план</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">ПИН за смарткартата</translation>
 <translation id="6501401484702599040">Екранът се предава към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="652139407789908527">По време на тази актуализация екранът ще остане празен по-дълго от обичайното (до една минута). Моля, не натискайте бутона за захранване, докато тя се извършва.</translation>
-<translation id="6527303717912515753">Споделяне</translation>
 <translation id="6528179044667508675">Не безпокойте</translation>
 <translation id="65320610082834431">Емоджи</translation>
 <translation id="6537270692134705506">Заснемане на екрана</translation>
@@ -568,7 +568,7 @@
 <translation id="7405710164030118432">За да отключите устройството, въведете кода си за достъп на родител от Family Link</translation>
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="742594950370306541">Камерата се използва.</translation>
-<translation id="742608627846767349">Добро утро</translation>
+<translation id="742608627846767349">Добро утро,</translation>
 <translation id="743058460480092004">Камерата и микрофонът се използват.</translation>
 <translation id="7466449121337984263">Моля, докоснете сензора</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
@@ -662,7 +662,7 @@
 <translation id="8394567579869570560">Родителят ви заключи това устройство</translation>
 <translation id="8412677897383510995">Показване на настройките за екрана</translation>
 <translation id="8425213833346101688">Промяна</translation>
-<translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" /></translation>
+<translation id="8426708595819210923">Добър вечер, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Функцията за диктуване изпраща гласа ви до Google, за да даде възможност за гласово въвеждане във всяко текстово поле.</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8433186206711564395">Настройки на мрежата</translation>

@@ -170,6 +170,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2819276065543622893">Masa-sign out ka ngayon.</translation>
 <translation id="2825224105325558319">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" />. Ginawang <ph name="FALLBACK_RESOLUTION" /> ang resolution.</translation>
 <translation id="2825619548187458965">Shelf</translation>
+<translation id="2841907151129139818">Lumipat sa tablet mode</translation>
 <translation id="2844169650293029770">USB-C device (port sa kaliwang bahagi sa harap)</translation>
 <translation id="2865888419503095837">Impormasyon ng network</translation>
 <translation id="2872961005593481000">Shut down</translation>
@@ -221,6 +222,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3255483164551725916">Ano'ng maaari mong gawin?</translation>
 <translation id="3290356915286466215">Hindi secure</translation>
 <translation id="3294437725009624529">Bisita</translation>
+<translation id="3307642347673023554">Lumipat sa laptop mode</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
 <translation id="332587331255250389">Pakipalitan ang baterya</translation>
@@ -378,7 +380,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5035389544768382859">Kumpirmahin ang Configuration ng Display</translation>
 <translation id="5083553833479578423">Mag-unlock ng higit pang feature ng Assistant.</translation>
 <translation id="5114495209940374989">Mga Screenshot</translation>
-<translation id="5123162024343028706">Umibabaw</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
@@ -492,7 +493,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="649452524636452238">PIN ng smart card</translation>
 <translation id="6501401484702599040">Kina-cast ang screen sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Magiging blangko ang iyong screen nang mas matagal kaysa karaniwan (hanggang isang minuto) sa panahon ng pag-update na ito Huwag pindutin ang power button habang isinasagawa ang pag-update.</translation>
-<translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6528179044667508675">Wag istorbohin</translation>
 <translation id="65320610082834431">Mga Emoji</translation>
 <translation id="6537270692134705506">I-capture ang screen</translation>

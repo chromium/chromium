@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">இப்போது வெளியேற்றப்படுவீர்கள்.</translation>
 <translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> தெளிவுத்திறனை <ph name="DISPLAY_NAME" /> ஆதரிக்கவில்லை. தெளிவுத்திறன் <ph name="FALLBACK_RESOLUTION" />க்கு மாற்றப்பட்டது.</translation>
 <translation id="2825619548187458965">அடுக்கு</translation>
+<translation id="2841907151129139818">டேப்லெட் பயன்முறைக்கு மாற்றப்பட்டது</translation>
 <translation id="2844169650293029770">USB-C சாதனம் (இடது பக்கம் முன்னே இருக்கும் போர்ட்)</translation>
 <translation id="2865888419503095837">நெட்வொர்க் தகவல்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">உன்னால் என்னவெல்லாம் செய்ய முடியும்?</translation>
 <translation id="3290356915286466215">பாதுகாப்பற்ற வைஃபை நெட்வொர்க்</translation>
 <translation id="3294437725009624529">கெஸ்ட்</translation>
+<translation id="3307642347673023554">லேப்டாப் பயன்முறைக்கு மாற்றப்பட்டது</translation>
 <translation id="3308453408813785101">அப்போதும் <ph name="USER_EMAIL_ADDRESS" /> பின்னர் உள்நுழையலாம்.</translation>
 <translation id="3321628682574733415">தவறான பெற்றோர் அணுகல் குறியீடு</translation>
 <translation id="332587331255250389">பேட்டரியை மாற்றவும்</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">திரை உள்ளமைவை உறுதிசெய்யுங்கள்</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
 <translation id="5114495209940374989">ஸ்கிரீன்ஷாட்டுகள்</translation>
-<translation id="5123162024343028706">மேலே பின் செய்</translation>
 <translation id="5136175204352732067">வேறொரு விசைப்பலகை இணைக்கப்பட்டது</translation>
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
 <translation id="5170568018924773124">கோப்புறையில் காண்பி</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">ஸ்மார்ட் கார்டு பின்</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புகிறது</translation>
 <translation id="652139407789908527">இந்தப் புதுப்பிப்பின்போது வழக்கத்தை விடக் கூடுதல் நேரம் (ஒரு நிமிடம் வரை) உங்கள் திரை காலியாக இருக்கும். புதுப்பிப்பு செயலில் இருக்கும்போது பவர் பட்டனை அழுத்த வேண்டாம்.</translation>
-<translation id="6527303717912515753">பகிர்</translation>
 <translation id="6528179044667508675">தொந்தரவு செய்யாதே</translation>
 <translation id="65320610082834431">ஈமோஜிகள்</translation>
 <translation id="6537270692134705506">திரையைப் படமெடு</translation>

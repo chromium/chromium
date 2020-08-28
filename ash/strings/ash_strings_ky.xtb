@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">Сиз азыр чыгарыласыз.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> дааналыкты колдоого албайт. Дааналыгы төмөнкүгө өзгөртүлдү: <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Текче</translation>
+<translation id="2841907151129139818">Планшет режимине которулду</translation>
 <translation id="2844169650293029770">USB-C түзмөгү (сол жактагы маңдайкы оюкча)</translation>
 <translation id="2865888419503095837">Тармак маалыматы</translation>
 <translation id="2872961005593481000">Жабуу</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">Эмне кыла аласыз?</translation>
 <translation id="3290356915286466215">Корголгон эмес</translation>
 <translation id="3294437725009624529">Конок</translation>
+<translation id="3307642347673023554">Ноутбук режимине которулду</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> аккаунтка кийинчерээк дагы кире алат.</translation>
 <translation id="3321628682574733415">Ата-эненин кирүү коду туура эмес</translation>
 <translation id="332587331255250389">Батареяны алмаштырыңыз</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">Дисплейдин конфигурациясын ырастоо</translation>
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
 <translation id="5114495209940374989">Скриншоттор</translation>
-<translation id="5123162024343028706">Үстүнө кадап коюу</translation>
 <translation id="5136175204352732067">Башка баскычтоп туташтырылды</translation>
 <translation id="5168181903108465623">Тышкы экранга чыгаруу түзмөктөрү жеткиликтүү</translation>
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">Акылдуу картанын PIN коду</translation>
 <translation id="6501401484702599040">Тышкы экранга чыгаруу <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Бул жаңыртуу учурунда экраныңыз адаттагыдан узагыраак (бир мүнөткө чейин) өчүп турушу мүмкүн. Жаңыртылып жатканда күйгүзүү/өчүрүү баскычын баспай туруңуз.</translation>
-<translation id="6527303717912515753">Бөлүшүү</translation>
 <translation id="6528179044667508675">Тынчымды алба</translation>
 <translation id="65320610082834431">Быйтыкчалар</translation>
 <translation id="6537270692134705506">Экранды тартуу</translation>

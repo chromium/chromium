@@ -19,6 +19,7 @@
 <translation id="2650312721222849884">Chromium-ն օգտագործելիս ձեր բոլոր ներդիրները տեսնելու համար միացրեք համաժամացումը։</translation>
 <translation id="2730884209570016437">Chromium-ը չի կարող օգտագործել ձեր ֆոտոխցիկը, քանի որ այն օգտագործվում է մեկ այլ հավելվածի կողմից</translation>
 <translation id="2915596697727466327">Chromium-ն օգտագործում է Face ID տեխնոլոգիան՝ ձեր գաղտնաբառերի անվտանգությունն ապահովելու համար։</translation>
+<translation id="2977470724722393594">Chromium-ը թարմացված է</translation>
 <translation id="3256316712990552818">Պատճենվել է Chromium-ում</translation>
 <translation id="3344973607274501920">Chromium-ին չհաջողվեց ստուգել ձեր գաղտնաբառերը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="3639997914391704523">Chromium-ը կարող է ստուգել ձեր գաղտնաբառերը, երբ մտնեք Google հաշիվ։</translation>
@@ -65,6 +66,7 @@
 <translation id="8586442755830160949">© <ph name="YEAR" /> The Chromium Authors: Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="8776843108004031667">Այս հաշիվը և բոլոր չպահված տվյալները կհեռացվեն Chromium-ից։</translation>
 <translation id="9022552996538154597">Մուտք գործել Chromium</translation>
+<translation id="9089354809943900324">Chromium-ը հնացել է</translation>
 <translation id="921174536258924340">Chromium-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք կամ <ph name="BEGIN_LINK" />գաղտնաբառերը ստուգեք ձեր Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 </translationbundle>

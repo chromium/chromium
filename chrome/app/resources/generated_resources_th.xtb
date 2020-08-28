@@ -3032,6 +3032,7 @@
 <translation id="4646675363240786305">พอร์ต</translation>
 <translation id="4646949265910132906">การเชื่อมต่อ Wi-Fi ที่ปลอดภัย</translation>
 <translation id="4647090755847581616">&amp;ปิดแท็บ</translation>
+<translation id="4647283074445570750">ขั้นตอนที่ <ph name="CURRENT_STEP" /> จาก <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{เริ่มแอปเมื่อคุณลงชื่อเข้าใช้แท็บเล็ต}computer{เริ่มแอปเมื่อคุณลงชื่อเข้าใช้คอมพิวเตอร์}other{เริ่มแอปเมื่อคุณลงชื่อเข้าใช้อุปกรณ์}}</translation>
 <translation id="4647697156028544508">โปรดป้อน PIN สำหรับ "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">สิทธิ์ไม่เพียงพอ</translation>

@@ -170,6 +170,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" />. Độ phân giải đã được thay đổi thành <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Giá</translation>
+<translation id="2841907151129139818">Đã chuyển sang chế độ máy tính bảng</translation>
 <translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
 <translation id="2865888419503095837">Thông tin mạng</translation>
 <translation id="2872961005593481000">Tắt</translation>
@@ -221,6 +222,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3255483164551725916">Bạn có thể làm gì?</translation>
 <translation id="3290356915286466215">Không bảo mật</translation>
 <translation id="3294437725009624529">Khách</translation>
+<translation id="3307642347673023554">Đã chuyển sang chế độ máy tính xách tay</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> vẫn có thể đăng nhập vào lúc khác.</translation>
 <translation id="3321628682574733415">Mã dành cho cha mẹ không chính xác</translation>
 <translation id="332587331255250389">Vui lòng thay pin</translation>
@@ -378,7 +380,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5035389544768382859">Xác nhận cấu hình của màn hình</translation>
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
 <translation id="5114495209940374989">Ảnh chụp màn hình</translation>
-<translation id="5123162024343028706">Ghim ở trên cùng</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
 <translation id="5168181903108465623">Có thiết bị truyền</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
@@ -492,7 +493,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="649452524636452238">Mã PIN của thẻ thông minh</translation>
 <translation id="6501401484702599040">Đang truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="652139407789908527">Màn hình của bạn sẽ trống lâu hơn bình thường (tối đa là 1 phút) trong quá trình cập nhật này. Vui lòng không nhấn nút nguồn trong khi đang cập nhật.</translation>
-<translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6528179044667508675">Ko làm phiền</translation>
 <translation id="65320610082834431">Biểu tượng cảm xúc</translation>
 <translation id="6537270692134705506">Chụp màn hình</translation>

@@ -2812,7 +2812,7 @@
 <translation id="4384312707950789900">Дадаць у прыярытэтныя</translation>
 <translation id="4384652540891215547">Актываваць пашырэнне</translation>
 <translation id="438503109373656455">Саратога</translation>
-<translation id="4385040356362222432">Каб аддзяліць сваю працу ў інтэрнэце ў якасці карыстальніка паштовага дамена <ph name="NEW_USER" /> ад працы з выкарыстаннем дамена <ph name="EXISTING_USER" />, стварыце новы профіль</translation>
+<translation id="4385040356362222432">Каб аддзяліць сваю працу ў інтэрнэце пад імем карыстальніка <ph name="NEW_USER" /> ад працы пад імем <ph name="EXISTING_USER" />, стварыце новы профіль</translation>
 <translation id="4387004326333427325">Сертыфікат аўтэнтыфікацыі адхілены аддалена</translation>
 <translation id="4387890294700445764">Раскрытыя паролі</translation>
 <translation id="4389091756366370506">Карыстальнік <ph name="VALUE" /></translation>
@@ -3032,6 +3032,7 @@
 <translation id="4646675363240786305">Парты</translation>
 <translation id="4646949265910132906">Бяспечнае падключэнне да сеткі Wi-Fi</translation>
 <translation id="4647090755847581616">&amp;Закрыць укладку</translation>
+<translation id="4647283074445570750">Крок <ph name="CURRENT_STEP" /> з <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Запускаць праграму пры ўваходзе ва ўліковы запіс на планшэце}computer{Запускаць праграму пры ўваходзе ва ўліковы запіс на камп'ютары}other{Запускаць праграму пры ўваходзе ва ўліковы запіс на прыладзе}}</translation>
 <translation id="4647697156028544508">Увядзіце PIN-код для прылады "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Недастаткова дазволаў</translation>
@@ -4356,7 +4357,7 @@
 <translation id="6298962879096096191">Для ўсталявання праграм Android выкарыстоўвайце Google Play</translation>
 <translation id="630065524203833229">В&amp;ыйсці</translation>
 <translation id="6300718114348072351">Не ўдалося аўтаматычна наладзіць <ph name="PRINTER_NAME" />. Укажыце пашыраныя звесткі пра прынтар. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
-<translation id="6301076166764763868">Каб аддзяліць сваю працу ў інтэрнэце як прыватнай асобы ад працы ў якасці карыстальніка паштовага дамена <ph name="EXISTING_USER" />, стварыце новы профіль для карыстальніка <ph name="NEW_USER" /></translation>
+<translation id="6301076166764763868">Каб аддзяліць сваю працу ў інтэрнэце як прыватнай асобы ад працы пад імем карыстальніка <ph name="EXISTING_USER" />, стварыце новы профіль для карыстальніка <ph name="NEW_USER" /></translation>
 <translation id="630292539633944562">Прапановы асабістых даных</translation>
 <translation id="6305607932814307878">Глабальная палітыка:</translation>
 <translation id="6307990684951724544">Сістэма занятая</translation>

@@ -3033,6 +3033,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4646675363240786305">Portas</translation>
 <translation id="4646949265910132906">Conexão Wi-Fi segura</translation>
 <translation id="4647090755847581616">&amp;Fechar guia</translation>
+<translation id="4647283074445570750">Etapa <ph name="CURRENT_STEP" /> de <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Iniciar o app ao fazer login no tablet}computer{Iniciar o app ao fazer login no computador}other{Iniciar o app ao fazer login no dispositivo}}</translation>
 <translation id="4647697156028544508">Insira o PIN para "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Permissões insuficientes</translation>

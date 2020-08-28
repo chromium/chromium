@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">Зараз ви вийдете.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" />. Роздільну здатність змінено на <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Полиця</translation>
+<translation id="2841907151129139818">Увімкнено режим планшета</translation>
 <translation id="2844169650293029770">Пристрій, під’єднаний до порту USB-C (ліворуч на передній панелі)</translation>
 <translation id="2865888419503095837">Інформація про мережу</translation>
 <translation id="2872961005593481000">Завершити роботу</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">Що ти можеш?</translation>
 <translation id="3290356915286466215">Не захищено</translation>
 <translation id="3294437725009624529">Гість</translation>
+<translation id="3307642347673023554">Увімкнено режим ноутбука</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> усе одно зможе ввійти в обліковий запис.</translation>
 <translation id="3321628682574733415">Неправильний код доступу батьків</translation>
 <translation id="332587331255250389">Замініть акумулятор</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">Підтвердьте налаштування дисплея</translation>
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
 <translation id="5114495209940374989">Знімки екрана</translation>
-<translation id="5123162024343028706">Перемістити вгору</translation>
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
 <translation id="5168181903108465623">Доступні пристрої для трансляції</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">PIN-код розумної картки</translation>
 <translation id="6501401484702599040">Вміст екрана транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="652139407789908527">Під час цього оновлення зображення на екрані зникне на довше, ніж зазвичай (до хвилини). Не натискайте кнопку живлення, поки триває оновлення.</translation>
-<translation id="6527303717912515753">Надіслати</translation>
 <translation id="6528179044667508675">Не турбувати</translation>
 <translation id="65320610082834431">Смайли</translation>
 <translation id="6537270692134705506">Зробити знімок екрана</translation>

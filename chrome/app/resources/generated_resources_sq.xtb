@@ -3029,6 +3029,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4646675363240786305">Portat</translation>
 <translation id="4646949265910132906">Lidhja e sigurt WiFi</translation>
 <translation id="4647090755847581616">&amp;Mbylle skedën</translation>
+<translation id="4647283074445570750">Hapi <ph name="CURRENT_STEP" /> nga <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Nis aplikacionin kur të identifikohesh në tabletin tënd}computer{Nis aplikacionin kur të identifikohesh në kompjuterin tënd}other{Nis aplikacionin kur të identifikohesh në pajisjen tënde}}</translation>
 <translation id="4647697156028544508">Fut kodin PIN për "<ph name="DEVICE_NAME" />":</translation>
 <translation id="4648491805942548247">Lejet e pamjaftueshme</translation>
@@ -4153,7 +4154,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6061882183774845124">Dërgo lidhjen te pajisjet e tua</translation>
 <translation id="6064217302520318294">Kyçja e ekranit</translation>
 <translation id="6065289257230303064">Atributet e direktorisë së subjektit të certifikatës</translation>
-<translation id="6069464830445383022">"Llogaria jote e Google" është identifikimi i pajisjes sate Chromebook</translation>
+<translation id="6069464830445383022">Identifikohu në pajisjen Chromebook me "Llogarinë tënde të Google"</translation>
 <translation id="6069671174561668781">Cakto imazhin e sfondit</translation>
 <translation id="6071181508177083058">konfirmo fjalëkalimin</translation>
 <translation id="6071576563962215370">Sistemi nuk arriti të vendoste kyçjen e atributeve për kohën e instalimit të pajisjes.</translation>
@@ -6175,7 +6176,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8546930481464505581">Personalizo shiritin me prekje</translation>
 <translation id="8547013269961688403">Aktivizo zmadhuesin e ekranit të plotë</translation>
 <translation id="85486688517848470">Mbaj të shtypur tastin "Kërko" për të ndërruar sjelljen e tasteve të rreshtit të sipërm</translation>
-<translation id="8549316893834449916">Do ta përdorim "Llogarinë tënde të Google" për t'u identifikuar në pajisjen tënde Chromebook - të njëjtën llogari që përdor për Gmail, "Diskun", YouTube etj.</translation>
+<translation id="8549316893834449916">Për t'u identifikuar në pajisjen tënde Chromebook do të përdorësh "Llogarinë tënde të Google", të njëjtën llogari që përdor për Gmail, "Diskun", YouTube etj.</translation>
 <translation id="8551388862522347954">Licencat</translation>
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>

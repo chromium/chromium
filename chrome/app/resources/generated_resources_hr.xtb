@@ -2122,7 +2122,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3556433843310711081">Voditelj je može deblokirati</translation>
 <translation id="3557101512409028104">Postavite ograničenja web-lokacija i ograničenja vremena upotrebe uz Family Link</translation>
 <translation id="3559262020195162408">Instalacija pravila na uređaju nije uspjela.</translation>
-<translation id="3559533181353831840">Još oko <ph name="TIME_LEFT" /></translation>
+<translation id="3559533181353831840">Još približno <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Provjera pravopisa</translation>
 <translation id="3562423906127931518">Taj postupak može potrajati nekoliko minuta. Postavlja se Linuxov spremnik.</translation>
 <translation id="3563432852173030730">Aplikacija kioska nije preuzeta.</translation>
@@ -2893,7 +2893,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4480590691557335796">Chrome može pronaći i ukloniti štetni softver na vašem računalu</translation>
 <translation id="4481530544597605423">Neupareni uređaji</translation>
 <translation id="4483049906298469269">Pinganje pristupnika mreže koja nije zadana nije uspjelo</translation>
-<translation id="4487489714832036847">Chromebookovi upotrebljavaju aplikacije umjesto uobičajenih softvera. Preuzmite aplikacije za produktivnost, zabavu i mnoge druge.</translation>
+<translation id="4487489714832036847">Chromebookovi upotrebljavaju aplikacije umjesto uobičajenog softvera. Preuzmite aplikacije za produktivnost, zabavu i mnoge druge.</translation>
 <translation id="4488502501195719518">Želite li izbrisati sve podatke?</translation>
 <translation id="4493468155686877504">Preporučeno (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Ne prikazuj na ovoj stranici</translation>
@@ -6181,7 +6181,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8546930481464505581">Prilagodba dodirne trake</translation>
 <translation id="8547013269961688403">Omogući povećalo za cijeli zaslon</translation>
 <translation id="85486688517848470">Držite tipku Pretraživanje da biste izmjenjivali ponašanje tipki u najvišem retku</translation>
-<translation id="8549316893834449916">Svoj Google račun upotrebljavat ćete za prijavu na Chromebook – isti račun koji upotrebljavate za Gmail, Disk, YouTube itd.</translation>
+<translation id="8549316893834449916">Na Chromebook se prijavljujete svojim Google računom – istim računom koji upotrebljavate za Gmail, Disk, YouTube itd.</translation>
 <translation id="8551388862522347954">Licence</translation>
 <translation id="8551588720239073785">Postavke datuma i vremena</translation>
 <translation id="8553342806078037065">Upravljaj drugim osobama</translation>

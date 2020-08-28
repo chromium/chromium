@@ -761,7 +761,7 @@
 <translation id="1877377290348678128">Label (optioneel)</translation>
 <translation id="1877520246462554164">Ophalen van verificatietoken is mislukt. Log uit en weer in om het opnieuw te proberen.</translation>
 <translation id="1877860345998737529">Toewijzing van acties voor schakelaar</translation>
-<translation id="1878155070920054810">Zo te zien komt je Chromebook zonder batterij te zitten voordat de update is voltooid. Check of je Chromebook correct wordt opgeladen om onderbrekingen te voorkomen.</translation>
+<translation id="1878155070920054810">Zo te zien komt je Chromebook zonder stroom te zitten voordat de update is voltooid. Check of je Chromebook correct wordt opgeladen om onderbrekingen te voorkomen.</translation>
 <translation id="1879000426787380528">Inloggen als</translation>
 <translation id="1880905663253319515">Certificaat '<ph name="CERTIFICATE_NAME" />' verwijderen?</translation>
 <translation id="1881445033931614352">Toetsenbordindeling</translation>
@@ -3032,6 +3032,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4646675363240786305">Poorten</translation>
 <translation id="4646949265910132906">Beveiligde wifi-verbinding</translation>
 <translation id="4647090755847581616">&amp;Tabblad sluiten</translation>
+<translation id="4647283074445570750">Stap <ph name="CURRENT_STEP" /> van <ph name="TOTAL_STEPS" /></translation>
 <translation id="4647420311443994946">{0,select, tablet{Start de app als je inlogt op je tablet}computer{Start de app als je inlogt op je computer}other{Start de app als je inlogt op je apparaat}}</translation>
 <translation id="4647697156028544508">Geef de pincode op voor '<ph name="DEVICE_NAME" />':</translation>
 <translation id="4648491805942548247">Onvoldoende rechten</translation>
@@ -5405,7 +5406,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7631205654593498032">Door je apparaten te koppelen geef je de <ph name="DEVICE_TYPE" /> toestemming om:</translation>
 <translation id="7631887513477658702">&amp;Altijd bestanden van dit type openen</translation>
 <translation id="7632948528260659758">Bijwerken van de volgende kiosk-apps is mislukt:</translation>
-<translation id="7633724038415831385">Dit is de enige keer dat je moet wachten op een update. Op Chromebooks vinden softwareupdates in de achtergrond plaats.</translation>
+<translation id="7633724038415831385">Dit is de enige keer dat je moet wachten op een update. Op Chromebooks vinden software-updates in de achtergrond plaats.</translation>
 <translation id="7634566076839829401">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="763632859238619983">Niet toestaan dat sites betalingshandlers installeren</translation>
 <translation id="7636919061354591437">Installeren op dit apparaat</translation>

@@ -2973,7 +2973,7 @@
 <translation id="457386861538956877">더보기...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="457564749856982089">프로필에 학교 계정을 추가하면 학생이 계속 자녀 보호 기능으로 감독받으면서 웹사이트, 확장 프로그램, 앱에 편리하게 로그인할 수 있습니다. 이렇게 해도 자녀는 학교 계정과 동기화된 북마크, 비밀번호 및 기타 브라우저 데이터에 액세스할 수 없습니다.&lt;br&gt;&lt;br&gt;
-    자녀가 학교에서 Chromebook을 사용하며 집에서 학교 환경을 미러링하여 필요한 학교 작업에 모두 액세스할 수 있기를 원한다면 이 Family Link 계정에서 로그아웃한 후 Chrome OS 계정 페이지에서 학교 계정으로 로그인하세요(참고: Family Link 자녀 보호 기능이 적용되지 않음).&lt;br&gt;&lt;br&gt;
+    자녀가 학교에서 Chromebook을 사용하며 집에서 학교 환경을 미러링하여 필요한 학교 과제에 모두 액세스할 수 있기를 원한다면, 이 Family Link 계정에서 로그아웃한 후 Chrome OS 계정 페이지에서 학교 계정으로 로그인하세요(참고: Family Link 자녀 보호 기능이 적용되지 않음).&lt;br&gt;&lt;br&gt;
     자녀가 학교에서 Chromebook을 사용하지 않거나 Family Link를 사용하여 집에서 자녀의 환경을 관리하고 싶다면 아래에서 다음 버튼을 클릭하여 이 프로필에 학교 계정을 추가하세요.</translation>
 <translation id="4576541033847873020">블루투스 기기 페어링</translation>
 <translation id="4579453506923101210">연결된 휴대전화 삭제</translation>
@@ -3030,6 +3030,7 @@
 <translation id="4646675363240786305">포트</translation>
 <translation id="4646949265910132906">보안 Wi-Fi 연결</translation>
 <translation id="4647090755847581616">탭 닫기(&amp;C)</translation>
+<translation id="4647283074445570750">총 <ph name="TOTAL_STEPS" />단계 중 <ph name="CURRENT_STEP" />단계</translation>
 <translation id="4647420311443994946">{0,select, tablet{태블릿에 로그인할 때 앱 시작}computer{컴퓨터에 로그인할 때 앱 시작}other{기기에 로그인할 때 앱 시작}}</translation>
 <translation id="4647697156028544508">'<ph name="DEVICE_NAME" />'의 PIN을 입력하세요:</translation>
 <translation id="4648491805942548247">권한 부족</translation>
@@ -4560,7 +4561,7 @@
 <translation id="6556866813142980365">다시실행</translation>
 <translation id="6556903358015358733">테마 및 배경화면</translation>
 <translation id="6557290421156335491">내 바로가기</translation>
-<translation id="6560151649238390891">추천 이모티콘 삽입됨</translation>
+<translation id="6560151649238390891">추천 그림 이모티콘 삽입됨</translation>
 <translation id="6561560012278703671">눈에 띄지 않는 메시지 사용(방해가 되지 않도록 알림 메시지 차단)</translation>
 <translation id="6561726789132298588">입력</translation>
 <translation id="6562117348069327379">시스템 로그를 다운로드 디렉터리에 저장합니다.</translation>
@@ -5236,7 +5237,7 @@
 <translation id="7415454883318062233">설정 완료</translation>
 <translation id="7416362041876611053">알려지지 않은 네트워크 오류입니다.</translation>
 <translation id="741906494724992817">이 앱에는 특별한 권한이 필요하지 않습니다.</translation>
-<translation id="7420817660256886596"><ph name="PROXY" /> 프록시에서 사용자 이름과 비밀번호로 인증할 것을 요청합니다.</translation>
+<translation id="7420817660256886596">프록시 <ph name="PROXY" />에서 사용자 이름과 비밀번호로 인증할 것을 요청합니다.</translation>
 <translation id="742130257665691897">북마크 삭제됨</translation>
 <translation id="7421925624202799674">페이지 소스 보기(&amp;V)</translation>
 <translation id="7422192691352527311">환경설정...</translation>
@@ -5810,7 +5811,7 @@
 <translation id="8084114998886531721">저장된 비밀번호</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> 구성 중...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> 설정</translation>
-<translation id="8086550884324762001">예: 직장, 개인, 어린이 또는 이름</translation>
+<translation id="8086550884324762001">예: 직장, 개인, 자녀 또는 이름</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{암호화된 파일입니다. 소유자에게 복호화를 요청하세요.}other{일부 파일이 암호화되어 있습니다. 소유자에게 복호화를 요청하세요.}}</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8090234456044969073">가장 자주 방문한 웹사이트 목록 보기</translation>
@@ -6599,7 +6600,7 @@
 <translation id="9031549947500880805">Google 드라이브에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다.</translation>
 <translation id="9033765790910064284">무시하고 계속</translation>
 <translation id="9033857511263905942">붙여넣기(&amp;P)</translation>
-<translation id="9037818663270399707">연결이 모든 네트워크 트래픽에 비공개로 설정되어 있지 않습니다.</translation>
+<translation id="9037818663270399707">연결이 일부 네트워크 트래픽에 비공개로 설정되어 있지 않습니다.</translation>
 <translation id="9037965129289936994">원본 보기</translation>
 <translation id="9039014462651733343">{NUM_ATTEMPTS,plural, =1{앞으로 1번 더 시도할 수 있습니다.}other{앞으로 #번 더 시도할 수 있습니다.}}</translation>
 <translation id="9039663905644212491">PEAP</translation>

@@ -3028,6 +3028,7 @@
 <translation id="4646675363240786305">पोर्टहरू</translation>
 <translation id="4646949265910132906">WiFi कनेक्सन सुरक्षित बनाउनुहोस्</translation>
 <translation id="4647090755847581616">ट्याब &amp;बन्द गर्नुहोस्</translation>
+<translation id="4647283074445570750"><ph name="TOTAL_STEPS" /> मध्ये <ph name="CURRENT_STEP" /> औँ चरण</translation>
 <translation id="4647420311443994946">{0,select, tablet{मैले आफ्नो ट्याब्लेटमा साइन इन गर्दा यो एप खोलियोस्}computer{मैले आफ्नो कम्प्युटरमा साइन इन गर्दा यो एप खोलियोस्}other{मैले आफ्नो यन्त्रमा साइन इन गर्दा यो एप खोलियोस्}}</translation>
 <translation id="4647697156028544508">कृपया "<ph name="DEVICE_NAME" />" का लागि पिन प्रविष्ट गर्नुहोस्ः</translation>
 <translation id="4648491805942548247">अपर्याप्त अनुमतिहरू</translation>

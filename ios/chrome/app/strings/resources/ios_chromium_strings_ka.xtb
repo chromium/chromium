@@ -19,6 +19,7 @@
 <translation id="2650312721222849884">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chromium-ს იყენებთ, ჩართეთ სინქრონიზაცია</translation>
 <translation id="2730884209570016437">Chromium ვერ ისარგებლებს თქვენი კამერით, რადგან მას სხვა აპლიკაცია იყენებს</translation>
 <translation id="2915596697727466327">თქვენს პაროლებზე ავტორიზებული წვდომის უზრუნველსაყოფად Chromium იყენებს Face ID-ს.</translation>
+<translation id="2977470724722393594">Chromium განახლებულია</translation>
 <translation id="3256316712990552818">დაკოპირდა Chromium-ში</translation>
 <translation id="3344973607274501920">Chromium-მა ვერ შეამოწმა თქვენი პაროლები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="3639997914391704523">პაროლების Chromium-ის მეშვეობით შესამოწმებლად შედით სისტემაში თქვენი Google ანგარიშით.</translation>
@@ -65,6 +66,7 @@
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="8776843108004031667">ეს ანგარიში და შეუნახავი მონაცემები ამოიშლება Chromium-იდან.</translation>
 <translation id="9022552996538154597">შედით Chromium-ში</translation>
+<translation id="9089354809943900324">Chromium მოძველდა</translation>
 <translation id="921174536258924340">Chromium-მა ვერ შეამოწმა ყველა პაროლი. ცადეთ ხვალ ან <ph name="BEGIN_LINK" />შეამოწმეთ პაროლები თქვენი Google ანგარიშიდან<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Chromium-ის ავტორები</translation>
 </translationbundle>

@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">আপনি এখনই প্রস্থান করুন হবেন৷</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> রেজোলিউশনে চলতে পারে না। তাই রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> করা হয়েছে।</translation>
 <translation id="2825619548187458965">তাক</translation>
+<translation id="2841907151129139818">'ট্যাবলেট' মোডে পাল্টানো হয়েছে</translation>
 <translation id="2844169650293029770">USB-C ডিভাইস (বাঁ দিকের সামনের পোর্ট)</translation>
 <translation id="2865888419503095837">নেটওয়ার্ক তথ্য</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">আপনি কি করতে পারেন?</translation>
 <translation id="3290356915286466215">সুরক্ষিত নেই</translation>
 <translation id="3294437725009624529">অতিথি</translation>
+<translation id="3307642347673023554">'ল্যাপটপ' মোডে পাল্টানো হয়েছে</translation>
 <translation id="3308453408813785101">তা সত্ত্বেও, <ph name="USER_EMAIL_ADDRESS" /> পরে সাইন-ইন করতে পারবেন।</translation>
 <translation id="3321628682574733415">ভুল অভিভাবকীয় কোড</translation>
 <translation id="332587331255250389">অনুগ্রহ করে ব্যাটারি পাল্টান</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">ডিসপ্লে কনফিগারেশন কনফার্ম করুন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
 <translation id="5114495209940374989">স্ক্রিনশট</translation>
-<translation id="5123162024343028706">'উপরে দেখা যাবে' বোতাম</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
@@ -493,7 +494,6 @@
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা হচ্ছে</translation>
 <translation id="652139407789908527">এই আপডেট চলাকালীন, আপনার স্ক্রিনে, সাধারণত যে সময় লাগে, তার চেয়ে বেশি সময় (প্রায় এক মিনিট পর্যন্ত) কিছুই দেখতে পাবেন না। আপডেট চলাকালীন পাওয়ার বোতাম প্রেস করবেন না।</translation>
-<translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6528179044667508675">বিরক্ত করবে না</translation>
 <translation id="65320610082834431">ইমোজি</translation>
 <translation id="6537270692134705506">স্ক্রিন ক্যাপচার করুন</translation>

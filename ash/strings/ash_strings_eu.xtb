@@ -11,7 +11,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">Gailu mugikorra: <ph name="ADDRESS" /></translation>
-<translation id="1087110696012418426">Arratsalde on, <ph name="GIVEN_NAME" /></translation>
+<translation id="1087110696012418426">Arratsalde on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="109942774857561566">Aspertuta nago</translation>
 <translation id="1104084341931202936">Erakutsi erabilerraztasun-ezarpenak</translation>
 <translation id="1104621072296271835">Gailuek are hobeto funtzionatzen dute batera</translation>
@@ -109,7 +109,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2018630726571919839">Kontatu txiste bat</translation>
 <translation id="2050339315714019657">Bertikala</translation>
 <translation id="2067602449040652523">Teklatuaren distira</translation>
-<translation id="2083190527011054446">Gabon, <ph name="GIVEN_NAME" /></translation>
+<translation id="2083190527011054446">Gabon, <ph name="GIVEN_NAME" />:</translation>
 <translation id="209965399369889474">Ez zaude sarera konektatuta</translation>
 <translation id="2126242104232412123">Lan-eremu berria</translation>
 <translation id="2127372758936585790">Potentzia gutxiko kargagailua</translation>
@@ -170,6 +170,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2819276065543622893">Saioa amaituko zaizu.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" /> bereizmena. <ph name="FALLBACK_RESOLUTION" /> ezarri da bereizmen gisa.</translation>
 <translation id="2825619548187458965">Apala</translation>
+<translation id="2841907151129139818">Tableta modura aldatu da</translation>
 <translation id="2844169650293029770">USB-C gailua (ezkerraldeko aurreko ataka)</translation>
 <translation id="2865888419503095837">Sarearen informazioa</translation>
 <translation id="2872961005593481000">Itzali</translation>
@@ -188,7 +189,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3009178788565917040">Irteera</translation>
 <translation id="3033545621352269033">Aktibatuta</translation>
 <translation id="3038571455154067151">Saioa hasteko, idatzi Family Link-eko gurasoen sarbide-kodea</translation>
-<translation id="3045488863354895414">Arratsalde on,</translation>
+<translation id="3045488863354895414">Arratsalde on:</translation>
 <translation id="3051128274746680507">Laster kenduko da erabiltzaile gainbegiratu gisa duzun profila. Hasi saioa informazio gehiago lortzeko.</translation>
 <translation id="3055162170959710888">Gailua erabiltzen emandako denbora, gaur: <ph name="USED_TIME" /></translation>
 <translation id="3076778413190775903">Egoera-erretilua. Ordua: <ph name="TIME" />,
@@ -221,6 +222,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3255483164551725916">Zer egin dezakezu?</translation>
 <translation id="3290356915286466215">Babestu gabe</translation>
 <translation id="3294437725009624529">Gonbidatua</translation>
+<translation id="3307642347673023554">Ordenagailu eramangarriaren modura aldatu da</translation>
 <translation id="3308453408813785101">Geroago ere has dezake saioa <ph name="USER_EMAIL_ADDRESS" /> erabiltzaileak.</translation>
 <translation id="3321628682574733415">Gurasoen kodea ez da zuzena</translation>
 <translation id="332587331255250389">Ordeztu bateria</translation>
@@ -309,7 +311,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4261870227682513959">Erakutsi jakinarazpen-ezarpenak. Desaktibatuta daude jakinarazpenak.</translation>
 <translation id="4269883910223712419">Gailuaren administratzaileak honako hauek egin ditzake:</translation>
 <translation id="4279490309300973883">Islatzen</translation>
-<translation id="4294319844246081198">Egun on, <ph name="GIVEN_NAME" /></translation>
+<translation id="4294319844246081198">Egun on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="4296136865091727875">Garbitu <ph name="COUNT" /> jakinarazpenak</translation>
 <translation id="4303223480529385476">Zabaldu egoeraren eremua</translation>
 <translation id="4321179778687042513">ktrl</translation>
@@ -326,7 +328,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4421231901400348175">Urruneko laguntzaren bidez <ph name="HELPER_NAME" /> laguntzailearekin pantailaren kontrola partekatzen.</translation>
 <translation id="4430019312045809116">Bolumena</translation>
 <translation id="4450893287417543264">Ez erakutsi berriro</translation>
-<translation id="445864333228800152">Arratsalde on,</translation>
+<translation id="445864333228800152">Arratsalde on:</translation>
 <translation id="4458688154122353284">Utzi pantaila grabatzeari</translation>
 <translation id="4477350412780666475">Hurrengo pista</translation>
 <translation id="4477892968187500306">Baliteke Google-k egiaztatu ez dituen aplikazioak egotea gailuan.</translation>
@@ -379,7 +381,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5035389544768382859">Berretsi pantailaren konfigurazioa</translation>
 <translation id="5083553833479578423">Lortu Laguntzailea eginbidearen aukera gehiago.</translation>
 <translation id="5114495209940374989">Pantaila-argazkiak</translation>
-<translation id="5123162024343028706">Mantendu gainean</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
 <translation id="5168181903108465623">Igorpen-gailuak erabilgarri</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
@@ -493,7 +494,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="649452524636452238">Txartel adimendunaren PIN kodea</translation>
 <translation id="6501401484702599040">Pantaila <ph name="RECEIVER_NAME" /> gailura igortzen ari da</translation>
 <translation id="652139407789908527">Eguneratu bitartean, pantaila ohi baino denbora gehiago egongo da hutsik (minutu bat gehienez ere). Eguneratu bitartean, ez sakatu etengailua.</translation>
-<translation id="6527303717912515753">Partekatu</translation>
 <translation id="6528179044667508675">Ez molestatu</translation>
 <translation id="65320610082834431">Emojiak</translation>
 <translation id="6537270692134705506">Egin pantaila-argazkia</translation>
@@ -569,7 +569,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7405710164030118432">Gailua desblokeatzeko, idatzi Family Link-eko gurasoen sarbide-kodea.</translation>
 <translation id="741244894080940828">bihurketa</translation>
 <translation id="742594950370306541">Kamera abian da.</translation>
-<translation id="742608627846767349">Egun on,</translation>
+<translation id="742608627846767349">Egun on:</translation>
 <translation id="743058460480092004">Norbait kamera eta mikrofonoa erabiltzen ari da.</translation>
 <translation id="7466449121337984263">Ukitu sentsorea</translation>
 <translation id="7477793887173910789">Kontrolatu musika, bideoak eta beste</translation>
@@ -657,13 +657,13 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8351131234907093545">Sortu oharra</translation>
 <translation id="8371779926711439835">Joan hurrengo hizkira</translation>
 <translation id="8375916635258623388"><ph name="DEVICE_NAME" /> hau eta telefonoa automatikoki konektatuko dira</translation>
-<translation id="8380784334203145311">Gabon,</translation>
+<translation id="8380784334203145311">Gabon:</translation>
 <translation id="8388750414311082622">Ezin da kendu azken lan-eremua.</translation>
 <translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> erabiltzailearen aukeren menua</translation>
 <translation id="8394567579869570560">Guraso batek gailua blokeatu dizu</translation>
 <translation id="8412677897383510995">Erakutsi bistaratze-ezarpenak</translation>
 <translation id="8425213833346101688">Aldatu</translation>
-<translation id="8426708595819210923">Arratsalde on, <ph name="GIVEN_NAME" /></translation>
+<translation id="8426708595819210923">Arratsalde on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="8427213022735114808">Diktaketak ahotsa bidaltzen dio Google-ri, testu-eremuetan diktatu ahal izateko.</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8433186206711564395">Sarearen ezarpenak</translation>

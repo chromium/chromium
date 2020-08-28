@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">Tidak ada link yang dikunjungi sebelumnya</translation>
 <translation id="4281245629646759298">Light Yellow</translation>
 <translation id="4289540628985791613">Ikhtisar</translation>
+<translation id="4294967782363273192">Pengurutan menaik</translation>
 <translation id="4300318234632215983">Mengumumkan URL di belakang link</translation>
 <translation id="4322625298640984693">Sienna</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{titik}=3{tiga titik}other{# titik}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">Suara</translation>
 <translation id="6006050241733874051">Formulir</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{garis miring terbalik}other{# garis miring terbalik}}</translation>
+<translation id="6010616110396250088">Pengurutan menurun</translation>
 <translation id="6017514345406065928">Hijau</translation>
 <translation id="602001110135236999">Scroll ke kiri</translation>
 <translation id="6034000775414344507">Abu-abu Muda</translation>

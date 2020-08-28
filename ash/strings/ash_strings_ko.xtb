@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다.</translation>
 <translation id="2825619548187458965">임시보관함</translation>
+<translation id="2841907151129139818">태블릿 모드로 전환됨</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
 <translation id="2865888419503095837">네트워크 정보</translation>
 <translation id="2872961005593481000">종료</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">무엇을 할 수 있어?</translation>
 <translation id="3290356915286466215">비보안</translation>
 <translation id="3294437725009624529">게스트</translation>
+<translation id="3307642347673023554">노트북 모드로 전환됨</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />님은 나중에도 로그인할 수 있습니다.</translation>
 <translation id="3321628682574733415">잘못된 부모 코드</translation>
 <translation id="332587331255250389">배터리를 교체해 주세요</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">화면 구성 확인</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
 <translation id="5114495209940374989">스크린샷</translation>
-<translation id="5123162024343028706">상단에 띄우기</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
 <translation id="5168181903108465623">전송 기기를 사용할 수 있음</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">스마트 카드 PIN</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />(으)로 화면 전송 중</translation>
 <translation id="652139407789908527">업데이트 중에 평소보다 오래(최대 1분) 화면에 아무 내용도 나타나지 않을 수 있습니다. 업데이트가 진행되는 동안에는 전원 버튼을 누르지 마시기 바랍니다.</translation>
-<translation id="6527303717912515753">공유</translation>
 <translation id="6528179044667508675">방해 금지 모드</translation>
 <translation id="65320610082834431">그림 이모티콘</translation>
 <translation id="6537270692134705506">화면 캡처</translation>

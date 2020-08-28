@@ -3031,6 +3031,7 @@
 <translation id="4646675363240786305">პორტები</translation>
 <translation id="4646949265910132906">დაცული Wi-Fi კავშირი</translation>
 <translation id="4647090755847581616">&amp;დახურეთ ჩანართი</translation>
+<translation id="4647283074445570750">ნაბიჯი <ph name="CURRENT_STEP" /> / <ph name="TOTAL_STEPS" />-დან</translation>
 <translation id="4647420311443994946">{0,select, tablet{აპის გაშვება ტაბლეტში შესვლისას}computer{აპის გაშვება კომპიუტერში შესვლისას}other{აპის გაშვება მოწყობილობაში შესვლისას}}</translation>
 <translation id="4647697156028544508">გთხოვთ, შეიყვანოთ PIN-ი „<ph name="DEVICE_NAME" />“-სთვის:</translation>
 <translation id="4648491805942548247">არასაკმარისი ნებართვები</translation>

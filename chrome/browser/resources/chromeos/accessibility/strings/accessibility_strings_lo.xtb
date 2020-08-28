@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">ບໍ່ມີລິ້ງທີ່ເຂົ້າເບິ່ງແລ້ວກ່ອນໜ້າ</translation>
 <translation id="4281245629646759298">ສີເຫຼືອງອ່ອນ</translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
+<translation id="4294967782363273192">ຈັດຮຽງແຕ່ນ້ອຍຫາໃຫຍ່</translation>
 <translation id="4300318234632215983">ປະກາດ URL ເບື້ອງຫຼັງລິ້ງ</translation>
 <translation id="4322625298640984693">ສີນໍ້າຕານດິນ</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{ ຈໍ້າ}=3{ ສາມຈໍ້າ}other{ # ຈໍ້າ}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">ສຽງ</translation>
 <translation id="6006050241733874051">ແບບ​ຟອມ</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{ ໝາຍ \}other{ # ໝາຍ \}}</translation>
+<translation id="6010616110396250088">ຈັດຮຽງແຕ່ໃຫຍ່ຫານ້ອຍ</translation>
 <translation id="6017514345406065928">ສີ​ຂຽວ</translation>
 <translation id="602001110135236999">ເລື່ອນໄປຊ້າຍ</translation>
 <translation id="6034000775414344507">ສີເທົາອ່ອນ</translation>

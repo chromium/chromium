@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">現在即將登出。</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解析度已變更為 <ph name="FALLBACK_RESOLUTION" />。</translation>
 <translation id="2825619548187458965">檔案櫃</translation>
+<translation id="2841907151129139818">已切換為平板電腦模式</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左前方連接埠)</translation>
 <translation id="2865888419503095837">網路資訊</translation>
 <translation id="2872961005593481000">關閉</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">你會做些什麼？</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3294437725009624529">訪客</translation>
+<translation id="3307642347673023554">已切換為筆記型電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
 <translation id="332587331255250389">請更換電池</translation>
@@ -378,7 +380,6 @@
 <translation id="5035389544768382859">確認螢幕設定</translation>
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
 <translation id="5114495209940374989">螢幕截圖</translation>
-<translation id="5123162024343028706">懸停在上方</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
 <translation id="5168181903108465623">可用的投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
@@ -492,7 +493,6 @@
 <translation id="649452524636452238">智慧型卡片 PIN 碼</translation>
 <translation id="6501401484702599040">正在將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="652139407789908527">進行這項更新時，螢幕顯示空白畫面的時間可能會比平時更長 (最多一分鐘)。請勿在更新期間按下電源按鈕。</translation>
-<translation id="6527303717912515753">分享</translation>
 <translation id="6528179044667508675">請勿打擾</translation>
 <translation id="65320610082834431">表情符號</translation>
 <translation id="6537270692134705506">擷取整個畫面</translation>
