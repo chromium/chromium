@@ -178,7 +178,7 @@ AbstractTextureImplOnSharedContextPassthrough::
   texture_.reset();
 
   // Make the previous context current again.
-  if (!previous_context->IsCurrent(previous_surface.get()))
+  if (previous_context && !previous_context->IsCurrent(previous_surface.get()))
     previous_context->MakeCurrent(previous_surface.get());
 }
 
