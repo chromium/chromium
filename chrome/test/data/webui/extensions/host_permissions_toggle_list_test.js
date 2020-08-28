@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://extensions/extensions.js';
+import {UserAction} from 'chrome://extensions/extensions.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {TestService} from './test_service.js';
@@ -145,9 +145,33 @@ suite('HostPermissionsToggleList', function() {
     expectFalse(hostToggles[2].checked);
   });
 
-  // Tests that clicking the "allow on all sites" toggle changes the item
-  // host access properly.
-  test('clicking all hosts toggle', function() {
+  // Tests that clicking the "learn more" button is logged as a user action
+  // correctly.
+  test('clicking learn more link', async function() {
+    const permissions = {
+      hostAccess: HostAccess.ON_CLICK,
+      hasAllHosts: false,
+      hosts: [
+        {host: EXAMPLE_COM, granted: false},
+      ],
+    };
+
+    element.permissions = permissions;
+    flush();
+
+    const learnMoreButton = element.$$('#link-icon-button');
+    // Prevent triggering the navigation, which could interfere with tests.
+    learnMoreButton.href = '#';
+    learnMoreButton.target = '_self';
+    learnMoreButton.click();
+
+    const metricName = await delegate.whenCalled('recordUserAction');
+    expectEquals(UserAction.LEARN_MORE, metricName);
+  });
+
+  // Tests that clicking the "allow on the following sites" toggle when it is in
+  // the "off" state calls the delegate as expected.
+  test('clicking all hosts toggle from off to on', function() {
     const permissions = {
       hostAccess: HostAccess.ON_CLICK,
       hasAllHosts: false,
@@ -163,10 +187,44 @@ suite('HostPermissionsToggleList', function() {
     assertTrue(!!element.$);
     const allSites = element.$.allHostsToggle;
     allSites.getLabel().click();
-    return delegate.whenCalled('setItemHostAccess').then((args) => {
-      expectEquals(ITEM_ID, args[0] /* id */);
-      expectEquals(HostAccess.ON_ALL_SITES, args[1] /* access */);
-    });
+    return delegate.whenCalled('setItemHostAccess')
+        .then(([id, access]) => {
+          expectEquals(ITEM_ID, id);
+          expectEquals(HostAccess.ON_ALL_SITES, access);
+          return delegate.whenCalled('recordUserAction');
+        })
+        .then(metricName => {
+          expectEquals(UserAction.ALL_TOGGLED_ON, metricName);
+        });
+  });
+
+  // Tests that clicking the "allow on the following sites" toggle when it is in
+  // the "on" state calls the delegate as expected.
+  test('clicking all hosts toggle from on to off', function() {
+    const permissions = {
+      hostAccess: HostAccess.ON_ALL_SITES,
+      hasAllHosts: false,
+      hosts: [
+        {host: EXAMPLE_COM, granted: true},
+        {host: GOOGLE_COM, granted: true},
+        {host: CHROMIUM_ORG, granted: true},
+      ],
+    };
+    element.permissions = permissions;
+    flush();
+
+    assertTrue(!!element.$);
+    const allSites = element.$.allHostsToggle;
+    allSites.getLabel().click();
+    return delegate.whenCalled('setItemHostAccess')
+        .then(([id, access]) => {
+          expectEquals(ITEM_ID, id);
+          expectEquals(HostAccess.ON_SPECIFIC_SITES, access);
+          return delegate.whenCalled('recordUserAction');
+        })
+        .then((metricName) => {
+          expectEquals(UserAction.ALL_TOGGLED_OFF, metricName);
+        });
   });
 
   // Tests that toggling a site's enabled state toggles the extension's access
@@ -193,16 +251,25 @@ suite('HostPermissionsToggleList', function() {
 
     hostToggles[0].getLabel().click();
     return delegate.whenCalled('removeRuntimeHostPermission')
-        .then((args) => {
-          expectEquals(ITEM_ID, args[0] /* id */);
-          expectEquals(CHROMIUM_ORG, args[1] /* site */);
+        .then(([id, site]) => {
+          expectEquals(ITEM_ID, id);
+          expectEquals(CHROMIUM_ORG, site);
+          return delegate.whenCalled('recordUserAction');
+        })
+        .then((metricName) => {
+          expectEquals(UserAction.SPECIFIC_TOGGLED_OFF, metricName);
+          delegate.resetResolver('recordUserAction');
 
           hostToggles[2].getLabel().click();
           return delegate.whenCalled('addRuntimeHostPermission');
         })
-        .then((args) => {
-          expectEquals(ITEM_ID, args[0] /* id */);
-          expectEquals(GOOGLE_COM, args[1] /* site */);
+        .then(([id, site]) => {
+          expectEquals(ITEM_ID, id);
+          expectEquals(GOOGLE_COM, site);
+          return delegate.whenCalled('recordUserAction');
+        })
+        .then((metricName) => {
+          expectEquals(UserAction.SPECIFIC_TOGGLED_ON, metricName);
         });
   });
 });

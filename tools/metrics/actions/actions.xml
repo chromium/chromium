@@ -6457,6 +6457,64 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Extensions.Settings.HostList.AllHostsToggledOff">
+  <owner>tjudkins@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user activated the toggle at the top of the list of hosts in the site
+    access section of an extension's settings page, switching it from the on
+    state to the off state. Note: the host list is only shown on the settings
+    page for extensions which request a list of specific hosts in their
+    permissions.
+  </description>
+</action>
+
+<action name="Extensions.Settings.HostList.AllHostsToggledOn">
+  <owner>tjudkins@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user activated the toggle at the top of the list of hosts in the site
+    access section of an extension's settings page, switching it from the off
+    state to the on state. Note: the host list is only shown on the settings
+    page for extensions which request a list of specific hosts in their
+    permissions.
+  </description>
+</action>
+
+<action name="Extensions.Settings.HostList.LearnMoreActivated">
+  <owner>tjudkins@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user activated the learn more icon on the site access section of an
+    extension's settings page, for an extension which requested a list of
+    specific hosts in their permissions.
+  </description>
+</action>
+
+<action name="Extensions.Settings.HostList.SpecificHostToggledOff">
+  <owner>tjudkins@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user activated a toggle next to a specific host entry in the list of
+    hosts on the site access section of an extension's settings page, switching
+    it from the on state to the off state. Note: the host list is only shown on
+    the settings page for extensions which request a list of specific hosts in
+    their permissions.
+  </description>
+</action>
+
+<action name="Extensions.Settings.HostList.SpecificHostToggledOn">
+  <owner>tjudkins@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user activated a toggle next to a specific host entry in the list of
+    hosts on the site access section of an extension's settings page, switching
+    it from the off state to the on state. Note: the host list is only shown on
+    the settings page for extensions which request a list of specific hosts in
+    their permissions.
+  </description>
+</action>
+
 <action name="Extensions.Settings.Hosts.ActionMenuEditActivated">
   <owner>tjudkins@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>

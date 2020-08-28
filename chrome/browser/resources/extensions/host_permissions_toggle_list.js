@@ -13,6 +13,7 @@ import './strings.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
+import {UserAction} from './item_util.js';
 
 Polymer({
   is: 'extensions-host-permissions-toggle-list',
@@ -61,8 +62,11 @@ Polymer({
     });
   },
 
-  /** @private */
-  onAllHostsToggleChanged_() {
+  /**
+   * @param {!CustomEvent<boolean>} e
+   * @private
+   */
+  onAllHostsToggleChanged_(e) {
     // TODO(devlin): In the case of going from all sites to specific sites,
     // we'll withhold all sites (i.e., all specific site toggles will move to
     // unchecked, and the user can check them individually). This is slightly
@@ -70,22 +74,38 @@ Polymer({
     // switch leaves everything synced, and user can uncheck them
     // individually. It could be nice to align on behavior, but probably not
     // super high priority.
-    this.delegate.setItemHostAccess(
-        this.itemId,
-        this.$.allHostsToggle.checked ?
-            chrome.developerPrivate.HostAccess.ON_ALL_SITES :
-            chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES);
+    const checked = e.detail;
+
+    if (checked) {
+      this.delegate.setItemHostAccess(
+          this.itemId, chrome.developerPrivate.HostAccess.ON_ALL_SITES);
+      this.delegate.recordUserAction(UserAction.ALL_TOGGLED_ON);
+    } else {
+      this.delegate.setItemHostAccess(
+          this.itemId, chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES);
+      this.delegate.recordUserAction(UserAction.ALL_TOGGLED_OFF);
+    }
   },
 
-  /** @private */
+  /**
+   * @param {!CustomEvent<boolean>} e
+   * @private
+   */
   onHostAccessChanged_(e) {
     const host = e.target.host;
     const checked = e.target.checked;
 
     if (checked) {
       this.delegate.addRuntimeHostPermission(this.itemId, host);
+      this.delegate.recordUserAction(UserAction.SPECIFIC_TOGGLED_ON);
     } else {
       this.delegate.removeRuntimeHostPermission(this.itemId, host);
+      this.delegate.recordUserAction(UserAction.SPECIFIC_TOGGLED_OFF);
     }
   },
+
+  /** @private */
+  onLearnMoreClick_() {
+    this.delegate.recordUserAction(UserAction.LEARN_MORE);
+  }
 });

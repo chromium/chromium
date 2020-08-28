@@ -19,6 +19,7 @@ export class TestService extends TestBrowserProxy {
       'getFilteredExtensionActivityLog',
       'getProfileConfiguration',
       'loadUnpacked',
+      'recordUserAction',
       'retryLoadUnpacked',
       'reloadItem',
       'removeRuntimeHostPermission',
@@ -217,5 +218,10 @@ export class TestService extends TestBrowserProxy {
   /** @override */
   downloadActivities(rawActivityData, fileName) {
     this.methodCalled('downloadActivities', [rawActivityData, fileName]);
+  }
+
+  /** @override */
+  recordUserAction(metricName) {
+    this.methodCalled('recordUserAction', metricName);
   }
 }

@@ -110,6 +110,11 @@ export class ItemDelegate {
    * @return {!Promise<void>}
    */
   removeRuntimeHostPermission(id, host) {}
+
+  // TODO(tjudkins): This function is not specific to items, so should be pulled
+  // out to a more generic place when we need to access it from elsewhere.
+  /** @param {string} metricName */
+  recordUserAction(metricName) {}
 }
 
 Polymer({

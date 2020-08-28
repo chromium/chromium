@@ -106,6 +106,11 @@ export class Service {
     });
   }
 
+  /** @override */
+  recordUserAction(metricName) {
+    chrome.metricsPrivate.recordUserAction(metricName);
+  }
+
   /**
    * Opens a file browser dialog for the user to select a file (or directory).
    * @param {chrome.developerPrivate.SelectType} selectType
