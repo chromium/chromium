@@ -202,7 +202,7 @@ void SubmenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // the orientation.
   if (parent_menu_item_)
     parent_menu_item_->GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kMenuListPopup;
+  node_data->role = ax::mojom::Role::kMenu;
   // Menus in Chrome are always traversed in a vertical direction.
   node_data->AddState(ax::mojom::State::kVertical);
 }

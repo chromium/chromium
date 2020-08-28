@@ -84,7 +84,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
     ui::AXNodeData menu_node_data;
     menu_item->GetSubmenu()->GetViewAccessibility().GetAccessibleNodeData(
         &menu_node_data);
-    EXPECT_EQ(menu_node_data.role, ax::mojom::Role::kMenuListPopup);
+    EXPECT_EQ(menu_node_data.role, ax::mojom::Role::kMenu);
     menu_runner_->Cancel();
     RunPendingMessages();
   }
