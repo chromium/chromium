@@ -112,8 +112,6 @@ void CreateQueryWithSettings(base::Value job_settings,
 
 PrintViewManagerBase::PrintViewManagerBase(content::WebContents* web_contents)
     : PrintManager(web_contents),
-      printing_rfh_(nullptr),
-      printing_succeeded_(false),
       queue_(g_browser_process->print_job_manager()->queue()) {
   DCHECK(queue_);
   Profile* profile =

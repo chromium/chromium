@@ -206,10 +206,10 @@ class PrintViewManagerBase : public content::NotificationObserver,
   content::NotificationRegistrar registrar_;
 
   // The current RFH that is printing with a system printing dialog.
-  content::RenderFrameHost* printing_rfh_;
+  content::RenderFrameHost* printing_rfh_ = nullptr;
 
   // Indication of success of the print job.
-  bool printing_succeeded_;
+  bool printing_succeeded_ = false;
 
   // Set while running an inner message loop inside RenderAllMissingPagesNow().
   // This means we are _blocking_ until all the necessary pages have been
@@ -219,7 +219,7 @@ class PrintViewManagerBase : public content::NotificationObserver,
   // Whether printing is enabled.
   BooleanPrefMember printing_enabled_;
 
-  scoped_refptr<PrintQueriesQueue> queue_;
+  const scoped_refptr<PrintQueriesQueue> queue_;
 
   base::WeakPtrFactory<PrintViewManagerBase> weak_ptr_factory_{this};
 
