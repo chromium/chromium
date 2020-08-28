@@ -26,6 +26,30 @@ TEST_F('RepeatedEventHandlerTest', 'RepeatedEventHandledOnce', function() {
     repeatedHandler.onEvent_();
 
     // Yield before verify how many times the handler was called.
-    setTimeout(() => assertEquals(this.handlerCallCount, 1), 0);
+    setTimeout(
+        this.newCallback(() => assertEquals(this.handlerCallCount, 1)), 0);
   });
 });
+
+TEST_F(
+    'RepeatedEventHandlerTest', 'NoEventsHandledAfterStopListening',
+    function() {
+      this.runWithLoadedTree('', (root) => {
+        this.handlerCallCount = 0;
+        const handler = () => this.handlerCallCount++;
+
+        const repeatedHandler =
+            new RepeatedEventHandler(root, 'focus', handler);
+
+        // Simulate events being fired.
+        repeatedHandler.onEvent_();
+        repeatedHandler.onEvent_();
+        repeatedHandler.onEvent_();
+
+        repeatedHandler.stopListening();
+
+        // Yield before verifying how many times the handler was called.
+        setTimeout(
+            this.newCallback(() => assertEquals(this.handlerCallCount, 0)), 0);
+      });
+    });
