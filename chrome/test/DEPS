@@ -3,6 +3,7 @@ include_rules = [
   # rely on components.
   "+ash",
   "+chrome",
+  "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "+chrome/grit",
   "+chromeos",
   "+components/autofill/content",

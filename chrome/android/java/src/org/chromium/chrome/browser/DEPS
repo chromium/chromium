@@ -1,0 +1,442 @@
+include_rules = [
+  # Restricting uses of ChromeActivity in favor of direct dependency aquisition. Code that doesn't
+  # live under chrome/android/java/src/.../chrome/browser has a seperate exception in
+  # chrome/android/DEPS. Exceptions can be found under "specific_include_rules" below. See
+  # chrome/android/DEPS for more information.
+  "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+]
+
+specific_include_rules = {
+  # Exceptions to the ChromeActivity dependency restriction. These will all eventually be removed
+  # new code should rely on acceptable dependency aquisition patterns. These are sorted by package,
+  # but the package to work with the filename matching done by checkdeps.
+  "ChromeAccessorActivity\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ChromeActivitySessionTracker\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ChromeKeyboardVisibilityDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ChromeTabbedActivity\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ChromeWindow\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "KeyboardShortcuts\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "LaunchIntentDispatcher\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "NavigationPopup\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ServiceTabLauncher\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TabbedModeTabDelegateFactory\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WarmupManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ActivityTabWebContentsDelegateAndroid\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutofillExpirationDateFixFlowBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutofillExpirationDateFixFlowPrompt\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutofillNameFixFlowBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutofillNameFixFlowPrompt\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutofillPopupBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CardUnmaskBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CardUnmaskPrompt\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "BookmarkPage\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "BookmarkUtils\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "QualityEnforcer\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "DigitalGoodsFactory\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TwaFinishHandler\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ClientPackageNameProvider\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "SplashController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WebappSplashController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "OverlayPanel\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "OverlayPanelBase\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "OverlayPanelContent\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "BarOverlapTapSuppression\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ContextualSearchManagementDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ContextualSearchManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ContextualSearchSelectionController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ContextualSearchTabHelper\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "BaseCustomTabActivity\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "BaseCustomTabRootUiCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabActivityLifecycleUmaTracker\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabBottomBarDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabCompositorContentInitializer\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabDelegateFactory\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabIncognitoManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabIntentDataProvider\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabTabPersistencePolicy\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabTaskDescriptionHelper\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabTopBarDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabActivityNavigationController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabActivityTabController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabActivityTabFactory\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabToolbarColorController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabToolbarCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ChromeActivityCommonsModule\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "DisplayCutoutTabHelper\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ReaderModeManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "DownloadController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "DownloadInfoBarController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "DownloadPage\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ExploreSitesIPH\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ExploreSitesPage\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ExternalNavigationDelegateImpl\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ScreenshotTask\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ForcedSigninProcessor\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "BrowserControlsManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ContextReporter\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "GSAHelper\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "HistoryManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "HistoryManagerUtils\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "HistoryPage\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "InfoBarContainer\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TranslateCompactInfoBar\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ProcessInitializationHandler\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "LanguageAskPrompt\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PictureInPictureController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ChromeTabModalPresenter\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TabModalLifetimeHandler\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "NativePageFactory\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "RecentTabsPage\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "OfflinePageBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "OfflinePageTabObserver\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "OfflinePageUtils\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "OfflineIndicatorController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TopSnackbarManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TopSnackbarView\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "UpdateInfoBarController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "UpdateStatusProvider\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "FakeAppUpdateManagerWrapper\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "UpdateNotificationControllerFactory\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "UpdateNotificationControllerImpl\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "UpdateNotificationServiceBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutocompleteMediator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PaintPreviewHelper\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutoSigninSnackbarController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CredentialLeakDialogBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "OnboardingDialogBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PasswordChangeLauncher\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PasswordCheckupLauncher\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PasswordGenerationDialogBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PasswordGenerationDialogCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AndroidPaymentApp\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AndroidPaymentAppFinder\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AutofillPaymentInstrument\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CardEditor\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PaymentRequestFactory\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PaymentRequestImpl\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TwaPackageManagerDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PaymentHandlerCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PaymentHandlerMediator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PaymentHandlerToolbarCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PaymentUIsManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "PrintShareActivity\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "SafeBrowsingPasswordReuseDialogBridge\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "EditorScreenshotTask\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "SendTabToSelfInfoBarController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "SendTabToSelfShareActivity\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "SigninUtils\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AccountPickerDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "InterceptNavigationDelegateClientImpl\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TabImpl\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TrustedCdn\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TabbedRootUiCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ChromeTabCreator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "TabDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ReturnToChromeExperimentsUtil\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ToolbarButtonInProductHelpController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ToolbarManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "BottomControlsCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "CustomTabToolbar\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ViewShiftingActionBarDelegate\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "RootUiCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "StatusBarColorController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "SuspendedTab\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ArCoreJavaUtils\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ArImmersiveOverlay\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WebApkActivityCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WebApkActivityLifecycleUmaTracker\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WebApkServiceClient\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WebApkUpdateManager\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WebappActivityCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WebappDeferredStartupWithStorageHandler\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "WebappDisclosureSnackbarController\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "AddToHomescreenCoordinator\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "Fido2CredentialRequest\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+  "ShareServiceImplementationFactory\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
+}
