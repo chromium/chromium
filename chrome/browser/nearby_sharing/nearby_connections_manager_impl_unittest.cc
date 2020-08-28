@@ -42,6 +42,8 @@ const int64_t kPayloadId2 = 777689;
 const uint64_t kTotalSize = 5201314;
 const uint64_t kBytesTransferred = 721831;
 const uint8_t kPayload[] = {0x0f, 0x0a, 0x0c, 0x0e};
+const char kBluetoothMacAddress[] = {0x00, 0x00, 0xe6, 0x88, 0x64, 0x13};
+const char kInvalidBluetoothMacAddress[] = {0x07, 0x07, 0x07};
 
 void VerifyFileReadWrite(base::File& input_file, base::File& output_file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -196,7 +198,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     EXPECT_CALL(nearby_connections_, RequestConnection)
         .WillOnce(
             [&](const std::vector<uint8_t>& endpoint_info,
-                const std::string& endpoint_id,
+                const std::string& endpoint_id, ConnectionOptionsPtr options,
                 mojo::PendingRemote<ConnectionLifecycleListener> listener,
                 NearbyConnectionsMojom::RequestConnectionCallback callback) {
               EXPECT_EQ(local_endpoint_info, endpoint_info);
@@ -440,6 +442,117 @@ TEST_F(NearbyConnectionsManagerImplTest, StopDiscoveryBeforeStart) {
   EXPECT_CALL(nearby_connections_, StopDiscovery).Times(0);
   nearby_connections_manager_.StopDiscovery();
 }
+
+using ConnectionMediumsTestParam =
+    std::tuple<DataUsage, net::NetworkChangeNotifier::ConnectionType>;
+class NearbyConnectionsManagerImplTestConnectionMediums
+    : public NearbyConnectionsManagerImplTest,
+      public testing::WithParamInterface<ConnectionMediumsTestParam> {};
+
+TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
+       RequestConnection_MediumSelection) {
+  const ConnectionMediumsTestParam& param = GetParam();
+  DataUsage data_usage = std::get<0>(param);
+  net::NetworkChangeNotifier::ConnectionType connection_type =
+      std::get<1>(param);
+
+  network_notifier_->SetConnectionType(connection_type);
+  bool should_use_web_rtc =
+      data_usage != DataUsage::kOffline &&
+      connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
+      (data_usage != DataUsage::kWifiOnly ||
+       !net::NetworkChangeNotifier::IsConnectionCellular(connection_type));
+
+  auto expected_mediums = MediumSelection::New(
+      /*bluetooth=*/true,
+      /*web_rtc=*/should_use_web_rtc,
+      /*wifi_lan=*/true);
+
+  // StartDiscovery will succeed.
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
+                                                 std::end(kEndpointInfo));
+  EXPECT_CALL(nearby_connections_, RequestConnection)
+      .WillOnce(
+          [&](const std::vector<uint8_t>& endpoint_info,
+              const std::string& endpoint_id, ConnectionOptionsPtr options,
+              mojo::PendingRemote<ConnectionLifecycleListener> listener,
+              NearbyConnectionsMojom::RequestConnectionCallback callback) {
+            EXPECT_EQ(local_endpoint_info, endpoint_info);
+            EXPECT_EQ(kRemoteEndpointId, endpoint_id);
+            EXPECT_EQ(expected_mediums, options->allowed_mediums);
+            std::move(callback).Run(Status::kSuccess);
+          });
+
+  nearby_connections_manager_.Connect(local_endpoint_info, kRemoteEndpointId,
+                                      /*bluetooth_mac_address=*/base::nullopt,
+                                      data_usage, base::DoNothing());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NearbyConnectionsManagerImplTestConnectionMediums,
+    NearbyConnectionsManagerImplTestConnectionMediums,
+    testing::Combine(
+        testing::Values(DataUsage::kWifiOnly,
+                        DataUsage::kOffline,
+                        DataUsage::kOnline),
+        testing::Values(net::NetworkChangeNotifier::CONNECTION_NONE,
+                        net::NetworkChangeNotifier::CONNECTION_WIFI,
+                        net::NetworkChangeNotifier::CONNECTION_3G)));
+
+struct ConnectionBluetoothMacAddressTestData {
+  base::Optional<std::vector<uint8_t>> bluetooth_mac_address;
+  base::Optional<std::vector<uint8_t>> expected_bluetooth_mac_address;
+} kConnectionBluetoothMacAddressTestData[] = {
+    {base::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
+                                              std::end(kBluetoothMacAddress))),
+     base::make_optional(std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
+                                              std::end(kBluetoothMacAddress)))},
+    {base::make_optional(
+         std::vector<uint8_t>(std::begin(kInvalidBluetoothMacAddress),
+                              std::end(kInvalidBluetoothMacAddress))),
+     base::nullopt},
+    {base::nullopt, base::nullopt}};
+
+class NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress
+    : public NearbyConnectionsManagerImplTest,
+      public testing::WithParamInterface<
+          ConnectionBluetoothMacAddressTestData> {};
+
+TEST_P(NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress,
+       RequestConnection_BluetoothMacAddress) {
+  // StartDiscovery will succeed.
+  mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
+  testing::NiceMock<MockDiscoveryListener> discovery_listener;
+  StartDiscovery(discovery_listener_remote, discovery_listener);
+
+  const std::vector<uint8_t> local_endpoint_info(std::begin(kEndpointInfo),
+                                                 std::end(kEndpointInfo));
+  EXPECT_CALL(nearby_connections_, RequestConnection)
+      .WillOnce(
+          [&](const std::vector<uint8_t>& endpoint_info,
+              const std::string& endpoint_id, ConnectionOptionsPtr options,
+              mojo::PendingRemote<ConnectionLifecycleListener> listener,
+              NearbyConnectionsMojom::RequestConnectionCallback callback) {
+            EXPECT_EQ(local_endpoint_info, endpoint_info);
+            EXPECT_EQ(kRemoteEndpointId, endpoint_id);
+            EXPECT_EQ(GetParam().expected_bluetooth_mac_address,
+                      options->remote_bluetooth_mac_address);
+            std::move(callback).Run(Status::kSuccess);
+          });
+
+  nearby_connections_manager_.Connect(local_endpoint_info, kRemoteEndpointId,
+                                      GetParam().bluetooth_mac_address,
+                                      DataUsage::kOffline, base::DoNothing());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress,
+    NearbyConnectionsManagerImplTestConnectionBluetoothMacAddress,
+    testing::ValuesIn(kConnectionBluetoothMacAddressTestData));
 
 TEST_F(NearbyConnectionsManagerImplTest, ConnectRejected) {
   // StartDiscovery will succeed.
@@ -819,7 +932,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ConnectTimeout) {
   EXPECT_CALL(nearby_connections_, RequestConnection)
       .WillOnce(
           [&](const std::vector<uint8_t>& endpoint_info,
-              const std::string& endpoint_id,
+              const std::string& endpoint_id, ConnectionOptionsPtr options,
               mojo::PendingRemote<ConnectionLifecycleListener> listener,
               NearbyConnectionsMojom::RequestConnectionCallback callback) {
             EXPECT_EQ(local_endpoint_info, endpoint_info);

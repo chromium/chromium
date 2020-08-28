@@ -77,6 +77,8 @@ class NearbyConnectionsManagerImpl
       location::nearby::connections::mojom::AdvertisingOptions;
   using ConnectionInfoPtr =
       location::nearby::connections::mojom::ConnectionInfoPtr;
+  using ConnectionOptions =
+      location::nearby::connections::mojom::ConnectionOptions;
   using ConnectionLifecycleListener =
       location::nearby::connections::mojom::ConnectionLifecycleListener;
   using DiscoveredEndpointInfoPtr =

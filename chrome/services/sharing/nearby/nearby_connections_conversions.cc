@@ -52,9 +52,8 @@ mojom::Status StatusToMojom(Status::Value status) {
       return mojom::Status::kNotConnectedToEndpoint;
     case Status::Value::kBluetoothError:
       return mojom::Status::kBluetoothError;
-    // TODO(alexchau): Add kBleError to mojo.
     case Status::Value::kBleError:
-      return mojom::Status::kError;
+      return mojom::Status::kBleError;
     case Status::Value::kWifiLanError:
       return mojom::Status::kWifiLanError;
     case Status::Value::kPayloadUnknown:
@@ -99,6 +98,15 @@ mojom::PayloadStatus PayloadStatusToMojom(PayloadProgressInfo::Status status) {
     case PayloadProgressInfo::Status::kCanceled:
       return mojom::PayloadStatus::kCanceled;
   }
+}
+
+BooleanMediumSelector MediumSelectorFromMojom(
+    mojom::MediumSelection* allowed_mediums) {
+  return BooleanMediumSelector{
+      .bluetooth = allowed_mediums->bluetooth,
+      .web_rtc = allowed_mediums->web_rtc,
+      .wifi_lan = allowed_mediums->wifi_lan,
+  };
 }
 
 }  // namespace connections

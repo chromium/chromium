@@ -21,9 +21,7 @@ const char kServiceId[] = "NearbySharing";
 const location::nearby::connections::mojom::Strategy kStrategy =
     location::nearby::connections::mojom::Strategy::kP2pPointToPoint;
 
-bool ShouldEnableWebRtc(bool is_advertising,
-                        DataUsage data_usage,
-                        PowerLevel power_level) {
+bool ShouldEnableWebRtc(DataUsage data_usage, PowerLevel power_level) {
   // We won't use internet if the user requested we don't.
   if (data_usage == DataUsage::kOffline)
     return false;
@@ -82,8 +80,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
 
   bool is_high_power = power_level == PowerLevel::kHighPower;
   auto allowed_mediums = MediumSelection::New(
-      /*bluetooth=*/is_high_power,
-      ShouldEnableWebRtc(/*is_advertising=*/true, data_usage, power_level),
+      /*bluetooth=*/is_high_power, ShouldEnableWebRtc(data_usage, power_level),
       /*wifi_lan=*/is_high_power);
 
   mojo::PendingRemote<ConnectionLifecycleListener> lifecycle_listener;
@@ -158,6 +155,14 @@ void NearbyConnectionsManagerImpl::Connect(
     return;
   }
 
+  if (bluetooth_mac_address && bluetooth_mac_address->size() != 6)
+    bluetooth_mac_address.reset();
+
+  auto allowed_mediums = MediumSelection::New(
+      /*bluetooth=*/true,
+      ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
+      /*wifi_lan=*/true);
+
   mojo::PendingRemote<ConnectionLifecycleListener> lifecycle_listener;
   connection_lifecycle_listeners_.Add(
       this, lifecycle_listener.InitWithNewPipeAndPassReceiver());
@@ -173,9 +178,11 @@ void NearbyConnectionsManagerImpl::Connect(
                      weak_ptr_factory_.GetWeakPtr(), endpoint_id));
   connect_timeout_timers_.emplace(endpoint_id, std::move(timeout_timer));
 
-  // TODO(crbug/10706008): Add MediumSelector and bluetooth_mac_address.
   nearby_connections_->RequestConnection(
-      endpoint_info, endpoint_id, std::move(lifecycle_listener),
+      endpoint_info, endpoint_id,
+      ConnectionOptions::New(std::move(allowed_mediums),
+                             std::move(bluetooth_mac_address)),
+      std::move(lifecycle_listener),
       base::BindOnce(&NearbyConnectionsManagerImpl::OnConnectionRequested,
                      weak_ptr_factory_.GetWeakPtr(), endpoint_id));
 }

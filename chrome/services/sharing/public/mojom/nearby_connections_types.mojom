@@ -43,6 +43,9 @@ enum Status {
   kNotConnectedToEndpoint,
   // There was an error trying to use the device's Bluetooth capabilities.
   kBluetoothError,
+  // There was an error trying to use the device's Bluetooth Low Energy
+  // capabilities.
+  kBleError,
   // There was an error trying to use the device's WiFi capabilities.
   kWifiLanError,
   // An attempt to interact with an in-flight Payload failed because it's
@@ -135,6 +138,16 @@ struct DiscoveryOptions {
   // The strategy to use for discovering. Must match the strategy used in
   // AdvertisingOptions in order to see advertisements.
   Strategy strategy;
+};
+
+// Options for a call to NearbyConnections::RequestConnection().
+struct ConnectionOptions {
+  // Describes which mediums are allowed to be used for connection. Note that
+  // allowing an otherwise unsupported medium is ok. Only the intersection of
+  // allowed and supported mediums will be used to connect.
+  MediumSelection allowed_mediums;
+  // Bluetooth MAC address of remote device in byte format.
+  array<uint8, 6>? remote_bluetooth_mac_address;
 };
 
 // A simple payload containing raw bytes.

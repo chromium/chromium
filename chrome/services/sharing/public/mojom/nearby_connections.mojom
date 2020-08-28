@@ -188,6 +188,7 @@ interface NearbyConnections {
   //                 connection request will be sent. Should match the value
   //                 provided in a call to
   //                 EndpointDiscoveryListener::OnEndpointFound().
+  // options       - The options for connection.
   // listener      - An interface notified when the remote endpoint sends a
   //                 response to the connection request.
   // Possible return values include:
@@ -199,8 +200,8 @@ interface NearbyConnections {
   //   Status::kWifiLanError if we failed to connect because of an
   //       issue with WiFi.
   //   Status::kError if we failed to connect for any other reason.
-  // TODO(crbug/1076008): Add MediumSelector and bluetooth_mac_address.
   RequestConnection(array<uint8> endpoint_info, string endpoint_id,
+                   ConnectionOptions options,
                    pending_remote<ConnectionLifecycleListener> listener)
       => (Status status);
 

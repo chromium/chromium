@@ -32,6 +32,9 @@ ByteArray ByteArrayFromMojom(const std::vector<uint8_t>& byte_array);
 
 mojom::PayloadStatus PayloadStatusToMojom(PayloadProgressInfo::Status status);
 
+BooleanMediumSelector MediumSelectorFromMojom(
+    mojom::MediumSelection* allowed_mediums);
+
 }  // namespace connections
 }  // namespace nearby
 }  // namespace location

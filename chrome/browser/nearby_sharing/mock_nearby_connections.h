@@ -13,12 +13,14 @@ using NearbyConnectionsMojom =
     location::nearby::connections::mojom::NearbyConnections;
 using AdvertisingOptionsPtr =
     location::nearby::connections::mojom::AdvertisingOptionsPtr;
+using ConnectionLifecycleListener =
+    location::nearby::connections::mojom::ConnectionLifecycleListener;
+using ConnectionOptionsPtr =
+    location::nearby::connections::mojom::ConnectionOptionsPtr;
 using DiscoveryOptionsPtr =
     location::nearby::connections::mojom::DiscoveryOptionsPtr;
 using EndpointDiscoveryListener =
     location::nearby::connections::mojom::EndpointDiscoveryListener;
-using ConnectionLifecycleListener =
-    location::nearby::connections::mojom::ConnectionLifecycleListener;
 using PayloadListener = location::nearby::connections::mojom::PayloadListener;
 using PayloadPtr = location::nearby::connections::mojom::PayloadPtr;
 
@@ -50,6 +52,7 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
               RequestConnection,
               (const std::vector<uint8_t>& endpoint_info,
                const std::string& endpoint_id,
+               ConnectionOptionsPtr options,
                mojo::PendingRemote<ConnectionLifecycleListener>,
                RequestConnectionCallback),
               (override));

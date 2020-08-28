@@ -196,14 +196,9 @@ void NearbyConnections::StartAdvertising(
     mojom::AdvertisingOptionsPtr options,
     mojo::PendingRemote<mojom::ConnectionLifecycleListener> listener,
     StartAdvertisingCallback callback) {
-  BooleanMediumSelector allowed_mediums = {
-      .bluetooth = options->allowed_mediums->bluetooth,
-      .web_rtc = options->allowed_mediums->web_rtc,
-      .wifi_lan = options->allowed_mediums->wifi_lan,
-  };
   ConnectionOptions connection_options{
       .strategy = StrategyFromMojom(options->strategy),
-      .allowed = std::move(allowed_mediums),
+      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get()),
       .auto_upgrade_bandwidth = options->auto_upgrade_bandwidth,
       .enforce_topology_constraints = options->enforce_topology_constraints,
   };
@@ -262,13 +257,20 @@ void NearbyConnections::StopDiscovery(StopDiscoveryCallback callback) {
 void NearbyConnections::RequestConnection(
     const std::vector<uint8_t>& endpoint_info,
     const std::string& endpoint_id,
+    mojom::ConnectionOptionsPtr options,
     mojo::PendingRemote<mojom::ConnectionLifecycleListener> listener,
     RequestConnectionCallback callback) {
+  ConnectionOptions connection_options{
+      .allowed = MediumSelectorFromMojom(options->allowed_mediums.get())};
+  if (options->remote_bluetooth_mac_address) {
+    connection_options.remote_bluetooth_mac_address =
+        ByteArrayFromMojom(*options->remote_bluetooth_mac_address);
+  }
   core_->RequestConnection(
       endpoint_id,
       CreateConnectionRequestInfo(endpoint_info, std::move(listener)),
-      // TODO(alexchau): Add ConnectionsOptions to mojo.
-      /*options=*/{}, ResultCallbackFromMojom(std::move(callback)));
+      std::move(connection_options),
+      ResultCallbackFromMojom(std::move(callback)));
 }
 
 void NearbyConnections::DisconnectFromEndpoint(
