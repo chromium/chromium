@@ -52,6 +52,12 @@ NativeTheme::PreferredColorScheme TestNativeTheme::GetPreferredColorScheme()
   return CalculatePreferredColorScheme();
 }
 
+NativeTheme::ColorScheme TestNativeTheme::GetDefaultSystemColorScheme() const {
+  if (is_platform_high_contrast_)
+    return ColorScheme::kPlatformHighContrast;
+  return NativeTheme::GetDefaultSystemColorScheme();
+}
+
 void TestNativeTheme::AddColorSchemeNativeThemeObserver(
     NativeTheme* theme_to_update) {
   color_scheme_observer_ =

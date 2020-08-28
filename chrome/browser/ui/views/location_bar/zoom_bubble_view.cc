@@ -154,10 +154,18 @@ void ParentToBrowser(Browser* browser,
                      ZoomBubbleView* zoom_bubble,
                      views::View* anchor_view,
                      content::WebContents* web_contents) {
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
   zoom_bubble->SetHighlightedButton(
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kZoom));
+      browser_view->toolbar_button_provider()->GetPageActionIconView(
+          PageActionIconType::kZoom));
+
+  // If we don't anchor to anything the BrowserView is our parent. This happens
+  // in fullscreen cases.
+  zoom_bubble->set_parent_window(
+      zoom_bubble->anchor_widget()
+          ? nullptr
+          : browser_view->GetWidget()->GetNativeView());
 
   views::BubbleDialogDelegateView::CreateBubble(zoom_bubble);
 }

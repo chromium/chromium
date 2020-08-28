@@ -119,14 +119,16 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kNone;
   else
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kDrop;
-  if (bubble->parent_window())
+  if (bubble->parent_window()) {
     bubble_params.parent = bubble->parent_window();
-  else if (bubble->anchor_widget())
+  } else if (bubble->anchor_widget()) {
     bubble_params.parent = bubble->anchor_widget()->GetNativeView();
+  }
   bubble_params.activatable = bubble->CanActivate()
                                   ? Widget::InitParams::ACTIVATABLE_YES
                                   : Widget::InitParams::ACTIVATABLE_NO;
   bubble->OnBeforeBubbleWidgetInit(&bubble_params, bubble_widget);
+  DCHECK(bubble_params.parent);
   bubble_widget->Init(std::move(bubble_params));
 #if !defined(OS_APPLE)
   // On Mac, having a parent window creates a permanent stacking order, so

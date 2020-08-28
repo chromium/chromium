@@ -165,12 +165,8 @@ void MaybeShowInvertBubbleView(BrowserView* browser_view) {
           ui::NativeTheme::PlatformHighContrastColorScheme::kDark &&
       !pref_service->GetBoolean(prefs::kInvertNotificationShown)) {
     pref_service->SetBoolean(prefs::kInvertNotificationShown, true);
-    ShowInvertBubbleView(browser, anchor);
+    views::BubbleDialogDelegateView::CreateBubble(
+        std::make_unique<InvertBubbleView>(browser, anchor))
+        ->Show();
   }
-}
-
-void ShowInvertBubbleView(Browser* browser, views::View* anchor) {
-  views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<InvertBubbleView>(browser, anchor))
-      ->Show();
 }
