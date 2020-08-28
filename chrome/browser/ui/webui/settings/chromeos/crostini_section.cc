@@ -98,8 +98,8 @@ const std::vector<SearchConcept>& GetCrostiniOptedOutSearchConcepts() {
        mojom::kCrostiniSectionPath,
        mojom::SearchResultIcon::kPenguin,
        mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kSetUpCrostini},
+       mojom::SearchResultType::kSection,
+       {.section = mojom::Section::kCrostini},
        {IDS_OS_SETTINGS_TAG_CROSTINI_SETUP_ALT1, SearchConcept::kAltTagEnd}},
   });
   return *tags;
