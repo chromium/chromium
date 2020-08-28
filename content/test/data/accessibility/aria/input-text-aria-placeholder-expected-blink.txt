@@ -4,18 +4,12 @@ rootWebArea
 ++++++textField name='aria-placeholder1'
 ++++++++genericContainer
 ++++++textField name='placeholder2'
-++++++++staticText name='placeholder2'
-++++++++++inlineTextBox name='placeholder2'
 ++++++++genericContainer
 ++++++textField name='aria-label3' placeholder='placeholder3'
-++++++++staticText name='placeholder3'
-++++++++++inlineTextBox name='placeholder3'
 ++++++++genericContainer
 ++++++textField name='aria-label4' placeholder='aria-placeholder4'
 ++++++++genericContainer
 ++++++textField description='aria-description5' name='aria-label5' placeholder='placeholder5' descriptionFrom=relatedElement
-++++++++staticText name='placeholder5'
-++++++++++inlineTextBox name='placeholder5'
 ++++++++genericContainer
 ++++++genericContainer
 ++++++++staticText name='aria-description5'

@@ -3404,6 +3404,15 @@ bool AXNodeObject::CanHaveChildren() const {
   if (GetNode() && IsA<HTMLMapElement>(GetNode()))
     return false;  // Does not have a role, so check here
 
+  // Placeholder gets exposed as an attribute on the input accessibility node,
+  // so there's no need to add its text children. Placeholder text is a separate
+  // node that gets removed when it disappears, so this will only be present if
+  // the placeholder is visible.
+  if (GetElement() && GetElement()->ShadowPseudoId() ==
+                          AtomicString("-webkit-input-placeholder")) {
+    return false;
+  }
+
   switch (native_role_) {
     case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kImage:
