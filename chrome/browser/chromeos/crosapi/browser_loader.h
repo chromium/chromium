@@ -42,9 +42,12 @@ class BrowserLoader {
                       component_updater::CrOSComponentManager::Error error,
                       const base::FilePath& path);
 
-  // Unloading hops threads. This is called after possible user directory
-  // removal.
-  void UnloadAfterCleanUp(bool was_installed);
+  // Unloading hops threads. This is called after we check whether Lacros was
+  // installed and maybe clean up the user directory.
+  void OnCheckInstalled(bool was_installed);
+
+  // Unloads the component. Called after system salt is available.
+  void UnloadAfterCleanUp(const std::string& ignored_salt);
 
   // May be null in tests.
   scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
