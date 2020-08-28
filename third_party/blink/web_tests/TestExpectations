@@ -6639,3 +6639,5 @@ crbug.com/1120330 virtual/threaded/external/wpt/feature-policy/experimental-feat
 # Sheriff 2020-08-26
 crbug.com/1122106 external/wpt/webrtc/protocol/crypto-suite.https.html [ Pass Timeout ]
 crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-breakpoint-decorations.js [ Pass Timeout ]
+
+crbug.com/1122582 external/wpt/html/cross-origin-opener-policy/coop-csp-sandbox-navigate.https.html [ Pass Failure ]
