@@ -291,7 +291,13 @@ void HeaderView::PaintHeaderContent(gfx::Canvas* canvas) {
   if (!should_paint_ || !target_widget_)
     return;
 
-  frame_header_->PaintHeader(canvas);
+  bool paint_as_active =
+      target_widget_->non_client_view()->frame_view()->ShouldPaintAsActive();
+  frame_header_->SetPaintAsActive(paint_as_active);
+
+  FrameHeader::Mode header_mode =
+      paint_as_active ? FrameHeader::MODE_ACTIVE : FrameHeader::MODE_INACTIVE;
+  frame_header_->PaintHeader(canvas, header_mode);
 }
 
 void HeaderView::UpdateBackButton() {

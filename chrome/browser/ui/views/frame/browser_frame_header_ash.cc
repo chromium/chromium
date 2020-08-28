@@ -34,31 +34,39 @@ void PaintThemedFrame(gfx::Canvas* canvas,
                       SkColor background_color,
                       const gfx::Rect& bounds,
                       int image_inset_x,
-                      int image_inset_y) {
+                      int image_inset_y,
+                      int alpha) {
   SkColor opaque_background_color =
       SkColorSetA(background_color, SK_AlphaOPAQUE);
 
-  // When no images are used, just draw a color.
+  // When no images are used, just draw a color, with the animation |alpha|
+  // applied.
   if (frame_image.isNull() && frame_overlay_image.isNull()) {
-    canvas->DrawColor(opaque_background_color);
+    // We use kPlus blending mode so that between the active and inactive
+    // background colors, the result is 255 alpha (i.e. opaque).
+    canvas->DrawColor(SkColorSetA(opaque_background_color, alpha),
+                      SkBlendMode::kPlus);
     return;
   }
 
   // This handles the case where blending is required between one or more images
   // and the background color. In this case we use a SaveLayerWithFlags() call
-  // to draw all 2-3 components into a single layer.
+  // to draw all 2-3 components into a single layer then apply the alpha to them
+  // together.
   const bool blending_required =
-      !frame_image.isNull() && !frame_overlay_image.isNull();
+      alpha < 0xFF || (!frame_image.isNull() && !frame_overlay_image.isNull());
   if (blending_required) {
     cc::PaintFlags flags;
     // We use kPlus blending mode so that between the active and inactive
     // background colors, the result is 255 alpha (i.e. opaque).
     flags.setBlendMode(SkBlendMode::kPlus);
+    flags.setAlpha(alpha);
     canvas->SaveLayerWithFlags(flags);
   }
 
   // Images can be transparent and we expect the background color to be present
-  // behind them.
+  // behind them. Here the |alpha| will be applied to the background color by
+  // the SaveLayer call, so use |opaque_background_color|.
   canvas->DrawColor(opaque_background_color);
   if (!frame_image.isNull()) {
     canvas->TileImageInt(frame_image, image_inset_x, image_inset_y, 0, 0,
@@ -81,6 +89,7 @@ void PaintFrameImagesInRoundRect(gfx::Canvas* canvas,
                                  const gfx::Rect& bounds,
                                  int image_inset_x,
                                  int image_inset_y,
+                                 int alpha,
                                  int corner_radius) {
   const SkScalar sk_corner_radius = SkIntToScalar(corner_radius);
   const SkScalar radii[8] = {sk_corner_radius,
@@ -100,7 +109,7 @@ void PaintFrameImagesInRoundRect(gfx::Canvas* canvas,
   canvas->ClipPath(frame_path, antialias);
 
   PaintThemedFrame(canvas, frame_image, frame_overlay_image, background_color,
-                   bounds, image_inset_x, image_inset_y);
+                   bounds, image_inset_x, image_inset_y, alpha);
 }
 
 }  // namespace
@@ -138,7 +147,8 @@ int BrowserFrameHeaderAsh::GetThemeBackgroundXInset() {
 // BrowserFrameHeaderAsh, protected:
 
 void BrowserFrameHeaderAsh::DoPaintHeader(gfx::Canvas* canvas) {
-  PaintFrameImages(canvas);
+  PaintFrameImages(canvas, false /* active */);
+  PaintFrameImages(canvas, true /* active */);
   PaintTitleBar(canvas);
 }
 
@@ -168,8 +178,13 @@ void BrowserFrameHeaderAsh::UpdateFrameColors() {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameHeaderAsh, private:
 
-void BrowserFrameHeaderAsh::PaintFrameImages(gfx::Canvas* canvas) {
-  const bool active = mode() == Mode::MODE_ACTIVE;
+void BrowserFrameHeaderAsh::PaintFrameImages(gfx::Canvas* canvas, bool active) {
+  int alpha = activation_animation().CurrentValueBetween(0, 0xFF);
+  if (!active)
+    alpha = 0xFF - alpha;
+
+  if (alpha == 0)
+    return;
 
   gfx::ImageSkia frame_image =
       appearance_provider_->GetFrameHeaderImage(active);
@@ -186,5 +201,5 @@ void BrowserFrameHeaderAsh::PaintFrameImages(gfx::Canvas* canvas) {
                               appearance_provider_->GetFrameHeaderColor(active),
                               GetPaintedBounds(), GetThemeBackgroundXInset(),
                               appearance_provider_->GetFrameHeaderImageYInset(),
-                              corner_radius);
+                              alpha, corner_radius);
 }

@@ -326,8 +326,11 @@ void BrowserNonClientFrameViewAsh::OnPaint(gfx::Canvas* canvas) {
   if (!ShouldPaint())
     return;
 
+  const ash::FrameHeader::Mode header_mode =
+      ShouldPaintAsActive() ? ash::FrameHeader::MODE_ACTIVE
+                            : ash::FrameHeader::MODE_INACTIVE;
   if (frame_header_)
-    frame_header_->PaintHeader(canvas);
+    frame_header_->PaintHeader(canvas, header_mode);
 }
 
 void BrowserNonClientFrameViewAsh::Layout() {

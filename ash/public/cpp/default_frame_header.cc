@@ -25,10 +25,6 @@ using views::Widget;
 
 namespace {
 
-// Duration of animation scheduled when frame color is changed.
-constexpr base::TimeDelta kFrameColorChangeAnimationDuration =
-    base::TimeDelta::FromMilliseconds(240);
-
 // Tiles an image into an area, rounding the top corners.
 void TileRoundRect(gfx::Canvas* canvas,
                    const cc::PaintFlags& flags,
@@ -57,6 +53,36 @@ void TileRoundRect(gfx::Canvas* canvas,
 
 namespace ash {
 
+DefaultFrameHeader::ColorAnimator::ColorAnimator(
+    gfx::AnimationDelegate* delegate)
+    : animation_(delegate) {
+  animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(240));
+  animation_.SetTweenType(gfx::Tween::EASE_IN);
+  animation_.Reset(1);
+}
+
+DefaultFrameHeader::ColorAnimator::ColorAnimator::~ColorAnimator() = default;
+
+void DefaultFrameHeader::ColorAnimator::SetTargetColor(SkColor target) {
+  target_color_ = target;
+  start_color_ = current_color_;
+  if (current_color_ == kDefaultFrameColor) {
+    // Changing from default should be set immediately.
+    current_color_ = target_color_;
+    animation_.Reset(1);
+  } else {
+    animation_.Reset(0);
+  }
+  animation_.Show();
+}
+
+SkColor DefaultFrameHeader::ColorAnimator::GetCurrentColor() {
+  current_color_ =
+      color_utils::AlphaBlend(target_color_, start_color_,
+                              static_cast<float>(animation_.GetCurrentValue()));
+  return current_color_;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // DefaultFrameHeader, public:
 
@@ -64,7 +90,9 @@ DefaultFrameHeader::DefaultFrameHeader(
     views::Widget* target_widget,
     views::View* header_view,
     FrameCaptionButtonContainerView* caption_button_container)
-    : FrameHeader(target_widget, header_view) {
+    : FrameHeader(target_widget, header_view),
+      active_frame_color_(this),
+      inactive_frame_color_(this) {
   DCHECK(caption_button_container);
   SetCaptionButtonContainer(caption_button_container);
 }
@@ -86,19 +114,18 @@ void DefaultFrameHeader::UpdateFrameColors() {
       target_window->GetProperty(kFrameInactiveColorKey);
 
   bool updated = false;
-  // Update the frame if the frame color for the current active state chagnes.
-  if (active_frame_color_ != active_frame_color) {
-    active_frame_color_ = active_frame_color;
-    updated = mode() == Mode::MODE_ACTIVE;
+  if (active_frame_color_.target_color() != active_frame_color) {
+    active_frame_color_.SetTargetColor(active_frame_color);
+    updated = true;
   }
-  if (inactive_frame_color_ != inactive_frame_color) {
-    inactive_frame_color_ = inactive_frame_color;
-    updated |= mode() == Mode::MODE_INACTIVE;
+  if (inactive_frame_color_.target_color() != inactive_frame_color) {
+    inactive_frame_color_.SetTargetColor(inactive_frame_color);
+    updated = true;
   }
 
   if (updated) {
     UpdateCaptionButtonColors();
-    StartTransitionAnimation(kFrameColorChangeAnimationDuration);
+    view()->SchedulePaint();
   }
 }
 
@@ -112,8 +139,10 @@ void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
                           : 0;
 
   cc::PaintFlags flags;
-  flags.setColor(mode() == Mode::MODE_ACTIVE ? active_frame_color_
-                                             : inactive_frame_color_);
+  flags.setColor(color_utils::AlphaBlend(
+      active_frame_color_.GetCurrentColor(),
+      inactive_frame_color_.GetCurrentColor(),
+      static_cast<float>(activation_animation().GetCurrentValue())));
   flags.setAntiAlias(true);
   if (width_in_pixels_ > 0) {
     canvas->Save();
@@ -157,11 +186,17 @@ aura::Window* DefaultFrameHeader::GetTargetWindow() {
 }
 
 SkColor DefaultFrameHeader::GetCurrentFrameColor() const {
-  return mode() == MODE_ACTIVE ? active_frame_color_ : inactive_frame_color_;
+  return mode() == MODE_ACTIVE ? active_frame_color_.target_color()
+                               : inactive_frame_color_.target_color();
+}
+
+gfx::SlideAnimation*
+DefaultFrameHeader::GetAnimationForActiveFrameColorForTest() {
+  return active_frame_color_.animation();
 }
 
 SkColor DefaultFrameHeader::GetActiveFrameColorForPaintForTest() {
-  return active_frame_color_;
+  return active_frame_color_.GetCurrentColor();
 }
 
 }  // namespace ash
