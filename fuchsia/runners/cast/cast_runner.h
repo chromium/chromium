@@ -52,6 +52,10 @@ class CastRunner : public fuchsia::sys::Runner,
                       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
                           controller_request) final;
 
+  // Returns a fuchsia.web.FrameHost interface to the main web.Context used to
+  // host non-isolated Cast applications.
+  fuchsia::web::FrameHost* main_context_frame_host() const;
+
   void SetOnMainContextLostCallbackForTest(base::OnceClosure on_context_lost);
 
   // Disables use of the VULKAN feature when creating Contexts. Must be set

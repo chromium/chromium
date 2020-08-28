@@ -19,7 +19,8 @@
 class WebComponent;
 
 // sys::Runner that instantiates components hosting standard web content.
-class WebContentRunner : public fuchsia::sys::Runner {
+class WebContentRunner : public fuchsia::sys::Runner,
+                         public fuchsia::web::FrameHost {
  public:
   using GetContextParamsCallback =
       base::RepeatingCallback<fuchsia::web::CreateContextParams()>;
@@ -37,9 +38,12 @@ class WebContentRunner : public fuchsia::sys::Runner {
 
   ~WebContentRunner() override;
 
+  // fuchsia::web::FrameHost implementation (used by CastRunner).
   // Creates a Frame in this Runner's Context. If no Context exists then
   // |get_context_params_callback_| will be used to create one, if set.
-  fuchsia::web::FramePtr CreateFrame(fuchsia::web::CreateFrameParams params);
+  void CreateFrameWithParams(
+      fuchsia::web::CreateFrameParams params,
+      fidl::InterfaceRequest<fuchsia::web::Frame> request) override;
 
   // Used by WebComponent instances to signal that the ComponentController
   // channel was dropped, and therefore the component should be destroyed.

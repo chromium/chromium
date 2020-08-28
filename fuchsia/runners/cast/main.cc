@@ -30,10 +30,18 @@ bool IsHeadless() {
   constexpr char kHeadlessConfigKey[] = "headless";
 
   const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
-  if (config) {
-    base::Optional<bool> headless = config->FindBoolPath(kHeadlessConfigKey);
-    return headless && *headless;
-  }
+  if (config)
+    return config->FindBoolPath(kHeadlessConfigKey).value_or(false);
+
+  return false;
+}
+
+bool AllowMainContextSharing() {
+  constexpr char kAllowMainContextSharing[] = "enable-main-context-sharing";
+
+  const base::Optional<base::Value>& config = cr_fuchsia::LoadPackageConfig();
+  if (config)
+    return config->FindBoolPath(kAllowMainContextSharing).value_or(false);
 
   return false;
 }
@@ -53,17 +61,28 @@ int main(int argc, char** argv) {
 
   cr_fuchsia::RegisterFuchsiaDirScheme();
 
+  sys::OutgoingDirectory* const outgoing_directory =
+      base::ComponentContextForProcess()->outgoing().get();
+
+  // Publish the fuchsia.web.Runner implementation for Cast applications.
   CastRunner runner(IsHeadless());
   base::fuchsia::ScopedServiceBinding<fuchsia::sys::Runner> binding(
-      base::ComponentContextForProcess()->outgoing().get(), &runner);
+      outgoing_directory, &runner);
 
-  base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
+  // Optionally publish the fuchsia.web.FrameHost service, to allow the Cast
+  // application web.Context to be shared by other components.
+  base::Optional<base::fuchsia::ScopedServiceBinding<fuchsia::web::FrameHost>>
+      frame_host_binding;
+  if (AllowMainContextSharing()) {
+    frame_host_binding.emplace(outgoing_directory,
+                               runner.main_context_frame_host());
+  }
+
+  outgoing_directory->ServeFromStartupInfo();
 
   // Publish version information for this component to Inspect.
   cr_fuchsia::PublishVersionInfoToInspect(base::ComponentInspectorForProcess());
 
-  // Run until there are no Components, or the last service client channel is
-  // closed.
   // TODO(https://crbug.com/952560): Implement Components v2 graceful exit.
   run_loop.Run();
 

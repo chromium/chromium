@@ -126,6 +126,10 @@ void CastRunner::StartComponent(
       std::move(controller_request), cast_url.GetContent()));
 }
 
+fuchsia::web::FrameHost* CastRunner::main_context_frame_host() const {
+  return main_context_.get();
+}
+
 void CastRunner::SetOnMainContextLostCallbackForTest(
     base::OnceClosure on_context_lost) {
   main_context_->SetOnContextLostCallbackForTest(std::move(on_context_lost));

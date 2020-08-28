@@ -51,8 +51,9 @@ WebContentRunner::WebContentRunner(
 
 WebContentRunner::~WebContentRunner() = default;
 
-fuchsia::web::FramePtr WebContentRunner::CreateFrame(
-    fuchsia::web::CreateFrameParams params) {
+void WebContentRunner::CreateFrameWithParams(
+    fuchsia::web::CreateFrameParams params,
+    fidl::InterfaceRequest<fuchsia::web::Frame> request) {
   if (!context_) {
     DCHECK(get_context_params_callback_);
     context_ = CreateWebContext(get_context_params_callback_.Run());
@@ -64,9 +65,7 @@ fuchsia::web::FramePtr WebContentRunner::CreateFrame(
     });
   }
 
-  fuchsia::web::FramePtr frame;
-  context_->CreateFrameWithParams(std::move(params), frame.NewRequest());
-  return frame;
+  context_->CreateFrameWithParams(std::move(params), std::move(request));
 }
 
 void WebContentRunner::StartComponent(
