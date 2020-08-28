@@ -22,8 +22,8 @@ namespace {
 
 constexpr size_t kNumPrinters = 5;
 
-constexpr size_t kWhitelistPrinters = 4;
-constexpr std::array<const char*, kWhitelistPrinters> kWhitelistIds = {
+constexpr size_t kAllowlistPrinters = 4;
+constexpr std::array<const char*, kAllowlistPrinters> kAllowlistIds = {
     "First", "Second", "Third", "Fifth"};
 
 constexpr std::array<const char*, 3> kBlocklistIds = {"Second", "Third",
@@ -155,7 +155,7 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsAllAccess) {
   EXPECT_EQ(calculator->GetPrinters().size(), kNumPrinters);
 }
 
-TEST_F(CalculatorsPoliciesBinderTest, PrefsWhitelist) {
+TEST_F(CalculatorsPoliciesBinderTest, PrefsAllowlist) {
   auto calculator = UserCalculator();
 
   // Set prefs to complete computation
@@ -164,11 +164,11 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsWhitelist) {
       std::make_unique<base::Value>(
           BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
   prefs_.SetManagedPref(prefs::kRecommendedPrintersAllowlist,
-                        StringsToList(kWhitelistIds));
+                        StringsToList(kAllowlistIds));
 
   env_.RunUntilIdle();
   EXPECT_TRUE(calculator->IsComplete());
-  EXPECT_EQ(calculator->GetPrinters().size(), kWhitelistPrinters);
+  EXPECT_EQ(calculator->GetPrinters().size(), kAllowlistPrinters);
 }
 
 TEST_F(CalculatorsPoliciesBinderTest, PrefsBlocklist) {
@@ -195,13 +195,13 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsBeforeBind) {
       std::make_unique<base::Value>(
           BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
   prefs_.SetManagedPref(prefs::kRecommendedPrintersAllowlist,
-                        StringsToList(kWhitelistIds));
+                        StringsToList(kAllowlistIds));
 
   auto calculator = UserCalculator();
 
   env_.RunUntilIdle();
   EXPECT_TRUE(calculator->IsComplete());
-  EXPECT_EQ(calculator->GetPrinters().size(), kWhitelistPrinters);
+  EXPECT_EQ(calculator->GetPrinters().size(), kAllowlistPrinters);
 }
 
 TEST_F(CalculatorsPoliciesBinderTest, SettingsAllAccess) {
@@ -215,17 +215,17 @@ TEST_F(CalculatorsPoliciesBinderTest, SettingsAllAccess) {
   EXPECT_EQ(calculator->GetPrinters().size(), kNumPrinters);
 }
 
-TEST_F(CalculatorsPoliciesBinderTest, SettingsWhitelist) {
+TEST_F(CalculatorsPoliciesBinderTest, SettingsAllowlist) {
   auto calculator = DeviceCalculator();
 
   SetDeviceSetting(
       kDevicePrintersAccessMode,
       base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
-  SetDeviceSetting(kDevicePrintersAllowlist, *StringsToList(kWhitelistIds));
+  SetDeviceSetting(kDevicePrintersAllowlist, *StringsToList(kAllowlistIds));
 
   env_.RunUntilIdle();
   EXPECT_TRUE(calculator->IsComplete());
-  EXPECT_EQ(calculator->GetPrinters().size(), kWhitelistPrinters);
+  EXPECT_EQ(calculator->GetPrinters().size(), kAllowlistPrinters);
 }
 
 TEST_F(CalculatorsPoliciesBinderTest, SettingsBlocklist) {
