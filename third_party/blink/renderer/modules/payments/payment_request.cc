@@ -444,8 +444,9 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
                  &execution_context)) {
     UseCounter::Count(&execution_context,
                       WebFeature::kSecurePaymentConfirmation);
-    SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-        input, exception_state);
+    output->secure_payment_confirmation =
+        SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
+            input, exception_state);
   }
 }
 

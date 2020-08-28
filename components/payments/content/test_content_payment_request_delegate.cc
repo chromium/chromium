@@ -15,6 +15,12 @@ TestContentPaymentRequestDelegate::TestContentPaymentRequestDelegate(
 
 TestContentPaymentRequestDelegate::~TestContentPaymentRequestDelegate() {}
 
+std::unique_ptr<autofill::InternalAuthenticator>
+TestContentPaymentRequestDelegate::CreateInternalAuthenticator(
+    content::RenderFrameHost* rfh) const {
+  return nullptr;
+}
+
 scoped_refptr<PaymentManifestWebDataService>
 TestContentPaymentRequestDelegate::GetPaymentManifestWebDataService() const {
   return nullptr;

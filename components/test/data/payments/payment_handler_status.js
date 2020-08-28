@@ -11,7 +11,7 @@
  * @return {string} - The status field or error message.
  */
 async function getStatus(method) { // eslint-disable-line no-unused-vars
-  return getStatusInternal([{supportedMethods: method}]);
+  return getStatusForMethodData([{supportedMethods: method}]);
 }
 
 /**
@@ -25,7 +25,7 @@ async function getStatusList(methods) { // eslint-disable-line no-unused-vars
   for (let method of methods) {
     methodData.push({supportedMethods: method});
   }
-  return getStatusInternal(methodData);
+  return getStatusForMethodData(methodData);
 }
 
 /**
@@ -34,7 +34,7 @@ async function getStatusList(methods) { // eslint-disable-line no-unused-vars
  * @param {array<PaymentMethodData>} methodData - The method data to use.
  * @return {string} - The status field or error message.
  */
-async function getStatusInternal(methodData) {
+async function getStatusForMethodData(methodData) {
   try {
     const request = new PaymentRequest(
         methodData,

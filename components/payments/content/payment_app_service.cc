@@ -9,6 +9,7 @@
 #include "components/payments/content/android_payment_app_factory.h"
 #include "components/payments/content/autofill_payment_app_factory.h"
 #include "components/payments/content/payment_app.h"
+#include "components/payments/content/secure_payment_confirmation_app_factory.h"
 #include "components/payments/content/service_worker_payment_app_factory.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/payments_experimental_features.h"
@@ -20,7 +21,7 @@ PaymentAppService::PaymentAppService(content::BrowserContext* context) {
   factories_.emplace_back(std::make_unique<AutofillPaymentAppFactory>());
 
   if (base::FeatureList::IsEnabled(::features::kServiceWorkerPaymentApps)) {
-    factories_.emplace_back(std::make_unique<ServiceWorkerPaymentAppFactory>());
+    factories_.push_back(std::make_unique<ServiceWorkerPaymentAppFactory>());
   }
 
   // TODO(https://crbug.com/1022512): Review the feature flag name when
@@ -28,9 +29,12 @@ PaymentAppService::PaymentAppService(content::BrowserContext* context) {
   // apps. (Currently it works only on Chrome OS with app store billing payment
   // methods.)
   if (PaymentsExperimentalFeatures::IsEnabled(features::kAppStoreBilling)) {
-    factories_.emplace_back(std::make_unique<AndroidPaymentAppFactory>(
+    factories_.push_back(std::make_unique<AndroidPaymentAppFactory>(
         AndroidAppCommunication::GetForBrowserContext(context)));
   }
+
+  // Controlled by the Blink runtime feature "SecurePaymentConfirmation".
+  factories_.push_back(std::make_unique<SecurePaymentConfirmationAppFactory>());
 }
 
 PaymentAppService::~PaymentAppService() = default;

@@ -27,6 +27,7 @@ source_set("browsertests") {
     "payment_request_can_make_payment_event_browsertest.cc",
     "payment_request_minimal_ui_browsertest.cc",
     "sec_fetch_site_browsertest.cc",
+    "secure_payment_confirmation_browsertest.cc",
     "two_payment_requests_browsertest.cc",
   ]
 

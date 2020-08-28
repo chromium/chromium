@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/modules/payments/secure_payment_confirmation_type_converter.h"
+
+#include <stdint.h>
+
+#include "base/time/time.h"
+#include "third_party/blink/renderer/modules/credentialmanager/credential_manager_type_converters.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+
+namespace mojo {
+
+payments::mojom::blink::SecurePaymentConfirmationRequestPtr
+TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
+              blink::SecurePaymentConfirmationRequest*>::
+    Convert(const blink::SecurePaymentConfirmationRequest* input) {
+  auto output = payments::mojom::blink::SecurePaymentConfirmationRequest::New();
+  output->instrument_id = input->instrumentId();
+  output->network_data = mojo::ConvertTo<Vector<uint8_t>>(input->networkData());
+
+  // If a timeout was not specified in JavaScript, then pass a null |timeout|
+  // through mojo IPC, so the browser can set a default (e.g., 3 minutes).
+  if (input->hasTimeout())
+    output->timeout = base::TimeDelta::FromMilliseconds(input->timeout());
+
+  return output;
+}
+
+}  // namespace mojo

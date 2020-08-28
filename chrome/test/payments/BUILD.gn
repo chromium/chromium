@@ -41,6 +41,9 @@ static_library("test_support") {
   if (!is_android) {
     sources += [ "payment_request_test_controller_desktop.cc" ]
 
-    deps += [ "//chrome/test:test_support_ui" ]
+    deps += [
+      "//chrome/test:test_support_ui",
+      "//components/autofill/content/browser/webauthn",
+    ]
   }
 }

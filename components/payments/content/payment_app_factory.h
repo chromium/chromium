@@ -20,6 +20,7 @@ class GURL;
 
 namespace autofill {
 class AutofillProfile;
+class InternalAuthenticator;
 }  // namespace autofill
 
 namespace content {
@@ -51,6 +52,8 @@ class PaymentAppFactory {
     virtual content::RenderFrameHost* GetInitiatorRenderFrameHost() const = 0;
     virtual const std::vector<mojom::PaymentMethodDataPtr>& GetMethodData()
         const = 0;
+    virtual std::unique_ptr<autofill::InternalAuthenticator>
+    CreateInternalAuthenticator() const = 0;
     virtual scoped_refptr<PaymentManifestWebDataService>
     GetPaymentManifestWebDataService() const = 0;
     virtual bool MayCrawlForInstallablePaymentApps() = 0;

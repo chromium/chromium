@@ -66,6 +66,7 @@ class PaymentRequestTestController {
   void SetValidSsl(bool valid_ssl);
   void SetCanMakePaymentEnabledPref(bool can_make_payment_enabled);
   void SetTwaPackageName(const std::string& twa_package_name);
+  void SetHasAuthenticator(bool has_authenticator);
   void SetTwaPaymentApp(const std::string& method_name,
                         const std::string& response);
 
@@ -122,6 +123,7 @@ class PaymentRequestTestController {
   bool valid_ssl_ = true;
   bool can_make_payment_pref_ = true;
   std::string twa_package_name_;
+  bool has_authenticator_ = false;
   std::string twa_payment_app_method_name_;
   std::string twa_payment_app_response_;
   std::vector<AppDescription> app_descriptions_;

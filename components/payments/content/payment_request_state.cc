@@ -137,6 +137,12 @@ PaymentRequestState::GetMethodData() const {
   return GetSpec()->method_data();
 }
 
+std::unique_ptr<autofill::InternalAuthenticator>
+PaymentRequestState::CreateInternalAuthenticator() const {
+  return GetPaymentRequestDelegate()->CreateInternalAuthenticator(
+      initiator_render_frame_host_);
+}
+
 scoped_refptr<PaymentManifestWebDataService>
 PaymentRequestState::GetPaymentManifestWebDataService() const {
   return GetPaymentRequestDelegate()->GetPaymentManifestWebDataService();

@@ -6,6 +6,8 @@
 module payments.mojom;
 
 import "components/payments/mojom/payment_request_data.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
 
 struct PaymentResponse {
   string method_name;
@@ -120,6 +122,23 @@ struct GooglePaymentMethodData {
   bool shipping_requested;
 };
 
+// Parameters for the "secure-payment-confirmation" payment method identifier.
+// https://github.com/rsolomakhin/secure-payment-confirmation
+struct SecurePaymentConfirmationRequest {
+  // An identifier of a set of credentials that map to a single instrument
+  // name and icon.
+  string instrument_id;
+
+  // An indefinite-length blob passed from the relying party server, to be sent
+  // to an authenticator for signing together with the price and merchant
+  // origin.
+  array<uint8> network_data;
+
+  // Time to wait for an authenticator to complete an operation provided by the
+  // relying party.
+  mojo_base.mojom.TimeDelta? timeout;
+};
+
 struct PaymentMethodData {
   string supported_method;
 
@@ -150,6 +169,9 @@ struct PaymentMethodData {
 
   // Basic card specific method data is parsed in the renderer.
   array<BasicCardNetwork> supported_networks;
+
+  // Parameters for the "secure-payment-confirmation" payment method identifier.
+  SecurePaymentConfirmationRequest? secure_payment_confirmation;
 };
 
 struct PaymentDetailsModifier {

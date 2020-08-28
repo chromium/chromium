@@ -29,6 +29,12 @@ SecurePaymentConfirmationPaymentRequestDelegate::
 SecurePaymentConfirmationPaymentRequestDelegate::
     ~SecurePaymentConfirmationPaymentRequestDelegate() = default;
 
+std::unique_ptr<autofill::InternalAuthenticator>
+SecurePaymentConfirmationPaymentRequestDelegate::CreateInternalAuthenticator(
+    content::RenderFrameHost* rfh) const {
+  return delegate_->CreateInternalAuthenticator(rfh);
+}
+
 scoped_refptr<PaymentManifestWebDataService>
 SecurePaymentConfirmationPaymentRequestDelegate::
     GetPaymentManifestWebDataService() const {

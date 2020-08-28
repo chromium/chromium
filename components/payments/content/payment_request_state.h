@@ -139,6 +139,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   content::RenderFrameHost* GetInitiatorRenderFrameHost() const override;
   const std::vector<mojom::PaymentMethodDataPtr>& GetMethodData()
       const override;
+  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+      const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
   const std::vector<autofill::AutofillProfile*>& GetBillingProfiles() override;

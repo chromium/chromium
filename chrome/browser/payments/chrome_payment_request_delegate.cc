@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/web_data_service_factory.h"
+#include "components/autofill/content/browser/webauthn/internal_authenticator_impl.h"
 #include "components/autofill/core/browser/address_normalizer_impl.h"
 #include "components/autofill/core/browser/geo/region_data_loader_impl.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -165,6 +166,12 @@ PrefService* ChromePaymentRequestDelegate::GetPrefService() {
 bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
   return browser && browser->window() && browser->window()->IsActive();
+}
+
+std::unique_ptr<autofill::InternalAuthenticator>
+ChromePaymentRequestDelegate::CreateInternalAuthenticator(
+    content::RenderFrameHost* rfh) const {
+  return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
 }
 
 scoped_refptr<PaymentManifestWebDataService>

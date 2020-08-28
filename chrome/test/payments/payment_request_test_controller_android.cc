@@ -112,6 +112,13 @@ void PaymentRequestTestController::SetTwaPackageName(
       /*skip_ui_for_basic_card=*/false, twa_package_name_);
 }
 
+void PaymentRequestTestController::SetHasAuthenticator(bool has_authenticator) {
+  // TODO(https://crbug.com/1110320): Implement SetHasAuthenticator() for
+  // Android, so secure payment confirmation can be integration tested on
+  // Android as well.
+  has_authenticator_ = has_authenticator;
+}
+
 void PaymentRequestTestController::SetTwaPaymentApp(
     const std::string& method_name,
     const std::string& response) {

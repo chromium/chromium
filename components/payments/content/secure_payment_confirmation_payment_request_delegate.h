@@ -29,6 +29,8 @@ class SecurePaymentConfirmationPaymentRequestDelegate
       const SecurePaymentConfirmationPaymentRequestDelegate& other) = delete;
 
   // ContentPaymentRequestDelegate implementation:
+  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator(
+      content::RenderFrameHost* rfh) const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
   PaymentRequestDisplayManager* GetDisplayManager() override;

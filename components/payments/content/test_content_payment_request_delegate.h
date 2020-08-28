@@ -22,6 +22,8 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   ~TestContentPaymentRequestDelegate() override;
 
   // ContentPaymentRequestDelegate:
+  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator(
+      content::RenderFrameHost* rfh) const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
   PaymentRequestDisplayManager* GetDisplayManager() override;

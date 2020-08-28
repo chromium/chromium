@@ -210,5 +210,13 @@ const char kMoreThanOneService[] =
     "Found more than one IS_READY_TO_PAY service, but at most one service is "
     "supported.";
 
+const char kInstrumentIdRequired[] =
+    "The \"secure-payment-confirmation\" method requires a non-empty "
+    "\"instrumentId\" field.";
+
+const char kTimeoutTooLong[] =
+    "The \"secure-payment-confirmation\" method requires at most 1 hour "
+    "\"timeout\" field.";
+
 }  // namespace errors
 }  // namespace payments

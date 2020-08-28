@@ -237,6 +237,14 @@ extern const char kUserClosedPaymentApp[];
 // Used when an Android app declares more than one IS_READY_TO_PAY service.
 extern const char kMoreThanOneService[];
 
+// Used when an empty instrument ID is specified for the
+// "secure-payment-confirmation" method.
+extern const char kInstrumentIdRequired[];
+
+// Used when the timeout specified for the "secure-payment-confirmation" method
+// is too long.
+extern const char kTimeoutTooLong[];
+
 }  // namespace errors
 }  // namespace payments
 

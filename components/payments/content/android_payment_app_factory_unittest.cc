@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/stl_util.h"
+#include "components/autofill/core/browser/payments/internal_authenticator.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/content/payment_app_factory.h"
@@ -64,6 +65,8 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   MOCK_CONST_METHOD0(GetInitiatorRenderFrameHost, content::RenderFrameHost*());
   MOCK_CONST_METHOD0(GetMethodData,
                      const std::vector<mojom::PaymentMethodDataPtr>&());
+  MOCK_CONST_METHOD0(CreateInternalAuthenticator,
+                     std::unique_ptr<autofill::InternalAuthenticator>());
   MOCK_CONST_METHOD0(GetPaymentManifestWebDataService,
                      scoped_refptr<PaymentManifestWebDataService>());
   MOCK_METHOD0(MayCrawlForInstallablePaymentApps, bool());

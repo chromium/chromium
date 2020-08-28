@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
+#include "chrome/browser/autofill/android/internal_authenticator_android.h"
 #include "chrome/browser/payments/android/jni_headers/PaymentAppServiceBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_data_service_factory.h"
@@ -244,6 +245,11 @@ content::RenderFrameHost* PaymentAppServiceBridge::GetInitiatorRenderFrameHost()
 const std::vector<PaymentMethodDataPtr>&
 PaymentAppServiceBridge::GetMethodData() const {
   return spec_->method_data();
+}
+
+std::unique_ptr<autofill::InternalAuthenticator>
+PaymentAppServiceBridge::CreateInternalAuthenticator() const {
+  return std::make_unique<InternalAuthenticatorAndroid>(render_frame_host_);
 }
 
 scoped_refptr<PaymentManifestWebDataService>

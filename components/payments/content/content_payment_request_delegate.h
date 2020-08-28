@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAYMENTS_CONTENT_CONTENT_PAYMENT_REQUEST_DELEGATE_H_
 #define COMPONENTS_PAYMENTS_CONTENT_CONTENT_PAYMENT_REQUEST_DELEGATE_H_
 
+#include <memory>
 #include <string>
 
 #include "components/payments/content/payment_request_display_manager.h"
@@ -12,6 +13,14 @@
 
 template <class T>
 class scoped_refptr;
+
+namespace autofill {
+class InternalAuthenticator;
+}  // namespace autofill
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
 
 namespace payments {
 
@@ -22,6 +31,11 @@ class PaymentRequestDisplayManager;
 class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
  public:
   ~ContentPaymentRequestDelegate() override {}
+
+  // Creates and returns an instance of the InternalAuthenticator interface for
+  // communication with WebAuthn.
+  virtual std::unique_ptr<autofill::InternalAuthenticator>
+  CreateInternalAuthenticator(content::RenderFrameHost* rfh) const = 0;
 
   // Returns the web data service for caching payment method manifests.
   virtual scoped_refptr<PaymentManifestWebDataService>
