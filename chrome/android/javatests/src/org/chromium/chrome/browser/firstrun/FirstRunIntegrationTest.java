@@ -96,7 +96,7 @@ public class FirstRunIntegrationTest {
 
     @After
     public void tearDown() {
-        FirstRunAppRestrictionInfo.setInstanceForTest(null);
+        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
         EnterpriseInfo.setInstanceForTest(null);
         if (mLastActivity != null) mLastActivity.finish();
     }
@@ -123,7 +123,7 @@ public class FirstRunIntegrationTest {
                })
                 .when(mMockAppRestrictionInfo)
                 .getHasAppRestriction(any());
-        FirstRunAppRestrictionInfo.setInstanceForTest(mMockAppRestrictionInfo);
+        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
     }
 
     private void setDeviceOwnedForMock() {
@@ -286,6 +286,16 @@ public class FirstRunIntegrationTest {
                 "native never initialized.");
 
         waitForActivity(CustomTabActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testFastDestroy() {
+        // Inspired by crbug.com/1119548, where onDestroy() before triggerLayoutInflation() caused
+        // a crash.
+        Intent intent =
+                CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, "https://test.com");
+        mContext.startActivity(intent);
     }
 
     private void clickButton(final Activity activity, final int id, final String message) {

@@ -296,7 +296,7 @@ public abstract class FirstRunFlowSequencer  {
         Log.d(TAG, "Redirecting user through FRE.");
 
         // Launch the async restriction checking as soon as we know we'll be running FRE.
-        FirstRunAppRestrictionInfo.getInstance().initialize();
+        FirstRunAppRestrictionInfo.startInitializationHint();
 
         if ((fromIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
             FreIntentCreator intentCreator = new FreIntentCreator();

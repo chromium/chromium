@@ -64,14 +64,13 @@ public class FirstRunAppRestrictionInfoTest {
         }
     }
 
-    private FirstRunAppRestrictionInfo mAppRestrictionInfo = new FirstRunAppRestrictionInfo(null);
-
     @Mock
     private Bundle mMockBundle;
     @Mock
     private CommandLine mCommandLine;
 
     private boolean mPauseDuringPostTask;
+    private Runnable mPendingPostTask;
 
     @Before
     public void setup() {
@@ -80,7 +79,11 @@ public class FirstRunAppRestrictionInfoTest {
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             @Override
             public void postDelayedTask(TaskTraits taskTraits, Runnable task, long delay) {
-                if (!mPauseDuringPostTask) task.run();
+                if (!mPauseDuringPostTask) {
+                    task.run();
+                } else {
+                    mPendingPostTask = task;
+                }
             }
         });
 
@@ -92,6 +95,7 @@ public class FirstRunAppRestrictionInfoTest {
 
     @After
     public void tearDown() {
+        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
         CommandLine.reset();
     }
 
@@ -116,19 +120,18 @@ public class FirstRunAppRestrictionInfoTest {
 
     private void testInitImpl(boolean withRestriction) throws TimeoutException {
         Mockito.when(mMockBundle.isEmpty()).thenReturn(!withRestriction);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAppRestrictionInfo.initialize());
-
         final BooleanInputCallbackHelper callbackHelper = new BooleanInputCallbackHelper();
         final CallbackHelper completionCallbackHelper = new CallbackHelper();
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAppRestrictionInfo.getHasAppRestriction(callbackHelper::notifyCalledWithInput);
-            mAppRestrictionInfo.getCompletionElapsedRealtimeMs(
+            FirstRunAppRestrictionInfo info = FirstRunAppRestrictionInfo.takeMaybeInitialized();
+            info.getHasAppRestriction(callbackHelper::notifyCalledWithInput);
+            info.getCompletionElapsedRealtimeMs(
                     (ignored) -> completionCallbackHelper.notifyCalled());
         });
+
         callbackHelper.assertCallbackHelperCalledWithInput(withRestriction);
         Assert.assertEquals(1, completionCallbackHelper.getCallCount());
-
         verifyHistograms(1);
     }
 
@@ -144,15 +147,17 @@ public class FirstRunAppRestrictionInfoTest {
         final CallbackHelper completionCallbackHelper2 = new CallbackHelper();
         final CallbackHelper completionCallbackHelper3 = new CallbackHelper();
 
+        mPauseDuringPostTask = true;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAppRestrictionInfo.getHasAppRestriction(callbackHelper1::notifyCalledWithInput);
-            mAppRestrictionInfo.getHasAppRestriction(callbackHelper2::notifyCalledWithInput);
-            mAppRestrictionInfo.getHasAppRestriction(callbackHelper3::notifyCalledWithInput);
-            mAppRestrictionInfo.getCompletionElapsedRealtimeMs(
+            FirstRunAppRestrictionInfo info = FirstRunAppRestrictionInfo.takeMaybeInitialized();
+            info.getHasAppRestriction(callbackHelper1::notifyCalledWithInput);
+            info.getHasAppRestriction(callbackHelper2::notifyCalledWithInput);
+            info.getHasAppRestriction(callbackHelper3::notifyCalledWithInput);
+            info.getCompletionElapsedRealtimeMs(
                     (ignored) -> completionCallbackHelper1.notifyCalled());
-            mAppRestrictionInfo.getCompletionElapsedRealtimeMs(
+            info.getCompletionElapsedRealtimeMs(
                     (ignored) -> completionCallbackHelper2.notifyCalled());
-            mAppRestrictionInfo.getCompletionElapsedRealtimeMs(
+            info.getCompletionElapsedRealtimeMs(
                     (ignored) -> completionCallbackHelper3.notifyCalled());
         });
 
@@ -170,7 +175,7 @@ public class FirstRunAppRestrictionInfoTest {
                 completionCallbackHelper3.getCallCount());
 
         // Initialized the AppRestrictionInfo and wait until initialized.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mAppRestrictionInfo.initialize());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mPendingPostTask.run());
 
         callbackHelper1.assertCallbackHelperCalledWithInput(true);
         callbackHelper2.assertCallbackHelperCalledWithInput(true);
@@ -187,17 +192,18 @@ public class FirstRunAppRestrictionInfoTest {
     public void testDestroy() {
         final BooleanInputCallbackHelper callbackHelper = new BooleanInputCallbackHelper();
         final CallbackHelper completionCallbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAppRestrictionInfo.getHasAppRestriction(callbackHelper::notifyCalledWithInput);
-            mAppRestrictionInfo.getCompletionElapsedRealtimeMs(
-                    (ignored) -> completionCallbackHelper.notifyCalled());
-        });
-
-        // Destroy the object before initialization.
         mPauseDuringPostTask = true;
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAppRestrictionInfo.initialize();
-            FirstRunAppRestrictionInfo.destroy();
+            FirstRunAppRestrictionInfo info = FirstRunAppRestrictionInfo.takeMaybeInitialized();
+            info.getHasAppRestriction(callbackHelper::notifyCalledWithInput);
+            info.getCompletionElapsedRealtimeMs(
+                    (ignored) -> completionCallbackHelper.notifyCalled());
+
+            // Destroy the object before the async task completes.
+            info.destroy();
+
+            mPendingPostTask.run();
         });
 
         Assert.assertEquals(
@@ -218,10 +224,10 @@ public class FirstRunAppRestrictionInfoTest {
         final BooleanInputCallbackHelper callbackHelper = new BooleanInputCallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> mAppRestrictionInfo.getHasAppRestriction(
+                        -> FirstRunAppRestrictionInfo.takeMaybeInitialized().getHasAppRestriction(
                                 callbackHelper::notifyCalledWithInput));
         callbackHelper.assertCallbackHelperCalledWithInput(true);
 
-        verifyHistograms(0);
+        verifyHistograms(1);
     }
 }

@@ -73,4 +73,7 @@ public interface FirstRunPageDelegate {
      * @param url Resource id for the URL of the web page.
      */
     void showInfoPage(int url);
+
+    /** Returns the provider of whether the device has app restrictions. */
+    FirstRunAppRestrictionInfo getFirstRunAppRestrictionInfo();
 }

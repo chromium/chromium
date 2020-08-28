@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.os.UserManager;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -33,67 +32,66 @@ import java.util.concurrent.RejectedExecutionException;
  * uses an asynchronous background task to fetch restrictions, then notifies registered callbacks
  * once complete.
  *
- * This class is only used during first run flow, so its lifecycle ends when first run completes.
+ * In order to get a result as soon as possible, this class provides a mechanism to kick off the
+ * async via {@link #startInitializationHint()}. This instance will be stored in a private static
+ * field, and will be returned by {@link #takeMaybeInitialized}, as well as nulling out the private
+ * static. This mechanism doesn't strictly need to be used, and {@link #startInitializationHint()}
+ * can be ignored at the cost of latency.
+ *
+ * This class is only used during first run flow, so its lifecycle ends when first run completes. At
+ * which point {@link #destroy()} should be called.
  */
 class FirstRunAppRestrictionInfo {
     private static final String TAG = "FRAppRestrictionInfo";
 
-    private static FirstRunAppRestrictionInfo sInstance;
+    private static FirstRunAppRestrictionInfo sInitializedInstance;
 
     private boolean mInitialized;
-    private boolean mIsFetching;
     private boolean mHasAppRestriction;
     private long mCompletionElapsedRealtimeMs;
     private Queue<Callback<Boolean>> mCallbacks = new LinkedList<>();
     private Queue<Callback<Long>> mCompletionTimeCallbacks = new LinkedList<>();
 
     private AsyncTask<Boolean> mFetchAppRestrictionAsyncTask;
-    private final AppRestrictionsProvider mProvider;
 
     private FirstRunAppRestrictionInfo() {
-        // TODO(crbug.com/1106407): A new AppRestrictionProvider is used here to simplify the
-        //  initial implementation. If the future we should look at sharing a single
-        //  AppRestrictionProvider in the main policy code to avoid redundant calls to Android APIs
-        //  to load policies.
-        mProvider = new AppRestrictionsProvider(ContextUtils.getApplicationContext()) {
-            @Override
-            public void notifySettingsAvailable(Bundle settings) {
-                // Update the singleton when we heard update from policy
-                // No super method here as we do not want to invoke calls to CombinedPolicyProvider.
-                ThreadUtils.assertOnUiThread();
-                onRestrictionDetected(!settings.isEmpty(), 0);
-            }
-        };
-    }
-
-    @VisibleForTesting
-    FirstRunAppRestrictionInfo(@Nullable AppRestrictionsProvider provider) {
-        mProvider = provider;
-    }
-
-    public static FirstRunAppRestrictionInfo getInstance() {
-        // Only access the singleton on UI thread for thread safety.
-        ThreadUtils.assertOnUiThread();
-        if (sInstance == null) sInstance = new FirstRunAppRestrictionInfo();
-        return sInstance;
+        initialize();
     }
 
     /**
-     * Destroy the singleton instance, stop async initialization if it is in progress, and remove
-     * all the callbacks.
+     * Starts initialization and stores an instance of {@link FirstRunAppRestrictionInfo} in a
+     * static field. This will be waiting for the first caller of
+     * {@link FirstRunAppRestrictionInfo#takeMaybeInitialized()}.
      */
-    public static void destroy() {
-        ThreadUtils.assertOnUiThread();
-        if (sInstance != null) sInstance.destroyInternal();
-        sInstance = null;
+    public static void startInitializationHint() {
+        if (sInitializedInstance == null) {
+            sInitializedInstance = new FirstRunAppRestrictionInfo();
+        }
     }
 
-    private void destroyInternal() {
+    /**
+     * Tries to transfer ownership of the previously instantiated static instance if possible. When
+     * there is no such instance, this will simply return a new {@link FirstRunAppRestrictionInfo}.
+     * Either way, an async check for app restrictions will have been started before this method
+     * returns. Call {@link #getHasAppRestriction(Callback)} to be notified when the check
+     * completes.
+     */
+    public static FirstRunAppRestrictionInfo takeMaybeInitialized() {
+        ThreadUtils.assertOnUiThread();
+        FirstRunAppRestrictionInfo info;
+        if (sInitializedInstance == null) {
+            info = new FirstRunAppRestrictionInfo();
+        } else {
+            info = sInitializedInstance;
+            sInitializedInstance = null;
+        }
+        return info;
+    }
+
+    /** Stops the async initialization if it is in progress, and remove all the callbacks. */
+    public void destroy() {
         if (mFetchAppRestrictionAsyncTask != null) {
             mFetchAppRestrictionAsyncTask.cancel(true);
-        }
-        if (mProvider != null) {
-            mProvider.destroy();
         }
         mCallbacks.clear();
         mCompletionTimeCallbacks.clear();
@@ -107,14 +105,6 @@ class FirstRunAppRestrictionInfo {
      */
     public void getHasAppRestriction(Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
-
-        // This is an imperfect system, and can sometimes return true when there will not actually
-        // be any app restrictions. But we do not have parsing logic in Java to understand if the
-        // switch sets valid policies.
-        if (CommandLine.getInstance().hasSwitch(PolicySwitches.CHROME_POLICY)) {
-            callback.onResult(true);
-            return;
-        }
 
         if (mInitialized) {
             callback.onResult(mHasAppRestriction);
@@ -142,15 +132,19 @@ class FirstRunAppRestrictionInfo {
     /**
      * Start fetching app restriction on an async thread.
      */
-    public void initialize() {
+    private void initialize() {
         ThreadUtils.assertOnUiThread();
-        // Early out if info is already fetched or any job has started.
-        if (mInitialized || mIsFetching) return;
+        long startTime = SystemClock.elapsedRealtime();
 
-        mIsFetching = true;
+        // This is an imperfect system, and can sometimes return true when there will not actually
+        // be any app restrictions. But we do not have parsing logic in Java to understand if the
+        // switch sets valid policies.
+        if (CommandLine.getInstance().hasSwitch(PolicySwitches.CHROME_POLICY)) {
+            onRestrictionDetected(true, startTime);
+            return;
+        }
 
         Context appContext = ContextUtils.getApplicationContext();
-        long startTime = SystemClock.elapsedRealtime();
         try {
             mFetchAppRestrictionAsyncTask = new AsyncTask<Boolean>() {
                 @Override
@@ -173,8 +167,6 @@ class FirstRunAppRestrictionInfo {
             // Though unlikely, if the task is rejected, we assume no restriction exists.
             onRestrictionDetected(false, startTime);
         }
-
-        if (mProvider != null) mProvider.startListeningForPolicyChanges();
     }
 
     private void onRestrictionDetected(boolean isAppRestricted, long startTime) {
@@ -203,7 +195,8 @@ class FirstRunAppRestrictionInfo {
     }
 
     @VisibleForTesting
-    public static void setInstanceForTest(FirstRunAppRestrictionInfo testInstance) {
-        sInstance = testInstance;
+    static void setInitializedInstanceForTest(
+            FirstRunAppRestrictionInfo firstRunAppRestrictionInfo) {
+        sInitializedInstance = firstRunAppRestrictionInfo;
     }
 }

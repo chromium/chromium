@@ -142,11 +142,4 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
         CustomTabsConnection.getInstance().sendFirstRunCallbackIfNecessary(
                 launchIntentExtras, complete);
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // As first run is complete, we no longer need FirstRunAppRestrictionInfo.
-        FirstRunAppRestrictionInfo.destroy();
-    }
 }

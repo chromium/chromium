@@ -115,6 +115,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      */
     private long mIntentCreationElapsedRealtimeMs;
 
+    private final FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
+
     private final List<FirstRunPage> mPages = new ArrayList<>();
     private final List<Integer> mFreProgressStates = new ArrayList<>();
 
@@ -122,6 +124,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      * The pager adapter, which provides the pages to the view pager widget.
      */
     private FirstRunPagerAdapter mPagerAdapter;
+
+    public FirstRunActivity() {
+        mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
+    }
 
     /**
      * Defines a sequence of pages to be shown (depending on parameters etc).
@@ -250,7 +256,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 long inflationCompletion = SystemClock.elapsedRealtime();
                 RecordHistogram.recordTimesHistogram(
                         "MobileFre.FromLaunch.FirstFragmentInflated", inflationCompletion);
-                FirstRunAppRestrictionInfo.getInstance().getCompletionElapsedRealtimeMs(
+                mFirstRunAppRestrictionInfo.getCompletionElapsedRealtimeMs(
                         restrictionsCompletion -> {
                             if (restrictionsCompletion > inflationCompletion) {
                                 RecordHistogram.recordTimesHistogram(
@@ -344,6 +350,14 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void onStart() {
         super.onStart();
         stopProgressionIfNotAcceptedTermsOfService();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // As first run is complete, we no longer need FirstRunAppRestrictionInfo.
+        mFirstRunAppRestrictionInfo.destroy();
     }
 
     @Override
@@ -566,6 +580,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void showInfoPage(@StringRes int url) {
         CustomTabActivity.showInfoPage(
                 this, LocalizationUtils.substituteLocalePlaceholder(getString(url)));
+    }
+
+    @Override
+    public FirstRunAppRestrictionInfo getFirstRunAppRestrictionInfo() {
+        return mFirstRunAppRestrictionInfo;
     }
 
     @VisibleForTesting

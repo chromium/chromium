@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
@@ -64,12 +66,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
 
     private TosAndUmaFirstRunFragmentWithEnterpriseSupport() {
         mCallbackController = new CallbackController();
-        checkAppRestriction();
-        // It's possible for app restrictions to have its callback synchronously invoked and we can
-        // give up on the skip scenario.
-        if (shouldWaitForPolicyLoading()) {
-            checkIsDeviceOwned();
-        }
     }
 
     @Override
@@ -87,6 +83,17 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
             mPolicyServiceObserver = null;
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        checkAppRestriction();
+        // It's possible for app restrictions to have its callback synchronously invoked and we can
+        // give up on the skip scenario.
+        if (shouldWaitForPolicyLoading()) {
+            checkIsDeviceOwned();
+        }
     }
 
     @Override
@@ -180,7 +187,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     }
 
     private void checkAppRestriction() {
-        FirstRunAppRestrictionInfo.getInstance().getHasAppRestriction(
+        getPageDelegate().getFirstRunAppRestrictionInfo().getHasAppRestriction(
                 mCallbackController.makeCancelable(this::onAppRestrictionDetected));
     }
 
