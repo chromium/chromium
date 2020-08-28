@@ -177,10 +177,10 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 
 #if defined(OS_CHROMEOS)
   // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
-  // ChromeOSMetricsProvider,
+  // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
   // SigninStatusMetricsProviderChromeOS, PrinterMetricsProvider, and
   // HashedLoggingMetricsProvider.
-  expected_providers += 6;
+  expected_providers += 7;
 #endif  // defined(OS_CHROMEOS)
 
 #if !defined(OS_CHROMEOS)
