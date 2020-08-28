@@ -88,6 +88,11 @@
     flex-direction: column;
   }
 
+  #menuSelector {
+    margin-bottom: 2px;
+    margin-top: 2px;
+  }
+
   .menu-item {
     align-items: center;
     border-radius: 0 16px 16px 0;
@@ -110,9 +115,12 @@
     border-radius: 16px 0 0 16px;
   }
 
-  .menu-item:hover,
-  .menu-item:focus {
+  .menu-item:hover {
     background-color: var(--ntp-hover-background-color);
+  }
+
+  .menu-item:focus {
+    box-shadow: var(--ntp-focus-shadow);
   }
 
   .menu-item:active {
@@ -195,7 +203,7 @@
     <div id="bodyContainer">
       <div id="menuContainer">
         <div id="menu">
-          <iron-selector selected-attribute="selected"
+          <iron-selector id="menuSelector" selected-attribute="selected"
               attr-for-selected="page-name" selected="{{selectedPage_}}"
               on-keydown="onMenuItemKeyDown_">
             <div class="menu-item" page-name="backgrounds" tabindex="0">
