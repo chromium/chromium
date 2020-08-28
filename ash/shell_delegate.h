@@ -49,7 +49,7 @@ class ASH_EXPORT ShellDelegate {
   virtual std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
       const = 0;
 
-  // TODO(jamescook): Replace with a mojo-compatible interface.
+  // Creates the screenshot delegate, which has dependencies on //chrome.
   virtual std::unique_ptr<ScreenshotDelegate> CreateScreenshotDelegate() = 0;
 
   // Creates a accessibility delegate. Shell takes ownership of the delegate.
