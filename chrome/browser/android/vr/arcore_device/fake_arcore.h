@@ -27,8 +27,7 @@ class FakeArCore : public ArCore {
   void SetCameraTexture(uint32_t texture) override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
                           display::Display::Rotation display_rotation) override;
-  std::vector<float> TransformDisplayUvCoords(
-      const base::span<const float> uvs) override;
+
   gfx::Transform GetProjectionMatrix(float near, float far) override;
   mojom::VRPosePtr Update(bool* camera_updated) override;
   base::TimeDelta GetFrameTimestamp() override;
@@ -78,6 +77,10 @@ class FakeArCore : public ArCore {
   void DetachAnchor(uint64_t anchor_id) override;
 
   void SetCameraAspect(float aspect) { camera_aspect_ = aspect; }
+
+ protected:
+  std::vector<float> TransformDisplayUvCoords(
+      const base::span<const float> uvs) const override;
 
  private:
   bool IsOnGlThread() const;

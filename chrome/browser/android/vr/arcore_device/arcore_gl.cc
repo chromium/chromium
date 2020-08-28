@@ -24,6 +24,7 @@
 #include "chrome/browser/android/vr/arcore_device/arcore_session_utils.h"
 #include "chrome/browser/android/vr/web_xr_presentation_state.h"
 #include "device/vr/android/arcore/arcore.h"
+#include "device/vr/android/arcore/arcore_math_utils.h"
 #include "device/vr/android/arcore/type_converters.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -42,11 +43,6 @@
 #include "ui/gl/init/gl_factory.h"
 
 namespace {
-// Input display coordinates (range 0..1) used with ArCore's
-// transformDisplayUvCoords to calculate the output matrix.
-constexpr std::array<float, 6> kDisplayCoordinatesForTransform = {
-    0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
-
 // When scheduling the next ARCore update task, aim to have that run this much
 // time ahead of when the next camera image is expected to be ready. In case
 // the overall system is running slower than ideal, i.e. if the device switches
@@ -62,40 +58,6 @@ constexpr base::TimeDelta kUpdateMaxDelay =
     base::TimeDelta::FromMilliseconds(30);
 
 const char kInputSourceProfileName[] = "generic-touchscreen";
-
-gfx::Transform ConvertUvsToTransformMatrix(const std::vector<float>& uvs) {
-  // We're creating a matrix that transforms viewport UV coordinates (for a
-  // screen-filling quad, origin at bottom left, u=1 at right, v=1 at top) to
-  // camera texture UV coordinates. This matrix is used to compute texture
-  // coordinates for copying an appropriately cropped and rotated subsection of
-  // the camera image. The SampleData is a bit unfortunate. ArCore doesn't
-  // provide a way to get a matrix directly. There's a function to transform UV
-  // vectors individually, which obviously can't be used from a shader, so we
-  // run that on selected vectors and recreate the matrix from the result.
-
-  // Assumes that |uvs| is the result of transforming the display coordinates
-  // from kDisplayCoordinatesForTransform. This combines the solved matrix with
-  // a Y flip because ArCore's "normalized screen space" coordinates have the
-  // origin at the top left to match 2D Android APIs, so it needs a Y flip to
-  // get an origin at bottom left as used for textures.
-  DCHECK_EQ(uvs.size(), 6U);
-  float u00 = uvs[0];
-  float v00 = uvs[1];
-  float u10 = uvs[2];
-  float v10 = uvs[3];
-  float u01 = uvs[4];
-  float v01 = uvs[5];
-
-  // Transform initializes to the identity matrix and then is modified by uvs.
-  gfx::Transform result;
-  result.matrix().set(0, 0, u10 - u00);
-  result.matrix().set(0, 1, -(u01 - u00));
-  result.matrix().set(0, 3, u01);
-  result.matrix().set(1, 0, v10 - v00);
-  result.matrix().set(1, 1, -(v01 - v00));
-  result.matrix().set(1, 3, v01);
-  return result;
-}
 
 const gfx::Size kDefaultFrameSize = {1, 1};
 const display::Display::Rotation kDefaultRotation = display::Display::ROTATE_0;
@@ -328,9 +290,7 @@ void ArCoreGl::GetFrameData(
   // resize.
   if (should_recalculate_uvs_) {
     // Get the UV transform matrix from ArCore's UV transform.
-    std::vector<float> uvs_transformed =
-        arcore_->TransformDisplayUvCoords(kDisplayCoordinatesForTransform);
-    uv_transform_ = ConvertUvsToTransformMatrix(uvs_transformed);
+    uv_transform_ = arcore_->GetCameraUvFromScreenUvTransform();
 
     // We need near/far distances to make a projection matrix. The actual
     // values don't matter, the Renderer will recalculate dependent values

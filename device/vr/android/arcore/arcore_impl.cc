@@ -604,19 +604,25 @@ void ArCoreImpl::SetDisplayGeometry(
 }
 
 std::vector<float> ArCoreImpl::TransformDisplayUvCoords(
-    const base::span<const float> uvs) {
+    const base::span<const float> uvs) const {
   DCHECK(IsOnGlThread());
   DCHECK(arcore_session_.is_valid());
   DCHECK(arcore_frame_.is_valid());
 
   size_t num_elements = uvs.size();
   DCHECK(num_elements % 2 == 0);
-  std::vector<float> uvs_out(num_elements);
+  DCHECK_GE(num_elements, 6u);
 
+  std::vector<float> uvs_out(num_elements);
   ArFrame_transformCoordinates2d(
       arcore_session_.get(), arcore_frame_.get(),
       AR_COORDINATES_2D_VIEW_NORMALIZED, num_elements / 2, &uvs[0],
       AR_COORDINATES_2D_TEXTURE_NORMALIZED, &uvs_out[0]);
+
+  DVLOG(3) << __func__ << ": transformed uvs=[ " << uvs_out[0] << " , "
+           << uvs_out[1] << " , " << uvs_out[2] << " , " << uvs_out[3] << " , "
+           << uvs_out[4] << " , " << uvs_out[5] << " ]";
+
   return uvs_out;
 }
 
@@ -1412,7 +1418,7 @@ void ArCoreImpl::DetachAnchor(uint64_t anchor_id) {
   anchor_manager_->DetachAnchor(AnchorId(anchor_id));
 }
 
-bool ArCoreImpl::IsOnGlThread() {
+bool ArCoreImpl::IsOnGlThread() const {
   return gl_thread_task_runner_->BelongsToCurrentThread();
 }
 
