@@ -77,6 +77,9 @@ class XDGSurfaceWrapperImpl : public ShellSurfaceWrapper {
   // Initializes using XDG Shell V6 protocol.
   bool InitializeV6(bool with_toplevel);
 
+  // Initializes the aura-shell EXO extension, if available.
+  void InitializeAuraShell();
+
   // Non-owing WaylandWindow that uses this surface wrapper.
   WaylandWindow* const wayland_window_;
   WaylandConnection* const connection_;
