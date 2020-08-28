@@ -30,10 +30,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                                    const base::ListValue* args);
   void HandleLaunchGuestProfile(const base::ListValue* args);
   void HandleAskOnStartupChanged(const base::ListValue* args);
-  void HandleGetNewProfileSuggestedThemeInfo(const base::ListValue* args);
   void HandleRemoveProfile(const base::ListValue* args);
   void HandleGetProfileStatistics(const base::ListValue* args);
+
+  // TODO(crbug.com/1115056): Move to new handler for profile creation.
   void HandleLoadSignInProfileCreationFlow(const base::ListValue* args);
+  void HandleGetNewProfileSuggestedThemeInfo(const base::ListValue* args);
+  void HandleCreateProfile(const base::ListValue* args);
 
   void GatherProfileStatistics(Profile* profile);
   void OnProfileStatisticsReceived(base::FilePath profile_path,
@@ -41,6 +44,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnSwitchToProfileComplete(bool open_settings,
                                  Profile* profile,
                                  Profile::CreateStatus profile_create_status);
+  void OnProfileCreated(SkColor profile_color,
+                        bool create_shortcut,
+                        Profile* profile,
+                        Profile::CreateStatus status);
+  void OnProfileCreationSuccess(SkColor profile_color,
+                                bool create_shortcut,
+                                Profile* profile);
   void PushProfilesList();
   base::Value GetProfilesList();
 

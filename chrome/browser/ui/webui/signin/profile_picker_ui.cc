@@ -78,6 +78,8 @@ void AddStrings(content::WebUIDataSource* html_source) {
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_INPUT_NAME},
       {"createDesktopShortcutLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_SHORTCUT_TEXT},
+      {"createProfileConfirm",
+       IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_LOCAL_PROFILE_CREATION_DONE},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
   html_source->AddBoolean("askOnStartup",

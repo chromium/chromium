@@ -19,6 +19,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy {
       'removeProfile',
       'getProfileStatistics',
       'loadSignInProfileCreationFlow',
+      'createProfile',
     ]);
   }
 
@@ -52,6 +53,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy {
     this.methodCalled('getNewProfileSuggestedThemeInfo');
     return Promise.resolve({
       colorId: 0,
+      color: 0,
       themeFrameColor: '',
       themeShapeColor: '',
       themeFrameTextColor: '',
@@ -72,5 +74,13 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy {
   /** @override */
   loadSignInProfileCreationFlow() {
     this.methodCalled('loadSignInProfileCreationFlow');
+  }
+
+  /** @override */
+  createProfile(
+      profileName, profileColor, avatarUrl, isGeneric, createShortcut) {
+    this.methodCalled(
+        'createProfile',
+        [profileName, profileColor, avatarUrl, isGeneric, createShortcut]);
   }
 }

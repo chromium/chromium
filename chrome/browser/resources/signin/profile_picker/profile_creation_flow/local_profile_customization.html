@@ -10,17 +10,58 @@
     text-align: center;
   }
 
+  #wrapperContainer {
+    align-items: center;
+    display: flex;
+    height: calc(max(100vh, var(--view-min-size)) -
+      (var(--banner-height) + var(--avatar-size)/2 + var(--vertical-gap) +
+       var(--cr-button-height) + var(--footer-margin)));
+    justify-content: center;
+    margin-bottom: var(--vertical-gap);
+    margin-inline-end: 16px;
+    margin-inline-start: 16px;
+    margin-top: calc(var(--avatar-size)/2);
+    overflow: auto;
+  }
+
+  #wrapperContainer::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+  }
+
+  /* Track */
+  #wrapperContainer::-webkit-scrollbar-track {
+    border-radius: var(--scrollbar-width);
+  }
+
+  /* Handle */
+  #wrapperContainer::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-background);
+    border-radius: var(--scrollbar-width);
+  }
+
+  #wrapper > * {
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-top: var(--vertical-gap);
+  }
+
+  #wrapper {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    width: 100%;
+  }
+
   #nameInput {
     --cr-input-placeholder-color: rgba(var(--google-grey-900-rgb), .5);
     --cr-input-border-bottom: 1px solid var(--cr-secondary-text-color);
     height: 32px;
-    margin: calc(var(--avatar-size)/2 + var(--vertical-gap)) auto 0 auto;
     width: 300px;
   }
 
   #colorPicker {
     height: 220px;
-    margin: var(--vertical-gap) auto var(--vertical-gap) auto;
     width: 370px;
   }
 
@@ -28,12 +69,23 @@
     --cr-checkbox-label-color:  var(--cr-secondary-text-color);
     --cr-checkbox-label-padding-start: 8px;
     height: 20px;
-    margin: auto;
+    left: 0;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    position: absolute;
+    right: 0;
     width: fit-content;
   }
 
   cr-checkbox[hidden] {
     display: none;
+  }
+
+  #save {
+    display: flex;
+    margin-inline-end: var(--footer-margin);
+    margin-inline-start: auto;
+    width: 111px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -55,17 +107,28 @@
   <img class="avatar" src$="[[profileThemeInfo.themeGenericAvatar]]">
 </div>
 
-<cr-input id="nameInput" value="{{profileName_}}" pattern=".*\\S.*"
-    placeholder="$i18n{createProfileNamePlaceholder}"
-    auto-validate spellcheck="false">
-</cr-input>
+<div id="wrapperContainer">
+  <div id="wrapper">
+    <cr-input id="nameInput" value="{{profileName_}}" pattern=".*\\S.*"
+        placeholder="$i18n{createProfileNamePlaceholder}"
+        auto-validate spellcheck="false">
+    </cr-input>
 
-<!-- TODO(crbug.com/1115301): Add color picker. -->
-<div id="colorPicker"
-    style$="background-color:[[profileThemeInfo.themeFrameColor]]">
+    <!-- TODO(crbug.com/1115301): Add color picker. -->
+    <div id="colorPicker"
+        style$="background-color:[[profileThemeInfo.themeFrameColor]]">
+    </div>
+  </div>
 </div>
 
-<cr-checkbox checked="{{createShortcut_}}"
-    hidden="[[!isProfileShortcutsEnabled_]]">
-    $i18n{createDesktopShortcutLabel}
-</cr-checkbox>
+<div class="footer">
+  <cr-checkbox checked="{{createShortcut_}}"
+      hidden="[[!isProfileShortcutsEnabled_]]">
+      $i18n{createDesktopShortcutLabel}
+  </cr-checkbox>
+
+  <cr-button id="save" class="action-button" on-click="onSaveClick_"
+            disabled="[[isSaveDisabled_(createInProgress_, profileName_)]]">
+    $i18n{createProfileConfirm}
+  </cr-button>
+</div>

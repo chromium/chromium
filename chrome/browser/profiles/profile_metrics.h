@@ -42,8 +42,8 @@ class ProfileMetrics {
     ADD_NEW_USER_MENU = 1,
     // User adds new user from create-profile dialog
     ADD_NEW_USER_DIALOG = 2,
-    // User adds new user from User Manager -- no longer used
-    // ADD_NEW_USER_MANAGER = 3,
+    // User adds new user from Profile Picker
+    ADD_NEW_PROFILE_PICKER = 3,
     // Auto-created after deleting last user
     ADD_NEW_USER_LAST_DELETED = 4,
     // Created by the sign-in interception prompt

@@ -22,6 +22,7 @@ export let ProfileState;
  * This is the data structure sent back and forth between C++ and JS.
  * @typedef {{
  *   colorId: number,
+ *   color: number,
  *   themeFrameColor: string,
  *   themeShapeColor: string,
  *   themeFrameTextColor: string,
@@ -81,6 +82,17 @@ export class ManageProfilesBrowserProxy {
 
   /** Loads Google sign in page.*/
   loadSignInProfileCreationFlow() {}
+
+  /**
+   * Creates local profile
+   * @param {string} profileName
+   * @param {number} profileColor
+   * @param {string} avatarUrl
+   * @param {boolean} isGeneric
+   * @param {boolean} createShortcut
+   */
+  createProfile(
+      profileName, profileColor, avatarUrl, isGeneric, createShortcut) {}
 }
 
 /** @implements {ManageProfilesBrowserProxy} */
@@ -128,6 +140,14 @@ export class ManageProfilesBrowserProxyImpl {
   /** @override */
   loadSignInProfileCreationFlow() {
     chrome.send('loadSignInProfileCreationFlow');
+  }
+
+  /** @override */
+  createProfile(
+      profileName, profileColor, avatarUrl, isGeneric, createShortcut) {
+    chrome.send(
+        'createProfile',
+        [profileName, profileColor, avatarUrl, isGeneric, createShortcut]);
   }
 }
 

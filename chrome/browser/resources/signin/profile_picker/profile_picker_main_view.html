@@ -42,7 +42,6 @@
     --grid-gutter: 24px;
     --profile-item-height:178px;
     --profile-item-width: 162px;
-    --scrollbar-width: 4px;
     align-items: center;
     display: grid;
     grid-column-gap: var(--grid-gutter);
@@ -69,7 +68,7 @@
 
   /* Handle */
   .profiles-container::-webkit-scrollbar-thumb {
-    background: var(--google-grey-refresh-100);
+    background: var(--scrollbar-background);
     border-radius: var(--scrollbar-width);
   }
 
@@ -97,21 +96,12 @@
     --cr-icon-button-stroke-color: var(--google-grey-refresh-700);
   }
 
-  .footer {
-    bottom: 0;
-    display: flex;
-    font-size: var(--text-font-size);
-    margin-bottom: 40px;
-    position: absolute;
-    width: 100%;
-  }
-
   .footer > * {
     background-color: rgba(255, 255, 255, .8);
   }
 
   #browseAsGuestButton {
-    margin-inline-start: 40px;
+    margin-inline-start: var(--footer-margin);
   }
 
   #browseAsGuestButton > iron-icon {
@@ -122,7 +112,7 @@
     --cr-checkbox-label-color:  var(--cr-secondary-text-color);
     --cr-checkbox-label-padding-start: 8px;
     justify-content: flex-end;
-    margin-inline-end: 40px;
+    margin-inline-end: var(--footer-margin);
     margin-inline-start: auto;
     padding-inline-end: 5px;
     padding-inline-start: 5px;
@@ -135,10 +125,6 @@
 
     #rightBanner {
       background: url(images/dark_mode_right_banner_image.svg);
-    }
-
-    .profiles-container::-webkit-scrollbar-thumb {
-      background: var(--google-grey-800);
     }
 
     #addProfile {
