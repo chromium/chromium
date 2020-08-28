@@ -340,6 +340,7 @@ def chromium_angle_builder(*, name, **kwargs):
         name = name,
         builderless = False,
         goma_backend = builders.goma.backend.RBE_PROD,
+        goma_jobs = builders.goma.jobs.J150,
         mastername = "tryserver.chromium.angle",
         service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
         **kwargs
