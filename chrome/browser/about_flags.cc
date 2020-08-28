@@ -1024,7 +1024,7 @@ const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
     {
         "Non-Prefix AC",
         (FeatureEntry::FeatureParam[]){
-            {"RichAutocompletionAutocompleteNonPrefix", "true"}},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
         1,
         nullptr,
     },
@@ -1032,7 +1032,7 @@ const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
         "Title UI & Non-Prefix AC",
         (FeatureEntry::FeatureParam[]){
             {"RichAutocompletionShowTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefix", "true"}},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
         2,
         nullptr,
     },
@@ -1042,7 +1042,7 @@ const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
         (FeatureEntry::FeatureParam[]){
             {"RichAutocompletionShowTitles", "true"},
             {"RichAutocompletionTwoLineOmnibox", "true"},
-            {"RichAutocompletionAutocompleteNonPrefix", "true"}},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
         3,
         nullptr,
     },
@@ -1050,7 +1050,7 @@ const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
         "Title AC & Non-Prefix AC",
         (FeatureEntry::FeatureParam[]){
             {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefix", "true"}},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
         2,
         nullptr,
     },
@@ -1059,7 +1059,7 @@ const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
         (FeatureEntry::FeatureParam[]){
             {"RichAutocompletionShowTitles", "true"},
             {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefix", "true"}},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
         3,
         nullptr,
     },
@@ -1068,14 +1068,14 @@ const FeatureEntry::FeatureVariation kOmniboxRichAutocompletionVariations[] = {
         (FeatureEntry::FeatureParam[]){
             {"RichAutocompletionTwoLineOmnibox", "true"},
             {"RichAutocompletionAutocompleteTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefix", "true"}},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
         3,
         nullptr,
     },
     {
         "Title UI, 2-Line UI, Title AC, & Non-Prefix AC",
         (FeatureEntry::FeatureParam[]){
-            {"RichAutocompletionAutocompleteNonPrefix", "true"},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
             {"RichAutocompletionShowTitles", "true"},
             {"RichAutocompletionAutocompleteTitles", "true"},
             {"RichAutocompletionTwoLineOmnibox", "true"}},
@@ -1149,6 +1149,49 @@ const FeatureEntry::FeatureVariation
             1,
             nullptr,
         }};
+
+// A limited number of combinations of the above variations that are most
+// promising.
+const FeatureEntry::FeatureVariation
+    kOmniboxRichAutocompletionPromisingVariations[] = {
+        {
+            "Aggressive - Title, Non-Prefix, min 0/0",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionAutocompleteTitles", "true"},
+                {"RichAutocompletionAutocompleteNonPrefixAll", "true"}},
+            2,
+            nullptr,
+        },
+        {
+            "Aggressive Moderate - Title, Non-Prefix, min 3/5",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionAutocompleteTitles", "true"},
+                {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
+                {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+                {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}},
+            4,
+            nullptr,
+        },
+        {
+            "Conservative Moderate - Title, Shortcut Non-Prefix, min 3/5",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionAutocompleteTitles", "true"},
+                {"RichAutocompletionAutocompleteNonPrefixShortcutProvider",
+                 "true"},
+                {"RichAutocompletionAutocompleteTitlesMinChar", "3"},
+                {"RichAutocompletionAutocompleteNonPrefixMinChar", "5"}},
+            4,
+            nullptr,
+        },
+        {
+            "Conservative - Title, min 3",
+            (FeatureEntry::FeatureParam[]){
+                {"RichAutocompletionAutocompleteTitles", "true"},
+                {"RichAutocompletionAutocompleteTitlesMinChar", "3"}},
+            2,
+            nullptr,
+        },
+};
 
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
@@ -3854,6 +3897,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          omnibox::kRichAutocompletion,
          kOmniboxRichAutocompletionShowAdditionalTextVariations,
+         "OmniboxBundledExperimentV1")},
+    {"omnibox-rich-autocompletion-promising",
+     flag_descriptions::kOmniboxRichAutocompletionPromisingName,
+     flag_descriptions::kOmniboxRichAutocompletionPromisingDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kRichAutocompletion,
+         kOmniboxRichAutocompletionPromisingVariations,
          "OmniboxBundledExperimentV1")},
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)

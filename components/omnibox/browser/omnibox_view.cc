@@ -262,7 +262,9 @@ void OmniboxView::GetState(State* state) {
   state->keyword = model()->keyword();
   state->is_keyword_selected = model()->is_keyword_selected();
   GetSelectionBounds(&state->sel_start, &state->sel_end);
-  if (OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefix())
+  if (OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
+      OmniboxFieldTrial::
+          RichAutocompletionAutocompleteNonPrefixShortcutProvider())
     state->all_sel_length = GetAllSelectionsLength();
 }
 
@@ -296,7 +298,9 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   state_changes.just_deleted_text =
       before.text.length() > after.text.length() &&
       after.sel_start <= std::min(before.sel_start, before.sel_end);
-  if (OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefix()) {
+  if (OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
+      OmniboxFieldTrial::
+          RichAutocompletionAutocompleteNonPrefixShortcutProvider()) {
     state_changes.just_deleted_text =
         state_changes.just_deleted_text &&
         after.sel_start <=

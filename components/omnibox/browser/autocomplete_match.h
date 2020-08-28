@@ -441,13 +441,14 @@ struct AutocompleteMatch {
   // - Non-prefix autocomplete |secondary_text|.
   // Midword and title autocompletion are only attempted if
   // |OmniboxFieldTrial::RichAutocompletionAutocompleteTitles()| and
-  // |OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefix()| are true
+  // |OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefix*()| are true
   // respectively.
   // Returns false if none of the autocompletions were appropriate (or the
   // features were disabled).
   bool TryRichAutocompletion(const base::string16& primary_text,
                              const base::string16& secondary_text,
-                             const AutocompleteInput& input);
+                             const AutocompleteInput& input,
+                             bool shortcut_provider = false);
 
   // The provider of this match, used to remember which provider the user had
   // selected when the input changes. This may be NULL, in which case there is
@@ -487,7 +488,7 @@ struct AutocompleteMatch {
   base::string16 inline_autocompletion;
   // The inline autocompletion to display before the user's input in the
   // omnibox, if this match becomes the default match. Always empty if
-  // kRichAutocompletionAutocompleteNonPrefix is disabled.
+  // non-prefix autocompletion is disabled.
   base::string16 prefix_autocompletion;
 
   // If false, the omnibox should prevent this match from being the

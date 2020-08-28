@@ -3411,6 +3411,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "omnibox-rich-autocompletion-promising",
+    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "omnibox-rich-autocompletion-show-additional-text",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95

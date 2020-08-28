@@ -909,6 +909,8 @@ extern const char kOmniboxRichAutocompletionMinCharName[];
 extern const char kOmniboxRichAutocompletionMinCharDescription[];
 extern const char kOmniboxRichAutocompletionShowAdditionalTextName[];
 extern const char kOmniboxRichAutocompletionShowAdditionalTextDescription[];
+extern const char kOmniboxRichAutocompletionPromisingName[];
+extern const char kOmniboxRichAutocompletionPromisingDescription[];
 
 extern const char kOmniboxOnFocusSuggestionsName[];
 extern const char kOmniboxOnFocusSuggestionsDescription[];

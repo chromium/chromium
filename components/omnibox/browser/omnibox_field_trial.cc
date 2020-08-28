@@ -764,10 +764,17 @@ bool OmniboxFieldTrial::RichAutocompletionShowTitles() {
       omnibox::kRichAutocompletion, kRichAutocompletionShowTitlesParam, false);
 }
 
-bool OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefix() {
+bool OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() {
   return base::GetFieldTrialParamByFeatureAsBool(
       omnibox::kRichAutocompletion,
-      kRichAutocompletionAutocompleteNonPrefixParam, false);
+      kRichAutocompletionAutocompleteNonPrefixAllParam, false);
+}
+
+bool OmniboxFieldTrial::
+    RichAutocompletionAutocompleteNonPrefixShortcutProvider() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      omnibox::kRichAutocompletion,
+      kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam, false);
 }
 
 size_t OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar() {
@@ -962,8 +969,12 @@ const char OmniboxFieldTrial::kRichAutocompletionTwoLineOmniboxParam[] =
     "RichAutocompletionTwoLineOmnibox";
 const char OmniboxFieldTrial::kRichAutocompletionShowTitlesParam[] =
     "RichAutocompletionShowTitles";
-const char OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixParam[] =
-    "RichAutocompletionAutocompleteNonPrefix";
+const char
+    OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAllParam[] =
+        "RichAutocompletionAutocompleteNonPrefixAll";
+const char OmniboxFieldTrial::
+    kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam[] =
+        "RichAutocompletionAutocompleteNonPrefixShortcutProvider";
 const char
     OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinCharParam[] =
         "RichAutocompletionAutocompleteNonPrefixMinChar";

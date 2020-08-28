@@ -542,7 +542,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteTitles", "true"},
             {"RichAutocompletionTwoLineOmnibox", "true"},
             {"RichAutocompletionShowTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefix", "true"},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
         });
 
     // Prefer autocompleting primary text prefix.
@@ -582,7 +582,7 @@ TEST(AutocompleteMatchTest, TryRichAutocompletion) {
             {"RichAutocompletionAutocompleteTitles", "true"},
             {"RichAutocompletionTwoLineOmnibox", "true"},
             {"RichAutocompletionShowTitles", "true"},
-            {"RichAutocompletionAutocompleteNonPrefix", "true"},
+            {"RichAutocompletionAutocompleteNonPrefixAll", "true"},
             {"RichAutocompletionAutocompleteTitlesMinChar", "2"},
             {"RichAutocompletionAutocompleteNonPrefixMinChar", "2"},
         });

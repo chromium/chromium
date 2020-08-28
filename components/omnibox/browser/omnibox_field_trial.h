@@ -418,7 +418,8 @@ bool RichAutocompletionAutocompleteTitles();
 size_t RichAutocompletionAutocompleteTitlesMinChar();
 bool RichAutocompletionTwoLineOmnibox();
 bool RichAutocompletionShowTitles();
-bool RichAutocompletionAutocompleteNonPrefix();
+bool RichAutocompletionAutocompleteNonPrefixAll();
+bool RichAutocompletionAutocompleteNonPrefixShortcutProvider();
 size_t RichAutocompletionAutocompleteNonPrefixMinChar();
 bool RichAutocompletionShowAdditionalText();
 
@@ -541,7 +542,9 @@ extern const char kRichAutocompletionAutocompleteTitlesParam[];
 extern const char kRichAutocompletionAutocompleteTitlesMinCharParam[];
 extern const char kRichAutocompletionTwoLineOmniboxParam[];
 extern const char kRichAutocompletionShowTitlesParam[];
-extern const char kRichAutocompletionAutocompleteNonPrefixParam[];
+extern const char kRichAutocompletionAutocompleteNonPrefixAllParam[];
+extern const char
+    kRichAutocompletionAutocompleteNonPrefixShortcutProviderParam[];
 extern const char kRichAutocompletionAutocompleteNonPrefixMinCharParam[];
 extern const char kRichAutocompletionShowAdditionalTextParam[];
 

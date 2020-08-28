@@ -1181,7 +1181,8 @@ void AutocompleteMatch::TryAutocompleteWithTitle(
 bool AutocompleteMatch::TryRichAutocompletion(
     const base::string16& primary_text,
     const base::string16& secondary_text,
-    const AutocompleteInput& input) {
+    const AutocompleteInput& input,
+    bool shortcut_provider) {
   if (!OmniboxFieldTrial::IsRichAutocompletionEnabled())
     return false;
 
@@ -1227,8 +1228,16 @@ bool AutocompleteMatch::TryRichAutocompletion(
     return true;
   }
 
-  // Check if non-prefix autocompletion is possible.
-  if (!OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefix() ||
+  // Check if non-prefix autocompletion is possible. I.e., these 2 conditions
+  // must be truthy:
+  // 1) Non-prefix autocompletion must be enabled through either param:
+  //   - EITHER |...NonPrefixAll|
+  //   - OR, for shortcut provider suggestions, |...NonPrefixShortcutProvider|
+  // 2) AND input must be longer than the threshold |...NonPrefixMinChar|
+  if (!(OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixAll() ||
+        (shortcut_provider &&
+         OmniboxFieldTrial::
+             RichAutocompletionAutocompleteNonPrefixShortcutProvider())) ||
       input.text().size() <
           OmniboxFieldTrial::RichAutocompletionAutocompleteNonPrefixMinChar())
     return false;

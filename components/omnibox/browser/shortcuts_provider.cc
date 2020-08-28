@@ -329,7 +329,8 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
             !input.prevent_inline_autocomplete() ||
             match.inline_autocompletion.empty();
       }
-    } else {
+    } else if (!match.TryRichAutocompletion(match.contents, match.description,
+                                            input, true)) {
       const size_t inline_autocomplete_offset =
           URLPrefix::GetInlineAutocompleteOffset(
               input.text(), fixed_up_input_text, true, match.fill_into_edit);
