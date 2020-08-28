@@ -106,7 +106,13 @@ MATCHER_P(GuidIs, e, "") {
 class SendTabToSelfBridgeTest : public testing::Test {
  protected:
   SendTabToSelfBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+
+  void InitializeLocalDeviceIfNeeded() {
+    if (local_device_) {
+      return;
+    }
+
     SetLocalDeviceCacheGuid(kLocalDeviceCacheGuid);
     local_device_ = CreateDevice(kLocalDeviceCacheGuid, "device",
                                  clock()->Now() - base::TimeDelta::FromDays(1));
@@ -116,6 +122,13 @@ class SendTabToSelfBridgeTest : public testing::Test {
   // Initialized the bridge based on the current local device and store. Can
   // only be called once per run, as it passes |store_|.
   void InitializeBridge() {
+    InitializeLocalDeviceIfNeeded();
+    InitializeBridgeWithoutDevice();
+  }
+
+  // Initializes only the bridge without creating local device. This is useful
+  // to test the case when the device info tracker is not initialized yet.
+  void InitializeBridgeWithoutDevice() {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
     bridge_ = std::make_unique<SendTabToSelfBridge>(
         mock_processor_.CreateForwardingProcessor(), &clock_,
@@ -202,6 +215,10 @@ class SendTabToSelfBridgeTest : public testing::Test {
   MockSendTabToSelfModelObserver* mock_observer() { return &mock_observer_; }
 
   base::SimpleTestClock* clock() { return &clock_; }
+
+  syncer::FakeDeviceInfoTracker* device_info_tracker() {
+    return &device_info_tracker_;
+  }
 
  private:
   base::SimpleTestClock clock_;
@@ -819,6 +836,18 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
                           std::move(remote_input));
 
   EXPECT_EQ(2ul, bridge()->GetAllGuids().size());
+}
+
+TEST_F(SendTabToSelfBridgeTest,
+       ShouldNotUpdateTargetDeviceInfoListWhileEmptyDeviceInfo) {
+  InitializeBridgeWithoutDevice();
+  SetLocalDeviceCacheGuid("cache_guid");
+
+  ASSERT_FALSE(bridge()->change_processor()->TrackedCacheGuid().empty());
+  ASSERT_FALSE(device_info_tracker()->IsSyncing());
+
+  EXPECT_FALSE(bridge()->ShouldUpdateTargetDeviceInfoListForTest());
+  EXPECT_FALSE(bridge()->HasValidTargetDevice());
 }
 
 }  // namespace

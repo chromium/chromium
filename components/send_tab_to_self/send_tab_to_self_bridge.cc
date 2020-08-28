@@ -613,6 +613,10 @@ void SendTabToSelfBridge::DoGarbageCollection() {
 }
 
 bool SendTabToSelfBridge::ShouldUpdateTargetDeviceInfoList() const {
+  if (!device_info_tracker_->IsSyncing()) {
+    return false;
+  }
+
   // The vector should be updated if any of these is true:
   //   * The vector is empty.
   //   * The number of total devices changed.
@@ -625,6 +629,7 @@ bool SendTabToSelfBridge::ShouldUpdateTargetDeviceInfoList() const {
 }
 
 void SendTabToSelfBridge::SetTargetDeviceInfoList() {
+  DCHECK(device_info_tracker_->IsSyncing());
   // Verify that the current TrackedCacheGuid() is the local GUID without
   // enforcing that tracked cache GUID is set.
   DCHECK(device_info_tracker_->IsRecentLocalCacheGuid(
