@@ -136,8 +136,8 @@
         hidden="[[!isState_(state_, State.CANCELING)]]">
       <paper-progress class="progress-bar" indeterminate></paper-progress>
     </div>
-    <div id="error-message" hidden="[[!isState_(state_, State.ERROR)]]">
-      <textarea id="error-log" rows="10" cols="80" readonly>[[getErrorMessage_(state_)]]</textarea>
+    <div id="upgrade-error-message" hidden="[[isErrorLogsHidden_(state_)]]">
+      <textarea id="error-log" rows="10" cols="80" readonly>[[getErrorLogs_(state_)]]</textarea>
     </div>
   </div>
 
