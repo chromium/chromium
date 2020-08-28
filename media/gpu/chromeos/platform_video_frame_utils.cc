@@ -173,6 +173,11 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
   switch (video_frame->storage_type()) {
     case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
       handle = video_frame->GetGpuMemoryBuffer()->CloneHandle();
+      // TODO(crbug.com/1097956): handle a failure gracefully.
+      CHECK_EQ(handle.type, gfx::NATIVE_PIXMAP)
+          << "The cloned handle has an unexpected type: " << handle.type;
+      CHECK(!handle.native_pixmap_handle.planes.empty())
+          << "The cloned handle has no planes";
       break;
     case VideoFrame::STORAGE_DMABUFS: {
       const size_t num_planes = VideoFrame::NumPlanes(video_frame->format());
@@ -184,10 +189,8 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
       while (num_planes != duped_fds.size()) {
         int duped_fd = -1;
         duped_fd = HANDLE_EINTR(dup(duped_fds.back().get()));
-        if (duped_fd == -1) {
-          DLOG(ERROR) << "Failed duplicating dmabuf fd";
-          return handle;
-        }
+        // TODO(crbug.com/1097956): handle a failure gracefully.
+        PCHECK(duped_fd >= 0) << "Failed duplicating a dma-buf fd";
         duped_fds.emplace_back(duped_fd);
       }
 
