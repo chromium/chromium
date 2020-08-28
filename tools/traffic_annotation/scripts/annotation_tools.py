@@ -15,6 +15,10 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 tool_dir = os.path.abspath(os.path.join(script_dir, '../../clang/pylib'))
 sys.path.insert(0, tool_dir)
 
+#TODO(https://crbug.com/1119417): To be replaced with a commandline argument or
+# made to run in addition to the preexisting C++ auditor executable.
+PYTHON_AUDITOR = False
+
 from clang import compile_db
 
 class NetworkTrafficAnnotationTools():
@@ -42,10 +46,15 @@ class NetworkTrafficAnnotationTools():
       'darwin': 'mac',
       'win32': 'win32',
     }[sys.platform]
-    path = os.path.join(self.this_dir, '..', 'bin', platform,
+
+    if PYTHON_AUDITOR:
+      path = os.path.join(self.this_dir, "../scripts/auditor.py")
+    else:
+      path = os.path.join(self.this_dir, '..', 'bin', platform,
                         'traffic_annotation_auditor')
-    if sys.platform == 'win32':
-      path += '.exe'
+      if sys.platform == 'win32':
+        path += '.exe'
+
     if os.path.exists(path):
       self.auditor_path = path
 
@@ -142,7 +151,12 @@ class NetworkTrafficAnnotationTools():
       return_code: int Auditor's exit code.
     """
 
-    command_line = [self.auditor_path, "--build-path=" + self.build_path] + args
+    if PYTHON_AUDITOR:
+      command_line = [
+        "vpython", self.auditor_path, "--build-path=" + self.build_path] + args
+    else:
+      command_line = [self.auditor_path, "--build-path=" + self.build_path] + \
+      args
 
     command = subprocess.Popen(
         command_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
