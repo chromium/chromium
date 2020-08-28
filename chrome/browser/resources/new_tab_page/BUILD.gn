@@ -48,6 +48,7 @@ js_library("app") {
   deps = [
     ":background_manager",
     ":browser_proxy",
+    ":middle_slot_promo",
     ":module_wrapper",
     ":modules",
     ":most_visited",
@@ -63,6 +64,13 @@ js_library("promo_browser_command_proxy") {
   deps = [
     "//chrome/browser/promo_browser_command:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("middle_slot_promo") {
+  deps = [
+    ":browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -258,6 +266,7 @@ html_to_js("web_components_local") {
     "doodle_share_dialog.js",
     "fakebox.js",
     "logo.js",
+    "middle_slot_promo.js",
     "mini_page.js",
     "most_visited.js",
     "realbox_button.js",

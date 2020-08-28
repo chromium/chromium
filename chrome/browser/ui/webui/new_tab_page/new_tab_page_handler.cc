@@ -10,6 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -22,6 +24,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
@@ -34,6 +37,7 @@
 #include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_factory.h"
+#include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -287,6 +291,76 @@ new_tab_page::mojom::ImageDoodlePtr MakeImageDoodle(
   return doodle;
 }
 
+new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
+  // |data.middle_slot_json| is safe to be decoded here. The JSON string is part
+  // of a larger JSON initially decoded using the data decoder utility in the
+  // PromoService to base::Value. The middle-slot promo part is then reencoded
+  // from base::Value to a JSON string stored in |data.middle_slot_json|.
+  auto middle_slot = base::JSONReader::Read(data.middle_slot_json);
+  if (!middle_slot.has_value() ||
+      middle_slot.value().FindBoolPath("hidden").value_or(false)) {
+    return nullptr;
+  }
+  auto promo = new_tab_page::mojom::Promo::New();
+  promo->id = data.promo_id;
+  if (middle_slot.has_value()) {
+    auto* parts = middle_slot.value().FindListPath("part");
+    if (parts) {
+      std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
+      for (const base::Value& part : parts->GetList()) {
+        if (part.FindKey("image")) {
+          auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
+          auto* image_url = part.FindStringPath("image.image_url");
+          if (!image_url || image_url->empty()) {
+            continue;
+          }
+          mojom_image->image_url = GURL(*image_url);
+          auto* target = part.FindStringPath("image.target");
+          if (target && !target->empty()) {
+            mojom_image->target = GURL(*target);
+          }
+          mojom_parts.push_back(
+              new_tab_page::mojom::PromoPart::NewImage(std::move(mojom_image)));
+        } else if (part.FindKey("link")) {
+          auto mojom_link = new_tab_page::mojom::PromoLinkPart::New();
+          auto* url = part.FindStringPath("link.url");
+          if (!url || url->empty()) {
+            continue;
+          }
+          mojom_link->url = GURL(*url);
+          auto* text = part.FindStringPath("link.text");
+          if (!text || text->empty()) {
+            continue;
+          }
+          mojom_link->text = *text;
+          auto* color = part.FindStringPath("link.color");
+          if (color && !color->empty()) {
+            mojom_link->color = *color;
+          }
+          mojom_parts.push_back(
+              new_tab_page::mojom::PromoPart::NewLink(std::move(mojom_link)));
+        } else if (part.FindKey("text")) {
+          auto mojom_text = new_tab_page::mojom::PromoTextPart::New();
+          auto* text = part.FindStringPath("text.text");
+          if (!text || text->empty()) {
+            continue;
+          }
+          mojom_text->text = *text;
+          auto* color = part.FindStringPath("text.color");
+          if (color && !color->empty()) {
+            mojom_text->color = *color;
+          }
+          mojom_parts.push_back(
+              new_tab_page::mojom::PromoPart::NewText(std::move(mojom_text)));
+        }
+      }
+      promo->middle_slot_parts = std::move(mojom_parts);
+    }
+  }
+  promo->log_url = data.promo_log_url;
+  return promo;
+}
+
 }  // namespace
 
 NewTabPageHandler::NewTabPageHandler(
@@ -318,11 +392,14 @@ NewTabPageHandler::NewTabPageHandler(
       web_contents_(web_contents),
       ntp_navigation_start_time_(ntp_navigation_start_time),
       logger_(logger),
+      promo_service_(PromoServiceFactory::GetForProfile(profile)),
       page_{std::move(pending_page)},
       receiver_{this, std::move(pending_page_handler)} {
   CHECK(instant_service_);
   CHECK(ntp_background_service_);
   CHECK(logo_service_);
+  CHECK(one_google_bar_service_);
+  CHECK(promo_service_);
   CHECK(web_contents_);
   CHECK(logger_);
   instant_service_->AddObserver(this);
@@ -330,11 +407,8 @@ NewTabPageHandler::NewTabPageHandler(
   instant_service_->UpdateNtpTheme();
   OmniboxTabHelper::CreateForWebContents(web_contents);
   OmniboxTabHelper::FromWebContents(web_contents_)->AddObserver(this);
-  // |one_google_bar_service_| is null in incognito, or when the feature is
-  // disabled.
-  if (one_google_bar_service_) {
-    one_google_bar_service_observer_.Add(one_google_bar_service_);
-  }
+  promo_service_observer_.Add(promo_service_);
+  one_google_bar_service_observer_.Add(one_google_bar_service_);
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -613,6 +687,79 @@ void NewTabPageHandler::GetOneGoogleBarParts(
   one_google_bar_service_->Refresh();
 }
 
+void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
+  // Replace the promo URL with "command:<id>" if such a command ID is set
+  // via the feature params.
+  const std::string command_id = base::GetFieldTrialParamValueByFeature(
+      features::kPromoBrowserCommands, features::kPromoBrowserCommandIdParam);
+  if (!command_id.empty()) {
+    auto promo = new_tab_page::mojom::Promo::New();
+    std::vector<new_tab_page::mojom::PromoPartPtr> parts;
+    auto image = new_tab_page::mojom::PromoImagePart::New();
+    // Warning symbol used as the test image.
+    image->image_url = GURL(
+        "data:image/"
+        "svg+xml;base64,"
+        "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii01IC"
+        "01IDU4IDU4IiBmaWxsPSIjZmRkNjMzIj48cGF0aCBkPSJNMiA0Mmg0NEwyNCA0IDIgNDJ6"
+        "bTI0LTZoLTR2LTRoNHY0em0wLThoLTR2LThoNHY4eiIvPjwvc3ZnPg==");
+    image->target = GURL("command:" + command_id);
+    parts.push_back(new_tab_page::mojom::PromoPart::NewImage(std::move(image)));
+    auto link = new_tab_page::mojom::PromoLinkPart::New();
+    link->url = GURL("command:" + command_id);
+    link->text = "Test command: " + command_id;
+    parts.push_back(new_tab_page::mojom::PromoPart::NewLink(std::move(link)));
+    promo->middle_slot_parts = std::move(parts);
+    std::move(callback).Run(std::move(promo));
+    return;
+  }
+
+  promo_callbacks_.push_back(std::move(callback));
+  if (promo_service_->promo_data().has_value()) {
+    OnPromoDataUpdated();
+  }
+  promo_load_start_time_ = base::TimeTicks::Now();
+  promo_service_->Refresh();
+}
+
+void NewTabPageHandler::OnPromoDataUpdated() {
+  if (promo_load_start_time_.has_value()) {
+    base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;
+    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2", duration);
+    if (promo_service_->promo_status() == PromoService::Status::OK_WITH_PROMO) {
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "NewTabPage.Promos.RequestLatency2.SuccessWithPromo", duration);
+    } else if (promo_service_->promo_status() ==
+               PromoService::Status::OK_BUT_BLOCKED) {
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "NewTabPage.Promos.RequestLatency2.SuccessButBlocked", duration);
+    } else if (promo_service_->promo_status() ==
+               PromoService::Status::OK_WITHOUT_PROMO) {
+      UMA_HISTOGRAM_MEDIUM_TIMES(
+          "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
+    } else {
+      UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
+                                 duration);
+    }
+    promo_load_start_time_ = base::nullopt;
+  }
+
+  const auto& data = promo_service_->promo_data();
+  for (auto& callback : promo_callbacks_) {
+    if (data.has_value() && !data->promo_html.empty()) {
+      std::move(callback).Run(MakePromo(data.value()));
+    } else {
+      std::move(callback).Run(nullptr);
+    }
+  }
+  promo_callbacks_.clear();
+}
+
+void NewTabPageHandler::OnPromoServiceShuttingDown() {
+  promo_service_observer_.RemoveAll();
+  promo_service_ = nullptr;
+}
+
 void NewTabPageHandler::OnMostVisitedTilesRendered(
     std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
     double time) {
@@ -630,9 +777,13 @@ void NewTabPageHandler::OnOneGoogleBarRendered(double time) {
                     base::Time::FromJsTime(time) - ntp_navigation_start_time_);
 }
 
-void NewTabPageHandler::OnPromoRendered(double time) {
+void NewTabPageHandler::OnPromoRendered(double time,
+                                        const base::Optional<GURL>& log_url) {
   logger_->LogEvent(NTP_MIDDLE_SLOT_PROMO_SHOWN,
                     base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+  if (log_url.has_value() && log_url->is_valid()) {
+    Fetch(*log_url, base::BindOnce([](bool, std::unique_ptr<std::string>) {}));
+  }
 }
 
 void NewTabPageHandler::OnMostVisitedTileNavigation(
@@ -1342,13 +1493,13 @@ void NewTabPageHandler::Fetch(const GURL& url,
       net::DefineNetworkTrafficAnnotation("new_tab_page_handler", R"(
         semantics {
           sender: "New Tab Page"
-          description: "Logs impression and interaction with the doodle."
+          description: "Logs impression and interaction with doodle or promo."
           trigger:
-            "Showing or clicking on the doodle on the New Tab Page. Desktop "
-            "only."
+            "Showing or clicking on the doodle or promo on the New Tab Page. "
+            "Desktop only."
           data:
-            "String identifiying todays doodle and token identifying a single "
-            "doodle interaction session. Data does not contain PII."
+            "String identifiying todays doodle or promo and token identifying "
+            "a single interaction session. Data does not contain PII."
           destination: GOOGLE_OWNED_SERVICE
         }
         policy {

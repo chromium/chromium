@@ -12,7 +12,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
@@ -20,13 +19,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_data.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_factory.h"
-#include "chrome/browser/search/promos/promo_data.h"
-#include "chrome/browser/search/promos/promo_service_factory.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_resources.h"
@@ -71,14 +67,7 @@ void ServeBackgroundImageData(content::URLDataSource::GotDataCallback callback,
 UntrustedSource::UntrustedSource(Profile* profile)
     : one_google_bar_service_(
           OneGoogleBarServiceFactory::GetForProfile(profile)),
-      profile_(profile),
-      promo_service_(PromoServiceFactory::GetForProfile(profile)) {
-  // |promo_service_| is null in incognito, or when the feature is
-  // disabled.
-  if (promo_service_) {
-    promo_service_observer_.Add(promo_service_);
-  }
-
+      profile_(profile) {
   // |one_google_bar_service_| is null in incognito, or when the feature is
   // disabled.
   if (one_google_bar_service_) {
@@ -145,21 +134,6 @@ void UntrustedSource::StartDataRequest(
     ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
     std::move(callback).Run(
         bundle.LoadDataResourceBytes(IDR_NEW_TAB_PAGE_ONE_GOOGLE_BAR_API_JS));
-    return;
-  }
-  if (path == "promo" && promo_service_) {
-    promo_callbacks_.push_back(std::move(callback));
-    if (promo_service_->promo_data().has_value()) {
-      OnPromoDataUpdated();
-    }
-    promo_load_start_time_ = base::TimeTicks::Now();
-    promo_service_->Refresh();
-    return;
-  }
-  if (path == "promo.js") {
-    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-    std::move(callback).Run(
-        bundle.LoadDataResourceBytes(IDR_NEW_TAB_PAGE_UNTRUSTED_PROMO_JS));
     return;
   }
   if (path == "image" && url_param.is_valid() &&
@@ -255,10 +229,9 @@ bool UntrustedSource::ShouldServiceRequest(
   }
   const std::string path = url.path().substr(1);
   return path == "one-google-bar" || path == "one_google_bar.js" ||
-         path == "promo" || path == "promo.js" || path == "image" ||
-         path == "background_image" || path == "custom_background_image" ||
-         path == "background_image.js" || path == "background.jpg" ||
-         path == "one_google_bar_api.js";
+         path == "image" || path == "background_image" ||
+         path == "custom_background_image" || path == "background_image.js" ||
+         path == "background.jpg" || path == "one_google_bar_api.js";
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {
@@ -298,59 +271,6 @@ void UntrustedSource::OnOneGoogleBarDataUpdated() {
 void UntrustedSource::OnOneGoogleBarServiceShuttingDown() {
   one_google_bar_service_observer_.RemoveAll();
   one_google_bar_service_ = nullptr;
-}
-
-void UntrustedSource::OnPromoDataUpdated() {
-  if (promo_load_start_time_.has_value()) {
-    base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;
-    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2", duration);
-    if (promo_service_->promo_status() == PromoService::Status::OK_WITH_PROMO) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessWithPromo", duration);
-    } else if (promo_service_->promo_status() ==
-               PromoService::Status::OK_BUT_BLOCKED) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessButBlocked", duration);
-    } else if (promo_service_->promo_status() ==
-               PromoService::Status::OK_WITHOUT_PROMO) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
-          "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
-    } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
-                                 duration);
-    }
-    promo_load_start_time_ = base::nullopt;
-  }
-
-  const auto& data = promo_service_->promo_data();
-  std::string html;
-  if (data.has_value() && !data->promo_html.empty()) {
-    std::string promo_html = data->promo_html;
-
-    // Replace the promo URL with "command:<id>" if such a command ID is set
-    // via the feature params.
-    const std::string command_id = base::GetFieldTrialParamValueByFeature(
-        features::kPromoBrowserCommands, features::kPromoBrowserCommandIdParam);
-    if (!command_id.empty()) {
-      re2::RE2::GlobalReplace(&promo_html, re2::RE2("href=\"([^\\s]+)\""),
-                              "href=\"command:" + command_id + "\"");
-    }
-
-    ui::TemplateReplacements replacements;
-    replacements["textdirection"] = base::i18n::IsRTL() ? "rtl" : "ltr";
-    replacements["data"] = promo_html;
-
-    html = FormatTemplate(IDR_NEW_TAB_PAGE_UNTRUSTED_PROMO_HTML, replacements);
-  }
-  for (auto& callback : promo_callbacks_) {
-    std::move(callback).Run(base::RefCountedString::TakeString(&html));
-  }
-  promo_callbacks_.clear();
-}
-
-void UntrustedSource::OnPromoServiceShuttingDown() {
-  promo_service_observer_.RemoveAll();
-  promo_service_ = nullptr;
 }
 
 void UntrustedSource::ServeBackgroundImage(

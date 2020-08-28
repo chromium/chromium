@@ -4,12 +4,13 @@
 
 module new_tab_page.mojom;
 
+import "chrome/common/search/omnibox.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
-import "mojo/public/mojom/base/string16.mojom";
-import "chrome/common/search/omnibox.mojom";
+
 
 struct OneGoogleBarParts {
   string bar_html;
@@ -251,6 +252,38 @@ enum DoodleShareChannel {
   kLinkCopy,
 };
 
+struct PromoImagePart {
+  url.mojom.Url image_url;
+  url.mojom.Url target;
+};
+
+struct PromoLinkPart {
+  string? color;
+  string text;
+  url.mojom.Url url;
+};
+
+struct PromoTextPart {
+  string? color;
+  string text;
+};
+
+union PromoPart {
+  PromoImagePart image;
+  PromoLinkPart link;
+  PromoTextPart text;
+};
+
+// Homepage promo used to display a message with a link on the NTP.
+struct Promo {
+  // A unique identifier for this promo.
+  string? id;
+  // URL to ping to log a promo impression. May be invalid.
+  url.mojom.Url? log_url;
+  // Middle slot promo data.
+  array<PromoPart> middle_slot_parts;
+};
+
 // Action the user performed while using the customize dialog. Used for metrics
 // logging only. Actions correspond to items in NTPLoggingEventType.
 enum CustomizeDialogAction {
@@ -360,6 +393,8 @@ interface PageHandler {
   // parameters to the endpoint that serves the OneGoogleBar parts with
   // |query_params|.
   GetOneGoogleBarParts(string query_params) => (OneGoogleBarParts? parts);
+  // Get the middle slot promo if it exists.
+  GetPromo() => (Promo? promo);
 
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of
@@ -368,8 +403,9 @@ interface PageHandler {
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
   // |time|.
   OnOneGoogleBarRendered(double time);
-  // Logs that the promo iframe was loaded at |time|.
-  OnPromoRendered(double time);
+  // Logs that the promo iframe was loaded at |time| and pings |log_url| for
+  // promo metrics logging.
+  OnPromoRendered(double time, url.mojom.Url? log_url);
   // Logs that |tile| at position |index| was triggered to navigate to that
   // most visited entry.
   OnMostVisitedTileNavigation(MostVisitedTile tile, uint32 index);

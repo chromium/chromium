@@ -55,10 +55,6 @@
       file="untrusted/one_google_bar.html" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_UNTRUSTED_ONE_GOOGLE_BAR_JS"
       file="untrusted/one_google_bar.js" type="BINDATA" />
-  <include name="IDR_NEW_TAB_PAGE_UNTRUSTED_PROMO_HTML"
-      file="untrusted/promo.html" type="BINDATA" />
-  <include name="IDR_NEW_TAB_PAGE_UNTRUSTED_PROMO_JS"
-      file="untrusted/promo.js" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_UNTRUSTED_IMAGE_HTML"
       file="untrusted/image.html" type="BINDATA" />
   <include name="IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_HTML"

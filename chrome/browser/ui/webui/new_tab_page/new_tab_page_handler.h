@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_HANDLER_H_
 
 #include <unordered_map>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
@@ -16,6 +18,8 @@
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
+#include "chrome/browser/search/promos/promo_service.h"
+#include "chrome/browser/search/promos/promo_service_observer.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/instant_types.h"
@@ -54,7 +58,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                           public OmniboxTabHelper::Observer,
                           public OneGoogleBarServiceObserver,
                           public ui::SelectFileDialog::Listener,
-                          public AutocompleteController::Observer {
+                          public AutocompleteController::Observer,
+                          public PromoServiceObserver {
  public:
   NewTabPageHandler(mojo::PendingReceiver<new_tab_page::mojom::PageHandler>
                         pending_page_handler,
@@ -103,11 +108,13 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       ChooseLocalCustomBackgroundCallback callback) override;
   void GetOneGoogleBarParts(const std::string& ogdeb_value,
                             GetOneGoogleBarPartsCallback callback) override;
+  void GetPromo(GetPromoCallback callback) override;
   void OnMostVisitedTilesRendered(
       std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
       double time) override;
   void OnOneGoogleBarRendered(double time) override;
-  void OnPromoRendered(double time) override;
+  void OnPromoRendered(double time,
+                       const base::Optional<GURL>& log_url) override;
   void OnMostVisitedTileNavigation(new_tab_page::mojom::MostVisitedTilePtr tile,
                                    uint32_t index) override;
   void OnCustomizeDialogAction(
@@ -160,6 +167,10 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   // OneGoogleBarServiceObserver:
   void OnOneGoogleBarDataUpdated() override;
   void OnOneGoogleBarServiceShuttingDown() override;
+
+  // PromoServiceObserver:
+  void OnPromoDataUpdated() override;
+  void OnPromoServiceShuttingDown() override;
 
   // SelectFileDialog::Listener:
   void FileSelected(const base::FilePath& path,
@@ -225,6 +236,11 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   std::unordered_map<const network::SimpleURLLoader*,
                      std::unique_ptr<network::SimpleURLLoader>>
       loader_map_;
+  std::vector<GetPromoCallback> promo_callbacks_;
+  PromoService* promo_service_;
+  ScopedObserver<PromoService, PromoServiceObserver> promo_service_observer_{
+      this};
+  base::Optional<base::TimeTicks> promo_load_start_time_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

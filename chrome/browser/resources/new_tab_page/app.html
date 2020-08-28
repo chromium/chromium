@@ -94,13 +94,9 @@
     --tile-hover-color: rgba(255, 255, 255, .1);
   }
 
-  #promo {
+  ntp-middle-slot-promo {
     bottom: 16px;
-    height: 32px;
-    left: 0;
     position: fixed;
-    right: 0;
-    width: 100%;
   }
 
   ntp-module-wrapper + ntp-module-wrapper {
@@ -280,9 +276,9 @@
   </ntp-most-visited>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
-      <ntp-iframe id="promo" hidden$="[[!promoLoaded_]]"
-          src="chrome-untrusted://new-tab-page/promo">
-      </ntp-iframe>
+      <ntp-middle-slot-promo
+          on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_">
+      </ntp-middle-slot-promo>
       <template is="dom-repeat" items="[[moduleDescriptors_]]" id="modules">
         <ntp-module-wrapper descriptor="[[item]]"></ntp-module-wrapper>
       </template>

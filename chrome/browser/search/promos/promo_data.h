@@ -23,6 +23,9 @@ struct PromoData {
   // The main HTML for the promo. May be empty when nothing to show.
   std::string promo_html;
 
+  // The structured JSON data of the middle slot promo.
+  std::string middle_slot_json;
+
   // URL to ping to log a promo impression. May be invalid.
   GURL promo_log_url;
 

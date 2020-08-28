@@ -1430,11 +1430,9 @@ const FeatureEntry::FeatureParam
         {features::kPromoBrowserCommandIdParam, "1"}};
 const FeatureEntry::FeatureVariation kPromoBrowserCommandsVariations[] = {
     {"- Unknown Command", kPromoBrowserCommandUnknownCommandParam,
-     base::size(kPromoBrowserCommandUnknownCommandParam),
-     "t4237555" /* variation_id */},
+     base::size(kPromoBrowserCommandUnknownCommandParam), nullptr},
     {"- Open Safety Check", kPromoBrowserCommandOpenSafetyCheckCommandParam,
-     base::size(kPromoBrowserCommandOpenSafetyCheckCommandParam),
-     "t4237555" /* variation_id */}};
+     base::size(kPromoBrowserCommandOpenSafetyCheckCommandParam), nullptr}};
 
 #if defined(OS_ANDROID)
 const FeatureEntry::FeatureParam kTranslateForceTriggerOnEnglishHeuristic[] = {

@@ -11,8 +11,6 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
-#include "chrome/browser/search/promos/promo_service.h"
-#include "chrome/browser/search/promos/promo_service_observer.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;
@@ -41,8 +39,7 @@ class Profile;
 //         * positionY: (optional) CSS background-position-y property.
 //   Each of those helpers only accept URLs with HTTPS or chrome-untrusted:.
 class UntrustedSource : public content::URLDataSource,
-                        public OneGoogleBarServiceObserver,
-                        public PromoServiceObserver {
+                        public OneGoogleBarServiceObserver {
  public:
   explicit UntrustedSource(Profile* profile);
   ~UntrustedSource() override;
@@ -70,10 +67,6 @@ class UntrustedSource : public content::URLDataSource,
   void OnOneGoogleBarDataUpdated() override;
   void OnOneGoogleBarServiceShuttingDown() override;
 
-  // PromoServiceObserver:
-  void OnPromoDataUpdated() override;
-  void OnPromoServiceShuttingDown() override;
-
   void ServeBackgroundImage(const GURL& url,
                             const GURL& url_2x,
                             const std::string& size,
@@ -90,11 +83,6 @@ class UntrustedSource : public content::URLDataSource,
       one_google_bar_service_observer_{this};
   base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
   Profile* profile_;
-  std::vector<content::URLDataSource::GotDataCallback> promo_callbacks_;
-  PromoService* promo_service_;
-  ScopedObserver<PromoService, PromoServiceObserver> promo_service_observer_{
-      this};
-  base::Optional<base::TimeTicks> promo_load_start_time_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_UNTRUSTED_SOURCE_H_

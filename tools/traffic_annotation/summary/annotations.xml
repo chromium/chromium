@@ -186,7 +186,7 @@ Refer to README.md for content description and update process.
  <item id="network_location_provider" hash_code="23472048" type="1" second_id="96590038" content_hash_code="41087976" os_list="linux,windows" semantics_fields="1" policy_fields="3,4" file_path="services/device/geolocation/network_location_provider.cc"/>
  <item id="network_location_request" hash_code="96590038" type="2" content_hash_code="80741011" os_list="linux,windows" semantics_fields="2,3,4,5" policy_fields="-1" file_path="services/device/geolocation/network_location_request.cc"/>
  <item id="network_time_component" hash_code="46188932" type="0" content_hash_code="28051857" os_list="linux,windows" file_path="components/network_time/network_time_tracker.cc"/>
- <item id="new_tab_page_handler" hash_code="48673144" type="0" content_hash_code="100789845" os_list="linux,windows" file_path="chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc"/>
+ <item id="new_tab_page_handler" hash_code="48673144" type="0" content_hash_code="49174657" os_list="linux,windows" file_path="chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc"/>
  <item id="notification_client" hash_code="78479125" type="0" content_hash_code="129874070" os_list="linux,windows" file_path="remoting/client/notification/notification_client.cc"/>
  <item id="ntp_contextual_suggestions_fetch" hash_code="95711309" type="0" deprecated="2019-04-18" content_hash_code="107035434" file_path=""/>
  <item id="ntp_custom_background" hash_code="92125886" type="0" content_hash_code="61176452" os_list="linux,windows" file_path="chrome/browser/search/instant_service.cc"/>

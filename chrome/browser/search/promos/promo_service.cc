@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -93,6 +94,13 @@ bool JsonToPromoData(const base::Value& value,
   if (!promos->GetString("middle", &middle)) {
     DVLOG(1) << "No middle promo";
     return false;
+  }
+
+  const base::Value* middle_announce_payload = promos->FindKeyOfType(
+      "middle_announce_payload", base::Value::Type::DICTIONARY);
+  if (middle_announce_payload) {
+    JSONStringValueSerializer serializer(&result.middle_slot_json);
+    serializer.Serialize(*middle_announce_payload);
   }
 
   std::string log_url;

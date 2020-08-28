@@ -51,6 +51,7 @@ suite('NewTabPageAppTest', () => {
     testProxy.handler.setResultFor('getOneGoogleBarParts', Promise.resolve({
       parts: null,
     }));
+    testProxy.handler.setResultFor('getPromo', Promise.resolve({promo: null}));
     testProxy.setResultMapperFor('matchMedia', () => ({
                                                  addListener() {},
                                                  removeListener() {},

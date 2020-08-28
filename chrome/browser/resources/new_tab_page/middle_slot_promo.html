@@ -1,0 +1,57 @@
+<style include="cr-hidden-style">
+  :host {
+    font-size: 12px;
+    max-width: 537px;
+    white-space: pre;
+  }
+
+  #container {
+    align-items: center;
+    background-color: var(--cr-card-background-color);
+    border: 1px solid var(--ntp-border-color);
+    border-radius: 16px;
+    box-sizing: border-box;
+    color: var(--cr-primary-text-color);
+    display: flex;
+    flex-direction: row;
+    height: 32px;
+    padding: 0 16px;
+  }
+
+  a {
+    color: var(--cr-link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  a:focus {
+    border-radius: 2px;
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
+  .image {
+    margin-inline-end: 8px;
+    margin-inline-start: -12px;
+  }
+
+  img {
+    border-radius: 50%;
+    height: 24px;
+    pointer-events: none;
+    width: 24px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    img {
+      background-color: var(--google-grey-200);
+    }
+  }
+
+  #container > :last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+<!-- The #container is hidden until the promo parts are added by the JS. -->
+<div id="container" hidden></div>

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import './middle_slot_promo.js';
 import './most_visited.js';
 import './customize_dialog.js';
 import './voice_search_overlay.js';
@@ -104,12 +105,6 @@ class AppElement extends PolymerElement {
         value: false,
         computed: `computeShowIframedOneGoogleBar_(iframeOneGoogleBarEnabled_,
             lazyRender_)`,
-      },
-
-      /** @private */
-      promoLoaded_: {
-        type: Boolean,
-        value: false,
       },
 
       /** @private {!newTabPage.mojom.Theme} */
@@ -251,12 +246,8 @@ class AppElement extends PolymerElement {
       if (typeof data !== 'object') {
         return;
       }
-      if ('frameType' in data) {
-        if (data.frameType === 'promo') {
-          this.handlePromoMessage_(event);
-        } else if (data.frameType === 'one-google-bar') {
-          this.handleOneGoogleBarMessage_(event);
-        }
+      if ('frameType' in data && data.frameType === 'one-google-bar') {
+        this.handleOneGoogleBarMessage_(event);
       }
     });
     this.eventTracker_.add(window, 'keydown', e => this.onWindowKeydown_(e));
@@ -732,40 +723,24 @@ class AppElement extends PolymerElement {
     }
   }
 
-  /**
-   * Handle messages from promo iframe. This shows the promo on load and sets
-   * up the show/hide logic (in case there is an overlap with most-visited
-   * tiles).
-   * @param {!MessageEvent} event
-   * @private
-   */
-  handlePromoMessage_(event) {
-    /** @type {!Object} */
-    const data = event.data;
-    if (data.messageType === 'loaded') {
-      this.promoLoaded_ = true;
-      const onResize = () => {
-        const hidePromo = this.$.mostVisited.getBoundingClientRect().bottom >=
-            $$(this, '#promo').offsetTop;
-        $$(this, '#promo').style.opacity = hidePromo ? 0 : 1;
-      };
-      this.eventTracker_.add(window, 'resize', onResize);
-      onResize();
-      this.pageHandler_.onPromoRendered(BrowserProxy.getInstance().now());
-    } else if (data.messageType === 'link-clicked') {
-      this.pageHandler_.onPromoLinkClicked();
-    } else if (data.messageType === 'execute-browser-command') {
-      this.executePromoBrowserCommand_(
-          /** @type {!CommandData} */ (data), event.source, event.origin);
-    }
-  }
-
   /** @private */
   oneGoogleBarLoadedChange_() {
     if (this.oneGoogleBarLoaded_ && this.iframeOneGoogleBarEnabled_ &&
         this.oneGoogleBarModalOverlaysEnabled_) {
       this.setupShortcutDragDropOneGoogleBarWorkaround_();
     }
+  }
+
+  /** @private */
+  onMiddleSlotPromoLoaded_() {
+    const onResize = () => {
+      const promoElement = $$(this, 'ntp-middle-slot-promo');
+      const hidePromo = this.$.mostVisited.getBoundingClientRect().bottom >=
+          promoElement.offsetTop;
+      promoElement.style.visibility = hidePromo ? 'hidden' : 'visible';
+    };
+    this.eventTracker_.add(window, 'resize', onResize);
+    onResize();
   }
 
   /**
