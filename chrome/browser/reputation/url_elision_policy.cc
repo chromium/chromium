@@ -18,6 +18,8 @@ namespace {
 
 const base::FeatureParam<int> kMaximumUnelidedHostnameLength{
     &omnibox::kMaybeElideToRegistrableDomain, "max_unelided_host_length", 25};
+const base::FeatureParam<bool> kEnableKeywordBasedElision{
+    &omnibox::kMaybeElideToRegistrableDomain, "enable_keyword_elision", true};
 
 }  // namespace
 
@@ -42,7 +44,8 @@ bool ShouldElideToRegistrableDomain(const GURL& url) {
   // Hostnames using sensitive keywords (typically, brandnames) are often social
   // engineering, and thus should only show the registrable domain.
   auto eTLD_plus_one = GetETLDPlusOne(host);
-  if (HostnameContainsKeyword(url, eTLD_plus_one, top500_domains::kTopKeywords,
+  if (kEnableKeywordBasedElision.Get() &&
+      HostnameContainsKeyword(url, eTLD_plus_one, top500_domains::kTopKeywords,
                               top500_domains::kNumTopKeywords)) {
     return true;
   }
