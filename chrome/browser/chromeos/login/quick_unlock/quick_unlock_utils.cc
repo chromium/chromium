@@ -30,25 +30,25 @@ namespace {
 bool enable_for_testing_ = false;
 bool disable_pin_by_policy_for_testing_ = false;
 
-// Options for the quick unlock whitelist.
-const char kQuickUnlockWhitelistOptionAll[] = "all";
-const char kQuickUnlockWhitelistOptionPin[] = "PIN";
-const char kQuickUnlockWhitelistOptionFingerprint[] = "FINGERPRINT";
+// Options for the quick unlock allowlist.
+const char kQuickUnlockAllowlistOptionAll[] = "all";
+const char kQuickUnlockAllowlistOptionPin[] = "PIN";
+const char kQuickUnlockAllowlistOptionFingerprint[] = "FINGERPRINT";
 
 // Default minimum PIN length. Policy can increase or decrease this value.
 constexpr int kDefaultMinimumPinLength = 6;
 
 bool HasPolicyValue(const PrefService* pref_service, const char* value) {
-  const base::ListValue* quick_unlock_whitelist =
-      pref_service->GetList(prefs::kQuickUnlockModeWhitelist);
-  return quick_unlock_whitelist->Find(base::Value(value)) !=
-         quick_unlock_whitelist->end();
+  const base::ListValue* quick_unlock_allowlist =
+      pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
+  return quick_unlock_allowlist->Find(base::Value(value)) !=
+         quick_unlock_allowlist->end();
 }
 
 bool IsFingerprintDisabledByPolicy(const PrefService* pref_service) {
   const bool enabled =
-      HasPolicyValue(pref_service, kQuickUnlockWhitelistOptionAll) ||
-      HasPolicyValue(pref_service, kQuickUnlockWhitelistOptionFingerprint);
+      HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionAll) ||
+      HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionFingerprint);
   return !enabled;
 }
 
@@ -71,11 +71,11 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  base::Value::ListStorage quick_unlock_whitelist_default;
-  quick_unlock_whitelist_default.emplace_back(kQuickUnlockWhitelistOptionAll);
+  base::Value::ListStorage quick_unlock_allowlist_default;
+  quick_unlock_allowlist_default.emplace_back(kQuickUnlockAllowlistOptionAll);
   registry->RegisterListPref(
-      prefs::kQuickUnlockModeWhitelist,
-      base::Value(std::move(quick_unlock_whitelist_default)));
+      prefs::kQuickUnlockModeAllowlist,
+      base::Value(std::move(quick_unlock_allowlist_default)));
   registry->RegisterIntegerPref(
       prefs::kQuickUnlockTimeout,
       static_cast<int>(PasswordConfirmationFrequency::TWO_DAYS));
@@ -101,8 +101,8 @@ bool IsPinDisabledByPolicy(PrefService* pref_service) {
     return false;
 
   const bool enabled =
-      HasPolicyValue(pref_service, kQuickUnlockWhitelistOptionAll) ||
-      HasPolicyValue(pref_service, kQuickUnlockWhitelistOptionPin);
+      HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionAll) ||
+      HasPolicyValue(pref_service, kQuickUnlockAllowlistOptionPin);
   return !enabled;
 }
 

@@ -4839,6 +4839,16 @@
     ]
   },
 
+  "QuickUnlockModeAllowlist": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "QuickUnlockModeAllowlist": ["PIN"] },
+        "prefs": { "quick_unlock_mode_whitelist": {} }
+      }
+    ]
+  },
+
   "QuickUnlockModeWhitelist": {
     "os": ["chromeos"],
     "policy_pref_mapping_test": [

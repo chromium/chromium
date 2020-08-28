@@ -789,8 +789,9 @@ const char kEolNotificationDismissed[] = "eol_notification_dismissed";
 
 // A list of allowed quick unlock modes. A quick unlock mode can only be used if
 // its type is on this list, or if type all (all quick unlock modes enabled) is
-// on this list.
-const char kQuickUnlockModeWhitelist[] = "quick_unlock_mode_whitelist";
+// on this list. The pref name variable was changed to match the policy, the
+// actual pref name stays the same to preserve the backward compatibility
+const char kQuickUnlockModeAllowlist[] = "quick_unlock_mode_whitelist";
 // Enum that specifies how often a user has to enter their password to continue
 // using quick unlock. These values are the same as the ones in
 // chromeos::QuickUnlockPasswordConfirmationFrequency.

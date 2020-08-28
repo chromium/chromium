@@ -731,6 +731,7 @@
       'caption': '''Quick unlock''',
       'desc': '''Configures quick unlock related policies.''',
       'policies': [
+        'QuickUnlockModeAllowlist',
         'QuickUnlockModeWhitelist',
         'QuickUnlockTimeout',
         'PinUnlockMinimumLength',
@@ -15868,6 +15869,40 @@
       The auto update expiration message must be plain text without any formatting. No markup is allowed.''',
     },
     {
+      'name': 'QuickUnlockModeAllowlist',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+          'enum': [
+            'all',
+            'PIN',
+            'FINGERPRINT',
+          ],
+        },
+        'id': 'QuickUnlockModeAllowlist',
+      },
+      'supported_on': ['chrome_os:87-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['PIN'],
+      'default_for_enterprise_users': [],
+      'id': 784,
+      'caption': '''Configure allowed quick unlock modes''',
+      'tags': [],
+      'desc': '''The policy controls a list of quick unlock modes that users can configure and use to unlock the lock screen.
+
+          This value is a list of strings; valid list entries are: "all", "PIN", "FINGERPRINT". Adding "all" to the list means that every quick unlock mode is available to the user, including ones implemented in the future. Otherwise, only the quick unlock modes present in the list will be available.
+
+          For example, to allow every quick unlock mode, use ["all"]. To allow only PIN unlock, use ["PIN"]. To allow PIN and fingerprint, use ["PIN", "FINGERPRINT"].
+
+          If the policy is not set or set to an empty list, no quick unlock modes are available for managed devices''',
+    },
+    {
       'name': 'QuickUnlockModeWhitelist',
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'list',
@@ -15893,13 +15928,15 @@
       'id': 352,
       'caption': '''Configure allowed quick unlock modes''',
       'tags': [],
-      'desc': '''A whitelist controlling which quick unlock modes the user can configure and use to unlock the lock screen.
+      'desc': '''The policy controls a list of quick unlock modes that users can configure and use to unlock the lock screen.
 
           This value is a list of strings; valid list entries are: "all", "PIN", "FINGERPRINT". Adding "all" to the list means that every quick unlock mode is available to the user, including ones implemented in the future. Otherwise, only the quick unlock modes present in the list will be available.
 
-          For example, to allow every quick unlock mode, use ["all"]. To allow only PIN unlock, use ["PIN"]. To allow PIN and fingerprint, use ["PIN", "FINGERPRINT"]. To disable all quick unlock modes, use [].
+          For example, to allow every quick unlock mode, use ["all"]. To allow only PIN unlock, use ["PIN"]. To allow PIN and fingerprint, use ["PIN", "FINGERPRINT"].
 
-          By default, no quick unlock modes are available for managed devices.''',
+          If the policy is not set or set to an empty list, no quick unlock modes are available for managed devices
+
+          This policy is deprecated, please use <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME">QuickUnlockModeAllowlist</ph> instead=''',
     },
     {
       'name': 'QuickUnlockTimeout',
@@ -23879,6 +23916,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
       'name': 'QuickUnlock',
       'caption': '''Quick unlock''',
       'policies': [
+        'QuickUnlockModeAllowlist',
         'QuickUnlockModeWhitelist',
         'QuickUnlockTimeout',
       ],
@@ -24110,6 +24148,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   ],
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 412, 476, 544, 546, 562, 569, 578],
-  'highest_id_currently_used': 783,
+  'highest_id_currently_used': 784,
   'highest_atomic_group_id_currently_used': 40
 }

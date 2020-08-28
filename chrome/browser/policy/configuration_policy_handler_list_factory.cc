@@ -1093,9 +1093,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAllowScreenLock,
     ash::prefs::kAllowScreenLock,
     base::Value::Type::BOOLEAN },
-  { key::kQuickUnlockModeWhitelist,
-    prefs::kQuickUnlockModeWhitelist,
-    base::Value::Type::LIST },
   { key::kQuickUnlockTimeout,
     prefs::kQuickUnlockTimeout,
     base::Value::Type::INTEGER },
@@ -1668,6 +1665,15 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kAttestationExtensionWhitelist,
       prefs::kAttestationExtensionWhitelist, false));
+
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(key::kQuickUnlockModeAllowlist,
+                                            prefs::kQuickUnlockModeAllowlist,
+                                            base::Value::Type::LIST),
+      std::make_unique<SimplePolicyHandler>(key::kQuickUnlockModeWhitelist,
+                                            prefs::kQuickUnlockModeAllowlist,
+                                            base::Value::Type::LIST)));
+
   handlers->AddHandler(base::WrapUnique(
       NetworkConfigurationPolicyHandler::CreateForDevicePolicy()));
   handlers->AddHandler(base::WrapUnique(
