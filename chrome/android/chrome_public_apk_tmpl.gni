@@ -168,7 +168,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
     # are currently duplicated in system_webview_apk_tmpl.gni.
 
     # Used only by alert dialog on tiny screens.
-    _material_package = "com_google_android_material_material.*"
+    _material_package = "com_google_android_material.*"
     resource_exclusion_regex += "|${_material_package}values-small"
 
     # Used only by date picker (which chrome doesn't use).
@@ -182,7 +182,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
     resource_exclusion_regex +=
         "|${_material_package}/drawable.*design_snackbar"
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
-    _material_package = "*com_google_android_material_material*"
+    _material_package = "*com_google_android_material*"
     resource_exclusion_exceptions += [
       # AppBarLayout
       "${_material_package}design_appbar_*",

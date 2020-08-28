@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-_material_package = "*com_google_android_material_material*"
+_material_package = "*com_google_android_material*"
 
 weblayer_resource_exclusion_exceptions = [
   # TextInputLayout (used for HTTP Auth dialog)
@@ -37,7 +37,7 @@ weblayer_resource_values_filter_rules = [
   "${_material_package}:[Tt]oolbarLayout",
 ]
 
-_material_package = "com_google_android_material_material.*"
+_material_package = "com_google_android_material.*"
 
 # Used only by alert dialog on tiny screens.
 weblayer_resource_exclusion_regex = "${_material_package}values-small"
