@@ -6,7 +6,6 @@
 
 #include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/shell/renderer/web_test/blink_test_helpers.h"
-#include "content/shell/renderer/web_test/blink_test_runner.h"
 #include "content/shell/renderer/web_test/test_runner.h"
 #include "content/shell/renderer/web_test/web_view_test_proxy.h"
 #include "third_party/blink/public/web/web_frame_widget.h"

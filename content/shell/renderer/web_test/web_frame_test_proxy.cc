@@ -9,7 +9,6 @@
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/shell/common/web_test/web_test_string_util.h"
 #include "content/shell/renderer/web_test/blink_test_helpers.h"
-#include "content/shell/renderer/web_test/blink_test_runner.h"
 #include "content/shell/renderer/web_test/event_sender.h"
 #include "content/shell/renderer/web_test/gc_controller.h"
 #include "content/shell/renderer/web_test/layout_dump.h"
@@ -135,10 +134,6 @@ class TestRenderFrameObserver : public RenderFrameObserver {
 
   TestRunner* test_runner() { return web_view_test_proxy_->GetTestRunner(); }
 
-  BlinkTestRunner* blink_test_runner() {
-    return web_view_test_proxy_->blink_test_runner();
-  }
-
   // RenderFrameObserver overrides.
   void OnDestruct() override { delete this; }
 
@@ -176,7 +171,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
       test_runner()->AddMainFrame(frame_proxy());
 
       // Looking for navigations to about:blank after a test completes.
-      blink_test_runner()->DidCommitNavigationInMainFrame(frame_proxy());
+      test_runner()->DidCommitNavigationInMainFrame(frame_proxy());
     }
   }
 
@@ -465,7 +460,7 @@ void WebFrameTestProxy::WillSendRequest(blink::WebURLRequest& request,
         ((site_for_cookies.scheme() != url::kHttpScheme &&
           site_for_cookies.scheme() != url::kHttpsScheme) ||
          IsLocalHost(site_for_cookies.registrable_domain())) &&
-        !blink_test_runner()->test_config().allow_external_pages) {
+        !web_view_test_proxy_->test_config().allow_external_pages) {
       test_runner()->PrintMessage(
           std::string("Blocked access to external URL ") +
           url.possibly_invalid_spec() + "\n");
@@ -749,20 +744,10 @@ void WebFrameTestProxy::DumpFrameLayout(DumpFrameLayoutCallback callback) {
   std::move(callback).Run(std::move(dump));
 }
 
-void WebFrameTestProxy::ReplicateTestConfiguration(
-    mojom::WebTestRunTestConfigurationPtr config) {
-  web_view_test_proxy_->set_is_main_window();
-  blink_test_runner()->OnReplicateTestConfiguration(std::move(config));
-}
-
 void WebFrameTestProxy::SetTestConfiguration(
-    mojom::WebTestRunTestConfigurationPtr config) {
-  web_view_test_proxy_->set_is_main_window();
-  blink_test_runner()->OnSetTestConfiguration(std::move(config));
-}
-
-void WebFrameTestProxy::ResetRendererAfterWebTest() {
-  blink_test_runner()->OnResetRendererAfterWebTest();
+    mojom::WebTestRunTestConfigurationPtr config,
+    bool starting_test) {
+  web_view_test_proxy_->SetTestConfiguration(std::move(config), starting_test);
 }
 
 void WebFrameTestProxy::BindReceiver(
@@ -774,10 +759,6 @@ void WebFrameTestProxy::BindReceiver(
 
 TestRunner* WebFrameTestProxy::test_runner() {
   return web_view_test_proxy_->GetTestRunner();
-}
-
-BlinkTestRunner* WebFrameTestProxy::blink_test_runner() {
-  return web_view_test_proxy_->blink_test_runner();
 }
 
 }  // namespace content

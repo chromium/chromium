@@ -178,7 +178,6 @@ class WebTestControlHost : public WebContentsObserver,
       bool capture_navigation_history,
       bool capture_pixels) override;
   void TestFinishedInSecondaryRenderer() override;
-  void ResetRendererAfterWebTestDone() override;
   void PrintMessageToStderr(const std::string& message) override;
   void PrintMessage(const std::string& message) override;
   void Reload() override;
@@ -256,7 +255,11 @@ class WebTestControlHost : public WebContentsObserver,
   void OnLeakDetectionDone(int pid,
                            const LeakDetector::LeakDetectionReport& report);
 
-  void OnCleanupFinished();
+  // At the end of the test, once browser-side cleanup is done, commence reset
+  // of the renderer process that will stick around.
+  void ResetRendererAfterWebTest();
+  // Callback for when the renderer completes its reset at the end of the test.
+  void ResetRendererAfterWebTestDone();
   void OnPixelDumpCaptured(const SkBitmap& snapshot);
   void ReportResults();
   void EnqueueSurfaceCopyRequest();
@@ -301,12 +304,6 @@ class WebTestControlHost : public WebContentsObserver,
   std::unique_ptr<WebTestDevToolsBindings> devtools_bindings_;
   std::unique_ptr<DevToolsProtocolTestBindings>
       devtools_protocol_test_bindings_;
-
-  // Tracks if (during the current test) we have already sent *initial* test
-  // configuration to a renderer process (*initial* test configuration is
-  // associated with some steps that should only be executed *once* per test -
-  // for example resizing the window and setting the focus).
-  bool did_send_initial_test_configuration_;
 
   // What phase of running an individual test we are currently in.
   TestPhase test_phase_;
@@ -357,7 +354,6 @@ class WebTestControlHost : public WebContentsObserver,
   bool check_for_leaked_windows_ = false;
   bool waiting_for_pixel_results_ = false;
   int waiting_for_layout_dumps_ = 0;
-  int waiting_for_reset_done_ = 0;
 
   // Map from frame_tree_node_id into frame-specific dumps while collecting
   // text dumps from all frames, before stitching them together.

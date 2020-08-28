@@ -13,8 +13,8 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "content/renderer/render_view_impl.h"
+#include "content/shell/common/web_test/web_test.mojom.h"
 #include "content/shell/renderer/web_test/accessibility_controller.h"
-#include "content/shell/renderer/web_test/blink_test_runner.h"
 #include "content/shell/renderer/web_test/text_input_controller.h"
 #include "third_party/blink/public/common/page/web_drag_operation.h"
 #include "third_party/blink/public/platform/web_rect.h"
@@ -35,7 +35,6 @@ struct WebWindowFeatures;
 
 namespace content {
 class AccessibilityController;
-class BlinkTestRunner;
 class TestRunner;
 class TextInputController;
 
@@ -75,7 +74,6 @@ class WebViewTestProxy : public RenderViewImpl {
   void PrintPage(blink::WebLocalFrame* frame) override;
   blink::WebString AcceptLanguages() override;
 
-  BlinkTestRunner* blink_test_runner() { return &blink_test_runner_; }
   TestRunner* GetTestRunner() { return test_runner_; }
   AccessibilityController* accessibility_controller() {
     return &accessibility_controller_;
@@ -87,12 +85,18 @@ class WebViewTestProxy : public RenderViewImpl {
   // Convert the provided relative path into an absolute path.
   blink::WebString GetAbsoluteWebStringFromUTF8Path(const std::string& path);
 
+  // Called on each RenderView that is part of the main test window, to give
+  // the test configuration, indicate to the RenderView that it is part of the
+  // main window, as well as to start the test.
+  void SetTestConfiguration(mojom::WebTestRunTestConfigurationPtr params,
+                            bool starting_test);
+
   // True if the RenderView is hosting a frame tree fragment that is part of the
   // web test harness' main window.
   bool is_main_window() const { return is_main_window_; }
-  // Sets this view as being part of the main test window. The main test window
-  // doesn't change, so once set this remains always true.
-  void set_is_main_window() { is_main_window_ = true; }
+  const mojom::WebTestRunTestConfiguration& test_config() const {
+    return test_config_;
+  }
 
  private:
   // RenderViewImpl has no public destructor.
@@ -103,8 +107,7 @@ class WebViewTestProxy : public RenderViewImpl {
   // True if the RenderView is hosting a frame tree fragment that is part of the
   // web test harness' main window.
   bool is_main_window_ = false;
-
-  BlinkTestRunner blink_test_runner_{this};
+  mojom::WebTestRunTestConfiguration test_config_;
 
   AccessibilityController accessibility_controller_{this};
   TextInputController text_input_controller_{this};

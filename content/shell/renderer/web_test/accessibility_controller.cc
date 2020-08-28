@@ -5,7 +5,6 @@
 #include "content/shell/renderer/web_test/accessibility_controller.h"
 
 #include "base/stl_util.h"
-#include "content/shell/renderer/web_test/blink_test_runner.h"
 #include "content/shell/renderer/web_test/web_view_test_proxy.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"

@@ -29,7 +29,6 @@
 #include "content/shell/common/web_test/web_test_string_util.h"
 #include "content/shell/renderer/web_test/app_banner_service.h"
 #include "content/shell/renderer/web_test/blink_test_helpers.h"
-#include "content/shell/renderer/web_test/blink_test_runner.h"
 #include "content/shell/renderer/web_test/mock_web_document_subresource_filter.h"
 #include "content/shell/renderer/web_test/pixel_dump.h"
 #include "content/shell/renderer/web_test/spell_check_client.h"
@@ -2551,6 +2550,46 @@ void TestRunner::TestFinishedFromSecondaryRenderer() {
   NotifyDone();
 }
 
+void TestRunner::ResetRendererAfterWebTest(base::OnceClosure done_callback) {
+  // Instead of resetting for the next test here, delay until after the
+  // navigation to about:blank, which is heard about in in
+  // `DidCommitNavigationInMainFrame()`. This ensures we reset settings that are
+  // set between now and the load of about:blank, and that no new changes or
+  // loads can be started by the renderer.
+  waiting_for_reset_navigation_to_about_blank_ = std::move(done_callback);
+
+  // TODO(danakj): Move this navigation to the browser.
+  blink::WebURLRequest request{GURL(url::kAboutBlankURL)};
+  request.SetMode(network::mojom::RequestMode::kNavigate);
+  request.SetRedirectMode(network::mojom::RedirectMode::kManual);
+  request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
+  request.SetRequestorOrigin(blink::WebSecurityOrigin::CreateUniqueOpaque());
+
+  WebFrameTestProxy* main_frame = FindInProcessMainWindowMainFrame();
+  DCHECK(main_frame);
+  main_frame->GetWebFrame()->StartNavigation(request);
+}
+
+void TestRunner::DidCommitNavigationInMainFrame(WebFrameTestProxy* main_frame) {
+  // This method is just meant to catch the about:blank navigation started in
+  // ResetRendererAfterWebTest().
+  if (!waiting_for_reset_navigation_to_about_blank_)
+    return;
+
+  // This would mean some other navigation was already happening when the test
+  // ended, the about:blank should still be coming.
+  GURL url = main_frame->GetWebFrame()->GetDocumentLoader()->GetUrl();
+  if (!url.IsAboutBlank())
+    return;
+
+  // Perform the reset now that the main frame is on about:blank.
+  main_frame->Reset();
+  Reset();
+
+  // Ack to the browser.
+  std::move(waiting_for_reset_navigation_to_about_blank_).Run();
+}
+
 void TestRunner::AddMainFrame(WebFrameTestProxy* frame) {
   main_frames_.insert(frame);
 }
@@ -3111,8 +3150,7 @@ void TestRunner::SetAnimationRequiresRaster(bool do_raster) {
 
 void TestRunner::OnWebTestRuntimeFlagsChanged() {
   // Ignore changes that happen before we got the initial, accumulated
-  // web flag changes in either ReplicateTestConfiguration() or
-  // SetTestConfiguration().
+  // web flag changes in SetTestConfiguration().
   if (!test_is_running_)
     return;
   if (web_test_runtime_flags_.tracked_dictionary().changed_values().empty())
@@ -3165,7 +3203,7 @@ void TestRunner::FinishTest() {
       blink::DocumentUpdateReason::kTest);
 
   const mojom::WebTestRunTestConfiguration& test_config =
-      main_frame->GetWebViewTestProxy()->blink_test_runner()->test_config();
+      main_frame->GetWebViewTestProxy()->test_config();
 
   // Initialize a new dump results object which we will populate in the calls
   // below.
@@ -3175,7 +3213,7 @@ void TestRunner::FinishTest() {
   bool browser_should_dump_pixels = false;
 
   if (ShouldDumpAsAudio()) {
-    TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalAudioDump");
+    TRACE_EVENT0("shell", "TestRunner::CaptureLocalAudioDump");
     dump_result->audio = GetAudioData();
   } else {
     TextResultType text_result_type = ShouldGenerateTextResults();
@@ -3209,13 +3247,13 @@ void TestRunner::FinishTest() {
     if (HasCustomTextDump(&custom_text_dump)) {
       dump_result->layout = custom_text_dump + "\n";
     } else if (!IsRecursiveLayoutDumpRequested()) {
-      TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalLayoutDump");
+      TRACE_EVENT0("shell", "TestRunner::CaptureLocalLayoutDump");
       dump_result->layout = DumpLayoutAsString(web_frame, text_result_type);
     }
 
     if (pixel_result) {
       if (CanDumpPixelsFromRenderer()) {
-        TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalPixelsDump");
+        TRACE_EVENT0("shell", "TestRunner::CaptureLocalPixelsDump");
         SkBitmap actual =
             DumpPixelsInRenderer(main_frame->GetWebViewTestProxy());
         DCHECK_GT(actual.info().width(), 0);
@@ -3230,7 +3268,7 @@ void TestRunner::FinishTest() {
       } else {
         browser_should_dump_pixels = true;
         if (ShouldDumpSelectionRect()) {
-          TRACE_EVENT0("shell", "BlinkTestRunner::CaptureLocalSelectionRect");
+          TRACE_EVENT0("shell", "TestRunner::CaptureLocalSelectionRect");
           dump_result->selection_rect =
               web_frame->GetSelectionBoundsRectForTesting();
         }

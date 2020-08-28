@@ -78,7 +78,8 @@ if (support_web_tests) {
       "common/web_test/web_test_switches.h",
     ]
     public_deps = [
-      # #include'ed by renderer/web_test/blink_test_runner.h
+      # The mojoms used to support communication between browser and renderer
+      # for the web test harness.
       ":web_test_common_mojom",
 
       # The generated mojom JS bindings are used by web tests.
@@ -244,8 +245,6 @@ if (support_web_tests) {
       "renderer/web_test/app_banner_service.h",
       "renderer/web_test/blink_test_helpers.cc",
       "renderer/web_test/blink_test_helpers.h",
-      "renderer/web_test/blink_test_runner.cc",
-      "renderer/web_test/blink_test_runner.h",
       "renderer/web_test/event_sender.cc",
       "renderer/web_test/event_sender.h",
       "renderer/web_test/gamepad_controller.cc",

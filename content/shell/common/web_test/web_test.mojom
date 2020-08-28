@@ -60,19 +60,13 @@ interface WebTestRenderFrame {
   // Dumps the frame's contents into a string.
   DumpFrameLayout() => (string frame_layout_dump);
 
-  // Replicates test config (for an already started test) to a new renderer
-  // that hosts parts of the main test window.
-  ReplicateTestConfiguration(WebTestRunTestConfiguration config);
-
   // Sets the test config for a web test that is being started.  This message
-  // is sent only to a renderer that hosts parts of the main test window.
-  SetTestConfiguration(WebTestRunTestConfiguration config);
-
-  // Tells the renderer to navigate to about:blank and reset all state
-  // in preparation for the next test. This happens before leak detection
-  // in order for the test harness to drop anything that tests passed in
-  // and which could cause a leak otherwise.
-  ResetRendererAfterWebTest();
+  // is sent once to each RenderView that hosts parts of the main test window.
+  // The `starting_test` indicates if this is the first call to this IPC method
+  // for the given test. After the initial call, this may be called for new
+  // RenderViews created to host frames for the main window, either as OOPIFs or
+  // to handle cross-site navigations.
+  SetTestConfiguration(WebTestRunTestConfiguration config, bool starting_test);
 };
 
 // Web test messages related runtime flags sent from the browser process to the
@@ -95,6 +89,12 @@ interface WebTestRenderThread {
   // Called on the renderer process with the main window's local main frame to
   // conclude the test. Used to bounce this request from another renderer.
   TestFinishedFromSecondaryRenderer();
+
+  // Tells the renderer to navigate the main window's main frame to about:blank
+  // and reset all state in preparation for the next test. This happens before
+  // leak detection in order for the test harness to drop anything that tests
+  // passed in and which could cause a leak otherwise.
+  ResetRendererAfterWebTest() => ();
 };
 
 // Web test messages sent from the renderer process to the browser. This
@@ -110,10 +110,6 @@ interface WebTestControlHost {
 
   // Sent by secondary test window to notify the test has finished.
   TestFinishedInSecondaryRenderer();
-
-  // An ACK to notify the browser process that ResetRendererAfterWebTest() has
-  // completed.
-  ResetRendererAfterWebTestDone();
 
   // Add a message to stderr (not saved to expected output files, for debugging
   // only).

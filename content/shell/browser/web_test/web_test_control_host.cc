@@ -530,7 +530,6 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   bool is_devtools_protocol_test = false;
   test_url_ = DevToolsProtocolTestBindings::MapTestURLIfNeeded(
       test_url_, &is_devtools_protocol_test);
-  did_send_initial_test_configuration_ = false;
 
   protocol_mode_ = test_info.protocol_mode;
   if (protocol_mode_)
@@ -575,6 +574,12 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
 
     main_window_->web_contents()->WasShown();
   }
+
+  // Tests should always start with the browser controls hidden.
+  // TODO(danakj): We no longer run web tests on android, and this is an android
+  // feature, so maybe this isn't needed anymore.
+  main_window_->web_contents()->GetMainFrame()->UpdateBrowserControlsState(
+      BROWSER_CONTROLS_STATE_BOTH, BROWSER_CONTROLS_STATE_HIDDEN, false);
 
   // We did not track the |main_window_| RenderFrameHost during the creation of
   // |main_window_|, since we need the pointer value in this class set first. So
@@ -654,7 +659,6 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   printer_->PrintTextFooter();
   printer_->PrintImageFooter();
   printer_->CloseStderr();
-  did_send_initial_test_configuration_ = false;
   test_phase_ = BETWEEN_TESTS;
   expected_pixel_hash_.clear();
   test_url_ = GURL();
@@ -1131,6 +1135,12 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
   if (main_window &&
       (!base::Contains(main_window_render_view_hosts_, view_host) ||
        !base::Contains(main_window_render_process_hosts_, process_host))) {
+    // When we find the main window's main frame for the first time, we mark the
+    // test as starting for the renderer.
+    const bool starting_test = main_window_render_process_hosts_.empty();
+    DCHECK_EQ(main_window_render_process_hosts_.empty(),
+              main_window_render_view_hosts_.empty());
+
     main_window_render_view_hosts_.insert(view_host);
     main_window_render_process_hosts_.insert(process_host);
 
@@ -1148,17 +1158,8 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
     params->expected_pixel_hash = expected_pixel_hash_;
     params->protocol_mode = protocol_mode_;
 
-    if (did_send_initial_test_configuration_) {
-      GetWebTestRenderFrameRemote(frame)->ReplicateTestConfiguration(
-          std::move(params));
-    } else {
-      did_send_initial_test_configuration_ = true;
-      GetWebTestRenderFrameRemote(frame)->SetTestConfiguration(
-          std::move(params));
-      // Tests should always start with the browser controls hidden.
-      frame->UpdateBrowserControlsState(BROWSER_CONTROLS_STATE_BOTH,
-                                        BROWSER_CONTROLS_STATE_HIDDEN, false);
-    }
+    GetWebTestRenderFrameRemote(frame)->SetTestConfiguration(std::move(params),
+                                                             starting_test);
   }
 
   // Is this a previously unknown renderer process_host?
@@ -1191,7 +1192,7 @@ void WebTestControlHost::OnTestFinished() {
       ShellContentBrowserClient::Get()->browser_context();
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      2, base::BindOnce(&WebTestControlHost::OnCleanupFinished,
+      2, base::BindOnce(&WebTestControlHost::ResetRendererAfterWebTest,
                         weak_factory_.GetWeakPtr()));
 
   StoragePartition* storage_partition =
@@ -1206,28 +1207,6 @@ void WebTestControlHost::OnTestFinished() {
       BrowserContext::GetStoragePartition(
           ShellContentBrowserClient::Get()->browser_context(), nullptr),
       barrier_closure);
-}
-
-void WebTestControlHost::OnCleanupFinished() {
-  if (secondary_window_) {
-    secondary_window_->web_contents()->Stop();
-    GetWebTestRenderFrameRemote(
-        secondary_window_->web_contents()->GetRenderViewHost()->GetMainFrame())
-        ->ResetRendererAfterWebTest();
-    ++waiting_for_reset_done_;
-  }
-  if (main_window_) {
-    main_window_->web_contents()->Stop();
-    GetWebTestRenderFrameRemote(
-        main_window_->web_contents()->GetRenderViewHost()->GetMainFrame())
-        ->ResetRendererAfterWebTest();
-    ++waiting_for_reset_done_;
-  }
-
-  // If the windows are gone, due to crashes or whatever, we need to make
-  // progress.
-  ++waiting_for_reset_done_;
-  ResetRendererAfterWebTestDone();
 }
 
 void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
@@ -1670,21 +1649,24 @@ void WebTestControlHost::CheckForLeakedWindows() {
   check_for_leaked_windows_ = true;
 }
 
-void WebTestControlHost::CloseTestOpenedWindows() {
-  DevToolsAgentHost::DetachAllClients();
-  std::vector<Shell*> open_windows(Shell::windows());
-  for (auto* shell : open_windows) {
-    if (shell != main_window_)
-      shell->Close();
+void WebTestControlHost::ResetRendererAfterWebTest() {
+  if (main_window_) {
+    main_window_->web_contents()->Stop();
+
+    RenderProcessHost* main_frame_process =
+        main_window_->web_contents()->GetRenderViewHost()->GetProcess();
+    GetWebTestRenderThreadRemote(main_frame_process)
+        ->ResetRendererAfterWebTest(
+            base::BindOnce(&WebTestControlHost::ResetRendererAfterWebTestDone,
+                           weak_factory_.GetWeakPtr()));
+  } else {
+    // If the window is gone, due to crashes or whatever, we need to make
+    // progress.
+    ResetRendererAfterWebTestDone();
   }
-  secondary_window_ = nullptr;
-  base::RunLoop().RunUntilIdle();
 }
 
 void WebTestControlHost::ResetRendererAfterWebTestDone() {
-  if (--waiting_for_reset_done_ > 0)
-    return;
-
   if (leak_detector_ && main_window_) {
     // When doing leak detection, we don't want to count opened windows as
     // leaks, unless the test specifies that it expects to have closed them
@@ -1716,6 +1698,17 @@ void WebTestControlHost::OnLeakDetectionDone(
   }
 
   Shell::QuitMainMessageLoopForTesting();
+}
+
+void WebTestControlHost::CloseTestOpenedWindows() {
+  DevToolsAgentHost::DetachAllClients();
+  std::vector<Shell*> open_windows(Shell::windows());
+  for (auto* shell : open_windows) {
+    if (shell != main_window_)
+      shell->Close();
+  }
+  secondary_window_ = nullptr;
+  base::RunLoop().RunUntilIdle();
 }
 
 void WebTestControlHost::SetBluetoothManualChooser(bool enable) {

@@ -51,7 +51,6 @@ class Arguments;
 }  // namespace gin
 
 namespace content {
-class BlinkTestRunner;
 class MockScreenOrientationClient;
 class RenderFrame;
 class RenderView;
@@ -101,6 +100,14 @@ class TestRunner {
   // Notification that another renderer has explicitly asked the test to end.
   void TestFinishedFromSecondaryRenderer();
 
+  // Performs a reset at the end of a test, in order to prepare for the next
+  // test. This includes a navigation to about:blank, which we hear about
+  // through DidCommitNavigationInMainFrame().
+  void ResetRendererAfterWebTest(base::OnceClosure done_callback);
+  // Listener for navigations in order to hear about the navigation to
+  // about:blank done for ResetRendererAfterWebTest().
+  void DidCommitNavigationInMainFrame(WebFrameTestProxy* main_frame);
+
   // Track the set of all main frames in the process, which is also the set of
   // windows rooted in this process.
   void AddMainFrame(WebFrameTestProxy* frame);
@@ -115,10 +122,6 @@ class TestRunner {
   // Returns a mock WebContentSettings that is used for web tests. An
   // embedder should use this for all WebViews it creates.
   blink::WebContentSettingsClient* GetWebContentSettings();
-
-  // After BlinkTestRunner::TestFinished was invoked, the following methods
-  // can be used to determine what kind of dump the main WebViewTestProxy can
-  // provide.
 
   // Returns true if the test output should be an audio file, rather than text
   // or pixel results.
@@ -145,7 +148,7 @@ class TestRunner {
   SkBitmap DumpPixelsInRenderer(content::RenderView* render_view);
 
   // Replicates changes to web test runtime flags (i.e. changes that happened in
-  // another renderer). See also BlinkTestRunner::OnWebTestRuntimeFlagsChanged.
+  // another renderer). See also `OnWebTestRuntimeFlagsChanged()`.
   void ReplicateWebTestRuntimeFlagsChanges(
       const base::DictionaryValue& changed_values);
 
@@ -254,7 +257,6 @@ class TestRunner {
  private:
   friend class TestRunnerBindings;
   friend class WorkQueue;
-  friend class BlinkTestRunner;  // For the mojom::WebTestControlHost.
 
   // Helper class for managing events queued by methods like QueueLoad or
   // QueueScript.
@@ -579,6 +581,12 @@ class TestRunner {
   // An effective connection type settable by web tests.
   blink::WebEffectiveConnectionType effective_connection_type_ =
       blink::WebEffectiveConnectionType::kTypeUnknown;
+
+  // Set to ack callback when the browser asks the renderer to reset at the end
+  // of a test. Part of reset involves performing a navigation to about:blank
+  // and this tracks that the navigation is in progress, and is called to inform
+  // the browser that the reset is complete.
+  base::OnceClosure waiting_for_reset_navigation_to_about_blank_;
 
   base::WeakPtrFactory<TestRunner> weak_factory_{this};
 

@@ -55,6 +55,12 @@ void WebTestRenderThreadObserver::OnWebTestRenderThreadAssociatedRequest(
   receiver_.Bind(std::move(receiver));
 }
 
+void WebTestRenderThreadObserver::SetupRendererProcessForNonTestWindow() {
+  // Allows the window to receive replicated WebTestRuntimeFlags and to
+  // control or end the test.
+  test_runner_->SetTestIsRunning(true);
+}
+
 void WebTestRenderThreadObserver::ReplicateWebTestRuntimeFlagsChanges(
     base::Value changed_layout_test_runtime_flags) {
   base::DictionaryValue* changed_web_test_runtime_flags_dictionary = nullptr;
@@ -69,10 +75,9 @@ void WebTestRenderThreadObserver::TestFinishedFromSecondaryRenderer() {
   test_runner_->TestFinishedFromSecondaryRenderer();
 }
 
-void WebTestRenderThreadObserver::SetupRendererProcessForNonTestWindow() {
-  // Allows the window to receive replicated WebTestRuntimeFlags and to
-  // control or end the test.
-  test_runner_->SetTestIsRunning(true);
+void WebTestRenderThreadObserver::ResetRendererAfterWebTest(
+    base::OnceClosure done_callback) {
+  test_runner_->ResetRendererAfterWebTest(std::move(done_callback));
 }
 
 }  // namespace content

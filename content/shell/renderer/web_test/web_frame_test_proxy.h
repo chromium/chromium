@@ -23,7 +23,6 @@
 #include "ui/accessibility/ax_event_intent.h"
 
 namespace content {
-class BlinkTestRunner;
 class SpellCheckClient;
 class TestRunner;
 class WebViewTestProxy;
@@ -88,11 +87,8 @@ class WebFrameTestProxy : public RenderFrameImpl,
   void SynchronouslyCompositeAfterTest(
       SynchronouslyCompositeAfterTestCallback callback) override;
   void DumpFrameLayout(DumpFrameLayoutCallback callback) override;
-  void SetTestConfiguration(
-      mojom::WebTestRunTestConfigurationPtr config) override;
-  void ReplicateTestConfiguration(
-      mojom::WebTestRunTestConfigurationPtr config) override;
-  void ResetRendererAfterWebTest() override;
+  void SetTestConfiguration(mojom::WebTestRunTestConfigurationPtr config,
+                            bool starting_test) override;
 
   void BindReceiver(
       mojo::PendingAssociatedReceiver<mojom::WebTestRenderFrame> receiver);
@@ -103,7 +99,6 @@ class WebFrameTestProxy : public RenderFrameImpl,
       const std::vector<ui::AXEventIntent>& event_intents);
 
   TestRunner* test_runner();
-  BlinkTestRunner* blink_test_runner();
 
   WebViewTestProxy* const web_view_test_proxy_;
 

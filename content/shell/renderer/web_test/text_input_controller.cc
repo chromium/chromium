@@ -5,7 +5,6 @@
 #include "content/shell/renderer/web_test/text_input_controller.h"
 
 #include "base/macros.h"
-#include "content/shell/renderer/web_test/blink_test_runner.h"
 #include "content/shell/renderer/web_test/web_view_test_proxy.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
