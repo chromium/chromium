@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
@@ -113,6 +114,46 @@ std::vector<TestParams> GetTestParams() {
     params.push_back(TestParams{version, true});
   }
   return params;
+}
+
+// Returns true if |params| is a dict, has an entry with key "headers", that
+// entry is a list of strings, which when interpreted as colon-separated
+// key-value pairs has exactly one entry with |key| and that entry has value
+// |expected_value|.
+bool CheckHeader(const base::Value& params,
+                 base::StringPiece key,
+                 base::StringPiece expected_value) {
+  if (!params.is_dict()) {
+    return false;
+  }
+  const base::Value* headers = params.FindListKey("headers");
+  if (!headers) {
+    return false;
+  }
+
+  std::string header_prefix = base::StrCat({key, ": "});
+  std::string expected_header = base::StrCat({header_prefix, expected_value});
+
+  auto header_list = headers->GetList();
+  auto header_it = header_list.begin();
+  bool header_found = false;
+  while (header_it != header_list.end()) {
+    if (!header_it->is_string()) {
+      return false;
+    }
+    const std::string& header = header_it->GetString();
+    if (base::StartsWith(header, header_prefix)) {
+      if (header_found) {
+        return false;
+      }
+      if (header != expected_header) {
+        return false;
+      }
+      header_found = true;
+    }
+    ++header_it;
+  }
+  return header_found;
 }
 
 class TestQuicConnection : public quic::QuicConnection {
@@ -950,102 +991,91 @@ TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
 
   net_log_.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
 
-  // Send request.
+  // Send first request.
   SetRequest("GET", "/", DEFAULT_PRIORITY);
   request_.method = "GET";
   request_.url = GURL("https://www.example.org/");
   headers_.SetHeader(HttpRequestHeaders::kCookie, "secret");
 
   size_t spdy_request_header_frame_length;
-  int packet_number = 1;
-  AddWrite(ConstructInitialSettingsPacket(packet_number++));
+  int outgoing_packet_number = 1;
+  AddWrite(ConstructInitialSettingsPacket(outgoing_packet_number++));
   AddWrite(InnerConstructRequestHeadersPacket(
-      packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
-      kIncludeVersion, kFin, DEFAULT_PRIORITY,
-      &spdy_request_header_frame_length));
+      outgoing_packet_number++, stream_id_, kIncludeVersion, kFin,
+      DEFAULT_PRIORITY, &spdy_request_header_frame_length));
 
   EXPECT_THAT(stream_->InitializeStream(&request_, true, DEFAULT_PRIORITY,
                                         net_log_.bound(), callback_.callback()),
               IsOk());
   EXPECT_THAT(stream_->SendRequest(headers_, &response_, callback_.callback()),
               IsOk());
-  ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));  // Ack the request.
+  int incoming_packet_number = 1;
+  ProcessPacket(ConstructServerAckPacket(incoming_packet_number++, 1, 1,
+                                         1));  // Ack the request.
 
-  // Process response.
+  // Process first response.
   SetResponse("200 OK", string());
   response_headers_["set-cookie"] = "secret";
   size_t spdy_response_header_frame_length;
   ProcessPacket(ConstructResponseHeadersPacket(
-      2, kFin, &spdy_response_header_frame_length));
-
+      incoming_packet_number++, kFin, &spdy_response_header_frame_length));
   EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()), IsOk());
-  EXPECT_TRUE(AtEof());
 
   ASSERT_TRUE(response_.headers.get());
   EXPECT_EQ(200, response_.headers->response_code());
   EXPECT_TRUE(response_.headers->HasHeaderValue("Content-Type", "text/plain"));
   EXPECT_TRUE(response_.headers->HasHeaderValue("set-cookie", "secret"));
 
-  // Find HTTP3_HEADERS_SENT NetLog event.
-  auto events = net_log_.GetEntries();
-  auto event_it = events.begin();
-  while (event_it != events.end()) {
-    if (event_it->type == NetLogEventType::HTTP3_HEADERS_SENT) {
-      break;
-    }
-    ++event_it;
-  }
-  ASSERT_NE(events.end(), event_it) << "No HTTP3_HEADERS_SENT event found.";
+  net_log_.SetObserverCaptureMode(NetLogCaptureMode::kIncludeSensitive);
 
-  // Extract request headers.
-  const base::Value& request_params = event_it->params;
-  ASSERT_TRUE(request_params.is_dict());
-  const base::Value* headers = request_params.FindKey("headers");
-  ASSERT_TRUE(headers) << "No headers entry found.";
-  ASSERT_TRUE(headers->is_list());
-  auto headerlist = headers->GetList();
+  // Send second request.
+  quic::QuicStreamId stream_id = GetNthClientInitiatedBidirectionalStreamId(1);
+  request_.url = GURL("https://www.example.org/foo");
 
-  // Check that cookie value has been stripped.
-  auto header_it = headerlist.begin();
-  while (header_it != headerlist.end()) {
-    ASSERT_TRUE(header_it->is_string());
-    if (base::StartsWith(header_it->GetString(), "cookie: ")) {
-      break;
-    }
-    ++header_it;
-  }
-  ASSERT_NE(headerlist.end(), header_it) << "No cookie header found.";
-  EXPECT_EQ("cookie: [6 bytes were stripped]", header_it->GetString());
+  AddWrite(InnerConstructRequestHeadersPacket(
+      outgoing_packet_number++, stream_id, kIncludeVersion, kFin,
+      DEFAULT_PRIORITY, &spdy_request_header_frame_length));
 
-  // Find HTTP3_HEADERS_DECODED NetLog event.
-  event_it = events.begin();
-  while (event_it != events.end()) {
-    if (event_it->type == NetLogEventType::HTTP3_HEADERS_DECODED) {
-      break;
-    }
-    ++event_it;
-  }
-  ASSERT_NE(events.end(), event_it) << "No HTTP3_HEADERS_DECODED event found.";
+  auto stream = std::make_unique<QuicHttpStream>(
+      session_->CreateHandle(HostPortPair("www.example.org/foo", 443)));
+  EXPECT_THAT(stream->InitializeStream(&request_, true, DEFAULT_PRIORITY,
+                                       net_log_.bound(), callback_.callback()),
+              IsOk());
+  EXPECT_THAT(stream->SendRequest(headers_, &response_, callback_.callback()),
+              IsOk());
+  ProcessPacket(ConstructServerAckPacket(incoming_packet_number++, 1, 1,
+                                         1));  // Ack the request.
 
-  // Extract response headers.
-  const base::Value& response_params = event_it->params;
-  ASSERT_TRUE(response_params.is_dict());
-  headers = response_params.FindKey("headers");
-  ASSERT_TRUE(headers) << "No headers entry found.";
-  ASSERT_TRUE(headers->is_list());
-  headerlist = headers->GetList();
+  // Process second response.
+  SetResponse("200 OK", string());
+  response_headers_["set-cookie"] = "secret";
+  ProcessPacket(InnerConstructResponseHeadersPacket(
+      incoming_packet_number++, stream_id, kFin,
+      &spdy_response_header_frame_length));
+  EXPECT_THAT(stream->ReadResponseHeaders(callback_.callback()), IsOk());
 
-  // Check that set-cookie value has been stripped.
-  header_it = headerlist.begin();
-  while (header_it != headerlist.end()) {
-    ASSERT_TRUE(header_it->is_string());
-    if (base::StartsWith(header_it->GetString(), "set-cookie: ")) {
-      break;
-    }
-    ++header_it;
-  }
-  ASSERT_NE(headerlist.end(), header_it) << "No set-cookie header found.";
-  EXPECT_EQ("set-cookie: [6 bytes were stripped]", header_it->GetString());
+  ASSERT_TRUE(response_.headers.get());
+  EXPECT_EQ(200, response_.headers->response_code());
+  EXPECT_TRUE(response_.headers->HasHeaderValue("Content-Type", "text/plain"));
+  EXPECT_TRUE(response_.headers->HasHeaderValue("set-cookie", "secret"));
+
+  EXPECT_TRUE(AtEof());
+
+  // Check that sensitive header value were stripped
+  // for the first transaction (logged with NetLogCaptureMode::kDefault)
+  // but not for the second (logged with NetLogCaptureMode::kIncludeSensitive).
+  auto entries =
+      net_log_.GetEntriesWithType(NetLogEventType::HTTP3_HEADERS_SENT);
+  ASSERT_EQ(2u, entries.size());
+  EXPECT_TRUE(
+      CheckHeader(entries[0].params, "cookie", "[6 bytes were stripped]"));
+  EXPECT_TRUE(CheckHeader(entries[1].params, "cookie", "secret"));
+
+  entries = net_log_.GetEntriesWithType(NetLogEventType::HTTP3_HEADERS_DECODED);
+  ASSERT_EQ(2u, entries.size());
+  EXPECT_TRUE(
+      CheckHeader(entries[0].params, "set-cookie", "[6 bytes were stripped]"));
+  EXPECT_TRUE(CheckHeader(entries[1].params, "set-cookie", "secret"));
 }
 
 // Regression test for http://crbug.com/288128
