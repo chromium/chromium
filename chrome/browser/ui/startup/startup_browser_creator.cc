@@ -267,8 +267,58 @@ bool CanOpenProfileOnStartup(Profile* profile) {
 #endif
 }
 
+// Returns true if starting in guest mode is enforced. If |show_warning| is
+// true, send a warning if guest mode is requested but not allowed by policy.
+bool IsGuestModeEnforced(const base::CommandLine& command_line,
+                         bool show_warning) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
+    defined(OS_MAC)
+  PrefService* service = g_browser_process->local_state();
+  DCHECK(service);
+
+  // Check if guest mode enforcement commandline switch or policy are provided.
+  if (command_line.HasSwitch(switches::kGuest) ||
+      service->GetBoolean(prefs::kBrowserGuestModeEnforced)) {
+    // Check if guest mode is allowed by policy.
+    if (service->GetBoolean(prefs::kBrowserGuestModeEnabled))
+      return true;
+    if (show_warning) {
+      LOG(WARNING) << "Guest mode disabled by policy, launching a normal "
+                   << "browser session.";
+    }
+  }
+#endif
+  return false;
+}
+
 #if !defined(OS_CHROMEOS)
-bool ShouldShowProfilePicker() {
+bool ShouldShowProfilePicker(const base::CommandLine& command_line,
+                             const std::vector<GURL>& urls_to_launch) {
+  // Don't show the picker if a certain profile (or an incognito window in the
+  // default profile) is explicitly requested.
+  if (IsGuestModeEnforced(command_line, /*show_warning=*/false) ||
+      command_line.HasSwitch(switches::kIncognito) ||
+      command_line.HasSwitch(switches::kProfileDirectory)) {
+    return false;
+  }
+
+// If the browser is launched due to activation on Windows native notification,
+// the profile id encoded in the notification launch id should be chosen over
+// the profile picker.
+#if defined(OS_WIN)
+  std::string profile_id =
+      NotificationLaunchId::GetNotificationLaunchProfileId(command_line);
+  if (!profile_id.empty()) {
+    return false;
+  }
+#endif  // defined(OS_WIN)
+
+  // Don't show the picker if a any URL is requested to launch via the
+  // command-line.
+  if (!urls_to_launch.empty()) {
+    return false;
+  }
+
   size_t number_of_profiles = g_browser_process->profile_manager()
                                   ->GetProfileAttributesStorage()
                                   .GetNumberOfProfiles();
@@ -301,30 +351,6 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
       prefs::kStartupBrowserWindowLaunchSuppressed);
 #endif  // defined(OS_CHROMEOS)
 
-  return false;
-}
-
-// Returns true if starting in guest mode is enforced. If |show_warning| is
-// true, send a warning if guest mode is requested but not allowed by policy.
-bool IsGuestModeEnforced(const base::CommandLine& command_line,
-                         bool show_warning) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
-    defined(OS_MAC)
-  PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
-
-  // Check if guest mode enforcement commandline switch or policy are provided.
-  if (command_line.HasSwitch(switches::kGuest) ||
-      service->GetBoolean(prefs::kBrowserGuestModeEnforced)) {
-    // Check if guest mode is allowed by policy.
-    if (service->GetBoolean(prefs::kBrowserGuestModeEnabled))
-      return true;
-    if (show_warning) {
-      LOG(WARNING) << "Guest mode disabled by policy, launching a normal "
-                   << "browser session.";
-    }
-  }
-#endif
   return false;
 }
 
@@ -818,7 +844,10 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
     Profile* last_used_profile,
     const Profiles& last_opened_profiles) {
 #if !defined(OS_CHROMEOS)
-  if (ShouldShowProfilePicker()) {
+  const std::vector<GURL> urls_to_launch =
+      StartupBrowserCreator::GetURLsFromCommandLine(command_line, cur_dir,
+                                                    last_used_profile);
+  if (ShouldShowProfilePicker(command_line, urls_to_launch)) {
     ProfilePicker::Show();
     return true;
   }
