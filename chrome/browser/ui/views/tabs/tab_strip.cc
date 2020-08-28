@@ -2334,12 +2334,13 @@ gfx::Size TabStrip::GetMinimumSize() const {
 }
 
 gfx::Size TabStrip::CalculatePreferredSize() const {
-  if (tab_count() == 0) {
-    return gfx::Size(GetRightSideReservedWidth(),
-                     GetLayoutConstant(TAB_HEIGHT));
+  // The tabs might be out of order due to an active animation or drag, so
+  // we have to check all of them to find the visually trailing-most one.
+  int max_x = 0;
+  for (auto* tab : layout_helper_->GetTabs()) {
+    max_x = std::max(max_x, tab->bounds().right());
   }
-  return gfx::Size(layout_helper_->GetTabs().back()->bounds().right() +
-                       GetRightSideReservedWidth(),
+  return gfx::Size(max_x + GetRightSideReservedWidth(),
                    GetLayoutConstant(TAB_HEIGHT));
 }
 
