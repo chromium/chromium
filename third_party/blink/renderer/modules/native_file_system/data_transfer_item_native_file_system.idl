@@ -4,7 +4,7 @@
 
 [
     ImplementedAs=DataTransferItemNativeFileSystem,
-    RuntimeEnabled=NativeFileSystemDragAndDrop
+    RuntimeEnabled=NativeFileSystem
 ] partial interface DataTransferItem {
     [CallWith=ScriptState, MeasureAs=NativeFileSystemDragAndDrop] Promise<FileSystemHandle?> getAsFileSystemHandle();
 };

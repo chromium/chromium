@@ -88,6 +88,16 @@ interface ServiceWorkerRegistration : EventTarget
 interface HTMLInputElement : HTMLElement
     getter webkitEntries
 
+# Native File System API not supported on Android, crbug.com/1011535
+interface DataTransferItem
+    method getAsFileSystemHandle
+interface StorageManager : EventTarget
+    method getDirectory
+interface FileSystemHandle
+interface FileSystemDirectoryHandle : FileSystemHandle
+interface FileSystemFileHandle : FileSystemHandle
+interface FileSystemWritableFileStream : WritableStream
+
 # MediaDevices devicechange disabled on Android, crbug.com/671461
 interface MediaDevices : EventTarget
     getter ondevicechange
@@ -173,6 +183,9 @@ interface XRAnchorSet
     method gc                                # test only
     method webkitRequestFileSystem           # File System API, crbug.com/589843
     method webkitResolveLocalFileSystemURL   # File System API, crbug.com/589843
+    method showOpenFilePicker                # Native File System API, crbug.com/1011535
+    method showSaveFilePicker                # Native File System API, crbug.com/1011535
+    method showDirectoryPicker               # Native File System API, crbug.com/1011535
 
 # TODO(timvolodine): check screen orientation lock api
 # TODO(timvolodine): check notifications in service workers

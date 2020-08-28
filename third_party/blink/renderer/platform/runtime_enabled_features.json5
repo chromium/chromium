@@ -1043,8 +1043,6 @@
       // This is enabled by features::kLazyInitializeMediaControls.
     },
     {
-      // Also enabled when blink::features::kNativeFileSystemAPI is overridden
-      // on the command line (or via chrome://flags).
       // Used for API surface that will be removed when the Native File System
       // API is no longer guarded by an origin trial.
       name: "LegacyNativeFileSystem",
@@ -1220,13 +1218,10 @@
       // Also enabled when blink::features::kNativeFileSystemAPI is overridden
       // on the command line (or via chrome://flags).
       name: "NativeFileSystem",
-      status: {"Android": "test", "default": "experimental"},
+      status: {"Android": "test", "default": "stable"},
+      // TODO(mek): Remove origin trial integration.
       origin_trial_feature_name: "NativeFileSystem2",
       origin_trial_os: ["win", "mac", "linux", "chromeos"],
-    },
-    {
-      name: "NativeFileSystemDragAndDrop",
-      status: "experimental"
     },
     {
       name: "NativeIO",
