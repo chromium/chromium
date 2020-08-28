@@ -82,6 +82,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -136,30 +137,41 @@ enum ShiftOffset { kLeft = -1, kRight = 1 };
 // Listens in on the browser event stream (as a pre target event handler) and
 // hides an associated hover card on any keypress.
 class TabHoverCardEventSniffer : public ui::EventHandler {
+// On Mac, events should be added to the root view.
+#if defined(OS_MAC)
+  using OwnerView = views::View*;
+#else   // defined(OS_MAC)
+  using OwnerView = gfx::NativeWindow;
+#endif  // defined(OS_MAC)
+
  public:
   TabHoverCardEventSniffer(TabHoverCardBubbleView* hover_card,
                            TabStrip* tab_strip)
       : hover_card_(hover_card),
         tab_strip_(tab_strip),
-        widget_(tab_strip->GetWidget()) {
 #if defined(OS_MAC)
-    if (widget_->GetRootView())
-      widget_->GetRootView()->AddPreTargetHandler(this);
-#else
-    if (widget_->GetNativeWindow())
-      widget_->GetNativeWindow()->AddPreTargetHandler(this);
-#endif
+        owner_view_(tab_strip->GetWidget()->GetRootView()) {
+#else   // defined(OS_MAC)
+        owner_view_(tab_strip->GetWidget()->GetNativeWindow()) {
+#endif  // defined(OS_MAC)
+    AddPreTargetHandler();
   }
 
   ~TabHoverCardEventSniffer() override {
-#if defined(OS_MAC)
-    widget_->GetRootView()->RemovePreTargetHandler(this);
-#else
-    widget_->GetNativeWindow()->RemovePreTargetHandler(this);
-#endif
+    RemovePreTargetHandler();
   }
 
  protected:
+  void AddPreTargetHandler() {
+    if (owner_view_)
+      owner_view_->AddPreTargetHandler(this);
+  }
+
+  void RemovePreTargetHandler() {
+    if (owner_view_)
+      owner_view_->RemovePreTargetHandler(this);
+  }
+
   // ui::EventTarget:
   void OnKeyEvent(ui::KeyEvent* event) override {
     if (!tab_strip_->IsFocusInTabs())
@@ -178,7 +190,7 @@ class TabHoverCardEventSniffer : public ui::EventHandler {
  private:
   TabHoverCardBubbleView* const hover_card_;
   TabStrip* tab_strip_;
-  views::Widget* widget_;
+  const OwnerView owner_view_;
 };
 
 // Provides the ability to monitor when a tab's bounds have been animated. Used
