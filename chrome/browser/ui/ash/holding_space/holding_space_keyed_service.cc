@@ -43,7 +43,8 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(
     const AccountId& account_id)
     : browser_context_(context),
       account_id_(account_id),
-      holding_space_client_(Profile::FromBrowserContext(context)) {
+      holding_space_client_(Profile::FromBrowserContext(context)),
+      thumbnail_loader_(Profile::FromBrowserContext(context)) {
   // If the service's associated profile is ready, we can proceed to restore the
   // `holding_space_model_` from persistence.
   ProfileManager* const profile_manager = GetProfileManager();

@@ -2569,6 +2569,7 @@ if (!is_android) {
         "../browser/ui/ash/chrome_new_window_client_browsertest.cc",
         "../browser/ui/ash/chrome_screenshot_grabber_browsertest.cc",
         "../browser/ui/ash/clipboard_history_browsertest.cc",
+        "../browser/ui/ash/holding_space/holding_space_thumbnail_loader_browsertest.cc",
         "../browser/ui/ash/keyboard/keyboard_controller_browsertest.cc",
         "../browser/ui/ash/keyboard/keyboard_end_to_end_browsertest.cc",
         "../browser/ui/ash/launcher/app_service/app_service_app_window_browsertest.cc",

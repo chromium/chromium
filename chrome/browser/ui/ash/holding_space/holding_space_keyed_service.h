@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/common/download_item.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -105,6 +106,10 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   void SetDownloadManagerForTesting(content::DownloadManager* manager);
 
+  HoldingSpaceThumbnailLoader* thumbnail_loader_for_testing() {
+    return &thumbnail_loader_;
+  }
+
  private:
   // KeyedService:
   void Shutdown() override;
@@ -145,6 +150,8 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   HoldingSpaceClientImpl holding_space_client_;
   HoldingSpaceModel holding_space_model_;
+
+  HoldingSpaceThumbnailLoader thumbnail_loader_;
 
   ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver>
       holding_space_model_observer_{this};

@@ -12,6 +12,7 @@
       "fileSystem": ["requestFileSystem"]
     },
     "fileManagerPrivate",
+    "nativeMessaging",
     "storage"
   ],
   "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' blob: filesystem: chrome://resources chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj; style-src 'self' blob: filesystem:; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:",
@@ -23,5 +24,6 @@
     ],
     "persistent": false
   },
+  "natively_connectable": ["com.google.holding_space_thumbnail_loader"],
   "web_accessible_resources": ["image_loader_client.js"]
 }
