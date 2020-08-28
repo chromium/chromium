@@ -2695,14 +2695,8 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_MESSAGE" desc="The message shows in the screenshot or screen recording notification.">
         Show in folder
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_SHARE" desc="The share button label for the screen capture notifiction.">
-        Share
-      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT" desc="The edit button label for the screen catpure notification.">
         Edit
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_FLOAT_ON_TOP" desc="The float-on-top button label for the screen capture notification.">
-        Float on top
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE" desc="The delete button label for the screen capture notificaiton.">
         Delete

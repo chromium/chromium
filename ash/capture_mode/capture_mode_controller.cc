@@ -33,9 +33,7 @@ const char kScreenCaptureNotifierId[] = "ash.capture_mode_controller";
 
 // The notification button index.
 enum NotificationButtonIndex {
-  BUTTON_SHARE = 0,
-  BUTTON_EDIT,
-  BUTTON_FLOAT_ON_TOP,
+  BUTTON_EDIT = 0,
   BUTTON_DELETE,
 };
 
@@ -111,15 +109,9 @@ void CaptureModeController::ShowNotification(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_MESSAGE);
 
   message_center::RichNotificationData optional_field;
-  message_center::ButtonInfo share_button(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_SHARE));
-  optional_field.buttons.push_back(share_button);
   message_center::ButtonInfo edit_button(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
   optional_field.buttons.push_back(edit_button);
-  message_center::ButtonInfo float_on_top_button(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_FLOAT_ON_TOP));
-  optional_field.buttons.push_back(float_on_top_button);
   message_center::ButtonInfo delete_button(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
   optional_field.buttons.push_back(delete_button);
@@ -166,11 +158,7 @@ void CaptureModeController::HandleNotificationClicked(
 
   // TODO: fill in here.
   switch (button_index.value()) {
-    case NotificationButtonIndex::BUTTON_SHARE:
-      break;
     case NotificationButtonIndex::BUTTON_EDIT:
-      break;
-    case NotificationButtonIndex::BUTTON_FLOAT_ON_TOP:
       break;
     case NotificationButtonIndex::BUTTON_DELETE:
       break;
