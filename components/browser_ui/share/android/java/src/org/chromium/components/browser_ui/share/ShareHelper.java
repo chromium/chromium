@@ -289,10 +289,10 @@ public class ShareHelper {
      */
     public static void shareWithUi(ShareParams params) {
         if (TargetChosenReceiver.isSupported()) {
-            // On L+ open system share sheet.
+            // On LMR1+ open system share sheet.
             shareWithSystemSheet(params);
         } else {
-            // On K and below open custom share dialog.
+            // On L and below open custom share dialog.
             showCompatShareDialog(params);
         }
     }
@@ -305,7 +305,6 @@ public class ShareHelper {
     public static void shareDirectly(
             @NonNull ShareParams params, @NonNull ComponentName component) {
         Intent intent = getShareLinkIntent(params);
-        intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
         intent.setComponent(component);
         fireIntent(params.getWindow(), intent, null);
     }
@@ -317,8 +316,8 @@ public class ShareHelper {
         final String action =
                 isMultipleFileShare ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND;
         Intent intent = new Intent(action);
-        intent.addFlags(ApiCompatibilityUtils.getActivityNewDocumentFlag()
-                | Intent.FLAG_ACTIVITY_FORWARD_RESULT | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_FORWARD_RESULT
+                | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
         intent.putExtra(EXTRA_TASK_ID, params.getWindow().getActivity().get().getTaskId());
 
         Uri screenshotUri = params.getScreenshotUri();
@@ -366,7 +365,7 @@ public class ShareHelper {
      */
     public static Intent getShareLinkAppCompatibilityIntent() {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         intent.putExtra(Intent.EXTRA_SUBJECT, "");
         intent.putExtra(Intent.EXTRA_TEXT, "");
         intent.setType("text/plain");

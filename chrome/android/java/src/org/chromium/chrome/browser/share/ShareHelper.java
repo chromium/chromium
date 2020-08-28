@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
@@ -252,7 +251,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     public static Intent createShareFileAppCompatibilityIntent(String fileContentType) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         intent.setType(fileContentType);
         return intent;
     }
@@ -264,7 +263,7 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      */
     public static Intent getShareImageIntent(Uri imageUri) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.addFlags(ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         intent.setType("image/jpeg");
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putExtra(Intent.EXTRA_STREAM, imageUri);

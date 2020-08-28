@@ -93,8 +93,7 @@ public class WebappLauncherActivity extends Activity {
             Intent sourceIntent, @NonNull String webApkPackageName, @NonNull String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setPackage(webApkPackageName);
-        intent.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK | ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         Bundle extras = sourceIntent.getExtras();
         if (extras != null) {
             intent.putExtras(extras);
@@ -282,8 +281,7 @@ public class WebappLauncherActivity extends Activity {
                 appContext.getPackageName(), ChromeLauncherActivity.class.getName());
         launchIntent.putExtra(ShortcutHelper.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
         launchIntent.putExtra(ShortcutHelper.EXTRA_SOURCE, webappSource);
-        launchIntent.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK | ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
 
         Log.e(TAG, "Shortcut (%s) opened in Chrome.", webappUrl);
 
@@ -350,8 +348,7 @@ public class WebappLauncherActivity extends Activity {
             launchIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION
                     | Intent.FLAG_ACTIVITY_FORWARD_RESULT);
         } else {
-            launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                    | ApiCompatibilityUtils.getActivityNewDocumentFlag()
+            launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT
                     | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         }
 

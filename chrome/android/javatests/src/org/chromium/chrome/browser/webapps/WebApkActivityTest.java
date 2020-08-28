@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -101,8 +100,7 @@ public final class WebApkActivityTest {
 
         // Move WebAPK to the background by launching Chrome.
         Intent intent = new Intent(InstrumentationRegistry.getTargetContext(), mainClass);
-        intent.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK | ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         InstrumentationRegistry.getTargetContext().startActivity(intent);
         ChromeActivityTestRule.waitFor(mainClass);
 

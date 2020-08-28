@@ -411,14 +411,6 @@ public class ApiCompatibilityUtils {
         return manager.isScreenOn();
     }
 
-    @SuppressWarnings("deprecation")
-    public static int getActivityNewDocumentFlag() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return ApisL.FLAG_ACTIVITY_NEW_DOCUMENT;
-        }
-        return Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET;
-    }
-
     /**
      * @see android.provider.Settings.Secure#SKIP_FIRST_USE_HINTS
      */

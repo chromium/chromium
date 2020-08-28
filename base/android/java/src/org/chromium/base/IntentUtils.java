@@ -416,8 +416,7 @@ public class IntentUtils {
 
     /** Returns whether the intent starts an activity in a new task or a new document. */
     public static boolean isIntentForNewTaskOrNewDocument(Intent intent) {
-        int testFlags =
-                Intent.FLAG_ACTIVITY_NEW_TASK | ApiCompatibilityUtils.getActivityNewDocumentFlag();
+        int testFlags = Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT;
         return (intent.getFlags() & testFlags) != 0;
     }
 

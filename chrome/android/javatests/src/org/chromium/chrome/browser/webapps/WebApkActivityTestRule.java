@@ -11,7 +11,6 @@ import org.hamcrest.Matchers;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
@@ -77,8 +76,7 @@ public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivit
         intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, webApkInfo.webApkPackageName());
         intent.putExtra(ShortcutHelper.EXTRA_ID, webApkInfo.id());
         intent.putExtra(ShortcutHelper.EXTRA_URL, webApkInfo.url());
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK | ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         return intent;
     }
 }

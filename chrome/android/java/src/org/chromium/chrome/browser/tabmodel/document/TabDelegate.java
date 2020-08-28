@@ -12,7 +12,6 @@ import android.provider.Browser;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -187,8 +186,7 @@ public class TabDelegate extends AsyncTabCreator {
     @Override
     public void createNewStandaloneFrame(Intent intent) {
         assert intent != null;
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | ApiCompatibilityUtils.getActivityNewDocumentFlag());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         IntentHandler.startActivityForTrustedIntent(intent);
     }
 }
