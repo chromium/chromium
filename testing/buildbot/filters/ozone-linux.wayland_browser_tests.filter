@@ -3,6 +3,7 @@
 # Failed:
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/0
 -All/PopupBrowserTest.MoveClampedToCurrentDisplay/1
+-AutomationManagerAuraBrowserTest.EventFromAction
 -AutomationManagerAuraBrowserTest.TransientFocusChangesAreSuppressed
 -BrowserActionApiTest.BrowserActionOpenPopupOnPopup
 -BrowserViewTest.F6CyclesThroughCaptionBubbleToo

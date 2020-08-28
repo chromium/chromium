@@ -92,6 +92,13 @@ class AutomationEventWaiter : public ui::AXEventBundleSink {
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
+  std::unique_ptr<ui::AXEvent> WaitForEvent(ax::mojom::Event event_type) {
+    event_type_to_wait_for_ = event_type;
+    run_loop_->Run();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    return std::move(most_recent_event_);
+  }
+
   bool WasNodeIdFocused(int node_id) {
     for (size_t i = 0; i < focused_node_ids_.size(); i++)
       if (node_id == focused_node_ids_[i])
@@ -105,17 +112,35 @@ class AutomationEventWaiter : public ui::AXEventBundleSink {
                                    std::vector<ui::AXTreeUpdate> updates,
                                    const gfx::Point& mouse_location,
                                    std::vector<ui::AXEvent> events) override {
-    for (const ui::AXTreeUpdate& update : updates) {
-      int focused_node_id = update.tree_data.focus_id;
-      focused_node_ids_.push_back(focused_node_id);
-      if (focused_node_id == node_id_to_wait_for_)
+    if (node_id_to_wait_for_ != -1) {
+      for (const ui::AXTreeUpdate& update : updates) {
+        int focused_node_id = update.tree_data.focus_id;
+        focused_node_ids_.push_back(focused_node_id);
+        if (focused_node_id == node_id_to_wait_for_) {
+          node_id_to_wait_for_ = -1;
+          run_loop_->Quit();
+        }
+      }
+    }
+
+    if (event_type_to_wait_for_ == ax::mojom::Event::kNone)
+      return;
+
+    for (const ui::AXEvent& event : events) {
+      if (event.event_type == event_type_to_wait_for_) {
+        most_recent_event_ = std::make_unique<ui::AXEvent>(event);
+        event_type_to_wait_for_ = ax::mojom::Event::kNone;
         run_loop_->Quit();
+      }
     }
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  int node_id_to_wait_for_ = 0;
+  int node_id_to_wait_for_ = -1;
   std::vector<int> focused_node_ids_;
+
+  std::unique_ptr<ui::AXEvent> most_recent_event_;
+  ax::mojom::Event event_type_to_wait_for_ = ax::mojom::Event::kNone;
 
   DISALLOW_COPY_AND_ASSIGN(AutomationEventWaiter);
 };
@@ -304,4 +329,56 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, ScrollView) {
   tree->SerializeNode(scroll_view_wrapper, &node_data);
   EXPECT_EQ(50, node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollX));
   EXPECT_EQ(315, node_data.GetIntAttribute(ax::mojom::IntAttribute::kScrollY));
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
+  auto cache = std::make_unique<views::AXAuraObjCache>();
+  auto* cache_ptr = cache.get();
+  AutomationManagerAura* manager = AutomationManagerAura::GetInstance();
+  manager->set_ax_aura_obj_cache_for_testing(std::move(cache));
+  manager->Enable();
+
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  cache_ptr->set_focused_widget_for_testing(widget);
+
+  views::View* view1 = new views::View();
+  view1->GetViewAccessibility().OverrideName("view1");
+  view1->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  widget->GetRootView()->AddChildView(view1);
+  views::View* view2 = new views::View();
+  view2->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  view2->GetViewAccessibility().OverrideName("view2");
+  widget->GetRootView()->AddChildView(view2);
+  views::AXAuraObjWrapper* wrapper2 = cache_ptr->GetOrCreate(view2);
+
+  AutomationEventWaiter waiter;
+
+  // Focus view1, simulating the non-accessibility action, block until we get an
+  // accessibility event that shows this view is focused.
+  view1->RequestFocus();
+  auto event_from_views = waiter.WaitForEvent(ax::mojom::Event::kFocus);
+  ASSERT_NE(nullptr, event_from_views.get());
+  EXPECT_EQ(ax::mojom::EventFrom::kNone, event_from_views->event_from);
+
+  // Focus view2, simulating the accessibility action, block until we get an
+  // accessibility event that shows this view is focused.
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kFocus;
+  action_data.target_tree_id = manager->current_tree_.get()->tree_id_for_test();
+  action_data.target_node_id = wrapper2->GetUniqueId();
+
+  manager->PerformAction(action_data);
+  auto event_from_action = waiter.WaitForEvent(ax::mojom::Event::kFocus);
+  ASSERT_NE(nullptr, event_from_action.get());
+  EXPECT_EQ(ax::mojom::EventFrom::kAction, event_from_action->event_from);
+
+  cache_ptr->set_focused_widget_for_testing(nullptr);
+
+  AddFailureOnWidgetAccessibilityError(widget);
 }

@@ -36,6 +36,7 @@
 -AutofillProviderBrowserTest.FrameDetachedOnFormlessSubmission
 -AutofillProviderBrowserTestWithSkipFlagOn.InferredLabelChangeNotImpactFormComparing
 -AutomationApiTest.ForceLayout
+-AutomationManagerAuraBrowserTest.EventFromAction
 -AutoplayExtensionBrowserTest.AutoplayAllowedInIframe
 -BluetoothApiTest.*
 -BluetoothLowEnergyApiTest.*
