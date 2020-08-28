@@ -320,20 +320,6 @@ static_assert(
     sizeof(MaybeSpinLock<ThreadSafe>) == sizeof(MaybeSpinLock<NotThreadSafe>),
     "Sizes should be equal to enseure identical layout of PartitionRoot");
 
-// An "extent" is a span of consecutive superpages. We link to the partition's
-// next extent (if there is one) to the very start of a superpage's metadata
-// area.
-template <bool thread_safe>
-struct PartitionSuperPageExtentEntry {
-  PartitionRoot<thread_safe>* root;
-  char* super_page_base;
-  char* super_pages_end;
-  PartitionSuperPageExtentEntry<thread_safe>* next;
-};
-static_assert(
-    sizeof(PartitionSuperPageExtentEntry<ThreadSafe>) <= kPageMetadataSize,
-    "PartitionSuperPageExtentEntry must be able to fit in a metadata slot");
-
 // g_oom_handling_function is invoked when PartitionAlloc hits OutOfMemory.
 static OomFunction g_oom_handling_function = nullptr;
 

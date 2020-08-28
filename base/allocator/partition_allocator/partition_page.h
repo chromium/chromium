@@ -20,6 +20,19 @@
 namespace base {
 namespace internal {
 
+// An "extent" is a span of consecutive superpages. We link the partition's next
+// extent (if there is one) to the very start of a superpage's metadata area.
+template <bool thread_safe>
+struct PartitionSuperPageExtentEntry {
+  PartitionRoot<thread_safe>* root;
+  char* super_page_base;
+  char* super_pages_end;
+  PartitionSuperPageExtentEntry<thread_safe>* next;
+};
+static_assert(
+    sizeof(PartitionSuperPageExtentEntry<ThreadSafe>) <= kPageMetadataSize,
+    "PartitionSuperPageExtentEntry must be able to fit in a metadata slot");
+
 // PartitionPage::Free() defers unmapping a large page until the lock is
 // released. Callers of PartitionPage::Free() must invoke Run().
 // TODO(1061437): Reconsider once the new locking mechanism is implemented.
@@ -67,17 +80,27 @@ struct DeferredUnmap {
 // updated.
 template <bool thread_safe>
 struct PartitionPage {
-  PartitionFreelistEntry* freelist_head;
-  PartitionPage<thread_safe>* next_page;
-  PartitionBucket<thread_safe>* bucket;
-  // Deliberately signed, 0 for empty or decommitted page, -n for full pages:
-  int16_t num_allocated_slots;
-  uint16_t num_unprovisioned_slots;
-  uint16_t page_offset;
-  int16_t empty_cache_index;  // -1 if not in the empty cache.
+  union {
+    struct {
+      PartitionFreelistEntry* freelist_head;
+      PartitionPage<thread_safe>* next_page;
+      PartitionBucket<thread_safe>* bucket;
+      // Deliberately signed, 0 for empty or decommitted page, -n for full
+      // pages:
+      int16_t num_allocated_slots;
+      uint16_t num_unprovisioned_slots;
+      uint16_t page_offset;
+      int16_t empty_cache_index;  // -1 if not in the empty cache.
+    };
 
+    // sizeof(PartitionPage) must always be:
+    // - a power of 2 (for fast modulo operations)
+    // - below kPageMetadataSize
+    //
+    // This makes sure that this is respected no matter the architecture.
+    char optional_padding[kPageMetadataSize];
+  };
   // Public API
-
   // Note the matching Alloc() functions are in PartitionPage.
   // Callers must invoke DeferredUnmap::Run() after releasing the lock.
   BASE_EXPORT NOINLINE DeferredUnmap FreeSlowPath() WARN_UNUSED_RESULT;
@@ -146,7 +169,7 @@ struct PartitionPage {
   // namespace so the getter can be fully inlined.
   static PartitionPage sentinel_page_;
 };
-static_assert(sizeof(PartitionPage<ThreadSafe>) <= kPageMetadataSize,
+static_assert(sizeof(PartitionPage<ThreadSafe>) == kPageMetadataSize,
               "PartitionPage must be able to fit in a metadata slot");
 
 ALWAYS_INLINE char* PartitionSuperPageToMetadataArea(char* ptr) {

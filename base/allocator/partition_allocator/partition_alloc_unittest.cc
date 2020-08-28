@@ -857,13 +857,6 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   for (size_t offset = 0; offset < requested_size; ++offset) {
     EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
               offset);
-    // Testing the mismatched thread-safety variant here and below, because
-    // CheckedPtr2OrMTEImpl may call the wrong variant and relies on the result
-    // to be identical.
-    // TODO(bartekn): Remove when CheckedPtr2OrMTEImpl no longer calls
-    // mismatched vartiant.
-    EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-              offset);
   }
 #endif
   allocator.root()->Free(ptr);

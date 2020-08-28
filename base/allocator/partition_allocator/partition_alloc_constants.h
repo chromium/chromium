@@ -118,14 +118,18 @@ static const size_t kMaxSystemPagesPerSlotSpan =
 //     | Guard page (4 KiB, 32-bit only) |
 //     +---------------------------------+
 //
-// A direct-mapped page's metadata page has the following layout:
+// A direct-mapped page's metadata page has the following layout (on 64 bit
+// architectures. On 32 bit ones, the layout is identical, some sizes are
+// different due to smaller pointers.):
 //
-//     +---------------------------------+
-//     | SuperPageExtentEntry (32 B)     |
-//     | PartitionPage (32 B)            |
-//     | PartitionBucket (32 B)          |
-//     | PartitionDirectMapExtent (32 B) |
-//     +---------------------------------+
+//     +----------------------------------+
+//     | SuperPageExtentEntry (32 B)      |
+//     | PartitionPage (32 B)             |
+//     | PartitionBucket (40 B)           |
+//     | PartitionDirectMapExtent (32 B)  |
+//     +----------------------------------+
+//
+// See |PartitionDirectMapMetadata| for details.
 
 static const size_t kSuperPageShift = 21;  // 2 MiB
 static const size_t kSuperPageSize = 1 << kSuperPageShift;

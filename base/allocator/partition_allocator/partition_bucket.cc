@@ -78,40 +78,39 @@ ALWAYS_INLINE PartitionPage<thread_safe>* PartitionDirectMap(
   SetSystemPagesAccess(slot + size, kSystemPageSize, PageInaccessible);
 #endif
 
-  auto* extent = reinterpret_cast<PartitionSuperPageExtentEntry<thread_safe>*>(
+  auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
       PartitionSuperPageToMetadataArea(ptr));
-  extent->root = root;
+  metadata->extent.root = root;
   // The new structures are all located inside a fresh system page so they
   // will all be zeroed out. These DCHECKs are for documentation.
-  PA_DCHECK(!extent->super_page_base);
-  PA_DCHECK(!extent->super_pages_end);
-  PA_DCHECK(!extent->next);
-  PartitionPage<thread_safe>* page =
-      PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(slot);
-  auto* bucket = reinterpret_cast<PartitionBucket<thread_safe>*>(
-      reinterpret_cast<char*>(page) + (kPageMetadataSize * 2));
+  PA_DCHECK(!metadata->extent.super_page_base);
+  PA_DCHECK(!metadata->extent.super_pages_end);
+  PA_DCHECK(!metadata->extent.next);
+  PA_DCHECK(PartitionPage<thread_safe>::FromPointerNoAlignmentCheck(slot) ==
+            &metadata->page);
+
+  auto* page = &metadata->page;
   PA_DCHECK(!page->next_page);
   PA_DCHECK(!page->num_allocated_slots);
   PA_DCHECK(!page->num_unprovisioned_slots);
   PA_DCHECK(!page->page_offset);
   PA_DCHECK(!page->empty_cache_index);
-  page->bucket = bucket;
+  page->bucket = &metadata->bucket;
   page->freelist_head = reinterpret_cast<PartitionFreelistEntry*>(slot);
-  PartitionFreelistEntry* next_entry =
-      reinterpret_cast<PartitionFreelistEntry*>(slot);
+
+  auto* next_entry = reinterpret_cast<PartitionFreelistEntry*>(slot);
   next_entry->next = PartitionFreelistEntry::Encode(nullptr);
 
-  PA_DCHECK(!bucket->active_pages_head);
-  PA_DCHECK(!bucket->empty_pages_head);
-  PA_DCHECK(!bucket->decommitted_pages_head);
-  PA_DCHECK(!bucket->num_system_pages_per_slot_span);
-  PA_DCHECK(!bucket->num_full_pages);
-  bucket->slot_size = size;
+  PA_DCHECK(!metadata->bucket.active_pages_head);
+  PA_DCHECK(!metadata->bucket.empty_pages_head);
+  PA_DCHECK(!metadata->bucket.decommitted_pages_head);
+  PA_DCHECK(!metadata->bucket.num_system_pages_per_slot_span);
+  PA_DCHECK(!metadata->bucket.num_full_pages);
+  metadata->bucket.slot_size = size;
 
-  PartitionDirectMapExtent<thread_safe>* map_extent =
-      PartitionDirectMapExtent<thread_safe>::FromPage(page);
+  auto* map_extent = &metadata->direct_map_extent;
   map_extent->map_size = map_size - kPartitionPageSize - kSystemPageSize;
-  map_extent->bucket = bucket;
+  map_extent->bucket = &metadata->bucket;
 
   // Maintain the doubly-linked list of all direct mappings.
   map_extent->next_extent = root->direct_map_list;

@@ -24,13 +24,30 @@ struct PartitionDirectMapExtent {
       PartitionPage<thread_safe>* page);
 };
 
+// Metadata page for direct-mapped allocations.
+template <bool thread_safe>
+struct PartitionDirectMapMetadata {
+  union {
+    PartitionSuperPageExtentEntry<thread_safe> extent;
+    // Never used, but must have the same size as a real PartitionPage.
+    PartitionPage<thread_safe> first_invalid_page;
+  };
+  PartitionPage<thread_safe> page;
+  PartitionBucket<thread_safe> bucket;
+  PartitionDirectMapExtent<thread_safe> direct_map_extent;
+};
+
 template <bool thread_safe>
 ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>*
 PartitionDirectMapExtent<thread_safe>::FromPage(
     PartitionPage<thread_safe>* page) {
   PA_DCHECK(page->bucket->is_direct_mapped());
-  return reinterpret_cast<PartitionDirectMapExtent<thread_safe>*>(
-      reinterpret_cast<char*>(page) + 3 * kPageMetadataSize);
+  // The page passed here is always |page| in |PartitionDirectMapMetadata|
+  // above. To get the metadata structure, need to get the invalid page address.
+  auto* first_invalid_page = page - 1;
+  auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
+      first_invalid_page);
+  return &metadata->direct_map_extent;
 }
 
 }  // namespace internal
