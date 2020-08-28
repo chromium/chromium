@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -50,7 +51,17 @@ bool AppServiceProxyFactory::IsAppServiceAvailableForProfile(Profile* profile) {
 
 // static
 AppServiceProxy* AppServiceProxyFactory::GetForProfile(Profile* profile) {
-  DCHECK(IsAppServiceAvailableForProfile(profile));
+  // TODO(https://crbug.com/1122463): remove this and convert back to a DCHECK
+  // once we have audited and removed code paths that call here with a profile
+  // that doesn't have an App Service.
+  if (!IsAppServiceAvailableForProfile(profile)) {
+    DVLOG(1) << "Called AppServiceProxyFactory::GetForProfile() on a profile "
+                "which does not contain an AppServiceProxy. Please check "
+                "whether this is appropriate as you may be leaking information "
+                "out of this profile. Returning the AppServiceProxy attached "
+                "to the parent profile instead.";
+    base::debug::DumpWithoutCrashing();
+  }
 
   auto* proxy = static_cast<AppServiceProxy*>(
       AppServiceProxyFactory::GetInstance()->GetServiceForBrowserContext(
@@ -99,13 +110,16 @@ content::BrowserContext* AppServiceProxyFactory::GetBrowserContextToUse(
   }
 
   // We must have a proxy in guest mode to ensure default extension-based apps
-  // are served. Otherwise, don't create the app service for incognito profiles.
+  // are served.
   if (profile->IsGuestSession()) {
     return chrome::GetBrowserContextOwnInstanceInIncognito(context);
   }
 #endif  // OS_CHROMEOS
 
-  return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
+  // TODO(https://crbug.com/1122463): replace this with
+  // BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context) once
+  // all non-guest incognito accesses have been removed.
+  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool AppServiceProxyFactory::ServiceIsCreatedWithBrowserContext() const {
