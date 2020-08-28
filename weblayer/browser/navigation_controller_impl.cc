@@ -31,29 +31,6 @@ using base::android::ScopedJavaLocalRef;
 
 namespace weblayer {
 
-class NavigationControllerImpl::DelayDeletionHelper {
- public:
-  explicit DelayDeletionHelper(NavigationControllerImpl* controller)
-      : controller_(controller->weak_ptr_factory_.GetWeakPtr()) {
-    // This should never be called reentrantly.
-    DCHECK(!controller->should_delay_web_contents_deletion_);
-    controller->should_delay_web_contents_deletion_ = true;
-  }
-
-  DelayDeletionHelper(const DelayDeletionHelper&) = delete;
-  DelayDeletionHelper& operator=(const DelayDeletionHelper&) = delete;
-
-  ~DelayDeletionHelper() {
-    if (controller_)
-      controller_->should_delay_web_contents_deletion_ = false;
-  }
-
-  bool WasControllerDeleted() { return controller_.get() == nullptr; }
-
- private:
-  base::WeakPtr<NavigationControllerImpl> controller_;
-};
-
 // NavigationThrottle implementation responsible for delaying certain
 // operations and performing them when safe. This is necessary as content
 // does allow certain operations to be called at certain times. For example,
@@ -366,7 +343,6 @@ void NavigationControllerImpl::DidFinishNavigation(
   if (!navigation_handle->IsInMainFrame())
     return;
 
-  DelayDeletionHelper deletion_helper(this);
   DCHECK(navigation_map_.find(navigation_handle) != navigation_map_.end());
   auto* navigation = navigation_map_[navigation_handle].get();
   if (navigation_handle->GetNetErrorCode() == net::OK &&
@@ -378,15 +354,10 @@ void NavigationControllerImpl::DidFinishNavigation(
       Java_NavigationControllerImpl_navigationCompleted(
           AttachCurrentThread(), java_controller_,
           navigation->java_navigation());
-      if (deletion_helper.WasControllerDeleted())
-        return;
     }
 #endif
-    for (auto& observer : observers_) {
+    for (auto& observer : observers_)
       observer.NavigationCompleted(navigation);
-      if (deletion_helper.WasControllerDeleted())
-        return;
-    }
   } else {
 #if defined(OS_ANDROID)
     if (java_controller_) {
@@ -395,15 +366,10 @@ void NavigationControllerImpl::DidFinishNavigation(
       Java_NavigationControllerImpl_navigationFailed(
           AttachCurrentThread(), java_controller_,
           navigation->java_navigation());
-      if (deletion_helper.WasControllerDeleted())
-        return;
     }
 #endif
-    for (auto& observer : observers_) {
+    for (auto& observer : observers_)
       observer.NavigationFailed(navigation);
-      if (deletion_helper.WasControllerDeleted())
-        return;
-    }
   }
 
   // Note InsertVisualStateCallback currently does not take into account

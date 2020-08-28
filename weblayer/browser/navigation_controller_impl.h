@@ -73,13 +73,7 @@ class NavigationControllerImpl : public NavigationController,
   bool IsNavigationEntrySkippable(JNIEnv* env, int index);
 #endif
 
-  bool should_delay_web_contents_deletion() {
-    return should_delay_web_contents_deletion_;
-  }
-
  private:
-  class DelayDeletionHelper;
-
   class NavigationThrottleImpl;
 
   // Called from NavigationControllerImpl::WillRedirectRequest(). See
@@ -139,11 +133,6 @@ class NavigationControllerImpl : public NavigationController,
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_controller_;
 #endif
-
-  // Set to true while processing an observer/callback and it's unsafe to
-  // delete the WebContents. This is not used for all callbacks, just the
-  // ones that we need to allow deletion from (such as completed/failed).
-  bool should_delay_web_contents_deletion_ = false;
 
   base::WeakPtrFactory<NavigationControllerImpl> weak_ptr_factory_{this};
 

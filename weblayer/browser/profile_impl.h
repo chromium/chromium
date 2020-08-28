@@ -6,7 +6,6 @@
 #define WEBLAYER_BROWSER_PROFILE_IMPL_H_
 
 #include <set>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -24,7 +23,6 @@
 
 namespace content {
 class BrowserContext;
-class WebContents;
 }
 
 namespace weblayer {
@@ -65,11 +63,6 @@ class ProfileImpl : public Profile {
 
   static void AddProfileObserver(ProfileObserver* observer);
   static void RemoveProfileObserver(ProfileObserver* observer);
-
-  // Deletes |web_contents| after a delay. This is used if the owning Tab is
-  // deleted and it's not safe to delete the WebContents.
-  void DeleteWebContentsSoon(
-      std::unique_ptr<content::WebContents> web_contents);
 
   BrowserContextImpl* GetBrowserContext();
 
@@ -163,8 +156,6 @@ class ProfileImpl : public Profile {
   // Returns the number of Browsers with this profile.
   int GetNumberOfBrowsers();
 
-  void DeleteScheduleWebContents();
-
   ProfileInfo info_;
 
   std::unique_ptr<BrowserContextImpl> browser_context_;
@@ -186,10 +177,6 @@ class ProfileImpl : public Profile {
   // CancelableTaskTracker isn't applicable. Because of this, the
   // CancelableTaskTracker is owned by Profile.
   base::CancelableTaskTracker cancelable_task_tracker_;
-
-  std::vector<std::unique_ptr<content::WebContents>> web_contents_to_delete_;
-
-  base::WeakPtrFactory<ProfileImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfileImpl);
 };

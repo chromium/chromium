@@ -97,14 +97,6 @@ class BrowserImpl : public Browser {
   bool GetPasswordEchoEnabled();
   void SetWebPreferences(content::WebPreferences* prefs);
 
-#if defined(OS_ANDROID)
-  // On Android the Java Tab class owns the C++ Tab. DestroyTab() calls to the
-  // Java Tab class to initiate deletion. This function is called from the Java
-  // side, and must not call DestroyTab(), otherwise we get stuck in infinite
-  // recursion.
-  void DestroyTabFromJava(Tab* tab);
-#endif
-
   // Browser:
   void AddTab(Tab* tab) override;
   void DestroyTab(Tab* tab) override;
