@@ -663,8 +663,9 @@ TEST_F(WebEngineIntegrationTest, WebGLContextAbsentWithoutVulkanFeature) {
 #endif
 class MAYBE_VulkanWebEngineIntegrationTest : public WebEngineIntegrationTest {};
 
+// TODO(crbug.com/1104563): Flakily times-out.
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
-       WebGLContextPresentWithVulkanFeature) {
+       DISABLED_WebGLContextPresentWithVulkanFeature) {
   StartWebEngine();
 
   fuchsia::web::CreateContextParams create_params = DefaultContextParams();
@@ -703,7 +704,8 @@ void WebEngineIntegrationTest::RunCameraTest(bool grant_permission) {
   navigation_listener_->RunUntilTitleEquals("ended");
 }
 
-TEST_F(WebEngineIntegrationTest, CameraAccess_WithPermission) {
+// TODO(crbug.com/1104562): Flakily times-out.
+TEST_F(WebEngineIntegrationTest, DISABLED_CameraAccess_WithPermission) {
   StartWebEngine();
   RunCameraTest(/*grant_permission=*/true);
 }
