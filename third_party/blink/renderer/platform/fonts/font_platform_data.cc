@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "hb-ot.h"
 #include "hb.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/linux/web_sandbox_support.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -293,5 +295,47 @@ void FontPlatformData::SetupSkFont(SkFont* font,
   font->setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
 }
 #endif
+
+IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
+  DCHECK(typeface_);
+  int table_count = typeface_->countTables();
+
+  // If no tables are found, return 0, to make it clearer that no identifiable
+  // information was available.
+  if (!table_count)
+    return 0;
+
+  IdentifiableTokenBuilder builder;
+  builder.AddValue(table_count);
+
+  Vector<SkFontTableTag> all_table_tags(table_count);
+  int tags_copied = typeface_->getTableTags(all_table_tags.data());
+  DCHECK_EQ(tags_copied, table_count);
+
+  // The tags are probably already sorted, but let's make sure.
+  std::sort(all_table_tags.begin(), all_table_tags.end());
+  for (SkFontTableTag table_tag : all_table_tags) {
+    builder.AddValue(table_tag).AddValue(typeface_->getTableSize(table_tag));
+  }
+
+  // These tables should both be small enough to compute a digest quickly and
+  // varied enough to ensure that different fonts have distinct hashes.
+  constexpr SkFontTableTag kTablesToFullyDigest[] = {
+      SkSetFourByteTag('c', 'm', 'a', 'p'),
+      SkSetFourByteTag('h', 'e', 'a', 'd'),
+      SkSetFourByteTag('n', 'a', 'm', 'e'),
+  };
+  for (SkFontTableTag table_tag : kTablesToFullyDigest) {
+    base::span<const uint8_t> table_data_span;
+    sk_sp<SkData> table_data = typeface_->copyTableData(table_tag);
+    if (table_data) {
+      table_data_span =
+          base::span<const uint8_t>(table_data->bytes(), table_data->size());
+    }
+    builder.AddAtomic(table_data_span);
+  }
+
+  return builder.GetToken();  // hasher.GetHash();
+}
 
 }  // namespace blink

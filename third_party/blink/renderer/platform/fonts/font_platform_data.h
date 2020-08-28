@@ -33,6 +33,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/platform/web_font_render_style.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
@@ -133,6 +134,16 @@ class PLATFORM_EXPORT FontPlatformData {
   void SetupSkFont(SkFont*,
                    float device_scale_factor = 1,
                    const Font* = nullptr) const;
+
+  // Computes a digest from the typeface. The digest only depends on the
+  // underlying font itself, and does not vary by the style (size, weight,
+  // italics, etc). This is aimed at discovering the fingerprinting information
+  // a particular local font may provide websites.
+  //
+  // The digest algorithm is designed for fast computation, rather than to be
+  // robust against an attacker with control of local fonts looking to attack
+  // the fingerprinting algorithm.
+  IdentifiableToken ComputeTypefaceDigest() const;
 
  private:
 #if !defined(OS_WIN) && !defined(OS_MAC)

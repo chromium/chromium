@@ -9,6 +9,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace {
@@ -91,8 +92,10 @@ void FontMatchingMetrics::ReportFontLookupByUniqueOrFamilyName(
     return;
   }
   OnFontLookup();
-  uint64_t hash = GetHashForFontData(resulting_font_data);
   LocalFontLookupKey key(name, font_description.GetFontSelectionRequest());
+  if (font_lookups_.Contains(key))
+    return;
+  int64_t hash = GetHashForFontData(resulting_font_data);
   LocalFontLookupResult result{hash, check_type, is_loading_fallback};
   font_lookups_.insert(key, result);
 }
@@ -106,9 +109,11 @@ void FontMatchingMetrics::ReportFontLookupByFallbackCharacter(
     return;
   }
   OnFontLookup();
-  uint64_t hash = GetHashForFontData(resulting_font_data);
   LocalFontLookupKey key(fallback_character,
                          font_description.GetFontSelectionRequest());
+  if (font_lookups_.Contains(key))
+    return;
+  int64_t hash = GetHashForFontData(resulting_font_data);
   LocalFontLookupResult result{hash, check_type,
                                false /* is_loading_fallback */};
   font_lookups_.insert(key, result);
@@ -122,8 +127,10 @@ void FontMatchingMetrics::ReportLastResortFallbackFontLookup(
     return;
   }
   OnFontLookup();
-  uint64_t hash = GetHashForFontData(resulting_font_data);
   LocalFontLookupKey key(font_description.GetFontSelectionRequest());
+  if (font_lookups_.Contains(key))
+    return;
+  int64_t hash = GetHashForFontData(resulting_font_data);
   LocalFontLookupResult result{hash, check_type,
                                false /* is_loading_fallback */};
   font_lookups_.insert(key, result);
@@ -223,9 +230,11 @@ void FontMatchingMetrics::PublishAllMetrics() {
   PublishUkmMetrics();
 }
 
-uint64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
-  // TODO(alexmt) Implement when hash is available.
-  return font_data ? 1 : 0;
+int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
+  return font_data ? FontGlobalContext::Get()
+                         ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                         .ToUkmMetricValue()
+                   : 0;
 }
 
 }  // namespace blink

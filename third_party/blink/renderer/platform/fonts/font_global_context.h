@@ -5,10 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/lru_cache.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 struct hb_font_funcs_t;
 
@@ -55,6 +58,8 @@ class PLATFORM_EXPORT FontGlobalContext {
 
   static FontUniqueNameLookup* GetFontUniqueNameLookup();
 
+  IdentifiableToken GetOrComputeTypefaceDigest(const FontPlatformData& source);
+
   // Called by MemoryPressureListenerRegistry to clear memory.
   static void ClearMemory();
 
@@ -69,6 +74,7 @@ class PLATFORM_EXPORT FontGlobalContext {
   hb_font_funcs_t* harfbuzz_font_funcs_skia_advances_;
   hb_font_funcs_t* harfbuzz_font_funcs_harfbuzz_advances_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
+  WTF::LruCache<SkFontID, IdentifiableToken> typeface_digest_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(FontGlobalContext);
 };

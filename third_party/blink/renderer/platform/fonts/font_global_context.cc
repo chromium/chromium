@@ -9,6 +9,11 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
+// While the size of this cache should usually be small (up to tens), we protect
+// against the possibility of it growing quickly to thousands when animating
+// variable font parameters.
+static constexpr size_t kTypefaceDigestCacheMaxSize = 250;
+
 namespace blink {
 
 FontGlobalContext* FontGlobalContext::Get(CreateIfNeeded create_if_needed) {
@@ -22,7 +27,8 @@ FontGlobalContext* FontGlobalContext::Get(CreateIfNeeded create_if_needed) {
 
 FontGlobalContext::FontGlobalContext()
     : harfbuzz_font_funcs_skia_advances_(nullptr),
-      harfbuzz_font_funcs_harfbuzz_advances_(nullptr) {}
+      harfbuzz_font_funcs_harfbuzz_advances_(nullptr),
+      typeface_digest_cache_(kTypefaceDigestCacheMaxSize) {}
 
 FontGlobalContext::~FontGlobalContext() = default;
 
@@ -43,11 +49,30 @@ HarfBuzzFontCache* FontGlobalContext::GetHarfBuzzFontCache() {
   return global_context_harfbuzz_font_cache.get();
 }
 
+IdentifiableToken FontGlobalContext::GetOrComputeTypefaceDigest(
+    const FontPlatformData& source) {
+  SkTypeface* typeface = source.Typeface();
+  if (!typeface)
+    return 0;
+
+  SkFontID font_id = typeface->uniqueID();
+
+  IdentifiableToken* cached_value = typeface_digest_cache_.Get(font_id);
+  if (!cached_value) {
+    typeface_digest_cache_.Put(font_id, source.ComputeTypefaceDigest());
+    cached_value = typeface_digest_cache_.Get(font_id);
+  } else {
+    DCHECK(*cached_value == source.ComputeTypefaceDigest());
+  }
+  return *cached_value;
+}
+
 void FontGlobalContext::ClearMemory() {
   if (!Get(kDoNotCreate))
     return;
 
   GetFontCache().Invalidate();
+  Get()->typeface_digest_cache_.Clear();
 }
 
 }  // namespace blink

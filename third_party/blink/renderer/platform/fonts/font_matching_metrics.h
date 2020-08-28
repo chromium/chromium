@@ -89,7 +89,7 @@ enum class LocalFontLookupType {
 };
 
 struct LocalFontLookupResult {
-  uint64_t hash;  // 0 if font was not found
+  int64_t hash;  // 0 if font was not found
   LocalFontLookupType check_type;
   bool is_loading_fallback;
 };
@@ -238,7 +238,7 @@ class PLATFORM_EXPORT FontMatchingMetrics {
 
   // Get a hash that uniquely represents the font data. Returns 0 if |font_data|
   // is nullptr.
-  uint64_t GetHashForFontData(SimpleFontData* font_data);
+  int64_t GetHashForFontData(SimpleFontData* font_data);
 
   // Font family names successfully matched.
   HashSet<AtomicString> successful_font_families_;
