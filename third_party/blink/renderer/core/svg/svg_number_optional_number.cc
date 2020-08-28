@@ -99,7 +99,7 @@ void SVGNumberOptionalNumber::Add(SVGPropertyBase* other,
 }
 
 void SVGNumberOptionalNumber::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from,
@@ -112,11 +112,11 @@ void SVGNumberOptionalNumber::CalculateAnimatedValue(
       To<SVGNumberOptionalNumber>(to_at_end_of_duration);
 
   first_number_->CalculateAnimatedValue(
-      animation_element, percentage, repeat_count, from_number->FirstNumber(),
+      parameters, percentage, repeat_count, from_number->FirstNumber(),
       to_number->FirstNumber(), to_at_end_of_duration_number->FirstNumber(),
       context_element);
   second_number_->CalculateAnimatedValue(
-      animation_element, percentage, repeat_count, from_number->SecondNumber(),
+      parameters, percentage, repeat_count, from_number->SecondNumber(),
       to_number->SecondNumber(), to_at_end_of_duration_number->SecondNumber(),
       context_element);
 }

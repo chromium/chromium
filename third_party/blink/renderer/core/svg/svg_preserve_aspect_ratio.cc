@@ -439,7 +439,7 @@ void SVGPreserveAspectRatio::Add(SVGPropertyBase* other, SVGElement*) {
 }
 
 void SVGPreserveAspectRatio::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters&,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,

@@ -51,7 +51,7 @@ class SVGBoolean final : public SVGPropertyHelper<SVGBoolean> {
   SVGParsingError SetValueAsString(const String&);
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
+  void CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,

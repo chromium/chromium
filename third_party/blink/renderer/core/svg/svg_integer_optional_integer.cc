@@ -97,7 +97,7 @@ void SVGIntegerOptionalInteger::Add(SVGPropertyBase* other,
 }
 
 void SVGIntegerOptionalInteger::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from,
@@ -110,12 +110,12 @@ void SVGIntegerOptionalInteger::CalculateAnimatedValue(
       To<SVGIntegerOptionalInteger>(to_at_end_of_duration);
 
   first_integer_->CalculateAnimatedValue(
-      animation_element, percentage, repeat_count, from_integer->FirstInteger(),
+      parameters, percentage, repeat_count, from_integer->FirstInteger(),
       to_integer->FirstInteger(), to_at_end_of_duration_integer->FirstInteger(),
       context_element);
   second_integer_->CalculateAnimatedValue(
-      animation_element, percentage, repeat_count,
-      from_integer->SecondInteger(), to_integer->SecondInteger(),
+      parameters, percentage, repeat_count, from_integer->SecondInteger(),
+      to_integer->SecondInteger(),
       to_at_end_of_duration_integer->SecondInteger(), context_element);
 }
 

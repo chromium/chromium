@@ -20,7 +20,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -102,7 +102,7 @@ SVGLength* SVGLengthList::CreatePaddingItem() const {
 }
 
 void SVGLengthList::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,
@@ -115,17 +115,14 @@ void SVGLengthList::CalculateAnimatedValue(
       To<SVGLengthList>(to_at_end_of_duration_value);
 
   SVGLengthContext length_context(context_element);
-  DCHECK_EQ(mode_, SVGLength::LengthModeForAnimatedLengthAttribute(
-                       animation_element.AttributeName()));
 
   uint32_t from_length_list_size = from_list->length();
   uint32_t to_length_list_size = to_list->length();
   uint32_t to_at_end_of_duration_list_size =
       to_at_end_of_duration_list->length();
 
-  const bool is_to_animation =
-      animation_element.GetAnimationMode() == kToAnimation;
-  if (!AdjustFromToListValues(from_list, to_list, percentage, is_to_animation))
+  if (!AdjustFromToListValues(from_list, to_list, percentage,
+                              parameters.is_to_animation))
     return;
 
   for (uint32_t i = 0; i < to_length_list_size; ++i) {
@@ -144,9 +141,8 @@ void SVGLengthList::CalculateAnimatedValue(
             ? to_at_end_of_duration_list->at(i)->Value(length_context)
             : 0;
 
-    animation_element.AnimateAdditiveNumber(
-        percentage, repeat_count, effective_from, effective_to,
-        effective_to_at_end, animated_number);
+    AnimateAdditiveNumber(parameters, percentage, repeat_count, effective_from,
+                          effective_to, effective_to_at_end, animated_number);
     // |animated_number| is in user units.
     CSSPrimitiveValue::UnitType unit_type =
         length_for_unit_type->IsCalculated()

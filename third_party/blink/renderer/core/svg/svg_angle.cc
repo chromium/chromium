@@ -21,7 +21,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_angle.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -364,7 +364,7 @@ void SVGAngle::Assign(const SVGAngle& other) {
 }
 
 void SVGAngle::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from,
@@ -382,9 +382,10 @@ void SVGAngle::CalculateAnimatedValue(
   }
 
   float animated_value = Value();
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_angle->Value(), to_angle->Value(),
-      To<SVGAngle>(to_at_end_of_duration)->Value(), animated_value);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count,
+                        from_angle->Value(), to_angle->Value(),
+                        To<SVGAngle>(to_at_end_of_duration)->Value(),
+                        animated_value);
   OrientType()->SetEnumValue(kSVGMarkerOrientAngle);
   SetValue(animated_value);
 }

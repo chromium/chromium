@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_number.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -79,7 +79,7 @@ void SVGNumber::Add(SVGPropertyBase* other, SVGElement*) {
 }
 
 void SVGNumber::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from,
@@ -90,9 +90,9 @@ void SVGNumber::CalculateAnimatedValue(
   auto* to_number = To<SVGNumber>(to);
   auto* to_at_end_of_duration_number = To<SVGNumber>(to_at_end_of_duration);
 
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_number->Value(), to_number->Value(),
-      to_at_end_of_duration_number->Value(), value_);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count,
+                        from_number->Value(), to_number->Value(),
+                        to_at_end_of_duration_number->Value(), value_);
 }
 
 float SVGNumber::CalculateDistance(SVGPropertyBase* other, SVGElement*) {

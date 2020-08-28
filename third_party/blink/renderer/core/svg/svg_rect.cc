@@ -21,7 +21,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_rect.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
@@ -91,7 +91,7 @@ void SVGRect::Add(SVGPropertyBase* other, SVGElement*) {
 }
 
 void SVGRect::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,
@@ -106,18 +106,18 @@ void SVGRect::CalculateAnimatedValue(
   float animated_y = Y();
   float animated_width = Width();
   float animated_height = Height();
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_rect->X(), to_rect->X(),
-      to_at_end_of_duration_rect->X(), animated_x);
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_rect->Y(), to_rect->Y(),
-      to_at_end_of_duration_rect->Y(), animated_y);
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_rect->Width(), to_rect->Width(),
-      to_at_end_of_duration_rect->Width(), animated_width);
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_rect->Height(), to_rect->Height(),
-      to_at_end_of_duration_rect->Height(), animated_height);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count, from_rect->X(),
+                        to_rect->X(), to_at_end_of_duration_rect->X(),
+                        animated_x);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count, from_rect->Y(),
+                        to_rect->Y(), to_at_end_of_duration_rect->Y(),
+                        animated_y);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count,
+                        from_rect->Width(), to_rect->Width(),
+                        to_at_end_of_duration_rect->Width(), animated_width);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count,
+                        from_rect->Height(), to_rect->Height(),
+                        to_at_end_of_duration_rect->Height(), animated_height);
 
   value_ = FloatRect(animated_x, animated_y, animated_width, animated_height);
 }

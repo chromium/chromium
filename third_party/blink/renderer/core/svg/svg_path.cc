@@ -26,7 +26,7 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_path_blender.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
@@ -124,15 +124,13 @@ void SVGPath::Add(SVGPropertyBase* other, SVGElement*) {
 }
 
 void SVGPath::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,
     SVGPropertyBase* to_value,
     SVGPropertyBase* to_at_end_of_duration_value,
     SVGElement*) {
-  bool is_to_animation = animation_element.GetAnimationMode() == kToAnimation;
-
   const auto& to = To<SVGPath>(*to_value);
   const SVGPathByteStream& to_stream = to.ByteStream();
 
@@ -144,7 +142,7 @@ void SVGPath::CalculateAnimatedValue(
   const SVGPathByteStream* from_stream = &from.ByteStream();
 
   std::unique_ptr<SVGPathByteStream> copy;
-  if (is_to_animation) {
+  if (parameters.is_to_animation) {
     copy = ByteStream().Clone();
     from_stream = copy.get();
   }
@@ -153,7 +151,7 @@ void SVGPath::CalculateAnimatedValue(
   // list length, fallback to a discrete animation.
   if (from_stream->size() != to_stream.size() && from_stream->size()) {
     if (percentage < 0.5) {
-      if (!is_to_animation) {
+      if (!parameters.is_to_animation) {
         path_value_ = from.PathValue();
         return;
       }
@@ -166,15 +164,15 @@ void SVGPath::CalculateAnimatedValue(
   std::unique_ptr<SVGPathByteStream> new_stream =
       BlendPathByteStreams(*from_stream, to_stream, percentage);
 
-  if (!is_to_animation) {
+  if (!parameters.is_to_animation) {
     // Handle additive='sum'.
-    if (animation_element.IsAdditive()) {
+    if (parameters.is_additive) {
       new_stream =
           ConditionallyAddPathByteStreams(std::move(new_stream), ByteStream());
     }
 
     // Handle accumulate='sum'.
-    if (repeat_count && animation_element.IsAccumulated()) {
+    if (repeat_count && parameters.is_cumulative) {
       new_stream = ConditionallyAddPathByteStreams(
           std::move(new_stream),
           To<SVGPath>(to_at_end_of_duration_value)->ByteStream(), repeat_count);

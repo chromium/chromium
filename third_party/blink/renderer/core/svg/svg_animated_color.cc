@@ -22,8 +22,9 @@
 #include "third_party/blink/renderer/core/css/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/color_distance.h"
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 
 namespace blink {
 
@@ -75,7 +76,7 @@ void SVGColorProperty::Add(SVGPropertyBase* other,
 }
 
 void SVGColorProperty::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,
@@ -98,24 +99,24 @@ void SVGColorProperty::CalculateAnimatedValue(
   Color animated_color = style_color_.Resolve(fallback_color, color_scheme);
 
   float animated_red = animated_color.Red();
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_color.Red(), to_color.Red(),
-      to_at_end_of_duration_color.Red(), animated_red);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count, from_color.Red(),
+                        to_color.Red(), to_at_end_of_duration_color.Red(),
+                        animated_red);
 
   float animated_green = animated_color.Green();
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_color.Green(), to_color.Green(),
-      to_at_end_of_duration_color.Green(), animated_green);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count,
+                        from_color.Green(), to_color.Green(),
+                        to_at_end_of_duration_color.Green(), animated_green);
 
   float animated_blue = animated_color.Blue();
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_color.Blue(), to_color.Blue(),
-      to_at_end_of_duration_color.Blue(), animated_blue);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count, from_color.Blue(),
+                        to_color.Blue(), to_at_end_of_duration_color.Blue(),
+                        animated_blue);
 
   float animated_alpha = animated_color.Alpha();
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_color.Alpha(), to_color.Alpha(),
-      to_at_end_of_duration_color.Alpha(), animated_alpha);
+  AnimateAdditiveNumber(parameters, percentage, repeat_count,
+                        from_color.Alpha(), to_color.Alpha(),
+                        to_at_end_of_duration_color.Alpha(), animated_alpha);
 
   style_color_ =
       StyleColor(MakeRGBA(roundf(animated_red), roundf(animated_green),

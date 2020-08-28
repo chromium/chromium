@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_animated_property.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_color.h"
@@ -362,9 +363,6 @@ void SVGAnimateElement::CalculateAnimatedValue(
   if (GetCalcMode() == kCalcModeDiscrete)
     percentage = percentage < 0.5 ? 0 : 1;
 
-  // Target element might have changed.
-  SVGElement* target_element = targetElement();
-
   // Values-animation accumulates using the last values entry corresponding to
   // the end of duration time.
   SVGPropertyBase* animated_value = result_animation_element->animated_value_;
@@ -388,9 +386,10 @@ void SVGAnimateElement::CalculateAnimatedValue(
     return;
   }
 
+  SMILAnimationEffectParameters parameters = ComputeEffectParameters();
   animated_value->CalculateAnimatedValue(
-      *this, percentage, repeat_count, from_value, to_value,
-      to_at_end_of_duration_value, target_element);
+      parameters, percentage, repeat_count, from_value, to_value,
+      to_at_end_of_duration_value, targetElement());
 }
 
 bool SVGAnimateElement::CalculateToAtEndOfDurationValue(

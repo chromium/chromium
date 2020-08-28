@@ -111,13 +111,14 @@ void SVGStringListBase::Add(SVGPropertyBase* other,
   NOTREACHED();
 }
 
-void SVGStringListBase::CalculateAnimatedValue(const SVGAnimateElement&,
-                                               float,
-                                               unsigned,
-                                               SVGPropertyBase*,
-                                               SVGPropertyBase*,
-                                               SVGPropertyBase*,
-                                               SVGElement*) {
+void SVGStringListBase::CalculateAnimatedValue(
+    const SMILAnimationEffectParameters&,
+    float,
+    unsigned,
+    SVGPropertyBase*,
+    SVGPropertyBase*,
+    SVGPropertyBase*,
+    SVGElement*) {
   // SVGStringList is never animated.
   NOTREACHED();
 }

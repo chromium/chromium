@@ -58,7 +58,7 @@ class SVGString final : public SVGPropertyBase {
   }
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
+  void CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,

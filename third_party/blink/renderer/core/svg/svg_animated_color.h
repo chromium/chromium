@@ -48,7 +48,7 @@ class SVGColorProperty final : public SVGPropertyBase {
   String ValueAsString() const override;
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
+  void CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,

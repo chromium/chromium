@@ -25,14 +25,13 @@ void SVGString::Add(SVGPropertyBase*, SVGElement*) {
   NOTREACHED();
 }
 
-void SVGString::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
-    float percentage,
-    unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase*,
-    SVGElement*) {
+void SVGString::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
+                                       float percentage,
+                                       unsigned repeat_count,
+                                       SVGPropertyBase* from,
+                                       SVGPropertyBase* to,
+                                       SVGPropertyBase*,
+                                       SVGElement*) {
   NOTREACHED();
 }
 

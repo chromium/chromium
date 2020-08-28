@@ -9,6 +9,7 @@ blink_core_sources("svg") {
     "animation/element_smil_animations.cc",
     "animation/element_smil_animations.h",
     "animation/priority_queue.h",
+    "animation/smil_animation_effect_parameters.h",
     "animation/smil_animation_sandwich.cc",
     "animation/smil_animation_sandwich.h",
     "animation/smil_repeat_count.h",

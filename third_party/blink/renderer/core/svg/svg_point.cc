@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -101,7 +100,7 @@ void SVGPoint::Add(SVGPropertyBase* other, SVGElement*) {
 }
 
 void SVGPoint::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters&,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,

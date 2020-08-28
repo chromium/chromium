@@ -51,6 +51,8 @@ enum CalcMode {
   kCalcModeSpline
 };
 
+struct SMILAnimationEffectParameters;
+
 class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -82,28 +84,10 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   bool OverwritesUnderlyingAnimationValue() const;
   void ApplyAnimation(SVGAnimationElement* result_element);
 
-  void AnimateAdditiveNumber(float percentage,
-                             unsigned repeat_count,
-                             float from_number,
-                             float to_number,
-                             float to_at_end_of_duration_number,
-                             float& animated_number) const {
-    float number;
-    if (GetCalcMode() == kCalcModeDiscrete)
-      number = percentage < 0.5 ? from_number : to_number;
-    else
-      number = (to_number - from_number) * percentage + from_number;
-    if (GetAnimationMode() != kToAnimation) {
-      if (repeat_count && IsAccumulated())
-        number += to_at_end_of_duration_number * repeat_count;
-      if (IsAdditive())
-        number += animated_number;
-    }
-    animated_number = number;
-  }
-
  protected:
   SVGAnimationElement(const QualifiedName&, Document&);
+
+  SMILAnimationEffectParameters ComputeEffectParameters() const;
 
   void ParseAttribute(const AttributeModificationParams&) override;
 

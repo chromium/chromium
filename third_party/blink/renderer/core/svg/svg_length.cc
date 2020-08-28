@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -319,7 +319,7 @@ void SVGLength::Add(SVGPropertyBase* other, SVGElement* context_element) {
 }
 
 void SVGLength::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,
@@ -333,13 +333,10 @@ void SVGLength::CalculateAnimatedValue(
 
   SVGLengthContext length_context(context_element);
   float animated_number = Value(length_context);
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_length->Value(length_context),
+  AnimateAdditiveNumber(
+      parameters, percentage, repeat_count, from_length->Value(length_context),
       to_length->Value(length_context),
       to_at_end_of_duration_length->Value(length_context), animated_number);
-
-  DCHECK_EQ(UnitMode(), LengthModeForAnimatedLengthAttribute(
-                            animation_element.AttributeName()));
 
   // TODO(shanmuga.m): Construct a calc() expression if the units fall in
   // different categories.

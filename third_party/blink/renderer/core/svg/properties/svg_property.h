@@ -39,7 +39,7 @@
 namespace blink {
 
 class SVGElement;
-class SVGAnimateElement;
+struct SMILAnimationEffectParameters;
 
 class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
  public:
@@ -65,7 +65,7 @@ class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
   // WebAnimations transition.
   virtual void Add(SVGPropertyBase*, SVGElement*) = 0;
   virtual void CalculateAnimatedValue(
-      const SVGAnimateElement&,
+      const SMILAnimationEffectParameters&,
       float percentage,
       unsigned repeat_count,
       SVGPropertyBase* from,

@@ -52,14 +52,13 @@ void SVGBoolean::Add(SVGPropertyBase*, SVGElement*) {
   NOTREACHED();
 }
 
-void SVGBoolean::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
-    float percentage,
-    unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase*,
-    SVGElement*) {
+void SVGBoolean::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
+                                        float percentage,
+                                        unsigned repeat_count,
+                                        SVGPropertyBase* from,
+                                        SVGPropertyBase* to,
+                                        SVGPropertyBase*,
+                                        SVGElement*) {
   NOTREACHED();
 }
 

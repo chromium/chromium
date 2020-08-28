@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_mpath_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
@@ -206,29 +207,32 @@ bool SVGAnimateMotionElement::CalculateFromAndByValues(
 void SVGAnimateMotionElement::CalculateAnimatedValue(float percentage,
                                                      unsigned repeat_count,
                                                      SVGSMILElement*) const {
+  SMILAnimationEffectParameters parameters = ComputeEffectParameters();
+
   SVGElement* target_element = targetElement();
   DCHECK(target_element);
   AffineTransform* transform = target_element->AnimateMotionTransform();
   DCHECK(transform);
 
-  if (!IsAdditive())
+  if (!parameters.is_additive)
     transform->MakeIdentity();
 
   if (GetAnimationMode() != kPathAnimation) {
     FloatPoint to_point_at_end_of_duration = to_point_;
-    if (GetAnimationMode() != kToAnimation) {
-      if (repeat_count && IsAccumulated() && has_to_point_at_end_of_duration_) {
+    if (!parameters.is_to_animation) {
+      if (repeat_count && parameters.is_cumulative &&
+          has_to_point_at_end_of_duration_) {
         to_point_at_end_of_duration = to_point_at_end_of_duration_;
       }
     }
 
     float animated_x = 0;
-    AnimateAdditiveNumber(percentage, repeat_count, from_point_.X(),
+    AnimateAdditiveNumber(parameters, percentage, repeat_count, from_point_.X(),
                           to_point_.X(), to_point_at_end_of_duration.X(),
                           animated_x);
 
     float animated_y = 0;
-    AnimateAdditiveNumber(percentage, repeat_count, from_point_.Y(),
+    AnimateAdditiveNumber(parameters, percentage, repeat_count, from_point_.Y(),
                           to_point_.Y(), to_point_at_end_of_duration.Y(),
                           animated_y);
 
@@ -244,7 +248,7 @@ void SVGAnimateMotionElement::CalculateAnimatedValue(float percentage,
   animation_path_.PointAndNormalAtLength(position_on_path, position, angle);
 
   // Handle accumulate="sum".
-  if (repeat_count && IsAccumulated()) {
+  if (repeat_count && parameters.is_cumulative) {
     FloatPoint position_at_end_of_duration =
         animation_path_.PointAtLength(animation_path_.length());
     position.Move(position_at_end_of_duration.X() * repeat_count,
