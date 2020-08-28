@@ -141600,6 +141600,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.AvatarLoadStatus" enum="ProfileAvatarLoadStatus"
     expires_after="M77">
+  <obsolete>
+    No longer recorded as of M87.
+  </obsolete>
   <owner>chengx@chromium.org</owner>
   <summary>Load status of an avatar for decorating the Windows taskbar</summary>
 </histogram>

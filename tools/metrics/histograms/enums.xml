@@ -58360,6 +58360,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ProfileAvatarLoadStatus">
+  <obsolete>
+    Deprecated. Code was deleted in M87.
+  </obsolete>
   <int value="0" label="Loaded"/>
   <int value="1" label="Loading"/>
   <int value="2" label="Missing"/>
