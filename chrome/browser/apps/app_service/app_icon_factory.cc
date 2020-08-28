@@ -543,7 +543,7 @@ void IconLoadingPipeline::LoadWebAppIcon(
   icon_scale_for_compressed_response_ = icon_scale_;
 
   base::Optional<IconPurpose> icon_purpose_to_read =
-      GetIconPurpose(web_app_id, icon_manager, icon_size_in_px_);
+      GetIconPurpose(web_app_id, icon_manager, size_hint_in_dip_);
 
   if (!icon_purpose_to_read.has_value()) {
     MaybeLoadFallbackOrCompleteEmpty();
