@@ -111,8 +111,7 @@
               "compositing/filters"
               ],
     "args": ["--stable-release-mode",
-             "--disable-auto-wpt-origin-isolation",
-             "--enable-blink-features=CompositingOptimizations"]
+             "--disable-auto-wpt-origin-isolation"]
   },
   {
     "prefix": "feature-policy-permissions",

@@ -604,6 +604,7 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // TODO(rodneyding): Investigate more on proper treatments of
   // these features.
   if (enable_experimental_web_platform_features) {
+    WebRuntimeFeatures::EnableCompositingOptimizations(true);
     WebRuntimeFeatures::EnableNetInfoDownlinkMax(true);
     WebRuntimeFeatures::EnableSignedExchangePrefetchCacheForNavigations(true);
     WebRuntimeFeatures::EnableSignedExchangeSubresourcePrefetch(true);
