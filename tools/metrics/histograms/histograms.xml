@@ -157001,6 +157001,28 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="Search.ContextualSearch.TranslationsOptInIPHShown"
+    enum="BooleanPreviouslyShown" expires_after="M89">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <summary>
+    Records whether an IPH promoting the Opt-in for the Translations experiment
+    has ever been shown for the current user. Recorded when the Overlay Panel is
+    closed. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="Search.ContextualSearch.TranslationsOptInIPHWorked"
+    enum="BooleanOptedIn" expires_after="M89">
+  <owner>donnd@chromium.org</owner>
+  <owner>contextual-search-eng@google.com</owner>
+  <summary>
+    Records whether the user actually did Opt-in right after seeing the IPH for
+    the Translations experiment. Recorded when the Overlay Panel is closed.
+    Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Search.ContextualSearch.UnifiedConsent.PreviouslyUndecided"
     enum="Boolean" expires_after="2019-01-30">
   <owner>donnd@chromium.org</owner>

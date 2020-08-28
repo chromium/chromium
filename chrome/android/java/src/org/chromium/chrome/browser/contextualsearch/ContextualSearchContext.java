@@ -341,6 +341,7 @@ public abstract class ContextualSearchContext {
      * @return An ISO 639 language code string, or an empty string if the language cannot be
      *         reliably determined.
      */
+    @NonNull
     String getDetectedLanguage() {
         assert mSurroundingText != null;
         if (mDetectedLanguage == null) {

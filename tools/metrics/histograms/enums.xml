@@ -8032,6 +8032,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Present"/>
 </enum>
 
+<enum name="BooleanPreviouslyShown">
+  <int value="0" label="Never shown"/>
+  <int value="1" label="Previously shown"/>
+</enum>
+
 <enum name="BooleanPreviouslyVisited">
   <int value="0" label="Was not visited before"/>
   <int value="1" label="Was visited before"/>

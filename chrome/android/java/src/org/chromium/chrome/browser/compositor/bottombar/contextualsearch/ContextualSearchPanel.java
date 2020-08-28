@@ -880,6 +880,7 @@ public class ContextualSearchPanel extends OverlayPanel {
                         getOverlayPanelContent().showContent();
                         expandPanel(StateChangeReason.OPTIN);
                     }
+                    mManagementDelegate.onPromoOptIn();
                 }
 
                 @Override

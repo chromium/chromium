@@ -122,6 +122,12 @@ public final class EventConstants {
             "contextual_search_tapped_but_should_longpress";
 
     /**
+     * Contextual Search user fully enabled access to page content through the opt-in.
+     */
+    public static final String CONTEXTUAL_SEARCH_ENABLED_OPT_IN =
+            "contextual_search_enabled_opt_in";
+
+    /**
      * The partner homepage was pressed.
      */
     public static final String PARTNER_HOME_PAGE_BUTTON_PRESSED =
