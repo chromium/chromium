@@ -146,9 +146,11 @@ void ExecuteWebTask(Profile* profile,
   // launched (ie. default handler to open a download from its
   // notification) from Incognito mode. Use the base profile in these
   // cases (see crbug.com/1111695).
-  if (profile->IsOffTheRecord()) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     profile = profile->GetOriginalProfile();
   }
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
 
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
