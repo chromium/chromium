@@ -47,7 +47,8 @@ class _Generator(object):
     )
     for feature in self._feature_defs:
       c.Append('features_["%s"] = %s;'
-                       % (feature.name, cpp_util.ConstantName(feature.name)))
+                       % (feature.name,
+                          cpp_util.FeatureNameToConstantName(feature.name)))
     (c.Eblock()
       .Append('}')
       .Append()
@@ -62,7 +63,7 @@ class _Generator(object):
     )
     for feature in self._feature_defs:
       c.Append('case %s: return "%s";' %
-          (cpp_util.ConstantName(feature.name), feature.name))
+          (cpp_util.FeatureNameToConstantName(feature.name), feature.name))
     (c.Append('case kUnknown: break;')
       .Append('case kEnumBoundary: break;')
       .Eblock()

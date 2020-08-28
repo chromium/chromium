@@ -126,8 +126,8 @@ def CloseNamespace(cpp_namespace):
   return c
 
 
-# TODO(karandeepb): Rename to FeatureNameToConstantName.
-def ConstantName(feature_name):
+def FeatureNameToConstantName(feature_name):
+  # type: (str) -> str
   """Returns a kName for a feature's name.
   """
   return ('k' + ''.join(word[0].upper() + word[1:]

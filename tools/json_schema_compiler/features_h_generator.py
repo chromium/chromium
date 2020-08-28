@@ -93,7 +93,7 @@ class _Generator(object):
       .Append('kUnknown,')
     )
     for feature in self._feature_defs:
-      c.Append('%s,' % cpp_util.ConstantName(feature.name))
+      c.Append('%s,' % cpp_util.FeatureNameToConstantName(feature.name))
     c.Append('kEnumBoundary')
 
     return c
