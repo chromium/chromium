@@ -53,10 +53,6 @@ found in the LICENSE file. -->
         color: var(--oobe-text-color);
         line-height: 20px;
       }
-
-      .next-button {
-        float: right;
-      }
     </style>
     <oobe-dialog id="userCreationDialog" role="dialog" has-buttons
         title-key="userCreationTitle" subtitle-key="userCreationSubtitle"
@@ -97,11 +93,12 @@ found in the LICENSE file. -->
         </cr-radio-group>
         </div>
       </div>
-      <div slot="bottom-buttons">
+      <div slot="bottom-buttons" class="layout horizontal">
         <oobe-back-button id="backButton" on-tap="onBackClicked_"
             hidden="[[!isBackButtonVisible_]]">
         </oobe-back-button>
-        <oobe-next-button id="nextButton" class="next-button focus-on-show"
+        <div class="flex"></div>
+        <oobe-next-button id="nextButton" class="focus-on-show"
             on-tap="onNextClicked_">
         </oobe-next-button>
       </div>
