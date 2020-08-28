@@ -1459,7 +1459,10 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // This could be run as late as WM_QUERYENDSESSION for system update reboots,
   // but should run on startup if extended to handle crashes/hangs/patches.
   // Also, better to run once here than once for each HWND's WM_QUERYENDSESSION.
-  ChromeBrowserMainPartsWin::RegisterApplicationRestart(parsed_command_line());
+  if (!parsed_command_line().HasSwitch(switches::kBrowserTest)) {
+    ChromeBrowserMainPartsWin::RegisterApplicationRestart(
+        parsed_command_line());
+  }
 
   // Verify that the profile is not on a network share and if so prepare to show
   // notification to the user.
