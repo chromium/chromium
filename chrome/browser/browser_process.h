@@ -256,7 +256,10 @@ class BrowserProcess {
 
   virtual network_time::NetworkTimeTracker* network_time_tracker() = 0;
 
+#if !defined(OS_ANDROID)
+  // Avoid using this. Prefer using GCMProfileServiceFactory.
   virtual gcm::GCMDriver* gcm_driver() = 0;
+#endif
 
   // Returns the tab manager. On non-supported platforms, this returns null.
   // TODO(sebmarchand): Update callers to

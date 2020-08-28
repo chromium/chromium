@@ -26,6 +26,8 @@ extern const char kGCMScope[];
 // Encapsulates Instance ID functionalities that need to be implemented for
 // different platforms. One instance is created per application. Life of
 // Instance ID is managed by the InstanceIDDriver.
+//
+// Create instances of this class by calling |InstanceIDDriver::GetInstanceID|.
 class InstanceID {
  public:
   // Used in UMA. Can add enum values, but never renumber or delete and reuse.
@@ -89,14 +91,20 @@ class InstanceID {
   // Returns the Instance ID.
   virtual void GetID(GetIDCallback callback) = 0;
 
-  // Returns the time when the InstanceID has been generated.
+  // Returns the time when the Instance ID has been generated.
   virtual void GetCreationTime(GetCreationTimeCallback callback) = 0;
 
   // Retrieves a token that allows the authorized entity to access the service
-  // defined as "scope".
+  // defined as "scope". This may cause network requests but the result is
+  // cached on disk for up to a week. Token validity will be checked
+  // automatically. Thus you should not store tokens for long periods yourself,
+  // instead call this function each time it's needed.
+  //
+  // To receive messages, register an |AppIdHandler| on a |GCMDriver|.
+  //
   // |authorized_entity|: identifies the entity that is authorized to access
   //                      resources associated with this Instance ID. It can be
-  //                      another Instance ID or a project ID.
+  //                      another Instance ID or a numeric project ID.
   // |scope|: identifies authorized actions that the authorized entity can take.
   //          E.g. for sending GCM messages, "GCM" scope should be used.
   // |time_to_live|: TTL of retrieved token, unlimited if zero value passed.
@@ -113,7 +121,9 @@ class InstanceID {
                         GetTokenCallback callback) = 0;
 
   // Checks that the provided |token| matches the stored token for (|app_id()|,
-  // |authorized_entity|, |scope|).
+  // |authorized_entity|, |scope|). If you follow the guidance for |GetToken|,
+  // and call that function each time you need the token, then you will not
+  // need to use this function.
   virtual void ValidateToken(const std::string& authorized_entity,
                              const std::string& scope,
                              const std::string& token,

@@ -881,12 +881,14 @@ network_time::NetworkTimeTracker* BrowserProcessImpl::network_time_tracker() {
   return network_time_tracker_.get();
 }
 
+#if !defined(OS_ANDROID)
 gcm::GCMDriver* BrowserProcessImpl::gcm_driver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!gcm_driver_)
     CreateGCMDriver();
   return gcm_driver_.get();
 }
+#endif
 
 resource_coordinator::TabManager* BrowserProcessImpl::GetTabManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1319,16 +1321,14 @@ void BrowserProcessImpl::CreateOptimizationGuideService() {
           content::GetUIThreadTaskRunner({}));
 }
 
+#if !defined(OS_ANDROID)
+// Android's GCMDriver currently makes the assumption that it's a singleton.
+// Until this gets fixed, instantiating multiple Java GCMDrivers will throw an
+// exception, but because they're only initialized on demand these crashes
+// would be very difficult to triage. See http://crbug.com/437827.
 void BrowserProcessImpl::CreateGCMDriver() {
   DCHECK(!gcm_driver_);
 
-#if defined(OS_ANDROID)
-  // Android's GCMDriver currently makes the assumption that it's a singleton.
-  // Until this gets fixed, instantiating multiple Java GCMDrivers will throw
-  // an exception, but because they're only initialized on demand these crashes
-  // would be very difficult to triage. See http://crbug.com/437827.
-  NOTREACHED();
-#else
   base::FilePath store_path;
   CHECK(base::PathService::Get(chrome::DIR_GLOBAL_GCM_STORE, &store_path));
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
@@ -1345,8 +1345,8 @@ void BrowserProcessImpl::CreateGCMDriver() {
       gcm::GetProductCategoryForSubtypes(local_state()),
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}),
       blocking_task_runner);
-#endif  // defined(OS_ANDROID)
 }
+#endif  // defined(OS_ANDROID)
 
 void BrowserProcessImpl::ApplyDefaultBrowserPolicy() {
   if (local_state()->GetBoolean(prefs::kDefaultBrowserSettingEnabled)) {

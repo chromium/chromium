@@ -425,9 +425,11 @@ TestingBrowserProcess::network_time_tracker() {
   return network_time_tracker_.get();
 }
 
+#if !defined(OS_ANDROID)
 gcm::GCMDriver* TestingBrowserProcess::gcm_driver() {
   return nullptr;
 }
+#endif
 
 resource_coordinator::ResourceCoordinatorParts*
 TestingBrowserProcess::resource_coordinator_parts() {

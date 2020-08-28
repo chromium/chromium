@@ -79,6 +79,7 @@ class InstanceIDHandler {
 };
 
 // Bridge between GCM users in Chrome and the platform-specific implementation.
+// Obtain instances of this object by using |GCMProfileServiceFactory|.
 class GCMDriver {
  public:
   // Max number of sender IDs that can be passed to |Register| on desktop.
@@ -113,9 +114,11 @@ class GCMDriver {
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
   virtual ~GCMDriver();
 
-  // Registers |sender_ids| for an app. A registration ID will be returned by
-  // the GCM server. On Android, only a single sender ID is supported, but
-  // instead multiple simultaneous registrations are allowed.
+  // Registers |sender_ids| for an app. *Use |InstanceID| instead in new code.*
+  //
+  // A registration ID will be returned by the GCM server. On Android, only a
+  // single sender ID is supported, but instead multiple simultaneous
+  // registrations are allowed.
   // |app_id|: application ID.
   // |sender_ids|: list of IDs of the servers allowed to send messages to the
   //               application. The IDs are assigned by the Google API Console.

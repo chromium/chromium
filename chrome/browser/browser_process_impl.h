@@ -188,7 +188,9 @@ class BrowserProcessImpl : public BrowserProcess,
   MediaFileSystemRegistry* media_file_system_registry() override;
   WebRtcLogUploader* webrtc_log_uploader() override;
   network_time::NetworkTimeTracker* network_time_tracker() override;
+#if !defined(OS_ANDROID)
   gcm::GCMDriver* gcm_driver() override;
+#endif
   resource_coordinator::TabManager* GetTabManager() override;
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;

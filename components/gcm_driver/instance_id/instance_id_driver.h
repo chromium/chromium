@@ -21,6 +21,8 @@ class InstanceID;
 
 // Bridge between Instance ID users in Chrome and the platform-specific
 // implementation.
+//
+// Create instances of this class with |InstanceIDProfileServiceFactory|.
 class InstanceIDDriver {
  public:
   // Returns whether InstanceID is enabled.
@@ -31,6 +33,7 @@ class InstanceIDDriver {
 
   // Returns the InstanceID that provides the Instance ID service for the given
   // application. The lifetime of the InstanceID will be managed by this class.
+  // App IDs are arbitrary strings that typically look like "chrome.foo.bar".
   virtual InstanceID* GetInstanceID(const std::string& app_id);
 
   // Removes the InstanceID when it is not longer needed, i.e. the app is being

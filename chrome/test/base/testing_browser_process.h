@@ -135,7 +135,9 @@ class TestingBrowserProcess : public BrowserProcess {
 
   network_time::NetworkTimeTracker* network_time_tracker() override;
 
+#if !defined(OS_ANDROID)
   gcm::GCMDriver* gcm_driver() override;
+#endif
   resource_coordinator::TabManager* GetTabManager() override;
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
