@@ -67,9 +67,7 @@ static_library("phonehub") {
   ]
 }
 
-static_library("test_support") {
-  testonly = true
-
+static_library("debug") {
   sources = [
     "fake_do_not_disturb_controller.cc",
     "fake_do_not_disturb_controller.h",
@@ -85,11 +83,25 @@ static_library("test_support") {
     "fake_phone_hub_manager.h",
     "fake_tether_controller.cc",
     "fake_tether_controller.h",
+  ]
+
+  public_deps = [ ":phonehub" ]
+
+  deps = [ "//base" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
     "phone_model_test_util.cc",
     "phone_model_test_util.h",
   ]
 
-  public_deps = [ ":phonehub" ]
+  public_deps = [
+    ":debug",
+    ":phonehub",
+  ]
 
   deps = [ "//base" ]
 }
@@ -110,6 +122,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":debug",
     ":phonehub",
     ":test_support",
     "//base",

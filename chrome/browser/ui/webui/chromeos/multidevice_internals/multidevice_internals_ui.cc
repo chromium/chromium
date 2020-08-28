@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_logs_handler.h"
+#include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_phone_hub_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/multidevice_internals_resources.h"
@@ -39,6 +40,8 @@ MultideviceInternalsUI::MultideviceInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource::Add(profile, html_source);
   web_ui->AddMessageHandler(
       std::make_unique<multidevice::MultideviceLogsHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<multidevice::MultidevicePhoneHubHandler>());
 }
 
 MultideviceInternalsUI::~MultideviceInternalsUI() = default;

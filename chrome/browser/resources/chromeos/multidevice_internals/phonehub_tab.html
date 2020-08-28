@@ -1,0 +1,25 @@
+<style include="cr-shared-style shared-style">
+  #container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .row {
+    flex: 1;
+  }
+
+  cr-toggle {
+    margin: 5px;
+  }
+</style>
+
+<div id="container">
+  <div class="cr-row">
+    <div class="cr-padded-text">
+      Toggle on to use fake PhoneHub
+    </div>
+    <cr-toggle checked="{{shouldEnableFakePhoneHubManager_}}">
+    </cr-toggle>
+  </div>
+</div>
+

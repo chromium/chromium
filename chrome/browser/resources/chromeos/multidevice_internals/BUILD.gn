@@ -11,14 +11,26 @@ js_type_check("closure_compile") {
     ":log_object",
     ":logging_tab",
     ":multidevice_internals",
+    ":multidevice_logs_browser_proxy",
+    ":multidevice_phonehub_browser_proxy",
+    ":phonehub_tab",
     ":types",
   ]
+}
+
+js_library("phonehub_tab") {
+  deps = [ ":multidevice_phonehub_browser_proxy" ]
+}
+
+js_library("multidevice_phonehub_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 js_library("multidevice_internals") {
   deps = [
     ":log_object",
     ":logging_tab",
+    ":phonehub_tab",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
   ]
@@ -61,6 +73,7 @@ html_to_js("web_components") {
     "log_object.js",
     "logging_tab.js",
     "multidevice_internals.js",
+    "phonehub_tab.js",
     "shared_style.js",
   ]
 }

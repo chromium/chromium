@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.m.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './logging_tab.js';
+import './phonehub_tab.js';
 import './shared_style.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -33,7 +34,7 @@ Polymer({
     /** @private */
     tabNames_: {
       type: Array,
-      value: () => ['Logs'],
+      value: () => ['Logs', 'PhoneHub'],
       readonly: true,
     },
 
