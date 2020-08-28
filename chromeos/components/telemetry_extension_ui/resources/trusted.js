@@ -285,6 +285,23 @@ class TelemetryProxy {
     if (this.categoryToEnum_.size != categoryEnum.MAX_VALUE + 1) {
       throw RangeError('categoryToEnum_ does not contain all items from enum!');
     }
+
+    const cpuArchEnum = chromeos.health.mojom.CpuArchitectureEnum;
+
+    /**
+     * @type { !Map<!chromeos.health.mojom.CpuArchitectureEnum, !string > }
+     * @const
+     */
+    this.enumToCpuArch_ = new Map([
+      [cpuArchEnum.kUnknown, 'unknown'],
+      [cpuArchEnum.kX86_64, 'x86-64'],
+      [cpuArchEnum.kAArch64, 'AArch64'],
+      [cpuArchEnum.kArmv7l, 'Armv7l'],
+    ]);
+
+    if (this.enumToCpuArch_.size != cpuArchEnum.MAX_VALUE + 1) {
+      throw RangeError('enumToCpuArch_ does not contain all items from enum!');
+    }
   }
 
   /**
@@ -298,6 +315,32 @@ class TelemetryProxy {
       }
       return this.categoryToEnum_.get(category);
     });
+  }
+
+  /**
+   * @param { !chromeos.health.mojom.CpuArchitectureEnum } cpuArch
+   * @return { !string }
+   */
+  convertCpuArch(cpuArch) {
+    if (!this.enumToCpuArch_.has(cpuArch)) {
+      throw TypeError(`CPU architecture '${cpuArch}' is unknown.`);
+    }
+    return this.enumToCpuArch_.get(cpuArch);
+  }
+
+  /**
+   * @param { !chromeos.health.mojom.TelemetryInfo } telemetryInfo
+   * @return { !Object }
+   */
+  convertAllEnums(telemetryInfo) {
+    if (telemetryInfo && telemetryInfo.cpuResult &&
+        telemetryInfo.cpuResult.cpuInfo &&
+        telemetryInfo.cpuResult.cpuInfo.architecture) {
+      /** @suppress {checkTypes} */
+      telemetryInfo.cpuResult.cpuInfo.architecture =
+          this.convertCpuArch(telemetryInfo.cpuResult.cpuInfo.architecture);
+    }
+    return telemetryInfo;
   }
 
   /**
@@ -378,7 +421,7 @@ class TelemetryProxy {
     const telemetryInfo =
         await getOrCreateProbeService().probeTelemetryInfo(categories);
     return /** @type {!Object} */ (
-        this.convert(telemetryInfo.telemetryInfo) || {});
+        this.convert(this.convertAllEnums(telemetryInfo.telemetryInfo)) || {});
   }
 };
 

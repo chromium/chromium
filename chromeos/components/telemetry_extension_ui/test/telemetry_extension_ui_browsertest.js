@@ -118,6 +118,31 @@ TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertDiagnosticsEnums', () => {
   testDone();
 });
 
+// Tests that Telemetry correctly converts Mojo enums to strings.
+TEST_F('TelemetryExtensionUIBrowserTest', 'ConvertTelemetryEnums', () => {
+  // Unit tests for convertCommandToEnum
+  const cpuArchEnum = chromeos.health.mojom.CpuArchitectureEnum;
+
+  assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kUnknown), 'unknown');
+  assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kX86_64), 'x86-64');
+  assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kAArch64), 'AArch64');
+  assertEquals(telemetryProxy.convertCpuArch(cpuArchEnum.kArmv7l), 'Armv7l');
+
+  // Check that convertAllEnums converts all Mojo enums to strings and does not
+  // crash if some enums are not present in TelemetryInfo.
+  assertDeepEquals(telemetryProxy.convertAllEnums({}), {});
+  assertDeepEquals(
+      telemetryProxy.convertAllEnums({cpuResult: {}}), {cpuResult: {}});
+  assertDeepEquals(
+      telemetryProxy.convertAllEnums({
+        cpuResult:
+            {cpuInfo: {architecture: cpuArchEnum.kX86_64, physicalCpus: []}}
+      }),
+      {cpuResult: {cpuInfo: {architecture: 'x86-64', physicalCpus: []}}});
+
+  testDone();
+});
+
 // Tests that Telemetry.convert method correctly converts Mojo types into WebIDL
 // types.
 TEST_F(

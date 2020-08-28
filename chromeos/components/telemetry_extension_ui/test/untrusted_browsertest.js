@@ -172,7 +172,38 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         discardTimeSecondsSinceLastBoot: 77777777777777
       }]
     },
-    vpdResult: {vpdInfo: {skuNumber: 'sku-18'}}
+    vpdResult: {vpdInfo: {skuNumber: 'sku-18'}},
+    cpuResult: {
+      cpuInfo: {
+        numTotalThreads: 2147483759,
+        architecture: 'Armv7l',
+        physicalCpus: [
+          {
+            modelName: 'i9',
+            logicalCpus: [
+              {
+                maxClockSpeedKhz: 2147494759,
+                scalingMaxFrequencyKhz: 1073764046,
+                scalingCurrentFrequencyKhz: 536904245,
+                idleTimeMs: 0,
+                cStates: [
+                  {name: 'C1', timeInStateSinceLastBootUs: 1125899906875957},
+                  {name: 'C2', timeInStateSinceLastBootUs: 1125899906877777}
+                ]
+              },
+              {
+                maxClockSpeedKhz: 1147494759,
+                scalingMaxFrequencyKhz: 1063764046,
+                scalingCurrentFrequencyKhz: 936904246,
+                idleTimeMs: 0,
+                cStates: []
+              }
+            ]
+          },
+          {modelName: 'i9-low-powered', logicalCpus: []}
+        ]
+      }
+    }
   });
 });
 

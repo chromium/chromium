@@ -198,6 +198,52 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
         chromeos::cros_healthd::mojom::SystemResult::NewSystemInfo(
             std::move(system_info));
   }
+  {
+    auto c_state1 = chromeos::cros_healthd::mojom::CpuCStateInfo::New();
+    c_state1->name = "C1";
+    c_state1->time_in_state_since_last_boot_us = 1125899906875957;
+
+    auto c_state2 = chromeos::cros_healthd::mojom::CpuCStateInfo::New();
+    c_state2->name = "C2";
+    c_state2->time_in_state_since_last_boot_us = 1125899906877777;
+
+    auto logical_info1 = chromeos::cros_healthd::mojom::LogicalCpuInfo::New();
+    logical_info1->max_clock_speed_khz = 2147494759;
+    logical_info1->scaling_max_frequency_khz = 1073764046;
+    logical_info1->scaling_current_frequency_khz = 536904245;
+    logical_info1->c_states.push_back(std::move(c_state1));
+    logical_info1->c_states.push_back(std::move(c_state2));
+    // Idle time cannot be tested in browser test, because it requires USER_HZ
+    // system constant to convert idle_time_user_hz to milliseconds.
+    logical_info1->idle_time_user_hz = 0;
+
+    auto logical_info2 = chromeos::cros_healthd::mojom::LogicalCpuInfo::New();
+    logical_info2->max_clock_speed_khz = 1147494759;
+    logical_info2->scaling_max_frequency_khz = 1063764046;
+    logical_info2->scaling_current_frequency_khz = 936904246;
+    // Idle time cannot be tested in browser test, because it requires USER_HZ
+    // system constant to convert idle_time_user_hz to milliseconds.
+    logical_info2->idle_time_user_hz = 0;
+
+    auto physical_info1 = chromeos::cros_healthd::mojom::PhysicalCpuInfo::New();
+    physical_info1->model_name = "i9";
+    physical_info1->logical_cpus.push_back(std::move(logical_info1));
+    physical_info1->logical_cpus.push_back(std::move(logical_info2));
+
+    auto physical_info2 = chromeos::cros_healthd::mojom::PhysicalCpuInfo::New();
+    physical_info2->model_name = "i9-low-powered";
+
+    auto cpu_info = chromeos::cros_healthd::mojom::CpuInfo::New();
+    cpu_info->num_total_threads = 2147483759;
+    cpu_info->architecture =
+        chromeos::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l;
+    cpu_info->physical_cpus.push_back(std::move(physical_info1));
+    cpu_info->physical_cpus.push_back(std::move(physical_info2));
+
+    telemetry_info->cpu_result =
+        chromeos::cros_healthd::mojom::CpuResult::NewCpuInfo(
+            std::move(cpu_info));
+  }
 
   DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
 
