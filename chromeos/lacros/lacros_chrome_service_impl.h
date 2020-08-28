@@ -89,6 +89,10 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   void BindScreenManagerReceiver(
       mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver);
 
+  const crosapi::mojom::LacrosInitParams* init_params() const {
+    return init_params_.get();
+  }
+
  private:
   // LacrosChromeServiceNeverBlockingState is an implementation detail of this
   // class.
@@ -100,6 +104,9 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Delegate instance to inject Chrome dependent code. Must only be used on the
   // affine sequence.
   std::unique_ptr<LacrosChromeServiceDelegate> delegate_;
+
+  // Parameters passed from ash-chrome.
+  crosapi::mojom::LacrosInitParamsPtr init_params_;
 
   // This member allows lacros-chrome to use the SelectFile interface. This
   // member is affine to the affine sequence. It is initialized in the

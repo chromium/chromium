@@ -281,6 +281,7 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
           invitation.AttachMessagePipe(0), /*version=*/0));
   lacros_chrome_service_.set_disconnect_handler(base::BindOnce(
       &BrowserManager::OnMojoDisconnected, weak_factory_.GetWeakPtr()));
+  lacros_chrome_service_->Init(crosapi::mojom::LacrosInitParams::New());
   lacros_chrome_service_->RequestAshChromeServiceReceiver(
       base::BindOnce(&BrowserManager::OnAshChromeServiceReceiverReceived,
                      weak_factory_.GetWeakPtr()));

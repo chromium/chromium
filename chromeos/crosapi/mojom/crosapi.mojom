@@ -26,9 +26,19 @@ interface AshChromeService {
   BindSelectFile@0(pending_receiver<SelectFile> receiver);
 };
 
+// LacrosInitParams is a set of parameters for initialization of lacros-chrome,
+// which is passed from ash-chrome.
+struct LacrosInitParams {
+  // This is placeholder, so now it is empty.
+};
+
 // LacrosChromeService defines the APIs that live in lacros-chrome and
 // are accessed from ash-chrome.
 interface LacrosChromeService {
+  // Ash-chrome can pass initialize parameters via this method.
+  // The parameters are available on lacros-chrome startup.
+  Init@2(LacrosInitParams params);
+
   // Returns the pending_receiver of AshChromeService.
   // Ash-chrome is expected to call this method on initialization.
   // Lacros-chrome may call AshChromeService APIs earlier than this

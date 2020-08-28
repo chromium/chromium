@@ -30,8 +30,12 @@ class LacrosChromeServiceNeverBlockingState
  public:
   LacrosChromeServiceNeverBlockingState(
       scoped_refptr<base::SequencedTaskRunner> owner_sequence,
-      base::WeakPtr<LacrosChromeServiceImpl> owner)
-      : owner_sequence_(owner_sequence), owner_(owner) {
+      base::WeakPtr<LacrosChromeServiceImpl> owner,
+      crosapi::mojom::LacrosInitParamsPtr* init_params)
+      : owner_sequence_(owner_sequence),
+        owner_(owner),
+        init_params_(init_params) {
+    DCHECK(init_params);
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
   ~LacrosChromeServiceNeverBlockingState() override {
@@ -39,6 +43,11 @@ class LacrosChromeServiceNeverBlockingState
   }
 
   // crosapi::mojom::LacrosChromeService:
+  void Init(crosapi::mojom::LacrosInitParamsPtr params) override {
+    *init_params_ = std::move(params);
+    initialized_.Signal();
+  }
+
   void RequestAshChromeServiceReceiver(
       RequestAshChromeServiceReceiverCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -54,6 +63,13 @@ class LacrosChromeServiceNeverBlockingState
                        owner_),
         std::move(callback));
   }
+
+  // Unlike most of other methods of this class, this is called on the
+  // affined thread. Specifically, it is intended to be called before starting
+  // the message pumping of the affined thread to pass the initialization
+  // parameter from ash-chrome needed for the procedure running before the
+  // message pumping.
+  void WaitForInit() { initialized_.Wait(); }
 
   // AshChromeService is the interface that lacros-chrome uses to message
   // ash-chrome. This method binds the remote, which allows queuing of message
@@ -123,6 +139,14 @@ class LacrosChromeServiceNeverBlockingState
   scoped_refptr<base::SequencedTaskRunner> owner_sequence_;
   base::WeakPtr<LacrosChromeServiceImpl> owner_;
 
+  // Owned by LacrosChromeServiceImpl.
+  crosapi::mojom::LacrosInitParamsPtr* const init_params_;
+
+  // Lock to wait for Init() invocation.
+  // Because the parameters are needed before starting the affined thread's
+  // message pumping, it is necessary to use sync primitive here, instead.
+  base::WaitableEvent initialized_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<LacrosChromeServiceNeverBlockingState> weak_factory_{
@@ -148,8 +172,8 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
 
   sequenced_state_ = std::unique_ptr<LacrosChromeServiceNeverBlockingState,
                                      base::OnTaskRunnerDeleter>(
-      new LacrosChromeServiceNeverBlockingState(affine_sequence,
-                                                weak_factory_.GetWeakPtr()),
+      new LacrosChromeServiceNeverBlockingState(
+          affine_sequence, weak_factory_.GetWeakPtr(), &init_params_),
       base::OnTaskRunnerDeleter(never_blocking_sequence_));
   weak_sequenced_state_ = sequenced_state_->GetWeakPtr();
 
@@ -204,6 +228,7 @@ void LacrosChromeServiceImpl::BindReceiver(
       FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
                                     BindLacrosChromeServiceReceiver,
                                 weak_sequenced_state_, std::move(receiver)));
+  sequenced_state_->WaitForInit();
 }
 
 void LacrosChromeServiceImpl::BindScreenManagerReceiver(
