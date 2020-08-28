@@ -35,11 +35,15 @@ class MultiStoreFormFetcher : public FormFetcherImpl {
       PasswordStore* store,
       std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
 
- private:
   // HttpPasswordStoreMigrator::Consumer:
   void ProcessMigratedForms(
       std::vector<std::unique_ptr<autofill::PasswordForm>> forms) override;
 
+  // CompromisedCredentialsConsumer:
+  void OnGetCompromisedCredentials(
+      std::vector<CompromisedCredentials> compromised_credentials) override;
+
+ private:
   void AggregatePasswordStoreResults(
       std::vector<std::unique_ptr<autofill::PasswordForm>> results);
 

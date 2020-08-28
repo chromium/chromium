@@ -440,4 +440,28 @@ TEST_F(MultiStoreFormFetcherTest, MovingToAccountStoreIsBlocked) {
   EXPECT_FALSE(form_fetcher_->IsMovingBlocked(kUser, psl_form.username_value));
 }
 
+TEST_F(MultiStoreFormFetcherTest, CompromisedCredentials) {
+  Fetch();
+  const CompromisedCredentials profile_store_compromised_credentials{
+      form_digest_.signon_realm, base::ASCIIToUTF16("profile_username"),
+      base::Time::FromTimeT(1), CompromiseType::kLeaked,
+      autofill::PasswordForm::Store::kProfileStore};
+
+  const CompromisedCredentials account_store_compromised_credentials{
+      form_digest_.signon_realm, base::ASCIIToUTF16("account_username"),
+      base::Time::FromTimeT(1), CompromiseType::kLeaked,
+      autofill::PasswordForm::Store::kAccountStore};
+
+  static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
+      ->OnGetCompromisedCredentials({profile_store_compromised_credentials});
+
+  static_cast<CompromisedCredentialsConsumer*>(form_fetcher_.get())
+      ->OnGetCompromisedCredentials({account_store_compromised_credentials});
+
+  EXPECT_THAT(form_fetcher_->GetCompromisedCredentials(),
+              testing::UnorderedElementsAreArray(
+                  {profile_store_compromised_credentials,
+                   account_store_compromised_credentials}));
+}
+
 }  // namespace password_manager

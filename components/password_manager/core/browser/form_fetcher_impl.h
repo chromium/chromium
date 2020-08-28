@@ -98,6 +98,9 @@ class FormFetcherImpl : public FormFetcher,
   // non-federated matches.
   std::vector<std::unique_ptr<autofill::PasswordForm>> federated_;
 
+  // List of compromised credentials for the current domain.
+  std::vector<CompromisedCredentials> compromised_credentials_;
+
   // Indicates whether HTTP passwords should be migrated to HTTPS.
   const bool should_migrate_http_passwords_;
 
@@ -137,9 +140,6 @@ class FormFetcherImpl : public FormFetcher,
 
   // Statistics for the current domain.
   std::vector<InteractionsStats> interactions_stats_;
-
-  // List of compromised credentials for the current domain.
-  std::vector<CompromisedCredentials> compromised_credentials_;
 
   // Consumers of the fetcher, all are assumed to either outlive |this| or
   // remove themselves from the list during their destruction.
