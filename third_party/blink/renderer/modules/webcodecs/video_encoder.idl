@@ -8,7 +8,7 @@
     Exposed=Window,
     RuntimeEnabled=WebCodecs
 ] interface VideoEncoder {
-    [CallWith=ScriptState, RaisesException]
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoEncoder]
     constructor(VideoEncoderInit init);
 
     // The number of pending decode requests. This does not include requests that
