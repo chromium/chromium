@@ -9,6 +9,7 @@
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/gfx/canvas.h"
@@ -114,13 +115,16 @@ bool ClipboardHistoryItemView::ContentsView::DoesIntersectRect(
 ClipboardHistoryItemView::DeleteButton::DeleteButton(
     views::ButtonListener* listener)
     : views::ImageButton(listener) {
-  const gfx::ImageSkia icon_image =
-      gfx::CreateVectorIcon(kDeleteIcon, kDeleteButtonSizeDip, SK_ColorBLACK);
-  SetImage(views::ImageButton::STATE_NORMAL, icon_image);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibleName(base::ASCIIToUTF16(std::string(GetClassName())));
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  SetPreferredSize(gfx::Size(kDeleteButtonSizeDip, kDeleteButtonSizeDip));
+
+  AshColorProvider::Get()->DecorateCloseButton(
+      this, AshColorProvider::ButtonType::kCloseButtonWithSmallBase,
+      AshColorProvider::AshColorMode::kDark, kDeleteButtonSizeDip,
+      kCloseButtonIcon);
 }
 
 ClipboardHistoryItemView::DeleteButton::~DeleteButton() = default;
