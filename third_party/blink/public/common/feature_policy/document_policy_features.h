@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/feature_policy/policy_value.h"
-#include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/feature_policy/document_policy_feature.mojom.h"
 
 namespace blink {
 

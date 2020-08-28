@@ -6,6 +6,8 @@
 #define CONTENT_COMMON_NAVIGATION_PARAMS_H_
 
 #include <string>
+
+#include "content/common/content_export.h"
 #include "content/common/navigation_params.mojom-forward.h"
 
 namespace content {

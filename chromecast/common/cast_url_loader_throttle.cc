@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace chromecast {

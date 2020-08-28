@@ -94,25 +94,6 @@ class {{interface.name}}InterfaceBase;
 {%-   endfor %}
 {%- endif %}
 
-{#--- WTF enum hashing #}
-{%- from "enum_macros.tmpl" import enum_hash_blink_forward%}
-{%- if for_blink %}
-{%-   if all_enums %}
-
-namespace WTF {
-template <typename T>
-struct DefaultHash;
-}
-
-{%-   endif %}
-
-{%-   for enum in all_enums %}
-{%-     if not enum|is_native_only_kind %}
-{{enum_hash_blink_forward(enum)}}
-{%-     endif %}
-{%-   endfor %}
-{%- endif %}
-
 {{namespace_begin()}}
 
 {%- set module_prefix = "%s"|format(namespaces_as_array|join(".")) %}
@@ -217,9 +198,5 @@ using {{interface.name}}AssociatedRequest =
 {{namespace_end()}}
 
 {#- TODO(tikuta): Use forward declaration of native enum/struct here. #}
-
-{%- for header in extra_public_headers %}
-#include "{{header}}"
-{%- endfor %}
 
 #endif  // {{header_guard}}

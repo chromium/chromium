@@ -28,6 +28,7 @@ namespace mojom {
 class URLLoaderClient;
 }
 class SharedURLLoaderFactory;
+struct URLLoaderCompletionStatus;
 }
 
 namespace predictors {

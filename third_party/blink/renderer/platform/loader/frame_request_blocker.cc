@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/frame_request_blocker.h"
 
+#include "net/base/net_errors.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace blink {

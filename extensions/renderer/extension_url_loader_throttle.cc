@@ -5,6 +5,8 @@
 #include "extensions/renderer/extension_url_loader_throttle.h"
 
 #include "extensions/renderer/extension_throttle_manager.h"
+#include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace extensions {
 

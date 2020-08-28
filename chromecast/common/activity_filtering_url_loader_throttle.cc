@@ -4,6 +4,10 @@
 
 #include "chromecast/common/activity_filtering_url_loader_throttle.h"
 
+#include "net/base/net_errors.h"
+#include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/resource_request.h"
+
 namespace chromecast {
 namespace {
 

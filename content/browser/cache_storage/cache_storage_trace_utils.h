@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/strings/string16.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-forward.h"

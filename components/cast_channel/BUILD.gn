@@ -46,10 +46,12 @@ static_library("cast_channel") {
     "//content/public/common",
     "//crypto",
     "//net",
-    "//services/data_decoder/public/cpp",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
   ]
-  public_deps = [ "//services/network/public/mojom" ]
+  public_deps = [
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/mojom",
+  ]
 }
 
 static_library("test_support") {

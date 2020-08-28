@@ -5,6 +5,7 @@
 #include "content/renderer/media/android/stream_texture_factory.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"

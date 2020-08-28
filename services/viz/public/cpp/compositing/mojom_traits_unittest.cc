@@ -49,6 +49,7 @@
 #include "services/viz/public/mojom/compositing/filter_operation.mojom.h"
 #include "services/viz/public/mojom/compositing/filter_operations.mojom.h"
 #include "services/viz/public/mojom/compositing/returned_resource.mojom.h"
+#include "services/viz/public/mojom/compositing/selection.mojom.h"
 #include "services/viz/public/mojom/compositing/surface_info.mojom.h"
 #include "services/viz/public/mojom/compositing/surface_range.mojom.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom.h"

@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_hints_agent.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"

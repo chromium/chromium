@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "url/gurl.h"
 
 namespace extensions {
 
