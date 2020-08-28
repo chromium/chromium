@@ -144,10 +144,8 @@ class BluetoothLowEnergyWeaveClientConnection
       std::unique_ptr<BluetoothLowEnergyWeavePacketReceiver> test_receiver);
 
   virtual BluetoothLowEnergyCharacteristicsFinder* CreateCharacteristicsFinder(
-      const BluetoothLowEnergyCharacteristicsFinder::SuccessCallback&
-          success_callback,
-      const BluetoothLowEnergyCharacteristicsFinder::ErrorCallback&
-          error_callback);
+      BluetoothLowEnergyCharacteristicsFinder::SuccessCallback success_callback,
+      base::OnceClosure error_callback);
 
   // Connection:
   void SendMessageImpl(std::unique_ptr<WireMessage> message) override;

@@ -67,8 +67,8 @@ SecureChannelInitializer::SecureChannelInitializer(
       base::BindOnce(
           &device::BluetoothAdapterFactory::GetAdapter,
           base::Unretained(factory),
-          base::Bind(&SecureChannelInitializer::OnBluetoothAdapterReceived,
-                     weak_ptr_factory_.GetWeakPtr())));
+          base::BindOnce(&SecureChannelInitializer::OnBluetoothAdapterReceived,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 SecureChannelInitializer::~SecureChannelInitializer() = default;

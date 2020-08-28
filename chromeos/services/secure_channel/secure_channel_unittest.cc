@@ -300,9 +300,9 @@ class SecureChannelConnectionTest : public testing::Test {
     // the implementation will call |VerifyWireMessageContents()| synchronously.
     fake_secure_context_->Encode(
         payload,
-        base::Bind(&SecureChannelConnectionTest::VerifyWireMessageContents,
-                   weak_ptr_factory_.GetWeakPtr(), message_being_sent,
-                   feature));
+        base::BindOnce(&SecureChannelConnectionTest::VerifyWireMessageContents,
+                       weak_ptr_factory_.GetWeakPtr(), message_being_sent,
+                       feature));
   }
 
   void VerifyWireMessageContents(WireMessage* wire_message,

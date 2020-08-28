@@ -37,14 +37,10 @@ class BluetoothLowEnergyCharacteristicsFinder
   // |to_peripheral_char_| and |from_peripheral_char_|. Note that, since this is
   // called after the characteristics were discovered, their id field (e.g.
   // to_peripheral_char_.id) will be non-blank.
-  typedef base::Callback<void(const RemoteAttribute&,
-                              const RemoteAttribute&,
-                              const RemoteAttribute&)>
+  typedef base::OnceCallback<void(const RemoteAttribute&,
+                                  const RemoteAttribute&,
+                                  const RemoteAttribute&)>
       SuccessCallback;
-
-  // Error callback indicating that no valid GATT service with all required
-  // characteristic was found on the |device_|.
-  typedef base::Callback<void()> ErrorCallback;
 
   // Constructs the object and registers itself as an observer for |adapter|,
   // waiting for |to_peripheral_char| and |from_peripheral_char| to be found.
@@ -58,8 +54,8 @@ class BluetoothLowEnergyCharacteristicsFinder
       const RemoteAttribute& remote_service,
       const RemoteAttribute& to_peripheral_char,
       const RemoteAttribute& from_peripheral_char,
-      const SuccessCallback& success_callback,
-      const ErrorCallback& error_callback,
+      SuccessCallback success_callback,
+      base::OnceClosure error_callback,
       const multidevice::RemoteDeviceRef& remote_device,
       std::unique_ptr<BackgroundEidGenerator> background_eid_generator);
 
@@ -126,7 +122,7 @@ class BluetoothLowEnergyCharacteristicsFinder
   bool have_services_been_parsed_ = false;
 
   // Called when there is an error.
-  ErrorCallback error_callback_;
+  base::OnceClosure error_callback_;
 
   const multidevice::RemoteDeviceRef remote_device_;
 

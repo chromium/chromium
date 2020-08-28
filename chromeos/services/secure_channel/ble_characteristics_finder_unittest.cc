@@ -83,17 +83,16 @@ std::string EidToString(const std::vector<uint8_t>& eid_value_read) {
 
 class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
     : public testing::Test {
+ public:
+  MOCK_METHOD3(OnCharacteristicsFound,
+               void(const RemoteAttribute&,
+                    const RemoteAttribute&,
+                    const RemoteAttribute&));
+  MOCK_METHOD0(OnCharacteristicsFinderError, void());
+
  protected:
   SecureChannelBluetoothLowEnergyCharacteristicFinderTest()
       : adapter_(new NiceMock<device::MockBluetoothAdapter>),
-        success_callback_(base::Bind(
-            &SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
-                OnCharacteristicsFound,
-            base::Unretained(this))),
-        error_callback_(base::Bind(
-            &SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
-                OnCharacteristicsFinderError,
-            base::Unretained(this))),
         device_(
             new NiceMock<device::MockBluetoothDevice>(adapter_.get(),
                                                       0,
@@ -121,15 +120,17 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
     characteristic_finder_ =
         std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
             adapter_, device_.get(), remote_service_, to_peripheral_char_,
-            from_peripheral_char_, success_callback_, error_callback_,
+            from_peripheral_char_,
+            base::BindOnce(
+                &SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
+                    OnCharacteristicsFound,
+                base::Unretained(this)),
+            base::BindOnce(
+                &SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
+                    OnCharacteristicsFinderError,
+                base::Unretained(this)),
             remote_device_, CreateBackgroundEidGenerator());
   }
-
-  MOCK_METHOD3(OnCharacteristicsFound,
-               void(const RemoteAttribute&,
-                    const RemoteAttribute&,
-                    const RemoteAttribute&));
-  MOCK_METHOD0(OnCharacteristicsFinderError, void());
 
   std::unique_ptr<device::MockBluetoothGattCharacteristic>
   ExpectToFindCharacteristic(const device::BluetoothUUID& uuid,
@@ -262,8 +263,6 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
       characteristic_finder_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<device::MockBluetoothAdapter> adapter_;
-  BluetoothLowEnergyCharacteristicsFinder::SuccessCallback success_callback_;
-  BluetoothLowEnergyCharacteristicsFinder::ErrorCallback error_callback_;
   std::unique_ptr<device::MockBluetoothDevice> device_;
   std::vector<std::unique_ptr<device::BluetoothRemoteGattService>> services_;
   std::vector<std::unique_ptr<device::MockBluetoothGattCharacteristic>>
@@ -279,8 +278,14 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
        ConstructAndDestroyDontCrash) {
   std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
       adapter_, device_.get(), remote_service_, to_peripheral_char_,
-      from_peripheral_char_, success_callback_, error_callback_, remote_device_,
-      CreateBackgroundEidGenerator());
+      from_peripheral_char_,
+      base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
+                         OnCharacteristicsFound,
+                     base::Unretained(this)),
+      base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
+                         OnCharacteristicsFinderError,
+                     base::Unretained(this)),
+      remote_device_, CreateBackgroundEidGenerator());
 }
 
 TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
@@ -309,8 +314,14 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
           /* connected */ false, /* paired */ false));
   BluetoothLowEnergyCharacteristicsFinder characteristic_finder(
       adapter_, device.get(), remote_service_, to_peripheral_char_,
-      from_peripheral_char_, success_callback_, error_callback_, remote_device_,
-      CreateBackgroundEidGenerator());
+      from_peripheral_char_,
+      base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
+                         OnCharacteristicsFound,
+                     base::Unretained(this)),
+      base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
+                         OnCharacteristicsFinderError,
+                     base::Unretained(this)),
+      remote_device_, CreateBackgroundEidGenerator());
   device::BluetoothAdapter::Observer* observer =
       static_cast<device::BluetoothAdapter::Observer*>(&characteristic_finder);
 
@@ -426,8 +437,14 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
 
   std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
       adapter_, device_.get(), remote_service_, to_peripheral_char_,
-      from_peripheral_char_, success_callback_, error_callback_, remote_device_,
-      CreateBackgroundEidGenerator());
+      from_peripheral_char_,
+      base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
+                         OnCharacteristicsFound,
+                     base::Unretained(this)),
+      base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
+                         OnCharacteristicsFinderError,
+                     base::Unretained(this)),
+      remote_device_, CreateBackgroundEidGenerator());
 
   EXPECT_EQ(kToPeripheralCharID, found_to_char.id);
   EXPECT_EQ(kFromPeripheralCharID, found_from_char.id);

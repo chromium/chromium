@@ -332,7 +332,7 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
         base::BindOnce(
             &SecureChannelBleSynchronizerTest::OnDiscoverySessionStarted,
             base::Unretained(this)),
-        base::Bind(
+        base::BindOnce(
             &SecureChannelBleSynchronizerTest::OnErrorStartingDiscoverySession,
             base::Unretained(this)));
   }
@@ -374,9 +374,10 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
       base::WeakPtr<device::BluetoothDiscoverySession> discovery_session) {
     synchronizer_->StopDiscoverySession(
         discovery_session,
-        base::Bind(&SecureChannelBleSynchronizerTest::OnDiscoverySessionStopped,
-                   base::Unretained(this)),
-        base::Bind(
+        base::BindOnce(
+            &SecureChannelBleSynchronizerTest::OnDiscoverySessionStopped,
+            base::Unretained(this)),
+        base::BindOnce(
             &SecureChannelBleSynchronizerTest::OnErrorStoppingDiscoverySession,
             base::Unretained(this)));
   }

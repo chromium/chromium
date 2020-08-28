@@ -536,23 +536,22 @@ void BluetoothLowEnergyWeaveClientConnection::OnGattConnectionCreated(
   PA_LOG(INFO) << "Finding GATT characteristics for "
                << GetDeviceInfoLogString() << ".";
   characteristic_finder_.reset(CreateCharacteristicsFinder(
-      base::Bind(
+      base::BindOnce(
           &BluetoothLowEnergyWeaveClientConnection::OnCharacteristicsFound,
           weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&BluetoothLowEnergyWeaveClientConnection::
-                     OnCharacteristicsFinderError,
-                 weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&BluetoothLowEnergyWeaveClientConnection::
+                         OnCharacteristicsFinderError,
+                     weak_ptr_factory_.GetWeakPtr())));
 }
 
 BluetoothLowEnergyCharacteristicsFinder*
 BluetoothLowEnergyWeaveClientConnection::CreateCharacteristicsFinder(
-    const BluetoothLowEnergyCharacteristicsFinder::SuccessCallback&
-        success_callback,
-    const BluetoothLowEnergyCharacteristicsFinder::ErrorCallback&
-        error_callback) {
+    BluetoothLowEnergyCharacteristicsFinder::SuccessCallback success_callback,
+    base::OnceClosure error_callback) {
   return new BluetoothLowEnergyCharacteristicsFinder(
       adapter_, GetBluetoothDevice(), remote_service_, tx_characteristic_,
-      rx_characteristic_, success_callback, error_callback, remote_device(),
+      rx_characteristic_, std::move(success_callback),
+      std::move(error_callback), remote_device(),
       std::make_unique<BackgroundEidGenerator>());
 }
 
@@ -878,8 +877,8 @@ void BluetoothLowEnergyWeaveClientConnection::GetConnectionRssi(
   // instead of a base::Callback, so use a wrapper for now.
   auto callback_holder = base::AdaptCallbackForRepeating(std::move(callback));
   bluetooth_device->GetConnectionInfo(
-      base::Bind(&BluetoothLowEnergyWeaveClientConnection::OnConnectionInfo,
-                 weak_ptr_factory_.GetWeakPtr(), callback_holder));
+      base::BindOnce(&BluetoothLowEnergyWeaveClientConnection::OnConnectionInfo,
+                     weak_ptr_factory_.GetWeakPtr(), callback_holder));
 }
 
 void BluetoothLowEnergyWeaveClientConnection::OnConnectionInfo(

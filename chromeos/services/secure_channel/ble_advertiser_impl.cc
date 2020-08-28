@@ -365,8 +365,8 @@ void BleAdvertiserImpl::StopActiveAdvertisement(size_t index) {
     return;
 
   active_advertisement->Stop(
-      base::Bind(&BleAdvertiserImpl::OnActiveAdvertisementStopped,
-                 base::Unretained(this), index));
+      base::BindOnce(&BleAdvertiserImpl::OnActiveAdvertisementStopped,
+                     base::Unretained(this), index));
 }
 
 void BleAdvertiserImpl::OnActiveAdvertisementStopped(size_t index) {

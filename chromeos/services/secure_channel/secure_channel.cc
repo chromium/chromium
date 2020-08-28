@@ -167,8 +167,8 @@ void SecureChannel::OnMessageReceived(const Connection& connection,
 
   secure_context_->Decode(
       wire_message.payload(),
-      base::Bind(&SecureChannel::OnMessageDecoded,
-                 weak_ptr_factory_.GetWeakPtr(), wire_message.feature()));
+      base::BindOnce(&SecureChannel::OnMessageDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), wire_message.feature()));
 }
 
 void SecureChannel::OnSendCompleted(const Connection& connection,
@@ -243,7 +243,7 @@ void SecureChannel::Authenticate() {
   authenticator_ = DeviceToDeviceAuthenticator::Factory::Create(
       connection_.get(),
       multidevice::SecureMessageDelegateImpl::Factory::Create());
-  authenticator_->Authenticate(base::Bind(
+  authenticator_->Authenticate(base::BindOnce(
       &SecureChannel::OnAuthenticationResult, weak_ptr_factory_.GetWeakPtr()));
 
   TransitionToStatus(Status::AUTHENTICATING);
@@ -267,9 +267,9 @@ void SecureChannel::ProcessMessageQueue() {
 
   secure_context_->Encode(
       pending_message_->payload,
-      base::Bind(&SecureChannel::OnMessageEncoded,
-                 weak_ptr_factory_.GetWeakPtr(), pending_message_->feature,
-                 pending_message_->sequence_number));
+      base::BindOnce(&SecureChannel::OnMessageEncoded,
+                     weak_ptr_factory_.GetWeakPtr(), pending_message_->feature,
+                     pending_message_->sequence_number));
 }
 
 void SecureChannel::OnMessageEncoded(const std::string& feature,

@@ -232,12 +232,16 @@ class TestBluetoothLowEnergyWeaveClientConnection
         should_set_low_connection_latency();
   }
 
+  BluetoothLowEnergyCharacteristicsFinder* CreateCharacteristicsFinder(
+      BluetoothLowEnergyCharacteristicsFinder::SuccessCallback success,
+      base::OnceClosure error) override {
+    return CreateCharacteristicsFinder_(success, error);
+  }
   MOCK_METHOD2(
-      CreateCharacteristicsFinder,
+      CreateCharacteristicsFinder_,
       BluetoothLowEnergyCharacteristicsFinder*(
-          const BluetoothLowEnergyCharacteristicsFinder::SuccessCallback&
-              success,
-          const BluetoothLowEnergyCharacteristicsFinder::ErrorCallback& error));
+          BluetoothLowEnergyCharacteristicsFinder::SuccessCallback& success,
+          base::OnceClosure& error));
 
   MOCK_METHOD1(OnBytesReceived, void(const std::string& bytes));
 
@@ -450,10 +454,10 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
     // Preparing |connection| to run |create_gatt_connection_success_callback_|.
     EXPECT_FALSE(create_gatt_connection_error_callback_.is_null());
     ASSERT_FALSE(create_gatt_connection_success_callback_.is_null());
-    EXPECT_CALL(*connection, CreateCharacteristicsFinder(_, _))
+    EXPECT_CALL(*connection, CreateCharacteristicsFinder_(_, _))
         .WillOnce(DoAll(
-            SaveArg<0>(&characteristics_finder_success_callback_),
-            SaveArg<1>(&characteristics_finder_error_callback_),
+            MoveArg<0>(&characteristics_finder_success_callback_),
+            MoveArg<1>(&characteristics_finder_error_callback_),
             Return(new NiceMock<MockBluetoothLowEnergyCharacteristicsFinder>(
                 remote_device_))));
 
@@ -475,10 +479,10 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
     EXPECT_FALSE(characteristics_finder_error_callback_.is_null());
     ASSERT_FALSE(characteristics_finder_success_callback_.is_null());
 
-    characteristics_finder_success_callback_.Run(
-        {service_uuid_, kServiceID},
-        {tx_characteristic_uuid_, kTXCharacteristicID},
-        {rx_characteristic_uuid_, kRXCharacteristicID});
+    std::move(characteristics_finder_success_callback_)
+        .Run({service_uuid_, kServiceID},
+             {tx_characteristic_uuid_, kTXCharacteristicID},
+             {rx_characteristic_uuid_, kRXCharacteristicID});
 
     EXPECT_EQ(connection->sub_status(), SubStatus::WAITING_NOTIFY_SESSION);
     EXPECT_EQ(connection->status(), Connection::Status::IN_PROGRESS);
@@ -683,8 +687,7 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
 
   BluetoothLowEnergyCharacteristicsFinder::SuccessCallback
       characteristics_finder_success_callback_;
-  BluetoothLowEnergyCharacteristicsFinder::ErrorCallback
-      characteristics_finder_error_callback_;
+  base::OnceClosure characteristics_finder_error_callback_;
 
   device::BluetoothRemoteGattCharacteristic::NotifySessionCallback
       notify_session_success_callback_;
@@ -873,7 +876,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   EXPECT_FALSE(characteristics_finder_success_callback_.is_null());
   ASSERT_FALSE(characteristics_finder_error_callback_.is_null());
 
-  characteristics_finder_error_callback_.Run();
+  std::move(characteristics_finder_error_callback_).Run();
 
   EXPECT_EQ(connection->sub_status(), SubStatus::DISCONNECTED);
   EXPECT_EQ(connection->status(), Connection::Status::DISCONNECTED);
@@ -896,10 +899,10 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
 
   EXPECT_FALSE(characteristics_finder_error_callback_.is_null());
   ASSERT_FALSE(characteristics_finder_success_callback_.is_null());
-  characteristics_finder_success_callback_.Run(
-      {service_uuid_, kServiceID},
-      {tx_characteristic_uuid_, kTXCharacteristicID},
-      {rx_characteristic_uuid_, kRXCharacteristicID});
+  std::move(characteristics_finder_success_callback_)
+      .Run({service_uuid_, kServiceID},
+           {tx_characteristic_uuid_, kTXCharacteristicID},
+           {rx_characteristic_uuid_, kRXCharacteristicID});
 
   EXPECT_EQ(connection->sub_status(), SubStatus::DISCONNECTED);
   EXPECT_EQ(connection->status(), Connection::Status::DISCONNECTED);
@@ -1386,10 +1389,10 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   ASSERT_FALSE(create_gatt_connection_success_callback_.is_null());
 
   // Preparing |connection| to run |create_gatt_connection_success_callback_|.
-  EXPECT_CALL(*connection, CreateCharacteristicsFinder(_, _))
+  EXPECT_CALL(*connection, CreateCharacteristicsFinder_(_, _))
       .WillOnce(DoAll(
-          SaveArg<0>(&characteristics_finder_success_callback_),
-          SaveArg<1>(&characteristics_finder_error_callback_),
+          MoveArg<0>(&characteristics_finder_success_callback_),
+          MoveArg<1>(&characteristics_finder_error_callback_),
           Return(new NiceMock<MockBluetoothLowEnergyCharacteristicsFinder>(
               remote_device_))));
 
@@ -1432,10 +1435,10 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   ASSERT_FALSE(create_gatt_connection_success_callback_.is_null());
 
   // Preparing |connection| to run |create_gatt_connection_success_callback_|.
-  EXPECT_CALL(*connection, CreateCharacteristicsFinder(_, _))
+  EXPECT_CALL(*connection, CreateCharacteristicsFinder_(_, _))
       .WillOnce(DoAll(
-          SaveArg<0>(&characteristics_finder_success_callback_),
-          SaveArg<1>(&characteristics_finder_error_callback_),
+          MoveArg<0>(&characteristics_finder_success_callback_),
+          MoveArg<1>(&characteristics_finder_error_callback_),
           Return(new NiceMock<MockBluetoothLowEnergyCharacteristicsFinder>(
               remote_device_))));
 
@@ -1489,10 +1492,10 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   std::move(connection_latency_callback_).Run();
 
   // Preparing |connection| to run |create_gatt_connection_success_callback_|.
-  EXPECT_CALL(*connection, CreateCharacteristicsFinder(_, _))
+  EXPECT_CALL(*connection, CreateCharacteristicsFinder_(_, _))
       .WillOnce(DoAll(
-          SaveArg<0>(&characteristics_finder_success_callback_),
-          SaveArg<1>(&characteristics_finder_error_callback_),
+          MoveArg<0>(&characteristics_finder_success_callback_),
+          MoveArg<1>(&characteristics_finder_error_callback_),
           Return(new NiceMock<MockBluetoothLowEnergyCharacteristicsFinder>(
               remote_device_))));
 
