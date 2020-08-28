@@ -2209,7 +2209,9 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget) {
   service_->UnregisterReceiveSurface(&callback);
 }
 
-TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
+// TODO(crbug.com/1123022): flakily times-out.
+TEST_F(NearbySharingServiceImplTest,
+       DISABLED_AcceptValidShareTarget_PayloadSuccessful) {
   for (int64_t payload_id : kValidIntroductionFramePayloadIds) {
     fake_nearby_connections_manager_->SetPayloadPathStatus(
         payload_id, location::nearby::connections::mojom::Status::kSuccess);
