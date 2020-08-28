@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 
-#include <wayland-client.h>
-
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 

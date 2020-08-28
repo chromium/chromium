@@ -26,7 +26,7 @@ WaylandDataOffer::~WaylandDataOffer() {
 
 void WaylandDataOffer::SetAction(uint32_t dnd_actions,
                                  uint32_t preferred_action) {
-  if (wl_data_offer_get_version(data_offer_.get()) >=
+  if (wl::get_version_of_object(data_offer_.get()) >=
       WL_DATA_OFFER_SET_ACTIONS_SINCE_VERSION) {
     wl_data_offer_set_actions(data_offer_.get(), dnd_actions, preferred_action);
   }
@@ -62,9 +62,10 @@ base::ScopedFD WaylandDataOffer::Receive(const std::string& mime_type) {
 }
 
 void WaylandDataOffer::FinishOffer() {
-  if (wl_data_offer_get_version(data_offer_.get()) >=
-      WL_DATA_OFFER_FINISH_SINCE_VERSION)
+  if (wl::get_version_of_object(data_offer_.get()) >=
+      WL_DATA_OFFER_FINISH_SINCE_VERSION) {
     wl_data_offer_finish(data_offer_.get());
+  }
 }
 
 uint32_t WaylandDataOffer::source_actions() const {

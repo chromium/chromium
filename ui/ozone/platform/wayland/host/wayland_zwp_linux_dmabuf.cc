@@ -57,8 +57,7 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(base::ScopedFD fd,
 
   // It's possible to avoid waiting until the buffer is created and have it
   // immediately. This method is only available since the protocol version 3.
-  if (zwp_linux_dmabuf_v1_get_version(zwp_linux_dmabuf_.get()) >=
-      kImmedVerstion) {
+  if (wl::get_version_of_object(zwp_linux_dmabuf_.get()) >= kImmedVerstion) {
     wl::Object<wl_buffer> buffer(zwp_linux_buffer_params_v1_create_immed(
         params, size.width(), size.height(), format, 0));
     std::move(callback).Run(std::move(buffer));

@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
-#include <wayland-client.h>
-
 #include <algorithm>
 #include <memory>
 

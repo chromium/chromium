@@ -4,13 +4,11 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 
-#include <wayland-client-core.h>
-#include <wayland-client-protocol.h>
-
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/task/current_thread.h"
 #include "ui/events/event.h"
+#include "ui/ozone/platform/wayland/common/wayland.h"
 
 namespace ui {
 

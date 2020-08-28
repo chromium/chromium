@@ -5,8 +5,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 
 #include <linux/input.h>
-#include <wayland-client-protocol.h>
-#include <wayland-client.h>
 
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"

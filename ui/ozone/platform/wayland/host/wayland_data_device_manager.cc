@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 
-#include <wayland-client-protocol.h>
-
 #include <memory>
 
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"

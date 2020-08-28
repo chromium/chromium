@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include <linux/input.h>
-#include <wayland-client-protocol.h>
-#include <wayland-server-core.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"

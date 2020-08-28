@@ -5,8 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_DEVICE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_DEVICE_H_
 
-#include <wayland-client.h>
-
 #include <cstdint>
 #include <memory>
 #include <string>

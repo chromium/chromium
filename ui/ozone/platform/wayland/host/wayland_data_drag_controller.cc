@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 
-#include <wayland-client-protocol.h>
-
 #include <cstdint>
 
 #include "base/check.h"

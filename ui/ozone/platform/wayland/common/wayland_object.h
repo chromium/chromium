@@ -5,8 +5,9 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_OBJECT_H_
 #define UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_OBJECT_H_
 
-#include <wayland-client-core.h>
 #include <memory>
+
+#include "ui/ozone/platform/wayland/common/wayland.h"
 
 struct gtk_primary_selection_device;
 struct gtk_primary_selection_device_manager;
@@ -364,7 +365,7 @@ class Object : public std::unique_ptr<T, Deleter> {
 template <typename T>
 wl::Object<T> Bind(wl_registry* registry, uint32_t name, uint32_t version) {
   return wl::Object<T>(static_cast<T*>(
-      wl_registry_bind(registry, name, ObjectTraits<T>::interface, version)));
+      wl::bind_registry(registry, name, ObjectTraits<T>::interface, version)));
 }
 
 }  // namespace wl

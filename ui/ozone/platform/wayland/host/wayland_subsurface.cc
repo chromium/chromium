@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 
-#include <wayland-client.h>
 #include <cstdint>
 
 #include "ui/ozone/platform/wayland/common/wayland_util.h"

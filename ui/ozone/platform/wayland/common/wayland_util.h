@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include <wayland-client.h>
-
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"

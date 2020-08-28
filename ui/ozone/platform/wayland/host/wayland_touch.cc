@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 
-#include <wayland-client.h>
-
 #include "base/time/time.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"

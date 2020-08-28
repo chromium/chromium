@@ -5,8 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_OFFER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_DATA_OFFER_H_
 
-#include <wayland-client.h>
-
 #include <string>
 
 #include "base/files/scoped_file.h"

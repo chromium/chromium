@@ -11,7 +11,6 @@
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
-#include <wayland-client.h>
 #include <wayland-drm-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
@@ -20,35 +19,35 @@ namespace wl {
 namespace {
 
 void delete_keyboard(wl_keyboard* keyboard) {
-  if (wl_keyboard_get_version(keyboard) >= WL_KEYBOARD_RELEASE_SINCE_VERSION)
+  if (wl::get_version_of_object(keyboard) >= WL_KEYBOARD_RELEASE_SINCE_VERSION)
     wl_keyboard_release(keyboard);
   else
     wl_keyboard_destroy(keyboard);
 }
 
 void delete_pointer(wl_pointer* pointer) {
-  if (wl_pointer_get_version(pointer) >= WL_POINTER_RELEASE_SINCE_VERSION)
+  if (wl::get_version_of_object(pointer) >= WL_POINTER_RELEASE_SINCE_VERSION)
     wl_pointer_release(pointer);
   else
     wl_pointer_destroy(pointer);
 }
 
 void delete_seat(wl_seat* seat) {
-  if (wl_seat_get_version(seat) >= WL_SEAT_RELEASE_SINCE_VERSION)
+  if (wl::get_version_of_object(seat) >= WL_SEAT_RELEASE_SINCE_VERSION)
     wl_seat_release(seat);
   else
     wl_seat_destroy(seat);
 }
 
 void delete_touch(wl_touch* touch) {
-  if (wl_touch_get_version(touch) >= WL_TOUCH_RELEASE_SINCE_VERSION)
+  if (wl::get_version_of_object(touch) >= WL_TOUCH_RELEASE_SINCE_VERSION)
     wl_touch_release(touch);
   else
     wl_touch_destroy(touch);
 }
 
 void delete_data_device(wl_data_device* data_device) {
-  if (wl_data_device_get_version(data_device) >=
+  if (wl::get_version_of_object(data_device) >=
       WL_DATA_DEVICE_RELEASE_SINCE_VERSION) {
     wl_data_device_release(data_device);
   } else {
