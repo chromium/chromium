@@ -720,7 +720,7 @@ std::unique_ptr<VaapiEncodeJob> VaapiVideoEncodeAccelerator::CreateEncodeJob(
       vpp_vaapi_wrapper_ = VaapiWrapper::Create(
           VaapiWrapper::kVideoProcess, VAProfileNone,
           base::Bind(&ReportVaapiErrorToUMA,
-                     "Media.VaapiVideoEncodeAccelerator.VppVAAPIError"));
+                     "Media.VaapiVideoEncodeAccelerator.Vpp.VAAPIError"));
       if (!vpp_vaapi_wrapper_) {
         NOTIFY_ERROR(kPlatformFailureError,
                      "Failed to initialize VppVaapiWrapper");

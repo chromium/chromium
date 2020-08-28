@@ -71932,9 +71932,6 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="VAJEAEncoderResult">
-  <obsolete>
-    Deprecated as of 8/2020, superseded by VaapiFunctions.
-  </obsolete>
   <int value="0" label="VAAPI_SUCCESS"/>
   <int value="1" label="VAAPI_ERROR"/>
 </enum>

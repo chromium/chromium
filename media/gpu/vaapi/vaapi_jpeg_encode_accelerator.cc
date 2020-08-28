@@ -457,7 +457,7 @@ VaapiJpegEncodeAccelerator::Initialize(
   scoped_refptr<VaapiWrapper> vpp_vaapi_wrapper = VaapiWrapper::Create(
       VaapiWrapper::kVideoProcess, VAProfileNone,
       base::Bind(&ReportVaapiErrorToUMA,
-                 "Media.VaapiJpegEncodeAccelerator.VppVAAPIError"));
+                 "Media.VaapiJpegEncodeAccelerator.Vpp.VAAPIError"));
   if (!vpp_vaapi_wrapper) {
     VLOGF(1) << "Failed initializing VAAPI wrapper for VPP";
     return PLATFORM_FAILURE;

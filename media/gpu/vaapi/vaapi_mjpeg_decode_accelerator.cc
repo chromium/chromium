@@ -143,7 +143,7 @@ bool VaapiMjpegDecodeAccelerator::Initialize(
   vpp_vaapi_wrapper_ = VaapiWrapper::Create(
       VaapiWrapper::kVideoProcess, VAProfileNone,
       base::Bind(&ReportVaapiErrorToUMA,
-                 "Media.VaapiMjpegDecodeAccelerator.VppVAAPIError"));
+                 "Media.VaapiMjpegDecodeAccelerator.Vpp.VAAPIError"));
   if (!vpp_vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI for VPP";
     return false;

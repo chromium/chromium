@@ -82825,7 +82825,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Media.VaapiVideoDecoder.DecodeError" enum="BooleanError"
     expires_after="2021-08-05">
   <owner>mcasas@chromium.org</owner>
-  <owner>chromeos-gfx-video@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
   <summary>
     The codec-specific delegate in VaapiVideoDecoder has returned an error from
     Decode(). This could be a parse error, or a VA error itself.
@@ -82835,7 +82835,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess"
     enum="BooleanSuccess" expires_after="2021-08-05">
   <owner>mcasas@chromium.org</owner>
-  <owner>chromeos-gfx-video@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
   <summary>
     Whether the creation of VaapiWrapper succeeded or not inside
     VaapiVideoDecoder.
@@ -82893,7 +82893,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Media.VAJDA.VppFailure" enum="VAJDAFailure"
     expires_after="2021-01-31">
   <obsolete>
-    Replaced by Media.VaapiMjpegDecodeAccelerator.VppVAAPIError as of 08/2020.
+    Replaced by Media.VaapiMjpegDecodeAccelerator.Vpp.VAAPIError as of 08/2020.
   </obsolete>
   <owner>kamesan@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
@@ -82929,7 +82929,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Media.VAJEA.VppFailure" enum="VAJEAEncoderResult"
     expires_after="M87">
   <obsolete>
-    Replaced by Media.VaapiJpegEncodeAccelerator.VppVAAPIError as of 08/2020.
+    Replaced by Media.VaapiJpegEncodeAccelerator.Vpp.VAAPIError as of 08/2020.
   </obsolete>
   <owner>wtlee@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
@@ -84144,7 +84144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Media.{VaapiClientName}.VAAPIError" enum="VaapiFunctions"
     expires_after="2021-08-05">
   <owner>mcasas@chromium.org</owner>
-  <owner>chromeos-gfx-video@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
   <summary>
     Error codes reported by libva (via VaapiWrapper) while being used from the
     specified client name.
@@ -84156,6 +84156,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="VaapiMjpegDecodeAccelerator" label=""/>
     <variant name="VaapiMjpegDecodeAccelerator.Vpp" label=""/>
     <variant name="VaapiVideoDecodeAccelerator" label=""/>
+    <variant name="VaapiVideoDecodeAccelerator.Vpp" label=""/>
     <variant name="VaapiVideoDecoder" label=""/>
     <variant name="VaapiVideoEncodeAccelerator" label=""/>
     <variant name="VaapiVideoEncodeAccelerator.Vpp" label=""/>

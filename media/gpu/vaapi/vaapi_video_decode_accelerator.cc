@@ -707,7 +707,7 @@ void VaapiVideoDecodeAccelerator::AssignPictureBuffers(
       vpp_vaapi_wrapper_ = VaapiWrapper::Create(
           VaapiWrapper::kVideoProcess, VAProfileNone,
           base::Bind(&ReportVaapiErrorToUMA,
-                     "Media.VaapiVideoDecodeAccelerator.VppVAAPIError"));
+                     "Media.VaapiVideoDecodeAccelerator.Vpp.VAAPIError"));
       RETURN_AND_NOTIFY_ON_FAILURE(vpp_vaapi_wrapper_,
                                    "Failed to initialize VppVaapiWrapper",
                                    PLATFORM_FAILURE, );
