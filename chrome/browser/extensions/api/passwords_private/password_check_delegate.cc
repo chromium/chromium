@@ -56,8 +56,8 @@ namespace {
 
 using autofill::PasswordForm;
 using password_manager::CanonicalizeUsername;
-using password_manager::CompromiseTypeFlags;
 using password_manager::CredentialWithPassword;
+using password_manager::InsecureCredentialTypeFlags;
 using password_manager::LeakCheckCredential;
 using ui::TimeFormat;
 
@@ -70,6 +70,14 @@ using State = password_manager::BulkLeakCheckService::State;
 std::unique_ptr<std::string> GetChangePasswordUrl(const GURL& url) {
   return std::make_unique<std::string>(
       password_manager::CreateChangePasswordUrl(url).spec());
+}
+
+// Unsets the bit responsible for the weak credential in the |flag|.
+InsecureCredentialTypeFlags UnsetWeakCredentialTypeFlag(
+    InsecureCredentialTypeFlags flag) {
+  return static_cast<InsecureCredentialTypeFlags>(
+      static_cast<int>(flag) &
+      ~(static_cast<int>(InsecureCredentialTypeFlags::kWeakCredential)));
 }
 
 }  // namespace
@@ -194,8 +202,10 @@ std::vector<CompromisedCredentialAndType> OrderCompromisedCredentials(
   std::vector<CompromisedCredentialAndType> results;
   results.reserve(compromised_credentials.size());
   for (auto& credential : compromised_credentials) {
+    // Since CompromiseType does not contain information about weakness of
+    // credential, we need to unset this bit in the |credential.insecure_type|.
     auto type = static_cast<api::passwords_private::CompromiseType>(
-        credential.compromise_type);
+        UnsetWeakCredentialTypeFlag(credential.insecure_type));
     results.push_back({std::move(credential), type});
   }
   // Reordering phished credential to the beginning.

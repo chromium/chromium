@@ -19,10 +19,10 @@
 
 namespace password_manager {
 
-// Extra information about CompromisedCredentials which is required by UI.
+// Extra information about InsecureCredentials which is required by UI.
 struct CredentialMetadata {
   std::vector<autofill::PasswordForm> forms;
-  CompromiseTypeFlags type = CompromiseTypeFlags::kNotCompromised;
+  InsecureCredentialTypeFlags type = InsecureCredentialTypeFlags::kSecure;
   base::Time latest_time;
 };
 
@@ -54,20 +54,20 @@ struct CredentialWithoutPasswordLess {
   }
 };
 
-CompromiseTypeFlags ConvertCompromiseType(CompromiseType type) {
+InsecureCredentialTypeFlags ConvertCompromiseType(CompromiseType type) {
   switch (type) {
     case CompromiseType::kLeaked:
-      return CompromiseTypeFlags::kCredentialLeaked;
+      return InsecureCredentialTypeFlags::kCredentialLeaked;
     case CompromiseType::kPhished:
-      return CompromiseTypeFlags::kCredentialPhished;
+      return InsecureCredentialTypeFlags::kCredentialPhished;
   }
   NOTREACHED();
 }
 
 // This function takes two lists of compromised credentials and saved passwords
 // and joins them, producing a map that contains CredentialWithPassword as keys
-// and vector<autofill::PasswordForm> as values with CredentialCompromiseType as
-// values.
+// and vector<autofill::PasswordForm> as values with InsecureCredentialTypeFlags
+// as values.
 CredentialPasswordsMap JoinCompromisedCredentialsWithSavedPasswords(
     const std::vector<CompromisedCredentials>& credentials,
     SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
@@ -83,7 +83,7 @@ CredentialPasswordsMap JoinCompromisedCredentialsWithSavedPasswords(
     for (const auto& form : saved_passwords) {
       CredentialView compromised_credential(form);
       auto& credential_to_form = credentials_to_forms[compromised_credential];
-      credential_to_form.type = CompromiseTypeFlags::kCredentialLeaked;
+      credential_to_form.type = InsecureCredentialTypeFlags::kCredentialLeaked;
       credential_to_form.forms.push_back(form);
       credential_to_form.latest_time = form.date_created;
     }
@@ -131,7 +131,7 @@ std::vector<CredentialWithPassword> ExtractCompromisedCredentials(
   credentials.reserve(credentials_to_forms.size());
   for (const auto& credential_to_forms : credentials_to_forms) {
     CredentialWithPassword credential(credential_to_forms.first);
-    credential.compromise_type = credential_to_forms.second.type;
+    credential.insecure_type = credential_to_forms.second.type;
     credential.create_time = credential_to_forms.second.latest_time;
     credentials.push_back(std::move(credential));
   }
@@ -178,7 +178,7 @@ CredentialWithPassword::CredentialWithPassword(
                      credential.username,
                      /*password=*/{}),
       create_time(credential.create_time),
-      compromise_type(ConvertCompromiseType(credential.compromise_type)) {}
+      insecure_type(ConvertCompromiseType(credential.compromise_type)) {}
 
 CredentialWithPassword& CredentialWithPassword::operator=(
     const CredentialWithPassword& other) = default;

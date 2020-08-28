@@ -40,6 +40,7 @@ using autofill::PasswordForm;
 using password_manager::BulkLeakCheckService;
 using password_manager::CompromisedCredentials;
 using password_manager::CompromiseType;
+using password_manager::InsecureCredentialTypeFlags;
 using password_manager::PasswordCheckUIStatus;
 using password_manager::TestPasswordStore;
 using password_manager::prefs::kLastTimePasswordCheckCompleted;
@@ -54,7 +55,6 @@ using testing::Return;
 
 using CompromisedCredentialForUI =
     PasswordCheckManager::CompromisedCredentialForUI;
-using CompromiseTypeFlags = password_manager::CompromiseTypeFlags;
 using State = password_manager::BulkLeakCheckService::State;
 
 namespace {
@@ -187,7 +187,7 @@ auto ExpectCompromisedCredentialForUI(
     const base::string16& display_origin,
     const base::Optional<std::string>& package_name,
     const base::Optional<std::string>& change_password_url,
-    CompromiseTypeFlags compromise_type,
+    InsecureCredentialTypeFlags insecure_type,
     bool has_script) {
   auto package_name_field_matcher =
       package_name.has_value()
@@ -203,7 +203,7 @@ auto ExpectCompromisedCredentialForUI(
       Field(&CompromisedCredentialForUI::display_username, display_username),
       Field(&CompromisedCredentialForUI::display_origin, display_origin),
       package_name_field_matcher, change_password_url_field_matcher,
-      Field(&CompromisedCredentialForUI::compromise_type, compromise_type),
+      Field(&CompromisedCredentialForUI::insecure_type, insecure_type),
       Field(&CompromisedCredentialForUI::has_script, has_script));
 }
 
@@ -309,7 +309,7 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForSiteCredential) {
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
-          CompromiseTypeFlags::kCredentialLeaked,
+          InsecureCredentialTypeFlags::kCredentialLeaked,
           /*has_script=*/false)));
 }
 
@@ -333,12 +333,12 @@ TEST_F(PasswordCheckManagerTest, CorrectlyCreatesUIStructForAppCredentials) {
           ExpectCompromisedCredentialForUI(
               base::ASCIIToUTF16(kUsername1),
               base::ASCIIToUTF16("App (com.example.app)"), "com.example.app",
-              base::nullopt, CompromiseTypeFlags::kCredentialLeaked,
+              base::nullopt, InsecureCredentialTypeFlags::kCredentialLeaked,
               /*has_script=*/false),
           ExpectCompromisedCredentialForUI(
               base::ASCIIToUTF16(kUsername2), base::ASCIIToUTF16("Example App"),
               "com.example.app", base::nullopt,
-              CompromiseTypeFlags::kCredentialLeaked,
+              InsecureCredentialTypeFlags::kCredentialLeaked,
               /*has_script=*/false)));
 }
 
@@ -388,7 +388,8 @@ TEST_F(PasswordCheckManagerTest,
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
-          CompromiseTypeFlags::kCredentialLeaked, /*has_script=*/false)));
+          InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_script=*/false)));
 }
 
 TEST_F(PasswordCheckManagerTest,
@@ -414,7 +415,8 @@ TEST_F(PasswordCheckManagerTest,
       ElementsAre(ExpectCompromisedCredentialForUI(
           base::ASCIIToUTF16(kUsername1), base::ASCIIToUTF16("example.com"),
           base::nullopt, "https://example.com/",
-          CompromiseTypeFlags::kCredentialLeaked, /*has_script=*/true)));
+          InsecureCredentialTypeFlags::kCredentialLeaked,
+          /*has_script=*/true)));
 }
 
 TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {

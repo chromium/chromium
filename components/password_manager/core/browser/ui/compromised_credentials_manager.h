@@ -27,22 +27,24 @@ namespace password_manager {
 
 class LeakCheckCredential;
 
-enum class CompromiseTypeFlags {
-  kNotCompromised = 0,
-  // If the credentials was leaked by a data breach.
+enum class InsecureCredentialTypeFlags {
+  kSecure = 0,
+  // If the credential was leaked by a data breach.
   kCredentialLeaked = 1 << 0,
-  // If the credentials was reused on a phishing site.
+  // If the credential was reused on a phishing site.
   kCredentialPhished = 1 << 1,
+  // If the credential has a weak password.
+  kWeakCredential = 1 << 2,
 };
 
-constexpr CompromiseTypeFlags operator|(CompromiseTypeFlags lhs,
-                                        CompromiseTypeFlags rhs) {
-  return static_cast<CompromiseTypeFlags>(static_cast<int>(lhs) |
-                                          static_cast<int>(rhs));
+constexpr InsecureCredentialTypeFlags operator|(
+    InsecureCredentialTypeFlags lhs,
+    InsecureCredentialTypeFlags rhs) {
+  return static_cast<InsecureCredentialTypeFlags>(static_cast<int>(lhs) |
+                                                  static_cast<int>(rhs));
 }
 
-// Simple struct that augments key values of CompromisedCredentials and a
-// password.
+// Simple struct that augments key values of InsecureCredentials and a password.
 struct CredentialView {
   CredentialView(std::string signon_realm,
                  GURL url,
@@ -62,10 +64,11 @@ struct CredentialView {
   base::string16 password;
 };
 
-// All information needed by UI to represent CompromisedCredential. It's a
-// result of deduplicating CompromisedCredentials to have single entity both for
-// phished and leaked credentials with latest |create_time|, and after that
-// joining with autofill::PasswordForms to get passwords.
+// All information needed by UI to represent InsecureCredential. It's a result
+// of deduplicating InsecureCredentials to have single entity for phished,
+// leaked and weak credentials with latest |create_time|, and after that joining
+// with autofill::PasswordForms to get passwords. If the credential is only
+// weak, |create_time| will be unset.
 struct CredentialWithPassword : CredentialView {
   explicit CredentialWithPassword(const CredentialView& credential);
   explicit CredentialWithPassword(const CompromisedCredentials& credential);
@@ -77,7 +80,8 @@ struct CredentialWithPassword : CredentialView {
   CredentialWithPassword& operator=(const CredentialWithPassword& other);
   CredentialWithPassword& operator=(CredentialWithPassword&& other);
   base::Time create_time;
-  CompromiseTypeFlags compromise_type = CompromiseTypeFlags::kNotCompromised;
+  InsecureCredentialTypeFlags insecure_type =
+      InsecureCredentialTypeFlags::kSecure;
 };
 
 // Comparator that can compare CredentialView or CredentialsWithPasswords.
@@ -88,7 +92,7 @@ struct PasswordCredentialLess {
   }
 };
 
-// Extra information about CompromisedCredentials which is required by UI.
+// Extra information about InsecureCredentials which is required by UI.
 struct CredentialMetadata;
 
 // This class provides clients with saved compromised credentials and

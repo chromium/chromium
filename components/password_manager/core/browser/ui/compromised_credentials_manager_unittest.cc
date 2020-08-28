@@ -77,10 +77,10 @@ CredentialWithPassword MakeCompromisedCredential(
     CompromisedCredentials credential) {
   CredentialWithPassword credential_with_password((CredentialView(form)));
   credential_with_password.create_time = credential.create_time;
-  credential_with_password.compromise_type =
+  credential_with_password.insecure_type =
       credential.compromise_type == CompromiseType::kLeaked
-          ? CompromiseTypeFlags::kCredentialLeaked
-          : CompromiseTypeFlags::kCredentialPhished;
+          ? InsecureCredentialTypeFlags::kCredentialLeaked
+          : InsecureCredentialTypeFlags::kCredentialPhished;
   return credential_with_password;
 }
 
@@ -113,8 +113,7 @@ bool operator==(const CredentialWithPassword& lhs,
                 const CredentialWithPassword& rhs) {
   return lhs.signon_realm == rhs.signon_realm && lhs.username == rhs.username &&
          lhs.create_time == rhs.create_time &&
-         lhs.compromise_type == rhs.compromise_type &&
-         lhs.password == rhs.password;
+         lhs.insecure_type == rhs.insecure_type && lhs.password == rhs.password;
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -123,7 +122,7 @@ std::ostream& operator<<(std::ostream& out,
              << ", username: " << credential.username
              << ", create_time: " << credential.create_time
              << ", compromise_type: "
-             << static_cast<int>(credential.compromise_type)
+             << static_cast<int>(credential.insecure_type)
              << ", password: " << credential.password << " }";
 }
 
@@ -272,8 +271,8 @@ TEST_F(CompromisedCredentialsManagerTest, JoinPhishedAndLeaked) {
 
   CredentialWithPassword expected = MakeCompromisedCredential(password, leaked);
   expected.password = password.password_value;
-  expected.compromise_type = (CompromiseTypeFlags::kCredentialLeaked |
-                              CompromiseTypeFlags::kCredentialPhished);
+  expected.insecure_type = (InsecureCredentialTypeFlags::kCredentialLeaked |
+                            InsecureCredentialTypeFlags::kCredentialPhished);
 
   EXPECT_THAT(provider().GetCompromisedCredentials(), ElementsAre(expected));
 }

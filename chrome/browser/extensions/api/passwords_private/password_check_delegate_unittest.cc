@@ -75,7 +75,7 @@ using password_manager::BulkLeakCheckDelegateInterface;
 using password_manager::BulkLeakCheckService;
 using password_manager::CompromisedCredentials;
 using password_manager::CompromiseType;
-using password_manager::CompromiseTypeFlags;
+using password_manager::InsecureCredentialTypeFlags;
 using password_manager::IsLeaked;
 using password_manager::LeakCheckCredential;
 using password_manager::TestPasswordStore;
@@ -264,21 +264,21 @@ class PasswordCheckDelegateTest : public ::testing::Test {
 TEST_F(PasswordCheckDelegateTest, VerifyCastingOfCompromisedCredentialTypes) {
   static_assert(
       static_cast<int>(api::passwords_private::COMPROMISE_TYPE_NONE) ==
-          static_cast<int>(CompromiseTypeFlags::kNotCompromised),
+          static_cast<int>(InsecureCredentialTypeFlags::kSecure),
       "");
   static_assert(
       static_cast<int>(api::passwords_private::COMPROMISE_TYPE_LEAKED) ==
-          static_cast<int>(CompromiseTypeFlags::kCredentialLeaked),
+          static_cast<int>(InsecureCredentialTypeFlags::kCredentialLeaked),
       "");
   static_assert(
       static_cast<int>(api::passwords_private::COMPROMISE_TYPE_PHISHED) ==
-          static_cast<int>(CompromiseTypeFlags::kCredentialPhished),
+          static_cast<int>(InsecureCredentialTypeFlags::kCredentialPhished),
       "");
   static_assert(
       static_cast<int>(
           api::passwords_private::COMPROMISE_TYPE_PHISHED_AND_LEAKED) ==
-          static_cast<int>(CompromiseTypeFlags::kCredentialLeaked |
-                           CompromiseTypeFlags::kCredentialPhished),
+          static_cast<int>(InsecureCredentialTypeFlags::kCredentialLeaked |
+                           InsecureCredentialTypeFlags::kCredentialPhished),
       "");
 }
 

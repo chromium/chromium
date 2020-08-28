@@ -54,7 +54,7 @@ using password_manager::CredentialWithPassword;
 using password_manager::MockBulkLeakCheckService;
 using password_manager::CompromisedCredentials;
 using password_manager::CompromiseType;
-using password_manager::CompromiseTypeFlags;
+using password_manager::InsecureCredentialTypeFlags;
 using password_manager::IsLeaked;
 using password_manager::LeakCheckCredential;
 using password_manager::TestPasswordStore;
@@ -132,14 +132,14 @@ auto ExpectCompromisedCredential(const std::string& signon_realm,
                                  const base::StringPiece& username,
                                  const base::StringPiece& password,
                                  base::TimeDelta elapsed_time_since_compromise,
-                                 CompromiseTypeFlags compromise_type) {
+                                 InsecureCredentialTypeFlags insecure_type) {
   return AllOf(
       Field(&CredentialWithPassword::signon_realm, signon_realm),
       Field(&CredentialWithPassword::username, base::ASCIIToUTF16(username)),
       Field(&CredentialWithPassword::password, base::ASCIIToUTF16(password)),
       Field(&CredentialWithPassword::create_time,
             (base::Time::Now() - elapsed_time_since_compromise)),
-      Field(&CredentialWithPassword::compromise_type, compromise_type));
+      Field(&CredentialWithPassword::insecure_type, insecure_type));
 }
 
 class IOSChromePasswordCheckManagerTest : public PlatformTest {
@@ -189,7 +189,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, GetCompromisedCredentials) {
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredential(
           kExampleCom, kUsername1, kPassword1, base::TimeDelta::FromMinutes(1),
-          CompromiseTypeFlags::kCredentialLeaked)));
+          InsecureCredentialTypeFlags::kCredentialLeaked)));
 }
 
 // Test that we don't create an entry in the password store if IsLeaked is
@@ -223,7 +223,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, OnLeakFoundCreatesCredential) {
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredential(
           kExampleCom, kUsername1, kPassword1, base::TimeDelta::FromMinutes(0),
-          CompromiseTypeFlags::kCredentialLeaked)));
+          InsecureCredentialTypeFlags::kCredentialLeaked)));
 }
 
 // Verifies that the case where the user has no saved passwords is reported
@@ -286,7 +286,7 @@ TEST_F(IOSChromePasswordCheckManagerTest,
       observer,
       CompromisedCredentialsChanged(ElementsAre(ExpectCompromisedCredential(
           kExampleCom, kUsername1, kPassword1, base::TimeDelta::FromMinutes(1),
-          CompromiseTypeFlags::kCredentialLeaked))));
+          InsecureCredentialTypeFlags::kCredentialLeaked))));
   store().AddCompromisedCredentials(MakeCompromised(
       kExampleCom, kUsername1, base::TimeDelta::FromMinutes(1)));
   RunUntilIdle();
@@ -337,7 +337,7 @@ TEST_F(IOSChromePasswordCheckManagerTest, DeletePassword) {
       manager().GetCompromisedCredentials(),
       ElementsAre(ExpectCompromisedCredential(
           kExampleCom, kUsername1, kPassword1, base::TimeDelta::FromMinutes(1),
-          CompromiseTypeFlags::kCredentialLeaked)));
+          InsecureCredentialTypeFlags::kCredentialLeaked)));
 
   manager().DeleteCompromisedPasswordForm(form);
   RunUntilIdle();
