@@ -33,22 +33,22 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
   // case, we enable it for all builds then.
 #if !(defined(ARCH_CPU_64_BITS) && !defined(OS_NACL))
   return false;
-#elif BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // We have to check if windows version is greater than or equal to 8.1.
-  // If IsWindows8Point1OrGreater() doesn't allocate any memory,
-  // we will use the helper function here. See https://crbug.com/1101421.
-  return true;
-#else  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#else
 #if defined(OS_WIN)
   // Lots of crashes (at PartitionAddressSpace::Init) occur
   // when enabling GigaCage on Windows whose version is smaller than 8.1,
   // because PTEs for reserved memory counts against commit limit. See
   // https://crbug.com/1101421.
-  if (!IsWindows8Point1OrGreater())
+  static bool recent_enough_windows_version = IsWindows8Point1OrGreater();
+  if (!recent_enough_windows_version)
     return false;
-#endif
+#endif  // defined(OS_WIN)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return true;
+#else
   return FeatureList::IsEnabled(kPartitionAllocGigaCage);
-#endif
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // !(defined(ARCH_CPU_64_BITS) && !defined(OS_NACL))
 }
 
 }  // namespace base
