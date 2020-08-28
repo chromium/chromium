@@ -87,7 +87,8 @@ class FakeNearbyConnectionsManager
   }
   DataUsage connected_data_usage() const { return connected_data_usage_; }
   void set_send_payload_callback(
-      base::RepeatingCallback<void(PayloadPtr payload)> callback) {
+      base::RepeatingCallback<void(PayloadPtr, PayloadStatusListener*)>
+          callback) {
     send_payload_callback_ = std::move(callback);
   }
   const base::Optional<std::vector<uint8_t>>& adverting_endpoint_info() {
@@ -115,7 +116,8 @@ class FakeNearbyConnectionsManager
   std::map<std::string, std::vector<uint8_t>> endpoint_auth_tokens_;
   NearbyConnection* connection_ = nullptr;
   DataUsage connected_data_usage_ = DataUsage::kUnknown;
-  base::RepeatingCallback<void(PayloadPtr payload)> send_payload_callback_;
+  base::RepeatingCallback<void(PayloadPtr, PayloadStatusListener*)>
+      send_payload_callback_;
   base::Optional<std::vector<uint8_t>> adverting_endpoint_info_;
   std::set<std::string> disconnected_endpoints_;
 

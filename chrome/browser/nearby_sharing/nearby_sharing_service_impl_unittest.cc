@@ -707,6 +707,83 @@ class NearbySharingServiceImplTest : public testing::Test {
     }
   }
 
+  void SetUpOutgoingConnectionUntilAccept(
+      MockTransferUpdateCallback& transfer_callback,
+      const ShareTarget& target) {
+    base::RunLoop introduction_run_loop;
+    ExpectTransferUpdates(transfer_callback, target,
+                          {TransferMetadata::Status::kConnecting,
+                           TransferMetadata::Status::kAwaitingLocalConfirmation,
+                           TransferMetadata::Status::kAwaitingRemoteAcceptance},
+                          introduction_run_loop.QuitClosure());
+
+    EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+              service_->SendAttachments(target,
+                                        CreateTextAttachments({kTextPayload})));
+    introduction_run_loop.Run();
+
+    // Verify data sent to the remote device so far.
+    ExpectPairedKeyEncryptionFrame();
+    ExpectPairedKeyResultFrame();
+    ExpectIntroductionFrame();
+  }
+
+  struct PayloadInfo {
+    int64_t payload_id;
+    NearbyConnectionsManager::PayloadStatusListener* listener;
+  };
+
+  PayloadInfo AcceptAndSendPayload(
+      MockTransferUpdateCallback& transfer_callback,
+      const ShareTarget& target) {
+    PayloadInfo info = {};
+    base::RunLoop payload_run_loop;
+    fake_nearby_connections_manager_->set_send_payload_callback(
+        base::BindLambdaForTesting(
+            [&](NearbyConnectionsManager::PayloadPtr payload,
+                NearbyConnectionsManager::PayloadStatusListener* listener) {
+              ASSERT_TRUE(payload->content->is_bytes());
+              std::vector<uint8_t> bytes = payload->content->get_bytes()->bytes;
+              EXPECT_EQ(kTextPayload, std::string(bytes.begin(), bytes.end()));
+              info.payload_id = payload->id;
+              info.listener = listener;
+              payload_run_loop.Quit();
+            }));
+
+    // We're now waiting for the remote device to respond with the accept
+    // result.
+    base::RunLoop accept_run_loop;
+    ExpectTransferUpdates(transfer_callback, target,
+                          {TransferMetadata::Status::kInProgress},
+                          accept_run_loop.QuitClosure());
+
+    // Kick off send process by accepting the transfer from the remote device.
+    SendConnectionResponse(
+        sharing::mojom::ConnectionResponseFrame::Status::kAccept);
+
+    accept_run_loop.Run();
+    payload_run_loop.Run();
+    return info;
+  }
+
+  void FinishOutgoingTransfer(MockTransferUpdateCallback& transfer_callback,
+                              const ShareTarget& target,
+                              const PayloadInfo& info) {
+    // Simulate a successful transfer via Nearby Connections.
+    base::RunLoop success_run_loop;
+    ExpectTransferUpdates(transfer_callback, target,
+                          {TransferMetadata::Status::kComplete},
+                          success_run_loop.QuitClosure());
+    ASSERT_TRUE(info.listener);
+    info.listener->OnStatusUpdate(
+        location::nearby::connections::mojom::PayloadTransferUpdate::New(
+            info.payload_id,
+            location::nearby::connections::mojom::PayloadStatus::kSuccess,
+            /*total_bytes=*/strlen(kTextPayload),
+            /*bytes_transferred=*/strlen(kTextPayload)));
+    success_run_loop.Run();
+  }
+
  protected:
   FakeNearbyShareLocalDeviceDataManager* local_device_data_manager() {
     EXPECT_EQ(1u, local_device_data_manager_factory_.instances().size());
@@ -3101,30 +3178,48 @@ TEST_F(NearbySharingServiceImplTest, SendText_Success) {
   EXPECT_EQ(test_metadata_key.encrypted_key(),
             advertisement->encrypted_metadata_key());
 
-  // Expect the text payload to be sent in the end.
-  base::RunLoop payload_run_loop;
-  fake_nearby_connections_manager_->set_send_payload_callback(
-      base::BindLambdaForTesting(
-          [&](NearbyConnectionsManager::PayloadPtr payload) {
-            ASSERT_TRUE(payload->content->is_bytes());
-            std::vector<uint8_t> bytes = payload->content->get_bytes()->bytes;
-            std::string sent = std::string(bytes.begin(), bytes.end());
-            EXPECT_EQ(kTextPayload, sent);
-            payload_run_loop.Quit();
-          }));
+  PayloadInfo info = AcceptAndSendPayload(transfer_callback, target);
+  FinishOutgoingTransfer(transfer_callback, target, info);
 
-  // We're now waiting for the remote device to respond with the accept result.
-  base::RunLoop accept_run_loop;
-  ExpectTransferUpdates(transfer_callback, target,
-                        {TransferMetadata::Status::kInProgress},
-                        accept_run_loop.QuitClosure());
+  // We should not have called disconnect yet as we want to wait for 1 minute to
+  // make sure all outgoing packets have been sent properly.
+  EXPECT_TRUE(
+      fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
 
-  // Kick off send process by accepting the transfer from the remote device.
-  SendConnectionResponse(
-      sharing::mojom::ConnectionResponseFrame::Status::kAccept);
+  // Forward time until we send the disconnect request to Nearby Connections.
+  task_environment_.FastForwardBy(kOutgoingDisconnectionDelay);
 
-  accept_run_loop.Run();
-  payload_run_loop.Run();
+  // Expect to be disconnected now.
+  EXPECT_FALSE(
+      fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
+
+  service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
+}
+
+TEST_F(NearbySharingServiceImplTest, SendText_SuccessClosedConnection) {
+  MockTransferUpdateCallback transfer_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  ShareTarget target =
+      SetUpOutgoingShareTarget(transfer_callback, discovery_callback);
+  SetUpOutgoingConnectionUntilAccept(transfer_callback, target);
+  PayloadInfo info = AcceptAndSendPayload(transfer_callback, target);
+  FinishOutgoingTransfer(transfer_callback, target, info);
+
+  // We should not have called disconnect yet as we want to wait for 1 minute to
+  // make sure all outgoing packets have been sent properly.
+  EXPECT_TRUE(
+      fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
+
+  // Call disconnect on the connection early before the timeout has passed.
+  connection_.Close();
+
+  // Expect that we haven't called disconnect again as the endpoint is already
+  // disconnected.
+  EXPECT_TRUE(
+      fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
+
+  // Make sure the scheduled disconnect callback does nothing.
+  task_environment_.FastForwardBy(kOutgoingDisconnectionDelay);
 
   service_->UnregisterSendSurface(&transfer_callback, &discovery_callback);
 }
@@ -3167,7 +3262,8 @@ TEST_F(NearbySharingServiceImplTest, SendFiles_Success) {
   base::RunLoop payload_run_loop;
   fake_nearby_connections_manager_->set_send_payload_callback(
       base::BindLambdaForTesting(
-          [&](NearbyConnectionsManager::PayloadPtr payload) {
+          [&](NearbyConnectionsManager::PayloadPtr payload,
+              NearbyConnectionsManager::PayloadStatusListener* listener) {
             base::ScopedAllowBlockingForTesting allow_blocking;
 
             ASSERT_TRUE(payload->content->is_file());

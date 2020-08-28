@@ -73,7 +73,7 @@ void FakeNearbyConnectionsManager::Send(const std::string& endpoint_id,
                                         PayloadStatusListener* listener) {
   DCHECK(!is_shutdown());
   if (send_payload_callback_)
-    send_payload_callback_.Run(std::move(payload));
+    send_payload_callback_.Run(std::move(payload), listener);
 }
 
 void FakeNearbyConnectionsManager::RegisterPayloadStatusListener(

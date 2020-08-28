@@ -136,6 +136,7 @@ TEST_F(PayloadTrackerTest, PayloadsComplete_Successful) {
       Run(testing::_,
           MetadataMatcher(TransferMetadataBuilder()
                               .set_status(TransferMetadata::Status::kComplete)
+                              .set_progress(100)
                               .build())));
 
   for (int payload_id = 0; payload_id < kAttachmentCount; payload_id++) {

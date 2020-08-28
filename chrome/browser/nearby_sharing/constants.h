@@ -15,6 +15,13 @@ constexpr base::TimeDelta kReadResponseFrameTimeout =
 constexpr base::TimeDelta kInitiateNearbyConnectionTimeout =
     base::TimeDelta::FromSeconds(60);
 
+// The delay before the sender will disconnect from the receiver after sending a
+// file. Note that the receiver is expected to immediately disconnect, so this
+// delay is a worst-effort disconnection. Disconnecting too early may interrupt
+// in flight packets, especially over WiFi LAN.
+constexpr base::TimeDelta kOutgoingDisconnectionDelay =
+    base::TimeDelta::FromSeconds(60);
+
 // The delay before the receiver will disconnect from the sender after rejecting
 // an incoming file. The sender is expected to disconnect immediately after
 // reading the rejection frame.

@@ -68,6 +68,7 @@ void PayloadTracker::OnTransferUpdate() {
     update_callback_.Run(share_target_,
                          TransferMetadataBuilder()
                              .set_status(TransferMetadata::Status::kComplete)
+                             .set_progress(100)
                              .build());
     return;
   }

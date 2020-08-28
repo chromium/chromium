@@ -2691,11 +2691,9 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
     Disconnect(share_target, metadata);
   }
 
-  if (share_target.is_incoming) {
-    OnIncomingTransferUpdate(share_target, metadata);
-  } else {
-    // TODO(crbug.com/1085067): Add call for outgoing transfer.
-  }
+  ShareTargetInfo* info = GetShareTargetInfo(share_target);
+  if (info->transfer_update_callback())
+    info->transfer_update_callback()->OnTransferUpdate(share_target, metadata);
 }
 
 void NearbySharingServiceImpl::OnPayloadsFailed(ShareTarget share_target) {
@@ -2821,7 +2819,33 @@ void NearbySharingServiceImpl::Disconnect(const ShareTarget& share_target,
     return;
   }
 
-  // TODO(crbug.com/1085067): Implement outgoing disconnection.
+  // Disconnect after a timeout to make sure any pending payloads are sent.
+  auto timer = std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
+      &NearbySharingServiceImpl::OnDisconnectingConnectionTimeout,
+      weak_ptr_factory_.GetWeakPtr(), *endpoint_id));
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, timer->callback(), kOutgoingDisconnectionDelay);
+  disconnection_timeout_alarms_[*endpoint_id] = std::move(timer);
+
+  // Stop the disconnection timeout if the connection has been closed already.
+  if (share_target_info->connection()) {
+    share_target_info->connection()->SetDisconnectionListener(base::BindOnce(
+        &NearbySharingServiceImpl::OnDisconnectingConnectionDisconnected,
+        weak_ptr_factory_.GetWeakPtr(), share_target, *endpoint_id));
+  }
+}
+
+void NearbySharingServiceImpl::OnDisconnectingConnectionTimeout(
+    const std::string& endpoint_id) {
+  disconnection_timeout_alarms_.erase(endpoint_id);
+  nearby_connections_manager_->Disconnect(endpoint_id);
+}
+
+void NearbySharingServiceImpl::OnDisconnectingConnectionDisconnected(
+    const ShareTarget& share_target,
+    const std::string& endpoint_id) {
+  disconnection_timeout_alarms_.erase(endpoint_id);
+  UnregisterShareTarget(share_target);
 }
 
 ShareTargetInfo& NearbySharingServiceImpl::GetOrCreateShareTargetInfo(

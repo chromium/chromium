@@ -264,6 +264,9 @@ class NearbySharingServiceImpl
   bool OnIncomingPayloadsComplete(ShareTarget& share_target);
   void OnPayloadsFailed(ShareTarget share_target);
   void Disconnect(const ShareTarget& share_target, TransferMetadata metadata);
+  void OnDisconnectingConnectionTimeout(const std::string& endpoint_id);
+  void OnDisconnectingConnectionDisconnected(const ShareTarget& share_target,
+                                             const std::string& endpoint_id);
 
   ShareTargetInfo& GetOrCreateShareTargetInfo(const ShareTarget& share_target,
                                               const std::string& endpoint_id);
@@ -348,6 +351,11 @@ class NearbySharingServiceImpl
   // This alarm is used to disconnect the sharing connection if both sides do
   // not press accept within the timeout.
   base::CancelableOnceClosure mutual_acceptance_timeout_alarm_;
+
+  // A map of ShareTarget id to disconnection timeout callback. Used to only
+  // disconnect after a timeout to keep sending any pending payloads.
+  base::flat_map<std::string, std::unique_ptr<base::CancelableOnceClosure>>
+      disconnection_timeout_alarms_;
 
   // The current advertising power level. PowerLevel::kUnknown while not
   // advertising.
