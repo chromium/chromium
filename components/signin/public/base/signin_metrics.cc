@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
@@ -721,6 +722,33 @@ void LogAccountRelation(const AccountRelation relation,
 
 void LogIsShared(const bool is_shared, const ReportingType type) {
   INVESTIGATOR_HISTOGRAM_BOOLEAN("Signin.IsShared", type, is_shared);
+}
+
+void LogSignedInCookiesCountsPerPrimaryAccountType(int signed_in_accounts_count,
+                                                   bool primary_syncing,
+                                                   bool primary_managed) {
+  constexpr int kMaxBucket = 10;
+  if (primary_syncing) {
+    if (primary_managed) {
+      base::UmaHistogramExactLinear(
+          "Signin.CookieJar.SignedInCountWithPrimary.SyncEnterprise",
+          signed_in_accounts_count, kMaxBucket);
+    } else {
+      base::UmaHistogramExactLinear(
+          "Signin.CookieJar.SignedInCountWithPrimary.SyncConsumer",
+          signed_in_accounts_count, kMaxBucket);
+    }
+  } else {
+    if (primary_managed) {
+      base::UmaHistogramExactLinear(
+          "Signin.CookieJar.SignedInCountWithPrimary.NoSyncEnterprise",
+          signed_in_accounts_count, kMaxBucket);
+    } else {
+      base::UmaHistogramExactLinear(
+          "Signin.CookieJar.SignedInCountWithPrimary.NoSyncConsumer",
+          signed_in_accounts_count, kMaxBucket);
+    }
+  }
 }
 
 void RecordRefreshTokenUpdatedFromSource(

@@ -58,6 +58,7 @@ class AccountInvestigator : public KeyedService,
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
  private:
   friend class AccountInvestigatorTest;
