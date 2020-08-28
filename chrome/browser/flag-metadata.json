@@ -3796,7 +3796,7 @@
   {
     "name": "quiet-notification-prompts",
     "owners": [ "engedy", "mkwst", "andypaicu", "hkamila" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 90
   },
   {
     "name": "raw-clipboard",
