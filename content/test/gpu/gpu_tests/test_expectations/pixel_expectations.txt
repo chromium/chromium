@@ -141,6 +141,9 @@ crbug.com/648369 [ linux debug intel ] * [ RetryOnFailure ]
 # further.
 crbug.com/660461 [ mac ] Pixel_ScissorTestWithPreserveDrawingBuffer [ RetryOnFailure ]
 
+# Flaky on Fuchsia
+crbug.com/1123095 [ Fuchsia ] Pixel_PrecisionRoundedCorner [ Skip ]
+
 # Failing on Nexus 5; haven't investigated why yet.
 crbug.com/773293 [ android no-use-gl qualcomm-adreno-(tm)-330 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Skip ]
 crbug.com/773293 [ android qualcomm-adreno-(tm)-330 ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Skip ]
