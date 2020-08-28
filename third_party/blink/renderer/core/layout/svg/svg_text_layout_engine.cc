@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_text_chunk_builder.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_engine_baseline.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_engine_spacing.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"

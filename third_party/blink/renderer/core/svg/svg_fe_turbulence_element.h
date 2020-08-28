@@ -22,14 +22,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_TURBULENCE_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_integer.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedInteger;
+class SVGAnimatedNumber;
+class SVGAnimatedNumberOptionalNumber;
 
 enum SVGStitchOptions {
   kSvgStitchtypeUnknown = 0,
@@ -47,10 +48,8 @@ class SVGFETurbulenceElement final
  public:
   explicit SVGFETurbulenceElement(Document&);
 
-  SVGAnimatedNumber* baseFrequencyX() { return base_frequency_->FirstNumber(); }
-  SVGAnimatedNumber* baseFrequencyY() {
-    return base_frequency_->SecondNumber();
-  }
+  SVGAnimatedNumber* baseFrequencyX();
+  SVGAnimatedNumber* baseFrequencyY();
   SVGAnimatedNumber* seed() { return seed_.Get(); }
   SVGAnimatedEnumeration<SVGStitchOptions>* stitchTiles() {
     return stitch_tiles_.Get();

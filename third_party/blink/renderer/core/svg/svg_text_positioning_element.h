@@ -21,12 +21,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_TEXT_POSITIONING_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_TEXT_POSITIONING_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_length_list.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedLengthList;
+class SVGAnimatedNumberList;
 
 class SVGTextPositioningElement : public SVGTextContentElement {
   DEFINE_WRAPPERTYPEINFO();

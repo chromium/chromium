@@ -21,6 +21,13 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_boolean.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_integer.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_integer_optional_integer.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
@@ -114,6 +121,22 @@ SVGFEConvolveMatrixElement::SVGFEConvolveMatrixElement(Document& document)
   AddToPropertyMap(order_);
   AddToPropertyMap(target_x_);
   AddToPropertyMap(target_y_);
+}
+
+SVGAnimatedNumber* SVGFEConvolveMatrixElement::kernelUnitLengthX() {
+  return kernel_unit_length_->FirstNumber();
+}
+
+SVGAnimatedNumber* SVGFEConvolveMatrixElement::kernelUnitLengthY() {
+  return kernel_unit_length_->SecondNumber();
+}
+
+SVGAnimatedInteger* SVGFEConvolveMatrixElement::orderX() const {
+  return order_->FirstInteger();
+}
+
+SVGAnimatedInteger* SVGFEConvolveMatrixElement::orderY() const {
+  return order_->SecondInteger();
 }
 
 void SVGFEConvolveMatrixElement::Trace(Visitor* visitor) const {

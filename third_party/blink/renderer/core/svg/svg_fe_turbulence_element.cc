@@ -20,6 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_fe_turbulence_element.h"
 
+#include "third_party/blink/renderer/core/svg/svg_animated_integer.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -73,6 +76,14 @@ SVGFETurbulenceElement::SVGFETurbulenceElement(Document& document)
   AddToPropertyMap(stitch_tiles_);
   AddToPropertyMap(type_);
   AddToPropertyMap(num_octaves_);
+}
+
+SVGAnimatedNumber* SVGFETurbulenceElement::baseFrequencyX() {
+  return base_frequency_->FirstNumber();
+}
+
+SVGAnimatedNumber* SVGFETurbulenceElement::baseFrequencyY() {
+  return base_frequency_->SecondNumber();
 }
 
 void SVGFETurbulenceElement::Trace(Visitor* visitor) const {

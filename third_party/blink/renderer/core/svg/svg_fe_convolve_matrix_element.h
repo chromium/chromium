@@ -20,18 +20,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_CONVOLVE_MATRIX_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_CONVOLVE_MATRIX_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_boolean.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_integer.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_integer_optional_integer.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedBoolean;
+class SVGAnimatedNumber;
+class SVGAnimatedNumberList;
+class SVGAnimatedNumberOptionalNumber;
+class SVGAnimatedInteger;
+class SVGAnimatedIntegerOptionalInteger;
 
 DECLARE_SVG_ENUM_MAP(EdgeModeType);
 
@@ -45,17 +46,13 @@ class SVGFEConvolveMatrixElement final
   SVGAnimatedBoolean* preserveAlpha() { return preserve_alpha_.Get(); }
   SVGAnimatedNumber* divisor() { return divisor_.Get(); }
   SVGAnimatedNumber* bias() { return bias_.Get(); }
-  SVGAnimatedNumber* kernelUnitLengthX() {
-    return kernel_unit_length_->FirstNumber();
-  }
-  SVGAnimatedNumber* kernelUnitLengthY() {
-    return kernel_unit_length_->SecondNumber();
-  }
+  SVGAnimatedNumber* kernelUnitLengthX();
+  SVGAnimatedNumber* kernelUnitLengthY();
   SVGAnimatedNumberList* kernelMatrix() { return kernel_matrix_.Get(); }
   SVGAnimatedString* in1() { return in1_.Get(); }
   SVGAnimatedEnumeration<EdgeModeType>* edgeMode() { return edge_mode_.Get(); }
-  SVGAnimatedInteger* orderX() const { return order_->FirstInteger(); }
-  SVGAnimatedInteger* orderY() const { return order_->SecondInteger(); }
+  SVGAnimatedInteger* orderX() const;
+  SVGAnimatedInteger* orderY() const;
   SVGAnimatedInteger* targetX() { return target_x_.Get(); }
   SVGAnimatedInteger* targetY() { return target_y_.Get(); }
 

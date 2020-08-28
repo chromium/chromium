@@ -22,12 +22,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_COLOR_MATRIX_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_color_matrix.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedNumberList;
 
 DECLARE_SVG_ENUM_MAP(ColorMatrixType);
 

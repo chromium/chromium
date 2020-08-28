@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_gaussian_blur_element.h"
 
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_gaussian_blur.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -39,16 +41,24 @@ SVGFEGaussianBlurElement::SVGFEGaussianBlurElement(Document& document)
   AddToPropertyMap(in1_);
 }
 
-void SVGFEGaussianBlurElement::Trace(Visitor* visitor) const {
-  visitor->Trace(std_deviation_);
-  visitor->Trace(in1_);
-  SVGFilterPrimitiveStandardAttributes::Trace(visitor);
-}
-
 void SVGFEGaussianBlurElement::setStdDeviation(float x, float y) {
   stdDeviationX()->BaseValue()->SetValue(x);
   stdDeviationY()->BaseValue()->SetValue(y);
   Invalidate();
+}
+
+SVGAnimatedNumber* SVGFEGaussianBlurElement::stdDeviationX() {
+  return std_deviation_->FirstNumber();
+}
+
+SVGAnimatedNumber* SVGFEGaussianBlurElement::stdDeviationY() {
+  return std_deviation_->SecondNumber();
+}
+
+void SVGFEGaussianBlurElement::Trace(Visitor* visitor) const {
+  visitor->Trace(std_deviation_);
+  visitor->Trace(in1_);
+  SVGFilterPrimitiveStandardAttributes::Trace(visitor);
 }
 
 void SVGFEGaussianBlurElement::SvgAttributeChanged(

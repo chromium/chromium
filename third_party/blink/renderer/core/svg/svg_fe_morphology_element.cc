@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_morphology_element.h"
 
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -52,6 +54,14 @@ SVGFEMorphologyElement::SVGFEMorphologyElement(Document& document)
   AddToPropertyMap(radius_);
   AddToPropertyMap(in1_);
   AddToPropertyMap(svg_operator_);
+}
+
+SVGAnimatedNumber* SVGFEMorphologyElement::radiusX() {
+  return radius_->FirstNumber();
+}
+
+SVGAnimatedNumber* SVGFEMorphologyElement::radiusY() {
+  return radius_->SecondNumber();
 }
 
 void SVGFEMorphologyElement::Trace(Visitor* visitor) const {

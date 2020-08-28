@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_func_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_func_b_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_func_g_element.h"

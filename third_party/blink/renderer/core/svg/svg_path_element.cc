@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_path.h"
 #include "third_party/blink/renderer/core/svg/svg_mpath_element.h"
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
@@ -59,6 +60,10 @@ const StylePath* SVGPathElement::GetStylePath() const {
 
 float SVGPathElement::ComputePathLength() const {
   return GetStylePath()->length();
+}
+
+const SVGPathByteStream& SVGPathElement::PathByteStream() const {
+  return GetStylePath()->ByteStream();
 }
 
 Path SVGPathElement::AsPath() const {

@@ -37,6 +37,14 @@ SVGPolyElement::SVGPolyElement(const QualifiedName& tag_name,
   AddToPropertyMap(points_);
 }
 
+SVGPointListTearOff* SVGPolyElement::pointsFromJavascript() {
+  return points_->baseVal();
+}
+
+SVGPointListTearOff* SVGPolyElement::animatedPoints() {
+  return points_->animVal();
+}
+
 void SVGPolyElement::Trace(Visitor* visitor) const {
   visitor->Trace(points_);
   SVGGeometryElement::Trace(visitor);

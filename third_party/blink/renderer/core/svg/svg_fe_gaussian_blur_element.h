@@ -21,11 +21,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_GAUSSIAN_BLUR_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_GAUSSIAN_BLUR_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedNumber;
+class SVGAnimatedNumberOptionalNumber;
 
 class SVGFEGaussianBlurElement final
     : public SVGFilterPrimitiveStandardAttributes {
@@ -36,8 +38,8 @@ class SVGFEGaussianBlurElement final
 
   void setStdDeviation(float std_deviation_x, float std_deviation_y);
 
-  SVGAnimatedNumber* stdDeviationX() { return std_deviation_->FirstNumber(); }
-  SVGAnimatedNumber* stdDeviationY() { return std_deviation_->SecondNumber(); }
+  SVGAnimatedNumber* stdDeviationX();
+  SVGAnimatedNumber* stdDeviationY();
   SVGAnimatedString* in1() { return in1_.Get(); }
 
   void Trace(Visitor*) const override;

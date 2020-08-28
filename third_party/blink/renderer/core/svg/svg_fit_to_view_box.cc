@@ -22,8 +22,12 @@
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
 
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
+#include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -58,6 +62,15 @@ SVGFitToViewBox::SVGFitToViewBox(SVGElement* element)
   DCHECK(element);
   element->AddToPropertyMap(view_box_);
   element->AddToPropertyMap(preserve_aspect_ratio_);
+}
+
+bool SVGFitToViewBox::HasValidViewBox() const {
+  return view_box_->CurrentValue()->IsValid();
+}
+
+bool SVGFitToViewBox::HasEmptyViewBox() const {
+  return view_box_->CurrentValue()->IsValid() &&
+         view_box_->CurrentValue()->Value().IsEmpty();
 }
 
 void SVGFitToViewBox::Trace(Visitor* visitor) const {

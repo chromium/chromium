@@ -22,16 +22,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FIT_TO_VIEW_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FIT_TO_VIEW_BOX_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
-#include "third_party/blink/renderer/core/svg/svg_preserve_aspect_ratio.h"
-#include "third_party/blink/renderer/core/svg/svg_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
 class AffineTransform;
+class FloatRect;
 class QualifiedName;
+class SVGAnimatedPreserveAspectRatio;
+class SVGAnimatedRect;
+class SVGElement;
+class SVGPreserveAspectRatio;
 
 class SVGFitToViewBox : public GarbageCollectedMixin {
  public:
@@ -42,11 +43,8 @@ class SVGFitToViewBox : public GarbageCollectedMixin {
 
   static bool IsKnownAttribute(const QualifiedName&);
 
-  bool HasValidViewBox() const { return view_box_->CurrentValue()->IsValid(); }
-  bool HasEmptyViewBox() const {
-    return view_box_->CurrentValue()->IsValid() &&
-           view_box_->CurrentValue()->Value().IsEmpty();
-  }
+  bool HasValidViewBox() const;
+  bool HasEmptyViewBox() const;
 
   // JS API
   SVGAnimatedRect* viewBox() const { return view_box_.Get(); }

@@ -21,8 +21,10 @@
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -50,6 +52,14 @@ SVGURIReference::SVGURIReference(SVGElement* element)
     : href_(MakeGarbageCollected<SVGAnimatedHref>(element)) {
   DCHECK(element);
   href_->AddToPropertyMap(element);
+}
+
+const String& SVGURIReference::HrefString() const {
+  return href_->CurrentValue()->Value();
+}
+
+SVGAnimatedString* SVGURIReference::href() const {
+  return href_.Get();
 }
 
 void SVGURIReference::Trace(Visitor* visitor) const {

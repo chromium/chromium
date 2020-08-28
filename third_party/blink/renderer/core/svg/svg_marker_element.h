@@ -22,14 +22,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_MARKER_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_MARKER_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
+#include "third_party/blink/renderer/core/svg/svg_angle.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedAngle;
+class SVGAnimatedLength;
 
 enum SVGMarkerUnitsType {
   kSVGMarkerUnitsUnknown = 0,
@@ -71,9 +73,7 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
     return marker_units_.Get();
   }
   SVGAnimatedAngle* orientAngle() { return orient_angle_.Get(); }
-  SVGAnimatedEnumeration<SVGMarkerOrientType>* orientType() {
-    return orient_angle_->OrientType();
-  }
+  SVGAnimatedEnumeration<SVGMarkerOrientType>* orientType();
 
   void Trace(Visitor*) const override;
 

@@ -56,7 +56,7 @@ void SVGScriptElement::ParseAttribute(
 void SVGScriptElement::SvgAttributeChanged(const QualifiedName& attr_name) {
   if (SVGURIReference::IsKnownAttribute(attr_name)) {
     SVGElement::InvalidationGuard invalidation_guard(this);
-    loader_->HandleSourceAttribute(HrefString());
+    loader_->HandleSourceAttribute(LegacyHrefString(*this));
     return;
   }
 
@@ -102,7 +102,7 @@ bool SVGScriptElement::HaveLoadedRequiredResources() {
 }
 
 String SVGScriptElement::SourceAttributeValue() const {
-  return HrefString();
+  return LegacyHrefString(*this);
 }
 
 String SVGScriptElement::TypeAttributeValue() const {
@@ -118,7 +118,7 @@ String SVGScriptElement::ScriptTextInternalSlot() const {
 }
 
 bool SVGScriptElement::HasSourceAttribute() const {
-  return href()->IsSpecified();
+  return !LegacyHrefString(*this).IsNull();
 }
 
 bool SVGScriptElement::IsConnected() const {

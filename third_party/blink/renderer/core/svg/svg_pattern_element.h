@@ -23,8 +23,6 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
 #include "third_party/blink/renderer/core/svg/svg_tests.h"
@@ -34,8 +32,10 @@
 
 namespace blink {
 
-class SVGResource;
 class PatternAttributes;
+class SVGAnimatedLength;
+class SVGAnimatedTransformList;
+class SVGResource;
 
 class SVGPatternElement final : public SVGElement,
                                 public SVGURIReference,

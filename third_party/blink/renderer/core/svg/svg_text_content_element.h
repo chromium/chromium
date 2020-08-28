@@ -22,7 +22,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_TEXT_CONTENT_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -30,6 +29,7 @@ namespace blink {
 
 class ExceptionState;
 class LineLayoutItem;
+class SVGAnimatedLength;
 class SVGPointTearOff;
 
 enum SVGLengthAdjustType {

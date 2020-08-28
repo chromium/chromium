@@ -24,6 +24,10 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/svg/svg_angle_tear_off.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -77,6 +81,10 @@ SVGMarkerElement::SVGMarkerElement(Document& document)
   AddToPropertyMap(marker_height_);
   AddToPropertyMap(orient_angle_);
   AddToPropertyMap(marker_units_);
+}
+
+SVGAnimatedEnumeration<SVGMarkerOrientType>* SVGMarkerElement::orientType() {
+  return orient_angle_->OrientType();
 }
 
 void SVGMarkerElement::Trace(Visitor* visitor) const {
