@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutInline (relative positioned) SPAN",
+      "name": "LayoutNGBlockFlow (relative positioned) (floating) DIV id='float'",
       "position": [158, 158],
       "bounds": [100, 100],
       "contentsOpaque": true,
