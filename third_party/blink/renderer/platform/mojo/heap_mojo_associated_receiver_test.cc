@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
+#include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
@@ -41,7 +41,7 @@ class MockContext final : public GarbageCollected<MockContext>,
   }
 
  private:
-  HeapObserverSet<ContextLifecycleObserver> observers_;
+  HeapObserverList<ContextLifecycleObserver> observers_;
 };
 
 template <HeapMojoWrapperMode Mode>

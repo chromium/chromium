@@ -39,7 +39,7 @@ class CORE_EXPORT PageVisibilityObserver : public GarbageCollectedMixin {
   virtual void PageVisibilityChanged() = 0;
 
   // Call before clearing an observer list.
-  void ObserverSetWillBeCleared();
+  void ObserverListWillBeCleared();
 
   Page* GetPage() const { return page_; }
   void SetPage(Page*);

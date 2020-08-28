@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_SET_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_SET_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_LIST_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_LIST_H_
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
-// A set of observers. Ensures list is not mutated while iterating. Observers
+// A list of observers. Ensures list is not mutated while iterating. Observers
 // are not retained.
 template <class ObserverType>
-class PLATFORM_EXPORT HeapObserverSet {
+class PLATFORM_EXPORT HeapObserverList {
   DISALLOW_NEW();
 
  public:
@@ -49,8 +49,7 @@ class PLATFORM_EXPORT HeapObserverSet {
     observers_.clear();
   }
 
-  // Safely iterate over the registered lifecycle observers in an unpredictable
-  // order.
+  // Safely iterate over the registered lifecycle observers.
   //
   // Adding or removing observers is not allowed during iteration. The callable
   // will only be called synchronously inside ForEachObserver().
@@ -70,7 +69,7 @@ class PLATFORM_EXPORT HeapObserverSet {
   void Trace(Visitor* visitor) const { visitor->Trace(observers_); }
 
  private:
-  using ObserverSet = HeapHashSet<WeakMember<ObserverType>>;
+  using ObserverSet = HeapLinkedHashSet<WeakMember<ObserverType>>;
 
   // TODO(keishi): Clean up iteration state once transition from
   // LifecycleObserver is complete.
@@ -89,4 +88,4 @@ class PLATFORM_EXPORT HeapObserverSet {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_SET_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_OBSERVER_LIST_H_

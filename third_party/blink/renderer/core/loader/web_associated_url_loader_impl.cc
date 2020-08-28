@@ -322,9 +322,9 @@ class WebAssociatedURLLoaderImpl::Observer final
   void Dispose() {
     parent_ = nullptr;
     // TODO(keishi): Remove IsIteratingOverObservers() check when
-    // HeapObserverSet() supports removal while iterating.
+    // HeapObserverList() supports removal while iterating.
     if (!GetExecutionContext()
-             ->ContextLifecycleObserverSet()
+             ->ContextLifecycleObserverList()
              .IsIteratingOverObservers()) {
       SetExecutionContext(nullptr);
     }

@@ -49,7 +49,7 @@
 #include "third_party/blink/renderer/core/frame/dom_timer_coordinator.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
+#include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
@@ -368,8 +368,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   void AddContextLifecycleObserver(ContextLifecycleObserver*) override;
   void RemoveContextLifecycleObserver(ContextLifecycleObserver*) override;
-  HeapObserverSet<ContextLifecycleObserver>& ContextLifecycleObserverSet() {
-    return context_lifecycle_observer_set_;
+  HeapObserverList<ContextLifecycleObserver>& ContextLifecycleObserverList() {
+    return context_lifecycle_observer_list_;
   }
   unsigned ContextLifecycleStateObserverCountForTesting() const;
 
@@ -439,7 +439,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   DOMTimerCoordinator timers_;
 
-  HeapObserverSet<ContextLifecycleObserver> context_lifecycle_observer_set_;
+  HeapObserverList<ContextLifecycleObserver> context_lifecycle_observer_list_;
 
   // Counter that keeps track of how many window interaction calls are allowed
   // for this ExecutionContext. Callers are expected to call

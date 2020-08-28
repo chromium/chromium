@@ -8,7 +8,7 @@
 
 namespace blink {
 
-void SynchronousMutationObserver::ObserverSetWillBeCleared() {
+void SynchronousMutationObserver::ObserverListWillBeCleared() {
   document_ = nullptr;
 }
 
@@ -17,12 +17,12 @@ void SynchronousMutationObserver::SetDocument(Document* document) {
     return;
 
   if (document_)
-    document_->SynchronousMutationObserverSet().RemoveObserver(this);
+    document_->SynchronousMutationObserverList().RemoveObserver(this);
 
   document_ = document;
 
   if (document_)
-    document_->SynchronousMutationObserverSet().AddObserver(this);
+    document_->SynchronousMutationObserverList().AddObserver(this);
 }
 
 void SynchronousMutationObserver::Trace(Visitor* visitor) const {

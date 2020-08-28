@@ -24,7 +24,7 @@
  *
  */
 
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
+#include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -37,12 +37,12 @@ class TestingNotifier final : public GarbageCollected<TestingNotifier> {
  public:
   TestingNotifier() = default;
 
-  HeapObserverSet<TestingObserver>& ObserverList() { return observer_list_; }
+  HeapObserverList<TestingObserver>& ObserverList() { return observer_list_; }
 
   void Trace(Visitor* visitor) const { visitor->Trace(observer_list_); }
 
  private:
-  HeapObserverSet<TestingObserver> observer_list_;
+  HeapObserverList<TestingObserver> observer_list_;
 };
 
 class TestingObserver final : public GarbageCollected<TestingObserver> {
@@ -56,12 +56,12 @@ class TestingObserver final : public GarbageCollected<TestingObserver> {
   int count_ = 0;
 };
 
-void Notify(HeapObserverSet<TestingObserver>& observer_list) {
+void Notify(HeapObserverList<TestingObserver>& observer_list) {
   observer_list.ForEachObserver(
       [](TestingObserver* observer) { observer->OnNotification(); });
 }
 
-TEST(HeapObserverSetTest, AddRemove) {
+TEST(HeapObserverListTest, AddRemove) {
   Persistent<TestingNotifier> notifier =
       MakeGarbageCollected<TestingNotifier>();
   Persistent<TestingObserver> observer =
@@ -79,7 +79,7 @@ TEST(HeapObserverSetTest, AddRemove) {
   EXPECT_EQ(observer->Count(), 1);
 }
 
-TEST(HeapObserverSetTest, HasObserver) {
+TEST(HeapObserverListTest, HasObserver) {
   Persistent<TestingNotifier> notifier =
       MakeGarbageCollected<TestingNotifier>();
   Persistent<TestingObserver> observer =
@@ -94,7 +94,7 @@ TEST(HeapObserverSetTest, HasObserver) {
   EXPECT_FALSE(notifier->ObserverList().HasObserver(observer.Get()));
 }
 
-TEST(HeapObserverSetTest, GarbageCollect) {
+TEST(HeapObserverListTest, GarbageCollect) {
   Persistent<TestingNotifier> notifier =
       MakeGarbageCollected<TestingNotifier>();
   Persistent<TestingObserver> observer =
@@ -111,7 +111,7 @@ TEST(HeapObserverSetTest, GarbageCollect) {
   EXPECT_EQ(weak_ref.Get(), nullptr);
 }
 
-TEST(HeapObserverSetTest, IsIteratingOverObservers) {
+TEST(HeapObserverListTest, IsIteratingOverObservers) {
   Persistent<TestingNotifier> notifier =
       MakeGarbageCollected<TestingNotifier>();
   Persistent<TestingObserver> observer =
@@ -122,6 +122,44 @@ TEST(HeapObserverSetTest, IsIteratingOverObservers) {
   notifier->ObserverList().ForEachObserver([&](TestingObserver* observer) {
     EXPECT_TRUE(notifier->ObserverList().IsIteratingOverObservers());
   });
+}
+
+TEST(HeapObserverListTest, ForEachObserverOrder) {
+  Persistent<TestingNotifier> notifier =
+      MakeGarbageCollected<TestingNotifier>();
+  Persistent<TestingObserver> observer1 =
+      MakeGarbageCollected<TestingObserver>();
+  Persistent<TestingObserver> observer2 =
+      MakeGarbageCollected<TestingObserver>();
+
+  HeapVector<Member<TestingObserver>> seen_observers;
+
+  notifier->ObserverList().AddObserver(observer1);
+  notifier->ObserverList().AddObserver(observer2);
+  notifier->ObserverList().ForEachObserver(
+      [&](TestingObserver* observer) { seen_observers.push_back(observer); });
+
+  ASSERT_EQ(2u, seen_observers.size());
+  EXPECT_EQ(observer1.Get(), seen_observers[0].Get());
+  EXPECT_EQ(observer2.Get(), seen_observers[1].Get());
+
+  seen_observers.clear();
+
+  notifier->ObserverList().RemoveObserver(observer1);
+  notifier->ObserverList().AddObserver(observer1);
+  notifier->ObserverList().ForEachObserver(
+      [&](TestingObserver* observer) { seen_observers.push_back(observer); });
+
+  ASSERT_EQ(2u, seen_observers.size());
+  EXPECT_EQ(observer2.Get(), seen_observers[0].Get());
+  EXPECT_EQ(observer1.Get(), seen_observers[1].Get());
+
+  seen_observers.clear();
+
+  notifier->ObserverList().Clear();
+  notifier->ObserverList().ForEachObserver(
+      [&](TestingObserver* observer) { seen_observers.push_back(observer); });
+  ASSERT_EQ(0u, seen_observers.size());
 }
 
 }  // namespace blink

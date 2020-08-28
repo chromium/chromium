@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap_observer_set.h"
+#include "third_party/blink/renderer/platform/heap_observer_list.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -356,8 +356,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return history_navigation_virtual_time_pauser_;
   }
 
-  HeapObserverSet<PageVisibilityObserver>& PageVisibilityObserverSet() {
-    return page_visibility_observer_set_;
+  HeapObserverList<PageVisibilityObserver>& PageVisibilityObserverList() {
+    return page_visibility_observer_list_;
   }
 
   void SetPageLifecycleState(
@@ -418,7 +418,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   const Member<FocusController> focus_controller_;
   const Member<ContextMenuController> context_menu_controller_;
   const Member<PageScaleConstraintsSet> page_scale_constraints_set_;
-  HeapObserverSet<PageVisibilityObserver> page_visibility_observer_set_;
+  HeapObserverList<PageVisibilityObserver> page_visibility_observer_list_;
   const Member<PointerLockController> pointer_lock_controller_;
   Member<ScrollingCoordinator> scrolling_coordinator_;
   const Member<BrowserControls> browser_controls_;
