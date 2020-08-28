@@ -47,9 +47,14 @@ class ProfileActivityMetricsRecorder
 
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 
+  // The profile of the last active window.
   Profile* last_active_profile_ = nullptr;
-  base::TimeTicks profile_session_start_;
-  base::TimeTicks last_profile_session_end_;
+
+  // Profile of the currently running session, if there is any. Reset after
+  // inactivity.
+  Profile* running_session_profile_ = nullptr;
+  base::TimeTicks running_session_start_;
+  base::TimeTicks last_session_end_;
 
   base::ActionCallback action_callback_;
 
