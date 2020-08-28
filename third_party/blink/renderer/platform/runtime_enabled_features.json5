@@ -125,7 +125,6 @@
     },
     {
       name: "AccessibilityExposeHTMLElement",
-      status: "experimental",
     },
     {
       name: "AccessibilityObjectModel",
