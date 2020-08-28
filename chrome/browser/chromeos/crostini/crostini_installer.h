@@ -29,7 +29,9 @@ class CrostiniInstaller : public KeyedService,
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  // When you add entries to this enum don't forget to update enums.xml
+  // When you add entries to this enum don't forget to update enums.xml and the
+  // plx scripts in
+  // https://plx.corp.google.com/home2/home/collections/c16e3c1474497b821
   enum class SetupResult {
     kNotStarted = 0,
     // kUserCancelled = 1,
@@ -64,6 +66,8 @@ class CrostiniInstaller : public KeyedService,
     kErrorUnknown = 26,
 
     kMaxValue = kErrorUnknown,
+    // When adding a new value, check you've followed the steps in the comment
+    // at the top of this enum.
   };
 
   static CrostiniInstaller* GetForProfile(Profile* profile);
