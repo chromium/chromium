@@ -155,6 +155,7 @@ ConvertInstallationStageToProto(extensions::InstallStageTracker::Stage stage) {
       return em::ExtensionInstallReportLogEvent::COMPLETE;
     default:
       NOTREACHED();
+      return em::ExtensionInstallReportLogEvent::INSTALLATION_STAGE_UNKNOWN;
   }
 }
 
@@ -183,7 +184,7 @@ em::ExtensionInstallReportLogEvent_UserType ConvertUserTypeToProto(
       return em::ExtensionInstallReportLogEvent::USER_TYPE_WEB_KIOSK_APP;
     case user_manager::NUM_USER_TYPES:
       NOTREACHED();
-      return em::ExtensionInstallReportLogEvent::USER_TYPE_REGULAR;
+      return em::ExtensionInstallReportLogEvent::USER_TYPE_UNKNOWN;
   }
 }
 
@@ -216,6 +217,7 @@ ConvertDownloadingStageToProto(
       return em::ExtensionInstallReportLogEvent::FINISHED;
     default:
       NOTREACHED();
+      return em::ExtensionInstallReportLogEvent::DOWNLOADING_STAGE_UNKNOWN;
   }
 }
 

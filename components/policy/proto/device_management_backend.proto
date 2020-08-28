@@ -2899,72 +2899,78 @@ message ExtensionInstallReportLogEvent {
   // a copy used for reporting purposes. The entries are in the order they occur
   // in the installation process.
   enum InstallationStage {
-    CREATED = 0;
+    INSTALLATION_STAGE_UNKNOWN = 0;
 
-    NOTIFIED_FROM_MANAGEMENT = 5;
+    CREATED = 1;
 
-    NOTIFIED_FROM_MANAGEMENT_NOT_FORCED = 6;
+    NOTIFIED_FROM_MANAGEMENT = 6;
 
-    SEEN_BY_POLICY_LOADER = 7;
+    NOTIFIED_FROM_MANAGEMENT_NOT_FORCED = 7;
 
-    SEEN_BY_EXTERNAL_PROVIDER = 8;
+    SEEN_BY_POLICY_LOADER = 8;
 
-    PENDING = 1;
+    SEEN_BY_EXTERNAL_PROVIDER = 9;
 
-    DOWNLOADING = 2;
+    PENDING = 2;
 
-    INSTALLING = 3;
+    DOWNLOADING = 3;
 
-    COMPLETE = 4;
+    INSTALLING = 4;
+
+    COMPLETE = 5;
   }
 
   // Type of current user. See user_manager::UserType for more details.
   // user_manager::UserType is the main enum and this is a copy used for
   // reporting purposes.
   enum UserType {
-    USER_TYPE_REGULAR = 0;
+    USER_TYPE_UNKNOWN = 0;
 
-    USER_TYPE_GUEST = 1;
+    USER_TYPE_REGULAR = 1;
 
-    USER_TYPE_PUBLIC_ACCOUNT = 2;
+    USER_TYPE_GUEST = 2;
 
-    USER_TYPE_SUPERVISED = 3;
+    USER_TYPE_PUBLIC_ACCOUNT = 3;
 
-    USER_TYPE_KIOSK_APP = 4;
+    USER_TYPE_SUPERVISED = 4;
 
-    USER_TYPE_CHILD = 5;
+    USER_TYPE_KIOSK_APP = 5;
 
-    USER_TYPE_ARC_KIOSK_APP = 6;
+    USER_TYPE_CHILD = 6;
 
-    USER_TYPE_ACTIVE_DIRECTORY = 7;
+    USER_TYPE_ARC_KIOSK_APP = 7;
 
-    USER_TYPE_WEB_KIOSK_APP = 8;
-  };
+    USER_TYPE_ACTIVE_DIRECTORY = 8;
+
+    USER_TYPE_WEB_KIOSK_APP = 9;
+  }
 
   // Current stage of the extension downloading process. See
   // ExtensionDownloaderDelegate::Stage for more details.
   // ExtensionDownloaderDelegate::Stage is the main enum and this is a copy used
   // for reporting purposes.
   enum DownloadingStage {
-    DOWNLOAD_PENDING = 0;
+    DOWNLOADING_STAGE_UNKNOWN = 0;
 
-    QUEUED_FOR_MANIFEST = 1;
+    DOWNLOAD_PENDING = 1;
 
-    DOWNLOADING_MANIFEST = 2;
+    QUEUED_FOR_MANIFEST = 2;
 
-    DOWNLOADING_MANIFEST_RETRY = 3;
+    DOWNLOADING_MANIFEST = 3;
 
-    PARSING_MANIFEST = 4;
+    DOWNLOADING_MANIFEST_RETRY = 4;
 
-    MANIFEST_LOADED = 5;
+    PARSING_MANIFEST = 5;
 
-    QUEUED_FOR_CRX = 6;
+    MANIFEST_LOADED = 6;
 
-    DOWNLOADING_CRX = 7;
+    QUEUED_FOR_CRX = 7;
 
-    DOWNLOADING_CRX_RETRY = 8;
+    DOWNLOADING_CRX = 8;
 
-    FINISHED = 9;
+    DOWNLOADING_CRX_RETRY = 9;
+
+    FINISHED = 10;
   }
 
   // Timestamp, in microseconds since epoch. Set for all log
