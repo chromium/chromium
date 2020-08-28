@@ -120,9 +120,11 @@ void NGFieldsetPainter::PaintBoxDecorationBackground(
 
     const LayoutObject* layout_object = fieldset_.GetLayoutObject();
     Node* node = layout_object->GeneratingNode();
-    fragment_painter.PaintBorder(*fieldset_.GetLayoutObject(),
-                                 layout_object->GetDocument(), node, paint_info,
-                                 contracted_rect, fieldset_.Style());
+    fragment_painter.PaintBorder(
+        *fieldset_.GetLayoutObject(), layout_object->GetDocument(), node,
+        paint_info, contracted_rect, fieldset_.Style(),
+        box_decoration_data.GetBackgroundBleedAvoidance(),
+        fieldset_.SidesToInclude());
   }
 }
 
