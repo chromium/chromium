@@ -110,6 +110,7 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/autotest_private.h"
 #include "chrome/common/pref_names.h"
@@ -1706,6 +1707,33 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcPackageFunction::Run() {
                           base::Value(package_info->vpn_provider));
   }
   return RespondNow(OneArgument(std::move(package_value)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateWaitForSystemWebAppsInstallFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateWaitForSystemWebAppsInstallFunction::
+    AutotestPrivateWaitForSystemWebAppsInstallFunction() = default;
+
+AutotestPrivateWaitForSystemWebAppsInstallFunction::
+    ~AutotestPrivateWaitForSystemWebAppsInstallFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateWaitForSystemWebAppsInstallFunction::Run() {
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  web_app::WebAppProviderBase* provider =
+      web_app::WebAppProviderBase::GetProviderBase(profile);
+
+  if (!provider)
+    return RespondNow(Error("Web Apps are not available for profile."));
+
+  provider->system_web_app_manager().on_apps_synchronized().Post(
+      FROM_HERE,
+      base::BindOnce(
+          &AutotestPrivateWaitForSystemWebAppsInstallFunction::Respond, this,
+          NoArguments()));
+  return RespondLater();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

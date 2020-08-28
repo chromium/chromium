@@ -667,6 +667,9 @@ namespace autotestPrivate {
     static void getArcPackage(DOMString packageName,
                               GetArcPackageCallback callback);
 
+    // Waits for system web apps to complete the installation.
+    static void waitForSystemWebAppsInstall(VoidCallback callback);
+
     // Launches ARC app with optional intent. Returns true if ARC is active,
     // app exists and launch request is passed to Android.
     static void launchArcApp(DOMString appId, DOMString intent,

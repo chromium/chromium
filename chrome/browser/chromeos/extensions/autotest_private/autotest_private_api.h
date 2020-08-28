@@ -292,6 +292,19 @@ class AutotestPrivateGetArcPackageFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateWaitForSystemWebAppsInstallFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateWaitForSystemWebAppsInstallFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "autotestPrivate.waitForSystemWebAppsInstall",
+      AUTOTESTPRIVATE_WAITFORSYSTEMWEBAPPSINSTALLFUNCTION)
+
+ private:
+  ~AutotestPrivateWaitForSystemWebAppsInstallFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateLaunchArcAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.launchArcApp",

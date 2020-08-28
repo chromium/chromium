@@ -184,6 +184,11 @@ var defaultTests = [
             });
         });
   },
+  function waitForSystemWebAppsInstall() {
+    chrome.autotestPrivate.waitForSystemWebAppsInstall(
+      chrome.test.callbackPass()
+    );
+  },
   // This launches and closes Chrome.
   function launchCloseApp() {
     chrome.autotestPrivate.launchApp('mgndgikekgjfcpckkfioiadnlibdjbkf',
