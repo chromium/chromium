@@ -76,9 +76,19 @@
     toolbar_bg_color: "#ffffff",
     toolbar_search_bg_color: "$google_grey_100",
 
+    // TODO(crbug/1122767): Rename menu_button_* to app sidebar menu items.
     menu_button_bg_color_active: "$google_blue_50",
     menu_button_bg_color_hover: "$google_grey_100",
     menu_button_outline_color_focused: "$google_blue_600",
+
+    menu_item_bg_color_focus: {
+      light: "rgba(0, 0, 0, 0.06)",
+      dark: "rgba(255, 255, 255, 0.08)",
+    },
+    menu_item_ripple_color: {
+      light: "rgba(0, 0, 0, 0.06)",
+      dark: "rgba(255, 255, 255, 0.08)",
+    },
 
     toggle_color: "$icon_color_prominent",
     toggle_bg_color_inactive: "$google_grey_400",

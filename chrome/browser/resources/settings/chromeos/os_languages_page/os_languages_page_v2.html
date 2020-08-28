@@ -130,7 +130,8 @@
     </div>
 
     <template is="dom-if" if="[[showChangeDeviceLanguageDialog_]]" restamp>
-      <os-settings-change-device-language-dialog
+      <os-settings-change-device-language-dialog languages="[[languages]]"
+          language-helper="[[languageHelper]]"
           on-close="onChangeDeviceLanguageDialogClose_">
       </os-settings-change-device-language-dialog>
     </template>

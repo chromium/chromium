@@ -212,14 +212,56 @@ suite('languages page', () => {
     });
   });
 
-  suite('opens dialog', () => {
-    test('when clicking changeSystemLanguage', () => {
+  suite('change device language dialog', () => {
+    let dialog;
+    let dialogItems;
+    let cancelButton;
+    let actionButton;
+
+    setup(() => {
       assertFalse(
           !!languagesPage.$$('os-settings-change-device-language-dialog'));
       languagesPage.$$('#changeSystemLanguage').click();
       Polymer.dom.flush();
-      assertTrue(
-          !!languagesPage.$$('os-settings-change-device-language-dialog'));
+
+      dialog = languagesPage.$$('os-settings-change-device-language-dialog');
+      assertTrue(!!dialog);
+
+      actionButton = dialog.$$('.action-button');
+      assertTrue(!!actionButton);
+      cancelButton = dialog.$$('.cancel-button');
+      assertTrue(!!cancelButton);
+
+      // The fixed-height dialog's iron-list should stamp far fewer than
+      // 50 items.
+      dialogItems =
+          dialog.$.dialog.querySelectorAll('.list-item:not([hidden])');
+      assertGT(dialogItems.length, 1);
+      assertLT(dialogItems.length, 50);
+
+      // No language has been selected, so the action button is disabled.
+      assertTrue(actionButton.disabled);
+      assertFalse(cancelButton.disabled);
+    });
+
+    test('has action button working correctly', () => {
+      // selecting a language enables action button
+      dialogItems[0].click();
+      assertFalse(actionButton.disabled);
+
+      // selecting the same language again disables action button
+      dialogItems[0].click();
+      assertTrue(actionButton.disabled);
+    });
+
+    test('sets device language', async () => {
+      // selects a language
+      dialogItems[0].click();  // en-CA
+      assertFalse(actionButton.disabled);
+
+      actionButton.click();
+      assertEquals(
+          'en-CA', await browserProxy.whenCalled('setProspectiveUILanguage'));
     });
   });
 
