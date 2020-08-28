@@ -27,6 +27,11 @@ int32_t NextID(int32_t* counter) {
   return value;
 }
 
+bool UseSharedImage() {
+  // TODO(https://crbug.com/1108909): Enable shared image use on macOS.
+  return false;
+}
+
 class PictureBufferManagerImpl : public PictureBufferManager {
  public:
   explicit PictureBufferManagerImpl(
@@ -82,34 +87,38 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(planes);
     DCHECK_LE(planes, static_cast<uint32_t>(VideoFrame::kMaxPlanes));
 
-    // TODO(sandersd): Consider requiring that CreatePictureBuffers() is called
-    // with the context current.
-    if (!command_buffer_helper_->MakeContextCurrent()) {
-      DVLOG(1) << "Failed to make context current";
-      return std::vector<PictureBuffer>();
+    if (!UseSharedImage()) {
+      // TODO(sandersd): Consider requiring that CreatePictureBuffers() is
+      // called with the context current.
+      if (!command_buffer_helper_->MakeContextCurrent()) {
+        DVLOG(1) << "Failed to make context current";
+        return std::vector<PictureBuffer>();
+      }
     }
 
     std::vector<PictureBuffer> picture_buffers;
     for (uint32_t i = 0; i < count; i++) {
       PictureBufferData picture_data = {pixel_format, texture_size};
 
-      for (uint32_t j = 0; j < planes; j++) {
-        // Create a texture for this plane.
-        GLuint service_id = command_buffer_helper_->CreateTexture(
-            texture_target, GL_RGBA, texture_size.width(),
-            texture_size.height(), GL_RGBA, GL_UNSIGNED_BYTE);
-        DCHECK(service_id);
-        picture_data.service_ids.push_back(service_id);
+      if (!UseSharedImage()) {
+        for (uint32_t j = 0; j < planes; j++) {
+          // Create a texture for this plane.
+          GLuint service_id = command_buffer_helper_->CreateTexture(
+              texture_target, GL_RGBA, texture_size.width(),
+              texture_size.height(), GL_RGBA, GL_UNSIGNED_BYTE);
+          DCHECK(service_id);
+          picture_data.service_ids.push_back(service_id);
 
-        // The texture is not cleared yet, but it will be before the VDA outputs
-        // it. Rather than requiring output to happen on the GPU thread, mark
-        // the texture as cleared immediately.
-        command_buffer_helper_->SetCleared(service_id);
+          // The texture is not cleared yet, but it will be before the VDA
+          // outputs it. Rather than requiring output to happen on the GPU
+          // thread, mark the texture as cleared immediately.
+          command_buffer_helper_->SetCleared(service_id);
 
-        // Generate a mailbox while we are still on the GPU thread.
-        picture_data.mailbox_holders[j] = gpu::MailboxHolder(
-            command_buffer_helper_->CreateMailbox(service_id), gpu::SyncToken(),
-            texture_target);
+          // Generate a mailbox while we are still on the GPU thread.
+          picture_data.mailbox_holders[j] = gpu::MailboxHolder(
+              command_buffer_helper_->CreateMailbox(service_id),
+              gpu::SyncToken(), texture_target);
+        }
       }
 
       // Generate a picture buffer ID and record the picture buffer.
@@ -208,6 +217,15 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     // Record the output.
     picture_buffer_data.output_count++;
 
+    // If this |picture| has a SharedImage, then keep a reference to the
+    // SharedImage in |picture_buffer_data| and update the gpu::MailboxHolder.
+    DCHECK_EQ(UseSharedImage(), !!picture.scoped_shared_image());
+    if (auto scoped_shared_image = picture.scoped_shared_image()) {
+      picture_buffer_data.scoped_shared_image = scoped_shared_image;
+      picture_buffer_data.mailbox_holders[0] =
+          scoped_shared_image->GetMailboxHolder();
+    }
+
     // Create and return a VideoFrame for the picture buffer.
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
         picture_buffer_data.pixel_format, picture_buffer_data.mailbox_holders,
@@ -297,6 +315,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
 
     std::vector<GLuint> service_ids;
+    scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
     {
       base::AutoLock lock(picture_buffers_lock_);
       const auto& it = picture_buffers_.find(picture_buffer_id);
@@ -304,7 +323,14 @@ class PictureBufferManagerImpl : public PictureBufferManager {
       DCHECK(it->second.dismissed);
       DCHECK(!it->second.IsInUse());
       service_ids = std::move(it->second.service_ids);
+      scoped_shared_image = std::move(it->second.scoped_shared_image);
       picture_buffers_.erase(it);
+    }
+
+    // If this PictureBuffer is using a SharedImage, let it fall out of scope.
+    if (scoped_shared_image) {
+      DCHECK(service_ids.empty());
+      return;
     }
 
     if (!command_buffer_helper_->MakeContextCurrent())
@@ -326,6 +352,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     gfx::Size texture_size;
     std::vector<GLuint> service_ids;
     gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
+    scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
     bool dismissed = false;
 
     // The same picture buffer can be output from the VDA multiple times

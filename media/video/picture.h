@@ -9,7 +9,9 @@
 
 #include <vector>
 
-#include "gpu/command_buffer/common/mailbox.h"
+#include "base/callback.h"
+#include "base/memory/ref_counted.h"
+#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/color_space.h"
@@ -78,6 +80,26 @@ class MEDIA_EXPORT PictureBuffer {
 // This is the media-namespace equivalent of PP_Picture_Dev.
 class MEDIA_EXPORT Picture {
  public:
+  // An object that keeps alive a SharedImage until it goes out of scope.
+  // Used to manage the lifetime of SharedImage-backed decoded frames.
+  class MEDIA_EXPORT ScopedSharedImage
+      : public base::RefCountedThreadSafe<ScopedSharedImage> {
+   public:
+    ScopedSharedImage(gpu::Mailbox mailbox,
+                      uint32_t texture_target,
+                      base::OnceClosure destruction_closure);
+    const gpu::MailboxHolder& GetMailboxHolder() const {
+      return mailbox_holder_;
+    }
+
+   private:
+    friend class base::RefCountedThreadSafe<ScopedSharedImage>;
+    ~ScopedSharedImage();
+
+    base::OnceClosure destruction_closure_;
+    gpu::MailboxHolder mailbox_holder_;
+  };
+
   // Defaults |size_changed_| to false. Size changed is currently only used
   // by AVDA and is set via set_size_changd().
   Picture(int32_t picture_buffer_id,
@@ -128,6 +150,14 @@ class MEDIA_EXPORT Picture {
     wants_promotion_hint_ = wants_promotion_hint;
   }
 
+  void set_scoped_shared_image(
+      scoped_refptr<ScopedSharedImage> scoped_shared_image) {
+    scoped_shared_image_ = scoped_shared_image;
+  }
+  scoped_refptr<ScopedSharedImage> scoped_shared_image() const {
+    return scoped_shared_image_;
+  }
+
  private:
   int32_t picture_buffer_id_;
   int32_t bitstream_buffer_id_;
@@ -138,6 +168,7 @@ class MEDIA_EXPORT Picture {
   bool size_changed_;
   bool texture_owner_;
   bool wants_promotion_hint_;
+  scoped_refptr<ScopedSharedImage> scoped_shared_image_;
 };
 
 }  // namespace media
