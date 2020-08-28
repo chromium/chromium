@@ -27,6 +27,9 @@ class ButtonMenuItemModel;
 // The breadth of MenuModel is not exposed through this API.
 class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
  public:
+  // Default icon size to be used for context menus.
+  static constexpr int kDefaultIconSize = 16;
+
   class COMPONENT_EXPORT(UI_BASE) Delegate : public AcceleratorProvider {
    public:
     ~Delegate() override {}

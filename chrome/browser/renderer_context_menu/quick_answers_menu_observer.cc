@@ -28,6 +28,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 
@@ -113,8 +115,10 @@ void QuickAnswersMenuObserver::InitMenu(
   // TODO(llin): Update the menu item after finalizing on the design.
   auto truncated_text = TruncateString(selected_text);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  proxy_->AddMenuItemWithIcon(IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY,
-                              truncated_text, kAssistantIcon);
+  proxy_->AddMenuItemWithIcon(
+      IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY, truncated_text,
+      ui::ImageModel::FromVectorIcon(kAssistantIcon, /*color_id=*/-1,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
 #else
   proxy_->AddMenuItem(IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY,
                       truncated_text);

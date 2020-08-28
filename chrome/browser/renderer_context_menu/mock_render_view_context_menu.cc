@@ -63,23 +63,15 @@ void MockRenderViewContextMenu::AddMenuItem(int command_id,
 void MockRenderViewContextMenu::AddMenuItemWithIcon(
     int command_id,
     const base::string16& title,
-    const gfx::ImageSkia& image) {
+    const ui::ImageModel& icon) {
   MockMenuItem item;
   item.command_id = command_id;
   item.enabled = observer_->IsCommandIdEnabled(command_id);
   item.checked = false;
   item.hidden = false;
   item.title = title;
-  item.icon = gfx::Image(image);
+  item.icon = icon;
   items_.push_back(item);
-}
-
-void MockRenderViewContextMenu::AddMenuItemWithIcon(
-    int command_id,
-    const base::string16& title,
-    const gfx::VectorIcon& icon) {
-  AddMenuItemWithIcon(command_id, title,
-                      gfx::CreateVectorIcon(icon, gfx::kPlaceholderColor));
 }
 
 void MockRenderViewContextMenu::AddCheckItem(int command_id,
@@ -120,27 +112,17 @@ void MockRenderViewContextMenu::AddSubMenuWithStringIdAndIcon(
     int command_id,
     int message_id,
     ui::MenuModel* model,
-    const gfx::ImageSkia& image) {
+    const ui::ImageModel& icon) {
   MockMenuItem item;
   item.command_id = command_id;
   item.enabled = observer_->IsCommandIdEnabled(command_id);
   item.checked = observer_->IsCommandIdChecked(command_id);
   item.hidden = false;
   item.title = l10n_util::GetStringUTF16(message_id);
-  item.icon = gfx::Image(image);
+  item.icon = icon;
   items_.push_back(item);
 
   AppendSubMenuItems(model);
-}
-
-void MockRenderViewContextMenu::AddSubMenuWithStringIdAndIcon(
-    int command_id,
-    int message_id,
-    ui::MenuModel* model,
-    const gfx::VectorIcon& icon) {
-  AddSubMenuWithStringIdAndIcon(
-      command_id, message_id, model,
-      gfx::CreateVectorIcon(icon, gfx::kPlaceholderColor));
 }
 
 void MockRenderViewContextMenu::AppendSubMenuItems(ui::MenuModel* model) {
@@ -180,10 +162,10 @@ void MockRenderViewContextMenu::UpdateMenuItem(int command_id,
 }
 
 void MockRenderViewContextMenu::UpdateMenuIcon(int command_id,
-                                               const gfx::Image& image) {
+                                               const ui::ImageModel& icon) {
   for (auto& item : items_) {
     if (item.command_id == command_id) {
-      item.icon = image;
+      item.icon = icon;
       return;
     }
   }

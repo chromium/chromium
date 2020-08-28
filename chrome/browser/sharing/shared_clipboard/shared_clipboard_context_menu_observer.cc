@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_device_info/device_info.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -73,7 +74,9 @@ void SharedClipboardContextMenuObserver::InitMenu(
         l10n_util::GetStringFUTF16(
             IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_SINGLE_DEVICE,
             base::UTF8ToUTF16(devices_[0]->client_name())),
-        controller_->GetVectorIcon());
+        ui::ImageModel::FromVectorIcon(controller_->GetVectorIcon(),
+                                       /*color_id=*/-1,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
 #endif
   } else {
     BuildSubMenu();
@@ -87,7 +90,10 @@ void SharedClipboardContextMenuObserver::InitMenu(
     proxy_->AddSubMenuWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES,
         IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_MULTIPLE_DEVICES,
-        sub_menu_model_.get(), controller_->GetVectorIcon());
+        sub_menu_model_.get(),
+        ui::ImageModel::FromVectorIcon(controller_->GetVectorIcon(),
+                                       /*color_id=*/-1,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
 #endif
   }
 }

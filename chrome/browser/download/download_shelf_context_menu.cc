@@ -413,7 +413,8 @@ void DownloadShelfContextMenu::AddAutoOpenToMenu(ui::SimpleMenuModel* menu) {
         DownloadCommands::ALWAYS_OPEN_TYPE,
         GetLabelForCommandId(DownloadCommands::ALWAYS_OPEN_TYPE),
         ui::ImageModel::FromVectorIcon(vector_icons::kBusinessIcon,
-                                       gfx::kChromeIconGrey, 16));
+                                       gfx::kChromeIconGrey,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
   } else {
     menu->AddCheckItem(
         DownloadCommands::ALWAYS_OPEN_TYPE,

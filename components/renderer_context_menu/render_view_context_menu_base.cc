@@ -209,17 +209,8 @@ void RenderViewContextMenuBase::AddMenuItem(int command_id,
 void RenderViewContextMenuBase::AddMenuItemWithIcon(
     int command_id,
     const base::string16& title,
-    const gfx::ImageSkia& image) {
-  menu_model_.AddItemWithIcon(command_id, title,
-                              ui::ImageModel::FromImageSkia(image));
-}
-
-void RenderViewContextMenuBase::AddMenuItemWithIcon(
-    int command_id,
-    const base::string16& title,
-    const gfx::VectorIcon& icon) {
-  menu_model_.AddItemWithIcon(command_id, title,
-                              ui::ImageModel::FromVectorIcon(icon));
+    const ui::ImageModel& icon) {
+  menu_model_.AddItemWithIcon(command_id, title, icon);
 }
 
 void RenderViewContextMenuBase::AddCheckItem(int command_id,
@@ -241,18 +232,9 @@ void RenderViewContextMenuBase::AddSubMenuWithStringIdAndIcon(
     int command_id,
     int message_id,
     ui::MenuModel* model,
-    const gfx::ImageSkia& image) {
-  menu_model_.AddSubMenuWithStringIdAndIcon(
-      command_id, message_id, model, ui::ImageModel::FromImageSkia(image));
-}
-
-void RenderViewContextMenuBase::AddSubMenuWithStringIdAndIcon(
-    int command_id,
-    int message_id,
-    ui::MenuModel* model,
-    const gfx::VectorIcon& icon) {
-  menu_model_.AddSubMenuWithStringIdAndIcon(
-      command_id, message_id, model, ui::ImageModel::FromVectorIcon(icon));
+    const ui::ImageModel& icon) {
+  menu_model_.AddSubMenuWithStringIdAndIcon(command_id, message_id, model,
+                                            icon);
 }
 
 void RenderViewContextMenuBase::UpdateMenuItem(int command_id,
@@ -271,12 +253,12 @@ void RenderViewContextMenuBase::UpdateMenuItem(int command_id,
 }
 
 void RenderViewContextMenuBase::UpdateMenuIcon(int command_id,
-                                               const gfx::Image& image) {
+                                               const ui::ImageModel& icon) {
   int index = menu_model_.GetIndexOfCommandId(command_id);
   if (index == -1)
     return;
 
-  menu_model_.SetIcon(index, ui::ImageModel::FromImage(image));
+  menu_model_.SetIcon(index, icon);
 #if defined(OS_CHROMEOS)
   if (toolkit_delegate_)
     toolkit_delegate_->RebuildMenu();

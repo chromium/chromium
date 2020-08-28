@@ -25,6 +25,7 @@
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/browser/context_menu_params.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace arc {
@@ -179,7 +180,7 @@ void StartSmartSelectionActionMenu::UpdateMenuIcon(
 
 void StartSmartSelectionActionMenu::SetMenuIcon(int command_id,
                                                 const gfx::ImageSkia& image) {
-  proxy_->UpdateMenuIcon(command_id, gfx::Image(image));
+  proxy_->UpdateMenuIcon(command_id, ui::ImageModel::FromImageSkia(image));
 }
 
 }  // namespace arc
