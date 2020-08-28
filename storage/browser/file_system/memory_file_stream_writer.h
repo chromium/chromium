@@ -30,14 +30,20 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MemoryFileStreamWriter
  private:
   friend class FileStreamWriter;
   MemoryFileStreamWriter(
+      scoped_refptr<base::TaskRunner> task_runner,
       base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
       const base::FilePath& file_path,
       int64_t initial_offset);
 
+  void OnWriteCompleted(net::CompletionOnceCallback callback, int result);
+
   base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_;
 
+  const scoped_refptr<base::TaskRunner> task_runner_;
   const base::FilePath file_path_;
   int64_t offset_;
+
+  base::WeakPtrFactory<MemoryFileStreamWriter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MemoryFileStreamWriter);
 };

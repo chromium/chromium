@@ -13,6 +13,7 @@
 #include "base/bind_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_test_utils.h"
@@ -59,11 +60,13 @@ class MemoryFileStreamWriterTest : public testing::Test {
 
   std::unique_ptr<FileStreamWriter> CreateWriter(const base::FilePath& path,
                                                  int64_t offset) {
-    return FileStreamWriter::CreateForMemoryFile(file_util_->GetWeakPtr(), path,
-                                                 offset);
+    return FileStreamWriter::CreateForMemoryFile(
+        base::ThreadTaskRunnerHandle::Get(), file_util_->GetWeakPtr(), path,
+        offset);
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir file_system_directory_;
   std::unique_ptr<ObfuscatedFileUtilMemoryDelegate> file_util_;
 };
