@@ -24,6 +24,7 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
@@ -444,9 +445,14 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
     const content_settings::ContentSettingsInfo* info =
         content_settings::ContentSettingsRegistry::GetInstance()->Get(
             content_settings_type);
+
+    if (secondary_pattern == primary_pattern &&
+        info->website_settings_info()->SupportsSecondaryPattern())
+      secondary_pattern = ContentSettingsPattern::Wildcard();
+
     if (primary_pattern != secondary_pattern &&
         secondary_pattern != ContentSettingsPattern::Wildcard() &&
-        !info->website_settings_info()->SupportsEmbeddedExceptions()) {
+        !info->website_settings_info()->SupportsSecondaryPattern()) {
       // Some types may have had embedded exceptions written even though they
       // aren't supported. This will implicitly delete these old settings from
       // the pref store when it is written back.

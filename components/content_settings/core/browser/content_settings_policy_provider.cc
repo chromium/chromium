@@ -402,15 +402,14 @@ void PolicyProvider::GetContentSettingsFromPreferences(
           << "Replacing invalid secondary pattern '"
           << pattern_pair.second.ToString() << "' with wildcard";
 
-      // Currently all settings that can set pattern pairs support embedded
-      // exceptions. However if a new content setting is added that doesn't,
-      // this DCHECK should be changed to an actual check which ignores such
-      // patterns for that type.
-      DCHECK(pattern_pair.first == pattern_pair.second ||
-             pattern_pair.second == ContentSettingsPattern::Wildcard() ||
-             content_settings::WebsiteSettingsRegistry::GetInstance()
-                 ->Get(content_type)
-                 ->SupportsEmbeddedExceptions());
+      // All settings that can set pattern pairs support embedded exceptions.
+      if (pattern_pair.first != pattern_pair.second &&
+          pattern_pair.second != ContentSettingsPattern::Wildcard() &&
+          !content_settings::WebsiteSettingsRegistry::GetInstance()
+               ->Get(content_type)
+               ->SupportsSecondaryPattern()) {
+        continue;
+      }
 
       if (base::FeatureList::IsEnabled(
               content_settings::kDisallowWildcardsInPluginContentSettings) &&

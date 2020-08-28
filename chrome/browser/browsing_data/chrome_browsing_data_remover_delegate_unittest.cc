@@ -2278,7 +2278,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
     EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(DSEOrigin()),
               host_settings[0].primary_pattern)
         << host_settings[0].primary_pattern.ToString();
-    EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(DSEOrigin()),
+    EXPECT_EQ(ContentSettingsPattern::Wildcard(),
               host_settings[0].secondary_pattern)
         << host_settings[0].secondary_pattern.ToString();
     EXPECT_EQ(CONTENT_SETTING_ALLOW, host_settings[0].GetContentSetting());

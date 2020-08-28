@@ -434,7 +434,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
         ContentSettingsPattern::FromURL(https_server_->base_url());
 
     settings_map->SetContentSettingCustomScope(
-        host_pattern, host_pattern, content_type,
+        host_pattern, ContentSettingsPattern::Wildcard(), content_type,
         std::string() /* resource_identifier */, setting);
   }
 

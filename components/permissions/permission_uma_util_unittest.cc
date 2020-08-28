@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -20,7 +21,7 @@ class PermissionUmaUtilTest : public testing::Test {
   TestPermissionsClient permissions_client_;
 };
 
-TEST_F(PermissionUmaUtilTest, ScopedevocationReporter) {
+TEST_F(PermissionUmaUtilTest, ScopedRevocationReporter) {
   content::TestBrowserContext browser_context;
 
   // TODO(tsergeant): Add more comprehensive tests of PermissionUmaUtil.
@@ -85,7 +86,8 @@ TEST_F(PermissionUmaUtilTest, ScopedevocationReporter) {
   {
     PermissionUmaUtil::ScopedRevocationReporter scoped_revocation_reporter(
         &browser_context, host_pattern, host_pattern, type, source_ui);
-    map->SetContentSettingCustomScope(host_pattern, host_pattern, type,
+    map->SetContentSettingCustomScope(host_pattern,
+                                      ContentSettingsPattern::Wildcard(), type,
                                       std::string(), CONTENT_SETTING_BLOCK);
   }
   histograms.ExpectBucketCount("Permissions.Action.Geolocation",
@@ -99,8 +101,8 @@ TEST_F(PermissionUmaUtilTest, ScopedevocationReporter) {
         &browser_context, host_containing_wildcards_pattern, host_pattern, type,
         source_ui);
     map->SetContentSettingCustomScope(host_containing_wildcards_pattern,
-                                      host_pattern, type, std::string(),
-                                      CONTENT_SETTING_BLOCK);
+                                      ContentSettingsPattern::Wildcard(), type,
+                                      std::string(), CONTENT_SETTING_BLOCK);
   }
   histograms.ExpectBucketCount("Permissions.Action.Geolocation",
                                static_cast<int>(PermissionAction::REVOKED), 3);

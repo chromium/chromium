@@ -286,67 +286,6 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
       "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
 }
 
-// Test the migration code needed as a result of changing how the content
-// setting is stored. We used to map the settings dictionary to the pattern
-// pair <origin, origin> but now we map it to <origin, wildcard>.
-IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest, Migrate) {
-  scoped_refptr<net::X509Certificate> cert = GetOkCert();
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
-  StatefulSSLHostStateDelegate* state =
-      StatefulSSLHostStateDelegateFactory::GetForProfile(profile);
-
-  // Simulate a user decision to allow an invalid certificate exception for
-  // kWWWGoogleHost and for kExampleHost.
-  state->AllowCert(kWWWGoogleHost, *cert, net::ERR_CERT_DATE_INVALID, tab);
-
-  // Move the new-format setting (<origin, wildcard>) to be an old-format one
-  // (<origin, origin>).
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  GURL url(std::string("https://") + kWWWGoogleHost);
-  std::unique_ptr<base::Value> new_format =
-      map->GetWebsiteSetting(url, url, ContentSettingsType::SSL_CERT_DECISIONS,
-                             std::string(), nullptr);
-  // Delete the new-format setting.
-  map->SetWebsiteSettingDefaultScope(url, GURL(),
-                                     ContentSettingsType::SSL_CERT_DECISIONS,
-                                     std::string(), nullptr);
-
-  // No exception should exist.
-  EXPECT_FALSE(state->HasAllowException(kWWWGoogleHost, tab));
-  // Create the old-format one.
-  map->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsType::SSL_CERT_DECISIONS, std::string(),
-      std::move(new_format));
-
-  // Test that the old-format setting works.
-  EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, tab));
-
-  // Trigger the migration code that happens on construction.
-  {
-    std::unique_ptr<StatefulSSLHostStateDelegate> temp_delegate(
-        new StatefulSSLHostStateDelegate(
-            profile, profile->GetPrefs(),
-            HostContentSettingsMapFactory::GetForProfile(profile)));
-  }
-
-  // Test that the new style setting still works.
-  EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, tab));
-
-  // Check that the old-format setting is removed and only the new one exists.
-  ContentSettingsForOneType settings;
-  map->GetSettingsForOneType(ContentSettingsType::SSL_CERT_DECISIONS,
-                             std::string(), &settings);
-  EXPECT_EQ(1u, settings.size());
-  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(url),
-            settings[0].primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), settings[0].secondary_pattern);
-}
-
 // Tests that StatefulSSLHostStateDelegate::HasSeenRecurrentErrors returns true
 // after seeing an error of interest multiple times, in the default mode in
 // which error occurrences are stored in-memory.

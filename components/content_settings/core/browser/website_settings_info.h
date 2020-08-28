@@ -45,9 +45,10 @@ class WebsiteSettingsInfo {
     // Settings scoped to the combination of the origin of the requesting
     // frame and the origin of the top level frame by default.
     //
-    // This is deprecated with Permission Delegation and should not be used.
-    // Specifically, UI (e.g. prompts, page actions, etc.) should generally only
-    // change settings for the top level origin and not for embedded origins.
+    // The use of this scope is highly discuraged as in introduces user
+    // confusion. Specifically, UI (e.g. prompts, page actions, etc.) should
+    // generally only change settings for the top level origin and not for
+    // embedded origins.
     REQUESTING_ORIGIN_AND_TOP_LEVEL_ORIGIN_SCOPE
   };
 
@@ -81,7 +82,7 @@ class WebsiteSettingsInfo {
 
   uint32_t GetPrefRegistrationFlags() const;
 
-  bool SupportsEmbeddedExceptions() const;
+  bool SupportsSecondaryPattern() const;
 
   ScopingType scoping_type() const { return scoping_type_; }
   IncognitoBehavior incognito_behavior() const { return incognito_behavior_; }

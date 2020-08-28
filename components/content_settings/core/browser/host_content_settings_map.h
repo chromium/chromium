@@ -336,6 +336,11 @@ class HostContentSettingsMap : public content_settings::Observer,
     return pref_provider_;
   }
 
+  // Only use for testing.
+  void AllowInvalidSecondaryPatternForTesting(bool allow) {
+    allow_invalid_secondary_pattern_for_testing_ = allow;
+  }
+
  private:
   friend class base::RefCountedThreadSafe<HostContentSettingsMap>;
   friend class content_settings::TestUtils;
@@ -423,9 +428,16 @@ class HostContentSettingsMap : public content_settings::Observer,
   // (http://y.com, *). The reason the second pattern is removed is to ensure
   // that permission won't automatically be granted to x.com when it's embedded
   // in y.com when permission delegation is enabled.
-  // TODO(raymes): Remove 2 milestones after permission delegation ships.
-  // https://crbug.com/818004.
-  void MigrateRequestingAndTopLevelOriginSettings();
+  // It also ensures that we move away from (http://x.com, http://x.com)
+  // patterns by replacing these patterns with (http://x.com, *).
+  void MigrateSettingsPrecedingPermissionDelegationActivation();
+
+  // Verifies that this secondary pattern is allowed.
+  bool IsSecondaryPatternAllowed(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      base::Value* value);
 
 #ifndef NDEBUG
   // This starts as the thread ID of the thread that constructs this
@@ -465,6 +477,11 @@ class HostContentSettingsMap : public content_settings::Observer,
   base::ThreadChecker thread_checker_;
 
   base::ObserverList<content_settings::Observer>::Unchecked observers_;
+
+  // When true, allows setting secondary patterns even for types that should not
+  // allow them. Only used for testing that inserts previously valid patterns in
+  // order to ensure the migration logic is sound.
+  bool allow_invalid_secondary_pattern_for_testing_;
 
   base::WeakPtrFactory<HostContentSettingsMap> weak_ptr_factory_{this};
 

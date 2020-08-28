@@ -269,7 +269,7 @@ ContentSettingsContentSettingSetFunction::Run() {
 
   if (primary_pattern != secondary_pattern &&
       secondary_pattern != ContentSettingsPattern::Wildcard() &&
-      !info->website_settings_info()->SupportsEmbeddedExceptions()) {
+      !info->website_settings_info()->SupportsSecondaryPattern()) {
     static const char kUnsupportedEmbeddedException[] =
         "Embedded patterns are not supported for this setting.";
     return RespondNow(Error(kUnsupportedEmbeddedException));
