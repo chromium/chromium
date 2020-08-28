@@ -32,7 +32,9 @@ import static org.chromium.chrome.browser.password_check.PasswordCheckProperties
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.RESTART_BUTTON_ACTION;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.UNKNOWN_PROGRESS;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.ITEMS;
+import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.CANCELED;
 import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.ERROR_OFFLINE;
+import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.ERROR_UNKNOWN;
 import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.IDLE;
 import static org.chromium.chrome.browser.password_check.PasswordCheckUIStatus.RUNNING;
 
@@ -261,6 +263,80 @@ public class PasswordCheckControllerTest {
         assertThat(mModel.get(ITEMS).get(1).type, is(ItemType.COMPROMISED_CREDENTIAL_WITH_SCRIPT));
         assertThat(mModel.get(ITEMS).get(1).model.get(COMPROMISED_CREDENTIAL), equalTo(BOB));
         assertThat(mModel.get(ITEMS).get(1).model.get(CREDENTIAL_HANDLER), is(mMediator));
+    }
+
+    @Test
+    public void testIdleStatusUpdatedOnCredentialsFetchCompleted() {
+        // Set initial status to IDLE with no compromised credentials.
+        when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(0);
+        mMediator.onPasswordCheckStatusChanged(IDLE);
+        assertThat(mModel.get(ITEMS).get(0).model.get(COMPROMISED_CREDENTIALS_COUNT), is(0));
+
+        // Add 2 compromised credentials.
+        when(mPasswordCheck.getCompromisedCredentials())
+                .thenReturn(new CompromisedCredential[] {ANA, BOB});
+        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
+        when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(2);
+        mMediator.onCompromisedCredentialsFetchCompleted();
+        assertThat(mModel.get(ITEMS).size(), is(3)); // Header + existing credentials.
+
+        // Check the compromised credentials count updated.
+        assertThat(mModel.get(ITEMS).get(0).model.get(COMPROMISED_CREDENTIALS_COUNT), is(2));
+    }
+
+    @Test
+    public void testCanceledStatusDoesntUpdateModel() {
+        assertRunningHeader(mModel.get(ITEMS).get(0), UNKNOWN_PROGRESS);
+        mMediator.onPasswordCheckStatusChanged(CANCELED);
+        // Check that the header model didn't change.
+        assertRunningHeader(mModel.get(ITEMS).get(0), UNKNOWN_PROGRESS);
+    }
+
+    @Test
+    public void testNotIdleStatusNotUpdatedOnCredentialsFetchCompleted() {
+        mMediator.onPasswordCheckStatusChanged(RUNNING);
+        assertNull(mModel.get(ITEMS).get(0).model.get(COMPROMISED_CREDENTIALS_COUNT));
+
+        // Add ANA while the check is running.
+        when(mPasswordCheck.getCompromisedCredentials())
+                .thenReturn(new CompromisedCredential[] {ANA});
+        when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
+        when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(1);
+        mMediator.onCompromisedCredentialsFetchCompleted();
+        assertThat(mModel.get(ITEMS).size(), is(2)); // Header + existing credentials.
+
+        // Check the compromised credential count did not update.
+        assertNull(mModel.get(ITEMS).get(0).model.get(COMPROMISED_CREDENTIALS_COUNT));
+    }
+
+    @Test
+    public void testIdleStatusUpdatedOnCredentialFound() {
+        // Set initial status to IDLE with no compromised credentials.
+        when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(0);
+        mMediator.onPasswordCheckStatusChanged(IDLE);
+        assertThat(mModel.get(ITEMS).get(0).model.get(COMPROMISED_CREDENTIALS_COUNT), is(0));
+
+        // Add ANA to the compromised credentials.
+        when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(1);
+        mMediator.onCompromisedCredentialFound(ANA);
+        assertThat(mModel.get(ITEMS).size(), is(2)); // Header + existing credentials.
+
+        // Check the compromised credentials count updated.
+        assertThat(mModel.get(ITEMS).get(0).model.get(COMPROMISED_CREDENTIALS_COUNT), is(1));
+    }
+
+    @Test
+    public void testNotIdleStatusNotUpdatedOnCredentialFound() {
+        mMediator.onPasswordCheckStatusChanged(ERROR_UNKNOWN);
+        assertNull(mModel.get(ITEMS).get(0).model.get(COMPROMISED_CREDENTIALS_COUNT));
+
+        // Add ANA after the check has failed.
+        when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(1);
+        mMediator.onCompromisedCredentialFound(ANA);
+        assertThat(mModel.get(ITEMS).size(), is(2)); // Header + existing credentials.
+
+        // Check the compromised credentials count did not update.
+        assertNull(mModel.get(ITEMS).get(0).model.get(COMPROMISED_CREDENTIALS_COUNT));
     }
 
     @Test

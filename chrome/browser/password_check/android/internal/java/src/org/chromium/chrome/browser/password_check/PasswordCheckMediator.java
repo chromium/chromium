@@ -108,6 +108,9 @@ class PasswordCheckMediator
 
     @Override
     public void onPasswordCheckStatusChanged(@PasswordCheckUIStatus int status) {
+        // There is no UI representation of a canceled check. This status can be sent when
+        // the bridge and the password check UI are being torn down while a check is running.
+        if (status == PasswordCheckUIStatus.CANCELED) return;
         ListModel<ListItem> items = mModel.get(ITEMS);
         PropertyModel header;
         if (items.size() == 0) {
