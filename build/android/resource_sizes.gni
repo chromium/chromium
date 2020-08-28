@@ -19,7 +19,7 @@ template("android_resource_sizes_test") {
   generate_android_wrapper(target_name) {
     forward_variables_from(invoker, [ "data_deps" ])
     executable = "//build/android/resource_sizes.py"
-    wrapper_script = "$root_out_dir/bin/${target_name}"
+    wrapper_script = "$root_out_dir/bin/run_${target_name}"
 
     assert(defined(invoker.apk_name) != defined(invoker.file_path),
            "Exactly one of apk_name or file_path should be provided.")
