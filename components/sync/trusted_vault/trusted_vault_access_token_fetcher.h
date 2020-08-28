@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/optional.h"
 
 struct CoreAccountId;
-class GoogleServiceAuthError;
 
 namespace signin {
 struct AccessTokenInfo;
@@ -22,9 +22,8 @@ namespace syncer {
 // the UI thread.
 class TrustedVaultAccessTokenFetcher {
  public:
-  using TokenCallback =
-      base::OnceCallback<void(GoogleServiceAuthError error,
-                              signin::AccessTokenInfo access_token_info)>;
+  using TokenCallback = base::OnceCallback<void(
+      base::Optional<signin::AccessTokenInfo> access_token_info)>;
 
   TrustedVaultAccessTokenFetcher() = default;
   TrustedVaultAccessTokenFetcher(const TrustedVaultAccessTokenFetcher& other) =

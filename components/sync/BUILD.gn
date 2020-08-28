@@ -524,6 +524,7 @@ source_set("unit_tests") {
     "trusted_vault/securebox_unittest.cc",
     "trusted_vault/standalone_trusted_vault_backend_unittest.cc",
     "trusted_vault/standalone_trusted_vault_client_unittest.cc",
+    "trusted_vault/trusted_vault_access_token_fetcher_frontend_unittest.cc",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]

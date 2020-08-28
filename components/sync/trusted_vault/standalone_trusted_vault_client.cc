@@ -15,7 +15,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/bind_to_task_runner.h"
 #include "components/sync/trusted_vault/standalone_trusted_vault_backend.h"
-#include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/sync/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/sync/trusted_vault/trusted_vault_connection_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -118,7 +118,8 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
     : identity_manager_(identity_manager),
       file_path_(file_path),
       backend_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner(kBackendTaskTraits)) {
+          base::ThreadPool::CreateSequencedTaskRunner(kBackendTaskTraits)),
+      access_token_fetcher_frontend_(identity_manager) {
   DCHECK(identity_manager_);
 }
 
@@ -200,16 +201,15 @@ void StandaloneTrustedVaultClient::TriggerLazyInitializationIfNeeded() {
     return;
   }
 
-  // TODO(crbug.com/1113597): populate TrustedVaultAccessTokenFetcher into
-  // TrustedVaultConnectionImpl ctor.
   // TODO(crbug.com/1113598): populate URLLoaderFactory into
   // TrustedVaultConnectionImpl ctor.
   // TODO(crbug.com/1102340): allow setting custom TrustedVaultConnection for
   // testing.
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path_,
-      std::make_unique<TrustedVaultConnectionImpl>(
-          /*url_loader_factory=*/nullptr, /*access_token_fetcher=*/nullptr));
+      file_path_, std::make_unique<TrustedVaultConnectionImpl>(
+                      /*url_loader_factory=*/nullptr,
+                      std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
+                          access_token_fetcher_frontend_.GetWeakPtr())));
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::ReadDataFromDisk,

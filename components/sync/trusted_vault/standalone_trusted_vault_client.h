@@ -15,6 +15,7 @@
 #include "base/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/trusted_vault/trusted_vault_access_token_fetcher_frontend.h"
 
 struct CoreAccountInfo;
 
@@ -81,6 +82,10 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   // Created lazily together with |backend_| and holds reference to it and
   // |backend_task_runner_|.
   std::unique_ptr<signin::IdentityManager::Observer> primary_account_observer_;
+
+  // Allows access token fetching for primary account on the ui thread. Passed
+  // as WeakPtr to TrustedVaultAccessTokenFetcherImpl.
+  TrustedVaultAccessTokenFetcherFrontend access_token_fetcher_frontend_;
 
   bool is_recoverability_degraded_for_testing_ = false;
 };
