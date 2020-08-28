@@ -102,12 +102,6 @@ void PlayerCompositorDelegateAndroid::OnCompositorReady(
     LOG(ERROR) << "Compositor process failed to begin with code: "
                << static_cast<int>(compositor_status);
     std::move(compositor_error_).Run(static_cast<int>(compositor_status));
-
-    // If there was a problem, prevent it from happening again by deleting it.
-    auto file_manager = paint_preview_service_->GetFileManager();
-    file_manager->GetTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FileManager::DeleteArtifactSet, file_manager, key_));
     return;
   }
   auto delta = base::TimeTicks::Now() - startup_timestamp_;
