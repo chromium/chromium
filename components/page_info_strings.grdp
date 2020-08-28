@@ -573,7 +573,7 @@
         Ignore
       </message>
     </if>
-    <message name="IDS_PAGE_INFO_ALLOWLIST_PASSWORD_REUSE_BUTTON" desc="The string used in the page info whitelist password reuse button.">
+    <message name="IDS_PAGE_INFO_ALLOWLIST_PASSWORD_REUSE_BUTTON" desc="The string used in the page info allowlist password reuse button.">
       Site is legitimate
     </message>
   </if>
