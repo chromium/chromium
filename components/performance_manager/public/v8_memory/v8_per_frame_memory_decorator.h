@@ -22,7 +22,7 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "content/public/browser/global_routing_id.h"
-#include "third_party/blink/public/mojom/performance_manager/v8_per_frame_memory.mojom.h"
+#include "third_party/blink/public/mojom/performance_manager/v8_detailed_memory_reporter.mojom.h"
 
 namespace performance_manager {
 
@@ -532,18 +532,18 @@ class V8PerFrameMemoryRequestAnySeq {
 
 namespace internal {
 
-// A callback that will bind a V8PerFrameMemoryReporter interface to
+// A callback that will bind a V8DetailedMemoryReporter interface to
 // communicate with the given process. Exposed so that it can be overridden to
 // implement the interface with a test fake.
-using BindV8PerFrameMemoryReporterCallback = base::RepeatingCallback<void(
-    mojo::PendingReceiver<blink::mojom::V8PerFrameMemoryReporter>,
+using BindV8DetailedMemoryReporterCallback = base::RepeatingCallback<void(
+    mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>,
     RenderProcessHostProxy)>;
 
 // Sets a callback that will be used to bind the V8PerFrameMemoryReporter
 // interface. The callback is owned by the caller and must live until this
 // function is called again with nullptr.
-void SetBindV8PerFrameMemoryReporterCallbackForTesting(
-    BindV8PerFrameMemoryReporterCallback* callback);
+void SetBindV8DetailedMemoryReporterCallbackForTesting(
+    BindV8DetailedMemoryReporterCallback* callback);
 
 }  // namespace internal
 

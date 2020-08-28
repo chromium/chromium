@@ -121,7 +121,7 @@ mojom("mojom_platform") {
     "payments/payment_app.mojom",
     "payments/payment_credential.mojom",
     "peerconnection/peer_connection_tracker.mojom",
-    "performance_manager/v8_per_frame_memory.mojom",
+    "performance_manager/v8_detailed_memory_reporter.mojom",
     "permissions/permission.mojom",
     "permissions/permission_automation.mojom",
     "permissions/permission_status.mojom",

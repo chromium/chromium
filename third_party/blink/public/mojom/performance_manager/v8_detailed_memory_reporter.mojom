@@ -1,0 +1,54 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+struct PerContextV8MemoryUsage {
+  // TODO(ulan): Replace this with V8ContextToken once it is hooked up in
+  // PerformanceManager.
+  ExecutionContextToken token;
+  uint64 bytes_used = 0;
+};
+
+struct PerIsolateV8MemoryUsage {
+  // The number of V8 heap bytes that were not associated with a specific
+  // V8 context, most likely because they're shared objects.
+  uint64 unassociated_bytes_used;
+
+  // The number of V8 contexts not associated with an execution context,
+  // likely web application leaks, and their associated byte usage. At the present time
+  // (April 2020), it's expected and normal to see one unassociated context per
+  // renderer process accounting for ~70kB.
+  uint64 num_unassociated_contexts;
+  uint64 unassociated_context_bytes_used;
+
+  // The V8 memory usage by individual V8 contexts in this process.
+  array<PerContextV8MemoryUsage> contexts;
+};
+
+struct PerProcessV8MemoryUsage {
+  // The V8 memory usage by individual isolates in this process.
+  // Each isolate has its own heap.
+  array<PerIsolateV8MemoryUsage> isolates;
+};
+
+// Allows a browser to query the resource usage of sub-processes.
+interface V8DetailedMemoryReporter {
+  // The mode for performing memory measurement.
+  enum Mode {
+    DEFAULT, // Perform memory measurement on the next garbage collection
+             // and force garbage collection after some timeout.
+
+    EAGER,   // Force immediate garbage collection and memory measurement.
+
+    LAZY,    // Perform memory measurement on the next garbage collection.
+  };
+  // Requests a per-frame estimate of v8 heap byte usage on the next garbage
+  // collection. Note that this causes extra cost for the next garbage
+  // collection, which can be on the order of 10-20%.
+  GetV8MemoryUsage(Mode mode) => (PerProcessV8MemoryUsage memory_usage);
+};
+

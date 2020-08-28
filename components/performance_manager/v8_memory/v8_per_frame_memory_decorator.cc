@@ -4,8 +4,6 @@
 
 #include "components/performance_manager/public/v8_memory/v8_per_frame_memory_decorator.h"
 
-#include <algorithm>
-#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -50,37 +48,10 @@ namespace {
 
 using MeasurementMode = V8PerFrameMemoryRequest::MeasurementMode;
 
-using PerFrameUsagePtr = blink::mojom::PerFrameV8MemoryUsageDataPtr;
-
-// Comparator that generates a strict total order of PerFrameUsagePtr's when
-// compared by their frame tokens.
-struct SortByToken {
-  bool operator()(const PerFrameUsagePtr& a, const PerFrameUsagePtr& b) {
-    return a->frame_token < b->frame_token;
-  }
-
-  bool operator()(const PerFrameUsagePtr& a, const blink::LocalFrameToken& b) {
-    return a->frame_token < b.value();
-  }
-};
-
-// Returns the memory used by the main world in a frame.
-uint64_t GetMainWorldBytesUsed(const PerFrameUsagePtr& per_frame) {
-  for (const auto& entry : per_frame->associated_bytes) {
-    if (entry->world_id ==
-        blink::mojom::V8IsolatedWorldMemoryUsage::kMainWorldId) {
-      return entry->bytes_used;
-    }
-  }
-  NOTREACHED() << "There should always be data for the main isolated world for "
-                  "each frame.";
-  return 0ULL;
-}
-
 // Forwards the pending receiver to the RenderProcessHost and binds it on the
 // UI thread.
 void BindReceiverOnUIThread(
-    mojo::PendingReceiver<blink::mojom::V8PerFrameMemoryReporter>
+    mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>
         pending_receiver,
     RenderProcessHostProxy proxy) {
   auto* render_process_host = proxy.Get();
@@ -89,7 +60,7 @@ void BindReceiverOnUIThread(
   }
 }
 
-internal::BindV8PerFrameMemoryReporterCallback* g_test_bind_callback = nullptr;
+internal::BindV8DetailedMemoryReporterCallback* g_test_bind_callback = nullptr;
 
 // Per-frame memory measurement involves the following classes that live on the
 // PM sequence:
@@ -189,12 +160,11 @@ class NodeAttachedProcessData
   void ScheduleUpgradeToBoundedMeasurement();
   void UpgradeToBoundedMeasurementIfNeeded();
   void EnsureRemote();
-  void OnPerFrameV8MemoryUsageData(
-      blink::mojom::PerProcessV8MemoryUsageDataPtr result);
+  void OnV8MemoryUsage(blink::mojom::PerProcessV8MemoryUsagePtr result);
 
   const ProcessNode* const process_node_;
 
-  mojo::Remote<blink::mojom::V8PerFrameMemoryReporter> resource_usage_reporter_;
+  mojo::Remote<blink::mojom::V8DetailedMemoryReporter> resource_usage_reporter_;
 
   // State transitions:
   //
@@ -306,11 +276,11 @@ void NodeAttachedProcessData::StartMeasurement(MeasurementMode mode) {
   // which should happen after renderers are destroyed). Should clean up
   // NodeAttachedProcessData when the last V8PerFrameMemoryRequest is deleted,
   // which could happen at any time.
-  resource_usage_reporter_->GetPerFrameV8MemoryUsageData(
+  resource_usage_reporter_->GetV8MemoryUsage(
       mode == MeasurementMode::kLazy
-          ? blink::mojom::V8PerFrameMemoryReporter::Mode::LAZY
-          : blink::mojom::V8PerFrameMemoryReporter::Mode::DEFAULT,
-      base::BindOnce(&NodeAttachedProcessData::OnPerFrameV8MemoryUsageData,
+          ? blink::mojom::V8DetailedMemoryReporter::Mode::LAZY
+          : blink::mojom::V8DetailedMemoryReporter::Mode::DEFAULT,
+      base::BindOnce(&NodeAttachedProcessData::OnV8MemoryUsage,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -348,8 +318,8 @@ void NodeAttachedProcessData::UpgradeToBoundedMeasurementIfNeeded() {
   StartMeasurement(MeasurementMode::kBounded);
 }
 
-void NodeAttachedProcessData::OnPerFrameV8MemoryUsageData(
-    blink::mojom::PerProcessV8MemoryUsageDataPtr result) {
+void NodeAttachedProcessData::OnV8MemoryUsage(
+    blink::mojom::PerProcessV8MemoryUsagePtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Data has arrived so don't upgrade lazy requests to bounded, even if
@@ -360,46 +330,56 @@ void NodeAttachedProcessData::OnPerFrameV8MemoryUsageData(
   // If a frame doesn't have corresponding data in the result, clear any data
   // it may have had. Any datum in the result that doesn't correspond to an
   // existing frame is likewise accured to unassociated usage.
-  uint64_t unassociated_v8_bytes_used = result->unassociated_bytes_used;
+  uint64_t unassociated_v8_bytes_used = 0;
 
-  // Use a sorted vector (O(NlogN)) + lower_bound (O(logN)) for O(NlogN)
-  // lookups.
-  std::sort(result->associated_memory.begin(), result->associated_memory.end(),
-            SortByToken());
+  // Create a mapping from token to per-frame usage for the merge below.
+  std::vector<std::pair<blink::LocalFrameToken,
+                        blink::mojom::PerContextV8MemoryUsagePtr>>
+      tmp;
+  for (auto& isolate : result->isolates) {
+    for (auto& entry : isolate->contexts) {
+      if (entry->token.Is<blink::LocalFrameToken>()) {
+        tmp.emplace_back(entry->token.GetAs<blink::LocalFrameToken>(),
+                         std::move(entry));
+      }
+      // TODO(ulan): Handle WorkerFrameTokens here.
+    }
+    unassociated_v8_bytes_used += isolate->unassociated_bytes_used;
+  }
+
+  size_t found_frame_count = tmp.size();
+
+  base::flat_map<blink::LocalFrameToken,
+                 blink::mojom::PerContextV8MemoryUsagePtr>
+      associated_memory(std::move(tmp));
+  // Validate that the frame tokens were all unique. If there are duplicates,
+  // the map will arbitrarily drop all but one record per unique token.
+  DCHECK_EQ(associated_memory.size(), found_frame_count);
+
   base::flat_set<const FrameNode*> frame_nodes = process_node_->GetFrameNodes();
   for (const FrameNode* frame_node : frame_nodes) {
-    const blink::LocalFrameToken& frame_token = frame_node->GetFrameToken();
-    auto it = std::lower_bound(result->associated_memory.begin(),
-                               result->associated_memory.end(), frame_token,
-                               SortByToken());
-    if (it == result->associated_memory.end() ||
-        (*it)->frame_token != frame_token.value()) {
+    auto it = associated_memory.find(frame_node->GetFrameToken());
+    if (it == associated_memory.end()) {
       // No data for this node, clear any data associated with it.
       NodeAttachedFrameData::Destroy(frame_node);
     } else {
-      DCHECK(std::next(it) == result->associated_memory.end() ||
-             (*std::next(it))->frame_token != (*it)->frame_token)
-          << "Duplicate frame tokens found";
-
-      // TODO(crbug.com/1080672): Where to stash the non-main-world data?
       NodeAttachedFrameData* frame_data =
           NodeAttachedFrameData::GetOrCreate(frame_node);
       frame_data->data_available_ = true;
-      frame_data->data_.set_v8_bytes_used(GetMainWorldBytesUsed(*it));
-
+      frame_data->data_.set_v8_bytes_used(it->second->bytes_used);
       // Zero out this datum as its usage has been consumed.
-      (*it)->associated_bytes.clear();
+      // We avoid erase() here because it may take O(n) time.
+      it->second.reset();
     }
   }
 
-  for (const PerFrameUsagePtr& per_frame : result->associated_memory) {
-    if (per_frame->associated_bytes.empty()) {
+  for (const auto& it : associated_memory) {
+    if (it.second.is_null()) {
       // Frame was already consumed.
       continue;
     }
     // Accrue the data for non-existent frames to unassociated bytes.
-    // TODO(crbug.com/1080672): Where to stash the non-main-world data?
-    unassociated_v8_bytes_used += GetMainWorldBytesUsed(per_frame);
+    unassociated_v8_bytes_used += it.second->bytes_used;
   }
 
   data_available_ = true;
@@ -422,7 +402,7 @@ void NodeAttachedProcessData::EnsureRemote() {
     return;
 
   // This interface is implemented in //content/renderer/performance_manager.
-  mojo::PendingReceiver<blink::mojom::V8PerFrameMemoryReporter>
+  mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>
       pending_receiver = resource_usage_reporter_.BindNewPipeAndPassReceiver();
 
   RenderProcessHostProxy proxy = process_node_->GetRenderProcessHostProxy();
@@ -441,8 +421,8 @@ void NodeAttachedProcessData::EnsureRemote() {
 
 namespace internal {
 
-void SetBindV8PerFrameMemoryReporterCallbackForTesting(
-    BindV8PerFrameMemoryReporterCallback* callback) {
+void SetBindV8DetailedMemoryReporterCallbackForTesting(
+    BindV8DetailedMemoryReporterCallback* callback) {
   g_test_bind_callback = callback;
 }
 
