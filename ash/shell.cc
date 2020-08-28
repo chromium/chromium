@@ -548,7 +548,6 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
           std::make_unique<KeyboardBrightnessController>()),
       locale_update_controller_(std::make_unique<LocaleUpdateControllerImpl>()),
       parent_access_controller_(std::make_unique<ParentAccessController>()),
-      ash_color_provider_(std::make_unique<AshColorProvider>()),
       session_controller_(std::make_unique<SessionControllerImpl>()),
       shell_delegate_(std::move(shell_delegate)),
       shutdown_controller_(std::make_unique<ShutdownControllerImpl>()),
@@ -957,6 +956,8 @@ void Shell::Init(
   aura::Env* env = aura::Env::GetInstance();
   if (context_factory)
     env->set_context_factory(context_factory);
+
+  ash_color_provider_ = std::make_unique<AshColorProvider>();
 
   // Night Light depends on the display manager, the display color manager, and
   // aura::Env, so initialize it after all have been initialized.

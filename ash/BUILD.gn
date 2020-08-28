@@ -903,6 +903,7 @@ component("ash") {
     "system/cast/tray_cast.h",
     "system/cast/unified_cast_detailed_view_controller.cc",
     "system/cast/unified_cast_detailed_view_controller.h",
+    "system/dark_mode/color_mode_observer.h",
     "system/dark_mode/dark_mode_detailed_view.cc",
     "system/dark_mode/dark_mode_detailed_view.h",
     "system/dark_mode/dark_mode_detailed_view_controller.cc",

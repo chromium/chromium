@@ -6,11 +6,19 @@
 
 #include <math.h>
 
+#include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/dark_mode/color_mode_observer.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "ui/chromeos/colors/cros_colors.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
@@ -61,6 +69,14 @@ bool IsLightMode(AshColorProvider::AshColorMode color_mode) {
 
 }  // namespace
 
+AshColorProvider::AshColorProvider() {
+  Shell::Get()->session_controller()->AddObserver(this);
+}
+
+AshColorProvider::~AshColorProvider() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
+}
+
 // static
 AshColorProvider* AshColorProvider::Get() {
   return Shell::Get()->ash_color_provider();
@@ -77,6 +93,27 @@ SkColor AshColorProvider::GetSecondToneColor(SkColor color_of_first_tone) {
   return SkColorSetA(
       color_of_first_tone,
       std::round(SkColorGetA(color_of_first_tone) * kSecondToneOpacity));
+}
+
+// static
+void AshColorProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kDarkModeEnabled, kDefaultDarkModeEnabled,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+}
+
+void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
+  active_user_pref_service_ = prefs;
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs);
+
+  pref_change_registrar_->Add(
+      prefs::kDarkModeEnabled,
+      base::BindRepeating(&AshColorProvider::NotifyDarkModeEnabledPrefChange,
+                          base::Unretained(this)));
+
+  // Immediately tell all the observers to load this user's saved preferences.
+  NotifyDarkModeEnabledPrefChange();
 }
 
 SkColor AshColorProvider::DeprecatedGetShieldLayerColor(
@@ -216,6 +253,27 @@ void AshColorProvider::DecorateCloseButton(views::ImageButton* button,
   // TODO(sammiequon): Add background blur as per spec. Background blur is quite
   // heavy, and we may have many close buttons showing at a time. They'll be
   // added separately so its easier to monitor performance.
+}
+
+void AshColorProvider::AddObserver(ColorModeObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AshColorProvider::RemoveObserver(ColorModeObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool AshColorProvider::IsDarkModeEnabled() const {
+  if (!active_user_pref_service_)
+    return kDefaultDarkModeEnabled;
+  return active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled);
+}
+
+void AshColorProvider::Toggle() {
+  DCHECK(active_user_pref_service_);
+  active_user_pref_service_->SetBoolean(prefs::kDarkModeEnabled,
+                                        !IsDarkModeEnabled());
+  active_user_pref_service_->CommitPendingWrite();
 }
 
 SkColor AshColorProvider::GetShieldLayerColorImpl(
@@ -392,6 +450,12 @@ SkColor AshColorProvider::GetBackgroundThemedColor(
                   IsLightMode(color_mode) ? kLightBackgroundBlendAlpha
                                           : kDarkBackgroundBlendAlpha),
       muted_color);
+}
+
+void AshColorProvider::NotifyDarkModeEnabledPrefChange() {
+  const bool is_enabled = IsDarkModeEnabled();
+  for (auto& observer : observers_)
+    observer.OnColorModeChanged(is_enabled);
 }
 
 }  // namespace ash

@@ -20,6 +20,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/shelf_controller.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
@@ -47,6 +48,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AccessibilityControllerImpl::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AssistantControllerImpl::RegisterProfilePrefs(registry);
+  AshColorProvider::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
   BluetoothPowerController::RegisterProfilePrefs(registry);
   CapsLockNotificationController::RegisterProfilePrefs(registry, for_test);

@@ -56,8 +56,7 @@ void DarkModeDetailedView::CreateItems() {
 
   toggle_ =
       TrayPopupUtils::CreateToggleButton(this, IDS_ASH_STATUS_TRAY_BLUETOOTH);
-  toggle_->SetIsOn(AshColorProvider::Get()->color_mode() ==
-                   AshColorProvider::AshColorMode::kDark);
+  toggle_->SetIsOn(AshColorProvider::Get()->IsDarkModeEnabled());
   tri_view()->AddView(TriView::Container::END, toggle_);
 
   // Add color mode options.

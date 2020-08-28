@@ -6,8 +6,14 @@
 #define ASH_STYLE_ASH_COLOR_PROVIDER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/vector_icon_types.h"
+
+class PrefChangeRegistrar;
+class PrefRegistrySimple;
+class PrefService;
 
 namespace views {
 class ImageButton;
@@ -15,6 +21,7 @@ class LabelButton;
 }  // namespace views
 
 namespace ash {
+class ColorModeObserver;
 
 // The color provider for system UI. It provides colors for Shield layer, Base
 // layer, Controls layer and Content layer. Shield layer is a combination of
@@ -26,11 +33,12 @@ namespace ash {
 // state of an interactive element (active/inactive states). Content layer means
 // the UI elements, e.g., separator, text, icon. The color of an element in
 // system UI will be the combination of the colors of the four layers.
-class ASH_EXPORT AshColorProvider {
+class ASH_EXPORT AshColorProvider : public SessionObserver {
  public:
-  // The color mode of system UI. Switch "--ash-color-mode" can only set
-  // |color_mode_| to |kLight| or |kDark|, |color_mode_| will be |kDefault| if
-  // the flag is not set.
+  // TODO(minch): Remove AshColorMode, |color_mode_| and DeprecatedGet*
+  // functions once all the deprecated colors have been removed.
+  // The color mode of system UI, which can be set through the dark mode feature
+  // pod in the system tray menu.
   enum class AshColorMode {
     // This is the color mode of current system UI, which is a combination of
     // dark and light mode. e.g, shelf and system tray are dark while many other
@@ -142,10 +150,10 @@ class ASH_EXPORT AshColorProvider {
     const float highlight_opacity;
   };
 
-  AshColorProvider() = default;
+  AshColorProvider();
   AshColorProvider(const AshColorProvider& other) = delete;
   AshColorProvider operator=(const AshColorProvider& other) = delete;
-  ~AshColorProvider() = default;
+  ~AshColorProvider() override;
 
   static AshColorProvider* Get();
 
@@ -156,6 +164,11 @@ class ASH_EXPORT AshColorProvider {
   // Gets the color of second tone on the given |color_of_first_tone|. e.g,
   // power status icon inside status area is a dual tone icon.
   static SkColor GetSecondToneColor(SkColor color_of_first_tone);
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
 
   // Gets color of Shield layer. See details at the corresponding function of
   // Base layer.
@@ -213,7 +226,16 @@ class ASH_EXPORT AshColorProvider {
                            int button_size,
                            const gfx::VectorIcon& icon);
 
-  AshColorMode color_mode() const { return color_mode_; }
+  void AddObserver(ColorModeObserver* observer);
+  void RemoveObserver(ColorModeObserver* observer);
+
+  // True if pref |kDarkModeEnabled| is true, which means the current color mode
+  // is dark.
+  bool IsDarkModeEnabled() const;
+
+  // Toggles pref |kDarkModeEnabled|.
+  void Toggle();
+
   bool is_themed() const { return is_themed_; }
 
  private:
@@ -250,12 +272,19 @@ class ASH_EXPORT AshColorProvider {
   // muted wallpaper prominent color + SK_ColorWHITE 75%.
   SkColor GetBackgroundThemedColor(AshColorMode color_mode) const;
 
+  // Notifies all the observers on |kDarkModeEnabled|'s change.
+  void NotifyDarkModeEnabledPrefChange();
+
   // Current color mode of system UI.
   AshColorMode color_mode_ = AshColorMode::kDefault;
 
   // Whether the system color mode is themed, by default is true. If true, the
   // background color will be calculated based on extracted wallpaper color.
   bool is_themed_ = true;
+
+  base::ObserverList<ColorModeObserver> observers_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  PrefService* active_user_pref_service_ = nullptr;  // Not owned.
 };
 
 }  // namespace ash

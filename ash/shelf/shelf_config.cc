@@ -494,10 +494,9 @@ AshColorProvider::BaseLayerType ShelfConfig::GetShelfBaseLayerType() const {
 
   if (in_tablet_mode_) {
     if (is_in_app()) {
-      return AshColorProvider::Get()->color_mode() ==
-                     AshColorProvider::AshColorMode::kLight
-                 ? AshColorProvider::BaseLayerType::kOpaque
-                 : AshColorProvider::BaseLayerType::kTransparent90;
+      return AshColorProvider::Get()->IsDarkModeEnabled()
+                 ? AshColorProvider::BaseLayerType::kTransparent90
+                 : AshColorProvider::BaseLayerType::kOpaque;
     }
     return AshColorProvider::BaseLayerType::kTransparent60;
   }

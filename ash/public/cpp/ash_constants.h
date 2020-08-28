@@ -72,6 +72,9 @@ constexpr SkColor kDefaultFrameColor = SkColorSetRGB(0xFD, 0xFE, 0xFF);
 // Whether keyboard auto repeat is enabled by default.
 constexpr bool kDefaultKeyAutoRepeatEnabled = true;
 
+// Whether dark mode is enabled by default.
+constexpr bool kDefaultDarkModeEnabled = true;
+
 // The default delay before a held keypress will start to auto repeat.
 constexpr base::TimeDelta kDefaultKeyAutoRepeatDelay =
     base::TimeDelta::FromMilliseconds(500);

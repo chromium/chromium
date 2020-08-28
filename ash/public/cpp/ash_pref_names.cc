@@ -577,6 +577,9 @@ const char kMouseReverseScroll[] = "settings.mouse.reverse_scroll";
 // contextual nudge was shown.
 const char kMultipasteNudges[] = "ash.clipboard.multipaste_nudges";
 
+// A boolean pref that indicates whether dark mode is enabled.
+const char kDarkModeEnabled[] = "cros.system.dark_mode_enabled";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

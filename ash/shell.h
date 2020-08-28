@@ -697,8 +697,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ParentAccessController> parent_access_controller_;
   std::unique_ptr<QuickAnswersController> quick_answers_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
-  std::unique_ptr<AshColorProvider> ash_color_provider_;
   std::unique_ptr<SessionControllerImpl> session_controller_;
+  std::unique_ptr<AshColorProvider> ash_color_provider_;
   std::unique_ptr<NightLightControllerImpl> night_light_controller_;
   std::unique_ptr<PrivacyScreenController> privacy_screen_controller_;
   std::unique_ptr<PolicyRecommendationRestorer> policy_recommendation_restorer_;

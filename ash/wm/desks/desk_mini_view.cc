@@ -139,10 +139,9 @@ void DeskMiniView::UpdateBorderColor() {
     desk_preview_->SetBorderColor(kInactiveColor);
   } else {
     // Default theme for desks is dark mode.
-    desk_preview_->SetBorderColor(color_provider->color_mode() ==
-                                          AshColorProvider::AshColorMode::kLight
-                                      ? kLightModeActiveColor
-                                      : kDarkModeActiveColor);
+    desk_preview_->SetBorderColor(color_provider->IsDarkModeEnabled()
+                                      ? kDarkModeActiveColor
+                                      : kLightModeActiveColor);
   }
 }
 
