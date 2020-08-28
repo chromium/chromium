@@ -30,30 +30,6 @@ ASSERT_SIZE(NGPhysicalTextFragment, SameSizeAsNGPhysicalTextFragment);
 
 }  // anonymous namespace
 
-NGPhysicalTextFragment::NGPhysicalTextFragment(
-    PassKey key,
-    const NGPhysicalTextFragment& source,
-    unsigned start_offset,
-    unsigned end_offset,
-    scoped_refptr<const ShapeResultView> shape_result)
-    : NGPhysicalFragment(
-          source.GetMutableLayoutObject(),
-          source.StyleVariant(),
-          source.IsHorizontal()
-              ? PhysicalSize{shape_result->SnappedWidth(), source.Size().height}
-              : PhysicalSize{source.Size().width, shape_result->SnappedWidth()},
-          kFragmentText,
-          static_cast<unsigned>(source.TextType())),
-      text_(source.text_),
-      text_offset_(start_offset, end_offset),
-      shape_result_(std::move(shape_result)) {
-  DCHECK_GE(text_offset_.start, source.StartOffset());
-  DCHECK_LE(text_offset_.end, source.EndOffset());
-  DCHECK(shape_result_ || IsFlowControl()) << *this;
-  base_or_resolved_direction_ = source.base_or_resolved_direction_;
-  ink_overflow_computed_ = false;
-}
-
 NGPhysicalTextFragment::NGPhysicalTextFragment(NGTextFragmentBuilder* builder)
     : NGPhysicalFragment(builder,
                          kFragmentText,
@@ -218,20 +194,6 @@ NGPhysicalTextFragment::CloneAsHiddenForPaint() const {
   NGTextFragmentBuilder builder(*this);
   builder.SetIsHiddenForPaint(true);
   return builder.ToTextFragment();
-}
-
-scoped_refptr<const NGPhysicalTextFragment> NGPhysicalTextFragment::TrimText(
-    unsigned new_start_offset,
-    unsigned new_end_offset) const {
-  DCHECK(shape_result_);
-  DCHECK_GE(new_start_offset, StartOffset());
-  DCHECK_GT(new_end_offset, new_start_offset);
-  DCHECK_LE(new_end_offset, EndOffset());
-  scoped_refptr<ShapeResultView> new_shape_result = ShapeResultView::Create(
-      shape_result_.get(), new_start_offset, new_end_offset);
-  return base::AdoptRef(
-      new NGPhysicalTextFragment(PassKey(), *this, new_start_offset,
-                                 new_end_offset, std::move(new_shape_result)));
 }
 
 unsigned NGPhysicalTextFragment::TextOffsetForPoint(

@@ -29,14 +29,6 @@ class CORE_EXPORT NGPhysicalTextFragment final : public NGPhysicalFragment {
  public:
   NGPhysicalTextFragment(NGTextFragmentBuilder*);
 
-  using PassKey = util::PassKey<NGPhysicalTextFragment>;
-  // For use by TrimText only
-  NGPhysicalTextFragment(PassKey,
-                         const NGPhysicalTextFragment& source,
-                         unsigned start_offset,
-                         unsigned end_offset,
-                         scoped_refptr<const ShapeResultView> shape_result);
-
   NGTextType TextType() const { return static_cast<NGTextType>(sub_type_); }
   // Returns true if the text is generated (from, e.g., list marker,
   // pseudo-element, ...) instead of from a DOM text node.
@@ -92,12 +84,6 @@ class CORE_EXPORT NGPhysicalTextFragment final : public NGPhysicalFragment {
   PhysicalRect SelfInkOverflow() const;
 
   scoped_refptr<const NGPhysicalTextFragment> CloneAsHiddenForPaint() const;
-
-  // Create a new fragment that has part of the text of this fragment.
-  // All other properties are the same as this fragment.
-  scoped_refptr<const NGPhysicalTextFragment> TrimText(
-      unsigned start_offset,
-      unsigned end_offset) const;
 
   scoped_refptr<const NGPhysicalFragment> CloneWithoutOffset() const;
 
