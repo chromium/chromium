@@ -329,6 +329,10 @@
       status: "experimental",
     },
     {
+      name: "ClipboardSvg",
+      status: "experimental",
+    },
+    {
       name: "CompositeAfterPaint",
     },
     {

@@ -57,6 +57,9 @@ class CORE_EXPORT SystemClipboard final
                  const KURL& document_url,
                  SmartReplaceOption = kCannotSmartReplace);
 
+  void ReadSvg(mojom::blink::ClipboardHost::ReadSvgCallback callback);
+  void WriteSvg(const String& markup);
+
   String ReadRTF();
 
   SkBitmap ReadImage(mojom::ClipboardBuffer);

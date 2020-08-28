@@ -36,6 +36,7 @@ const char kMimeTypeText[] = "text";
 const char kMimeTypeTextPlain[] = "text/plain";
 const char kMimeTypeTextPlainEtc[] = "text/plain;";
 const char kMimeTypeTextHTML[] = "text/html";
+const char kMimeTypeImageSvg[] = "image/svg+xml";
 const char kMimeTypeTextRTF[] = "text/rtf";
 const char kMimeTypeURL[] = "url";
 const char kMimeTypeTextURIList[] = "text/uri-list";

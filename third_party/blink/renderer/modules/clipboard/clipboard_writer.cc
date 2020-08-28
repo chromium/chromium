@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -165,6 +166,49 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
   }
 };
 
+class ClipboardSvgWriter final : public ClipboardWriter {
+ public:
+  ClipboardSvgWriter(SystemClipboard* system_clipboard,
+                     ClipboardPromise* promise)
+      : ClipboardWriter(system_clipboard, promise) {}
+  ~ClipboardSvgWriter() override = default;
+
+ private:
+  // This must be called on the main thread because XML DOM nodes can
+  // only be used on the main thread
+  void StartWrite(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                  DOMArrayBuffer* svg_data) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    String svg_string =
+        String::FromUTF8(reinterpret_cast<const LChar*>(svg_data->Data()),
+                         svg_data->ByteLengthAsSizeT());
+
+    // Now sanitize the SVG string.
+    KURL url;
+    unsigned fragment_start = 0;
+    unsigned fragment_end = svg_string.length();
+
+    Document* document = promise_->GetLocalFrame()->GetDocument();
+    DocumentFragment* fragment = CreateSanitizedFragmentFromMarkupWithContext(
+        *document, svg_string, fragment_start, fragment_end, url);
+    String sanitized_svg =
+        CreateMarkup(fragment, kIncludeNode, kResolveAllURLs);
+    Write(sanitized_svg);
+  }
+
+  void DecodeOnBackgroundThread(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      DOMArrayBuffer* html_data) override {
+    NOTREACHED() << "SVG's serializers cannot be used on background threads.";
+  }
+
+  void Write(const String& svg_html) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    system_clipboard()->WriteSvg(svg_html);
+    promise_->CompleteWriteRepresentation();
+  }
+};
 // Writes a blob with arbitrary, unsanitized content to the System Clipboard.
 class ClipboardRawDataWriter final : public ClipboardWriter {
  public:
@@ -239,6 +283,10 @@ ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
   if (mime_type == kMimeTypeTextHTML)
     return MakeGarbageCollected<ClipboardHtmlWriter>(system_clipboard, promise);
 
+  if (mime_type == kMimeTypeImageSvg &&
+      RuntimeEnabledFeatures::ClipboardSvgEnabled())
+    return MakeGarbageCollected<ClipboardSvgWriter>(system_clipboard, promise);
+
   NOTREACHED() << "Type " << mime_type << " was not implemented";
   return nullptr;
 }
@@ -282,7 +330,7 @@ bool ClipboardWriter::IsValidType(const String& type, bool is_raw) {
 
   // TODO(https://crbug.com/1029857): Add support for other types.
   return type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||
-         type == kMimeTypeTextHTML;
+         type == kMimeTypeTextHTML || type == kMimeTypeImageSvg;
 }
 
 void ClipboardWriter::WriteToSystem(Blob* blob) {
