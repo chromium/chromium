@@ -10,8 +10,10 @@
 
 #include "base/bind.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
@@ -22,6 +24,10 @@
 
 class CrosHealthdMetricsProviderTest : public testing::Test {
  public:
+  CrosHealthdMetricsProviderTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kUmaStorageDimensions);
+  }
+
   void SetUp() override { chromeos::CrosHealthdClient::InitializeFake(); }
 
   void TearDown() override {
@@ -34,6 +40,9 @@ class CrosHealthdMetricsProviderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CrosHealthdMetricsProviderTest, EndToEnd) {
@@ -120,6 +129,20 @@ TEST_F(CrosHealthdMetricsProviderTest, EndToEndTimeout) {
 
   // FastForward by timeout period.
   task_environment_.FastForwardBy(CrosHealthdMetricsProvider::GetTimeout());
+  run_loop.Run();
+  ASSERT_FALSE(provider.IsInitialized());
+}
+
+TEST_F(CrosHealthdMetricsProviderTest, EndToEndNoFeature) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.Init();
+
+  base::RunLoop run_loop;
+  CrosHealthdMetricsProvider provider;
+  provider.AsyncInit(base::BindOnce(
+      [](base::OnceClosure callback) { std::move(callback).Run(); },
+      run_loop.QuitClosure()));
+
   run_loop.Run();
   ASSERT_FALSE(provider.IsInitialized());
 }
