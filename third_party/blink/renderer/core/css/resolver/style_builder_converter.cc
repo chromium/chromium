@@ -323,37 +323,37 @@ float MathScriptScaleFactor(StyleResolverState& state) {
   float defaultScaleDown = 0.71;
   int exponent = b - a;
   float scaleFactor = 1.0;
-  HarfBuzzFace* parent_harfbuzz_face = state.ParentStyle()
-                                           ->GetFont()
-                                           .PrimaryFont()
-                                           ->PlatformData()
-                                           .GetHarfBuzzFace();
-  if (OpenTypeMathSupport::HasMathData(parent_harfbuzz_face)) {
-    float scriptPercentScaleDown =
-        OpenTypeMathSupport::MathConstant(
-            parent_harfbuzz_face,
-            OpenTypeMathSupport::MathConstants::kScriptPercentScaleDown)
-            .value_or(0);
-    // Note: zero can mean both zero for the math constant and the fallback.
-    if (!scriptPercentScaleDown)
-      scriptPercentScaleDown = defaultScaleDown;
-    float scriptScriptPercentScaleDown =
-        OpenTypeMathSupport::MathConstant(
-            parent_harfbuzz_face,
-            OpenTypeMathSupport::MathConstants::kScriptScriptPercentScaleDown)
-            .value_or(0);
-    // Note: zero can mean both zero for the math constant and the fallback.
-    if (!scriptScriptPercentScaleDown)
-      scriptScriptPercentScaleDown = defaultScaleDown * defaultScaleDown;
-    if (a <= 0 && b >= 2) {
-      scaleFactor *= scriptScriptPercentScaleDown;
-      exponent -= 2;
-    } else if (a == 1) {
-      scaleFactor *= scriptScriptPercentScaleDown / scriptPercentScaleDown;
-      exponent--;
-    } else if (b == 1) {
-      scaleFactor *= scriptPercentScaleDown;
-      exponent--;
+  if (const SimpleFontData* font_data =
+          state.ParentStyle()->GetFont().PrimaryFont()) {
+    HarfBuzzFace* parent_harfbuzz_face =
+        font_data->PlatformData().GetHarfBuzzFace();
+    if (OpenTypeMathSupport::HasMathData(parent_harfbuzz_face)) {
+      float scriptPercentScaleDown =
+          OpenTypeMathSupport::MathConstant(
+              parent_harfbuzz_face,
+              OpenTypeMathSupport::MathConstants::kScriptPercentScaleDown)
+              .value_or(0);
+      // Note: zero can mean both zero for the math constant and the fallback.
+      if (!scriptPercentScaleDown)
+        scriptPercentScaleDown = defaultScaleDown;
+      float scriptScriptPercentScaleDown =
+          OpenTypeMathSupport::MathConstant(
+              parent_harfbuzz_face,
+              OpenTypeMathSupport::MathConstants::kScriptScriptPercentScaleDown)
+              .value_or(0);
+      // Note: zero can mean both zero for the math constant and the fallback.
+      if (!scriptScriptPercentScaleDown)
+        scriptScriptPercentScaleDown = defaultScaleDown * defaultScaleDown;
+      if (a <= 0 && b >= 2) {
+        scaleFactor *= scriptScriptPercentScaleDown;
+        exponent -= 2;
+      } else if (a == 1) {
+        scaleFactor *= scriptScriptPercentScaleDown / scriptPercentScaleDown;
+        exponent--;
+      } else if (b == 1) {
+        scaleFactor *= scriptPercentScaleDown;
+        exponent--;
+      }
     }
   }
   scaleFactor *= pow(defaultScaleDown, exponent);

@@ -50,7 +50,10 @@ struct ScriptsVerticalParameters {
 ScriptsVerticalParameters GetScriptsVerticalParameters(
     const ComputedStyle& style) {
   ScriptsVerticalParameters parameters;
-  auto x_height = style.GetFont().PrimaryFont()->GetFontMetrics().XHeight();
+  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  if (!font_data)
+    return parameters;
+  auto x_height = font_data->GetFontMetrics().XHeight();
   parameters.subscript_shift_down =
       LayoutUnit(MathConstant(style, MathConstants::kSubscriptShiftDown)
                      .value_or(x_height / 3));

@@ -17,8 +17,8 @@ namespace blink {
 namespace {
 
 bool HasBaseGlyphForRadical(const ComputedStyle& style) {
-  return style.GetFont().PrimaryFont() &&
-         style.GetFont().PrimaryFont()->GlyphForCharacter(kSquareRootCharacter);
+  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  return font_data && font_data->GlyphForCharacter(kSquareRootCharacter);
 }
 
 }  // namespace

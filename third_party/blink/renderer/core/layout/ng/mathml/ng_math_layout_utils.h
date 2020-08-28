@@ -15,6 +15,7 @@ struct MinMaxSizes;
 class NGBlockNode;
 class NGConstraintSpace;
 class NGLayoutInputNode;
+class SimpleFontData;
 
 // Creates a new constraint space for the current child.
 NGConstraintSpace CreateConstraintSpaceForMathChild(
@@ -41,9 +42,10 @@ LayoutUnit MathAxisHeight(const ComputedStyle& style);
 inline base::Optional<float> MathConstant(
     const ComputedStyle& style,
     OpenTypeMathSupport::MathConstants constant) {
-  return OpenTypeMathSupport::MathConstant(
-      style.GetFont().PrimaryFont()->PlatformData().GetHarfBuzzFace(),
-      constant);
+  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  return font_data ? OpenTypeMathSupport::MathConstant(
+                         font_data->PlatformData().GetHarfBuzzFace(), constant)
+                   : constant;
 }
 
 LayoutUnit FractionLineThickness(const ComputedStyle&);

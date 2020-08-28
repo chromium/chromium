@@ -34,9 +34,9 @@ struct UnderOverVerticalParameters {
 UnderOverVerticalParameters GetUnderOverVerticalParameters(
     const ComputedStyle& style) {
   UnderOverVerticalParameters parameters;
-
-  if (!OpenTypeMathSupport::HasMathData(
-          style.GetFont().PrimaryFont()->PlatformData().GetHarfBuzzFace())) {
+  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  if (font_data && !OpenTypeMathSupport::HasMathData(
+                       font_data->PlatformData().GetHarfBuzzFace())) {
     // The MATH table specification does not really provide any suggestions,
     // except for some underbar/overbar values and AccentBaseHeight.
     LayoutUnit default_line_thickness =
@@ -46,7 +46,7 @@ UnderOverVerticalParameters GetUnderOverVerticalParameters(
     parameters.under_extra_descender = default_line_thickness;
     parameters.over_extra_ascender = default_line_thickness;
     parameters.accent_base_height =
-        LayoutUnit(style.GetFont().PrimaryFont()->GetFontMetrics().XHeight());
+        LayoutUnit(font_data->GetFontMetrics().XHeight());
     parameters.use_under_over_bar_fallback = true;
     return parameters;
   }
