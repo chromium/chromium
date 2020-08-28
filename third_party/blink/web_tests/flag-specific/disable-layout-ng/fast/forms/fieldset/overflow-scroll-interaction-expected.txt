@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Pressing the space bar should scroll up assert_equals: expected 400 but got 418
+FAIL Wheel scroll should work assert_equals: expected 400 but got 418
+Harness: the test ran to completion.
+

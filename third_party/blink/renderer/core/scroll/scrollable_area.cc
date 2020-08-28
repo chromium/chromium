@@ -772,6 +772,16 @@ void ScrollableArea::ShowNonMacOverlayScrollbars() {
   }
 }
 
+Node* ScrollableArea::EventTargetNode() const {
+  const LayoutBox* box = GetLayoutBox();
+  Node* node = box->GetNode();
+  if (!node && box->Parent() && box->Parent()->IsLayoutNGFieldset())
+    node = box->Parent()->GetNode();
+  if (node && IsA<Element>(node))
+    DCHECK_EQ(box, To<Element>(node)->GetLayoutBoxForScrolling());
+  return node;
+}
+
 const Document* ScrollableArea::GetDocument() const {
   if (auto* box = GetLayoutBox())
     return &box->GetDocument();
@@ -874,7 +884,7 @@ CompositorElementId ScrollableArea::GetScrollbarElementId(
 void ScrollableArea::OnScrollFinished() {
   if (GetLayoutBox()) {
     if (RuntimeEnabledFeatures::OverscrollCustomizationEnabled()) {
-      if (Node* node = GetLayoutBox()->GetNode())
+      if (Node* node = EventTargetNode())
         node->GetDocument().EnqueueScrollEndEventForNode(node);
     }
     GetLayoutBox()
@@ -1002,8 +1012,13 @@ ScrollableArea* ScrollableArea::GetForScrolling(const LayoutBox* layout_box) {
   if (!layout_box)
     return nullptr;
 
-  if (!layout_box->IsGlobalRootScroller())
+  if (!layout_box->IsGlobalRootScroller()) {
+    if (const auto* element = DynamicTo<Element>(layout_box->GetNode())) {
+      if (auto* scrolling_box = element->GetLayoutBoxForScrolling())
+        return scrolling_box->GetScrollableArea();
+    }
     return layout_box->GetScrollableArea();
+  }
 
   // The global root scroller should be scrolled by the root frame view's
   // ScrollableArea.

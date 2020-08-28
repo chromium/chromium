@@ -125,6 +125,16 @@ LayoutObject* HTMLFieldSetElement::CreateLayoutObject(
   return LayoutObjectFactory::CreateFieldset(*this, style, legacy);
 }
 
+LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
+  auto* layout_box = GetLayoutBox();
+  if (!layout_box || !layout_box->IsLayoutNGFieldset())
+    return HTMLFormControlElement::GetLayoutBoxForScrolling();
+  LayoutObject* child = layout_box->SlowFirstChild();
+  if (child && child->IsAnonymous())
+    return ToLayoutBox(child);
+  return HTMLFormControlElement::GetLayoutBoxForScrolling();
+}
+
 bool HTMLFieldSetElement::TypeShouldForceLegacyLayout() const {
   return !RuntimeEnabledFeatures::LayoutNGFieldsetEnabled();
 }

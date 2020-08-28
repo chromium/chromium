@@ -63,9 +63,6 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
   // Inherit all properties listed here:
   // https://html.spec.whatwg.org/C/#anonymous-fieldset-content-box
 
-  // TODO(crbug.com/1101976): When the paint code is ready for anonymous
-  // scrollable containers, inherit overflow-x and overflow-y here.
-
   child_style.SetAlignContent(StyleRef().AlignContent());
   child_style.SetAlignItems(StyleRef().AlignItems());
 
@@ -113,6 +110,8 @@ void LayoutNGFieldset::UpdateAnonymousChildStyle(
 
   child_style.SetJustifyContent(StyleRef().JustifyContent());
   child_style.SetJustifyItems(StyleRef().JustifyItems());
+  child_style.SetOverflowX(StyleRef().OverflowX());
+  child_style.SetOverflowY(StyleRef().OverflowY());
   child_style.SetUnicodeBidi(StyleRef().GetUnicodeBidi());
 }
 
@@ -139,6 +138,20 @@ bool LayoutNGFieldset::BackgroundIsKnownToBeOpaqueInRect(
     return false;
 
   return LayoutBlockFlow::BackgroundIsKnownToBeOpaqueInRect(local_rect);
+}
+
+LayoutUnit LayoutNGFieldset::ScrollWidth() const {
+  const LayoutObject* child = FirstChild();
+  if (child && child->IsAnonymous())
+    return ToLayoutBox(child)->ScrollWidth();
+  return LayoutNGBlockFlow::ScrollWidth();
+}
+
+LayoutUnit LayoutNGFieldset::ScrollHeight() const {
+  const LayoutObject* child = FirstChild();
+  if (child && child->IsAnonymous())
+    return ToLayoutBox(child)->ScrollHeight();
+  return LayoutNGBlockFlow::ScrollHeight();
 }
 
 }  // namespace blink

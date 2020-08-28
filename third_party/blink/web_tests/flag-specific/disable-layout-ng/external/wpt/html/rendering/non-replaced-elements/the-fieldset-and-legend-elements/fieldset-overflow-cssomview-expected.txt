@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test cssom-view API for FIELDSET assert_equals: expected 400 but got 418
+Harness: the test ran to completion.
+

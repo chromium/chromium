@@ -549,10 +549,9 @@ void Node::NativeApplyScroll(ScrollState& scroll_state) {
   // TODO: This should use updateStyleAndLayoutForNode.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
 
-  LayoutBox* box_to_scroll = ToLayoutBox(GetLayoutObject());
-
   ScrollableArea* scrollable_area =
-      box_to_scroll->EnclosingBox()->GetScrollableArea();
+      ScrollableArea::GetForScrolling(ToLayoutBox(GetLayoutObject()));
+  LayoutBox* box_to_scroll = scrollable_area->GetLayoutBox();
 
   // TODO(bokan): This is a hack to fix https://crbug.com/977954. If we have a
   // non-default root scroller, scrolling from one of its siblings or a fixed

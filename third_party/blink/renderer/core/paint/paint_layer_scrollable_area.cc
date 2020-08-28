@@ -675,10 +675,8 @@ void PaintLayerScrollableArea::EnqueueScrollEventIfNeeded() {
   if (HasBeenDisposed())
     return;
   // Schedule the scroll DOM event.
-  if (GetLayoutBox()->GetNode()) {
-    GetLayoutBox()->GetNode()->GetDocument().EnqueueScrollEventForNode(
-        GetLayoutBox()->GetNode());
-  }
+  if (auto* node = EventTargetNode())
+    node->GetDocument().EnqueueScrollEventForNode(node);
 }
 
 IntSize PaintLayerScrollableArea::MinimumScrollOffsetInt() const {
@@ -1546,7 +1544,8 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
   DCHECK(GetLayoutBox()->GetFrame()->GetSettings());
   if (VisualViewportSuppliesScrollbars() ||
       !CanHaveOverflowScrollbars(*GetLayoutBox()) ||
-      GetLayoutBox()->GetFrame()->GetSettings()->GetHideScrollbars()) {
+      GetLayoutBox()->GetFrame()->GetSettings()->GetHideScrollbars() ||
+      GetLayoutBox()->IsLayoutNGFieldset()) {
     needs_horizontal_scrollbar = false;
     needs_vertical_scrollbar = false;
     return;

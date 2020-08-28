@@ -27,6 +27,11 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
                                  ComputedStyle& child_style) const override;
   void InvalidatePaint(const PaintInvalidatorContext& context) const final;
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override;
+
+  bool AllowsNonVisibleOverflow() const override { return false; }
+  // Override to forward to the anonymous fieldset content box.
+  LayoutUnit ScrollWidth() const override;
+  LayoutUnit ScrollHeight() const override;
 };
 
 }  // namespace blink

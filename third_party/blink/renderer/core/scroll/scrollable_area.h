@@ -568,6 +568,10 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   bool HasBeenDisposed() const { return has_been_disposed_; }
 
+  // Returns a Node at which 'scroll' events should be dispatched.
+  // For <fieldset>, a ScrollableArea is associated to its internal anonymous
+  // box. GetLayoutBox()->GetNode() doesn't work in this case.
+  Node* EventTargetNode() const;
   virtual const Document* GetDocument() const;
 
   // Resolves into un-zoomed physical pixels a scroll |delta| based on its
