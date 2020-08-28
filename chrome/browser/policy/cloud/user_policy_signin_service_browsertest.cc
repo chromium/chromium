@@ -242,8 +242,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     access_token_info.audience =
         GaiaUrls::GetInstance()->oauth2_chrome_client_id();
     access_token_info.email = kTestEmail;
-    fake_gaia_.IssueOAuthToken(base::StringPrintf(kTestRefreshToken),
-                               access_token_info);
+    fake_gaia_.IssueOAuthToken(kTestRefreshToken, access_token_info);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleUserInfoRequest(
