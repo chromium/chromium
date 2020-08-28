@@ -26,46 +26,55 @@ class CppTypeGeneratorTest(unittest.TestCase):
   def setUp(self):
     self.models = defaultdict(model.Model)
 
-    self.forbidden_json = CachedLoad('test/forbidden.json')
-    self.forbidden = self.models['forbidden'].AddNamespace(
-        self.forbidden_json[0], 'path/to/forbidden.json')
-    self.permissions_json = CachedLoad('test/permissions.json')
+    forbidden_json = CachedLoad('test/forbidden.json')
+    self.models['forbidden'].AddNamespace(
+        forbidden_json[0], 'path/to/forbidden.json')
+
+    permissions_json = CachedLoad('test/permissions.json')
     self.permissions = self.models['permissions'].AddNamespace(
-        self.permissions_json[0], 'path/to/permissions.json')
+        permissions_json[0], 'path/to/permissions.json')
+
     self.windows_json = CachedLoad('test/windows.json')
     self.windows = self.models['windows'].AddNamespace(self.windows_json[0],
                                                        'path/to/window.json')
     self.tabs_json = CachedLoad('test/tabs.json')
     self.tabs = self.models['tabs'].AddNamespace(self.tabs_json[0],
                                                  'path/to/tabs.json')
+
     self.browser_action_json = CachedLoad('test/browser_action.json')
     self.browser_action = self.models['browser_action'].AddNamespace(
         self.browser_action_json[0], 'path/to/browser_action.json')
+
     self.font_settings_json = CachedLoad('test/font_settings.json')
     self.font_settings = self.models['font_settings'].AddNamespace(
         self.font_settings_json[0], 'path/to/font_settings.json')
+
     self.dependency_tester_json = CachedLoad('test/dependency_tester.json')
-    self.dependency_tester = self.models['dependency_tester'].AddNamespace(
+    self.models['dependency_tester'].AddNamespace(
         self.dependency_tester_json[0], 'path/to/dependency_tester.json')
-    self.content_settings_json = CachedLoad('test/content_settings.json')
-    self.content_settings = self.models['content_settings'].AddNamespace(
-        self.content_settings_json[0], 'path/to/content_settings.json')
-    self.objects_movable_idl = idl_schema.Load('test/objects_movable.idl')
+
+    content_settings_json = CachedLoad('test/content_settings.json')
+    self.models['content_settings'].AddNamespace(
+        content_settings_json[0], 'path/to/content_settings.json')
+
+    objects_movable_idl = idl_schema.Load('test/objects_movable.idl')
     self.objects_movable = self.models['objects_movable'].AddNamespace(
-        self.objects_movable_idl[0], 'path/to/objects_movable.idl',
+        objects_movable_idl[0], 'path/to/objects_movable.idl',
         include_compiler_options=True)
+
     self.simple_api_json = CachedLoad('test/simple_api.json')
-    self.simple_api = self.models['simple_api'].AddNamespace(
+    self.models['simple_api'].AddNamespace(
         self.simple_api_json[0], 'path/to/simple_api.json')
+
     self.crossref_enums_json = CachedLoad('test/crossref_enums.json')
-    self.crossref_enums = self.models['crossref_enums'].AddNamespace(
+    self.models['crossref_enums'].AddNamespace(
         self.crossref_enums_json[0], 'path/to/crossref_enums.json')
+
     self.crossref_enums_array_json = CachedLoad(
         'test/crossref_enums_array.json')
-    self.crossref_enums_array = (
-        self.models['crossref_enums_array'].AddNamespace(
-            self.crossref_enums_array_json[0],
-            'path/to/crossref_enums_array.json'))
+    self.models['crossref_enums_array'].AddNamespace(
+        self.crossref_enums_array_json[0],
+        'path/to/crossref_enums_array.json')
 
   def testGenerateIncludesAndForwardDeclarations(self):
     m = model.Model()
@@ -238,7 +247,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
     test case so that other types don't cause the hard-dependency.
     """
     m = model.Model()
-    m.AddNamespace(self.crossref_enums_json[0],
+    m.AddNamespace(self.crossref_enums_array_json[0],
                    'path/to/crossref_enums_array.json',
                    environment=CppNamespaceEnvironment('%(namespace)s'))
     m.AddNamespace(self.simple_api_json[0],
