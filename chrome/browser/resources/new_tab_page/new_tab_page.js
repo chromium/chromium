@@ -15,6 +15,7 @@ import './app.js';
 export {BackgroundManager} from './background_manager.js';
 export {BrowserProxy} from './browser_proxy.js';
 export {BackgroundSelectionType} from './customize_dialog.js';
+export {ImgElement} from './img.js';
 export {dummyDescriptor} from './modules/dummy/module.js';
 export {kaleidoscopeDescriptor} from './modules/kaleidoscope/module.js';
 export {ModuleDescriptor} from './modules/module_descriptor.js';

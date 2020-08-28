@@ -18,6 +18,7 @@ js_type_check("closure_compile") {
     ":fakebox",
     ":iframe",
     ":logo",
+    ":new_tab_page",
     ":one_google_bar_api",
     ":promo_browser_command_proxy",
     ":realbox",
@@ -31,6 +32,21 @@ js_type_check("closure_compile") {
     "modules:module_descriptor",
     "modules:module_registry",
     "modules:modules",
+  ]
+}
+
+js_library("new_tab_page") {
+  deps = [
+    ":app",
+    ":background_manager",
+    ":browser_proxy",
+    ":customize_dialog",
+    ":promo_browser_command_proxy",
+    ":utils",
+    "modules:module_descriptor",
+    "modules:module_registry",
+    "modules/dummy:module",
+    "modules/kaleidoscope:module",
   ]
 }
 
@@ -227,6 +243,9 @@ js_library("background_manager") {
 }
 
 js_library("one_google_bar_api") {
+}
+
+js_library("img") {
 }
 
 html_to_js("web_components_local") {

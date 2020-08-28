@@ -1,20 +1,23 @@
 <style>
-.tile-item {
-    background-color: var(--ntp-active-background-color);
-    border-color: var(--ntp-border-color);
-    border-radius: 8px;
-    border-style: solid;
-    border-width: thin;
+  cr-grid {
+    --cr-grid-gap: 8px;
+  }
+
+  .tile-item {
     color: var(--cr-primary-text-color);
-    height: 85px;
-    line-height: 85px;
-    margin: 10px;
-    text-align: center;
+    height: 120px;
     width: 170px;
+  }
+
+  img {
+    border-radius: 8px;
   }
 </style>
 <cr-grid id="tiles" columns="3">
   <template id="tileList" is="dom-repeat" items="[[tiles]]">
-    <div class="tile-item" title="[[item.label]]">[[item.value]]</div>
+    <div class="tile-item" title="[[item.label]]">
+      <img is="ntp-img" external-src="[[item.imageUrl]]"></img>
+      <span>[[item.value]]</span>
+    </div>
   </template>
 </cr-grid>

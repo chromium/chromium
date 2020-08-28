@@ -430,6 +430,7 @@ group("closure_compile") {
     "cr_elements:closure_compile",
     "nearby_share:closure_compile",
     "nearby_share/shared:closure_compile",
+    "new_tab_page:closure_compile",
     "print_preview:closure_compile",
     "settings:closure_compile",
     "signin:closure_compile",
