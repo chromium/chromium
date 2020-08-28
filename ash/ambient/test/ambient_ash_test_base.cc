@@ -16,9 +16,7 @@
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
@@ -108,9 +106,6 @@ void AmbientAshTestBase::SetUp() {
   chromeos::PowerManagerClient::InitializeFake();
 
   AshTestBase::SetUp();
-
-  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-      ambient::prefs::kAmbientModeEnabled, true);
 
   // Need to reset first and then assign the TestPhotoClient because can only
   // have one instance of AmbientBackendController.

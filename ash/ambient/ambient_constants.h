@@ -25,11 +25,11 @@ constexpr base::TimeDelta kPhotoRefreshInterval =
     base::TimeDelta::FromSeconds(60);
 
 // The number of requests to fetch topics.
-constexpr int kNumberOfRequests = 1;
+constexpr int kNumberOfRequests = 50;
 
 // The batch size of topics to fetch in one request.
 // Magic number 2 is based on experiments that no curation on Google Photos.
-constexpr int kTopicsBatchSize = 100;
+constexpr int kTopicsBatchSize = 2;
 
 // Max cached images.
 constexpr int kMaxNumberOfCachedImages = 100;

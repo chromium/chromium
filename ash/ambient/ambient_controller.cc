@@ -160,7 +160,7 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     // Do not sync across devices to allow different usages for different
     // devices.
     registry->RegisterBooleanPref(ash::ambient::prefs::kAmbientModeEnabled,
-                                  false);
+                                  true);
 
     // Used to upload usage metrics. Derived from |AmbientSettings| when
     // settings are successfully saved by the user. This pref is not displayed
