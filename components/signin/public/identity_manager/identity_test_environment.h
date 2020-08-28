@@ -50,6 +50,19 @@ class TestIdentityManagerObserver;
 // requirement.
 class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
  public:
+  struct PendingRequest {
+    PendingRequest(CoreAccountId account_id,
+                   std::string client_id,
+                   std::string client_secret,
+                   OAuth2AccessTokenManager::ScopeSet scopes);
+    PendingRequest(const PendingRequest&);
+    ~PendingRequest();
+    CoreAccountId account_id;
+    std::string client_id;
+    std::string client_secret;
+    OAuth2AccessTokenManager::ScopeSet scopes;
+  };
+
   // Preferred constructor: constructs an IdentityManager object and its
   // dependencies internally. Cannot be used if the client of this class
   // is still interacting directly with those dependencies (e.g., if
@@ -279,6 +292,9 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
 
   // Returns whether there is a access token request pending.
   bool IsAccessTokenRequestPending();
+
+  // Returns the pending access token requests.
+  std::vector<PendingRequest> GetPendingAccessTokenRequests();
 
   // Sets whether the list of accounts in Gaia cookie jar is fresh and does not
   // need to be updated.

@@ -149,6 +149,10 @@ void AssistantInteractionControllerImpl::StartTextInteraction(
   assistant_->StartTextInteraction(text, query_source, allow_tts);
 }
 
+void AssistantInteractionControllerImpl::StartBloomInteraction() {
+  // TODO(jeroendh): Implement.
+}
+
 void AssistantInteractionControllerImpl::OnAssistantControllerConstructed() {
   AssistantUiController::Get()->GetModel()->AddObserver(this);
   assistant_controller_->view_delegate()->AddObserver(this);

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/component_export.h"
+
 namespace chromeos {
 namespace bloom {
 
@@ -20,7 +22,8 @@ enum class BloomInteractionResolution {
   kNoScreenshot = 2,
 };
 
-std::string ToString(BloomInteractionResolution resolution);
+std::string COMPONENT_EXPORT(BLOOM)
+    ToString(BloomInteractionResolution resolution);
 
 }  // namespace bloom
 }  // namespace chromeos

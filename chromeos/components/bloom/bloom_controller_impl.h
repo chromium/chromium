@@ -25,7 +25,8 @@ class BloomControllerImpl : public BloomController {
  public:
   BloomControllerImpl(
       signin::IdentityManager* identity_manager,
-      ash::AssistantInteractionController* assistant_interaction_controller);
+      ash::AssistantInteractionController* assistant_interaction_controller,
+      std::unique_ptr<ScreenshotGrabber> screenshot_grabber);
   BloomControllerImpl(const BloomControllerImpl&) = delete;
   BloomControllerImpl& operator=(const BloomControllerImpl&) = delete;
   ~BloomControllerImpl() override;
@@ -37,15 +38,20 @@ class BloomControllerImpl : public BloomController {
   bool HasInteraction() const;
   void StopInteraction(BloomInteractionResolution resolution);
 
+  ScreenshotGrabber* screenshot_grabber() { return screenshot_grabber_.get(); }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
   ash::AssistantInteractionController* assistant_interaction_controller() {
     return assistant_interaction_controller_;
   }
 
+  void SetScreenshotGrabberForTesting(std::unique_ptr<ScreenshotGrabber>);
+
  private:
   signin::IdentityManager* const identity_manager_;
   ash::AssistantInteractionController* const assistant_interaction_controller_;
+  std::unique_ptr<ScreenshotGrabber> screenshot_grabber_;
 
+  std::unique_ptr<BloomInteraction> current_interaction_;
   BloomInteractionResolution last_interaction_resolution_ =
       BloomInteractionResolution::kNormal;
 };

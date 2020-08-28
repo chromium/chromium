@@ -33,3 +33,11 @@ component("bloom_controller_factory") {
 
   defines = [ "IS_BLOOM_IMPL" ]
 }
+
+source_set("future") {
+  sources = [ "future_value.h" ]
+
+  deps = [ "//base" ]
+
+  defines = [ "IS_BLOOM_IMPL" ]
+}

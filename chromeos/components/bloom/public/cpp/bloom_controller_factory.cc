@@ -6,9 +6,20 @@
 
 #include "base/callback.h"
 #include "chromeos/components/bloom/bloom_controller_impl.h"
+#include "chromeos/components/bloom/screenshot_grabber.h"
 
 namespace chromeos {
 namespace bloom {
+
+namespace {
+
+// TODO(jeroendh): Replace with actual working screenshot grabber.
+class FakeScreenshotGrabber : public ScreenshotGrabber {
+ public:
+  void TakeScreenshot(Callback callback) override { NOTIMPLEMENTED(); }
+};
+
+}  // namespace
 
 // static
 std::unique_ptr<BloomController> BloomControllerFactory::Create(
@@ -16,7 +27,8 @@ std::unique_ptr<BloomController> BloomControllerFactory::Create(
     signin::IdentityManager* identity_manager,
     ash::AssistantInteractionController* assistant_interaction_controller) {
   return std::make_unique<BloomControllerImpl>(
-      identity_manager, assistant_interaction_controller);
+      identity_manager, assistant_interaction_controller,
+      std::make_unique<FakeScreenshotGrabber>());
 }
 
 }  // namespace bloom

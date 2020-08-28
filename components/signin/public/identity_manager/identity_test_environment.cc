@@ -260,6 +260,21 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
 }
 #endif  // defined(OS_CHROMEOS)
 
+IdentityTestEnvironment::PendingRequest::PendingRequest(
+    CoreAccountId account_id,
+    std::string client_id,
+    std::string client_secret,
+    OAuth2AccessTokenManager::ScopeSet scopes)
+    : account_id(account_id),
+      client_id(client_id),
+      client_secret(client_secret),
+      scopes(scopes) {}
+
+IdentityTestEnvironment::PendingRequest::PendingRequest(const PendingRequest&) =
+    default;
+
+IdentityTestEnvironment::PendingRequest::~PendingRequest() = default;
+
 // static
 std::unique_ptr<IdentityManager>
 IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
@@ -621,6 +636,18 @@ void IdentityTestEnvironment::ReloadAccountsFromDisk() {
 
 bool IdentityTestEnvironment::IsAccessTokenRequestPending() {
   return fake_token_service()->GetPendingRequests().size();
+}
+
+std::vector<IdentityTestEnvironment::PendingRequest>
+IdentityTestEnvironment::GetPendingAccessTokenRequests() {
+  std::vector<PendingRequest> result;
+
+  for (const auto& request : fake_token_service()->GetPendingRequests()) {
+    result.emplace_back(request.account_id, request.client_id,
+                        request.client_secret, request.scopes);
+  }
+
+  return result;
 }
 
 void IdentityTestEnvironment::SetFreshnessOfAccountsInGaiaCookie(

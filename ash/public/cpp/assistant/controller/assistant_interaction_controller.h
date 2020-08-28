@@ -41,6 +41,9 @@ class ASH_PUBLIC_EXPORT AssistantInteractionController {
       bool allow_tts,
       chromeos::assistant::AssistantQuerySource source) = 0;
 
+  // Start Bloom interaction.
+  virtual void StartBloomInteraction() = 0;
+
  protected:
   AssistantInteractionController();
   virtual ~AssistantInteractionController();

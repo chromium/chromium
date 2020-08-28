@@ -6,13 +6,37 @@ source_set("bloom") {
   sources = [
     "bloom_controller_impl.cc",
     "bloom_controller_impl.h",
+    "bloom_interaction.cc",
+    "bloom_interaction.h",
+    "screenshot_grabber.h",
   ]
 
   deps = [
     "//ash/public/cpp",
     "//base",
     "//chromeos/components/bloom/public/cpp",
+    "//chromeos/components/bloom/public/cpp:future",
+    "//chromeos/services/assistant/public/shared",
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "bloom_controller_impl_unittest.cc" ]
+
+  deps = [
+    ":bloom",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chromeos/components/bloom/public/cpp",
+    "//chromeos/services/assistant/public/shared",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
