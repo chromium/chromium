@@ -940,6 +940,114 @@ TEST_P(QuicHttpStreamTest, GetRequestWithTrailers) {
       NetLogEventPhase::NONE);
 }
 
+TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
+  Initialize();
+
+  // QuicHttp3Logger is only used with HTTP/3.
+  if (!VersionUsesHttp3(version_.transport_version)) {
+    return;
+  }
+
+  net_log_.SetObserverCaptureMode(NetLogCaptureMode::kDefault);
+
+  // Send request.
+  SetRequest("GET", "/", DEFAULT_PRIORITY);
+  request_.method = "GET";
+  request_.url = GURL("https://www.example.org/");
+  headers_.SetHeader(HttpRequestHeaders::kCookie, "secret");
+
+  size_t spdy_request_header_frame_length;
+  int packet_number = 1;
+  AddWrite(ConstructInitialSettingsPacket(packet_number++));
+  AddWrite(InnerConstructRequestHeadersPacket(
+      packet_number++, GetNthClientInitiatedBidirectionalStreamId(0),
+      kIncludeVersion, kFin, DEFAULT_PRIORITY,
+      &spdy_request_header_frame_length));
+
+  EXPECT_THAT(stream_->InitializeStream(&request_, true, DEFAULT_PRIORITY,
+                                        net_log_.bound(), callback_.callback()),
+              IsOk());
+  EXPECT_THAT(stream_->SendRequest(headers_, &response_, callback_.callback()),
+              IsOk());
+  ProcessPacket(ConstructServerAckPacket(1, 1, 1, 1));  // Ack the request.
+
+  // Process response.
+  SetResponse("200 OK", string());
+  response_headers_["set-cookie"] = "secret";
+  size_t spdy_response_header_frame_length;
+  ProcessPacket(ConstructResponseHeadersPacket(
+      2, kFin, &spdy_response_header_frame_length));
+
+  EXPECT_THAT(stream_->ReadResponseHeaders(callback_.callback()), IsOk());
+  EXPECT_TRUE(AtEof());
+
+  ASSERT_TRUE(response_.headers.get());
+  EXPECT_EQ(200, response_.headers->response_code());
+  EXPECT_TRUE(response_.headers->HasHeaderValue("Content-Type", "text/plain"));
+  EXPECT_TRUE(response_.headers->HasHeaderValue("set-cookie", "secret"));
+
+  // Find HTTP3_HEADERS_SENT NetLog event.
+  auto events = net_log_.GetEntries();
+  auto event_it = events.begin();
+  while (event_it != events.end()) {
+    if (event_it->type == NetLogEventType::HTTP3_HEADERS_SENT) {
+      break;
+    }
+    ++event_it;
+  }
+  ASSERT_NE(events.end(), event_it) << "No HTTP3_HEADERS_SENT event found.";
+
+  // Extract request headers.
+  const base::Value& request_params = event_it->params;
+  ASSERT_TRUE(request_params.is_dict());
+  const base::Value* headers = request_params.FindKey("headers");
+  ASSERT_TRUE(headers) << "No headers entry found.";
+  ASSERT_TRUE(headers->is_list());
+  auto headerlist = headers->GetList();
+
+  // Check that cookie value has been stripped.
+  auto header_it = headerlist.begin();
+  while (header_it != headerlist.end()) {
+    ASSERT_TRUE(header_it->is_string());
+    if (base::StartsWith(header_it->GetString(), "cookie: ")) {
+      break;
+    }
+    ++header_it;
+  }
+  ASSERT_NE(headerlist.end(), header_it) << "No cookie header found.";
+  EXPECT_EQ("cookie: [6 bytes were stripped]", header_it->GetString());
+
+  // Find HTTP3_HEADERS_DECODED NetLog event.
+  event_it = events.begin();
+  while (event_it != events.end()) {
+    if (event_it->type == NetLogEventType::HTTP3_HEADERS_DECODED) {
+      break;
+    }
+    ++event_it;
+  }
+  ASSERT_NE(events.end(), event_it) << "No HTTP3_HEADERS_DECODED event found.";
+
+  // Extract response headers.
+  const base::Value& response_params = event_it->params;
+  ASSERT_TRUE(response_params.is_dict());
+  headers = response_params.FindKey("headers");
+  ASSERT_TRUE(headers) << "No headers entry found.";
+  ASSERT_TRUE(headers->is_list());
+  headerlist = headers->GetList();
+
+  // Check that set-cookie value has been stripped.
+  header_it = headerlist.begin();
+  while (header_it != headerlist.end()) {
+    ASSERT_TRUE(header_it->is_string());
+    if (base::StartsWith(header_it->GetString(), "set-cookie: ")) {
+      break;
+    }
+    ++header_it;
+  }
+  ASSERT_NE(headerlist.end(), header_it) << "No set-cookie header found.";
+  EXPECT_EQ("set-cookie: [6 bytes were stripped]", header_it->GetString());
+}
+
 // Regression test for http://crbug.com/288128
 TEST_P(QuicHttpStreamTest, GetRequestLargeResponse) {
   SetRequest("GET", "/", DEFAULT_PRIORITY);
