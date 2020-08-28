@@ -98,13 +98,6 @@ struct GenericHashTraitsBase<false, T> {
 
   static constexpr bool kCanHaveDeletedValue = true;
 
-  // The kHasMovingCallback value is only used for HashTable backing stores.
-  // Currently it is needed for LegacyLinkedHashSet to register moving callback
-  // on write barrier. Users of this value have to provide
-  // RegisterMovingCallback function.
-  // TODO(bartekn): Remove once fully transitioned to LinkedHashSet.
-  static constexpr bool kHasMovingCallback = false;
-
   // The kCanTraceConcurrently value is used by Oilpan concurrent marking. Only
   // type for which HashTraits<T>::kCanTraceConcurrently is true can be traced
   // on a concurrent thread.

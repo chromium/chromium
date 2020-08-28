@@ -108,14 +108,6 @@ class PLATFORM_EXPORT HeapAllocator {
     MarkingVisitor::WriteBarrier(slot);
   }
 
-  template <typename HashTable, typename T>
-  static void BackingWriteBarrierForHashTable(T** slot) {
-    if (MarkingVisitor::WriteBarrier(slot)) {
-      AddMovingCallback<HashTable>(
-          static_cast<typename HashTable::ValueType*>(*slot));
-    }
-  }
-
   template <typename Return, typename Metadata>
   static Return Malloc(size_t size, const char* type_name) {
     return reinterpret_cast<Return>(
@@ -271,22 +263,6 @@ class PLATFORM_EXPORT HeapAllocator {
         ->MarkFullyConstructed<HeapObjectHeader::AccessMode::kAtomic>();
     return address;
   }
-
-  template <
-      typename HashTable,
-      std::enable_if_t<HashTable::ValueTraits::kHasMovingCallback>* = nullptr>
-  static void AddMovingCallback(typename HashTable::ValueType* memory) {
-    ThreadState* thread_state = ThreadState::Current();
-    auto* visitor = thread_state->CurrentVisitor();
-    DCHECK(visitor);
-    HashTable::ValueTraits::template RegisterMovingCallback<HashTable>(visitor,
-                                                                       memory);
-  }
-
-  template <
-      typename HashTable,
-      std::enable_if_t<!HashTable::ValueTraits::kHasMovingCallback>* = nullptr>
-  static void AddMovingCallback(typename HashTable::ValueType*) {}
 
   static void BackingFree(void*);
   static bool BackingExpand(void*, size_t);
