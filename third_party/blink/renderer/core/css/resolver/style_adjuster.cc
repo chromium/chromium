@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
@@ -103,6 +104,16 @@ void AdjustBackgroundForForcedColorsMode(StyleResolverState& state,
   StyleColor bg_color(Color(bg_color_rbg.Red(), bg_color_rbg.Green(),
                             bg_color_rbg.Blue(), bg_color_alpha));
   style.SetBackgroundColor(bg_color);
+}
+
+bool HostIsInputFile(const Element* element) {
+  if (!element || !element->IsInUserAgentShadowRoot())
+    return false;
+  if (const Element* shadow_host = element->OwnerShadowHost()) {
+    if (const auto* input = DynamicTo<HTMLInputElement>(shadow_host))
+      return input->type() == input_type_names::kFile;
+  }
+  return false;
 }
 
 }  // namespace
@@ -436,9 +447,10 @@ void StyleAdjuster::AdjustOverflow(ComputedStyle& style) {
 
 static void AdjustStyleForDisplay(ComputedStyle& style,
                                   const ComputedStyle& layout_parent_style,
+                                  const Element* element,
                                   Document* document) {
   // Blockify the children of flex, grid or LayoutCustom containers.
-  if (layout_parent_style.BlockifiesChildren()) {
+  if (layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) {
     style.SetIsInBlockifyingDisplay();
     if (style.Display() != EDisplay::kContents) {
       style.SetDisplay(EquivalentBlockDisplay(style.Display()));
@@ -655,7 +667,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForFirstLine(style);
     AdjustStyleForMarker(style, parent_style, state.GetElement());
 
-    AdjustStyleForDisplay(style, layout_parent_style,
+    AdjustStyleForDisplay(style, layout_parent_style, element,
                           element ? &element->GetDocument() : nullptr);
 
     // If this is a child of a LayoutNGCustom, we need the name of the parent
