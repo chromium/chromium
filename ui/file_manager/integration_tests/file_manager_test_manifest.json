@@ -36,6 +36,7 @@
       "file_manager/metrics.js",
       "file_manager/my_files.js",
       "file_manager/open_audio_files.js",
+      "file_manager/open_image_backlight.js",
       "file_manager/open_image_files.js",
       "file_manager/open_sniffed_files.js",
       "file_manager/open_video_files.js",
