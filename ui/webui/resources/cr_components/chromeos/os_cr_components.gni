@@ -26,6 +26,7 @@ cr_components_chromeos_auto_imports = [
   "ui/webui/resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.html|MojoInterfaceProviderImpl,MojoInterfaceProvider",
   "ui/webui/resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html|CrPolicyNetworkBehaviorMojo",
   "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
+  "ui/webui/resources/cr_components/chromeos/network/network_config_element_behavior.html|NetworkConfigElementBehavior",
   "ui/webui/resources/cr_components/chromeos/network/network_listener_behavior.html|NetworkListenerBehavior",
   "ui/webui/resources/cr_components/chromeos/network/mojo_interface_provider.html|MojoInterfaceProviderImpl,MojoInterfaceProvider",
   "ui/webui/resources/cr_components/chromeos/quick_unlock/lock_screen_constants.html|recordLockScreenProgress,LockScreenProgress",
