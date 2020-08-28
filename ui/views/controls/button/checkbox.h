@@ -50,6 +50,8 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // LabelButton:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::ImageSkia GetImage(ButtonState for_state) const override;
+  std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override;
 
  protected:
   // Bitmask constants for GetIconImageColor.
@@ -60,8 +62,6 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   std::unique_ptr<InkDrop> CreateInkDrop() override;
   std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override;
   SkColor GetInkDropBaseColor() const override;
-  gfx::ImageSkia GetImage(ButtonState for_state) const override;
-  std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override;
 
   // Returns the path to draw the focus ring around for this Checkbox.
   virtual SkPath GetFocusRingPath() const;

@@ -132,6 +132,24 @@ void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
+gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
+  int icon_state = 0;
+  if (GetChecked())
+    icon_state |= IconState::CHECKED;
+  if (for_state != STATE_DISABLED)
+    icon_state |= IconState::ENABLED;
+  return gfx::CreateVectorIcon(GetVectorIcon(), 16,
+                               GetIconImageColor(icon_state));
+}
+
+std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
+  std::unique_ptr<LabelButtonBorder> border =
+      LabelButton::CreateDefaultBorder();
+  border->set_insets(
+      LayoutProvider::Get()->GetInsetsMetric(INSETS_CHECKBOX_RADIO_BUTTON));
+  return border;
+}
+
 void Checkbox::OnThemeChanged() {
   LabelButton::OnThemeChanged();
   UpdateImage();
@@ -154,24 +172,6 @@ SkColor Checkbox::GetInkDropBaseColor() const {
   // Usually ink-drop ripples match the text color. Checkboxes use the color of
   // the unchecked, enabled icon.
   return GetIconImageColor(IconState::ENABLED);
-}
-
-gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
-  int icon_state = 0;
-  if (GetChecked())
-    icon_state |= IconState::CHECKED;
-  if (for_state != STATE_DISABLED)
-    icon_state |= IconState::ENABLED;
-  return gfx::CreateVectorIcon(GetVectorIcon(), 16,
-                               GetIconImageColor(icon_state));
-}
-
-std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
-  std::unique_ptr<LabelButtonBorder> border =
-      LabelButton::CreateDefaultBorder();
-  border->set_insets(
-      LayoutProvider::Get()->GetInsetsMetric(INSETS_CHECKBOX_RADIO_BUTTON));
-  return border;
 }
 
 SkPath Checkbox::GetFocusRingPath() const {
