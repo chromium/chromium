@@ -116,8 +116,11 @@ base::Optional<std::string> ToFourDigitString(
   return base::StringPrintf("%04d", std::abs(hash));
 }
 
-bool IsOutOfStorage(base::FilePath file_path, int64_t storage_required) {
-  int64_t free_space = base::SysInfo::AmountOfFreeDiskSpace(file_path);
+bool IsOutOfStorage(base::FilePath file_path,
+                    int64_t storage_required,
+                    base::Optional<int64_t> free_disk_space_for_testing) {
+  int64_t free_space = free_disk_space_for_testing.value_or(
+      base::SysInfo::AmountOfFreeDiskSpace(file_path));
   return free_space < storage_required;
 }
 
@@ -2195,7 +2198,7 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&IsOutOfStorage, std::move(download_path),
-                     file_size_sum.ValueOrDie()),
+                     file_size_sum.ValueOrDie(), free_disk_space_for_testing_),
       base::BindOnce(&NearbySharingServiceImpl::OnStorageCheckCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(share_target),
                      std::move(four_digit_token)));

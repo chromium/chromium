@@ -118,6 +118,9 @@ class NearbySharingServiceImpl
   NearbyShareLocalDeviceDataManager* GetLocalDeviceDataManager() override;
   NearbyShareContactManager* GetContactManager() override;
   NearbyShareCertificateManager* GetCertificateManager() override;
+  void set_free_disk_space_for_testing(int64_t free_disk_space) {
+    free_disk_space_for_testing_ = free_disk_space;
+  }
 
   // NearbyConnectionsManager::DiscoveryListener:
   void OnEndpointDiscovered(const std::string& endpoint_id,
@@ -341,6 +344,10 @@ class NearbySharingServiceImpl
   bool is_connecting_ = false;
   // The time scanning began.
   base::Time scanning_start_timestamp_;
+
+  // Available free disk space for testing. Using real disk space can introduce
+  // flakiness in tests.
+  base::Optional<int64_t> free_disk_space_for_testing_;
 
   mojo::Receiver<nearby_share::mojom::NearbyShareSettingsObserver>
       settings_receiver_{this};

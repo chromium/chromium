@@ -189,6 +189,8 @@ const nearby_share::mojom::ShareTargetType kDeviceType =
 const char kEndpointId[] = "test_endpoint_id";
 const char kTextPayload[] = "Test text payload";
 
+constexpr int64_t kFreeDiskSpace = 10000;
+
 const std::vector<uint8_t> kValidV1EndpointInfo = {
     0, 0, 0, 0,  0,   0,   0,   0,   0,  0,   0,  0,  0,   0,
     0, 0, 0, 10, 100, 101, 118, 105, 99, 101, 78, 97, 109, 101};
@@ -253,21 +255,6 @@ sharing::mojom::FramePtr GetConnectionResponseFrame(
   return mojo_frame;
 }
 
-int64_t GetFreeSpaceInDownloadPath(Profile* profile) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath file_path =
-      DownloadPrefs::FromDownloadManager(
-          content::BrowserContext::GetDownloadManager(profile))
-          ->DownloadPath();
-  int64_t free_space = base::SysInfo::AmountOfFreeDiskSpace(file_path);
-
-  // Might return -1 for failure.
-  if (free_space < 0)
-    free_space = 0;
-
-  return free_space;
-}
-
 std::vector<std::unique_ptr<Attachment>> CreateTextAttachments(
     std::vector<std::string> texts) {
   std::vector<std::unique_ptr<Attachment>> attachments;
@@ -330,6 +317,8 @@ class NearbySharingServiceImplTest : public testing::Test {
     EXPECT_CALL(mock_nearby_process_manager(),
                 GetOrStartNearbySharingDecoder(testing::_))
         .WillRepeatedly(testing::Return(&mock_decoder_));
+
+    service_->set_free_disk_space_for_testing(kFreeDiskSpace);
 
     // From now on we don't allow any blocking tasks anymore.
     disallow_blocking_ = std::make_unique<base::ScopedDisallowBlocking>();
@@ -1882,20 +1871,17 @@ TEST_F(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
   SetUpAdvertisementDecoder(kValidV1EndpointInfo,
                             /*return_empty_advertisement=*/false);
 
-  int64_t free_space = GetFreeSpaceInDownloadPath(profile_);
-
   // Set a huge file size in introduction frame to go out of storage.
   std::string intro = "introduction_frame";
   std::vector<uint8_t> bytes(intro.begin(), intro.end());
   EXPECT_CALL(mock_decoder_, DecodeFrame(testing::Eq(bytes), testing::_))
       .WillOnce(testing::Invoke(
-          [&free_space](
-              const std::vector<uint8_t>& data,
-              MockNearbySharingDecoder::DecodeFrameCallback callback) {
+          [](const std::vector<uint8_t>& data,
+             MockNearbySharingDecoder::DecodeFrameCallback callback) {
             std::vector<sharing::mojom::FileMetadataPtr> mojo_file_metadatas;
             mojo_file_metadatas.push_back(sharing::mojom::FileMetadata::New(
                 "name", sharing::mojom::FileMetadata::Type::kAudio,
-                /*payload_id=*/1, free_space + 1, "mime_type",
+                /*payload_id=*/1, kFreeDiskSpace + 1, "mime_type",
                 /*id=*/123));
 
             sharing::mojom::V1FramePtr mojo_v1frame =
