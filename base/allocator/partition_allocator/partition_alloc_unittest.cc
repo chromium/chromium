@@ -897,6 +897,22 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
               offset);
   }
 #endif
+
+  // Allocate the maximum allowed bucketed size.
+  requested_size = kMaxBucketed - kExtraAllocSize;
+  predicted_size = allocator.root()->ActualSize(requested_size);
+  ptr = allocator.root()->Alloc(requested_size, type_name);
+  EXPECT_TRUE(ptr);
+  actual_size = allocator.root()->GetSize(ptr);
+  EXPECT_EQ(predicted_size, actual_size);
+  EXPECT_EQ(requested_size, actual_size);
+#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+  for (size_t offset = 0; offset < requested_size; offset += 4999) {
+    EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
+              offset);
+  }
+#endif
+
   // Check that we can write at the end of the reported size too.
   char* char_ptr = reinterpret_cast<char*>(ptr);
   *(char_ptr + (actual_size - 1)) = 'A';
@@ -2536,6 +2552,19 @@ TEST_F(PartitionAllocTest, TagBasic) {
 }
 
 #endif
+
+// Test that the optimized `GetSlotOffset` implementation produces valid
+// results.
+TEST_F(PartitionAllocTest, OptimizedGetSlotOffset) {
+  auto* current_bucket = allocator.root()->buckets;
+
+  for (size_t i = 0; i < kNumBuckets; ++i, ++current_bucket) {
+    for (size_t offset = 0; offset <= kMaxBucketed; offset += 4999) {
+      EXPECT_EQ(offset % current_bucket->slot_size,
+                current_bucket->GetSlotOffset(offset));
+    }
+  }
+}
 
 }  // namespace internal
 }  // namespace base

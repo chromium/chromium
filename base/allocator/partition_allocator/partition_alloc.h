@@ -818,18 +818,14 @@ ALWAYS_INLINE size_t PartitionAllocGetSlotOffset(void* ptr) {
   auto* page =
       internal::PartitionAllocGetPageForSize<internal::ThreadSafe>(ptr);
   PA_DCHECK(PartitionRoot<internal::ThreadSafe>::FromPage(page)->allow_extras);
-  size_t slot_size = page->bucket->slot_size;
 
   // Get the offset from the beginning of the slot span.
   uintptr_t ptr_addr = reinterpret_cast<uintptr_t>(ptr);
   uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
       internal::PartitionPage<internal::ThreadSafe>::ToPointer(page));
   size_t offset_in_slot_span = ptr_addr - slot_span_start;
-  // Knowing that slots are tightly packed in a slot span, calculate an offset
-  // within a slot using simple % operation.
-  // TODO(bartekn): Try to replace % with multiplication&shift magic.
-  size_t offset_in_slot = offset_in_slot_span % slot_size;
-  return offset_in_slot;
+
+  return page->bucket->GetSlotOffset(offset_in_slot_span);
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
