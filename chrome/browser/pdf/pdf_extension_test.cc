@@ -97,6 +97,8 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point.h"
@@ -1966,20 +1968,31 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInternalLinkClickTest, ShiftLeft) {
   EXPECT_EQ("page=2&zoom=100,0,200", url.ref());
 }
 
-class PDFExtensionClipboardTest : public PDFExtensionTest {
+class PDFExtensionClipboardTest : public PDFExtensionTest,
+                                  public ui::ClipboardObserver {
  public:
   PDFExtensionClipboardTest() : guest_contents_(nullptr) {}
   ~PDFExtensionClipboardTest() override {}
 
+  // PDFExtensionTest:
   void SetUpOnMainThread() override {
     PDFExtensionTest::SetUpOnMainThread();
     ui::TestClipboard::CreateForCurrentThread();
   }
-
   void TearDownOnMainThread() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
     PDFExtensionTest::TearDownOnMainThread();
   }
+
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override {
+    DCHECK(!clipboard_changed_);
+    clipboard_changed_ = true;
+    std::move(clipboard_quit_closure_).Run();
+  }
+#if defined(OS_CHROMEOS)
+  void OnClipboardDataRead() override {}
+#endif
 
   void LoadTestComboBoxPdfGetGuestContents() {
     GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
@@ -2077,45 +2090,30 @@ class PDFExtensionClipboardTest : public PDFExtensionTest {
   }
 
  private:
-  // Waits and polls the clipboard of a given |clipboard_buffer| until its
-  // contents reaches the length of |expected|. Then checks and see if the
-  // clipboard contents matches |expected|.
-  // TODO(thestig): Change this to avoid polling after https://crbug.com/755826
-  // has been fixed.
   void CheckClipboard(ui::ClipboardBuffer clipboard_buffer,
                       const std::string& expected) {
+    ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+    DCHECK(!clipboard_changed_);
+    DCHECK(!clipboard_quit_closure_);
+
+    base::RunLoop run_loop;
+    clipboard_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+
+    EXPECT_TRUE(clipboard_changed_);
+    clipboard_changed_ = false;
+    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+
     auto* clipboard = ui::Clipboard::GetForCurrentThread();
     std::string clipboard_data;
-    const std::string& last_data = last_clipboard_data_[clipboard_buffer];
-    if (last_data.size() == expected.size()) {
-      DCHECK_EQ(last_data, expected);
-      clipboard->ReadAsciiText(clipboard_buffer, /* data_dst = */ nullptr,
-                               &clipboard_data);
-      EXPECT_EQ(expected, clipboard_data);
-      return;
-    }
-
-    const bool expect_increase = last_data.size() < expected.size();
-    while (true) {
-      clipboard->ReadAsciiText(clipboard_buffer, /* data_dst = */ nullptr,
-                               &clipboard_data);
-      if (expect_increase) {
-        if (clipboard_data.size() >= expected.size())
-          break;
-      } else {
-        if (clipboard_data.size() <= expected.size())
-          break;
-      }
-
-      content::RunAllPendingInMessageLoop();
-    }
+    clipboard->ReadAsciiText(clipboard_buffer, /* data_dst=*/nullptr,
+                             &clipboard_data);
     EXPECT_EQ(expected, clipboard_data);
-
-    last_clipboard_data_[clipboard_buffer] = clipboard_data;
   }
 
-  std::map<ui::ClipboardBuffer, std::string> last_clipboard_data_;
+  base::RepeatingClosure clipboard_quit_closure_;
   WebContents* guest_contents_;
+  bool clipboard_changed_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionClipboardTest,
