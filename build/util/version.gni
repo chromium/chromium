@@ -118,18 +118,12 @@ if (is_mac) {
 
   chrome_version_name = chrome_version_full
 
-  if (target_cpu == "arm64" || target_cpu == "x64") {
-    _trichrome_version_code = trichrome_64_32_version_code
-  } else {
-    _trichrome_version_code = trichrome_version_code
-  }
-
   lines_to_write = [
     "VersionName: $chrome_version_name",
     "Chrome: $chrome_version_code",
     "ChromeModern: $chrome_modern_version_code",
     "Monochrome: $monochrome_version_code",
-    "TrichromeChrome: $_trichrome_version_code",
+    "TrichromeChrome: $trichrome_version_code",
     "AndroidWebviewStable: $webview_stable_version_code",
     "AndroidWebviewBeta: $webview_beta_version_code",
     "AndroidWebviewDev: $webview_dev_version_code",
