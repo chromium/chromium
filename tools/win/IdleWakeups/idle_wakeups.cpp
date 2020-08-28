@@ -300,6 +300,7 @@ int wmain(int argc, wchar_t* argv[]) {
   ULONGLONG cumulative_working_set = 0;
   double cumulative_energy = 0.0;
   size_t cumulative_processes_created = 0;
+  int num_idle_snapshots = 0;
 
   ResultVector results;
 
@@ -331,12 +332,15 @@ int wmain(int argc, wchar_t* argv[]) {
            result.idle_wakeups_per_sec, result.cpu_usage, '%',
            result.working_set / 1024.0, result.power);
 
-    cumulative_idle_wakeups_per_sec += result.idle_wakeups_per_sec;
-    cumulative_cpu_usage += result.cpu_usage;
-    cumulative_working_set += result.working_set;
-    cumulative_energy += result.power;
-
-    results.push_back(result);
+    if (number_of_processes > 0) {
+      cumulative_idle_wakeups_per_sec += result.idle_wakeups_per_sec;
+      cumulative_cpu_usage += result.cpu_usage;
+      cumulative_working_set += result.working_set;
+      cumulative_energy += result.power;
+      results.push_back(result);
+    } else {
+      num_idle_snapshots++;
+    }
   }
 
   CloseHandle(ctrl_c_pressed);
@@ -365,7 +369,10 @@ int wmain(int argc, wchar_t* argv[]) {
          median_result.idle_wakeups_per_sec, median_result.cpu_usage, '%',
          median_result.working_set / 1024.0, median_result.power);
 
-  printf("\nProcesses created:   %zu\n", cumulative_processes_created);
+  printf("\n");
+  if (num_idle_snapshots > 0)
+    printf("Idle snapshots:      %d\n", num_idle_snapshots);
+  printf("Processes created:   %zu\n", cumulative_processes_created);
   printf("Processes destroyed: %zu\n", initial_number_of_processes +
                                            cumulative_processes_created -
                                            final_number_of_processes);
