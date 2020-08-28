@@ -4,7 +4,7 @@
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 
-suite('NewTabPageModuleWrapperTest', () => {
+suite('NewTabPageModulesModuleWrapperTest', () => {
   /** @type {!ModuleWrapperElement} */
   let moduleWrapper;
 

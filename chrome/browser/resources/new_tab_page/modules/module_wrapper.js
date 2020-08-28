@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ModuleDescriptor} from './modules/module_descriptor.js';
+import {ModuleDescriptor} from './module_descriptor.js';
 
 /** @fileoverview Element that implements the common module UI. */
 

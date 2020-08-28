@@ -6,4 +6,13 @@
   <include name="IDR_NEW_TAB_PAGE_MODULES_KALEIDOSCOPE_MODULE_JS"
       file="modules/kaleidoscope/module.js"
       type="BINDATA" compress="false" />
+  <include name="IDR_NEW_TAB_PAGE_MODULES_MODULE_DESCRIPTOR_JS"
+      file="modules/module_descriptor.js" type="BINDATA" compress="false" />
+  <include name="IDR_NEW_TAB_PAGE_MODULES_MODULES_JS"
+      file="modules/modules.js" type="BINDATA" compress="false" />
+  <include name="IDR_NEW_TAB_PAGE_MODULES_MODULE_REGISTRY_JS"
+      file="modules/module_registry.js" type="BINDATA" compress="false" />
+  <include name="IDR_NEW_TAB_PAGE_MODULE_WRAPPER_JS"
+      file="${root_gen_dir}/chrome/browser/resources/new_tab_page/modules/module_wrapper.js"
+      use_base_dir="false" type="BINDATA" compress="false" />
 </grit-part>

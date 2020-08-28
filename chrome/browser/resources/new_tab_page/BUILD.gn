@@ -18,9 +18,6 @@ js_type_check("closure_compile") {
     ":fakebox",
     ":iframe",
     ":logo",
-    ":module_descriptor",
-    ":module_registry",
-    ":modules",
     ":one_google_bar_api",
     ":promo_browser_command_proxy",
     ":realbox",
@@ -31,6 +28,9 @@ js_type_check("closure_compile") {
     ":theme_icon",
     ":utils",
     ":voice_search_overlay",
+    "modules:module_descriptor",
+    "modules:module_registry",
+    "modules:modules",
   ]
 }
 
@@ -49,11 +49,11 @@ js_library("app") {
     ":background_manager",
     ":browser_proxy",
     ":middle_slot_promo",
-    ":module_wrapper",
-    ":modules",
     ":most_visited",
     ":one_google_bar_api",
     ":promo_browser_command_proxy",
+    "modules:module_wrapper",
+    "modules:modules",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:event_tracker.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -229,33 +229,6 @@ js_library("background_manager") {
 js_library("one_google_bar_api") {
 }
 
-js_library("module_descriptor") {
-  sources = [ "modules/module_descriptor.js" ]
-}
-
-js_library("modules") {
-  sources = [ "modules/modules.js" ]
-  deps = [
-    ":module_registry",
-    "modules/dummy:module",
-    "modules/kaleidoscope:module",
-  ]
-}
-
-js_library("module_wrapper") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("module_registry") {
-  sources = [ "modules/module_registry.js" ]
-  deps = [
-    ":module_descriptor",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
-
 html_to_js("web_components_local") {
   js_files = [
     "app.js",
@@ -277,14 +250,13 @@ html_to_js("web_components_local") {
     "theme_icon.js",
     "iframe.js",
     "voice_search_overlay.js",
-    "module_wrapper.js",
   ]
 }
 
 group("web_components") {
   public_deps = [
     ":web_components_local",
-    "modules/dummy:web_components",
+    "modules:web_components",
   ]
 }
 
