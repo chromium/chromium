@@ -4,7 +4,6 @@
 
 #include "services/shape_detection/face_detection_impl_mac.h"
 
-#include <dlfcn.h>
 #include <memory>
 #include <utility>
 
@@ -102,21 +101,7 @@ std::vector<TestParams> GetTestParams() {
 
 class FaceDetectionImplMacTest : public TestWithParam<struct TestParams> {
  public:
-  ~FaceDetectionImplMacTest() override {}
-
-  void SetUp() override {
-    if (@available(macOS 10.13, *)) {
-      vision_framework_ = dlopen(
-          "/System/Library/Frameworks/Vision.framework/Vision", RTLD_LAZY);
-    }
-  }
-
-  void TearDown() override {
-    if (@available(macOS 10.13, *)) {
-      if (vision_framework_)
-        dlclose(vision_framework_);
-    }
-  }
+  ~FaceDetectionImplMacTest() override = default;
 
   void DetectCallback(size_t num_faces,
                       size_t num_landmarks,
@@ -136,7 +121,6 @@ class FaceDetectionImplMacTest : public TestWithParam<struct TestParams> {
 
   std::unique_ptr<mojom::FaceDetection> impl_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  void* vision_framework_;
 };
 
 TEST_P(FaceDetectionImplMacTest, CreateAndDestroy) {

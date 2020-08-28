@@ -33,6 +33,7 @@ source_set("lib") {
       "text_detection_impl_mac.mm",
     ]
     frameworks = [ "QuartzCore.framework" ]
+    weak_frameworks = [ "Vision.framework" ]
   } else if (is_win) {
     sources += [
       "barcode_detection_provider_impl.cc",

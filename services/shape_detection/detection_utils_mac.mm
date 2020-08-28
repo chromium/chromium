@@ -4,10 +4,13 @@
 
 #include "services/shape_detection/detection_utils_mac.h"
 
+#import <Vision/Vision.h>
+
 #include <vector>
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
@@ -60,7 +63,7 @@ gfx::RectF ConvertCGToGfxCoordinates(CGRect bounds, int height) {
 std::unique_ptr<VisionAPIAsyncRequestMac> VisionAPIAsyncRequestMac::Create(
     Class request_class,
     Callback callback,
-    NSSet<NSString*>* symbology_hints) {
+    NSArray<VNBarcodeSymbology>* symbology_hints) {
   return base::WrapUnique(new VisionAPIAsyncRequestMac(
       std::move(callback), request_class, symbology_hints));
 }
@@ -68,7 +71,7 @@ std::unique_ptr<VisionAPIAsyncRequestMac> VisionAPIAsyncRequestMac::Create(
 VisionAPIAsyncRequestMac::VisionAPIAsyncRequestMac(
     Callback callback,
     Class request_class,
-    NSSet<NSString*>* symbology_hints)
+    NSArray<VNBarcodeSymbology>* symbology_hints)
     : callback_(std::move(callback)) {
   DCHECK(callback_);
 
@@ -81,10 +84,12 @@ VisionAPIAsyncRequestMac::VisionAPIAsyncRequestMac(
 
   request_.reset([[request_class alloc] initWithCompletionHandler:handler]);
 
-  // Pass symbology hints to request.
-  SEL sel = NSSelectorFromString(@"setSymbologies:");
-  if ([symbology_hints count] > 0)
-    [request_ performSelector:sel withObject:symbology_hints];
+  // Pass symbology hints to request. Only valid for VNDetectBarcodesRequest.
+  if ([symbology_hints count] > 0) {
+    VNDetectBarcodesRequest* barcode_request =
+        base::mac::ObjCCastStrict<VNDetectBarcodesRequest>(request_.get());
+    barcode_request.symbologies = symbology_hints;
+  }
 }
 
 VisionAPIAsyncRequestMac::~VisionAPIAsyncRequestMac() = default;
@@ -92,12 +97,6 @@ VisionAPIAsyncRequestMac::~VisionAPIAsyncRequestMac() = default;
 // Processes asynchronously an image analysis request and returns results with
 // |callback_| when the asynchronous request completes.
 bool VisionAPIAsyncRequestMac::PerformRequest(const SkBitmap& bitmap) {
-  Class image_handler_class = NSClassFromString(@"VNImageRequestHandler");
-  if (!image_handler_class) {
-    DLOG(ERROR) << "Failed to load VNImageRequestHandler class";
-    return false;
-  }
-
   base::scoped_nsobject<CIImage> ci_image = CreateCIImageFromSkBitmap(bitmap);
   if (!ci_image) {
     DLOG(ERROR) << "Failed to create image from SkBitmap";
@@ -105,7 +104,7 @@ bool VisionAPIAsyncRequestMac::PerformRequest(const SkBitmap& bitmap) {
   }
 
   base::scoped_nsobject<VNImageRequestHandler> image_handler(
-      [[image_handler_class alloc] initWithCIImage:ci_image options:@{}]);
+      [[VNImageRequestHandler alloc] initWithCIImage:ci_image options:@{}]);
   if (!image_handler) {
     DLOG(ERROR) << "Failed to create image request handler";
     return false;

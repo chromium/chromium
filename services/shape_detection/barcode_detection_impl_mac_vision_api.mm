@@ -16,25 +16,16 @@ class VisionAPI : public VisionAPIInterface {
 
   ~VisionAPI() override = default;
 
-  NSArray* GetSupportedSymbologies() const override {
-    Class request_class = NSClassFromString(@"VNDetectBarcodesRequest");
-    if (!request_class) {
-      DPLOG(ERROR) << "Failed to load VNDetectBarcodesRequest class";
-      return [NSArray array];
+  NSArray<VNBarcodeSymbology>* GetSupportedSymbologies() const override {
+    if (@available(macOS 10.13, *)) {
+      return [VNDetectBarcodesRequest supportedSymbologies];
     }
 
-    SEL sel = NSSelectorFromString(@"supportedSymbologies");
-    id symbologies = [request_class performSelector:sel];
-    if (![symbologies isKindOfClass:[NSArray class]]) {
-      DLOG(ERROR)
-          << "Failed to get NSArray of supportedSymbologies (wrong type)";
-      return [NSArray array];
-    }
-    return symbologies;
+    return @[];
   }
 };
 
-}  // anonymous namespace
+}  // namespace
 
 // static
 std::unique_ptr<VisionAPIInterface> VisionAPIInterface::Create() {

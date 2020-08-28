@@ -33,10 +33,6 @@ class ShapeDetectionService : public mojom::ShapeDetectionService {
  private:
   mojo::Receiver<mojom::ShapeDetectionService> receiver_;
 
-#if defined(OS_MAC)
-  void* vision_framework_;
-#endif
-
   DISALLOW_COPY_AND_ASSIGN(ShapeDetectionService);
 };
 

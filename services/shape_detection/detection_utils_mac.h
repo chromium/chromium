@@ -43,17 +43,17 @@ class API_AVAILABLE(macos(10.13)) VisionAPIAsyncRequestMac {
   static std::unique_ptr<VisionAPIAsyncRequestMac> Create(
       Class request_class,
       Callback callback,
-      NSSet<NSString*>* symbology_hints = nullptr);
+      NSArray<VNBarcodeSymbology>* symbology_hints = nullptr);
 
   // Processes asynchronously an image analysis request and returns results with
   // |callback_| when the asynchronous request completes, the callers should
-  // only enqueue one request at a timer.
+  // only enqueue one request at a time.
   bool PerformRequest(const SkBitmap& bitmap);
 
  private:
   VisionAPIAsyncRequestMac(Callback callback,
                            Class request_class,
-                           NSSet<NSString*>* symbology_hints);
+                           NSArray<VNBarcodeSymbology>* symbology_hints);
 
   base::scoped_nsobject<VNRequest> request_;
   const Callback callback_;

@@ -26,7 +26,7 @@ class VisionAPIInterface;
 namespace shape_detection {
 
 // This class is the implementation of Barcode Detection based on Mac OS Vision
-// framework(https://developer.apple.com/documentation/vision).
+// framework (https://developer.apple.com/documentation/vision).
 class API_AVAILABLE(macos(10.13)) BarcodeDetectionImplMacVision
     : public mojom::BarcodeDetection {
  public:
@@ -47,13 +47,13 @@ class API_AVAILABLE(macos(10.13)) BarcodeDetectionImplMacVision
   static std::vector<shape_detection::mojom::BarcodeFormat>
   GetSupportedSymbologies(VisionAPIInterface* vision_api = nullptr);
 
-  NSSet<NSString*>* GetSymbologyHintsForTesting();
+  NSArray<VNBarcodeSymbology>* GetSymbologyHintsForTesting();
 
  private:
   void OnBarcodesDetected(VNRequest* request, NSError* error);
 
   CGSize image_size_;
-  base::scoped_nsobject<NSSet<NSString*>> symbology_hints_;
+  base::scoped_nsobject<NSArray<VNBarcodeSymbology>> symbology_hints_;
   std::unique_ptr<VisionAPIAsyncRequestMac> barcodes_async_request_;
   DetectCallback detected_callback_;
   mojo::SelfOwnedReceiverRef<mojom::BarcodeDetection> receiver_;

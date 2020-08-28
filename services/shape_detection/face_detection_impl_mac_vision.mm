@@ -35,15 +35,10 @@ mojom::LandmarkPtr API_AVAILABLE(macos(10.13))
 }
 
 FaceDetectionImplMacVision::FaceDetectionImplMacVision() : weak_factory_(this) {
-  Class request_class = NSClassFromString(@"VNDetectFaceLandmarksRequest");
-  if (!request_class) {
-    DLOG(ERROR) << "Failed to load VNDetectFaceLandmarksRequest class";
-    return;
-  }
   // The repeating callback will not be run if FaceDetectionImplMacVision object
   // has already been destroyed.
   landmarks_async_request_ = VisionAPIAsyncRequestMac::Create(
-      request_class,
+      [VNDetectFaceLandmarksRequest class],
       base::BindRepeating(&FaceDetectionImplMacVision::OnFacesDetected,
                           weak_factory_.GetWeakPtr()));
 }
