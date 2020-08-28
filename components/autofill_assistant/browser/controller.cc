@@ -1128,9 +1128,12 @@ bool Controller::Start(const GURL& deeplink_url,
 }
 
 void Controller::ShowFirstMessageAndStart() {
-  SetStatusMessage(
-      l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
-                                base::UTF8ToUTF16(GetCurrentURL().host())));
+  // Only show default status message if necessary.
+  if (status_message_.empty()) {
+    SetStatusMessage(
+        l10n_util::GetStringFUTF8(IDS_AUTOFILL_ASSISTANT_LOADING,
+                                  base::UTF8ToUTF16(GetCurrentURL().host())));
+  }
   if (step_progress_bar_configuration_.has_value() &&
       step_progress_bar_configuration_->use_step_progress_bar()) {
     SetProgressActiveStep(0);
