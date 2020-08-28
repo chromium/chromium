@@ -1,6 +1,7 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #ifndef CHROMEOS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_H_
 #define CHROMEOS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_H_
 
@@ -13,7 +14,6 @@
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
-#include "base/process/process_metrics.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/util/memory_pressure/memory_pressure_voter.h"
@@ -72,10 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
     return critical_pressure_threshold_mb_;
   }
 
-  // The memory parameters are saved for optimization.  If these memory
-  // parameters are changed, call this function to update the saved values.
-  void UpdateMemoryParameters();
-
   // Returns the current system memory pressure evaluator.
   static SystemMemoryPressureEvaluator* Get();
 
@@ -90,16 +86,6 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
       std::unique_ptr<util::MemoryPressureVoter> voter);
 
   static std::vector<int> GetMarginFileParts(const std::string& margin_file);
-
-  static uint64_t CalculateReservedFreeKB(const std::string& zoneinfo);
-
-  static uint64_t GetReservedMemoryKB();
-
-  static uint64_t CalculateAvailableMemoryUserSpaceKB(
-      const base::SystemMemoryInfoKB& info,
-      uint64_t reserved_free,
-      uint64_t min_filelist,
-      uint64_t ram_swap_weight);
 
   void CheckMemoryPressure();
 
@@ -133,14 +119,6 @@ class COMPONENT_EXPORT(CHROMEOS_MEMORY) SystemMemoryPressureEvaluator
 
   // User space low memory notification mode.
   const bool is_user_space_notify_;
-
-  // Values saved for user space available memory calculation.  The value of
-  // |reserved_free_| should not change unless min_free_kbytes or
-  // lowmem_reserve_ratio change.  The value of |min_filelist_| and
-  // |ram_swap_weight_| should not change unless the user sets them manually.
-  uint64_t reserved_free_;
-  uint64_t min_filelist_;
-  uint64_t ram_swap_weight_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

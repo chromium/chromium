@@ -35,6 +35,8 @@ component("memory") {
     "memory.h",
     "pagemap.cc",
     "pagemap.h",
+    "pressure/pressure.cc",
+    "pressure/pressure.h",
     "pressure/system_memory_pressure_evaluator.cc",
     "pressure/system_memory_pressure_evaluator.h",
     "swap_configuration.cc",
@@ -57,6 +59,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "pagemap_unittest.cc",
+    "pressure/pressure_unittest.cc",
     "pressure/system_memory_pressure_evaluator_unittest.cc",
   ]
 }
