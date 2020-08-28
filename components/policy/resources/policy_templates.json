@@ -3007,6 +3007,7 @@
       'supported_on': [
         'chrome.*:83-',
         'chrome_os:83-',
+        'android:87-',
       ],
       'future_on': [ 'ios' ],
       'features': {
@@ -3031,6 +3032,7 @@
       If this policy is left not set, Safe Browsing will operate in Standard Protection mode but users can change this setting.
 
       See https://developers.google.com/safe-browsing for more info on Safe Browsing.''',
+      'arc_support': 'This policy is not supported within Arc.',
     },
     {
       'name': 'MetricsReportingEnabled',

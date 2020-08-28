@@ -306,6 +306,55 @@ public class SecuritySettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"SafeBrowsing"})
+    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
+    @Policies.Add({ @Policies.Item(key = "SafeBrowsingProtectionLevel", string = "2") })
+    public void testSafeBrowsingProtectionLevelManagedEnhanced() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+        launchSettingsActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(SafeBrowsingBridge.isSafeBrowsingManaged());
+            Assert.assertTrue(mManagedTextPreference.isVisible());
+            Assert.assertFalse(getEnhancedProtectionButton().isEnabled());
+            Assert.assertFalse(getStandardProtectionButton().isEnabled());
+            Assert.assertFalse(getNoProtectionButton().isEnabled());
+            Assert.assertEquals(SafeBrowsingState.ENHANCED_PROTECTION, getSafeBrowsingState());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
+    @Policies.Add({ @Policies.Item(key = "SafeBrowsingProtectionLevel", string = "1") })
+    public void testSafeBrowsingProtectionLevelManagedStandard() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+        launchSettingsActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(SafeBrowsingBridge.isSafeBrowsingManaged());
+            Assert.assertEquals(SafeBrowsingState.STANDARD_PROTECTION, getSafeBrowsingState());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
+    @Features.EnableFeatures(ChromeFeatureList.SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED)
+    @Policies.Add({ @Policies.Item(key = "SafeBrowsingProtectionLevel", string = "0") })
+    public void testSafeBrowsingProtectionLevelManagedDisabled() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+        launchSettingsActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(SafeBrowsingBridge.isSafeBrowsingManaged());
+            Assert.assertEquals(SafeBrowsingState.NO_SAFE_BROWSING, getSafeBrowsingState());
+        });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"SafeBrowsing"})
     public void testHelpButtonClicked() {
         launchSettingsActivity();
         mSecuritySettingsFragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
