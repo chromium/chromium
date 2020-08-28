@@ -70,7 +70,7 @@ extern const base::Feature kAvatarToolbarButton{
 // estimates of the update stages.
 // https://crbug.com/1101317
 const base::Feature kBetterUpdateScreen{"BetterUpdateScreen",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables more aggressive filtering out of Bluetooth devices with
 // "appearances" that are less likely to be pairable or useful.
