@@ -391,11 +391,12 @@ bool PrintingContextMac::SetOutputColor(int color_mode) {
       static_cast<PMPrintSettings>([print_info_.get() PMPrintSettings]);
   std::string color_setting_name;
   std::string color_value;
+  mojom::ColorModel color_model = ColorModeToColorModel(color_mode);
   if (base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
     color_setting_name = CUPS_PRINT_COLOR_MODE;
-    color_value = GetIppColorModelForMode(color_mode);
+    color_value = GetIppColorModelForModel(color_model);
   } else {
-    GetColorModelForMode(color_mode, &color_setting_name, &color_value);
+    GetColorModelForModel(color_model, &color_setting_name, &color_value);
   }
   base::ScopedCFTypeRef<CFStringRef> color_setting(
       base::SysUTF8ToCFStringRef(color_setting_name));

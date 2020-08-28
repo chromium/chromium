@@ -122,9 +122,9 @@ std::vector<ScopedCupsOption> SettingsToCupsOptions(
   }
 
   std::vector<ScopedCupsOption> options;
-  options.push_back(ConstructOption(
-      kIppColor,
-      GetIppColorModelForMode(static_cast<int>(settings.color()))));  // color
+  options.push_back(
+      ConstructOption(kIppColor,
+                      GetIppColorModelForModel(settings.color())));  // color
   options.push_back(ConstructOption(kIppDuplex, sides));         // duplexing
   options.push_back(
       ConstructOption(kIppMedia,

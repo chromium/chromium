@@ -232,7 +232,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
     return false;
 
   base::Optional<bool> is_color =
-      ::printing::IsColorModelSelected(static_cast<int>(settings.color()));
+      ::printing::IsColorModelSelected(settings.color());
   bool color_mode_selected = is_color.has_value() && is_color.value();
   if (!color_mode_selected &&
       capabilities.bw_model ==

@@ -25,11 +25,10 @@ bool PapersEqual(const PrinterSemanticCapsAndDefaults::Paper& lhs,
 }
 
 void VerifyCapabilityColorModels(const PrinterSemanticCapsAndDefaults& caps) {
-  base::Optional<bool> maybe_color =
-      IsColorModelSelected(static_cast<int>(caps.color_model));
+  base::Optional<bool> maybe_color = IsColorModelSelected(caps.color_model);
   ASSERT_TRUE(maybe_color.has_value());
   EXPECT_TRUE(maybe_color.value());
-  maybe_color = IsColorModelSelected(static_cast<int>(caps.bw_model));
+  maybe_color = IsColorModelSelected(caps.bw_model);
   ASSERT_TRUE(maybe_color.has_value());
   EXPECT_FALSE(maybe_color.value());
 }

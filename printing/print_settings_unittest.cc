@@ -11,29 +11,43 @@
 
 namespace printing {
 
+TEST(PrintSettingsTest, ColorModeToColorModel) {
+  for (int mode = static_cast<int>(mojom::ColorModel::kUnknownColorModel);
+       mode <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++mode) {
+    EXPECT_EQ(ColorModeToColorModel(mode),
+              static_cast<mojom::ColorModel>(mode));
+  }
+
+  // Check edge cases.
+  EXPECT_EQ(ColorModeToColorModel(
+                static_cast<int>(mojom::ColorModel::kUnknownColorModel) - 1),
+            mojom::ColorModel::kUnknownColorModel);
+  EXPECT_EQ(ColorModeToColorModel(
+                static_cast<int>(mojom::ColorModel::kColorModelLast) + 1),
+            mojom::ColorModel::kUnknownColorModel);
+}
+
 TEST(PrintSettingsTest, IsColorModelSelected) {
   for (int model = static_cast<int>(mojom::ColorModel::kUnknownColorModel) + 1;
-       model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model)
-    EXPECT_TRUE(IsColorModelSelected(IsColorModelSelected(model).has_value()));
+       model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model) {
+    EXPECT_TRUE(IsColorModelSelected(static_cast<mojom::ColorModel>(model))
+                    .has_value());
+  }
 }
 
 TEST(PrintSettingsDeathTest, IsColorModelSelectedEdges) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-  EXPECT_DCHECK_DEATH(IsColorModelSelected(
-      static_cast<int>(mojom::ColorModel::kUnknownColorModel)));
-  EXPECT_DCHECK_DEATH(IsColorModelSelected(
-      static_cast<int>(mojom::ColorModel::kUnknownColorModel) - 1));
-  EXPECT_DCHECK_DEATH(IsColorModelSelected(
-      static_cast<int>(mojom::ColorModel::kColorModelLast) + 1));
+  EXPECT_DCHECK_DEATH(
+      IsColorModelSelected(mojom::ColorModel::kUnknownColorModel));
 }
-
 #if defined(USE_CUPS)
-TEST(PrintSettingsTest, GetColorModelForMode) {
+TEST(PrintSettingsTest, GetColorModelForModel) {
   std::string color_setting_name;
   std::string color_value;
   for (int model = static_cast<int>(mojom::ColorModel::kUnknownColorModel);
        model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model) {
-    GetColorModelForMode(model, &color_setting_name, &color_value);
+    GetColorModelForModel(static_cast<mojom::ColorModel>(model),
+                          &color_setting_name, &color_value);
     EXPECT_FALSE(color_setting_name.empty());
     EXPECT_FALSE(color_value.empty());
     color_setting_name.clear();
@@ -41,31 +55,13 @@ TEST(PrintSettingsTest, GetColorModelForMode) {
   }
 }
 
-TEST(PrintSettingsDeathTest, GetColorModelForModeEdges) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-  std::string color_setting_name;
-  std::string color_value;
-  EXPECT_DCHECK_DEATH(GetColorModelForMode(
-      static_cast<int>(mojom::ColorModel::kUnknownColorModel) - 1,
-      &color_setting_name, &color_value));
-  EXPECT_DCHECK_DEATH(GetColorModelForMode(
-      static_cast<int>(mojom::ColorModel::kColorModelLast) + 1,
-      &color_setting_name, &color_value));
-}
-
 #if defined(OS_MAC) || defined(OS_CHROMEOS)
-TEST(PrintSettingsTest, GetIppColorModelForMode) {
+TEST(PrintSettingsTest, GetIppColorModelForModel) {
   for (int model = static_cast<int>(mojom::ColorModel::kUnknownColorModel);
-       model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model)
-    EXPECT_FALSE(GetIppColorModelForMode(model).empty());
-}
-
-TEST(PrintSettingsDeathTest, GetIppColorModelForModeEdges) {
-  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-  EXPECT_DCHECK_DEATH(GetIppColorModelForMode(
-      static_cast<int>(mojom::ColorModel::kUnknownColorModel) - 1));
-  EXPECT_DCHECK_DEATH(GetIppColorModelForMode(
-      static_cast<int>(mojom::ColorModel::kColorModelLast) + 1));
+       model <= static_cast<int>(mojom::ColorModel::kColorModelLast); ++model) {
+    EXPECT_FALSE(GetIppColorModelForModel(static_cast<mojom::ColorModel>(model))
+                     .empty());
+  }
 }
 #endif  // defined(OS_MAC) || defined(OS_CHROMEOS)
 #endif  // defined(USE_CUPS)

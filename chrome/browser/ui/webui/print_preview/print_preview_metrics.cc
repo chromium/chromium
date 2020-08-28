@@ -104,12 +104,12 @@ void ReportPrintSettingsStats(const base::Value& print_settings,
 
   base::Optional<int> color_mode_opt = print_settings.FindIntKey(kSettingColor);
   if (color_mode_opt.has_value()) {
+    mojom::ColorModel color_model =
+        ColorModeToColorModel(color_mode_opt.value());
     bool unknown_color_model =
-        color_mode_opt.value() ==
-        static_cast<int>(mojom::ColorModel::kUnknownColorModel);
+        color_model == mojom::ColorModel::kUnknownColorModel;
     if (!unknown_color_model) {
-      base::Optional<bool> is_color =
-          IsColorModelSelected(color_mode_opt.value());
+      base::Optional<bool> is_color = IsColorModelSelected(color_model);
       ReportPrintSettingHistogram(is_color.value()
                                       ? PrintSettingsBuckets::kColor
                                       : PrintSettingsBuckets::kBlackAndWhite);

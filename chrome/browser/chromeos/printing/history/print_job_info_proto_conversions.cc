@@ -18,8 +18,7 @@ namespace {
 
 proto::PrintSettings_ColorMode ColorModelToProto(
     ::printing::mojom::ColorModel color) {
-  base::Optional<bool> is_color =
-      ::printing::IsColorModelSelected(static_cast<int>(color));
+  base::Optional<bool> is_color = ::printing::IsColorModelSelected(color);
   return is_color.value() ? proto::PrintSettings_ColorMode_COLOR
                           : proto::PrintSettings_ColorMode_BLACK_AND_WHITE;
 }

@@ -27,19 +27,26 @@
 
 namespace printing {
 
-// Returns true if |color_mode| is color and not B&W. Must be called with a
-// |color_mode| from printing::ColorModel, excluding UNKNOWN_COLOR_MODEL.
-PRINTING_EXPORT base::Optional<bool> IsColorModelSelected(int color_mode);
+// Convert from |color_mode| into a |color_model|.  An invalid |color_mode|
+// will give a result of |mojom::ColorModel::kUnknownColorModel|.
+PRINTING_EXPORT mojom::ColorModel ColorModeToColorModel(int color_mode);
+
+// Returns true if |color_model| is color and false if it is B&W.  Callers
+// are not supposed to pass in |mojom::ColorModel::kUnknownColorModel|, but
+// if they do then the result will be base::nullopt.
+PRINTING_EXPORT base::Optional<bool> IsColorModelSelected(
+    mojom::ColorModel color_model);
 
 #if defined(USE_CUPS)
-// Get the color model setting name and value for the |color_mode|.
-PRINTING_EXPORT void GetColorModelForMode(int color_mode,
-                                          std::string* color_setting_name,
-                                          std::string* color_value);
+// Get the color model setting name and value for the |color_model|.
+PRINTING_EXPORT void GetColorModelForModel(mojom::ColorModel color_model,
+                                           std::string* color_setting_name,
+                                           std::string* color_value);
 
 #if defined(OS_MAC) || defined(OS_CHROMEOS)
-// Convert from |color_mode| to a print-color-mode value from PWG 5100.13.
-PRINTING_EXPORT std::string GetIppColorModelForMode(int color_mode);
+// Convert from |color_model| to a print-color-mode value from PWG 5100.13.
+PRINTING_EXPORT std::string GetIppColorModelForModel(
+    mojom::ColorModel color_model);
 #endif
 #endif  // defined(USE_CUPS)
 

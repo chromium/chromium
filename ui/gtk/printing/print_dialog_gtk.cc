@@ -290,8 +290,8 @@ void PrintDialogGtk::UpdateSettings(
 
   std::string color_value;
   std::string color_setting_name;
-  printing::GetColorModelForMode(static_cast<int>(settings->color()),
-                                 &color_setting_name, &color_value);
+  printing::GetColorModelForModel(settings->color(), &color_setting_name,
+                                  &color_value);
   gtk_print_settings_set(gtk_settings_, color_setting_name.c_str(),
                          color_value.c_str());
 
