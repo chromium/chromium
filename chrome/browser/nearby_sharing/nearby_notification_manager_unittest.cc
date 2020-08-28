@@ -876,7 +876,54 @@ TEST_F(NearbyNotificationManagerTest, Onboarding_DismissTimeout) {
 }
 
 TEST_F(NearbyNotificationManagerTest,
-       SuccessNotificationClicked_SingleImageReceived) {
+       SuccessNotificationClicked_SingleImageReceived_OpenDownloads) {
+  base::RunLoop run_loop;
+  manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
+      [&](NearbyNotificationManager::SuccessNotificationAction action) {
+        EXPECT_EQ(NearbyNotificationManager::SuccessNotificationAction::
+                      kOpenDownloads,
+                  action);
+        run_loop.Quit();
+      }));
+
+  ShareTarget share_target =
+      CreateIncomingShareTarget(/*text_attachments=*/0, /*image_attachments=*/1,
+                                /*other_file_attachments=*/0);
+  manager()->ShowSuccess(share_target);
+
+  // Image decoding happens asynchronously so wait for the notification to show.
+  base::RunLoop display_run_loop;
+  notification_tester_->SetNotificationAddedClosure(
+      display_run_loop.QuitClosure());
+  display_run_loop.Run();
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications();
+  ASSERT_EQ(1u, notifications.size());
+  const message_center::Notification& notification = notifications[0];
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_IMAGE, notification.type());
+  EXPECT_FALSE(notification.image().IsEmpty());
+  ASSERT_EQ(2u, notification.buttons().size());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER),
+      notification.buttons()[0].title);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
+            notification.buttons()[1].title);
+
+  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
+                                      notification.id(),
+                                      /*action_index=*/0,
+                                      /*reply=*/base::nullopt);
+
+  run_loop.Run();
+
+  // Notification should be closed.
+  EXPECT_EQ(0u, GetDisplayedNotifications().size());
+}
+
+TEST_F(NearbyNotificationManagerTest,
+       SuccessNotificationClicked_SingleImageReceived_CopyToClipboard) {
   base::RunLoop run_loop;
   manager()->SetOnSuccessClickedForTesting(base::BindLambdaForTesting(
       [&](NearbyNotificationManager::SuccessNotificationAction action) {
@@ -891,13 +938,29 @@ TEST_F(NearbyNotificationManagerTest,
                                 /*other_file_attachments=*/0);
   manager()->ShowSuccess(share_target);
 
+  // Image decoding happens asynchronously so wait for the notification to show.
+  base::RunLoop display_run_loop;
+  notification_tester_->SetNotificationAddedClosure(
+      display_run_loop.QuitClosure());
+  display_run_loop.Run();
+
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
+  const message_center::Notification& notification = notifications[0];
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_IMAGE, notification.type());
+  EXPECT_FALSE(notification.image().IsEmpty());
+  ASSERT_EQ(2u, notification.buttons().size());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER),
+      notification.buttons()[0].title);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
+            notification.buttons()[1].title);
 
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/base::nullopt,
+                                      notification.id(),
+                                      /*action_index=*/1,
                                       /*reply=*/base::nullopt);
 
   run_loop.Run();
@@ -929,10 +992,17 @@ TEST_F(NearbyNotificationManagerTest,
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
+  const message_center::Notification& notification = notifications[0];
+  EXPECT_EQ(message_center::NOTIFICATION_TYPE_SIMPLE, notification.type());
+  EXPECT_TRUE(notification.image().IsEmpty());
+  ASSERT_EQ(1u, notification.buttons().size());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER),
+      notification.buttons()[0].title);
 
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/base::nullopt,
+                                      notification.id(),
+                                      /*action_index=*/0,
                                       /*reply=*/base::nullopt);
 
   run_loop.Run();
@@ -959,10 +1029,15 @@ TEST_F(NearbyNotificationManagerTest, SuccessNotificationClicked_TextReceived) {
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
+  const message_center::Notification& notification = notifications[0];
+  ASSERT_EQ(1u, notification.buttons().size());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
+            notification.buttons()[0].title);
 
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/base::nullopt,
+                                      notification.id(),
+                                      /*action_index=*/0,
                                       /*reply=*/base::nullopt);
 
   run_loop.Run();
@@ -991,10 +1066,15 @@ TEST_F(NearbyNotificationManagerTest,
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
+  const message_center::Notification& notification = notifications[0];
+  ASSERT_EQ(1u, notification.buttons().size());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER),
+      notification.buttons()[0].title);
 
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/base::nullopt,
+                                      notification.id(),
+                                      /*action_index=*/0,
                                       /*reply=*/base::nullopt);
 
   run_loop.Run();
@@ -1022,10 +1102,15 @@ TEST_F(NearbyNotificationManagerTest,
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
+  const message_center::Notification& notification = notifications[0];
+  ASSERT_EQ(1u, notification.buttons().size());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER),
+      notification.buttons()[0].title);
 
   notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/base::nullopt,
+                                      notification.id(),
+                                      /*action_index=*/0,
                                       /*reply=*/base::nullopt);
 
   run_loop.Run();
