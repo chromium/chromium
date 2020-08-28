@@ -206,9 +206,11 @@ void PasswordCheckManager::OnStateChanged(State state) {
 void PasswordCheckManager::OnCredentialDone(
     const password_manager::LeakCheckCredential& credential,
     password_manager::IsLeaked is_leaked) {
-  progress_->OnProcessed(credential);
-  observer_->OnPasswordCheckProgressChanged(progress_->already_processed(),
-                                            progress_->remaining_in_queue());
+  if (progress_) {
+    progress_->OnProcessed(credential);
+    observer_->OnPasswordCheckProgressChanged(progress_->already_processed(),
+                                              progress_->remaining_in_queue());
+  }
   if (is_leaked) {
     // TODO(crbug.com/1092444): Trigger single-credential update.
     compromised_credentials_manager_.SaveCompromisedCredential(credential);
