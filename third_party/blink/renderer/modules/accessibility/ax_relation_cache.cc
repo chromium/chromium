@@ -280,20 +280,30 @@ void AXRelationCache::UpdateRelatedTree(Node* node) {
 
 void AXRelationCache::UpdateRelatedText(Node* node) {
   // Walk up ancestor chain from node and refresh text of any related content.
-  while (node) {
+  // TODO(crbug.com/1109265): It's very likely this loop should only walk the
+  // unignored AXObject chain, but doing so breaks a number of tests related to
+  // name or description computation / invalidation.
+  for (Node* current_node = node; current_node;
+       current_node = current_node->parentNode()) {
     // Reverse relations via aria-labelledby, aria-describedby, aria-owns.
     HeapVector<Member<AXObject>> related_sources;
-    GetReverseRelated(node, related_sources);
+    GetReverseRelated(current_node, related_sources);
     for (AXObject* related : related_sources) {
       if (related)
         TextChanged(related);
     }
 
-    // Forward relation via <label for="[id]">.
-    if (IsA<HTMLLabelElement>(*node))
-      LabelChanged(node);
+    // Ancestors that may derive their accessible name from descendant content
+    // should also handle text changed events when descendant content changes.
+    if (current_node != node) {
+      AXObject* obj = Get(current_node);
+      if (obj && obj->SupportsNameFromContents(/*recursive=*/false))
+        TextChanged(obj);
+    }
 
-    node = node->parentNode();
+    // Forward relation via <label for="[id]">.
+    if (IsA<HTMLLabelElement>(*current_node))
+      LabelChanged(current_node);
   }
 }
 

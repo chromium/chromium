@@ -3,3 +3,4 @@ StructureChanged/ChildAdded on role=heading, name=C
 StructureChanged/ChildRemoved on role=group, name=main
 StructureChanged/ChildRemoved on role=group, name=main
 Text_TextChanged on role=document
+Text_TextChanged on role=document

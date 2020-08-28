@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
@@ -396,6 +397,10 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     const AXEventNotificationDetails& details) {
   TRACE_EVENT0("accessibility",
                "BrowserAccessibilityManager::OnAccessibilityEvents");
+
+#if DCHECK_IS_ON()
+  base::AutoReset<bool> auto_reset(&in_on_accessibility_events_, true);
+#endif  // DCHECK_IS_ON()
 
   // Update the cached device scale factor.
   if (delegate_ && !use_custom_device_scale_factor_for_testing_)
