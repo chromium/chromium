@@ -128,6 +128,7 @@ class DateTimeEditElement final : public HTMLDivElement,
   //  8. AM/PM
   static const int kMaximumNumberOfFields = 8;
 
+  DateTimeFieldElement* GetField(DateTimeField) const;
   DateTimeFieldElement* FieldAt(wtf_size_t) const;
   wtf_size_t FieldIndexOf(const DateTimeFieldElement&) const;
   DateTimeFieldElement* FocusedField() const;
@@ -147,6 +148,7 @@ class DateTimeEditElement final : public HTMLDivElement,
   void FieldValueChanged() override;
   bool FocusOnNextField(const DateTimeFieldElement&) override;
   bool FocusOnPreviousField(const DateTimeFieldElement&) override;
+  void HandleAmPmRollover(DateTimeFieldElement::FieldRolloverType) override;
   bool IsFieldOwnerDisabled() const override;
   bool IsFieldOwnerReadOnly() const override;
   AtomicString LocaleIdentifier() const override;

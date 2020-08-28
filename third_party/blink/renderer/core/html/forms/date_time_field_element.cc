@@ -161,6 +161,12 @@ void DateTimeFieldElement::FocusOnNextField() {
   field_owner_->FocusOnNextField(*this);
 }
 
+void DateTimeFieldElement::HandleAmPmRollover(FieldRolloverType type) {
+  if (!field_owner_)
+    return;
+  field_owner_->HandleAmPmRollover(type);
+}
+
 void DateTimeFieldElement::Initialize(const AtomicString& pseudo,
                                       const String& ax_help_text,
                                       int ax_minimum,

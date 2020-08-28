@@ -701,6 +701,24 @@ bool DateTimeEditElement::FocusOnPreviousField(
   return false;
 }
 
+void DateTimeEditElement::HandleAmPmRollover(
+    DateTimeFieldElement::FieldRolloverType rollover_type) {
+  auto* ampm_field = GetField(DateTimeField::kAMPM);
+  if (!ampm_field)
+    return;
+  DateTimeFieldsState date_time_fields_state = ValueAsDateTimeFieldsState();
+  ampm_field->PopulateDateTimeFieldsState(date_time_fields_state);
+  bool was_am =
+      (date_time_fields_state.Ampm() == DateTimeFieldsState::kAMPMValueAM);
+  date_time_fields_state.SetAMPM(DateTimeFieldsState::kAMPMValuePM);
+  if (rollover_type != DateTimeFieldElement::FieldRolloverType::kToPm &&
+      !was_am)
+    date_time_fields_state.SetAMPM(DateTimeFieldsState::kAMPMValueAM);
+  ampm_field->SetValueAsDateTimeFieldsState(date_time_fields_state);
+  // No need to call EditControlValueChanged since change that triggered
+  // rollover will do so.
+}
+
 bool DateTimeEditElement::IsDateTimeEditElement() const {
   return true;
 }
@@ -827,6 +845,15 @@ void DateTimeEditElement::SetEmptyValue(
   GetLayout(layout_parameters, date_for_read_only_field);
   for (const auto& field : fields_)
     field->SetEmptyValue(DateTimeFieldElement::kDispatchNoEvent);
+}
+
+DateTimeFieldElement* DateTimeEditElement::GetField(DateTimeField type) const {
+  auto* it = std::find_if(
+      fields_.begin(), fields_.end(),
+      [&type](const auto& field) { return field->Type() == type; });
+  if (it == fields_.end())
+    return nullptr;
+  return *it;
 }
 
 bool DateTimeEditElement::HasField(DateTimeField type) const {

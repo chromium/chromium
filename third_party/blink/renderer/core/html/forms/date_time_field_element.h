@@ -55,6 +55,7 @@ class DateTimeFieldElement : public HTMLSpanElement {
     kDispatchNoEvent,
     kDispatchEvent,
   };
+  enum FieldRolloverType { kPastMin, kPastMax, kToPm };
 
   // FieldOwner implementer must call removeEventHandler when
   // it doesn't handle event, e.g. at destruction.
@@ -66,6 +67,7 @@ class DateTimeFieldElement : public HTMLSpanElement {
     virtual void FieldValueChanged() = 0;
     virtual bool FocusOnNextField(const DateTimeFieldElement&) = 0;
     virtual bool FocusOnPreviousField(const DateTimeFieldElement&) = 0;
+    virtual void HandleAmPmRollover(FieldRolloverType) {}
     virtual bool IsFieldOwnerDisabled() const = 0;
     virtual bool IsFieldOwnerReadOnly() const = 0;
     virtual AtomicString LocaleIdentifier() const = 0;
@@ -96,6 +98,7 @@ class DateTimeFieldElement : public HTMLSpanElement {
  protected:
   DateTimeFieldElement(Document&, FieldOwner&, DateTimeField);
   void FocusOnNextField();
+  void HandleAmPmRollover(FieldRolloverType);
   virtual void HandleKeyboardEvent(KeyboardEvent&) = 0;
   void Initialize(const AtomicString& pseudo,
                   const String& ax_help_text,

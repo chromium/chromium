@@ -53,6 +53,12 @@ shouldBeEqualToString('stepDown("2013-01-16T15:00", 1, "2013-01-16T15:00", "2013
 shouldBeEqualToString('stepUp("2013-01-16T17:00", 1, "2013-01-16T15:00", "2013-01-17T17:00")', '2013-01-16T18:00');
 shouldBeEqualToString('stepDown("2013-01-16T17:00", 1, "2013-01-16T17:00", "2013-01-17T20:00")', '2013-01-16T16:00');
 
+debug('The hour field wraps am/pm.');
+shouldBeEqualToString('stepUp("2013-01-16T11:00", 1, "2013-01-16T00:00", "2013-01-16T23:59")', '2013-01-16T12:00');
+shouldBeEqualToString('stepUp("2013-01-16T23:00", 1, "2013-01-16T00:00", "2013-01-16T23:59")', '2013-01-16T00:00');
+shouldBeEqualToString('stepDown("2013-01-16T12:00", 1, "2013-01-16T00:00", "2013-01-16T23:59")', '2013-01-16T11:00');
+shouldBeEqualToString('stepDown("2013-01-16T00:00", 1, "2013-01-16T00:00", "2013-01-16T23:59")', '2013-01-16T23:00');
+
 debug('');
 document.body.removeChild(input);
 </script>

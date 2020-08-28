@@ -194,6 +194,7 @@ void DateTimeNumericFieldElement::StepDown() {
       RoundDown(has_value_ ? value_ - 1 : DefaultValueForStepDown());
   if (!range_.IsInRange(new_value))
     new_value = RoundDown(range_.maximum);
+  NotifyOwnerIfStepDownRollOver(has_value_, step_, value_, new_value);
   type_ahead_buffer_.Clear();
   SetValueAsInteger(new_value, kDispatchEvent);
 }
@@ -202,6 +203,7 @@ void DateTimeNumericFieldElement::StepUp() {
   int new_value = RoundUp(has_value_ ? value_ + 1 : DefaultValueForStepUp());
   if (!range_.IsInRange(new_value))
     new_value = RoundUp(range_.minimum);
+  NotifyOwnerIfStepUpRollOver(has_value_, step_, value_, new_value);
   type_ahead_buffer_.Clear();
   SetValueAsInteger(new_value, kDispatchEvent);
 }

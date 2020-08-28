@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/forms/date_time_field_elements.h"
 
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_fields_state.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -212,6 +213,8 @@ void DateTimeHour11FieldElement::PopulateDateTimeFieldsState(
 void DateTimeHour11FieldElement::SetValueAsInteger(
     int value,
     EventBehavior event_behavior) {
+  if (value > 12)
+    DateTimeNumericFieldElement::HandleAmPmRollover(FieldRolloverType::kToPm);
   value = Range(0, 23).ClampValue(value) % 12;
   DateTimeNumericFieldElement::SetValueAsInteger(value, event_behavior);
 }
@@ -267,9 +270,31 @@ void DateTimeHour12FieldElement::PopulateDateTimeFieldsState(
 void DateTimeHour12FieldElement::SetValueAsInteger(
     int value,
     EventBehavior event_behavior) {
+  if (value > 12)
+    DateTimeNumericFieldElement::HandleAmPmRollover(FieldRolloverType::kToPm);
   value = Range(0, 24).ClampValue(value) % 12;
   DateTimeNumericFieldElement::SetValueAsInteger(value ? value : 12,
                                                  event_behavior);
+}
+void DateTimeHour12FieldElement::NotifyOwnerIfStepDownRollOver(bool has_value,
+                                                               Step step,
+                                                               int old_value,
+                                                               int new_value) {
+  if (!has_value || old_value == new_value || step.step > 12 ||
+      old_value - step.step != new_value)
+    return;
+  if (old_value > 11 && new_value <= 11)
+    HandleAmPmRollover(DateTimeFieldElement::FieldRolloverType::kPastMin);
+}
+void DateTimeHour12FieldElement::NotifyOwnerIfStepUpRollOver(bool has_value,
+                                                             Step step,
+                                                             int old_value,
+                                                             int new_value) {
+  if (!has_value || old_value == new_value || step.step > 12 ||
+      old_value + step.step != new_value)
+    return;
+  if (new_value == 12)
+    HandleAmPmRollover(DateTimeFieldElement::FieldRolloverType::kPastMax);
 }
 
 // ----------------------------

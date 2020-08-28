@@ -105,6 +105,14 @@ class DateTimeHour12FieldElement final : public DateTimeHourFieldElementBase {
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsInteger(int, EventBehavior = kDispatchNoEvent) override;
+  void NotifyOwnerIfStepDownRollOver(bool has_value,
+                                     Step step,
+                                     int old_value,
+                                     int new_value) override;
+  void NotifyOwnerIfStepUpRollOver(bool has_value,
+                                   Step step,
+                                   int old_value,
+                                   int new_value) override;
 
   DISALLOW_COPY_AND_ASSIGN(DateTimeHour12FieldElement);
 };

@@ -73,6 +73,14 @@ class DateTimeNumericFieldElement : public DateTimeFieldElement {
   int ClampValue(int value) const { return range_.ClampValue(value); }
   virtual int DefaultValueForStepDown() const;
   virtual int DefaultValueForStepUp() const;
+  virtual void NotifyOwnerIfStepDownRollOver(bool has_value,
+                                             Step step,
+                                             int old_value,
+                                             int new_value) {}
+  virtual void NotifyOwnerIfStepUpRollOver(bool has_value,
+                                           Step step,
+                                           int old_value,
+                                           int new_value) {}
   const Range& GetRange() const { return range_; }
 
   // DateTimeFieldElement functions.
