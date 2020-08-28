@@ -29,10 +29,7 @@ GeneratedPrefsFactory* GeneratedPrefsFactory::GetInstance() {
 GeneratedPrefsFactory::GeneratedPrefsFactory()
     : BrowserContextKeyedServiceFactory(
           "GeneratedPrefs",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
 GeneratedPrefsFactory::~GeneratedPrefsFactory() {}
 

@@ -74,6 +74,9 @@ GeneratedPasswordLeakDetectionPref::GeneratedPasswordLeakDetectionPref(
   if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile))
     identity_manager_observer_.Add(identity_manager);
 
+  if (auto* identity_manager_factory = IdentityManagerFactory::GetInstance())
+    identity_manager_factory_observer_.Add(identity_manager_factory);
+
   if (auto* sync_service = ProfileSyncServiceFactory::GetForProfile(profile))
     sync_service_observer_.Add(sync_service);
 }
@@ -133,6 +136,11 @@ void GeneratedPasswordLeakDetectionPref::OnSourcePreferencesChanged() {
   NotifyObservers(kGeneratedPasswordLeakDetectionPref);
 }
 
+void GeneratedPasswordLeakDetectionPref::IdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observer_.RemoveAll();
+}
+
 void GeneratedPasswordLeakDetectionPref::OnPrimaryAccountSet(
     const CoreAccountInfo& primary_account_info) {
   NotifyObservers(kGeneratedPasswordLeakDetectionPref);
@@ -156,4 +164,9 @@ void GeneratedPasswordLeakDetectionPref::OnExtendedAccountInfoRemoved(
 void GeneratedPasswordLeakDetectionPref::OnStateChanged(
     syncer::SyncService* sync) {
   NotifyObservers(kGeneratedPasswordLeakDetectionPref);
+}
+
+void GeneratedPasswordLeakDetectionPref::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  sync_service_observer_.RemoveAll();
 }

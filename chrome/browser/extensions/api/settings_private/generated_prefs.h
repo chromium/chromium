@@ -42,11 +42,11 @@ class GeneratedPrefs : public KeyedService {
   ~GeneratedPrefs() override;
 
   // Returns true if preference is supported.
-  bool HasPref(const std::string& pref_name) const;
+  bool HasPref(const std::string& pref_name);
 
   // Returns fully populated PrefObject or nullptr if not supported.
   std::unique_ptr<api::settings_private::PrefObject> GetPref(
-      const std::string& pref_name) const;
+      const std::string& pref_name);
 
   // Updates preference value.
   SetPrefResult SetPref(const std::string& pref_name, const base::Value* value);
@@ -61,11 +61,17 @@ class GeneratedPrefs : public KeyedService {
   void Shutdown() override;
 
  private:
-  // Returns preference implementation or nullptr if not found.
-  GeneratedPref* FindPrefImpl(const std::string& pref_name) const;
+  // Returns preference implementation or nullptr if not found. Will create
+  // preferences if they haven't already been created.
+  GeneratedPref* FindPrefImpl(const std::string& pref_name);
 
-  // Known preference map.
+  // Creates all generated preferences and populates the preference map.
+  void CreatePrefs();
+
+  // Preference object map.
   PrefsMap prefs_;
+
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(GeneratedPrefs);
 };

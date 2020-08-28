@@ -22,33 +22,16 @@
 namespace extensions {
 namespace settings_private {
 
-GeneratedPrefs::GeneratedPrefs(Profile* profile) {
-#if defined(OS_CHROMEOS)
-  prefs_[kResolveTimezoneByGeolocationOnOff] =
-      CreateGeneratedResolveTimezoneByGeolocationOnOff(profile);
-  prefs_[kResolveTimezoneByGeolocationMethodShort] =
-      CreateGeneratedResolveTimezoneByGeolocationMethodShort(profile);
-#endif
-  prefs_[content_settings::kCookiePrimarySetting] =
-      std::make_unique<content_settings::GeneratedCookiePrimarySettingPref>(
-          profile);
-  prefs_[content_settings::kCookieSessionOnly] =
-      std::make_unique<content_settings::GeneratedCookieSessionOnlyPref>(
-          profile);
-  prefs_[kGeneratedPasswordLeakDetectionPref] =
-      std::make_unique<GeneratedPasswordLeakDetectionPref>(profile);
-  prefs_[safe_browsing::kGeneratedSafeBrowsingPref] =
-      std::make_unique<safe_browsing::GeneratedSafeBrowsingPref>(profile);
-}
+GeneratedPrefs::GeneratedPrefs(Profile* profile) : profile_(profile) {}
 
 GeneratedPrefs::~GeneratedPrefs() = default;
 
-bool GeneratedPrefs::HasPref(const std::string& pref_name) const {
+bool GeneratedPrefs::HasPref(const std::string& pref_name) {
   return FindPrefImpl(pref_name) != nullptr;
 }
 
 std::unique_ptr<api::settings_private::PrefObject> GeneratedPrefs::GetPref(
-    const std::string& pref_name) const {
+    const std::string& pref_name) {
   GeneratedPref* impl = FindPrefImpl(pref_name);
   if (!impl)
     return nullptr;
@@ -88,13 +71,34 @@ void GeneratedPrefs::Shutdown() {
   prefs_.clear();
 }
 
-GeneratedPref* GeneratedPrefs::FindPrefImpl(
-    const std::string& pref_name) const {
+GeneratedPref* GeneratedPrefs::FindPrefImpl(const std::string& pref_name) {
+  if (prefs_.empty())
+    CreatePrefs();
+
   const PrefsMap::const_iterator it = prefs_.find(pref_name);
   if (it == prefs_.end())
     return nullptr;
 
   return it->second.get();
+}
+
+void GeneratedPrefs::CreatePrefs() {
+#if defined(OS_CHROMEOS)
+  prefs_[kResolveTimezoneByGeolocationOnOff] =
+      CreateGeneratedResolveTimezoneByGeolocationOnOff(profile_);
+  prefs_[kResolveTimezoneByGeolocationMethodShort] =
+      CreateGeneratedResolveTimezoneByGeolocationMethodShort(profile_);
+#endif
+  prefs_[content_settings::kCookiePrimarySetting] =
+      std::make_unique<content_settings::GeneratedCookiePrimarySettingPref>(
+          profile_);
+  prefs_[content_settings::kCookieSessionOnly] =
+      std::make_unique<content_settings::GeneratedCookieSessionOnlyPref>(
+          profile_);
+  prefs_[kGeneratedPasswordLeakDetectionPref] =
+      std::make_unique<GeneratedPasswordLeakDetectionPref>(profile_);
+  prefs_[safe_browsing::kGeneratedSafeBrowsingPref] =
+      std::make_unique<safe_browsing::GeneratedSafeBrowsingPref>(profile_);
 }
 
 }  // namespace settings_private
