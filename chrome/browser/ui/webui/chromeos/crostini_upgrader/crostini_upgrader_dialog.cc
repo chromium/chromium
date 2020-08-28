@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -63,6 +64,7 @@ CrostiniUpgraderDialog::CrostiniUpgraderDialog(
   DCHECK(profile_);
   crostini::CrostiniManager::GetForProfile(profile_)->SetCrostiniDialogStatus(
       crostini::DialogType::UPGRADER, true);
+  set_can_minimize(true);
 }
 
 CrostiniUpgraderDialog::~CrostiniUpgraderDialog() {
@@ -86,6 +88,10 @@ bool CrostiniUpgraderDialog::ShouldShowDialogTitle() const {
 }
 
 bool CrostiniUpgraderDialog::ShouldCloseDialogOnEscape() const {
+  return false;
+}
+
+bool CrostiniUpgraderDialog::CanResizeDialog() const {
   return false;
 }
 

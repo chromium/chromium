@@ -80,6 +80,11 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // returns false.
   virtual bool CanMaximizeDialog() const;
 
+  // Returns true if the dialog can ever be minimized. Default implementation
+  // returns false.
+  bool can_minimize() const { return can_minimize_; }
+  void set_can_minimize(bool can_minimize) { can_minimize_ = can_minimize; }
+
   // A callback to notify the delegate that |source|'s loading state has
   // changed.
   virtual void OnLoadingStateChanged(content::WebContents* source) {}
@@ -180,6 +185,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
       blink::mojom::MediaStreamType type);
 
   virtual ~WebDialogDelegate() = default;
+
+ private:
+  bool can_minimize_ = false;
 };
 
 }  // namespace ui

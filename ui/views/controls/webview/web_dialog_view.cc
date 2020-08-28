@@ -81,6 +81,7 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
       delegate_(delegate),
       web_view_(new ObservableWebView(context, delegate)),
       use_dialog_frame_(use_dialog_frame) {
+  SetCanMinimize(!delegate_ || delegate_->can_minimize());
   SetModalType(GetDialogModalType());
   web_view_->set_allow_accelerators(true);
   AddChildView(web_view_);
