@@ -190,6 +190,14 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
     telemetry_info->block_device_result = chromeos::cros_healthd::mojom::
         NonRemovableBlockDeviceResult::NewBlockDeviceInfo(std::move(infos));
   }
+  {
+    auto system_info = chromeos::cros_healthd::mojom::SystemInfo::New();
+    system_info->product_sku_number = "sku-18";
+
+    telemetry_info->system_result =
+        chromeos::cros_healthd::mojom::SystemResult::NewSystemInfo(
+            std::move(system_info));
+  }
 
   DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
 

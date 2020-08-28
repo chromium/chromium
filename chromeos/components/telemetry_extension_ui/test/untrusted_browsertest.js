@@ -172,6 +172,7 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         discardTimeSecondsSinceLastBoot: 77777777777777
       }]
     },
+    vpdResult: {vpdInfo: {skuNumber: 'sku-18'}}
   });
 });
 
