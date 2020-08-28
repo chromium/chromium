@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.components.browser_ui.media.MediaNotificationImageUtils;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
+import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.content_public.browser.WebContents;
 
@@ -116,7 +117,7 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
 
     @Override
     public void showMediaNotification(MediaNotificationInfo notificationInfo) {
-        MediaNotificationManager.show(notificationInfo);
+        ChromeMediaNotificationManager.show(notificationInfo);
     }
 
     @Override

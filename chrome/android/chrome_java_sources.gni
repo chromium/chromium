@@ -894,7 +894,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/media/PictureInPictureController.java",
   "java/src/org/chromium/chrome/browser/media/remote/RecordCastAction.java",
   "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerDelegate.java",
-  "java/src/org/chromium/chrome/browser/media/ui/MediaNotificationManager.java",
+  "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationManager.java",
   "java/src/org/chromium/chrome/browser/media/ui/MediaSessionTabHelper.java",
   "java/src/org/chromium/chrome/browser/metrics/ActivityTabStartupMetricsTracker.java",
   "java/src/org/chromium/chrome/browser/metrics/BackgroundTaskMemoryMetricsEmitter.java",

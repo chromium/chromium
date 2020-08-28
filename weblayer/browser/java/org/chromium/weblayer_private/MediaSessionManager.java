@@ -4,13 +4,13 @@
 
 package org.chromium.weblayer_private;
 
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
+import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -24,14 +24,11 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
  * associated with the notification.
  */
 class MediaSessionManager {
-    // This is a singleton because there's only at most one MediaSession active at a time.
-    @SuppressLint("StaticFieldLeak")
-    static MediaNotificationController sController;
-
     private static int sNotificationId;
 
     static void serviceStarted(Service service, Intent intent) {
-        if (sController != null && sController.processIntent(service, intent)) return;
+        MediaNotificationController controller = getController();
+        if (controller != null && controller.processIntent(service, intent)) return;
 
         // The service has been started with startForegroundService() but the
         // notification hasn't been shown. See similar logic in {@link
@@ -45,8 +42,9 @@ class MediaSessionManager {
     }
 
     static void serviceDestroyed() {
-        if (sController != null) sController.onServiceDestroyed();
-        sController = null;
+        MediaNotificationController controller = getController();
+        if (controller != null) controller.onServiceDestroyed();
+        MediaNotificationManager.clear(getNotificationId());
     }
 
     static MediaSessionHelper.Delegate createMediaSessionHelperDelegate(int tabId) {
@@ -64,29 +62,25 @@ class MediaSessionManager {
 
             @Override
             public MediaNotificationInfo.Builder createMediaNotificationInfoBuilder() {
-                ensureNotificationId();
                 return new MediaNotificationInfo.Builder().setInstanceId(tabId).setId(
-                        sNotificationId);
+                        getNotificationId());
             }
 
             @Override
             public void showMediaNotification(MediaNotificationInfo notificationInfo) {
-                assert notificationInfo.id == sNotificationId;
-                if (sController == null) {
-                    sController = new MediaNotificationController(
-                            new WebLayerMediaNotificationControllerDelegate());
-                }
-                sController.mThrottler.queueNotification(notificationInfo);
+                assert notificationInfo.id == getNotificationId();
+                MediaNotificationManager.show(notificationInfo,
+                        () -> { return new WebLayerMediaNotificationControllerDelegate(); });
             }
 
             @Override
             public void hideMediaNotification() {
-                if (sController != null) sController.hideNotification(tabId);
+                MediaNotificationManager.hide(tabId, getNotificationId());
             }
 
             @Override
             public void activateAndroidMediaSession() {
-                if (sController != null) sController.activateAndroidMediaSession(tabId);
+                MediaNotificationManager.activateAndroidMediaSession(tabId, getNotificationId());
             }
         };
     }
@@ -123,18 +117,21 @@ class MediaSessionManager {
     }
 
     private static NotificationWrapperBuilder createNotificationWrapperBuilder() {
-        ensureNotificationId();
-
         // Only the null tag will work as expected, because {@link Service#startForeground()} only
         // takes an ID and no tag. If we pass a tag here, then the notification that's used to
         // display a paused state (no foreground service) will not be identified as the same one
         // that's used with the foreground service.
         return WebLayerNotificationWrapperBuilder.create(
                 WebLayerNotificationChannels.ChannelId.MEDIA_PLAYBACK,
-                new NotificationMetadata(0, null /*notificationTag*/, sNotificationId));
+                new NotificationMetadata(0, null /*notificationTag*/, getNotificationId()));
     }
 
-    private static void ensureNotificationId() {
+    private static int getNotificationId() {
         if (sNotificationId == 0) sNotificationId = WebLayerImpl.getMediaSessionNotificationId();
+        return sNotificationId;
+    }
+
+    private static MediaNotificationController getController() {
+        return MediaNotificationManager.getController(getNotificationId());
     }
 }

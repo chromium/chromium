@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.media.ui;
+package org.chromium.components.browser_ui.media;
 
 import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.components.browser_ui.media.MediaNotificationController;
-import org.chromium.components.browser_ui.media.MediaNotificationInfo;
+import org.chromium.base.supplier.Supplier;
 
 /**
  * A class that manages the services/notifications for various media types.
@@ -34,12 +33,14 @@ public class MediaNotificationManager {
      * mismatches |mMediaNotificationInfo.isPaused|, it is also no-op.
      *
      * @param notificationInfo information to show in the notification
+     * @param delegate a factory function for the delegate passed to new {@link
+     *         MediaNotificatonController} instances.
      */
-    public static void show(MediaNotificationInfo notificationInfo) {
+    public static void show(MediaNotificationInfo notificationInfo,
+            Supplier<MediaNotificationController.Delegate> delegateFactory) {
         MediaNotificationController controller = sControllers.get(notificationInfo.id);
         if (controller == null) {
-            controller = new MediaNotificationController(
-                    new ChromeMediaNotificationControllerDelegate(notificationInfo.id));
+            controller = new MediaNotificationController(delegateFactory.get());
             sControllers.put(notificationInfo.id, controller);
         }
 
@@ -85,18 +86,12 @@ public class MediaNotificationManager {
         controller.activateAndroidMediaSession(tabId);
     }
 
-    @VisibleForTesting
-    static MediaNotificationController getController(int notificationId) {
+    public static MediaNotificationController getController(int notificationId) {
         return sControllers.get(notificationId);
     }
 
     @VisibleForTesting
-    static boolean hasControllerForTesting(int notificationId) {
-        return getController(notificationId) != null;
-    }
-
-    @VisibleForTesting
-    static void setControllerForTesting(
+    public static void setControllerForTesting(
             int notificationId, MediaNotificationController controller) {
         sControllers.put(notificationId, controller);
     }

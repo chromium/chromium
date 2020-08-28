@@ -10,10 +10,11 @@ import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 
-import org.chromium.chrome.browser.media.ui.MediaNotificationManager;
+import org.chromium.chrome.browser.media.ui.ChromeMediaNotificationManager;
 import org.chromium.chrome.media.router.R;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationListener;
+import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.services.media_session.MediaMetadata;
 
 /** Base controller for updating media notification for Casting and MediaFling. */
@@ -45,7 +46,7 @@ public abstract class BaseNotificationController
                         .setListener(this);
 
         updateNotificationMetadata();
-        MediaNotificationManager.show(mNotificationBuilder.build());
+        ChromeMediaNotificationManager.show(mNotificationBuilder.build());
     }
 
     @Override
@@ -72,7 +73,7 @@ public abstract class BaseNotificationController
         } else {
             mNotificationBuilder.setActions(MediaNotificationInfo.ACTION_STOP);
         }
-        MediaNotificationManager.show(mNotificationBuilder.build());
+        ChromeMediaNotificationManager.show(mNotificationBuilder.build());
     }
 
     /** Called when media metadata updated. */
@@ -80,7 +81,7 @@ public abstract class BaseNotificationController
     public void onMetadataUpdated() {
         if (mNotificationBuilder == null) return;
         updateNotificationMetadata();
-        MediaNotificationManager.show(mNotificationBuilder.build());
+        ChromeMediaNotificationManager.show(mNotificationBuilder.build());
     }
 
     private void updateNotificationMetadata() {

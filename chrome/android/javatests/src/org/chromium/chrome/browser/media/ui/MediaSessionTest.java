@@ -30,6 +30,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.components.browser_ui.media.MediaNotificationController;
+import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -118,8 +119,7 @@ public class MediaSessionTest {
 
     private void waitForNotificationReady() {
         CriteriaHelper.pollInstrumentationThread(() -> {
-            return MediaNotificationManager.hasControllerForTesting(
-                    R.id.media_playback_notification);
+            return MediaNotificationManager.getController(R.id.media_playback_notification) != null;
         });
     }
 

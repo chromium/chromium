@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/media/MediaNotificationImageUtils.java",
     "java/src/org/chromium/components/browser_ui/media/MediaNotificationInfo.java",
     "java/src/org/chromium/components/browser_ui/media/MediaNotificationListener.java",
+    "java/src/org/chromium/components/browser_ui/media/MediaNotificationManager.java",
     "java/src/org/chromium/components/browser_ui/media/MediaNotificationUma.java",
     "java/src/org/chromium/components/browser_ui/media/MediaSessionHelper.java",
     "java/src/org/chromium/components/browser_ui/media/MediaSessionUma.java",
