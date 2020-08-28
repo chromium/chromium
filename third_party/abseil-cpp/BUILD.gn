@@ -66,6 +66,8 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/container:flat_hash_map",
     "//third_party/abseil-cpp/absl/container:flat_hash_set",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
+    "//third_party/abseil-cpp/absl/container:node_hash_map",
+    "//third_party/abseil-cpp/absl/container:node_hash_set",
     "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/debugging:symbolize",
@@ -90,6 +92,8 @@ group("absl_component_deps") {
     public_deps -= [
       "//third_party/abseil-cpp/absl/container:flat_hash_map",
       "//third_party/abseil-cpp/absl/container:flat_hash_set",
+      "//third_party/abseil-cpp/absl/container:node_hash_map",
+      "//third_party/abseil-cpp/absl/container:node_hash_set",
       "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
     ]
   }
