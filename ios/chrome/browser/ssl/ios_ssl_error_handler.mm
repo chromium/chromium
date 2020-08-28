@@ -16,7 +16,6 @@
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
-#include "ios/chrome/browser/ssl/captive_portal_features.h"
 #include "ios/chrome/browser/ssl/captive_portal_metrics.h"
 #include "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
 #include "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"

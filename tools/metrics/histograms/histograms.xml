@@ -25470,6 +25470,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CaptivePortal.Session.SecureConnectionFailed"
     enum="CaptivePortalStatus" expires_after="M84">
+  <obsolete>
+    Retired in M86.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>cros-networking@google.com</owner>
   <summary>
@@ -25481,6 +25484,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CaptivePortal.Session.TimeoutDetectionResult"
     enum="CaptivePortalStatus" expires_after="M84">
+  <obsolete>
+    Retired in M86.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>cros-networking@google.com</owner>
   <summary>

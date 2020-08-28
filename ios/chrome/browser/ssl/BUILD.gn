@@ -9,8 +9,6 @@ source_set("ssl") {
     "captive_portal_detector_tab_helper.mm",
     "captive_portal_detector_tab_helper_delegate.h",
     "captive_portal_metrics.h",
-    "captive_portal_metrics_tab_helper.h",
-    "captive_portal_metrics_tab_helper.mm",
     "ios_captive_portal_blocking_page.h",
     "ios_captive_portal_blocking_page.mm",
     "ios_ssl_blocking_page.h",
@@ -19,7 +17,6 @@ source_set("ssl") {
     "ios_ssl_error_handler.mm",
   ]
   deps = [
-    ":feature_flags",
     "//base",
     "//base:i18n",
     "//components/autofill/ios/form_util",
@@ -46,15 +43,6 @@ source_set("ssl") {
   ]
 }
 
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "captive_portal_features.cc",
-    "captive_portal_features.h",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -63,7 +51,6 @@ source_set("unit_tests") {
     "ios_ssl_error_handler_unittest.mm",
   ]
   deps = [
-    ":feature_flags",
     ":ssl",
     "//base/test:test_support",
     "//components/security_interstitials/core",

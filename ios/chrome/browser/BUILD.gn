@@ -101,7 +101,6 @@ source_set("browser") {
     "//ios/chrome/browser/complex_tasks",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/itunes_urls",
-    "//ios/chrome/browser/ssl:feature_flags",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

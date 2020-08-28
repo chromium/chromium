@@ -96,7 +96,6 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/sessions:session_service",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ssl",
-    "//ios/chrome/browser/ssl:feature_flags",
     "//ios/chrome/browser/store_kit",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate",

@@ -57,8 +57,6 @@
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#include "ios/chrome/browser/ssl/captive_portal_features.h"
-#import "ios/chrome/browser/ssl/captive_portal_metrics_tab_helper.h"
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
@@ -129,10 +127,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     InfobarOverlayRequestInserter::CreateForWebState(web_state);
     InfobarOverlayTabHelper::CreateForWebState(web_state);
     TranslateOverlayTabHelper::CreateForWebState(web_state);
-  }
-
-  if (base::FeatureList::IsEnabled(kCaptivePortalMetrics)) {
-    CaptivePortalMetricsTabHelper::CreateForWebState(web_state);
   }
 
   if (base::FeatureList::IsEnabled(web::kWebPageTextAccessibility)) {
