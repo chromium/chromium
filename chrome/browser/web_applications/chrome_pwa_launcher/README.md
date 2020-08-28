@@ -30,3 +30,7 @@ chrome_pwa_launcher.exe assumes that it is run from a web-app data directory
 (User Data\<profile>\Web Applications\<app ID>), as it uses the "Last Browser"
 file in its great-grandparent User Data directory to find the chrome.exe to
 launch.
+
+NOTE: PWA launchers must be compiled in a non-component build to support file
+handling. Component-build EXEs will hit a missing-DLL error if run from the
+web-app directory.
