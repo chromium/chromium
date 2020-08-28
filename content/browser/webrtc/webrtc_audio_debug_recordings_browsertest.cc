@@ -84,7 +84,7 @@ class WebRtcAudioDebugRecordingsBrowserTest
   ~WebRtcAudioDebugRecordingsBrowserTest() override {}
 };
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 // Renderer crashes under Android: https://crbug.com/820934.
 // Failures on Android M. https://crbug.com/535728.

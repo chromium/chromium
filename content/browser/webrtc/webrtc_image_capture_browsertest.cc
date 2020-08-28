@@ -42,13 +42,13 @@ namespace content {
 
 // TODO(crbug.com/793859, crbug.com/986602): This test is broken on Android
 // (see above) and flaky on Linux.
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_ManipulateExposureTime DISABLED_ManipulateExposureTime
 #else
 #define MAYBE_ManipulateExposureTime ManipulateExposureTime
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // See crbug/986470
 #define MAYBE_GetPhotoSettings DISABLED_GetPhotoSettings
 #define MAYBE_GetTrackSettings DISABLED_GetTrackSettings
@@ -191,7 +191,7 @@ class WebRtcImageCaptureSucceedsBrowserTest
 };
 
 // TODO(crbug.com/998305): Flaky on Linux.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_GetPhotoCapabilities DISABLED_GetPhotoCapabilities
 #else
 #define MAYBE_GetPhotoCapabilities GetPhotoCapabilities
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, GrabFrame) {
 }
 
 // Flaky. crbug.com/998116
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_GetTrackCapabilities DISABLED_GetTrackCapabilities
 #else
 #define MAYBE_GetTrackCapabilities GetTrackCapabilities
@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest,
 // TODO(crbug.com/998304): Flaky on Linux.
 // TODO(crbug.com/793859): Re-enable test on Android as soon as the cause for
 // the bug is understood and fixed.
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #define MAYBE_ManipulateTilt DISABLED_ManipulateTilt
 #else
 #define MAYBE_ManipulateTilt ManipulateTilt
@@ -289,8 +289,8 @@ INSTANTIATE_TEST_SUITE_P(
 // API has already been implemented.
 // Note, these tests must be run sequentially, since multiple parallel test runs
 // competing for a single physical webcam typically causes failures.
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_ANDROID) || \
-    defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+    defined(OS_ANDROID) || defined(OS_WIN)
 
 const TargetVideoCaptureImplementation
     kTargetVideoCaptureImplementationsForRealWebcam[] = {
