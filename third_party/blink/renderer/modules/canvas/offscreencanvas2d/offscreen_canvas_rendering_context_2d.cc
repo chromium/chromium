@@ -576,8 +576,14 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
       bounds, paint_type, CanvasRenderingContext2DState::kNoImage);
-  paint_canvas->restoreToCount(save_count);
-  ValidateStateStack();
+
+  // |paint_canvas| maybe rese during Draw. If that happens,
+  // GetOrCreatePaintCanvas will create a new |paint_canvas| and return a new
+  // address. In this case, there is no need to call |restoreToCount|.
+  if (paint_canvas == GetOrCreatePaintCanvas()) {
+    paint_canvas->restoreToCount(save_count);
+    ValidateStateStack();
+  }
 }
 
 TextMetrics* OffscreenCanvasRenderingContext2D::measureText(
