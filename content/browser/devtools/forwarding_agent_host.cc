@@ -19,7 +19,8 @@ ForwardingAgentHost::ForwardingAgentHost(
 
 ForwardingAgentHost::~ForwardingAgentHost() = default;
 
-bool ForwardingAgentHost::AttachSession(DevToolsSession* session) {
+bool ForwardingAgentHost::AttachSession(DevToolsSession* session,
+                                        bool acquire_wake_lock) {
   session->TurnIntoExternalProxy(delegate_.get());
   return true;
 }

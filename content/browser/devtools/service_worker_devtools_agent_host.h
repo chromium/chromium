@@ -86,7 +86,7 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   void UpdateIsAttached(bool attached);
 
   // DevToolsAgentHostImpl overrides.
-  bool AttachSession(DevToolsSession* session) override;
+  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
 
   void UpdateLoaderFactories(base::OnceClosure callback);

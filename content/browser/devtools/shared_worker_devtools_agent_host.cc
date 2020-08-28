@@ -69,7 +69,8 @@ bool SharedWorkerDevToolsAgentHost::Close() {
   return true;
 }
 
-bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
+bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
+                                                  bool acquire_wake_lock) {
   session->AddHandler(std::make_unique<protocol::InspectorHandler>());
   session->AddHandler(std::make_unique<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(),

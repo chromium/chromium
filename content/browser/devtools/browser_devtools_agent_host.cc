@@ -67,7 +67,8 @@ BrowserDevToolsAgentHost::~BrowserDevToolsAgentHost() {
   BrowserDevToolsAgentHostInstances().erase(this);
 }
 
-bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session) {
+bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
+                                             bool acquire_wake_lock) {
   if (!session->GetClient()->MayAttachToBrowser())
     return false;
 

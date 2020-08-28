@@ -30,7 +30,7 @@ DevtoolsClient::DevtoolsClient(
       next_message_id_(0),
       frame_tracker_(this) {
   browser_main_thread_ = content::GetUIThreadTaskRunner({});
-  agent_host_->AttachClient(this);
+  agent_host_->AttachClientWithoutWakeLock(this);
   frame_tracker_.Start();
 }
 

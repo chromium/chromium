@@ -40,7 +40,7 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   void Disconnected();
 
   // DevToolsAgentHostImpl overrides.
-  bool AttachSession(DevToolsSession* session) override;
+  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
   void DetachSession(DevToolsSession* session) override;
 
   const int process_id_;

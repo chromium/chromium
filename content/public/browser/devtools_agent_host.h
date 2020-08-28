@@ -126,6 +126,9 @@ class CONTENT_EXPORT DevToolsAgentHost
   // embedder or |client| itself may prevent attaching.
   virtual bool AttachClient(DevToolsAgentHostClient* client) = 0;
 
+  // Same as the above, but does not acquire the WakeLock.
+  virtual bool AttachClientWithoutWakeLock(DevToolsAgentHostClient* client) = 0;
+
   // Already attached client detaches from this agent host to stop debugging it.
   // Returns true iff detach succeeded.
   virtual bool DetachClient(DevToolsAgentHostClient* client) = 0;
