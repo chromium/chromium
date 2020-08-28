@@ -1843,6 +1843,7 @@ void AccessibilityControllerImpl::SwitchAccessDisableDialogClosed(
   DeactivateSwitchAccess();
   if (disable_dialog_accepted) {
     NotifyAccessibilityStatusChanged();
+    SyncSwitchAccessPrefsToSignInProfile();
   } else {
     // Reset the preference (which was already set to false). Doing so turns
     // switch access back on.
