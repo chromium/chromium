@@ -20,6 +20,15 @@
 #include "url/gurl.h"
 
 namespace app_list {
+namespace {
+
+bool IsDriveUrl(const GURL& url) {
+  // Returns true if the |url| points to a Drive Web host.
+  const std::string& host = url.host();
+  return host == "drive.google.com" || host == "docs.google.com";
+}
+
+}  //  namespace
 
 OmniboxProvider::OmniboxProvider(Profile* profile,
                                  AppListControllerDelegate* list_controller)
@@ -72,12 +81,22 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
   SearchProvider::Results new_results;
   new_results.reserve(result.size());
   for (const AutocompleteMatch& match : result) {
-    if (!match.destination_url.is_valid())
+    // Do not return a match in any of these cases:
+    // - The URL is invalid.
+    // - The URL points to Drive Web. The LauncherSearchProvider surfaces Drive
+    //   results.
+    // - The URL points to a local file. The LauncherSearchProvider also handles
+    //   files results, even if they've been opened in the browser.
+    if (!match.destination_url.is_valid() ||
+        IsDriveUrl(match.destination_url) ||
+        match.destination_url.SchemeIsFile()) {
       continue;
+    }
     new_results.emplace_back(std::make_unique<OmniboxResult>(
         profile_, list_controller_, controller_.get(), match,
         is_zero_state_input_));
   }
+
   SwapResults(&new_results);
 }
 
