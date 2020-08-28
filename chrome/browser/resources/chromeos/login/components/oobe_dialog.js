@@ -166,11 +166,14 @@ Polymer({
         continue;
 
       focused = true;
-      this.focusElement_(focusedElements[i]);
+      Polymer.RenderStatus.afterNextRender(
+          this, () => this.focusElement_(focusedElements[i]));
       break;
     }
-    if (!focused && focusedElements.length > 0)
-      this.focusElement_(focusedElements[0]);
+    if (!focused && focusedElements.length > 0) {
+      Polymer.RenderStatus.afterNextRender(
+          this, () => this.focusElement_(focusedElements[0]));
+    }
 
     this.fire('show-dialog');
   },
