@@ -50,6 +50,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
     private Runnable mOnDismissed;
     private Boolean mInitializing;
     private boolean mHasUserInteraction;
+    private boolean mFirstMeaningfulPaintHappened;
     private TabbedPaintPreviewObserver mObserver;
     private long mLastShownSnackBarTime;
     private boolean mDidStartRestore;
@@ -128,6 +129,7 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
 
         if (mTab.getWebContents() != webContents) return;
 
+        mFirstMeaningfulPaintHappened = true;
         mObserver.onFirstMeaningfulPaint();
     }
 
@@ -151,12 +153,17 @@ public class TabbedPaintPreviewPlayer implements TabViewProvider, UserData {
         mInitializing = hasCapture;
         mMetricsHelper.recordHadCapture(hasCapture);
         if (!hasCapture) return false;
+        mFirstMeaningfulPaintHappened = false;
 
         mPlayerManager = new PlayerManager(mTab.getUrl(), mTab.getContext(),
                 mPaintPreviewTabService, String.valueOf(mTab.getId()), this::onLinkClicked,
                 () -> removePaintPreview(ExitCause.PULL_TO_REFRESH),
                 () -> {
                     mInitializing = false;
+                    if (mFirstMeaningfulPaintHappened) {
+                        removePaintPreview(ExitCause.TAB_FINISHED_LOADING);
+                        return;
+                    }
                     onShown.run();
                     mMetricsHelper.onShown();
                 },
