@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
@@ -212,10 +213,7 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         BuildInfo.setBrowserPackageInfo(packageInfo);
         BuildInfo.setFirebaseAppId(
                 FirebaseConfig.getFirebaseAppIdForPackage(packageInfo.packageName));
-        // TODO: The call to onResourcesLoaded() can be slow, we may need to parallelize this with
-        // other expensive startup tasks.
-        org.chromium.weblayer_private.base.R.onResourcesLoaded(
-                forceCorrectPackageId(remoteContext));
+
         SelectionPopupController.setMustUseWebContentsContext();
 
         ResourceBundle.setAvailablePakLocales(new String[] {}, ProductConfig.UNCOMPRESSED_LOCALES);
@@ -453,8 +451,25 @@ public final class WebLayerImpl extends IWebLayer.Stub {
         if (ContextUtils.getApplicationContext() != null) {
             return ContextUtils.getApplicationContext();
         }
+
         assert remoteContext != null;
-        ClassLoaderContextWrapperFactory.setResourceOverrideContext(remoteContext);
+        // TODO: This is only needed for tests. Remove once BundleLanguageTests can call through to
+        // TestWebLayerImpl.
+        forceCorrectPackageId(remoteContext);
+
+        Context lightContext = createContextForMode(remoteContext, Configuration.UI_MODE_NIGHT_NO);
+        Context darkContext = createContextForMode(remoteContext, Configuration.UI_MODE_NIGHT_YES);
+        ClassLoaderContextWrapperFactory.setLightDarkResourceOverrideContext(
+                lightContext, darkContext);
+
+        int lightPackageId = forceCorrectPackageId(lightContext);
+        int darkPackageId = forceCorrectPackageId(darkContext);
+        assert lightPackageId == darkPackageId;
+
+        // TODO: The call to onResourcesLoaded() can be slow, we may need to parallelize this with
+        // other expensive startup tasks.
+        org.chromium.weblayer_private.base.R.onResourcesLoaded(lightPackageId);
+
         // Wrap the app context so that it can be used to load WebLayer implementation classes.
         appContext = ClassLoaderContextWrapperFactory.get(appContext);
         ContextUtils.initApplicationContext(appContext);
@@ -686,6 +701,12 @@ public final class WebLayerImpl extends IWebLayer.Stub {
             }
         }
         return remoteContext;
+    }
+
+    private static Context createContextForMode(Context remoteContext, int uiMode) {
+        Configuration configuration = new Configuration();
+        configuration.uiMode = uiMode;
+        return remoteContext.createConfigurationContext(configuration);
     }
 
     @CalledByNative

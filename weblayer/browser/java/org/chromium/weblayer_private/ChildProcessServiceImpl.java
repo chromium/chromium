@@ -27,7 +27,8 @@ public final class ChildProcessServiceImpl extends IChildProcessService.Stub {
 
     @UsedByReflection("WebLayer")
     public static IBinder create(Service service, Context appContext, Context remoteContext) {
-        ClassLoaderContextWrapperFactory.setResourceOverrideContext(remoteContext);
+        ClassLoaderContextWrapperFactory.setLightDarkResourceOverrideContext(
+                remoteContext, remoteContext);
         // Wrap the app context so that it can be used to load WebLayer implementation classes.
         appContext = ClassLoaderContextWrapperFactory.get(appContext);
         return new ChildProcessServiceImpl(service, appContext);
