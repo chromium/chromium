@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -19,6 +20,7 @@
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
+#include "content/public/common/content_features.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -58,17 +60,28 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
 SecurePaymentConfirmationApp::~SecurePaymentConfirmationApp() = default;
 
 void SecurePaymentConfirmationApp::InvokePaymentApp(Delegate* delegate) {
-  std::vector<device::PublicKeyCredentialDescriptor> credentials;
-  credentials.emplace_back(device::CredentialType::kPublicKey, credential_id_,
-                           base::flat_set<device::FidoTransportProtocol>{
-                               device::FidoTransportProtocol::kInternal});
-
   auto options = blink::mojom::PublicKeyCredentialRequestOptions::New();
   options->relying_party_id = effective_relying_party_identity_;
   options->timeout = request_->timeout.has_value()
                          ? request_->timeout.value()
                          : base::TimeDelta::FromMinutes(kDefaultTimeoutMinutes);
   options->user_verification = device::UserVerificationRequirement::kRequired;
+  std::vector<device::PublicKeyCredentialDescriptor> credentials;
+
+  if (base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationDebug)) {
+    options->user_verification =
+        device::UserVerificationRequirement::kPreferred;
+    // The `device::PublicKeyCredentialDescriptor` constructor with 2 parameters
+    // enables authentication through all protocols.
+    credentials.emplace_back(device::CredentialType::kPublicKey,
+                             credential_id_);
+  } else {
+    // Enable authentication only through internal authenticators by default.
+    credentials.emplace_back(device::CredentialType::kPublicKey, credential_id_,
+                             base::flat_set<device::FidoTransportProtocol>{
+                                 device::FidoTransportProtocol::kInternal});
+  }
+
   options->allow_credentials = std::move(credentials);
 
   // TODO(https://crbug.com/1110324): Combine |merchant_origin_|, |total_|, and

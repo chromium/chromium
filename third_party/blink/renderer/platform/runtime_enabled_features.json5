@@ -1721,6 +1721,9 @@
       status: "experimental",
     },
     {
+      name: "SecurePaymentConfirmationDebug",
+    },
+    {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
       status: "stable",
     },

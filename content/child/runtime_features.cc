@@ -231,6 +231,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,
      features::kSendBeaconThrowForBlobWithNonSimpleType, kEnableOnly},
     {wf::EnablePaymentRequest, features::kWebPayments, kUseFeatureState},
+    {wf::EnableSecurePaymentConfirmationDebug,
+     features::kSecurePaymentConfirmationDebug, kUseFeatureState},
     {wf::EnablePaymentHandlerMinimalUI, features::kWebPaymentsMinimalUI,
      kEnableOnly},
     {wf::EnablePaymentApp, features::kServiceWorkerPaymentApps, kEnableOnly},

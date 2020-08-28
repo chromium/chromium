@@ -1391,6 +1391,11 @@
     "expiry_milestone": 94
   },
   {
+    "name": "enable-debug-for-secure-payment-confirmation",
+    "owners": [ "rouslan", "web-payments-team@google.com" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-debug-for-store-billing",
     "owners": [ "maxlg", "web-payments-team@google.com" ],
     // This flag is to allow developers to develop their app-billing capable

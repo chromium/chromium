@@ -562,6 +562,13 @@ const base::Feature kRunVideoCaptureServiceInBrowserProcess{
 const base::Feature kSavePageAsWebBundle{"SavePageAsWebBundle",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Used to control whether to remove the restriction that PaymentCredential in
+// WebAuthn and secure payment confirmation method in PaymentRequest API must
+// use a user verifying platform authenticator. When enabled, this allows using
+// such devices as UbiKey on Linux, which can make development easier.
+const base::Feature kSecurePaymentConfirmationDebug{
+    "SecurePaymentConfirmationDebug", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Make sendBeacon throw for a Blob with a non simple type.
 const base::Feature kSendBeaconThrowForBlobWithNonSimpleType{
     "SendBeaconThrowForBlobWithNonSimpleType",

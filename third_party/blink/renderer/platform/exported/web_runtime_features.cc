@@ -507,6 +507,10 @@ void WebRuntimeFeatures::EnableRestrictAutomaticLazyImageLoadingToDataSaver(
       SetRestrictAutomaticLazyImageLoadingToDataSaverEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableSecurePaymentConfirmationDebug(bool enable) {
+  RuntimeEnabledFeatures::SetSecurePaymentConfirmationDebugEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableAutoLazyLoadOnReloads(bool enable) {
   RuntimeEnabledFeatures::SetAutoLazyLoadOnReloadsEnabled(enable);
 }

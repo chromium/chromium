@@ -632,14 +632,17 @@ void CreatePublicKeyCredentialForPaymentCredential(
   mojo_options->challenge =
       mojo::ConvertTo<Vector<uint8_t>>(options->challenge());
 
-  // PaymentCredentials is only supported with user-verifying authenticators.
-  auto selection_criteria = mojom::blink::AuthenticatorSelectionCriteria::New();
-  selection_criteria->authenticator_attachment =
-      mojom::blink::AuthenticatorAttachment::PLATFORM;
-  selection_criteria->require_resident_key = false;
-  selection_criteria->user_verification =
-      mojom::blink::UserVerificationRequirement::REQUIRED;
-  mojo_options->authenticator_selection = std::move(selection_criteria);
+  if (!RuntimeEnabledFeatures::SecurePaymentConfirmationDebugEnabled()) {
+    // PaymentCredentials is only supported with user-verifying authenticators.
+    auto selection_criteria =
+        mojom::blink::AuthenticatorSelectionCriteria::New();
+    selection_criteria->authenticator_attachment =
+        mojom::blink::AuthenticatorAttachment::PLATFORM;
+    selection_criteria->require_resident_key = false;
+    selection_criteria->user_verification =
+        mojom::blink::UserVerificationRequirement::REQUIRED;
+    mojo_options->authenticator_selection = std::move(selection_criteria);
+  }
 
   Vector<mojom::blink::PublicKeyCredentialParametersPtr> parameters;
   if (options->pubKeyCredParams().size() == 0) {
