@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
@@ -365,6 +366,8 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
   base::UmaHistogramTimes(
       "Signin.Intercept.ProfileCreationDuration",
       base::TimeTicks::Now() - profile_creation_start_time_);
+  ProfileMetrics::LogProfileAddNewUser(
+      ProfileMetrics::ADD_NEW_USER_SIGNIN_INTERCEPTION);
 
   if (!new_profile) {
     Reset();

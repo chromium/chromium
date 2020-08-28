@@ -32,15 +32,26 @@ enum GAIAServiceType : int;
 
 class ProfileMetrics {
  public:
-
   // Enum for counting the ways users were added.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ProfileAdd {
-    ADD_NEW_USER_ICON = 0,      // User adds new user from icon menu
-    ADD_NEW_USER_MENU,          // User adds new user from menu bar
-    ADD_NEW_USER_DIALOG,        // User adds new user from create-profile dialog
-    ADD_NEW_USER_MANAGER,       // User adds new user from User Manager
-    ADD_NEW_USER_LAST_DELETED,  // Auto-created after deleting last user
-    NUM_PROFILE_ADD_METRICS
+    // User adds new user from icon menu -- no longer used
+    // ADD_NEW_USER_ICON = 0,
+    // User adds new user from menu bar
+    ADD_NEW_USER_MENU = 1,
+    // User adds new user from create-profile dialog
+    ADD_NEW_USER_DIALOG = 2,
+    // User adds new user from User Manager -- no longer used
+    // ADD_NEW_USER_MANAGER = 3,
+    // Auto-created after deleting last user
+    ADD_NEW_USER_LAST_DELETED = 4,
+    // Created by the sign-in interception prompt
+    ADD_NEW_USER_SIGNIN_INTERCEPTION = 5,
+    // Created during the sync flow (to avoid clash with data in the existing
+    // profile)
+    ADD_NEW_USER_SYNC_FLOW = 6,
+    kMaxValue = ADD_NEW_USER_SYNC_FLOW
   };
 
   enum ProfileDelete {

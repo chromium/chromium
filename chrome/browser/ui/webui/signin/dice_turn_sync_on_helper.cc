@@ -22,6 +22,7 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -385,6 +386,7 @@ syncer::SyncService* DiceTurnSyncOnHelper::GetSyncService() {
 void DiceTurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
   DCHECK(dice_signed_in_profile_creator_);
   dice_signed_in_profile_creator_.reset();
+  ProfileMetrics::LogProfileAddNewUser(ProfileMetrics::ADD_NEW_USER_SYNC_FLOW);
 
   if (!new_profile) {
     // TODO(atwilson): On error, unregister the client to release the DMToken

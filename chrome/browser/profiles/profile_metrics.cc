@@ -202,9 +202,7 @@ void ProfileMetrics::LogNumberOfProfiles(ProfileAttributesStorage* storage) {
 }
 
 void ProfileMetrics::LogProfileAddNewUser(ProfileAdd metric) {
-  DCHECK(metric < NUM_PROFILE_ADD_METRICS);
-  base::UmaHistogramEnumeration("Profile.AddNewUser", metric,
-                                NUM_PROFILE_ADD_METRICS);
+  base::UmaHistogramEnumeration("Profile.AddNewUser", metric);
   base::UmaHistogramEnumeration("Profile.NetUserCount",
                                 ProfileNetUserCounts::ADD_NEW_USER);
 }
