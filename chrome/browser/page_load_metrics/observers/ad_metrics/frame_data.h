@@ -156,8 +156,7 @@ class FrameData {
 
   // Update the metadata of this frame if it is being navigated.
   void UpdateForNavigation(content::RenderFrameHost* render_frame_host,
-                           bool frame_navigated,
-                           bool record_frame_metrics);
+                           bool frame_navigated);
 
   // Updates the number of bytes loaded in the frame given a resource load.
   void ProcessResourceLoadInFrame(
@@ -405,12 +404,6 @@ class FrameData {
 
   // Number of bytes of noise that should be added to the network threshold.
   const int heavy_ad_network_threshold_noise_;
-
-  // |record_metrics| indicates whether metrics should be logged for this frame.
-  // This may be false in cases where we are tracking a frame, but do not want
-  // to log metrics until a subsequent navigation, e.g. if a frame is currently
-  // navigated to the heavy ads error page.
-  bool record_metrics_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(FrameData);
 };

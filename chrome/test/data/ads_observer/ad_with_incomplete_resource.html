@@ -6,10 +6,6 @@
   let adIframe = createAdIframe();
   // "incomplete_resource.js" should never be a complete resource load.
   adIframe.srcdoc = "<link rel='preload' href='incomplete_resource.js' as='script'>";
-
-  function advanceSrcdoc() {
-    adIframe.srcdoc =  "<link rel='preload' href='incomplete_resource2.js' as='script'>";
-  }
 </script>
 
 </body>

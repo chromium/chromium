@@ -84,10 +84,8 @@ FrameData::FrameData(FrameTreeNodeId root_frame_tree_node_id,
 FrameData::~FrameData() = default;
 
 void FrameData::UpdateForNavigation(content::RenderFrameHost* render_frame_host,
-                                    bool frame_navigated,
-                                    bool record_metrics) {
+                                    bool frame_navigated) {
   frame_navigated_ = frame_navigated;
-  record_metrics_ = record_metrics;
   if (!render_frame_host)
     return;
 
@@ -269,7 +267,7 @@ void FrameData::MaybeUpdateFrameDepth(
 }
 
 bool FrameData::ShouldRecordFrameForMetrics() const {
-  return record_metrics_ && (bytes() != 0 || !GetTotalCpuUsage().is_zero());
+  return bytes() != 0 || !GetTotalCpuUsage().is_zero();
 }
 
 void FrameData::RecordAdFrameLoadUkmEvent(ukm::SourceId source_id) const {
