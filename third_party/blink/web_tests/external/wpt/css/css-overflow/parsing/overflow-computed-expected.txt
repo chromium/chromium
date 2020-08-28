@@ -11,6 +11,7 @@ FAIL Property overflow value 'clip auto' assert_true: 'clip auto' is a supported
 FAIL Property overflow value 'clip clip' assert_true: 'clip clip' is a supported value for overflow. expected true got false
 FAIL Property overflow value 'clip hidden' assert_true: 'clip hidden' is a supported value for overflow. expected true got false
 FAIL Property overflow value 'clip scroll' assert_true: 'clip scroll' is a supported value for overflow. expected true got false
+FAIL Property overflow value 'clip visible' assert_true: 'clip visible' is a supported value for overflow. expected true got false
 FAIL Property overflow value 'hidden clip' assert_true: 'hidden clip' is a supported value for overflow. expected true got false
 PASS Property overflow value 'hidden visible'
 PASS Property overflow value 'scroll auto'
@@ -19,6 +20,7 @@ PASS Property overflow value 'scroll visible'
 PASS Property overflow value 'visible auto'
 PASS Property overflow value 'visible hidden'
 PASS Property overflow value 'visible scroll'
+FAIL Property overflow value 'visible clip' assert_true: 'visible clip' is a supported value for overflow. expected true got false
 PASS Property overflow value 'visible visible'
 PASS Property overflow-x value 'scroll'
 PASS Property overflow-x value 'hidden'
