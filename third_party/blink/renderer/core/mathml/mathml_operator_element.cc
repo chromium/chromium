@@ -25,7 +25,7 @@ void MathMLOperatorElement::AddMathRSpaceIfNeeded(
     const CSSToLengthConversionData& conversion_data) {
   if (auto length_or_percentage_value = AddMathLengthToComputedStyle(
           conversion_data, mathml_names::kRspaceAttr)) {
-    style.SetMathLSpace(std::move(*length_or_percentage_value));
+    style.SetMathRSpace(std::move(*length_or_percentage_value));
   }
 }
 
