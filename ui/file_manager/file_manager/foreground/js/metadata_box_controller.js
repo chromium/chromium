@@ -160,10 +160,16 @@ class MetadataBoxController {
     this.updateModificationTime_(entry, items);
 
     if (!entry.isDirectory) {
-      const sniffMimeType = (item.externalFileUrl || item.alternateUrl) ?
-          'contentMimeType' :
-          'mediaMimeType';
-      this.metadataModel_.get([entry], [sniffMimeType])
+      let media = [];  // Extra metadata types for local video media.
+
+      let sniffMimeType = 'mediaMimeType';
+      if (item.externalFileUrl || item.alternateUrl) {
+        sniffMimeType = 'contentMimeType';
+      } else if (type === 'video') {
+        media = MetadataBoxController.EXTRA_METADATA_NAMES;
+      }
+
+      this.metadataModel_.get([entry], [sniffMimeType].concat(media))
           .then(items => {
             this.metadataBox_.mediaMimeType = items[0][sniffMimeType] || '';
             this.metadataBox_.metadataRendered('mime');

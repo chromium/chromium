@@ -2608,11 +2608,10 @@
           'deepQueryAllElements', appId, [videoWebView, ['display']]));
     });
 
-    // Check: The MIME type of |world.ogv| is audio/ogg
+    // Check: The MIME type of |world.ogv| is video/ogg
     const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
-    chrome.test.assertEq(mimeType, 'audio/ogg');
+    chrome.test.assertEq('video/ogg', mimeType);
   };
-
 
   /**
    * Tests that deleting all items in a check-selection closes the Quick View.
