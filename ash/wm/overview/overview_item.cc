@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/cpp/window_state_type.h"
@@ -1051,6 +1052,11 @@ void OverviewItem::OnWindowDestroying(aura::Window* window) {
 
   overview_grid_->RemoveItem(this, /*item_destroying=*/true,
                              /*reposition=*/!animating_to_close_);
+
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+          IDS_ASH_OVERVIEW_WINDOW_CLOSING_A11Y_ALERT, window->GetTitle()));
 }
 
 void OverviewItem::OnPreWindowStateTypeChange(WindowState* window_state,
