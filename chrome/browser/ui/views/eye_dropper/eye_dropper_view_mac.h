@@ -1,0 +1,28 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_MAC_H_
+#define CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_MAC_H_
+
+#include "base/mac/scoped_nsobject.h"
+#include "content/public/browser/eye_dropper.h"
+#include "content/public/browser/eye_dropper_listener.h"
+
+@class NSColorSampler;
+
+class EyeDropperViewMac : public content::EyeDropper {
+ public:
+  EyeDropperViewMac(content::EyeDropperListener* listener);
+  EyeDropperViewMac(const EyeDropperViewMac&) = delete;
+  EyeDropperViewMac& operator=(const EyeDropperViewMac&) = delete;
+  ~EyeDropperViewMac() override;
+
+ private:
+  // Receives the color selection.
+  content::EyeDropperListener* listener_;
+
+  base::scoped_nsobject<NSColorSampler> color_sampler_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_MAC_H_

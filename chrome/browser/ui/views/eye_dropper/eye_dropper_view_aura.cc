@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/eye_dropper/eye_dropper_win.h"
+#include "chrome/browser/ui/views/eye_dropper/eye_dropper_view_aura.h"
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
@@ -19,9 +19,9 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
-class EyeDropperWin::PreEventDispatchHandler : public ui::EventHandler {
+class EyeDropperViewAura::PreEventDispatchHandler : public ui::EventHandler {
  public:
-  explicit PreEventDispatchHandler(aura::Window* owner, EyeDropperWin* view);
+  explicit PreEventDispatchHandler(EyeDropperViewAura* view);
   PreEventDispatchHandler(const PreEventDispatchHandler&) = delete;
   PreEventDispatchHandler& operator=(const PreEventDispatchHandler&) = delete;
   ~PreEventDispatchHandler() override;
@@ -29,35 +29,37 @@ class EyeDropperWin::PreEventDispatchHandler : public ui::EventHandler {
  private:
   void OnMouseEvent(ui::MouseEvent* event) override;
 
-  aura::Window* owner_;
-  EyeDropperWin* view_;
+  EyeDropperViewAura* view_;
 };
 
-EyeDropperWin::PreEventDispatchHandler::PreEventDispatchHandler(
-    aura::Window* owner,
-    EyeDropperWin* view)
-    : owner_(owner), view_(view) {
+EyeDropperViewAura::PreEventDispatchHandler::PreEventDispatchHandler(
+    EyeDropperViewAura* view)
+    : view_(view) {
   // Ensure that this handler is called before color popup handler by using
   // a higher priority.
-  owner_->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
+  view->GetWidget()->GetNativeWindow()->AddPreTargetHandler(
+      this, ui::EventTarget::Priority::kSystem);
 }
 
-EyeDropperWin::PreEventDispatchHandler::~PreEventDispatchHandler() {
-  owner_->RemovePreTargetHandler(this);
+EyeDropperViewAura::PreEventDispatchHandler::~PreEventDispatchHandler() {
+  view_->GetWidget()->GetNativeWindow()->RemovePreTargetHandler(this);
 }
 
-void EyeDropperWin::PreEventDispatchHandler::OnMouseEvent(
+void EyeDropperViewAura::PreEventDispatchHandler::OnMouseEvent(
     ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_PRESSED) {
     // Avoid closing the color popup when the eye dropper is clicked.
+    event->StopPropagation();
+  }
+  if (event->type() == ui::ET_MOUSE_RELEASED) {
     view_->OnColorSelected();
     event->StopPropagation();
   }
 }
 
-class EyeDropperWin::ViewPositionHandler {
+class EyeDropperViewAura::ViewPositionHandler {
  public:
-  explicit ViewPositionHandler(EyeDropperWin* owner);
+  explicit ViewPositionHandler(EyeDropperViewAura* owner);
   ViewPositionHandler(const ViewPositionHandler&) = delete;
   ViewPositionHandler& operator=(const ViewPositionHandler&) = delete;
   ~ViewPositionHandler();
@@ -68,27 +70,29 @@ class EyeDropperWin::ViewPositionHandler {
   // Timer used for updating the window location.
   base::RepeatingTimer timer_;
 
-  EyeDropperWin* owner_;
+  EyeDropperViewAura* owner_;
 };
 
-EyeDropperWin::ViewPositionHandler::ViewPositionHandler(EyeDropperWin* owner)
+EyeDropperViewAura::ViewPositionHandler::ViewPositionHandler(
+    EyeDropperViewAura* owner)
     : owner_(owner) {
   // Use a value close to the refresh rate @60hz.
   // TODO(iopopesc): Use SetCapture instead of a timer when support for
   // activating the eye dropper without closing the color popup is added.
   timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(16), this,
-               &EyeDropperWin::ViewPositionHandler::UpdateViewPosition);
+               &EyeDropperViewAura::ViewPositionHandler::UpdateViewPosition);
 }
 
-EyeDropperWin::ViewPositionHandler::~ViewPositionHandler() {
+EyeDropperViewAura::ViewPositionHandler::~ViewPositionHandler() {
   timer_.AbandonAndStop();
 }
 
-void EyeDropperWin::ViewPositionHandler::UpdateViewPosition() {
+void EyeDropperViewAura::ViewPositionHandler::UpdateViewPosition() {
   owner_->UpdatePosition();
 }
 
-class EyeDropperWin::ScreenCapturer : public webrtc::DesktopCapturer::Callback {
+class EyeDropperViewAura::ScreenCapturer
+    : public webrtc::DesktopCapturer::Callback {
  public:
   ScreenCapturer();
   ScreenCapturer(const ScreenCapturer&) = delete;
@@ -106,7 +110,7 @@ class EyeDropperWin::ScreenCapturer : public webrtc::DesktopCapturer::Callback {
   SkBitmap frame_;
 };
 
-EyeDropperWin::ScreenCapturer::ScreenCapturer() {
+EyeDropperViewAura::ScreenCapturer::ScreenCapturer() {
   // TODO(iopopesc): Update the captured frame after a period of time to match
   // latest content on screen.
   capturer_ = content::desktop_capture::CreateScreenCapturer();
@@ -114,7 +118,7 @@ EyeDropperWin::ScreenCapturer::ScreenCapturer() {
   capturer_->CaptureFrame();
 }
 
-void EyeDropperWin::ScreenCapturer::OnCaptureResult(
+void EyeDropperViewAura::ScreenCapturer::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   if (result != webrtc::DesktopCapturer::Result::SUCCESS)
@@ -126,12 +130,12 @@ void EyeDropperWin::ScreenCapturer::OnCaptureResult(
   frame_.setImmutable();
 }
 
-SkBitmap EyeDropperWin::ScreenCapturer::GetBitmap() const {
+SkBitmap EyeDropperViewAura::ScreenCapturer::GetBitmap() const {
   return frame_;
 }
 
-EyeDropperWin::EyeDropperWin(content::RenderFrameHost* frame,
-                             content::EyeDropperListener* listener)
+EyeDropperViewAura::EyeDropperViewAura(content::RenderFrameHost* frame,
+                                       content::EyeDropperListener* listener)
     : render_frame_host_(frame),
       listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
@@ -154,8 +158,7 @@ EyeDropperWin::EyeDropperWin(content::RenderFrameHost* frame,
   widget->Init(std::move(params));
   widget->SetContentsView(this);
 
-  pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(
-      widget->GetNativeWindow(), this);
+  pre_dispatch_handler_ = std::make_unique<PreEventDispatchHandler>(this);
 
   auto* cursor_client =
       aura::client::GetCursorClient(widget->GetNativeWindow()->GetRootWindow());
@@ -164,21 +167,21 @@ EyeDropperWin::EyeDropperWin(content::RenderFrameHost* frame,
   widget->Show();
 }
 
-EyeDropperWin::~EyeDropperWin() {
+EyeDropperViewAura::~EyeDropperViewAura() {
   if (GetWidget())
     GetWidget()->CloseNow();
 }
 
-void EyeDropperWin::OnPaint(gfx::Canvas* view_canvas) {
+void EyeDropperViewAura::OnPaint(gfx::Canvas* view_canvas) {
   if (screen_capturer_->GetBitmap().drawsNothing())
     return;
 
   constexpr float kDiameter = 90;
   constexpr float kPixelSize = 10;
-
-  // Clip circle for magnified projection.
   const gfx::Size padding((size().width() - kDiameter) / 2,
                           (size().height() - kDiameter) / 2);
+
+  // Clip circle for magnified projection.
   SkPath clip_path;
   clip_path.addOval(SkRect::MakeXYWH(padding.width(), padding.height(),
                                      kDiameter, kDiameter));
@@ -240,23 +243,23 @@ void EyeDropperWin::OnPaint(gfx::Canvas* view_canvas) {
   OnPaintBorder(view_canvas);
 }
 
-void EyeDropperWin::WindowClosing() {
+void EyeDropperViewAura::WindowClosing() {
   aura::client::GetCursorClient(GetWidget()->GetNativeWindow()->GetRootWindow())
       ->UnlockCursor();
   pre_dispatch_handler_.reset();
 }
 
-ui::ModalType EyeDropperWin::GetModalType() const {
+ui::ModalType EyeDropperViewAura::GetModalType() const {
   return ui::MODAL_TYPE_SYSTEM;
 }
 
-void EyeDropperWin::OnWidgetMove() {
+void EyeDropperViewAura::OnWidgetMove() {
   // Trigger a repaint since because the widget was moved, the content of the
   // view needs to be updated.
   SchedulePaint();
 }
 
-void EyeDropperWin::UpdatePosition() {
+void EyeDropperViewAura::UpdatePosition() {
   if (screen_capturer_->GetBitmap().drawsNothing() || !GetWidget())
     return;
 
@@ -271,7 +274,7 @@ void EyeDropperWin::UpdatePosition() {
                 size()));
 }
 
-void EyeDropperWin::OnColorSelected() {
+void EyeDropperViewAura::OnColorSelected() {
   if (!selected_color_.has_value()) {
     listener_->ColorSelectionCanceled();
     return;
@@ -284,5 +287,5 @@ void EyeDropperWin::OnColorSelected() {
 std::unique_ptr<content::EyeDropper> ShowEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
-  return std::make_unique<EyeDropperWin>(frame, listener);
+  return std::make_unique<EyeDropperViewAura>(frame, listener);
 }

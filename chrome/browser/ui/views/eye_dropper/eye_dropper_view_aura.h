@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_WIN_H_
-#define CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_WIN_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_AURA_H_
+#define CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_AURA_H_
 
 #include <memory>
 
@@ -15,14 +15,14 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget_delegate.h"
 
-class EyeDropperWin : public content::EyeDropper,
-                      public views::WidgetDelegateView {
+class EyeDropperViewAura : public content::EyeDropper,
+                           public views::WidgetDelegateView {
  public:
-  EyeDropperWin(content::RenderFrameHost* frame,
-                content::EyeDropperListener* listener);
-  EyeDropperWin(const EyeDropperWin&) = delete;
-  EyeDropperWin& operator=(const EyeDropperWin&) = delete;
-  ~EyeDropperWin() override;
+  EyeDropperViewAura(content::RenderFrameHost* frame,
+                     content::EyeDropperListener* listener);
+  EyeDropperViewAura(const EyeDropperViewAura&) = delete;
+  EyeDropperViewAura& operator=(const EyeDropperViewAura&) = delete;
+  ~EyeDropperViewAura() override;
 
  protected:
   // views::WidgetDelegateView:
@@ -53,4 +53,4 @@ class EyeDropperWin : public content::EyeDropper,
   base::Optional<SkColor> selected_color_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_WIN_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_AURA_H_
