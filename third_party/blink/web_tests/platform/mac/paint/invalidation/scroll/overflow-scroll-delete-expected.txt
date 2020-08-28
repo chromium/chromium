@@ -12,18 +12,18 @@
       "transform": 1
     },
     {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [65, 0],
+      "bounds": [15, 69],
+      "transform": 1
+    },
+    {
       "name": "Scrolling Contents Layer",
       "bounds": [65, 198],
       "invalidations": [
         [0, 162, 44, 36]
       ],
       "transform": 2
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [65, 0],
-      "bounds": [15, 69],
-      "transform": 1
     }
   ],
   "transforms": [

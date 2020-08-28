@@ -11,17 +11,17 @@
       "bounds": [200, 100]
     },
     {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [185, 0],
+      "bounds": [15, 100]
+    },
+    {
       "name": "Scrolling Contents Layer",
       "bounds": [185, 210],
       "backgroundColor": "#80808080",
       "invalidations": [
         [0, 5, 15, 15]
       ]
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [185, 0],
-      "bounds": [15, 100]
     }
   ]
 }

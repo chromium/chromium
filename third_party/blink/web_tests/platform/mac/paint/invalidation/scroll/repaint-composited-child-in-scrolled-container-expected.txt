@@ -12,12 +12,6 @@
       "transform": 1
     },
     {
-      "name": "Scrolling Contents Layer",
-      "bounds": [650, 600],
-      "backgroundColor": "#0000FF80",
-      "transform": 2
-    },
-    {
       "name": "ContentsLayer for Horizontal Scrollbar Layer",
       "position": [0, 285],
       "bounds": [285, 15],
@@ -34,6 +28,12 @@
       "position": [285, 285],
       "bounds": [15, 15],
       "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [650, 600],
+      "backgroundColor": "#0000FF80",
+      "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
