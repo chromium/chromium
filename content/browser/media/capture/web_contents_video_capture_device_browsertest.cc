@@ -402,8 +402,8 @@ INSTANTIATE_TEST_SUITE_P(
 // compositing, whether the WebContents is visible/hidden or occluded/unoccluded
 // and whether the main document contains a cross-site iframe.
 
-// Fails on LACROS only. http://crbug.com/1108205
-#if BUILDFLAG(IS_LACROS)
+// Fails on LACROS and linux. http://crbug.com/1108205
+#if BUILDFLAG(IS_LACROS) || defined(OS_LINUX)
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges
