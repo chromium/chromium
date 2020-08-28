@@ -67,12 +67,11 @@ class ContentMetadataProvider extends MetadataProvider {
 
     const promises = [];
     for (let i = 0; i < requests.length; i++) {
-      // TODO(crbug.com/1114622): is the .bind actually needed here?
-      promises.push(new Promise(((request, fulfill) => {
-                                  this.getImpl_(
-                                      request.entry, request.names, fulfill);
-                                }).bind(null, requests[i])));
+      promises.push(new Promise(function(request, fulfill) {
+        this.getImpl_(request.entry, request.names, fulfill);
+      }.bind(this, requests[i])));
     }
+
     return Promise.all(promises);
   }
 
