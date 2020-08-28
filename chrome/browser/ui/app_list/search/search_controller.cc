@@ -72,8 +72,7 @@ SearchController::SearchController(AppListModelUpdater* model_updater,
                                    Profile* profile)
     : profile_(profile),
       mixer_(std::make_unique<Mixer>(model_updater)),
-      metrics_observer_(
-          std::make_unique<SearchMetricsObserver>(notifier, this)),
+      metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
       list_controller_(list_controller) {}
 
 SearchController::~SearchController() {}

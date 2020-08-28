@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -140,9 +141,9 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // AppListNotifier:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void NotifyLaunched(Location location, const std::string& result) override;
+  void NotifyLaunched(Location location, const Result& result) override;
   void NotifyResultsUpdated(Location location,
-                            const std::vector<std::string>& results) override;
+                            const std::vector<Result>& results) override;
   void NotifySearchQueryChanged(const base::string16& query) override;
   void NotifyUIStateChanged(ash::AppListViewState view) override;
 
@@ -186,11 +187,11 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // |shown_| due to tablet mode.
   ash::AppListViewState view_ = ash::AppListViewState::kClosed;
   // The currently shown results for each UI view.
-  base::flat_map<Location, std::vector<std::string>> results_;
+  base::flat_map<Location, std::vector<Result>> results_;
   // The current search query, may be empty.
   base::string16 query_;
-  // The ID of the most recently launched result.
-  std::string launched_result_;
+  // The most recently launched result.
+  base::Optional<Result> launched_result_;
 
   base::WeakPtrFactory<AppListNotifierImpl> weak_ptr_factory_{this};
 };

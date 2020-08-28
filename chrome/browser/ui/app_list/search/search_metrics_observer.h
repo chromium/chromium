@@ -16,14 +16,13 @@
 
 namespace app_list {
 
-class SearchController;
-
 // Records impression, abandonment, and launch UMA metrics reported by the
 // AppListNotifier.
 class SearchMetricsObserver : ash::AppListNotifier::Observer {
  public:
-  SearchMetricsObserver(ash::AppListNotifier* notifier,
-                        SearchController* controller);
+  using Result = ash::AppListNotifier::Result;
+
+  explicit SearchMetricsObserver(ash::AppListNotifier* notifier);
   ~SearchMetricsObserver() override;
 
   SearchMetricsObserver(const SearchMetricsObserver&) = delete;
@@ -31,26 +30,20 @@ class SearchMetricsObserver : ash::AppListNotifier::Observer {
 
   // AppListNotifier::Observer:
   void OnImpression(ash::AppListNotifier::Location location,
-                    const std::vector<std::string>& results,
+                    const std::vector<Result>& results,
                     const base::string16& query) override;
   void OnAbandon(ash::AppListNotifier::Location location,
-                 const std::vector<std::string>& results,
+                 const std::vector<Result>& results,
                  const base::string16& query) override;
   void OnLaunch(ash::AppListNotifier::Location location,
-                const std::string& launched,
-                const std::vector<std::string>& shown,
+                const Result& launched,
+                const std::vector<Result>& shown,
                 const base::string16& query) override;
   void OnIgnore(ash::AppListNotifier::Location location,
-                const std::vector<std::string>& results,
+                const std::vector<Result>& results,
                 const base::string16& query) override;
 
  private:
-  // Looks up the ChromeSearchResult object in SearchController that corresponds
-  // to |result_id|, and returns its type. If the result is not found, returns
-  // base::nullopt and logs an error to UMA.
-  base::Optional<ash::SearchResultType> GetType(const std::string& result_id);
-
-  SearchController* controller_;
   ScopedObserver<ash::AppListNotifier, ash::AppListNotifier::Observer>
       observer_{this};
 };

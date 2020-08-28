@@ -59,10 +59,10 @@ std::string GetHistogramSuffix(ash::AppListNotifier::Location location,
 void LogTypeAction(const std::string& histogram_prefix,
                    ash::AppListNotifier::Location location,
                    const base::string16& query,
-                   ash::SearchResultType type) {
+                   const SearchMetricsObserver::Result& result) {
   const std::string histogram_name = base::StrCat(
       {histogram_prefix, ".", GetHistogramSuffix(location, query)});
-  base::UmaHistogramEnumeration(histogram_name, type,
+  base::UmaHistogramEnumeration(histogram_name, result.type,
                                 ash::SEARCH_RESULT_TYPE_BOUNDARY);
 }
 
@@ -76,10 +76,7 @@ void LogOverallAction(ash::AppListNotifier::Location location,
 
 }  // namespace
 
-SearchMetricsObserver::SearchMetricsObserver(ash::AppListNotifier* notifier,
-                                             SearchController* controller)
-    : controller_(controller) {
-  DCHECK(controller);
+SearchMetricsObserver::SearchMetricsObserver(ash::AppListNotifier* notifier) {
   if (notifier) {
     observer_.Add(notifier);
   } else {
@@ -91,58 +88,37 @@ SearchMetricsObserver::~SearchMetricsObserver() = default;
 
 void SearchMetricsObserver::OnImpression(
     ash::AppListNotifier::Location location,
-    const std::vector<std::string>& results,
+    const std::vector<Result>& results,
     const base::string16& query) {
-  for (const std::string& result : results) {
-    const auto type = GetType(result);
-    if (type) {
-      LogTypeAction("Apps.AppList.UserEvent.TypeImpression", location, query,
-                    type.value());
-    }
+  for (const Result& result : results) {
+    LogTypeAction("Apps.AppList.UserEvent.TypeImpression", location, query,
+                  result);
   }
   LogOverallAction(location, query, Action::kImpression);
 }
 
 void SearchMetricsObserver::OnAbandon(ash::AppListNotifier::Location location,
-                                      const std::vector<std::string>& results,
+                                      const std::vector<Result>& results,
                                       const base::string16& query) {
-  for (const std::string& result : results) {
-    const auto type = GetType(result);
-    if (type) {
-      LogTypeAction("Apps.AppList.UserEvent.TypeAbandon", location, query,
-                    type.value());
-    }
+  for (const auto& result : results) {
+    LogTypeAction("Apps.AppList.UserEvent.TypeAbandon", location, query,
+                  result);
   }
   LogOverallAction(location, query, Action::kAbandon);
 }
 
 void SearchMetricsObserver::OnLaunch(ash::AppListNotifier::Location location,
-                                     const std::string& launched,
-                                     const std::vector<std::string>& shown,
+                                     const Result& launched,
+                                     const std::vector<Result>& shown,
                                      const base::string16& query) {
-  const auto type = GetType(launched);
-  if (type) {
-    LogTypeAction("Apps.AppList.UserEvent.TypeLaunch", location, query,
-                  type.value());
-  }
+  LogTypeAction("Apps.AppList.UserEvent.TypeLaunch", location, query, launched);
   LogOverallAction(location, query, Action::kLaunch);
 }
 
 void SearchMetricsObserver::OnIgnore(ash::AppListNotifier::Location location,
-                                     const std::vector<std::string>& results,
+                                     const std::vector<Result>& results,
                                      const base::string16& query) {
   LogOverallAction(location, query, Action::kIgnore);
-}
-
-base::Optional<ash::SearchResultType> SearchMetricsObserver::GetType(
-    const std::string& result_id) {
-  const auto* result = controller_->FindSearchResult(result_id);
-  if (result) {
-    return result->metrics_type();
-  } else {
-    LogError(Error::kResultNotFound);
-    return base::nullopt;
-  }
 }
 
 }  // namespace app_list

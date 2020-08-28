@@ -40,7 +40,7 @@ void AppListNotifierImpl::RemoveObserver(Observer* observer) {
 }
 
 void AppListNotifierImpl::NotifyLaunched(Location location,
-                                         const std::string& result) {
+                                         const Result& result) {
   launched_result_ = result;
 
   // Only two UI views appear at once: the app tiles and results list. If a
@@ -56,7 +56,7 @@ void AppListNotifierImpl::NotifyLaunched(Location location,
 
 void AppListNotifierImpl::NotifyResultsUpdated(
     Location location,
-    const std::vector<std::string>& results) {
+    const std::vector<Result>& results) {
   results_[location] = results;
 }
 
@@ -199,9 +199,10 @@ void AppListNotifierImpl::DoStateTransition(Location location,
   }
 
   // Notify of launch on * -> kLaunched.
-  if (new_state == State::kLaunched) {
+  if (new_state == State::kLaunched && launched_result_.has_value()) {
     for (auto& observer : observers_) {
-      observer.OnLaunch(location, launched_result_, results_[location], query_);
+      observer.OnLaunch(location, launched_result_.value(), results_[location],
+                        query_);
     }
   }
 

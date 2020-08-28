@@ -210,7 +210,6 @@ int SearchResultListView::DoUpdate() {
   // AppListNotifier and done in chrome.
   bool found_zero_state_file = false;
   bool found_drive_quick_access = false;
-  std::vector<std::string> display_ids;
 
   for (size_t i = 0; i < results_container_->children().size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
@@ -239,7 +238,6 @@ int SearchResultListView::DoUpdate() {
             display_results[i]->title()));
       }
 
-      display_ids.push_back(display_results[i]->id());
       result_view->SetResult(display_results[i]);
       result_view->SetVisible(true);
     } else {
@@ -250,7 +248,11 @@ int SearchResultListView::DoUpdate() {
 
   auto* notifier = view_delegate_->GetNotifier();
   if (notifier) {
-    notifier->NotifyResultsUpdated(SearchResultDisplayType::kList, display_ids);
+    std::vector<AppListNotifier::Result> notifier_results;
+    for (const auto* result : display_results)
+      notifier_results.emplace_back(result->id(), result->metrics_type());
+    notifier->NotifyResultsUpdated(SearchResultDisplayType::kList,
+                                   notifier_results);
   }
 
   // Logic for logging impression of items that were shown to user.

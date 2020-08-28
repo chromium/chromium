@@ -148,8 +148,6 @@ int SuggestionChipContainerView::DoUpdate() {
     }
   }
 
-  std::vector<std::string> display_ids;
-
   // Update search results here, but wait until layout to add them as child
   // views when we know this view's bounds.
   for (size_t i = 0; i < static_cast<size_t>(
@@ -157,14 +155,15 @@ int SuggestionChipContainerView::DoUpdate() {
        ++i) {
     suggestion_chip_views_[i]->SetResult(
         i < display_results.size() ? display_results[i] : nullptr);
-    if (i < display_results.size()) {
-      display_ids.push_back(display_results[i]->id());
-    }
   }
 
   auto* notifier = view_delegate()->GetNotifier();
   if (notifier) {
-    notifier->NotifyResultsUpdated(SearchResultDisplayType::kChip, display_ids);
+    std::vector<AppListNotifier::Result> notifier_results;
+    for (const auto* result : display_results)
+      notifier_results.emplace_back(result->id(), result->metrics_type());
+    notifier->NotifyResultsUpdated(SearchResultDisplayType::kChip,
+                                   notifier_results);
   }
 
   Layout();

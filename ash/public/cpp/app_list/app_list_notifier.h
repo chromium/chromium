@@ -30,33 +30,41 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
  public:
   using Location = ash::SearchResultDisplayType;
 
+  struct Result {
+    Result(const std::string& id, ash::SearchResultType type)
+        : id(id), type(type) {}
+
+    std::string id;
+    ash::SearchResultType type = ash::SEARCH_RESULT_TYPE_BOUNDARY;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when |results| have been displayed for the length of the
     // impression timer.
     virtual void OnImpression(Location location,
-                              const std::vector<std::string>& results,
+                              const std::vector<Result>& results,
                               const base::string16& query) {}
 
     // Called when an impression occurred for |results|, and the user then moved
     // to a different UI view. For example, by closing the launcher or
     // changing the search query.
     virtual void OnAbandon(Location location,
-                           const std::vector<std::string>& results,
+                           const std::vector<Result>& results,
                            const base::string16& query) {}
 
     // Called when the |location| UI view displayed |results|, but the user
     // launched a result in a different UI view. This can only happen when
     // |location| is kList or kTile.
     virtual void OnIgnore(Location location,
-                          const std::vector<std::string>& results,
+                          const std::vector<Result>& results,
                           const base::string16& query) {}
 
     // Called when the |launched| result is launched, and provides all |shown|
     // results at |location| (including |launched|).
     virtual void OnLaunch(Location location,
-                          const std::string& launched,
-                          const std::vector<std::string>& shown,
+                          const Result& launched,
+                          const std::vector<Result>& shown,
                           const base::string16& query) {}
   };
 
@@ -67,13 +75,12 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
 
   // Called to indicate a search |result| has been launched at the UI surface
   // |location|.
-  virtual void NotifyLaunched(Location location, const std::string& result) = 0;
+  virtual void NotifyLaunched(Location location, const Result& result) = 0;
 
   // Called to indicate the results displayed in the |location| UI surface have
   // changed. |results| should contain a complete list of what is now shown.
-  virtual void NotifyResultsUpdated(
-      Location location,
-      const std::vector<std::string>& results) = 0;
+  virtual void NotifyResultsUpdated(Location location,
+                                    const std::vector<Result>& results) = 0;
 
   // Called to indicate the user has updated the search query to |query|.
   virtual void NotifySearchQueryChanged(const base::string16& query) = 0;

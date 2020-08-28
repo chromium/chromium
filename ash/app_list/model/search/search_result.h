@@ -33,6 +33,7 @@ class APP_LIST_MODEL_EXPORT SearchResult {
  public:
   using ResultType = ash::AppListSearchResultType;
   using DisplayType = ash::SearchResultDisplayType;
+  using MetricsType = ash::SearchResultType;
   using Tag = ash::SearchResultTag;
   using Tags = ash::SearchResultTags;
   using Action = ash::SearchResultAction;
@@ -105,6 +106,11 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   ResultType result_type() const { return metadata_->result_type; }
   void set_result_type(ResultType result_type) {
     metadata_->result_type = result_type;
+  }
+
+  MetricsType metrics_type() const { return metadata_->metrics_type; }
+  void set_metrics_type(MetricsType metrics_type) {
+    metadata_->metrics_type = metrics_type;
   }
 
   DisplayIndex display_index() const { return metadata_->display_index; }
