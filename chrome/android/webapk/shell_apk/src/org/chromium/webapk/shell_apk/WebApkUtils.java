@@ -162,7 +162,7 @@ public class WebApkUtils {
     public static void applyAlertDialogContentStyle(
             Context context, View contentView, TextView titleView) {
         Resources res = context.getResources();
-        titleView.setTextColor(getColor(res, R.color.black_alpha_87));
+        titleView.setTextColor(getColor(res, R.color.webapk_black_alpha_87));
         titleView.setTextSize(
                 TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.headline_size_medium));
         int dialogContentPadding = res.getDimensionPixelSize(R.dimen.dialog_content_padding);

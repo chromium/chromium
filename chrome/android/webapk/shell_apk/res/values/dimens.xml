@@ -6,8 +6,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Common text sizes -->
     <dimen name="headline_size_medium">20sp</dimen>
-    <dimen name="text_size_large">16sp</dimen>
-    <dimen name="text_size_medium_dense">12sp</dimen>
+    <dimen name="webapk_text_size_large">16sp</dimen>
+    <dimen name="webapk_text_size_medium_dense">12sp</dimen>
 
     <!-- Refers to https://material.googleplex.com/components/dialogs.html#dialogs-specs. -->
     <dimen name="dialog_content_padding">24dp</dimen>

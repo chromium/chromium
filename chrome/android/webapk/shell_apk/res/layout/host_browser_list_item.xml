@@ -25,8 +25,8 @@
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black_alpha_87"
-        android:textSize="@dimen/text_size_large"
+        android:textColor="@color/webapk_black_alpha_87"
+        android:textSize="@dimen/webapk_text_size_large"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp" />
 </LinearLayout>

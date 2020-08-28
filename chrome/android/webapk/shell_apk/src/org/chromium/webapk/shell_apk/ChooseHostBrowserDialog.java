@@ -212,19 +212,20 @@ public class ChooseHostBrowserDialog {
             name.setEnabled(item.enable());
             if (item.enable()) {
                 name.setText(item.getApplicationName());
-                name.setTextColor(WebApkUtils.getColor(res, R.color.black_alpha_87));
+                name.setTextColor(WebApkUtils.getColor(res, R.color.webapk_black_alpha_87));
                 icon.setAlpha(SUPPORTED_ICON_OPACITY);
             } else {
                 String text = mContext.getString(R.string.host_browser_item_not_supporting_webapks,
                         item.getApplicationName());
                 SpannableString spannableName = new SpannableString(text);
-                float descriptionProportion = res.getDimension(R.dimen.text_size_medium_dense)
-                        / res.getDimension(R.dimen.text_size_large);
+                float descriptionProportion =
+                        res.getDimension(R.dimen.webapk_text_size_medium_dense)
+                        / res.getDimension(R.dimen.webapk_text_size_large);
                 spannableName.setSpan(new RelativeSizeSpan(descriptionProportion),
                         item.getApplicationName().length() + 1, spannableName.length(), 0);
                 name.setText(spannableName);
                 name.setSingleLine(false);
-                name.setTextColor(WebApkUtils.getColor(res, R.color.black_alpha_38));
+                name.setTextColor(WebApkUtils.getColor(res, R.color.webapk_black_alpha_38));
                 icon.setAlpha(UNSUPPORTED_ICON_OPACITY);
             }
             icon.setImageDrawable(item.getApplicationIcon());
