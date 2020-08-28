@@ -974,26 +974,36 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */, PDFExtensionJSTest, testing::Bool());
 
 class PDFExtensionContentSettingJSTest
     : public PDFExtensionJSTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::pair<bool, bool>> {
  public:
   ~PDFExtensionContentSettingJSTest() override = default;
 
  protected:
   const std::vector<base::Feature> GetEnabledFeatures() const override {
+    std::vector<base::Feature> features;
     if (ShouldHonorJsContentSettings()) {
-      return {chrome_pdf::features::kPdfHonorJsContentSettings};
+      features.push_back(chrome_pdf::features::kPdfHonorJsContentSettings);
     }
-    return {};
+    if (ShouldEnablePDFViewerUpdate()) {
+      features.push_back(chrome_pdf::features::kPDFViewerUpdate);
+    }
+    return features;
   }
 
   const std::vector<base::Feature> GetDisabledFeatures() const override {
-    if (ShouldHonorJsContentSettings()) {
-      return {};
+    std::vector<base::Feature> features;
+    if (!ShouldHonorJsContentSettings()) {
+      features.push_back(chrome_pdf::features::kPdfHonorJsContentSettings);
     }
-    return {chrome_pdf::features::kPdfHonorJsContentSettings};
+    if (!ShouldEnablePDFViewerUpdate()) {
+      features.push_back(chrome_pdf::features::kPDFViewerUpdate);
+    }
+    return features;
   }
 
-  bool ShouldHonorJsContentSettings() const { return GetParam(); }
+  bool ShouldEnablePDFViewerUpdate() const { return GetParam().first; }
+
+  bool ShouldHonorJsContentSettings() const { return GetParam().second; }
 
   // When blocking JavaScript, block the exact query from pdf/main.js while
   // still allowing enough JavaScript to run in the extension for the test
@@ -1048,7 +1058,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          PDFExtensionContentSettingJSTest,
-                         testing::Bool());
+                         testing::ValuesIn({std::make_pair(true, false),
+                                            std::make_pair(false, false),
+                                            std::make_pair(true, true),
+                                            std::make_pair(false, true)}));
 
 // Service worker tests are regression tests for
 // https://crbug.com/916514.
