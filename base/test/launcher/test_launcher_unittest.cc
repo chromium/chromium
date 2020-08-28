@@ -15,12 +15,14 @@
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/launcher/test_launcher_test_utils.h"
 #include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
@@ -763,6 +765,65 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   EXPECT_TRUE(test_launcher_utils::ValidateTestResult(
       iteration_val, "MockUnitTests.NoRunTest", "NOTRUN", 0u));
 }
+
+// TODO(crbug.com/1094369): Enable leaked-child checks on other platforms.
+#if defined(OS_FUCHSIA)
+
+// Test that leaves a child process running. The test is DISABLED_, so it can
+// be launched explicitly by RunMockLeakProcessTest
+
+MULTIPROCESS_TEST_MAIN(LeakChildProcess) {
+  while (true)
+    PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+}
+
+TEST(LeakedChildProcessTest, DISABLED_LeakChildProcess) {
+  Process child_process = SpawnMultiProcessTestChild(
+      "LeakChildProcess", GetMultiProcessTestChildBaseCommandLine(),
+      LaunchOptions());
+  ASSERT_TRUE(child_process.IsValid());
+  // Don't wait for the child process to exit.
+}
+
+// Validate that a test that leaks a process causes the batch to have an
+// error exit_code.
+TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
+  CommandLine command_line(CommandLine::ForCurrentProcess()->GetProgram());
+  command_line.AppendSwitchASCII(
+      "gtest_filter", "LeakedChildProcessTest.DISABLED_LeakChildProcess");
+
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = dir.GetPath().AppendASCII("SaveSummaryResult.json");
+  command_line.AppendSwitchPath("test-launcher-summary-output", path);
+  command_line.AppendSwitch("gtest_also_run_disabled_tests");
+  command_line.AppendSwitchASCII("test-launcher-retry-limit", "0");
+#if defined(OS_WIN)
+  // In Windows versions prior to Windows 8, nested job objects are
+  // not allowed and cause this test to fail.
+  if (win::GetVersion() < win::Version::WIN8) {
+    command_line.AppendSwitch(kDontUseJobObjectFlag);
+  }
+#endif  // defined(OS_WIN)
+
+  std::string output;
+  int exit_code = 0;
+  GetAppOutputWithExitCode(command_line, &output, &exit_code);
+
+  // Validate that we actually ran a test.
+  Optional<Value> root = test_launcher_utils::ReadSummary(path);
+  ASSERT_TRUE(root);
+
+  Value* val = root->FindDictKey("test_locations");
+  ASSERT_TRUE(val);
+  EXPECT_EQ(1u, val->DictSize());
+
+  EXPECT_TRUE(test_launcher_utils::ValidateTestLocations(
+      val, "LeakedChildProcessTest"));
+
+  // Validate that the leaked child caused the batch to error-out.
+  EXPECT_EQ(exit_code, 1);
+}
+#endif  // defined(OS_FUCHSIA)
 
 // Validate GetTestOutputSnippetTest assigns correct output snippet.
 TEST(TestLauncherTools, GetTestOutputSnippetTest) {

@@ -73,6 +73,7 @@
 #if defined(OS_FUCHSIA)
 #include <lib/fdio/namespace.h>
 #include <lib/zx/job.h>
+#include <lib/zx/time.h>
 #include "base/atomic_sequence_num.h"
 #include "base/base_paths_fuchsia.h"
 #include "base/fuchsia/default_job.h"
@@ -142,6 +143,22 @@ TestLauncherTracer* GetTestLauncherTracer() {
   static auto* tracer = new TestLauncherTracer;
   return tracer;
 }
+
+#if defined(OS_FUCHSIA)
+zx_status_t WaitForJobExit(const zx::job& job) {
+  zx::time deadline =
+      zx::deadline_after(zx::duration(kOutputTimeout.ToZxDuration()));
+  zx_signals_t to_wait_for = ZX_JOB_NO_JOBS | ZX_JOB_NO_PROCESSES;
+  while (to_wait_for) {
+    zx_signals_t observed = 0;
+    zx_status_t status = job.wait_one(to_wait_for, deadline, &observed);
+    if (status != ZX_OK)
+      return status;
+    to_wait_for &= ~observed;
+  }
+  return ZX_OK;
+}
+#endif  // defined(OS_FUCHSIA)
 
 #if defined(OS_POSIX)
 // Self-pipe that makes it possible to do complex shutdown handling
@@ -424,6 +441,14 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
       process.Terminate(-1, true);
     }
   }
+
+#if defined(OS_FUCHSIA)
+  zx_status_t wait_status = WaitForJobExit(job_handle);
+  if (wait_status != ZX_OK) {
+    LOG(ERROR) << "Batch leaked jobs or processes.";
+    exit_code = -1;
+  }
+#endif  // defined(OS_FUCHSIA)
 
   {
     // Note how we grab the log before issuing a possibly broad process kill.
