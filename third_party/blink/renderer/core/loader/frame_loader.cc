@@ -917,17 +917,19 @@ static bool ShouldNavigate(WebNavigationParams* params, LocalFrame* frame) {
     return true;
 
   int status_code = params->response.HttpStatusCode();
-  if (status_code == 204 || status_code == 205) {
-    // The server does not want us to replace the page contents.
-    return false;
-  }
+  // If the server sends 204 or 205, this means the server does not want to
+  // replace the page contents. However, PlzNavigate should have handled it
+  // browser-side and never sent a commit request to the renderer.
+  if (status_code == 204 || status_code == 205)
+    CHECK(false);
 
+  // If the server attached a Content-Disposition indicating that the resource
+  // is an attachment, this is actually a download. However, PlzNavigate should
+  // have handled it browser-side and never sent a commit request to the
+  // renderer.
   if (IsContentDispositionAttachment(
           params->response.HttpHeaderField(http_names::kContentDisposition))) {
-    // The server wants us to download instead of replacing the page contents.
-    // Downloading is handled by the embedder, but we still get the initial
-    // response so that we can ignore it and clean up properly.
-    return false;
+    CHECK(false);
   }
 
   const String& mime_type = params->response.MimeType();
@@ -936,6 +938,8 @@ static bool ShouldNavigate(WebNavigationParams* params, LocalFrame* frame) {
   PluginData* plugin_data = frame->GetPluginData();
   bool can_load_with_plugin = !mime_type.IsEmpty() && plugin_data &&
                               plugin_data->SupportsMimeType(mime_type);
+  // TODO(dcheng): Ideally, this should commit a failed navigation or something,
+  // instead of silently ignoring the commit request.
   if (!can_load_with_plugin) {
     WebLocalFrameImpl::FromFrame(frame)->Client()->WillFailCommitNavigation(
         WebLocalFrameClient::CommitFailureReason::kNoPluginForMimeType);
