@@ -58,6 +58,11 @@ base::ScopedFD GetDummyFD() {
 
 FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format)
+    : FakeGpuMemoryBuffer(size, format, gfx::NativePixmapHandle::kNoModifier) {}
+
+FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
+                                         gfx::BufferFormat format,
+                                         uint64_t modifier)
     : size_(size), format_(format) {
   base::Optional<VideoPixelFormat> video_pixel_format =
       GfxBufferFormatToVideoPixelFormat(format);
@@ -81,6 +86,7 @@ FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
         plane_size_in_bytes.width(), 0, plane_size_in_bytes.GetArea(),
         GetDummyFD());
   }
+  handle_.native_pixmap_handle.modifier = modifier;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 

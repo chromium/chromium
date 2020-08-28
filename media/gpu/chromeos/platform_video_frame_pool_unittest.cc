@@ -23,6 +23,7 @@ namespace media {
 
 namespace {
 
+template <uint64_t modifier>
 scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     gpu::GpuMemoryBufferFactory* factory,
     VideoPixelFormat format,
@@ -36,7 +37,7 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
   const gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
   return VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, natural_size,
-      std::make_unique<FakeGpuMemoryBuffer>(coded_size, *gfx_format),
+      std::make_unique<FakeGpuMemoryBuffer>(coded_size, *gfx_format, modifier),
       mailbox_holders, base::NullCallback(), timestamp);
 }
 
@@ -48,7 +49,9 @@ class PlatformVideoFramePoolTest
   PlatformVideoFramePoolTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         pool_(new PlatformVideoFramePool(nullptr)) {
-    SetCreateFrameCB(base::BindRepeating(&CreateGpuMemoryBufferVideoFrame));
+    SetCreateFrameCB(
+        base::BindRepeating(&CreateGpuMemoryBufferVideoFrame<
+                            gfx::NativePixmapHandle::kNoModifier>));
     pool_->set_parent_task_runner(base::ThreadTaskRunnerHandle::Get());
   }
 
@@ -73,6 +76,7 @@ class PlatformVideoFramePoolTest
     scoped_refptr<VideoFrame> frame = pool_->GetFrame();
     frame->set_timestamp(base::TimeDelta::FromMilliseconds(timestamp_ms));
 
+    EXPECT_EQ(layout_->modifier(), frame->layout().modifier());
     EXPECT_EQ(layout_->fourcc(),
               *Fourcc::FromVideoPixelFormat(frame->format()));
     EXPECT_EQ(layout_->size(), frame->coded_size());
@@ -290,6 +294,18 @@ TEST_P(PlatformVideoFramePoolTest, InitializeFail) {
       }));
 
   EXPECT_FALSE(Initialize(fourcc.value()));
+}
+
+TEST_P(PlatformVideoFramePoolTest, ModifierIsPassed) {
+  const uint64_t kSampleModifier = 0x001234567890abcdULL;
+  const auto fourcc = Fourcc::FromVideoPixelFormat(GetParam());
+  ASSERT_TRUE(fourcc.has_value());
+  SetCreateFrameCB(
+      base::BindRepeating(&CreateGpuMemoryBufferVideoFrame<kSampleModifier>));
+  ASSERT_TRUE(Initialize(fourcc.value()));
+
+  EXPECT_EQ(layout_->modifier(), kSampleModifier);
+  EXPECT_TRUE(GetFrame(10));
 }
 
 // TODO(akahuang): Add a testcase to verify calling Initialize() only with

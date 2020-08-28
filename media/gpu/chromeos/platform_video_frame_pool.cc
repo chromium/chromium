@@ -160,7 +160,8 @@ base::Optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
       return base::nullopt;
     }
     frame_layout_ = GpuBufferLayout::Create(fourcc, frame->coded_size(),
-                                            frame->layout().planes());
+                                            frame->layout().planes(),
+                                            frame->layout().modifier());
   }
 
   visible_rect_ = visible_rect;

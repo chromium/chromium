@@ -441,9 +441,14 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
   auto timestamp = base::TimeDelta::FromMilliseconds(1);
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  const uint64_t modifier = 0x001234567890abcdULL;
+#else
+  const uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
+#endif
   std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
       std::make_unique<FakeGpuMemoryBuffer>(
-          coded_size, gfx::BufferFormat::YUV_420_BIPLANAR);
+          coded_size, gfx::BufferFormat::YUV_420_BIPLANAR, modifier);
   gfx::GpuMemoryBuffer* gmb_raw_ptr = gmb.get();
   gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes] = {
       gpu::MailboxHolder(gpu::Mailbox::Generate(), gpu::SyncToken(), 5),
@@ -459,6 +464,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   for (size_t i = 0; i < 2; ++i) {
     EXPECT_EQ(frame->layout().planes()[i].stride, coded_size.width());
   }
+  EXPECT_EQ(frame->layout().modifier(), modifier);
   EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
   EXPECT_TRUE(frame->HasGpuMemoryBuffer());
   EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_raw_ptr);

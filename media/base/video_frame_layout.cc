@@ -97,8 +97,11 @@ base::Optional<VideoFrameLayout> VideoFrameLayout::Create(
 base::Optional<VideoFrameLayout> VideoFrameLayout::CreateWithStrides(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
-    std::vector<int32_t> strides) {
-  return CreateWithPlanes(format, coded_size, PlanesFromStrides(strides));
+    std::vector<int32_t> strides,
+    size_t buffer_addr_align,
+    uint64_t modifier) {
+  return CreateWithPlanes(format, coded_size, PlanesFromStrides(strides),
+                          buffer_addr_align, modifier);
 }
 
 // static

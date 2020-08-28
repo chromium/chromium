@@ -110,7 +110,8 @@ void VdaVideoFramePool::ImportFrame(scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
 
   if (!layout_ || layout_->fourcc().ToVideoPixelFormat() != frame->format() ||
-      layout_->size() != frame->coded_size()) {
+      layout_->size() != frame->coded_size() ||
+      layout_->modifier() != frame->layout().modifier()) {
     return;
   }
 

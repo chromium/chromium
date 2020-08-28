@@ -564,13 +564,27 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     return nullptr;
   }
 
+  uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  if (gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP) {
+    const auto gmb_handle = gpu_memory_buffer->CloneHandle();
+    if (gmb_handle.is_null() ||
+        gmb_handle.native_pixmap_handle.planes.empty()) {
+      DLOG(ERROR) << "Failed to clone the GpuMemoryBufferHandle";
+      return nullptr;
+    }
+    modifier = gmb_handle.native_pixmap_handle.modifier;
+  }
+#endif
+
   const size_t num_planes =
       NumberOfPlanesForLinearBufferFormat(gpu_memory_buffer->GetFormat());
   std::vector<int32_t> strides;
   for (size_t i = 0; i < num_planes; ++i)
     strides.push_back(gpu_memory_buffer->stride(i));
-  const auto layout = VideoFrameLayout::CreateWithStrides(*format, coded_size,
-                                                          std::move(strides));
+  const auto layout = VideoFrameLayout::CreateWithStrides(
+      *format, coded_size, std::move(strides),
+      VideoFrameLayout::kBufferAddressAlignment, modifier);
   if (!layout) {
     DLOG(ERROR) << __func__ << " Invalid layout";
     return nullptr;

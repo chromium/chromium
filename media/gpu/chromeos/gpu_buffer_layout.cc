@@ -32,23 +32,26 @@ std::string VectorToString(const std::vector<T>& vec) {
 base::Optional<GpuBufferLayout> GpuBufferLayout::Create(
     const Fourcc& fourcc,
     const gfx::Size& size,
-    const std::vector<ColorPlaneLayout>& planes) {
+    const std::vector<ColorPlaneLayout>& planes,
+    uint64_t modifier) {
   // TODO(akahuang): Check planes.size() is equal to the expected value
   // according to |fourcc|.
   if (size.IsEmpty() || planes.size() == 0) {
     VLOGF(1) << "Invalid parameters. fourcc: " << fourcc.ToString()
              << ", size: " << size.ToString()
-             << ", planes: " << VectorToString(planes);
+             << ", planes: " << VectorToString(planes)
+             << ", modifier: " << std::hex << modifier;
     return base::nullopt;
   }
 
-  return GpuBufferLayout(fourcc, size, planes);
+  return GpuBufferLayout(fourcc, size, planes, modifier);
 }
 
 GpuBufferLayout::GpuBufferLayout(const Fourcc& fourcc,
                                  const gfx::Size& size,
-                                 const std::vector<ColorPlaneLayout>& planes)
-    : fourcc_(fourcc), size_(size), planes_(planes) {}
+                                 const std::vector<ColorPlaneLayout>& planes,
+                                 uint64_t modifier)
+    : fourcc_(fourcc), size_(size), planes_(planes), modifier_(modifier) {}
 
 GpuBufferLayout::~GpuBufferLayout() = default;
 GpuBufferLayout::GpuBufferLayout(const GpuBufferLayout&) = default;
@@ -57,7 +60,8 @@ GpuBufferLayout& GpuBufferLayout::operator=(const GpuBufferLayout& other) =
     default;
 
 bool GpuBufferLayout::operator==(const GpuBufferLayout& rhs) const {
-  return fourcc_ == rhs.fourcc_ && size_ == rhs.size_ && planes_ == rhs.planes_;
+  return fourcc_ == rhs.fourcc_ && size_ == rhs.size_ &&
+         planes_ == rhs.planes_ && modifier_ == rhs.modifier_;
 }
 
 bool GpuBufferLayout::operator!=(const GpuBufferLayout& rhs) const {
@@ -68,7 +72,8 @@ std::ostream& operator<<(std::ostream& ostream, const GpuBufferLayout& layout) {
   ostream << "GpuBufferLayout(fourcc: " << layout.fourcc().ToString()
           << ", size: " << layout.size().ToString()
           << ", planes (stride, offset, size): "
-          << VectorToString(layout.planes());
+          << VectorToString(layout.planes()) << ", modifier: " << std::hex
+          << layout.modifier();
   return ostream;
 }
 

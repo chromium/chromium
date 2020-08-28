@@ -62,7 +62,9 @@ class MEDIA_EXPORT VideoFrameLayout {
   static base::Optional<VideoFrameLayout> CreateWithStrides(
       VideoPixelFormat format,
       const gfx::Size& coded_size,
-      std::vector<int32_t> strides);
+      std::vector<int32_t> strides,
+      size_t buffer_addr_align = kBufferAddressAlignment,
+      uint64_t modifier = gfx::NativePixmapHandle::kNoModifier);
 
   // Create a layout suitable for |format| at |coded_size|, with the |planes|
   // fully provided.
