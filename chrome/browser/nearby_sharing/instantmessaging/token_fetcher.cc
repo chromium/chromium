@@ -34,8 +34,7 @@ void TokenFetcher::OnOAuthTokenFetched(
     base::OnceCallback<void(const std::string& token)> callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
-  // TODO(himanshujaju) - The token returned is empty for error, should we do
-  // something special?
+  // Note: We do not do anything special for empty tokens.
   std::move(callback).Run(access_token_info.token);
   token_fetcher_.reset();
 }

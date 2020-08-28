@@ -32,8 +32,8 @@ StreamParser::GetNextMessage() {
   // Security Note - The StreamBody proto is coming from a trusted Google server
   // and hence can be parsed on the browser process.
 
-  // TODO(himanshujaju) - Add metrics to figure out which code paths are more
-  // used and the time taken to parse the incoming messages.
+  // TODO(crbug.com/1123172) - Add metrics to figure out which code paths are
+  // more used and the time taken to parse the incoming messages.
   if (data_.empty())
     return base::nullopt;
 
@@ -49,9 +49,9 @@ StreamParser::GetNextMessage() {
   int end_pos = 1;
   int size = data_.size();
   while (end_pos < size) {
-    // TODO(himanshujaju) - Optimize this function to use header information to
-    // figure out the start and end of proto instead of checking for every
-    // length.
+    // TODO(crbug.com/1123169) - Optimize this function to use header
+    // information to figure out the start and end of proto instead of checking
+    // for every length.
     if (stream_body.ParseFromArray(data_.data(), end_pos)) {
       data_.erase(data_.begin(), data_.begin() + end_pos);
       return stream_body;

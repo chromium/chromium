@@ -253,7 +253,7 @@ location::nearby::connections::mojom::PayloadPtr GetTextPayloadPtr(
 
 sharing::mojom::FramePtr GetValidIntroductionFrame() {
   std::vector<sharing::mojom::TextMetadataPtr> mojo_text_metadatas;
-  // TODO(himanshujaju) - Parameterise number of text and file metadatas.
+  // TODO(crbug.com/1123168) - Parameterise number of text and file metadatas.
   for (int i = 1; i <= 3; i++) {
     mojo_text_metadatas.push_back(sharing::mojom::TextMetadata::New(
         "title " + base::NumberToString(i),

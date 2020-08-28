@@ -1309,8 +1309,8 @@ void NearbySharingServiceImpl::OnTransferComplete() {
 
   NS_LOG(VERBOSE) << __func__
                   << ": NearbySharing state change transfer finished";
-  // TODO(himanshujaju): Check if we need to delay InvalidateSurfaceState() for
-  // 500ms similar to GmsCore impl.
+  // TODO(crbug.com/1123167): Check if we need to delay InvalidateSurfaceState()
+  // for 500ms similar to GmsCore impl.
   // Post a task as InvalidateSurfaceState() might invalidate ShareTargetInfo
   // object that are still in use.
   base::SequencedTaskRunnerHandle::Get()->PostTask(

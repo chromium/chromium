@@ -17,7 +17,7 @@
 #include "url/gurl.h"
 
 namespace {
-// TODO(himanshujaju) - Add nearby sharing policy when available.
+// TODO(crbug.com/1123164) - Add nearby sharing policy when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("receive_messages_express", R"(
         semantics {

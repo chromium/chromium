@@ -69,7 +69,7 @@ TEST_F(StreamParserTest, SingleEntireMessageAtOnce) {
 // More than one message is sent in one response body.
 TEST_F(StreamParserTest, MultipleEntireMessagesAtOnce) {
   std::vector<std::string> messages = {"random 42", "more random 98",
-                                       "himanshujaju 25"};
+                                       "helloworld 25"};
   chrome_browser_nearby_sharing_instantmessaging::StreamBody stream_body =
       BuildProto(messages);
   GetStreamParser().Append(stream_body.SerializeAsString());

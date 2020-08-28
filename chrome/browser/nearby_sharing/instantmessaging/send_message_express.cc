@@ -19,7 +19,7 @@ namespace {
 // 256 KB as max response size.
 constexpr int kMaxSendResponseSize = 256;
 
-// TODO(himanshujaju) - Add nearby sharing policy when available.
+// TODO(crbug.com/1123164) - Add nearby sharing policy when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("send_message_express", R"(
         semantics {
@@ -121,8 +121,8 @@ void SendMessageExpress::OnSendMessageResponse(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     SuccessCallback callback,
     std::unique_ptr<std::string> response_body) {
-  // TODO(himanshujaju) - Add metrics for success and failures, with error codes
-  // for failures.
+  // TODO(crbug.com/1123172) - Add metrics for success and failures, with error
+  // codes for failures.
   bool success = response_body && !response_body->empty();
   success &= IsLoaderSuccessful(url_loader.get());
   std::move(callback).Run(success);
