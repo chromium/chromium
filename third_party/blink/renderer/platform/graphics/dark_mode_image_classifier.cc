@@ -4,14 +4,11 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 
-#include <map>
+#include <set>
 
 #include "base/memory/singleton.h"
 #include "base/optional.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/skia/include/utils/SkNullCanvas.h"
 
 namespace blink {
@@ -311,22 +308,20 @@ DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
 float DarkModeImageClassifier::ComputeColorBucketsRatio(
     const std::vector<SkColor>& sampled_pixels,
     const ColorMode color_mode) {
-  HashSet<unsigned, WTF::AlreadyHashed,
-          WTF::UnsignedWithZeroKeyHashTraits<unsigned>>
-      buckets;
+  std::set<uint16_t> buckets;
 
   // If image is in color, use 4 bits per color channel, otherwise 4 bits for
   // illumination.
   if (color_mode == ColorMode::kColor) {
     for (const SkColor& sample : sampled_pixels) {
-      unsigned bucket = ((SkColorGetR(sample) >> 4) << 8) +
+      uint16_t bucket = ((SkColorGetR(sample) >> 4) << 8) +
                         ((SkColorGetG(sample) >> 4) << 4) +
                         ((SkColorGetB(sample) >> 4));
       buckets.insert(bucket);
     }
   } else {
     for (const SkColor& sample : sampled_pixels) {
-      unsigned illumination =
+      uint16_t illumination =
           (SkColorGetR(sample) * 5 + SkColorGetG(sample) * 3 +
            SkColorGetB(sample) * 2) /
           10;
