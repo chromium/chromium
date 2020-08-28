@@ -104,6 +104,25 @@ class AnimometerWebGLMultiDrawPage(ToughWebglPage):
   # pylint: disable=line-too-long
   URL = 'http://kenrussell.github.io/webgl-animometer/Animometer/tests/3d/webgl.html?webgl_version=2&use_ubos=1&use_multi_draw=1'
 
+
+class AnimometerWebGLIndexed(ToughWebglPage):
+  BASE_NAME = 'animometer_webgl_indexed'
+  # pylint: disable=line-too-long
+  URL = 'http://kenrussell.github.io/webgl-animometer/Animometer/tests/3d/webgl-indexed-instanced.html?webgl_version=2&use_attributes=1&num_geometries=120000'
+
+
+class AnimometerWebGLIndexedMultiDraw(ToughWebglPage):
+  BASE_NAME = 'animometer_webgl_indexed_multi_draw'
+  # pylint: disable=line-too-long
+  URL = 'http://kenrussell.github.io/webgl-animometer/Animometer/tests/3d/webgl-indexed-instanced.html?webgl_version=2&use_attributes=1&use_multi_draw=1&num_geometries=120000'
+
+
+class AnimometerWebGLIndexedBaseVertexBaseInstancePage(ToughWebglPage):
+  BASE_NAME = 'animometer_webgl_indexed_multi_draw_base_vertex_base_instance'
+  # pylint: disable=line-too-long
+  URL = 'http://kenrussell.github.io/webgl-animometer/Animometer/tests/3d/webgl-indexed-instanced.html?webgl_version=2&use_attributes=1&use_multi_draw=1&use_base_vertex_base_instance=1&num_geometries=120000'
+
+
 class AnimometerWebGLAttribArraysPage(ToughWebglPage):
   BASE_NAME = 'animometer_webgl_attrib_arrays'
   # pylint: disable=line-too-long
