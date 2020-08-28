@@ -660,9 +660,9 @@ config("compiler") {
       }
     }
 
-    # Whole-program devirtualization increases android libchrome.so size
-    # by ~100kb on arm32 and reduces it by ~108kb on arm64 instead.
-    if (!is_android || current_cpu == "arm64") {
+    # TODO(pcc): Re-enable this flag on Android. This will require libc++ to be
+    # built with ThinLTO (see https://crbug.com/767901) as well as the GVR shim.
+    if (!is_android) {
       cflags += [ "-fwhole-program-vtables" ]
       if (!is_win) {
         ldflags += [ "-fwhole-program-vtables" ]
