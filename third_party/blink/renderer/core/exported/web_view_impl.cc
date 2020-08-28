@@ -2489,6 +2489,9 @@ void WebViewImpl::SetPageLifecycleStateInternal(
        mojom::blink::PagehideDispatch::kNotDispatched) &&
       GetPage()->DispatchedPagehideAndStillHidden();
 
+  if (dispatching_pagehide) {
+    RemoveFocusAndTextInputState();
+  }
   if (hiding_page) {
     SetVisibilityState(new_state->visibility, /*is_initial_state=*/false);
   }
@@ -2551,6 +2554,24 @@ void WebViewImpl::ReportActiveSchedulerTrackedFeatures() {
 
 void WebViewImpl::AudioStateChanged(bool is_audio_playing) {
   GetPage()->GetPageScheduler()->AudioStateChanged(is_audio_playing);
+}
+
+void WebViewImpl::RemoveFocusAndTextInputState() {
+  auto& focus_controller = GetPage()->GetFocusController();
+  auto* focused_frame = focus_controller.FocusedFrame();
+  if (!focused_frame)
+    return;
+  // Remove focus from the currently focused element and frame.
+  focus_controller.SetFocusedElement(nullptr, nullptr);
+  // Clear composing state, and make sure we send a TextInputState update.
+  // Note that the TextInputState itself is cleared when we clear the focus,
+  // but no updates to the browser will be triggered until the next animation
+  // frame, which won't happen if we're freezing the page.
+  if (auto* widget = static_cast<WebFrameWidgetBase*>(
+          focused_frame->GetWidgetForLocalRoot())) {
+    widget->FinishComposingText(false /* keep_selection */);
+    widget->UpdateTextInputState();
+  }
 }
 
 void WebViewImpl::DispatchPagehide(

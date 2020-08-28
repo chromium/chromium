@@ -571,6 +571,11 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   LocalFrame* FocusedLocalFrameInWidget() const;
   LocalFrame* FocusedLocalFrameAvailableForIme() const;
 
+  // Clear focus and text input state of the page. If there was a focused
+  // element, this will trigger updates to observers and send focus, selection,
+  // and text input-related events.
+  void RemoveFocusAndTextInputState();
+
   bool ScrollFocusedEditableElementIntoView();
   // Finds the zoom and scroll parameters for zooming into an editable element
   // with bounds |element_bounds_in_document| and caret bounds

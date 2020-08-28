@@ -58,101 +58,9 @@
 namespace {
 using IndexVector = std::vector<size_t>;
 
-// TextInputManager Observers
-
-// A base class for observing the TextInputManager owned by the given
-// WebContents. Subclasses could observe the TextInputManager for different
-// changes. The class wraps a public tester which accepts callbacks that
-// are run after specific changes in TextInputManager. Different observers can
-// be subclassed from this by providing their specific callback methods.
-class TextInputManagerObserverBase {
- public:
-  explicit TextInputManagerObserverBase(content::WebContents* web_contents)
-      : tester_(new content::TextInputManagerTester(web_contents)),
-        success_(false) {}
-
-  virtual ~TextInputManagerObserverBase() {}
-
-  // Wait for derived class's definition of success.
-  void Wait() {
-    if (success_)
-      return;
-    message_loop_runner_ = new content::MessageLoopRunner();
-    message_loop_runner_->Run();
-  }
-
-  bool success() const { return success_; }
-
- protected:
-  content::TextInputManagerTester* tester() { return tester_.get(); }
-
-  void OnSuccess() {
-    success_ = true;
-    if (message_loop_runner_)
-      message_loop_runner_->Quit();
-
-    // By deleting |tester_| we make sure that the internal observer used in
-    // content/ is removed from the observer list of TextInputManager.
-    tester_.reset(nullptr);
-  }
-
- private:
-  std::unique_ptr<content::TextInputManagerTester> tester_;
-  bool success_;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputManagerObserverBase);
-};
-
-// This class observes TextInputManager for changes in |TextInputState.value|.
-class TextInputManagerValueObserver : public TextInputManagerObserverBase {
- public:
-  TextInputManagerValueObserver(content::WebContents* web_contents,
-                                const std::string& expected_value)
-      : TextInputManagerObserverBase(web_contents),
-        expected_value_(expected_value) {
-    tester()->SetUpdateTextInputStateCalledCallback(base::Bind(
-        &TextInputManagerValueObserver::VerifyValue, base::Unretained(this)));
-  }
-
- private:
-  void VerifyValue() {
-    std::string value;
-    if (tester()->GetTextInputValue(&value) && expected_value_ == value)
-      OnSuccess();
-  }
-
-  const std::string expected_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputManagerValueObserver);
-};
-
-// This class observes TextInputManager for changes in |TextInputState.type|.
-class TextInputManagerTypeObserver : public TextInputManagerObserverBase {
- public:
-  TextInputManagerTypeObserver(content::WebContents* web_contents,
-                               ui::TextInputType expected_type)
-      : TextInputManagerObserverBase(web_contents),
-        expected_type_(expected_type) {
-    tester()->SetUpdateTextInputStateCalledCallback(base::Bind(
-        &TextInputManagerTypeObserver::VerifyType, base::Unretained(this)));
-  }
-
- private:
-  void VerifyType() {
-    ui::TextInputType type =
-        tester()->GetTextInputType(&type) ? type : ui::TEXT_INPUT_TYPE_NONE;
-    if (expected_type_ == type)
-      OnSuccess();
-  }
-
-  const ui::TextInputType expected_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputManagerTypeObserver);
-};
-
 // This class observes TextInputManager for the first change in TextInputState.
-class TextInputManagerChangeObserver : public TextInputManagerObserverBase {
+class TextInputManagerChangeObserver
+    : public content::TextInputManagerObserverBase {
  public:
   explicit TextInputManagerChangeObserver(content::WebContents* web_contents)
       : TextInputManagerObserverBase(web_contents) {
@@ -170,7 +78,7 @@ class TextInputManagerChangeObserver : public TextInputManagerObserverBase {
 };
 
 // This class observes |TextInputState.type| for a specific RWHV.
-class ViewTextInputTypeObserver : public TextInputManagerObserverBase {
+class ViewTextInputTypeObserver : public content::TextInputManagerObserverBase {
  public:
   explicit ViewTextInputTypeObserver(content::WebContents* web_contents,
                                      content::RenderWidgetHostView* rwhv,
@@ -201,7 +109,8 @@ class ViewTextInputTypeObserver : public TextInputManagerObserverBase {
 
 // This class observes the |expected_view| for the first change in its
 // selection bounds.
-class ViewSelectionBoundsChangedObserver : public TextInputManagerObserverBase {
+class ViewSelectionBoundsChangedObserver
+    : public content::TextInputManagerObserverBase {
  public:
   ViewSelectionBoundsChangedObserver(
       content::WebContents* web_contents,
@@ -227,7 +136,7 @@ class ViewSelectionBoundsChangedObserver : public TextInputManagerObserverBase {
 // This class observes the |expected_view| for the first change in its
 // composition range information.
 class ViewCompositionRangeChangedObserver
-    : public TextInputManagerObserverBase {
+    : public content::TextInputManagerObserverBase {
  public:
   ViewCompositionRangeChangedObserver(
       content::WebContents* web_contents,
@@ -251,7 +160,7 @@ class ViewCompositionRangeChangedObserver
 };
 
 // This class observes the |expected_view| for a change in the text selection.
-class ViewTextSelectionObserver : public TextInputManagerObserverBase {
+class ViewTextSelectionObserver : public content::TextInputManagerObserverBase {
  public:
   ViewTextSelectionObserver(content::WebContents* web_contents,
                             content::RenderWidgetHostView* expected_view,
@@ -280,7 +189,7 @@ class ViewTextSelectionObserver : public TextInputManagerObserverBase {
 };
 
 // This class observes all the text selection updates within a WebContents.
-class TextSelectionObserver : public TextInputManagerObserverBase {
+class TextSelectionObserver : public content::TextInputManagerObserverBase {
  public:
   explicit TextSelectionObserver(content::WebContents* web_contents)
       : TextInputManagerObserverBase(web_contents) {
@@ -461,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
     AddInputFieldToFrame(frames[i], "text", values[i], true);
 
   for (size_t i = 0; i < frames.size(); ++i) {
-    TextInputManagerValueObserver observer(active_contents(), values[i]);
+    content::TextInputManagerValueObserver observer(active_contents(),
+                                                    values[i]);
     SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, false, false, false);
     observer.Wait();
@@ -492,7 +402,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       active_contents(), frames[0]->GetView(), ui::TEXT_INPUT_TYPE_NONE);
 
   for (size_t i = 0; i < frames.size(); ++i) {
-    TextInputManagerValueObserver observer(active_contents(), values[i]);
+    content::TextInputManagerValueObserver observer(active_contents(),
+                                                    values[i]);
     SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, false, false, false);
     observer.Wait();
@@ -562,8 +473,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
     AddInputFieldToFrame(frames[i], "text", "", true);
 
   // Press tab key to focus the <input> in the first frame.
-  TextInputManagerTypeObserver type_observer_text_a(active_contents(),
-                                                    ui::TEXT_INPUT_TYPE_TEXT);
+  content::TextInputManagerTypeObserver type_observer_text_a(
+      active_contents(), ui::TEXT_INPUT_TYPE_TEXT);
   SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
   type_observer_text_a.Wait();
@@ -573,22 +484,22 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       "frame.parentNode.removeChild(frame);";
   // Detach first frame and observe |TextInputState.type| resetting to
   // ui::TEXT_INPUT_TYPE_NONE.
-  TextInputManagerTypeObserver type_observer_none_a(active_contents(),
-                                                    ui::TEXT_INPUT_TYPE_NONE);
+  content::TextInputManagerTypeObserver type_observer_none_a(
+      active_contents(), ui::TEXT_INPUT_TYPE_NONE);
   EXPECT_TRUE(ExecuteScript(active_contents(), remove_first_iframe_script));
   type_observer_none_a.Wait();
 
   // Press tab to focus the <input> in the second frame.
-  TextInputManagerTypeObserver type_observer_text_b(active_contents(),
-                                                    ui::TEXT_INPUT_TYPE_TEXT);
+  content::TextInputManagerTypeObserver type_observer_text_b(
+      active_contents(), ui::TEXT_INPUT_TYPE_TEXT);
   SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
   type_observer_text_b.Wait();
 
   // Detach first frame and observe |TextInputState.type| resetting to
   // ui::TEXT_INPUT_TYPE_NONE.
-  TextInputManagerTypeObserver type_observer_none_b(active_contents(),
-                                                    ui::TEXT_INPUT_TYPE_NONE);
+  content::TextInputManagerTypeObserver type_observer_none_b(
+      active_contents(), ui::TEXT_INPUT_TYPE_NONE);
   EXPECT_TRUE(ExecuteScript(active_contents(), remove_first_iframe_script));
   type_observer_none_b.Wait();
 }
@@ -606,15 +517,15 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   AddInputFieldToFrame(child_frame, "text", "child", false);
 
   // Focus <input> in child frame and verify the |TextInputState.value|.
-  TextInputManagerValueObserver child_set_state_observer(active_contents(),
-                                                         "child");
+  content::TextInputManagerValueObserver child_set_state_observer(
+      active_contents(), "child");
   SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
   child_set_state_observer.Wait();
 
   // Navigate the child frame to about:blank and verify that TextInputManager
   // correctly sets its |TextInputState.type| to ui::TEXT_INPUT_TYPE_NONE.
-  TextInputManagerTypeObserver child_reset_state_observer(
+  content::TextInputManagerTypeObserver child_reset_state_observer(
       active_contents(), ui::TEXT_INPUT_TYPE_NONE);
   EXPECT_TRUE(ExecuteScript(
       main_frame, "document.querySelector('iframe').src = 'about:blank'"));
@@ -631,14 +542,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   content::RenderFrameHost* main_frame = GetFrame(IndexVector{});
   AddInputFieldToFrame(main_frame, "text", "", false);
 
-  TextInputManagerTypeObserver set_state_observer(active_contents(),
-                                                  ui::TEXT_INPUT_TYPE_TEXT);
+  content::TextInputManagerTypeObserver set_state_observer(
+      active_contents(), ui::TEXT_INPUT_TYPE_TEXT);
   SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
   set_state_observer.Wait();
 
-  TextInputManagerTypeObserver reset_state_observer(active_contents(),
-                                                    ui::TEXT_INPUT_TYPE_NONE);
+  content::TextInputManagerTypeObserver reset_state_observer(
+      active_contents(), ui::TEXT_INPUT_TYPE_NONE);
   ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
   reset_state_observer.Wait();
 }
@@ -688,8 +599,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   AddInputFieldToFrame(main_frame, "text", "", false);
 
   // Focus the input and wait for state update.
-  TextInputManagerTypeObserver observer(active_contents(),
-                                        ui::TEXT_INPUT_TYPE_TEXT);
+  content::TextInputManagerTypeObserver observer(active_contents(),
+                                                 ui::TEXT_INPUT_TYPE_TEXT);
   SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                    ui::VKEY_TAB, false, false, false, false);
   observer.Wait();
@@ -719,7 +630,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
   auto send_tab_and_wait_for_value =
       [&web_contents](const std::string& expected_value) {
-        TextInputManagerValueObserver observer(web_contents, expected_value);
+        content::TextInputManagerValueObserver observer(web_contents,
+                                                        expected_value);
         SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                          ui::VKEY_TAB, false, false, false, false);
         observer.Wait();
@@ -814,7 +726,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   content::WebContents* web_contents = active_contents();
 
   auto send_tab_and_wait_for_value = [&web_contents](const std::string& value) {
-    TextInputManagerValueObserver observer(web_contents, value);
+    content::TextInputManagerValueObserver observer(web_contents, value);
     SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, false, false, false);
     observer.Wait();

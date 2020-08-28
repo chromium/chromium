@@ -31,50 +31,6 @@
 
 namespace content {
 
-// TextInputManager Observers
-
-// A base class for observing the TextInputManager owned by the given
-// WebContents. Subclasses could observe the TextInputManager for different
-// changes. The class wraps a public tester which accepts callbacks that
-// are run after specific changes in TextInputManager. Different observers can
-// be subclassed from this by providing their specific callback methods.
-class TextInputManagerObserverBase {
- public:
-  explicit TextInputManagerObserverBase(WebContents* web_contents)
-      : tester_(std::make_unique<TextInputManagerTester>(web_contents)) {}
-  virtual ~TextInputManagerObserverBase() = default;
-
-  TextInputManagerObserverBase(const TextInputManagerObserverBase&) = delete;
-  TextInputManagerObserverBase operator=(const TextInputManagerObserverBase&) =
-      delete;
-
-  // Wait for derived class's definition of success.
-  void Wait() {
-    if (success_)
-      return;
-    run_loop.Run();
-  }
-
-  bool success() const { return success_; }
-
- protected:
-  TextInputManagerTester* tester() { return tester_.get(); }
-
-  void OnSuccess() {
-    success_ = true;
-    run_loop.Quit();
-
-    // By deleting |tester_| we make sure that the internal observer used in
-    // content/ is removed from the observer list of TextInputManager.
-    tester_.reset(nullptr);
-  }
-
- private:
-  std::unique_ptr<TextInputManagerTester> tester_;
-  bool success_ = false;
-  base::RunLoop run_loop;
-};
-
 // This class observes TextInputManager for changes in
 // |TextInputState.vk_policy|.
 class TextInputManagerVkPolicyObserver : public TextInputManagerObserverBase {
