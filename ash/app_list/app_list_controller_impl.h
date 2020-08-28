@@ -32,6 +32,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/observer_list.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sync/model/string_ordinal.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/types/display_constants.h"
@@ -49,22 +50,24 @@ class AppListControllerObserver;
 // Ash's AppListController owns the AppListModel and implements interface
 // functions that allow Chrome to modify and observe the Shelf and AppListModel
 // state.
-class ASH_EXPORT AppListControllerImpl : public AppListController,
-                                         public SessionObserver,
-                                         public AppListModelObserver,
-                                         public AppListViewDelegate,
-                                         public ShellObserver,
-                                         public OverviewObserver,
-                                         public TabletModeObserver,
-                                         public KeyboardControllerObserver,
-                                         public WallpaperControllerObserver,
-                                         public AssistantStateObserver,
-                                         public WindowTreeHostManager::Observer,
-                                         public aura::WindowObserver,
-                                         public MruWindowTracker::Observer,
-                                         public AssistantControllerObserver,
-                                         public AssistantUiModelObserver,
-                                         public HomeScreenDelegate {
+class ASH_EXPORT AppListControllerImpl
+    : public AppListController,
+      public SessionObserver,
+      public AppListModelObserver,
+      public AppListViewDelegate,
+      public ShellObserver,
+      public OverviewObserver,
+      public TabletModeObserver,
+      public KeyboardControllerObserver,
+      public WallpaperControllerObserver,
+      public AssistantStateObserver,
+      public WindowTreeHostManager::Observer,
+      public aura::WindowObserver,
+      public MruWindowTracker::Observer,
+      public AssistantControllerObserver,
+      public AssistantUiModelObserver,
+      public HomeScreenDelegate,
+      public apps::AppRegistryCache::Observer {
  public:
   AppListControllerImpl();
   ~AppListControllerImpl() override;
@@ -295,6 +298,11 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   gfx::Rect GetInitialAppListItemScreenBoundsForWindow(
       aura::Window* window) override;
 
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
   bool onscreen_keyboard_shown() const { return onscreen_keyboard_shown_; }
 
   HomeLauncherTransitionState home_launcher_transition_state() const {
@@ -380,6 +388,11 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   // Updates the window that is tracked as |tracked_app_window_|.
   void UpdateTrackedAppWindow();
 
+  // Updates whether a notification badge is shown for the AppListItemView
+  // corresponding with the |app_id|.
+  void UpdateItemNotificationBadge(const std::string& app_id,
+                                   apps::mojom::OptionalBool has_badge);
+
   // Whether the home launcher is
   // * being shown (either through an animation or a drag)
   // * being hidden (either through an animation or a drag)
@@ -456,6 +469,13 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   base::Optional<base::ScopedClosureRunner> home_screen_blur_disabler_;
 
   base::ObserverList<AppListControllerObserver> observers_;
+
+  // Observed to update notification badging on app list items. Also used to get
+  // initial notification badge information when app list items are added.
+  apps::AppRegistryCache* cache_ = nullptr;
+
+  // Whether the notification indicator flag is enabled.
+  const bool is_notification_indicator_enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(AppListControllerImpl);
 };

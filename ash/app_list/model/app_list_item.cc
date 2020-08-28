@@ -90,4 +90,10 @@ void AppListItem::SetNameAndShortName(const std::string& name,
     observer.ItemNameChanged();
 }
 
+void AppListItem::UpdateBadge(bool has_badge) {
+  for (auto& observer : observers_) {
+    observer.ItemBadgeVisibilityChanged(has_badge);
+  }
+}
+
 }  // namespace ash

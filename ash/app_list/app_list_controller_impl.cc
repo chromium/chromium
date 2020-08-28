@@ -61,6 +61,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "extensions/common/constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
@@ -188,7 +189,9 @@ GetTransitionFromMetricsAnimationInfo(
 
 AppListControllerImpl::AppListControllerImpl()
     : model_(std::make_unique<AppListModel>()),
-      presenter_(std::make_unique<AppListPresenterDelegateImpl>(this)) {
+      presenter_(std::make_unique<AppListPresenterDelegateImpl>(this)),
+      is_notification_indicator_enabled_(
+          ::features::IsNotificationIndicatorEnabled()) {
   model_->AddObserver(this);
 
   SessionControllerImpl* session_controller =
@@ -499,10 +502,35 @@ bool AppListControllerImpl::IsVisible(
 
 void AppListControllerImpl::OnAppListItemAdded(AppListItem* item) {
   client_->OnItemAdded(profile_id_, item->CloneMetadata());
+
+  if (is_notification_indicator_enabled_ && cache_) {
+    // Update the notification badge indicator for the newly added app list
+    // item.
+    cache_->ForOneApp(item->id(), [item](const apps::AppUpdate& update) {
+      item->UpdateBadge(update.HasBadge() == apps::mojom::OptionalBool::kTrue);
+    });
+  }
 }
 
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* /* pref_service */) {
+  if (is_notification_indicator_enabled_) {
+    // Observe AppRegistryCache for the current active account to get
+    // notification updates.
+    AccountId account_id =
+        Shell::Get()->session_controller()->GetActiveAccountId();
+    cache_ =
+        apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
+    Observe(cache_);
+
+    if (cache_) {
+      // Update the notification badge indicator for all apps in the app list.
+      cache_->ForEachApp([this](const apps::AppUpdate& update) {
+        UpdateItemNotificationBadge(update.AppId(), update.HasBadge());
+      });
+    }
+  }
+
   if (!IsTabletMode()) {
     DismissAppList();
     return;
@@ -1810,6 +1838,17 @@ gfx::Rect AppListControllerImpl::GetInitialAppListItemScreenBoundsForWindow(
       app_id ? *app_id : std::string());
 }
 
+void AppListControllerImpl::OnAppUpdate(const apps::AppUpdate& update) {
+  if (update.HasBadgeChanged()) {
+    UpdateItemNotificationBadge(update.AppId(), update.HasBadge());
+  }
+}
+
+void AppListControllerImpl::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  Observe(nullptr);
+}
+
 void AppListControllerImpl::UpdateTrackedAppWindow() {
   aura::Window* top_window = GetTopVisibleWindow();
   if (tracked_app_window_ == top_window)
@@ -1825,6 +1864,14 @@ void AppListControllerImpl::UpdateTrackedAppWindow() {
 void AppListControllerImpl::RecordAppListState() {
   recorded_app_list_view_state_ = GetAppListViewState();
   recorded_app_list_visibility_ = last_visible_;
+}
+
+void AppListControllerImpl::UpdateItemNotificationBadge(
+    const std::string& app_id,
+    apps::mojom::OptionalBool has_badge) {
+  AppListItem* item = model_->FindItem(app_id);
+  if (item)
+    item->UpdateBadge(has_badge == apps::mojom::OptionalBool::kTrue);
 }
 
 }  // namespace ash

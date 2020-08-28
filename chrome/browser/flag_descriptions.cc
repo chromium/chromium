@@ -1428,8 +1428,8 @@ const char kTextureLayerSkipWaitForActivationDescription[] =
 
 const char kNotificationIndicatorName[] = "Notification Indicators";
 const char kNotificationIndicatorDescription[] =
-    "Enable notification indicators, which appear on shelf app icons when a "
-    "notification is active.";
+    "Enable notification indicators, which appear on shelf app icons and "
+    "launcher apps when a notification is active.";
 
 const char kNotificationSchedulerDebugOptionName[] =
     "Notification scheduler debug options";

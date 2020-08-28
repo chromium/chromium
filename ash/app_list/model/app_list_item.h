@@ -107,6 +107,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   void SetNameAndShortName(const std::string& name,
                            const std::string& short_name);
 
+  // Updates whether the notification badge is shown on the view.
+  void UpdateBadge(bool has_badge);
+
   void set_position(const syncer::StringOrdinal& new_position) {
     DCHECK(new_position.IsValid());
     metadata_->position = new_position;
