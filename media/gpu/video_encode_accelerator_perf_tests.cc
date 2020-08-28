@@ -280,7 +280,9 @@ class VideoEncoderTest : public ::testing::Test {
     performance_evaluator_ = performance_evaluator.get();
     bitstream_processors.push_back(std::move(performance_evaluator));
 
-    VideoEncoderClientConfig config(video, profile, bitrate);
+    constexpr size_t kNumTemporalLayers = 1u;
+    VideoEncoderClientConfig config(video, profile, kNumTemporalLayers,
+                                    bitrate);
     auto video_encoder =
         VideoEncoder::Create(config, g_env->GetGpuMemoryBufferFactory(),
                              std::move(bitstream_processors));
@@ -368,7 +370,7 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
-          codec, false /* output_bitstream */);
+          codec, 1u /* num_temporal_layers */, false /* output_bitstream */);
   if (!test_environment)
     return EXIT_FAILURE;
 

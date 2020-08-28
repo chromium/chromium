@@ -87,6 +87,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     bool enable_bitstream_validator,
     const base::FilePath& output_folder,
     const std::string& codec,
+    size_t num_temporal_layers,
     bool save_output_bitstream,
     const FrameOutputConfig& frame_output_config) {
   if (video_path.empty()) {
@@ -126,12 +127,18 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
 
+  const VideoCodecProfile profile = it->profile;
+  if (num_temporal_layers > 1u && profile != VP9PROFILE_PROFILE0) {
+    LOG(ERROR) << "Temporal layer encoding supported "
+               << "only if output profile is vp9";
+    return nullptr;
+  }
+
   const uint32_t bitrate =
       GetDefaultTargetBitrate(video->Resolution(), video->FrameRate());
-  VideoCodecProfile profile = it->profile;
   return new VideoEncoderTestEnvironment(
       std::move(video), enable_bitstream_validator, output_folder, profile,
-      bitrate, save_output_bitstream, frame_output_config);
+      num_temporal_layers, bitrate, save_output_bitstream, frame_output_config);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
@@ -139,6 +146,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     bool enable_bitstream_validator,
     const base::FilePath& output_folder,
     VideoCodecProfile profile,
+    size_t num_temporal_layers,
     uint32_t bitrate,
     bool save_output_bitstream,
     const FrameOutputConfig& frame_output_config)
@@ -148,6 +156,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       enable_bitstream_validator_(enable_bitstream_validator),
       output_folder_(output_folder),
       profile_(profile),
+      num_temporal_layers_(num_temporal_layers),
       bitrate_(bitrate),
       save_output_bitstream_(save_output_bitstream),
       frame_output_config_(frame_output_config),
@@ -170,6 +179,10 @@ const base::FilePath& VideoEncoderTestEnvironment::OutputFolder() const {
 
 VideoCodecProfile VideoEncoderTestEnvironment::Profile() const {
   return profile_;
+}
+
+size_t VideoEncoderTestEnvironment::NumTemporalLayers() const {
+  return num_temporal_layers_;
 }
 
 uint32_t VideoEncoderTestEnvironment::Bitrate() const {

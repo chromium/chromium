@@ -13,6 +13,7 @@
 #include "media/base/test_data_util.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_decoder_config.h"
+#include "media/gpu/buildflags.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_encoder/bitstream_file_writer.h"
 #include "media/gpu/test/video_encoder/bitstream_validator.h"
@@ -37,9 +38,10 @@ namespace {
 // TODO(dstaessens): Add video_encoder_test_usage.md
 constexpr const char* usage_msg =
     "usage: video_encode_accelerator_tests\n"
-    "           [--codec=<codec>] [--disable_validator]\n"
-    "           [--output_bitstream] [--output_images=(all|corrupt)]\n"
-    "           [--output_format=(png|yuv)] [--output_folder=<filepath>]\n"
+    "           [--codec=<codec>] [--num_temporal_layers=<number>]\n"
+    "           [--disable_validator] [--output_bitstream]\n"
+    "           [--output_images=(all|corrupt)] [--output_format=(png|yuv)]\n"
+    "           [--output_folder=<filepath>] [--output_limit=<number>]\n"
     "           [-v=<level>] [--vmodule=<config>] [--gtest_help] [--help]\n"
     "           [<video path>] [<video metadata path>]\n";
 
@@ -52,27 +54,30 @@ constexpr const char* help_msg =
     "containing the video's metadata, such as frame checksums. By default\n"
     "<video path>.json will be used.\n"
     "\nThe following arguments are supported:\n"
-    "  --codec              codec profile to encode, \"h264\" (baseline),\n"
-    "                       \"h264main, \"h264high\", \"vp8\" and \"vp9\".\n"
-    "                       H264 Baseline is selected if unspecified.\n"
-    "  --disable_validator  disable validation of encoded bitstream.\n\n"
-    "  --output_bitstream   save the output bitstream in either H264 AnnexB\n"
-    "                       format (for H264) or IVF format (for vp8 and vp9)\n"
-    "                       to <output_folder>/<testname>."
-    "  --output_images      in addition to saving the full encoded bitstream,\n"
-    "                       it's also possible to dump individual frames to\n"
-    "                       <output_folder>/<testname>, possible values\n"
-    "                       are \"all|corrupt\"\n"
-    "  --output_format      set the format of images saved to disk, supported\n"
-    "                       formats are \"png\" (default) and \"yuv\".\n"
-    "  --output_limit       limit the number of images saved to disk.\n"
-    "  --output_folder      set the basic folder used to store test artifacts\n"
-    "                       The default is the current directory.\n"
-    "   -v                  enable verbose mode, e.g. -v=2.\n"
-    "  --vmodule            enable verbose mode for the specified module,\n"
-    "                       e.g. --vmodule=*media/gpu*=2.\n\n"
-    "  --gtest_help         display the gtest help and exit.\n"
-    "  --help               display this help and exit.\n";
+    "  --codec               codec profile to encode, \"h264\" (baseline),\n"
+    "                        \"h264main, \"h264high\", \"vp8\" and \"vp9\".\n"
+    "                        H264 Baseline is selected if unspecified.\n"
+    "  --num_temporal_layers the number of temporal layers of the encoded\n"
+    "                        bitstream. Only used in --codec=vp9 currently.\n"
+    "  --disable_validator   disable validation of encoded bitstream.\n"
+    "  --output_bitstream    save the output bitstream in either H264 AnnexB\n"
+    "                        format (for H264) or IVF format (for vp8 and\n"
+    "                        vp9) to <output_folder>/<testname>.\n"
+    "  --output_images       in addition to saving the full encoded,\n"
+    "                        bitstream it's also possible to dump individual\n"
+    "                        frames to <output_folder>/<testname>, possible\n"
+    "                        values are \"all|corrupt\"\n"
+    "  --output_format       set the format of images saved to disk,\n"
+    "                        supported formats are \"png\" (default) and\n"
+    "                        \"yuv\".\n"
+    "  --output_limit        limit the number of images saved to disk.\n"
+    "  --output_folder       set the basic folder used to store test\n"
+    "                        artifacts. The default is the current directory.\n"
+    "   -v                   enable verbose mode, e.g. -v=2.\n"
+    "  --vmodule             enable verbose mode for the specified module,\n"
+    "                        e.g. --vmodule=*media/gpu*=2.\n\n"
+    "  --gtest_help          display the gtest help and exit.\n"
+    "  --help                display this help and exit.\n";
 
 // Default video to be used if no test video was specified.
 constexpr base::FilePath::CharType kDefaultTestVideoPath[] =
@@ -89,6 +94,12 @@ media::test::VideoEncoderTestEnvironment* g_env;
 // Video encode test class. Performs setup and teardown for each single test.
 class VideoEncoderTest : public ::testing::Test {
  public:
+  VideoEncoderClientConfig GetDefaultConfig() {
+    return VideoEncoderClientConfig(g_env->Video(), g_env->Profile(),
+                                    g_env->NumTemporalLayers(),
+                                    g_env->Bitrate());
+  }
+
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
       Video* video,
       const VideoEncoderClientConfig& config) {
@@ -141,8 +152,8 @@ class VideoEncoderTest : public ::testing::Test {
         bitstream_processors.emplace_back(new VP8Validator(visible_rect));
         break;
       case kCodecVP9:
-        bitstream_processors.emplace_back(
-            new VP9Validator(config.output_profile, visible_rect));
+        bitstream_processors.emplace_back(new VP9Validator(
+            config.output_profile, visible_rect, config.num_temporal_layers));
         break;
       default:
         LOG(ERROR) << "Unsupported profile: "
@@ -213,9 +224,7 @@ class VideoEncoderTest : public ::testing::Test {
 // Encode video from start to end. Wait for the kFlushDone event at the end of
 // the stream, that notifies us all frames have been encoded.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
-  VideoEncoderClientConfig config(g_env->Video(), g_env->Profile(),
-                                  g_env->Bitrate());
-  auto encoder = CreateVideoEncoder(g_env->Video(), config);
+  auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
 
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
@@ -230,9 +239,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
 // resolution. The test only verifies initialization and doesn't do any
 // encoding.
 TEST_F(VideoEncoderTest, Initialize) {
-  VideoEncoderClientConfig config(g_env->Video(), g_env->Profile(),
-                                  g_env->Bitrate());
-  auto encoder = CreateVideoEncoder(g_env->Video(), config);
+  auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
 
   EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kInitialized), 1u);
 }
@@ -242,10 +249,8 @@ TEST_F(VideoEncoderTest, Initialize) {
 // of scope at the end of the test. The test will pass if no asserts or crashes
 // are triggered upon destroying.
 TEST_F(VideoEncoderTest, DestroyBeforeInitialize) {
-  VideoEncoderClientConfig config(g_env->Video(), g_env->Profile(),
-                                  g_env->Bitrate());
-  auto video_encoder =
-      VideoEncoder::Create(config, g_env->GetGpuMemoryBufferFactory());
+  auto video_encoder = VideoEncoder::Create(GetDefaultConfig(),
+                                            g_env->GetGpuMemoryBufferFactory());
 
   EXPECT_NE(video_encoder, nullptr);
 }
@@ -253,8 +258,7 @@ TEST_F(VideoEncoderTest, DestroyBeforeInitialize) {
 // Encode video from start to end. Multiple buffer encodes will be queued in the
 // encoder, without waiting for the result of the previous encode requests.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleOutstandingEncodes) {
-  VideoEncoderClientConfig config(g_env->Video(), g_env->Profile(),
-                                  g_env->Bitrate());
+  auto config = GetDefaultConfig();
   config.max_outstanding_encode_requests = 4;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
 
@@ -271,8 +275,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleConcurrentEncodes) {
   // The minimal number of concurrent encoders we expect to be supported.
   constexpr size_t kMinSupportedConcurrentEncoders = 3;
 
-  VideoEncoderClientConfig config(g_env->Video(), g_env->Profile(),
-                                  g_env->Bitrate());
+  auto config = GetDefaultConfig();
   std::vector<std::unique_ptr<VideoEncoder>> encoders(
       kMinSupportedConcurrentEncoders);
   for (size_t i = 0; i < kMinSupportedConcurrentEncoders; ++i)
@@ -291,8 +294,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleConcurrentEncodes) {
 }
 
 TEST_F(VideoEncoderTest, BitrateCheck) {
-  VideoEncoderClientConfig config(g_env->Video(), g_env->Profile(),
-                                  g_env->Bitrate());
+  auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
 
@@ -307,8 +309,7 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
 }
 
 TEST_F(VideoEncoderTest, DynamicBitrateChange) {
-  VideoEncoderClientConfig config(g_env->Video(), g_env->Profile(),
-                                  g_env->Bitrate());
+  auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
 
@@ -336,8 +337,7 @@ TEST_F(VideoEncoderTest, DynamicBitrateChange) {
 }
 
 TEST_F(VideoEncoderTest, DynamicFramerateChange) {
-  VideoEncoderClientConfig config(g_env->Video(), g_env->Profile(),
-                                  g_env->Bitrate());
+  auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
 
@@ -370,7 +370,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
   ASSERT_TRUE(nv12_video);
 
   VideoEncoderClientConfig config(nv12_video.get(), g_env->Profile(),
-                                  g_env->Bitrate());
+                                  g_env->NumTemporalLayers(), g_env->Bitrate());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kDmabuf;
 
@@ -407,6 +407,7 @@ int main(int argc, char** argv) {
   base::FilePath video_metadata_path =
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
   std::string codec = "h264";
+  size_t num_temporal_layers = 1u;
   bool output_bitstream = false;
   media::test::FrameOutputConfig frame_output_config;
   base::FilePath output_folder =
@@ -424,6 +425,12 @@ int main(int argc, char** argv) {
 
     if (it->first == "codec") {
       codec = it->second;
+    } else if (it->first == "num_temporal_layers") {
+      if (!base::StringToSizeT(it->second, &num_temporal_layers)) {
+        std::cout << "invalid number of temporal layers: " << it->second
+                  << "\n";
+        return EXIT_FAILURE;
+      }
     } else if (it->first == "disable_validator") {
       enable_bitstream_validator = false;
     } else if (it->first == "output_bitstream") {
@@ -472,7 +479,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, enable_bitstream_validator,
-          output_folder, codec, output_bitstream, frame_output_config);
+          output_folder, codec, num_temporal_layers, output_bitstream,
+          frame_output_config);
 
   if (!test_environment)
     return EXIT_FAILURE;

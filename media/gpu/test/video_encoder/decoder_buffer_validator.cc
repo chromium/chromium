@@ -45,12 +45,59 @@ DecoderBufferValidator::~DecoderBufferValidator() = default;
 void DecoderBufferValidator::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
-  if (!Validate(*bitstream->buffer))
+  if (!Validate(*bitstream->buffer, bitstream->metadata))
     num_errors_++;
 }
 
 bool DecoderBufferValidator::WaitUntilDone() {
   return num_errors_ == 0;
+}
+
+TemporalLayerValidator::TemporalLayerValidator(size_t num_temporal_layers)
+    : num_temporal_layers_(num_temporal_layers) {
+  reference_frames_.fill(0);
+}
+
+TemporalLayerValidator::~TemporalLayerValidator() = default;
+
+bool TemporalLayerValidator::ValidateAndUpdate(bool keyframe,
+                                               uint8_t temporal_index,
+                                               uint8_t reference_index,
+                                               uint8_t refresh_frame_index) {
+  if (temporal_index >= num_temporal_layers_) {
+    LOG(ERROR) << "Temporal layer index is not less than the number of temporal"
+               << " layers, temporal_index=" << temporal_index
+               << ", num_temporal_layers=" << num_temporal_layers_;
+    return false;
+  }
+  if (keyframe) {
+    if (temporal_index != 0) {
+      LOG(ERROR) << "Key frame exists in non base layer, temporal_index="
+                 << temporal_index;
+      return false;
+    }
+    reference_frames_.fill(temporal_index);
+    return true;
+  }
+
+  const std::bitset<kReferenceFramePoolSize> reference(reference_index);
+  for (size_t i = 0; i < kReferenceFramePoolSize; ++i) {
+    if (!reference[i])
+      continue;
+    const uint8_t referenced_index = reference_frames_[i];
+    if (referenced_index > temporal_index) {
+      LOG(ERROR) << "Frame in upper layer referenced, temporal_index="
+                 << temporal_index
+                 << ", referenced temporal index=" << referenced_index;
+      return false;
+    }
+  }
+  const std::bitset<kReferenceFramePoolSize> refresh(refresh_frame_index);
+  for (size_t i = 0; i < kReferenceFramePoolSize; ++i) {
+    if (refresh[i])
+      reference_frames_[i] = temporal_index;
+  }
+  return true;
 }
 
 H264Validator::H264Validator(VideoCodecProfile profile,
@@ -63,7 +110,8 @@ H264Validator::H264Validator(VideoCodecProfile profile,
 
 H264Validator::~H264Validator() = default;
 
-bool H264Validator::Validate(const DecoderBuffer& decoder_buffer) {
+bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
+                             const BitstreamBufferMetadata& metadata) {
   parser_.SetStream(decoder_buffer.data(), decoder_buffer.data_size());
 
   size_t num_frames = 0;
@@ -190,7 +238,8 @@ VP8Validator::VP8Validator(const gfx::Rect& visible_rect)
 
 VP8Validator::~VP8Validator() = default;
 
-bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer) {
+bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
+                            const BitstreamBufferMetadata& metadata) {
   // TODO(hiroh): We could be getting more frames in the buffer, but there is
   // no simple way to detect this. We'd need to parse the frames and go through
   // partition numbers/sizes. For now assume one frame per buffer.
@@ -215,14 +264,20 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer) {
 }
 
 VP9Validator::VP9Validator(VideoCodecProfile profile,
-                           const gfx::Rect& visible_rect)
+                           const gfx::Rect& visible_rect,
+                           size_t num_temporal_layers)
     : DecoderBufferValidator(visible_rect),
       parser_(false /* parsing_compressed_header */),
-      profile_(VideoCodecProfileToVP9Profile(profile)) {}
+      profile_(VideoCodecProfileToVP9Profile(profile)),
+      temporal_layer_validator_(
+          num_temporal_layers > 1u
+              ? std::make_unique<TemporalLayerValidator>(num_temporal_layers)
+              : nullptr) {}
 
 VP9Validator::~VP9Validator() = default;
 
-bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer) {
+bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
+                            const BitstreamBufferMetadata& metadata) {
   // TODO(hiroh): We could be getting more frames in the buffer, but there is
   // no simple way to detect this. We'd need to parse the frames and go through
   // partition numbers/sizes. For now assume one frame per buffer.
@@ -232,6 +287,11 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer) {
   if (parser_.ParseNextFrame(&header, &allocate_size, nullptr) ==
       Vp9Parser::kInvalidStream) {
     LOG(ERROR) << "Failed parsing";
+    return false;
+  }
+  if (metadata.key_frame != header.IsKeyframe()) {
+    LOG(ERROR) << "Keyframe info in metadata is wrong, metadata.keyframe="
+               << metadata.key_frame;
     return false;
   }
 
@@ -252,7 +312,36 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer) {
     }
   }
 
-  return seen_keyframe_ && header.show_frame;
+  if (!seen_keyframe_) {
+    LOG(ERROR) << "First frame is not key frame";
+    return false;
+  }
+
+  if (!header.show_frame) {
+    LOG(ERROR) << "VideoEncodeAccelerator outputs non showable frame";
+    return false;
+  }
+
+  if (!temporal_layer_validator_)
+    return true;
+
+  if (!metadata.vp9.has_value()) {
+    LOG(ERROR) << "No metadata in temporal layer encoding";
+    return false;
+  }
+  uint8_t reference_index = 0;
+  for (size_t i = 0; i < kVp9NumRefsPerFrame; ++i) {
+    uint8_t ref_frame_index = header.ref_frame_idx[i];
+    if (ref_frame_index >= static_cast<uint8_t>(kVp9NumRefFrames)) {
+      LOG(ERROR) << "Invalid reference frame index: "
+                 << static_cast<int>(ref_frame_index);
+      return false;
+    }
+    reference_index |= (1u << ref_frame_index);
+  }
+  return temporal_layer_validator_->ValidateAndUpdate(
+      header.IsKeyframe(), metadata.vp9->temporal_idx, reference_index,
+      header.refresh_frame_flags);
 }
 }  // namespace test
 }  // namespace media

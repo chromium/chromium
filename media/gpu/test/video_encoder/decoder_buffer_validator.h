@@ -32,7 +32,8 @@ class DecoderBufferValidator : public BitstreamProcessor {
 
  protected:
   // Returns true if decoder_buffer is valid and expected, otherwise false.
-  virtual bool Validate(const DecoderBuffer& decoder_buffer) = 0;
+  virtual bool Validate(const DecoderBuffer& decoder_buffer,
+                        const BitstreamBufferMetadata& metadata) = 0;
 
   // The expected visible rectangle that |decoder_buffer| has.
   const gfx::Rect visible_rect_;
@@ -40,6 +41,24 @@ class DecoderBufferValidator : public BitstreamProcessor {
  private:
   // The number of detected errors by Validate().
   size_t num_errors_ = 0;
+};
+
+// TemporalLayerValidator checks whether the stream is valid on each temporal
+// layer.
+class TemporalLayerValidator {
+ public:
+  TemporalLayerValidator(size_t num_temporal_layers);
+  ~TemporalLayerValidator();
+
+  bool ValidateAndUpdate(bool keyframe,
+                         uint8_t temporal_index,
+                         uint8_t reference_index,
+                         uint8_t refresh_frame_index);
+
+ private:
+  static constexpr size_t kReferenceFramePoolSize = 8;
+  const size_t num_temporal_layers_ = 3;
+  std::array<uint8_t, kReferenceFramePoolSize> reference_frames_;
 };
 
 class H264Validator : public DecoderBufferValidator {
@@ -50,7 +69,8 @@ class H264Validator : public DecoderBufferValidator {
   ~H264Validator() override;
 
  private:
-  bool Validate(const DecoderBuffer& decoder_buffer) override;
+  bool Validate(const DecoderBuffer& decoder_buffer,
+                const BitstreamBufferMetadata& metadata) override;
 
   // Returns whether the |slice_hdr| is the first slice of a new frame.
   bool IsNewPicture(const H264SliceHeader& slice_hdr);
@@ -85,7 +105,8 @@ class VP8Validator : public DecoderBufferValidator {
   ~VP8Validator() override;
 
  private:
-  bool Validate(const DecoderBuffer& decoder_buffer) override;
+  bool Validate(const DecoderBuffer& decoder_buffer,
+                const BitstreamBufferMetadata& metadata) override;
 
   Vp8Parser parser_;
   // Whether key frame has been input.
@@ -94,11 +115,14 @@ class VP8Validator : public DecoderBufferValidator {
 
 class VP9Validator : public DecoderBufferValidator {
  public:
-  VP9Validator(VideoCodecProfile profile, const gfx::Rect& visible_rect);
+  VP9Validator(VideoCodecProfile profile,
+               const gfx::Rect& visible_rect,
+               size_t num_temporal_layers);
   ~VP9Validator() override;
 
  private:
-  bool Validate(const DecoderBuffer& decoder_buffer) override;
+  bool Validate(const DecoderBuffer& decoder_buffer,
+                const BitstreamBufferMetadata& metadata) override;
 
   Vp9Parser parser_;
 
@@ -107,6 +131,8 @@ class VP9Validator : public DecoderBufferValidator {
 
   // The expected h264 profile of |decoder_buffer|.
   const int profile_;
+
+  const std::unique_ptr<TemporalLayerValidator> temporal_layer_validator_;
 };
 }  // namespace test
 }  // namespace media

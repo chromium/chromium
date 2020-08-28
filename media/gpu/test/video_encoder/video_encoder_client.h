@@ -37,11 +37,14 @@ struct VideoEncoderClientConfig {
   static constexpr uint32_t kDefaultBitrate = 200000;
   VideoEncoderClientConfig(const Video* video,
                            VideoCodecProfile output_profile,
+                           size_t num_temporal_layers,
                            uint32_t bitrate);
   VideoEncoderClientConfig(const VideoEncoderClientConfig&);
 
-  // The output output profile to be used.
+  // The output profile to be used.
   VideoCodecProfile output_profile = VideoCodecProfile::H264PROFILE_MAIN;
+  // The number of temporal layers of the output stream.
+  size_t num_temporal_layers = 1u;
   // The maximum number of bitstream buffer encodes that can be requested
   // without waiting for the result of the previous encodes requests.
   size_t max_outstanding_encode_requests = 1;
@@ -59,13 +62,19 @@ struct VideoEncoderClientConfig {
 };
 
 struct VideoEncoderStats {
-  explicit VideoEncoderStats(uint32_t framerate = 1u);
+  VideoEncoderStats();
+  VideoEncoderStats(const VideoEncoderStats&);
+  ~VideoEncoderStats();
+  VideoEncoderStats(uint32_t framerate, size_t num_temporal_layers);
   uint32_t Bitrate() const;
   void Reset();
 
   uint32_t framerate = 0;
-  size_t num_encoded_frames = 0;
+  size_t total_num_encoded_frames = 0;
   size_t total_encoded_frames_size = 0;
+  // Filled in temporal layer encoding and codec is vp9.
+  std::vector<size_t> num_encoded_frames_per_layer;
+  std::vector<size_t> encoded_frames_size_per_layer;
 };
 
 // The video encoder client is responsible for the communication between the

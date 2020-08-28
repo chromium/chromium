@@ -39,6 +39,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       bool enable_bitstream_validator,
       const base::FilePath& output_folder,
       const std::string& codec,
+      size_t num_temporal_layers,
       bool output_bitstream,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig());
 
@@ -52,6 +53,8 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   const base::FilePath& OutputFolder() const;
   // Get the output codec profile.
   VideoCodecProfile Profile() const;
+  // Get the number of temporal layers.
+  size_t NumTemporalLayers() const;
   // Get the target bitrate (bits/second).
   uint32_t Bitrate() const;
   // Whether the encoded bitstream is saved to disk.
@@ -71,6 +74,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
                               bool enable_bitstream_validator,
                               const base::FilePath& output_folder,
                               VideoCodecProfile profile,
+                              size_t num_temporal_layers,
                               uint32_t bitrate,
                               bool save_output_bitstream,
                               const FrameOutputConfig& frame_output_config);
@@ -83,6 +87,9 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   const base::FilePath output_folder_;
   // VideoCodecProfile to be produced by VideoEncoder.
   const VideoCodecProfile profile_;
+  // The number of temporal layers of the stream to be produced by VideoEncoder.
+  // This is only for vp9 stream.
+  const size_t num_temporal_layers_;
   // Targeted bitrate (bits/second) of the stream produced by VideoEncoder.
   const uint32_t bitrate_;
   // Whether the bitstream produced by VideoEncoder is saved to disk.
