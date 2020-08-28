@@ -77,7 +77,7 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
   String console_message;
 
   CodecConfigEval eval =
-      Traits::CreateMediaConfig(*config, media_config.get(), &console_message);
+      MakeMediaConfig(*config, media_config.get(), &console_message);
   switch (eval) {
     case CodecConfigEval::kInvalid:
       exception_state.ThrowTypeError(console_message);
@@ -112,7 +112,7 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kDecode;
-  request->chunk = chunk;
+  request->decoder_buffer = MakeDecoderBuffer(*chunk);
   requests_.push_back(request);
   ++requested_decodes_;
   ProcessRequests();
@@ -250,7 +250,6 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kDecode);
-  DCHECK(request->chunk);
   DCHECK_GT(requested_decodes_, 0);
 
   // TODO(sandersd): If a reset has been requested, complete immediately.
@@ -266,9 +265,8 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
     return false;
   }
 
-  scoped_refptr<media::DecoderBuffer> decoder_buffer =
-      Traits::MakeDecoderBuffer(*request->chunk);
-  if (decoder_buffer->data_size() == 0) {
+  // The request may be invalid, if so report that now.
+  if (!request->decoder_buffer || request->decoder_buffer->data_size() == 0) {
     HandleError();
     return false;
   }
@@ -283,7 +281,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
     ;
   pending_decodes_.Set(pending_decode_id_, request);
   --requested_decodes_;
-  decoder_->Decode(std::move(decoder_buffer),
+  decoder_->Decode(std::move(request->decoder_buffer),
                    WTF::Bind(&DecoderTemplate::OnDecodeDone,
                              WrapWeakPersistent(this), pending_decode_id_));
   return true;
@@ -499,7 +497,6 @@ void DecoderTemplate<Traits>::Trace(Visitor* visitor) const {
 
 template <typename Traits>
 void DecoderTemplate<Traits>::Request::Trace(Visitor* visitor) const {
-  visitor->Trace(chunk);
   visitor->Trace(resolver);
 }
 

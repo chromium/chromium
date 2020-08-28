@@ -55,16 +55,11 @@ class MODULES_EXPORT AudioDecoderTraits {
   static std::unique_ptr<MediaDecoderType> CreateDecoder(
       ExecutionContext& execution_context,
       media::MediaLog* media_log);
-  static CodecConfigEval CreateMediaConfig(const ConfigType& config,
-                                           MediaConfigType* out_media_config,
-                                           String* out_console_message);
   static void InitializeDecoder(MediaDecoderType& decoder,
                                 const MediaConfigType& media_config,
                                 MediaDecoderType::InitCB init_cb,
                                 MediaDecoderType::OutputCB output_cb);
   static int GetMaxDecodeRequests(const MediaDecoderType& decoder);
-  static scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer(
-      const InputType& input);
 };
 
 class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
@@ -77,6 +72,13 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
 
   AudioDecoder(ScriptState*, const AudioDecoderInit*, ExceptionState&);
   ~AudioDecoder() override = default;
+
+ protected:
+  CodecConfigEval MakeMediaConfig(const ConfigType& config,
+                                  MediaConfigType* out_media_config,
+                                  String* out_console_message) override;
+  scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer(
+      const InputType& chunk) override;
 };
 
 }  // namespace blink

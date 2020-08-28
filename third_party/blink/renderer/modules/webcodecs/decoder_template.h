@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_codecs_error_callback.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -50,6 +51,21 @@ class MODULES_EXPORT DecoderTemplate : public ScriptWrappable {
   // GarbageCollected override.
   void Trace(Visitor*) const override;
 
+ protected:
+  // TODO(sandersd): Consider moving these to the Traits class, and creating an
+  // instance of the traits.
+
+  // Convert a configuration to a DecoderConfig.
+  virtual CodecConfigEval MakeMediaConfig(const ConfigType& config,
+                                          MediaConfigType* out_media_config,
+                                          String* out_console_message) = 0;
+
+  // Convert a chunk to a DecoderBuffer. You can assume that the last
+  // configuration sent to MakeMediaConfig() is the active configuration for
+  // |chunk|.
+  virtual scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer(
+      const InputType& chunk) = 0;
+
  private:
   struct Request final : public GarbageCollected<Request> {
     enum class Type {
@@ -67,7 +83,7 @@ class MODULES_EXPORT DecoderTemplate : public ScriptWrappable {
     std::unique_ptr<MediaConfigType> media_config;
 
     // For kDecode Requests.
-    Member<const InputType> chunk;
+    scoped_refptr<media::DecoderBuffer> decoder_buffer;
 
     // For kFlush Requests.
     Member<ScriptPromiseResolver> resolver;

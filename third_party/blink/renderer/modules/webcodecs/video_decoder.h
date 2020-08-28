@@ -12,6 +12,7 @@
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
+#include "media/media_buildflags.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_output_callback.h"
@@ -30,6 +31,13 @@ namespace media {
 class VideoFrame;
 class DecoderBuffer;
 class MediaLog;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+class H264ToAnnexBBitstreamConverter;
+namespace mp4 {
+struct AVCDecoderConfigurationRecord;
+}
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace media
 
@@ -56,16 +64,11 @@ class MODULES_EXPORT VideoDecoderTraits {
   static std::unique_ptr<MediaDecoderType> CreateDecoder(
       ExecutionContext& execution_context,
       media::MediaLog* media_log);
-  static CodecConfigEval CreateMediaConfig(const ConfigType& config,
-                                           MediaConfigType* out_media_config,
-                                           String* out_console_message);
   static void InitializeDecoder(MediaDecoderType& decoder,
                                 const MediaConfigType& media_config,
                                 MediaDecoderType::InitCB init_cb,
                                 MediaDecoderType::OutputCB output_cb);
   static int GetMaxDecodeRequests(const MediaDecoderType& decoder);
-  static scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer(
-      const InputType& input);
 };
 
 class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
@@ -78,6 +81,18 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
 
   VideoDecoder(ScriptState*, const VideoDecoderInit*, ExceptionState&);
   ~VideoDecoder() override = default;
+
+ protected:
+  CodecConfigEval MakeMediaConfig(const ConfigType& config,
+                                  MediaConfigType* out_media_config,
+                                  String* out_console_message) override;
+  scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer(
+      const InputType& input) override;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter_;
+  std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc_;
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
 
 }  // namespace blink

@@ -32,10 +32,37 @@ AudioDecoderTraits::CreateDecoder(ExecutionContext& execution_context,
 }
 
 // static
-CodecConfigEval AudioDecoderTraits::CreateMediaConfig(
-    const ConfigType& config,
-    MediaConfigType* out_media_config,
-    String* out_console_message) {
+void AudioDecoderTraits::InitializeDecoder(
+    MediaDecoderType& decoder,
+    const MediaConfigType& media_config,
+    MediaDecoderType::InitCB init_cb,
+    MediaDecoderType::OutputCB output_cb) {
+  decoder.Initialize(media_config, nullptr /* cdm_context */,
+                     std::move(init_cb), output_cb, media::WaitingCB());
+}
+
+// static
+int AudioDecoderTraits::GetMaxDecodeRequests(const MediaDecoderType& decoder) {
+  return 1;
+}
+
+// static
+AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
+                                   const AudioDecoderInit* init,
+                                   ExceptionState& exception_state) {
+  return MakeGarbageCollected<AudioDecoder>(script_state, init,
+                                            exception_state);
+}
+
+AudioDecoder::AudioDecoder(ScriptState* script_state,
+                           const AudioDecoderInit* init,
+                           ExceptionState& exception_state)
+    : DecoderTemplate<AudioDecoderTraits>(script_state, init, exception_state) {
+}
+
+CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
+                                              MediaConfigType* out_media_config,
+                                              String* out_console_message) {
   media::AudioCodec codec = media::kUnknownAudioCodec;
   bool is_codec_ambiguous = true;
   bool parse_succeeded = ParseAudioCodecString("", config.codec().Utf8(),
@@ -88,23 +115,7 @@ CodecConfigEval AudioDecoderTraits::CreateMediaConfig(
   return CodecConfigEval::kSupported;
 }
 
-// static
-void AudioDecoderTraits::InitializeDecoder(
-    MediaDecoderType& decoder,
-    const MediaConfigType& media_config,
-    MediaDecoderType::InitCB init_cb,
-    MediaDecoderType::OutputCB output_cb) {
-  decoder.Initialize(media_config, nullptr /* cdm_context */,
-                     std::move(init_cb), output_cb, media::WaitingCB());
-}
-
-// static
-int AudioDecoderTraits::GetMaxDecodeRequests(const MediaDecoderType& decoder) {
-  return 1;
-}
-
-// static
-scoped_refptr<media::DecoderBuffer> AudioDecoderTraits::MakeDecoderBuffer(
+scoped_refptr<media::DecoderBuffer> AudioDecoder::MakeDecoderBuffer(
     const InputType& chunk) {
   auto decoder_buffer = media::DecoderBuffer::CopyFrom(
       static_cast<uint8_t*>(chunk.data()->Data()),
@@ -113,20 +124,6 @@ scoped_refptr<media::DecoderBuffer> AudioDecoderTraits::MakeDecoderBuffer(
       base::TimeDelta::FromMicroseconds(chunk.timestamp()));
   decoder_buffer->set_is_key_frame(chunk.type() == "key");
   return decoder_buffer;
-}
-
-// static
-AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
-                                   const AudioDecoderInit* init,
-                                   ExceptionState& exception_state) {
-  return MakeGarbageCollected<AudioDecoder>(script_state, init,
-                                            exception_state);
-}
-
-AudioDecoder::AudioDecoder(ScriptState* script_state,
-                           const AudioDecoderInit* init,
-                           ExceptionState& exception_state)
-    : DecoderTemplate<AudioDecoderTraits>(script_state, init, exception_state) {
 }
 
 }  // namespace blink

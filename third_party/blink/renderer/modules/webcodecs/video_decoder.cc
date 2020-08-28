@@ -13,6 +13,7 @@
 #include "media/base/mime_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/video_decoder.h"
+#include "media/media_buildflags.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_config.h"
@@ -29,6 +30,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/filters/h264_to_annex_b_bitstream_converter.h"
+#include "media/formats/mp4/box_definitions.h"
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
 namespace blink {
 
 // static
@@ -40,10 +46,38 @@ VideoDecoderTraits::CreateDecoder(ExecutionContext& execution_context,
 }
 
 // static
-CodecConfigEval VideoDecoderTraits::CreateMediaConfig(
-    const ConfigType& config,
-    MediaConfigType* out_media_config,
-    String* out_console_message) {
+void VideoDecoderTraits::InitializeDecoder(
+    MediaDecoderType& decoder,
+    const MediaConfigType& media_config,
+    MediaDecoderType::InitCB init_cb,
+    MediaDecoderType::OutputCB output_cb) {
+  decoder.Initialize(media_config, false /* low_delay */,
+                     nullptr /* cdm_context */, std::move(init_cb), output_cb,
+                     media::WaitingCB());
+}
+
+// static
+int VideoDecoderTraits::GetMaxDecodeRequests(const MediaDecoderType& decoder) {
+  return decoder.GetMaxDecodeRequests();
+}
+
+// static
+VideoDecoder* VideoDecoder::Create(ScriptState* script_state,
+                                   const VideoDecoderInit* init,
+                                   ExceptionState& exception_state) {
+  return MakeGarbageCollected<VideoDecoder>(script_state, init,
+                                            exception_state);
+}
+
+VideoDecoder::VideoDecoder(ScriptState* script_state,
+                           const VideoDecoderInit* init,
+                           ExceptionState& exception_state)
+    : DecoderTemplate<VideoDecoderTraits>(script_state, init, exception_state) {
+}
+
+CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
+                                              MediaConfigType* out_media_config,
+                                              String* out_console_message) {
   DCHECK(out_media_config);
   DCHECK(out_console_message);
 
@@ -89,13 +123,32 @@ CodecConfigEval VideoDecoderTraits::CreateMediaConfig(
     }
   }
 
-  // If we allow empty |extra_data| here, FFmpegVideoDecoder will expect an
-  // Annex B formatted stream.
-  if (codec == media::kCodecH264 && extra_data.empty()) {
-    *out_console_message =
-        "H.264 configuration for must include an avcC description.";
-    return CodecConfigEval::kInvalid;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (codec == media::kCodecH264) {
+    if (extra_data.empty()) {
+      *out_console_message =
+          "H.264 configuration must include an avcC description.";
+      return CodecConfigEval::kInvalid;
+    }
+
+    h264_avcc_ = std::make_unique<media::mp4::AVCDecoderConfigurationRecord>();
+    h264_converter_ = std::make_unique<media::H264ToAnnexBBitstreamConverter>();
+    if (!h264_converter_->ParseConfiguration(
+            extra_data.data(), static_cast<uint32_t>(extra_data.size()),
+            h264_avcc_.get())) {
+      *out_console_message = "Failed to parse avcC.";
+      return CodecConfigEval::kInvalid;
+    }
+  } else {
+    h264_avcc_.reset();
+    h264_converter_.reset();
   }
+#else
+  if (codec == media::kCodecH264) {
+    *out_console_message = "H.264 decoding is not supported.";
+    return CodecConfigEval::kUnsupported;
+  }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   // TODO(sandersd): Either remove sizes from VideoDecoderConfig (replace with
   // sample aspect) or parse the AvcC here to get the actual size.
@@ -111,29 +164,36 @@ CodecConfigEval VideoDecoderTraits::CreateMediaConfig(
   return CodecConfigEval::kSupported;
 }
 
-// static
-void VideoDecoderTraits::InitializeDecoder(
-    MediaDecoderType& decoder,
-    const MediaConfigType& media_config,
-    MediaDecoderType::InitCB init_cb,
-    MediaDecoderType::OutputCB output_cb) {
-  decoder.Initialize(media_config, false /* low_delay */,
-                     nullptr /* cdm_context */, std::move(init_cb), output_cb,
-                     media::WaitingCB());
-}
-
-// static
-int VideoDecoderTraits::GetMaxDecodeRequests(const MediaDecoderType& decoder) {
-  return decoder.GetMaxDecodeRequests();
-}
-
-// static
-scoped_refptr<media::DecoderBuffer> VideoDecoderTraits::MakeDecoderBuffer(
+scoped_refptr<media::DecoderBuffer> VideoDecoder::MakeDecoderBuffer(
     const InputType& chunk) {
-  // Convert |chunk| to a DecoderBuffer.
-  auto decoder_buffer = media::DecoderBuffer::CopyFrom(
-      static_cast<uint8_t*>(chunk.data()->Data()),
-      chunk.data()->ByteLengthAsSizeT());
+  uint8_t* src = static_cast<uint8_t*>(chunk.data()->Data());
+  size_t src_size = chunk.data()->ByteLengthAsSizeT();
+
+  scoped_refptr<media::DecoderBuffer> decoder_buffer;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (h264_converter_) {
+    // Note: this may not be safe if support for SharedArrayBuffers is added.
+    uint32_t output_size = h264_converter_->CalculateNeededOutputBufferSize(
+        src, static_cast<uint32_t>(src_size), h264_avcc_.get());
+    if (!output_size) {
+      // TODO(sandersd): Provide an error message.
+      return nullptr;
+    }
+
+    std::vector<uint8_t> buf(output_size);
+    if (!h264_converter_->ConvertNalUnitStreamToByteStream(
+            src, static_cast<uint32_t>(src_size), h264_avcc_.get(), buf.data(),
+            &output_size)) {
+      // TODO(sandersd): Provide an error message.
+      return nullptr;
+    }
+
+    decoder_buffer = media::DecoderBuffer::CopyFrom(buf.data(), output_size);
+  }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (!decoder_buffer)
+    decoder_buffer = media::DecoderBuffer::CopyFrom(src, src_size);
+
   decoder_buffer->set_timestamp(
       base::TimeDelta::FromMicroseconds(chunk.timestamp()));
   // TODO(sandersd): Use kUnknownTimestamp instead of 0?
@@ -142,20 +202,6 @@ scoped_refptr<media::DecoderBuffer> VideoDecoderTraits::MakeDecoderBuffer(
   decoder_buffer->set_is_key_frame(chunk.type() == "key");
 
   return decoder_buffer;
-}
-
-// static
-VideoDecoder* VideoDecoder::Create(ScriptState* script_state,
-                                   const VideoDecoderInit* init,
-                                   ExceptionState& exception_state) {
-  return MakeGarbageCollected<VideoDecoder>(script_state, init,
-                                            exception_state);
-}
-
-VideoDecoder::VideoDecoder(ScriptState* script_state,
-                           const VideoDecoderInit* init,
-                           ExceptionState& exception_state)
-    : DecoderTemplate<VideoDecoderTraits>(script_state, init, exception_state) {
 }
 
 }  // namespace blink
