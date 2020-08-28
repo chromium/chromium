@@ -16,8 +16,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
+#include "chrome/browser/push_messaging/push_messaging_refresher.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -62,7 +64,8 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                                  public gcm::GCMAppHandler,
                                  public content_settings::Observer,
                                  public KeyedService,
-                                 public content::NotificationObserver {
+                                 public content::NotificationObserver,
+                                 public PushMessagingRefresher::Observer {
  public:
   // If any Service Workers are using push, starts GCM and adds an app handler.
   static void InitializeForProfile(Profile* profile);
@@ -140,10 +143,22 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // KeyedService implementation.
   void Shutdown() override;
 
-  // content::NotificationObserver:
+  // content::NotificationObserver implementation
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
+
+  // WARNING: Only call this function if features::kPushSubscriptionChangeEvent
+  // is enabled, will be later used by the Push Service to trigger subscription
+  // refreshes
+  void OnSubscriptionInvalidation(const std::string& app_id);
+
+  // PushMessagingRefresher::Observer implementation
+  // Initiate unsubscribe task when old subscription becomes invalid
+  void OnOldSubscriptionExpired(const std::string& app_id,
+                                const std::string& sender_id) override;
+  void OnRefreshFinished(
+      const PushMessagingAppIdentifier& app_identifier) override;
 
   void SetMessageCallbackForTesting(const base::Closure& callback);
   void SetUnsubscribeCallbackForTesting(const base::Closure& callback);
@@ -275,12 +290,40 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       const std::vector<uint8_t>& p256dh,
       const std::vector<uint8_t>& auth);
 
+  // OnSubscriptionInvalidation methods-----------------------------------------
+
+  void GetOldSubscription(PushMessagingAppIdentifier old_app_identifier,
+                          const std::string& sender_id);
+
+  // After gathering all relavent information to start the refresh,
+  // generate a new app id and initiate refresh
+  void StartRefresh(PushMessagingAppIdentifier old_app_identifier,
+                    const std::string& sender_id,
+                    blink::mojom::PushSubscriptionPtr old_subscription);
+
+  // Makes a new susbcription and replaces the old subscription by new
+  // subscription in preferences and service worker database
+  void UpdateSubscription(PushMessagingAppIdentifier app_identifier,
+                          blink::mojom::PushSubscriptionOptionsPtr options,
+                          RegisterCallback callback);
+
+  // After the subscription is updated, fire a `pushsubscriptionchange` event
+  // and notify the |refresher_|
+  void DidUpdateSubscription(const std::string& new_app_id,
+                             const std::string& old_app_id,
+                             blink::mojom::PushSubscriptionPtr old_subscription,
+                             const std::string& sender_id,
+                             const std::string& registration_id,
+                             const GURL& endpoint,
+                             const base::Optional<base::Time>& expiration_time,
+                             const std::vector<uint8_t>& p256dh,
+                             const std::vector<uint8_t>& auth,
+                             blink::mojom::PushRegistrationStatus status);
   // Helper methods ------------------------------------------------------------
 
   // The subscription given in |identifier| will be unsubscribed (and a
   // `pushsubscriptionchange` event fires if
   // features::kPushSubscriptionChangeEvent is enabled)
-  // |completed_closure|
   void UnexpectedChange(PushMessagingAppIdentifier identifier,
                         blink::mojom::PushUnregistrationReason reason,
                         base::OnceClosure completed_closure);
@@ -344,6 +387,10 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   PushMessagingNotificationManager notification_manager_;
 
+  PushMessagingRefresher refresher_;
+
+  ScopedObserver<PushMessagingRefresher, PushMessagingRefresher::Observer>
+      refresh_observer_{this};
   // A multiset containing one entry for each in-flight push message delivery,
   // keyed by the receiver's app id.
   std::multiset<std::string> in_flight_message_deliveries_;

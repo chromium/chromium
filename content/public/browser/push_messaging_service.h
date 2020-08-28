@@ -141,6 +141,13 @@ class CONTENT_EXPORT PushMessagingService {
                                       int64_t service_worker_registration_id,
                                       base::OnceClosure callback);
 
+  // Update |subscription_id| stored in Service Worker database.
+  static void UpdatePushSubscriptionId(BrowserContext* browser_context,
+                                       const GURL& origin,
+                                       int64_t service_worker_registration_id,
+                                       const std::string& subscription_id,
+                                       base::OnceClosure callback);
+
   // Stores a push subscription in the service worker for the given |origin|.
   // Must only be used by tests.
   static void StorePushSubscriptionForTesting(

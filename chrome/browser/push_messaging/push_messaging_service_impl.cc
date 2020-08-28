@@ -261,6 +261,7 @@ PushMessagingServiceImpl::PushMessagingServiceImpl(Profile* profile)
 
   registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                  content::NotificationService::AllSources());
+  refresh_observer_.Add(&refresher_);
 }
 
 PushMessagingServiceImpl::~PushMessagingServiceImpl() = default;
@@ -347,15 +348,21 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
   base::OnceClosure message_handled_closure =
       message_callback_for_testing_.is_null() ? base::DoNothing()
                                               : message_callback_for_testing_;
+  refresher_.GotMessageFrom(app_id);
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
   // Drop message and unregister if app_id was unknown (maybe recently deleted).
   if (app_identifier.is_null()) {
-    DeliverMessageCallback(app_id, GURL::EmptyGURL(),
-                           -1 /* kInvalidServiceWorkerRegistrationId */,
-                           message, std::move(message_handled_closure),
-                           blink::mojom::PushEventStatus::UNKNOWN_APP_ID);
-    return;
+    base::Optional<PushMessagingAppIdentifier> refresh_identifier =
+        refresher_.FindActiveAppIdentifier(app_id);
+    if (!refresh_identifier) {
+      DeliverMessageCallback(app_id, GURL::EmptyGURL(),
+                             -1 /* kInvalidServiceWorkerRegistrationId */,
+                             message, std::move(message_handled_closure),
+                             blink::mojom::PushEventStatus::UNKNOWN_APP_ID);
+      return;
+    }
+    app_identifier = std::move(*refresh_identifier);
   }
 
   LogMessageReceivedEventToDevTools(
@@ -1272,6 +1279,9 @@ void PushMessagingServiceImpl::FirePushSubscriptionChange(
   // Ensure |completed_closure| is run after this function
   base::ScopedClosureRunner scoped_closure(std::move(completed_closure));
 
+  if (!base::FeatureList::IsEnabled(features::kPushSubscriptionChangeEvent))
+    return;
+
   if (app_identifier.is_null()) {
     FirePushSubscriptionChangeCallback(
         app_identifier, blink::mojom::PushEventStatus::UNKNOWN_APP_ID);
@@ -1334,6 +1344,136 @@ void PushMessagingServiceImpl::Observe(
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   in_flight_keep_alive_.reset();
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
+}
+
+// OnSubscriptionInvalidation methods ------------------------------------------
+
+void PushMessagingServiceImpl::OnSubscriptionInvalidation(
+    const std::string& app_id) {
+  DCHECK(base::FeatureList::IsEnabled(features::kPushSubscriptionChangeEvent))
+      << "It is not allowed to call this method when "
+         "features::kPushSubscriptionChangeEvent is disabled.";
+  PushMessagingAppIdentifier old_app_identifier =
+      PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
+  if (old_app_identifier.is_null())
+    return;
+
+  GetSenderId(profile_, old_app_identifier.origin(),
+              old_app_identifier.service_worker_registration_id(),
+              base::BindOnce(&PushMessagingServiceImpl::GetOldSubscription,
+                             weak_factory_.GetWeakPtr(), old_app_identifier));
+}
+
+void PushMessagingServiceImpl::GetOldSubscription(
+    PushMessagingAppIdentifier old_app_identifier,
+    const std::string& sender_id) {
+  GetPushSubscriptionFromAppIdentifier(
+      old_app_identifier,
+      base::BindOnce(&PushMessagingServiceImpl::StartRefresh,
+                     weak_factory_.GetWeakPtr(), old_app_identifier,
+                     sender_id));
+}
+
+void PushMessagingServiceImpl::StartRefresh(
+    PushMessagingAppIdentifier old_app_identifier,
+    const std::string& sender_id,
+    blink::mojom::PushSubscriptionPtr old_subscription) {
+  // Generate a new app_identifier with the same information, but a different
+  // app_id. Expiration time will be overwritten by DoSubscribe, if the flag
+  // features::kPushSubscriptionWithExpiration time is enabled
+  PushMessagingAppIdentifier new_app_identifier =
+      PushMessagingAppIdentifier::Generate(
+          old_app_identifier.origin(),
+          old_app_identifier.service_worker_registration_id(),
+          base::nullopt /* expiration_time */);
+
+  refresher_.Refresh(old_app_identifier, new_app_identifier.app_id(),
+                     sender_id);
+
+  UpdateSubscription(
+      new_app_identifier, push_messaging::MakeOptions(sender_id),
+      base::BindOnce(&PushMessagingServiceImpl::DidUpdateSubscription,
+                     weak_factory_.GetWeakPtr(), new_app_identifier.app_id(),
+                     old_app_identifier.app_id(), std::move(old_subscription),
+                     sender_id));
+}
+
+void PushMessagingServiceImpl::UpdateSubscription(
+    PushMessagingAppIdentifier app_identifier,
+    blink::mojom::PushSubscriptionOptionsPtr options,
+    RegisterCallback callback) {
+  // After getting a new GCM registration, update the |subscription_id| in SW
+  // database before running the callback
+  auto register_callback = base::BindOnce(
+      [](RegisterCallback cb, Profile* profile, PushMessagingAppIdentifier ai,
+         const std::string& registration_id, const GURL& endpoint,
+         const base::Optional<base::Time>& expiration_time,
+         const std::vector<uint8_t>& p256dh, const std::vector<uint8_t>& auth,
+         blink::mojom::PushRegistrationStatus status) {
+        base::OnceClosure closure =
+            base::BindOnce(std::move(cb), registration_id, endpoint,
+                           expiration_time, p256dh, auth, status);
+        base::ScopedClosureRunner closure_runner(std::move(closure));
+        if (status ==
+            blink::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE) {
+          UpdatePushSubscriptionId(profile, ai.origin(),
+                                   ai.service_worker_registration_id(),
+                                   registration_id, closure_runner.Release());
+        }
+      },
+      std::move(callback), profile_, app_identifier);
+  // Subscribe using the new subscription information, this will overwrite
+  // the expiration time of |app_identifier|
+  DoSubscribe(app_identifier, std::move(options), std::move(register_callback),
+              -1 /* render_process_id */, -1 /* render_frame_id */,
+              CONTENT_SETTING_ALLOW);
+}
+
+void PushMessagingServiceImpl::DidUpdateSubscription(
+    const std::string& new_app_id,
+    const std::string& old_app_id,
+    blink::mojom::PushSubscriptionPtr old_subscription,
+    const std::string& sender_id,
+    const std::string& registration_id,
+    const GURL& endpoint,
+    const base::Optional<base::Time>& expiration_time,
+    const std::vector<uint8_t>& p256dh,
+    const std::vector<uint8_t>& auth,
+    blink::mojom::PushRegistrationStatus status) {
+  // TODO(crbug.com/1122545): Currently, if |status| is unsuccessful, the old
+  // subscription remains in SW database and preferences and the refresh is
+  // aborted. Instead, one should abort the refresh and retry to refresh
+  // periodically.
+  if (status !=
+      blink::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE) {
+    return;
+  }
+
+  // Old subscription is now replaced locally by the new subscription
+  refresher_.OnSubscriptionUpdated(new_app_id);
+
+  PushMessagingAppIdentifier new_app_identifier =
+      PushMessagingAppIdentifier::FindByAppId(profile_, new_app_id);
+
+  FirePushSubscriptionChange(
+      new_app_identifier, base::DoNothing(),
+      blink::mojom::PushSubscription::New(
+          endpoint, expiration_time, push_messaging::MakeOptions(sender_id),
+          p256dh, auth),
+      std::move(old_subscription));
+}
+
+// PushMessagingRefresher::Observer methods ------------------------------------
+
+void PushMessagingServiceImpl::OnOldSubscriptionExpired(
+    const std::string& app_id,
+    const std::string& sender_id) {
+  NOTIMPLEMENTED();
+}
+
+void PushMessagingServiceImpl::OnRefreshFinished(
+    const PushMessagingAppIdentifier& app_identifier) {
+  NOTIMPLEMENTED();
 }
 
 // Helper methods --------------------------------------------------------------
