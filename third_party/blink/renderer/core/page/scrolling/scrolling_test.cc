@@ -998,8 +998,10 @@ TEST_P(ScrollingTest, overflowScrolling) {
   EXPECT_TRUE(scroll_node->user_scrollable_horizontal);
   EXPECT_TRUE(scroll_node->user_scrollable_vertical);
 
-  EXPECT_TRUE(ScrollbarLayerForScrollNode(scroll_node, cc::HORIZONTAL));
-  EXPECT_TRUE(ScrollbarLayerForScrollNode(scroll_node, cc::VERTICAL));
+  EXPECT_TRUE(ScrollbarLayerForScrollNode(
+      scroll_node, cc::ScrollbarOrientation::HORIZONTAL));
+  EXPECT_TRUE(ScrollbarLayerForScrollNode(scroll_node,
+                                          cc::ScrollbarOrientation::VERTICAL));
 }
 
 TEST_P(ScrollingTest, overflowHidden) {
@@ -1045,8 +1047,10 @@ TEST_P(ScrollingTest, iframeScrolling) {
   const auto* scroll_node =
       ScrollNodeForScrollableArea(inner_frame_view->LayoutViewport());
   ASSERT_TRUE(scroll_node);
-  EXPECT_TRUE(ScrollbarLayerForScrollNode(scroll_node, cc::HORIZONTAL));
-  EXPECT_TRUE(ScrollbarLayerForScrollNode(scroll_node, cc::VERTICAL));
+  EXPECT_TRUE(ScrollbarLayerForScrollNode(
+      scroll_node, cc::ScrollbarOrientation::HORIZONTAL));
+  EXPECT_TRUE(ScrollbarLayerForScrollNode(scroll_node,
+                                          cc::ScrollbarOrientation::VERTICAL));
 }
 
 TEST_P(ScrollingTest, rtlIframe) {
@@ -1111,8 +1115,8 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
       ScrollNodeForScrollableArea(frame_view->LayoutViewport());
   ASSERT_TRUE(scroll_node);
 
-  const auto* horizontal_scrollbar_layer =
-      ScrollbarLayerForScrollNode(scroll_node, cc::HORIZONTAL);
+  const auto* horizontal_scrollbar_layer = ScrollbarLayerForScrollNode(
+      scroll_node, cc::ScrollbarOrientation::HORIZONTAL);
   ASSERT_TRUE(horizontal_scrollbar_layer);
   // TODO(crbug.com/1029620): CAP needs more accurate contents_opaque.
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
@@ -1122,7 +1126,8 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
               horizontal_scrollbar_layer->contents_opaque());
   }
 
-  EXPECT_FALSE(ScrollbarLayerForScrollNode(scroll_node, cc::VERTICAL));
+  EXPECT_FALSE(ScrollbarLayerForScrollNode(scroll_node,
+                                           cc::ScrollbarOrientation::VERTICAL));
 }
 
 TEST_P(ScrollingTest, NestedIFramesMainThreadScrollingRegion) {

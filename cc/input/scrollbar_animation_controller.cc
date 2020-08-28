@@ -352,8 +352,10 @@ bool ScrollbarAnimationController::ScrollbarsHidden() const {
 
 bool ScrollbarAnimationController::Captured() const {
   DCHECK(need_thinning_animation_);
-  return GetScrollbarAnimationController(VERTICAL).captured() ||
-         GetScrollbarAnimationController(HORIZONTAL).captured();
+  return GetScrollbarAnimationController(ScrollbarOrientation::VERTICAL)
+             .captured() ||
+         GetScrollbarAnimationController(ScrollbarOrientation::HORIZONTAL)
+             .captured();
 }
 
 void ScrollbarAnimationController::Show() {

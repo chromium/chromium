@@ -222,7 +222,9 @@ void PaintedOverlayScrollbarLayerImpl::SetAperture(const gfx::Rect& aperture) {
 }
 
 float PaintedOverlayScrollbarLayerImpl::TrackLength() const {
-  return track_length_ + (orientation() == VERTICAL ? vertical_adjust() : 0);
+  return track_length_ + (orientation() == ScrollbarOrientation::VERTICAL
+                              ? vertical_adjust()
+                              : 0);
 }
 
 bool PaintedOverlayScrollbarLayerImpl::IsThumbResizable() const {

@@ -66,7 +66,7 @@ void PaintedOverlayScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
   PaintedOverlayScrollbarLayerImpl* scrollbar_layer =
       static_cast<PaintedOverlayScrollbarLayerImpl*>(layer);
 
-  if (orientation() == HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
     scrollbar_layer->SetThumbThickness(thumb_size_.height());
     scrollbar_layer->SetThumbLength(thumb_size_.width());
     scrollbar_layer->SetTrackStart(track_rect_.x());
@@ -130,7 +130,7 @@ bool PaintedOverlayScrollbarLayer::Update() {
 }
 
 bool PaintedOverlayScrollbarLayer::PaintThumbIfNeeded() {
-  if (!scrollbar_->NeedsRepaintPart(THUMB) && thumb_resource_)
+  if (!scrollbar_->NeedsRepaintPart(ScrollbarPart::THUMB) && thumb_resource_)
     return false;
 
   gfx::Size paint_size = scrollbar_->NinePatchThumbCanvasSize();
@@ -142,7 +142,7 @@ bool PaintedOverlayScrollbarLayer::PaintThumbIfNeeded() {
   SkiaPaintCanvas canvas(skbitmap);
   canvas.clear(SK_ColorTRANSPARENT);
 
-  scrollbar_->PaintPart(&canvas, THUMB, gfx::Rect(paint_size));
+  scrollbar_->PaintPart(&canvas, ScrollbarPart::THUMB, gfx::Rect(paint_size));
   // Make sure that the pixels are no longer mutable to unavoid unnecessary
   // allocation and copying.
   skbitmap.setImmutable();
@@ -175,7 +175,7 @@ bool PaintedOverlayScrollbarLayer::PaintTickmarks() {
   SkiaPaintCanvas canvas(skbitmap);
   canvas.clear(SK_ColorTRANSPARENT);
 
-  scrollbar_->PaintPart(&canvas, TRACK_BUTTONS_TICKMARKS,
+  scrollbar_->PaintPart(&canvas, ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
                         gfx::Rect(paint_size));
   // Make sure that the pixels are no longer mutable to unavoid unnecessary
   // allocation and copying.

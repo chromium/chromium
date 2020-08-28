@@ -64,7 +64,7 @@ void PaintedScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
   scrollbar_layer->SetBackButtonRect(back_button_rect_);
   scrollbar_layer->SetForwardButtonRect(forward_button_rect_);
   scrollbar_layer->SetTrackRect(track_rect_);
-  if (orientation() == HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
     scrollbar_layer->SetThumbThickness(thumb_size_.height());
     scrollbar_layer->SetThumbLength(thumb_size_.width());
   } else {
@@ -176,21 +176,24 @@ bool PaintedScrollbarLayer::Update() {
   }
 
   if (!track_resource_ ||
-      scrollbar_->NeedsRepaintPart(TRACK_BUTTONS_TICKMARKS)) {
+      scrollbar_->NeedsRepaintPart(ScrollbarPart::TRACK_BUTTONS_TICKMARKS)) {
     track_resource_ = ScopedUIResource::Create(
         layer_tree_host()->GetUIResourceManager(),
-        RasterizeScrollbarPart(size, scaled_size, TRACK_BUTTONS_TICKMARKS));
+        RasterizeScrollbarPart(size, scaled_size,
+                               ScrollbarPart::TRACK_BUTTONS_TICKMARKS));
     SetNeedsPushProperties();
     updated = true;
   }
 
   gfx::Size scaled_thumb_size = LayerSizeToContentSize(thumb_size_);
   if (has_thumb_ && !scaled_thumb_size.IsEmpty()) {
-    if (!thumb_resource_ || scrollbar_->NeedsRepaintPart(THUMB) ||
+    if (!thumb_resource_ ||
+        scrollbar_->NeedsRepaintPart(ScrollbarPart::THUMB) ||
         scaled_thumb_size != thumb_resource_->GetBitmap(0, false).GetSize()) {
       thumb_resource_ = ScopedUIResource::Create(
           layer_tree_host()->GetUIResourceManager(),
-          RasterizeScrollbarPart(thumb_size_, scaled_thumb_size, THUMB));
+          RasterizeScrollbarPart(thumb_size_, scaled_thumb_size,
+                                 ScrollbarPart::THUMB));
       SetNeedsPushProperties();
       updated = true;
     }

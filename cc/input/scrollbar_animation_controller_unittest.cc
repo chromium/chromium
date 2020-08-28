@@ -79,9 +79,11 @@ class ScrollbarAnimationControllerAuraOverlayTest
 
     scroll_layer_ = AddLayer<LayerImpl>();
     h_scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        HORIZONTAL, kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar);
+        ScrollbarOrientation::HORIZONTAL, kThumbThickness, kTrackStart,
+        kIsLeftSideVerticalScrollbar);
     v_scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        VERTICAL, kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar);
+        ScrollbarOrientation::VERTICAL, kThumbThickness, kTrackStart,
+        kIsLeftSideVerticalScrollbar);
     SetElementIdsForTesting();
 
     clip_layer_ = root_layer();
@@ -1341,7 +1343,9 @@ class ScrollbarAnimationControllerAndroidTest
             base::TimeDelta::FromSeconds(3), 0.0f);
   }
 
-  virtual ScrollbarOrientation orientation() const { return HORIZONTAL; }
+  virtual ScrollbarOrientation orientation() const {
+    return ScrollbarOrientation::HORIZONTAL;
+  }
 
   std::unique_ptr<ScrollbarAnimationController> scrollbar_controller_;
   LayerImpl* scroll_layer_;
@@ -1356,7 +1360,9 @@ class ScrollbarAnimationControllerAndroidTest
 class VerticalScrollbarAnimationControllerAndroidTest
     : public ScrollbarAnimationControllerAndroidTest {
  protected:
-  ScrollbarOrientation orientation() const override { return VERTICAL; }
+  ScrollbarOrientation orientation() const override {
+    return ScrollbarOrientation::VERTICAL;
+  }
 };
 
 TEST_F(ScrollbarAnimationControllerAndroidTest, HiddenInBegin) {
@@ -1403,7 +1409,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
 TEST_F(ScrollbarAnimationControllerAndroidTest, HideOnResize) {
   EXPECT_EQ(gfx::Size(200, 200), scroll_layer_->bounds());
 
-  EXPECT_EQ(HORIZONTAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::HORIZONTAL, scrollbar_layer_->orientation());
 
   // Shrink along X axis, horizontal scrollbar should appear.
   GetScrollNode(scroll_layer_)->container_bounds = gfx::Size(100, 200);
@@ -1426,7 +1432,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, HideOnResize) {
 TEST_F(VerticalScrollbarAnimationControllerAndroidTest, HideOnResize) {
   EXPECT_EQ(gfx::Size(200, 200), scroll_layer_->bounds());
 
-  EXPECT_EQ(VERTICAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::VERTICAL, scrollbar_layer_->orientation());
 
   // Shrink along X axis, vertical scrollbar should remain invisible.
   GetScrollNode(scroll_layer_)->container_bounds = gfx::Size(100, 200);
@@ -1446,7 +1452,7 @@ TEST_F(VerticalScrollbarAnimationControllerAndroidTest, HideOnResize) {
 }
 
 TEST_F(ScrollbarAnimationControllerAndroidTest, HideOnUserNonScrollableHorz) {
-  EXPECT_EQ(HORIZONTAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::HORIZONTAL, scrollbar_layer_->orientation());
 
   GetScrollNode(scroll_layer_)->user_scrollable_horizontal = false;
   UpdateActiveTreeDrawProperties();
@@ -1456,7 +1462,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, HideOnUserNonScrollableHorz) {
 }
 
 TEST_F(ScrollbarAnimationControllerAndroidTest, ShowOnUserNonScrollableVert) {
-  EXPECT_EQ(HORIZONTAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::HORIZONTAL, scrollbar_layer_->orientation());
 
   GetScrollNode(scroll_layer_)->user_scrollable_vertical = false;
   UpdateActiveTreeDrawProperties();
@@ -1467,7 +1473,7 @@ TEST_F(ScrollbarAnimationControllerAndroidTest, ShowOnUserNonScrollableVert) {
 
 TEST_F(VerticalScrollbarAnimationControllerAndroidTest,
        HideOnUserNonScrollableVert) {
-  EXPECT_EQ(VERTICAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::VERTICAL, scrollbar_layer_->orientation());
 
   GetScrollNode(scroll_layer_)->user_scrollable_vertical = false;
   UpdateActiveTreeDrawProperties();
@@ -1478,7 +1484,7 @@ TEST_F(VerticalScrollbarAnimationControllerAndroidTest,
 
 TEST_F(VerticalScrollbarAnimationControllerAndroidTest,
        ShowOnUserNonScrollableHorz) {
-  EXPECT_EQ(VERTICAL, scrollbar_layer_->orientation());
+  EXPECT_EQ(ScrollbarOrientation::VERTICAL, scrollbar_layer_->orientation());
 
   GetScrollNode(scroll_layer_)->user_scrollable_horizontal = false;
   UpdateActiveTreeDrawProperties();

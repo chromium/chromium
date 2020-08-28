@@ -71,7 +71,8 @@ class SingleScrollbarAnimationControllerThinningTest
     const bool kIsLeftSideVerticalScrollbar = false;
 
     scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
-        HORIZONTAL, kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar);
+        ScrollbarOrientation::HORIZONTAL, kThumbThickness, kTrackStart,
+        kIsLeftSideVerticalScrollbar);
 
     scrollbar_layer_->SetBounds(gfx::Size(kThumbThickness, kTrackLength));
     scrollbar_layer_->SetScrollElementId(scroll_layer->element_id());
@@ -86,7 +87,8 @@ class SingleScrollbarAnimationControllerThinningTest
     UpdateActiveTreeDrawProperties();
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(
-        scroll_layer->element_id(), HORIZONTAL, &client_, kThinningDuration);
+        scroll_layer->element_id(), ScrollbarOrientation::HORIZONTAL, &client_,
+        kThinningDuration);
   }
 
   std::unique_ptr<SingleScrollbarAnimationControllerThinning>

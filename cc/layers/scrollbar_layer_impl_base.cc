@@ -227,7 +227,7 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
       thumb_thickness * (1.f - thumb_thickness_scale_factor);
 
   gfx::RectF thumb_rect;
-  if (orientation_ == HORIZONTAL) {
+  if (orientation_ == ScrollbarOrientation::HORIZONTAL) {
     thumb_rect = gfx::RectF(thumb_offset,
                             vertical_adjust_ + thumb_thickness_adjustment,
                             thumb_length,

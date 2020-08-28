@@ -38,7 +38,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   UIResourceBitmap track_bitmap(track_sk_bitmap);
   impl.host_impl()->CreateUIResource(track_uid, track_bitmap);
 
-  ScrollbarOrientation orientation = VERTICAL;
+  ScrollbarOrientation orientation = ScrollbarOrientation::VERTICAL;
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
       impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);

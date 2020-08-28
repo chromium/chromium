@@ -632,7 +632,9 @@ void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
     int thumb_thickness = theme.ThumbThickness(scale);
     int scrollbar_margin = theme.ScrollbarMargin(scale);
     cc::ScrollbarOrientation cc_orientation =
-        orientation == kHorizontalScrollbar ? cc::HORIZONTAL : cc::VERTICAL;
+        orientation == kHorizontalScrollbar
+            ? cc::ScrollbarOrientation::HORIZONTAL
+            : cc::ScrollbarOrientation::VERTICAL;
     scrollbar_layer = cc::SolidColorScrollbarLayer::Create(
         cc_orientation, thumb_thickness, scrollbar_margin,
         /*is_left_side_vertical_scrollbar*/ false);

@@ -13,7 +13,8 @@ scoped_refptr<FakePaintedScrollbarLayer> FakePaintedScrollbarLayer::Create(
     bool paint_during_update,
     bool has_thumb,
     ElementId scrolling_element_id) {
-  return Create(paint_during_update, has_thumb, HORIZONTAL, false, false,
+  return Create(paint_during_update, has_thumb,
+                ScrollbarOrientation::HORIZONTAL, false, false,
                 scrolling_element_id);
 }
 

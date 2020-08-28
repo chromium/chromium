@@ -210,7 +210,8 @@ int PaintedScrollbarLayerImpl::ThumbLength() const {
 }
 
 int PaintedScrollbarLayerImpl::TrackStart() const {
-  return orientation() == VERTICAL ? track_rect_.y() : track_rect_.x();
+  return orientation() == ScrollbarOrientation::VERTICAL ? track_rect_.y()
+                                                         : track_rect_.x();
 }
 
 void PaintedScrollbarLayerImpl::SetBackButtonRect(gfx::Rect back_button_rect) {
@@ -240,7 +241,7 @@ gfx::Rect PaintedScrollbarLayerImpl::BackTrackRect() const {
   const gfx::Rect thumb_rect = ComputeThumbQuadRect();
   const int rect_x = track_rect_.x();
   const int rect_y = track_rect_.y();
-  if (orientation() == HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
     int width = thumb_rect.x() - rect_x;
     int height = track_rect_.height();
     return gfx::Rect(rect_x, rect_y, width, height);
@@ -254,7 +255,7 @@ gfx::Rect PaintedScrollbarLayerImpl::BackTrackRect() const {
 gfx::Rect PaintedScrollbarLayerImpl::ForwardTrackRect() const {
   const gfx::Rect thumb_rect = ComputeThumbQuadRect();
   const int track_end = TrackStart() + TrackLength();
-  if (orientation() == HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
     int rect_x = thumb_rect.right();
     int rect_y = track_rect_.y();
     int width = track_end - rect_x;
@@ -277,7 +278,7 @@ void PaintedScrollbarLayerImpl::SetTrackRect(gfx::Rect track_rect) {
 }
 
 float PaintedScrollbarLayerImpl::TrackLength() const {
-  if (orientation() == VERTICAL)
+  if (orientation() == ScrollbarOrientation::VERTICAL)
     return track_rect_.height() + vertical_adjust();
   else
     return track_rect_.width();

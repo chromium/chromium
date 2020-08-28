@@ -17,7 +17,7 @@ namespace blink {
 
 CompositorElementId ScrollbarElementId(const cc::Scrollbar& scrollbar) {
   return CompositorElementIdFromUniqueObjectId(
-      13579, scrollbar.Orientation() == cc::HORIZONTAL
+      13579, scrollbar.Orientation() == cc::ScrollbarOrientation::HORIZONTAL
                  ? CompositorElementIdNamespace::kHorizontalScrollbar
                  : CompositorElementIdNamespace::kVerticalScrollbar);
 }
@@ -38,7 +38,7 @@ scoped_refptr<TransformPaintPropertyNode> CreateScrollTranslation() {
 
 TEST(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
   auto scrollbar = base::MakeRefCounted<cc::FakeScrollbar>();
-  scrollbar->set_orientation(cc::HORIZONTAL);
+  scrollbar->set_orientation(cc::ScrollbarOrientation::HORIZONTAL);
   scrollbar->set_is_solid_color(true);
   scrollbar->set_is_overlay(true);
   scrollbar->set_track_rect(gfx::Rect(2, 90, 96, 10));
@@ -58,7 +58,8 @@ TEST(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
 
   auto* scrollbar_layer =
       static_cast<cc::SolidColorScrollbarLayer*>(layer.get());
-  EXPECT_EQ(cc::HORIZONTAL, scrollbar_layer->orientation());
+  EXPECT_EQ(cc::ScrollbarOrientation::HORIZONTAL,
+            scrollbar_layer->orientation());
   EXPECT_EQ(7, scrollbar_layer->thumb_thickness());
   EXPECT_EQ(2, scrollbar_layer->track_start());
   EXPECT_EQ(element_id, scrollbar_layer->element_id());
@@ -69,7 +70,7 @@ TEST(ScrollbarDisplayItemTest, HorizontalSolidColorScrollbar) {
 
 TEST(ScrollbarDisplayItemTest, VerticalSolidColorScrollbar) {
   auto scrollbar = base::MakeRefCounted<cc::FakeScrollbar>();
-  scrollbar->set_orientation(cc::VERTICAL);
+  scrollbar->set_orientation(cc::ScrollbarOrientation::VERTICAL);
   scrollbar->set_is_solid_color(true);
   scrollbar->set_is_overlay(true);
   scrollbar->set_track_rect(gfx::Rect(90, 2, 10, 96));
@@ -89,7 +90,7 @@ TEST(ScrollbarDisplayItemTest, VerticalSolidColorScrollbar) {
 
   auto* scrollbar_layer =
       static_cast<cc::SolidColorScrollbarLayer*>(layer.get());
-  EXPECT_EQ(cc::VERTICAL, scrollbar_layer->orientation());
+  EXPECT_EQ(cc::ScrollbarOrientation::VERTICAL, scrollbar_layer->orientation());
   EXPECT_EQ(7, scrollbar_layer->thumb_thickness());
   EXPECT_EQ(2, scrollbar_layer->track_start());
   EXPECT_EQ(element_id, scrollbar_layer->element_id());

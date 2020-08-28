@@ -213,7 +213,7 @@ class PaintedOverlayScrollbar : public FakeScrollbar {
   PaintedOverlayScrollbar() {
     set_should_paint(true);
     set_has_thumb(true);
-    set_orientation(VERTICAL);
+    set_orientation(ScrollbarOrientation::VERTICAL);
     set_is_overlay(true);
     set_thumb_size(gfx::Size(15, 50));
     set_track_rect(gfx::Rect(0, 0, 15, 400));

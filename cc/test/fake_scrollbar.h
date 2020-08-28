@@ -72,7 +72,7 @@ class FakeScrollbar : public Scrollbar {
   bool should_paint_ = false;
   bool has_thumb_ = false;
   bool has_tickmarks_ = false;
-  ScrollbarOrientation orientation_ = HORIZONTAL;
+  ScrollbarOrientation orientation_ = ScrollbarOrientation::HORIZONTAL;
   bool is_left_side_vertical_scrollbar_ = false;
   bool is_solid_color_ = false;
   bool is_overlay_ = false;

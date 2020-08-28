@@ -59,28 +59,36 @@ TEST(PaintedScrollbarLayerTest, NeedsPaint) {
   // yet been initialized.
   scrollbar->set_needs_repaint_thumb(false);
   scrollbar->set_needs_repaint_track(false);
-  EXPECT_CALL(*scrollbar, PaintPart(_, THUMB, _)).Times(1);
-  EXPECT_CALL(*scrollbar, PaintPart(_, TRACK_BUTTONS_TICKMARKS, _)).Times(1);
+  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::THUMB, _)).Times(1);
+  EXPECT_CALL(*scrollbar,
+              PaintPart(_, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, _))
+      .Times(1);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // The next update will paint nothing because the first update caused a paint.
-  EXPECT_CALL(*scrollbar, PaintPart(_, THUMB, _)).Times(0);
-  EXPECT_CALL(*scrollbar, PaintPart(_, TRACK_BUTTONS_TICKMARKS, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::THUMB, _)).Times(0);
+  EXPECT_CALL(*scrollbar,
+              PaintPart(_, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, _))
+      .Times(0);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // Enable the thumb.
-  EXPECT_CALL(*scrollbar, PaintPart(_, THUMB, _)).Times(1);
-  EXPECT_CALL(*scrollbar, PaintPart(_, TRACK_BUTTONS_TICKMARKS, _)).Times(0);
+  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::THUMB, _)).Times(1);
+  EXPECT_CALL(*scrollbar,
+              PaintPart(_, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, _))
+      .Times(0);
   scrollbar->set_needs_repaint_thumb(true);
   scrollbar->set_needs_repaint_track(false);
   scrollbar_layer->Update();
   Mock::VerifyAndClearExpectations(scrollbar.get());
 
   // Enable the track.
-  EXPECT_CALL(*scrollbar, PaintPart(_, THUMB, _)).Times(0);
-  EXPECT_CALL(*scrollbar, PaintPart(_, TRACK_BUTTONS_TICKMARKS, _)).Times(1);
+  EXPECT_CALL(*scrollbar, PaintPart(_, ScrollbarPart::THUMB, _)).Times(0);
+  EXPECT_CALL(*scrollbar,
+              PaintPart(_, ScrollbarPart::TRACK_BUTTONS_TICKMARKS, _))
+      .Times(1);
   scrollbar->set_needs_repaint_thumb(false);
   scrollbar->set_needs_repaint_track(true);
   scrollbar_layer->Update();

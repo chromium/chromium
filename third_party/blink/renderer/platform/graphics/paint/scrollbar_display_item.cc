@@ -38,8 +38,9 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
 
 sk_sp<const PaintRecord> ScrollbarDisplayItem::Paint() const {
   if (record_) {
-    DCHECK(!scrollbar_->NeedsRepaintPart(cc::TRACK_BUTTONS_TICKMARKS));
-    DCHECK(!scrollbar_->NeedsRepaintPart(cc::THUMB));
+    DCHECK(!scrollbar_->NeedsRepaintPart(
+        cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS));
+    DCHECK(!scrollbar_->NeedsRepaintPart(cc::ScrollbarPart::THUMB));
     return record_;
   }
 
@@ -47,10 +48,11 @@ sk_sp<const PaintRecord> ScrollbarDisplayItem::Paint() const {
   const IntRect& rect = VisualRect();
   recorder.beginRecording(rect);
   auto* canvas = recorder.getRecordingCanvas();
-  scrollbar_->PaintPart(canvas, cc::TRACK_BUTTONS_TICKMARKS, rect);
+  scrollbar_->PaintPart(canvas, cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
+                        rect);
   gfx::Rect thumb_rect = scrollbar_->ThumbRect();
   thumb_rect.Offset(rect.X(), rect.Y());
-  scrollbar_->PaintPart(canvas, cc::THUMB, thumb_rect);
+  scrollbar_->PaintPart(canvas, cc::ScrollbarPart::THUMB, thumb_rect);
 
   record_ = recorder.finishRecordingAsPicture();
   return record_;
@@ -76,8 +78,8 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
       gfx::Vector2dF(FloatPoint(VisualRect().Location())));
   layer->SetBounds(gfx::Size(VisualRect().Size()));
 
-  if (scrollbar_->NeedsRepaintPart(cc::THUMB) ||
-      scrollbar_->NeedsRepaintPart(cc::TRACK_BUTTONS_TICKMARKS))
+  if (scrollbar_->NeedsRepaintPart(cc::ScrollbarPart::THUMB) ||
+      scrollbar_->NeedsRepaintPart(cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS))
     layer->SetNeedsDisplay();
   return layer;
 }

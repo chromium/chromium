@@ -27,9 +27,9 @@ static constexpr int kDefaultWinScrollbarThickness = 17;
 
 namespace cc {
 
-enum ScrollbarOrientation { HORIZONTAL, VERTICAL };
+enum class ScrollbarOrientation { HORIZONTAL, VERTICAL };
 
-enum ScrollbarPart {
+enum class ScrollbarPart {
   THUMB,
   TRACK_BUTTONS_TICKMARKS,  // for PartNeedsRepaint() and PaintPart() only.
   BACK_BUTTON,

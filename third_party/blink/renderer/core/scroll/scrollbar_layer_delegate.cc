@@ -52,8 +52,8 @@ bool ScrollbarLayerDelegate::IsSame(const cc::Scrollbar& other) const {
 
 cc::ScrollbarOrientation ScrollbarLayerDelegate::Orientation() const {
   if (scrollbar_->Orientation() == kHorizontalScrollbar)
-    return cc::HORIZONTAL;
-  return cc::VERTICAL;
+    return cc::ScrollbarOrientation::HORIZONTAL;
+  return cc::ScrollbarOrientation::VERTICAL;
 }
 
 bool ScrollbarLayerDelegate::IsLeftSideVerticalScrollbar() const {
@@ -112,7 +112,7 @@ float ScrollbarLayerDelegate::Opacity() const {
 }
 
 bool ScrollbarLayerDelegate::NeedsRepaintPart(cc::ScrollbarPart part) const {
-  if (part == cc::THUMB)
+  if (part == cc::ScrollbarPart::THUMB)
     return scrollbar_->ThumbNeedsRepaint();
   return scrollbar_->TrackNeedsRepaint();
 }
@@ -161,11 +161,11 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
   ScopedScrollbarPainter painter(*canvas, device_scale_factor_);
   // The canvas coordinate space is relative to the part's origin.
   switch (part) {
-    case cc::THUMB:
+    case cc::ScrollbarPart::THUMB:
       theme.PaintThumb(painter.Context(), *scrollbar_, IntRect(rect));
       scrollbar_->ClearThumbNeedsRepaint();
       break;
-    case cc::TRACK_BUTTONS_TICKMARKS: {
+    case cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS: {
       DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().Size());
       IntPoint offset(IntPoint(rect.origin()) -
                       scrollbar_->FrameRect().Location());

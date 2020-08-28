@@ -22,7 +22,8 @@ scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
     scoped_refptr<Scrollbar> scrollbar,
     SolidColorScrollbarLayer* existing_layer) {
   DCHECK(scrollbar->IsOverlay());
-  bool is_horizontal = scrollbar->Orientation() == HORIZONTAL;
+  bool is_horizontal =
+      scrollbar->Orientation() == ScrollbarOrientation::HORIZONTAL;
   gfx::Rect thumb_rect = scrollbar->ThumbRect();
   int thumb_thickness =
       is_horizontal ? thumb_rect.height() : thumb_rect.width();
