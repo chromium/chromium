@@ -48,6 +48,7 @@ class TableSplitter extends cr.ui.Splitter {
       const icon = document.createElement('cr-icon-button');
       icon.setAttribute('iron-icon', 'files32:small-dragger');
       icon.setAttribute('tabindex', '-1');
+      icon.setAttribute('aria-hidden', 'true');
       icon.classList.add('splitter-icon');
       this.appendChild(icon);
     }
