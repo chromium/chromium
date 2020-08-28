@@ -79,7 +79,8 @@ class CC_EXPORT CompositorTimingHistory {
   void BeginImplFrameNotExpectedSoon();
   void WillBeginMainFrame(const viz::BeginFrameArgs& args);
   void BeginMainFrameStarted(base::TimeTicks begin_main_frame_start_time_);
-  void BeginMainFrameAborted(const viz::BeginFrameId& id);
+  void BeginMainFrameAborted(const viz::BeginFrameId& id,
+                             CommitEarlyOutReason reason);
   void NotifyReadyToCommit(std::unique_ptr<BeginMainFrameMetrics> details);
   void WillCommit();
   void DidCommit();

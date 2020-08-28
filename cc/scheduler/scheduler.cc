@@ -193,7 +193,7 @@ void Scheduler::BeginMainFrameAborted(CommitEarlyOutReason reason) {
   TRACE_EVENT1("cc", "Scheduler::BeginMainFrameAborted", "reason",
                CommitEarlyOutReasonToString(reason));
   compositor_timing_history_->BeginMainFrameAborted(
-      last_dispatched_begin_main_frame_args_.frame_id);
+      last_dispatched_begin_main_frame_args_.frame_id, reason);
   state_machine_.BeginMainFrameAborted(reason);
   ProcessScheduledActions();
 }

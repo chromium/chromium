@@ -588,8 +588,20 @@ void CompositorTimingHistory::BeginMainFrameStarted(
 }
 
 void CompositorTimingHistory::BeginMainFrameAborted(
-    const viz::BeginFrameId& id) {
+    const viz::BeginFrameId& id,
+    CommitEarlyOutReason reason) {
   compositor_frame_reporting_controller_->BeginMainFrameAborted(id);
+  switch (reason) {
+    case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
+    case CommitEarlyOutReason::FINISHED_NO_UPDATES:
+      compositor_frame_reporting_controller_->DidNotProduceFrame(
+          id, FrameSkippedReason::kNoDamage);
+      break;
+    case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
+    case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
+      break;
+  }
+
   base::TimeTicks begin_main_frame_end_time = Now();
   DidBeginMainFrame(begin_main_frame_end_time);
 }
