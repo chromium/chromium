@@ -406,7 +406,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // When DevToolsWindow is docked, it owns main_web_contents_. When it isn't
   // docked, the tab strip model owns the main_web_contents_.
   bool is_docked_;
-  std::unique_ptr<content::WebContents> owned_main_web_contents_;
+  class OwnedMainWebContents;
+  std::unique_ptr<OwnedMainWebContents> owned_main_web_contents_;
 
   const bool can_dock_;
   bool close_on_detach_;

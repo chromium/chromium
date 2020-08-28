@@ -34,6 +34,7 @@ enum class KeepAliveOrigin {
 
   // c/b/devtools
   REMOTE_DEBUGGING,
+  DEVTOOLS_WINDOW,
 
   // c/b/extensions
   NATIVE_MESSAGING_HOST_ERROR_REPORT,

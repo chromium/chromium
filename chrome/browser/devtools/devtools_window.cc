@@ -37,6 +37,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -379,6 +381,27 @@ class DevToolsWindow::Throttle : public content::NavigationThrottle {
   DevToolsWindow* devtools_window_;
 
   DISALLOW_COPY_AND_ASSIGN(Throttle);
+};
+
+// Helper class that holds the owned main WebContents for the docked
+// devtools window and maintains a keepalive object that keeps the browser
+// main loop alive long enough for the WebContents to clean up properly.
+class DevToolsWindow::OwnedMainWebContents {
+ public:
+  explicit OwnedMainWebContents(
+      std::unique_ptr<content::WebContents> web_contents)
+      : keep_alive_(KeepAliveOrigin::DEVTOOLS_WINDOW,
+                    KeepAliveRestartOption::DISABLED),
+        web_contents_(std::move(web_contents)) {}
+
+  static std::unique_ptr<content::WebContents> TakeWebContents(
+      std::unique_ptr<OwnedMainWebContents> instance) {
+    return std::move(instance->web_contents_);
+  }
+
+ private:
+  ScopedKeepAlive keep_alive_;
+  std::unique_ptr<content::WebContents> web_contents_;
 };
 
 // DevToolsWindow -------------------------------------------------------------
@@ -949,7 +972,8 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
       bindings_(bindings),
       browser_(nullptr),
       is_docked_(true),
-      owned_main_web_contents_(std::move(main_web_contents)),
+      owned_main_web_contents_(
+          std::make_unique<OwnedMainWebContents>(std::move(main_web_contents))),
       can_dock_(can_dock),
       close_on_detach_(true),
       // This initialization allows external front-end to work without changes.
@@ -1376,8 +1400,9 @@ void DevToolsWindow::SetIsDocked(bool dock_requested) {
     // okay to just null the raw pointer here.
     browser_ = nullptr;
 
-    owned_main_web_contents_ = tab_strip_model->DetachWebContentsAt(
-        tab_strip_model->GetIndexOfWebContents(main_web_contents_));
+    owned_main_web_contents_ = std::make_unique<OwnedMainWebContents>(
+        tab_strip_model->DetachWebContentsAt(
+            tab_strip_model->GetIndexOfWebContents(main_web_contents_)));
   } else if (!dock_requested && was_docked) {
     UpdateBrowserWindow();
   }
@@ -1551,8 +1576,9 @@ void DevToolsWindow::CreateDevToolsBrowser() {
 
   browser_ = new Browser(Browser::CreateParams::CreateForDevTools(profile_));
   browser_->tab_strip_model()->AddWebContents(
-      std::move(owned_main_web_contents_), -1,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, TabStripModel::ADD_ACTIVE);
+      OwnedMainWebContents::TakeWebContents(
+          std::move(owned_main_web_contents_)),
+      -1, ui::PAGE_TRANSITION_AUTO_TOPLEVEL, TabStripModel::ADD_ACTIVE);
   main_web_contents_->SyncRendererPrefs();
 }
 
