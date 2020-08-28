@@ -198,6 +198,7 @@
 #include "third_party/blink/renderer/core/html/custom/v0_custom_element_registration_context.h"
 #include "third_party/blink/renderer/core/html/document_all_name_collection.h"
 #include "third_party/blink/renderer/core/html/document_name_collection.h"
+#include "third_party/blink/renderer/core/html/forms/email_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -7299,6 +7300,12 @@ Document::EnsureDocumentExplicitRootIntersectionObserverData() {
         MakeGarbageCollected<ElementIntersectionObserverData>();
   }
   return *document_explicit_root_intersection_observer_data_;
+}
+
+const ScriptRegexp& Document::EnsureEmailRegexp() const {
+  if (!data_->email_regexp_)
+    data_->email_regexp_ = EmailInputType::CreateEmailRegexp();
+  return *data_->email_regexp_;
 }
 
 void Document::AddConsoleMessage(ConsoleMessage* message,

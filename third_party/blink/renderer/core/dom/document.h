@@ -188,6 +188,7 @@ class Text;
 class TrustedHTML;
 class ScriptElementBase;
 class ScriptPromise;
+class ScriptRegexp;
 class ScriptRunner;
 class ScriptableDocumentParser;
 class ScriptedAnimationController;
@@ -985,6 +986,8 @@ class CORE_EXPORT Document : public ContainerNode,
   DocumentExplicitRootIntersectionObserverData() const;
   ElementIntersectionObserverData&
   EnsureDocumentExplicitRootIntersectionObserverData();
+
+  const ScriptRegexp& EnsureEmailRegexp() const;
 
   // Returns the owning element in the parent document. Returns nullptr if
   // this is the top level document or the owner is remote.

@@ -2030,12 +2030,6 @@ bool HTMLInputElement::IsDraggedSlider() const {
   return input_type_view_->IsDraggedSlider();
 }
 
-ScriptRegexp& HTMLInputElement::EnsureEmailRegexp() const {
-  if (!email_regexp_)
-    email_regexp_ = EmailInputType::CreateEmailRegexp();
-  return *email_regexp_;
-}
-
 void HTMLInputElement::MaybeReportPiiMetrics() {
   // Don't report metrics if the field is empty.
   if (value().IsEmpty())
@@ -2061,7 +2055,8 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
   // https://www.rfc-editor.org/errata_search.php?rfc=3696) in addition to
   // matching with the pattern given by the HTML standard.
   if (value().length() <= kMaxEmailFieldLength &&
-      EmailInputType::IsValidEmailAddress(EnsureEmailRegexp(), value())) {
+      EmailInputType::IsValidEmailAddress(GetDocument().EnsureEmailRegexp(),
+                                          value())) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kEmailFieldDetected_PatternMatch);
   }

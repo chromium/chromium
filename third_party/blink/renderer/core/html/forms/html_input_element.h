@@ -347,8 +347,6 @@ class CORE_EXPORT HTMLInputElement
     form_element_pii_type_ = form_element_pii_type;
   }
 
-  ScriptRegexp& EnsureEmailRegexp() const;
-
  protected:
   void DefaultEventHandler(Event&) override;
   void CreateShadowSubtree();
@@ -478,7 +476,6 @@ class CORE_EXPORT HTMLInputElement
   Member<ListAttributeTargetObserver> list_attribute_target_observer_;
 
   FormElementPiiType form_element_pii_type_ = FormElementPiiType::kUnknown;
-  mutable std::unique_ptr<ScriptRegexp> email_regexp_;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLInputElementTest, RadioKeyDownDCHECKFailure);
 };

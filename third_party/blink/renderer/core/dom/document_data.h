@@ -7,6 +7,7 @@
 
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
@@ -19,7 +20,7 @@ namespace blink {
 //   Other instances should not have strong references to the DocumentData.
 // Lifetime: A DocumentData instance is created on a Document creation, and
 //   is never destructed before the Document.
-class DocumentData : public GarbageCollected<DocumentData> {
+class DocumentData final : public GarbageCollected<DocumentData> {
  public:
   explicit DocumentData(ExecutionContext* context)
       : permission_service_(context), has_trust_tokens_answerer_(context) {}
@@ -50,6 +51,9 @@ class DocumentData : public GarbageCollected<DocumentData> {
   // or on connection error, whichever comes first.
   HeapHashSet<Member<ScriptPromiseResolver>>
       pending_has_trust_tokens_resolvers_;
+
+  // To do email regex checks.
+  std::unique_ptr<ScriptRegexp> email_regexp_;
 
   friend class Document;
 };
