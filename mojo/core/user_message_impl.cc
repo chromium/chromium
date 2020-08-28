@@ -515,6 +515,15 @@ MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
     }
   }
 
+  if (user_payload_size_ > GetConfiguration().max_message_num_bytes) {
+    // We want to be aware of new undocumented cases of very large IPCs. Crashes
+    // which result from this stack should be addressed by either marking the
+    // corresponding mojom interface method with an [UnlimitedSize] attribute;
+    // or preferably by refactoring to avoid such large message contents, for
+    // example by batching calls or leveraging shared memory where feasible.
+    base::debug::DumpWithoutCrashing();
+  }
+
   return MOJO_RESULT_OK;
 }
 
@@ -533,15 +542,6 @@ MojoResult UserMessageImpl::CommitSize() {
     Core::Get()->ReleaseDispatchersForTransit(pending_handle_attachments_,
                                               true);
     pending_handle_attachments_.clear();
-  }
-
-  if (user_payload_size_ > GetConfiguration().max_message_num_bytes) {
-    // We want to be aware of new undocumented cases of very large IPCs. Crashes
-    // which result from this stack should be addressed by either marking the
-    // corresponding mojom interface method with an [UnlimitedSize] attribute;
-    // or preferably by refactoring to avoid such large message contents, for
-    // example by batching calls or leveraging shared memory where feasible.
-    base::debug::DumpWithoutCrashing();
   }
 
   is_committed_ = true;
