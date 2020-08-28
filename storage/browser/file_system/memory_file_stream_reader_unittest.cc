@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/test/task_environment.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -63,9 +62,9 @@ class MemoryFileStreamReaderTest : public testing::Test {
       const base::FilePath& path,
       int64_t initial_offset,
       const base::Time& expected_modification_time) {
-    return FileStreamReader::CreateForMemoryFile(
-        base::ThreadTaskRunnerHandle::Get(), file_util_->GetWeakPtr(), path,
-        initial_offset, expected_modification_time);
+    return FileStreamReader::CreateForMemoryFile(file_util_->GetWeakPtr(), path,
+                                                 initial_offset,
+                                                 expected_modification_time);
   }
 
   void TouchTestFile(base::TimeDelta delta) {
@@ -84,7 +83,6 @@ class MemoryFileStreamReaderTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir file_system_directory_;
   std::unique_ptr<ObfuscatedFileUtilMemoryDelegate> file_util_;
   base::Time test_file_modification_time_;
@@ -115,14 +113,14 @@ TEST_F(MemoryFileStreamReaderTest, Empty) {
   ASSERT_EQ(net::OK, result);
   ASSERT_EQ(0U, data.size());
 
-  int64_t length_result = GetLengthFromReader(reader.get());
+  int64_t length_result = reader->GetLength(base::DoNothing());
   ASSERT_EQ(0, length_result);
 }
 
 TEST_F(MemoryFileStreamReaderTest, GetLengthNormal) {
   std::unique_ptr<FileStreamReader> reader(
       CreateFileReader(test_path(), 0, test_file_modification_time()));
-  int64_t result = GetLengthFromReader(reader.get());
+  int64_t result = reader->GetLength(base::DoNothing());
   ASSERT_EQ(kTestDataSize, result);
 }
 
@@ -133,7 +131,7 @@ TEST_F(MemoryFileStreamReaderTest, GetLengthAfterModified) {
 
   std::unique_ptr<FileStreamReader> reader(
       CreateFileReader(test_path(), 0, test_file_modification_time()));
-  int64_t result = GetLengthFromReader(reader.get());
+  int64_t result = reader->GetLength(base::DoNothing());
   ASSERT_EQ(net::ERR_UPLOAD_FILE_CHANGED, result);
 }
 
@@ -144,14 +142,14 @@ TEST_F(MemoryFileStreamReaderTest, GetLengthAfterModifiedWithNoExpectedTime) {
 
   std::unique_ptr<FileStreamReader> reader(
       CreateFileReader(test_path(), 0, base::Time()));
-  int64_t result = GetLengthFromReader(reader.get());
+  int64_t result = reader->GetLength(base::DoNothing());
   ASSERT_EQ(kTestDataSize, result);
 }
 
 TEST_F(MemoryFileStreamReaderTest, GetLengthWithOffset) {
   std::unique_ptr<FileStreamReader> reader(
       CreateFileReader(test_path(), 3, base::Time()));
-  int64_t result = GetLengthFromReader(reader.get());
+  int64_t result = reader->GetLength(base::DoNothing());
   // Initial offset does not affect the result of GetLength.
   ASSERT_EQ(kTestDataSize, result);
 }

@@ -126,8 +126,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtilMemoryDelegate
                               const DecomposedPath& dest_dp,
                               bool move);
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   // The root of the directory tree.
   std::unique_ptr<Entry> root_;
 

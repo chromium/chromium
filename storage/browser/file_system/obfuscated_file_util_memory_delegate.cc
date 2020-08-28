@@ -56,17 +56,13 @@ struct ObfuscatedFileUtilMemoryDelegate::DecomposedPath {
 ObfuscatedFileUtilMemoryDelegate::ObfuscatedFileUtilMemoryDelegate(
     const base::FilePath& file_system_directory)
     : root_(std::make_unique<Entry>(Entry::kDirectory)) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
   file_system_directory.GetComponents(&root_path_components_);
 }
 
-ObfuscatedFileUtilMemoryDelegate::~ObfuscatedFileUtilMemoryDelegate() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
+ObfuscatedFileUtilMemoryDelegate::~ObfuscatedFileUtilMemoryDelegate() = default;
 
 base::Optional<ObfuscatedFileUtilMemoryDelegate::DecomposedPath>
 ObfuscatedFileUtilMemoryDelegate::ParsePath(const base::FilePath& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DecomposedPath dp;
 
   path.GetComponents(&dp.components);
@@ -122,7 +118,6 @@ ObfuscatedFileUtilMemoryDelegate::ParsePath(const base::FilePath& path) {
 
 bool ObfuscatedFileUtilMemoryDelegate::DirectoryExists(
     const base::FilePath& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   return dp && dp->entry && dp->entry->type == Entry::kDirectory;
 }
@@ -131,7 +126,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CreateDirectory(
     const base::FilePath& path,
     bool exclusive,
     bool recursive) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   if (!dp)
     return base::File::FILE_ERROR_NOT_FOUND;
@@ -175,7 +169,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CreateDirectory(
 bool ObfuscatedFileUtilMemoryDelegate::DeleteFileOrDirectory(
     const base::FilePath& path,
     bool recursive) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   if (!dp)
     return false;
@@ -192,13 +185,11 @@ bool ObfuscatedFileUtilMemoryDelegate::DeleteFileOrDirectory(
 }
 
 bool ObfuscatedFileUtilMemoryDelegate::IsLink(const base::FilePath& file_path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // In-memory file system does not support links.
   return false;
 }
 
 bool ObfuscatedFileUtilMemoryDelegate::PathExists(const base::FilePath& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   return dp && dp->entry;
 }
@@ -206,7 +197,6 @@ bool ObfuscatedFileUtilMemoryDelegate::PathExists(const base::FilePath& path) {
 base::File ObfuscatedFileUtilMemoryDelegate::CreateOrOpen(
     const base::FilePath& path,
     int file_flags) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO:(https://crbug.com/936722): Once the output of this function is
   // changed to base::File::Error, it can use CreateOrOpenInternal to perform
   // the task and return the result.
@@ -216,7 +206,6 @@ base::File ObfuscatedFileUtilMemoryDelegate::CreateOrOpen(
 void ObfuscatedFileUtilMemoryDelegate::CreateOrOpenInternal(
     const DecomposedPath& dp,
     int file_flags) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!dp.entry) {
     dp.parent->directory_content.emplace(dp.components.back(), Entry::kFile);
     return;
@@ -232,7 +221,6 @@ void ObfuscatedFileUtilMemoryDelegate::CreateOrOpenInternal(
 
 base::File::Error ObfuscatedFileUtilMemoryDelegate::DeleteFile(
     const base::FilePath& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   if (!dp || !dp->entry)
     return base::File::FILE_ERROR_NOT_FOUND;
@@ -247,7 +235,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::DeleteFile(
 base::File::Error ObfuscatedFileUtilMemoryDelegate::EnsureFileExists(
     const base::FilePath& path,
     bool* created) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   *created = false;
   if (!dp || !dp->parent)
@@ -266,7 +253,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::EnsureFileExists(
 base::File::Error ObfuscatedFileUtilMemoryDelegate::GetFileInfo(
     const base::FilePath& path,
     base::File::Info* file_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   if (!dp || !dp->entry)
     return base::File::FILE_ERROR_NOT_FOUND;
@@ -286,7 +272,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::Touch(
     const base::FilePath& path,
     const base::Time& last_access_time,
     const base::Time& last_modified_time) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   if (!dp || !dp->entry)
     return base::File::FILE_ERROR_FAILED;
@@ -300,7 +285,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::Touch(
 base::File::Error ObfuscatedFileUtilMemoryDelegate::Truncate(
     const base::FilePath& path,
     int64_t length) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   if (!dp || !dp->entry || dp->entry->type != Entry::kFile)
     return base::File::FILE_ERROR_NOT_FOUND;
@@ -313,7 +297,6 @@ NativeFileUtil::CopyOrMoveMode
 ObfuscatedFileUtilMemoryDelegate::CopyOrMoveModeForDestination(
     const FileSystemURL& /*dest_url*/,
     bool copy) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return copy ? NativeFileUtil::CopyOrMoveMode::COPY_SYNC
               : NativeFileUtil::CopyOrMoveMode::MOVE;
 }
@@ -323,7 +306,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyOrMoveFile(
     const base::FilePath& dest_path,
     FileSystemOperation::CopyOrMoveOption option,
     NativeFileUtil::CopyOrMoveMode mode) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> src_dp = ParsePath(src_path);
   base::Optional<DecomposedPath> dest_dp = ParsePath(dest_path);
 
@@ -379,7 +361,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyOrMoveFile(
 bool ObfuscatedFileUtilMemoryDelegate::MoveDirectoryInternal(
     const DecomposedPath& src_dp,
     const DecomposedPath& dest_dp) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(src_dp.entry->type == Entry::kDirectory);
   if (!dest_dp.entry) {
     dest_dp.parent->directory_content.insert(
@@ -398,7 +379,6 @@ bool ObfuscatedFileUtilMemoryDelegate::CopyOrMoveFileInternal(
     const DecomposedPath& src_dp,
     const DecomposedPath& dest_dp,
     bool move) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(src_dp.entry->type == Entry::kFile);
   if (dest_dp.entry)
     dest_dp.parent->directory_content.erase(dest_dp.components.back());
@@ -424,7 +404,6 @@ bool ObfuscatedFileUtilMemoryDelegate::CopyOrMoveFileInternal(
 
 size_t ObfuscatedFileUtilMemoryDelegate::ComputeDirectorySize(
     const base::FilePath& path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   if (!dp || !dp->entry || dp->entry->type != Entry::kDirectory)
     return 0;
@@ -450,7 +429,6 @@ int ObfuscatedFileUtilMemoryDelegate::ReadFile(const base::FilePath& path,
                                                int64_t offset,
                                                net::IOBuffer* buf,
                                                int buf_len) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
   if (!dp || dp->entry->type != Entry::kFile)
     return net::ERR_FILE_NOT_FOUND;
@@ -471,10 +449,9 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(const base::FilePath& path,
                                                 int64_t offset,
                                                 net::IOBuffer* buf,
                                                 int buf_len) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dp = ParsePath(path);
 
-  if (!dp || !dp->entry || dp->entry->type != Entry::kFile)
+  if (!dp || dp->entry->type != Entry::kFile)
     return net::ERR_FILE_NOT_FOUND;
 
   size_t offset_u = static_cast<size_t>(offset);
@@ -502,7 +479,6 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(const base::FilePath& path,
 base::File::Error ObfuscatedFileUtilMemoryDelegate::CreateFileForTesting(
     const base::FilePath& path,
     base::span<const char> content) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool created;
   base::File::Error result = EnsureFileExists(path, &created);
   if (result != base::File::FILE_OK)
@@ -522,7 +498,6 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyInForeignFile(
     const base::FilePath& dest_path,
     FileSystemOperation::CopyOrMoveOption /* option */,
     NativeFileUtil::CopyOrMoveMode /* mode */) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Optional<DecomposedPath> dest_dp = ParsePath(dest_path);
 
   if (!dest_dp || !dest_dp->parent)
