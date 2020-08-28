@@ -45,16 +45,6 @@ void MarkingVisitorBase::RegisterWeakCallback(WeakCallback callback,
   weak_callback_worklist_.Push({callback, object});
 }
 
-void MarkingVisitorBase::RegisterBackingStoreCallback(
-    const void* backing,
-    MovingObjectCallback callback) {
-  if (marking_mode_ != kGlobalMarkingWithCompaction)
-    return;
-  if (Heap().ShouldRegisterMovingAddress()) {
-    backing_store_callback_worklist_.Push({backing, callback});
-  }
-}
-
 void MarkingVisitorBase::RegisterMovableSlot(const void* const* slot) {
   if (marking_mode_ != kGlobalMarkingWithCompaction)
     return;

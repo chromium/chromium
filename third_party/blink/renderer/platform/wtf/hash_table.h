@@ -219,12 +219,6 @@ template <typename Key,
           typename KeyTraits,
           typename Allocator>
 class HashTableConstIterator;
-// TODO(bartekn): Remove once fully transitioned to LinkedHashSet.
-template <typename Value,
-          typename HashFunctions,
-          typename HashTraits,
-          typename Allocator>
-class LegacyLinkedHashSet;
 template <WeakHandlingFlag x,
           typename T,
           typename U,
@@ -1019,9 +1013,6 @@ class HashTable final
             typename Y,
             typename Z>
   friend struct WeakProcessingHashTableHelper;
-  // TODO(bartekn): Remove once fully transitioned to LinkedHashSet.
-  template <typename T, typename U, typename V, typename W>
-  friend class LegacyLinkedHashSet;
   template <typename T, size_t, typename U, typename V>
   friend class ListHashSet;
 };

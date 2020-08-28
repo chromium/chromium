@@ -3098,10 +3098,6 @@ void OrderedSetHelper(bool strong) {
 
 TEST_F(HeapTest, HeapWeakLinkedHashSet) {
   ClearOutOldGarbage();
-  OrderedSetHelper<HeapLegacyLinkedHashSet<Member<IntWrapper>>>(true);
-  ClearOutOldGarbage();
-  OrderedSetHelper<HeapLegacyLinkedHashSet<WeakMember<IntWrapper>>>(false);
-  ClearOutOldGarbage();
   OrderedSetHelper<HeapListHashSet<Member<IntWrapper>>>(true);
   ClearOutOldGarbage();
   OrderedSetHelper<HeapLinkedHashSet<Member<IntWrapper>>>(true);
@@ -3133,11 +3129,6 @@ void ClearInWeakProcessingHelper() {
 }
 
 TEST_F(HeapTest, ClearInWeakProcessing) {
-  ClearOutOldGarbage();
-  ClearInWeakProcessingHelper<HeapLegacyLinkedHashSet<Member<IntWrapper>>>();
-  ClearOutOldGarbage();
-  ClearInWeakProcessingHelper<
-      HeapLegacyLinkedHashSet<WeakMember<IntWrapper>>>();
   ClearOutOldGarbage();
   ClearInWeakProcessingHelper<HeapLinkedHashSet<Member<IntWrapper>>>();
   ClearOutOldGarbage();
@@ -3265,10 +3256,6 @@ typedef HeapHashSet<PairWeakStrong> WeakStrongSet;
 typedef HeapHashSet<PairWeakUnwrapped> WeakUnwrappedSet;
 typedef HeapHashSet<PairStrongWeak> StrongWeakSet;
 typedef HeapHashSet<PairUnwrappedWeak> UnwrappedWeakSet;
-typedef HeapLegacyLinkedHashSet<PairWeakStrong> WeakStrongLegacyLinkedSet;
-typedef HeapLegacyLinkedHashSet<PairWeakUnwrapped> WeakUnwrappedLegacyLinkedSet;
-typedef HeapLegacyLinkedHashSet<PairStrongWeak> StrongWeakLegacyLinkedSet;
-typedef HeapLegacyLinkedHashSet<PairUnwrappedWeak> UnwrappedWeakLegacyLinkedSet;
 typedef HeapLinkedHashSet<PairWeakStrong> WeakStrongLinkedSet;
 typedef HeapLinkedHashSet<PairWeakUnwrapped> WeakUnwrappedLinkedSet;
 typedef HeapLinkedHashSet<PairStrongWeak> StrongWeakLinkedSet;
@@ -3352,7 +3339,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
   typedef HeapHashMap<Member<IntWrapper>, WeakMember<IntWrapper>> StrongWeak;
   typedef HeapHashMap<WeakMember<IntWrapper>, WeakMember<IntWrapper>> WeakWeak;
   typedef HeapHashSet<WeakMember<IntWrapper>> WeakSet;
-  typedef HeapLegacyLinkedHashSet<WeakMember<IntWrapper>> WeakOrderedLegacySet;
   typedef HeapLinkedHashSet<WeakMember<IntWrapper>> WeakOrderedSet;
 
   ClearOutOldGarbage();
@@ -3362,9 +3348,8 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
   const int kWeakWeakIndex = 2;
   const int kNumberOfMapIndices = 3;
   const int kWeakSetIndex = 3;
-  const int kWeakOrderedLegacySetIndex = 4;
-  const int kWeakOrderedSetIndex = 5;
-  const int kNumberOfCollections = 6;
+  const int kWeakOrderedSetIndex = 4;
+  const int kNumberOfCollections = 5;
 
   for (int test_run = 0; test_run < 4; test_run++) {
     for (int collection_number = 0; collection_number < kNumberOfCollections;
@@ -3385,8 +3370,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
       Persistent<WeakWeak> weak_weak = MakeGarbageCollected<WeakWeak>();
 
       Persistent<WeakSet> weak_set = MakeGarbageCollected<WeakSet>();
-      Persistent<WeakOrderedLegacySet> weak_ordered_legacy_set =
-          MakeGarbageCollected<WeakOrderedLegacySet>();
       Persistent<WeakOrderedSet> weak_ordered_set =
           MakeGarbageCollected<WeakOrderedSet>();
 
@@ -3401,7 +3384,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
         strong_weak->insert(wrapped2, wrapped);
         weak_weak->insert(wrapped, wrapped2);
         weak_set->insert(wrapped);
-        weak_ordered_legacy_set->insert(wrapped);
         weak_ordered_set->insert(wrapped);
       }
 
@@ -3409,7 +3391,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
       EXPECT_EQ(64u, strong_weak->size());
       EXPECT_EQ(64u, weak_weak->size());
       EXPECT_EQ(64u, weak_set->size());
-      EXPECT_EQ(64u, weak_ordered_legacy_set->size());
       EXPECT_EQ(64u, weak_ordered_set->size());
 
       // Collect garbage. This should change nothing since we are keeping
@@ -3420,7 +3401,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
       EXPECT_EQ(64u, strong_weak->size());
       EXPECT_EQ(64u, weak_weak->size());
       EXPECT_EQ(64u, weak_set->size());
-      EXPECT_EQ(64u, weak_ordered_legacy_set->size());
       EXPECT_EQ(64u, weak_ordered_set->size());
 
       for (int i = 0; i < 128; i += 2) {
@@ -3430,7 +3410,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
         EXPECT_EQ(wrapped, strong_weak->at(wrapped2));
         EXPECT_EQ(wrapped2, weak_weak->at(wrapped));
         EXPECT_TRUE(weak_set->Contains(wrapped));
-        EXPECT_TRUE(weak_ordered_legacy_set->Contains(wrapped));
         EXPECT_TRUE(weak_ordered_set->Contains(wrapped));
       }
 
@@ -3445,8 +3424,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
         weak_weak->clear();
       if (collection_number != kWeakSetIndex)
         weak_set->clear();
-      if (collection_number != kWeakOrderedLegacySetIndex)
-        weak_ordered_legacy_set->clear();
       if (collection_number != kWeakOrderedSetIndex)
         weak_ordered_set->clear();
 
@@ -3455,8 +3432,7 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
         StrongWeak::iterator it2 = strong_weak->begin();
         WeakWeak::iterator it3 = weak_weak->begin();
         WeakSet::iterator it4 = weak_set->begin();
-        WeakOrderedLegacySet::iterator it5 = weak_ordered_legacy_set->begin();
-        WeakOrderedSet::iterator it6 = weak_ordered_set->begin();
+        WeakOrderedSet::iterator it5 = weak_ordered_set->begin();
         // Collect garbage. This should change nothing since the
         // iterators make the collections strong.
         ConservativelyCollectGarbage();
@@ -3472,12 +3448,9 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
         } else if (collection_number == kWeakSetIndex) {
           EXPECT_EQ(64u, weak_set->size());
           SetIteratorCheck(it4, weak_set->end(), 64);
-        } else if (collection_number == kWeakOrderedLegacySetIndex) {
-          EXPECT_EQ(64u, weak_ordered_legacy_set->size());
-          SetIteratorCheck(it5, weak_ordered_legacy_set->end(), 64);
         } else if (collection_number == kWeakOrderedSetIndex) {
           EXPECT_EQ(64u, weak_ordered_set->size());
-          SetIteratorCheck(it6, weak_ordered_set->end(), 64);
+          SetIteratorCheck(it5, weak_ordered_set->end(), 64);
         }
       } else {
         // Collect garbage. This causes weak processing to remove
@@ -3518,14 +3491,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
               weak_set->erase(keep_numbers_alive->at(i));
             else
               count++;
-          } else if (collection_number == kWeakOrderedLegacySetIndex &&
-                     first_alive) {
-            ASSERT_TRUE(
-                weak_ordered_legacy_set->Contains(keep_numbers_alive->at(i)));
-            if (delete_afterwards)
-              weak_ordered_legacy_set->erase(keep_numbers_alive->at(i));
-            else
-              count++;
           } else if (collection_number == kWeakOrderedSetIndex && first_alive) {
             ASSERT_TRUE(weak_ordered_set->Contains(keep_numbers_alive->at(i)));
             if (delete_afterwards)
@@ -3542,7 +3507,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
             strong_weak->insert(wrapped, wrapped);
             weak_weak->insert(wrapped, wrapped);
             weak_set->insert(wrapped);
-            weak_ordered_legacy_set->insert(wrapped);
             weak_ordered_set->insert(wrapped);
           }
         }
@@ -3554,16 +3518,13 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
           EXPECT_EQ(count + added, weak_weak->size());
         else if (collection_number == kWeakSetIndex)
           EXPECT_EQ(count + added, weak_set->size());
-        else if (collection_number == kWeakOrderedLegacySetIndex)
-          EXPECT_EQ(count + added, weak_ordered_legacy_set->size());
         else if (collection_number == kWeakOrderedSetIndex)
           EXPECT_EQ(count + added, weak_ordered_set->size());
         WeakStrong::iterator it1 = weak_strong->begin();
         StrongWeak::iterator it2 = strong_weak->begin();
         WeakWeak::iterator it3 = weak_weak->begin();
         WeakSet::iterator it4 = weak_set->begin();
-        WeakOrderedLegacySet::iterator it5 = weak_ordered_legacy_set->begin();
-        WeakOrderedSet::iterator it6 = weak_ordered_set->begin();
+        WeakOrderedSet::iterator it5 = weak_ordered_set->begin();
         MapIteratorCheck(
             it1, weak_strong->end(),
             (collection_number == kWeakStrongIndex ? count : 0) + added);
@@ -3577,11 +3538,7 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
             it4, weak_set->end(),
             (collection_number == kWeakSetIndex ? count : 0) + added);
         SetIteratorCheck(
-            it5, weak_ordered_legacy_set->end(),
-            (collection_number == kWeakOrderedLegacySetIndex ? count : 0) +
-                added);
-        SetIteratorCheck(
-            it6, weak_ordered_set->end(),
+            it5, weak_ordered_set->end(),
             (collection_number == kWeakOrderedSetIndex ? count : 0) + added);
       }
       for (unsigned i = 0; i < 128 + added; i++)
@@ -3591,7 +3548,6 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
       EXPECT_EQ(0u, strong_weak->size());
       EXPECT_EQ(0u, weak_weak->size());
       EXPECT_EQ(0u, weak_set->size());
-      EXPECT_EQ(0u, weak_ordered_legacy_set->size());
       EXPECT_EQ(0u, weak_ordered_set->size());
     }
   }
@@ -5243,9 +5199,6 @@ TEST_F(HeapTest, IsGarbageCollected) {
   static_assert(
       WTF::IsGarbageCollectedType<HeapHashSet<Member<IntWrapper>>>::value,
       "HeapHashSet");
-  static_assert(WTF::IsGarbageCollectedType<
-                    HeapLegacyLinkedHashSet<Member<IntWrapper>>>::value,
-                "HeapLegacyLinkedHashSet");
   static_assert(
       WTF::IsGarbageCollectedType<HeapLinkedHashSet<Member<IntWrapper>>>::value,
       "HeapLinkedHashSet");

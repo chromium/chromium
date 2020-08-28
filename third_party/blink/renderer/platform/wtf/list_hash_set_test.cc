@@ -52,7 +52,6 @@ struct CustomHashTraitsForInt : public HashTraits<int> {
 
 using SetTypes = testing::Types<ListHashSet<int>,
                                 ListHashSet<int, 1>,
-                                LegacyLinkedHashSet<int>,
                                 LinkedHashSet<int, CustomHashTraitsForInt>>;
 TYPED_TEST_SUITE(ListOrLinkedHashSetTest, SetTypes);
 
@@ -240,7 +239,6 @@ TYPED_TEST(ListOrLinkedHashSetTest, Find) {
 TYPED_TEST(ListOrLinkedHashSetTest, InsertBefore) {
   using Set = TypeParam;
   bool can_modify_while_iterating =
-      !std::is_same<Set, LegacyLinkedHashSet<int>>::value &&
       !std::is_same<Set, LinkedHashSet<int, CustomHashTraitsForInt>>::value;
   Set set;
   set.insert(-1);
@@ -373,7 +371,6 @@ class ListOrLinkedHashSetRefPtrTest : public testing::Test {};
 using RefPtrSetTypes =
     testing::Types<ListHashSet<scoped_refptr<DummyRefCounted>>,
                    ListHashSet<scoped_refptr<DummyRefCounted>, 1>,
-                   LegacyLinkedHashSet<scoped_refptr<DummyRefCounted>>,
                    LinkedHashSet<scoped_refptr<DummyRefCounted>>>;
 TYPED_TEST_SUITE(ListOrLinkedHashSetRefPtrTest, RefPtrSetTypes);
 
@@ -487,8 +484,7 @@ class ListOrLinkedHashSetTranslatorTest : public testing::Test {};
 // TODO(bartekn): Add LinkedHashSet once it supports custom hash function.
 using TranslatorSetTypes =
     testing::Types<ListHashSet<Complicated, 256, ComplicatedHashFunctions>,
-                   ListHashSet<Complicated, 1, ComplicatedHashFunctions>,
-                   LegacyLinkedHashSet<Complicated, ComplicatedHashFunctions>>;
+                   ListHashSet<Complicated, 1, ComplicatedHashFunctions>>;
 TYPED_TEST_SUITE(ListOrLinkedHashSetTranslatorTest, TranslatorSetTypes);
 
 TYPED_TEST(ListOrLinkedHashSetTranslatorTest, ComplexityTranslator) {
@@ -594,7 +590,6 @@ class ListOrLinkedHashSetCountCopyTest : public testing::Test {};
 
 using CountCopySetTypes = testing::Types<ListHashSet<CountCopy>,
                                          ListHashSet<CountCopy, 1>,
-                                         LegacyLinkedHashSet<CountCopy>,
                                          LinkedHashSet<CountCopy>>;
 TYPED_TEST_SUITE(ListOrLinkedHashSetCountCopyTest, CountCopySetTypes);
 
@@ -627,8 +622,7 @@ class ListOrLinkedHashSetMoveOnlyTest : public testing::Test {};
 
 // TODO(bartekn): Add LinkedHashSet once it supports move-only type.
 using MoveOnlySetTypes = testing::Types<ListHashSet<MoveOnlyHashValue>,
-                                        ListHashSet<MoveOnlyHashValue, 1>,
-                                        LegacyLinkedHashSet<MoveOnlyHashValue>>;
+                                        ListHashSet<MoveOnlyHashValue, 1>>;
 TYPED_TEST_SUITE(ListOrLinkedHashSetMoveOnlyTest, MoveOnlySetTypes);
 
 TYPED_TEST(ListOrLinkedHashSetMoveOnlyTest, MoveOnlyValue) {
@@ -724,8 +718,7 @@ class ListOrLinkedHashSetInvalidZeroTest : public testing::Test {};
 // LinkedHashSet is tested in LinkedHashSetEmptyTest.EmptyString
 using InvalidZeroValueSetTypes =
     testing::Types<ListHashSet<InvalidZeroValue>,
-                   ListHashSet<InvalidZeroValue, 1>,
-                   LegacyLinkedHashSet<InvalidZeroValue>>;
+                   ListHashSet<InvalidZeroValue, 1>>;
 TYPED_TEST_SUITE(ListOrLinkedHashSetInvalidZeroTest, InvalidZeroValueSetTypes);
 
 TYPED_TEST(ListOrLinkedHashSetInvalidZeroTest, InvalidZeroValue) {

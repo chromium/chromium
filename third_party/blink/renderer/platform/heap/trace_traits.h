@@ -376,50 +376,6 @@ struct TraceInCollectionTrait<
   }
 };
 
-// Nodes used by LegacyLinkedHashSet.  Again we need two versions to
-// disambiguate the template.
-// TODO(bartekn): Remove once fully transitioned to LinkedHashSet.
-template <typename Value, typename Traits>
-struct TraceInCollectionTrait<kNoWeakHandling,
-                              LegacyLinkedHashSetNode<Value>,
-                              Traits> {
-  static bool IsAlive(const blink::LivenessBroker& info,
-                      const LegacyLinkedHashSetNode<Value>& self) {
-    return TraceInCollectionTrait<
-        kNoWeakHandling, Value,
-        typename Traits::ValueTraits>::IsAlive(info, self.value_);
-  }
-
-  static void Trace(blink::Visitor* visitor,
-                    const LegacyLinkedHashSetNode<Value>& self) {
-    static_assert(
-        IsTraceableInCollectionTrait<Traits>::value || IsWeak<Value>::value,
-        "T should be traceable (or weak)");
-    TraceInCollectionTrait<kNoWeakHandling, Value,
-                           typename Traits::ValueTraits>::Trace(visitor,
-                                                                self.value_);
-  }
-};
-
-template <typename Value, typename Traits>
-struct TraceInCollectionTrait<kWeakHandling,
-                              LegacyLinkedHashSetNode<Value>,
-                              Traits> {
-  static bool IsAlive(const blink::LivenessBroker& info,
-                      const LegacyLinkedHashSetNode<Value>& self) {
-    return TraceInCollectionTrait<
-        kWeakHandling, Value,
-        typename Traits::ValueTraits>::IsAlive(info, self.value_);
-  }
-
-  static void Trace(blink::Visitor* visitor,
-                    const LegacyLinkedHashSetNode<Value>& self) {
-    TraceInCollectionTrait<kWeakHandling, Value,
-                           typename Traits::ValueTraits>::Trace(visitor,
-                                                                self.value_);
-  }
-};
-
 // ListHashSetNode pointers (a ListHashSet is implemented as a hash table of
 // these pointers).
 template <typename Value, size_t inlineCapacity, typename Traits>

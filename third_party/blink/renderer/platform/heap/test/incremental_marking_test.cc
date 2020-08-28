@@ -904,34 +904,6 @@ TEST_F(IncrementalMarkingTest, HeapHashSetSwap) {
 }
 
 // =============================================================================
-// HeapLegacyLinkedHashSet support. ============================================
-// =============================================================================
-
-TEST_F(IncrementalMarkingTest, HeapLegacyLinkedHashSetInsert) {
-  Insert<HeapLegacyLinkedHashSet<Member<Object>>>();
-  // Weak references are strongified for the current cycle.
-  Insert<HeapLegacyLinkedHashSet<WeakMember<Object>>>();
-}
-
-TEST_F(IncrementalMarkingTest, HeapLegacyLinkedHashSetCopy) {
-  Copy<HeapLegacyLinkedHashSet<Member<Object>>>();
-  // Weak references are strongified for the current cycle.
-  Copy<HeapLegacyLinkedHashSet<WeakMember<Object>>>();
-}
-
-TEST_F(IncrementalMarkingTest, HeapLegacyLinkedHashSetMove) {
-  Move<HeapLegacyLinkedHashSet<Member<Object>>>();
-  // Weak references are strongified for the current cycle.
-  Move<HeapLegacyLinkedHashSet<WeakMember<Object>>>();
-}
-
-TEST_F(IncrementalMarkingTest, HeapLegacyLinkedHashSetSwap) {
-  Swap<HeapLegacyLinkedHashSet<Member<Object>>>();
-  // Weak references are strongified for the current cycle.
-  Swap<HeapLegacyLinkedHashSet<WeakMember<Object>>>();
-}
-
-// =============================================================================
 // HeapLinkedHashSet support. ==================================================
 // =============================================================================
 
@@ -1808,53 +1780,6 @@ class Destructed final : public GarbageCollected<Destructed> {
 };
 
 size_t Destructed::n_destructed = 0;
-
-class LegacyLinkedHashSetWrapper final
-    : public GarbageCollected<LegacyLinkedHashSetWrapper> {
- public:
-  using HashType = HeapLegacyLinkedHashSet<Member<Destructed>>;
-
-  LegacyLinkedHashSetWrapper() {
-    for (size_t i = 0; i < 10; ++i) {
-      hash_set_.insert(MakeGarbageCollected<Destructed>());
-    }
-  }
-
-  void Trace(Visitor* v) const { v->Trace(hash_set_); }
-
-  void Swap() {
-    HashType hash_set;
-    hash_set_.Swap(hash_set);
-  }
-
-  HashType hash_set_;
-};
-
-TEST_F(IncrementalMarkingTest, LegacyLinkedHashSetMovingCallback) {
-  ClearOutOldGarbage();
-
-  Destructed::n_destructed = 0;
-  {
-    HeapHashSet<Member<Destructed>> to_be_destroyed;
-    to_be_destroyed.ReserveCapacityForSize(100);
-  }
-  Persistent<LegacyLinkedHashSetWrapper> wrapper =
-      MakeGarbageCollected<LegacyLinkedHashSetWrapper>();
-
-  IncrementalMarkingTestDriver driver(ThreadState::Current());
-  ThreadState::Current()->EnableCompactionForNextGCForTesting();
-  driver.Start();
-  driver.FinishSteps();
-
-  // Destroy the link between original HeapLegacyLinkedHashSet object and its
-  // backing store.
-  wrapper->Swap();
-  DCHECK(wrapper->hash_set_.IsEmpty());
-
-  PreciselyCollectGarbage();
-
-  EXPECT_EQ(10u, Destructed::n_destructed);
-}
 
 class LinkedHashSetWrapper final
     : public GarbageCollected<LinkedHashSetWrapper> {

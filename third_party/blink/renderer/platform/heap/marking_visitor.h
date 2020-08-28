@@ -49,15 +49,6 @@ class PLATFORM_EXPORT MarkingVisitorBase : public Visitor {
   // to be in construction.
   void DynamicallyMarkAddress(ConstAddress);
 
-  // This callback mechanism is needed to account for backing store objects
-  // containing intra-object pointers, all of which must be relocated/rebased
-  // with respect to the moved-to location.
-  //
-  // |HeapLegacyLinkedHashSet<>| is currently the only abstraction which
-  // relies on this feature.
-  // TODO(bartekn): Remove once fully transitioned to LinkedHashSet.
-  void RegisterBackingStoreCallback(const void*, MovingObjectCallback) final;
-
   void RegisterMovableSlot(const void* const*) final;
 
   void RegisterWeakCallback(WeakCallback, const void*) final;
