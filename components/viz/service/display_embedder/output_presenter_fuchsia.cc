@@ -188,10 +188,10 @@ void OutputPresenterFuchsia::InitializeCapabilities(
   capabilities->supports_post_sub_buffer = false;
   capabilities->supports_commit_overlay_planes = false;
 
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
-      kRGBA_8888_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
-      kRGBA_8888_SkColorType;
+  capabilities->sk_color_type = kRGBA_8888_SkColorType;
+  capabilities->gr_backend_format =
+      dependency_->GetSharedContextState()->gr_context()->defaultBackendFormat(
+          capabilities->sk_color_type, GrRenderable::kYes);
 }
 
 bool OutputPresenterFuchsia::Reshape(const gfx::Size& size,

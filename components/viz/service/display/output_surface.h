@@ -117,9 +117,13 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // enforced if zero.
     int max_render_target_size = 0;
 
-    // SkColorType for all supported buffer formats.
-    SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =
-        {};
+    // The SkColorType and GrBackendFormat for non-HDR and HDR.
+    // TODO(penghuang): remove SkColorType and GrBackendFormat when
+    // OutputSurface uses the |format| passed to Reshape().
+    SkColorType sk_color_type = kUnknown_SkColorType;
+    GrBackendFormat gr_backend_format;
+    SkColorType sk_color_type_for_hdr = kUnknown_SkColorType;
+    GrBackendFormat gr_backend_format_for_hdr;
   };
 
   // Constructor for skia-based compositing.

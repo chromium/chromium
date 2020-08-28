@@ -214,6 +214,23 @@ OutputPresenterGL::OutputPresenterGL(scoped_refptr<gl::GLSurface> gl_surface,
   // GL is origin is at bottom left normally, all Surfaceless implementations
   // are flipped.
   DCHECK_EQ(gl_surface_->GetOrigin(), gfx::SurfaceOrigin::kTopLeft);
+
+  // TODO(https://crbug.com/958166): The initial |image_format_| should not be
+  // used, and the gfx::BufferFormat specified in Reshape should be used
+  // instead, because it may be updated to reflect changes in the content being
+  // displayed (e.g, HDR content appearing on-screen).
+#if defined(OS_APPLE)
+  image_format_ = BGRA_8888;
+#else
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    image_format_ =
+        GetResourceFormat(display::DisplaySnapshot::PrimaryFormat());
+    return;
+  }
+#endif
+  image_format_ = RGBA_8888;
+#endif
 }
 
 OutputPresenterGL::~OutputPresenterGL() = default;
@@ -230,28 +247,13 @@ void OutputPresenterGL::InitializeCapabilities(
   // We expect origin of buffers is at top left.
   capabilities->output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
 
-  // TODO(https://crbug.com/1108406): only add supported formats base on
-  // platform, driver, etc.
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGR_565)] =
-      kRGB_565_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_4444)] =
-      kARGB_4444_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBX_8888)] =
-      kRGB_888x_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
-      kRGBA_8888_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
-      kBGRA_8888_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
-      kBGRA_8888_SkColorType;
-  capabilities
-      ->sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_1010102)] =
-      kBGRA_1010102_SkColorType;
-  capabilities
-      ->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_1010102)] =
-      kRGBA_1010102_SkColorType;
-  capabilities->sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_F16)] =
-      kRGBA_F16_SkColorType;
+  // TODO(penghuang): Use defaultBackendFormat() in shared image implementation
+  // to make sure backend format is consistent.
+  capabilities->sk_color_type = ResourceFormatToClosestSkColorType(
+      true /* gpu_compositing */, image_format_);
+  capabilities->gr_backend_format =
+      dependency_->GetSharedContextState()->gr_context()->defaultBackendFormat(
+          capabilities->sk_color_type, GrRenderable::kYes);
 }
 
 bool OutputPresenterGL::Reshape(const gfx::Size& size,
@@ -259,7 +261,6 @@ bool OutputPresenterGL::Reshape(const gfx::Size& size,
                                 const gfx::ColorSpace& color_space,
                                 gfx::BufferFormat format,
                                 gfx::OverlayTransform transform) {
-  image_format_ = GetResourceFormat(format);
   return gl_surface_->Resize(size, device_scale_factor, color_space,
                              gfx::AlphaBitsForBufferFormat(format));
 }

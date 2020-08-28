@@ -81,6 +81,7 @@ class SkiaOutputDeviceGL final : public SkiaOutputDevice {
 
   sk_sp<SkSurface> sk_surface_;
 
+  bool supports_alpha_ = false;
   uint64_t backbuffer_estimated_size_ = 0;
 
   base::WeakPtrFactory<SkiaOutputDeviceGL> weak_ptr_factory_{this};

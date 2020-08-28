@@ -159,7 +159,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                              bool* result);
   SkSurfaceCharacterization CreateSkSurfaceCharacterization(
       const gfx::Size& surface_size,
-      gfx::BufferFormat format,
+      ResourceFormat format,
       bool mipmap,
       sk_sp<SkColorSpace> color_space,
       bool is_root_render_pass);
@@ -202,7 +202,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   gfx::Size size_;
   gfx::ColorSpace color_space_;
-  gfx::BufferFormat format_;
   bool is_hdr_ = false;
   SkSurfaceCharacterization characterization_;
   base::Optional<SkDeferredDisplayListRecorder> root_recorder_;
