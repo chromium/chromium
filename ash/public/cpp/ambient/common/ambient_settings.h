@@ -79,6 +79,10 @@ struct ASH_PUBLIC_EXPORT AmbientSettings {
   // Only selected album.
   std::vector<std::string> selected_album_ids;
 
+  // This setting is not exposed to the user as right now we are expecting
+  // weather info to always show on ambient.
+  bool show_weather = true;
+
   AmbientModeTemperatureUnit temperature_unit =
       AmbientModeTemperatureUnit::kFahrenheit;
 };

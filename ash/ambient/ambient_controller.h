@@ -21,12 +21,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+class PrefChangeRegistrar;
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 
@@ -55,6 +59,7 @@ class ASH_EXPORT AmbientController
   void OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility) override;
 
   // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnLockStateChanged(bool locked) override;
 
   // PowerStatus::Observer:
@@ -136,6 +141,11 @@ class ASH_EXPORT AmbientController
 
   void CloseWidget(bool immediately);
 
+  void RegisterPrefChanges(PrefService* pref_service);
+
+  // Invoked when the |kAmbientModeEnabled| pref state changed.
+  void OnEnabledStateChanged();
+
   AmbientContainerView* get_container_view_for_testing() {
     return container_view_;
   }
@@ -173,6 +183,9 @@ class ASH_EXPORT AmbientController
       power_manager_client_observer_{this};
 
   bool is_screen_off_ = false;
+
+  // Observes user profile prefs for ambient.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AmbientController);

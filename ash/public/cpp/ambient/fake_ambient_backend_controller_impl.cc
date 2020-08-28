@@ -86,6 +86,13 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
       FROM_HERE, base::BindOnce(std::move(callback), update));
 }
 
+void FakeAmbientBackendControllerImpl::InitSettings(
+    UpdateSettingsCallback callback) {
+  // Post task to simulate an async response.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true));
+}
+
 void FakeAmbientBackendControllerImpl::GetSettings(
     GetSettingsCallback callback) {
   // Pretend to respond asynchronously.

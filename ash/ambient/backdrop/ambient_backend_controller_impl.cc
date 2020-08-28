@@ -234,6 +234,20 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfo(
       weak_factory_.GetWeakPtr(), num_topics, std::move(callback)));
 }
 
+void AmbientBackendControllerImpl::InitSettings(
+    UpdateSettingsCallback callback) {
+  AmbientSettings settings;
+
+  // Inits weather-related settings. Leaving this settings as default could
+  // result in unpredictable behavior (b/158630188).
+  // Note that right now the weather info is designed to be always shown on
+  // ambient screen, and we don't expose an option in ambient Settings for
+  // users to switch it off.
+  settings.show_weather = true;
+
+  UpdateSettings(settings, std::move(callback));
+}
+
 void AmbientBackendControllerImpl::GetSettings(GetSettingsCallback callback) {
   Shell::Get()->ambient_controller()->RequestAccessToken(
       base::BindOnce(&AmbientBackendControllerImpl::StartToGetSettings,

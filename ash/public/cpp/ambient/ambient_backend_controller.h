@@ -116,6 +116,9 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
       int num_topics,
       OnScreenUpdateInfoFetchedCallback callback) = 0;
 
+  // Sets the initial settings to the backdrop server.
+  virtual void InitSettings(UpdateSettingsCallback callback) = 0;
+
   // Get ambient mode Settings from server.
   virtual void GetSettings(GetSettingsCallback callback) = 0;
 
