@@ -155,8 +155,7 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
     suffix = "SameRegDomain";
   } else {
     // This is assumed to mean that the user has clicked on a link from a
-    // non-lookalike page.
-    // on a lookalike page, resulting in another lookalike navigation.
+    // non-lookalike page, newly triggering the safety tip.
     suffix = "CrossOrigin";
   }
 
