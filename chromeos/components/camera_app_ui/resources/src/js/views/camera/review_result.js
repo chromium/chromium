@@ -121,7 +121,13 @@ export class ReviewResult {
    */
   async openPhoto(blob) {
     const img = await util.blobToImage(blob);
-    this.reviewPhotoResult_.src = img.src;
+
+    await new Promise((resolve, reject) => {
+      this.reviewPhotoResult_.onload = resolve;
+      this.reviewPhotoResult_.onerror = reject;
+      this.reviewPhotoResult_.src = img.src;
+    });
+
     state.set(state.State.REVIEW_PHOTO_RESULT, true);
     state.set(state.State.REVIEW_RESULT, true);
     this.confirmResultButton_.focus();
@@ -138,7 +144,14 @@ export class ReviewResult {
    *     with the video result.
    */
   async openVideo(fileEntry) {
-    this.reviewVideoResult_.src = await pictureURL(fileEntry);
+    await new Promise((resolve, reject) => {
+      this.reviewVideoResult_.oncanplay = resolve;
+      this.reviewVideoResult_.onerror = reject;
+      pictureURL(fileEntry).then((url) => {
+        this.reviewVideoResult_.src = url;
+      });
+    });
+
     state.set(state.State.REVIEW_VIDEO_RESULT, true);
     state.set(state.State.REVIEW_RESULT, true);
     this.confirmResultButton_.focus();
