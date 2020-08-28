@@ -13,7 +13,7 @@ to make decisions about a site's identity and trustworthiness.
 This page explains the proposed criteria that Chrome will be using when simplifying
 the URL. Note that this criteria is tentative and may change as Chrome collects
 data from the
-[M86 simplified URL experiment](https://blog.chromium.org/2020/08/helping-people-spot-spoofs-url.html
+[M86 simplified URL experiment](https://blog.chromium.org/2020/08/helping-people-spot-spoofs-url.html).
 
 For more information about best practices for URL display in browsers, see our
 article on [Guidelines for URL
