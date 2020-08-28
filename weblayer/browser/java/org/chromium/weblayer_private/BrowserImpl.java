@@ -434,6 +434,7 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         destroyTabImpl((TabImpl) iTab);
     }
 
+    @CalledByNative
     private void destroyTabImpl(TabImpl tab) {
         tab.destroy();
     }
