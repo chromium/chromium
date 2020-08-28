@@ -53,7 +53,9 @@ int GetCurrentTid() {
 std::unique_ptr<SubmittableExecutor>
 ImplementationPlatform::CreateSingleThreadExecutor() {
   return std::make_unique<chrome::SubmittableExecutor>(
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::MayBlock()},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED));
 }
 
 std::unique_ptr<SubmittableExecutor>
@@ -175,8 +177,9 @@ std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {
   if (!socket_manager || !mdns_responder || !ice_config_fetcher || !messenger)
     return nullptr;
 
-  return std::make_unique<chrome::WebRtcMedium>(socket_manager, mdns_responder,
-                                                ice_config_fetcher, messenger);
+  return std::make_unique<chrome::WebRtcMedium>(
+      socket_manager, mdns_responder, ice_config_fetcher, messenger,
+      connections.GetThreadTaskRunner());
 }
 
 std::unique_ptr<Mutex> ImplementationPlatform::CreateMutex(Mutex::Mode mode) {

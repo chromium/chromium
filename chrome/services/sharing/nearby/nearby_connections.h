@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/thread_annotations.h"
@@ -111,6 +112,9 @@ class NearbyConnections : public mojom::NearbyConnections {
   // Returns the file associated with |payload_id| for OutputFile.
   base::File ExtractOutputFile(int64_t payload_id);
 
+  // Returns the task runner for the thread that created |this|.
+  scoped_refptr<base::SingleThreadTaskRunner> GetThreadTaskRunner();
+
  private:
   void OnDisconnect();
 
@@ -141,6 +145,8 @@ class NearbyConnections : public mojom::NearbyConnections {
   // A map of payload_id to file for OutputFile.
   base::flat_map<int64_t, base::File> output_file_map_
       GUARDED_BY(output_file_lock_);
+
+  scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner_;
 
   base::WeakPtrFactory<NearbyConnections> weak_ptr_factory_{this};
 };

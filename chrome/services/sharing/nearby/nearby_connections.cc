@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/platform_v2/input_file.h"
@@ -91,7 +92,8 @@ NearbyConnections::NearbyConnections(
     std::unique_ptr<Core> core)
     : nearby_connections_(this, std::move(nearby_connections)),
       on_disconnect_(std::move(on_disconnect)),
-      core_(std::move(core)) {
+      core_(std::move(core)),
+      thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   nearby_connections_.set_disconnect_handler(base::BindOnce(
       &NearbyConnections::OnDisconnect, weak_ptr_factory_.GetWeakPtr()));
 
@@ -443,6 +445,11 @@ base::File NearbyConnections::ExtractOutputFile(int64_t payload_id) {
   base::File file = std::move(file_it->second);
   output_file_map_.erase(file_it);
   return file;
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+NearbyConnections::GetThreadTaskRunner() {
+  return thread_task_runner_;
 }
 
 }  // namespace connections

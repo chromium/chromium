@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/single_thread_task_runner.h"
 #include "chrome/services/sharing/public/mojom/webrtc.mojom.h"
 #include "chrome/services/sharing/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
@@ -32,7 +33,8 @@ class WebRtcMedium : public api::WebRtcMedium {
       network::mojom::P2PSocketManager* socket_manager,
       network::mojom::MdnsResponder* mdns_responder,
       sharing::mojom::IceConfigFetcher* ice_config_fetcher,
-      sharing::mojom::WebRtcSignalingMessenger* webrtc_signaling_messenger);
+      sharing::mojom::WebRtcSignalingMessenger* webrtc_signaling_messenger,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebRtcMedium() override;
 
   // api::WebRtcMedium:
@@ -42,6 +44,8 @@ class WebRtcMedium : public api::WebRtcMedium {
       absl::string_view self_id) override;
 
  private:
+  void FetchIceServers(webrtc::PeerConnectionObserver* observer,
+                       PeerConnectionCallback callback);
   void OnIceServersFetched(
       webrtc::PeerConnectionObserver* observer,
       PeerConnectionCallback callback,
@@ -53,6 +57,8 @@ class WebRtcMedium : public api::WebRtcMedium {
   sharing::mojom::WebRtcSignalingMessenger* webrtc_signaling_messenger_;
 
   std::unique_ptr<sharing::IpcPacketSocketFactory> socket_factory_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<WebRtcMedium> weak_ptr_factory_{this};
 };

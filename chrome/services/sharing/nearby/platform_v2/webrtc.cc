@@ -159,16 +159,26 @@ WebRtcMedium::WebRtcMedium(
     network::mojom::P2PSocketManager* socket_manager,
     network::mojom::MdnsResponder* mdns_responder,
     sharing::mojom::IceConfigFetcher* ice_config_fetcher,
-    sharing::mojom::WebRtcSignalingMessenger* webrtc_signaling_messenger)
+    sharing::mojom::WebRtcSignalingMessenger* webrtc_signaling_messenger,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : p2p_socket_manager_(socket_manager),
       mdns_responder_(mdns_responder),
       ice_config_fetcher_(ice_config_fetcher),
-      webrtc_signaling_messenger_(webrtc_signaling_messenger) {}
+      webrtc_signaling_messenger_(webrtc_signaling_messenger),
+      task_runner_(std::move(task_runner)) {}
 WebRtcMedium::~WebRtcMedium() = default;
 
 void WebRtcMedium::CreatePeerConnection(
     webrtc::PeerConnectionObserver* observer,
     PeerConnectionCallback callback) {
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&WebRtcMedium::FetchIceServers,
+                                weak_ptr_factory_.GetWeakPtr(), observer,
+                                std::move(callback)));
+}
+
+void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
+                                   PeerConnectionCallback callback) {
   ice_config_fetcher_->GetIceServers(base::BindOnce(
       &WebRtcMedium::OnIceServersFetched, weak_ptr_factory_.GetWeakPtr(),
       observer, std::move(callback)));

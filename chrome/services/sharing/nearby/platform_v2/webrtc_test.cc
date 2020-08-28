@@ -50,7 +50,8 @@ class WebRtcMediumTest : public ::testing::Test {
         webrtc_medium_(socket_manager_.get(),
                        mdns_responder_.get(),
                        ice_config_fetcher_.get(),
-                       messenger_.get()) {}
+                       messenger_.get(),
+                       base::ThreadTaskRunnerHandle::Get()) {}
 
   ~WebRtcMediumTest() override {
     // Let libjingle threads finish.
