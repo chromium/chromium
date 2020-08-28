@@ -576,9 +576,7 @@ public class LayoutManagerChrome
         Tab lastTab = getTabById(lastTabId);
         if (NewTabPage.isNTPUrl(lastTab.getUrl()) && !lastTab.canGoBack()
                 && !lastTab.canGoForward()) {
-            getTabModelSelector()
-                    .getModel(lastTab.isIncognito())
-                    .closeTab(lastTab, tab, false, false, false);
+            getTabModelSelector().getCurrentModel().closeTab(lastTab, tab, false, false, false);
         }
     }
 }
