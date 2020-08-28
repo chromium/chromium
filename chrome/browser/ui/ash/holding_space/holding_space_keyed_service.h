@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_KEYED_SERVICE_H_
 
+#include <memory>
+#include <vector>
+
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/scoped_observer.h"
@@ -37,6 +40,9 @@ class ImageSkia;
 
 namespace ash {
 
+class HoldingSpaceItem;
+using HoldingSpaceItemPtr = std::unique_ptr<HoldingSpaceItem>;
+
 // Browser context keyed service that:
 // *   Manages the temporary holding space per-profile data model.
 // *   Serves as an entry point to add holding space items from Chrome.
@@ -67,25 +73,6 @@ class HoldingSpaceKeyedService : public KeyedService,
                      const gfx::ImageSkia& image);
   void AddDownload(const base::FilePath& download_path);
 
-  void RemoveDownloadManagerObservers();
-
-  // KeyedService:
-  void Shutdown() override;
-
-  // ProfileManagerObserver:
-  void OnProfileAdded(Profile* profile) override;
-
-  // content::DownloadManager::Observer implementation:
-  void OnDownloadCreated(content::DownloadManager* manager,
-                         download::DownloadItem* item) override;
-  void OnDownloadDropped(content::DownloadManager* manager) override;
-  void OnManagerInitialized() override;
-  void ManagerGoingDown(content::DownloadManager* manager) override;
-
-  // download::DownloadItem::Observer implementation:
-  void OnDownloadUpdated(download::DownloadItem* item) override;
-
-
   const HoldingSpaceClient* client_for_testing() const {
     return &holding_space_client_;
   }
@@ -93,32 +80,61 @@ class HoldingSpaceKeyedService : public KeyedService,
   const HoldingSpaceModel* model_for_testing() const {
     return &holding_space_model_;
   }
+
   void SetDownloadManagerForTesting(content::DownloadManager* manager);
 
  private:
+  // KeyedService:
+  void Shutdown() override;
+
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
 
-  // Restores |holding_space_model_| from persistent storage.
-  void RestoreModel();
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+
+  // content::DownloadManager::Observer:
+  void ManagerGoingDown(content::DownloadManager* manager) override;
+  void OnDownloadCreated(content::DownloadManager* manager,
+                         download::DownloadItem* item) override;
+
+  // download::DownloadItem::Observer:
+  void OnDownloadUpdated(download::DownloadItem* item) override;
+
+  // Removes all observers from:
+  // - `download_manager_`
+  // - `download_items_observer_`.
+  void RemoveDownloadManagerObservers();
+
+  // Restores `holding_space_model_` from persistent storage.
+  void RestoreModelFromPersistence();
+  void RestoreModelByExistence(
+      std::vector<HoldingSpaceItemPtr> existing_items,
+      std::vector<HoldingSpaceItemPtr> non_existing_items);
+  void OnModelRestored();
 
   // Resolves file attributes from a file path;
   GURL ResolveFileSystemUrl(const base::FilePath& file_path) const;
   gfx::ImageSkia ResolveImage(const base::FilePath& file_path) const;
 
   content::BrowserContext* const browser_context_;
+  const AccountId account_id_;
+
   HoldingSpaceClientImpl holding_space_client_;
   HoldingSpaceModel holding_space_model_;
 
   ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver>
       holding_space_model_observer_{this};
 
-  content::DownloadManager* download_manager_ = nullptr;
   ScopedObserver<ProfileManager, ProfileManagerObserver>
-      observed_profile_manager_{this};
+      profile_manager_observer_{this};
+
+  content::DownloadManager* download_manager_ = nullptr;
   ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
       download_items_observer_{this};
+
+  base::WeakPtrFactory<HoldingSpaceKeyedService> weak_factory_{this};
 };
 
 }  // namespace ash

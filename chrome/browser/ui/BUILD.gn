@@ -1872,6 +1872,8 @@ static_library("ui") {
       "ash/holding_space/holding_space_keyed_service.h",
       "ash/holding_space/holding_space_keyed_service_factory.cc",
       "ash/holding_space/holding_space_keyed_service_factory.h",
+      "ash/holding_space/holding_space_util.cc",
+      "ash/holding_space/holding_space_util.h",
       "ash/image_downloader_impl.cc",
       "ash/image_downloader_impl.h",
       "ash/ime_controller_client.cc",
