@@ -48,9 +48,6 @@
     # crbug/1060399: only enable wpr tests on marshmallow CI bot
     # due to the restriction that render test only works on marshamllow.
     'modifications': {
-      'Marshmallow 64 bit Tester': {
-        'experiment_percentage': 100, # https://crbug.com/1060399
-      },
       'android-marshmallow-x86-rel': {
         'experiment_percentage': 100, # https://crbug.com/1060399
       },
