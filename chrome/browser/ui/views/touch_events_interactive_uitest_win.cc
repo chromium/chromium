@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/win/windows_version.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "ui/aura/env.h"
@@ -192,7 +193,15 @@ class TouchEventsViewTest : public ViewEventTestBase {
   DISALLOW_COPY_AND_ASSIGN(TouchEventsViewTest);
 };
 
-VIEW_TEST(TouchEventsViewTest, CheckWindowsNativeMessageForTouchEvents)
+#if defined(OS_WIN)  // Fails on latest versions of Windows.
+                     // https://crbug.com/1108551.
+#define MAYBE_CheckWindowsNativeMessageForTouchEvents \
+  DISABLED_CheckWindowsNativeMessageForTouchEvents
+#else
+#define MAYBE_CheckWindowsNativeMessageForTouchEvents \
+  CheckWindowsNativeMessageForTouchEvents
+#endif
+VIEW_TEST(TouchEventsViewTest, MAYBE_CheckWindowsNativeMessageForTouchEvents)
 
 class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
  public:
@@ -231,4 +240,10 @@ class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
   DISALLOW_COPY_AND_ASSIGN(TouchEventsRecursiveViewTest);
 };
 
-VIEW_TEST(TouchEventsRecursiveViewTest, CheckWindowsRecursiveHandler)
+#if defined(OS_WIN)  // Fails on latest versions of Windows.
+                     // https://crbug.com/1108551.
+#define MAYBE_CheckWindowsRecursiveHandler DISABLED_CheckWindowsRecursiveHandler
+#else
+#define MAYBE_CheckWindowsRecursiveHandler CheckWindowsRecursiveHandler
+#endif
+VIEW_TEST(TouchEventsRecursiveViewTest, MAYBE_CheckWindowsRecursiveHandler)

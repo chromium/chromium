@@ -1156,7 +1156,13 @@ class BookmarkBarViewTest10 : public BookmarkBarViewEventTestBase {
   }
 };
 
-VIEW_TEST(BookmarkBarViewTest10, KeyEvents)
+#if defined(OS_WIN)  // Fails on latest versions of Windows.
+                     // https://crbug.com/1108551.
+#define MAYBE_KeyEvents DISABLED_KeyEvents
+#else
+#define MAYBE_KeyEvents KeyEvents
+#endif
+VIEW_TEST(BookmarkBarViewTest10, MAYBE_KeyEvents)
 
 // Make sure the menu closes with the following sequence: show menu, show
 // context menu, close context menu (via escape), then click else where. This
@@ -2054,7 +2060,13 @@ class BookmarkBarViewTest23 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-VIEW_TEST(BookmarkBarViewTest23, ContextMenusKeyboard)
+#if defined(OS_WIN)  // Fails on latest versions of Windows.
+                     // https://crbug.com/1108551.
+#define MAYBE_ContextMenusKeyboard DISABLED_ContextMenusKeyboard
+#else
+#define MAYBE_ContextMenusKeyboard ContextMenusKeyboard
+#endif
+VIEW_TEST(BookmarkBarViewTest23, MAYBE_ContextMenusKeyboard)
 
 // Test that pressing escape on a menu opened via the keyboard dismisses the
 // context menu but not the parent menu.
@@ -2130,7 +2142,13 @@ class BookmarkBarViewTest24 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-VIEW_TEST(BookmarkBarViewTest24, ContextMenusKeyboardEscape)
+#if defined(OS_WIN)  // Fails on latest versions of Windows.
+                     // https://crbug.com/1108551.
+#define MAYBE_ContextMenusKeyboardEscape DISABLED_ContextMenusKeyboardEscape
+#else
+#define MAYBE_ContextMenusKeyboardEscape ContextMenusKeyboardEscape
+#endif
+VIEW_TEST(BookmarkBarViewTest24, MAYBE_ContextMenusKeyboardEscape)
 
 #if defined(OS_WIN)
 // Tests that pressing the key KEYCODE closes the menu.
