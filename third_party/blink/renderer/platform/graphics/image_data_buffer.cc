@@ -51,30 +51,36 @@ namespace blink {
 ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
   if (!image)
     return;
-  retained_image_ = image->PaintImageForCurrentFrame().GetSkImage();
-  if (!retained_image_)
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
+  if (!paint_image || paint_image.IsPaintWorklet())
     return;
+
+  SkImageInfo paint_image_info = paint_image.GetSkImageInfo();
+  if (paint_image_info.isEmpty())
+    return;
+
 #if defined(MEMORY_SANITIZER)
-  // Test if retained_image has an initialized pixmap.
+  // Test if software SKImage has an initialized pixmap.
   SkPixmap pixmap;
-  if (retained_image_->peekPixels(&pixmap))
+  if (!paint_image.IsTextureBacked() &&
+      paint_image.GetSwSkImage()->peekPixels(&pixmap)) {
     MSAN_CHECK_MEM_IS_INITIALIZED(pixmap.addr(), pixmap.computeByteSize());
+  }
 #endif
 
-  if (retained_image_->isTextureBacked() ||
-      retained_image_->isLazyGenerated() ||
-      retained_image_->alphaType() != kUnpremul_SkAlphaType) {
+  if (paint_image.IsTextureBacked() || paint_image.IsLazyGenerated() ||
+      paint_image_info.alphaType() != kUnpremul_SkAlphaType) {
     // Unpremul is handled upfront, using readPixels, which will correctly clamp
     // premul color values that would otherwise cause overflows in the skia
     // encoder unpremul logic.
-    SkColorType colorType = retained_image_->colorType();
+    SkColorType colorType = paint_image.GetColorType();
     if (colorType == kRGBA_8888_SkColorType ||
         colorType == kBGRA_8888_SkColorType)
       colorType = kN32_SkColorType;  // Work around for bug with JPEG encoder
     const SkImageInfo info =
-        SkImageInfo::Make(retained_image_->width(), retained_image_->height(),
-                          retained_image_->colorType(), kUnpremul_SkAlphaType,
-                          retained_image_->refColorSpace());
+        SkImageInfo::Make(paint_image_info.width(), paint_image_info.height(),
+                          paint_image_info.colorType(), kUnpremul_SkAlphaType,
+                          paint_image_info.refColorSpace());
     const size_t rowBytes = info.minRowBytes();
     size_t size = info.computeByteSize(rowBytes);
     if (SkImageInfo::ByteSizeOverflowed(size))
@@ -82,13 +88,15 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
 
     sk_sp<SkData> data = SkData::MakeUninitialized(size);
     pixmap_ = {info, data->writable_data(), info.minRowBytes()};
-    if (!retained_image_->readPixels(pixmap_, 0, 0)) {
+    if (!paint_image.readPixels(info, pixmap_.writable_addr(), rowBytes, 0,
+                                0)) {
       pixmap_.reset();
       return;
     }
     MSAN_CHECK_MEM_IS_INITIALIZED(pixmap_.addr(), pixmap_.computeByteSize());
     retained_image_ = SkImage::MakeRasterData(info, std::move(data), rowBytes);
   } else {
+    retained_image_ = paint_image.GetSwSkImage();
     if (!retained_image_->peekPixels(&pixmap_))
       return;
     MSAN_CHECK_MEM_IS_INITIALIZED(pixmap_.addr(), pixmap_.computeByteSize());
