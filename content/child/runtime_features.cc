@@ -605,6 +605,8 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // these features.
   if (enable_experimental_web_platform_features) {
     WebRuntimeFeatures::EnableNetInfoDownlinkMax(true);
+    WebRuntimeFeatures::EnableSignedExchangePrefetchCacheForNavigations(true);
+    WebRuntimeFeatures::EnableSignedExchangeSubresourcePrefetch(true);
   }
 
   if (enable_blink_test_features) {

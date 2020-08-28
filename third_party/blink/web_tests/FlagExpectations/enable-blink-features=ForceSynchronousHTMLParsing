@@ -38,8 +38,8 @@ crbug.com/901056 scrollingcoordinator/donot-compute-non-fast-scrollable-region-f
 ### virtual/composite-after-paint/scrollingcoordinator/
 crbug.com/901056 virtual/composite-after-paint/scrollingcoordinator/donot-compute-non-fast-scrollable-region-for-hidden-frames.html [ Timeout ]
 
-### virtual/sxg-subresource/external/wpt/signed-exchange/subresource/
-crbug.com/901056 virtual/sxg-subresource/external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Timeout ]
+### external/wpt/signed-exchange/subresource/
+crbug.com/901056 external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Timeout ]
 
 ### http/tests/devtools/sources/debugger/
 crbug.com/1063051 http/tests/devtools/sources/debugger/debug-inlined-scripts-fragment-id.js [ Timeout ]

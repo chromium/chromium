@@ -2148,6 +2148,10 @@ virtual/wbn-from-network/external/wpt/web-bundle/wbn-from-network/* [ Pass ]
 crbug.com/1082020 http/tests/loading/wbn/origin-trial/* [ Skip ]
 virtual/subresource-web-bundles-disabled/http/tests/loading/wbn/origin-trial/* [ Pass ]
 
+# This test requires sxg-subresource-disabled.
+http/tests/loading/sxg/sxg-subresource-origin-trial.https.html [ Skip ]
+virtual/sxg-subresource-disabled/http/tests/loading/sxg/sxg-subresource-origin-trial.https.html [ Pass ]
+
 # No good way to automate this test yet
 external/wpt/native-file-system/showSaveFilePicker-manual.https.html [ Skip ]
 

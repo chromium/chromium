@@ -377,9 +377,9 @@
     "args": ["--autoplay-policy=document-user-activation-required"]
   },
   {
-    "prefix": "sxg-subresource",
-    "bases": ["external/wpt/signed-exchange"],
-    "args": ["--enable-features=SignedExchangeSubresourcePrefetch"]
+    "prefix": "sxg-subresource-disabled",
+    "bases": ["http/tests/loading/sxg/sxg-subresource-origin-trial.https.html"],
+    "args": ["--disable-blink-features=SignedExchangeSubresourcePrefetch"]
   },
   {
     "prefix": "wbn-from-network",
