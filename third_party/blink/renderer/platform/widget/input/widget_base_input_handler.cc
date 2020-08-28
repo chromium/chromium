@@ -338,10 +338,23 @@ void WidgetBaseInputHandler::HandleInputEvent(
       ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
   cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
       &swap_latency_info, widget_->LayerTreeHost()->GetSwapPromiseManager());
+  base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
+  if (input_event.GetType() == WebInputEvent::Type::kGestureScrollUpdate) {
+    // TODO(crbug.com/1079116): For now, we use data from `LatencyInfo` to
+    // determine whether a scroll-update is the first one in a sequence or not.
+    // This should be determined independent of `LatencyInfo`.
+    if (coalesced_event.latency_info().FindLatency(
+            ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
+            nullptr)) {
+      scroll_update_type = cc::EventMetrics::ScrollUpdateType::kStarted;
+    } else {
+      scroll_update_type = cc::EventMetrics::ScrollUpdateType::kContinued;
+    }
+  }
   auto scoped_event_metrics_monitor =
       widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(
           cc::EventMetrics::Create(input_event.GetTypeAsUiEventType(),
-                                   input_event.TimeStamp(),
+                                   scroll_update_type, input_event.TimeStamp(),
                                    input_event.GetScrollInputType()));
 
   bool prevent_default = false;
@@ -646,9 +659,24 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
       cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
           &scrollbar_latency_info,
           widget_->LayerTreeHost()->GetSwapPromiseManager());
+      base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
+      if (gesture_event->GetType() ==
+          WebInputEvent::Type::kGestureScrollUpdate) {
+        // TODO(crbug.com/1079116): For now, we use data from `LatencyInfo` to
+        // determine whether a scroll-update is the first one in a sequence or
+        // not. This should be determined independent of `LatencyInfo`.
+        if (scrollbar_latency_info.FindLatency(
+                ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
+                nullptr)) {
+          scroll_update_type = cc::EventMetrics::ScrollUpdateType::kStarted;
+        } else {
+          scroll_update_type = cc::EventMetrics::ScrollUpdateType::kContinued;
+        }
+      }
       auto scoped_event_metrics_monitor =
           widget_->LayerTreeHost()->GetScopedEventMetricsMonitor(
               cc::EventMetrics::Create(gesture_event->GetTypeAsUiEventType(),
+                                       scroll_update_type,
                                        gesture_event->TimeStamp(),
                                        gesture_event->GetScrollInputType()));
       widget_->client()->HandleInputEvent(

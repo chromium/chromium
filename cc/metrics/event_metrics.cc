@@ -18,9 +18,11 @@ constexpr struct {
   EventMetrics::EventType metrics_event_type;
   ui::EventType ui_event_type;
   const char* name;
+  base::Optional<EventMetrics::ScrollUpdateType> scroll_update_type =
+      base::nullopt;
 } kInterestingEvents[] = {
-#define EVENT_TYPE(name, ui_type) \
-  { EventMetrics::EventType::k##name, ui_type, #name }
+#define EVENT_TYPE(name, ui_type, ...) \
+  { EventMetrics::EventType::k##name, ui_type, #name, __VA_ARGS__ }
     EVENT_TYPE(MousePressed, ui::ET_MOUSE_PRESSED),
     EVENT_TYPE(MouseReleased, ui::ET_MOUSE_RELEASED),
     EVENT_TYPE(MouseWheel, ui::ET_MOUSEWHEEL),
@@ -30,7 +32,9 @@ constexpr struct {
     EVENT_TYPE(TouchReleased, ui::ET_TOUCH_RELEASED),
     EVENT_TYPE(TouchMoved, ui::ET_TOUCH_MOVED),
     EVENT_TYPE(GestureScrollBegin, ui::ET_GESTURE_SCROLL_BEGIN),
-    EVENT_TYPE(GestureScrollUpdate, ui::ET_GESTURE_SCROLL_UPDATE),
+    EVENT_TYPE(GestureScrollUpdate,
+               ui::ET_GESTURE_SCROLL_UPDATE,
+               EventMetrics::ScrollUpdateType::kContinued),
     EVENT_TYPE(GestureScrollEnd, ui::ET_GESTURE_SCROLL_END),
     EVENT_TYPE(GestureDoubleTap, ui::ET_GESTURE_DOUBLE_TAP),
     EVENT_TYPE(GestureLongPress, ui::ET_GESTURE_LONG_PRESS),
@@ -41,6 +45,9 @@ constexpr struct {
     EVENT_TYPE(GestureTapDown, ui::ET_GESTURE_TAP_DOWN),
     EVENT_TYPE(GestureTapUnconfirmed, ui::ET_GESTURE_TAP_UNCONFIRMED),
     EVENT_TYPE(GestureTwoFingerTap, ui::ET_GESTURE_TWO_FINGER_TAP),
+    EVENT_TYPE(FirstGestureScrollUpdate,
+               ui::ET_GESTURE_SCROLL_UPDATE,
+               EventMetrics::ScrollUpdateType::kStarted),
 #undef EVENT_TYPE
 };
 static_assert(base::size(kInterestingEvents) ==
@@ -65,12 +72,15 @@ static_assert(base::size(kScrollTypes) ==
               "EventMetrics::ScrollType has changed.");
 
 base::Optional<EventMetrics::EventType> ToInterestingEventType(
-    ui::EventType ui_event_type) {
+    ui::EventType ui_event_type,
+    base::Optional<EventMetrics::ScrollUpdateType> scroll_update_type) {
   for (size_t i = 0; i < base::size(kInterestingEvents); i++) {
-    if (ui_event_type == kInterestingEvents[i].ui_event_type) {
+    const auto& interesting_event = kInterestingEvents[i];
+    if (ui_event_type == interesting_event.ui_event_type &&
+        scroll_update_type == interesting_event.scroll_update_type) {
       EventMetrics::EventType metrics_event_type =
           static_cast<EventMetrics::EventType>(i);
-      DCHECK_EQ(metrics_event_type, kInterestingEvents[i].metrics_event_type);
+      DCHECK_EQ(metrics_event_type, interesting_event.metrics_event_type);
       return metrics_event_type;
     }
   }
@@ -98,9 +108,15 @@ base::Optional<EventMetrics::ScrollType> ToScrollType(
 
 std::unique_ptr<EventMetrics> EventMetrics::Create(
     ui::EventType type,
+    base::Optional<ScrollUpdateType> scroll_update_type,
     base::TimeTicks time_stamp,
     base::Optional<ui::ScrollInputType> scroll_input_type) {
-  base::Optional<EventType> interesting_type = ToInterestingEventType(type);
+  // `scroll_update_type` should be set for and only for
+  // `ui::ET_GESTURE_SCROLL_UPDATE`.
+  DCHECK(type == ui::ET_GESTURE_SCROLL_UPDATE && scroll_update_type ||
+         type != ui::ET_GESTURE_SCROLL_UPDATE && !scroll_update_type);
+  base::Optional<EventType> interesting_type =
+      ToInterestingEventType(type, scroll_update_type);
   if (!interesting_type)
     return nullptr;
   return base::WrapUnique(new EventMetrics(*interesting_type, time_stamp,

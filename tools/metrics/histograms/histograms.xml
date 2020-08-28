@@ -204858,6 +204858,10 @@ regressions. -->
   <suffix name="TotalLatency"
       label="Total latency from when the event is generated until the frame
              is presented on screen."/>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate.Autoscroll"/>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate.Scrollbar"/>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate.Touchscreen"/>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate.Wheel"/>
   <affected-histogram name="EventLatency.GestureDoubleTap"/>
   <affected-histogram name="EventLatency.GestureLongPress"/>
   <affected-histogram name="EventLatency.GestureLongTap"/>
@@ -204913,6 +204917,10 @@ regressions. -->
       which measures what we actually intended to measure.
     </obsolete>
   </suffix>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate.Autoscroll"/>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate.Scrollbar"/>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate.Touchscreen"/>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate.Wheel"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Autoscroll"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Scrollbar"/>
   <affected-histogram name="EventLatency.GestureScrollBegin.Touchscreen"/>
@@ -204936,6 +204944,7 @@ regressions. -->
       label="Event latency for touchscreen scroll events."/>
   <suffix base="true" name="Wheel"
       label="Event latency for mousewheel scroll events."/>
+  <affected-histogram name="EventLatency.FirstGestureScrollUpdate"/>
   <affected-histogram name="EventLatency.GestureScrollBegin"/>
   <affected-histogram name="EventLatency.GestureScrollEnd"/>
   <affected-histogram name="EventLatency.GestureScrollUpdate"/>
@@ -204949,6 +204958,9 @@ regressions. -->
 </histogram_suffixes>
 
 <histogram_suffixes name="EventLatencyTypes" separator=".">
+  <suffix base="true" name="FirstGestureScrollUpdate"
+      label="Event latency for the first gesture-scroll-update event in a
+             scroll sequence."/>
   <suffix base="true" name="GestureDoubleTap"
       label="Event latency for gesture-double-tap event."/>
   <suffix base="true" name="GestureLongPress"
@@ -204960,7 +204972,8 @@ regressions. -->
   <suffix base="true" name="GestureScrollEnd"
       label="Event latency for gesture-scroll-end event."/>
   <suffix base="true" name="GestureScrollUpdate"
-      label="Event latency for gesture-scroll-update event."/>
+      label="Event latency for gesture-scroll-update events in a scroll
+             sequence except for the first one."/>
   <suffix base="true" name="GestureShowPress"
       label="Event latency for gesture-show-press event."/>
   <suffix base="true" name="GestureTap"

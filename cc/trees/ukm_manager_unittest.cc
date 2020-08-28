@@ -354,12 +354,14 @@ TEST_F(UkmManagerTest, EventLatency) {
 
   const base::TimeTicks event_time = now;
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
-      EventMetrics::Create(ui::ET_GESTURE_SCROLL_BEGIN, event_time,
+      EventMetrics::Create(ui::ET_GESTURE_SCROLL_BEGIN, base::nullopt,
+                           event_time, ui::ScrollInputType::kWheel),
+      EventMetrics::Create(ui::ET_GESTURE_SCROLL_UPDATE,
+                           EventMetrics::ScrollUpdateType::kStarted, event_time,
                            ui::ScrollInputType::kWheel),
-      EventMetrics::Create(ui::ET_GESTURE_SCROLL_UPDATE, event_time,
-                           ui::ScrollInputType::kWheel),
-      EventMetrics::Create(ui::ET_GESTURE_SCROLL_UPDATE, event_time,
-                           ui::ScrollInputType::kWheel),
+      EventMetrics::Create(ui::ET_GESTURE_SCROLL_UPDATE,
+                           EventMetrics::ScrollUpdateType::kContinued,
+                           event_time, ui::ScrollInputType::kWheel),
   };
   EXPECT_THAT(event_metrics_ptrs, ::testing::Each(::testing::NotNull()));
   std::vector<EventMetrics> events_metrics = {

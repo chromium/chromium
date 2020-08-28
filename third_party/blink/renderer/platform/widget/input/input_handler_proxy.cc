@@ -438,10 +438,24 @@ void InputHandlerProxy::DispatchSingleInputEvent(
   std::unique_ptr<cc::SwapPromiseMonitor> latency_info_swap_promise_monitor =
       input_handler_->CreateLatencyInfoSwapPromiseMonitor(
           &monitored_latency_info);
+  base::Optional<cc::EventMetrics::ScrollUpdateType> scroll_update_type;
+  if (event_with_callback->event().GetType() ==
+      WebInputEvent::Type::kGestureScrollUpdate) {
+    // TODO(crbug.com/1079116): For now, we use data from `LatencyInfo` to
+    // determine whether a scroll-update is the first one in a sequence or not.
+    // This should be determined independent of `LatencyInfo`.
+    if (original_latency_info.FindLatency(
+            ui::INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
+            nullptr)) {
+      scroll_update_type = cc::EventMetrics::ScrollUpdateType::kStarted;
+    } else {
+      scroll_update_type = cc::EventMetrics::ScrollUpdateType::kContinued;
+    }
+  }
   auto scoped_event_metrics_monitor =
       input_handler_->GetScopedEventMetricsMonitor(cc::EventMetrics::Create(
           event_with_callback->event().GetTypeAsUiEventType(),
-          event_with_callback->event().TimeStamp(),
+          scroll_update_type, event_with_callback->event().TimeStamp(),
           event_with_callback->event().GetScrollInputType()));
 
   current_overscroll_params_.reset();

@@ -42,23 +42,27 @@ TEST_F(EventsMetricsManagerTest, EventsMetricsSaved) {
   std::pair<std::unique_ptr<EventMetrics>, Behavior> events[] = {
       // An interesting event type for which SaveActiveEventMetrics() is not
       // called.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, TimeAtMs(0), base::nullopt),
+      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt, TimeAtMs(0),
+                            base::nullopt),
        Behavior::kDoNotSave},
 
       // An interesting event type for which SaveActiveEventMetrics() is called
       // inside its monitor scope.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, TimeAtMs(1), base::nullopt),
+      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt, TimeAtMs(1),
+                            base::nullopt),
        Behavior::kSaveInsideScope},
 
       // An interesting event type for which SaveActiveEventMetrics() is called
       // after
       // its monitor scope is finished.
-      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, TimeAtMs(2), base::nullopt),
+      {EventMetrics::Create(ui::ET_MOUSE_PRESSED, base::nullopt, TimeAtMs(2),
+                            base::nullopt),
        Behavior::kSaveOutsideScope},
 
       // A non-interesting event type for which SaveActiveEventMetrics() is
       // called inside its monitor scope.
-      {EventMetrics::Create(ui::ET_MOUSE_MOVED, TimeAtMs(3), base::nullopt),
+      {EventMetrics::Create(ui::ET_MOUSE_MOVED, base::nullopt, TimeAtMs(3),
+                            base::nullopt),
        Behavior::kSaveInsideScope},
   };
   EXPECT_NE(events[0].first, nullptr);
