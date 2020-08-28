@@ -51,6 +51,12 @@ KeyedService* CupsPrintersManagerFactory::BuildServiceInstanceFor(
       ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
+
+  // In Guest Mode, only use the OffTheRecord profile.
+  if (profile->IsGuestSession() && !profile->IsOffTheRecord()) {
+    return nullptr;
+  }
+
   auto manager = CupsPrintersManager::Create(profile);
   if (ProfileHelper::IsPrimaryProfile(profile)) {
     proxy_->SetManager(manager.get());
@@ -71,7 +77,7 @@ void CupsPrintersManagerFactory::BrowserContextShutdown(
 
 content::BrowserContext* CupsPrintersManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
+  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool CupsPrintersManagerFactory::ServiceIsCreatedWithBrowserContext() const {
