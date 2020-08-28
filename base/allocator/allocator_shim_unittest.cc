@@ -38,15 +38,6 @@
 #include <unistd.h>
 #endif
 
-// Some new Android NDKs (64 bit) does not expose (p)valloc anymore. These
-// functions are implemented at the shim-layer level.
-#if defined(OS_ANDROID)
-extern "C" {
-void* valloc(size_t size);
-void* pvalloc(size_t size);
-}
-#endif
-
 namespace base {
 namespace allocator {
 namespace {
@@ -340,7 +331,6 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   ASSERT_GE(zero_allocs_intercepted_by_size[2 * 23], 1u);
 
 #if !defined(OS_WIN)
-  const size_t kPageSize = base::GetPageSize();
   void* posix_memalign_ptr = nullptr;
   int res = posix_memalign(&posix_memalign_ptr, 256, 59);
   ASSERT_EQ(0, res);
@@ -349,11 +339,17 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[256], 1u);
   ASSERT_GE(aligned_allocs_intercepted_by_size[59], 1u);
 
+  // (p)valloc() are not defined on Android. pvalloc() is a GNU extension,
+  // valloc() is not in POSIX.
+#if !defined(OS_ANDROID)
+  const size_t kPageSize = base::GetPageSize();
   void* valloc_ptr = valloc(61);
   ASSERT_NE(nullptr, valloc_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(valloc_ptr) % kPageSize);
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[kPageSize], 1u);
   ASSERT_GE(aligned_allocs_intercepted_by_size[61], 1u);
+#endif  // !defined(OS_ANDROID)
+
 #endif  // !OS_WIN
 
 #if !defined(OS_WIN) && !defined(OS_APPLE)
@@ -363,12 +359,15 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[128], 1u);
   ASSERT_GE(aligned_allocs_intercepted_by_size[53], 1u);
 
+#if !defined(OS_ANDROID)
   void* pvalloc_ptr = pvalloc(67);
   ASSERT_NE(nullptr, pvalloc_ptr);
   ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(pvalloc_ptr) % kPageSize);
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[kPageSize], 1u);
   // pvalloc rounds the size up to the next page.
   ASSERT_GE(aligned_allocs_intercepted_by_size[kPageSize], 1u);
+#endif  // !defined(OS_ANDROID)
+
 #endif  // !OS_WIN && !OS_APPLE
 
   char* realloc_ptr = static_cast<char*>(malloc(10));
@@ -389,16 +388,22 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   free(memalign_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(memalign_ptr)], 1u);
 
+#if !defined(OS_ANDROID)
   free(pvalloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(pvalloc_ptr)], 1u);
+#endif  // !defined(OS_ANDROID)
+
 #endif  // !OS_WIN && !OS_APPLE
 
 #if !defined(OS_WIN)
   free(posix_memalign_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(posix_memalign_ptr)], 1u);
 
+#if !defined(OS_ANDROID)
   free(valloc_ptr);
   ASSERT_GE(frees_intercepted_by_addr[Hash(valloc_ptr)], 1u);
+#endif  // !defined(OS_ANDROID)
+
 #endif  // !OS_WIN
 
   free(realloc_ptr);
