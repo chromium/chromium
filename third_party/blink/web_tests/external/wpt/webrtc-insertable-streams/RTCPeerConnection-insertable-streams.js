@@ -109,3 +109,133 @@ async function exchangeOfferAnswerReverse(pc1, pc2) {
   await pc2.setRemoteDescription(answer);
   await pc1.setLocalDescription(answer);
 }
+
+function createFrameDescriptor(videoFrame) {
+  const kMaxSpatialLayers = 8;
+  const kMaxTemporalLayers = 8;
+  const kMaxNumFrameDependencies = 8;
+
+  const metadata = videoFrame.getMetadata();
+  let frameDescriptor = {
+    beginningOfSubFrame: true,
+    endOfSubframe: false,
+    frameId: metadata.frameId & 0xFFFF,
+    spatialLayers: 1 << metadata.spatialIndex,
+    temporalLayer: metadata.temporalLayer,
+    frameDependenciesDiffs: [],
+    width: 0,
+    height: 0
+  };
+
+  for (const dependency of metadata.dependencies) {
+    frameDescriptor.frameDependenciesDiffs.push(metadata.frameId - dependency);
+  }
+  if (metadata.dependencies.length == 0) {
+    frameDescriptor.width = metadata.width;
+    frameDescriptor.height = metadata.height;
+  }
+  return frameDescriptor;
+}
+
+function additionalDataSize(descriptor) {
+  if (!descriptor.beginningOfSubFrame) {
+    return 1;
+  }
+
+  let size = 4;
+  for (const fdiff of descriptor.frameDependenciesDiffs) {
+    size += (fdiff >= (1 << 6)) ? 2 : 1;
+  }
+  if (descriptor.beginningOfSubFrame &&
+      descriptor.frameDependenciesDiffs.length == 0 &&
+      descriptor.width > 0 &&
+      descriptor.height > 0) {
+    size += 4;
+  }
+
+  return size;
+}
+
+// Compute the buffer reported in the additionalData field using the metadata
+// provided by a video frame.
+// Based on the webrtc::RtpDescriptorAuthentication() C++ function at
+// https://source.chromium.org/chromium/chromium/src/+/master:third_party/webrtc/modules/rtp_rtcp/source/rtp_descriptor_authentication.cc
+function computeAdditionalData(videoFrame) {
+  const kMaxSpatialLayers = 8;
+  const kMaxTemporalLayers = 8;
+  const kMaxNumFrameDependencies = 8;
+
+  const metadata = videoFrame.getMetadata();
+  if (metadata.spatialIndex < 0 ||
+      metadata.temporalIndex < 0 ||
+      metadata.spatialIndex >= kMaxSpatialLayers ||
+      metadata.temporalIndex >= kMaxTemporalLayers ||
+      metadata.dependencies.length > kMaxNumFrameDependencies) {
+    return new ArrayBuffer(0);
+  }
+
+  const descriptor = createFrameDescriptor(videoFrame);
+  const size = additionalDataSize(descriptor);
+  const additionalData = new ArrayBuffer(size);
+  const data = new Uint8Array(additionalData);
+
+  const kFlagBeginOfSubframe = 0x80;
+  const kFlagEndOfSubframe = 0x40;
+  const kFlagFirstSubframeV00 = 0x20;
+  const kFlagLastSubframeV00 = 0x10;
+
+  const kFlagDependencies = 0x08;
+  const kFlagMoreDependencies = 0x01;
+  const kFlageXtendedOffset = 0x02;
+
+  let baseHeader =
+    (descriptor.beginningOfSubFrame ? kFlagBeginOfSubframe : 0) |
+    (descriptor.endOfSubFrame ? kFlagEndOfSubframe : 0);
+  baseHeader |= kFlagFirstSubframeV00;
+  baseHeader |= kFlagLastSubframeV00;
+
+  if (!descriptor.beginningOfSubFrame) {
+    data[0] = baseHeader;
+    return additionalData;
+  }
+
+  data[0] =
+      baseHeader |
+      (descriptor.frameDependenciesDiffs.length == 0 ? 0 : kFlagDependencies) |
+      descriptor.temporalLayer;
+  data[1] = descriptor.spatialLayers;
+  data[2] = descriptor.frameId & 0xFF;
+  data[3] = descriptor.frameId >> 8;
+
+  const fdiffs = descriptor.frameDependenciesDiffs;
+  let offset = 4;
+  if (descriptor.beginningOfSubFrame &&
+      fdiffs.length == 0 &&
+      descriptor.width > 0 &&
+      descriptor.height > 0) {
+    data[offset++] = (descriptor.width >> 8);
+    data[offset++] = (descriptor.width & 0xFF);
+    data[offset++] = (descriptor.height >> 8);
+    data[offset++] = (descriptor.height & 0xFF);
+  }
+  for (let i = 0; i < fdiffs.length; i++) {
+    const extended = fdiffs[i] >= (1 << 6);
+    const more = i < fdiffs.length - 1;
+    data[offset++] = ((fdiffs[i] & 0x3f) << 2) |
+                     (extended ? kFlageXtendedOffset : 0) |
+                     (more ? kFlagMoreDependencies : 0);
+    if (extended) {
+      data[offset++] = fdiffs[i] >> 6;
+    }
+  }
+  return additionalData;
+}
+
+function verifyNonstandardAdditionalDataIfPresent(videoFrame) {
+  if (videoFrame.additionalData === undefined)
+    return;
+
+  const computedData = computeAdditionalData(videoFrame);
+  assert_true(areArrayBuffersEqual(videoFrame.additionalData, computedData));
+}
+
