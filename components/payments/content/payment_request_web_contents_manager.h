@@ -59,6 +59,7 @@ class PaymentRequestWebContentsManager
   // WebContentsObserver::
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
  private:
   explicit PaymentRequestWebContentsManager(content::WebContents* web_contents);

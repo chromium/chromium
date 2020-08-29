@@ -753,6 +753,21 @@ void PaymentRequest::DidStartMainFrameNavigationToDifferentDocument(
                              : JourneyLogger::ABORT_REASON_MERCHANT_NAVIGATION);
 }
 
+void PaymentRequest::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host ==
+         content::RenderFrameHost::FromID(initiator_frame_routing_id_));
+  // RenderFrameHost is usually deleted explicitly before PaymentRequest
+  // destruction if the user closes the tab or browser window without closing
+  // the payment request dialog.
+  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
+  // But don't bother sending errors to |client_| because the mojo pipe will be
+  // torn down anyways when RenderFrameHost is destroyed. It's not safe to call
+  // UserCancelled() here because it is not re-entrant.
+  // TODO(crbug.com/1121841) Make UserCancelled re-entrant.
+  OnConnectionTerminated();
+}
+
 void PaymentRequest::OnConnectionTerminated() {
   // We are here because of a browser-side error, or likely as a result of the
   // disconnect_handler on |receiver_|, which can mean that the renderer

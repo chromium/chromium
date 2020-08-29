@@ -111,6 +111,12 @@ class PaymentRequest : public mojom::PaymentRequest,
   // another document, but before the PaymentRequest is destroyed.
   void DidStartMainFrameNavigationToDifferentDocument(bool is_user_initiated);
 
+  // Called when the frame attached to this PaymentRequest is about to be
+  // destroyed. This is used to clean up before the RenderFrameHost is actually
+  // destroyed because some objects held by the PaymentRequest (e.g.
+  // InternalAuthenticator) must be out-lived by the RenderFrameHost.
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host);
+
   // As a result of a browser-side error or renderer-initiated mojo channel
   // closure (e.g. there was an error on the renderer side, or payment was
   // successful), this method is called. It is responsible for cleaning up,
@@ -129,6 +135,10 @@ class PaymentRequest : public mojom::PaymentRequest,
   void OnPaymentHandlerOpenWindowCalled();
 
   content::WebContents* web_contents() { return web_contents_; }
+
+  const content::GlobalFrameRoutingId& initiator_frame_routing_id() {
+    return initiator_frame_routing_id_;
+  }
 
   bool skipped_payment_request_ui() { return skipped_payment_request_ui_; }
   bool is_show_user_gesture() const { return is_show_user_gesture_; }

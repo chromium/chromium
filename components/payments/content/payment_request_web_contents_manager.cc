@@ -66,6 +66,22 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
   }
 }
 
+void PaymentRequestWebContentsManager::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  // Two passes to avoid modifying the |payment_requests_| map while iterating
+  // over it.
+  std::vector<PaymentRequest*> obsolete;
+  for (auto& it : payment_requests_) {
+    if (content::RenderFrameHost::FromID(
+            it.second->initiator_frame_routing_id()) == render_frame_host) {
+      obsolete.push_back(it.first);
+    }
+  }
+  for (auto* request : obsolete) {
+    request->RenderFrameDeleted(render_frame_host);
+  }
+}
+
 void PaymentRequestWebContentsManager::DestroyRequest(PaymentRequest* request) {
   request->HideIfNecessary();
   payment_requests_.erase(request);
