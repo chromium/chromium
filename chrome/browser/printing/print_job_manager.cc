@@ -62,7 +62,8 @@ void PrintQueriesQueue::Shutdown() {
   // corresponding PrintJob, so any pending preview requests are not covered
   // by PrintJobManager::StopJobs and should be stopped explicitly.
   for (auto& query : queries_to_stop) {
-    query->PostTask(
+    PrinterQuery* const query_ptr = query.get();
+    query_ptr->PostTask(
         FROM_HERE, base::BindOnce(&PrinterQuery::StopWorker, std::move(query)));
   }
 }
