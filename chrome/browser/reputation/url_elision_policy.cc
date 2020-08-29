@@ -20,6 +20,8 @@ const base::FeatureParam<int> kMaximumUnelidedHostnameLength{
     &omnibox::kMaybeElideToRegistrableDomain, "max_unelided_host_length", 25};
 const base::FeatureParam<bool> kEnableKeywordBasedElision{
     &omnibox::kMaybeElideToRegistrableDomain, "enable_keyword_elision", true};
+const base::FeatureParam<bool> kSearchE2LDForKeywords{
+    &omnibox::kMaybeElideToRegistrableDomain, "search_e2ld_for_keywords", true};
 
 }  // namespace
 
@@ -46,7 +48,8 @@ bool ShouldElideToRegistrableDomain(const GURL& url) {
   auto eTLD_plus_one = GetETLDPlusOne(host);
   if (kEnableKeywordBasedElision.Get() &&
       HostnameContainsKeyword(url, eTLD_plus_one, top500_domains::kTopKeywords,
-                              top500_domains::kNumTopKeywords)) {
+                              top500_domains::kNumTopKeywords,
+                              kSearchE2LDForKeywords.Get())) {
     return true;
   }
 
