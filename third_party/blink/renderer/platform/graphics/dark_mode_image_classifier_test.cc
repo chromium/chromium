@@ -150,6 +150,14 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   EXPECT_NEAR(0.0f, features.background_ratio, kEpsilon);
 }
 
+TEST_F(DarkModeImageClassifierTest, InvalidImage) {
+  PaintImage paint_image;
+  SkRect src = SkRect::MakeWH(50, 50);
+  SkRect dst = SkRect::MakeWH(50, 50);
+  EXPECT_EQ(image_classifier()->Classify(paint_image, src, dst),
+            DarkModeClassification::kDoNotApplyFilter);
+}
+
 TEST_F(DarkModeImageClassifierTest, Caching) {
   PaintImage::Id image_id = PaintImage::GetNextId();
   SkRect src1 = SkRect::MakeXYWH(0, 0, 50, 50);

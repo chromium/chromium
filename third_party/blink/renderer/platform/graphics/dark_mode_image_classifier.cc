@@ -110,6 +110,10 @@ DarkModeClassification DarkModeImageClassifier::Classify(
     const PaintImage& paint_image,
     const SkRect& src,
     const SkRect& dst) {
+  // Empty paint image cannot be classified.
+  if (!paint_image)
+    return DarkModeClassification::kDoNotApplyFilter;
+
   DarkModeImageClassificationCache* cache =
       DarkModeImageClassificationCache::GetInstance();
   PaintImage::Id image_id = paint_image.stable_id();
@@ -136,6 +140,8 @@ DarkModeClassification DarkModeImageClassifier::Classify(
 bool DarkModeImageClassifier::GetBitmap(const PaintImage& paint_image,
                                         const SkRect& src,
                                         SkBitmap* bitmap) {
+  DCHECK(paint_image);
+
   if (!src.width() || !src.height())
     return false;
 
