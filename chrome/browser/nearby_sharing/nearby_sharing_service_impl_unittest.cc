@@ -1094,14 +1094,20 @@ TEST_F(NearbySharingServiceImplTest,
 
 TEST_F(NearbySharingServiceImplTest,
        RegisterSendSurfaceAlreadyReceivingNotDiscovering) {
-  ui::ScopedSetIdleState unlocked(ui::IDLE_STATE_IDLE);
-  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  // TODO(himanshujaju) is_receiving_files_ should be set to true when
-  // receiving. Test that WHEN receiving files, THEN below passes.
-  // EXPECT_EQ(NearbySharingService::StatusCodes::kTransferAlreadyInProgress,
-  //           RegisterSendSurface(SendSurfaceState::kForeground));
-  // EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
-  // EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+  NiceMock<MockTransferUpdateCallback> callback;
+  ShareTarget share_target = SetUpIncomingConnection(callback);
+  EXPECT_FALSE(connection_.IsClosed());
+
+  MockTransferUpdateCallback send_callback;
+  MockShareTargetDiscoveredCallback discovery_callback;
+  EXPECT_EQ(NearbySharingService::StatusCodes::kTransferAlreadyInProgress,
+            service_->RegisterSendSurface(&send_callback, &discovery_callback,
+                                          SendSurfaceState::kForeground));
+  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
+  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
+
+  // To avoid UAF in OnIncomingTransferUpdate().
+  service_->UnregisterReceiveSurface(&callback);
 }
 
 TEST_F(NearbySharingServiceImplTest,
