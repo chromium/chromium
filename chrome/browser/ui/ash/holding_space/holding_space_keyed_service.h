@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_client_impl.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/common/download_item.h"
@@ -42,7 +43,7 @@ class ImageSkia;
 
 namespace storage {
 class FileSystemURL;
-}
+}  // namespace storage
 
 namespace ash {
 
@@ -104,11 +105,11 @@ class HoldingSpaceKeyedService : public KeyedService,
     return &holding_space_model_;
   }
 
-  void SetDownloadManagerForTesting(content::DownloadManager* manager);
-
   HoldingSpaceThumbnailLoader* thumbnail_loader_for_testing() {
     return &thumbnail_loader_;
   }
+
+  void SetDownloadManagerForTesting(content::DownloadManager* manager);
 
  private:
   // KeyedService:
@@ -141,9 +142,12 @@ class HoldingSpaceKeyedService : public KeyedService,
       std::vector<HoldingSpaceItemPtr> non_existing_items);
   void OnModelRestored();
 
-  // Resolves file attributes from a file path;
+  // Resolves file attributes from a `file_path`;
   GURL ResolveFileSystemUrl(const base::FilePath& file_path) const;
   gfx::ImageSkia ResolveImage(const base::FilePath& file_path) const;
+
+  // Invoked when the specified `file_path` is removed.
+  void OnFileRemoved(const base::FilePath& file_path);
 
   content::BrowserContext* const browser_context_;
   const AccountId account_id_;
@@ -152,6 +156,11 @@ class HoldingSpaceKeyedService : public KeyedService,
   HoldingSpaceModel holding_space_model_;
 
   HoldingSpaceThumbnailLoader thumbnail_loader_;
+
+  // The `HoldingSpaceKeyedService` owns a collection of `delegates_` which are
+  // each tasked with an independent area of responsibility on behalf of the
+  // service. They operate autonomously of one another.
+  std::vector<std::unique_ptr<HoldingSpaceKeyedServiceDelegate>> delegates_;
 
   ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver>
       holding_space_model_observer_{this};

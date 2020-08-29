@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -45,6 +46,12 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(
       account_id_(account_id),
       holding_space_client_(Profile::FromBrowserContext(context)),
       thumbnail_loader_(Profile::FromBrowserContext(context)) {
+  // TODO(dmblack): Add delegates for downloads and persistence.
+  delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
+      &holding_space_model_,
+      base::BindRepeating(&HoldingSpaceKeyedService::OnFileRemoved,
+                          weak_factory_.GetWeakPtr())));
+
   // If the service's associated profile is ready, we can proceed to restore the
   // `holding_space_model_` from persistence.
   ProfileManager* const profile_manager = GetProfileManager();
@@ -282,6 +289,15 @@ GURL HoldingSpaceKeyedService::ResolveFileSystemUrl(
 gfx::ImageSkia HoldingSpaceKeyedService::ResolveImage(
     const base::FilePath& file_path) const {
   return GetIconForPath(file_path);
+}
+
+void HoldingSpaceKeyedService::OnFileRemoved(const base::FilePath& file_path) {
+  // When `file_path` is removed, we need to remove any associated items.
+  holding_space_model_.RemoveIf(base::BindRepeating(
+      [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
+        return item->file_path() == file_path;
+      },
+      std::cref(file_path)));
 }
 
 }  // namespace ash

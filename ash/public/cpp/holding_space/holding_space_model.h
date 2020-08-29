@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback_forward.h"
 #include "base/observer_list.h"
 
 namespace ash {
@@ -38,6 +39,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModel {
 
   // Removes a single holding space item from the model.
   void RemoveItem(const std::string& id);
+
+  // Removes all holding space items from the model for which the specified
+  // `predicate` returns true.
+  using Predicate = base::RepeatingCallback<bool(const HoldingSpaceItem*)>;
+  void RemoveIf(Predicate predicate);
 
   // Removes all the items from the model.
   void RemoveAll();

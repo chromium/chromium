@@ -43,6 +43,14 @@ void HoldingSpaceModel::RemoveItem(const std::string& id) {
     observer.OnHoldingSpaceItemRemoved(item.get());
 }
 
+void HoldingSpaceModel::RemoveIf(Predicate predicate) {
+  for (int i = items_.size() - 1; i >= 0; --i) {
+    const HoldingSpaceItem* item = items_.at(i).get();
+    if (predicate.Run(item))
+      RemoveItem(item->id());
+  }
+}
+
 void HoldingSpaceModel::RemoveAll() {
   // Clear the item list, but keep the items around until the observers have
   // been notified of the item removal.
