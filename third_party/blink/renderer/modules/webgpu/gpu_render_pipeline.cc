@@ -236,19 +236,43 @@ GPURenderPipeline* GPURenderPipeline::Create(
     dawn_desc.fragmentStage = nullptr;
   }
 
+  dawn_desc.primitiveTopology =
+      AsDawnEnum<WGPUPrimitiveTopology>(webgpu_desc->primitiveTopology());
+
   v8::Isolate* isolate = script_state->GetIsolate();
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "GPUVertexStateDescriptor");
   WGPUVertexStateInfo vertex_state_info = GPUVertexStateAsWGPUVertexState(
       isolate, webgpu_desc->vertexState(), exception_state);
-  dawn_desc.vertexState = &std::get<0>(vertex_state_info);
+  WGPUVertexStateDescriptor dawn_vertex_state = std::get<0>(vertex_state_info);
+
+  // TODO(crbug.com/1121762): Remove these checks after a deprecation period.
+  if (dawn_vertex_state.indexFormat == WGPUIndexFormat_Undefined) {
+    dawn_vertex_state.indexFormat = WGPUIndexFormat_Uint32;
+
+    if (dawn_desc.primitiveTopology == WGPUPrimitiveTopology_LineStrip ||
+        dawn_desc.primitiveTopology == WGPUPrimitiveTopology_TriangleStrip) {
+      device->AddConsoleWarning(
+          "Creating a GPUVertexStateDescriptor with a default indexFormat is "
+          "deprecated: Specify an explicit GPUIndexFormat when using "
+          "'line-strip' or 'triangle-strip' primitive topologies.");
+    }
+  } else if (dawn_desc.primitiveTopology == WGPUPrimitiveTopology_PointList ||
+             dawn_desc.primitiveTopology == WGPUPrimitiveTopology_LineList ||
+             dawn_desc.primitiveTopology ==
+                 WGPUPrimitiveTopology_TriangleList) {
+    device->AddConsoleWarning(
+        "Creating a GPUVertexStateDescriptor with an explicit indexFormat is "
+        "deprecated when using 'point-list', 'line-list', or 'triangle-list' "
+        "primitive topologies: Specify the GPUIndexFormat when calling "
+        "setIndexBuffer() instead.");
+  }
+
+  dawn_desc.vertexState = &dawn_vertex_state;
 
   if (exception_state.HadException()) {
     return nullptr;
   }
-
-  dawn_desc.primitiveTopology =
-      AsDawnEnum<WGPUPrimitiveTopology>(webgpu_desc->primitiveTopology());
 
   WGPURasterizationStateDescriptor rasterization_state;
   rasterization_state = AsDawnType(webgpu_desc->rasterizationState());

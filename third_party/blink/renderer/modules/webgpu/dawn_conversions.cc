@@ -376,6 +376,9 @@ WGPULoadOp AsDawnEnum<WGPULoadOp>(const WTF::String& webgpu_enum) {
 
 template <>
 WGPUIndexFormat AsDawnEnum<WGPUIndexFormat>(const WTF::String& webgpu_enum) {
+  if (webgpu_enum.IsNull()) {
+    return WGPUIndexFormat_Undefined;
+  }
   if (webgpu_enum == "uint16") {
     return WGPUIndexFormat_Uint16;
   }

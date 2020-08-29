@@ -47,6 +47,11 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
   void setPipeline(GPURenderPipeline* pipeline);
 
   void setIndexBuffer(GPUBuffer* buffer, uint64_t offset, uint64_t size);
+  void setIndexBuffer(GPUBuffer* buffer,
+                      const WTF::String& format,
+                      uint64_t offset,
+                      uint64_t size,
+                      ExceptionState& exception_state);
   void setVertexBuffer(uint32_t slot,
                        const GPUBuffer* buffer,
                        uint64_t offset,
@@ -64,6 +69,8 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
   void drawIndexedIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
 
   GPURenderBundle* finish(const GPURenderBundleDescriptor* webgpu_desc);
+
+  void Trace(Visitor*) const override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPURenderBundleEncoder);

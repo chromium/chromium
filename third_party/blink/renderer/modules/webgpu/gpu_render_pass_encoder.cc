@@ -110,8 +110,26 @@ void GPURenderPassEncoder::setScissorRect(uint32_t x,
 void GPURenderPassEncoder::setIndexBuffer(GPUBuffer* buffer,
                                           uint64_t offset,
                                           uint64_t size) {
+  device_->AddConsoleWarning(
+      "Calling setIndexBuffer without a GPUIndexFormat is deprecated.");
   GetProcs().renderPassEncoderSetIndexBuffer(GetHandle(), buffer->GetHandle(),
                                              offset, size);
+}
+
+void GPURenderPassEncoder::setIndexBuffer(GPUBuffer* buffer,
+                                          const WTF::String& format,
+                                          uint64_t offset,
+                                          uint64_t size,
+                                          ExceptionState& exception_state) {
+  if (format != "uint16" && format != "uint32") {
+    exception_state.ThrowTypeError(
+        "The provided value '" + format +
+        "' is not a valid enum value of type GPUIndexFormat.");
+    return;
+  }
+  GetProcs().renderPassEncoderSetIndexBufferWithFormat(
+      GetHandle(), buffer->GetHandle(), AsDawnEnum<WGPUIndexFormat>(format),
+      offset, size);
 }
 
 void GPURenderPassEncoder::setVertexBuffer(uint32_t slot,
@@ -162,6 +180,11 @@ void GPURenderPassEncoder::executeBundles(
 
 void GPURenderPassEncoder::endPass() {
   GetProcs().renderPassEncoderEndPass(GetHandle());
+}
+
+void GPURenderPassEncoder::Trace(Visitor* visitor) const {
+  visitor->Trace(device_);
+  DawnObject::Trace(visitor);
 }
 
 }  // namespace blink
