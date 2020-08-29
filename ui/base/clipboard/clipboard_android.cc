@@ -32,16 +32,21 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 
-// TODO:(andrewhayden) Support additional formats in Android: Bitmap, URI, HTML,
+// TODO:(andrewhayden) Support additional formats in Android: URI, HTML,
 // HTML+text now that Android's clipboard system supports them, then nuke the
 // legacy implementation note below.
 
 // Legacy implementation note:
-// The Android clipboard system used to only support text format. So we used the
-// Android system when some text was added or retrieved from the system. For
-// anything else, we STILL store the value in some process wide static
-// variable protected by a lock. So the (non-text) clipboard will only work
-// within the same process.
+// The Android clipboard, and hence `ClipboardAndroid` as well, used to only
+// support text. Since then, bitmap support has been added, but not support
+// for any other formats.
+//
+// Therefore, Clipboard data is stored:
+// - on the Android system, for text and bitmaps.
+// - in a process-wide static variable protected by a lock, for other formats.
+//
+// These "other formats" only work within the same process, and can't be copied
+// between Android applications.
 
 using base::android::AttachCurrentThread;
 using base::android::ClearException;
