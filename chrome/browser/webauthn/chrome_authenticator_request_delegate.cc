@@ -280,6 +280,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     // This will require additional UI that is not yet ready. Therefore, at this
     // stage, it is always rejected.
     std::move(callback).Run(false);
+    return;
   }
 
   // Cryptotoken displays its own attestation consent prompt.
