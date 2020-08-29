@@ -76,8 +76,5 @@ const base::Feature kAllowJITInstallationWhenAppIconIsMissing{
 const base::Feature kEnforceFullDelegation{"EnforceFullDelegation",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kForceSecurePaymentConfirmationDialog{
-    "ForceSecurePaymentConfirmationDialog", base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace features
 }  // namespace payments

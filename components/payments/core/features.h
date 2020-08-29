@@ -79,12 +79,6 @@ extern const base::Feature kAllowJITInstallationWhenAppIconIsMissing;
 // Used to reject the apps with partial delegation.
 extern const base::Feature kEnforceFullDelegation;
 
-// Used to force showing the Secure Payment Confirmation dialog instead of the
-// regular UI. For demo and development purposes only.
-// TODO(https://crbug.com/1110320): Remove this feature after Secure Payment
-// Confirmation has been implemented.
-extern const base::Feature kForceSecurePaymentConfirmationDialog;
-
 }  // namespace features
 }  // namespace payments
 

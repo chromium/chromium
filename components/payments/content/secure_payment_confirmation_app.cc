@@ -4,14 +4,18 @@
 
 #include "components/payments/content/secure_payment_confirmation_app.h"
 
+#include <sstream>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payer_data.h"
@@ -176,24 +180,60 @@ void SecurePaymentConfirmationApp::OnPaymentDetailsNotUpdated() {
 
 void SecurePaymentConfirmationApp::AbortPaymentApp(
     base::OnceCallback<void(bool)> abort_callback) {
-  authenticator_->Cancel();
-  std::move(abort_callback).Run(/*abort_success=*/true);
+  std::move(abort_callback).Run(/*abort_success=*/false);
 }
 
 void SecurePaymentConfirmationApp::OnGetAssertion(
     Delegate* delegate,
     blink::mojom::AuthenticatorStatus status,
     blink::mojom::GetAssertionAuthenticatorResponsePtr response) {
-  if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    delegate->OnInstrumentDetailsError("Authentication failure.");
+  if (status != blink::mojom::AuthenticatorStatus::SUCCESS || !response) {
+    std::stringstream status_string_stream;
+    status_string_stream << status;
+    delegate->OnInstrumentDetailsError(base::StringPrintf(
+        "Authenticator returned %s.", status_string_stream.str().c_str()));
     return;
   }
 
-  // TODO(https://crbug.com/1110324): Serialize response into a JSON string.
-  // Browser will pass this string over Mojo IPC into Blink, which will parse it
-  // into a JavaScript object for the merchant.
-  std::string json_serialized_response = "{\"status\": \"success\"}";
+  // Serialize response into a JSON string. Browser will pass this string over
+  // Mojo IPC into Blink, which will parse it into a JavaScript object for the
+  // merchant.
+  auto info_json = std::make_unique<base::DictionaryValue>();
+  if (response->info) {
+    info_json->SetString("id", response->info->id);
+    info_json->SetString("client_data_json",
+                         base::Base64Encode(response->info->client_data_json));
+    info_json->SetString(
+        "authenticator_data",
+        base::Base64Encode(response->info->authenticator_data));
+  }
 
+  auto prf_results_json = std::make_unique<base::DictionaryValue>();
+  if (response->prf_results) {
+    DCHECK(!response->prf_results->id.has_value());
+    prf_results_json->SetString(
+        "first", base::Base64Encode(response->prf_results->first));
+    if (response->prf_results->second) {
+      prf_results_json->SetString(
+          "second", base::Base64Encode(*response->prf_results->second));
+    }
+  }
+
+  base::DictionaryValue json;
+  json.Set("info", std::move(info_json));
+  json.SetString("signature", base::Base64Encode(response->signature));
+  if (response->user_handle.has_value()) {
+    json.SetString("user_handle",
+                   base::Base64Encode(response->user_handle.value()));
+  }
+  json.SetBoolean("echo_appid_extension", response->echo_appid_extension);
+  json.SetBoolean("appid_extension", response->appid_extension);
+  json.SetBoolean("echo_prf", response->echo_prf);
+  json.Set("prf_results", std::move(prf_results_json));
+  json.SetBoolean("prf_not_evaluated", response->echo_prf);
+
+  std::string json_serialized_response;
+  base::JSONWriter::Write(json, &json_serialized_response);
   delegate->OnInstrumentDetailsReady(methods::kSecurePaymentConfirmation,
                                      json_serialized_response, PayerData());
 }
