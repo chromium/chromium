@@ -812,7 +812,14 @@ void AwContents::OnReceivedIcon(const GURL& icon_url, const SkBitmap& bitmap) {
     entry->GetFavicon().image = gfx::Image::CreateFrom1xBitmap(bitmap);
   }
 
-  Java_AwContents_onReceivedIcon(env, obj, gfx::ConvertToJavaBitmap(&bitmap));
+  ScopedJavaLocalRef<jobject> java_bitmap =
+      gfx::ConvertToJavaBitmap(&bitmap, gfx::OomBehavior::kReturnNullOnOom);
+  if (!java_bitmap) {
+    LOG(WARNING) << "Skipping onReceivedIcon; Not enough memory to convert "
+                    "icon to Bitmap.";
+    return;
+  }
+  Java_AwContents_onReceivedIcon(env, obj, java_bitmap);
 }
 
 void AwContents::OnReceivedTouchIconUrl(const std::string& url,
