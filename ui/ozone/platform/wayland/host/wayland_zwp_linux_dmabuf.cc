@@ -12,10 +12,6 @@
 
 namespace ui {
 
-namespace {
-constexpr uint32_t kImmedVerstion = 3;
-}
-
 WaylandZwpLinuxDmabuf::WaylandZwpLinuxDmabuf(
     zwp_linux_dmabuf_v1* zwp_linux_dmabuf,
     WaylandConnection* connection)
@@ -56,8 +52,9 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(base::ScopedFD fd,
   }
 
   // It's possible to avoid waiting until the buffer is created and have it
-  // immediately. This method is only available since the protocol version 3.
-  if (wl::get_version_of_object(zwp_linux_dmabuf_.get()) >= kImmedVerstion) {
+  // immediately. This method is only available since the protocol version 2.
+  if (wl::get_version_of_object(zwp_linux_dmabuf_.get()) >=
+      ZWP_LINUX_BUFFER_PARAMS_V1_CREATE_IMMED_SINCE_VERSION) {
     wl::Object<wl_buffer> buffer(zwp_linux_buffer_params_v1_create_immed(
         params, size.width(), size.height(), format, 0));
     std::move(callback).Run(std::move(buffer));
