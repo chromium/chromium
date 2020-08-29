@@ -21,10 +21,7 @@ import {
 async function cropSquare(blob) {
   const img = await util.blobToImage(blob);
   const side = Math.min(img.width, img.height);
-  const canvas = document.createElement('canvas');
-  canvas.width = side;
-  canvas.height = side;
-  const ctx = canvas.getContext('2d');
+  const {canvas, ctx} = util.newDrawingCanvas({width: side, height: side});
   ctx.drawImage(
       img, Math.floor((img.width - side) / 2),
       Math.floor((img.height - side) / 2), side, side, 0, 0, side, side);

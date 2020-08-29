@@ -7,6 +7,7 @@ import {assertInstanceof} from '../../chrome_util.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
+import * as util from '../../util.js';
 
 /**
  * Creates a controller for the video preview of Camera view.
@@ -200,10 +201,8 @@ export class Preview {
    * @return {!Promise<!Blob>} Promise for the result.
    */
   toImage() {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = this.video_.videoWidth;
-    canvas.height = this.video_.videoHeight;
+    const {canvas, ctx} = util.newDrawingCanvas(
+        {width: this.video_.videoWidth, height: this.video_.videoHeight});
     ctx.drawImage(this.video_, 0, 0);
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {

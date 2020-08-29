@@ -3,10 +3,27 @@
 // found in the LICENSE file.
 
 import {browserProxy} from './browser_proxy/browser_proxy.js';
+import {assertInstanceof} from './chrome_util.js';
 import {ErrorLevel, ErrorType, reportError} from './error.js';
 import * as state from './state.js';
 import * as tooltip from './tooltip.js';
 import {Facing} from './type.js';
+
+/**
+ * Creates a canvas element for 2D drawing.
+ * @param {{width: number, height: number}} params Width/Height of the canvas.
+ * @return {{canvas: !HTMLCanvasElement, ctx: !CanvasRenderingContext2D}}
+ *     Returns canvas element and the context for 2D drawing.
+ */
+export function newDrawingCanvas({width, height}) {
+  const canvas =
+      assertInstanceof(document.createElement('canvas'), HTMLCanvasElement);
+  canvas.width = width;
+  canvas.height = height;
+  const ctx =
+      assertInstanceof(canvas.getContext('2d'), CanvasRenderingContext2D);
+  return {canvas, ctx};
+}
 
 /**
  * Gets the clockwise rotation and flip that can orient a photo to its upright
@@ -98,41 +115,38 @@ export function orientPhoto(blob, onSuccess, onFailure) {
   // TODO(shenghao): Revise or remove this function if it's no longer
   // applicable.
   const drawPhoto = function(original, orientation, onSuccess, onFailure) {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
     const canvasSquareLength = Math.max(original.width, original.height);
-    canvas.width = canvasSquareLength;
-    canvas.height = canvasSquareLength;
+    const {canvas, ctx} = newDrawingCanvas(
+        {width: canvasSquareLength, height: canvasSquareLength});
 
     const [centerX, centerY] = [canvas.width / 2, canvas.height / 2];
-    context.translate(centerX, centerY);
-    context.rotate(orientation.rotation * Math.PI / 180);
+    ctx.translate(centerX, centerY);
+    ctx.rotate(orientation.rotation * Math.PI / 180);
     if (orientation.flip) {
-      context.scale(-1, 1);
+      ctx.scale(-1, 1);
     }
-    context.drawImage(
+    ctx.drawImage(
         original, -original.width / 2, -original.height / 2, original.width,
         original.height);
     if (orientation.flip) {
-      context.scale(-1, 1);
+      ctx.scale(-1, 1);
     }
-    context.rotate(-orientation.rotation * Math.PI / 180);
-    context.translate(-centerX, -centerY);
+    ctx.rotate(-orientation.rotation * Math.PI / 180);
+    ctx.translate(-centerX, -centerY);
 
-    const outputCanvas = document.createElement('canvas');
-    if (orientation.rotation === 90 || orientation.rotation === 270) {
-      outputCanvas.width = original.height;
-      outputCanvas.height = original.width;
-    } else {
-      outputCanvas.width = original.width;
-      outputCanvas.height = original.height;
-    }
-    const imageData = context.getImageData(
+    const outputSize = (() => {
+      if (orientation.rotation === 90 || orientation.rotation === 270) {
+        return {width: original.height, height: original.width};
+      } else {
+        return {width: original.width, height: original.height};
+      }
+    })();
+    const {canvas: outputCanvas, ctx: outputCtx} = newDrawingCanvas(outputSize);
+    const imageData = ctx.getImageData(
         (canvasSquareLength - outputCanvas.width) / 2,
         (canvasSquareLength - outputCanvas.height) / 2, outputCanvas.width,
         outputCanvas.height);
-    const outputContext = outputCanvas.getContext('2d');
-    outputContext.putImageData(imageData, 0, 0);
+    outputCtx.putImageData(imageData, 0, 0);
 
     outputCanvas.toBlob(function(blob) {
       if (blob) {
@@ -147,7 +161,8 @@ export function orientPhoto(blob, onSuccess, onFailure) {
     if (orientation.rotation === 0 && !orientation.flip) {
       onSuccess(blob);
     } else {
-      const original = document.createElement('img');
+      const original =
+          assertInstanceof(document.createElement('img'), HTMLImageElement);
       original.onload = function() {
         drawPhoto(original, orientation, onSuccess, onFailure);
       };
@@ -337,7 +352,9 @@ export function getDefaultFacing() {
  * @return {!Promise<!Blob>} Promise for the result.
  */
 export async function scalePicture(url, isVideo, width, height = undefined) {
-  const element = document.createElement(isVideo ? 'video' : 'img');
+  const element =
+      /** @type {(!HTMLImageElement|!HTMLVideoElement)} */ (
+          document.createElement(isVideo ? 'video' : 'img'));
   if (isVideo) {
     element.preload = 'auto';
   }
@@ -346,21 +363,18 @@ export async function scalePicture(url, isVideo, width, height = undefined) {
     element.addEventListener('error', reject);
     element.src = url;
   });
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
   if (height === undefined) {
     const ratio = isVideo ? element.videoHeight / element.videoWidth :
                             element.height / element.width;
     height = Math.round(width * ratio);
   }
-  canvas.width = width;
-  canvas.height = height;
-  context.drawImage(element, 0, 0, width, height);
+  const {canvas, ctx} = newDrawingCanvas({width, height});
+  ctx.drawImage(element, 0, 0, width, height);
 
   /**
    * @type {!Uint8ClampedArray} A one-dimensional pixels array in RGBA order.
    */
-  const data = context.getImageData(0, 0, width, height).data;
+  const data = ctx.getImageData(0, 0, width, height).data;
   if (data.every((byte) => byte === 0)) {
     reportError(
         ErrorType.BROKEN_THUMBNAIL, ErrorLevel.ERROR,
