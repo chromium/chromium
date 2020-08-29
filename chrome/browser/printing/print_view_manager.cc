@@ -86,13 +86,13 @@ bool PrintViewManager::PrintForSystemDialogNow(
   DCHECK(!on_print_dialog_shown_callback_);
   on_print_dialog_shown_callback_ = std::move(dialog_shown_callback);
   is_switching_to_system_dialog_ = true;
-
-  SetPrintingRFH(print_preview_rfh_);
+  DisconnectFromCurrentPrintJob();
 
   // Don't print / print preview crashed tabs.
   if (IsCrashed())
     return false;
 
+  SetPrintingRFH(print_preview_rfh_);
   GetPrintRenderFrame(print_preview_rfh_)->PrintForSystemDialog();
   return true;
 }
