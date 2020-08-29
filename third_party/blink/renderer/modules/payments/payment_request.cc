@@ -809,6 +809,15 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
                       WebFeature::kPaymentRequestShowWithoutGesture);
   }
 
+  // TODO(crbug.com/825270): Pretend that a user gesture is provided to allow
+  // origins that are part of the Secure Payment Confirmation Origin Trial to
+  // use skip-the-sheet flow as a hack for secure modal window
+  // (crbug.com/1122028). Remove this after user gesture delegation ships.
+  if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
+          GetExecutionContext())) {
+    is_user_gesture = true;
+  }
+
   // TODO(crbug.com/779126): add support for handling payment requests in
   // immersive mode.
   if (GetFrame()->GetDocument()->GetSettings()->GetImmersiveModeEnabled()) {
