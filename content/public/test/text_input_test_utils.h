@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "content/public/test/test_utils.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -170,6 +171,70 @@ class TextInputManagerTester {
   std::unique_ptr<InternalObserver> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(TextInputManagerTester);
+};
+
+// TextInputManager Observers
+
+// A base class for observing the TextInputManager owned by the given
+// WebContents. Subclasses can observe the TextInputManager for different
+// changes. The class wraps a public tester which accepts callbacks that
+// are run after specific changes in TextInputManager. Different observers can
+// be subclassed from this by providing their specific callback methods.
+class TextInputManagerObserverBase {
+ public:
+  explicit TextInputManagerObserverBase(content::WebContents* web_contents);
+
+  virtual ~TextInputManagerObserverBase();
+
+  TextInputManagerObserverBase(const TextInputManagerObserverBase&) = delete;
+  TextInputManagerObserverBase& operator=(const TextInputManagerObserverBase&) =
+      delete;
+
+  // Wait for derived class's definition of success.
+  void Wait();
+
+  bool success() const { return success_; }
+
+ protected:
+  content::TextInputManagerTester* tester() { return tester_.get(); }
+
+  void OnSuccess();
+
+ private:
+  std::unique_ptr<content::TextInputManagerTester> tester_;
+  bool success_;
+  base::OnceClosure quit_;
+};
+
+// This class observes TextInputManager for changes in |TextInputState.value|.
+class TextInputManagerValueObserver : public TextInputManagerObserverBase {
+ public:
+  TextInputManagerValueObserver(content::WebContents* web_contents,
+                                const std::string& expected_value);
+
+  TextInputManagerValueObserver(const TextInputManagerValueObserver&) = delete;
+  TextInputManagerValueObserver& operator=(
+      const TextInputManagerValueObserver&) = delete;
+
+ private:
+  void VerifyValue();
+  const std::string expected_value_;
+};
+
+// This class observes TextInputManager for changes in |TextInputState.type|.
+class TextInputManagerTypeObserver : public TextInputManagerObserverBase {
+ public:
+  TextInputManagerTypeObserver(content::WebContents* web_contents,
+                               ui::TextInputType expected_type);
+
+  TextInputManagerTypeObserver(const TextInputManagerTypeObserver&) = delete;
+  TextInputManagerTypeObserver& operator=(const TextInputManagerTypeObserver&) =
+      delete;
+
+ private:
+  void VerifyType();
+
+  const ui::TextInputType expected_type_;
 };
 
 // This class observes the lifetime of a RenderWidgetHostView.

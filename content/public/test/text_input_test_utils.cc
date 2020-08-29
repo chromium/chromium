@@ -437,6 +437,63 @@ bool TextInputManagerTester::IsTextInputStateChanged() {
   return observer_->text_input_state_changed();
 }
 
+TextInputManagerObserverBase::TextInputManagerObserverBase(
+    content::WebContents* web_contents)
+    : tester_(std::make_unique<TextInputManagerTester>(web_contents)),
+      success_(false) {}
+
+TextInputManagerObserverBase::~TextInputManagerObserverBase() = default;
+
+void TextInputManagerObserverBase::Wait() {
+  if (success_)
+    return;
+
+  base::RunLoop loop;
+  quit_ = loop.QuitClosure();
+  loop.Run();
+}
+
+void TextInputManagerObserverBase::OnSuccess() {
+  success_ = true;
+  if (quit_)
+    std::move(quit_).Run();
+
+  // By deleting |tester_| we make sure that the internal observer used in
+  // content/ is removed from the observer list of TextInputManager.
+  tester_.reset();
+}
+
+TextInputManagerValueObserver::TextInputManagerValueObserver(
+    content::WebContents* web_contents,
+    const std::string& expected_value)
+    : TextInputManagerObserverBase(web_contents),
+      expected_value_(expected_value) {
+  tester()->SetUpdateTextInputStateCalledCallback(base::BindRepeating(
+      &TextInputManagerValueObserver::VerifyValue, base::Unretained(this)));
+}
+
+void TextInputManagerValueObserver::VerifyValue() {
+  std::string value;
+  if (tester()->GetTextInputValue(&value) && expected_value_ == value)
+    OnSuccess();
+}
+
+TextInputManagerTypeObserver::TextInputManagerTypeObserver(
+    content::WebContents* web_contents,
+    ui::TextInputType expected_type)
+    : TextInputManagerObserverBase(web_contents),
+      expected_type_(expected_type) {
+  tester()->SetUpdateTextInputStateCalledCallback(base::BindRepeating(
+      &TextInputManagerTypeObserver::VerifyType, base::Unretained(this)));
+}
+
+void TextInputManagerTypeObserver::VerifyType() {
+  ui::TextInputType type =
+      tester()->GetTextInputType(&type) ? type : ui::TEXT_INPUT_TYPE_NONE;
+  if (expected_type_ == type)
+    OnSuccess();
+}
+
 TestRenderWidgetHostViewDestructionObserver::
     TestRenderWidgetHostViewDestructionObserver(RenderWidgetHostView* view)
     : observer_(
