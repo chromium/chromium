@@ -308,6 +308,10 @@ void IdentifiabilityStudyState::ReconcileLoadedPrefs() {
 bool IdentifiabilityStudyState::ShouldRecordSurface(
     uint64_t source_id,
     blink::IdentifiableSurface surface) {
+  if (!blink::IdentifiabilityStudySettings::Get()->IsTypeAllowed(
+          blink::IdentifiableSurface::Type::kMeasuredSurface)) {
+    return false;
+  }
   return tracked_surfaces_.ShouldRecord(source_id, surface.ToUkmMetricHash());
 }
 
