@@ -237549,7 +237549,7 @@
        []
       ],
       "testrunner.py": [
-       "4c9468a0eba4b3c38821446aba65dec58137b229",
+       "0bde5ba348ea08984c1b95f78d926218b3713890",
        []
       ],
       "update": {
@@ -262231,6 +262231,15 @@
       }
      ]
     ],
+    "async-svg-script-removal.https.html": [
+     "cd1a551d9d12852f3ff8233bf535eb29e88c48ef",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "async-write-blobs-read-blobs.https.html": [
      "50d23a9c3625d5295407a783ad63908571fd55f7",
      [
@@ -262251,6 +262260,15 @@
     ],
     "async-write-image-read-image.https.html": [
      "281358dfc5f8d68d3d6d436fdd92dbc8fb8b7b5d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "async-write-svg-read-svg.https.html": [
+     "19c91597c111ee267e95f6d4bb0092fa2aafec25",
      [
       null,
       {
