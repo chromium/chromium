@@ -56,6 +56,11 @@
 // The controller for |sceneState|.
 @property(nonatomic, strong) SceneController* sceneController;
 
+// YES if application:didFinishLaunchingWithOptions: was called. Used to
+// determine whether or not shutdown should be invoked from
+// applicationWillTerminate:.
+@property(nonatomic, assign) BOOL didFinishLaunching;
+
 @end
 
 @implementation MainApplicationDelegate
@@ -113,6 +118,8 @@
 // startup is fast, and the UI appears as soon as possible.
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
+  self.didFinishLaunching = YES;
+
   startup_loggers::RegisterAppDidFinishLaunchingTime();
 
   _mainController.window = self.window;
@@ -200,6 +207,12 @@
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
+  // If |self.didFinishLaunching| is NO, that indicates that the app was
+  // terminated before startup could be run. In this situation, skip running
+  // shutdown, since the app was never fully started.
+  if (!self.didFinishLaunching)
+    return;
+
   if ([_appState isInSafeMode])
     return;
 

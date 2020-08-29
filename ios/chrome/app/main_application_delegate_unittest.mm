@@ -48,3 +48,25 @@ TEST_F(MainApplicationDelegateTest, CrashIfNotInitialized) {
   delete ios::GetChromeBrowserProvider();
   ios::SetChromeBrowserProvider(stashed_chrome_browser_provider);
 }
+
+// Tests that the application does not crash if |applicationWillTerminate:| is
+// called before a previous call to |application:didFinishLaunchingWithOptions:|
+// set up the ChromeBrowserProvider. This can happen if the app is force-quit
+// while the splash screen is still visible.
+TEST_F(MainApplicationDelegateTest, TerminateCalledWithNoBrowserProvider) {
+  id application = [OCMockObject niceMockForClass:[UIApplication class]];
+
+  // The test fixture automatically registers a ChromeBrowserProvider, but this
+  // test is trying to verify behavior in the case where
+  // ios::GetChromeBrowserProvider() return nullptr. Clear the previously-set
+  // provider before proceeding.
+  ios::ChromeBrowserProvider* stashed_chrome_browser_provider =
+      ios::GetChromeBrowserProvider();
+  ios::SetChromeBrowserProvider(nullptr);
+
+  MainApplicationDelegate* delegate = [[MainApplicationDelegate alloc] init];
+  [delegate applicationWillTerminate:application];
+
+  // Restore ChromeBrowserProvider to its original value.
+  ios::SetChromeBrowserProvider(stashed_chrome_browser_provider);
+}
