@@ -595,9 +595,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             ChromeActivity chromeActivity =
                     (ChromeActivity) tab.getWindowAndroid().getActivity().get();
             int tabIndex = TabModelUtils.getTabIndexById(
-                    chromeActivity.getTabModelSelector().getCurrentModel(), tab.getId());
-            chromeActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    tabIndex, TabSelectionType.FROM_OMNIBOX);
+                    chromeActivity.getTabModelSelector().getModel(tab.isIncognito()), tab.getId());
+            chromeActivity.getTabModelSelector()
+                    .getModel(tab.isIncognito())
+                    .setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
         } else {
             // Browser is in background, bring to to foreground and switch to the tab.
             Intent newIntent = ChromeIntentUtil.createBringTabToFrontIntent(tab.getId());
