@@ -539,6 +539,8 @@ source_set("run_all_unittests") {
 }
 
 test("gl_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "gl_api_unittest.cc",
     "gl_image_ref_counted_memory_unittest.cc",

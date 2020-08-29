@@ -216,6 +216,8 @@ executable("app_list_demo") {
 }
 
 test("app_list_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "folder_image_unittest.cc",
     "test/run_all_unittests.cc",

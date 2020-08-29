@@ -269,6 +269,8 @@ copy("views_examples_resources_pak") {
 }
 
 test("views_examples_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "examples_unittest.cc",
     "examples_unittest_main.cc",

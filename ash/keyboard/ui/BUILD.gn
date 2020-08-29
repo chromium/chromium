@@ -133,6 +133,8 @@ build_closure("inputview") {
 }
 
 test("keyboard_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "container_floating_behavior_unittest.cc",
     "container_full_width_behavior_unittest.cc",

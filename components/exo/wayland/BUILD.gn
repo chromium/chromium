@@ -466,6 +466,8 @@ source_set("wayland_client_test_helper") {
 }
 
 test("wayland_client_perftests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "clients/perftests.cc",
     "clients/test/run_all_client_perftests.cc",

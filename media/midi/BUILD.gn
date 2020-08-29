@@ -178,6 +178,8 @@ mojom("mojo") {
 }
 
 test("midi_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "message_util_unittest.cc",
     "midi_manager_unittest.cc",

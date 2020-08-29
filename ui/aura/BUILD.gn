@@ -314,9 +314,7 @@ executable("aura_demo") {
 }
 
 test("aura_unittests") {
-  if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-    use_xvfb = true
-  }
+  use_xvfb = use_xvfb_in_this_config
 
   sources = [
     "../compositor_extra/shadow_unittest.cc",

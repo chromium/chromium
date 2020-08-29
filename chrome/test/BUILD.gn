@@ -676,9 +676,7 @@ static_library("browser_tests_runner") {
 
 if (!is_android) {
   test("browser_tests") {
-    if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-      use_xvfb = true
-    }
+    use_xvfb = use_xvfb_in_this_config
 
     configs += [ "//build/config:precompiled_headers" ]
     defines = [
@@ -3133,9 +3131,7 @@ if (is_mac) {
 }
 
 test("unit_tests") {
-  if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-    use_xvfb = true
-  }
+  use_xvfb = use_xvfb_in_this_config
 
   inputs = [
     # enums.xml is analyzed by AboutFlagsHistogramTest, so this
@@ -5975,9 +5971,7 @@ if (!is_android) {
   }
 
   test("interactive_ui_tests") {
-    if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-      use_xvfb = true
-    }
+    use_xvfb = use_xvfb_in_this_config
 
     sources = [
       "../browser/about_flags_browsertest.cc",
@@ -6617,9 +6611,7 @@ if (!is_fuchsia) {
 
 if (!is_fuchsia && !is_android) {
   test("sync_integration_tests") {
-    if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-      use_xvfb = true
-    }
+    use_xvfb = use_xvfb_in_this_config
 
     sources = [
       "../browser/sync/test/integration/enable_disable_test.cc",
@@ -6862,6 +6854,8 @@ if (!is_fuchsia && !is_android) {
 
   # Tests autofill on captured websites
   test("captured_sites_interactive_tests") {
+    use_xvfb = use_xvfb_in_this_config
+
     sources = [
       "../browser/autofill/autofill_captured_sites_interactive_uitest.cc",
       "../browser/autofill/autofill_uitest.cc",

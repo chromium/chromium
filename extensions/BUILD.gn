@@ -207,9 +207,7 @@ repack("shell_and_test_pak") {
 }
 
 test("extensions_unittests") {
-  if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-    use_xvfb = true
-  }
+  use_xvfb = use_xvfb_in_this_config
 
   sources = [
     "test/extensions_unittests_main.cc",
@@ -245,9 +243,7 @@ test("extensions_unittests") {
 }
 
 test("extensions_browsertests") {
-  if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-    use_xvfb = true
-  }
+  use_xvfb = use_xvfb_in_this_config
 
   data = [
     "//extensions/test/data/",

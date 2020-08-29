@@ -865,6 +865,8 @@ if (is_ios) {
 }
 
 test("ui_base_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "class_property_unittest.cc",
     "l10n/l10n_util_unittest.cc",

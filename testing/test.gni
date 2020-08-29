@@ -40,11 +40,14 @@ if ((is_linux && !is_chromeos) || is_mac || is_win ||
 # Define a test as an executable (or apk on Android) with the "testonly" flag
 # set.
 # Variable:
+#   use_xvfb: (optional) whether to run the executable under Xvfb.
 #   use_raw_android_executable: Use executable() rather than android_apk().
 #   use_native_activity: Test implements ANativeActivity_onCreate().
 #   win_test_enable_cfi_linker: (Win) Enable CFI linker for this test binary.
 template("test") {
   if (is_android) {
+    assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
+
     _use_raw_android_executable = defined(invoker.use_raw_android_executable) &&
                                   invoker.use_raw_android_executable
 
@@ -211,6 +214,8 @@ template("test") {
       }
     }
   } else if (is_fuchsia) {
+    assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
+
     _output_name = invoker.target_name
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
@@ -242,6 +247,8 @@ template("test") {
       output_name = _exec_target
     }
   } else if (is_ios) {
+    assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
+
     declare_args() {
       # Keep the unittest-as-xctest functionality defaulted to off until the
       # bots are updated to handle it properly.
@@ -329,6 +336,8 @@ template("test") {
       data_deps += [ ":${_wrapper_output_name}" ]
     }
   } else if (is_chromeos && cros_board != "") {
+    assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
+
     # Building for a cros board (ie: not linux-chromeos).
 
     _gen_runner_target = "${target_name}__runner"
@@ -362,8 +371,10 @@ template("test") {
       deps += [ ":$_gen_runner_target" ]
     }
   } else if (is_chromeos && cros_board == "") {
+    # TODO(crbug.com/816629) - Make use_xvfb work right in this situation.
+    not_needed([ "use_xvfb" ])
     executable(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", [ "use_xvfb" ])
       if (!defined(deps)) {
         deps = []
       }
@@ -444,6 +455,10 @@ template("test") {
       deps += [ ":$_gen_runner_target" ]
     }
   } else {
+    if (is_mac || is_win) {
+      assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
+    }
+
     if ((is_linux && !is_chromeos) || is_mac || is_win) {
       _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
       _executable = target_name
@@ -498,7 +513,7 @@ template("test") {
     }
 
     executable(target_name) {
-      forward_variables_from(invoker, "*")
+      forward_variables_from(invoker, "*", [ "use_xvfb" ])
       if (!defined(deps)) {
         deps = []
       }

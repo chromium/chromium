@@ -70,6 +70,8 @@ static_library("test_support") {
 }
 
 test("ui_touch_selection_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "longpress_drag_selector_unittest.cc",
     "touch_handle_unittest.cc",

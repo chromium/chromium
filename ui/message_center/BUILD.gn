@@ -156,9 +156,7 @@ if (enable_message_center) {
   }
 
   test("message_center_unittests") {
-    if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-      use_xvfb = true
-    }
+    use_xvfb = use_xvfb_in_this_config
 
     sources = [
       "message_center_impl_unittest.cc",

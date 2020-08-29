@@ -293,6 +293,8 @@ source_set("unit_tests") {
 }
 
 test("exo_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [ "test/run_all_unittests.cc" ]
 
   deps = [

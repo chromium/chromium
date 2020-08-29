@@ -140,6 +140,8 @@ source_set("test_support") {
 # Contains tests for all targets in the "media" folder.
 # TODO(xhwang): Move mojo/capture/remoting tests here where applicable.
 test("media_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   deps = [
     "//media/audio:unit_tests",
     "//media/base:unit_tests",

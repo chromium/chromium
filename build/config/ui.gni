@@ -18,6 +18,7 @@
 # of //build/config/BUILDCONFIG.gn.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 
 declare_args() {
   # Indicates if Ozone is enabled. Ozone is a low-level library layer for Linux
@@ -49,6 +50,11 @@ assert(!use_glib || (is_linux && !is_chromeos && !is_chromecast))
 
 # Whether to use atk, the Accessibility ToolKit library
 use_atk = is_desktop_linux && !is_chromecast && use_glib
+
+# Whether using Xvfb to provide a display server for a test might be
+# necessary.
+use_xvfb_in_this_config = (is_linux && !is_chromeos) || chromeos_is_browser_only
+#
 # =============================================
 #   PLEASE DO NOT ADD MORE FLAGS TO THIS FILE
 # =============================================

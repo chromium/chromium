@@ -277,6 +277,8 @@ static_library("test_support") {
 }
 
 test("cast_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "common/expanded_value_base_unittest.cc",
     "common/rtp_time_unittest.cc",

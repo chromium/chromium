@@ -199,6 +199,8 @@ if (enable_vulkan) {
   # https://crbug.com/1065499
   if (is_android || use_x11 || is_win || use_ozone) {
     test("vulkan_tests") {
+      use_xvfb = use_xvfb_in_this_config
+
       sources = [
         "tests/basic_vulkan_test.cc",
         "tests/basic_vulkan_test.h",

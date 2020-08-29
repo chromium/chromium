@@ -1777,6 +1777,8 @@ action("dbus_service_files") {
 }
 
 test("ash_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "accelerators/accelerator_commands_unittest.cc",
     "accelerators/accelerator_controller_unittest.cc",

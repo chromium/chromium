@@ -300,6 +300,8 @@ test("ozone_unittests") {
 # backend.
 if (ozone_platform_x11) {
   test("ozone_x11_unittests") {
+    use_xvfb = true
+
     deps = [ ":test_support" ]
 
     deps += [ "platform/x11:x11_unittests" ]

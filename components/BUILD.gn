@@ -45,9 +45,7 @@ if (is_ios) {
 # no tests will run) and add a reference here. You can add more than one unit
 # test target if convenient.
 test("components_unittests") {
-  if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-    use_xvfb = true
-  }
+  use_xvfb = use_xvfb_in_this_config
 
   if (is_android || is_linux || is_chromeos || is_mac || is_win) {
     data = [ "test/data/" ]
@@ -545,9 +543,7 @@ if (is_android) {
 # no-op under Fuchsia.
 if (!is_ios && !is_fuchsia) {
   test("components_browsertests") {
-    if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-      use_xvfb = true
-    }
+    use_xvfb = use_xvfb_in_this_config
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

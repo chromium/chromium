@@ -619,6 +619,8 @@ cc_test_static_library("test_support") {
 }
 
 cc_test("cc_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "base/delayed_unique_notifier_unittest.cc",
     "base/float_quad_unittest.cc",

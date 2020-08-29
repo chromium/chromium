@@ -118,9 +118,7 @@ static_library("test_support") {
 }
 
 test("wm_unittests") {
-  if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-    use_xvfb = true
-  }
+  use_xvfb = use_xvfb_in_this_config
 
   sources = [
     "core/capture_controller_unittest.cc",

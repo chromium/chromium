@@ -540,6 +540,8 @@ static_library("test_support") {
 
 if (!is_ios) {
   test("events_unittests") {
+    use_xvfb = use_xvfb_in_this_config
+
     sources = [
       "blink/blink_event_util_unittest.cc",
       "blink/fling_booster_unittest.cc",

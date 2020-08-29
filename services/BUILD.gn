@@ -12,6 +12,8 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 # To add tests for a new service, please define a "tests" source_set in the
 # service subdirectory and add it as a dependency here.
 test("services_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   # The tracing unittests require this for testing unwinding. See
   # stack_unwinder_android_unittest.cc.
   if (is_android && can_unwind_with_cfi_table && is_official_build) {

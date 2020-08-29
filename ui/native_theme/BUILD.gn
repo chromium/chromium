@@ -127,6 +127,8 @@ source_set("test_support") {
 }
 
 test("native_theme_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "native_theme_unittest.cc",
     "themed_vector_icon_unittest.cc",

@@ -73,6 +73,8 @@ if (is_android) {
 }
 
 test("weblayer_browsertests") {
+  use_xvfb = use_xvfb_in_this_config
+
   data = [
     "$root_out_dir/weblayer_shell.pak",
     "data/",

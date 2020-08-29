@@ -91,9 +91,7 @@ source_set("snapshot_export") {
 }
 
 test("snapshot_unittests") {
-  if ((is_linux && !is_chromeos) || chromeos_is_browser_only) {
-    use_xvfb = true
-  }
+  use_xvfb = use_xvfb_in_this_config
 
   sources = [ "test/run_all_unittests.cc" ]
 

@@ -50,6 +50,8 @@ component("x11") {
 }
 
 test("x11_unittests") {
+  use_xvfb = true
+
   sources = [
     "test/device_data_manager_x11_unittest.cc",
     "test/events_x_unittest.cc",
