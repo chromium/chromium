@@ -158,14 +158,6 @@
       El valor predeterminado es RollbackDisabled.</translation>
 <translation id="1221359380862872747">Cargar las URL especificadas en el inicio de sesión del demo</translation>
 <translation id="1223789468190631420">La Navegación segura habilita el estado para las fuentes de confianza</translation>
-<translation id="122899932962115297">Una lista blanca que controla los métodos de desbloqueo rápido que el usuario puede configurar y usar para desbloquear la pantalla bloqueada.
-
-          Este valor es una lista de strings; las entradas válidas para la lista son las siguientes: "all", "PIN", "FINGERPRINT". Si se agrega "all" a la lista, el usuario podrá usar todos los métodos de desbloqueo rápido, entre los que se incluyen aquellos que se implementen en el futuro. De lo contrario, solo estarán disponibles los métodos de desbloqueo rápido que se enumeran en la lista.
-
-
-          Por ejemplo, para permitir todos los métodos de desbloqueo rápido, se debe usar ["all"]. Para permitir solo el desbloqueo con PIN, se debe usar ["PIN"]. Para permitir el desbloqueo con PIN y huella digital, se debe usar ["PIN", "FINGERPRINT"]. Para inhabilitar todos los métodos de desbloqueo rápido, se debe usar [].
-
-          De manera predeterminada, no está disponible ningún método de desbloqueo rápido para los dispositivos administrados.</translation>
 <translation id="123081309365616809">Permite transmitir contenido al dispositivo</translation>
 <translation id="1231349879329465225">Permite habilitar o inhabilitar la "Transición rápida".
       Se aplica a todos los usuarios y todas las interfaces del dispositivo.

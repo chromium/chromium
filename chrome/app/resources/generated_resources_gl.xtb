@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">Para solicitar acceso, ponte en contacto co administrador deste dispositivo.</translation>
 <translation id="1149401351239820326">Mes de caducidade</translation>
 <translation id="1149725087019908252">Analizando <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Esta é a última actualización automática de software e seguranza para este dispositivo (<ph name="DEVICE_TYPE" />). Se queres recibir futuras actualizacións, cambia a un modelo máis novo. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Lentes de sol</translation>
 <translation id="1151917987301063366">Permitir sempre a <ph name="HOST" /> acceder aos sensores</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">Produciuse un problema técnico. Comproba a impresora</translation>
 <translation id="1363585519747660921">É necesario configurar a impresora USB</translation>
 <translation id="1365180424462182382">O dominio <ph name="ENROLLMENT_DOMAIN" /> <ph name="BEGIN_LINK" />xestiona o teu navegador<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534">Executa IDE, editores e ferramentas de Linux no teu <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Máis información&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
 <translation id="1369149969991017342">Acceso con interruptores (controla o ordenador cun ou dous interruptores)</translation>
 <translation id="1372841398847029212">Sincronizar coa túa conta</translation>
@@ -1421,7 +1421,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2682498795777673382">Cambio feito polo teu pai ou nai</translation>
 <translation id="2683638487103917598">Cartafol ordenado</translation>
 <translation id="2684004000387153598">Para continuar, fai clic en Aceptar e despois en Engadir persoa se queres crear un novo perfil para o teu enderezo de correo electrónico.</translation>
-<translation id="2686222346846590368">Esta é a última actualización automática de software e seguranza para este dispositivo (<ph name="DEVICE_TYPE" />). Se queres obter futuras actualizacións, cambia a un modelo máis novo. &lt;a target="_blank" href="<ph name="URL" />"&gt;Máis información<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Bloquear todas as cookies (non recomendado)</translation>
 <translation id="2687407218262674387">Condicións de servizo de Google</translation>
 <translation id="2688196195245426394">Produciuse un erro ao rexistrar o dispositivo co servidor: <ph name="CLIENT_ERROR" />.</translation>
@@ -1525,6 +1524,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2799223571221894425">Iniciar de novo</translation>
 <translation id="2800760947029405028">Subir unha imaxe</translation>
 <translation id="2801954693771979815">Tamaño da pantalla</translation>
+<translation id="2803313416453193357">Abrir cartafol</translation>
 <translation id="2803375539583399270">Introduce o PIN</translation>
 <translation id="2804043232879091219">Non se puido abrir o navegador alternativo</translation>
 <translation id="2804667941345577550">Pecharase sesión neste sitio, aínda que o teñas aberto en pestanas</translation>

@@ -159,13 +159,6 @@
       Mặc định là RollbackDisabled.</translation>
 <translation id="1221359380862872747">Tải các url đã chỉ định khi đăng nhập ở chế độ trình diễn</translation>
 <translation id="1223789468190631420">Trạng thái bật tính năng Duyệt web an toàn cho các nguồn đáng tin cậy</translation>
-<translation id="122899932962115297">Một danh sách cho phép kiểm soát những chế độ mở khóa nhanh nào người dùng có thể định cấu hình và sử dụng để mở khóa màn hình khóa.
-
-          Giá trị này là một danh sách chuỗi; các mục nhập hợp lệ của danh sách này là: "all", "PIN", "FINGERPRINT". Khi bạn thêm "all" vào danh sách này, thì người dùng có thể sử dụng mọi chế độ mở khóa nhanh, bao gồm cả những chế độ được triển khai trong tương lai. Nếu không, người dùng chỉ sử dụng được các chế độ có trong danh sách này.
-
-          Ví dụ: để cho phép tất cả chế độ mở khóa nhanh, hãy sử dụng ["all"]. Để chỉ cho phép mở khóa bằng mã PIN, hãy sử dụng ["PIN"]. Để cho phép mở khóa bằng mã PIN và vân tay, hãy sử dụng ["PIN", "FINGERPRINT"]. Để tắt tất cả chế độ mở khóa nhanh, hãy sử dụng [].
-
-          Theo mặc định, các thiết bị được quản lý sẽ không sử dụng được bất kỳ chế độ mở khóa nhanh nào.</translation>
 <translation id="123081309365616809">Bật tính năng truyền nội dung đến thiết bị</translation>
 <translation id="1231349879329465225">Cho phép bật hoặc tắt tính năng Chuyển đổi nhanh.
       Tính năng này áp dụng cho tất cả người dùng và tất cả giao diện trên thiết bị.

@@ -158,13 +158,6 @@
       De standaardinstelling is RollbackDisabled.</translation>
 <translation id="1221359380862872747">Gespecificeerde URL's laden in demo-aanmeldvenster</translation>
 <translation id="1223789468190631420">Inschakelstatus van Safe Browsing voor vertrouwde bronnen</translation>
-<translation id="122899932962115297">Een witte lijst die beheert welke modi voor snel ontgrendelen de gebruiker kan configureren en gebruiken om het vergrendelscherm te ontgrendelen.
-
-          Deze waarde bestaat uit een lijst met tekenreeksen. Geldige lijstvermeldingen zijn: "all", "PIN" en "FINGERPRINT". Als je "all" toevoegt aan de lijst, betekent dit dat elke modus voor snel ontgrendelen beschikbaar is voor de gebruiker, waaronder modi die in de toekomst worden geïmplementeerd. Anders zijn alleen de modi voor snel ontgrendelen in de lijst beschikbaar.
-
-          Als je bijvoorbeeld elke modus voor snel ontgrendelen wilt toestaan, gebruik je ['all"]. Als je alleen ontgrendelen via pincode wilt toestaan, gebruik je ["PIN"]. Als je "PIN" en "FINGERPRINT" wilt toestaan, gebruik je ["PIN", "FINGERPRINT"]. Als je alle modi voor snel ontgrendelen wilt uitschakelen, gebruik je [].
-
-          Standaard zijn er geen modi voor snel ontgrendelen beschikbaar voor beheerde apparaten.</translation>
 <translation id="123081309365616809">Casten van content naar het apparaat inschakelen</translation>
 <translation id="1231349879329465225">Hiermee kan Fast Transition worden in- of uitgeschakeld.
       Dit is van toepassing op alle gebruikers en op alle interfaces op het apparaat.

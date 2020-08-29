@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">ആക്സസ് ആവശ്യപ്പെടാൻ, ഈ ഉപകരണത്തിന്റെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="1149401351239820326">കാലാവധി കഴിയുന്ന മാസം</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> സ്‌കാൻ ചെയ്യുന്നു</translation>
+<translation id="1150490752229770117">ഈ <ph name="DEVICE_TYPE" /> എന്നതിന് സ്വയമേവയുള്ള അവസാനത്തെ സോഫ്റ്റ്‌വെയർ, സുരക്ഷാ അപ്ഡേറ്റ് ആണിത്. ഭാവി അപ്ഡേറ്റുകൾ ലഭിക്കാൻ പുതിയ മോഡലിലേക്ക് അപ്ഗ്രേഡ് ചെയ്യൂ. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">സൺഗ്ലാസുകൾ</translation>
 <translation id="1151917987301063366">സെൻസറുകൾ ആക്‌സസ് ചെയ്യാൻ എപ്പോഴും <ph name="HOST" />-നെ അനുവദിക്കുക</translation>
 <translation id="1153356358378277386">ജോടിയാക്കിയ ഉപകരണങ്ങൾ</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">മെക്കാനിക്കൽ പ്രശ്‌നം. പ്രിന്റർ പരിശോധിക്കുക</translation>
 <translation id="1363585519747660921">USB പ്രിൻ്ററിന് കോൺഫിഗറേഷൻ ആവശ്യമുണ്ട്</translation>
 <translation id="1365180424462182382">നിങ്ങളുടെ <ph name="BEGIN_LINK" />ബ്രൗസർ മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /><ph name="ENROLLMENT_DOMAIN" /> ആണ്</translation>
-<translation id="1366177842110999534">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്ന ഉപകരണത്തിലെ Linux ടൂളുകൾ, എഡിറ്ററുകൾ, IDE-കൾ എന്നിവ റൺ ചെയ്യുക. &lt;a target="_blank" href="<ph name="URL" />"&gt;കൂടുതലറിയുക&lt;/a&gt;</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1369149969991017342">ആക്‌സസ് മാറുക (ഒന്നോ രണ്ടോ തവണ മാറുന്നതിലൂടെ കമ്പ്യൂട്ടർ നിയന്ത്രിക്കുക)</translation>
 <translation id="1372841398847029212">നിങ്ങളുടെ അക്കൗണ്ടിലേക്ക് സമന്വയിപ്പിക്കുക</translation>
@@ -1419,7 +1419,6 @@
 <translation id="2682498795777673382">രക്ഷിതാവിൽ നിന്നുള്ള അപ്‌ഡേറ്റ്</translation>
 <translation id="2683638487103917598">ഫോൾഡർ അടുക്കി</translation>
 <translation id="2684004000387153598">തുടരാൻ, ശരി ക്ലിക്ക് ചെയ്യുക, തുടർന്ന് നിങ്ങളുടെ ഇമെയിൽ വിലാസത്തിനൊരു പുതിയ പ്രൊഫൈൽ സൃഷ്ടിക്കാൻ, 'ഒരു വ്യക്തിയെ ചേർക്കുക' ക്ലിക്ക് ചെയ്യുക.</translation>
-<translation id="2686222346846590368">ഈ <ph name="DEVICE_TYPE" />-ന് സ്വയമേവയുള്ള അവസാനത്തെ സോഫ്റ്റ്‌വെയർ, സുരക്ഷാ അപ്ഡേറ്റ് ആണിത്. ഭാവി അപ്ഡേറ്റുകൾ ലഭിക്കാൻ പുതിയൊരു മോഡലിലേക്ക് അപ്ഗ്രേഡ് ചെയ്യൂ. &lt;a target="_blank" href="<ph name="URL" />"&gt;കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="2687407218262674387">Google സേവന നിബന്ധനകൾ</translation>
 <translation id="2688196195245426394">ഉപകരണം സെർവറിൽ രജിസ്റ്റർ ചെയ്യുന്നതിൽ പിശക്: <ph name="CLIENT_ERROR" />.</translation>
@@ -1523,6 +1522,7 @@
 <translation id="2799223571221894425">വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="2800760947029405028">ഒരു ചിത്രം അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="2801954693771979815">സ്‌ക്രീൻ വലുപ്പം</translation>
+<translation id="2803313416453193357">ഫോൾഡർ തുറക്കുക</translation>
 <translation id="2803375539583399270">പിൻ നൽകുക</translation>
 <translation id="2804043232879091219">ഇതര ബ്രൗസർ തുറക്കാനായില്ല</translation>
 <translation id="2804667941345577550">തുറന്നിരിക്കുന്ന ടാബുകളിൽ നിന്ന് ഉൾപ്പെടെ ഈ സൈറ്റിൽ നിന്ന് നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്യപ്പെടും.</translation>

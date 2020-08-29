@@ -155,13 +155,6 @@
       O padrão é RollbackDisabled.</translation>
 <translation id="1221359380862872747">Carrega os urls especificados no login de demonstração</translation>
 <translation id="1223789468190631420">Ativar Navegação segura para fontes confiáveis</translation>
-<translation id="122899932962115297">Uma lista de permissões que controla quais modos de desbloqueio rápido o usuário pode configurar e usar para desbloquear a tela de bloqueio.
-
-          Esse valor é uma lista de strings, e as entradas válidas da lista são: "all", "PIN" ou "FINGERPRINT". Se a opção "all" for adicionada à lista, todos os modos de desbloqueio rápido estarão disponíveis, incluindo os implementados no futuro. Caso contrário, somente os modos presentes na lista serão disponibilizados.
-
-          Por exemplo, para permitir todos os modos de desbloqueio rápido, use ["all"]. Para permitir apenas o desbloqueio com PIN, use ["PIN"]. Para permitir o desbloqueio com PIN e impressão digital, use ["PIN", "FINGERPRINT"]. Para desativar todos os modos de desbloqueio rápido, use [].
-
-          Por padrão, nenhum modo de desbloqueio rápido é disponibilizado para dispositivos gerenciados.</translation>
 <translation id="123081309365616809">Ativa transmissão de conteúdo para o dispositivo</translation>
 <translation id="1231349879329465225">Permite ativar ou desativar a transição rápida.
       Isso se aplica a todos os usuários e a todas as interfaces no dispositivo.

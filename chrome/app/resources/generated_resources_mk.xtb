@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">За да побарате пристап, контактирајте со администраторот на уредов.</translation>
 <translation id="1149401351239820326">Месец на истекување</translation>
 <translation id="1149725087019908252">Се скенира <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">Ова е последното автоматско софтверско и безбедносно ажурирање за овој <ph name="DEVICE_TYPE" />. За да добивате идни ажурирања, надградете на понов модел. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Очила за сонце</translation>
 <translation id="1151917987301063366">Секогаш дозволувај <ph name="HOST" /> да пристапува до сензорите</translation>
 <translation id="1153356358378277386">Спарени уреди</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">Механички проблем. Проверете го печатачот</translation>
 <translation id="1363585519747660921">Потребно е конфигурирање на USB-печатачот</translation>
 <translation id="1365180424462182382">Вашиот <ph name="BEGIN_LINK" />прелистувач е управуван<ph name="END_LINK" /> од <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">Извршувајте ги алатките на Linux, уредувачите и интегрираните средини за програмери на вашиот <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Дознајте повеќе&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Избери датотека</translation>
 <translation id="1369149969991017342">Пристап со прекинувачи (контролирајте го компјутерот со само еден или два прекинувачи)</translation>
 <translation id="1372841398847029212">Синхронизирајте со вашата сметка</translation>
@@ -1422,7 +1422,6 @@
 <translation id="2682498795777673382">Ажурирање од родителот</translation>
 <translation id="2683638487103917598">Папката е подредена</translation>
 <translation id="2684004000387153598">За да продолжите, кликнете „Во ред“, а потоа кликнете „Додај лице“ за да создадете нов профил за адресата на е-пошта.</translation>
-<translation id="2686222346846590368">Ова е последното автоматско ажурирање на софтверот и безбедноста за овој <ph name="DEVICE_TYPE" />. За да добивате идни ажурирања, надградете на понов модел. &lt;a target="_blank" href="<ph name="URL" />"&gt;Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="2687407218262674387">Услови за користење на Google</translation>
 <translation id="2688196195245426394">Грешка при регистрирање на уредот на серверот: <ph name="CLIENT_ERROR" />.</translation>
@@ -1526,6 +1525,7 @@
 <translation id="2799223571221894425">Рестартирај</translation>
 <translation id="2800760947029405028">Прикачете слика</translation>
 <translation id="2801954693771979815">Големина на екранот</translation>
+<translation id="2803313416453193357">Отвори папка</translation>
 <translation id="2803375539583399270">Внесете PIN.</translation>
 <translation id="2804043232879091219">Алтернативниот прелистувач не можеше да се отвори</translation>
 <translation id="2804667941345577550">Ќе ве одјавиме од сајтов, вклучително и од отворените картички</translation>

@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">要申请访问权限，请与此设备的管理员联系。</translation>
 <translation id="1149401351239820326">过期月份</translation>
 <translation id="1149725087019908252">正在扫描 <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">这是最后一次自动为此 <ph name="DEVICE_TYPE" /> 提供软件更新和安全更新。要想接收未来的更新，请升级至较新的型号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">太阳镜</translation>
 <translation id="1151917987301063366">始终允许 <ph name="HOST" /> 使用传感器</translation>
 <translation id="1153356358378277386">已配对的设备</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">发生机械问题，请检查打印机</translation>
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
 <translation id="1365180424462182382">您的<ph name="BEGIN_LINK" />浏览器<ph name="END_LINK" />由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
-<translation id="1366177842110999534">在 <ph name="DEVICE_TYPE" /> 上运行 Linux 工具、编辑器和 IDE。&lt;a target="_blank" href="<ph name="URL" />"&gt;了解详情&lt;/a&gt;</translation>
 <translation id="1367951781824006909">选择文件</translation>
 <translation id="1369149969991017342">开关控制（只需 1-2 个开关即可控制计算机）</translation>
 <translation id="1372841398847029212">同步到您的帐号中</translation>
@@ -1418,7 +1418,6 @@
 <translation id="2682498795777673382">您的家长已更新设置</translation>
 <translation id="2683638487103917598">文件夹内容已排序</translation>
 <translation id="2684004000387153598">要想继续，请点击“确定”，然后点击“添加用户”为您的电子邮件地址创建一份新个人资料。</translation>
-<translation id="2686222346846590368">这是最后一次为此 <ph name="DEVICE_TYPE" /> 提供自动的软件和安全更新。如需接收以后的更新，请升级至较新的型号。&lt;a target="_blank" href="<ph name="URL" />"&gt;了解详情<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
 <translation id="2687407218262674387">Google 服务条款</translation>
 <translation id="2688196195245426394">向服务器注册设备时出错：<ph name="CLIENT_ERROR" />。</translation>
@@ -1522,6 +1521,7 @@
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2800760947029405028">上传图片</translation>
 <translation id="2801954693771979815">屏幕上的内容大小</translation>
+<translation id="2803313416453193357">打开文件夹</translation>
 <translation id="2803375539583399270">输入 PIN 码</translation>
 <translation id="2804043232879091219">无法打开替代浏览器</translation>
 <translation id="2804667941345577550">您将会自动退出这个网站（包括打开的标签页）</translation>
@@ -3027,6 +3027,7 @@
 <translation id="4646675363240786305">端口</translation>
 <translation id="4646949265910132906">安全的 Wi-Fi 连接</translation>
 <translation id="4647090755847581616">关闭标签页(&amp;C)</translation>
+<translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步（共 <ph name="TOTAL_STEPS" /> 步）</translation>
 <translation id="4647420311443994946">{0,select, tablet{在您登录平板电脑时启动应用}computer{在您登录计算机时启动应用}other{在您登录设备时启动应用}}</translation>
 <translation id="4647697156028544508">请输入“<ph name="DEVICE_NAME" />”的 PIN：</translation>
 <translation id="4648491805942548247">权限不足</translation>

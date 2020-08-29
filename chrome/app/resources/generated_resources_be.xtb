@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">Каб запытаць доступ, звярніцеся да адміністратара гэтай прылады.</translation>
 <translation id="1149401351239820326">Месяц заканчэння тэрміну дзеяння</translation>
 <translation id="1149725087019908252">Ідзе праверка файла "<ph name="FILE_NAME" />"</translation>
+<translation id="1150490752229770117">Гэта апошняе аўтаматычнае абнаўленне праграмнага забеспячэння і сістэмы бяспекі для гэтай прылады <ph name="DEVICE_TYPE" />. Каб атрымліваць наступныя абнаўленні, перайдзіце на новую мадэль. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Сонечныя акуляры</translation>
 <translation id="1151917987301063366">Заўсёды даваць хосту <ph name="HOST" /> доступ да датчыкаў</translation>
 <translation id="1153356358378277386">Спалучаныя прылады</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">Механічная праблема. Праверце прынтар</translation>
 <translation id="1363585519747660921">Неабходна наладзіць USB-прынтар</translation>
 <translation id="1365180424462182382"><ph name="BEGIN_LINK" />Браўзер знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" />.</translation>
-<translation id="1366177842110999534">Запускайце IDE, рэдактары і інструменты Linux на прыладзе <ph name="DEVICE_TYPE" />. &lt;a target="_blank" href="<ph name="URL" />"&gt;Даведацца больш&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Выбраць файл</translation>
 <translation id="1369149969991017342">Доступ праз пераключальнікі (кіраванне камп'ютарам з дапамогай аднаго або двух пераключальнікаў)</translation>
 <translation id="1372841398847029212">Сінхранізаваць з уліковым запісам</translation>
@@ -1422,7 +1422,6 @@
 <translation id="2682498795777673382">Вашы бацькі змянілі налады</translation>
 <translation id="2683638487103917598">Папка адсартавана</translation>
 <translation id="2684004000387153598">Каб працягнуць, націсніце "OK", затым "Дадаць карыстальніка" – так вы створыце новы профіль для свайго адраса электроннай пошты.</translation>
-<translation id="2686222346846590368">Гэта апошняе аўтаматычнае абнаўленне праграмнага забеспячэння і сістэмы бяспекі для гэтай прылады <ph name="DEVICE_TYPE" />. Каб атрымліваць наступныя абнаўленні, перайдзіце на новую мадэль. &lt;a target="_blank" href="<ph name="URL" />"&gt;Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Блакіраваць усе файлы cookie (не рэкамендуецца)</translation>
 <translation id="2687407218262674387">Умовы выкарыстання Google</translation>
 <translation id="2688196195245426394">Пры рэгістрацыі прылады на серверы адбылася памылка: <ph name="CLIENT_ERROR" />.</translation>
@@ -1526,6 +1525,7 @@
 <translation id="2799223571221894425">Перазапусціць</translation>
 <translation id="2800760947029405028">Запампаваць відарыс</translation>
 <translation id="2801954693771979815">Памер экрана</translation>
+<translation id="2803313416453193357">Адкрыць папку</translation>
 <translation id="2803375539583399270">Увядзіце PIN-код</translation>
 <translation id="2804043232879091219">Не ўдалося адкрыць альтэрнатыўны браўзер</translation>
 <translation id="2804667941345577550">Будзе выкананы выхад з гэтага сайта, у тым ліку на адкрытых укладках</translation>

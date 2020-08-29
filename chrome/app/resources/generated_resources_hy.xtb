@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">Օգտագործելու թույլտվություն խնդրելու համար կապվեք այս սարքի ադմինիստրատորի հետ:</translation>
 <translation id="1149401351239820326">Ժամկետի սպառման ամիսը</translation>
 <translation id="1149725087019908252">«<ph name="FILE_NAME" />» ֆայլի ստուգում</translation>
+<translation id="1150490752229770117">Սա ծրագրային և անվտանգության կարգավորումների վերջին ավտոմատ թարմացումն է այս <ph name="DEVICE_TYPE" /> սարքի համար։ Հետագա թարմացումները ստանալու համար անցեք ավելի նոր մոդելի։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">Արևային ակնոց</translation>
 <translation id="1151917987301063366">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել տվիչները</translation>
 <translation id="1153356358378277386">Զուգակցված սարքեր</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">Մեխանիկական խնդիր է առաջացել։ Ստուգեք տպիչը։</translation>
 <translation id="1363585519747660921">USB տպիչը հարկավոր է կարգավորել</translation>
 <translation id="1365180424462182382">Ձեր <ph name="BEGIN_LINK" />դիտարկիչը կառավարվում է<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> կայքի կողմից</translation>
-<translation id="1366177842110999534">Աշխատեցրեք Լինուքսի գործիքներ, խմբագրիչներ ու IDE-ներ ձեր <ph name="DEVICE_TYPE" />-ում: &lt;a target="_blank" href="<ph name="URL" />"&gt;Իմանալ ավելին&lt;/a&gt;</translation>
 <translation id="1367951781824006909">Ընտրել ֆայլ</translation>
 <translation id="1369149969991017342">Միացնել Switch Access-ը (թույլ է տալիս կառավարել համակարգիչը մեկ կամ երկու փոխանջատիչով)</translation>
 <translation id="1372841398847029212">Համաժամացնել ձեր հաշվի հետ</translation>
@@ -1422,7 +1422,6 @@
 <translation id="2682498795777673382">Ծնողը փոխել է կարգավորումները</translation>
 <translation id="2683638487103917598">Պանակի պարունակությունը տեսակավորվել է</translation>
 <translation id="2684004000387153598">Շարունակելու համար սեղմեք «OK» կոճակը, այնուհետև «Ավելացնել օգտատեր»՝ ձեր էլեկտրոնային հասցեով նոր պրոֆիլ ստեղծելու համար:</translation>
-<translation id="2686222346846590368">Սա ծրագրային և անվտանգության կարգավորումների վերջին ավտոմատ թարմացումն է <ph name="DEVICE_TYPE" /> սարքի համար։ Հետագա թարմացումները ստանալու համար անցեք ավելի նոր մոդելի։ &lt;a target="_blank" href="<ph name="URL" />"&gt;Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">Արգելափակել բոլոր քուքիները (խորհուրդ չի տրվում)</translation>
 <translation id="2687407218262674387">Google-ի օգտագործման պայմաններ</translation>
 <translation id="2688196195245426394">Սարքը սերվերում գրանցելիս սխալ առաջացավ` <ph name="CLIENT_ERROR" />:</translation>
@@ -1526,6 +1525,7 @@
 <translation id="2799223571221894425">Վերագործարկել</translation>
 <translation id="2800760947029405028">Վերբեռնել պատկեր</translation>
 <translation id="2801954693771979815">Էկրանի չափը</translation>
+<translation id="2803313416453193357">Բացել պանակը</translation>
 <translation id="2803375539583399270">Մուտքագրեք PIN կոդը</translation>
 <translation id="2804043232879091219">Չհաջողվեց բացել այլընտրանքային դիտարկիչը</translation>
 <translation id="2804667941345577550">Դուք դուրս կգրվեք հաշվից այս կայքում և բաց ներդիրներում</translation>

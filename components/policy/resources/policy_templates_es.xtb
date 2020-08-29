@@ -158,12 +158,6 @@ Si no se establece ningún valor para esta política, la frecuencia predetermina
       El valor predeterminado es RollbackDisabled.</translation>
 <translation id="1221359380862872747">Cargar URL especificadas en el inicio de sesión de demostración</translation>
 <translation id="1223789468190631420">Estado habilitado de Navegación Segura con fuentes de confianza</translation>
-<translation id="122899932962115297">Una lista blanca que controla qué modos de desbloqueo rápido puede configurar y emplear el usuario para desbloquear la pantalla. 
-          Este valor es una lista de cadenas. Entre los registros válidos de la lista, se incluyen "all", "PIN" y "FINGERPRINT". Si se añade "all" a la lista, todos los modos de desbloqueo rápido están disponibles para el usuario, incluidos los que se implementarán en el futuro. Si no se añade, solo los modos de desbloqueo rápido incluidos en la lista están disponibles.
-          
-          Por ejemplo, para permitir todos los modos de desbloqueo rápido, usa ["all"]. Para permitir solo el desbloqueo con el PIN, usa ["PIN"]. Para permitir el desbloqueo con el PIN y la huella digital, usa ["PIN", "FINGERPRINT"]. Para inhabilitar todos los modos de desbloqueo rápido, usa [].
-
-          Ningún modo de desbloqueo rápido está disponible para los dispositivos administrados de forma predeterminada.</translation>
 <translation id="123081309365616809">Habilita el envío de contenido al dispositivo</translation>
 <translation id="1231349879329465225">Permite habilitar o inhabilitar la transición rápida.
       Se aplica a todos los usuarios y todas las interfaces del dispositivo.

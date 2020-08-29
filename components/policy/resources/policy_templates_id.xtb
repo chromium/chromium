@@ -159,13 +159,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya dinonaktifkan bagi penggun
       Default adalah RollbackDisabled.</translation>
 <translation id="1221359380862872747">Muat url yang ditentukan di proses masuk demo</translation>
 <translation id="1223789468190631420">Safe Browsing mengaktifkan status untuk sumber tepercaya</translation>
-<translation id="122899932962115297">Daftar yang diizinkan mengontrol mode buka kunci cepat mana yang dapat dikonfigurasi dan digunakan pengguna untuk membuka layar kunci.
-
-Nilai ini adalah daftar string; entri daftar yang valid adalah: "semua", "PIN", "SIDIK JARI". Menambahkan "semua" ke daftar menandakan bahwa setiap mode buka kunci cepat tersedia bagi pengguna, termasuk mode yang digunakan di masa mendatang. Jika tidak, hanya mode buka kunci cepat yang ada dalam daftar akan tersedia.
-
-Misalnya, untuk mengaktifkan setiap mode buka kunci cepat, gunakan ["semua"]. Untuk mengizinkan buka kunci PIN saja, gunakan ["PIN"]. Untuk mengizinkan PIN dan sidik jari, gunakan ["PIN", "SIDIK JARI"]. Untuk menonaktifkan semua mode buka kunci cepat, gunakan [].
-
-Secara default, tidak ada mode buka kunci cepat yang tersedia untuk perangkat yang dikelola.</translation>
 <translation id="123081309365616809">Mengaktifkan casting konten ke perangkat</translation>
 <translation id="1231349879329465225">Mengizinkan pengaktifan atau penonaktifan Transisi Cepat.
       Berlaku untuk semua pengguna dan semua antarmuka pada perangkat.

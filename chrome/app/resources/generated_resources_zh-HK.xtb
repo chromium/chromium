@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">如要求存取權，請聯絡此裝置的管理員。</translation>
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1149725087019908252">正在掃瞄 <ph name="FILE_NAME" /></translation>
+<translation id="1150490752229770117">這是此 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟件和安全性。如要取得後續更新，請升級為較新的型號。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">太陽眼鏡</translation>
 <translation id="1151917987301063366">永遠允許 <ph name="HOST" /> 存取感應器</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">發生機件故障。請檢查打印機</translation>
 <translation id="1363585519747660921">USB 列印機需要設定</translation>
 <translation id="1365180424462182382">您的<ph name="BEGIN_LINK" />瀏覽器由 <ph name="END_LINK" /><ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
-<translation id="1366177842110999534">在您的 <ph name="DEVICE_TYPE" /> 執行 Linux 工具、編輯器和整合開發環境 (IDE)。&lt;a target="_blank" href="<ph name="URL" />"&gt;瞭解詳情&lt;/a&gt;</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1369149969991017342">按鈕控制 (使用一或兩個按鈕就能操控電腦)</translation>
 <translation id="1372841398847029212">同步至您的帳戶</translation>
@@ -1421,7 +1421,6 @@
 <translation id="2682498795777673382">您的家長已更新設定</translation>
 <translation id="2683638487103917598">資料夾已排序</translation>
 <translation id="2684004000387153598">如要繼續操作，請按一下 [確定]，然後按一下 [新增使用者]，即可為您的電郵地址建立新的設定檔。</translation>
-<translation id="2686222346846590368">這是此 <ph name="DEVICE_TYPE" /> 最後一次自動更新軟件和安全性。如要取得後續更新，請升級為較新的型號。&lt;a target="_blank" href="<ph name="URL" />"&gt;瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2687407218262674387">Google 服務條款</translation>
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
@@ -1525,6 +1524,7 @@
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2800760947029405028">上載圖片</translation>
 <translation id="2801954693771979815">螢幕大小</translation>
+<translation id="2803313416453193357">開啟資料夾</translation>
 <translation id="2803375539583399270">請輸入 PIN</translation>
 <translation id="2804043232879091219">無法開啟替代瀏覽器</translation>
 <translation id="2804667941345577550">您將會從此網站 (包括在開啟的分頁) 登出。</translation>

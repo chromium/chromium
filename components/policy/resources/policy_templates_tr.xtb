@@ -160,13 +160,6 @@
       Varsayılan, RollbackDisabled şeklindedir.</translation>
 <translation id="1221359380862872747">Demo girişinde belirtilen URL'leri yükle</translation>
 <translation id="1223789468190631420">Güvenilen kaynaklar için Güvenli Tarama etkinleştirme durumu</translation>
-<translation id="122899932962115297">Kullanıcının yapılandırabileceği ve kilit ekranının kilidini açmak için kullanabileceği hızlı kilit açma modlarını kontrol eden beyaz liste.
-
-          Bu değer, bir dize listesidir; geçerli liste girişleri şöyledir: "all", "PIN", "FINGERPRINT". Listeye "all" (tümü) girişinin eklenmesi, kullanıcının ileride uygulanacak olanlar da dahil olmak üzere her hızlı kilit açma modunu kullanabileceği anlamına gelir. Aksi takdirde, yalnızca listedeki mevcut hızlı kilit açma modları kullanılabilir. 
-
-          Örneğin, hızlı kilit açma modlarının hepsine izin vermek için ["all"] (tümü) girişini kullanın. Yalnızca PIN kilit açma yöntemine izin vermek için ["PIN"] girişini kullanın. PIN ve parmak izi ile kilit açmaya izin vermek için ["PIN", "FINGERPRINT"] kullanın. Tüm hızlı kilit açma modlarını devre dışı bırakmak için [] girişini kullanın.
-
-          Varsayılan olarak, yönetilen cihazlarda hiçbir hızlı kilit açma moduna izin verilmez.</translation>
 <translation id="123081309365616809">Cihaza içerik yayınlamayı etkinleştirme</translation>
 <translation id="1231349879329465225">Fast Transition'ın etkinleştirilmesini veya devre dışı bırakılmasını sağlar.
       Bu, tüm kullanıcılar ve cihazdaki tüm arayüzler için geçerlidir.

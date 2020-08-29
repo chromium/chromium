@@ -133,6 +133,7 @@
 <translation id="1147991416141538220">पहुँच माग्न यस यन्त्रका प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्क्यान गरिँदै</translation>
+<translation id="1150490752229770117">यो <ph name="DEVICE_TYPE" /> का लागि यो नै सफ्टवेयर र सुरक्षासम्बन्धी अन्तिम स्वचालित अद्यावधिक हो। भावी अपडेट प्राप्त गर्न  स्तरवृद्धि गरी नयाँ मोडेल प्रयोग गर्न थाल्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">शीतल चस्मा</translation>
 <translation id="1151917987301063366"><ph name="HOST" /> लाई सेन्सरहरूमाथि पहुँच राख्न सधै अनुमति दिनुहोस्‌</translation>
 <translation id="1153356358378277386">जोडा बनाइएका यन्त्रहरू</translation>
@@ -313,7 +314,6 @@
 <translation id="1362865166188278099">मेकानिकल समस्या भयो। प्रिन्टर जाँच्नुहोस्</translation>
 <translation id="1363585519747660921">USB प्रिन्टरलाई कन्फिगर गर्नु पर्छ</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" />ब्राउजरको व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534">आफ्नो <ph name="DEVICE_TYPE" />मा Linux का उपकरण, सम्पादनसम्बन्धी सफ्टवेयर र IDE हरू सञ्चालन गर्नुहोस्। &lt;a target="_blank" href="<ph name="URL" />"&gt;थप जान्नुहोस्&lt;/a&gt;</translation>
 <translation id="1367951781824006909">एउटा फाइल रोज्नुहोस्</translation>
 <translation id="1369149969991017342">स्विचमार्फत पहुँच राख्नुहोस् (केवल एक वा दुई स्विचहरू प्रयोग गरी कम्प्युटर नियन्त्रण गर्नुहोस्)</translation>
 <translation id="1372841398847029212">आफ्नो खातासँग सिंक गर्नुहोस्</translation>
@@ -1418,7 +1418,6 @@
 <translation id="2682498795777673382">तपाईंका अभिभावकबाट प्राप्त अद्यावधिक</translation>
 <translation id="2683638487103917598">फोल्डरलाई क्रमबद्ध गरियो</translation>
 <translation id="2684004000387153598">जारी राख्न, ठिक छ नामक बटनमा क्लिक गर्नुहोस्, त्यसपछि आफ्नो इमेल ठेगानाको नयाँ प्रोफाइल सिर्जना गर्न व्यक्ति थप्नुहोस् नामक बटनमा क्लिक गर्नुहोस्।</translation>
-<translation id="2686222346846590368">यो <ph name="DEVICE_TYPE" /> का लागि यो नै सफ्टवेयर र सुरक्षासम्बन्धी अन्तिम स्वचालित अपडेट हो। भावी अपडेट प्राप्त गर्न अपग्रेड गरी नयाँ मोडेल प्रयोग गर्न थाल्नुहोस्। &lt;a target="_blank" href="<ph name="URL" />"&gt;थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">सबै कुकीहरूमाथि रोक लगाउनुहोस् (सिफारिस गरिँदैन)</translation>
 <translation id="2687407218262674387">Google का सेवाका सर्तहरू</translation>
 <translation id="2688196195245426394">यन्त्रलाई सर्भरसँग दर्ता गर्नमा त्रुटि: <ph name="CLIENT_ERROR" />।</translation>
@@ -1522,6 +1521,7 @@
 <translation id="2799223571221894425">पुन: सुरुवात गर्नुहोस्</translation>
 <translation id="2800760947029405028">कुनै छवि अपलोड गर्नुहोस्</translation>
 <translation id="2801954693771979815">स्क्रिनको आकार</translation>
+<translation id="2803313416453193357">फोल्डर खोल्नुहोस्</translation>
 <translation id="2803375539583399270">PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="2804043232879091219">वैकल्पिक ब्राउजर खोल्न सकिएन</translation>
 <translation id="2804667941345577550">तपाईंलाई खुला ट्याबहरूलगायत यस साइटबाट साइन आउट गरिने छ</translation>

@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">没有上一个访问过的链接</translation>
 <translation id="4281245629646759298">浅黄色</translation>
 <translation id="4289540628985791613">概述</translation>
+<translation id="4294967782363273192">升序排列</translation>
 <translation id="4300318234632215983">读出链接网址</translation>
 <translation id="4322625298640984693">赭色</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{1个点}=3{3个点}other{#个点}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">语音</translation>
 <translation id="6006050241733874051">表单</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{1个反斜线符号}other{#个反斜线符号}}</translation>
+<translation id="6010616110396250088">降序排列</translation>
 <translation id="6017514345406065928">绿色</translation>
 <translation id="602001110135236999">向左滚动</translation>
 <translation id="6034000775414344507">浅灰色</translation>

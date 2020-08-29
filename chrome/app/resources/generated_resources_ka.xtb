@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">წვდომის მოთხოვნით მიმართეთ ამ მოწყობილობის ადმინისტრატორს.</translation>
 <translation id="1149401351239820326">ვადის გასვლის თვე</translation>
 <translation id="1149725087019908252">მიმდინარეობს <ph name="FILE_NAME" />-ის სკანირება</translation>
+<translation id="1150490752229770117">ეს არის პროგრამული უზრუნველყოფისა და უსაფრთხოების ბოლო განახლება, რომელსაც თქვენი <ph name="DEVICE_TYPE" /> იღებს. მომავალი განახლებების მისაღებად გადადით ახალ მოდელზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">მზის სათვალე</translation>
 <translation id="1151917987301063366"><ph name="HOST" />-ისთვის სენსორებზე წვდომის ყოველთვის დაშვება</translation>
 <translation id="1153356358378277386">დაწყვილებული მოწყობილობები</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">მექანიკური პრობლემაა. შეამოწმეთ პრინტერი</translation>
 <translation id="1363585519747660921">USB პრინტერი საჭიროებს კონფიგურაციას</translation>
 <translation id="1365180424462182382">თქვენს <ph name="BEGIN_LINK" />ბრაუზერს მართავს<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
-<translation id="1366177842110999534">გაუშვით Linux ხელსაწყოები, რედაქტორები და IDE-ები თქვენს <ph name="DEVICE_TYPE" />-ზე. &lt;a target="_blank" href="<ph name="URL" />"&gt;შეიტყვეთ მეტი&lt;/a&gt;</translation>
 <translation id="1367951781824006909">აირჩიეთ ფაილი</translation>
 <translation id="1369149969991017342">გადამრთველებით წვდომა (მართეთ კომპიუტერი მხოლოდ რამდენიმე გადამრთველის მეშვეობით)</translation>
 <translation id="1372841398847029212">თქვენს ანგარიშთან სინქრონიზაცია</translation>
@@ -1421,7 +1421,6 @@
 <translation id="2682498795777673382">განახლება თქვენი მშობლისგან</translation>
 <translation id="2683638487103917598">საქაღალდე დალაგებულია</translation>
 <translation id="2684004000387153598">გასაგრძელებლად დაწკაპუნებით აირჩიეთ „კარგი“, ხოლო შემდეგ — „მომხმარებლის დამატება“, რათა შექმნათ ახალი პროფილი თქვენი ელფოსტის მისამართისთვის.</translation>
-<translation id="2686222346846590368">ეს არის პროგრამული უზრუნველყოფისა და უსაფრთხოების ბოლო განახლება, რომელსაც თქვენი <ph name="DEVICE_TYPE" /> იღებს. მომავალი განახლებების მისაღებად გადადით ახალ მოდელზე. &lt;a target="_blank" href="<ph name="URL" />"&gt;შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">ყველა ქუქი-ჩანაწერის დაბლოკვა (არარეკომენდებული)</translation>
 <translation id="2687407218262674387">Google-ის მომსახურების პირობები</translation>
 <translation id="2688196195245426394">შეცდომა სერვერზე მოწყობილობის დარეგისტრირებისას: <ph name="CLIENT_ERROR" />.</translation>
@@ -1525,6 +1524,7 @@
 <translation id="2799223571221894425">ხელახლა გაშვება</translation>
 <translation id="2800760947029405028">სურათის ატვირთვა</translation>
 <translation id="2801954693771979815">ეკრანის ზომა</translation>
+<translation id="2803313416453193357">გახსენით საქაღალდე</translation>
 <translation id="2803375539583399270">შეიყვანეთ PIN-კოდი</translation>
 <translation id="2804043232879091219">ალტერნატიული ბრაუზერის გახსნა ვერ მოხერხდა</translation>
 <translation id="2804667941345577550">თქვენ გამოხვალთ ამ საიტიდან, მათ შორის, გახსნილ ჩანართებზე</translation>

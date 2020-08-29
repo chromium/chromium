@@ -135,6 +135,7 @@
 <translation id="1147991416141538220">ဝင်ကြည့်ခွင့်တောင်းရန် ဤစက်၏ စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="1149401351239820326">သက်တမ်းကုန်ဆုံးမည့်လ</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> ကို စစ်ဆေးနေသည်</translation>
+<translation id="1150490752229770117">၎င်းက ဤ <ph name="DEVICE_TYPE" /> အတွက် နောက်ဆုံးထုတ် ဆော့ဖ်ဝဲနှင့် လုံခြုံရေးဆိုင်ရာ အလိုအလျောက်အပ်ဒိတ် ဖြစ်သည်။ နောင်လာမည့်အပ်ဒိတ်များ ရယူရန် မော်ဒယ်အသစ်သို့ အဆင့်မြှင့်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="1150565364351027703">နေကာမျက်မှန်များ</translation>
 <translation id="1151917987301063366">အာရုံခံကိရိယာများကို <ph name="HOST" /> အား အမြဲအသုံးပြုခွင့်ပေးရန်</translation>
 <translation id="1153356358378277386">တွဲချိတ်ထားသည့် စက်ပစ္စည်းများ</translation>
@@ -315,7 +316,6 @@
 <translation id="1362865166188278099">စက်ပြဿနာ။ ပရင်တာကိုစစ်ပါ</translation>
 <translation id="1363585519747660921">USB ပုံနှိပ်စက်အတွက် စီစဉ်သတ်မှတ်မှု လိုအပ်သည်</translation>
 <translation id="1365180424462182382"><ph name="ENROLLMENT_DOMAIN" /> က သင့် <ph name="BEGIN_LINK" />ဘရောင်ဇာကို စီမံခန့်ခွဲထားသည်<ph name="END_LINK" /></translation>
-<translation id="1366177842110999534">သင်၏ <ph name="DEVICE_TYPE" /> တွင် Linux တူးလ်၊ တည်းဖြတ်စနစ်နှင့် IDE များကို ဖွင့်သည်။ &lt;a target="_blank" href="<ph name="URL" />"&gt;ပိုမိုလေ့လာရန်&lt;/a&gt;</translation>
 <translation id="1367951781824006909">ဖိုင်ကို ရွေးရန်</translation>
 <translation id="1369149969991017342">ခလုတ်သုံးခြင်း (အသွင်တူခလုတ် တစ်ခု သို့မဟုတ် နှစ်ခုတည်းဖြင့် ကွန်ပျူတာကို ထိန်းချုပ်ပါ)</translation>
 <translation id="1372841398847029212">သင့်အကောင့်သို့ စင့်ခ်လုပ်ရန်</translation>
@@ -1423,7 +1423,6 @@
 <translation id="2682498795777673382">သင့်မိဘထံမှ အပ်ဒိတ်</translation>
 <translation id="2683638487103917598">အကန့်ကို အစီအစဉ်တကျ စီစဉ်ထားသည်</translation>
 <translation id="2684004000387153598">ရှေ့ဆက်ရန်အတွက် OK ကို နှိပ်ပြီး သင့်အီးမေးလ်လိပ်စာအတွက် ပရိုဖိုင်အသစ် ပြုလုပ်ရန် 'လူထည့်ရန်' ကို နှိပ်ပါ။</translation>
-<translation id="2686222346846590368">၎င်းသည် <ph name="DEVICE_TYPE" /> အတွက် နောက်ဆုံးထုတ် ဆော့ဖ်ဝဲနှင့် လုံခြုံရေး အလိုအလျောက်အပ်ဒိတ် ဖြစ်သည်။ နောင်လာမည့်အပ်ဒိတ်များ ရယူရန် မော်ဒယ်အသစ်သို့ အဆင့်မြှင့်ပါ။ &lt;a target="_blank" href="<ph name="URL" />"&gt;ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="2687403674020088961">ကွတ်ကီးများအားလုံးကို ပိတ်ရန် (အကြံမပြုပါ)</translation>
 <translation id="2687407218262674387">Google ဝန်ဆောင်မှု စည်းမျဉ်းများ</translation>
 <translation id="2688196195245426394">ကိရိယာကို ဆာဗာမှာ မှတ်ပုံတင်စဉ် အမှား: <ph name="CLIENT_ERROR" />။</translation>
@@ -1527,6 +1526,7 @@
 <translation id="2799223571221894425">ပြန်လည်ဖွင့်တင်ရန်</translation>
 <translation id="2800760947029405028">ပုံအပ်လုဒ်လုပ်ရန်</translation>
 <translation id="2801954693771979815">ဖန်သားပြင် အရွယ်အစား</translation>
+<translation id="2803313416453193357">ဖိုင်တွဲဖွင့်</translation>
 <translation id="2803375539583399270">ပင်နံပါတ် ထည့်ပါ</translation>
 <translation id="2804043232879091219">အရန်ဘရောင်ဇာ ဖွင့်၍မရပါ</translation>
 <translation id="2804667941345577550">ဖွင့်ထားသည့်တဘ်များအပါအဝင် ဤဝဘ်ဆိုက်မှ သင်ထွက်သွားပါမည်</translation>

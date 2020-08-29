@@ -156,13 +156,6 @@
       L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="1221359380862872747">Carica gli URL specificati all'accesso demo</translation>
 <translation id="1223789468190631420">Stato attivazione Navigazione sicura per origini attendibili</translation>
-<translation id="122899932962115297">Una whitelist che consente di stabilire quali modalità di sblocco rapido possono essere configurate e usate dagli utenti per sbloccare la schermata di blocco.
-
-          Il valore è un elenco di stringhe; le voci valide sono "tutte", "PIN" e "IMPRONTA". Se viene aggiunto il valore "tutte" all'elenco, sono disponibili tutte le modalità di sblocco rapido, incluse quelle implementate in futuro. In caso contrario, saranno disponibili solo le modalità indicate nell'elenco.
-
-          Ad esempio, per consentire ogni modalità di sblocco rapido, usa ["tutte"]. Per consentire solo lo sblocco tramite PIN, usa ["PIN"]. Per consentire l'uso del PIN e dell'impronta, usa ["PIN", "IMPRONTA"]. Per disattivare tutte le modalità di sblocco rapido, usa [].
-
-          Per impostazione predefinita, non ci sono modalità di sblocco rapido disponibili per i dispositivi gestiti.</translation>
 <translation id="123081309365616809">Attiva la trasmissione di contenuti al dispositivo</translation>
 <translation id="1231349879329465225">Consente di attivare o disattivare Fast Transition.
       La scelta è valida per tutti gli utenti e per tutte le interfacce sul dispositivo.

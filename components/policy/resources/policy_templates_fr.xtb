@@ -159,13 +159,6 @@
       La valeur par défaut est RollbackDisabled.</translation>
 <translation id="1221359380862872747">Charger les URL spécifiées lors de la connexion à la démonstration</translation>
 <translation id="1223789468190631420">Navigation sécurisée activée pour les sources fiables</translation>
-<translation id="122899932962115297">Une liste blanche des modes de déverrouillage rapide pouvant être configurés par l'utilisateur et utilisés pour débloquer l'écran de verrouillage.
-
-          Cette valeur liste des chaînes de caractères ; les entrées valides sont : "all", "PIN", "FINGERPRINT". L'option "all" permet à l'utilisateur d'employer tous les modes de déverrouillage rapide (y compris ceux qui seront ajoutés par la suite). Sans cette option, seuls les modes apparaissant dans la liste sont utilisables.
-
-          Par exemple, pour autoriser tous les modes de déverrouillage rapide, utilisez ["all"]. Pour n'autoriser que le déverrouillage par code, utilisez ["PIN"]. Pour autoriser code et empreinte digitale, utilisez To ["PIN", "FINGERPRINT"]. Pour désactiver tous les modes de déverrouillage rapide, utilisez [].
-
-          Par défaut, aucun mode de déverrouillage rapide n'est activé sur les appareils gérés.</translation>
 <translation id="123081309365616809">Activer la diffusion de contenus sur l'appareil</translation>
 <translation id="1231349879329465225">Permet d'activer ou de désactiver la transition rapide.
       Cette règle s'applique à l'ensemble des utilisateurs et des interfaces de l'appareil.
