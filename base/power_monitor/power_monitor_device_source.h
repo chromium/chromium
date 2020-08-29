@@ -5,6 +5,9 @@
 #ifndef BASE_POWER_MONITOR_POWER_MONITOR_DEVICE_SOURCE_H_
 #define BASE_POWER_MONITOR_POWER_MONITOR_DEVICE_SOURCE_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "base/power_monitor/power_monitor_source.h"
@@ -44,6 +47,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   static void SetPowerSource(bool on_battery);
   static void HandleSystemSuspending();
   static void HandleSystemResumed();
+  static void ThermalEventReceived(PowerObserver::DeviceThermalState state);
 #endif
 
  private:

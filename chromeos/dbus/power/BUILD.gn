@@ -58,6 +58,7 @@ proto_library("power_manager_proto") {
     "//third_party/cros_system_api/dbus/power_manager/power_supply_properties.proto",
     "//third_party/cros_system_api/dbus/power_manager/suspend.proto",
     "//third_party/cros_system_api/dbus/power_manager/switch_states.proto",
+    "//third_party/cros_system_api/dbus/power_manager/thermal.proto",
   ]
 
   proto_out_dir = "chromeos/dbus/power_manager"

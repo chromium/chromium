@@ -15,9 +15,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/power_monitor_test_base.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "chromeos/dbus/power_manager/thermal.pb.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
 #include "dbus/object_path.h"
@@ -191,6 +194,29 @@ class TestDelegate : public PowerManagerClient::RenderProcessManagerDelegate {
   base::WeakPtrFactory<TestDelegate> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestDelegate);
+};
+
+// Local implementation of base::PowerMonitorTestObserver to add callback to
+// OnThermalStateChange.
+class PowerMonitorTestObserverLocal : public base::PowerMonitorTestObserver {
+ public:
+  using base::PowerMonitorTestObserver::PowerMonitorTestObserver;
+
+  void OnThermalStateChange(
+      PowerObserver::DeviceThermalState new_state) override {
+    ASSERT_TRUE(cb);
+    base::PowerMonitorTestObserver::OnThermalStateChange(new_state);
+    std::move(cb).Run();
+  }
+
+  void set_cb_for_testing(base::OnceCallback<void()> cb) {
+    this->cb = std::move(cb);
+  }
+
+ private:
+  base::OnceCallback<void()> cb;
+
+  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTestObserverLocal);
 };
 
 }  // namespace
@@ -611,6 +637,52 @@ TEST_F(PowerManagerClientTest, ChangeAmbientColorTemperature) {
   EmitSignal(&signal);
 
   EXPECT_EQ(kTemperature, observer.ambient_color_temperature());
+}
+
+// Tests that base::PowerMonitor observers are notified about thermal event.
+TEST_F(PowerManagerClientTest, ChangeThermalState) {
+  PowerMonitorTestObserverLocal observer;
+  base::PowerMonitor::AddObserver(&observer);
+
+  base::PowerMonitor::Initialize(
+      std::make_unique<base::PowerMonitorTestSource>());
+
+  typedef struct {
+    power_manager::ThermalEvent::ThermalState dbus_state;
+    base::PowerObserver::DeviceThermalState expected_state;
+  } ThermalDBusTestType;
+  ThermalDBusTestType thermal_states[] = {
+      {.dbus_state = power_manager::ThermalEvent_ThermalState_UNKNOWN,
+       .expected_state = base::PowerObserver::DeviceThermalState::kUnknown},
+      {.dbus_state = power_manager::ThermalEvent_ThermalState_NOMINAL,
+       .expected_state = base::PowerObserver::DeviceThermalState::kNominal},
+      {.dbus_state = power_manager::ThermalEvent_ThermalState_FAIR,
+       .expected_state = base::PowerObserver::DeviceThermalState::kFair},
+      {.dbus_state = power_manager::ThermalEvent_ThermalState_SERIOUS,
+       .expected_state = base::PowerObserver::DeviceThermalState::kSerious},
+      {.dbus_state = power_manager::ThermalEvent_ThermalState_CRITICAL,
+       .expected_state = base::PowerObserver::DeviceThermalState::kCritical},
+  };
+
+  for (const auto& p : thermal_states) {
+    power_manager::ThermalEvent proto;
+    proto.set_thermal_state(p.dbus_state);
+    proto.set_timestamp(0);
+
+    dbus::Signal signal(kInterface, power_manager::kThermalEventSignal);
+    dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(proto);
+    EmitSignal(&signal);
+
+    base::RunLoop run_loop;
+    observer.set_cb_for_testing(base::BindLambdaForTesting([&] {
+      run_loop.Quit();
+      EXPECT_EQ(observer.last_thermal_state(), p.expected_state);
+    }));
+
+    run_loop.Run();
+  }
+
+  base::PowerMonitor::RemoveObserver(&observer);
 }
 
 }  // namespace chromeos

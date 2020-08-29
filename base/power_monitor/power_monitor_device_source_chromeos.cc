@@ -37,4 +37,10 @@ bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
   return g_on_battery;
 }
 
+// static
+void PowerMonitorDeviceSource::ThermalEventReceived(
+    PowerObserver::DeviceThermalState state) {
+  ProcessThermalEvent(state);
+}
+
 }  // namespace base

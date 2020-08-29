@@ -20,6 +20,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/power_monitor/power_monitor_device_source.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -34,6 +35,7 @@
 #include "chromeos/dbus/power_manager/input_event.pb.h"
 #include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
 #include "chromeos/dbus/power_manager/switch_states.pb.h"
+#include "chromeos/dbus/power_manager/thermal.pb.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -107,6 +109,26 @@ PowerManagerClient::TabletMode GetTabletModeFromProtoEnum(
   return PowerManagerClient::TabletMode::UNSUPPORTED;
 }
 
+// Converts a ThermalState value from a power_manager::ThermalEvent proto to the
+// corresponding base::PowerObserver::DeviceThermalState value.
+base::PowerObserver::DeviceThermalState GetThermalStateFromProtoEnum(
+    power_manager::ThermalEvent::ThermalState state) {
+  switch (state) {
+    case power_manager::ThermalEvent_ThermalState_UNKNOWN:
+      return base::PowerObserver::DeviceThermalState::kUnknown;
+    case power_manager::ThermalEvent_ThermalState_NOMINAL:
+      return base::PowerObserver::DeviceThermalState::kNominal;
+    case power_manager::ThermalEvent_ThermalState_FAIR:
+      return base::PowerObserver::DeviceThermalState::kFair;
+    case power_manager::ThermalEvent_ThermalState_SERIOUS:
+      return base::PowerObserver::DeviceThermalState::kSerious;
+    case power_manager::ThermalEvent_ThermalState_CRITICAL:
+      return base::PowerObserver::DeviceThermalState::kCritical;
+  }
+  NOTREACHED() << "Unhandled thermal state " << state;
+  return base::PowerObserver::DeviceThermalState::kUnknown;
+}
+
 // Callback for D-Bus call made in |CreateArcTimers|.
 void OnCreateArcTimersDBusMethod(
     DBusMethodCallback<std::vector<PowerManagerClient::TimerId>> callback,
@@ -175,7 +197,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
 
     // Listen to D-Bus signals emitted by powerd.
     typedef void (PowerManagerClientImpl::*SignalMethod)(dbus::Signal*);
-    const std::map<const char*, SignalMethod> kSignalMethods = {
+    const std::pair<const char*, SignalMethod> kSignalMethods[] = {
         {power_manager::kScreenBrightnessChangedSignal,
          &PowerManagerClientImpl::ScreenBrightnessChangedReceived},
         {power_manager::kAmbientColorTemperatureChangedSignal,
@@ -202,13 +224,17 @@ class PowerManagerClientImpl : public PowerManagerClient {
          &PowerManagerClientImpl::IdleActionImminentReceived},
         {power_manager::kIdleActionDeferredSignal,
          &PowerManagerClientImpl::IdleActionDeferredReceived},
+        {power_manager::kThermalEventSignal,
+         &PowerManagerClientImpl::ThermalEventReceived},
     };
-    for (const auto& it : kSignalMethods) {
+    auto on_connected_callback =
+        base::BindRepeating(&PowerManagerClientImpl::SignalConnected,
+                            weak_ptr_factory_.GetWeakPtr());
+    for (const auto& p : kSignalMethods) {
       power_manager_proxy_->ConnectToSignal(
-          power_manager::kPowerManagerInterface, it.first,
-          base::BindRepeating(it.second, weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&PowerManagerClientImpl::SignalConnected,
-                         weak_ptr_factory_.GetWeakPtr()));
+          power_manager::kPowerManagerInterface, p.first,
+          base::BindRepeating(p.second, weak_ptr_factory_.GetWeakPtr()),
+          on_connected_callback);
     }
 
     RegisterSuspendDelays();
@@ -1062,6 +1088,24 @@ class PowerManagerClientImpl : public PowerManagerClient {
         // TODO(henryhsu): handle the missing cases.
         break;
     }
+  }
+
+  void ThermalEventReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    power_manager::ThermalEvent proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
+      POWER_LOG(ERROR) << "Unable to decode protocol buffer from "
+                       << power_manager::kThermalEventSignal << " signal";
+      return;
+    }
+
+    POWER_LOG(USER) << "Got " << power_manager::kThermalEventSignal
+                    << " signal:"
+                    << " thermal_state=" << proto.thermal_state()
+                    << " timestamp=" << proto.timestamp();
+
+    base::PowerMonitorDeviceSource::ThermalEventReceived(
+        GetThermalStateFromProtoEnum(proto.thermal_state()));
   }
 
   void RegisterSuspendDelayImpl(
