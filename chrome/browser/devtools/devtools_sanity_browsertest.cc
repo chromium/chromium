@@ -245,7 +245,7 @@ class DevToolsSanityTest : public InProcessBrowserTest {
   }
 
   void LoadTestPage(const std::string& test_page) {
-    GURL url = spawned_test_server()->GetURL(test_page);
+    GURL url(spawned_test_server()->GetURL("").Resolve(test_page));
     ui_test_utils::NavigateToURL(browser(), url);
   }
 
@@ -1529,6 +1529,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                        TestConsoleContextNames) {
   LoadExtension("simple_content_script");
   RunTest("testConsoleContextNames", kPageWithContentScript);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestEvaluateOnChromeScheme) {
+  LoadExtension("chrome_scheme");
+  RunTest("waitForTestResultsAsMessage", std::string());
 }
 
 // Tests that scripts are not duplicated after Scripts Panel switch.
