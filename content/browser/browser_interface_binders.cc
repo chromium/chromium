@@ -100,6 +100,7 @@
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
+#include "third_party/blink/public/mojom/payments/payment_credential.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
@@ -730,6 +731,8 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::InsecureInputService>));
   map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::PrerenderProcessor>));
+  map->Add<payments::mojom::PaymentCredential>(base::BindRepeating(
+      &EmptyBinderForFrame<payments::mojom::PaymentCredential>));
   map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
       &EmptyBinderForFrame<payments::mojom::PaymentRequest>));
   map->Add<blink::mojom::AnchorElementMetricsHost>(base::BindRepeating(

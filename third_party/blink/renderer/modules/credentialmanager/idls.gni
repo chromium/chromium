@@ -11,6 +11,7 @@ modules_idl_files = [
   "federated_credential.idl",
   "otp_credential.idl",
   "password_credential.idl",
+  "payment_credential.idl",
   "public_key_credential.idl",
 ]
 
@@ -28,6 +29,8 @@ modules_dictionary_idl_files = [
   "federated_credential_request_options.idl",
   "otp_credential_request_options.idl",
   "password_credential_data.idl",
+  "payment_credential_creation_options.idl",
+  "payment_credential_instrument.idl",
   "public_key_credential_creation_options.idl",
   "public_key_credential_descriptor.idl",
   "public_key_credential_entity.idl",

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "components/payments/content/content_payment_request_delegate.h"
+#include "components/payments/content/payment_credential.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/content/secure_payment_confirmation_payment_request_delegate.h"
@@ -64,6 +65,7 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
     it.second->DidStartMainFrameNavigationToDifferentDocument(
         !navigation_handle->IsRendererInitiated());
   }
+  payment_credential_ = nullptr;
 }
 
 void PaymentRequestWebContentsManager::RenderFrameDeleted(
@@ -85,6 +87,12 @@ void PaymentRequestWebContentsManager::RenderFrameDeleted(
 void PaymentRequestWebContentsManager::DestroyRequest(PaymentRequest* request) {
   request->HideIfNecessary();
   payment_requests_.erase(request);
+}
+
+void PaymentRequestWebContentsManager::CreatePaymentCredential(
+    mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
+  payment_credential_ =
+      std::make_unique<PaymentCredential>(std::move(receiver));
 }
 
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(

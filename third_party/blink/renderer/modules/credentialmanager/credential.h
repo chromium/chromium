@@ -26,6 +26,7 @@ class MODULES_EXPORT Credential : public ScriptWrappable {
   virtual bool IsFederatedCredential() const { return false; }
   virtual bool IsPublicKeyCredential() const { return false; }
   virtual bool IsOTPCredential() const { return false; }
+  virtual bool IsPaymentCredential() const { return false; }
 
   // Credential.idl
   const String& id() const { return id_; }
