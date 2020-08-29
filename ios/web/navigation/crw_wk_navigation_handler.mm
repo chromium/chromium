@@ -1239,8 +1239,12 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     item = [[CRWNavigationItemHolder
         holderForBackForwardListItem:webView.backForwardList.currentItem]
         navigationItem];
-    userAgentType = item->GetUserAgentType();
-  } else {
+    // In some cases, the associated item isn't found. In that case, follow the
+    // code path for the non-backforward navigations. See crbug.com/1121950.
+    if (item)
+      userAgentType = item->GetUserAgentType();
+  }
+  if (!item) {
     // Get the visible item. There is no guarantee that the pending item belongs
     // to this navigation but it is very likely that it is the case. If there is
     // no pending item, it is probably a render initiated navigation. Use the
