@@ -61,8 +61,11 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
+#include "ui/display/test/scoped_screen_override.h"
+#include "ui/display/test/test_screen.h"
 
 using crostini::CrostiniTestHelper;
+using display::test::ScopedScreenOverride;
 using extensions::AppSorting;
 using extensions::ExtensionSystem;
 using plugin_vm::PluginVmTestHelper;
@@ -150,6 +153,8 @@ class AppServiceAppModelBuilderTest
       scoped_feature_list_.InitAndDisableFeature(
           features::kDesktopPWAsWithoutExtensions);
     }
+    scoped_screen_override_ =
+        std::make_unique<ScopedScreenOverride>(&test_screen_);
   }
 
   ~AppServiceAppModelBuilderTest() override {}
@@ -188,6 +193,8 @@ class AppServiceAppModelBuilderTest
   std::unique_ptr<AppServiceAppModelBuilder> builder_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
+  display::test::TestScreen test_screen_;
+  std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
 };
 
 class BuiltInAppTest : public AppServiceAppModelBuilderTest {
