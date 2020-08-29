@@ -37,14 +37,15 @@ UrlResponse& UrlResponse::operator=(const UrlResponse& other) = default;
 UrlResponse& UrlResponse::operator=(UrlResponse&& other) noexcept = default;
 UrlResponse::~UrlResponse() = default;
 
-UrlLoader::UrlLoader() : plugin_instance_(0) {}
-
-UrlLoader::UrlLoader(pp::InstanceHandle plugin_instance)
-    : plugin_instance_(plugin_instance), pepper_loader_(plugin_instance) {}
-
+UrlLoader::UrlLoader() = default;
 UrlLoader::~UrlLoader() = default;
 
-void UrlLoader::GrantUniversalAccess() {
+PepperUrlLoader::PepperUrlLoader(pp::InstanceHandle plugin_instance)
+    : plugin_instance_(plugin_instance), pepper_loader_(plugin_instance) {}
+
+PepperUrlLoader::~PepperUrlLoader() = default;
+
+void PepperUrlLoader::GrantUniversalAccess() {
   const PPB_URLLoaderTrusted* trusted_interface =
       static_cast<const PPB_URLLoaderTrusted*>(
           pp::Module::Get()->GetBrowserInterface(
@@ -53,7 +54,7 @@ void UrlLoader::GrantUniversalAccess() {
     trusted_interface->GrantUniversalAccess(pepper_loader_.pp_resource());
 }
 
-void UrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
+void PepperUrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
   pp::URLRequestInfo pp_request(plugin_instance_);
   pp_request.SetURL(request.url);
   pp_request.SetMethod(request.method);
@@ -71,21 +72,22 @@ void UrlLoader::Open(const UrlRequest& request, ResultCallback callback) {
     pp_request.AppendDataToBody(request.body.data(), request.body.size());
 
   pp::CompletionCallback pp_callback = PPCompletionCallbackFromResultCallback(
-      base::BindOnce(&UrlLoader::DidOpen, weak_factory_.GetWeakPtr(),
+      base::BindOnce(&PepperUrlLoader::DidOpen, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
   int32_t result = pepper_loader_.Open(pp_request, pp_callback);
   if (result != PP_OK_COMPLETIONPENDING)
     pp_callback.Run(result);
 }
 
-bool UrlLoader::GetDownloadProgress(int64_t& bytes_received,
-                                    int64_t& total_bytes_to_be_received) const {
+bool PepperUrlLoader::GetDownloadProgress(
+    int64_t& bytes_received,
+    int64_t& total_bytes_to_be_received) const {
   return pepper_loader_.GetDownloadProgress(&bytes_received,
                                             &total_bytes_to_be_received);
 }
 
-void UrlLoader::ReadResponseBody(base::span<char> buffer,
-                                 ResultCallback callback) {
+void PepperUrlLoader::ReadResponseBody(base::span<char> buffer,
+                                       ResultCallback callback) {
   pp::CompletionCallback pp_callback =
       PPCompletionCallbackFromResultCallback(std::move(callback));
   int32_t result = pepper_loader_.ReadResponseBody(buffer.data(), buffer.size(),
@@ -94,19 +96,19 @@ void UrlLoader::ReadResponseBody(base::span<char> buffer,
     pp_callback.Run(result);
 }
 
-void UrlLoader::Close() {
+void PepperUrlLoader::Close() {
   pepper_loader_.Close();
 }
 
-void UrlLoader::DidOpen(ResultCallback callback, int32_t result) {
+void PepperUrlLoader::DidOpen(ResultCallback callback, int32_t result) {
   pp::URLResponseInfo pp_response = pepper_loader_.GetResponseInfo();
-  response_.status_code = pp_response.GetStatusCode();
+  mutable_response().status_code = pp_response.GetStatusCode();
 
   pp::Var headers_var = pp_response.GetHeaders();
   if (headers_var.is_string()) {
-    response_.headers = headers_var.AsString();
+    mutable_response().headers = headers_var.AsString();
   } else {
-    response_.headers.reset();
+    mutable_response().headers.reset();
   }
 
   std::move(callback).Run(result);

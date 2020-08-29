@@ -14,7 +14,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/ppapi_migration/url_loader.h"
-#include "ppapi/cpp/url_loader.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
@@ -152,7 +151,7 @@ void PdfViewWebPlugin::SubmitForm(const std::string& url,
                                   int length) {}
 
 scoped_refptr<UrlLoader> PdfViewWebPlugin::CreateUrlLoader() {
-  return base::MakeRefCounted<UrlLoader>();
+  return nullptr;
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>

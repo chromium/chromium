@@ -36,7 +36,7 @@ std::string TestClient::GetURL() {
 }
 
 scoped_refptr<UrlLoader> TestClient::CreateUrlLoader() {
-  return base::MakeRefCounted<UrlLoader>();
+  return nullptr;
 }
 
 std::vector<PDFEngine::Client::SearchStringResult> TestClient::SearchString(

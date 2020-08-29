@@ -2078,7 +2078,7 @@ void OutOfProcessInstance::LoadUrl(const std::string& url,
 }
 
 scoped_refptr<UrlLoader> OutOfProcessInstance::CreateUrlLoaderInternal() {
-  auto loader = base::MakeRefCounted<UrlLoader>(this);
+  auto loader = base::MakeRefCounted<PepperUrlLoader>(this);
   loader->GrantUniversalAccess();
   return loader;
 }

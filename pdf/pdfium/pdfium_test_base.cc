@@ -85,7 +85,6 @@ PDFiumTestBase::InitializeEngineWithoutLoading(
     const base::FilePath::CharType* pdf_name) {
   InitializeEngineResult result;
 
-  auto dummy_loader = base::MakeRefCounted<UrlLoader>();
   result.engine =
       std::make_unique<PDFiumEngine>(client, /*enable_javascript=*/false);
   client->set_engine(result.engine.get());
@@ -96,7 +95,7 @@ PDFiumTestBase::InitializeEngineWithoutLoading(
   result.engine->SetDocumentLoaderForTesting(std::move(test_loader));
 
   if (!result.engine->New("https://chromium.org/dummy.pdf", "") ||
-      !result.engine->HandleDocumentLoad(std::move(dummy_loader))) {
+      !result.engine->HandleDocumentLoad(nullptr)) {
     client->set_engine(nullptr);
     result.engine = nullptr;
     result.document_loader = nullptr;

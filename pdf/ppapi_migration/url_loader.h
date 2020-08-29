@@ -64,41 +64,69 @@ struct UrlResponse final {
   base::Optional<std::string> headers;
 };
 
-// Thin wrapper around a `pp::URLLoader`. Unlike a `pp::URLLoader`, this class
-// does not perform its own reference counting, but relies on `scoped_refptr`.
-//
-// TODO(crbug.com/1099022): Make this abstract, and add a Blink implementation.
+// Abstraction for a Blink or Pepper URL loader.
+// TODO(crbug.com/1099022): Implement the Blink URL loader.
 class UrlLoader : public base::RefCounted<UrlLoader> {
  public:
-  UrlLoader();
-  explicit UrlLoader(pp::InstanceHandle plugin_instance);
   UrlLoader(const UrlLoader&) = delete;
   UrlLoader& operator=(const UrlLoader&) = delete;
 
   // Tries to grant the loader the capability to make unrestricted cross-origin
-  // requests ("universal access," in `blink::SecurityOrigin` terms).
-  void GrantUniversalAccess();
+  // requests ("universal access," in `blink::SecurityOrigin` terms). Must be
+  // called before `Open()`.
+  virtual void GrantUniversalAccess() = 0;
 
   // Mimic `pp::URLLoader`:
-  void Open(const UrlRequest& request, ResultCallback callback);
-  bool GetDownloadProgress(int64_t& bytes_received,
-                           int64_t& total_bytes_to_be_received) const;
+  virtual void Open(const UrlRequest& request, ResultCallback callback) = 0;
+  virtual bool GetDownloadProgress(
+      int64_t& bytes_received,
+      int64_t& total_bytes_to_be_received) const = 0;
+  virtual void ReadResponseBody(base::span<char> buffer,
+                                ResultCallback callback) = 0;
+  virtual void Close() = 0;
+
+  // Returns the URL response (not including the body). Only valid after
+  // `Open()` completes.
   const UrlResponse& response() const { return response_; }
-  void ReadResponseBody(base::span<char> buffer, ResultCallback callback);
-  void Close();
+
+ protected:
+  UrlLoader();
+  virtual ~UrlLoader();
+
+  UrlResponse& mutable_response() { return response_; }
 
  private:
   friend class base::RefCounted<UrlLoader>;
 
-  ~UrlLoader();
+  UrlResponse response_;
+};
+
+// A Pepper URL loader.
+class PepperUrlLoader final : public UrlLoader {
+ public:
+  explicit PepperUrlLoader(pp::InstanceHandle plugin_instance);
+  PepperUrlLoader(const PepperUrlLoader&) = delete;
+  PepperUrlLoader& operator=(const PepperUrlLoader&) = delete;
+
+  // UrlLoader:
+  void GrantUniversalAccess() override;
+  void Open(const UrlRequest& request, ResultCallback callback) override;
+  bool GetDownloadProgress(int64_t& bytes_received,
+                           int64_t& total_bytes_to_be_received) const override;
+  void ReadResponseBody(base::span<char> buffer,
+                        ResultCallback callback) override;
+  void Close() override;
+
+ private:
+  // Private because the class is RefCounted.
+  ~PepperUrlLoader() override;
 
   void DidOpen(ResultCallback callback, int32_t result);
 
   pp::InstanceHandle plugin_instance_;
   pp::URLLoader pepper_loader_;
-  UrlResponse response_;
 
-  base::WeakPtrFactory<UrlLoader> weak_factory_{this};
+  base::WeakPtrFactory<PepperUrlLoader> weak_factory_{this};
 };
 
 }  // namespace chrome_pdf

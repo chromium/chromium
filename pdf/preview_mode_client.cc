@@ -118,7 +118,7 @@ void PreviewModeClient::SubmitForm(const std::string& url,
 
 scoped_refptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
   NOTREACHED();
-  return base::MakeRefCounted<UrlLoader>();
+  return nullptr;
 }
 
 std::vector<PDFEngine::Client::SearchStringResult>
