@@ -13,11 +13,13 @@
 #include "media/base/mime_util.h"
 #include "media/base/supported_types.h"
 #include "media/base/waiting.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_config.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 #include <memory>
 #include <vector>
@@ -58,6 +60,8 @@ AudioDecoder::AudioDecoder(ScriptState* script_state,
                            const AudioDecoderInit* init,
                            ExceptionState& exception_state)
     : DecoderTemplate<AudioDecoderTraits>(script_state, init, exception_state) {
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kWebCodecs);
 }
 
 CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
