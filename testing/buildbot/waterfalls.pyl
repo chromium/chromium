@@ -347,6 +347,7 @@
               'os': 'Android',
             },
           ],
+          'expiration': 10800,
         },
         'use_swarming': True,
         'os_type': 'android',
@@ -358,6 +359,9 @@
         ],
         'test_suites': {
           'gtest_tests': 'webview_bot_all_gtests',
+        },
+        'swarming': {
+          'expiration': 10800,
         },
         'use_swarming': True,
         'os_type': 'android',
