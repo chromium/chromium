@@ -303,10 +303,7 @@ DOMArrayBuffer* GPUBuffer::CreateArrayBufferForMappedData(void* data,
   DCHECK_LE(data_length, kLargestMappableSize);
 
   ArrayBufferContents contents(data, data_length,
-                               [](void* data, size_t length, void* info) {
-                                 // DataDeleter does nothing because Dawn wire
-                                 // owns the memory.
-                               });
+                               v8::BackingStore::EmptyDeleter);
 
   DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(contents);
   mapped_array_buffers_.push_back(array_buffer);
