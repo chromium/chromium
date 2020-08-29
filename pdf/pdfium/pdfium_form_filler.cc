@@ -151,7 +151,7 @@ void PDFiumFormFiller::Form_OutputSelectedRect(FPDF_FORMFILLINFO* param,
   if (rect.IsEmpty())
     return;
 
-  engine->form_highlights_.push_back(PPRectFromRect(rect));
+  engine->form_highlights_.push_back(rect);
 }
 
 // static

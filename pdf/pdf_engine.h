@@ -169,7 +169,7 @@ class PDFEngine {
     virtual void UpdateCursor(PP_CursorType_Dev cursor) {}
 
     // Updates the tick marks in the vertical scrollbar.
-    virtual void UpdateTickMarks(const std::vector<pp::Rect>& tickmarks) {}
+    virtual void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) {}
 
     // Updates the number of find results for the current search term.  If
     // there are no matches 0 should be passed in.  Only when the plugin has

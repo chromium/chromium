@@ -59,7 +59,7 @@ void PreviewModeClient::UpdateCursor(PP_CursorType_Dev cursor) {
 }
 
 void PreviewModeClient::UpdateTickMarks(
-    const std::vector<pp::Rect>& tickmarks) {
+    const std::vector<gfx::Rect>& tickmarks) {
   NOTREACHED();
 }
 

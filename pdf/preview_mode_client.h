@@ -14,6 +14,7 @@
 #include "pdf/pdf_engine.h"
 
 namespace gfx {
+class Rect;
 class Vector2d;
 }  // namespace gfx
 
@@ -42,7 +43,7 @@ class PreviewModeClient : public PDFEngine::Client {
   void NavigateTo(const std::string& url,
                   WindowOpenDisposition disposition) override;
   void UpdateCursor(PP_CursorType_Dev cursor) override;
-  void UpdateTickMarks(const std::vector<pp::Rect>& tickmarks) override;
+  void UpdateTickMarks(const std::vector<gfx::Rect>& tickmarks) override;
   void NotifyNumberOfFindResultsChanged(int total, bool final_result) override;
   void NotifySelectedFindResultChanged(int current_find_index) override;
   void GetDocumentPassword(

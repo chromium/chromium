@@ -36,6 +36,7 @@
 #include "third_party/pdfium/public/fpdfview.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -204,17 +205,17 @@ class PDFiumEngine : public PDFEngine,
    private:
     // Returns all the currently visible selection rectangles, in screen
     // coordinates.
-    std::vector<pp::Rect> GetVisibleSelections() const;
+    std::vector<gfx::Rect> GetVisibleSelections() const;
 
     // Invalidates |selection|, but with |selection| slightly expanded to
     // compensate for any rounding errors.
-    void Invalidate(const pp::Rect& selection);
+    void Invalidate(const gfx::Rect& selection);
 
     PDFiumEngine* const engine_;
     // The origin at the time this object was constructed.
     const gfx::Point previous_origin_;
     // Screen rectangles that were selected on construction.
-    std::vector<pp::Rect> old_selections_;
+    std::vector<gfx::Rect> old_selections_;
   };
 
   // Used to store mouse down state to handle it in other mouse event handlers.
@@ -357,7 +358,7 @@ class PDFiumEngine : public PDFEngine,
       size_t page_index,
       size_t num_of_pages) const;
 
-  std::vector<pp::Rect> GetAllScreenRectsUnion(
+  std::vector<gfx::Rect> GetAllScreenRectsUnion(
       const std::vector<PDFiumRange>& rect_range,
       const gfx::Point& point) const;
 
@@ -496,11 +497,11 @@ class PDFiumEngine : public PDFEngine,
   // updated to include |rect| if |rect| has not already been highlighted.
   void Highlight(void* buffer,
                  int stride,
-                 const pp::Rect& rect,
+                 const gfx::Rect& rect,
                  int color_red,
                  int color_green,
                  int color_blue,
-                 std::vector<pp::Rect>* highlighted_rects) const;
+                 std::vector<gfx::Rect>& highlighted_rects) const;
 
   // Helper function to convert a device to page coordinates.  If the page is
   // not yet loaded, |page_x| and |page_y| will be set to 0.
@@ -764,7 +765,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Records parts of form fields that need to be highlighted at next paint, in
   // screen coordinates.
-  std::vector<pp::Rect> form_highlights_;
+  std::vector<gfx::Rect> form_highlights_;
 
   // Whether to render in grayscale or in color.
   bool render_grayscale_ = false;

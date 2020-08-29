@@ -452,14 +452,6 @@ void ScalePoint(float scale, pp::Point* point) {
   point->set_y(static_cast<int>(point->y() * scale));
 }
 
-void ScaleRect(float scale, pp::Rect* rect) {
-  int left = static_cast<int>(floorf(rect->x() * scale));
-  int top = static_cast<int>(floorf(rect->y() * scale));
-  int right = static_cast<int>(ceilf((rect->x() + rect->width()) * scale));
-  int bottom = static_cast<int>(ceilf((rect->y() + rect->height()) * scale));
-  rect->SetRect(left, top, right - left, bottom - top);
-}
-
 bool IsSaveDataSizeValid(size_t size) {
   return size > 0 && size <= kMaximumSavedFileSize;
 }
@@ -1268,12 +1260,14 @@ void OutOfProcessInstance::UpdateCursor(PP_CursorType_Dev cursor) {
 }
 
 void OutOfProcessInstance::UpdateTickMarks(
-    const std::vector<pp::Rect>& tickmarks) {
+    const std::vector<gfx::Rect>& tickmarks) {
   float inverse_scale = 1.0f / device_scale_;
-  std::vector<pp::Rect> scaled_tickmarks = tickmarks;
-  for (auto& tickmark : scaled_tickmarks)
-    ScaleRect(inverse_scale, &tickmark);
-  tickmarks_ = scaled_tickmarks;
+  tickmarks_.clear();
+  tickmarks_.reserve(tickmarks.size());
+  for (auto& tickmark : tickmarks) {
+    tickmarks_.emplace_back(
+        PPRectFromRect(gfx::ScaleToEnclosingRect(tickmark, inverse_scale)));
+  }
 }
 
 void OutOfProcessInstance::NotifyNumberOfFindResultsChanged(int total,

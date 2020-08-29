@@ -108,8 +108,8 @@ void PdfViewWebPlugin::NavigateToDestination(int page,
 
 void PdfViewWebPlugin::UpdateCursor(PP_CursorType_Dev cursor) {}
 
-void PdfViewWebPlugin::UpdateTickMarks(const std::vector<pp::Rect>& tickmarks) {
-}
+void PdfViewWebPlugin::UpdateTickMarks(
+    const std::vector<gfx::Rect>& tickmarks) {}
 
 void PdfViewWebPlugin::NotifyNumberOfFindResultsChanged(int total,
                                                         bool final_result) {}
