@@ -338,8 +338,10 @@ void BuildProfileTitleAndSubtitle(views::View* parent,
   views::View* profile_titles_container =
       parent->AddChildView(std::make_unique<views::View>());
   // Separate the titles from the avatar image by the default margin.
-  profile_titles_container->SetBorder(
-      views::CreateEmptyBorder(kDefaultMargin, 0, 0, 0));
+  profile_titles_container->SetLayoutManager(
+      CreateBoxLayout(views::BoxLayout::Orientation::kVertical,
+                      views::BoxLayout::CrossAxisAlignment::kCenter,
+                      gfx::Insets(kDefaultMargin, 0, 0, 0)));
 
   if (!title.empty()) {
     profile_titles_container->AddChildView(std::make_unique<views::Label>(
