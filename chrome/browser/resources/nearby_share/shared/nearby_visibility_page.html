@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="nearby_share_settings_behavior.html">
 <link rel="import" href="nearby_contact_visibility.html">
 
@@ -58,10 +59,8 @@
     </style>
     <div id="page-container">
       <div id="header">
-        <h1 id="page-title">Device Visibility</h1>
-        <h4 id="page-sub-title">
-          Select who you want this device to be visible to
-        </h4>
+        <h1 id="page-title">$i18n{nearbyShareVisibilityPageTitle}</h1>
+        <h4 id="page-sub-title">$i18n{nearbyShareVisibilityPageSubtitle}</h4>
       </div>
 
       <div id=center-content>
@@ -72,14 +71,14 @@
 
       <div id="actions">
         <cr-button id="manage-contacts-button" on-click="onManageContactsTap_">
-          Manage Contacts
+          $i18n{nearbyShareVisibilityPageManageContacts}
         </cr-button>
         <cr-button id="cancel-button" class="cancel-button"
             on-click="onCloseTap_">
-          Cancel
+          $i18n{nearbyShareActionsCancel}
         </cr-button>
         <cr-button id="next-button" class="action-button" on-click="onNextTap_">
-          Confirm
+          $i18n{nearbyShareActionsConfirm}
         </cr-button>
       </div>
     </div>

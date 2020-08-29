@@ -148,6 +148,19 @@ Polymer({
     }
   },
 
+  /**
+   * @return {string} The contact name of the selected ShareTarget.
+   * @private
+   */
+  contactName_() {
+    // TODO(knollr): Get contact name from ShareTarget.
+    const contactName = null;
+    if (!contactName) {
+      return '';
+    }
+    return this.i18n('nearbyShareConfirmationPageAddContactTitle', contactName);
+  },
+
   /** @private */
   onAcceptTap_() {
     this.confirmationManager.accept().then(
@@ -168,5 +181,14 @@ Polymer({
     this.confirmationManager.cancel().then(result => {
       this.fire('close');
     });
+  },
+
+  /**
+   * @return {!string} The title of the attachment to be shared.
+   * @private
+   */
+  attachmentTitle_() {
+    // TODO(knollr): Pass attachments to UI.
+    return 'Unknown file';
   },
 });

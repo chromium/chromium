@@ -1,9 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Nearby Share specific strings (included from generated_resources.grd). -->
 <grit-part>
+  <!-- Confirmation page -->
+  <message name="IDS_NEARBY_CONFIRMATION_PAGE_ADD_CONTACT_SUBTITLE" desc="Subtitle of the checkbox to add the person to a users contacts. This will make the local device visible to them once they are nearby.">
+    Adding this contact will remember the next time they share
+  </message>
+  <message name="IDS_NEARBY_CONFIRMATION_PAGE_ADD_CONTACT_TITLE" desc="Title of the checkbox to add the person to a users contacts.">
+    Add <ph name="CONTACT_NAME">$1<ex>Richard</ex></ph> to your contacts
+  </message>
+  <message name="IDS_NEARBY_CONFIRMATION_PAGE_TITLE" desc="Title of the Nearby Share confirmation page after selecting a device to share with.">
+    Share with this device?
+  </message>
+
+  <!-- Contact visibility component -->
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_CONTACTS_TITLE" desc="Section title of the contacts list when setting up the device visibility for the Nearby Share feature.">
+    Contacts
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_NEARBY_SHARE_OPEN" desc="Describes that nearby devices are visible while the Nearby Share feature is open on screen.">
+    Devices near you when Nearby Share is open
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_NO_CONTACTS_SUBTITLE" desc="Help text shown when there are no available contacts with a Google Account to select from. Nearby Share is the feature name.">
+    No contacts are available. To use Nearby Share with your contacts, add the email address linked with their Google Account to your contacts.
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_NO_CONTACTS_TITLE" desc="Title text shown when there are no available contacts with a Google Account to select from.">
+    No available contacts
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OTHERS" desc="Describes when nearby devices are visible to this user when using the Nearby Share feature.">
+    People who have chosen to be visible to you when their screen is unlocked
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OTHERS_TITLE" desc="Title of the description for which devices the user can share with using the Nearby Share feature.">
+    Devices you can share with
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_ALL" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'All contacts'.">
+    All contacts near you when your screen is unlocked
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_NONE" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Hidden'.">
+    No one unless you open Nearby Share
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_SOME" desc="Describes who can see the local device when the Nearby Share visibility setting is set to 'Some contacts'.">
+    Selected contacts near you when your screen is unlocked
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_OWN_TITLE" desc="Title of the description for which nearby devices can share with a users device using the Nearby Share feature.">
+    Who can share with your device
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_ZERO_STATE_INFO" desc="Help text to learn more about the privacy and visibility settings of the Nearby Share feature.">
+    Learn more
+  </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_ZERO_STATE_TEXT" desc="Zero state help text to explain how the visibility settings control the Nearby Share feature.">
+    Your device visibility controls who can share with you while your screen is unlocked
+  </message>
+
+  <!-- Discovery page -->
+  <message name="IDS_NEARBY_DISCOVERY_PAGE_INFO" desc="Help text on how to use the Nearby Share feature. Explains how to enable it on a nearby Chromebook to share with it.">
+    Make sure both devices are unlocked, close together, and have Bluetooth turned on. If you’re sharing with a Chromebook, make sure it has Nearby Sharing turned on (open the status area by selecting the time, then select Nearby Share).
+  </message>
+  <message name="IDS_NEARBY_DISCOVERY_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share device discovery page. This is where users select a device to share files with.">
+    Select the device you’d like to share files with
+  </message>
+  <message name="IDS_NEARBY_DISCOVERY_PAGE_TITLE" desc="Title of the Nearby Share device discovery page. This is where users select a device to share files with. Nearby Share is the feature name.">
+    Nearby Share
+  </message>
+
+  <!-- Onboarding page -->
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_DEVICE_NAME" desc="Label of the text input field to set the name of a users device which is shown to other devices for the Nearby Share feature.">
+    Device name
+  </message>
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share onboarding page that sets up the local device for the feature which provides a way for nearby devices to share files, text, and urls.">
+    Share files with people around you
+  </message>
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_TITLE" desc="Title of the Nearby Share onboarding page that sets up the local device for the feature. Nearby Share is the feature name.">
+    Set up Nearby Share
+  </message>
+
+  <!-- Visibility page -->
+  <message name="IDS_NEARBY_VISIBILITY_PAGE_MANAGE_CONTACTS" desc="Action button text to manage the contacts of a user while setting up Nearby Share.">
+    Manage contacts
+  </message>
+  <message name="IDS_NEARBY_VISIBILITY_PAGE_SUBTITLE" desc="Subtitle of the Nearby Share device visibility page that sets up the visibility settings for the local device. This page allows users to configure who can see their local device when nearby.">
+    Select who can share with you
+  </message>
+  <message name="IDS_NEARBY_VISIBILITY_PAGE_TITLE" desc="Title of the Nearby Share device visibility page that sets up the visibility settings for the local device.">
+    Device visibility
+  </message>
+
   <!-- Common strings -->
   <message name="IDS_NEARBY_SHARE_FEATURE_NAME" desc="This is the name of the Nearby Share feature which provides a way for nearby devices to share files, text, and urls">
     Nearby Share
+  </message>
+  <message name="IDS_NEARBY_ACTIONS_CANCEL" desc="Action button text to cancel the current step in the Nearby Share UI.">
+    Cancel
+  </message>
+  <message name="IDS_NEARBY_ACTIONS_CONFIRM" desc="Action button text to confirm a transfer in the Nearby Share UI.">
+    Confirm
+  </message>
+  <message name="IDS_NEARBY_ACTIONS_NEXT" desc="Action button text to go to the next step in the Nearby Share UI.">
+    Next
+  </message>
+  <message name="IDS_NEARBY_ACTIONS_REJECT" desc="Action button text to reject a transfer in the Nearby Share UI.">
+    Reject
   </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_APPS" desc="Describes one or more apps being transfered via Nearby Share.">
     {COUNT, plural, =1 {1 app} other {# apps}}

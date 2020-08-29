@@ -111,6 +111,12 @@
         margin-block-end: 8px;
       }
 
+      .explanation-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
       .explanation-section {
         display: flex;
         margin-block-end: 8px;
@@ -176,7 +182,7 @@
             <iron-icon icon="nearby20:contact-all" class="card-icon">
             </iron-icon>
             <div class="card-label">
-              All Contacts
+              $i18n{nearbyShareContactVisibilityAll}
             </div>
           </div>
         </cr-card-radio-button>
@@ -185,7 +191,7 @@
             <iron-icon icon="nearby20:contact-group" class="card-icon">
             </iron-icon>
             <div class="card-label">
-              Some Contacts
+              $i18n{nearbyShareContactVisibilitySome}
             </div>
           </div>
         </cr-card-radio-button>
@@ -194,7 +200,7 @@
             <iron-icon icon="nearby20:visibility-off" class="card-icon">
             </iron-icon>
             <div class="card-label">
-              Hidden
+              $i18n{nearbyShareContactVisibilityNone}
             </div>
           </div>
         </cr-card-radio-button>
@@ -210,13 +216,12 @@
           </div>
           <div id="zeroStateTextContainer">
             <div id="zeroStateText" class="cr-title-text">
-              Your device visibility controls who can share with you while your
-              screen is unlocked.
+              $i18n{nearbyShareContactVisibilityZeroStateText}
             </div>
             <div id="zeroStateInfoContainer">
               <iron-icon id="zeroStateIcon" icon="cr:info"></iron-icon>
               <div class="cr-secondary-text">
-                Learn more about device visibility
+                $i18n{nearbyShareContactVisibilityZeroStateInfo}
               </div>
             </div>
           </div>
@@ -230,10 +235,14 @@
             <iron-icon icon="nearby20:radar" class="padded-icon grey-icon">
             </iron-icon>
             <div class="viz-description-section">
-              <div class="cr-title-text">Who you see</div>
+              <div class="cr-title-text">
+                $i18n{nearbyShareContactVisibilityOthersTitle}
+              </div>
               <div class="cr-secondary-text">
-                Nearby sharing users who are temporarily visible to everyone or
-                have chosen to always be visible to you
+                <ul class="explanation-list">
+                  <li>$i18n{nearbyShareContactVisibilityOthers}</li>
+                  <li>$i18n{nearbyShareContactVisibilityNearbyShareOpen}</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -242,22 +251,34 @@
             <iron-icon icon="nearby20:visibility" class="padded-icon grey-icon">
             </iron-icon>
             <div class="viz-description-section">
-              <div class="cr-title-text">Who sees you</div>
+              <div class="cr-title-text">
+                $i18n{nearbyShareContactVisibilityOwnTitle}
+              </div>
               <template is="dom-if"
                   if="[[isVisibility_(selectedVisibility,'all')]]">
                 <div class="cr-secondary-text">
-                  Current and future contacts who have Nearby Share turned on
+                  <ul class="explanation-list">
+                    <li>$i18n{nearbyShareContactVisibilityOwnAll}</li>
+                    <li>$i18n{nearbyShareContactVisibilityNearbyShareOpen}</li>
+                  </ul>
                 </div>
               </template>
               <template is="dom-if"
                   if="[[isVisibility_(selectedVisibility,'some')]]">
                 <div class="cr-secondary-text">
-                  Selected contacts who have Nearby Share turned on
+                  <ul class="explanation-list">
+                    <li>$i18n{nearbyShareContactVisibilityOwnSome}</li>
+                    <li>$i18n{nearbyShareContactVisibilityNearbyShareOpen}</li>
+                  </ul>
                 </div>
               </template>
               <template is="dom-if"
                   if="[[isVisibility_(selectedVisibility,'none')]]">
-                <div class="cr-secondary-text">Nobody!</div>
+                <div class="cr-secondary-text">
+                  <ul class="explanation-list">
+                    <li>$i18n{nearbyShareContactVisibilityOwnNone}</li>
+                  </ul>
+                </div>
               </template>
             </div>
           </div>
@@ -265,7 +286,9 @@
         </div>
 
         <div id="contactsWrapper">
-          <div id="contactsHeading">Contacts</div>
+          <div id="contactsHeading">
+            $i18n{nearbyShareContactVisibilityContactsTitle}
+          </div>
 
           <!-- Show when the user has one or more contacts-->
           <template is="dom-if" if="[[showContactsList_(contacts)]]">
@@ -295,8 +318,12 @@
           <!-- Show when the user has no contacts available -->
           <template is="dom-if" if="[[!showContactsList_(contacts)]]">
             <div id="noContactsContainer">
-              <div class="cr-title-text">No Reachable Contacts</div>
-              <div class="cr-secondary-text">No Reachable Contacts Subtext</div>
+              <div class="cr-title-text">
+                $i18n{nearbyShareContactVisibilityNoContactsTitle}
+              </div>
+              <div class="cr-secondary-text">
+                $i18n{nearbyShareContactVisibilityNoContactsSubtitle}
+              </div>
             </div>
           </template>
         </div>

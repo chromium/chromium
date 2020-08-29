@@ -10,6 +10,8 @@
 Polymer({
   is: 'nearby-onboarding-page',
 
+  behaviors: [I18nBehavior],
+
   properties: {
     /** @type {?nearby_share.NearbySettings} */
     settings: {
@@ -18,14 +20,11 @@ Polymer({
   },
 
   onNextTap_() {
+    this.set('settings.deviceName', this.$.deviceName.value);
     this.fire('change-page', {page: 'visibility'});
   },
 
   onCloseTap_() {
     this.fire('close');
-  },
-
-  onDeviceNameTap_() {
-    window.open('chrome://os-settings/multidevice/nearbyshare?deviceName');
   },
 });

@@ -14,6 +14,8 @@
 Polymer({
   is: 'nearby-visibility-page',
 
+  behaviors: [I18nBehavior],
+
   properties: {
     /** @type {?nearby_share.NearbySettings} */
     settings: {

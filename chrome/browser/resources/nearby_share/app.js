@@ -113,5 +113,5 @@ Polymer({
    */
   onClose_(event) {
     chrome.send('close');
-  }
+  },
 });

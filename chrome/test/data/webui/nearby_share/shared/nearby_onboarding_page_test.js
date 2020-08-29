@@ -33,6 +33,6 @@ suite('nearby-onboarding-page', function() {
   test('Renders onboarding page', async function() {
     assertEquals('NEARBY-ONBOARDING-PAGE', element.tagName);
     // Verify the device name is shown correctly.
-    assertEquals(deviceName, element.$$('#link-row').$$('#label').innerText);
+    assertEquals(deviceName, element.$$('#deviceName').value);
   });
 });

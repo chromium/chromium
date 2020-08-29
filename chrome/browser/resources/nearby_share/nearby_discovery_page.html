@@ -84,13 +84,13 @@
 </style>
 
 <div id="page-content">
-  <h1 id="title">Nearby Share</h1>
-  <h2 id="subtitle">Select people you would like to share with</h2>
+  <h1 id="title">[[i18n('nearbyShareDiscoveryPageTitle')]]</h1>
+  <h2 id="subtitle">[[i18n('nearbyShareDiscoveryPageSubtitle')]]</h2>
 
   <div id="center-content">
 
     <div id="process-row">
-      <nearby-preview title="Doggo.jpg"></nearby-preview>
+      <nearby-preview title="[[attachmentTitle_()]]"></nearby-preview>
       <iron-list items="[[shareTargets_]]" id="deviceList"
           selected-item="{{selectedShareTarget}}"
           on-selected-item-changed="onSelectedShareTargetChanged_"
@@ -105,21 +105,17 @@
       </iron-list>
     </div>
 
-    <div id="help">
-      Make sure both devices are unlocked, close together (within 1 ft), and
-      have Bluetooth turned on. If you’re sharing with a Chromebook make sure
-      Nearby Share is turned on from quick settings.
-    </div>
+    <div id="help">[[i18n('nearbyShareDiscoveryPageInfo')]]</div>
 
   </div>
 
   <div id="actions">
     <cr-button class="cancel-button" on-click="onCancelTap_">
-      Cancel
+      [[i18n('nearbyShareActionsCancel')]]
     </cr-button>
     <cr-button id="next-button" class="action-button" on-click="onNextTap_"
         disabled="[[!selectedShareTarget]]">
-      Next
+      [[i18n('nearbyShareActionsNext')]]
     </cr-button>
   </div>
 </div>

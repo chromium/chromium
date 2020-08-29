@@ -53,14 +53,6 @@
     margin-top: 48px;
   }
 
-  #subtitle {
-    color: rgb(32, 33, 36);
-    font-size: 100%;
-    font-weight: normal;
-    line-height: 154%;
-    margin: 0;
-  }
-
   #title {
     color: rgb(32, 33, 36);
     font-size: 123%;
@@ -72,43 +64,44 @@
 </style>
 
 <div id="page-content">
-  <h1 id="title">Share with this device...</h1>
-  <h2 id="subtitle">Your Chromebook is ready to share</h2>
+  <h1 id="title">[[i18n('nearbyShareConfirmationPageTitle')]]</h1>
 
   <div id="process-row">
-    <nearby-preview title="Doggo.jpg"></nearby-preview>
+    <nearby-preview title="[[attachmentTitle_()]]"></nearby-preview>
     <div id="confirmation-token">
       <template is="dom-if" if="[[confirmationToken_]]">
-        [[i18n('secureConnectionId', confirmationToken_)]]
+        [[i18n('nearbyShareSecureConnectionId', confirmationToken_)]]
       </template>
     </div>
     <nearby-progress share-target="[[shareTarget]]"></nearby-progress>
   </div>
 
-  <cr-checkbox id="add-contacts">
-    <div id="add-contacts-label">
-      Add Richard to contacts
-    </div>
-    <div id="add-contacts-label-secondary">
-      Adding this contact will remember the next time you share
-    </div>
-  </cr-checkbox>
+  <template is="dom-if" if="[[contactName_(shareTarget)]]">
+    <cr-checkbox id="add-contacts">
+      <div id="add-contacts-label">
+        [[contactName_(shareTarget)]]
+      </div>
+      <div id="add-contacts-label-secondary">
+        [[i18n('nearbyShareConfirmationPageAddContactSubtitle')]]
+      </div>
+    </cr-checkbox>
+  </template>
 
   <div id="actions">
     <template is="dom-if" if="[[needsConfirmation_]]">
       <cr-button id="reject-button" class="cancel-button"
           on-click="onRejectTap_">
-        Reject
+        [[i18n('nearbyShareActionsReject')]]
       </cr-button>
       <cr-button id="accept-button" class="action-button"
           on-click="onAcceptTap_">
-        Confirm
+        [[i18n('nearbyShareActionsConfirm')]]
       </cr-button>
     </template>
     <template is="dom-if" if="[[!needsConfirmation_]]">
       <cr-button id="cancel-button" class="action-button"
           on-click="onCancelTap_">
-        Cancel
+        [[i18n('nearbyShareActionsCancel')]]
       </cr-button>
     </template>
   </div>

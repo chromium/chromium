@@ -1,7 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="./nearby_share_settings_behavior.html">
 
@@ -57,9 +58,8 @@
         border-radius: 5px;
       }
 
-      #device-name-desc-group {
-        margin-inline-start: 10px;
-        padding: 10px;
+      #deviceName {
+        margin-top: 60px;
       }
 
       #device-name-group {
@@ -77,10 +77,8 @@
     </style>
     <div id="page-container">
       <div id="header">
-        <h1 id="page-title">Turn on Nearby Share</h1>
-        <h4 id="page-sub-title">
-          Nearby allows you to send and receive files from people nearby
-        </h4>
+        <h1 id="page-title">$i18n{nearbyShareOnboardingPageTitle}</h1>
+        <h4 id="page-sub-title">$i18n{nearbyShareOnboardingPageSubtitle}</h4>
       </div>
 
       <div id=center-content>
@@ -88,25 +86,18 @@
             icon="nearby-images:nearby-onboarding-splash">
         </iron-icon>
         <div id="device-name-column">
-            <div id="device-name-desc-group">
-              <div>Device Name</div>
-              <div class="cr-secondary-text">
-                Visible to people you share with
-              </div>
-            </div>
-            <cr-link-row id="link-row" label="[[settings.deviceName]]"
-                sub-label="Your device name" on-click="onDeviceNameTap_"
-                start-icon="cr:person" external=true>
-            </cr-link-row>
+          <cr-input label="$i18n{nearbyShareOnboardingPageDeviceName}"
+              id="deviceName" value="[[settings.deviceName]]" autofocus>
+          </cr-input>
         </div>
       </div>
 
       <div id="actions">
         <cr-button class="cancel-button" on-click="onCloseTap_">
-          Cancel
+          $i18n{nearbyShareActionsCancel}
         </cr-button>
         <cr-button id="next-button" class="action-button" on-click="onNextTap_">
-          Next
+          $i18n{nearbyShareActionsNext}
         </cr-button>
       </div>
     </div>

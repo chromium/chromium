@@ -124,13 +124,13 @@ Polymer({
   getVisibilityText_(visibility) {
     switch (visibility) {
       case nearbyShare.mojom.Visibility.kAllContacts:
-        return this.i18n('visibilityAllContacts');
+        return this.i18n('nearbyShareContactVisibilityAll');
       case nearbyShare.mojom.Visibility.kSelectedContacts:
-        return this.i18n('visibilitySomeContacts');
+        return this.i18n('nearbyShareContactVisibilitySome');
       case nearbyShare.mojom.Visibility.kNoOne:
-        return this.i18n('visibilityHidden');
+        return this.i18n('nearbyShareContactVisibilityNone');
       case nearbyShare.mojom.Visibility.kUnknown:
-        return this.i18n('visibilityUnknown');
+        return this.i18n('nearbyShareContactVisibilityUnknown');
       default:
         return '';  // Make closure happy.
     }
@@ -144,13 +144,13 @@ Polymer({
   getVisibilityDescription_(visibility) {
     switch (visibility) {
       case nearbyShare.mojom.Visibility.kAllContacts:
-        return this.i18n('visibilityAllContactsDescription');
+        return this.i18n('nearbyShareContactVisibilityAllDescription');
       case nearbyShare.mojom.Visibility.kSelectedContacts:
-        return this.i18n('visibilitySomeContactsDescription');
+        return this.i18n('nearbyShareContactVisibilitySomeDescription');
       case nearbyShare.mojom.Visibility.kNoOne:
-        return this.i18n('visibilityHiddenDescription');
+        return this.i18n('nearbyShareContactVisibilityNoneDescription');
       case nearbyShare.mojom.Visibility.kUnknown:
-        return this.i18n('visibilityUnknownDescription');
+        return this.i18n('nearbyShareContactVisibilityUnknownDescription');
       default:
         return '';  // Make closure happy.
     }
