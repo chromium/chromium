@@ -422,12 +422,12 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueue(Task pending_task) {
 
   // TODO(altimin): Add a copy method to Task to capture metadata here.
   auto task_runner = pending_task.task_runner;
+  const auto task_type = pending_task.task_type;
   PostImmediateTaskImpl(
       PostedTask(std::move(task_runner),
                  BindOnce(&TaskQueueImpl::ScheduleDelayedWorkTask,
                           Unretained(this), std::move(pending_task)),
-                 FROM_HERE, TimeDelta(), Nestable::kNonNestable,
-                 pending_task.task_type),
+                 FROM_HERE, TimeDelta(), Nestable::kNonNestable, task_type),
       CurrentThread::kNotMainThread);
 }
 

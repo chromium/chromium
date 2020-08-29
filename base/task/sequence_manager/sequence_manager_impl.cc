@@ -279,9 +279,10 @@ SequenceManagerImpl::CreateThreadControllerImplForCurrentThread(
 // static
 std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateOnCurrentThread(
     SequenceManager::Settings settings) {
+  auto thread_controller =
+      CreateThreadControllerImplForCurrentThread(settings.clock);
   std::unique_ptr<SequenceManagerImpl> manager(new SequenceManagerImpl(
-      CreateThreadControllerImplForCurrentThread(settings.clock),
-      std::move(settings)));
+      std::move(thread_controller), std::move(settings)));
   manager->BindToCurrentThread();
   return manager;
 }
@@ -289,9 +290,10 @@ std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateOnCurrentThread(
 // static
 std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateUnbound(
     SequenceManager::Settings settings) {
-  return WrapUnique(new SequenceManagerImpl(
-      ThreadControllerWithMessagePumpImpl::CreateUnbound(settings),
-      std::move(settings)));
+  auto thread_controller =
+      ThreadControllerWithMessagePumpImpl::CreateUnbound(settings);
+  return WrapUnique(new SequenceManagerImpl(std::move(thread_controller),
+                                            std::move(settings)));
 }
 
 void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {
@@ -459,8 +461,8 @@ void SequenceManagerImpl::OnExitNestedRunLoop() {
     while (!main_thread_only().non_nestable_task_queue.empty()) {
       internal::TaskQueueImpl::DeferredNonNestableTask& non_nestable_task =
           main_thread_only().non_nestable_task_queue.back();
-      non_nestable_task.task_queue->RequeueDeferredNonNestableTask(
-          std::move(non_nestable_task));
+      auto* const task_queue = non_nestable_task.task_queue;
+      task_queue->RequeueDeferredNonNestableTask(std::move(non_nestable_task));
       main_thread_only().non_nestable_task_queue.pop_back();
     }
   }
