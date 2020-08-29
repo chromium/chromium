@@ -550,7 +550,9 @@ void ExtensionInstallPrompt::ShowDialog(
   // We special-case themes to not show any confirm UI. Instead they are
   // immediately installed, and then we show an infobar (see OnInstallSuccess)
   // to allow the user to revert if they don't like it.
-  if (extension->is_theme() && extension->from_webstore()) {
+  if (extension->is_theme() && extension->from_webstore() &&
+      prompt_->type() != EXTENSION_REQUEST_PROMPT &&
+      prompt_->type() != EXTENSION_PENDING_REQUEST_PROMPT) {
     std::move(done_callback_).Run(Result::ACCEPTED);
     return;
   }
