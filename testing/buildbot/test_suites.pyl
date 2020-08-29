@@ -5712,19 +5712,21 @@
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPAD_AIR_2_12_4',
-          'SIM_IPHONE_X_12_4',
           'SIM_IPHONE_7_13_6',
           'SIM_IPAD_AIR_2_13_6',
           'SIM_IPHONE_X_13_6',
+          'SIM_IPHONE_7_14_0',
+          'SIM_IPAD_AIR_2_14_0',
+          'SIM_IPHONE_X_14_0',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPAD_AIR_2_12_4',
           'SIM_IPHONE_7_13_6',
           'SIM_IPAD_AIR_2_13_6',
+          'SIM_IPHONE_7_14_0',
+          'SIM_IPAD_AIR_2_14_0',
         ]
       }
     },
@@ -5764,9 +5766,9 @@
     # and removes failing ones from ios14-sdk-simulator.
     # The result is test suites with certain tests removed,
     # identified by *_noncq.
-    # The list of variants to use is determined by
-    # ios-simulator and ios-simulator-full config's 12.4
-    # passing sims, converted to 14.0
+    # The list of variants are ios-simulator's 12.4 passing
+    # sims converted to 14.0, and 12.4 sims used to be on
+    # ios-simulator-full-configs.
     'ios_simulator_noncq_tests': {
       'ios_common_tests': {
         'mixins': [
@@ -5779,17 +5781,16 @@
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
+          'SIM_IPAD_AIR_2_12_4',
+          'SIM_IPHONE_X_12_4',
           'SIM_IPHONE_6S_14_0',
-          'SIM_IPAD_AIR_2_14_0',
-          'SIM_IPHONE_X_14_0',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
+          'SIM_IPAD_AIR_2_12_4',
           'SIM_IPHONE_6S_14_0',
-          'SIM_IPAD_AIR_2_14_0',
-          'SIM_IPHONE_X_14_0',
         ]
       },
       'ios_screen_size_dependent_tests': {
