@@ -1629,7 +1629,7 @@ TEST_F(OptimizationGuideStoreTest, FetchHintsPurgeExpiredFetchedHints) {
   proto::Hint fetched_hint2;
   fetched_hint2.set_key("domain3.org");
   fetched_hint2.set_key_representation(proto::HOST);
-  fetched_hint1.mutable_max_cache_duration()->set_seconds(
+  fetched_hint2.mutable_max_cache_duration()->set_seconds(
       base::TimeDelta::FromDays(7).InSeconds());
   update_data->MoveHintIntoUpdateData(std::move(fetched_hint2));
 
