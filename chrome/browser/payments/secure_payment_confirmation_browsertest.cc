@@ -222,6 +222,11 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
   }
   {
     std::string snippet = base::StringPrintf(
+        "canMakePaymentForMethodDataTwice(%s)", kTestMethodData);
+    EXPECT_EQ("true", content::EvalJs(GetActiveWebContents(), snippet));
+  }
+  {
+    std::string snippet = base::StringPrintf(
         "hasEnrolledInstrumentForMethodData(%s)", kTestMethodData);
     EXPECT_EQ("true", content::EvalJs(GetActiveWebContents(), snippet));
   }

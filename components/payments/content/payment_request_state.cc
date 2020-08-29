@@ -300,7 +300,7 @@ void PaymentRequestState::CanMakePayment(StatusCallback callback) {
     return;
   }
 
-  PostStatusCallback(std::move(callback), are_requested_methods_supported_);
+  PostStatusCallback(std::move(callback), GetCanMakePaymentValue());
 }
 
 void PaymentRequestState::HasEnrolledInstrument(StatusCallback callback) {
