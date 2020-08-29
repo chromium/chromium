@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <if expr="enable_plugins">
-    <message name="IDS_PDF_DOWNLOAD_ORIGINAL" desc="The label for the menu option to download the original, unedited PDF document.">
-      Original
+    <message name="IDS_PDF_DOWNLOAD_ORIGINAL" desc="The label for the menu option to download the original, unedited PDF document (without user's changes).">
+      Without your changes
     </message>
-    <message name="IDS_PDF_DOWNLOAD_EDITED" desc="The label for the menu option to download the edited PDF document.">
-      Edited
+    <message name="IDS_PDF_DOWNLOAD_EDITED" desc="The label for the menu option to download the edited PDF document (with user's changes).">
+      With your changes
     </message>
     <message name="IDS_PDF_NEED_PASSWORD" desc="A message asking the user for a password to open a PDF file.">
       This document is password protected.  Please enter a password.
