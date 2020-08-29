@@ -249,6 +249,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/interstitials/LookalikeInterstitialTest.java",
   "javatests/src/org/chromium/chrome/browser/jsdialog/JavascriptAppModalDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/jsdialog/JavascriptTabModalDialogTest.java",
+  "javatests/src/org/chromium/chrome/browser/language/AppLocaleUtilsTest.java",
   "javatests/src/org/chromium/chrome/browser/language/settings/LanguageSettingsTest.java",
   "javatests/src/org/chromium/chrome/browser/locale/DefaultSearchEngineDialogHelperTest.java",
   "javatests/src/org/chromium/chrome/browser/locale/DefaultSearchEngineDialogHelperUtils.java",

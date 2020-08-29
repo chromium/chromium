@@ -42,12 +42,16 @@ import java.util.List;
  * sanity of this file.
  */
 public final class ChromePreferenceKeys {
-    /*
+    /**
      * Whether the simplified tab switcher is enabled when accessibility mode is enabled. Keep in
      * sync with accessibility_preferences.xml.
      * Default value is true.
      */
     public static final String ACCESSIBILITY_TAB_SWITCHER = "accessibility_tab_switcher";
+
+    /** The language code to override application language with. */
+    public static final String APPLICATION_OVERRIDE_LANGUAGE =
+            "Chrome.Language.ApplicationOverrideLanguage";
 
     public static final String APP_LOCALE = "locale";
 
@@ -791,6 +795,7 @@ public final class ChromePreferenceKeys {
         return Arrays.asList(
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
+                APPLICATION_OVERRIDE_LANGUAGE,
                 CLIPBOARD_SHARED_URI,
                 CONDITIONAL_TAB_STRIP_CONTINUOUS_DISMISS_COUNTER,
                 CONDITIONAL_TAB_STRIP_FEATURE_STATUS,
