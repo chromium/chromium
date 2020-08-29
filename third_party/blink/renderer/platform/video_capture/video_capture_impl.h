@@ -174,6 +174,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   VideoCaptureState state_;
 
+  int num_first_frame_logs_ = 0;
+
   // Methods of |gpu_factories_| need to run on |media_task_runner_|.
   media::GpuVideoAcceleratorFactories* gpu_factories_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;

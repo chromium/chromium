@@ -37,6 +37,8 @@
 
 namespace blink {
 
+constexpr int kMaxFirstFrameLogs = 5;
+
 using VideoFrameBufferHandleType = media::mojom::blink::VideoBufferHandle::Tag;
 
 // A collection of all types of handles that we use to reference a camera buffer
@@ -514,7 +516,15 @@ void VideoCaptureImpl::OnBufferReady(
 
   if (first_frame_ref_time_.is_null()) {
     first_frame_ref_time_ = reference_time;
-    OnLog("First frame received at VideoCaptureImpl");
+    if (num_first_frame_logs_ < kMaxFirstFrameLogs) {
+      OnLog("First frame received for this VideoCaptureImpl instance");
+      num_first_frame_logs_++;
+    } else if (num_first_frame_logs_ == kMaxFirstFrameLogs) {
+      OnLog(
+          "First frame received for this VideoCaptureImpl instance. This will "
+          "not be logged anymore for this VideoCaptureImpl instance.");
+      num_first_frame_logs_++;
+    }
   }
 
   // If the timestamp is not prepared, we use reference time to make a rough
