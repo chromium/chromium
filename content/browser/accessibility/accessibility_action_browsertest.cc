@@ -482,9 +482,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   EXPECT_EQ("Before",
             target->GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
-  AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
-                                          ui::kAXModeComplete,
-                                          ax::mojom::Event::kValueChanged);
+  AccessibilityNotificationWaiter waiter2(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::VALUE_CHANGED);
   GetManager()->SetValue(*target, "Line1\nLine2");
   waiter2.WaitForNotification();
 

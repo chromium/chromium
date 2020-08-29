@@ -1054,7 +1054,6 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
       }
     }
 
-    obj->TextChanged();
     PostNotification(obj, ax::mojom::Event::kTextChanged);
   }
 

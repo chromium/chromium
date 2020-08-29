@@ -85,9 +85,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   {
     // Hide one of the elements on the page, and wait for an accessibility
     // notification triggered by the hide.
-    AccessibilityNotificationWaiter waiter(
-        shell()->web_contents(), ui::kAXModeComplete,
-        ax::mojom::Event::kLiveRegionChanged);
+    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                           ui::kAXModeComplete,
+                                           ax::mojom::Event::kChildrenChanged);
     ASSERT_TRUE(ExecuteScript(
         shell(), "document.getElementById('p1').style.display = 'none';"));
     waiter.WaitForNotification();

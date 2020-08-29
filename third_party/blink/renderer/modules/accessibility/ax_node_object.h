@@ -248,7 +248,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Notifications that this object may have changed.
   void ChildrenChanged() override;
   void SelectionChanged() final;
-  void TextChanged() override;
 
   // The aria-errormessage object or native object from a validationMessage
   // alert.

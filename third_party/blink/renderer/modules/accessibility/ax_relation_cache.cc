@@ -334,7 +334,6 @@ void AXRelationCache::ChildrenChanged(AXObject* object) {
 }
 
 void AXRelationCache::TextChanged(AXObject* object) {
-  object->TextChanged();
   object_cache_->PostNotification(object, ax::mojom::Event::kTextChanged);
 }
 

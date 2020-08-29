@@ -1165,7 +1165,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void HandleAutofillStateChanged(WebAXAutofillState) {}
   virtual void HandleAriaExpandedChanged() {}
   virtual void SelectionChanged();
-  virtual void TextChanged() {}
 
   // Static helper functions.
   static bool IsARIAControl(ax::mojom::blink::Role);
