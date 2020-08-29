@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    container, leaf {display: block;}
+  </style>
+  <script src="../resources/runner.js"></script>
+</head>
+<body>
+</body>
+
+<script>
+
+var isDone = false;
+var startTime;
+
+function runTest() {
+  if (startTime) {
+    PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+    PerfTestRunner.addRunTestEndMarker();
+  }
+  if (!isDone) {
+    PerfTestRunner.addRunTestStartMarker();
+    startTime = PerfTestRunner.now();
+
+    document.body.innerHTML = '';
+    appendManyElements(document.body, 7);
+
+    setTimeout(changeLeafText, 10);
+
+    // Re-run the same test.
+    // Wait to allow the asynchronous accessibility code that's
+    // covered by traceEventsToMeasure to have a chance to run.
+    setTimeout(runTest, 1500);
+  }
+}
+
+// Recursively add layers of descendants.
+function appendManyElements(start, depth) {
+  if (depth == 0) {
+    start.innerHTML = '<leaf>A</leaf>';
+  }
+  else {
+    // Each element receives 3 new children.
+    for (let count = 0; count < 3; count++) {
+      let newContainer = document.createElement('container');
+      appendManyElements(start.appendChild(newContainer), depth - 1);
+    }
+  }
+}
+
+function changeLeafText(text) {
+  let elements = document.querySelectorAll('leaf');
+  for (let count = 0; count < elements.length; count ++)
+    elements[count].textContent = 'B';
+}
+
+
+PerfTestRunner.startMeasureValuesAsync({
+    description: 'Test accessibility performance when changing text inside ignored inlines.',
+    unit: 'ms',
+    done: function () {
+      isDone = true;
+    },
+    run: function() {
+      runTest();
+    },
+    iterationCount: 6,
+    tracingCategories: 'accessibility',
+    traceEventsToMeasure: [
+      'ProcessDeferredAccessibilityEvents',
+      'RenderAccessibilityImpl::SendPendingAccessibilityEvents'
+    ]
+});
+</script>
+
+</html>

@@ -2008,20 +2008,6 @@ void AXLayoutObject::HandleAutofillStateChanged(WebAXAutofillState state) {
   AXObjectCache().SetAutofillState(AXObjectID(), state);
 }
 
-void AXLayoutObject::TextChanged() {
-  if (!layout_object_)
-    return;
-
-  Settings* settings = GetDocument()->GetSettings();
-  if (settings && settings->GetInlineTextBoxAccessibilityEnabled() &&
-      RoleValue() == ax::mojom::blink::Role::kStaticText)
-    ChildrenChanged();
-
-  // Do this last - AXNodeObject::textChanged posts live region announcements,
-  // and we should update the inline text boxes first.
-  AXNodeObject::TextChanged();
-}
-
 // The following is a heuristic used to determine if a
 // <table> should be with ax::mojom::blink::Role::kTable or
 // ax::mojom::blink::Role::kLayoutTable.

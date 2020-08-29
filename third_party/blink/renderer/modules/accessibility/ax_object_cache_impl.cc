@@ -997,6 +997,12 @@ void AXObjectCacheImpl::TextChanged(Node* node) {
   if (!node)
     return;
 
+  // A text changed event is redundant with children changed on the same node.
+  if (nodes_with_pending_children_changed_.find(node) !=
+      nodes_with_pending_children_changed_.end()) {
+    return;
+  }
+
   DeferTreeUpdate(&AXObjectCacheImpl::TextChangedWithCleanLayout, node);
 }
 
@@ -1009,6 +1015,12 @@ void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {
   // when it has a block sibling.
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
+    // A text changed event is redundant with children changed on the same node.
+    if (nodes_with_pending_children_changed_.find(node) !=
+        nodes_with_pending_children_changed_.end()) {
+      return;
+    }
+
     DeferTreeUpdate(&AXObjectCacheImpl::TextChangedWithCleanLayout, node);
     return;
   }
@@ -1033,6 +1045,15 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
 #endif  // DCHECK_IS_ON()
 
   if (obj) {
+    if (obj->RoleValue() == ax::mojom::blink::Role::kStaticText) {
+      Settings* settings = GetSettings();
+      if (settings && settings->GetInlineTextBoxAccessibilityEnabled()) {
+        // Update inline text box children.
+        ChildrenChangedWithCleanLayout(optional_node_for_relation_update, obj);
+        return;
+      }
+    }
+
     obj->TextChanged();
     PostNotification(obj, ax::mojom::Event::kTextChanged);
   }

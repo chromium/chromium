@@ -152,7 +152,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   void HandleAriaExpandedChanged() override;
   // Called when autofill/autocomplete state changes on a form control.
   void HandleAutofillStateChanged(WebAXAutofillState state) override;
-  void TextChanged() override;
 
   // For a table.
   bool IsDataTable() const override;

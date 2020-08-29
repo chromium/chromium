@@ -393,6 +393,9 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       } else if (ui::IsValuePatternSupported(node)) {
         FireUiaPropertyChangedEvent(UIA_ValueValuePropertyId, node);
         HandleTextChangedEvent(*node);
+      } else if (node->GetData().GetBoolAttribute(
+                     ax::mojom::BoolAttribute::kEditableRoot)) {
+        HandleTextChangedEvent(*node);
       }
       break;
     case ui::AXEventGenerator::Event::VALUE_MAX_CHANGED:
