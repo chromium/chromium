@@ -27,6 +27,7 @@ FakeServiceConnection::~FakeServiceConnection() {
 void FakeServiceConnection::ScheduleCall(base::OnceClosure callback) {
   if (!is_async_) {
     std::move(callback).Run();
+    return;
   }
 
   pending_calls_.emplace_back(std::move(callback));
