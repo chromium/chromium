@@ -208,7 +208,8 @@ base::Value DeviceToReadableDictionary(
   dict.SetKey("contacts", std::move(contacts_list));
   base::Value public_certificates_list(base::Value::Type::LIST);
   for (const auto& certificate : device.public_certificates()) {
-    contacts_list.Append(PublicCertificateToReadableDictionary(certificate));
+    public_certificates_list.Append(
+        PublicCertificateToReadableDictionary(certificate));
   }
   dict.SetKey("public_certificates", std::move(public_certificates_list));
   return dict;
