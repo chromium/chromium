@@ -16,7 +16,9 @@
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
@@ -118,6 +120,7 @@ void AmbientAshTestBase::SetUp() {
       std::make_unique<TestAmbientImageDecoderImpl>());
   token_controller()->SetTokenUsageBufferForTesting(
       base::TimeDelta::FromSeconds(30));
+  SetAmbientModeEnabled(true);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -126,6 +129,11 @@ void AmbientAshTestBase::TearDown() {
   image_downloader_.reset();
 
   AshTestBase::TearDown();
+}
+
+void AmbientAshTestBase::SetAmbientModeEnabled(bool enabled) {
+  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
+      ambient::prefs::kAmbientModeEnabled, enabled);
 }
 
 void AmbientAshTestBase::ShowAmbientScreen() {
