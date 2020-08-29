@@ -44,11 +44,15 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.supports_post_sub_buffer = false;
 
-  capabilities_.sk_color_type = kSurfaceColorType;
-  capabilities_.gr_backend_format =
-      context_provider_->GetGrContext()->defaultBackendFormat(
-          kSurfaceColorType, GrRenderable::kYes);
-
+  // TODO(https://crbug.com/1108406): use buffer format from Reshape().
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
+      kSurfaceColorType;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBX_8888)] =
+      kSurfaceColorType;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+      kSurfaceColorType;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
+      kSurfaceColorType;
   vsync_provider_ = std::make_unique<gl::VSyncProviderWin>(widget);
   child_window_.Initialize();
 }

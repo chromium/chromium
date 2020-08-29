@@ -318,10 +318,14 @@ bool SkiaOutputDeviceVulkan::Initialize() {
   const auto surface_format = vulkan_surface_->surface_format().format;
   DCHECK(surface_format == VK_FORMAT_B8G8R8A8_UNORM ||
          surface_format == VK_FORMAT_R8G8B8A8_UNORM);
-  capabilities_.sk_color_type = surface_format == VK_FORMAT_R8G8B8A8_UNORM
-                                    ? kRGBA_8888_SkColorType
-                                    : kBGRA_8888_SkColorType;
-  capabilities_.gr_backend_format = GrBackendFormat::MakeVk(surface_format);
+
+  auto sk_color_type = surface_format == VK_FORMAT_R8G8B8A8_UNORM
+                           ? kRGBA_8888_SkColorType
+                           : kBGRA_8888_SkColorType;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
+      sk_color_type;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+      sk_color_type;
   return true;
 }
 

@@ -120,6 +120,12 @@ void SkiaOutputDevice::ScheduleOverlays(
 void SkiaOutputDevice::EnsureBackbuffer() {}
 void SkiaOutputDevice::DiscardBackbuffer() {}
 
+void SkiaOutputDevice::SetDrawTimings(base::TimeTicks submitted,
+                                      base::TimeTicks started) {
+  viz_scheduled_draw_ = submitted;
+  gpu_started_draw_ = started;
+}
+
 void SkiaOutputDevice::StartSwapBuffers(BufferPresentedCallback feedback) {
   DCHECK_LT(static_cast<int>(pending_swaps_.size()),
             capabilities_.max_frames_pending);
@@ -156,12 +162,6 @@ void SkiaOutputDevice::FinishSwapBuffers(
   }
 
   pending_swaps_.pop();
-}
-
-void SkiaOutputDevice::SetDrawTimings(base::TimeTicks submitted,
-                                      base::TimeTicks started) {
-  viz_scheduled_draw_ = submitted;
-  gpu_started_draw_ = started;
 }
 
 SkiaOutputDevice::SwapInfo::SwapInfo(

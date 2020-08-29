@@ -34,10 +34,16 @@ SkiaOutputDeviceOffscreen::SkiaOutputDeviceOffscreen(
   capabilities_.output_surface_origin = origin;
   capabilities_.supports_post_sub_buffer = true;
 
-  capabilities_.sk_color_type = kSurfaceColorType;
-  capabilities_.gr_backend_format =
-      context_state_->gr_context()->defaultBackendFormat(kSurfaceColorType,
-                                                         GrRenderable::kYes);
+  // TODO(https://crbug.com/1108406): use the right color types base on GPU
+  // capabilities.
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
+      kSurfaceColorType;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBX_8888)] =
+      kSurfaceColorType;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
+      kSurfaceColorType;
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
+      kSurfaceColorType;
 }
 
 SkiaOutputDeviceOffscreen::~SkiaOutputDeviceOffscreen() {
@@ -53,6 +59,7 @@ bool SkiaOutputDeviceOffscreen::Reshape(const gfx::Size& size,
 
   DiscardBackbuffer();
   size_ = size;
+  format_ = format;
   sk_color_space_ = color_space.ToSkColorSpace();
   EnsureBackbuffer();
   return true;
@@ -82,15 +89,20 @@ void SkiaOutputDeviceOffscreen::EnsureBackbuffer() {
   if (size_.IsEmpty())
     return;
 
+  auto format_index = static_cast<int>(format_);
+  const auto& sk_color_type = capabilities_.sk_color_types[format_index];
+  DCHECK(sk_color_type != kUnknown_SkColorType)
+      << "SkColorType is invalid for format: " << format_index;
+
   if (has_alpha_) {
     backend_texture_ = context_state_->gr_context()->createBackendTexture(
-        size_.width(), size_.height(), kSurfaceColorType, GrMipMapped::kNo,
+        size_.width(), size_.height(), sk_color_type, GrMipMapped::kNo,
         GrRenderable::kYes);
   } else {
     is_emulated_rgbx_ = true;
     // Initialize alpha channel to opaque.
     backend_texture_ = context_state_->gr_context()->createBackendTexture(
-        size_.width(), size_.height(), kSurfaceColorType, SkColors::kBlack,
+        size_.width(), size_.height(), sk_color_type, SkColors::kBlack,
         GrMipMapped::kNo, GrRenderable::kYes);
   }
   DCHECK(backend_texture_.isValid());
