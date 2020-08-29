@@ -7344,4 +7344,93 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   }
 }
 
+// We should try to reuse process on same-site renderer-initiated navigations.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       RendererInitiatedSameSiteNavigationReusesProcess) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+
+  // Navigate to title1.html.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  scoped_refptr<SiteInstanceImpl> site_instance_1 =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  // Navigate to title2.html. The navigation is document/renderer initiated.
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_2));
+  scoped_refptr<SiteInstanceImpl> site_instance_2 =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+
+  // Check that title1.html and title2.html are in different BrowsingInstances
+  // but have the same renderer process.
+  EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
+  EXPECT_EQ(site_instance_1->GetProcess(), site_instance_2->GetProcess());
+}
+
+// We should try to reuse process on same-site browser-initiated navigations.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       BrowserInitiatedSameSiteNavigationReusesProcess) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+
+  // 1) Navigate to title1.html.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  scoped_refptr<SiteInstanceImpl> site_instance_1 =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  // 2) Navigate to title2.html. The navigation is browser initiated.
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  scoped_refptr<SiteInstanceImpl> site_instance_2 =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+
+  // Check that title1.html and title2.html are in different BrowsingInstances
+  // but have the same renderer process.
+  EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2.get()));
+  EXPECT_EQ(site_instance_1->GetProcess(), site_instance_2->GetProcess());
+
+  // 3) Do a back navigation to title1.html.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_1);
+  scoped_refptr<SiteInstanceImpl> site_instance_1_history_nav =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+
+  // We will reuse the SiteInstance and renderer process of |site_instance_1|.
+  EXPECT_EQ(site_instance_1_history_nav, site_instance_1);
+  EXPECT_EQ(site_instance_1_history_nav->GetProcess(),
+            site_instance_1->GetProcess());
+}
+
+// We should not try to reuse process on cross-site navigations.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       CrossSiteNavigationDoesNotReuseProcess) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL a1_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL a2_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+
+  // Navigate to A1.
+  EXPECT_TRUE(NavigateToURL(shell(), a1_url));
+  scoped_refptr<SiteInstanceImpl> a1_site_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  // Navigate to B. The navigation is browser initiated.
+  EXPECT_TRUE(NavigateToURL(shell(), b_url));
+  scoped_refptr<SiteInstanceImpl> b_site_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+
+  // Check that A1 and B are in different BrowsingInstances and renderer
+  // processes.
+  EXPECT_FALSE(a1_site_instance->IsRelatedSiteInstance(b_site_instance.get()));
+  EXPECT_NE(a1_site_instance->GetProcess(), b_site_instance->GetProcess());
+
+  // Navigate to A2. The navigation is renderer-initiated.
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), a2_url));
+  scoped_refptr<SiteInstanceImpl> a2_site_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+
+  // Check that B and A2 are in different BrowsingInstances and renderer
+  // processes.
+  EXPECT_FALSE(b_site_instance->IsRelatedSiteInstance(a2_site_instance.get()));
+  EXPECT_NE(b_site_instance->GetProcess(), a2_site_instance->GetProcess());
+}
+
 }  // namespace content

@@ -1604,27 +1604,44 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
     }
   }
 
-  // If we're doing a proactive BI swap, we should try to reuse the current
-  // SiteInstance's process for the new SiteInstance if possible.
-  // It might not be possible to reuse the process in some cases, including when
-  // the current SiteInstance needs a dedicated process (unless this is a
-  // same-site navigation).
   *did_same_site_proactive_browsing_instance_swap =
       (should_swap_result ==
        ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap);
+  bool reuse_current_process_if_possible = false;
+  // With proactive BrowsingInstance swap, we should try to reuse the current
+  // SiteInstance's process. This avoids swapping processes too many times,
+  // which might cause performance regressions.
+  // Note: process reuse might not be possible in some cases, e.g. for
+  // cross-site navigations when the current SiteInstance needs a dedicated
+  // process.
+
+  // Process-reuse cases include:
+  // 1) When ProactivelySwapBrowsingInstance with process-reuse is explicitly
+  // enabled. In this case, we will try to reuse process on both cross-site and
+  // same-site navigations.
   if (IsProactivelySwapBrowsingInstanceWithProcessReuseEnabled() &&
       proactive_swap &&
       (!current_instance->RequiresDedicatedProcess() ||
        *did_same_site_proactive_browsing_instance_swap)) {
-    DCHECK(frame_tree_node_->IsMainFrame());
-    new_instance_impl->ReuseCurrentProcessIfPossible(
-        current_instance->GetProcess());
+    reuse_current_process_if_possible = true;
   }
 
-  // If this is a same-site history navigation with different BrowsingInstances,
-  // the original navigation might have done a proactive BrowsingInstance swap,
-  // which means we should try to reuse the current process (because we did too
-  // on the original navigation).
+  // 2) When BackForwardCache is enabled on same-site navigations.
+  // Note 1: When BackForwardCache is disabled, we typically reuse processes on
+  // same-site navigations. This follows that behavior.
+  // Note 2: This doesn't cover cross-site navigations. Cross-site process-reuse
+  // is being experimented independently and is covered in path #1 above.
+  // See crbug.com/1122974 for further details.
+  if (IsSameSiteBackForwardCacheEnabled() &&
+      *did_same_site_proactive_browsing_instance_swap) {
+    reuse_current_process_if_possible = true;
+  }
+
+  // 3) When we're doing a same-site history navigation with different
+  // BrowsingInstances. We typically do not swap BrowsingInstances on same-site
+  // navigations. This might indicate that the original navigation did a
+  // proactive BrowsingInstance swap (and process-reuse) before, so we should
+  // try to reuse the current process.
   bool is_history_navigation = !!dest_instance;
   bool swapped_browsing_instance =
       !new_instance->IsRelatedSiteInstance(current_instance);
@@ -1636,10 +1653,15 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       IsCurrentlySameSite(
           static_cast<RenderFrameHostImpl*>(render_frame_host_.get()),
           dest_url)) {
+    reuse_current_process_if_possible = true;
+  }
+
+  if (reuse_current_process_if_possible) {
     DCHECK(frame_tree_node_->IsMainFrame());
     new_instance_impl->ReuseCurrentProcessIfPossible(
         current_instance->GetProcess());
   }
+
   return new_instance;
 }
 
