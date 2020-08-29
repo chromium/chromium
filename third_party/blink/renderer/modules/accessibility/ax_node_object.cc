@@ -3827,40 +3827,29 @@ void AXNodeObject::TextChanged() {
   if (!GetLayoutObject())
     return;
 
-  // Go up the accessibility parent chain, but only if the element already
-  // exists, firing live region and value change events as necessary.
-
-  // First, fire live region events.
-  // TODO(accessibility) Use LiveRegionRoot() so that we don't need to
-  // walk entire ancestor chain.
-  for (AXObject* parent = this; parent;
-       parent = parent->ParentObjectIfExists()) {
-    // These notifications always need to be sent because screenreaders are
-    // reliant on them to perform.  In other words, they need to be sent even
-    // when the screen reader has not accessed this live region since the last
-    // update.
-
-    // If this element supports ARIA live regions, then notify the AT of
-    // changes. Do not fire live region changed events if aria-live="off".
-    if (parent->IsLiveRegionRoot()) {
-      if (parent->IsActiveLiveRegionRoot()) {
-        AXObjectCache().PostNotification(
-            parent, ax::mojom::blink::Event::kLiveRegionChanged);
-      }
-      break;
-    }
+  // If this element supports ARIA live regions, then notify the AT of changes.
+  // Do not fire live region changed events if aria-live="off".
+  // These notifications always need to be sent as screenreaders are reliant on
+  // them to perform.  In other words, they need to be sent even when the screen
+  // reader has not accessed this live region since the last update.
+  AXObject* live_region_root = LiveRegionRoot();
+  if (live_region_root && live_region_root->IsActiveLiveRegionRoot()) {
+    AXObjectCache().PostNotification(
+        live_region_root, ax::mojom::blink::Event::kLiveRegionChanged);
   }
 
-  // Second, fire value changes.
-  for (AXObject* parent = this; parent;
-       parent = parent->ParentObjectIfExists()) {
-    // If this element is an ARIA text box or content editable, post a "value
-    // changed" notification on it so that it behaves just like a native input
-    // element or textarea.
-    if (parent->IsNonNativeTextControl()) {
-      AXObjectCache().PostNotification(parent,
-                                       ax::mojom::blink::Event::kValueChanged);
-      break;
+  // If this element is an ARIA text box or content editable, post a "value
+  // changed" notification on it so that it behaves just like a native input
+  // element or textarea. Native text control value changes are handled
+  // separately via calls into the AXObjectCache.
+  if (IsRichlyEditable()) {  // A contenteditable or descendant of it.
+    for (AXObject* parent = this; parent;
+         parent = parent->ParentObjectIfExists()) {
+      if (parent->IsNonNativeTextControl()) {
+        AXObjectCache().PostNotification(
+            parent, ax::mojom::blink::Event::kValueChanged);
+        break;
+      }
     }
   }
 }

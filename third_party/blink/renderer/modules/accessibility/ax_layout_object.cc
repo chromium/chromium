@@ -363,6 +363,7 @@ bool AXLayoutObject::IsEditable() const {
 
 // Requires layoutObject to be present because it relies on style
 // user-modify. Don't move this logic to AXNodeObject.
+// Returns true for a contenteditable or any descendant of it.
 bool AXLayoutObject::IsRichlyEditable() const {
   if (IsDetached())
     return false;
