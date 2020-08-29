@@ -22,6 +22,7 @@ source_set("whats_new") {
   ]
 
   deps = [
+    ":utils",
     "//base",
     "//ios/chrome/app/strings:ios_google_chrome_strings",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

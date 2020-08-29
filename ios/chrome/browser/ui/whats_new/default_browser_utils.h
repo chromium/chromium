@@ -17,8 +17,20 @@ extern NSString* const kLastHTTPURLOpenTime;
 // past expired logs that have happened too far in the past.
 void LogLikelyInterestedDefaultBrowserUserActivity();
 
-// Returns True if the last URL open is within the time threshold that would
-// indicate Chrome is likely still the default browser. Returns False otherwise.
+// Returns true if the user has interacted with the Fullscreen Promo previously.
+// Returns false otherwise.
+bool HasUserInteractedWithFullscreenPromoBefore();
+
+// Logs that the user has interacted with the Fullscreen Promo.
+void LogUserInteractionWithFullscreenPromo();
+
+// Returns true if the last URL open is within the time threshold that would
+// indicate Chrome is likely still the default browser. Returns false otherwise.
 bool IsChromeLikelyDefaultBrowser();
+
+// Returns true if the past behavior of the user indicates that the user fits
+// the categorization that would likely benefit from having Chrome set as their
+// default browser. Returns false otherwise.
+bool IsLikelyInterestedDefaultBrowserUser();
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_DEFAULT_BROWSER_UTILS_H_

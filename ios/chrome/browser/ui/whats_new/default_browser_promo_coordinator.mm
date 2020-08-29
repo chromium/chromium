@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/ui/whats_new/default_browser_promo_view_controller.h"
+#import "ios/chrome/browser/ui/whats_new/default_browser_utils.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #include "ios/chrome/grit/ios_google_chrome_strings.h"
@@ -67,11 +68,13 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 
 - (void)confirmationAlertDismissAction {
   UMA_HISTOGRAM_ENUMERATION("IOS.DefaultBrowserFullscreenPromo", CANCEL);
+  LogUserInteractionWithFullscreenPromo();
   [self.handler hidePromo];
 }
 
 - (void)confirmationAlertPrimaryAction {
   UMA_HISTOGRAM_ENUMERATION("IOS.DefaultBrowserFullscreenPromo", ACTION_BUTTON);
+  LogUserInteractionWithFullscreenPromo();
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
