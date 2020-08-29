@@ -1,6 +1,7 @@
 ---
 ---
   Checks:          '-*,
+                    bugprone-use-after-move,
                     google-build-explicit-make-pair,
                     google-explicit-constructor,
                     google-readability-casting,
