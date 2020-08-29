@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -19,6 +20,9 @@
 #include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
+#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/webdata/common/web_data_results.h"
+#include "components/webdata/common/web_data_service_base.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "url/origin.h"
 
@@ -31,13 +35,20 @@ constexpr int64_t kMaxTimeoutInMilliseconds = 1000 * 60 * 60;
 
 bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
              std::string* error_message) {
-  // |request| can be null when the feature is disabled in Blink.
+  // `request` can be null when the feature is disabled in Blink.
   if (!request)
     return false;
 
-  if (request->instrument_id.empty()) {
-    *error_message = errors::kInstrumentIdRequired;
+  if (request->credential_ids.empty()) {
+    *error_message = errors::kCredentialIdsRequired;
     return false;
+  }
+
+  for (const auto& credential_id : request->credential_ids) {
+    if (credential_id.empty()) {
+      *error_message = errors::kCredentialIdsRequired;
+      return false;
+    }
   }
 
   if (request->timeout.has_value() &&
@@ -49,11 +60,14 @@ bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
   return true;
 }
 
-void OnIsUserVerifyingPlatformAuthenticatorAvailable(
-    base::WeakPtr<PaymentAppFactory::Delegate> delegate,
-    mojom::SecurePaymentConfirmationRequestPtr request,
-    std::unique_ptr<autofill::InternalAuthenticator> authenticator,
-    bool is_available) {
+}  // namespace
+
+void SecurePaymentConfirmationAppFactory::
+    OnIsUserVerifyingPlatformAuthenticatorAvailable(
+        base::WeakPtr<PaymentAppFactory::Delegate> delegate,
+        mojom::SecurePaymentConfirmationRequestPtr request,
+        std::unique_ptr<autofill::InternalAuthenticator> authenticator,
+        bool is_available) {
   if (!delegate)
     return;
 
@@ -62,6 +76,11 @@ void OnIsUserVerifyingPlatformAuthenticatorAvailable(
     return;
   }
 
+  // Regardless of whether `web_data_service` has any apps, canMakePayment() and
+  // hasEnrolledInstrument() should return true when a user-verifying platform
+  // authenticator device is available.
+  delegate->SetCanMakePaymentEvenWithoutApps();
+
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
       delegate->GetPaymentManifestWebDataService();
   if (!web_data_service) {
@@ -69,27 +88,12 @@ void OnIsUserVerifyingPlatformAuthenticatorAvailable(
     return;
   }
 
-  // TODO(https://crbug.com/1110324): Check |web_data_service| for whether
-  // |request->instrument_id| has any credentials on this device. If so,
-  // retrieve the instrument information from |web_data_service| and use these
-  // values to create a SecurePaymentConfirmationApp. For now, use stubs.
-  std::string effective_relying_party_identity = "rp.example";
-  std::unique_ptr<SkBitmap> icon;
-  base::string16 label = base::ASCIIToUTF16("Stub label");
-  std::vector<std::unique_ptr<std::vector<uint8_t>>> credential_ids;
-  credential_ids.emplace_back(std::make_unique<std::vector<uint8_t>>());
-  credential_ids.back()->push_back(0);
-
-  delegate->OnPaymentAppCreated(std::make_unique<SecurePaymentConfirmationApp>(
-      effective_relying_party_identity, std::move(icon), label,
-      std::move(credential_ids),
-      /*merchant_origin=*/url::Origin::Create(delegate->GetTopOrigin()),
-      /*total=*/delegate->GetSpec()->details().total->amount,
-      std::move(request), std::move(authenticator)));
-  delegate->OnDoneCreatingPaymentApps();
+  WebDataServiceBase::Handle handle =
+      web_data_service->GetSecurePaymentConfirmationInstruments(
+          std::move(request->credential_ids), this);
+  requests_[handle] = std::make_unique<Request>(delegate, std::move(request),
+                                                std::move(authenticator));
 }
-
-}  // namespace
 
 SecurePaymentConfirmationAppFactory::SecurePaymentConfirmationAppFactory()
     : PaymentAppFactory(PaymentApp::Type::INTERNAL) {}
@@ -120,8 +124,9 @@ void SecurePaymentConfirmationAppFactory::Create(
           delegate->CreateInternalAuthenticator();
 
       authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(
-          base::BindOnce(&OnIsUserVerifyingPlatformAuthenticatorAvailable,
-                         delegate,
+          base::BindOnce(&SecurePaymentConfirmationAppFactory::
+                             OnIsUserVerifyingPlatformAuthenticatorAvailable,
+                         weak_ptr_factory_.GetWeakPtr(), delegate,
                          method_data->secure_payment_confirmation.Clone(),
                          std::move(authenticator)));
       return;
@@ -129,6 +134,73 @@ void SecurePaymentConfirmationAppFactory::Create(
   }
 
   delegate->OnDoneCreatingPaymentApps();
+}
+
+struct SecurePaymentConfirmationAppFactory::Request {
+  Request(base::WeakPtr<PaymentAppFactory::Delegate> delegate,
+          mojom::SecurePaymentConfirmationRequestPtr mojo_request,
+          std::unique_ptr<autofill::InternalAuthenticator> authenticator)
+      : delegate(delegate),
+        mojo_request(std::move(mojo_request)),
+        authenticator(std::move(authenticator)) {}
+
+  ~Request() = default;
+
+  Request(const Request& other) = delete;
+  Request& operator=(const Request& other) = delete;
+
+  base::WeakPtr<PaymentAppFactory::Delegate> delegate;
+  mojom::SecurePaymentConfirmationRequestPtr mojo_request;
+  std::unique_ptr<autofill::InternalAuthenticator> authenticator;
+};
+
+void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
+    WebDataServiceBase::Handle handle,
+    std::unique_ptr<WDTypedResult> result) {
+  auto iterator = requests_.find(handle);
+  if (iterator == requests_.end())
+    return;
+
+  std::unique_ptr<Request> request = std::move(iterator->second);
+  requests_.erase(iterator);
+  DCHECK(request.get());
+  if (!request->delegate)
+    return;
+
+  if (!result || result->GetType() != SECURE_PAYMENT_CONFIRMATION) {
+    request->delegate->OnDoneCreatingPaymentApps();
+    return;
+  }
+
+  std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>
+      instruments = static_cast<WDResult<
+          std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>>*>(
+                        result.get())
+                        ->GetValue();
+  if (instruments.empty()) {
+    request->delegate->OnDoneCreatingPaymentApps();
+    return;
+  }
+
+  // For the pilot phase, arbitrarily use the first matching instrument.
+  // TODO(https://crbug.com/1110320): Handle multiple instruments.
+  std::unique_ptr<SecurePaymentConfirmationInstrument> instrument =
+      std::move(instruments.front());
+
+  // TODO(https://crbug.com/1110324): Decode `instrument->icon` from
+  // std::unique_ptr<std::vector<uint8_t>> into std::unique_ptr<SkBitmap> and
+  // check the icon validity.
+  auto icon = std::make_unique<SkBitmap>();
+
+  request->delegate->OnPaymentAppCreated(
+      std::make_unique<SecurePaymentConfirmationApp>(
+          instrument->relying_party_id, std::move(icon), instrument->label,
+          std::move(instrument->credential_id),
+          url::Origin::Create(request->delegate->GetTopOrigin()),
+          request->delegate->GetSpec()->details().total->amount,
+          std::move(request->mojo_request), std::move(request->authenticator)));
+
+  request->delegate->OnDoneCreatingPaymentApps();
 }
 
 }  // namespace payments

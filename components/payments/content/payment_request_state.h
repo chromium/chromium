@@ -151,6 +151,7 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   void OnPaymentAppCreationError(const std::string& error_message) override;
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
+  void SetCanMakePaymentEvenWithoutApps() override;
 
   // PaymentResponseHelper::Delegate
   void OnPaymentResponseReady(
@@ -350,6 +351,9 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // Returns whether the browser is currently in a TWA.
   bool IsInTwa() const;
 
+  bool GetCanMakePaymentValue() const;
+  bool GetHasEnrolledInstrumentValue() const;
+
   content::WebContents* web_contents_;
   content::RenderFrameHost* initiator_render_frame_host_;
   const GURL top_origin_;
@@ -425,6 +429,15 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   // Whether PaymentRequest.show() was invoked with a user gesture.
   bool is_show_user_gesture_ = false;
+
+  // If set to true, then both GetCanMakePaymentValue() and
+  // GetHasEnrolledInstrumentValue() will return true, regardless of presence of
+  // payment apps. This is used by secure payment confirmation, where
+  // PaymentRequest.canMakePayment() and PaymentRequesthasEnrolledInstrument()
+  // calls in JavaScript both return true without querying the SQLite database
+  // for instrument information and without querying the authenticator for
+  // credentials.
+  bool can_make_payment_even_without_apps_ = false;
 
   base::WeakPtrFactory<PaymentRequestState> weak_ptr_factory_{this};
 

@@ -61,6 +61,7 @@ static_library("content") {
     "//components/strings:components_strings_grit",
     "//components/ukm/content",
     "//components/url_formatter",
+    "//components/webdata/common",
     "//content/public/browser",
     "//device/fido",
     "//third_party/blink/public:blink_headers",

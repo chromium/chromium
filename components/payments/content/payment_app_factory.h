@@ -91,6 +91,14 @@ class PaymentAppFactory {
 
     // Called when all apps of this factory have been created.
     virtual void OnDoneCreatingPaymentApps() = 0;
+
+    // Make both canMakePayment() and hasEnrolledInstrument() return true,
+    // regardless of presence of payment apps. This is used by secure payment
+    // confirmation method, which returns true for canMakePayment() and
+    // hasEnrolledInstrument() regardless of presence of credentials in user
+    // profile or the authenticator device, as long as a user-verifying platform
+    // authenticator device is available.
+    virtual void SetCanMakePaymentEvenWithoutApps() = 0;
   };
 
   explicit PaymentAppFactory(PaymentApp::Type type);

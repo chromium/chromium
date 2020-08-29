@@ -84,6 +84,7 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
                void(const std::string& error_message));
   MOCK_CONST_METHOD0(SkipCreatingNativePaymentApps, bool());
   MOCK_METHOD0(OnDoneCreatingPaymentApps, void());
+  MOCK_METHOD0(SetCanMakePaymentEvenWithoutApps, void());
 
   base::WeakPtr<PaymentAppFactory::Delegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

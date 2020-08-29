@@ -84,6 +84,7 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   void OnPaymentAppCreationError(const std::string& error_message) override;
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
+  void SetCanMakePaymentEvenWithoutApps() override;
 
  private:
   // Prevents direct instantiation. Callers should use Create() instead.

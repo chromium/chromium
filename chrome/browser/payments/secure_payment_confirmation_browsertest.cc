@@ -2,10 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/command_line.h"
+#include "base/memory/ref_counted.h"
+#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_data_service_factory.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/core/secure_payment_confirmation_instrument.h"
+#include "components/webdata/common/web_data_service_consumer.h"
 #include "content/public/browser/authenticator_environment.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -21,8 +35,8 @@ static constexpr char kTestMethodData[] =
     "  supportedMethods: 'secure-payment-confirmation',"
     "  data: {"
     "    action: 'authenticate',"
-    "    instrumentId: 'x',"
-    "    networkData: Uint8Array.from('x', c => c.charCodeAt(0)),"
+    "    credentialIds: [Uint8Array.from('cred', c => c.charCodeAt(0))],"
+    "    networkData: Uint8Array.from('network_data', c => c.charCodeAt(0)),"
     "    timeout: 60000,"
     "    fallbackUrl: 'https://fallback.example/url'"
     "}}]";
@@ -59,13 +73,25 @@ static constexpr char kCreatePaymentCredential[] =
 #endif
 
 class SecurePaymentConfirmationTest
-    : public PaymentRequestPlatformBrowserTestBase {
+    : public PaymentRequestPlatformBrowserTestBase,
+      public WebDataServiceConsumer {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PaymentRequestPlatformBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
+
+  void OnWebDataServiceRequestDone(
+      WebDataServiceBase::Handle h,
+      std::unique_ptr<WDTypedResult> result) override {
+    ASSERT_NE(nullptr, result);
+    ASSERT_EQ(BOOL_RESULT, result->GetType());
+    EXPECT_TRUE(static_cast<WDResult<bool>*>(result.get())->GetValue());
+    databse_write_responded_ = true;
+  }
+
+  bool databse_write_responded_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {
@@ -82,14 +108,39 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {
 #if defined(OS_ANDROID)
 // TODO(https://crbug.com/1110320): Implement SetHasAuthenticator() for Android,
 // so this behavior can be tested on Android as well.
+#define MAYBE_NoInstrumentInStorage DISABLED_NoInstrumentInStorage
 #define MAYBE_PaymentSheetShowsApp DISABLED_PaymentSheetShowsApp
 #else
+#define MAYBE_NoInstrumentInStorage NoInstrumentInStorage
 #define MAYBE_PaymentSheetShowsApp PaymentSheetShowsApp
 #endif  // OS_ANDROID
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+                       MAYBE_NoInstrumentInStorage) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/payment_handler_status.html");
+
+  // EvalJs waits for JavaScript promise to resolve.
+  EXPECT_EQ(
+      "The payment method \"secure-payment-confirmation\" is not supported.",
+      content::EvalJs(GetActiveWebContents(),
+                      getInvokePaymentRequestSnippet()));
+}
+
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
                        MAYBE_PaymentSheetShowsApp) {
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/payment_handler_status.html");
+  std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
+  std::vector<uint8_t> icon = {0, 1, 2, 3};
+  WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()),
+      ServiceAccessType::EXPLICIT_ACCESS)
+      ->AddSecurePaymentConfirmationInstrument(
+          std::make_unique<SecurePaymentConfirmationInstrument>(
+              std::move(credential_id), "relying-party.example",
+              base::ASCIIToUTF16("Stub label"), std::move(icon)),
+          /*consumer=*/this);
   ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
 
   // ExecJs starts executing JavaScript and immediately returns, not waiting for
@@ -98,6 +149,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
                               getInvokePaymentRequestSnippet()));
 
   WaitForObservedEvent();
+  EXPECT_TRUE(databse_write_responded_);
   ASSERT_FALSE(test_controller()->app_descriptions().empty());
   EXPECT_EQ(1u, test_controller()->app_descriptions().size());
   EXPECT_EQ("Stub label", test_controller()->app_descriptions().front().label);

@@ -16,7 +16,7 @@ test(() => {
     data: {
        // All valid parameters.
        action: 'authenticate',
-       instrumentId: 'x',
+       credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        timeout: 60000,
        fallbackUrl: 'https://fallback.example/url'
@@ -29,7 +29,7 @@ test(() => {
     supportedMethods: 'secure-payment-confirmation',
     data: {
        // Omitted action field.
-       instrumentId: 'x',
+       credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        timeout: 60000,
        fallbackUrl: 'https://fallback.example/url'
@@ -42,7 +42,7 @@ test(() => {
     supportedMethods: 'secure-payment-confirmation',
     data: {
        action: 'authenticate',
-       instrumentId: 'x',
+       credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        // Omitted timeout field.
        fallbackUrl: 'https://fallback.example/url'
@@ -56,7 +56,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
@@ -71,7 +71,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
@@ -86,7 +86,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
@@ -101,7 +101,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
@@ -116,7 +116,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
@@ -131,7 +131,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
@@ -147,7 +147,7 @@ test(() => {
       data: {
         // Invalid action parameter.
         action: 'authorize',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
@@ -162,14 +162,14 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        // Omitted instrumentId field.
+        // Omitted credentialIds field.
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
-}, 'The instrumentId field is required.');
+}, 'The credentialIds field is required.');
 
 test(() => {
   assert_throws_js(TypeError, () => {
@@ -177,8 +177,8 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
-        // Omitted instrumentId field.
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        // Omitted networkData field.
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
       },
@@ -192,7 +192,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         // Omitted fallbackUrl field.
@@ -207,15 +207,16 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        // Empty instrumentId field.
-        instrumentId: '',
+        relyingPartyId: 'relying-party.example',
+        // Empty credentialIds field.
+        credentialIds: [],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
         fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
-}, 'Empty instrumentId field throws exception.');
+}, 'Empty credentialIds field throws exception.');
 
 test(() => {
   assert_throws_js(TypeError, () => {
@@ -223,7 +224,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         // Null networkData field.
         networkData: null,
         timeout: 60000,
@@ -239,7 +240,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         // Empty networkData field.
         networkData: [],
         timeout: 60000,
@@ -255,7 +256,7 @@ test(() => {
       supportedMethods: 'secure-payment-confirmation',
       data: {
         action: 'authenticate',
-        instrumentId: 'x',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         // Timeout longer than 1 hour.
         timeout: 1000 * 60 * 60 + 1,

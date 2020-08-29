@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
 #include "base/notreached.h"
@@ -30,7 +31,7 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     const std::string& effective_relying_party_identity,
     std::unique_ptr<SkBitmap> icon,
     const base::string16& label,
-    std::vector<std::unique_ptr<std::vector<uint8_t>>> credential_ids,
+    std::vector<uint8_t> credential_id,
     const url::Origin& merchant_origin,
     const mojom::PaymentCurrencyAmountPtr& total,
     mojom::SecurePaymentConfirmationRequestPtr request,
@@ -39,14 +40,13 @@ SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
       effective_relying_party_identity_(effective_relying_party_identity),
       icon_(std::move(icon)),
       label_(label),
-      credential_ids_(std::move(credential_ids)),
+      credential_id_(std::move(credential_id)),
+      encoded_credential_id_(base::Base64Encode(credential_id_)),
       merchant_origin_(merchant_origin),
       total_(total.Clone()),
       request_(std::move(request)),
       authenticator_(std::move(authenticator)) {
-  DCHECK(!credential_ids_.empty());
-  DCHECK(credential_ids_.front());
-  DCHECK(!credential_ids_.front()->empty());
+  DCHECK(!credential_id_.empty());
 
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
 }
@@ -55,11 +55,9 @@ SecurePaymentConfirmationApp::~SecurePaymentConfirmationApp() = default;
 
 void SecurePaymentConfirmationApp::InvokePaymentApp(Delegate* delegate) {
   std::vector<device::PublicKeyCredentialDescriptor> credentials;
-  for (const auto& credential_id : credential_ids_) {
-    credentials.emplace_back(device::CredentialType::kPublicKey, *credential_id,
-                             base::flat_set<device::FidoTransportProtocol>{
-                                 device::FidoTransportProtocol::kInternal});
-  }
+  credentials.emplace_back(device::CredentialType::kPublicKey, credential_id_,
+                           base::flat_set<device::FidoTransportProtocol>{
+                               device::FidoTransportProtocol::kInternal});
 
   auto options = blink::mojom::PublicKeyCredentialRequestOptions::New();
   options->relying_party_id = effective_relying_party_identity_;
@@ -119,7 +117,7 @@ bool SecurePaymentConfirmationApp::NeedsInstallation() const {
 }
 
 std::string SecurePaymentConfirmationApp::GetId() const {
-  return request_->instrument_id;
+  return encoded_credential_id_;
 }
 
 base::string16 SecurePaymentConfirmationApp::GetLabel() const {
