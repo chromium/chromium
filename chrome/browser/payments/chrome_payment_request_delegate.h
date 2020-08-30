@@ -48,8 +48,8 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool IsBrowserWindowActive() const override;
 
   // ContentPaymentRequestDelegate:
-  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator(
-      content::RenderFrameHost* rfh) const override;
+  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+      const override;
   scoped_refptr<PaymentManifestWebDataService>
   GetPaymentManifestWebDataService() const override;
   PaymentRequestDisplayManager* GetDisplayManager() override;
@@ -60,6 +60,7 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   std::string GetInvalidSslCertificateErrorMessage() override;
   bool SkipUiForBasicCard() const override;
   std::string GetTwaPackageName() const override;
+  PaymentRequestDialog* GetDialogForTesting() override;
 
  protected:
   // Reference to the dialog so that we can satisfy calls to CloseDialog(). This

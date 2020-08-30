@@ -161,6 +161,10 @@ void SecurePaymentConfirmationController::ShowPaymentHandlerScreen(
   NOTREACHED();
 }
 
+void SecurePaymentConfirmationController::ConfirmPaymentForTesting() {
+  OnConfirm();
+}
+
 void SecurePaymentConfirmationController::OnInitialized(
     InitializationTask* initialization_task) {
   if (--number_of_initialization_tasks_ == 0)

@@ -66,3 +66,28 @@ async function getStatusForMethodDataAfterCanMakePayment(
     return e.message;
   }
 }
+
+/**
+ * Returns the status field from the payment handler's response for given
+ * payment method data. Passes a promise into PaymentRequest.show() to delay
+ * initialization by 1 second.
+ * @param {array<PaymentMethodData>} methodData - The method data to use.
+ * @return {string} - The status field or error message.
+ */
+async function getStatusForMethodDataWithShowPromise(methodData) { // eslint-disable-line no-unused-vars, max-len
+  try {
+    const details = {total: {label: 'TEST',
+        amount: {currency: 'USD', value: '0.01'}}};
+    const request = new PaymentRequest(methodData, details);
+    const response = await request.show(new Promise((resolve) => {
+      window.setTimeout(() => resolve(details), 1000);
+    }));
+    await response.complete();
+    if (!response.details.status) {
+      return 'Payment handler did not specify the status.';
+    }
+    return response.details.status;
+  } catch (e) {
+    return e.message;
+  }
+}

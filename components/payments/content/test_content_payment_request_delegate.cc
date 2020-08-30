@@ -16,8 +16,7 @@ TestContentPaymentRequestDelegate::TestContentPaymentRequestDelegate(
 TestContentPaymentRequestDelegate::~TestContentPaymentRequestDelegate() {}
 
 std::unique_ptr<autofill::InternalAuthenticator>
-TestContentPaymentRequestDelegate::CreateInternalAuthenticator(
-    content::RenderFrameHost* rfh) const {
+TestContentPaymentRequestDelegate::CreateInternalAuthenticator() const {
   return nullptr;
 }
 
@@ -61,6 +60,10 @@ bool TestContentPaymentRequestDelegate::SkipUiForBasicCard() const {
 
 std::string TestContentPaymentRequestDelegate::GetTwaPackageName() const {
   return "";
+}
+
+PaymentRequestDialog* TestContentPaymentRequestDelegate::GetDialogForTesting() {
+  return nullptr;
 }
 
 autofill::PersonalDataManager*

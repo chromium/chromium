@@ -88,6 +88,7 @@ static_library("content") {
     sources += [ "secure_payment_confirmation_view_stub.cc" ]
   } else {
     sources += [
+      "content_payment_request_delegate.cc",
       "content_payment_request_delegate.h",
       "payment_credential.cc",
       "payment_credential.h",
@@ -173,8 +174,6 @@ source_set("unit_tests") {
     "android_payment_app_unittest.cc",
     "payment_method_manifest_table_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
-    "test_content_payment_request_delegate.cc",
-    "test_content_payment_request_delegate.h",
     "web_app_manifest_section_table_unittest.cc",
   ]
 
@@ -188,6 +187,8 @@ source_set("unit_tests") {
       "secure_payment_confirmation_app_unittest.cc",
       "secure_payment_confirmation_model_unittest.cc",
       "service_worker_payment_app_unittest.cc",
+      "test_content_payment_request_delegate.cc",
+      "test_content_payment_request_delegate.h",
     ]
   }
 
