@@ -9,10 +9,13 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_data_service_factory.h"
@@ -44,6 +47,22 @@ static constexpr char kTestMethodData[] =
 
 std::string getInvokePaymentRequestSnippet() {
   return base::StringPrintf("getStatusForMethodData(%s)", kTestMethodData);
+}
+
+std::vector<uint8_t> GetEncodedIcon(const std::string& icon_file_name) {
+  base::FilePath base_path;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
+  std::string icon_as_string;
+  base::FilePath icon_file_path =
+      base_path.AppendASCII("components/test/data/payments")
+          .AppendASCII(icon_file_name);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    CHECK(base::PathExists(icon_file_path));
+    CHECK(base::ReadFileToString(icon_file_path, &icon_as_string));
+  }
+
+  return std::vector<uint8_t>(icon_as_string.begin(), icon_as_string.end());
 }
 
 #if !defined(OS_ANDROID)
@@ -138,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
   test_controller()->SetHasAuthenticator(true);
   NavigateTo("a.com", "/payment_handler_status.html");
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
-  std::vector<uint8_t> icon = {0, 1, 2, 3};
+  std::vector<uint8_t> icon = GetEncodedIcon("icon.png");
   WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
       Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()),
       ServiceAccessType::EXPLICIT_ACCESS)

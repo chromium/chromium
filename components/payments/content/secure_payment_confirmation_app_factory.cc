@@ -23,6 +23,7 @@
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "url/origin.h"
 
@@ -187,10 +188,23 @@ void SecurePaymentConfirmationAppFactory::OnWebDataServiceRequestDone(
   std::unique_ptr<SecurePaymentConfirmationInstrument> instrument =
       std::move(instruments.front());
 
-  // TODO(https://crbug.com/1110324): Decode `instrument->icon` from
-  // std::unique_ptr<std::vector<uint8_t>> into std::unique_ptr<SkBitmap> and
-  // check the icon validity.
-  auto icon = std::make_unique<SkBitmap>();
+  auto* instrument_ptr = instrument.get();
+  // Decode the icon in a sandboxed process off the main thread.
+  data_decoder::DecodeImageIsolated(
+      instrument_ptr->icon, data_decoder::mojom::ImageCodec::DEFAULT,
+      /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
+      /*desired_image_frame_size=*/gfx::Size(),
+      base::BindOnce(&SecurePaymentConfirmationAppFactory::OnAppIconDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(instrument),
+                     std::move(request)));
+}
+
+void SecurePaymentConfirmationAppFactory::OnAppIconDecoded(
+    std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+    std::unique_ptr<Request> request,
+    const SkBitmap& decoded_icon) {
+  DCHECK(!decoded_icon.drawsNothing());
+  auto icon = std::make_unique<SkBitmap>(decoded_icon);
 
   request->delegate->OnPaymentAppCreated(
       std::make_unique<SecurePaymentConfirmationApp>(
