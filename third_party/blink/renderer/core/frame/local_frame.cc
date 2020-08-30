@@ -3120,6 +3120,9 @@ void LocalFrame::BindToReceiver(
     blink::LocalFrame* frame,
     mojo::PendingAssociatedReceiver<mojom::blink::LocalFrame> receiver) {
   DCHECK(frame);
+  if (frame->IsDetached())
+    return;
+
   frame->receiver_.Bind(
       std::move(receiver),
       frame->GetTaskRunner(blink::TaskType::kInternalDefault));
@@ -3129,6 +3132,9 @@ void LocalFrame::BindToMainFrameReceiver(
     blink::LocalFrame* frame,
     mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrame> receiver) {
   DCHECK(frame);
+  if (frame->IsDetached())
+    return;
+
   frame->main_frame_receiver_.Bind(
       std::move(receiver),
       frame->GetTaskRunner(blink::TaskType::kInternalDefault));
@@ -3136,6 +3142,9 @@ void LocalFrame::BindToMainFrameReceiver(
 
 void LocalFrame::BindToHighPriorityReceiver(
     mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver) {
+  if (IsDetached())
+    return;
+
   high_priority_frame_receiver_.Bind(
       std::move(receiver),
       GetTaskRunner(blink::TaskType::kInternalHighPriorityLocalFrame));
