@@ -92,9 +92,10 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
   if (data->small_icon)
     rich_data.small_image = gfx::Image::CreateFrom1xBitmap(*data->small_icon);
 
-  if (data->accessible_name.has_value())
+  if (data->accessible_name.has_value()) {
     rich_data.accessible_name =
         base::UTF8ToUTF16(data->accessible_name.value());
+  }
 
   if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
     rich_data.settings_button_handler =
