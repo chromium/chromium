@@ -81,10 +81,12 @@ void PaymentRequestWebContentsManager::DestroyRequest(PaymentRequest* request) {
 }
 
 void PaymentRequestWebContentsManager::CreatePaymentCredential(
+    content::GlobalFrameRoutingId initiator_frame_routing_id,
     scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
     mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
-  payment_credential_ =
-      std::make_unique<PaymentCredential>(web_data_sevice, std::move(receiver));
+  payment_credential_ = std::make_unique<PaymentCredential>(
+      web_contents(), initiator_frame_routing_id, web_data_sevice,
+      std::move(receiver));
 }
 
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(

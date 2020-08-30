@@ -11,6 +11,7 @@
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments {
@@ -22,8 +23,16 @@ void CreatePaymentCredential(
       content::WebContents::FromRenderFrameHost(render_frame_host);
   if (!web_contents)
     return;
+
+  content::GlobalFrameRoutingId initiator_frame_routing_id =
+      render_frame_host->GetProcess()
+          ? content::GlobalFrameRoutingId(
+                render_frame_host->GetProcess()->GetID(),
+                render_frame_host->GetRoutingID())
+          : content::GlobalFrameRoutingId();
   PaymentRequestWebContentsManager::GetOrCreateForWebContents(web_contents)
       ->CreatePaymentCredential(
+          initiator_frame_routing_id,
           WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext()),
               ServiceAccessType::EXPLICIT_ACCESS),

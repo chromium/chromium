@@ -47,25 +47,28 @@ std::string getInvokePaymentRequestSnippet() {
 }
 
 #if !defined(OS_ANDROID)
-static constexpr char kPaymentCreationOptions[] =
-    "var PAYMENT_INSTRUMENT = {"
-    "    displayName: 'display_name_for_instrument',"
-    "    icon: 'https://pics.acme.com/00/p/aBjjjpqPb.png'"
-    "};"
-    "var PUBLIC_KEY_RP = {"
-    "    id: 'a.com',"
-    "    name: 'Acme'"
-    "};"
-    "var PUBLIC_KEY_PARAMETERS =  [{"
-    "    type: 'public-key',"
-    "    alg: -7,"
-    "},];"
-    "var PAYMENT_CREATION_OPTIONS = {"
-    "    rp: PUBLIC_KEY_RP,"
-    "    instrument: PAYMENT_INSTRUMENT,"
-    "    challenge: new TextEncoder().encode('climb a mountain'),"
-    "    pubKeyCredParams: PUBLIC_KEY_PARAMETERS,"
-    "};";
+std::string getPaymentCreationOptions(const std::string& icon_url) {
+  return base::StrCat(
+      {"var PAYMENT_INSTRUMENT = {"
+       "    displayName: 'display_name_for_instrument',"
+       "    icon: '",
+       icon_url,
+       "'};"
+       "var PUBLIC_KEY_RP = {"
+       "    id: 'a.com',"
+       "    name: 'Acme'"
+       "};"
+       "var PUBLIC_KEY_PARAMETERS =  [{"
+       "    type: 'public-key',"
+       "    alg: -7,"
+       "},];"
+       "var PAYMENT_CREATION_OPTIONS = {"
+       "    rp: PUBLIC_KEY_RP,"
+       "    instrument: PAYMENT_INSTRUMENT,"
+       "    challenge: new TextEncoder().encode('climb a mountain'),"
+       "    pubKeyCredParams: PUBLIC_KEY_PARAMETERS,"
+       "};"});
+}
 
 static constexpr char kCreatePaymentCredential[] =
     "navigator.credentials.create({ payment : PAYMENT_CREATION_OPTIONS })"
@@ -269,6 +272,10 @@ class SecurePaymentConfirmationCreationTest
     config.internal_uv_support = true;
     virtual_device_factory->SetCtap2Config(config);
   }
+
+  const std::string GetDefaultIconURL() {
+    return https_server()->GetURL("a.com", "/icon.png").spec();
+  }
 };
 
 #if defined(OS_WIN)
@@ -289,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       GetActiveWebContents(),
-      base::StrCat({kPaymentCreationOptions, kCreatePaymentCredential}),
+      base::StrCat({getPaymentCreationOptions(GetDefaultIconURL()),
+                    kCreatePaymentCredential}),
       &result));
   EXPECT_EQ(result, "paymentCredential: OK");
 }
@@ -303,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
           GetActiveWebContents(),
           base::StrCat(
               {"async function createPaymentCredential() {",
-               kPaymentCreationOptions,
+               getPaymentCreationOptions(GetDefaultIconURL()),
                "  const c = await navigator.credentials.create("
                "    {payment: PAYMENT_CREATION_OPTIONS});"
                "  return btoa(String.fromCharCode(...new Uint8Array(c.rawId)));"

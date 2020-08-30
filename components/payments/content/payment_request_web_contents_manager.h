@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/payments/content/payment_credential.h"
 #include "components/payments/content/payment_request.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -61,8 +62,9 @@ class PaymentRequestWebContentsManager
   void DestroyRequest(PaymentRequest* request);
 
   // Creates the mojo IPC endpoint that will receive requests from the renderer
-  // to store payment credential in user's profle.
+  // to store payment credential in user's profile.
   void CreatePaymentCredential(
+      content::GlobalFrameRoutingId initiator_frame_routing_id,
       scoped_refptr<PaymentManifestWebDataService> web_data_sevice,
       mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver);
 
