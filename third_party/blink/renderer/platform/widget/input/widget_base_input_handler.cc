@@ -25,6 +25,7 @@
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/widget/input/ime_event_guard.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "ui/latency/latency_info.h"
@@ -216,13 +217,6 @@ class WidgetBaseInputHandler::HandlingState {
     input_handler_->handling_input_event_ = previous_was_handling_input_;
     DCHECK_EQ(input_handler_->handling_input_state_, this);
     input_handler_->handling_input_state_ = previous_state_;
-
-#if defined(OS_ANDROID)
-    if (show_virtual_keyboard_)
-      input_handler_->ShowVirtualKeyboard();
-    else
-      input_handler_->UpdateTextInputState();
-#endif
   }
 
   std::unique_ptr<InputHandlerProxy::DidOverscrollParams>& event_overscroll() {
@@ -242,12 +236,6 @@ class WidgetBaseInputHandler::HandlingState {
 
   bool touch_start_or_move() { return touch_start_or_move_; }
 
-#if defined(OS_ANDROID)
-  void set_show_virtual_keyboard(bool show_virtual_keyboard) {
-    show_virtual_keyboard_ = show_virtual_keyboard;
-  }
-#endif  // defined(OS_ANDROID)
-
  private:
   // Used to intercept overscroll notifications while an event is being
   // handled. If the event causes overscroll, the overscroll metadata can be
@@ -265,11 +253,6 @@ class WidgetBaseInputHandler::HandlingState {
 
   // Whether the event we are handling is a touch start or move.
   bool touch_start_or_move_;
-
-#if defined(OS_ANDROID)
-  // Whether to show the virtual keyboard or not at the end of processing.
-  bool show_virtual_keyboard_ = false;
-#endif
 
   HandlingState* previous_state_;
   bool previous_was_handling_input_;
@@ -322,6 +305,10 @@ void WidgetBaseInputHandler::HandleInputEvent(
   base::WeakPtr<WidgetBaseInputHandler> weak_self =
       weak_ptr_factory_.GetWeakPtr();
   HandlingState handling_state(weak_self, IsTouchStartOrMove(input_event));
+
+#if defined(OS_ANDROID)
+  ImeEventGuard guard(widget_->GetWeakPtr());
+#endif
 
   base::TimeTicks start_time;
   if (base::TimeTicks::IsHighResolution())
@@ -504,7 +491,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
   if ((processed != WebInputEventResult::kNotHandled &&
        input_event.GetType() == WebInputEvent::Type::kTouchEnd) ||
       show_virtual_keyboard_for_mouse) {
-    ShowVirtualKeyboard();
+    widget_->ShowVirtualKeyboard();
   }
 
   if (!prevent_default &&
@@ -686,24 +673,6 @@ bool WidgetBaseInputHandler::ProcessTouchAction(WebTouchAction touch_action) {
     return false;
   handling_input_state_->touch_action() = touch_action;
   return true;
-}
-
-void WidgetBaseInputHandler::ShowVirtualKeyboard() {
-#if defined(OS_ANDROID)
-  if (handling_input_state_) {
-    handling_input_state_->set_show_virtual_keyboard(true);
-    return;
-  }
-#endif
-  widget_->ShowVirtualKeyboard();
-}
-
-void WidgetBaseInputHandler::UpdateTextInputState() {
-#if defined(OS_ANDROID)
-  if (handling_input_state_)
-    return;
-#endif
-  widget_->UpdateTextInputState();
 }
 
 }  // namespace blink

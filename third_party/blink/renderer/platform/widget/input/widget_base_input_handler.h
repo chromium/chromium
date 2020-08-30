@@ -86,11 +86,6 @@ class PLATFORM_EXPORT WidgetBaseInputHandler {
   // cursor.
   bool DidChangeCursor(const ui::Cursor& cursor);
 
-  // Request virtual keyboard be shown. The message will be debounced during
-  // handling of input events.
-  void ShowVirtualKeyboard();
-  void UpdateTextInputState();
-
  private:
   class HandlingState;
   struct InjectScrollGestureParams {
