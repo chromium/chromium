@@ -55,6 +55,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
+import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -80,6 +81,19 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPostTask.class, ShadowRecordHistogram.class})
 public class FeedStreamSurfaceTest {
+    class ContentChangeWatcher implements ContentChangedListener {
+        @Override
+        public void onContentChanged() {
+            mContentChanged = true;
+        }
+
+        @Override
+        public void onAddStarting() {}
+
+        @Override
+        public void onAddFinished() {}
+    }
+
     private static final String TEST_DATA = "test";
     private static final String TEST_URL = "https://www.chromium.org";
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
@@ -89,6 +103,7 @@ public class FeedStreamSurfaceTest {
     private LinearLayout mParent;
     private FakeLinearLayoutManager mLayoutManager;
     private FeedListContentManager mContentManager;
+    private boolean mContentChanged;
 
     @Mock
     private SnackbarManager mSnackbarManager;
@@ -146,6 +161,7 @@ public class FeedStreamSurfaceTest {
         mRecyclerView = mFeedStreamSurface.mRootView;
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mFeedStreamSurface.addContentChangedListener(new ContentChangeWatcher());
 
         // Since we use a mockito spy, we need to replace the entry in sSurfaces.
         FeedStreamSurface.sSurfaces.clear();
@@ -160,6 +176,39 @@ public class FeedStreamSurfaceTest {
         mFeedStreamSurface.destroy();
         FeedStreamSurface.shutdownForTesting();
         AppHooks.setInstanceForTesting(null);
+    }
+
+    @Test
+    @SmallTest
+    public void testContentChangedOnStreamUpdated() {
+        startupAndSetVisible();
+
+        // Add 1 slice.
+        StreamUpdate update = StreamUpdate.newBuilder()
+                                      .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
+                                      .build();
+        mContentChanged = false;
+        mFeedStreamSurface.onStreamUpdated(update.toByteArray());
+        assertTrue(mContentChanged);
+        assertEquals(1, mContentManager.getItemCount());
+
+        // Remove 1 slice.
+        update = StreamUpdate.newBuilder().build();
+        mContentChanged = false;
+        mFeedStreamSurface.onStreamUpdated(update.toByteArray());
+        assertTrue(mContentChanged);
+        assertEquals(0, mContentManager.getItemCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testContentChangedOnSetHeaderViews() {
+        startupAndSetVisible();
+
+        mContentChanged = false;
+        mFeedStreamSurface.setHeaderViews(Arrays.asList(new View(mActivity)));
+        assertTrue(mContentChanged);
+        assertEquals(1, mContentManager.getItemCount());
     }
 
     @Test
@@ -529,7 +578,9 @@ public class FeedStreamSurfaceTest {
         assertEquals(headers + 3, mContentManager.getItemCount());
 
         // Closing the surface should remove all non-header contents.
+        mContentChanged = false;
         mFeedStreamSurface.setStreamVisibility(false);
+        assertTrue(mContentChanged);
         assertEquals(headers, mContentManager.getItemCount());
         assertEquals(v0, getNativeView(0));
         assertEquals(v1, getNativeView(1));

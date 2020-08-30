@@ -184,12 +184,12 @@ public class FeedStream implements Stream {
 
     @Override
     public void addOnContentChangedListener(ContentChangedListener listener) {
-        // Not longer needed.
+        mFeedStreamSurface.addContentChangedListener(listener);
     }
 
     @Override
     public void removeOnContentChangedListener(ContentChangedListener listener) {
-        // Not longer needed.
+        mFeedStreamSurface.removeContentChangedListener(listener);
     }
 
     @Override
