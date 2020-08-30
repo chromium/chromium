@@ -16,9 +16,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "ui/base/resource/scale_factor.h"
 
 class Profile;
@@ -116,6 +118,7 @@ class GuestOsRegistryService : public KeyedService {
     // last_launch_time field is updated.
     virtual void OnRegistryUpdated(
         guest_os::GuestOsRegistryService* registry_service,
+        VmType vm_type,
         const std::vector<std::string>& updated_apps,
         const std::vector<std::string>& removed_apps,
         const std::vector<std::string>& inserted_apps) {}
@@ -145,6 +148,36 @@ class GuestOsRegistryService : public KeyedService {
   // Constructs path to app icon for specific scale factor.
   base::FilePath GetIconPath(const std::string& app_id,
                              ui::ScaleFactor scale_factor) const;
+
+  // Attempts to load icon in the following order:
+  // 1/ Loads from resource if |icon_key->resource_id| is valid (non-zero).
+  // 2/ Looks up file cache.
+  // 3/ Fetches from VM.
+  // 4/ Uses |fallback_icon_resource_id| if it is valid (non-zero).
+  // 5/ Returns empty.
+  void LoadIcon(const std::string& app_id,
+                apps::mojom::IconKeyPtr icon_key,
+                apps::mojom::IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                int fallback_icon_resource_id,
+                apps::mojom::Publisher::LoadIconCallback callback);
+
+  void LoadIconFromVM(const std::string& app_id,
+                      apps::mojom::IconType icon_type,
+                      int32_t size_hint_in_dip,
+                      ui::ScaleFactor scale_factor,
+                      apps::IconEffects icon_effects,
+                      int fallback_icon_resource_id,
+                      apps::mojom::Publisher::LoadIconCallback callback);
+
+  void OnLoadIconFromVM(const std::string& app_id,
+                        apps::mojom::IconType icon_type,
+                        int32_t size_hint_in_dip,
+                        apps::IconEffects icon_effects,
+                        int fallback_icon_resource_id,
+                        apps::mojom::Publisher::LoadIconCallback callback,
+                        std::string compressed_icon_data);
 
   // Fetches icons from container.
   void RequestIcon(const std::string& app_id,

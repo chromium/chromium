@@ -60,6 +60,7 @@ class CrostiniPackageNotification
   // GuestOsRegistryService::Observer:
   void OnRegistryUpdated(
       guest_os::GuestOsRegistryService* registry_service,
+      guest_os::GuestOsRegistryService::VmType vm_type,
       const std::vector<std::string>& updated_apps,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override;

@@ -17,6 +17,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/dip_px_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
@@ -668,6 +669,86 @@ base::FilePath GuestOsRegistryService::GetIconPath(
   }
 }
 
+void GuestOsRegistryService::LoadIcon(
+    const std::string& app_id,
+    apps::mojom::IconKeyPtr icon_key,
+    apps::mojom::IconType icon_type,
+    int32_t size_hint_in_dip,
+    bool allow_placeholder_icon,
+    int fallback_icon_resource_id,
+    apps::mojom::Publisher::LoadIconCallback callback) {
+  if (icon_key) {
+    if (icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
+      // The icon is a resource built into the Chrome OS binary.
+      constexpr bool is_placeholder_icon = false;
+      apps::LoadIconFromResource(
+          icon_type, size_hint_in_dip, icon_key->resource_id,
+          is_placeholder_icon,
+          static_cast<apps::IconEffects>(icon_key->icon_effects),
+          std::move(callback));
+      return;
+    } else {
+      auto scale_factor = apps_util::GetPrimaryDisplayUIScaleFactor();
+
+      // Try loading the icon from an on-disk cache. If that fails, fall back
+      // to LoadIconFromVM.
+      apps::LoadIconFromFileWithFallback(
+          icon_type, size_hint_in_dip, GetIconPath(app_id, scale_factor),
+          static_cast<apps::IconEffects>(icon_key->icon_effects),
+          std::move(callback),
+          base::BindOnce(&GuestOsRegistryService::LoadIconFromVM,
+                         weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
+                         size_hint_in_dip, scale_factor,
+                         static_cast<apps::IconEffects>(icon_key->icon_effects),
+                         fallback_icon_resource_id));
+      return;
+    }
+  }
+
+  // On failure, we still run the callback, with the zero IconValue.
+  std::move(callback).Run(apps::mojom::IconValue::New());
+}
+
+void GuestOsRegistryService::LoadIconFromVM(
+    const std::string& app_id,
+    apps::mojom::IconType icon_type,
+    int32_t size_hint_in_dip,
+    ui::ScaleFactor scale_factor,
+    apps::IconEffects icon_effects,
+    int fallback_icon_resource_id,
+    apps::mojom::Publisher::LoadIconCallback callback) {
+  RequestIcon(app_id, scale_factor,
+              base::BindOnce(&GuestOsRegistryService::OnLoadIconFromVM,
+                             weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
+                             size_hint_in_dip, icon_effects,
+                             fallback_icon_resource_id, std::move(callback)));
+}
+
+void GuestOsRegistryService::OnLoadIconFromVM(
+    const std::string& app_id,
+    apps::mojom::IconType icon_type,
+    int32_t size_hint_in_dip,
+    apps::IconEffects icon_effects,
+    int fallback_icon_resource_id,
+    apps::mojom::Publisher::LoadIconCallback callback,
+    std::string compressed_icon_data) {
+  if (compressed_icon_data.empty()) {
+    if (fallback_icon_resource_id != apps::mojom::IconKey::kInvalidResourceId) {
+      // We load the fallback icon, but we tell AppsService that this is not
+      // a placeholder to avoid endless repeat calls since we don't expect to
+      // find a better icon than this any time soon.
+      apps::LoadIconFromResource(
+          icon_type, size_hint_in_dip, fallback_icon_resource_id,
+          /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
+    } else {
+      std::move(callback).Run(apps::mojom::IconValue::New());
+    }
+  } else {
+    apps::LoadIconFromCompressedData(icon_type, size_hint_in_dip, icon_effects,
+                                     compressed_icon_data, std::move(callback));
+  }
+}
+
 void GuestOsRegistryService::RequestIcon(
     const std::string& app_id,
     ui::ScaleFactor scale_factor,
@@ -724,8 +805,10 @@ void GuestOsRegistryService::ClearApplicationList(
 
   std::vector<std::string> updated_apps;
   std::vector<std::string> inserted_apps;
-  for (Observer& obs : observers_)
-    obs.OnRegistryUpdated(this, updated_apps, removed_apps, inserted_apps);
+  for (Observer& obs : observers_) {
+    obs.OnRegistryUpdated(this, vm_type, updated_apps, removed_apps,
+                          inserted_apps);
+  }
 }
 
 void GuestOsRegistryService::UpdateApplicationList(
@@ -839,8 +922,10 @@ void GuestOsRegistryService::UpdateApplicationList(
   if (updated_apps.empty() && removed_apps.empty() && inserted_apps.empty())
     return;
 
-  for (Observer& obs : observers_)
-    obs.OnRegistryUpdated(this, updated_apps, removed_apps, inserted_apps);
+  for (Observer& obs : observers_) {
+    obs.OnRegistryUpdated(this, app_list.vm_type(), updated_apps, removed_apps,
+                          inserted_apps);
+  }
 }
 
 void GuestOsRegistryService::RemoveAppData(const std::string& app_id) {

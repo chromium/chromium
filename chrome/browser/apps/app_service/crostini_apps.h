@@ -42,12 +42,6 @@ class CrostiniApps : public KeyedService,
       Profile* profile);
 
  private:
-  enum class PublishAppIDType {
-    kInstall,
-    kUninstall,
-    kUpdate,
-  };
-
   void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
 
   // apps::mojom::Publisher overrides.
@@ -75,6 +69,7 @@ class CrostiniApps : public KeyedService,
   // GuestOsRegistryService::Observer overrides.
   void OnRegistryUpdated(
       guest_os::GuestOsRegistryService* registry_service,
+      guest_os::GuestOsRegistryService::VmType vm_type,
       const std::vector<std::string>& updated_apps,
       const std::vector<std::string>& removed_apps,
       const std::vector<std::string>& inserted_apps) override;
@@ -84,26 +79,10 @@ class CrostiniApps : public KeyedService,
   // once it can support hiding apps.
   void OnCrostiniEnabledChanged();
 
-  void LoadIconFromVM(const std::string app_id,
-                      apps::mojom::IconType icon_type,
-                      int32_t size_hint_in_dip,
-                      ui::ScaleFactor scale_factor,
-                      IconEffects icon_effects,
-                      LoadIconCallback callback);
-
-  void OnLoadIconFromVM(const std::string app_id,
-                        apps::mojom::IconType icon_type,
-                        int32_t size_hint_in_dip,
-                        IconEffects icon_effects,
-                        LoadIconCallback callback,
-                        std::string compressed_icon_data);
-
   apps::mojom::AppPtr Convert(
-      const std::string& app_id,
       const guest_os::GuestOsRegistryService::Registration& registration,
       bool new_icon_key);
   apps::mojom::IconKeyPtr NewIconKey(const std::string& app_id);
-  void PublishAppID(const std::string& app_id, PublishAppIDType type);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 

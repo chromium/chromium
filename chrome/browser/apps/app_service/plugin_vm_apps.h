@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/scoped_observer.h"
+#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -27,7 +29,8 @@ namespace apps {
 //
 // See components/services/app_service/README.md.
 class PluginVmApps : public apps::PublisherBase,
-                     public plugin_vm::PluginVmPermissionsObserver {
+                     public plugin_vm::PluginVmPermissionsObserver,
+                     public guest_os::GuestOsRegistryService::Observer {
  public:
   PluginVmApps(const mojo::Remote<apps::mojom::AppService>& app_service,
                Profile* profile);
@@ -61,6 +64,17 @@ class PluginVmApps : public apps::PublisherBase,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
 
+  // GuestOsRegistryService::Observer overrides.
+  void OnRegistryUpdated(
+      guest_os::GuestOsRegistryService* registry_service,
+      guest_os::GuestOsRegistryService::VmType vm_type,
+      const std::vector<std::string>& updated_apps,
+      const std::vector<std::string>& removed_apps,
+      const std::vector<std::string>& inserted_apps) override;
+
+  apps::mojom::AppPtr Convert(
+      const guest_os::GuestOsRegistryService::Registration& registration,
+      bool new_icon_key);
   void OnPluginVmAllowedChanged(bool is_allowed);
   void OnPluginVmConfiguredChanged();
   // plugin_vm::PluginVmPermissionsObserver
@@ -70,6 +84,9 @@ class PluginVmApps : public apps::PublisherBase,
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   Profile* const profile_;
+  guest_os::GuestOsRegistryService* registry_;
+
+  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   // Whether the Plugin VM app is allowed by policy.
   bool is_allowed_;

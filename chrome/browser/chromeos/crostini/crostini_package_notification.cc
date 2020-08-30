@@ -96,9 +96,14 @@ PackageOperationStatus CrostiniPackageNotification::GetOperationStatus() const {
 
 void CrostiniPackageNotification::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
+    guest_os::GuestOsRegistryService::VmType vm_type,
     const std::vector<std::string>& updated_apps,
     const std::vector<std::string>& removed_apps,
     const std::vector<std::string>& inserted_apps) {
+  if (vm_type != guest_os::GuestOsRegistryService::VmType::
+                     ApplicationList_VmType_TERMINA) {
+    return;
+  }
   inserted_apps_.insert(inserted_apps.begin(), inserted_apps.end());
 }
 

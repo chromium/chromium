@@ -50,8 +50,9 @@ class GuestOsRegistryServiceTest : public testing::Test {
 
   class Observer : public GuestOsRegistryService::Observer {
    public:
-    MOCK_METHOD4(OnRegistryUpdated,
+    MOCK_METHOD5(OnRegistryUpdated,
                  void(GuestOsRegistryService*,
+                      GuestOsRegistryService::VmType,
                       const std::vector<std::string>&,
                       const std::vector<std::string>&,
                       const std::vector<std::string>&));
@@ -170,10 +171,13 @@ TEST_F(GuestOsRegistryServiceTest, Observer) {
 
   Observer observer;
   service()->AddObserver(&observer);
-  EXPECT_CALL(observer,
-              OnRegistryUpdated(
-                  service(), testing::IsEmpty(), testing::IsEmpty(),
-                  testing::UnorderedElementsAre(app_id_1, app_id_2, app_id_3)));
+  EXPECT_CALL(
+      observer,
+      OnRegistryUpdated(
+          service(),
+          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA,
+          testing::IsEmpty(), testing::IsEmpty(),
+          testing::UnorderedElementsAre(app_id_1, app_id_2, app_id_3)));
   service()->UpdateApplicationList(app_list);
 
   // Rename desktop file for "app 2" to "app 4" (deletion+insertion)
@@ -181,10 +185,13 @@ TEST_F(GuestOsRegistryServiceTest, Observer) {
   // Rename name for "app 3" to "banana"
   app_list.mutable_apps(2)->mutable_name()->mutable_values(0)->set_value(
       "banana");
-  EXPECT_CALL(observer,
-              OnRegistryUpdated(service(), testing::ElementsAre(app_id_3),
-                                testing::ElementsAre(app_id_2),
-                                testing::ElementsAre(app_id_4)));
+  EXPECT_CALL(
+      observer,
+      OnRegistryUpdated(
+          service(),
+          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA,
+          testing::ElementsAre(app_id_3), testing::ElementsAre(app_id_2),
+          testing::ElementsAre(app_id_4)));
   service()->UpdateApplicationList(app_list);
 }
 
@@ -199,17 +206,24 @@ TEST_F(GuestOsRegistryServiceTest, ObserverForPvmDefault) {
   service()->AddObserver(&observer);
 
   // Observers should be called when apps are added or updated.
-  EXPECT_CALL(observer, OnRegistryUpdated(
-                            service(), testing::IsEmpty(), testing::IsEmpty(),
-                            testing::UnorderedElementsAre(app_id_1)))
+  EXPECT_CALL(
+      observer,
+      OnRegistryUpdated(
+          service(),
+          GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM,
+          testing::IsEmpty(), testing::IsEmpty(),
+          testing::UnorderedElementsAre(app_id_1)))
       .Times(1);
   service()->UpdateApplicationList(app_list);
 
   // Observers should be called when apps are removed.
-  EXPECT_CALL(observer,
-              OnRegistryUpdated(service(), testing::IsEmpty(),
-                                testing::UnorderedElementsAre(app_id_1),
-                                testing::IsEmpty()))
+  EXPECT_CALL(
+      observer,
+      OnRegistryUpdated(
+          service(),
+          GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM,
+          testing::IsEmpty(), testing::UnorderedElementsAre(app_id_1),
+          testing::IsEmpty()))
       .Times(1);
   service()->ClearApplicationList(
       GuestOsRegistryService::VmType::ApplicationList_VmType_PLUGIN_VM,
@@ -287,9 +301,13 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
 
   Observer observer;
   service()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnRegistryUpdated(service(), testing::IsEmpty(),
-                                          testing::IsEmpty(),
-                                          testing::ElementsAre(app_id)));
+  EXPECT_CALL(
+      observer,
+      OnRegistryUpdated(
+          service(),
+          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA,
+          testing::IsEmpty(), testing::IsEmpty(),
+          testing::ElementsAre(app_id)));
   service()->UpdateApplicationList(app_list);
 
   base::Optional<GuestOsRegistryService::Registration> result =
@@ -301,7 +319,7 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
   // UpdateApplicationList with nothing changed. Times shouldn't be updated and
   // the observer shouldn't fire.
   test_clock_.Advance(base::TimeDelta::FromHours(1));
-  EXPECT_CALL(observer, OnRegistryUpdated(_, _, _, _)).Times(0);
+  EXPECT_CALL(observer, OnRegistryUpdated(_, _, _, _, _)).Times(0);
   service()->UpdateApplicationList(app_list);
   result = service()->GetRegistration(app_id);
   EXPECT_EQ(result->InstallTime(), install_time);
@@ -318,9 +336,13 @@ TEST_F(GuestOsRegistryServiceTest, InstallAndLaunchTime) {
   // The install time shouldn't change if fields change.
   test_clock_.Advance(base::TimeDelta::FromHours(1));
   app_list.mutable_apps(0)->set_no_display(true);
-  EXPECT_CALL(observer,
-              OnRegistryUpdated(service(), testing::ElementsAre(app_id),
-                                testing::IsEmpty(), testing::IsEmpty()));
+  EXPECT_CALL(
+      observer,
+      OnRegistryUpdated(
+          service(),
+          GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA,
+          testing::ElementsAre(app_id), testing::IsEmpty(),
+          testing::IsEmpty()));
   service()->UpdateApplicationList(app_list);
   result = service()->GetRegistration(app_id);
   EXPECT_EQ(result->InstallTime(), install_time);

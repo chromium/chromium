@@ -111,15 +111,15 @@ void CrostiniApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
   std::vector<apps::mojom::AppPtr> apps;
-  // Register all apps with app service. We will only show termina apps in
-  // launcher, shelf, etc, but app service will manage icons for all apps which
-  // can appear in FilesApp open-with.
-  for (const auto& pair : registry_->GetAllRegisteredApps()) {
-    const std::string& app_id = pair.first;
+
+  for (const auto& pair :
+       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
+                                        ApplicationList_VmType_TERMINA)) {
     const guest_os::GuestOsRegistryService::Registration& registration =
         pair.second;
-    apps.push_back(Convert(app_id, registration, true));
+    apps.push_back(Convert(registration, /*new_icon_key=*/true));
   }
+
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
   subscriber->OnApps(std::move(apps));
@@ -132,34 +132,9 @@ void CrostiniApps::LoadIcon(const std::string& app_id,
                             int32_t size_hint_in_dip,
                             bool allow_placeholder_icon,
                             LoadIconCallback callback) {
-  if (icon_key) {
-    if (icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
-      // The icon is a resource built into the Chrome OS binary.
-      constexpr bool is_placeholder_icon = false;
-      LoadIconFromResource(icon_type, size_hint_in_dip, icon_key->resource_id,
-                           is_placeholder_icon,
-                           static_cast<IconEffects>(icon_key->icon_effects),
-                           std::move(callback));
-      return;
-    } else {
-      auto scale_factor = apps_util::GetPrimaryDisplayUIScaleFactor();
-
-      // Try loading the icon from an on-disk cache. If that fails, fall back
-      // to LoadIconFromVM.
-      LoadIconFromFileWithFallback(
-          icon_type, size_hint_in_dip,
-          registry_->GetIconPath(app_id, scale_factor),
-          static_cast<IconEffects>(icon_key->icon_effects), std::move(callback),
-          base::BindOnce(&CrostiniApps::LoadIconFromVM,
-                         weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
-                         size_hint_in_dip, scale_factor,
-                         static_cast<IconEffects>(icon_key->icon_effects)));
-      return;
-    }
-  }
-
-  // On failure, we still run the callback, with the zero IconValue.
-  std::move(callback).Run(apps::mojom::IconValue::New());
+  registry_->LoadIcon(app_id, std::move(icon_key), icon_type, size_hint_in_dip,
+                      allow_placeholder_icon, IDR_LOGO_CROSTINI_DEFAULT_192,
+                      std::move(callback));
 }
 
 void CrostiniApps::Launch(const std::string& app_id,
@@ -231,17 +206,31 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
 
 void CrostiniApps::OnRegistryUpdated(
     guest_os::GuestOsRegistryService* registry_service,
+    guest_os::GuestOsRegistryService::VmType vm_type,
     const std::vector<std::string>& updated_apps,
     const std::vector<std::string>& removed_apps,
     const std::vector<std::string>& inserted_apps) {
+  if (vm_type != guest_os::GuestOsRegistryService::VmType::
+                     ApplicationList_VmType_TERMINA) {
+    return;
+  }
+
   for (const std::string& app_id : updated_apps) {
-    PublishAppID(app_id, PublishAppIDType::kUpdate);
+    if (auto registration = registry_->GetRegistration(app_id)) {
+      Publish(Convert(*registration, /*new_icon_key=*/false), subscribers_);
+    }
   }
   for (const std::string& app_id : removed_apps) {
-    PublishAppID(app_id, PublishAppIDType::kUninstall);
+    apps::mojom::AppPtr app = apps::mojom::App::New();
+    app->app_type = apps::mojom::AppType::kCrostini;
+    app->app_id = app_id;
+    app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+    Publish(std::move(app), subscribers_);
   }
   for (const std::string& app_id : inserted_apps) {
-    PublishAppID(app_id, PublishAppIDType::kInstall);
+    if (auto registration = registry_->GetRegistration(app_id)) {
+      Publish(Convert(*registration, /*new_icon_key=*/true), subscribers_);
+    }
   }
 }
 
@@ -262,53 +251,13 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
   Publish(std::move(app), subscribers_);
 }
 
-void CrostiniApps::LoadIconFromVM(const std::string app_id,
-                                  apps::mojom::IconType icon_type,
-                                  int32_t size_hint_in_dip,
-                                  ui::ScaleFactor scale_factor,
-                                  IconEffects icon_effects,
-                                  LoadIconCallback callback) {
-  registry_->RequestIcon(
-      app_id, scale_factor,
-      base::BindOnce(&CrostiniApps::OnLoadIconFromVM,
-                     weak_ptr_factory_.GetWeakPtr(), app_id, icon_type,
-                     size_hint_in_dip, icon_effects, std::move(callback)));
-}
-
-void CrostiniApps::OnLoadIconFromVM(const std::string app_id,
-                                    apps::mojom::IconType icon_type,
-                                    int32_t size_hint_in_dip,
-                                    IconEffects icon_effects,
-                                    LoadIconCallback callback,
-                                    std::string compressed_icon_data) {
-  if (compressed_icon_data.empty()) {
-    auto registration = registry_->GetRegistration(app_id);
-    if (crostini::IsUnmatchedCrostiniShelfAppId(app_id) ||
-        (registration && registration->VmType() ==
-                             guest_os::GuestOsRegistryService::VmType::
-                                 ApplicationList_VmType_TERMINA)) {
-      // Load default penguin for crostini. We must set is_placeholder_icon to
-      // false to stop endless recursive calls.
-      LoadIconFromResource(
-          icon_type, size_hint_in_dip, IDR_LOGO_CROSTINI_DEFAULT_192,
-          /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
-    } else {
-      // Leave it for app service to get a default for Plugin VM.
-      std::move(callback).Run(apps::mojom::IconValue::New());
-    }
-  } else {
-    LoadIconFromCompressedData(icon_type, size_hint_in_dip, icon_effects,
-                               compressed_icon_data, std::move(callback));
-  }
-}
-
 apps::mojom::AppPtr CrostiniApps::Convert(
-    const std::string& app_id,
     const guest_os::GuestOsRegistryService::Registration& registration,
     bool new_icon_key) {
   apps::mojom::AppPtr app = PublisherBase::MakeApp(
-      apps::mojom::AppType::kCrostini, app_id, apps::mojom::Readiness::kReady,
-      registration.Name(), apps::mojom::InstallSource::kUser);
+      apps::mojom::AppType::kCrostini, registration.app_id(),
+      apps::mojom::Readiness::kReady, registration.Name(),
+      apps::mojom::InstallSource::kUser);
 
   const std::string& executable_file_name = registration.ExecutableFileName();
   if (!executable_file_name.empty()) {
@@ -319,7 +268,7 @@ apps::mojom::AppPtr CrostiniApps::Convert(
   }
 
   if (new_icon_key) {
-    app->icon_key = NewIconKey(app_id);
+    app->icon_key = NewIconKey(registration.app_id());
   }
 
   app->last_launch_time = registration.LastLaunchTime();
@@ -370,25 +319,6 @@ apps::mojom::IconKeyPtr CrostiniApps::NewIconKey(const std::string& app_id) {
           ? IconEffects::kCrOsStandardIcon
           : IconEffects::kNone;
   return icon_key_factory_.MakeIconKey(icon_effects);
-}
-
-void CrostiniApps::PublishAppID(const std::string& app_id,
-                                PublishAppIDType type) {
-  if (type == PublishAppIDType::kUninstall) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_type = apps::mojom::AppType::kCrostini;
-    app->app_id = app_id;
-    app->readiness = apps::mojom::Readiness::kUninstalledByUser;
-    Publish(std::move(app), subscribers_);
-    return;
-  }
-
-  base::Optional<guest_os::GuestOsRegistryService::Registration> registration =
-      registry_->GetRegistration(app_id);
-  if (registration.has_value()) {
-    Publish(Convert(app_id, *registration, type == PublishAppIDType::kInstall),
-            subscribers_);
-  }
 }
 
 }  // namespace apps
