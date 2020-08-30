@@ -125,4 +125,12 @@ Polymer({
       }
     }
   },
+
+  /**
+   * @return boolean
+   * @private
+   */
+  shouldHideAskOnStartup_() {
+    return !this.profilesList_ || (this.profilesList_.length < 2);
+  },
 });
