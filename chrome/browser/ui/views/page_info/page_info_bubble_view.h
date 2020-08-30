@@ -28,7 +28,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/widget/widget.h"
 
 class BubbleHeaderView;
@@ -60,7 +59,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
                            public PermissionSelectorRowObserver,
                            public ChosenObjectViewObserver,
                            public views::ButtonListener,
-                           public views::StyledLabelListener,
                            public PageInfoUI {
  public:
   // The width of the column size for permissions and chosen object icons.
@@ -100,6 +98,9 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
       const GURL& url,
       PageInfoClosingCallback closing_callback);
 
+  void SecurityDetailsClicked(int event_flags);
+  void ResetDecisionsClicked();
+
  protected:
   const base::string16 details_text() const { return details_text_; }
 
@@ -131,11 +132,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* button, const ui::Event& event) override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
   // PageInfoUI:
   void SetCookieInfo(const CookieInfoList& cookie_info_list) override;

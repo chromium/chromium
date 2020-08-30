@@ -132,12 +132,15 @@ std::unique_ptr<views::View> CreateSiteSettingsLink(
 // |BubbleHeaderView| is the UI element (view) that represents the header of the
 // |PageInfoBubbleView|. The header shows the status of the site's
 // identity check and the name of the site's identity.
-class BubbleHeaderView : public views::View {
+class BubbleHeaderView : public views::View, public views::StyledLabelListener {
  public:
-  BubbleHeaderView(views::ButtonListener* button_listener,
-                   views::StyledLabelListener* styled_label_listener,
-                   int side_margin);
+  BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin);
   ~BubbleHeaderView() override;
+
+  // views::StyledLabelListener:
+  void StyledLabelLinkClicked(views::StyledLabel* label,
+                              const gfx::Range& range,
+                              int event_flags) override;
 
   // Sets the security summary for the current page.
   void SetSummary(const base::string16& summary_text);
@@ -156,11 +159,8 @@ class BubbleHeaderView : public views::View {
   void AddPasswordReuseButtons(bool is_saved_password);
 
  private:
-  // The listener for the buttons in this view.
-  views::ButtonListener* button_listener_;
-
-  // The listener for the styled labels in this view.
-  views::StyledLabelListener* styled_label_listener_;
+  // Owns |this|.
+  PageInfoBubbleView* bubble_;
 
   // The label that displays the status of the identity check for this site.
   // Includes a link to open the Chrome Help Center article about connection
@@ -206,12 +206,8 @@ class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
 // Bubble Header
 ////////////////////////////////////////////////////////////////////////////////
 
-BubbleHeaderView::BubbleHeaderView(
-    views::ButtonListener* button_listener,
-    views::StyledLabelListener* styled_label_listener,
-    int side_margin)
-    : button_listener_(button_listener),
-      styled_label_listener_(styled_label_listener) {
+BubbleHeaderView::BubbleHeaderView(PageInfoBubbleView* bubble, int side_margin)
+    : bubble_(bubble) {
   views::GridLayout* layout =
       SetLayoutManager(std::make_unique<views::GridLayout>());
 
@@ -220,8 +216,7 @@ BubbleHeaderView::BubbleHeaderView(
 
   layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
 
-  auto security_details_label =
-      std::make_unique<views::StyledLabel>(styled_label_listener);
+  auto security_details_label = std::make_unique<views::StyledLabel>(this);
   security_details_label->SetID(
       PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_SECURITY_DETAILS);
   security_details_label_ =
@@ -244,6 +239,20 @@ BubbleHeaderView::BubbleHeaderView(
 }
 
 BubbleHeaderView::~BubbleHeaderView() {}
+
+void BubbleHeaderView::StyledLabelLinkClicked(views::StyledLabel* label,
+                                              const gfx::Range& range,
+                                              int event_flags) {
+  if (label->GetID() ==
+      PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_SECURITY_DETAILS) {
+    bubble_->SecurityDetailsClicked(event_flags);
+  } else {
+    DCHECK_EQ(
+        PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_RESET_CERTIFICATE_DECISIONS,
+        label->GetID());
+    bubble_->ResetDecisionsClicked();
+  }
+}
 
 void BubbleHeaderView::SetDetails(const base::string16& details_text) {
   std::vector<base::string16> subst;
@@ -282,7 +291,7 @@ void BubbleHeaderView::AddResetDecisionsLabel() {
       base::ASCIIToUTF16("$1 $2"), subst, &offsets);
   views::StyledLabel* reset_cert_decisions_label =
       reset_decisions_label_container_->AddChildView(
-          std::make_unique<views::StyledLabel>(styled_label_listener_));
+          std::make_unique<views::StyledLabel>(this));
   reset_cert_decisions_label->SetText(text);
   reset_cert_decisions_label->SetID(
       PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_RESET_CERTIFICATE_DECISIONS);
@@ -324,13 +333,13 @@ void BubbleHeaderView::AddPasswordReuseButtons(bool is_saved_password) {
   std::unique_ptr<views::MdTextButton> change_password_button;
   if (change_password_template) {
     change_password_button = std::make_unique<views::MdTextButton>(
-        button_listener_, l10n_util::GetStringUTF16(change_password_template));
+        bubble_, l10n_util::GetStringUTF16(change_password_template));
     change_password_button->SetProminent(true);
     change_password_button->SetID(
         PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_CHANGE_PASSWORD);
   }
   auto allowlist_password_reuse_button = std::make_unique<views::MdTextButton>(
-      button_listener_,
+      bubble_,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_ALLOWLIST_PASSWORD_REUSE_BUTTON));
   allowlist_password_reuse_button->SetID(
       PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
@@ -466,6 +475,24 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
                                 web_contents, url, std::move(closing_callback));
 }
 
+void PageInfoBubbleView::SecurityDetailsClicked(int event_flags) {
+  if (GetSecurityDescriptionType() == SecurityDescriptionType::SAFETY_TIP) {
+    OpenHelpCenterFromSafetyTip(web_contents());
+  } else {
+    web_contents()->OpenURL(content::OpenURLParams(
+        GURL(chrome::kPageInfoHelpCenterURL), content::Referrer(),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+        false));
+    presenter_->RecordPageInfoAction(
+        PageInfo::PAGE_INFO_CONNECTION_HELP_OPENED);
+  }
+}
+
+void PageInfoBubbleView::ResetDecisionsClicked() {
+  presenter_->OnRevokeSSLErrorBypassButtonPressed();
+  GetWidget()->Close();
+}
+
 PageInfoBubbleView::PageInfoBubbleView(
     views::View* anchor_view,
     const gfx::Rect& anchor_rect,
@@ -507,8 +534,8 @@ PageInfoBubbleView::PageInfoBubbleView(
                         views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  header_ = layout->AddView(
-      std::make_unique<BubbleHeaderView>(this, this, side_margin));
+  header_ =
+      layout->AddView(std::make_unique<BubbleHeaderView>(this, side_margin));
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   permissions_view_ = layout->AddView(std::make_unique<views::View>());
@@ -1010,32 +1037,6 @@ void PageInfoBubbleView::HandleMoreInfoRequestAsync(int view_id) {
       }
       break;
     }
-    default:
-      NOTREACHED();
-  }
-}
-
-void PageInfoBubbleView::StyledLabelLinkClicked(views::StyledLabel* label,
-                                                const gfx::Range& range,
-                                                int event_flags) {
-  switch (label->GetID()) {
-    case PageInfoBubbleView::VIEW_ID_PAGE_INFO_LABEL_SECURITY_DETAILS:
-      if (GetSecurityDescriptionType() == SecurityDescriptionType::SAFETY_TIP) {
-        OpenHelpCenterFromSafetyTip(web_contents());
-      } else {
-        web_contents()->OpenURL(content::OpenURLParams(
-            GURL(chrome::kPageInfoHelpCenterURL), content::Referrer(),
-            WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
-            false));
-        presenter_->RecordPageInfoAction(
-            PageInfo::PAGE_INFO_CONNECTION_HELP_OPENED);
-      }
-      break;
-    case PageInfoBubbleView::
-        VIEW_ID_PAGE_INFO_LABEL_RESET_CERTIFICATE_DECISIONS:
-      presenter_->OnRevokeSSLErrorBypassButtonPressed();
-      GetWidget()->Close();
-      break;
     default:
       NOTREACHED();
   }
