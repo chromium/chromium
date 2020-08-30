@@ -16,7 +16,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
@@ -150,9 +150,9 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
   }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-  // TODO(sandersd): Either remove sizes from VideoDecoderConfig (replace with
-  // sample aspect) or parse the AvcC here to get the actual size.
-  // For the moment, hard-code 720p to prefer hardware decoders.
+  // TODO(sandersd): Use size information from the VideoDecoderConfig when it is
+  // provided, and figure out how to combine it with the avcC. Update fuzzer to
+  // match.
   gfx::Size size = gfx::Size(1280, 720);
 
   out_media_config->Initialize(codec, profile,

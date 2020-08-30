@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_config.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
@@ -45,9 +45,9 @@ ScriptValue FakeFunction::Call(ScriptValue) {
   return ScriptValue();
 }
 
-EncodedVideoConfig* MakeVideoDecoderConfig(
+VideoDecoderConfig* MakeVideoDecoderConfig(
     const wc_fuzzer::ConfigureVideoDecoder& proto) {
-  auto* config = EncodedVideoConfig::Create();
+  auto* config = VideoDecoderConfig::Create();
   config->setCodec(proto.codec().c_str());
   DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
       proto.description().data(), proto.description().size());

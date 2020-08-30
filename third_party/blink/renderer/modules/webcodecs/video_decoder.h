@@ -44,8 +44,8 @@ struct AVCDecoderConfigurationRecord;
 namespace blink {
 
 class EncodedVideoChunk;
-class EncodedVideoConfig;
 class ExceptionState;
+class VideoDecoderConfig;
 class VideoDecoderInit;
 class VideoFrame;
 class V8VideoFrameOutputCallback;
@@ -57,7 +57,7 @@ class MODULES_EXPORT VideoDecoderTraits {
   using MediaOutputType = media::VideoFrame;
   using MediaDecoderType = media::VideoDecoder;
   using OutputCallbackType = V8VideoFrameOutputCallback;
-  using ConfigType = EncodedVideoConfig;
+  using ConfigType = VideoDecoderConfig;
   using MediaConfigType = media::VideoDecoderConfig;
   using InputType = EncodedVideoChunk;
 

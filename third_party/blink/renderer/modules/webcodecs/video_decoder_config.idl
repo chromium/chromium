@@ -1,0 +1,35 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoDecoderConfig {
+  // Codec string, eg. "avc1.42001e" or "vp09.00.10.08".
+  // TODO(sandersd): Should we accept "avc1" when |description| is provided?
+  required DOMString codec;
+
+  // avcC, vpcC, or etc.
+  // TODO(sandersd): Define what happens if the parsed description differs from
+  // the metadata below.
+  BufferSource description;
+
+  // Hint about the encoded size of the content.
+  // TODO(sandersd): Draft spec marks these as required.
+  unsigned long codedWidth;
+  unsigned long codedHeight;
+
+  // Hint about the visible region of the content.
+  unsigned long cropLeft;
+  unsigned long cropTop;
+  unsigned long cropWidth;
+  unsigned long cropHeight;
+
+  // Hint about the pixel aspect ratio of the content.
+  unsigned long displayWidth;
+  unsigned long displayHeight;
+
+  // TODO(sandersd): color space.
+  // TODO(sandersd): Constraints (sequential access) and requirements
+  // (imagebitmap, colorspace conversion).
+};
