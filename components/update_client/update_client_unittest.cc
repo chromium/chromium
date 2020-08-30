@@ -1879,9 +1879,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
   class MockInstaller : public CrxInstaller {
    public:
     MOCK_METHOD1(OnUpdateError, void(int error));
-    MOCK_METHOD2(DoInstall,
-                 void(const base::FilePath& unpack_path,
-                      const Callback& callback));
+    MOCK_METHOD1(DoInstall, void(const base::FilePath& unpack_path));
     MOCK_METHOD2(GetInstalledFile,
                  bool(const std::string& file, base::FilePath* installed_file));
     MOCK_METHOD0(Uninstall, bool());
@@ -1891,7 +1889,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
                  std::unique_ptr<InstallParams> /*install_params*/,
                  ProgressCallback progress_callback,
                  Callback callback) override {
-      DoInstall(unpack_path, std::move(callback));
+      DoInstall(unpack_path);
 
       unpack_path_ = unpack_path;
       EXPECT_TRUE(base::DirectoryExists(unpack_path_));
@@ -1923,7 +1921,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
           base::MakeRefCounted<MockInstaller>();
 
       EXPECT_CALL(*installer, OnUpdateError(_)).Times(0);
-      EXPECT_CALL(*installer, DoInstall(_, _)).Times(1);
+      EXPECT_CALL(*installer, DoInstall(_)).Times(1);
       EXPECT_CALL(*installer, GetInstalledFile(_, _)).Times(0);
       EXPECT_CALL(*installer, Uninstall()).Times(0);
 
