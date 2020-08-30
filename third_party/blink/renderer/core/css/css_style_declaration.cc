@@ -196,6 +196,13 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   return NamedPropertySetterResult::kIntercepted;
 }
 
+NamedPropertyDeleterResult CSSStyleDeclaration::AnonymousNamedDeleter(
+    const AtomicString& name) {
+  // Pretend to be deleted since web author can define their own property with
+  // the same name.
+  return NamedPropertyDeleterResult::kDeleted;
+}
+
 void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
                                                   ExceptionState&) {
   typedef Vector<String, numCSSProperties - 1> PreAllocatedPropertyVector;

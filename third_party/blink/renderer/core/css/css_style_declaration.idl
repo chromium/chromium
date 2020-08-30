@@ -40,4 +40,5 @@
     // https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-dashed-attribute
     [Affects=Nothing] getter DOMString (DOMString name);
     [CEReactions, CallWith=ScriptState] setter void (DOMString property, [TreatNullAs=EmptyString] DOMString propertyValue);
+    deleter void (DOMString property);
 };
