@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -1881,5 +1882,111 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorInfobarsKioskTest,
     EXPECT_NE(infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
               infobar->delegate()->GetIdentifier());
   }
+}
+
+// Checks the correct behavior of the profile picker on startup. This feature is
+// not available on ChromeOS.
+class StartupBrowserCreatorPickerTest : public InProcessBrowserTest {
+ public:
+  StartupBrowserCreatorPickerTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kNewProfilePicker);
+  }
+  ~StartupBrowserCreatorPickerTest() override = default;
+
+ protected:
+  void StartWithTwoProfiles(const base::CommandLine& command_line) {
+    Profile* profile = browser()->profile();
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    // Create another profile.
+    base::FilePath dest_path = profile_manager->user_data_dir();
+    dest_path = dest_path.Append(FILE_PATH_LITERAL("New Profile 1"));
+
+    Profile* other_profile = nullptr;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      other_profile = profile_manager->GetProfile(dest_path);
+    }
+    ASSERT_TRUE(other_profile);
+
+    StartupBrowserCreator launch;
+    ASSERT_TRUE(launch.Start(command_line, profile_manager->user_data_dir(),
+                             profile, {}));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(StartupBrowserCreatorPickerTest);
+};
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, OpensPicker) {
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  StartWithTwoProfiles(command_line);
+
+  // Opens the picker and thus does not open any new browser window for the main
+  // profile.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerWithURL) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  GURL url("https://www.foo.com/");
+  command_line.AppendArg(url.spec());
+
+  StartWithTwoProfiles(command_line);
+
+  // Skips the picker and creates a new browser window.
+  Browser* new_browser = FindOneOtherBrowser(browser());
+  EXPECT_TRUE(new_browser);
+  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  EXPECT_EQ(url, tab_strip->GetWebContentsAt(0)->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest, SkipsPickerWithGuest) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kGuest);
+
+  // The guest profile needs to get created before it gets opened.
+  Profile* guest_profile = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    guest_profile =
+        profile_manager->GetProfile(profile_manager->GetGuestProfilePath());
+  }
+
+  StartWithTwoProfiles(command_line);
+  // Skips the picker and creates a new browser window for the guest profile (by
+  // definition, it opens the OTR profile).
+  Browser* new_browser =
+      chrome::FindBrowserWithProfile(guest_profile->GetOffTheRecordProfile());
+  EXPECT_TRUE(new_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest,
+                       SkipsPickerWithIncognito) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kIncognito);
+
+  StartWithTwoProfiles(command_line);
+
+  // Skips the picker and creates a new browser window.
+  Browser* new_browser = chrome::FindBrowserWithProfile(
+      browser()->profile()->GetOffTheRecordProfile());
+  EXPECT_TRUE(new_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorPickerTest,
+                       SkipsPickerWithProfileDirectory) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kProfileDirectory);
+
+  StartWithTwoProfiles(command_line);
+
+  // Skips the picker and creates a new browser window.
+  Browser* new_browser = FindOneOtherBrowser(browser());
+  EXPECT_TRUE(new_browser);
 }
 #endif  // !defined(OS_CHROMEOS)
