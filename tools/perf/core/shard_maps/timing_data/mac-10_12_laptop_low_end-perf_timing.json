@@ -892,32 +892,8 @@
         "name": "blink_perf.paint/fixed-and-many-layers-scroll.html"
     },
     {
-        "duration": "28.0",
-        "name": "blink_perf.paint/large-table-background-change-with-invisible-collapsed-borders.html"
-    },
-    {
-        "duration": "24.0",
-        "name": "blink_perf.paint/large-table-background-change-with-visible-collapsed-borders.html"
-    },
-    {
-        "duration": "30.0",
-        "name": "blink_perf.paint/large-table-background-change-with-zero-width-collapsed-borders.html"
-    },
-    {
-        "duration": "26.0",
-        "name": "blink_perf.paint/large-table-collapsed-border-change-with-backgrounds.html"
-    },
-    {
-        "duration": "28.0",
-        "name": "blink_perf.paint/large-table-collapsed-border-change-with-text.html"
-    },
-    {
         "duration": "24.0",
         "name": "blink_perf.paint/large-table-collapsed-border-change.html"
-    },
-    {
-        "duration": "28.0",
-        "name": "blink_perf.paint/large-table-repaint.html"
     },
     {
         "duration": "26.0",
@@ -926,10 +902,6 @@
     {
         "duration": "26.0",
         "name": "blink_perf.paint/paint-offset-changes.html"
-    },
-    {
-        "duration": "26.0",
-        "name": "blink_perf.paint/select-all-words.html"
     },
     {
         "duration": "32.0",
