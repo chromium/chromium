@@ -134,9 +134,13 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {
 // TODO(https://crbug.com/1110320): Implement SetHasAuthenticator() for Android,
 // so this behavior can be tested on Android as well.
 #define MAYBE_NoInstrumentInStorage DISABLED_NoInstrumentInStorage
+#define MAYBE_CheckInstrumentInStorageAfterCanMakePayment \
+  DISABLED_CheckInstrumentInStorageAfterCanMakePayment
 #define MAYBE_PaymentSheetShowsApp DISABLED_PaymentSheetShowsApp
 #else
 #define MAYBE_NoInstrumentInStorage NoInstrumentInStorage
+#define MAYBE_CheckInstrumentInStorageAfterCanMakePayment \
+  CheckInstrumentInStorageAfterCanMakePayment
 #define MAYBE_PaymentSheetShowsApp PaymentSheetShowsApp
 #endif  // OS_ANDROID
 
@@ -150,6 +154,21 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
       "The payment method \"secure-payment-confirmation\" is not supported.",
       content::EvalJs(GetActiveWebContents(),
                       getInvokePaymentRequestSnippet()));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+                       MAYBE_CheckInstrumentInStorageAfterCanMakePayment) {
+  test_controller()->SetHasAuthenticator(true);
+  NavigateTo("a.com", "/payment_handler_status.html");
+
+  // EvalJs waits for JavaScript promise to resolve.
+  EXPECT_EQ(
+      "The payment method \"secure-payment-confirmation\" is not supported.",
+      content::EvalJs(
+          GetActiveWebContents(),
+          base::StringPrintf("getStatusForMethodDataAfterCanMakePayment(%s, "
+                             "/*checkCanMakePaymentFirst=*/true)",
+                             kTestMethodData)));
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,

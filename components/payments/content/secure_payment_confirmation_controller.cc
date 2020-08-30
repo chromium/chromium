@@ -54,8 +54,15 @@ void SecurePaymentConfirmationController::ShowDialog() {
 void SecurePaymentConfirmationController::
     SetupModelAndShowDialogIfApplicable() {
   DCHECK(!view_);
-  if (!request_ || !request_->web_contents() || !request_->state() ||
-      !request_->state()->selected_app() ||
+  // If no apps are available then don't show any UI. The payment_request.cc
+  // code will reject the PaymentRequest.show() call with appropriate error
+  // message on its own.
+  if (!request_ || !request_->state() ||
+      request_->state()->available_apps().empty()) {
+    return;
+  }
+
+  if (!request_->web_contents() || !request_->state()->selected_app() ||
       request_->state()->selected_app()->type() != PaymentApp::Type::INTERNAL ||
       request_->state()->selected_app()->GetAppMethodNames().size() != 1 ||
       *request_->state()->selected_app()->GetAppMethodNames().begin() !=
