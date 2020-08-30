@@ -1313,7 +1313,9 @@ TEST_F(IdentityManagerTest,
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id;
   UpdateCredentials(account_id2, kTestGaiaId2, kTestEmail2, "refresh_token");
 
-  // No changes to the declared scopes and callback, we can reuse them.
+  // No changes to the declared scopes, we can reuse it.
+  callback = base::BindOnce(
+      [](GoogleServiceAuthError error, AccessTokenInfo access_token_info) {});
   std::unique_ptr<AccessTokenFetcher> token_fetcher2 =
       identity_manager()->CreateAccessTokenFetcherForAccount(
           account_id2, kTestConsumerId2, scopes, std::move(callback),
