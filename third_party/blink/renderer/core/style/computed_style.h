@@ -2061,6 +2061,7 @@ class ComputedStyle : public ComputedStyleBase,
   bool IsDisplayBlockContainer() const {
     return IsDisplayBlockContainer(Display());
   }
+  bool IsDisplayTableBox() const { return IsDisplayTableBox(Display()); }
   bool IsDisplayFlexibleOrGridBox() const {
     return IsDisplayFlexibleBox(Display()) || IsDisplayGridBox(Display());
   }
@@ -2648,6 +2649,10 @@ class ComputedStyle : public ComputedStyleBase,
            display == EDisplay::kInlineBlock ||
            display == EDisplay::kFlowRoot || display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;
+  }
+
+  static bool IsDisplayTableBox(EDisplay display) {
+    return display == EDisplay::kTable || display == EDisplay::kInlineTable;
   }
 
   static bool IsDisplayFlexibleBox(EDisplay display) {

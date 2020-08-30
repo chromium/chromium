@@ -967,8 +967,7 @@ NGBoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
     return NGBoxStrut();
 
   // Tables with collapsed borders don't have any padding.
-  if ((style.Display() == EDisplay::kTable ||
-       style.Display() == EDisplay::kInlineTable) &&
+  if (style.IsDisplayTableBox() &&
       style.BorderCollapse() == EBorderCollapse::kCollapse) {
     return NGBoxStrut();
   }

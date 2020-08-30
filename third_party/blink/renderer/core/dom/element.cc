@@ -4316,8 +4316,7 @@ void Element::ForceLegacyLayoutInFormattingContext(
           style->IsDisplayTableType();
     }
     if (needs_traverse_to_table) {
-      EDisplay display = style->Display();
-      if (display == EDisplay::kTable || display == EDisplay::kInlineTable)
+      if (style->IsDisplayTableBox())
         needs_traverse_to_table = false;
     }
     ancestor->SetShouldForceLegacyLayoutForChild(true);

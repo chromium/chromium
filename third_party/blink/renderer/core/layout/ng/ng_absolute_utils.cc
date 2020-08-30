@@ -19,21 +19,6 @@ namespace blink {
 
 namespace {
 
-// NOTE: Out-of-flow positioned tables require special handling:
-//  - The specified inline-size/block-size is always considered as 'auto', and
-//    instead treated as an additional "min" constraint.
-//  - They can't be "stretched" by inset constraints, ("left: 0; right: 0;"),
-//    instead they always perform shrink-to-fit sizing within this
-//    available-size, (and this is why we always compute the min/max content
-//    sizes for them).
-//  - When performing shrink-to-fit sizing, the given available size can never
-//    exceed the available-size of the containing-block (e.g.  with insets
-//    similar to: "left: -100px; right: -100px").
-bool IsTable(const ComputedStyle& style) {
-  return style.Display() == EDisplay::kTable ||
-         style.Display() == EDisplay::kInlineTable;
-}
-
 // Dominant side:
 // htb ltr => top left
 // htb rtl => top right
@@ -335,8 +320,19 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
 
 }  // namespace
 
+// NOTE: Out-of-flow positioned tables require special handling:
+//  - The specified inline-size/block-size is always considered as 'auto', and
+//    instead treated as an additional "min" constraint.
+//  - They can't be "stretched" by inset constraints, ("left: 0; right: 0;"),
+//    instead they always perform shrink-to-fit sizing within this
+//    available-size, (and this is why we always compute the min/max content
+//    sizes for them).
+//  - When performing shrink-to-fit sizing, the given available size can never
+//    exceed the available-size of the containing-block (e.g.  with insets
+//    similar to: "left: -100px; right: -100px").
+
 bool AbsoluteNeedsChildInlineSize(const ComputedStyle& style) {
-  if (IsTable(style))
+  if (style.IsDisplayTableBox())
     return true;
   return style.LogicalWidth().IsIntrinsic() ||
          style.LogicalMinWidth().IsIntrinsic() ||
@@ -346,7 +342,7 @@ bool AbsoluteNeedsChildInlineSize(const ComputedStyle& style) {
 }
 
 bool AbsoluteNeedsChildBlockSize(const ComputedStyle& style) {
-  if (IsTable(style))
+  if (style.IsDisplayTableBox())
     return true;
   return style.LogicalHeight().IsIntrinsic() ||
          style.LogicalMinHeight().IsIntrinsic() ||
@@ -443,7 +439,7 @@ void ComputeOutOfFlowInlineDimensions(
       space, style, border_padding, min_max_sizes, style.LogicalMaxWidth(),
       LengthResolvePhase::kLayout);
 
-  bool is_table = IsTable(style);
+  bool is_table = style.IsDisplayTableBox();
   base::Optional<LayoutUnit> inline_size;
   if (!style.LogicalWidth().IsAuto()) {
     LayoutUnit resolved_inline_size = ResolveMainInlineLength(
@@ -513,7 +509,7 @@ void ComputeOutOfFlowBlockDimensions(
       space, style, border_padding, style.LogicalMaxHeight(),
       LengthResolvePhase::kLayout);
 
-  bool is_table = IsTable(style);
+  bool is_table = style.IsDisplayTableBox();
   base::Optional<LayoutUnit> block_size;
   if (!style.LogicalHeight().IsAuto()) {
     LayoutUnit resolved_block_size = ResolveMainBlockLength(
