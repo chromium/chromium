@@ -202,8 +202,11 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
   // Use the original profile here, which is the same profile unless this is an
   // OffTheRecord profile. The help app is not installed into the incognito /
   // OffTheRecord profile.
-  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      profile->GetOriginalProfile());
+  if (profile->IsOffTheRecord() && !profile->IsGuestSession()) {
+    profile = profile->GetOriginalProfile();
+  }
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
   DCHECK(proxy);
 
   const char* app_id =

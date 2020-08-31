@@ -17,9 +17,12 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_app_manager_browsertest.h"
+#include "chrome/common/chrome_switches.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/chromeos_switches.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -118,6 +121,33 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2Incognito) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HelpAppIntegrationTest,
+                         ::testing::Values(web_app::ProviderType::kBookmarkApps,
+                                           web_app::ProviderType::kWebApps),
+                         web_app::ProviderTypeParamToString);
+
+class HelpAppGuestSessionIntegrationTest : public HelpAppIntegrationTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(chromeos::switches::kGuestSession);
+    command_line->AppendSwitch(::switches::kIncognito);
+    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "hash");
+    command_line->AppendSwitchASCII(
+        chromeos::switches::kLoginUser,
+        user_manager::GuestAccountId().GetUserEmail());
+  }
+};
+
+// Test that the Help App shortcut doesn't crash in guest mode.
+IN_PROC_BROWSER_TEST_P(HelpAppGuestSessionIntegrationTest, HelpAppShowHelp) {
+  WaitForTestSystemAppInstall();
+  // TODO(carpenterr): Verify the right windows are launched in the chrome
+  // branded and non-chrome branded codepaths.
+  EXPECT_NO_FATAL_FAILURE(
+      chrome::ShowHelp(browser(), chrome::HELP_SOURCE_KEYBOARD));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HelpAppGuestSessionIntegrationTest,
                          ::testing::Values(web_app::ProviderType::kBookmarkApps,
                                            web_app::ProviderType::kWebApps),
                          web_app::ProviderTypeParamToString);
