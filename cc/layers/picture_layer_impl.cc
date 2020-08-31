@@ -1626,6 +1626,12 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
 
 bool PictureLayerImpl::CalculateRasterTranslation(
     gfx::Vector2dF& raster_translation) const {
+  // If this setting is set, the client (e.g. the Chromium UI) is sure that it
+  // can almost always align raster pixels to physical pixels, and doesn't care
+  // about temporary misalignment, so don't bother raster translation.
+  if (layer_tree_impl()->settings().layers_always_allowed_lcd_text)
+    return true;
+
   // No need to use raster translation if there is no text.
   if (!raster_source_ || !raster_source_->GetDisplayItemList() ||
       !raster_source_->GetDisplayItemList()->has_draw_text_ops()) {
