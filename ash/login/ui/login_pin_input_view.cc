@@ -84,7 +84,6 @@ void LoginPinInput::OnModified(bool last_field_active, bool complete) {
   // Submit the input if its the last field, and complete.
   if (last_field_active && complete) {
     base::Optional<std::string> user_input = GetCode();
-    ClearInput();
     DCHECK(on_submit_);
     on_submit_.Run(base::UTF8ToUTF16(user_input.value_or(std::string())));
   }
@@ -186,6 +185,10 @@ void LoginPinInputView::Backspace() {
 void LoginPinInputView::InsertDigit(int digit) {
   DCHECK(code_input_);
   code_input_->InsertDigit(digit);
+}
+
+void LoginPinInputView::SetReadOnly(bool read_only) {
+  code_input_->SetReadOnly(read_only);
 }
 
 gfx::Size LoginPinInputView::CalculatePreferredSize() const {

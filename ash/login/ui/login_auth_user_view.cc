@@ -1332,7 +1332,10 @@ gfx::Size LoginAuthUserView::CalculatePreferredSize() const {
 }
 
 void LoginAuthUserView::RequestFocus() {
-  password_view_->RequestFocus();
+  if (input_field_mode_ == InputFieldMode::PIN_WITH_TOGGLE)
+    pin_input_view_->RequestFocus();
+  else
+    password_view_->RequestFocus();
 }
 
 void LoginAuthUserView::ButtonPressed(views::Button* sender,
@@ -1355,6 +1358,8 @@ void LoginAuthUserView::OnAuthSubmit(const base::string16& password) {
   }
 
   password_view_->SetReadOnly(true);
+  pin_input_view_->SetReadOnly(true);
+
   Shell::Get()->login_screen_controller()->AuthenticateUserWithPasswordOrPin(
       current_user().basic_user_info.account_id, base::UTF16ToUTF8(password),
       HasAuthMethod(AUTH_PIN),
@@ -1370,6 +1375,8 @@ void LoginAuthUserView::OnAuthComplete(base::Optional<bool> auth_success) {
   if (!auth_success.has_value() || !auth_success.value()) {
     password_view_->Reset();
     password_view_->SetReadOnly(false);
+    pin_input_view_->Reset();
+    pin_input_view_->SetReadOnly(false);
   }
 
   on_auth_.Run(auth_success.value(), /*display_error_messages=*/true);
