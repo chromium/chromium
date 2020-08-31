@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/plugins/navigator_plugins.h"
 
+#include <initializer_list>
+
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
@@ -52,36 +54,41 @@ bool NavigatorPlugins::javaEnabled(Navigator& navigator) {
   return false;
 }
 
+namespace {
+
+void RecordPlugins(LocalFrame* frame, DOMPluginArray* plugins) {
+  if (!IdentifiabilityStudySettings::Get()->IsActive() || !frame)
+    return;
+  if (Document* document = frame->GetDocument()) {
+    IdentifiableTokenBuilder builder;
+    for (unsigned i = 0; i < plugins->length(); i++) {
+      DOMPlugin* plugin = plugins->item(i);
+      for (const String& token :
+           {plugin->name(), plugin->description(), plugin->filename()}) {
+        builder.AddToken(IdentifiabilityBenignStringToken(token));
+      }
+      for (unsigned j = 0; j < plugin->length(); j++) {
+        DOMMimeType* mimeType = plugin->item(j);
+        for (const String& token : {mimeType->type(), mimeType->description(),
+                                    mimeType->suffixes()}) {
+          builder.AddToken(IdentifiabilityBenignStringToken(token));
+        }
+      }
+    }
+    IdentifiabilityMetricBuilder(document->UkmSourceID())
+        .SetWebfeature(WebFeature::kNavigatorPlugins, builder.GetToken())
+        .Record(document->UkmRecorder());
+  }
+}
+
+}  // namespace
+
 DOMPluginArray* NavigatorPlugins::plugins(LocalFrame* frame) const {
   if (!plugins_)
     plugins_ = MakeGarbageCollected<DOMPluginArray>(frame);
 
   DOMPluginArray* result = plugins_.Get();
-  if (!IdentifiabilityStudySettings::Get()->IsActive() || !frame)
-    return result;
-  Document* document = frame->GetDocument();
-  if (!document)
-    return result;
-
-  // Build digest...
-  IdentifiableTokenBuilder builder;
-  for (unsigned i = 0; i < result->length(); i++) {
-    DOMPlugin* plugin = result->item(i);
-    builder.AddToken(IdentifiabilityBenignStringToken(plugin->name()))
-        .AddToken(IdentifiabilityBenignStringToken(plugin->description()))
-        .AddToken(IdentifiabilityBenignStringToken(plugin->filename()));
-    for (unsigned j = 0; j < plugin->length(); j++) {
-      DOMMimeType* mimeType = plugin->item(j);
-      builder.AddToken(IdentifiabilityBenignStringToken(mimeType->type()))
-          .AddToken(IdentifiabilityBenignStringToken(mimeType->description()))
-          .AddToken(IdentifiabilityBenignStringToken(mimeType->suffixes()));
-    }
-  }
-  // ...and report to UKM.
-  IdentifiabilityMetricBuilder(document->UkmSourceID())
-      .SetWebfeature(WebFeature::kNavigatorPlugins, builder.GetToken())
-      .Record(document->UkmRecorder());
-
+  RecordPlugins(frame, result);
   return result;
 }
 
