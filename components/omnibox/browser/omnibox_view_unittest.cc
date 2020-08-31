@@ -169,7 +169,7 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
 // query.
 TEST_F(OmniboxViewTest, GetIcon_Default) {
   ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
-      vector_icons::kSearchIcon, gfx::kFaviconSize, gfx::kPlaceholderColor);
+      vector_icons::kSearchIcon, gfx::kPlaceholderColor, gfx::kFaviconSize);
 
   ui::ImageModel icon = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, base::DoNothing());
@@ -189,7 +189,7 @@ TEST_F(OmniboxViewTest, GetIcon_BookmarkIcon) {
                            base::ASCIIToUTF16("a bookmark"), kUrl);
 
   ui::ImageModel expected_icon = ui::ImageModel::FromVectorIcon(
-      omnibox::kBookmarkIcon, gfx::kFaviconSize, gfx::kPlaceholderColor);
+      omnibox::kBookmarkIcon, gfx::kPlaceholderColor, gfx::kFaviconSize);
 
   ui::ImageModel icon = view()->GetIcon(
       gfx::kFaviconSize, gfx::kPlaceholderColor, base::DoNothing());

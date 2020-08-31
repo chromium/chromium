@@ -178,13 +178,13 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     AutocompleteMatch fake_match;
     fake_match.type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
     const gfx::VectorIcon& vector_icon = fake_match.GetVectorIcon(false);
-    return ui::ImageModel::FromVectorIcon(vector_icon, dip_size, color);
+    return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
   }
 
   if (model_->ShouldShowCurrentPageIcon()) {
     LocationBarModel* location_bar_model = controller_->GetLocationBarModel();
     return ui::ImageModel::FromVectorIcon(location_bar_model->GetVectorIcon(),
-                                          dip_size, color);
+                                          color, dip_size);
   }
 
   gfx::Image favicon;
@@ -214,7 +214,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
 
   const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmarked);
 
-  return ui::ImageModel::FromVectorIcon(vector_icon, dip_size, color);
+  return ui::ImageModel::FromVectorIcon(vector_icon, color, dip_size);
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 }
 
