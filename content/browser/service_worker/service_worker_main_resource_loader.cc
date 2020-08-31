@@ -94,7 +94,7 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
 ServiceWorkerMainResourceLoader::~ServiceWorkerMainResourceLoader() {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
-      "ServiceWorkerMainResourceLoader::~ServiceWorkerNavigationloader", this,
+      "ServiceWorkerMainResourceLoader::~ServiceWorkerMainResourceLoader", this,
       TRACE_EVENT_FLAG_FLOW_IN);
 }
 

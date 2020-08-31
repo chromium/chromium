@@ -380,7 +380,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   friend class ServiceWorkerInternalsUI;
   friend class ServiceWorkerMainResourceHandleCore;
   friend class ServiceWorkerProcessManager;
-  friend class ServiceWorkerRequestHandler;
   friend class ServiceWorkerVersionBrowserTest;
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;
 
