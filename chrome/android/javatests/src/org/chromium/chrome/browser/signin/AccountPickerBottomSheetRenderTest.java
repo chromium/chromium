@@ -8,6 +8,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
@@ -22,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -39,6 +44,9 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.ProfileDataSource;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -132,6 +140,45 @@ public class AccountPickerBottomSheetRenderTest {
     public void testSignInInProgressView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(PROFILE_DATA1);
         buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndCheckSigninInProgressView();
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testTryAgainButtonOnSignInGeneralErrorSheet(boolean nightModeEnabled)
+            throws IOException {
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+        // Throws a connection error during the sign-in action
+        doAnswer(invocation -> {
+            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
+            onSignInErrorCallback.onResult(new GoogleServiceAuthError(State.CONNECTION_FAILED));
+            return null;
+        })
+                .when(mAccountPickerDelegateMock)
+                .signIn(eq(coreAccountInfo), any());
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndWaitForErrorView();
+        doNothing().when(mAccountPickerDelegateMock).signIn(eq(coreAccountInfo), any());
+        clickContinueButtonAndCheckSigninInProgressView();
+    }
+
+    private void clickContinueButtonAndWaitForErrorView() {
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
+        });
+        CriteriaHelper.pollUiThread(() -> {
+            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown()
+                    && bottomSheetView.findViewById(R.id.account_picker_bottom_sheet_subtitle)
+                               .isShown();
+        });
+    }
+
+    private void clickContinueButtonAndCheckSigninInProgressView() throws IOException {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
