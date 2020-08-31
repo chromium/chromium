@@ -22,6 +22,13 @@ const tests = [
    */
   function testViewToggle() {
     const sidenav = createSidenav();
+
+    // Add some dummy bookmarks so that the tabs selectors appear.
+    sidenav.bookmarks = [
+      {title: 'Foo', page: 1},
+      {title: 'Bar', page: 2},
+    ];
+
     const content = sidenav.shadowRoot.querySelector('#content');
     const buttons = /** @type {!NodeList<!CrIconButtonElement>} */ (
         sidenav.shadowRoot.querySelectorAll('cr-icon-button'));
@@ -36,16 +43,6 @@ const tests = [
     // Sidebar starts on thumbnail view.
     chrome.test.assertTrue(
         buttons[0].parentNode.classList.contains('selected'));
-
-    // Outline button is hidden since there are no bookmarks.
-    chrome.test.assertTrue(buttons[1].parentNode.hidden);
-
-    // Add some dummy bookmarks so that the button appears.
-    sidenav.bookmarks = [
-      {title: 'Foo', page: 1},
-      {title: 'Bar', page: 2},
-    ];
-    chrome.test.assertFalse(buttons[1].parentNode.hidden);
     chrome.test.assertFalse(
         buttons[1].parentNode.classList.contains('selected'));
     chrome.test.assertFalse(thumbnailBar.hidden);
@@ -71,6 +68,23 @@ const tests = [
 
     chrome.test.succeed();
   },
+
+  function testTabIconsHidden() {
+    const sidenav = createSidenav();
+    const buttonsContainer = sidenav.shadowRoot.querySelector('#icons');
+
+    chrome.test.assertEq(0, sidenav.bookmarks.length);
+    chrome.test.assertTrue(buttonsContainer.hidden);
+
+    // Add dummy bookmarks so that the buttons appear.
+    sidenav.bookmarks = [
+      {title: 'Foo', page: 1},
+      {title: 'Bar', page: 2},
+    ];
+
+    chrome.test.assertFalse(buttonsContainer.hidden);
+    chrome.test.succeed();
+  }
 ];
 
 chrome.test.runTests(tests);
