@@ -40915,6 +40915,7 @@ from previous Chrome versions.
   <int value="-1530711962" label="PrivacyElevatedAndroid:disabled"/>
   <int value="-1529907580" label="ImeServiceConnectable:disabled"/>
   <int value="-1529899201" label="H264DecoderBufferIsCompleteFrame:disabled"/>
+  <int value="-1529631789" label="enable-unsafe-fast-js-calls"/>
   <int value="-1529140321" label="ReadLater:enabled"/>
   <int value="-1528455406" label="OmniboxPedalSuggestions:enabled"/>
   <int value="-1525129540"

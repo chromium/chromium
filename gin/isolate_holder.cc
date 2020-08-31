@@ -81,6 +81,8 @@ IsolateHolder::IsolateHolder(
         atomics_wait_mode == AllowAtomicsWaitMode::kAllowAtomicsWait;
     params.external_references = g_reference_table;
     params.only_terminate_in_safe_scope = true;
+    params.embedder_wrapper_type_index = kWrapperInfoIndex;
+    params.embedder_wrapper_object_index = kEncodedValueIndex;
 
     v8::Isolate::Initialize(isolate_, params);
   }

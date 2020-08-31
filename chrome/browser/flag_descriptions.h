@@ -1381,6 +1381,9 @@ extern const char kTurnOffStreamingMediaCachingAlwaysDescription[];
 extern const char kUnsafeWebGPUName[];
 extern const char kUnsafeWebGPUDescription[];
 
+extern const char kUnsafeFastJSCallsName[];
+extern const char kUnsafeFastJSCallsDescription[];
+
 extern const char kUiPartialSwapName[];
 extern const char kUiPartialSwapDescription[];
 

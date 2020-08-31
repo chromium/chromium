@@ -2208,6 +2208,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-unsafe-fast-js-calls",
+    "owners": [ "mslekova", "enga" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
     "expiry_milestone": 90

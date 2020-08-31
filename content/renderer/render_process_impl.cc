@@ -121,6 +121,9 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfHasSwitch(switches::kEnableExperimentalWebAssemblyFeatures,
                        "--wasm-staging");
 
+  SetV8FlagIfHasSwitch(switches::kEnableUnsafeFastJSCalls,
+                       "--turbo-fast-api-calls");
+
   constexpr char kModuleFlags[] =
       "--harmony-dynamic-import --harmony-import-meta";
   v8::V8::SetFlagsFromString(kModuleFlags, sizeof(kModuleFlags));

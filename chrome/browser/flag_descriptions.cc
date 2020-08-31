@@ -2393,6 +2393,12 @@ const char kUnsafeWebGPUDescription[] =
     "isn't implemented yet for the WebGPU API, it is possible to read GPU data "
     "for other processes.";
 
+const char kUnsafeFastJSCallsName[] = "Unsafe fast JS calls";
+const char kUnsafeFastJSCallsDescription[] =
+    "Enables experimental fast API between Blink and V8."
+    "Warning: type checking, few POD types and array types "
+    "are not supported yet, so crashes are possible.";
+
 const char kUiPartialSwapName[] = "Partial swap";
 const char kUiPartialSwapDescription[] = "Sets partial swap behavior.";
 

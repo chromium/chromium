@@ -5382,6 +5382,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUnsafeWebGPUDescription, kOsMac | kOsWin,
      SINGLE_VALUE_TYPE(switches::kEnableUnsafeWebGPU)},
 
+    {"enable-unsafe-fast-js-calls", flag_descriptions::kUnsafeFastJSCallsName,
+     flag_descriptions::kUnsafeFastJSCallsDescription, kOsAll,
+     SINGLE_VALUE_TYPE(switches::kEnableUnsafeFastJSCalls)},
+
 #if defined(OS_ANDROID)
     {"autofill-use-mobile-label-disambiguation",
      flag_descriptions::kAutofillUseMobileLabelDisambiguationName,

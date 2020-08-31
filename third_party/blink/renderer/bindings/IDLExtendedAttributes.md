@@ -1624,6 +1624,18 @@ In case of `func1(...)`, if JavaScript calls `func1(100, 200)`, then `HTMLFoo::f
 In case of `func2(...)` which adds `[DefaultValue=Undefined]`, if JavaScript calls `func2(100, 200)`, then it behaves as if JavaScript called `func2(100, 200, undefined)`. Consequently, `HTMLFoo::func2(int a, int b, int c)` is called in Blink. 100 is passed to `a`, 200 is passed to `b`, and 0 is passed to `c`. (A JavaScript `undefined` is converted to 0, following the value conversion rule in the Web IDL spec; if it were a DOMString parameter, it would end up as the string `"undefined"`.) In this way, Blink needs to just implement `func2(int a, int b, int c)` and needs not to implement both `func2(int a, int b)` and `func2(int a, int b, int c)`.
 
 
+### [NoAllocDirectCall]
+
+Summary: `[NoAllocDirectCall]` marks a given method as being usable with the fast API calls implemented in V8. They get their value conversions inlined in TurboFan, leading to overall better performance.
+
+Usage: The method must adhere to the following requirements:
+
+1. Doesn't trigger GC, i.e., doesn't allocate Blink or V8 objects;
+2. Doesn't trigger JavaScript execution;
+3. Has no side effect.
+
+Those requirements lead to the specific inability to throw JS exceptions and to log warnings to the console, as logging uses `MakeGarbageCollected<ConsoleMessage>`. If any such error reporting needs to happen, the method marked with `[NoAllocDirectCall]` should expect a last parameter `bool* has_error`, in which it might store `true` to signal V8. V8 will in turn re-execute the "default" callback, giving the possibility of the exception/error to be reported. This mechanism also implies that the "fast" callback is idempotent up to the point of reporting the error.
+
 ## Discouraged Blink-specific IDL Extended Attributes
 
 These extended attributes are _discouraged_ - they are not deprecated, but they should be avoided and removed if possible.
