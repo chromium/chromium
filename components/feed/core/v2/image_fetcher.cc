@@ -47,7 +47,8 @@ void ImageFetcher::Fetch(const GURL& url, ImageCallback callback) {
 
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
-  simple_loader->DownloadToString(
+  auto* const simple_loader_ptr = simple_loader.get();
+  simple_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&ImageFetcher::OnFetchComplete, weak_factory_.GetWeakPtr(),
                      std::move(simple_loader), std::move(callback)),
