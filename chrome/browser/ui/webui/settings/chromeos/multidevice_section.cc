@@ -71,8 +71,14 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
         mojom::SearchResultIcon::kLock,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kSmartLock}},
-       {IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB,
+        {.subpage = mojom::Subpage::kSmartLock}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>&
+GetMultiDeviceOptedInPhoneHubSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB,
         mojom::kMultiDeviceFeaturesSubpagePath,
         mojom::SearchResultIcon::kPhone,
         mojom::SearchResultDefaultRank::kMedium,
@@ -421,12 +427,15 @@ void MultiDeviceSection::OnHostStatusChanged(
     const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
         host_status_with_device) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.RemoveSearchTags(GetMultiDeviceOptedOutSearchConcepts());
+  updater.RemoveSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
+  updater.RemoveSearchTags(GetMultiDeviceOptedInSearchConcepts());
 
   if (IsOptedIn(host_status_with_device.first)) {
-    updater.RemoveSearchTags(GetMultiDeviceOptedOutSearchConcepts());
     updater.AddSearchTags(GetMultiDeviceOptedInSearchConcepts());
+    if (features::IsPhoneHubEnabled())
+      updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubSearchConcepts());
   } else {
-    updater.RemoveSearchTags(GetMultiDeviceOptedInSearchConcepts());
     updater.AddSearchTags(GetMultiDeviceOptedOutSearchConcepts());
   }
 }
