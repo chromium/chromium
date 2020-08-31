@@ -5904,6 +5904,7 @@ crbug.com/1031345 media/controls/overlay-play-button-tap-to-hide.html [ Timeout 
 crbug.com/1029941 [ Linux ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 crbug.com/1029941 [ Linux ] transforms/3d/point-mapping/3d-point-mapping-deep.html [ Failure ]
 crbug.com/1029941 [ Linux ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer-filter.html [ Failure ]
+crbug.com/1029941 [ Win ] external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 
 # Failing document policy tests
 crbug.com/993790 external/wpt/document-policy/required-policy/separate-document-policies.html [ Failure ]
@@ -6024,6 +6025,12 @@ crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/backdrop-filter-basi
 crbug.com/1043675 [ Linux ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 crbug.com/1043675 [ Linux ] http/tests/media/video-frame-size-change.html [ Failure ]
 crbug.com/1043675 [ Linux ] svg/custom/svg-root-with-opacity.html [ Failure ]
+crbug.com/1043675 [ Win ] animations/animation-paused-hardware.html [ Failure ]
+crbug.com/1043675 [ Win ] animations/missing-values-first-keyframe.html [ Failure ]
+crbug.com/1043675 [ Win ] animations/missing-values-last-keyframe.html [ Failure ]
+crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
+crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
+crbug.com/1043675 [ Win ] svg/custom/svg-root-with-opacity.html [ Failure ]
 
 # Required to land DevTools change
 crbug.com/106759 http/tests/devtools/command-line-api-inspect.js [ Pass Failure ]
