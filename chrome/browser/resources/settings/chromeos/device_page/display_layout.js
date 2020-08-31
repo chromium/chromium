@@ -75,7 +75,7 @@ Polymer({
 
   /** @override */
   created() {
-    if (this.allowDisplayAlignmentApi_) {
+    if (this.allowDisplayAlignmentApi_ || this.allowDisplayIdentificationApi_) {
       this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
     }
   },
