@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -224,6 +225,54 @@ TEST_F(LayoutObjectTest, UseCountBackdropFilterAsGroupingProperty) {
                    .HasGroupingPropertyForUsedTransformStyle3D());
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kAdditionalGroupingPropertiesForCompat));
+}
+
+TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .cv { content-visibility: auto }
+      .strict { contain: strict }
+      .all { contain: size paint layout style }
+    </style>
+    <div id=target class=cv></div>
+  )HTML");
+  auto* target = GetDocument().getElementById("target");
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSContainAllWithoutContentVisibility));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSContainStrictWithoutContentVisibility));
+
+  target->classList().Add("all");
+  UpdateAllLifecyclePhasesForTest();
+
+  // With content-visibility, we don't count the features.
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSContainAllWithoutContentVisibility));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSContainStrictWithoutContentVisibility));
+
+  target->classList().Remove("cv");
+  target->classList().Remove("all");
+  target->classList().Add("strict");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Strict should register, but without style containment the "all" bucket is
+  // not counted.
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kCSSContainAllWithoutContentVisibility));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCSSContainStrictWithoutContentVisibility));
+
+  target->classList().Remove("strict");
+  target->classList().Add("all");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Everything should be counted now.
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCSSContainAllWithoutContentVisibility));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kCSSContainStrictWithoutContentVisibility));
 }
 
 TEST_F(LayoutObjectTest, UseCountContainingBlockFixedPosUnderFlattened3D) {

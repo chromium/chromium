@@ -2791,6 +2791,8 @@ enum WebFeature {
   kV8Navigator_OpenUDPSocket_Method = 3463,
   kWebCodecs = 3464,
   kCredentialManagerCrossOriginPublicKeyGetRequest = 3465,
+  kCSSContainStrictWithoutContentVisibility = 3466,
+  kCSSContainAllWithoutContentVisibility = 3467,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

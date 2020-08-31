@@ -2552,6 +2552,16 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     }
   }
 
+  if (ShouldApplyStrictContainment() &&
+      (style_->ContentVisibility() == EContentVisibility::kVisible)) {
+    if (ShouldApplyStyleContainment()) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kCSSContainAllWithoutContentVisibility);
+    }
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kCSSContainStrictWithoutContentVisibility);
+  }
+
   // First assume the outline will be affected. It may be updated when we know
   // it's not affected.
   SetOutlineMayBeAffectedByDescendants(style_->HasOutline());

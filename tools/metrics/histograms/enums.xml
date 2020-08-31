@@ -29042,6 +29042,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3463" label="V8Navigator_OpenUDPSocket_Method"/>
   <int value="3464" label="WebCodecs"/>
   <int value="3465" label="CredentialManagerCrossOriginPublicKeyGetRequest"/>
+  <int value="3466" label="CSSContainStrictWithoutContentVisibility"/>
+  <int value="3467" label="CSSContainAllWithoutContentVisibility"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
