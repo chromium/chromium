@@ -67,7 +67,7 @@ public class DownloadDateTimePickerDialogImpl
                 context.getResources().getString(R.string.cancel), this::onDatePickerClicked);
 
         mTimePickerDialog = new DownloadTimePickerDialog(
-                context, this, mCalendar.get(Calendar.HOUR), mCalendar.get(Calendar.MINUTE));
+                context, this, mCalendar.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE));
 
         // Start the flow.
         mDatePickerDialog.show();
@@ -112,8 +112,8 @@ public class DownloadDateTimePickerDialogImpl
 
     // DownloadTimePickerDialog.Controller overrides.
     @Override
-    public void onDownloadTimePicked(int hour, int minute) {
-        mCalendar.set(Calendar.HOUR, hour);
+    public void onDownloadTimePicked(int hourOfDay, int minute) {
+        mCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         mCalendar.set(Calendar.MINUTE, minute);
 
         onComplete();
