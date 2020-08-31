@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -87,17 +88,39 @@ GamepadList* NavigatorGamepad::getGamepads(Navigator& navigator,
 
   auto* navigator_gamepad = &NavigatorGamepad::From(navigator);
 
-  if (base::FeatureList::IsEnabled(features::kRestrictGamepadAccess)) {
-    ExecutionContext* context = navigator_gamepad->GetExecutionContext();
-    if (!context || !context->IsSecureContext()) {
+  ExecutionContext* context = navigator_gamepad->GetExecutionContext();
+  if (!context || !context->IsSecureContext()) {
+    if (base::FeatureList::IsEnabled(features::kRestrictGamepadAccess)) {
       exception_state.ThrowSecurityError(kSecureContextBlocked);
       return nullptr;
+    } else {
+      context->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "getGamepad will now require Secure Context. "
+              "Please update your application accordingly. "
+              "For more information see "
+              "https://github.com/w3c/gamepad/pull/120"),
+          /*discard_duplicates=*/true);
     }
+  }
 
-    if (!context->IsFeatureEnabled(
-            mojom::blink::FeaturePolicyFeature::kGamepad)) {
+  if (!context->IsFeatureEnabled(
+          mojom::blink::FeaturePolicyFeature::kGamepad)) {
+    if (base::FeatureList::IsEnabled(features::kRestrictGamepadAccess)) {
       exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
       return nullptr;
+    } else {
+      context->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "getGamepad will now require a Permission Policy. "
+              "Please update your application accordingly. "
+              "For more information see "
+              "https://github.com/w3c/gamepad/pull/112"),
+          /*discard_duplicates=*/true);
     }
   }
 
