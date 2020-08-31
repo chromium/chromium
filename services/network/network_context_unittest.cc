@@ -5558,7 +5558,12 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnBeforeSendHeaders) {
 
   client.RunUntilComplete();
 
-  EXPECT_EQ(client.completion_status().error_code, net::ERR_ABORTED);
+  // The reported error differs, but eventually URLLoader returns
+  // net::ERR_ABORTED once OOR-CORS clean-up is finished.
+  if (features::ShouldEnableOutOfBlinkCorsForTesting())
+    EXPECT_EQ(client.completion_status().error_code, net::ERR_ABORTED);
+  else
+    EXPECT_EQ(client.completion_status().error_code, net::ERR_FAILED);
 }
 
 // Test destroying the mojom::URLLoader after the OnHeadersReceived event and
@@ -5606,7 +5611,12 @@ TEST_F(NetworkContextTest, HangingHeaderClientAbortDuringOnHeadersReceived) {
 
   client.RunUntilComplete();
 
-  EXPECT_EQ(client.completion_status().error_code, net::ERR_ABORTED);
+  // The reported error differs, but eventually URLLoader returns
+  // net::ERR_ABORTED once OOR-CORS clean-up is finished.
+  if (features::ShouldEnableOutOfBlinkCorsForTesting())
+    EXPECT_EQ(client.completion_status().error_code, net::ERR_ABORTED);
+  else
+    EXPECT_EQ(client.completion_status().error_code, net::ERR_FAILED);
 }
 
 // Custom proxy does not apply to localhost, so resolve kMockHost to localhost,

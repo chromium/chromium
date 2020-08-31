@@ -95,6 +95,9 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kOutOfBlinkCSPEE;
 
 COMPONENT_EXPORT(NETWORK_CPP)
+bool ShouldEnableOutOfBlinkCorsForTesting();
+
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kWebSocketReassembleShortMessages;
 
 COMPONENT_EXPORT(NETWORK_CPP)

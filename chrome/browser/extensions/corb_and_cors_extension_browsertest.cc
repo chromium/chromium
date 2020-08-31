@@ -76,13 +76,16 @@ enum TestParam {
   // //extensions/browser/url_loader_factory_manager.cc).
   kAllowlisted = 1 << 0,
 
+  // Whether network::features::kOutOfBlinkCors is enabled.
+  kOutOfBlinkCors = 1 << 1,
+
   // Whether network::features::kCorbAllowlistAlsoAppliesToOorCors is enabled.
-  kCorsForContentScripts = 1 << 1,
+  kAllowlistForCors = 1 << 2,
 
   // Whether network::features::
   // kDeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess is
   // enabled.
-  kDeriveOriginFromUrl = 1 << 2,
+  kDeriveOriginFromUrl = 1 << 3,
 };
 
 const char kCorsErrorWhenFetching[] = "error: TypeError: Failed to fetch";
@@ -208,6 +211,13 @@ class CorbAndCorsExtensionBrowserTest
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
 
+    if (IsOutOfBlinkCorsEnabled()) {
+      enabled_features.emplace_back(network::features::kOutOfBlinkCors,
+                                    base::FieldTrialParams());
+    } else {
+      disabled_features.push_back(network::features::kOutOfBlinkCors);
+    }
+
     if (DeriveOriginFromUrl()) {
       enabled_features.emplace_back(
           network::features::
@@ -219,7 +229,7 @@ class CorbAndCorsExtensionBrowserTest
               kDeriveOriginFromUrlForNeitherGetNorHeadRequestWhenHavingSpecialAccess);
     }
 
-    if (IsCorsForContentScriptsEnabled()) {
+    if (ShouldAllowlistAlsoApplyToOorCors()) {
       base::FieldTrialParams field_trial_params;
       if (IsExtensionAllowlisted()) {
         field_trial_params.emplace(
@@ -250,9 +260,13 @@ class CorbAndCorsExtensionBrowserTest
     return (GetParam() & TestParam::kAllowlisted) != 0;
   }
 
+  bool IsOutOfBlinkCorsEnabled() {
+    return (GetParam() & TestParam::kOutOfBlinkCors) != 0;
+  }
+
   // This returns true if content scripts are not exempt from CORS.
-  bool IsCorsForContentScriptsEnabled() {
-    return (GetParam() & TestParam::kCorsForContentScripts) != 0;
+  bool ShouldAllowlistAlsoApplyToOorCors() {
+    return (GetParam() & TestParam::kAllowlistForCors) != 0;
   }
 
   bool DeriveOriginFromUrl() {
@@ -331,7 +345,7 @@ class CorbAndCorsExtensionBrowserTest
 
     // This logging is to get an initial estimate, and it won't work once we
     // actually turn the new CORS content script behavior on.
-    if (IsCorsForContentScriptsEnabled())
+    if (IsOutOfBlinkCorsEnabled() && ShouldAllowlistAlsoApplyToOorCors())
       expect_uma_presence = false;
 
     // If the extension is allowlisted, then CORB is disabled (and therefore the
@@ -444,7 +458,7 @@ class CorbAndCorsExtensionBrowserTest
     VerifyPassiveUmaForAllowlistForCors(histograms, base::nullopt);
 
     if (AreContentScriptFetchesExpectedToBeBlocked()) {
-      if (IsCorsForContentScriptsEnabled()) {
+      if (ShouldAllowlistAlsoApplyToOorCors()) {
         // Verify the fetch was blocked by CORS.
         EXPECT_EQ(kCorsErrorWhenFetching, actual_fetch_result);
         VerifyFetchWasBlockedByCors(console_observer);
@@ -478,7 +492,7 @@ class CorbAndCorsExtensionBrowserTest
     VerifyFetchFromContentScriptWasAllowedByCorb(histograms,
                                                  true /* expecting_sniffing */);
 
-    if (IsCorsForContentScriptsEnabled() &&
+    if (ShouldAllowlistAlsoApplyToOorCors() &&
         AreContentScriptFetchesExpectedToBeBlocked()) {
       // Verify that the response body was blocked by CORS.
       EXPECT_EQ(kCorsErrorWhenFetching, actual_fetch_result);
@@ -626,7 +640,7 @@ class CorbAndCorsExtensionBrowserTest
     // ScopedFeatureList early) uses the right extension id hash.
     EXPECT_EQ(kExpectedHashedExtensionId, extension.hashed_id().value());
 
-    if (IsCorsForContentScriptsEnabled()) {
+    if (ShouldAllowlistAlsoApplyToOorCors()) {
       // Allowlist has already been populated via field trial param (see the
       // constructor of CrossOriginReadBlockingExtensionAllowlistingTest).
       return;
@@ -904,7 +918,7 @@ IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest,
     content::ExecuteScriptAsync(active_web_contents(), kFetchInitiatingScript);
     std::string fetch_result = PopString(&queue);
 
-    if (IsExtensionAllowlisted()) {
+    if (IsExtensionAllowlisted() && IsOutOfBlinkCorsEnabled()) {
       // TODO(lukasza): https://crbug.com/1062043: Revoking of extension
       // permissions doesn't cover
       // URLLoaderFactoryParams::factory_bound_access_patterns.
@@ -1376,7 +1390,8 @@ class TrustTokenExtensionBrowserTest : public CorbAndCorsExtensionBrowserTest {
 INSTANTIATE_TEST_SUITE_P(Allowlisted_AllowlistForCors,
                          TrustTokenExtensionBrowserTest,
                          ::testing::Values(TestParam::kAllowlisted |
-                                           TestParam::kCorsForContentScripts));
+                                           TestParam::kOutOfBlinkCors |
+                                           TestParam::kAllowlistForCors));
 IN_PROC_BROWSER_TEST_P(
     TrustTokenExtensionBrowserTest,
     FromProgrammaticContentScript_TrustTokenRedemptionAllowed) {
@@ -2133,7 +2148,7 @@ IN_PROC_BROWSER_TEST_P(OriginHeaderExtensionBrowserTest,
     actual_origin_header = it->second;
 
   if (AreContentScriptFetchesExpectedToBeBlocked() &&
-      IsCorsForContentScriptsEnabled()) {
+      ShouldAllowlistAlsoApplyToOorCors()) {
     // Verify the Origin header uses the page's origin (not the extension
     // origin).
     EXPECT_EQ(url::Origin::Create(page_url).Serialize(), actual_origin_header);
@@ -2345,7 +2360,7 @@ IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
 
   // Verify the request headers (e.g. Origin and Sec-Fetch-Site headers).
   cors_request.WaitForRequest();
-  if (IsExtensionAllowlisted() || !IsCorsForContentScriptsEnabled()) {
+  if (IsExtensionAllowlisted() || !ShouldAllowlistAlsoApplyToOorCors()) {
     // Content scripts of allowlisted extensions should be exempted from CORS,
     // based on the websites the extension has permission for, via extension
     // manifest.  Therefore, there should be no "Origin" header.
@@ -2387,48 +2402,63 @@ IN_PROC_BROWSER_TEST_P(CorbAndCorsExtensionBrowserTest, CorsFromContentScript) {
 INSTANTIATE_TEST_SUITE_P(Allowlisted_AllowlistForCors,
                          CorbAndCorsExtensionBrowserTest,
                          ::testing::Values(TestParam::kAllowlisted |
-                                           TestParam::kCorsForContentScripts));
+                                           TestParam::kOutOfBlinkCors |
+                                           TestParam::kAllowlistForCors));
 INSTANTIATE_TEST_SUITE_P(NotAllowlisted_AllowlistForCors,
                          CorbAndCorsExtensionBrowserTest,
-                         ::testing::Values(TestParam::kCorsForContentScripts));
-INSTANTIATE_TEST_SUITE_P(Allowlisted,
+                         ::testing::Values(TestParam::kOutOfBlinkCors |
+                                           TestParam::kAllowlistForCors));
+INSTANTIATE_TEST_SUITE_P(Allowlisted_OorCors,
+                         CorbAndCorsExtensionBrowserTest,
+                         ::testing::Values(TestParam::kAllowlisted |
+                                           TestParam::kOutOfBlinkCors));
+INSTANTIATE_TEST_SUITE_P(NotAllowlisted_OorCors,
+                         CorbAndCorsExtensionBrowserTest,
+                         ::testing::Values(TestParam::kOutOfBlinkCors));
+INSTANTIATE_TEST_SUITE_P(Allowlisted_InBlinkCors,
                          CorbAndCorsExtensionBrowserTest,
                          ::testing::Values(TestParam::kAllowlisted));
-INSTANTIATE_TEST_SUITE_P(NotAllowlisted,
+INSTANTIATE_TEST_SUITE_P(NotAllowlisted_InBlinkCors,
                          CorbAndCorsExtensionBrowserTest,
                          ::testing::Values(0));
 
 INSTANTIATE_TEST_SUITE_P(
     Allowlisted_LegacyOriginHeaderBehavior_AllowlistForCors,
     OriginHeaderExtensionBrowserTest,
-    ::testing::Values(TestParam::kAllowlisted |
-                      TestParam::kCorsForContentScripts));
+    ::testing::Values(TestParam::kAllowlisted | TestParam::kAllowlistForCors |
+                      TestParam::kOutOfBlinkCors));
 INSTANTIATE_TEST_SUITE_P(Allowlisted_NewOriginHeaderBehavior_AllowlistForCors,
                          OriginHeaderExtensionBrowserTest,
                          ::testing::Values(TestParam::kAllowlisted |
-                                           TestParam::kCorsForContentScripts |
+                                           TestParam::kAllowlistForCors |
+                                           TestParam::kOutOfBlinkCors |
                                            TestParam::kDeriveOriginFromUrl));
 INSTANTIATE_TEST_SUITE_P(
     NotAllowlisted_LegacyOriginHeaderBehavior_AllowlistForCors,
     OriginHeaderExtensionBrowserTest,
-    ::testing::Values(TestParam::kCorsForContentScripts));
+    ::testing::Values(TestParam::kOutOfBlinkCors |
+                      TestParam::kAllowlistForCors));
 INSTANTIATE_TEST_SUITE_P(
     NotAllowlisted_NewOriginHeaderBehavior_AllowlistForCors,
     OriginHeaderExtensionBrowserTest,
-    ::testing::Values(TestParam::kCorsForContentScripts |
+    ::testing::Values(TestParam::kOutOfBlinkCors |
+                      TestParam::kAllowlistForCors |
                       TestParam::kDeriveOriginFromUrl));
 INSTANTIATE_TEST_SUITE_P(Allowlisted_LegacyOriginHeaderBehavior,
                          OriginHeaderExtensionBrowserTest,
-                         ::testing::Values(TestParam::kAllowlisted));
+                         ::testing::Values(TestParam::kAllowlisted |
+                                           TestParam::kOutOfBlinkCors));
 INSTANTIATE_TEST_SUITE_P(Allowlisted_NewOriginHeaderBehavior,
                          OriginHeaderExtensionBrowserTest,
                          ::testing::Values(TestParam::kAllowlisted |
+                                           TestParam::kOutOfBlinkCors |
                                            TestParam::kDeriveOriginFromUrl));
 INSTANTIATE_TEST_SUITE_P(NotAllowlisted_LegacyOriginHeaderBehavior,
                          OriginHeaderExtensionBrowserTest,
-                         ::testing::Values(0));
+                         ::testing::Values(TestParam::kOutOfBlinkCors));
 INSTANTIATE_TEST_SUITE_P(NotAllowlisted_NewOriginHeaderBehavior,
                          OriginHeaderExtensionBrowserTest,
-                         ::testing::Values(TestParam::kDeriveOriginFromUrl));
+                         ::testing::Values(TestParam::kOutOfBlinkCors |
+                                           TestParam::kDeriveOriginFromUrl));
 
 }  // namespace extensions

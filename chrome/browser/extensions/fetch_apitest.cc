@@ -325,8 +325,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchPostOriginTest,
       embedded_test_server()->GetURL("example.com", "/echo-origin");
   std::string script = content::JsReplace(kFetchPostScript, destination_url);
   std::string origin_string =
-      GetParam() ? url::Origin::Create(destination_url).Serialize()
-                 : url::Origin::Create(extension->url()).Serialize();
+      network::features::ShouldEnableOutOfBlinkCorsForTesting() && GetParam()
+          ? url::Origin::Create(destination_url).Serialize()
+          : url::Origin::Create(extension->url()).Serialize();
   EXPECT_EQ(origin_string,
             ExecuteScriptInBackgroundPage(extension->id(), script));
 }

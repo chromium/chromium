@@ -193,12 +193,16 @@ std::unique_ptr<net::test_server::HttpResponse> VerifySaveDataHeaderInRequest(
 std::unique_ptr<net::test_server::HttpResponse>
 VerifySaveDataNotInAccessControlRequestHeader(
     const net::test_server::HttpRequest& request) {
-  if (request.method == net::test_server::METHOD_OPTIONS) {
-    // 'Save-Data' is not added to the CORS preflight request.
+  if (request.method == net::test_server::METHOD_OPTIONS &&
+      network::features::ShouldEnableOutOfBlinkCorsForTesting()) {
+    // In OOR-CORS mode, 'Save-Data' is not added to the CORS preflight request.
+    // This is the desired behavior.
     auto it = request.headers.find("Save-Data");
     EXPECT_EQ(request.headers.end(), it);
   } else {
-    // 'Save-Data' is added to the actual request, as expected.
+    // In the legacy code path, 'Save-Data' is (undesirably) added to the
+    // preflight request. And in both code paths, 'Save-Data' is added to the
+    // actual request, as expected.
     auto it = request.headers.find("Save-Data");
     EXPECT_NE(request.headers.end(), it);
     EXPECT_EQ("on", it->second);
