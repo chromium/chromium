@@ -260,7 +260,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   WebContentsView* GetView() const;
 
-  void OnScreensChange();
+  // Called on screen information changes; |is_multi_screen_changed| is true iff
+  // the plurality of connected screens changed (e.g. 1 screen <-> 2 screens).
+  void OnScreensChange(bool is_multi_screen_changed);
+
   void OnScreenOrientationChange();
 
   ScreenOrientationProvider* GetScreenOrientationProviderForTesting() const {

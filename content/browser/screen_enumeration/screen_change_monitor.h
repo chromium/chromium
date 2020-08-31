@@ -13,7 +13,9 @@ namespace content {
 // Monitors system screen information and runs a callback on changes.
 class ScreenChangeMonitor : public display::DisplayObserver {
  public:
-  explicit ScreenChangeMonitor(base::RepeatingClosure callback);
+  // The callback is run on any screen changes; the bool parameter is true iff
+  // the plurality of connected screens changed (e.g. 1 screen <-> 2 screens).
+  explicit ScreenChangeMonitor(base::RepeatingCallback<void(bool)> callback);
   ~ScreenChangeMonitor() override;
 
   ScreenChangeMonitor(const ScreenChangeMonitor&) = delete;
@@ -30,7 +32,7 @@ class ScreenChangeMonitor : public display::DisplayObserver {
                                uint32_t changed_metrics) override;
 
   // The callback to run on screen change events.
-  base::RepeatingClosure callback_;
+  base::RepeatingCallback<void(bool)> callback_;
 
   // The most recent display information, cached to detect meaningful changes.
   std::vector<display::Display> cached_displays_;
