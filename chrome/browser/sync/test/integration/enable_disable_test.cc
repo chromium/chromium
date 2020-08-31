@@ -222,8 +222,14 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, DisableOneAtATime) {
   }
 }
 
+// Flakiness spike on Windows, see crbug.com/1111227.
+#if defined(OS_WIN)
+#define MAYBE_FastEnableDisableOneAtATime DISABLED_FastEnableDisableOneAtATime
+#else
+#define MAYBE_FastEnableDisableOneAtATime FastEnableDisableOneAtATime
+#endif
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       FastEnableDisableOneAtATime) {
+                       MAYBE_FastEnableDisableOneAtATime) {
   // Setup sync with no enabled types.
   SetupTest(/*all_types_enabled=*/false);
 
@@ -284,8 +290,16 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
   }
 }
 
+// Flakiness spike on Windows, see crbug.com/1111227.
+#if defined(OS_WIN)
+#define MAYBE_FastEnableDisableEnableOneAtATime \
+  DISABLED_FastEnableDisableEnableOneAtATime
+#else
+#define MAYBE_FastEnableDisableEnableOneAtATime \
+  FastEnableDisableEnableOneAtATime
+#endif
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
-                       FastEnableDisableEnableOneAtATime) {
+                       MAYBE_FastEnableDisableEnableOneAtATime) {
   // Setup sync with no enabled types.
   SetupTest(/*all_types_enabled=*/false);
 
