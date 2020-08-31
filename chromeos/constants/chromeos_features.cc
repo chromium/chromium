@@ -322,10 +322,6 @@ const base::Feature kMinimumChromeVersion{"MinimumChromeVersion",
 // ChromeOS Media App. https://crbug.com/996088.
 const base::Feature kMediaApp{"MediaApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disable native typing for rule-based input methods.
-const base::Feature kNativeRuleBasedTyping{"NativeRuleBasedTyping",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to use screen priorities to decide if transition from one
 // Oobe screen to another is allowed.
 // TODO(https://crbug.com/1064271): Remove this flag once the feature is stable.

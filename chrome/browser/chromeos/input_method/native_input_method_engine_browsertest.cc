@@ -141,8 +141,7 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
  public:
   NativeInputMethodEngineTest() : input_method_(this) {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kNativeRuleBasedTyping,
-                              chromeos::features::kAssistPersonalInfo,
+        /*enabled_features=*/{chromeos::features::kAssistPersonalInfo,
                               chromeos::features::kEmojiSuggestAddition},
         /*disabled_features=*/{});
   }

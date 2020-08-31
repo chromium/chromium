@@ -590,11 +590,9 @@ bool InputImeEventRouter::RegisterImeExtension(
   }
 
   auto observer = std::make_unique<ImeObserverChromeOS>(extension_id, profile);
-  auto engine =
-      (extension_id == "jkghodnilhceideoidjikpgommlajknk" &&
-       base::FeatureList::IsEnabled(chromeos::features::kNativeRuleBasedTyping))
-          ? std::make_unique<chromeos::NativeInputMethodEngine>()
-          : std::make_unique<chromeos::InputMethodEngine>();
+  auto engine = extension_id == "jkghodnilhceideoidjikpgommlajknk"
+                    ? std::make_unique<chromeos::NativeInputMethodEngine>()
+                    : std::make_unique<chromeos::InputMethodEngine>();
   engine->Initialize(std::move(observer), extension_id.c_str(), profile);
   engine_map_[extension_id] = std::move(engine);
 

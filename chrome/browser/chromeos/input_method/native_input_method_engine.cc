@@ -29,9 +29,7 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
 }
 
 bool ShouldEngineUseMojo(const std::string& engine_id) {
-  return base::FeatureList::IsEnabled(
-             chromeos::features::kNativeRuleBasedTyping) &&
-         base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
+  return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
 
 std::string NormalizeString(const std::string& str) {
