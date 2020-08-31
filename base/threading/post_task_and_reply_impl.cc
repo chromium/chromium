@@ -100,8 +100,9 @@ class PostTaskAndReplyRelay {
     // |relay| is moved into a callback.
     SequencedTaskRunner* reply_task_runner_raw = relay.reply_task_runner_.get();
 
+    const Location from_here = relay.from_here_;
     reply_task_runner_raw->PostTask(
-        relay.from_here_,
+        from_here,
         BindOnce(&PostTaskAndReplyRelay::RunReply, std::move(relay)));
   }
 
