@@ -51,6 +51,8 @@ jboolean OverscrollSceneLayer::Update(
     jfloat accumulated_overscroll_x,
     jfloat delta_x) {
   if (!resource_manager_) {
+    if (jresource_manager.is_null())
+      return false;
     resource_manager_ =
         ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   }
