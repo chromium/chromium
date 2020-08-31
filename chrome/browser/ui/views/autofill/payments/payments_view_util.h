@@ -43,20 +43,25 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield();
 
 // Defines a view with legal message. This class handles the legal message
 // parsing and the links clicking events.
-class LegalMessageView : public views::View {
+class LegalMessageView : public views::View, public views::StyledLabelListener {
  public:
+  using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
+
   explicit LegalMessageView(const LegalMessageLines& legal_message_lines,
-                            views::StyledLabelListener* listener);
+                            LinkClickedCallback callback);
   ~LegalMessageView() override;
 
-  const GURL GetUrlForLink(views::StyledLabel* label, const gfx::Range& range);
+  // views::StyledLabelListener:
+  void StyledLabelLinkClicked(views::StyledLabel* label,
+                              const gfx::Range& range,
+                              int event_flags) override;
 
  private:
   std::unique_ptr<views::StyledLabel> CreateLegalMessageLineLabel(
-      const LegalMessageLine& line,
-      views::StyledLabelListener* listener);
+      const LegalMessageLine& line);
 
-  LegalMessageLines legal_message_lines_;
+  const LegalMessageLines legal_message_lines_;
+  const LinkClickedCallback callback_;
 };
 
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(

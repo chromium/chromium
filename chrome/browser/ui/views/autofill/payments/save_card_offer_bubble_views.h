@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "ui/views/controls/combobox/combobox_listener.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace content {
@@ -24,7 +23,6 @@ namespace autofill {
 // and an [Save] button. (Non-material UI's include a [No Thanks] button).
 class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
                                  public views::ComboboxListener,
-                                 public views::StyledLabelListener,
                                  public views::TextfieldController {
  public:
   // Bubble will be anchored to |anchor_view|.
@@ -36,11 +34,6 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   void Init() override;
   bool Accept() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -54,6 +47,8 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
 
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();
+
+  void LinkClicked(const GURL& url);
 
   ~SaveCardOfferBubbleViews() override;
 

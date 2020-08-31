@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -51,11 +52,11 @@ const int kTooltipIconSize = 12;
 
 std::unique_ptr<LegalMessageView> CreateLegalMessageView(
     const LegalMessageLines& message_lines,
-    views::StyledLabelListener* listener) {
+    LegalMessageView::LinkClickedCallback callback) {
   if (message_lines.empty())
     return nullptr;
 
-  return std::make_unique<LegalMessageView>(message_lines, listener);
+  return std::make_unique<LegalMessageView>(message_lines, std::move(callback));
 }
 
 }  // namespace
@@ -66,8 +67,10 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  legal_message_view_ = SetFootnoteView(
-      CreateLegalMessageView(controller->GetLegalMessageLines(), this));
+  legal_message_view_ = SetFootnoteView(CreateLegalMessageView(
+      controller->GetLegalMessageLines(),
+      base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
+                          base::Unretained(this))));
   if (legal_message_view_)
     InitFootnoteView(legal_message_view_);
 }
@@ -128,16 +131,6 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
   }
 
   return true;
-}
-
-void SaveCardOfferBubbleViews::StyledLabelLinkClicked(views::StyledLabel* label,
-                                                      const gfx::Range& range,
-                                                      int event_flags) {
-  if (!controller())
-    return;
-
-  controller()->OnLegalMessageLinkClicked(
-      legal_message_view_->GetUrlForLink(label, range));
 }
 
 void SaveCardOfferBubbleViews::ContentsChanged(
@@ -319,6 +312,11 @@ SaveCardOfferBubbleViews::CreateUploadExplanationView() {
       views::BubbleBorder::Arrow::TOP_RIGHT);
   upload_explanation_tooltip->SetID(DialogViewId::UPLOAD_EXPLANATION_TOOLTIP);
   return upload_explanation_tooltip;
+}
+
+void SaveCardOfferBubbleViews::LinkClicked(const GURL& url) {
+  if (controller())
+    controller()->OnLegalMessageLinkClicked(url);
 }
 
 }  // namespace autofill

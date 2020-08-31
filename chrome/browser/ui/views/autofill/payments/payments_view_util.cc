@@ -130,22 +130,21 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield() {
 }
 
 LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
-                                   views::StyledLabelListener* listener)
-    : legal_message_lines_(legal_message_lines) {
+                                   LinkClickedCallback callback)
+    : legal_message_lines_(legal_message_lines),
+      callback_(std::move(callback)) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   for (const LegalMessageLine& line : legal_message_lines) {
-    AddChildView(CreateLegalMessageLineLabel(line, listener).release());
+    AddChildView(CreateLegalMessageLineLabel(line).release());
   }
 }
 
 LegalMessageView::~LegalMessageView() {}
 
 std::unique_ptr<views::StyledLabel>
-LegalMessageView::CreateLegalMessageLineLabel(
-    const LegalMessageLine& line,
-    views::StyledLabelListener* listener) {
-  auto label = std::make_unique<views::StyledLabel>(listener);
+LegalMessageView::CreateLegalMessageLineLabel(const LegalMessageLine& line) {
+  auto label = std::make_unique<views::StyledLabel>(this);
   label->SetText(line.text());
   label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
@@ -156,8 +155,9 @@ LegalMessageView::CreateLegalMessageLineLabel(
   return label;
 }
 
-const GURL LegalMessageView::GetUrlForLink(views::StyledLabel* label,
-                                           const gfx::Range& range) {
+void LegalMessageView::StyledLabelLinkClicked(views::StyledLabel* label,
+                                              const gfx::Range& range,
+                                              int event_flags) {
   // Index of |label| within its parent's view hierarchy is the same as the
   // legal message line index. DCHECK this assumption to guard against future
   // layout changes.
@@ -167,12 +167,12 @@ const GURL LegalMessageView::GetUrlForLink(views::StyledLabel* label,
       legal_message_lines_[label->parent()->GetIndexOf(label)].links();
   for (const LegalMessageLine::Link& link : links) {
     if (link.range == range) {
-      return link.url;
+      callback_.Run(link.url);
+      return;
     }
   }
   // |range| was not found.
   NOTREACHED();
-  return GURL();
 }
 
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(

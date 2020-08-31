@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
 #include "base/macros.h"
@@ -45,7 +46,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/controls/styled_label_listener.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
@@ -268,8 +268,7 @@ std::unique_ptr<views::View> CreateFeedbackContentView(
 // horizontal separator, and legal message. It is used by
 // LocalCardMigrationDialogView class when it offers the user the
 // option to upload all browser-saved credit cards.
-class LocalCardMigrationOfferView : public views::View,
-                                    public views::StyledLabelListener {
+class LocalCardMigrationOfferView : public views::View {
  public:
   LocalCardMigrationOfferView(LocalCardMigrationDialogController* controller,
                               LocalCardMigrationDialogView* dialog_view)
@@ -306,22 +305,17 @@ class LocalCardMigrationOfferView : public views::View,
 
     AddChildView(new views::Separator());
 
-    legal_message_container_ =
-        new LegalMessageView(controller->GetLegalMessageLines(), this);
+    legal_message_container_ = new LegalMessageView(
+        controller->GetLegalMessageLines(),
+        base::BindRepeating(
+            &LocalCardMigrationDialogController::OnLegalMessageLinkClicked,
+            base::Unretained(controller_)));
     legal_message_container_->SetBorder(
         views::CreateEmptyBorder(kMigrationDialogInsets));
     AddChildView(legal_message_container_);
   }
 
   ~LocalCardMigrationOfferView() override {}
-
-  // views::StyledLabelListener:
-  void StyledLabelLinkClicked(views::StyledLabel* label,
-                              const gfx::Range& range,
-                              int event_flags) override {
-    controller_->OnLegalMessageLinkClicked(
-        legal_message_container_->GetUrlForLink(label, range));
-  }
 
   const std::vector<std::string> GetSelectedCardGuids() const {
     std::vector<std::string> selected_cards;
