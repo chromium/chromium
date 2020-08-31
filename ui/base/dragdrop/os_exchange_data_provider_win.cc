@@ -43,33 +43,31 @@
 
 namespace ui {
 
-static constexpr STGMEDIUM kNullStorageMedium = {.tymed = TYMED_NULL,
-                                                 .pUnkForRelease = nullptr};
-
-static const ClipboardFormatType& GetRendererTaintFormatType() {
-  static base::NoDestructor<ClipboardFormatType> format(
-      ClipboardFormatType::GetType("chromium/x-renderer-taint"));
-  return *format;
-}
+namespace {
+constexpr STGMEDIUM kNullStorageMedium = {.tymed = TYMED_NULL,
+                                          .pUnkForRelease = nullptr};
 
 // Creates a new STGMEDIUM object to hold the specified text. The caller
 // owns the resulting object. The "Bytes" version does not NULL terminate, the
 // string version does.
-static STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes);
+STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes);
 template <typename T>
-static STGMEDIUM CreateStorageForString(const std::basic_string<T>& data);
-// Creates the contents of an Internet Shortcut file for the given URL.
-static std::string GetInternetShortcutFileContents(const GURL& url);
-// Creates a valid file name given a suggested title and URL.
-static base::string16 CreateValidFileNameFromTitle(const GURL& url,
-                                                   const base::string16& title);
+STGMEDIUM CreateStorageForString(const std::basic_string<T>& data);
 // Creates a new STGMEDIUM object to hold files.
-static STGMEDIUM CreateStorageForFileNames(
-    const std::vector<FileInfo>& filenames);
-static STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path);
+STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames);
+STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path);
 // Creates a File Descriptor for the creation of a file to the given URL and
 // returns a handle to it.
-static STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path);
+STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path);
+
+const ClipboardFormatType& GetRendererTaintFormatType();
+// Creates the contents of an Internet Shortcut file for the given URL.
+std::string GetInternetShortcutFileContents(const GURL& url);
+// Creates a valid file name given a suggested title and URL.
+base::string16 CreateValidFileNameFromTitle(const GURL& url,
+                                            const base::string16& title);
+
+}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 // FormatEtcEnumerator
@@ -1071,9 +1069,9 @@ ULONG DataObjectImpl::Release() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// DataObjectImpl, private:
-
-static STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes) {
+// anonymous namespace functions
+namespace {
+STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes) {
   HANDLE handle = GlobalAlloc(GPTR, static_cast<int>(bytes));
   if (handle) {
     base::win::ScopedHGlobal<uint8_t*> scoped(handle);
@@ -1086,46 +1084,13 @@ static STGMEDIUM CreateStorageForBytes(const void* data, size_t bytes) {
 }
 
 template <typename T>
-static STGMEDIUM CreateStorageForString(const std::basic_string<T>& data) {
+STGMEDIUM CreateStorageForString(const std::basic_string<T>& data) {
   return CreateStorageForBytes(
       data.c_str(),
       (data.size() + 1) * sizeof(typename std::basic_string<T>::value_type));
 }
 
-static std::string GetInternetShortcutFileContents(const GURL& url) {
-  static constexpr char kInternetShortcutFileStart[] =
-      "[InternetShortcut]\r\nURL=";
-  static constexpr char kInternetShortcutFileEnd[] = "\r\n";
-  return kInternetShortcutFileStart + url.spec() + kInternetShortcutFileEnd;
-}
-
-static base::string16 CreateValidFileNameFromTitle(
-    const GURL& url,
-    const base::string16& title) {
-  base::string16 validated;
-  if (title.empty()) {
-    if (url.is_valid()) {
-      validated = net::GetSuggestedFilename(url, "", "", "", "", std::string());
-    } else {
-      // Nothing else can be done, just use a default.
-      validated =
-          l10n_util::GetStringUTF16(IDS_APP_UNTITLED_SHORTCUT_FILE_NAME);
-    }
-  } else {
-    validated = title;
-    base::i18n::ReplaceIllegalCharactersInPath(&validated, '-');
-  }
-  static const wchar_t kExtension[] = L".url";
-  static const size_t kMaxLength = MAX_PATH - base::size(kExtension);
-  if (validated.size() > kMaxLength)
-    validated.erase(kMaxLength);
-  validated += kExtension;
-
-  return validated;
-}
-
-static STGMEDIUM CreateStorageForFileNames(
-    const std::vector<FileInfo>& filenames) {
+STGMEDIUM CreateStorageForFileNames(const std::vector<FileInfo>& filenames) {
   // CF_HDROP clipboard format consists of DROPFILES structure, a series of file
   // names including the terminating null character and the additional null
   // character at the tail to terminate the array.
@@ -1171,12 +1136,12 @@ static STGMEDIUM CreateStorageForFileNames(
   return storage;
 }
 
-static LPITEMIDLIST PIDLNext(LPITEMIDLIST pidl) {
+LPITEMIDLIST PIDLNext(LPITEMIDLIST pidl) {
   return reinterpret_cast<LPITEMIDLIST>(
       reinterpret_cast<BYTE*>(pidl) + pidl->mkid.cb);
 }
 
-static size_t PIDLSize(LPITEMIDLIST pidl) {
+size_t PIDLSize(LPITEMIDLIST pidl) {
   size_t s = 0;
   while (pidl->mkid.cb > 0) {
     s += pidl->mkid.cb;
@@ -1186,12 +1151,12 @@ static size_t PIDLSize(LPITEMIDLIST pidl) {
   return 2 + s;
 }
 
-static LPITEMIDLIST GetNthPIDL(CIDA* cida, int n) {
+LPITEMIDLIST GetNthPIDL(CIDA* cida, int n) {
   return reinterpret_cast<LPITEMIDLIST>(
       reinterpret_cast<LPBYTE>(cida) + cida->aoffset[n]);
 }
 
-static LPITEMIDLIST GetPidlFromPath(const base::FilePath& path) {
+LPITEMIDLIST GetPidlFromPath(const base::FilePath& path) {
   LPITEMIDLIST pidl = NULL;
   LPSHELLFOLDER desktop_folder = NULL;
   LPWSTR path_str = const_cast<LPWSTR>(path.value().c_str());
@@ -1205,7 +1170,7 @@ static LPITEMIDLIST GetPidlFromPath(const base::FilePath& path) {
   return SUCCEEDED(hr) ? pidl : NULL;
 }
 
-static STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path) {
+STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path) {
   LPITEMIDLIST pidl = GetPidlFromPath(path);
   if (!pidl)
     return kNullStorageMedium;
@@ -1246,7 +1211,7 @@ static STGMEDIUM CreateIdListStorageForFileName(const base::FilePath& path) {
   return storage;
 }
 
-static STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path) {
+STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path) {
   base::string16 file_name = path.value();
   DCHECK(!file_name.empty());
   HANDLE hdata = GlobalAlloc(GPTR, sizeof(FILEGROUPDESCRIPTORW));
@@ -1262,5 +1227,44 @@ static STGMEDIUM CreateStorageForFileDescriptor(const base::FilePath& path) {
       .tymed = TYMED_HGLOBAL, .hGlobal = hdata, .pUnkForRelease = nullptr};
   return storage;
 }
+
+const ClipboardFormatType& GetRendererTaintFormatType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ClipboardFormatType::GetType("chromium/x-renderer-taint"));
+  return *format;
+}
+
+std::string GetInternetShortcutFileContents(const GURL& url) {
+  static constexpr char kInternetShortcutFileStart[] =
+      "[InternetShortcut]\r\nURL=";
+  static constexpr char kInternetShortcutFileEnd[] = "\r\n";
+  return kInternetShortcutFileStart + url.spec() + kInternetShortcutFileEnd;
+}
+
+base::string16 CreateValidFileNameFromTitle(const GURL& url,
+                                            const base::string16& title) {
+  base::string16 validated;
+  if (title.empty()) {
+    if (url.is_valid()) {
+      validated = net::GetSuggestedFilename(url, "", "", "", "", std::string());
+    } else {
+      // Nothing else can be done, just use a default.
+      validated =
+          l10n_util::GetStringUTF16(IDS_APP_UNTITLED_SHORTCUT_FILE_NAME);
+    }
+  } else {
+    validated = title;
+    base::i18n::ReplaceIllegalCharactersInPath(&validated, '-');
+  }
+  static const wchar_t kExtension[] = L".url";
+  static const size_t kMaxLength = MAX_PATH - base::size(kExtension);
+  if (validated.size() > kMaxLength)
+    validated.erase(kMaxLength);
+  validated += kExtension;
+
+  return validated;
+}
+
+}  // namespace
 
 }  // namespace ui
