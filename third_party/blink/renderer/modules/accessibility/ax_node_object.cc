@@ -3740,13 +3740,11 @@ void AXNodeObject::ChildrenChanged() {
   // because unignored nodes recursively include all children of ignored
   // nodes. This method is called during layout, so we need to be careful to
   // only explore existing objects.
-  AXObject* node_to_update = this;
-  while (node_to_update) {
+  bool is_included =
+      !LastKnownIsIgnoredValue() || LastKnownIsIgnoredButIncludedInTreeValue();
+  AXObject* node_to_update = is_included ? this : ParentObjectIncludedInTree();
+  if (node_to_update)  // Can be null, e.g. if <title> contents change.
     node_to_update->SetNeedsToUpdateChildren();
-    if (!node_to_update->LastKnownIsIgnoredValue())
-      break;
-    node_to_update = node_to_update->ParentObjectIfExists();
-  }
 
   // If this node's children are not part of the accessibility tree then
   // skip notification and walking up the ancestors.
