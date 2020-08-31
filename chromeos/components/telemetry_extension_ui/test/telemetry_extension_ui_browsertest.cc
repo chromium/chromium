@@ -132,6 +132,16 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
         ->SetAvailableRoutinesForTesting(input);
   }
 
+  {
+    auto input = chromeos::cros_healthd::mojom::RunRoutineResponse::New();
+    input->id = 123456789;
+    input->status =
+        chromeos::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kReady;
+
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetRunRoutineResponseForTesting(input);
+  }
+
   auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
   {
     auto battery_info = chromeos::cros_healthd::mojom::BatteryInfo::New();

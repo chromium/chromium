@@ -47,6 +47,12 @@ health::mojom::NonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
       Convert(input->status), std::move(input->status_message));
 }
 
+health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
+    cros_healthd::mojom::RunRoutineResponsePtr input) {
+  return health::mojom::RunRoutineResponse::New(input->id,
+                                                Convert(input->status));
+}
+
 }  // namespace unchecked
 
 health::mojom::DiagnosticRoutineStatusEnum Convert(

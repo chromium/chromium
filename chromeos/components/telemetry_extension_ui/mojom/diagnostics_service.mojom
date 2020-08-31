@@ -40,6 +40,22 @@ interface DiagnosticsService {
   GetRoutineUpdate(int32 id, DiagnosticRoutineCommandEnum command,
                    bool include_output)
       => (RoutineUpdate routine_update);
+
+  // Requests that the BatteryCapacity routine is created and started on the
+  // platform. This routine checks the battery's design capacity against the
+  // inputs. The routine will pass iff the design capacity of the battery read
+  // from the platform is inclusively within these bounds. This routine is only
+  // available if GetAvailableRoutines returned kBatteryCapactity.
+  //
+  // The request:
+  // * |low_mah| - lower bound for the battery's design capacity (mAh).
+  // * |high_mah| - upper bound for the battery's design capacity (mAh).
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunBatteryCapacityRoutine(uint32 low_mah, uint32 high_mah)
+      => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.
@@ -133,4 +149,15 @@ struct RoutineUpdate {
   // Information specific to the type of response - interactive or
   // noninteractive.
   RoutineUpdateUnion routine_update_union;
+};
+
+// Generic return value for a RunSomeRoutine call.
+struct RunRoutineResponse {
+  // Unique identifier for the newly-created routine. An id of kFailedToStartId
+  // means that the routine was unable to be created. Can be used in a
+  // GetRoutineUpdate call to control or get the status of the created routine.
+  int32 id;
+  // Current status of the newly-created routine. A status of kFailedToStart
+  // means the routine was unable to be created.
+  DiagnosticRoutineStatusEnum status;
 };

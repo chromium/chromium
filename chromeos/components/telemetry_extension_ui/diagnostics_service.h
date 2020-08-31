@@ -31,6 +31,10 @@ class DiagnosticsService : public health::mojom::DiagnosticsService {
                         health::mojom::DiagnosticRoutineCommandEnum command,
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
+  void RunBatteryCapacityRoutine(
+      uint32_t low_mah,
+      uint32_t high_mah,
+      RunBatteryCapacityRoutineCallback callback) override;
 
   // Ensures that |service_| created and connected to the
   // CrosHealthdProbeService.

@@ -30,6 +30,13 @@ function getOrCreateProbeService() {
 }
 
 /**
+ * Alias for Mojo RunRoutine response.
+ * @typedef { !Promise<{response: !chromeos.health.mojom.RunRoutineResponse}>
+ * }
+ */
+let RunRoutineResponsePromise;
+
+/**
  * Proxying diagnostics requests between DiagnosticsRequester on
  * chrome-untrusted:// side with WebIDL types and DiagnosticsService on
  * chrome:// side with Mojo types.
@@ -254,6 +261,47 @@ class DiagnosticsProxy {
 
     return this.convertRoutineUpdate(response.routineUpdate);
   };
+
+  /**
+   * @param { !chromeos.health.mojom.RunRoutineResponse } runRoutineResponse
+   * @return { !Object }
+   */
+  convertRunRoutineResponse(runRoutineResponse) {
+    return {
+      id: runRoutineResponse.id,
+      status: this.convertStatus(runRoutineResponse.status)
+    };
+  };
+
+  /**
+   * Generic handler for a runRoutine.
+   * @param { !function(!Object): !RunRoutineResponsePromise } handler
+   * @param { !Object } message
+   * @return { !Promise<!dpsl_internal.DiagnosticsRunRoutineResponse> }
+   */
+  async genericRunRoutineHandler(handler, message) {
+    try {
+      const response = await handler(message);
+      return this.convertRunRoutineResponse(response.response);
+    } catch (/** @type !Error */ error) {
+      return error;
+    }
+  };
+
+  /**
+   * Runs battery capacity routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunBatteryCapacityRoutine(message) {
+    const request =
+        /**
+         * @type {!dpsl_internal.DiagnosticsRunBatteryCapacityRoutineRequest}
+         */
+        (message);
+    return await getOrCreateDiagnosticsService().runBatteryCapacityRoutine(
+        request.lowMah, request.highMah);
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -437,6 +485,12 @@ untrustedMessagePipe.registerHandler(
 untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_ROUTINE_UPDATE,
     (message) => diagnosticsProxy.handleGetRoutineUpdate(message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunBatteryCapacityRoutine(message),
+        message));
 
 untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.PROBE_TELEMETRY_INFO,

@@ -37,6 +37,9 @@ health::mojom::InteractiveRoutineUpdatePtr UncheckedConvertPtr(
 health::mojom::NonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
     cros_healthd::mojom::NonInteractiveRoutineUpdatePtr input);
 
+health::mojom::RunRoutineResponsePtr UncheckedConvertPtr(
+    cros_healthd::mojom::RunRoutineResponsePtr input);
+
 }  // namespace unchecked
 
 std::vector<health::mojom::DiagnosticRoutineEnum> Convert(
