@@ -11,10 +11,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -58,7 +56,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // This uses type uint64_t to match the definition of
 // WebSocketFrameHeader::payload_length in websocket_frame.h.
-const uint64_t kMaxControlFramePayload = 125;
+constexpr uint64_t kMaxControlFramePayload = 125;
 
 // The number of bytes to attempt to read at a time.
 // TODO(ricea): See if there is a better number or algorithm to fulfill our
@@ -71,10 +69,10 @@ const uint64_t kMaxControlFramePayload = 125;
 //  4. We would like to hit any sweet-spots that might exist in terms of network
 //     packet sizes / encryption block sizes / IPC alignment issues, etc.
 #if defined(OS_ANDROID)
-const int kReadBufferSize = 32 * 1024;
+constexpr size_t kReadBufferSize = 32 * 1024;
 #else
 // |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.
-const int kReadBufferSize = 131000;
+constexpr size_t kReadBufferSize = 131000;
 #endif
 
 // Returns the total serialized size of |frames|. This function assumes that
@@ -101,17 +99,13 @@ int CalculateSerializedSizeAndTurnOnMaskBit(
 
 }  // namespace
 
-// Overrides default read buffer size for WebSocket. This flag will be used to
-// investigate the performance issue of crbug.com/865001 and be deleted later
-// on.
-const char kWebSocketReadBufferSize[] = "websocket-read-buffer-size";
-
 WebSocketBasicStream::WebSocketBasicStream(
     std::unique_ptr<Adapter> connection,
     const scoped_refptr<GrowableIOBuffer>& http_read_buffer,
     const std::string& sub_protocol,
     const std::string& extensions)
-    : connection_(std::move(connection)),
+    : read_buffer_(base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize)),
+      connection_(std::move(connection)),
       http_read_buffer_(http_read_buffer),
       sub_protocol_(sub_protocol),
       extensions_(extensions),
@@ -120,21 +114,6 @@ WebSocketBasicStream::WebSocketBasicStream(
   if (http_read_buffer_.get() && http_read_buffer_->offset() == 0)
     http_read_buffer_ = nullptr;
   DCHECK(connection_->is_initialized());
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  DCHECK(command_line);
-  int websocket_buffer_size = kReadBufferSize;
-  if (command_line->HasSwitch(kWebSocketReadBufferSize)) {
-    std::string size_string =
-        command_line->GetSwitchValueASCII(kWebSocketReadBufferSize);
-    if (!base::StringToInt(size_string, &websocket_buffer_size) ||
-        websocket_buffer_size <= 0) {
-      websocket_buffer_size = kReadBufferSize;
-    }
-  }
-  DVLOG(1) << "WebSocketReadBufferSize is " << websocket_buffer_size;
-  read_buffer_ =
-      (base::MakeRefCounted<IOBufferWithSize>(websocket_buffer_size));
 }
 
 WebSocketBasicStream::~WebSocketBasicStream() { Close(); }

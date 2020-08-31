@@ -19,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_frame.h"
@@ -147,16 +146,6 @@ class NET_EXPORT WebSocketChannel {
   // This method is public for testing.
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request);
-
-  // The renderer calls AddReceiveFlowControlQuota() to the browser per
-  // recerving this amount of data so that the browser can continue sending
-  // remaining data to the renderer.
-#if defined(OS_ANDROID)
-  static const uint64_t kReceiveQuotaThreshold = 1 << 15;
-#else
-  // |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.
-  static const uint64_t kReceiveQuotaThreshold = 65500;
-#endif
 
  private:
   // The object passes through a linear progression of states from
@@ -399,8 +388,6 @@ class NET_EXPORT WebSocketChannel {
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketChannel);
 };
-
-NET_EXPORT extern const char kWebSocketReceiveQuotaThreshold[];
 
 }  // namespace net
 

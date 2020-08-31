@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -19,10 +18,10 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "net/base/auth.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
@@ -48,6 +47,15 @@ namespace {
 // What is considered a "small message" for the purposes of small message
 // reassembly.
 constexpr uint64_t kSmallMessageThreshhold = 1 << 16;
+
+// The capacity of the data pipe to use for received messages, in bytes. Optimal
+// value depends on the platform.
+#if defined(OS_ANDROID)
+constexpr uint32_t kReceiveDataPipeCapacity = 1 << 16;
+#else
+// |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.
+constexpr uint32_t kReceiveDataPipeCapacity = 131000;
+#endif
 
 // Convert a mojom::WebSocketMessageType to a
 // net::WebSocketFrameHeader::OpCode
@@ -190,22 +198,9 @@ void WebSocket::WebSocketEventHandler::OnAddChannelResponse(
     impl_->pending_connection_tracker_->OnCompleteHandshake();
   }
 
-  base::CommandLine* const command_line =
-      base::CommandLine::ForCurrentProcess();
-  DCHECK(command_line);
-  uint64_t receive_quota_threshold =
-      net::WebSocketChannel::kReceiveQuotaThreshold;
-  if (command_line->HasSwitch(net::kWebSocketReceiveQuotaThreshold)) {
-    std::string flag_string =
-        command_line->GetSwitchValueASCII(net::kWebSocketReceiveQuotaThreshold);
-    if (!base::StringToUint64(flag_string, &receive_quota_threshold))
-      receive_quota_threshold = net::WebSocketChannel::kReceiveQuotaThreshold;
-  }
-  DVLOG(3) << "receive_quota_threshold is " << receive_quota_threshold;
-
   const MojoCreateDataPipeOptions data_pipe_options{
       sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
-      receive_quota_threshold * 2};
+      kReceiveDataPipeCapacity};
   mojo::ScopedDataPipeConsumerHandle readable;
   const MojoResult result =
       mojo::CreateDataPipe(&data_pipe_options, &impl_->writable_, &readable);
