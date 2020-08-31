@@ -60,6 +60,7 @@
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/transform_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -337,6 +338,62 @@ class OverviewGrid::TargetWindowObserver : public aura::WindowObserver {
   DISALLOW_COPY_AND_ASSIGN(TargetWindowObserver);
 };
 
+// Class that updates the focusable overview widgets so that the point to the
+// correct next and previous widgets for a11y purposes. Needs to be updated when
+// an overview item is added or removed. It is expected that the desk widget
+// does not get altered for the duration of overview.
+class OverviewGrid::AccessibilityFocusAnnotator {
+ public:
+  explicit AccessibilityFocusAnnotator(OverviewGrid* grid) : grid_(grid) {}
+  AccessibilityFocusAnnotator(const AccessibilityFocusAnnotator&) = delete;
+  AccessibilityFocusAnnotator& operator=(const AccessibilityFocusAnnotator&) =
+      delete;
+  ~AccessibilityFocusAnnotator() = default;
+
+  void UpdateAccessibilityFocus() {
+    // Construct the list of accessible widgets, these are the desk bar widget
+    // and all the item widgets of each item on this grid.
+    std::vector<views::Widget*> a11y_widgets;
+    if (grid_->desks_widget())
+      a11y_widgets.push_back(const_cast<views::Widget*>(grid_->desks_widget()));
+    for (const auto& item : grid_->window_list())
+      a11y_widgets.push_back(item->item_widget());
+
+    if (a11y_widgets.empty())
+      return;
+
+    auto get_view_a11y =
+        [&a11y_widgets](int index) -> views::ViewAccessibility& {
+      return a11y_widgets[index]->GetContentsView()->GetViewAccessibility();
+    };
+
+    // If there is only one widget left, clear the focus overrides so that they
+    // do not point to deleted objects.
+    if (a11y_widgets.size() == 1) {
+      get_view_a11y(/*index=*/0).OverridePreviousFocus(nullptr);
+      get_view_a11y(/*index=*/0).OverrideNextFocus(nullptr);
+      a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
+          ax::mojom::Event::kTreeChanged, true);
+      return;
+    }
+
+    int size = a11y_widgets.size();
+    for (int i = 0; i < size; ++i) {
+      int previous_index = (i + size - 1) % size;
+      int next_index = (i + 1) % size;
+      get_view_a11y(i).OverridePreviousFocus(a11y_widgets[previous_index]);
+      get_view_a11y(i).OverrideNextFocus(a11y_widgets[next_index]);
+      a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
+          ax::mojom::Event::kTreeChanged, true);
+    }
+  }
+
+ private:
+  // The associated overview grid. Guaranteed to be non null for the duration of
+  // |this|.
+  OverviewGrid* grid_;
+};
+
 OverviewGrid::OverviewGrid(aura::Window* root_window,
                            const std::vector<aura::Window*>& windows,
                            OverviewSession* overview_session)
@@ -567,6 +624,9 @@ void OverviewGrid::AddItem(aura::Window* window,
   }
   if (reposition)
     PositionWindows(animate, ignored_items);
+
+  if (accessibility_focus_annotator_)
+    accessibility_focus_annotator_->UpdateAccessibilityFocus();
 }
 
 void OverviewGrid::AppendItem(aura::Window* window,
@@ -596,7 +656,9 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
   DCHECK(iter != window_list_.rend());
 
   // This can also be called when shutting down |this|, at which the item will
-  // be cleaning up and its associated view may be nullptr.
+  // be cleaning up and its associated view may be nullptr. |overview_item|
+  // needs to still be in |window_list_| so we can compute what the deleted
+  // index is.
   if (overview_session_ && (*iter)->overview_item_view()) {
     overview_session_->highlight_controller()->OnViewDestroyingOrDisabling(
         (*iter)->overview_item_view());
@@ -606,6 +668,16 @@ void OverviewGrid::RemoveItem(OverviewItem* overview_item,
   // iterating through the |window_list_|.
   std::unique_ptr<OverviewItem> tmp = std::move(*iter);
   window_list_.erase(std::next(iter).base());
+
+  // This can also be called when shutting down |this|, at which the item will
+  // be cleaning up and its associated view may be nullptr. |overview_item|
+  // needs to be removed from |window_list_| so we recompute the accessibility
+  // widget pointers.
+  if (overview_session_ && accessibility_focus_annotator_ &&
+      tmp->overview_item_view()) {
+    accessibility_focus_annotator_->UpdateAccessibilityFocus();
+  }
+
   tmp.reset();
 
   UpdateFrameThrottling();
@@ -1009,6 +1081,10 @@ void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
 
   for (auto& window : window_list())
     window->OnStartingAnimationComplete();
+
+  accessibility_focus_annotator_ =
+      std::make_unique<AccessibilityFocusAnnotator>(this);
+  accessibility_focus_annotator_->UpdateAccessibilityFocus();
 }
 
 void OverviewGrid::CalculateWindowListAnimationStates(
