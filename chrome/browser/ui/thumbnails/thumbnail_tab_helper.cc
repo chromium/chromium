@@ -162,10 +162,9 @@ class ThumbnailTabHelper::TabStateTracker
       return;
 
     visible_ = new_visible;
+    capture_driver_.UpdatePageVisibility(visible_);
     if (!visible_ && page_readiness_ == PageReadiness::kReadyForFinalCapture)
       thumbnail_tab_helper_->CaptureThumbnailOnTabHidden();
-    else
-      capture_driver_.UpdatePageVisibility(visible_);
   }
 
   void RenderViewReady() override { capture_driver_.SetCanCapture(true); }

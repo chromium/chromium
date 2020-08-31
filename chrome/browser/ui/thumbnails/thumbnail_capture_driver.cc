@@ -50,9 +50,10 @@ void ThumbnailCaptureDriver::UpdateCaptureState() {
     return;
   }
 
-  // Don't capture when the page is visible and the thumbnail is not
-  // requested.
-  if (!thumbnail_visible_ && page_visible_) {
+  // Capturing is not allowed when a page is visible. Otherwise it
+  // prevents the tab from properly entering fullscreen. See
+  // https://crbug.com/1112607
+  if (page_visible_) {
     client_->StopCapture();
     if (capture_state_ < CaptureState::kHaveFinalCapture)
       capture_state_ = CaptureState::kNoCapture;
@@ -67,7 +68,7 @@ void ThumbnailCaptureDriver::UpdateCaptureState() {
   // renderer. TODO(crbug.com/1073141): Figure out how to force-render
   // background tabs. This bug has detailed descriptions of steps we might
   // take to make capture more flexible in this area.
-  if (!thumbnail_visible_ && !page_visible_) {
+  if (!thumbnail_visible_) {
     client_->StopCapture();
     if (capture_state_ < CaptureState::kHaveFinalCapture)
       capture_state_ = CaptureState::kNoCapture;

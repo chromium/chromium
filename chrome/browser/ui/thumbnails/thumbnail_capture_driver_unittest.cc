@@ -37,6 +37,7 @@ class ThumbnailCaptureDriverTest : public ::testing::Test {
 }  // namespace
 
 using ::testing::AnyNumber;
+using ::testing::AtLeast;
 using ::testing::Expectation;
 using ::testing::InSequence;
 
@@ -48,6 +49,25 @@ TEST_F(ThumbnailCaptureDriverTest,
 
   capture_driver_.UpdateThumbnailVisibility(false);
   capture_driver_.UpdatePageVisibility(true);
+
+  // Simulate a page loading from start to finish
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kNotReady);
+  capture_driver_.SetCanCapture(true);
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForInitialCapture);
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForFinalCapture);
+}
+
+TEST_F(ThumbnailCaptureDriverTest,
+       NoCaptureWhenPageIsVisibleAndThumbnailIsRequested) {
+  EXPECT_CALL(mock_client_, RequestCapture()).Times(0);
+  EXPECT_CALL(mock_client_, StartCapture()).Times(0);
+  EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
+
+  capture_driver_.UpdatePageVisibility(true);
+  capture_driver_.UpdateThumbnailVisibility(true);
 
   // Simulate a page loading from start to finish
   capture_driver_.UpdatePageReadiness(
@@ -186,6 +206,29 @@ TEST_F(ThumbnailCaptureDriverTest, StopsOngoingCaptureWhenPageNoLongerReady) {
   capture_driver_.SetCanCapture(true);
   capture_driver_.UpdatePageReadiness(
       ThumbnailReadinessTracker::Readiness::kNotReady);
+}
+
+TEST_F(ThumbnailCaptureDriverTest, StopsCaptureIfPageBecomesVisible) {
+  {
+    InSequence s;
+    EXPECT_CALL(mock_client_, StopCapture()).Times(AnyNumber());
+    EXPECT_CALL(mock_client_, RequestCapture());
+    EXPECT_CALL(mock_client_, StartCapture());
+    EXPECT_CALL(mock_client_, StopCapture()).Times(AtLeast(1));
+  }
+
+  capture_driver_.UpdateThumbnailVisibility(true);
+  capture_driver_.UpdatePageVisibility(false);
+
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kNotReady);
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForInitialCapture);
+  capture_driver_.SetCanCapture(true);
+
+  capture_driver_.UpdatePageVisibility(true);
+  capture_driver_.UpdatePageReadiness(
+      ThumbnailReadinessTracker::Readiness::kReadyForFinalCapture);
 }
 
 TEST_F(ThumbnailCaptureDriverTest, ContinuesCaptureWhenPageBecomesFinal) {
