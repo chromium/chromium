@@ -99,8 +99,7 @@ void NearbyShareAction::LaunchAction(
   gfx::Size size = ComputeSize();
   controller->SetSharesheetSize(size.width(), size.height());
 
-  // TODO(vecore): SharesheetController will eventually provide the profile.
-  auto* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
+  auto* profile = controller->GetProfile();
   auto view = std::make_unique<views::WebView>(profile);
   // If this is not done, we don't see anything in our view.
   view->SetPreferredSize(size);
