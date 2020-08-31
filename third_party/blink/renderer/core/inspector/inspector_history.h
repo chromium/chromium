@@ -33,6 +33,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -41,9 +42,10 @@ namespace blink {
 
 class ExceptionState;
 
-class InspectorHistory final : public GarbageCollected<InspectorHistory> {
+class CORE_EXPORT InspectorHistory final
+    : public GarbageCollected<InspectorHistory> {
  public:
-  class Action : public GarbageCollected<Action> {
+  class CORE_EXPORT Action : public GarbageCollected<Action> {
    public:
     explicit Action(const String& name);
     virtual ~Action();
