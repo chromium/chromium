@@ -123,6 +123,13 @@ class WindowCycleControllerTest : public AshTestBase {
         ->GetWindowCycleItemViewsForTesting();
   }
 
+  bool CycleViewExists() const {
+    return Shell::Get()
+        ->window_cycle_controller()
+        ->window_cycle_list()
+        ->cycle_view_for_testing();
+  }
+
  private:
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 
@@ -597,7 +604,7 @@ TEST_F(WindowCycleControllerTest, MouseEventsCaptured) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   wm::ActivateWindow(w0.get());
 
-  // Events get through.
+  // Events get through while not cycling.
   generator->MoveMouseToCenterOf(w0.get());
   generator->ClickLeftButton();
   EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
@@ -606,11 +613,11 @@ TEST_F(WindowCycleControllerTest, MouseEventsCaptured) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
   controller->HandleCycleWindow(WindowCycleController::FORWARD);
 
-  // Most mouse events don't get through.
+  // Mouse events not over the cycle view don't get through.
   generator->PressLeftButton();
   EXPECT_EQ(0, event_count.GetMouseEventCountAndReset());
 
-  // Although releases do.
+  // Although releases do, regardless of mouse position.
   generator->ReleaseLeftButton();
   EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
 
@@ -864,6 +871,32 @@ class InteractiveWindowCycleControllerTest : public WindowCycleControllerTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests that when the cycle view is not open, the event filter does not check
+// whether events occur within the cycle view.
+// TODO(chinsenj): Add this to WindowCycleControllerTest.MouseEventsCaptured
+// after feature launch.
+TEST_F(InteractiveWindowCycleControllerTest,
+       MouseEventWhenCycleViewDoesNotExist) {
+  aura::test::TestWindowDelegate delegate;
+  std::unique_ptr<Window> w0(CreateTestWindowInShellWithDelegate(
+      &delegate, 0, gfx::Rect(0, 0, 100, 100)));
+  EventCounter event_count;
+  w0->AddPreTargetHandler(&event_count);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+
+  // Mouse events get through if the cycle view is not open.
+  // Cycling with one window open ensures the UI doesn't show but the event
+  // filter is.
+  controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  generator->MoveMouseToCenterOf(w0.get());
+  generator->ClickLeftButton();
+  EXPECT_TRUE(controller->IsCycling());
+  EXPECT_FALSE(CycleViewExists());
+  EXPECT_LT(0, event_count.GetMouseEventCountAndReset());
+  controller->CompleteCycling();
+}
 
 // When a user hovers their mouse over an item, it should cycle to it.
 // If a user clicks on an item, it should complete cycling and activate

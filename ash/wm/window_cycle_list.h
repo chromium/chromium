@@ -48,7 +48,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Skip window cycle list directly to |window|.
   void StepToWindow(aura::Window* window);
 
-  // Checks whether |event| occurs within the cycle view.
+  // Checks whether |event| occurs within the cycle view. Returns false if
+  // |cycle_view_| does not exist.
   bool IsEventInCycleView(ui::LocatedEvent* event);
 
   void set_user_did_accept(bool user_did_accept) {
@@ -89,6 +90,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Returns the views for the window cycle list.
   const views::View::Views& GetWindowCycleItemViewsForTesting() const;
+
+  WindowCycleView* cycle_view_for_testing() const { return cycle_view_; }
 
   // List of weak pointers to windows to use while cycling with the keyboard.
   // List is built when the user initiates the gesture (i.e. hits alt-tab the

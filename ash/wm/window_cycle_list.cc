@@ -565,6 +565,9 @@ void WindowCycleList::StepToWindow(aura::Window* window) {
 }
 
 bool WindowCycleList::IsEventInCycleView(ui::LocatedEvent* event) {
+  if (!cycle_view_)
+    return false;
+
   aura::Window* target = static_cast<aura::Window*>(event->target());
   aura::Window* event_root = target->GetRootWindow();
   gfx::Point event_screen_point = event->root_location();
