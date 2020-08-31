@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
@@ -260,24 +261,28 @@ class CrossRealmTransformErrorListener final : public NativeEventListener {
   void Invoke(ExecutionContext*, Event*) override {
     ScriptState* script_state = target_->GetScriptState();
 
+    // Need to enter a script scope to manipulate JavaScript objects.
+    ScriptState::Scope scope(script_state);
+
     // Common to
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformreadable
     // and
     // https://streams.spec.whatwg.org/#abstract-opdef-setupcrossrealmtransformwritable.
 
     // 1. Let error be a new "DataCloneError" DOMException.
-    const auto* error =
-        DOMException::Create("chunk could not be cloned", "DataCloneError");
-    auto* message_port = target_->GetMessagePort();
-    v8::Local<v8::Value> error_value = ToV8(error, script_state);
+    v8::Local<v8::Value> error = V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kDataCloneError,
+        "chunk could not be cloned");
 
     // 2. Perform ! CrossRealmTransformSendError(port, error).
-    CrossRealmTransformSendError(script_state, message_port, error_value);
+    auto* message_port = target_->GetMessagePort();
+    CrossRealmTransformSendError(script_state, message_port, error);
 
     // 4. Disentangle port.
     message_port->close();
 
-    target_->HandleError(error_value);
+    DVLOG(3) << "ErrorListener saw messageerror";
+    target_->HandleError(error);
   }
 
   void Trace(Visitor* visitor) const override {
