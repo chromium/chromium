@@ -305,11 +305,12 @@ void AppCacheInternalsUI::Proxy::OnResponseInfoLoaded(
     std::unique_ptr<AppCacheResponseReader> reader =
         appcache_service_->storage()->CreateResponseReader(
             GURL(response_enquiry.manifest_url), response_enquiry.response_id);
+    AppCacheResponseReader* const reader_ptr = reader.get();
 
-    reader->ReadData(response_data.get(), amount_to_read,
-                     base::BindOnce(&Proxy::OnResponseDataReadComplete, this,
-                                    response_enquiry, response_info,
-                                    std::move(reader), response_data));
+    reader_ptr->ReadData(response_data.get(), amount_to_read,
+                         base::BindOnce(&Proxy::OnResponseDataReadComplete,
+                                        this, response_enquiry, response_info,
+                                        std::move(reader), response_data));
   } else {
     OnResponseDataReadComplete(response_enquiry, nullptr, nullptr, nullptr, -1);
   }
