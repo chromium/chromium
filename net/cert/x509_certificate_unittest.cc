@@ -815,7 +815,7 @@ TEST(X509CertificateTest, Equals) {
   intermediates2.push_back(bssl::UpRef(certs[2]->cert_buffer()));
   scoped_refptr<X509Certificate> cert0_with_intermediate2 =
       X509Certificate::CreateFromBuffer(bssl::UpRef(certs[0]->cert_buffer()),
-                                        std::move(intermediates1));
+                                        std::move(intermediates2));
   ASSERT_TRUE(cert0_with_intermediate2);
 
   // Comparing X509Certificate with one intermediate to X509Certificate with
