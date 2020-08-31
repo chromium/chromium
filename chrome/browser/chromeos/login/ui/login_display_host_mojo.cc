@@ -118,13 +118,11 @@ void LoginDisplayHostMojo::SetUserCount(int user_count) {
 
   // Hide Gaia dialog in case empty list of users switched to a non-empty one.
   // And if the dialog shows login screen.
-  const OobeScreenId start_screen = features::IsChildSpecificSigninEnabled()
-                                        ? UserCreationView::kScreenId
-                                        : GaiaView::kScreenId;
   if (was_zero_users && user_count_ != 0 && dialog_ && dialog_->IsVisible() &&
       (!wizard_controller_->is_initialized() ||
        (wizard_controller_->current_screen() &&
-        wizard_controller_->current_screen()->screen_id() == start_screen))) {
+        WizardController::IsSigninScreen(
+            wizard_controller_->current_screen()->screen_id())))) {
     HideOobeDialog();
   }
 }
@@ -260,15 +258,12 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
     // If we already have a signin screen instance, just reset the state of the
     // oobe dialog.
 
-    OobeScreenId signin_screen_id = features::IsChildSpecificSigninEnabled()
-                                        ? UserCreationView::kScreenId
-                                        : GaiaView::kScreenId;
-
     // Try to switch to user creation screen.
-    StartWizard(signin_screen_id);
+    StartWizard(UserCreationView::kScreenId);
 
     if (wizard_controller_->current_screen() &&
-        wizard_controller_->current_screen()->screen_id() != signin_screen_id) {
+        !WizardController::IsSigninScreen(
+            wizard_controller_->current_screen()->screen_id())) {
       // Switching might fail due to the screen priorities. Do no hide the
       // dialog in that case.
       return;

@@ -712,12 +712,6 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_REQUEST_PIN_DIALOG_MAX_ATTEMPTS_EXCEEDED_ERROR);
 }
 
-void GaiaScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
-  dict->SetBoolKey("childSpecificSigninFeatureEnabled",
-                   chromeos::features::IsChildSpecificSigninEnabled());
-  BaseScreenHandler::GetAdditionalParameters(dict);
-}
-
 void GaiaScreenHandler::Initialize() {
   initialized_ = true;
   // This should be called only once on page load.

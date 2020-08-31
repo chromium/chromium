@@ -68,6 +68,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/mock_async_method_caller.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
@@ -565,7 +566,12 @@ void SecretInterceptingFakeCryptohomeClient::MountEx(
 
 class SamlTest : public OobeBaseTest {
  public:
-  SamlTest() { fake_gaia_.set_initialize_fake_merge_session(false); }
+  SamlTest() {
+    // TODO(crbug.com/1121910): Fix tests.
+    feature_list_.InitAndDisableFeature(
+        chromeos::features::kChildSpecificSignin);
+    fake_gaia_.set_initialize_fake_merge_session(false);
+  }
   ~SamlTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -709,6 +715,8 @@ class SamlTest : public OobeBaseTest {
 
  private:
   FakeSamlIdp fake_saml_idp_;
+
+  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(SamlTest);
 };

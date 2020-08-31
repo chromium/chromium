@@ -443,10 +443,13 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithChildSigninEnabled,
   // Start with identifier page.
   ExpectIdentifierPage();
 
-  // Click back to exit gaia screen.
+  // Back button reloads the gaia page since user creation screen is skipped.
+  // TODO(https://crbug.com/1121910) Fix this so back button brings back to
+  // user creation screen.
+  auto back_button_waiter = CreateGaiaPageEventWaiter("backButton");
   test::OobeJS().ClickOnPath({"gaia-signin", "signin-back-button"});
-  OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
-  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  back_button_waiter->Wait();
+  ExpectIdentifierPage();
 }
 
 // Create new account option should be available only if the settings allow it.

@@ -11,6 +11,8 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager_test_api.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/chromeos/login/test/test_condition_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_webui.h"
 #include "chrome/browser/chromeos/login/ui/webui_login_view.h"
+#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -222,8 +225,12 @@ test::JSChecker OobeBaseTest::SigninFrameJS() {
 
 // static
 OobeScreenId OobeBaseTest::GetFirstSigninScreen() {
-  return features::IsChildSpecificSigninEnabled() ? UserCreationView::kScreenId
-                                                  : GaiaView::kScreenId;
+  bool childSpecificSigninEnabled = features::IsChildSpecificSigninEnabled() &&
+                                    !g_browser_process->platform_part()
+                                         ->browser_policy_connector_chromeos()
+                                         ->IsEnterpriseManaged();
+  return childSpecificSigninEnabled ? UserCreationView::kScreenId
+                                    : GaiaView::kScreenId;
 }
 
 void OobeBaseTest::MaybeWaitForLoginScreenLoad() {

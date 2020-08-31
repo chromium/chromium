@@ -882,6 +882,9 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
     case GaiaScreen::Result::BACK:
       AdvanceToScreen(UserCreationView::kScreenId);
       break;
+    case GaiaScreen::Result::CLOSE_DIALOG:
+      LoginDisplayHost::default_host()->HideOobeDialog();
+      break;
   }
 }
 
@@ -1371,10 +1374,7 @@ void WizardController::OnDeviceModificationCanceled() {
   current_screen_->Hide();
   current_screen_ = nullptr;
   if (previous_screen_) {
-    const OobeScreenId start_screen = features::IsChildSpecificSigninEnabled()
-                                          ? UserCreationView::kScreenId
-                                          : GaiaView::kScreenId;
-    if (previous_screen_ == GetScreen(start_screen)) {
+    if (IsSigninScreen(previous_screen_->screen_id())) {
       ShowLoginScreen();
     } else {
       SetCurrentScreen(previous_screen_);
@@ -1868,6 +1868,12 @@ bool WizardController::UsingHandsOffEnrollment() {
   return policy::DeviceCloudPolicyManagerChromeOS::
              GetZeroTouchEnrollmentMode() ==
          policy::ZeroTouchEnrollmentMode::HANDS_OFF;
+}
+
+// static
+bool WizardController::IsSigninScreen(OobeScreenId screen_id) {
+  return screen_id == UserCreationView::kScreenId ||
+         screen_id == GaiaView::kScreenId;
 }
 
 void WizardController::OnLocalStateInitialized(bool /* succeeded */) {

@@ -194,6 +194,9 @@ class WizardController {
   // Set pref value for first run.
   void PrepareFirstRunPrefs();
 
+  // Returns true if we are in user creation screen or gaia signin screen.
+  static bool IsSigninScreen(OobeScreenId screen_id);
+
   OobeScreenId first_screen_for_testing() const {
     return first_screen_for_testing_;
   }
