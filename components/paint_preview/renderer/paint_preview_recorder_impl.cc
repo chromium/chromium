@@ -180,6 +180,7 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
       // immediately after a navigation finished.
       std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
                               std::move(response));
+      frame->DispatchAfterPrintEvent();
       return;
     }
   }
