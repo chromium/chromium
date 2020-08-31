@@ -463,10 +463,12 @@ void PushMessagingManager::Core::RegisterOnUI(
           // Request notifications permission (which will fail, since
           // notifications aren't supported in incognito), so the website can't
           // detect whether incognito is active.
+          GURL requesting_origin = data.requesting_origin;
+          bool user_gesture = data.user_gesture;
           PermissionControllerImpl::FromBrowserContext(browser_context)
               ->RequestPermission(
                   PermissionType::NOTIFICATIONS, render_frame_host,
-                  data.requesting_origin, data.user_gesture,
+                  requesting_origin, user_gesture,
                   base::BindOnce(&PushMessagingManager::Core::
                                      DidRequestPermissionInIncognito,
                                  weak_factory_ui_to_ui_.GetWeakPtr(),
@@ -479,12 +481,13 @@ void PushMessagingManager::Core::RegisterOnUI(
 
   int64_t registration_id = data.service_worker_registration_id;
   GURL requesting_origin = data.requesting_origin;
+  bool user_gesture = data.user_gesture;
 
   auto options = data.options->Clone();
   if (IsRequestFromDocument(render_frame_id_)) {
     push_service->SubscribeFromDocument(
         requesting_origin, registration_id, render_process_id_,
-        render_frame_id_, std::move(options), data.user_gesture,
+        render_frame_id_, std::move(options), user_gesture,
         base::BindOnce(&Core::DidRegister, weak_factory_ui_to_ui_.GetWeakPtr(),
                        std::move(data)));
   } else {
