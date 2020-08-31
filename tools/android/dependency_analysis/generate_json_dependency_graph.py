@@ -67,16 +67,18 @@ class JavaClassJdepsParser(object):
         dep_to = parsed[2]
         if not class_is_interesting(dep_from):
             return
-        if not class_is_interesting(dep_to):
-            return
 
         key_from, nested_from = class_dependency.split_nested_class_from_key(
             dep_from)
-        key_to, nested_to = class_dependency.split_nested_class_from_key(
-            dep_to)
-
         from_node: class_dependency.JavaClass = self._graph.add_node_if_new(
             key_from)
+        from_node.add_build_target(build_target)
+
+        if not class_is_interesting(dep_to):
+            return
+
+        key_to, nested_to = class_dependency.split_nested_class_from_key(
+            dep_to)
 
         self._graph.add_node_if_new(key_to)
         if key_from != key_to:  # Skip self-edges (class-nested dependency)
@@ -86,7 +88,6 @@ class JavaClassJdepsParser(object):
         if nested_to is not None:
             from_node.add_nested_class(nested_to)
 
-        from_node.add_build_target(build_target)
 
 
 def _run_command(command: List[str]) -> str:

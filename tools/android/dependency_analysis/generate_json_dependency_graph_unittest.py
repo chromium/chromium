@@ -89,9 +89,10 @@ class TestJavaClassJdepsParser(unittest.TestCase):
         self.assertEqual(self.parser.graph.num_edges, 1)
 
     def test_parse_line_not_interesting(self):
-        """Tests that nothing is changed if there is an uninteresting class."""
+        """Tests that a dependency on an uninteresting class adds a node only
+            for the origin class."""
         self.parser.parse_line(self.BUILD_TARGET, 'org.chromium.a -> b c')
-        self.assertEqual(self.parser.graph.num_nodes, 0)
+        self.assertEqual(self.parser.graph.num_nodes, 1)
         self.assertEqual(self.parser.graph.num_edges, 0)
 
     def test_parse_line_too_short(self):
