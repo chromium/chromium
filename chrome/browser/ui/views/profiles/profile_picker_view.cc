@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -127,6 +128,9 @@ void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
                              Profile* system_profile) {
   web_view_ = new views::WebView(system_profile);
   web_view_->GetWebContents()->SetDelegate(this);
+  // To record metrics using javascript, extensions are needed.
+  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
+      web_view_->GetWebContents());
   AddChildView(web_view_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 

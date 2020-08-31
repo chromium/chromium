@@ -37,6 +37,7 @@ js_library("profile_picker_main_view") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("navigation_behavior") {
@@ -44,6 +45,7 @@ js_library("navigation_behavior") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("profile_picker_app") {
@@ -75,6 +77,7 @@ js_library("profile_card_menu") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("manage_profiles_browser_proxy") {

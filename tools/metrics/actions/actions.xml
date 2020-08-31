@@ -19725,6 +19725,30 @@ should be able to be added at any place in this file.
   <description>The user opened the regular profile menu.</description>
 </action>
 
+<action name="ProfilePicker_AddClicked">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user clicked the add button in chrome://profile-picker.
+  </description>
+</action>
+
+<action name="ProfilePicker_RemoveOptionClicked">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user clicked remove in the three dotted menu in chrome://profile-picker.
+  </description>
+</action>
+
+<action name="ProfilePicker_ThreeDottedMenuClicked">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user clicked the three dotted menu in chrome://profile-picker.
+  </description>
+</action>
+
 <action name="PWAInstallIcon">
   <owner>alancutter@chromium.org</owner>
   <description>

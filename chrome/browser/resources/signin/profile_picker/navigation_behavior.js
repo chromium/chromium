@@ -7,6 +7,20 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {isForceSigninEnabled, isSignInProfileCreationSupported} from './policy_helper.js';
 
 /**
+ * ProfilePickerPages enum.
+ * These values are persisted to logs and should not be renumbered or
+ * re-used.
+ * See tools/metrics/histograms/enums.xml.
+ * @enum {number}
+ */
+const Pages = {
+  MAIN_VIEW: 0,
+  PROFILE_TYPE_CHOICE: 1,
+  LOCAL_PROFILE_CUSTOMIZATION: 2,
+  LOAD_SIGNIN: 3,
+};
+
+/**
  * Valid route pathnames.
  * @enum {string}
  */
@@ -68,8 +82,30 @@ if (!history.state || !history.state.route || !history.state.step) {
           {route: Routes.MAIN, step: computeStep(Routes.MAIN), isFirst: true},
           '', '/');
   }
+  recordNavigation();
 }
 
+
+function recordNavigation() {
+  let page = /** @type {!Pages} */ (Pages.MAIN_VIEW);
+  switch (history.state.step) {
+    case 'mainView':
+      page = Pages.MAIN_VIEW;
+      break;
+    case ProfileCreationSteps.PROFILE_TYPE_CHOICE:
+      page = Pages.PROFILE_TYPE_CHOICE;
+      break;
+    case ProfileCreationSteps.LOCAL_PROFILE_CUSTOMIZATION:
+      page = Pages.LOCAL_PROFILE_CUSTOMIZATION;
+      break;
+    case ProfileCreationSteps.LOAD_SIGNIN:
+      page = Pages.LOAD_SIGNIN;
+    default:
+      assertNotReached();
+  }
+  chrome.metricsPrivate.recordEnumerationValue(
+      'ProfilePicker.UiVisited', page, Object.keys(Pages).length);
+}
 
 /** @type {!Set<!PolymerElement>} */
 const routeObservers = new Set();

@@ -131,6 +131,8 @@ Polymer({
     e.stopPropagation();
     e.preventDefault();
     this.$.actionMenu.showAt(this.$.moreActionsButton);
+    chrome.metricsPrivate.recordUserAction(
+        'ProfilePicker_ThreeDottedMenuClicked');
   },
 
   /**
@@ -145,6 +147,7 @@ Polymer({
         this.profileState.profilePath);
     this.$.actionMenu.close();
     this.$.removeActionMenu.showAt(this.$.moreActionsButton);
+    chrome.metricsPrivate.recordUserAction('ProfilePicker_RemoveOptionClicked');
   },
 
   /**
