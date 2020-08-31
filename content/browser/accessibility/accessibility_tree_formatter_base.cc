@@ -498,7 +498,7 @@ bool AccessibilityTreeFormatterBase::MatchesNodeFilters(
   return AccessibilityTreeFormatter::MatchesNodeFilters(node_filters_, dict);
 }
 
-base::string16 AccessibilityTreeFormatterBase::FormatCoordinates(
+std::string AccessibilityTreeFormatterBase::FormatCoordinates(
     const base::DictionaryValue& value,
     const std::string& name,
     const std::string& x_name,
@@ -506,12 +506,10 @@ base::string16 AccessibilityTreeFormatterBase::FormatCoordinates(
   int x, y;
   value.GetInteger(x_name, &x);
   value.GetInteger(y_name, &y);
-  std::string xy_str(base::StringPrintf("%s=(%d, %d)", name.c_str(), x, y));
-
-  return base::UTF8ToUTF16(xy_str);
+  return base::StringPrintf("%s=(%d, %d)", name.c_str(), x, y);
 }
 
-base::string16 AccessibilityTreeFormatterBase::FormatRectangle(
+std::string AccessibilityTreeFormatterBase::FormatRectangle(
     const base::DictionaryValue& value,
     const std::string& name,
     const std::string& left_name,
@@ -523,28 +521,20 @@ base::string16 AccessibilityTreeFormatterBase::FormatRectangle(
   value.GetInteger(top_name, &top);
   value.GetInteger(width_name, &width);
   value.GetInteger(height_name, &height);
-  std::string rect_str(base::StringPrintf("%s=(%d, %d, %d, %d)", name.c_str(),
-                                          left, top, width, height));
-
-  return base::UTF8ToUTF16(rect_str);
+  return base::StringPrintf("%s=(%d, %d, %d, %d)", name.c_str(), left, top,
+                            width, height);
 }
 
 bool AccessibilityTreeFormatterBase::WriteAttribute(bool include_by_default,
                                                     const std::string& attr,
                                                     base::string16* line) {
-  return WriteAttribute(include_by_default, base::UTF8ToUTF16(attr), line);
-}
-
-bool AccessibilityTreeFormatterBase::WriteAttribute(bool include_by_default,
-                                                    const base::string16& attr,
-                                                    base::string16* line) {
   if (attr.empty())
     return false;
-  if (!MatchesPropertyFilters(base::UTF16ToUTF8(attr), include_by_default))
+  if (!MatchesPropertyFilters(attr, include_by_default))
     return false;
   if (!line->empty())
     *line += base::ASCIIToUTF16(" ");
-  *line += attr;
+  *line += base::UTF8ToUTF16(attr);
   return true;
 }
 

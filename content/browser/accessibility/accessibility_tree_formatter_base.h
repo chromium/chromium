@@ -176,24 +176,21 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBase
   // Utility functions to be used by each platform.
   //
 
-  base::string16 FormatCoordinates(const base::DictionaryValue& value,
-                                   const std::string& name,
-                                   const std::string& x_name,
-                                   const std::string& y_name);
+  std::string FormatCoordinates(const base::DictionaryValue& value,
+                                const std::string& name,
+                                const std::string& x_name,
+                                const std::string& y_name);
 
-  base::string16 FormatRectangle(const base::DictionaryValue& value,
-                                 const std::string& name,
-                                 const std::string& left_name,
-                                 const std::string& top_name,
-                                 const std::string& width_name,
-                                 const std::string& height_name);
+  std::string FormatRectangle(const base::DictionaryValue& value,
+                              const std::string& name,
+                              const std::string& left_name,
+                              const std::string& top_name,
+                              const std::string& width_name,
+                              const std::string& height_name);
 
   // Writes the given attribute string out to |line| if it matches the property
   // filters.
   // Returns false if the attribute was filtered out.
-  bool WriteAttribute(bool include_by_default,
-                      const base::string16& attr,
-                      base::string16* line);
   bool WriteAttribute(bool include_by_default,
                       const std::string& attr,
                       base::string16* line);

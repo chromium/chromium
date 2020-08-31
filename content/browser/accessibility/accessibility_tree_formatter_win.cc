@@ -919,7 +919,7 @@ base::string16 AccessibilityTreeFormatterWin::ProcessTreeForOutput(
   base::string16 line;
 
   // Always show role, and show it first.
-  base::string16 role_value;
+  std::string role_value;
   dict.GetString("role", &role_value);
   WriteAttribute(true, role_value, &line);
   if (filtered_dict_result)
@@ -932,13 +932,11 @@ base::string16 AccessibilityTreeFormatterWin::ProcessTreeForOutput(
 
     switch (value->type()) {
       case base::Value::Type::STRING: {
-        base::string16 string_value;
+        std::string string_value;
         value->GetAsString(&string_value);
         bool did_pass_filters = WriteAttribute(
             false,
-            base::StringPrintf(L"%ls='%ls'",
-                               base::UTF8ToUTF16(attribute_name).c_str(),
-                               string_value.c_str()),
+            base::StringPrintf("%s='%s'", attribute_name, string_value.c_str()),
             &line);
         if (filtered_dict_result && did_pass_filters)
           filtered_dict_result->SetString(attribute_name, string_value);
@@ -948,10 +946,7 @@ base::string16 AccessibilityTreeFormatterWin::ProcessTreeForOutput(
         int int_value = 0;
         value->GetAsInteger(&int_value);
         bool did_pass_filters = WriteAttribute(
-            false,
-            base::StringPrintf(L"%ls=%d",
-                               base::UTF8ToUTF16(attribute_name).c_str(),
-                               int_value),
+            false, base::StringPrintf("%s=%d", attribute_name, int_value),
             &line);
         if (filtered_dict_result && did_pass_filters)
           filtered_dict_result->SetInteger(attribute_name, int_value);
@@ -961,10 +956,7 @@ base::string16 AccessibilityTreeFormatterWin::ProcessTreeForOutput(
         double double_value = 0.0;
         value->GetAsDouble(&double_value);
         bool did_pass_filters = WriteAttribute(
-            false,
-            base::StringPrintf(L"%ls=%.2f",
-                               base::UTF8ToUTF16(attribute_name).c_str(),
-                               double_value),
+            false, base::StringPrintf("%s=%.2f", attribute_name, double_value),
             &line);
         if (filtered_dict_result && did_pass_filters)
           filtered_dict_result->SetDouble(attribute_name, double_value);
@@ -979,7 +971,7 @@ base::string16 AccessibilityTreeFormatterWin::ProcessTreeForOutput(
 
         for (base::ListValue::const_iterator it = list_value->begin();
              it != list_value->end(); ++it) {
-          base::string16 string_value;
+          std::string string_value;
           if (it->GetAsString(&string_value))
             if (WriteAttribute(false, string_value, &line))
               filtered_list->AppendString(string_value);

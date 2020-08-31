@@ -425,10 +425,10 @@ base::string16 AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
   if (show_ids()) {
     int id_value;
     dict.GetInteger("id", &id_value);
-    WriteAttribute(true, base::NumberToString16(id_value), &line);
+    WriteAttribute(true, base::NumberToString(id_value), &line);
   }
 
-  base::string16 role_value;
+  std::string role_value;
   dict.GetString("internalRole", &role_value);
   WriteAttribute(true, role_value, &line);
 

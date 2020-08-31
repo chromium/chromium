@@ -1031,7 +1031,7 @@ base::string16 AccessibilityTreeFormatterUia::ProcessTreeForOutput(
   base::string16 line;
 
   // Always show control type, and show it first.
-  base::string16 control_type_value;
+  std::string control_type_value;
   dict.GetString(UiaIdentifierToCondensedString(UIA_ControlTypePropertyId),
                  &control_type_value);
   WriteAttribute(true, control_type_value, &line);
@@ -1103,12 +1103,11 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
     base::DictionaryValue* filtered_result) {
   switch (value->type()) {
     case base::Value::Type::STRING: {
-      base::string16 string_value;
+      std::string string_value;
       value->GetAsString(&string_value);
       bool did_pass_filters = WriteAttribute(
           false,
-          base::StringPrintf(L"%ls='%ls'", base::UTF8ToUTF16(name).c_str(),
-                             string_value.c_str()),
+          base::StringPrintf("%s='%s'", name.c_str(), string_value.c_str()),
           &line);
       if (filtered_result && did_pass_filters)
         filtered_result->SetString(name, string_value);
@@ -1117,11 +1116,11 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
     case base::Value::Type::BOOLEAN: {
       bool bool_value = 0;
       value->GetAsBoolean(&bool_value);
-      bool did_pass_filters = WriteAttribute(
-          false,
-          base::StringPrintf(L"%ls=%ls", base::UTF8ToUTF16(name).c_str(),
-                             (bool_value ? L"true" : L"false")),
-          &line);
+      bool did_pass_filters =
+          WriteAttribute(false,
+                         base::StringPrintf("%s=%s", name.c_str(),
+                                            (bool_value ? "true" : "false")),
+                         &line);
       if (filtered_result && did_pass_filters)
         filtered_result->SetBoolean(name, bool_value);
       break;
@@ -1130,10 +1129,7 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
       int int_value = 0;
       value->GetAsInteger(&int_value);
       bool did_pass_filters = WriteAttribute(
-          false,
-          base::StringPrintf(L"%ls=%d", base::UTF8ToUTF16(name).c_str(),
-                             int_value),
-          &line);
+          false, base::StringPrintf("%s=%d", name.c_str(), int_value), &line);
       if (filtered_result && did_pass_filters)
         filtered_result->SetInteger(name, int_value);
       break;
@@ -1142,9 +1138,7 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
       double double_value = 0.0;
       value->GetAsDouble(&double_value);
       bool did_pass_filters = WriteAttribute(
-          false,
-          base::StringPrintf(L"%ls=%.2f", base::UTF8ToUTF16(name).c_str(),
-                             double_value),
+          false, base::StringPrintf("%s=%.2f", name.c_str(), double_value),
           &line);
       if (filtered_result && did_pass_filters)
         filtered_result->SetDouble(name, double_value);
