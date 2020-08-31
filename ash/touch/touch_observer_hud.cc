@@ -25,7 +25,7 @@ TouchObserverHud::TouchObserverHud(aura::Window* initial_root,
   const display::Display& display =
       Shell::Get()->display_manager()->GetDisplayForId(display_id_);
 
-  views::View* content = new views::View;
+  auto content = std::make_unique<views::View>();
 
   const gfx::Size& display_size = display.size();
   content->SetSize(display_size);
@@ -40,7 +40,7 @@ TouchObserverHud::TouchObserverHud(aura::Window* initial_root,
       Shell::GetContainer(root_window_, kShellWindowId_OverlayContainer);
   params.name = widget_name;
   widget_->Init(std::move(params));
-  widget_->SetContentsView(content);
+  widget_->SetContentsView(std::move(content));
   widget_->StackAtTop();
   widget_->Show();
 

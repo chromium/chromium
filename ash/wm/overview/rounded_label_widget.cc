@@ -89,7 +89,7 @@ void RoundedLabelWidget::Init(InitParams params) {
   }
   views::Widget::Init(std::move(widget_params));
 
-  SetContentsView(new RoundedLabelView(
+  SetContentsView(std::make_unique<RoundedLabelView>(
       params.horizontal_padding, params.vertical_padding,
       params.background_color, params.foreground_color, params.rounding_dp,
       params.preferred_height, params.message_id));

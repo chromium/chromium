@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SUBTLE_NOTIFICATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SUBTLE_NOTIFICATION_VIEW_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/native_widget_types.h"
@@ -30,8 +32,9 @@ class SubtleNotificationView : public views::View {
   void UpdateContent(const base::string16& instruction_text);
 
   // Creates a Widget containing a SubtleNotificationView.
-  static views::Widget* CreatePopupWidget(gfx::NativeView parent_view,
-                                          SubtleNotificationView* view);
+  static views::Widget* CreatePopupWidget(
+      gfx::NativeView parent_view,
+      std::unique_ptr<SubtleNotificationView> view);
   // views::View
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 

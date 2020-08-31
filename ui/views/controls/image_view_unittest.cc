@@ -56,16 +56,14 @@ class ImageViewTest : public ViewsTestBase,
     params.bounds = gfx::Rect(200, 200);
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget_.Init(std::move(params));
-    View* container = new View();
+    auto container = std::make_unique<View>();
     // Make sure children can take up exactly as much space as they require.
     BoxLayout::Orientation orientation =
         GetParam() == Axis::kHorizontal ? BoxLayout::Orientation::kHorizontal
                                         : BoxLayout::Orientation::kVertical;
     container->SetLayoutManager(std::make_unique<BoxLayout>(orientation));
-    widget_.SetContentsView(container);
-
-    image_view_ = new ImageView();
-    container->AddChildView(image_view_);
+    image_view_ = container->AddChildView(std::make_unique<ImageView>());
+    widget_.SetContentsView(std::move(container));
 
     widget_.Show();
   }

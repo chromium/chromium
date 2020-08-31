@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -297,8 +298,7 @@ TEST_F(WebViewUnitTest, TestWebViewAttachDetachWebContents) {
   // Note: that reparenting the windows directly, after the windows have been
   // created, e.g., Widget::ReparentNativeView(widget, parent2), is not a
   // supported use case. Instead, move the WebView over.
-  web_view()->parent()->RemoveChildView(web_view());
-  parent2->SetContentsView(web_view());
+  parent2->SetContentsView(web_view()->parent()->RemoveChildViewT(web_view()));
   EXPECT_EQ(3, observer1.shown_count());
   parent2->Close();
 }

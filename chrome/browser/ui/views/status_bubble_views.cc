@@ -648,8 +648,6 @@ void StatusBubbleViews::InitPopup() {
     DCHECK(!view_);
     DCHECK(!expand_view_);
     popup_ = std::make_unique<views::Widget>();
-    view_ = new StatusView(this);
-    expand_view_ = std::make_unique<StatusViewExpander>(this, view_);
 
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
 #if defined(OS_WIN)
@@ -674,7 +672,8 @@ void StatusBubbleViews::InitPopup() {
     // We do our own animation and don't want any from the system.
     popup_->SetVisibilityChangedAnimationsEnabled(false);
     popup_->SetOpacity(0.f);
-    popup_->SetContentsView(view_);
+    view_ = popup_->SetContentsView(std::make_unique<StatusView>(this));
+    expand_view_ = std::make_unique<StatusViewExpander>(this, view_);
 #if !defined(OS_MAC)
     // Stack the popup above the base widget and below higher z-order windows.
     // This is unnecessary and even detrimental on Mac, see CreateBubbleWidget.

@@ -592,7 +592,7 @@ void RunCloseWidgetDuringDispatchTest(WidgetTest* test,
       test->CreateParams(Widget::InitParams::TYPE_POPUP);
   params.bounds = gfx::Rect(0, 0, 50, 100);
   widget->Init(std::move(params));
-  widget->SetContentsView(new CloseWidgetView(last_event_type));
+  widget->SetContentsView(std::make_unique<CloseWidgetView>(last_event_type));
   widget->Show();
   GenerateMouseEvents(widget, last_event_type);
 }

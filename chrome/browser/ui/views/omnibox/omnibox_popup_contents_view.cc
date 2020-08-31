@@ -59,8 +59,8 @@ class OmniboxPopupContentsView::AutocompletePopupWidget
   }
 
   void SetPopupContentsView(OmniboxPopupContentsView* contents) {
-    SetContentsView(
-        new RoundedOmniboxResultsFrame(contents, contents->location_bar_view_));
+    SetContentsView(std::make_unique<RoundedOmniboxResultsFrame>(
+        contents, contents->location_bar_view_));
   }
 
   void SetTargetBounds(const gfx::Rect& bounds) {

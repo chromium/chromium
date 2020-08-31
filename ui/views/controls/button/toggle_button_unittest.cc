@@ -65,8 +65,8 @@ class ToggleButtonTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    button_ = new TestToggleButton(&counter_);
-    widget_->SetContentsView(button_);
+    button_ =
+        widget_->SetContentsView(std::make_unique<TestToggleButton>(&counter_));
   }
 
   void TearDown() override {

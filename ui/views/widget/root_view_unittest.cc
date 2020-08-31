@@ -125,9 +125,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
       static_cast<internal::RootView*>(widget.GetRootView());
 
   TestContextMenuController controller;
-  View* focused_view = new View;
+  View* focused_view = widget.SetContentsView(std::make_unique<View>());
   focused_view->set_context_menu_controller(&controller);
-  widget.SetContentsView(focused_view);
   focused_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   focused_view->RequestFocus();
 
@@ -194,9 +193,8 @@ TEST_F(RootViewTest, ContextMenuFromLongPress) {
   // Create a view capable of showing the context menu with two children one of
   // which handles all gesture events (e.g. a button).
   TestContextMenuController controller;
-  View* parent_view = new View;
+  View* parent_view = widget.SetContentsView(std::make_unique<View>());
   parent_view->set_context_menu_controller(&controller);
-  widget.SetContentsView(parent_view);
 
   View* gesture_handling_child_view = new GestureHandlingView;
   gesture_handling_child_view->SetBoundsRect(gfx::Rect(10, 10));
@@ -268,10 +266,9 @@ TEST_F(RootViewTest, ContextMenuFromLongPressOnDisabledView) {
   // which handles all gesture events (e.g. a button). Also mark this view
   // as disabled.
   TestContextMenuController controller;
-  View* parent_view = new View;
+  View* parent_view = widget.SetContentsView(std::make_unique<View>());
   parent_view->set_context_menu_controller(&controller);
   parent_view->SetEnabled(false);
-  widget.SetContentsView(parent_view);
 
   View* gesture_handling_child_view = new GestureHandlingView;
   gesture_handling_child_view->SetBoundsRect(gfx::Rect(10, 10));

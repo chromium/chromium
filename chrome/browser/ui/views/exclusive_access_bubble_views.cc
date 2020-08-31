@@ -51,7 +51,8 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
       bubble_first_hide_callback_(std::move(bubble_first_hide_callback)),
       animation_(new gfx::SlideAnimation(this)) {
   // Create the contents view.
-  view_ = new SubtleNotificationView();
+  auto content_view = std::make_unique<SubtleNotificationView>();
+  view_ = content_view.get();
 
 #if defined(OS_CHROMEOS)
   // Technically the exit fullscreen key on ChromeOS is F11 and the
@@ -79,7 +80,8 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
 
   // Initialize the popup.
   popup_ = SubtleNotificationView::CreatePopupWidget(
-      bubble_view_context_->GetBubbleParentView(), view_);
+      bubble_view_context_->GetBubbleParentView(), std::move(content_view));
+
   gfx::Size size = GetPopupRect(true).size();
   // Bounds are in screen coordinates.
   popup_->SetBounds(GetPopupRect(false));

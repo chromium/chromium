@@ -96,9 +96,8 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 200, 200);
     textfield_widget_->Init(std::move(params));
-    View* container = new View();
-    textfield_widget_->SetContentsView(container);
-    container->AddChildView(textfield_);
+    textfield_widget_->SetContentsView(std::make_unique<View>())
+        ->AddChildView(textfield_);
 
     textfield_->SetBoundsRect(gfx::Rect(0, 0, 200, 21));
     textfield_->SetID(1);

@@ -117,9 +117,9 @@ void FirstRunController::Init() {
       base::BindOnce(&FirstRunController::OnCancelled, base::Unretained(this)));
 
   widget_ = CreateFirstRunWidget();
-  FirstRunView* view = new FirstRunView();
+  FirstRunView* view =
+      widget_->SetContentsView(std::make_unique<FirstRunView>());
   view->Init(user_profile_, this);
-  widget_->SetContentsView(view);
   actor_ = view->GetActor();
   actor_->set_delegate(this);
   widget_->Show();

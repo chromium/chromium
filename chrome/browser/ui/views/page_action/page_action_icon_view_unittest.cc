@@ -92,10 +92,9 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
 
     widget_ = CreateTestWidget();
     delegate_ = TestPageActionIconDelegate();
-    view_ = new TestPageActionIconView(/*command_updater=*/nullptr,
-                                       /*command_id=*/0, delegate(), delegate(),
-                                       gfx::FontList());
-    widget_->SetContentsView(view_);
+    view_ = widget_->SetContentsView(std::make_unique<TestPageActionIconView>(
+        /*command_updater=*/nullptr,
+        /*command_id=*/0, delegate(), delegate(), gfx::FontList()));
 
     widget_->Show();
   }

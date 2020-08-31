@@ -3319,9 +3319,6 @@ TabStrip::DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
                                bool point_down,
                                views::Widget* context)
     : index_(index), point_down_(point_down) {
-  arrow_view_ = new views::ImageView;
-  arrow_view_->SetImage(GetDropArrowImage(point_down_));
-
   arrow_window_ = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
@@ -3330,7 +3327,9 @@ TabStrip::DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
   params.bounds = gfx::Rect(g_drop_indicator_width, g_drop_indicator_height);
   params.context = context->GetNativeWindow();
   arrow_window_->Init(std::move(params));
-  arrow_window_->SetContentsView(arrow_view_);
+  arrow_view_ =
+      arrow_window_->SetContentsView(std::make_unique<views::ImageView>());
+  arrow_view_->SetImage(GetDropArrowImage(point_down_));
   scoped_observer_.Add(arrow_window_);
 
   arrow_window_->Show();

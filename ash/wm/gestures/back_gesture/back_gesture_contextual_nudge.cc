@@ -388,8 +388,8 @@ class BackGestureContextualNudge::ContextualNudgeView
 BackGestureContextualNudge::BackGestureContextualNudge(
     base::OnceCallback<void(bool)> callback) {
   widget_ = CreateWidget();
-  nudge_view_ = new ContextualNudgeView(std::move(callback));
-  widget_->SetContentsView(nudge_view_);
+  nudge_view_ = widget_->SetContentsView(
+      std::make_unique<ContextualNudgeView>(std::move(callback)));
   widget_->Show();
 }
 

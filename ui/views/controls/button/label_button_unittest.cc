@@ -739,13 +739,12 @@ class InkDropLabelButtonTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    button_ = new LabelButton(nullptr, base::string16());
+    button_ = widget_->SetContentsView(
+        std::make_unique<LabelButton>(nullptr, base::string16()));
 
     test_ink_drop_ = new test::TestInkDrop();
     test::InkDropHostViewTestApi(button_).SetInkDrop(
         base::WrapUnique(test_ink_drop_));
-
-    widget_->SetContentsView(button_);
   }
 
   void TearDown() override {

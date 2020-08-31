@@ -169,7 +169,7 @@ void SubtleNotificationView::UpdateContent(
 // static
 views::Widget* SubtleNotificationView::CreatePopupWidget(
     gfx::NativeView parent_view,
-    SubtleNotificationView* view) {
+    std::unique_ptr<SubtleNotificationView> view) {
   // Initialize the popup.
   views::Widget* popup = new views::Widget;
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
@@ -178,7 +178,7 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
   params.parent = parent_view;
   params.accept_events = false;
   popup->Init(std::move(params));
-  popup->SetContentsView(view);
+  popup->SetContentsView(std::move(view));
   // We set layout manager to nullptr to prevent the widget from sizing its
   // contents to the same size as itself. This prevents the widget contents from
   // shrinking while we animate the height of the popup to give the impression

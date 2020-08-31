@@ -150,9 +150,9 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     widget_ = CreateTestWidget();
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
-    view_ = new TestIconLabelBubbleView(font_list, this);
+    view_ = widget_->SetContentsView(
+        std::make_unique<TestIconLabelBubbleView>(font_list, this));
     view_->SetBoundsRect(gfx::Rect(0, 0, 24, 24));
-    widget_->SetContentsView(view_);
 
     widget_->Show();
   }
@@ -426,10 +426,9 @@ TEST_F(IconLabelBubbleViewCrashTest,
        GetPreferredSizeDoesntCrashWhenNoCompositor) {
   gfx::FontList font_list;
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
-  IconLabelBubbleView* icon_label_bubble_view =
-      new TestIconLabelBubbleView(font_list, this);
+  IconLabelBubbleView* icon_label_bubble_view = widget->SetContentsView(
+      std::make_unique<TestIconLabelBubbleView>(font_list, this));
   icon_label_bubble_view->SetLabel(base::ASCIIToUTF16("x"));
-  widget->SetContentsView(icon_label_bubble_view);
   aura::Window* widget_native_view = widget->GetNativeView();
   // Remove the window from its parent. This means GetWidget() in
   // IconLabelBubbleView will return non-null, but GetWidget()->GetCompositor()

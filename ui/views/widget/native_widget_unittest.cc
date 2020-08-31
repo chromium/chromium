@@ -84,8 +84,8 @@ TEST_F(NativeWidgetTest, GetTopLevelNativeWidget2) {
     ScopedTestWidget toplevel_widget(CreateNativeWidget());
 
     // |toplevel_widget| owns |child_host|.
-    NativeViewHost* child_host = new NativeViewHost;
-    toplevel_widget->GetWidget()->SetContentsView(child_host);
+    NativeViewHost* child_host = toplevel_widget->GetWidget()->SetContentsView(
+        std::make_unique<NativeViewHost>());
 
     // |child_host| hosts |child_widget|'s NativeView.
     child_host->Attach(child_widget->GetWidget()->GetNativeView());

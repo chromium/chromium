@@ -125,7 +125,7 @@ class DragWindowController::DragWindowDetails {
     // show popups due to performance reasons. WindowPreviewView also needs to
     // be modified so that it can optionally be clipped to the main window's
     // bounds.
-    widget_->SetContentsView(new WindowMirrorView(
+    widget_->SetContentsView(std::make_unique<WindowMirrorView>(
         original_window, /*trilinear_filtering_on_init=*/false,
         /*show_non_client_view=*/true));
 

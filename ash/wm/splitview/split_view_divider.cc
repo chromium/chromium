@@ -435,12 +435,12 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   params.parent = Shell::GetContainer(controller->root_window(),
                                       kShellWindowId_AlwaysOnTopContainer);
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-  DividerView* divider_view = new DividerView(controller, this);
   divider_widget_->set_focus_on_creation(false);
   divider_widget_->Init(std::move(params));
   divider_widget_->SetVisibilityAnimationTransition(
       views::Widget::ANIMATE_NONE);
-  divider_widget_->SetContentsView(divider_view);
+  divider_widget_->SetContentsView(
+      std::make_unique<DividerView>(controller, this));
   divider_widget_->SetBounds(GetDividerBoundsInScreen(false /* is_dragging */));
   divider_widget_->Show();
 }

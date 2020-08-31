@@ -64,10 +64,10 @@ void InitContentsBorderWidget(content::WebContents* contents) {
 #endif
 
   widget->Init(std::move(params));
-  views::View* border_view = new views::View();
+  auto border_view = std::make_unique<views::View>();
   border_view->SetBorder(
       views::CreateSolidBorder(kContentsBorderThickness, kContentsBorderColor));
-  widget->SetContentsView(border_view);
+  widget->SetContentsView(std::move(border_view));
   widget->SetVisibilityChangedAnimationsEnabled(false);
   widget->SetOpacity(kContentsBorderOpacity);
 

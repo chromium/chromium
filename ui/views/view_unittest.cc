@@ -2569,12 +2569,13 @@ TEST_F(ViewTest, NativeViewHierarchyChanged) {
                              toplevel2->GetNativeView());
   EXPECT_EQ(toplevel2.get(), observer_view->toplevel());
 
-  observer_view->parent()->RemoveChildView(observer_view);
+  owning_observer_view =
+      observer_view->parent()->RemoveChildViewT(observer_view);
   EXPECT_EQ(nullptr, observer_view->toplevel());
 
   // Make |observer_view| |child|'s contents view again so that it gets deleted
   // with the widget.
-  child->SetContentsView(observer_view);
+  child->SetContentsView(std::move(owning_observer_view));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

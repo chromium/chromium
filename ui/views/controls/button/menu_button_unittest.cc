@@ -96,14 +96,14 @@ class MenuButtonTest : public ViewsTestBase {
     // are about to create initializes its hover state in a consistent manner.
     generator_->set_current_screen_location(gfx::Point(10, 10));
 
-    button_ = new TestMenuButton(button_listener);
+    button_ = widget_->SetContentsView(
+        std::make_unique<TestMenuButton>(button_listener));
     button_->SetBoundsRect(gfx::Rect(0, 0, 200, 20));
 
     ink_drop_ = new test::TestInkDrop();
     test::InkDropHostViewTestApi(button_).SetInkDrop(
         base::WrapUnique(ink_drop_));
 
-    widget_->SetContentsView(button_);
     widget_->Show();
   }
 

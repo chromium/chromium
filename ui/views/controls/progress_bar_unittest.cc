@@ -24,10 +24,9 @@ class ProgressBarTest : public ViewsTestBase {
   // ViewsTestBase:
   void SetUp() override {
     ViewsTestBase::SetUp();
-    bar_ = new ProgressBar;
 
     widget_ = CreateTestWidget();
-    widget_->SetContentsView(bar_);
+    bar_ = widget_->SetContentsView(std::make_unique<ProgressBar>());
     widget_->Show();
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(

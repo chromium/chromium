@@ -133,8 +133,8 @@ class PaneView : public View, public FocusTraversable {
 // view hierarchy.
 class BorderView : public NativeViewHost {
  public:
-  explicit BorderView(View* child) : child_(child) {
-    DCHECK(child);
+  explicit BorderView(std::unique_ptr<View> child) : child_(std::move(child)) {
+    DCHECK(child_);
     SetFocusBehavior(FocusBehavior::NEVER);
   }
 
@@ -161,7 +161,7 @@ class BorderView : public NativeViewHost {
         params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
         widget_->Init(std::move(params));
         widget_->SetFocusTraversableParentView(this);
-        widget_->SetContentsView(child_);
+        widget_->SetContentsView(std::move(child_));
       }
 
       // We have been added to a view hierarchy, attach the native view.
@@ -173,7 +173,7 @@ class BorderView : public NativeViewHost {
   }
 
  private:
-  View* child_;
+  std::unique_ptr<View> child_;
   std::unique_ptr<Widget> widget_;
 };
 
@@ -543,7 +543,7 @@ void FocusTraversalTest::InitContentView() {
   link_ptr->SetBounds(175, 10, 30, 20);
 
   auto search_border_view =
-      std::make_unique<BorderView>(border_contents.release());
+      std::make_unique<BorderView>(std::move(border_contents));
   search_border_view->SetID(SEARCH_CONTAINER_ID);
   search_border_view_ =
       GetContentsView()->AddChildView(std::move(search_border_view));

@@ -339,7 +339,7 @@ void BackGestureAffordance::CreateAffordanceWidget(const gfx::Point& location) {
       kShellWindowId_OverlayContainer);
 
   affordance_widget_->Init(std::move(params));
-  affordance_widget_->SetContentsView(new AffordanceView());
+  affordance_widget_->SetContentsView(std::make_unique<AffordanceView>());
   // We've got our own custom show/hide animation, so the default is unneeded.
   ::wm::SetWindowVisibilityAnimationTransition(
       affordance_widget_->GetNativeWindow(), ::wm::ANIMATE_NONE);

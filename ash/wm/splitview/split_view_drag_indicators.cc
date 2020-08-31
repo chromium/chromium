@@ -609,10 +609,10 @@ class SplitViewDragIndicators::SplitViewDragIndicatorsView
 };
 
 SplitViewDragIndicators::SplitViewDragIndicators(aura::Window* root_window) {
-  indicators_view_ = new SplitViewDragIndicatorsView();
   widget_ = CreateWidget(root_window);
   widget_->SetBounds(GetWorkAreaBoundsNoOverlapWithShelf(root_window));
-  widget_->SetContentsView(indicators_view_);
+  indicators_view_ =
+      widget_->SetContentsView(std::make_unique<SplitViewDragIndicatorsView>());
   widget_->Show();
 }
 

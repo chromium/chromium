@@ -87,7 +87,6 @@ class ResizeAreaTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<TestResizeAreaDelegate> delegate_;
-  ResizeArea* resize_area_ = nullptr;
   views::Widget* widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
@@ -122,10 +121,10 @@ void ResizeAreaTest::SetUp() {
   views::ViewsTestBase::SetUp();
 
   delegate_ = std::make_unique<TestResizeAreaDelegate>();
-  resize_area_ = new ResizeArea(delegate_.get());
+  auto resize_area = std::make_unique<ResizeArea>(delegate_.get());
 
   gfx::Size size(10, 10);
-  resize_area_->SetBounds(0, 0, size.width(), size.height());
+  resize_area->SetBounds(0, 0, size.width(), size.height());
 
   views::Widget::InitParams init_params(
       CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
@@ -133,7 +132,7 @@ void ResizeAreaTest::SetUp() {
 
   widget_ = new views::Widget();
   widget_->Init(std::move(init_params));
-  widget_->SetContentsView(resize_area_);
+  widget_->SetContentsView(std::move(resize_area));
   widget_->Show();
 
   event_generator_ =

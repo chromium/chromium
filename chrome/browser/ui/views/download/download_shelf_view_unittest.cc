@@ -22,9 +22,9 @@ TEST_F(DownloadShelfViewTest, ShowAllViewColors) {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   ChromeTestWidget widget;
   widget.Init(std::move(params));
-  DownloadShelfView view(browser(), nullptr);
-  widget.SetContentsView(&view);
-  views::MdTextButton* button = view.show_all_view_;
+  DownloadShelfView* view = widget.SetContentsView(
+      std::make_unique<DownloadShelfView>(browser(), nullptr));
+  views::MdTextButton* button = view->show_all_view_;
 
   // With default theme, button should have GoogleBlue600 text and no bg.
   EXPECT_FALSE(button->GetBgColorOverride().has_value());

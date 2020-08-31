@@ -1291,8 +1291,8 @@ void OverviewItem::CreateItemWidget() {
   item_widget_->GetLayer()->Add(shadow_->layer());
 
   overview_item_view_ =
-      new OverviewItemView(this, GetWindow(), transform_window_.IsMinimized());
-  item_widget_->SetContentsView(overview_item_view_);
+      item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
+          this, GetWindow(), transform_window_.IsMinimized()));
   item_widget_->Show();
   item_widget_->SetOpacity(0.f);
   item_widget_->GetLayer()->SetMasksToBounds(false);

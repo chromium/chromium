@@ -292,14 +292,12 @@ class WidgetScrollViewTest : public test::WidgetTest,
 
     const gfx::Rect default_bounds(50, 50, kDefaultWidth, kDefaultHeight);
     widget_ = CreateTopLevelFramelessPlatformWidget();
-
-    ScrollView* scroll_view = new ScrollView();
-    scroll_view->SetContents(std::move(contents));
-
     widget_->SetBounds(default_bounds);
     widget_->Show();
 
-    widget_->SetContentsView(scroll_view);
+    ScrollView* scroll_view =
+        widget_->SetContentsView(std::make_unique<ScrollView>());
+    scroll_view->SetContents(std::move(contents));
     scroll_view->Layout();
 
     widget_->GetCompositor()->AddObserver(this);
