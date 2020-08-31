@@ -883,15 +883,15 @@ class RTCPeerConnectionHandler::Observer
             base::WrapRefCounted<DataChannelInterface>(data_channel.get())));
   }
 
-  void OnRenegotiationNeeded() override {
+  void OnNegotiationNeededEvent(uint32_t event_id) override {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
           *main_thread_.get(), FROM_HERE,
           CrossThreadBindOnce(
-              &RTCPeerConnectionHandler::Observer::OnRenegotiationNeeded,
-              WrapCrossThreadPersistent(this)));
+              &RTCPeerConnectionHandler::Observer::OnNegotiationNeededEvent,
+              WrapCrossThreadPersistent(this), event_id));
     } else if (handler_) {
-      handler_->OnRenegotiationNeeded();
+      handler_->OnNegotiationNeededEvent(event_id);
     }
   }
 
@@ -2297,13 +2297,17 @@ void RTCPeerConnectionHandler::OnIceGatheringChange(
     client_->DidChangeIceGatheringState(new_state);
 }
 
-void RTCPeerConnectionHandler::OnRenegotiationNeeded() {
+void RTCPeerConnectionHandler::OnNegotiationNeededEvent(uint32_t event_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnRenegotiationNeeded");
+  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnNegotiationNeededEvent");
+  if (is_closed_)
+    return;
+  if (!native_peer_connection_->ShouldFireNegotiationNeededEvent(event_id)) {
+    return;
+  }
   if (peer_connection_tracker_)
     peer_connection_tracker_->TrackOnRenegotiationNeeded(this);
-  if (!is_closed_)
-    client_->NegotiationNeeded();
+  client_->NegotiationNeeded();
 }
 
 void RTCPeerConnectionHandler::OnReceiversModifiedPlanB(

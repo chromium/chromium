@@ -756,7 +756,6 @@ RTCPeerConnection::RTCPeerConnection(
       ice_connection_state_(webrtc::PeerConnectionInterface::kIceConnectionNew),
       peer_connection_state_(
           webrtc::PeerConnectionInterface::PeerConnectionState::kNew),
-      negotiation_needed_(false),
       peer_handler_unregistered_(true),
       closed_(true),
       suppress_events_(true),
@@ -2840,16 +2839,6 @@ void RTCPeerConnection::OnStreamRemoveTrack(MediaStream* stream,
 
 void RTCPeerConnection::NegotiationNeeded() {
   DCHECK(!closed_);
-  negotiation_needed_ = true;
-  Microtask::EnqueueMicrotask(
-      WTF::Bind(&RTCPeerConnection::MaybeFireNegotiationNeeded,
-                WrapWeakPersistent(this)));
-}
-
-void RTCPeerConnection::MaybeFireNegotiationNeeded() {
-  if (!negotiation_needed_ || closed_)
-    return;
-  negotiation_needed_ = false;
   MaybeDispatchEvent(Event::Create(event_type_names::kNegotiationneeded));
 }
 
@@ -2859,7 +2848,7 @@ void RTCPeerConnection::DidGenerateICECandidate(
   DCHECK(GetExecutionContext()->IsContextThread());
   DCHECK(platform_candidate);
   RTCIceCandidate* ice_candidate = RTCIceCandidate::Create(platform_candidate);
-  ScheduleDispatchEvent(RTCPeerConnectionIceEvent::Create(ice_candidate));
+  MaybeDispatchEvent(RTCPeerConnectionIceEvent::Create(ice_candidate));
 }
 
 void RTCPeerConnection::DidFailICECandidate(const String& address,
@@ -2870,7 +2859,7 @@ void RTCPeerConnection::DidFailICECandidate(const String& address,
                                             const String& error_text) {
   DCHECK(!closed_);
   DCHECK(GetExecutionContext()->IsContextThread());
-  ScheduleDispatchEvent(RTCPeerConnectionIceErrorEvent::Create(
+  MaybeDispatchEvent(RTCPeerConnectionIceErrorEvent::Create(
       address, port, host_candidate, url, error_code, error_text));
 }
 

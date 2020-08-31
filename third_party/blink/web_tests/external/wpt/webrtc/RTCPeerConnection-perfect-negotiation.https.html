@@ -44,6 +44,7 @@ function peer(other, polite, fail = null) {
     pc.addEventListener("icecandidate", ({candidate}) => send(other,
                                                               {candidate}));
     let makingOffer = false, ignoreOffer = false;
+    let srdAnswerPending = false;
     pc.addEventListener("negotiationneeded", async () => {
       try {
         assert_equals(pc.signalingState, "stable", "negotiationneeded always fires in stable state");
@@ -62,12 +63,22 @@ function peer(other, polite, fail = null) {
     window.onmessage = async ({data: {description, candidate, run}}) => {
       try {
         if (description) {
+          // If we have a setRemoteDescription() answer operation pending, then
+          // we will be "stable" by the time the next setRemoteDescription() is
+          // executed, so we count this being stable when deciding whether to
+          // ignore the offer.
+          let isStable =
+              pc.signalingState == "stable" ||
+              (pc.signalingState == "have-local-offer" && srdAnswerPending);
           ignoreOffer = description.type == "offer" && !polite &&
-                         (makingOffer || pc.signalingState != "stable");
+                         (makingOffer || !isStable);
           if (ignoreOffer) {
             return;
           }
+          if (description.type == "answer")
+            srdAnswerPending = true;
           await pc.setRemoteDescription(description);
+          srdAnswerPending = false;
           if (description.type == "offer") {
             assert_equals(pc.signalingState, "have-remote-offer", "Remote offer");
             assert_equals(pc.remoteDescription.type, "offer", "SRD worked");

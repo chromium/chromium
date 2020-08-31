@@ -460,10 +460,10 @@ class MODULES_EXPORT RTCPeerConnection final
   void Dispose();
 
   void MaybeDispatchEvent(Event*);
+  // TODO(hbos): Remove any remaining uses of ScheduleDispatchEvent.
   void ScheduleDispatchEvent(Event*);
   void ScheduleDispatchEvent(Event*, BoolFunction);
   void DispatchScheduledEvents();
-  void MaybeFireNegotiationNeeded();
   MediaStreamTrack* GetTrack(MediaStreamComponent*) const;
   RTCRtpSender* FindSenderForTrackAndStream(MediaStreamTrack*, MediaStream*);
   HeapVector<Member<RTCRtpSender>>::iterator FindSender(
@@ -629,7 +629,6 @@ class MODULES_EXPORT RTCPeerConnection final
   FrameScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
-  bool negotiation_needed_;
   // When the |peer_handler_| is unregistered, the native peer connection is
   // closed and disappears from the chrome://webrtc-internals page. This happens
   // when page context is destroyed.
