@@ -6,6 +6,7 @@
 
 #include "ash/clipboard/clipboard_history_controller.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
@@ -26,6 +27,9 @@ ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
 void ClipboardHistoryMenuModelAdapter::Run(const gfx::Rect& anchor_rect) {
   DCHECK(!root_view_);
   DCHECK(model_);
+
+  // Start async rendering of HTML, if any exists.
+  ClipboardImageModelFactory::Get()->Activate();
 
   root_view_ = CreateMenu();
   menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -58,6 +62,10 @@ gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()
     const {
   DCHECK(root_view_);
   return root_view_->GetSubmenu()->GetBoundsInScreen();
+}
+
+void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
+  ClipboardImageModelFactory::Get()->Deactivate();
 }
 
 views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
