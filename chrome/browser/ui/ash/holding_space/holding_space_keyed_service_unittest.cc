@@ -281,7 +281,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     return result;
   }
 
-  std::unique_ptr<download::MockDownloadItem> CreateMockInProgressDownload(
+  std::unique_ptr<download::MockDownloadItem> CreateMockDownloadItem(
       base::FilePath full_file_path) {
     std::unique_ptr<download::MockDownloadItem> item(
         new testing::NiceMock<download::MockDownloadItem>());
@@ -551,6 +551,80 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
             persisted_holding_space_items_after_restoration);
 }
 
+TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
+  TestingProfile* profile = GetProfile();
+  // Create a test downloads mount point.
+  ScopedDownloadsMountPoint downloads_mount(profile);
+  ASSERT_TRUE(downloads_mount.IsValid());
+
+  std::vector<base::FilePath> virtual_paths;
+  std::vector<base::FilePath> full_paths;
+  content::DownloadManager::DownloadVector download_items_mock;
+
+  content::MockDownloadManager* mock_download_manager = download_manager();
+
+  for (int i = 0; i < 3; ++i) {
+    const base::FilePath download_item_virtual_path(
+        "Download " + base::NumberToString(i) + ".png");
+    virtual_paths.push_back(download_item_virtual_path);
+    const base::FilePath download_item_full_path =
+        CreateFile(downloads_mount, download_item_virtual_path,
+                   "download " + base::NumberToString(i));
+    full_paths.push_back(download_item_full_path);
+    std::unique_ptr<download::MockDownloadItem> item(
+        CreateMockDownloadItem(download_item_full_path));
+    // Set one item as an download in progress, which will complete afterwards.
+    if (i == 2) {
+      {
+        testing::InSequence s1;
+        EXPECT_CALL(*item, GetState())
+            .WillOnce(testing::Return(download::DownloadItem::IN_PROGRESS));
+        EXPECT_CALL(*item, GetState())
+            .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
+      }
+    } else {
+      EXPECT_CALL(*item, GetState())
+          .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
+    }
+    download_items_mock.push_back(item.release());
+  }
+  EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
+      .WillOnce(testing::SetArgPointee<0>(download_items_mock));
+
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  // Set the testing download manager, it should retrieve history and add the
+  // completed downloads to the model.
+  HoldingSpaceKeyedService* const holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
+  holding_space_service->SetDownloadManagerForTesting(mock_download_manager);
+
+  ASSERT_EQ(2u, model->items().size());
+
+  for (int i = 0; i < static_cast<int>(model->items().size()); ++i) {
+    EXPECT_EQ(full_paths[i], model->items()[i]->file_path());
+    EXPECT_EQ(virtual_paths[i],
+              GetVirtualPathFromUrl(model->items()[i]->file_system_url(),
+                                    downloads_mount.name()));
+  }
+
+  // Notify the holding space service of download completion. It should add
+  // the object to the model.
+  download::MockDownloadItem* in_progress_item =
+      static_cast<download::MockDownloadItem*>(download_items_mock[2]);
+  in_progress_item->NotifyObserversDownloadUpdated();
+
+  ASSERT_EQ(3u, model->items().size());
+  EXPECT_EQ(full_paths[2], model->items()[2]->file_path());
+  EXPECT_EQ(virtual_paths[2],
+            GetVirtualPathFromUrl(model->items()[2]->file_system_url(),
+                                  downloads_mount.name()));
+
+  for (int i = 0; i < 3; i++)
+    delete download_items_mock[i];
+}
+
 TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
   TestingProfile* profile = GetProfile();
   // Create a test downloads mount point.
@@ -566,7 +640,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
 
   content::MockDownloadManager* mock_download_manager = download_manager();
   std::unique_ptr<download::MockDownloadItem> item(
-      CreateMockInProgressDownload(download_item_full_path));
+      CreateMockDownloadItem(download_item_full_path));
 
   HoldingSpaceKeyedService* const holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);

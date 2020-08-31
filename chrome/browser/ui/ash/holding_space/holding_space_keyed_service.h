@@ -134,6 +134,8 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Invoked when the holding space model has been restored from persistence.
   void OnModelRestored();
 
+  void RetrieveDownloadHistory();
+
   content::BrowserContext* const browser_context_;
   const AccountId account_id_;
 

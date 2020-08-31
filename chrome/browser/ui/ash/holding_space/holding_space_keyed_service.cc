@@ -118,6 +118,7 @@ void HoldingSpaceKeyedService::SetDownloadManagerForTesting(
   RemoveDownloadManagerObservers();
   download_manager_ = manager;
   download_manager_->AddObserver(this);
+  RetrieveDownloadHistory();
 }
 
 void HoldingSpaceKeyedService::Shutdown() {
@@ -216,6 +217,20 @@ void HoldingSpaceKeyedService::OnModelRestored() {
   download_manager_ =
       content::BrowserContext::GetDownloadManager(browser_context_);
   download_manager_->AddObserver(this);
+  RetrieveDownloadHistory();
+}
+
+void HoldingSpaceKeyedService::RetrieveDownloadHistory() {
+  DCHECK(download_manager_);
+  download::SimpleDownloadManager::DownloadVector downloads;
+  download_manager_->GetAllDownloads(&downloads);
+  for (auto* download : downloads) {
+    download::DownloadItem::DownloadState state = download->GetState();
+    if (state == download::DownloadItem::COMPLETE)
+      AddDownload(download->GetFullPath());
+    else if (state == download::DownloadItem::IN_PROGRESS)
+      download_items_observer_.Add(download);
+  }
 }
 
 }  // namespace ash
