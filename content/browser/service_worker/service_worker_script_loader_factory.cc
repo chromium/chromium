@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -210,13 +211,15 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
   scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();
   version->script_cache_map()->NotifyStartedCaching(url, new_resource_id);
 
+  auto repeating_callback =
+      base::AdaptCallbackForRepeating(std::move(callback));
   net::Error error = cache_writer_->StartCopy(
-      base::BindOnce(std::move(callback), new_resource_id));
+      base::BindOnce(repeating_callback, new_resource_id));
 
   // Run the callback directly if the operation completed or failed
   // synchronously.
   if (net::ERR_IO_PENDING != error) {
-    std::move(callback).Run(new_resource_id, error);
+    repeating_callback.Run(new_resource_id, error);
   }
 }
 
