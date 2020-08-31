@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/contextual_search/buildflags.h"
@@ -101,7 +102,6 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/digital_goods/digital_goods.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
-#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #else
 #include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/badging/badge_manager.h"
@@ -182,6 +182,13 @@
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
+#endif
+
+#if defined(OS_WIN) || defined(OS_ANDROID)
+#if defined(OS_WIN)
+#include "chrome/browser/webshare/share_service_impl.h"
+#endif
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #endif
 
 #if defined(OS_CHROMEOS) && !defined(OFFICIAL_BUILD)
@@ -472,6 +479,13 @@ void PopulateChromeFrameBinders(
   }
   map->Add<payments::mojom::PaymentCredential>(
       base::BindRepeating(&payments::CreatePaymentCredential));
+#endif
+
+#if defined(OS_WIN)
+  if (base::FeatureList::IsEnabled(features::kWebShare)) {
+    map->Add<blink::mojom::ShareService>(
+        base::BindRepeating(&ShareServiceImpl::Create));
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
