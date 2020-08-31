@@ -304,9 +304,10 @@ void PointerEventManager::HandlePointerInterruption(
   for (auto pointer_event : canceled_pointer_events) {
     // If we are sending a pointercancel we have sent the pointerevent to some
     // target before.
-    CHECK(element_under_pointer_.Contains(pointer_event->pointerId()));
-    Element* target =
-        element_under_pointer_.at(pointer_event->pointerId())->target;
+    Element* target = nullptr;
+    if (element_under_pointer_.Contains(pointer_event->pointerId())) {
+      target = element_under_pointer_.at(pointer_event->pointerId())->target;
+    }
 
     DispatchPointerEvent(
         GetEffectiveTargetForPointerEvent(target, pointer_event->pointerId()),
