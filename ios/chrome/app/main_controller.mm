@@ -118,11 +118,6 @@
 
 namespace {
 
-// Constants for deferring notifying the AuthenticationService of a new cold
-// start.
-NSString* const kAuthenticationServiceNotification =
-    @"AuthenticationServiceNotification";
-
 // Constants for deferring reseting the startup attempt count (to give the app
 // a little while to make sure it says alive).
 NSString* const kStartupAttemptReset = @"StartupAttempReset";
