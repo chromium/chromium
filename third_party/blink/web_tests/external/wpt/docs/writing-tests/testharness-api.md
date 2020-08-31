@@ -434,7 +434,7 @@ These functions are preferred over `step_timeout` as they end when a condition o
 `step_wait(cond, description, timeout=3000, interval=100)` is useful inside `promise_test`, e.g.:
 
 ```js
-promise_test(t => {
+promise_test(async t => {
   // …
   await t.step_wait(() => frame.contentDocument === null, "Frame navigated to a cross-origin document");
   // …

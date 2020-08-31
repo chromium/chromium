@@ -88283,6 +88283,58 @@
        {}
       ]
      ],
+     "absolute-tables-008.tentative.html": [
+      "157139b9ca0ca9aaa88c3afc2d2f068054f21243",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "absolute-tables-009.tentative.html": [
+      "291c69afbcf06aa15107b073a18085c357df166f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "absolute-tables-010.tentative.html": [
+      "cb4ad48f3ac69097eccf780f058dccf706b1478c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "absolute-tables-011.tentative.html": [
+      "5c8ed3a5fa897faa509731ec6363642280d803b8",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "anonymous-table-cell-margin-collapsing.html": [
       "23b467ebacc983122a632f4d5971c8daca569420",
       [
@@ -199224,7 +199276,7 @@
       []
      ],
      "testharness-api.md": [
-      "c7e311c45afc6e83e07b4ecc5eb0e820c9883461",
+      "b603080f096e24129a1070a2e4f742f8db0776d3",
       []
      ],
      "testharness-tutorial.md": [
