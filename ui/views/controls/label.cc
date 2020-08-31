@@ -1155,6 +1155,6 @@ ADD_PROPERTY_METADATA(bool, HandlesTooltips)
 ADD_PROPERTY_METADATA(bool, CollapseWhenHidden)
 ADD_PROPERTY_METADATA(int, MaximumWidth)
 ADD_READONLY_PROPERTY_METADATA(int, TextContext)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

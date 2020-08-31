@@ -131,6 +131,6 @@ bool BaseScrollBarThumb::IsHorizontal() const {
 }
 
 BEGIN_METADATA(BaseScrollBarThumb, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

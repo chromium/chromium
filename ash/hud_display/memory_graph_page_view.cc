@@ -20,7 +20,7 @@ namespace hud_display {
 // MemoryGraphPageView, public:
 
 BEGIN_METADATA(MemoryGraphPageView, GraphPageViewBase)
-END_METADATA()
+END_METADATA
 
 MemoryGraphPageView::MemoryGraphPageView(const base::TimeDelta refresh_interval)
     : graph_chrome_rss_private_(Graph::Baseline::BASELINE_BOTTOM,

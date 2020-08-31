@@ -124,6 +124,6 @@ void TooltipIcon::OnWidgetDestroyed(Widget* widget) {
 }
 
 BEGIN_METADATA(TooltipIcon, ImageView)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

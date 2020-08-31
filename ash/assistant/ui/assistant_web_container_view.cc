@@ -160,6 +160,6 @@ void AssistantWebContainerView::RemoveContents() {
 }
 
 BEGIN_METADATA(AssistantWebContainerView, views::WidgetDelegateView)
-END_METADATA()
+END_METADATA
 
 }  // namespace ash

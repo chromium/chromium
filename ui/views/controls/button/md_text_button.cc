@@ -290,6 +290,6 @@ BEGIN_METADATA(MdTextButton, LabelButton)
 ADD_PROPERTY_METADATA(bool, Prominent)
 ADD_PROPERTY_METADATA(float, CornerRadius)
 ADD_PROPERTY_METADATA(base::Optional<SkColor>, BgColorOverride)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

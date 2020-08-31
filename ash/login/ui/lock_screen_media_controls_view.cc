@@ -874,6 +874,6 @@ void LockScreenMediaControlsView::RunResetControlsAnimation() {
 }
 
 BEGIN_METADATA(LockScreenMediaControlsView, views::View)
-END_METADATA()
+END_METADATA
 
 }  // namespace ash

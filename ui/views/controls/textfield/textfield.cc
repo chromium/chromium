@@ -2553,6 +2553,6 @@ ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Range, SelectedRange)
 ADD_PROPERTY_METADATA(base::string16, AccessibleName)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

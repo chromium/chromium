@@ -93,7 +93,7 @@ class SearchCardView : public views::View {
 };
 
 BEGIN_METADATA(SearchCardView, views::View)
-END_METADATA()
+END_METADATA
 
 class ZeroWidthVerticalScrollBar : public views::OverlayScrollBar {
  public:

@@ -66,7 +66,7 @@ class MetadataTestBaseView : public views::View {
 
 BEGIN_METADATA(MetadataTestBaseView, views::View)
 ADD_PROPERTY_METADATA(int, IntProperty)
-END_METADATA()
+END_METADATA
 
 // Descendent view in the simple hierarchy. The inherited properties are visible
 // within the metadata.
@@ -95,7 +95,7 @@ class MetadataTestView : public MetadataTestBaseView {
 
 BEGIN_METADATA(MetadataTestView, MetadataTestBaseView)
 ADD_PROPERTY_METADATA(float, FloatProperty)
-END_METADATA()
+END_METADATA
 
 TEST_F(MetadataTest, TestFloatMetadataPropertyAccess) {
   const float start_value = 12.34f;

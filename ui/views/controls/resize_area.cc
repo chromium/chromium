@@ -78,6 +78,6 @@ void ResizeArea::SetInitialPosition(int event_x) {
 }
 
 BEGIN_METADATA(ResizeArea, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

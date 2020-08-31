@@ -81,6 +81,6 @@ void ClientView::ViewHierarchyChanged(
 }
 
 BEGIN_METADATA(ClientView, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

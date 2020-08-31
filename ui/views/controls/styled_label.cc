@@ -590,6 +590,6 @@ ADD_PROPERTY_METADATA(int, DefaultTextStyle)
 ADD_PROPERTY_METADATA(int, LineHeight)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
 ADD_PROPERTY_METADATA(base::Optional<SkColor>, DisplayedOnBackgroundColor)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

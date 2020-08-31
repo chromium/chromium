@@ -349,6 +349,6 @@ BubbleBorder::Arrow MenuScrollViewContainer::BubbleBorderTypeFromAnchor(
 }
 
 BEGIN_METADATA(MenuScrollViewContainer, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

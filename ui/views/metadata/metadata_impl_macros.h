@@ -22,7 +22,7 @@
   BEGIN_METADATA_INTERNAL(class_name)                 \
   METADATA_PARENT_CLASS_INTERNAL(parent_class_name)
 
-#define END_METADATA() }
+#define END_METADATA }
 
 // This will fail to compile if the property accessors aren't in the form of
 // SetXXXX and GetXXXX.

@@ -102,6 +102,6 @@ void MenuSeparator::SetType(ui::MenuSeparatorType type) {
 
 BEGIN_METADATA(MenuSeparator, View)
 ADD_PROPERTY_METADATA(ui::MenuSeparatorType, Type)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

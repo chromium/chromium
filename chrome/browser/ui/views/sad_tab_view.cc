@@ -655,4 +655,4 @@ SadTab* SadTab::Create(content::WebContents* web_contents,
 }
 
 BEGIN_METADATA(SadTabView, views::View)
-END_METADATA()
+END_METADATA

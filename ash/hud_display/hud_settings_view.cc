@@ -76,7 +76,7 @@ base::RepeatingCallback<void(views::Checkbox*)> GetHandleClickCallback(
 }  // anonymous namespace
 
 BEGIN_METADATA(HUDSettingsView, View)
-END_METADATA()
+END_METADATA
 
 HUDSettingsView::HUDSettingsView() {
   SetVisible(false);

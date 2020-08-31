@@ -332,6 +332,6 @@ gfx::Rect ScrollBarViews::GetTrackBounds() const {
 }
 
 BEGIN_METADATA(ScrollBarViews, ScrollBar)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

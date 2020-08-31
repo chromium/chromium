@@ -3014,6 +3014,6 @@ ADD_READONLY_PROPERTY_METADATA(gfx::Size, MaximumSize)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, MinimumSize)
 ADD_PROPERTY_METADATA(bool, Mirrored)
 ADD_PROPERTY_METADATA(bool, Visible)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

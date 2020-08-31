@@ -38,6 +38,6 @@ void MenuButton::NotifyClick(const ui::Event& event) {
 }
 
 BEGIN_METADATA(MenuButton, LabelButton)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

@@ -103,6 +103,6 @@ void AmbientBackgroundImageView::InitLayout() {
 }
 
 BEGIN_METADATA(AmbientBackgroundImageView, views::ImageView)
-END_METADATA()
+END_METADATA
 
 }  // namespace ash

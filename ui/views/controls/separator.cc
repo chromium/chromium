@@ -98,6 +98,6 @@ void Separator::OnPaint(gfx::Canvas* canvas) {
 BEGIN_METADATA(Separator, View)
 ADD_PROPERTY_METADATA(SkColor, Color)
 ADD_PROPERTY_METADATA(int, PreferredHeight)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

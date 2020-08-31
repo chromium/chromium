@@ -271,7 +271,7 @@ void Tab::UpdatePreferredTitleWidth() {
 }
 
 BEGIN_METADATA(Tab, View)
-END_METADATA()
+END_METADATA
 
 // static
 constexpr size_t TabStrip::kNoSelectedTab;
@@ -490,7 +490,7 @@ BEGIN_METADATA(TabStrip, View)
 ADD_READONLY_PROPERTY_METADATA(int, SelectedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::TabStripStyle, Style)
-END_METADATA()
+END_METADATA
 
 TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
                        TabbedPane::TabStripStyle style) {
@@ -615,6 +615,6 @@ void TabbedPane::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 BEGIN_METADATA(TabbedPane, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

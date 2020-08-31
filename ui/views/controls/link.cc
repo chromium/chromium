@@ -220,6 +220,6 @@ void Link::ConfigureFocus() {
 
 BEGIN_METADATA(Link, Label)
 ADD_READONLY_PROPERTY_METADATA(SkColor, Color)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

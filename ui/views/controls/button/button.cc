@@ -586,6 +586,6 @@ DEFINE_ENUM_CONVERTERS(
 
 BEGIN_METADATA(Button, InkDropHostView)
 ADD_PROPERTY_METADATA(ButtonState, State)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

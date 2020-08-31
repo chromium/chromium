@@ -325,7 +325,7 @@ void NotificationMdTextButton::UpdateBackgroundColor() {
 }
 
 BEGIN_METADATA(NotificationMdTextButton, views::MdTextButton)
-END_METADATA()
+END_METADATA
 
 // NotificationInputContainerMD ////////////////////////////////////////////////
 

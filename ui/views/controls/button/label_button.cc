@@ -611,6 +611,6 @@ ADD_PROPERTY_METADATA(gfx::Size, MaxSize)
 ADD_PROPERTY_METADATA(bool, IsDefault)
 ADD_PROPERTY_METADATA(int, ImageLabelSpacing)
 ADD_PROPERTY_METADATA(bool, ImageCentered)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

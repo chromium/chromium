@@ -93,6 +93,6 @@ void FootnoteContainerView::ResetBorder() {
 }
 
 BEGIN_METADATA(FootnoteContainerView, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

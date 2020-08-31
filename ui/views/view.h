@@ -255,7 +255,7 @@ enum PropertyEffects {
 //
 //   BEGIN_METADATA(View, ParentView)
 //   ADD_PROPERTY_METADATA(bool, Frobble)
-//   END_METADATA()
+//   END_METADATA
 //
 //   For each property, add a definition using ADD_PROPERTY_METADATA() between
 //   the begin and end macros.
@@ -264,7 +264,7 @@ enum PropertyEffects {
 //
 //   BEGIN_METADATA(MyView, views::View)
 //   ADD_PROPERTY_METADATA(int, Bobble)
-//   END_METADATA()
+//   END_METADATA
 /////////////////////////////////////////////////////////////////////////////
 class VIEWS_EXPORT View : public ui::LayerDelegate,
                           public ui::LayerObserver,

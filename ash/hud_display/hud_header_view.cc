@@ -146,7 +146,7 @@ class SettingsButton : public views::ImageButton {
 };
 
 BEGIN_METADATA(SettingsButton, ImageButton)
-END_METADATA()
+END_METADATA
 
 // Basically FillLayout that matches host size to the given data view.
 // Padding will take the rest of the host view to the right.
@@ -196,7 +196,7 @@ void HUDHeaderLayout::Layout(views::View* host) {
 // HUDHeaderView
 
 BEGIN_METADATA(HUDHeaderView, View)
-END_METADATA()
+END_METADATA
 
 HUDHeaderView::HUDHeaderView(HUDDisplayView* hud) {
   // Header is rendered as horizontal container with three children:

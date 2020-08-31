@@ -318,6 +318,6 @@ BEGIN_METADATA(ImageButton, Button)
 ADD_PROPERTY_METADATA(HorizontalAlignment, ImageHorizontalAlignment)
 ADD_PROPERTY_METADATA(VerticalAlignment, ImageVerticalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinimumImageSize)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

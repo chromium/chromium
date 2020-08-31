@@ -555,6 +555,6 @@ bool SubmenuView::OnScroll(float dx, float dy) {
 }
 
 BEGIN_METADATA(SubmenuView, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

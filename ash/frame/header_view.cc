@@ -320,6 +320,6 @@ void HeaderView::UpdateCaptionButtonsVisibility() {
 }
 
 BEGIN_METADATA(HeaderView, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace ash

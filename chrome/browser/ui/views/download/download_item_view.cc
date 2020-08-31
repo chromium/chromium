@@ -183,7 +183,7 @@ class TransparentButton : public views::Button {
 };
 
 BEGIN_METADATA(TransparentButton, Button)
-END_METADATA()
+END_METADATA
 
 bool UseNewWarnings() {
   return base::FeatureList::IsEnabled(safe_browsing::kUseNewDownloadWarnings);

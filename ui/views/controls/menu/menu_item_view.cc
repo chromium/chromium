@@ -1455,6 +1455,6 @@ bool MenuItemView::HasChecksOrRadioButtons() const {
 }
 
 BEGIN_METADATA(MenuItemView, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

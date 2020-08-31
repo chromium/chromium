@@ -188,6 +188,6 @@ void OverlayScrollBar::StartHideCountdown() {
 }
 
 BEGIN_METADATA(OverlayScrollBar, ScrollBar)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

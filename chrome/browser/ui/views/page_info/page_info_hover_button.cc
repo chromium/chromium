@@ -149,4 +149,4 @@ views::View* PageInfoHoverButton::GetTooltipHandlerForPoint(
 }
 
 BEGIN_METADATA(PageInfoHoverButton, HoverButton)
-END_METADATA()
+END_METADATA

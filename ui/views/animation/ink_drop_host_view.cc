@@ -257,6 +257,6 @@ InkDropEventHandler* InkDropHostView::GetEventHandler() {
 
 BEGIN_METADATA(InkDropHostView, View)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

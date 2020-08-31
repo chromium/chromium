@@ -418,6 +418,6 @@ void DialogClientView::SetupViews() {
 }
 
 BEGIN_METADATA(DialogClientView, ClientView)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

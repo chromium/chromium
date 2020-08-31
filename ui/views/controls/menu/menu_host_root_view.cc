@@ -95,5 +95,5 @@ MenuController* MenuHostRootView::GetMenuControllerForInputEvents() {
 }
 
 BEGIN_METADATA(MenuHostRootView, RootView)
-END_METADATA()
+END_METADATA
 }  // namespace views

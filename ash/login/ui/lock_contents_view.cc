@@ -2247,6 +2247,6 @@ void LockContentsView::OnBottomStatusIndicatorTapped() {
 }
 
 BEGIN_METADATA(LockContentsView, NonAccessibleView)
-END_METADATA()
+END_METADATA
 
 }  // namespace ash

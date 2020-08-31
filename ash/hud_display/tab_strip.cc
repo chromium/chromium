@@ -72,7 +72,7 @@ void HUDTabStripLayout::Layout(views::View* host) {
 }  // namespace
 
 BEGIN_METADATA(HUDTabButton, LabelButton)
-END_METADATA()
+END_METADATA
 
 HUDTabButton::HUDTabButton(Style style,
                            HUDTabStrip* tab_strip,
@@ -160,7 +160,7 @@ void HUDTabButton::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 BEGIN_METADATA(HUDTabStrip, View)
-END_METADATA()
+END_METADATA
 
 HUDTabStrip::HUDTabStrip(HUDDisplayView* hud) : hud_(hud) {
   SetLayoutManager(std::make_unique<HUDTabStripLayout>());

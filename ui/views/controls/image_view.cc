@@ -271,6 +271,6 @@ BEGIN_METADATA(ImageView, View)
 ADD_PROPERTY_METADATA(Alignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(Alignment, VerticalAlignment)
 ADD_PROPERTY_METADATA(base::string16, AccessibleName)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

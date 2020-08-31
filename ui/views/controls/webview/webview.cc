@@ -490,6 +490,6 @@ void WebView::MaybeEnableAutoResize() {
 }
 
 BEGIN_METADATA(WebView, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

@@ -214,6 +214,6 @@ void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
 BEGIN_METADATA(Checkbox, LabelButton)
 ADD_PROPERTY_METADATA(bool, Checked)
 ADD_PROPERTY_METADATA(bool, MultiLine)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

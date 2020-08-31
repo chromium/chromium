@@ -27,7 +27,7 @@ constexpr base::TimeDelta kGraphsDataRefreshInterval =
 // GraphsContainerView, public:
 
 BEGIN_METADATA(GraphsContainerView, View)
-END_METADATA()
+END_METADATA
 
 GraphsContainerView::GraphsContainerView() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);

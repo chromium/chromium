@@ -8,7 +8,7 @@ namespace ash {
 namespace hud_display {
 
 BEGIN_METADATA(GraphPageViewBase, View)
-END_METADATA()
+END_METADATA
 
 GraphPageViewBase::GraphPageViewBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);

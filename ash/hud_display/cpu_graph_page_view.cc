@@ -18,7 +18,7 @@ namespace hud_display {
 // CpuGraphPageView, public:
 
 BEGIN_METADATA(CpuGraphPageView, GraphPageViewBase)
-END_METADATA()
+END_METADATA
 
 CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
     : cpu_other_(Graph::Baseline::BASELINE_BOTTOM,

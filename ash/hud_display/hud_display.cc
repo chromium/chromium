@@ -67,7 +67,7 @@ class HTClientView : public views::ClientView {
 };
 
 BEGIN_METADATA(HTClientView, ClientView)
-END_METADATA()
+END_METADATA
 
 }  // namespace
 
@@ -75,7 +75,7 @@ END_METADATA()
 // HUDDisplayView, public:
 
 BEGIN_METADATA(HUDDisplayView, WidgetDelegateView)
-END_METADATA()
+END_METADATA
 
 // static
 void HUDDisplayView::Destroy() {

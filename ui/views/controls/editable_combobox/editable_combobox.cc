@@ -539,6 +539,6 @@ void EditableCombobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
 }
 
 BEGIN_METADATA(EditableCombobox, View)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

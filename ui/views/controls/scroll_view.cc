@@ -1033,7 +1033,7 @@ ADD_PROPERTY_METADATA(base::Optional<ui::NativeTheme::ColorId>,
 ADD_PROPERTY_METADATA(bool, DrawOverflowIndicator)
 ADD_PROPERTY_METADATA(bool, HasFocusIndicator)
 ADD_PROPERTY_METADATA(bool, HideHorizontalScrollBar)
-END_METADATA()
+END_METADATA
 
 // VariableRowHeightScrollHelper ----------------------------------------------
 

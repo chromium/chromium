@@ -357,6 +357,6 @@ ADD_PROPERTY_METADATA(base::Optional<SkColor>, ThumbOnColor)
 ADD_PROPERTY_METADATA(base::Optional<SkColor>, ThumbOffColor)
 ADD_PROPERTY_METADATA(base::Optional<SkColor>, TrackOnColor)
 ADD_PROPERTY_METADATA(base::Optional<SkColor>, TrackOffColor)
-END_METADATA()
+END_METADATA
 
 }  // namespace views

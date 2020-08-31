@@ -188,6 +188,6 @@ void TouchSelectionMenuViews::ButtonPressed(Button* sender,
 }
 
 BEGIN_METADATA(TouchSelectionMenuViews, BubbleDialogDelegateView)
-END_METADATA()
+END_METADATA
 
 }  // namespace views
