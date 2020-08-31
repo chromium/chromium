@@ -1297,7 +1297,7 @@
   {
     "name": "enable-core-location-implementation",
     "owners": [ "jameshollyer@google.com" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 88
   },
   {
     "name": "enable-credit-card-assist",
