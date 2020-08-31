@@ -76,11 +76,11 @@ struct AccessTokenInfo;
 //       // Choose the mode in which to fetch the access token:
 //       // see AccessTokenFetcher::Mode below for definitions.
 //       auto mode =
-//         signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable;
+//         PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable;
 
 //       // Create the fetcher.
 //       access_token_fetcher_ =
-//           std::make_unique<PrimaryAccountAccessTokenFetcher(
+//           std::make_unique<PrimaryAccountAccessTokenFetcher>(
 //               /*consumer_name=*/"MyClass",
 //               identity_manager_,
 //               scopes,
@@ -91,7 +91,7 @@ struct AccessTokenInfo;
 //                              mode);
 //
 //     }
-//     MyClass::OnAccessTokenRequestCompleted(
+//     void MyClass::OnAccessTokenRequestCompleted(
 //         GoogleServiceAuthError error, AccessTokenInfo access_token_info) {
 //       // It is safe to destroy |access_token_fetcher_| from this callback.
 //       access_token_fetcher_.reset();
