@@ -13,6 +13,7 @@
 #include "chrome/browser/media/kaleidoscope/constants.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_metrics_recorder.h"
 #include "chrome/browser/media/kaleidoscope/kaleidoscope_prefs.h"
+#include "chrome/browser/media/kaleidoscope/kaleidoscope_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -270,6 +271,31 @@ void KaleidoscopeDataProviderImpl::SendFeedback() {
                            std::string() /* description_placeholder_text */,
                            kKaleidoscopeFeedbackCategoryTag /* category_tag */,
                            std::string() /* extra_diagnostics */);
+}
+
+void KaleidoscopeDataProviderImpl::GetCollections(const std::string& request,
+                                                  GetCollectionsCallback cb) {
+  GetCredentials(base::BindOnce(
+      &KaleidoscopeDataProviderImpl::OnGotCredentialsForCollections,
+      weak_ptr_factory.GetWeakPtr(), request, std::move(cb)));
+}
+
+void KaleidoscopeDataProviderImpl::OnGotCredentialsForCollections(
+    const std::string& request,
+    GetCollectionsCallback cb,
+    media::mojom::CredentialsPtr credentials,
+    media::mojom::CredentialsResult result) {
+  // If we have no credentials then we should return an empty response.
+  if (result != media::mojom::CredentialsResult::kSuccess) {
+    std::move(cb).Run("");
+    return;
+  }
+
+  auto account_info = identity_manager_->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kNotRequired);
+
+  kaleidoscope::KaleidoscopeService::Get(profile_)->GetCollections(
+      std::move(credentials), account_info.gaia, request, std::move(cb));
 }
 
 media_history::MediaHistoryKeyedService*

@@ -154,6 +154,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="gstatic_change_password_override_urls"/>
       <traffic_annotation unique_id="interest_feedv2_image_send"/>
       <traffic_annotation unique_id="sanitized_image_source"/>
+      <traffic_annotation unique_id="kaleidoscope_service"/>
     </sender>
   </group>
   <group name="Admin Features">
@@ -254,6 +255,9 @@ hidden="true" so that these annotations don't show up in the document.
     </sender>
   </group>
   <group name="Media">
+    <sender name="Kaleidoscope">
+      <traffic_annotation unique_id="kaleidoscope_service"/>
+    </sender>
     <sender name="Plugins">
       <traffic_annotation unique_id="plugins_resource_service"/>
     </sender>
