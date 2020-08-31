@@ -353,8 +353,9 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   Release(ui::KeyboardCode::VKEY_COMMAND);
 }
 
+// Flaky: crbug.com/1123542
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
-                       ShouldPasteHistoryAsPlainText) {
+                       DISABLED_ShouldPasteHistoryAsPlainText) {
   LoginUser(account_id1_);
 
   // Create a browser and cache its active web contents.
