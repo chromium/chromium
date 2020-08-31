@@ -153,11 +153,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableBackgroundBlur;
 // preferences, or policy).
 ASH_PUBLIC_EXPORT extern const base::Feature kHideShelfControlsInTabletMode;
 
-// Same as kHideShelfCOntrolsInTabletMode, but enabled by default. Used if the
-// current board is allowlisted for the feature.
-ASH_PUBLIC_EXPORT extern const base::Feature
-    kHideShelfControlsInTabletModeForAllowedBoards;
-
 // Enables sliders for setting mic gain levels in the more audio settings
 // section in the system tray.
 ASH_PUBLIC_EXPORT extern const base::Feature kSystemTrayMicGainSetting;

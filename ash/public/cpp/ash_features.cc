@@ -4,33 +4,14 @@
 
 #include "ash/public/cpp/ash_features.h"
 
-#include <vector>
-
 #include "ash/public/cpp/ash_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/strings/string_split.h"
-#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "chromeos/constants/chromeos_switches.h"
 
 namespace ash {
 namespace features {
-
-namespace {
-
-bool HideShelfControlButtonsEnabledForCurrentBoard() {
-  std::vector<std::string> board =
-      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (board.empty())
-    return false;
-  return board[0] == "kukui" || board[0] == "hatch" || board[0] == "eve" ||
-         board[0] == "meowth" || board[0] == "hana" || board[0] == "cyan" ||
-         board[0] == "scarlet";
-}
-
-}  // namespace
 
 const base::Feature kAllowAmbientEQ{"AllowAmbientEQ",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
@@ -135,11 +116,7 @@ const base::Feature kEnableBackgroundBlur{"EnableBackgroundBlur",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kHideShelfControlsInTabletMode{
-    "HideShelfControlsInTabletMode", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kHideShelfControlsInTabletModeForAllowedBoards{
-    "HideShelfControlsInTabletModeForAllowedBoard",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+    "HideShelfControlsInTabletMode", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSystemTrayMicGainSetting{"SystemTrayMicGainSetting",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
@@ -274,15 +251,6 @@ bool IsReduceDisplayNotificationsEnabled() {
 bool IsHideShelfControlsInTabletModeEnabled() {
   if (!IsDragFromShelfToHomeOrOverviewEnabled())
     return false;
-
-  // Use enabled by default feature it the current board is in the
-  // default-by-default allowlist.
-  static const bool enabled_for_board =
-      HideShelfControlButtonsEnabledForCurrentBoard();
-  if (enabled_for_board) {
-    return base::FeatureList::IsEnabled(
-        kHideShelfControlsInTabletModeForAllowedBoards);
-  }
 
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
 }
