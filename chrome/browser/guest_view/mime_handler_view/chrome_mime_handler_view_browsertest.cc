@@ -12,6 +12,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/lacros_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -269,8 +270,8 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 
 }  // namespace
 
-// Flaky on ChromeOS (https://crbug.com/1033009)
-#if defined(OS_CHROMEOS)
+// Flaky on ChromeOS and Lacros (https://crbug.com/1033009)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 #define MAYBE_GuestDevToolsReloadsEmbedder DISABLED_GuestDevToolsReloadsEmbedder
 #else
 #define MAYBE_GuestDevToolsReloadsEmbedder GuestDevToolsReloadsEmbedder

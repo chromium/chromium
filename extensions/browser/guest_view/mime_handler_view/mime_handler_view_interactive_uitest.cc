@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "build/lacros_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -144,7 +145,13 @@ void WaitForFullscreenAnimation() {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, EscapeExitsFullscreen) {
+// TODO(1119576): Flaky under Lacros.
+#if BUILDFLAG(IS_LACROS)
+#define MAYBE_EscapeExitsFullscreen DISABLED_EscapeExitsFullscreen
+#else
+#define MAYBE_EscapeExitsFullscreen EscapeExitsFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, MAYBE_EscapeExitsFullscreen) {
   // Use the testing subclass of MimeHandlerViewGuest.
   GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
       base::BindRepeating(&TestMimeHandlerViewGuest::Create));
