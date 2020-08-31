@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -83,8 +84,9 @@ void AccountManagerWelcomeDialog::AdjustWidgetInitParams(
 
 void AccountManagerWelcomeDialog::OnDialogClosed(
     const std::string& json_retval) {
-  // Opening Settings during shutdown leads to a crash.
-  if (!chrome::IsAttemptingShutdown()) {
+  // Opening Settings during shutdown or crash/restart leads to a crash.
+  if (!chrome::IsAttemptingShutdown() && g_browser_process &&
+      !g_browser_process->IsShuttingDown()) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         ProfileManager::GetActiveUserProfile(),
         chromeos::settings::mojom::kMyAccountsSubpagePath);
