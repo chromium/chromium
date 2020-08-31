@@ -77,7 +77,8 @@ void OpenNewWindowForProfile(Profile* profile) {
 
   if (ProfilePicker::IsOpen()) {
     // If the profile picker is open, do not open a new browser automatically.
-    ProfilePicker::Show();
+    ProfilePicker::Show(
+        ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion);
     return;
   }
 

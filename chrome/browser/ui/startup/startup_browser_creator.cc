@@ -20,6 +20,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/scoped_observer.h"
@@ -322,9 +323,14 @@ bool ShouldShowProfilePicker(const base::CommandLine& command_line,
   size_t number_of_profiles = g_browser_process->profile_manager()
                                   ->GetProfileAttributesStorage()
                                   .GetNumberOfProfiles();
-  return !signin_util::IsForceSigninEnabled() && number_of_profiles != 1 &&
-         g_browser_process->local_state()->GetBoolean(
-             prefs::kBrowserShowProfilePickerOnStartup) &&
+  if (signin_util::IsForceSigninEnabled() || number_of_profiles == 1) {
+    return false;
+  }
+
+  bool pref_enabled = g_browser_process->local_state()->GetBoolean(
+      prefs::kBrowserShowProfilePickerOnStartup);
+  base::UmaHistogramBoolean("ProfilePicker.AskOnStartup", pref_enabled);
+  return pref_enabled &&
          base::FeatureList::IsEnabled(features::kNewProfilePicker);
 }
 #endif  // !defined(OS_CHROMEOS)
@@ -848,7 +854,7 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
       StartupBrowserCreator::GetURLsFromCommandLine(command_line, cur_dir,
                                                     last_used_profile);
   if (ShouldShowProfilePicker(command_line, urls_to_launch)) {
-    ProfilePicker::Show();
+    ProfilePicker::Show(ProfilePicker::EntryPoint::kOnStartup);
     return true;
   }
 #endif  // !defined(OS_CHROMEOS)

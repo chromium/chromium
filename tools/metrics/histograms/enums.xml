@@ -9245,6 +9245,7 @@ histogram as enum -->
 </enum>
 
 <enum name="ChromeColorsInfo">
+  <int value="-1" label="Default"/>
   <int value="0" label="Other"/>
   <int value="1" label="Warm grey"/>
   <int value="2" label="Cool grey"/>
@@ -58595,6 +58596,21 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Switch to locked profile via User Manager"/>
   <int value="8" label="Switch to Guest profile"/>
   <int value="9" label="Switch to profile from context menu"/>
+</enum>
+
+<enum name="ProfilePickerAction">
+  <int value="0" label="Launch existing profile"/>
+  <int value="1" label="Launch existing profile on customize settings page"/>
+  <int value="2" label="Launch guest profile"/>
+  <int value="3" label="Launch new profile"/>
+  <int value="4" label="Delete profile"/>
+</enum>
+
+<enum name="ProfilePickerEntryPoint">
+  <int value="0" label="On startup"/>
+  <int value="1" label="Manage profile button in the profile menu"/>
+  <int value="2" label="Add new profile button in the profile menu"/>
+  <int value="3" label="Open new window after profile deletion"/>
 </enum>
 
 <enum name="ProfileResetRequestOriginEnum">

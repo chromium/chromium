@@ -142551,6 +142551,68 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.AskOnStartup" enum="BooleanEnabled"
+    expires_after="M90">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the state of the &quot;Ask on startup&quot; user preference that
+    controls whether the profile picker should be shown on startup. Recorded on
+    startup of Chrome.
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.AskOnStartupChanged" enum="BooleanEnabled"
+    expires_after="M90">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the state of the &quot;Ask on startup&quot; checkbox upon user
+    action to check/uncheck &quot;Ask on startup&quot; in the profile picker
+    main screen.
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.NewProfileCreateShortcut" enum="BooleanCreated"
+    expires_after="M90">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Whether the user picked to create a desktop shortcut for the new profile
+    created through the local profile creation in the profile picker. Recorded
+    on platforms where desktop shortcut is enabled.
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.NewProfileTheme" enum="ChromeColorsInfo"
+    expires_after="M90">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the theme color of a new profile just created through the profile
+    picker local profile creation.
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.Shown" enum="ProfilePickerEntryPoint"
+    expires_after="M90">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the reason why the profile picker has been shown to the user.
+    Recorded every time the profile picker window is shown or reactivated.
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.UserAction" enum="ProfilePickerAction"
+    expires_after="M90">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the action performed by the user in the profile picker.
+  </summary>
+</histogram>
+
 <histogram name="ProfileReset.ResetRequestOrigin"
     enum="ProfileResetRequestOriginEnum" expires_after="M90">
   <owner>proberge@chromium.org</owner>

@@ -175,10 +175,10 @@ void UserManager::Show(
        user_manager_action == profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE) &&
       base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
     // Use the new profile picker instead.
-    ProfilePicker::Show(user_manager_action ==
-                                profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE
-                            ? ProfilePicker::Page::kAddNewProfile
-                            : ProfilePicker::Page::kManageProfiles);
+    ProfilePicker::Show(
+        user_manager_action == profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE
+            ? ProfilePicker::EntryPoint::kProfileMenuAddNewProfile
+            : ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
     return;
   }
 

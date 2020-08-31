@@ -42,7 +42,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void GatherProfileStatistics(Profile* profile);
   void OnProfileStatisticsReceived(base::FilePath profile_path,
                                    profiles::ProfileCategoryStats result);
-  void OnSwitchToProfileComplete(bool open_settings,
+  void OnSwitchToProfileComplete(bool new_profile,
+                                 bool open_settings,
                                  Profile* profile,
                                  Profile::CreateStatus profile_create_status);
   void OnProfileCreated(base::Optional<SkColor> profile_color,
