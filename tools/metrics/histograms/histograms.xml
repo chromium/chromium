@@ -171832,7 +171832,7 @@ should be kept until we use this API.  -->
 
 <histogram name="Stability.MobileSessionShutdownType"
     enum="MobileSessionShutdownType" expires_after="2021-01-31">
-  <owner>pkl@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Type of the shutdown. This histogram is recorded at startup and logs a
