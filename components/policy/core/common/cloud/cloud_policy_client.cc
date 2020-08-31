@@ -696,15 +696,16 @@ void CloudPolicyClient::GetDeviceAttributeUpdatePermission(
   // (https://crbug.com/942013).
   // DCHECK(auth->has_oauth_token() || auth->has_enrollment_token());
 
-  bool has_oauth_token = auth->has_oauth_token();
+  const bool has_oauth_token = auth->has_oauth_token();
+  const std::string oauth_token =
+      has_oauth_token ? auth->oauth_token() : std::string();
   std::unique_ptr<DMServerJobConfiguration> config =
       std::make_unique<DMServerJobConfiguration>(
           DeviceManagementService::JobConfiguration::
               TYPE_ATTRIBUTE_UPDATE_PERMISSION,
           this,
           /*critical=*/false,
-          !has_oauth_token ? std::move(auth) : DMAuth::NoAuth(),
-          has_oauth_token ? auth->oauth_token() : std::string(),
+          !has_oauth_token ? std::move(auth) : DMAuth::NoAuth(), oauth_token,
           base::BindOnce(
               &CloudPolicyClient::OnDeviceAttributeUpdatePermissionCompleted,
               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -723,14 +724,15 @@ void CloudPolicyClient::UpdateDeviceAttributes(
   CHECK(is_registered());
   DCHECK(auth->has_oauth_token() || auth->has_enrollment_token());
 
-  bool has_oauth_token = auth->has_oauth_token();
+  const bool has_oauth_token = auth->has_oauth_token();
+  const std::string oauth_token =
+      has_oauth_token ? auth->oauth_token() : std::string();
   std::unique_ptr<DMServerJobConfiguration> config =
       std::make_unique<DMServerJobConfiguration>(
           DeviceManagementService::JobConfiguration::TYPE_ATTRIBUTE_UPDATE,
           this,
           /*critical=*/false,
-          !has_oauth_token ? std::move(auth) : DMAuth::NoAuth(),
-          has_oauth_token ? auth->oauth_token() : std::string(),
+          !has_oauth_token ? std::move(auth) : DMAuth::NoAuth(), oauth_token,
           base::BindOnce(&CloudPolicyClient::OnDeviceAttributeUpdated,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
