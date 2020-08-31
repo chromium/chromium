@@ -307,6 +307,7 @@ void CastMediaRouteProvider::CreateMediaRouteController(
 void CastMediaRouteProvider::GetState(GetStateCallback callback) {
   if (!activity_manager_) {
     std::move(callback).Run(mojom::ProviderState::New());
+    return;
   }
   const CastSessionTracker::SessionMap& sessions =
       activity_manager_->GetCastSessionTracker()->GetSessions();
