@@ -35,10 +35,15 @@
 - (void)handlePromoTapped;
 // Handles the actions following a tap on the "Learn more" item.
 - (void)handleLearnMoreTapped;
-// Handles the actions following a tap on the "Manage Activity" item.
-- (void)handleManageActivityTapped;
-// Handles the actions following a tap on the "Manage Interests" item.
-- (void)handleManageInterestsTapped;
+// Handles the actions following a tap on the "Manage Activity" item in the
+// Discover feed menu.
+- (void)handleFeedManageActivityTapped;
+// Handles the actions following a tap on the "Manage Interests" item in the
+// Discover feed menu.
+- (void)handleFeedManageInterestsTapped;
+// Handles the actions following a tap on the "Learn More" item in the Discover
+// feed menu.
+- (void)handleFeedLearnMoreTapped;
 
 @end
 

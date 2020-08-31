@@ -457,7 +457,7 @@
         addItemWithTitle:l10n_util::GetNSString(
                              IDS_IOS_DISCOVER_FEED_MENU_MANAGE_ACTIVITY_ITEM)
                   action:^{
-                    [weakSelf.NTPMediator handleManageActivityTapped];
+                    [weakSelf.NTPMediator handleFeedManageActivityTapped];
                   }
                    style:UIAlertActionStyleDefault];
 
@@ -465,7 +465,7 @@
         addItemWithTitle:l10n_util::GetNSString(
                              IDS_IOS_DISCOVER_FEED_MENU_MANAGE_INTERESTS_ITEM)
                   action:^{
-                    [weakSelf.NTPMediator handleManageInterestsTapped];
+                    [weakSelf.NTPMediator handleFeedManageInterestsTapped];
                   }
                    style:UIAlertActionStyleDefault];
   }
@@ -474,7 +474,7 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_DISCOVER_FEED_MENU_LEARN_MORE_ITEM)
                 action:^{
-                  [weakSelf.NTPMediator handleLearnMoreTapped];
+                  [weakSelf.NTPMediator handleFeedLearnMoreTapped];
                 }
                  style:UIAlertActionStyleDefault];
   [self.alertCoordinator start];
