@@ -99,6 +99,13 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 #pragma mark - ChromeTableViewController
 
 - (void)editButtonPressed {
+  // If password value is missing, proceed with editing without
+  // reauthentication.
+  if (![self.password.password length]) {
+    [super editButtonPressed];
+    return;
+  }
+
   // Request reauthentication before revealing password during editing.
   // Editing mode will be entered on successful reauth.
   if (!self.tableView.editing && !self.isPasswordShown) {
@@ -128,23 +135,29 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   [model addItem:[self websiteItem]
       toSectionWithIdentifier:SectionIdentifierPassword];
 
-  [model addItem:[self usernameItem]
-      toSectionWithIdentifier:SectionIdentifierPassword];
+  // Blocked password forms don't have username value.
+  if ([self.password.username length]) {
+    [model addItem:[self usernameItem]
+        toSectionWithIdentifier:SectionIdentifierPassword];
+  }
 
-  self.passwordTextItem = [self passwordItem];
-  [model addItem:self.passwordTextItem
-      toSectionWithIdentifier:SectionIdentifierPassword];
+  // Federated and blocked password forms don't have password value.
+  if ([self.password.password length]) {
+    self.passwordTextItem = [self passwordItem];
+    [model addItem:self.passwordTextItem
+        toSectionWithIdentifier:SectionIdentifierPassword];
 
-  if (self.password.isCompromised) {
-    [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
+    if (self.password.isCompromised) {
+      [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
 
-    if (self.password.changePasswordURL.is_valid()) {
-      [model addItem:[self changePasswordItem]
+      if (self.password.changePasswordURL.is_valid()) {
+        [model addItem:[self changePasswordItem]
+            toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
+      }
+
+      [model addItem:[self changePasswordRecommendationItem]
           toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
     }
-
-    [model addItem:[self changePasswordRecommendationItem]
-        toSectionWithIdentifier:SectionIdentifierCompromisedInfo];
   }
 }
 
@@ -315,7 +328,13 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // Called when user tapped Delete button during editing. It means presented
 // password should be deleted.
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
-  [self.handler showPasswordDeleteDialogWithOrigin:self.password.origin];
+  // Pass origin only if password is compromised as confirmation message makes
+  // sense only in this case.
+  if (self.password.isCompromised) {
+    [self.handler showPasswordDeleteDialogWithOrigin:self.password.origin];
+  } else {
+    [self.handler showPasswordDeleteDialogWithOrigin:nil];
+  }
 }
 
 - (BOOL)shouldHideToolbar {

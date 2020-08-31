@@ -16,7 +16,8 @@
 - (void)showPasscodeDialog;
 
 // Called when the user wants to delete password. |origin| is a short website
-// version. It is displayed inside dialog.
+// version. It is displayed inside dialog. If |origin| is nil dialog is
+// displayed without message.
 - (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin;
 
 // Called when the user wants to save edited password.

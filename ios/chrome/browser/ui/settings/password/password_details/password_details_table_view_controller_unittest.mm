@@ -129,6 +129,32 @@ class PasswordDetailsTableViewControllerTest
     [passwords_controller setPassword:passwordDetails];
   }
 
+  void SetFederatedPassword() {
+    auto form = autofill::PasswordForm();
+    form.username_value = base::ASCIIToUTF16("test@egmail.com");
+    form.url = GURL(base::ASCIIToUTF16("http://www.example.com/"));
+    form.signon_realm = form.url.spec();
+    form.federation_origin =
+        url::Origin::Create(GURL("http://www.example.com/"));
+    PasswordDetails* password =
+        [[PasswordDetails alloc] initWithPasswordForm:form];
+    PasswordDetailsTableViewController* passwords_controller =
+        static_cast<PasswordDetailsTableViewController*>(controller());
+    [passwords_controller setPassword:password];
+  }
+
+  void SetBlockedOrigin() {
+    auto form = autofill::PasswordForm();
+    form.url = GURL("http://www.example.com/");
+    form.blocked_by_user = true;
+    form.signon_realm = form.url.spec();
+    PasswordDetails* password =
+        [[PasswordDetails alloc] initWithPasswordForm:form];
+    PasswordDetailsTableViewController* passwords_controller =
+        static_cast<PasswordDetailsTableViewController*>(controller());
+    [passwords_controller setPassword:password];
+  }
+
   void CheckEditCellText(NSString* expected_text, int section, int item) {
     TableViewTextEditItem* cell =
         static_cast<TableViewTextEditItem*>(GetTableViewItem(section, item));
@@ -154,16 +180,6 @@ class PasswordDetailsTableViewControllerTest
   FakePasswordDetailsDelegate* delegate_;
   MockReauthenticationModule* reauthentication_module_;
 };
-
-// Tests PasswordDetailsTableViewController is set up with appropriate items
-// and sections.
-TEST_F(PasswordDetailsTableViewControllerTest, TestModel) {
-  CreateController();
-  CheckController();
-  EXPECT_EQ(1, NumberOfSections());
-
-  EXPECT_EQ(3, NumberOfItemsInSection(0));
-}
 
 // Tests that password is displayed properly.
 TEST_F(PasswordDetailsTableViewControllerTest, TestPassword) {
@@ -344,4 +360,39 @@ TEST_F(PasswordDetailsTableViewControllerTest,
 
   CheckDetailItemTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION, 1,
                             0);
+}
+
+// Tests federated credential is shown without password value and editing
+// doesn't require reauth.
+TEST_F(PasswordDetailsTableViewControllerTest, TestFederatedCredential) {
+  SetFederatedPassword();
+  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(2, NumberOfItemsInSection(0));
+
+  CheckEditCellText(@"http://www.example.com/", 0, 0);
+  CheckEditCellText(@"test@egmail.com", 0, 1);
+
+  reauth().expectedResult = ReauthenticationResult::kFailure;
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+  [passwordDetails editButtonPressed];
+  EXPECT_TRUE(passwordDetails.tableView.editing);
+}
+
+// Tests blocked website is shown without password and username values and
+// editing doesn't require reauth.
+TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
+  SetBlockedOrigin();
+  EXPECT_EQ(1, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+
+  CheckEditCellText(@"http://www.example.com/", 0, 0);
+
+  reauth().expectedResult = ReauthenticationResult::kFailure;
+  PasswordDetailsTableViewController* passwordDetails =
+      base::mac::ObjCCastStrict<PasswordDetailsTableViewController>(
+          controller());
+  [passwordDetails editButtonPressed];
+  EXPECT_TRUE(passwordDetails.tableView.editing);
 }

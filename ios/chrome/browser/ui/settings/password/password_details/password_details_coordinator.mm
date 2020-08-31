@@ -140,9 +140,12 @@
 }
 
 - (void)showPasswordDeleteDialogWithOrigin:(NSString*)origin {
-  NSString* message =
-      l10n_util::GetNSStringF(IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION,
-                              base::SysNSStringToUTF16(origin));
+  NSString* message;
+
+  if (origin)
+    message =
+        l10n_util::GetNSStringF(IDS_IOS_DELETE_COMPROMISED_PASSWORD_DESCRIPTION,
+                                base::SysNSStringToUTF16(origin));
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
