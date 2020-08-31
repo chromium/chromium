@@ -43,6 +43,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
       uint32_t before,
       uint32_t after,
       const std::vector<ui::ImeTextSpan>& text_spans) override;
+  bool SetComposingRange(
+      uint32_t start,
+      uint32_t end,
+      const std::vector<ui::ImeTextSpan>& text_spans) override;
   gfx::Range GetAutocorrectRange() override;
   gfx::Rect GetAutocorrectCharacterBounds() override;
   bool SetAutocorrectRange(const base::string16& autocorrect_text,

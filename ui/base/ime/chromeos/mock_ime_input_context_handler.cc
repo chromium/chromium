@@ -47,6 +47,16 @@ bool MockIMEInputContextHandler::SetCompositionRange(
   return true;
 }
 
+bool MockIMEInputContextHandler::SetComposingRange(
+    uint32_t start,
+    uint32_t end,
+    const std::vector<ui::ImeTextSpan>& text_spans) {
+  // TODO(shend): Make this work with start, end and different text contents.
+  last_update_composition_arg_.composition_text.text =
+      base::UTF8ToUTF16(last_commit_text_);
+  return true;
+}
+
 gfx::Range MockIMEInputContextHandler::GetAutocorrectRange() {
   return gfx::Range();
 }

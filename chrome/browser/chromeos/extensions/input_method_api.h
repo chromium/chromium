@@ -265,6 +265,18 @@ class InputMethodPrivateSetCompositionRangeFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class InputMethodPrivateSetComposingRangeFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.setComposingRange",
+                             INPUTMETHODPRIVATE_SETCOMPOSINGRANGE)
+
+ protected:
+  ~InputMethodPrivateSetComposingRangeFunction() override {}
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class InputMethodPrivateSetSelectionRangeFunction : public ExtensionFunction {
  public:
   InputMethodPrivateSetSelectionRangeFunction(

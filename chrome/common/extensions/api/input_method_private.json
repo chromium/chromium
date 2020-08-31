@@ -525,7 +525,7 @@
       }, {
         "name": "setCompositionRange",
         "type": "function",
-        "description": "Set the composition range. If this extension does not own the active IME, this fails.",
+        "description": "(Deprecated) Set the composition range. If this extension does not own the active IME, this fails. Use setComposingRange instead.",
         "parameters": [
           {
             "name": "parameters",
@@ -578,6 +578,58 @@
                 "type": "boolean"
               }
             ]
+          }
+        ]
+      }, {
+        "name": "setComposingRange",
+        "type": "function",
+        "description": "Sets the composing range. If this extension does not own the active IME, this fails.",
+        "parameters": [
+          {
+            "name": "parameters",
+            "type": "object",
+            "properties": {
+              "contextID": {
+                "description": "ID of the context where the composition text will be set",
+                "type": "integer"
+              },
+              "start": {
+                "description": "The starting index of the composing range, in bytes.",
+                "type": "integer"
+              },
+              "end": {
+                "description": "The ending index of the composing range, in bytes.",
+                "type": "integer"
+              },
+              "segments": {
+                "description": "List of segments and their associated types.",
+                "type": "array",
+                "optional": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "start": {
+                      "description": "Index of the character to start this segment at",
+                      "type": "integer"
+                    },
+                    "end": {
+                      "description": "Index of the character to end this segment after.",
+                      "type": "integer"
+                    },
+                    "style": {
+                      "$ref": "UnderlineStyle",
+                      "description": "The type of the underline to modify this segment."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "function",
+            "name": "callback",
+            "optional": true,
+            "description": "Called when the operation is complete. On failure, $(ref:runtime.lastError) is set."
           }
         ]
       }, {

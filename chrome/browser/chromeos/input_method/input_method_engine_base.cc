@@ -541,6 +541,60 @@ bool InputMethodEngineBase::SetCompositionRange(
                              text_spans);
 }
 
+bool InputMethodEngineBase::SetComposingRange(
+    int context_id,
+    int start,
+    int end,
+    const std::vector<SegmentInfo>& segments,
+    std::string* error) {
+  if (!IsActive()) {
+    *error = kErrorNotActive;
+    return false;
+  }
+  if (context_id != context_id_ || context_id_ == -1) {
+    *error = base::StringPrintf(
+        "%s request context id = %d, current context id = %d",
+        kErrorWrongContext, context_id, context_id_);
+    return false;
+  }
+
+  // When there is composition text, commit it to the text field first before
+  // changing the composition range.
+  ConfirmCompositionText(/* reset_engine */ false, /* keep_selection */ true);
+
+  std::vector<ui::ImeTextSpan> text_spans;
+  for (const auto& segment : segments) {
+    ui::ImeTextSpan text_span;
+
+    text_span.underline_color = SK_ColorTRANSPARENT;
+    switch (segment.style) {
+      case SEGMENT_STYLE_UNDERLINE:
+        text_span.thickness = ui::ImeTextSpan::Thickness::kThin;
+        break;
+      case SEGMENT_STYLE_DOUBLE_UNDERLINE:
+        text_span.thickness = ui::ImeTextSpan::Thickness::kThick;
+        break;
+      case SEGMENT_STYLE_NO_UNDERLINE:
+        text_span.thickness = ui::ImeTextSpan::Thickness::kNone;
+        break;
+    }
+
+    text_span.start_offset = segment.start;
+    text_span.end_offset = segment.end;
+    text_spans.push_back(text_span);
+  }
+  if (!IsUint32Value(start)) {
+    *error = base::StringPrintf(kErrorInvalidValue, "start", start);
+    return false;
+  }
+  if (!IsUint32Value(end)) {
+    *error = base::StringPrintf(kErrorInvalidValue, "end", end);
+    return false;
+  }
+  return SetComposingRange(static_cast<uint32_t>(start),
+                           static_cast<uint32_t>(end), text_spans);
+}
+
 gfx::Range InputMethodEngineBase::GetAutocorrectRange(int context_id,
                                                       std::string* error) {
   if (!IsActive()) {

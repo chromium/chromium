@@ -471,6 +471,17 @@ bool InputMethodEngine::SetCompositionRange(
   return input_context->SetCompositionRange(before, after, text_spans);
 }
 
+bool InputMethodEngine::SetComposingRange(
+    uint32_t start,
+    uint32_t end,
+    const std::vector<ui::ImeTextSpan>& text_spans) {
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context)
+    return false;
+  return input_context->SetComposingRange(start, end, text_spans);
+}
+
 gfx::Range InputMethodEngine::GetAutocorrectRange() {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();

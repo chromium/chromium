@@ -314,8 +314,8 @@ chrome.inputMethodPrivate.getSettings = function(engineID, callback) {};
 chrome.inputMethodPrivate.setSettings = function(engineID, settings, callback) {};
 
 /**
- * Set the composition range. If this extension does not own the active IME,
- * this fails.
+ * (Deprecated) Set the composition range. If this extension does not own the
+ * active IME, this fails. Use setComposingRange instead.
  * @param {{
  *   contextID: number,
  *   selectionBefore: number,
@@ -331,6 +331,24 @@ chrome.inputMethodPrivate.setSettings = function(engineID, settings, callback) {
  *     failure, $(ref:runtime.lastError) is set.
  */
 chrome.inputMethodPrivate.setCompositionRange = function(parameters, callback) {};
+
+/**
+ * Sets the composing range. If this extension does not own the active IME, this
+ * fails.
+ * @param {{
+ *   contextID: number,
+ *   start: number,
+ *   end: number,
+ *   segments: (!Array<{
+ *     start: number,
+ *     end: number,
+ *     style: !chrome.inputMethodPrivate.UnderlineStyle
+ *   }>|undefined)
+ * }} parameters
+ * @param {function(): void=} callback Called when the operation is complete. On
+ *     failure, $(ref:runtime.lastError) is set.
+ */
+chrome.inputMethodPrivate.setComposingRange = function(parameters, callback) {};
 
 /**
  * Get the autocorrected word's bounds.

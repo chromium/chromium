@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
       uint32_t before,
       uint32_t after,
       const std::vector<ui::ImeTextSpan>& text_spans) = 0;
+  virtual bool SetComposingRange(
+      uint32_t start,
+      uint32_t end,
+      const std::vector<ui::ImeTextSpan>& text_spans) = 0;
   virtual gfx::Range GetAutocorrectRange() = 0;
   virtual gfx::Rect GetAutocorrectCharacterBounds() = 0;
   // Set the autocorrect range with text.

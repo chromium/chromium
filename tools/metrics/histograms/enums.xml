@@ -24433,6 +24433,7 @@ Called by update_extension_histograms.py.-->
   <int value="1503"
       label="FILEMANAGERPRIVATEINTERNAL_TOGGLEADDEDTOHOLDINGSPACE"/>
   <int value="1504" label="FILEMANAGERPRIVATEINTERNAL_GETHOLDINGSPACESTATE"/>
+  <int value="1505" label="INPUTMETHODPRIVATE_SETCOMPOSINGRANGE"/>
 </enum>
 
 <enum name="ExtensionIconState">

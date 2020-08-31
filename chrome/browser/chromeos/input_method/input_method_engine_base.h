@@ -206,12 +206,20 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
                       const std::vector<SegmentInfo>& segments,
                       std::string* error);
 
-  // Set the current composition range.
+  // Set the current composition range around the current cursor.
+  // This function is deprecated. Use |SetComposingRange| instead.
   bool SetCompositionRange(int context_id,
                            int selection_before,
                            int selection_after,
                            const std::vector<SegmentInfo>& segments,
                            std::string* error);
+
+  // Set the current composition range.
+  bool SetComposingRange(int context_id,
+                         int start,
+                         int end,
+                         const std::vector<SegmentInfo>& segments,
+                         std::string* error);
 
   gfx::Range GetAutocorrectRange(int context_id, std::string* error);
 
@@ -283,6 +291,11 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   virtual bool SetCompositionRange(
       uint32_t before,
       uint32_t after,
+      const std::vector<ui::ImeTextSpan>& text_spans) = 0;
+
+  virtual bool SetComposingRange(
+      uint32_t start,
+      uint32_t end,
       const std::vector<ui::ImeTextSpan>& text_spans) = 0;
 
   virtual gfx::Range GetAutocorrectRange() = 0;
