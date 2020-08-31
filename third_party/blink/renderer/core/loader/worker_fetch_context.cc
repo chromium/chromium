@@ -226,6 +226,8 @@ void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
 
   if (save_data_enabled_)
     request.SetHttpHeaderField(http_names::kSaveData, "on");
+
+  AddBackForwardCacheExperimentHTTPHeaderIfNeeded(global_scope_, request);
 }
 
 void WorkerFetchContext::AddResourceTiming(const ResourceTimingInfo& info) {
