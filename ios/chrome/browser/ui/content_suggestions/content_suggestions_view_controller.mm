@@ -80,6 +80,10 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 // position, since the feed height is dynamic.
 @property(nonatomic) CGFloat offset;
 
+// Represents the last recorded height of the Discover feed for tracking when to
+// trigger the infinite feed.
+@property(nonatomic, assign) CGFloat discoverFeedHeight;
+
 @end
 
 @implementation ContentSuggestionsViewController
@@ -708,18 +712,12 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
       scrollView.contentOffset.y >= [self.headerSynchronizer pinnedOffsetY];
 
   if (IsDiscoverFeedEnabled() && self.contentSuggestionsEnabled) {
-    float scrollPosition =
-        scrollView.contentOffset.y + scrollView.frame.size.height;
-    // Check if view is bouncing to ignore overscoll positions for infinite feed
-    // triggering.
-    BOOL isBouncing =
-        (scrollView.contentOffset.y >=
-         (scrollView.contentSize.height - scrollView.bounds.size.height));
-    ContentSuggestionsLayout* layout = static_cast<ContentSuggestionsLayout*>(
-        self.collectionView.collectionViewLayout);
-    if (scrollPosition > scrollView.contentSize.height - kPaginationOffset &&
-        scrollPosition > layout.ntpHeight && !isBouncing) {
-      [self.handler loadMoreFeedArticles];
+    if ([self shouldTriggerInfiniteFeed:scrollView]) {
+      CGFloat currentHeight = self.feedView.contentSize.height;
+      if (currentHeight != self.discoverFeedHeight) {
+        self.discoverFeedHeight = currentHeight;
+        [self.handler loadMoreFeedArticles];
+      }
     }
   }
 }
@@ -906,6 +904,22 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 // Opens top-level feed menu when pressing |menuButton|.
 - (void)openDiscoverFeedMenu:(id)menuButton {
   [self.discoverFeedMenuHandler openDiscoverFeedMenu:menuButton];
+}
+
+// Evaluates whether or not another set of Discover feed articles should be
+// fetched when scrolling.
+- (BOOL)shouldTriggerInfiniteFeed:(UIScrollView*)scrollView {
+  float scrollPosition =
+      scrollView.contentOffset.y + scrollView.frame.size.height;
+  // Check if view is bouncing to ignore overscoll positions for infinite feed
+  // triggering.
+  BOOL isBouncing =
+      (scrollView.contentOffset.y >=
+       (scrollView.contentSize.height - scrollView.bounds.size.height));
+  ContentSuggestionsLayout* layout = static_cast<ContentSuggestionsLayout*>(
+      self.collectionView.collectionViewLayout);
+  return (scrollPosition > scrollView.contentSize.height - kPaginationOffset &&
+          scrollPosition > layout.ntpHeight && !isBouncing);
 }
 
 @end

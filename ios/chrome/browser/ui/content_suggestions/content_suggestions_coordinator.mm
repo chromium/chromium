@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_header_changing.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_menu_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
@@ -100,6 +101,8 @@
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 @property(nonatomic, strong) ContentSuggestionsMetricsRecorder* metricsRecorder;
+@property(nonatomic, strong)
+    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 @property(nonatomic, strong) NTPHomeMediator* NTPMediator;
 @property(nonatomic, strong) UIViewController* discoverFeedViewController;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
@@ -111,7 +114,6 @@
 // Delegate for handling Discover feed header UI changes.
 @property(nonatomic, weak) id<DiscoverFeedHeaderChanging>
     discoverFeedHeaderDelegate;
-@property(nonatomic) CGFloat discoverFeedHeight;
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
 // Coordinator in charge of handling sharing use cases.
@@ -233,6 +235,8 @@
 
   self.metricsRecorder = [[ContentSuggestionsMetricsRecorder alloc] init];
   self.metricsRecorder.delegate = self.contentSuggestionsMediator;
+
+  self.discoverFeedMetricsRecorder = [[DiscoverFeedMetricsRecorder alloc] init];
 
   // Offset to maintain Discover feed scroll position.
   CGFloat offset = 0;
@@ -433,10 +437,7 @@
         addItemWithTitle:l10n_util::GetNSString(
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM)
                   action:^{
-                    [weakSelf.contentSuggestionsVisible setValue:NO];
-                    [weakSelf.discoverFeedHeaderDelegate
-                        changeDiscoverFeedHeaderVisibility:NO];
-                    [weakSelf.contentSuggestionsMediator reloadAllData];
+                    [weakSelf setDiscoverFeedVisible:NO];
                   }
                    style:UIAlertActionStyleDestructive];
   } else {
@@ -444,10 +445,7 @@
         addItemWithTitle:l10n_util::GetNSString(
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM)
                   action:^{
-                    [weakSelf.contentSuggestionsVisible setValue:YES];
-                    [weakSelf.discoverFeedHeaderDelegate
-                        changeDiscoverFeedHeaderVisibility:YES];
-                    [weakSelf.contentSuggestionsMediator reloadAllData];
+                    [weakSelf setDiscoverFeedVisible:YES];
                   }
                    style:UIAlertActionStyleDefault];
   }
@@ -495,21 +493,10 @@
 #pragma mark - ContentSuggestionsActionHandler
 
 - (void)loadMoreFeedArticles {
-  CGFloat currentHeight = 0;
-  for (UIView* view in self.discoverFeedViewController.view.subviews) {
-    if ([view isKindOfClass:[UICollectionView class]]) {
-      UICollectionView* feedView = static_cast<UICollectionView*>(view);
-      currentHeight = feedView.contentSize.height;
-    }
-  }
-  // TODO(crbug.com/1085419): Track number of cards from protocol instead of
-  // height to determine whether or not we should fetch more cards.
-  if (currentHeight != self.discoverFeedHeight) {
-    ios::GetChromeBrowserProvider()
-        ->GetDiscoverFeedProvider()
-        ->LoadMoreFeedArticles();
-    self.discoverFeedHeight = currentHeight;
-  }
+  ios::GetChromeBrowserProvider()
+      ->GetDiscoverFeedProvider()
+      ->LoadMoreFeedArticles();
+  [self.discoverFeedMetricsRecorder recordInfiniteFeedTriggered];
 }
 
 #pragma mark - Public methods
@@ -665,6 +652,13 @@
                                                       params:params
                                                   originView:view];
   [self.sharingCoordinator start];
+}
+
+// Toggles Discover feed visibility between hidden or expanded.
+- (void)setDiscoverFeedVisible:(BOOL)visible {
+  [self.contentSuggestionsVisible setValue:visible];
+  [self.discoverFeedHeaderDelegate changeDiscoverFeedHeaderVisibility:visible];
+  [self.contentSuggestionsMediator reloadAllData];
 }
 
 @end
