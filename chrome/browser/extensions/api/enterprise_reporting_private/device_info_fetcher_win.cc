@@ -53,6 +53,19 @@ std::string GetSerialNumber() {
   return base::UTF16ToUTF8(sys_info.serial_number());
 }
 
+// Retrieves the FQDN of the comeputer and if this fails reverts to the hostname
+// as known to the net subsystem.
+std::string GetComputerName() {
+  DWORD size = 1024;
+  std::string result(size, '\0');
+
+  if (!::GetComputerNameExA(ComputerNameDnsFullyQualified, &result[0], &size))
+    return net::GetHostName();
+  result.resize(size);
+
+  return result;
+}
+
 // Retrieves the state of the screen locking feature from the screen saver
 // settings.
 base::Optional<bool> GetScreenLockStatus() {
@@ -259,7 +272,7 @@ DeviceInfo DeviceInfoFetcherWin::Fetch() {
   DeviceInfo device_info;
   device_info.os_name = "windows";
   device_info.os_version = base::SysInfo::OperatingSystemVersion();
-  device_info.device_host_name = net::GetHostName();
+  device_info.device_host_name = GetComputerName();
   device_info.device_model = base::SysInfo::HardwareModelName();
   device_info.serial_number = GetSerialNumber();
   device_info.screen_lock_secured = GetScreenlockSecured();
