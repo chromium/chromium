@@ -249,39 +249,24 @@
     "args": ["--enable-blink-features=LayoutNGGrid"]
   },
   {
-    "prefix": "dark-mode-grayscale-images",
-    "bases": [],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeInversionAlgorithm=3,forceDarkModeImagePolicy=0,forceDarkModeImageStyle=1,forceDarkModeTextBrightnessThreshold=256,forceDarkModeBackgroundBrightnessThreshold=0"]
+    "prefix": "dark-mode-default",
+    "bases": ["dark-mode/colors"],
+    "args": ["--blink-settings=forceDarkModeEnabled=true"]
   },
   {
-    "prefix": "dark-mode-image-filter-all",
-    "bases": [],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeInversionAlgorithm=3,forceDarkModeImagePolicy=0,forceDarkModeTextBrightnessThreshold=256,forceDarkModeBackgroundBrightnessThreshold=0"]
+    "prefix": "dark-mode-images-filter-all",
+    "bases": ["dark-mode/images"],
+    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeImagePolicy=0"]
   },
   {
-    "prefix": "dark-mode-image-filter-none",
-    "bases": [],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeInversionAlgorithm=3,forceDarkModeImagePolicy=1,forceDarkModeTextBrightnessThreshold=256,forceDarkModeBackgroundBrightnessThreshold=0"]
+    "prefix": "dark-mode-images-filter-none",
+    "bases": ["dark-mode/images"],
+    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeImagePolicy=1,"]
   },
   {
-    "prefix": "dark-mode-native-theme-off",
-    "bases": [],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeInversionAlgorithm=3,forceDarkModeTextBrightnessThreshold=256,forceDarkModeBackgroundBrightnessThreshold=0"]
-  },
-  {
-    "prefix": "dark-mode-native-theme-on",
-    "bases": [],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeInversionAlgorithm=3,forceDarkModeTextBrightnessThreshold=256,forceDarkModeBackgroundBrightnessThreshold=0"]
-  },
-  {
-    "prefix": "dark-mode-page-background",
-    "bases": [],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeInversionAlgorithm=3,forceDarkModeTextBrightnessThreshold=256,forceDarkModeBackgroundBrightnessThreshold=0"]
-  },
-  {
-    "prefix": "dark-mode-text",
-    "bases": [],
-    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeInversionAlgorithm=3,forceDarkModeImagePolicy=1,forceDarkModeTextBrightnessThreshold=100,forceDarkModeBackgroundBrightnessThreshold=205"]
+    "prefix": "dark-mode-images-grayscale",
+    "bases": ["dark-mode/images"],
+    "args": ["--blink-settings=forceDarkModeEnabled=true,forceDarkModeImagePolicy=0,forceDarkModeImageStyle=1"]
   },
   {
     "prefix": "presentation",
