@@ -54,11 +54,10 @@ AffiliationServiceImpl::AffiliationServiceImpl(
 AffiliationServiceImpl::~AffiliationServiceImpl() = default;
 
 void AffiliationServiceImpl::PrefetchChangePasswordURLs(
-    const std::vector<url::SchemeHostPort>& tuple_origins) {
+    const std::vector<GURL>& urls) {
   if (ShouldAffiliationBasedMatchingBeActive(sync_service_)) {
-    RequestFacetsAffiliations(
-        ConvertMissingSchemeHostPortsToFacets(tuple_origins),
-        {.change_password_info = true});
+    RequestFacetsAffiliations(ConvertMissingURLsToFacets(urls),
+                              {.change_password_info = true});
   }
 }
 
@@ -67,9 +66,8 @@ void AffiliationServiceImpl::Clear() {
   change_password_urls_.clear();
 }
 
-GURL AffiliationServiceImpl::GetChangePasswordURL(
-    const url::SchemeHostPort& tuple) const {
-  auto it = change_password_urls_.find(tuple);
+GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
+  auto it = change_password_urls_.find(url::SchemeHostPort(url));
   return it != change_password_urls_.end() ? it->second : GURL();
 }
 
@@ -99,14 +97,16 @@ void AffiliationServiceImpl::OnMalformedResponse() {
   requested_tuple_origins_.clear();
 }
 
-std::vector<FacetURI>
-AffiliationServiceImpl::ConvertMissingSchemeHostPortsToFacets(
-    const std::vector<url::SchemeHostPort>& tuple_origins) {
+std::vector<FacetURI> AffiliationServiceImpl::ConvertMissingURLsToFacets(
+    const std::vector<GURL>& urls) {
   std::vector<FacetURI> facets;
-  for (const auto& tuple : tuple_origins) {
-    if (tuple.IsValid() && !base::Contains(change_password_urls_, tuple)) {
-      requested_tuple_origins_.push_back(tuple);
-      facets.push_back(FacetURI::FromCanonicalSpec(tuple.Serialize()));
+  for (const auto& url : urls) {
+    if (url.is_valid()) {
+      url::SchemeHostPort scheme_host_port(url);
+      if (!base::Contains(change_password_urls_, scheme_host_port)) {
+        requested_tuple_origins_.push_back(std::move(scheme_host_port));
+        facets.push_back(FacetURI::FromCanonicalSpec(url.spec()));
+      }
     }
   }
   return facets;
@@ -117,8 +117,10 @@ AffiliationServiceImpl::ConvertMissingSchemeHostPortsToFacets(
 void AffiliationServiceImpl::RequestFacetsAffiliations(
     const std::vector<FacetURI>& facets,
     const AffiliationFetcherInterface::RequestInfo request_info) {
-  fetcher_ = AffiliationFetcher::Create(url_loader_factory_, this);
-  fetcher_->StartRequest(facets, request_info);
+  if (!facets.empty()) {
+    fetcher_ = AffiliationFetcher::Create(url_loader_factory_, this);
+    fetcher_->StartRequest(facets, request_info);
+  }
 }
 
 }  // namespace password_manager

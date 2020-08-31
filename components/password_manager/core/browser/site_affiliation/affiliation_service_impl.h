@@ -23,6 +23,10 @@ namespace syncer {
 class SyncService;
 }
 
+namespace url {
+class SchemeHostPort;
+}
+
 namespace password_manager {
 
 class AffiliationServiceImpl : public AffiliationService,
@@ -36,16 +40,14 @@ class AffiliationServiceImpl : public AffiliationService,
   // Prefetches change password URLs and saves them to |change_password_urls_|
   // map. The verification if affiliation based matching is enabled must be
   // performed.
-  void PrefetchChangePasswordURLs(
-      const std::vector<url::SchemeHostPort>& tuple_origins) override;
+  void PrefetchChangePasswordURLs(const std::vector<GURL>& urls) override;
 
   // Clears the |change_password_urls_| map and cancels prefetch if still
   // running.
   void Clear() override;
 
   // In case no valid URL was found, a method returns an empty URL.
-  GURL GetChangePasswordURL(
-      const url::SchemeHostPort& scheme_host_port) const override;
+  GURL GetChangePasswordURL(const GURL& url) const override;
 
   AffiliationFetcherInterface* GetFetcherForTesting() { return fetcher_.get(); }
 
@@ -56,10 +58,10 @@ class AffiliationServiceImpl : public AffiliationService,
   void OnFetchFailed() override;
   void OnMalformedResponse() override;
 
-  // Converts new |tuple_origins| to facets and inserts them to the
+  // Converts new |urls| to facets and inserts them to the
   // |change_password_urls_|.
-  std::vector<FacetURI> ConvertMissingSchemeHostPortsToFacets(
-      const std::vector<url::SchemeHostPort>& tuple_origins);
+  std::vector<FacetURI> ConvertMissingURLsToFacets(
+      const std::vector<GURL>& urls);
 
   // Calls Affiliation Fetcher and starts a request for |facets| affiliations.
   void RequestFacetsAffiliations(

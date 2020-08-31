@@ -36,12 +36,10 @@ constexpr char k3ExampleURL[] = "https://3.example.com";
 constexpr char k4ExampleURL[] = "https://4.example.com";
 constexpr char k5ExampleURL[] = "https://5.example.com";
 
-std::vector<FacetURI> SchemeHostPortsToFacetsURIs(
-    const std::vector<url::SchemeHostPort>& scheme_host_ports) {
+std::vector<FacetURI> ToFacetsURIs(const std::vector<GURL>& urls) {
   std::vector<FacetURI> facet_URIs;
-  for (const auto& scheme_host_port : scheme_host_ports) {
-    facet_URIs.push_back(
-        FacetURI::FromCanonicalSpec(scheme_host_port.Serialize()));
+  for (const auto& url : urls) {
+    facet_URIs.push_back(FacetURI::FromCanonicalSpec(url.spec()));
   }
   return facet_URIs;
 }
@@ -94,24 +92,21 @@ class AffiliationServiceImplTest : public testing::Test {
 };
 
 TEST_F(AffiliationServiceImplTest, GetChangePasswordURLReturnsEmpty) {
-  EXPECT_EQ(GURL(), service()->GetChangePasswordURL(
-                        url::SchemeHostPort(GURL(k1ExampleURL))));
+  EXPECT_EQ(GURL(), service()->GetChangePasswordURL(GURL(k1ExampleURL)));
 }
 
 TEST_F(AffiliationServiceImplTest, ClearStopsOngoingAffiliationFetcherRequest) {
-  MockAffiliationFetcher* mock_fetcher = new MockAffiliationFetcher();
+  auto* mock_fetcher = new MockAffiliationFetcher();
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance)
       .WillOnce(Return(mock_fetcher));
 
-  const std::vector<url::SchemeHostPort> tuple_origins = {
-      url::SchemeHostPort(GURL(k1ExampleURL)),
-      url::SchemeHostPort(GURL(k2ExampleURL))};
+  const std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
   EXPECT_CALL(*mock_fetcher,
-              StartRequest(SchemeHostPortsToFacetsURIs(tuple_origins),
+              StartRequest(ToFacetsURIs(origins),
                            AffiliationFetcherInterface::RequestInfo{
                                .change_password_info = true}));
 
-  service()->PrefetchChangePasswordURLs(tuple_origins);
+  service()->PrefetchChangePasswordURLs(origins);
   EXPECT_NE(nullptr, service()->GetFetcherForTesting());
 
   service()->Clear();
@@ -120,17 +115,17 @@ TEST_F(AffiliationServiceImplTest, ClearStopsOngoingAffiliationFetcherRequest) {
 
 TEST_F(AffiliationServiceImplTest,
        OnFetchSuccededInsertsChangePasswordURLOfRequestedSiteIfFound) {
-  const url::SchemeHostPort scheme_host_port{GURL(k1ExampleURL)};
-  MockAffiliationFetcher* mock_fetcher = new MockAffiliationFetcher();
+  const GURL origin(k1ExampleURL);
+  auto* mock_fetcher = new MockAffiliationFetcher();
 
   EXPECT_CALL(*mock_fetcher,
-              StartRequest(SchemeHostPortsToFacetsURIs({scheme_host_port}),
+              StartRequest(ToFacetsURIs({origin}),
                            AffiliationFetcherInterface::RequestInfo{
                                .change_password_info = true}));
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance)
       .WillOnce(Return(mock_fetcher));
 
-  service()->PrefetchChangePasswordURLs({scheme_host_port});
+  service()->PrefetchChangePasswordURLs({origin});
 
   const GroupedFacets group = {
       {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
@@ -146,22 +141,22 @@ TEST_F(AffiliationServiceImplTest,
 
   // Expect Change Password URL of requested site.
   EXPECT_EQ(GURL(k1ExampleChangePasswordURL),
-            service()->GetChangePasswordURL(scheme_host_port));
+            service()->GetChangePasswordURL(origin));
 }
 
 TEST_F(AffiliationServiceImplTest,
        OnFetchSuccededInsertsChangePasswordURLOfAnotherSiteFromAGroup) {
-  const url::SchemeHostPort scheme_host_port{GURL(kM1ExampleURL)};
-  MockAffiliationFetcher* mock_fetcher = new MockAffiliationFetcher();
+  const GURL origin(kM1ExampleURL);
+  auto* mock_fetcher = new MockAffiliationFetcher();
 
   EXPECT_CALL(*mock_fetcher,
-              StartRequest(SchemeHostPortsToFacetsURIs({scheme_host_port}),
+              StartRequest(ToFacetsURIs({origin}),
                            AffiliationFetcherInterface::RequestInfo{
                                .change_password_info = true}));
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance)
       .WillOnce(Return(mock_fetcher));
 
-  service()->PrefetchChangePasswordURLs({scheme_host_port});
+  service()->PrefetchChangePasswordURLs({origin});
 
   const GroupedFacets group = {
       {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
@@ -175,22 +170,22 @@ TEST_F(AffiliationServiceImplTest,
 
   // Expect Change Password URL of another site from a grouping.
   EXPECT_EQ(GURL(k1ExampleChangePasswordURL),
-            service()->GetChangePasswordURL(scheme_host_port));
+            service()->GetChangePasswordURL(origin));
 }
 
 TEST_F(AffiliationServiceImplTest,
        OnFetchSucceedTakesNoActionWhenNoChangePasswordURLsAvailable) {
-  const url::SchemeHostPort scheme_host_port{GURL(k1ExampleURL)};
-  MockAffiliationFetcher* mock_fetcher = new MockAffiliationFetcher();
+  const GURL origin(k1ExampleURL);
+  auto* mock_fetcher = new MockAffiliationFetcher();
 
   EXPECT_CALL(*mock_fetcher,
-              StartRequest(SchemeHostPortsToFacetsURIs({scheme_host_port}),
+              StartRequest(ToFacetsURIs({origin}),
                            AffiliationFetcherInterface::RequestInfo{
                                .change_password_info = true}));
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance)
       .WillOnce(Return(mock_fetcher));
 
-  service()->PrefetchChangePasswordURLs({scheme_host_port});
+  service()->PrefetchChangePasswordURLs({origin});
 
   const GroupedFacets group = {
       {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
@@ -204,25 +199,23 @@ TEST_F(AffiliationServiceImplTest,
   AffiliationFetcherDelegate* service_delegate = service();
   service_delegate->OnFetchSucceeded(std::move(test_result));
 
-  EXPECT_EQ(GURL(), service()->GetChangePasswordURL(scheme_host_port));
+  EXPECT_EQ(GURL(), service()->GetChangePasswordURL(origin));
 }
 
 TEST_F(AffiliationServiceImplTest, OnFetchFailedResetsFetcher) {
-  MockAffiliationFetcher* mock_fetcher = new MockAffiliationFetcher();
+  auto* mock_fetcher = new MockAffiliationFetcher();
   AffiliationFetcherDelegate* service_delegate = service();
 
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance)
       .WillOnce(Return(mock_fetcher));
 
-  std::vector<url::SchemeHostPort> tuple_origins = {
-      url::SchemeHostPort(GURL(k1ExampleURL)),
-      url::SchemeHostPort(GURL(k2ExampleURL))};
+  std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
   EXPECT_CALL(*mock_fetcher,
-              StartRequest(SchemeHostPortsToFacetsURIs(tuple_origins),
+              StartRequest(ToFacetsURIs(origins),
                            AffiliationFetcherInterface::RequestInfo{
                                .change_password_info = true}));
 
-  service()->PrefetchChangePasswordURLs(tuple_origins);
+  service()->PrefetchChangePasswordURLs(origins);
   EXPECT_NE(nullptr, service()->GetFetcherForTesting());
 
   service_delegate->OnFetchFailed();
@@ -230,20 +223,18 @@ TEST_F(AffiliationServiceImplTest, OnFetchFailedResetsFetcher) {
 }
 
 TEST_F(AffiliationServiceImplTest, OnMalformedResponseResetsFetcher) {
-  std::vector<url::SchemeHostPort> tuple_origins = {
-      url::SchemeHostPort(GURL(k1ExampleURL)),
-      url::SchemeHostPort(GURL(k2ExampleURL))};
-  MockAffiliationFetcher* mock_fetcher = new MockAffiliationFetcher();
+  std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
+  auto* mock_fetcher = new MockAffiliationFetcher();
   AffiliationFetcherDelegate* service_delegate = service();
 
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance)
       .WillOnce(Return(mock_fetcher));
   EXPECT_CALL(*mock_fetcher,
-              StartRequest(SchemeHostPortsToFacetsURIs(tuple_origins),
+              StartRequest(ToFacetsURIs(origins),
                            AffiliationFetcherInterface::RequestInfo{
                                .change_password_info = true}));
 
-  service()->PrefetchChangePasswordURLs(tuple_origins);
+  service()->PrefetchChangePasswordURLs(origins);
   EXPECT_NE(nullptr, service()->GetFetcherForTesting());
 
   service_delegate->OnMalformedResponse();
@@ -252,32 +243,28 @@ TEST_F(AffiliationServiceImplTest, OnMalformedResponseResetsFetcher) {
 
 TEST_F(AffiliationServiceImplTest,
        EachPrefetchCallCreatesNewAffiliationFetcherInstance) {
-  const url::SchemeHostPort scheme_host_port1{GURL(k1ExampleURL)};
-  const url::SchemeHostPort scheme_host_port2{GURL(k2ExampleURL)};
-  const url::SchemeHostPort scheme_host_port3{GURL(k3ExampleURL)};
-  const url::SchemeHostPort scheme_host_port4{GURL(k4ExampleURL)};
-  const url::SchemeHostPort scheme_host_port5{GURL(k5ExampleURL)};
+  const GURL origin1(k1ExampleURL);
+  const GURL origin2(k2ExampleURL);
+  const GURL origin3(k3ExampleURL);
+  const GURL origin4(k4ExampleURL);
+  const GURL origin5(k5ExampleURL);
 
-  const std::vector<url::SchemeHostPort> tuple_origins_1 = {
-      scheme_host_port1, scheme_host_port2, scheme_host_port3};
-  const std::vector<url::SchemeHostPort> tuple_origins_2 = {
-      scheme_host_port3, scheme_host_port4, scheme_host_port5};
-  MockAffiliationFetcher* mock_fetcher = new MockAffiliationFetcher();
-  MockAffiliationFetcher* new_mock_fetcher = new MockAffiliationFetcher();
+  const std::vector<GURL> origins_1 = {origin1, origin2, origin3};
+  const std::vector<GURL> origins_2 = {origin3, origin4, origin5};
+  auto* mock_fetcher = new MockAffiliationFetcher();
+  auto* new_mock_fetcher = new MockAffiliationFetcher();
   AffiliationFetcher::RequestInfo request_info{.change_password_info = true};
 
-  EXPECT_CALL(
-      *mock_fetcher,
-      StartRequest(SchemeHostPortsToFacetsURIs(tuple_origins_1), request_info));
-  EXPECT_CALL(
-      *new_mock_fetcher,
-      StartRequest(SchemeHostPortsToFacetsURIs(tuple_origins_2), request_info));
+  EXPECT_CALL(*mock_fetcher,
+              StartRequest(ToFacetsURIs(origins_1), request_info));
+  EXPECT_CALL(*new_mock_fetcher,
+              StartRequest(ToFacetsURIs(origins_2), request_info));
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance)
       .WillOnce(Return(mock_fetcher))
       .WillOnce(Return(new_mock_fetcher));
 
-  service()->PrefetchChangePasswordURLs(tuple_origins_1);
-  service()->PrefetchChangePasswordURLs(tuple_origins_2);
+  service()->PrefetchChangePasswordURLs(origins_1);
+  service()->PrefetchChangePasswordURLs(origins_2);
 }
 
 TEST_F(AffiliationServiceImplTest,
@@ -287,19 +274,17 @@ TEST_F(AffiliationServiceImplTest,
   SetSyncServiceStates(/*is_setup_completed=*/true,
                        /*is_passphrase_set=*/false);
 
-  const std::vector<url::SchemeHostPort> tuple_origins = {
-      url::SchemeHostPort(GURL(k1ExampleURL)),
-      url::SchemeHostPort(GURL(k2ExampleURL))};
-  MockAffiliationFetcher* mock_fetcher = new MockAffiliationFetcher();
+  const std::vector<GURL> origins = {GURL(k1ExampleURL), GURL(k2ExampleURL)};
+  auto* mock_fetcher = new MockAffiliationFetcher();
 
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance)
       .WillOnce(Return(mock_fetcher));
   EXPECT_CALL(*mock_fetcher,
-              StartRequest(SchemeHostPortsToFacetsURIs(tuple_origins),
+              StartRequest(ToFacetsURIs(origins),
                            AffiliationFetcherInterface::RequestInfo{
                                .change_password_info = true}));
 
-  service()->PrefetchChangePasswordURLs(tuple_origins);
+  service()->PrefetchChangePasswordURLs(origins);
 }
 
 TEST_F(AffiliationServiceImplTest, SecondaryPassphraseSetPreventsFetch) {
@@ -308,8 +293,7 @@ TEST_F(AffiliationServiceImplTest, SecondaryPassphraseSetPreventsFetch) {
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance).Times(0);
 
   service()->PrefetchChangePasswordURLs(
-      {url::SchemeHostPort(GURL(k1ExampleURL)),
-       url::SchemeHostPort(GURL(k2ExampleURL))});
+      {GURL(k1ExampleURL), GURL(k2ExampleURL)});
 }
 
 TEST_F(AffiliationServiceImplTest, SetupNotCompletedPreventsFetch) {
@@ -319,8 +303,7 @@ TEST_F(AffiliationServiceImplTest, SetupNotCompletedPreventsFetch) {
   EXPECT_CALL(*mock_fetcher_factory(), CreateInstance).Times(0);
 
   service()->PrefetchChangePasswordURLs(
-      {url::SchemeHostPort(GURL(k1ExampleURL)),
-       url::SchemeHostPort(GURL(k2ExampleURL))});
+      {GURL(k1ExampleURL), GURL(k2ExampleURL)});
 }
 
 }  // namespace password_manager
