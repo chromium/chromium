@@ -50,6 +50,7 @@ static_library("content") {
   deps = [
     ":content_common",
     ":utils",
+    "//base",
     "//components/autofill/core/browser",
     "//components/keyed_service/content",
     "//components/payments/content/utility",
@@ -63,6 +64,7 @@ static_library("content") {
     "//components/url_formatter",
     "//components/webdata/common",
     "//content/public/browser",
+    "//crypto",
     "//device/fido",
     "//services/data_decoder/public/cpp",
     "//third_party/blink/public:blink_headers",
@@ -183,6 +185,7 @@ source_set("unit_tests") {
       "payment_request_spec_unittest.cc",
       "payment_request_state_unittest.cc",
       "payment_response_helper_unittest.cc",
+      "secure_payment_confirmation_app_unittest.cc",
       "secure_payment_confirmation_model_unittest.cc",
       "service_worker_payment_app_unittest.cc",
     ]
