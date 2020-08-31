@@ -59,9 +59,6 @@ enum class SystemAppType {
   TELEMETRY,
   SAMPLE,
 #endif  // !defined(OFFICIAL_BUILD)
-
-  // When adding a new system app, update system_web_app_manager_browsertest.cc
-  // |GetExpectedNumberOfInstalledSystemApps| method accordingly.
 };
 
 using OriginTrialsMap = std::map<url::Origin, std::vector<std::string>>;
