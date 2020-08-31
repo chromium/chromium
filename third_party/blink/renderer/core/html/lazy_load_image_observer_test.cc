@@ -205,7 +205,7 @@ TEST_P(LazyLoadImagesSimTest, CSSBackgroundImage) {
   bool is_lazyload_image_enabled = GetParam();
   SetLazyLoadEnabled(is_lazyload_image_enabled);
   SimRequest image_resource("https://example.com/img.png", "image/png");
-  LoadMainResource(String::Format(R"HTML(
+  LoadMainResource(R"HTML(
         <style>
         #deferred_image {
           height:200px;
@@ -214,7 +214,7 @@ TEST_P(LazyLoadImagesSimTest, CSSBackgroundImage) {
         </style>
         <div style='height:10000px;'></div>
         <div id="deferred_image"></div>
-      )HTML"));
+      )HTML");
 
   if (!is_lazyload_image_enabled)
     image_resource.Complete(ReadTestImage());

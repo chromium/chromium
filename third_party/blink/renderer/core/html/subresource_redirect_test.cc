@@ -67,7 +67,7 @@ class SubresourceRedirectSimTest
 // states of SaveData, LazyLoad, SubresourceRedirect features.
 TEST_P(SubresourceRedirectSimTest, CSSBackgroundImage) {
   SimRequest image_resource("https://example.com/img.png", "image/png");
-  LoadMainResource(String::Format(R"HTML(
+  LoadMainResource(R"HTML(
         <style>
         #deferred_image {
           height:200px;
@@ -76,7 +76,7 @@ TEST_P(SubresourceRedirectSimTest, CSSBackgroundImage) {
         </style>
         <div style='height:10000px;'></div>
         <div id="deferred_image"></div>
-      )HTML"));
+      )HTML");
 
   if (!is_lazyload_image_enabled())
     image_resource.Complete(ReadTestImage());

@@ -283,19 +283,19 @@ TEST_F(HTMLMetaElementSimTest, WebMonetizationNotCountedInSubFrame) {
 
   LoadURL("https://example.com/");
 
-  main_resource.Complete(String::Format(
+  main_resource.Complete(
       R"HTML(
         <body onload='console.log("main body onload");'>
           <iframe src='https://example.com/subframe.html'
                   onload='console.log("child frame element onload");'></iframe>
-        </body>)HTML"));
+        </body>)HTML");
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  child_frame_resource.Complete(String::Format(R"HTML(
+  child_frame_resource.Complete(R"HTML(
     <meta name="monetization" content="$payment.pointer.url">
-  )HTML"));
+  )HTML");
 
   Compositor().BeginFrame();
   test::RunPendingTasks();

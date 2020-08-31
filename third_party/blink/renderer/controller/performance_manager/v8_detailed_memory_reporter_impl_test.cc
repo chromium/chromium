@@ -42,7 +42,7 @@ TEST_F(V8DetailedMemoryReporterImplTest, GetV8MemoryUsage) {
 
   LoadURL("https://example.com/");
 
-  main_resource.Complete(String::Format(R"HTML(
+  main_resource.Complete(R"HTML(
       <script>
         window.onload = function () {
           globalThis.array = new Array(1000000).fill(0);
@@ -51,11 +51,11 @@ TEST_F(V8DetailedMemoryReporterImplTest, GetV8MemoryUsage) {
       </script>
       <body>
         <iframe src='https://example.com/subframe.html'></iframe>
-      </body>)HTML"));
+      </body>)HTML");
 
   test::RunPendingTasks();
 
-  child_frame_resource.Complete(String::Format(R"HTML(
+  child_frame_resource.Complete(R"HTML(
       <script>
         window.onload = function () {
           globalThis.array = new Array(1000000).fill(0);
@@ -63,7 +63,7 @@ TEST_F(V8DetailedMemoryReporterImplTest, GetV8MemoryUsage) {
         }
       </script>
       <body>
-      </body>)HTML"));
+      </body>)HTML");
 
   test::RunPendingTasks();
 

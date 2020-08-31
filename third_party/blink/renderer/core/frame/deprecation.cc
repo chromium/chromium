@@ -249,12 +249,11 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     // Blocked subresource requests:
     case WebFeature::kLegacyProtocolEmbeddedAsSubresource:
       return {"LegacyProtocolEmbeddedAsSubresource", kUnknown,
-              String::Format(
-                  "Subresource requests using legacy protocols (like `ftp:`) "
-                  "are blocked. Please deliver web-accessible resources over "
-                  "modern protocols like HTTPS. See "
-                  "https://www.chromestatus.com/feature/5709390967472128 for "
-                  "details.")};
+              "Subresource requests using legacy protocols (like `ftp:`) "
+              "are blocked. Please deliver web-accessible resources over "
+              "modern protocols like HTTPS. See "
+              "https://www.chromestatus.com/feature/5709390967472128 for "
+              "details."};
 
     case WebFeature::kRequestedSubresourceWithEmbeddedCredentials:
       return {"RequestedSubresourceWithEmbeddedCredentials", kUnknown,
@@ -333,26 +332,22 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
     case WebFeature::kNotificationInsecureOrigin:
     case WebFeature::kNotificationAPIInsecureOriginIframe:
     case WebFeature::kNotificationPermissionRequestedInsecureOrigin:
-      return {
-          "NotificationInsecureOrigin", kUnknown,
-          String::Format(
+      return {"NotificationInsecureOrigin", kUnknown,
               "The Notification API may no longer be used from insecure "
               "origins. "
               "You should consider switching your application to a secure "
               "origin, "
-              "such as HTTPS. See https://goo.gl/rStTGz for more details.")};
+              "such as HTTPS. See https://goo.gl/rStTGz for more details."};
 
     case WebFeature::kNotificationPermissionRequestedIframe:
-      return {
-          "NotificationPermissionRequestedIframe", kUnknown,
-          String::Format(
+      return {"NotificationPermissionRequestedIframe", kUnknown,
               "Permission for the Notification API may no longer be requested "
               "from "
               "a cross-origin iframe. You should consider requesting "
               "permission "
               "from a top-level frame or opening a new window instead. See "
               "https://www.chromestatus.com/feature/6451284559265792 for more "
-              "details.")};
+              "details."};
 
     case WebFeature::kCSSDeepCombinator:
       return {"CSSDeepCombinator", kM65,

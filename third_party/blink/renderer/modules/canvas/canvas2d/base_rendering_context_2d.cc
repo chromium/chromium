@@ -985,17 +985,16 @@ static inline CanvasImageSource* ToImageSourceInternal(
             .IsEmpty()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
-          String::Format("The image argument is a canvas element with a width "
-                         "or height of 0."));
+          "The image argument is a canvas element with a width "
+          "or height of 0.");
       return nullptr;
     }
     return value.GetAsHTMLCanvasElement();
   }
   if (value.IsImageBitmap()) {
     if (static_cast<ImageBitmap*>(value.GetAsImageBitmap())->IsNeutered()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          String::Format("The image source is detached"));
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The image source is detached");
       return nullptr;
     }
     return value.GetAsImageBitmap();
@@ -1003,9 +1002,8 @@ static inline CanvasImageSource* ToImageSourceInternal(
   if (value.IsOffscreenCanvas()) {
     if (static_cast<OffscreenCanvas*>(value.GetAsOffscreenCanvas())
             ->IsNeutered()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          String::Format("The image source is detached"));
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "The image source is detached");
       return nullptr;
     }
     if (static_cast<OffscreenCanvas*>(value.GetAsOffscreenCanvas())
@@ -1013,8 +1011,8 @@ static inline CanvasImageSource* ToImageSourceInternal(
             .IsEmpty()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
-          String::Format("The image argument is an OffscreenCanvas element "
-                         "with a width or height of 0."));
+          "The image argument is an OffscreenCanvas element "
+          "with a width or height of 0.");
       return nullptr;
     }
     return value.GetAsOffscreenCanvas();

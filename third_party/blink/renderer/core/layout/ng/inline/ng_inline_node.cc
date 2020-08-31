@@ -1791,7 +1791,7 @@ bool NGInlineNode::ShouldReportLetterSpacingUseCounterForTesting(
 }
 
 String NGInlineNode::ToString() const {
-  return String::Format("NGInlineNode");
+  return "NGInlineNode";
 }
 
 }  // namespace blink
