@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerWebContentsObserver;
 import org.chromium.chrome.browser.payments.minimal.MinimalUICoordinator;
 import org.chromium.chrome.browser.payments.ui.ContactDetailsSection;
-import org.chromium.chrome.browser.payments.ui.LineItem;
 import org.chromium.chrome.browser.payments.ui.PaymentInformation;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestUI.SelectionResult;
@@ -54,7 +53,6 @@ import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.CanMakePaymentQuery;
 import org.chromium.components.payments.CheckoutFunnelStep;
 import org.chromium.components.payments.ComponentPaymentRequestImpl;
-import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.ErrorMessageUtil;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.Event;
@@ -403,7 +401,13 @@ public class PaymentRequestImpl
             mQueryForQuota.put("basic-card-payment-options", paymentMethodData);
         }
 
-        if (!parseAndValidateDetailsOrDisconnectFromClient(details)) return false;
+        if (parseAndValidateDetails(details)) {
+            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
+        } else {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
+            return false;
+        }
         mSpec = new PaymentRequestSpec(mPaymentOptions, details, mMethodData.values(),
                 LocaleUtils.getDefaultLocaleString());
 
@@ -932,7 +936,13 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (!parseAndValidateDetailsOrDisconnectFromClient(details)) return;
+        if (parseAndValidateDetails(details)) {
+            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
+        } else {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
+            return;
+        }
         mSpec.updateWith(details);
 
         if (mInvokedPaymentApp != null && mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
@@ -971,7 +981,13 @@ public class PaymentRequestImpl
             return;
         }
 
-        if (!parseAndValidateDetailsOrDisconnectFromClient(details)) return;
+        if (parseAndValidateDetails(details)) {
+            mPaymentUIsManager.updateDetailsOnPaymentRequestUI(details, mRawTotal, mRawLineItems);
+        } else {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
+            return;
+        }
         mSpec.updateWith(details);
 
         if (!TextUtils.isEmpty(details.error)) {
@@ -1056,12 +1072,8 @@ public class PaymentRequestImpl
      *                member variables.
      * @return True if the data is valid. False if the data is invalid.
      */
-    private boolean parseAndValidateDetailsOrDisconnectFromClient(PaymentDetails details) {
-        if (!PaymentValidator.validatePaymentDetails(details)) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
-            return false;
-        }
+    private boolean parseAndValidateDetails(PaymentDetails details) {
+        if (!PaymentValidator.validatePaymentDetails(details)) return false;
 
         if (details.total != null) {
             mRawTotal = details.total;
@@ -1073,26 +1085,7 @@ public class PaymentRequestImpl
                             : new ArrayList<>());
         }
 
-        mPaymentUIsManager.loadCurrencyFormattersForPaymentDetails(details);
-
-        // Total is never pending.
-        CurrencyFormatter formatter =
-                mPaymentUIsManager.getOrCreateCurrencyFormatter(mRawTotal.amount);
-        LineItem uiTotal = new LineItem(mRawTotal.label, formatter.getFormattedCurrencyCode(),
-                formatter.format(mRawTotal.amount.value), /* isPending */ false);
-
-        List<LineItem> uiLineItems = mPaymentUIsManager.getLineItems(mRawLineItems);
-
-        mPaymentUIsManager.setUiShoppingCart(new ShoppingCart(uiTotal, uiLineItems));
-
-        if (mPaymentUIsManager.getUiShippingOptions() == null || details.shippingOptions != null) {
-            mPaymentUIsManager.setUiShippingOptions(
-                    mPaymentUIsManager.getShippingOptions(details.shippingOptions));
-        }
-
         if (mSkipToGPayHelper != null && !mSkipToGPayHelper.setShippingOptionIfValid(details)) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
             return false;
         }
 
@@ -1112,8 +1105,6 @@ public class PaymentRequestImpl
         } else if (mRawShippingOptions == null) {
             mRawShippingOptions = Collections.unmodifiableList(new ArrayList<>());
         }
-
-        mPaymentUIsManager.updateAppModifiedTotals();
 
         assert mRawTotal != null;
         assert mRawLineItems != null;

@@ -250,11 +250,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         return mPaymentUisShowStateReconciler;
     }
 
-    /** @return Get the AddressEditor of the PaymentRequest UI. */
-    public AddressEditor getAddressEditor() {
-        return mAddressEditor;
-    }
-
     /** @return Get the CardEditor of the PaymentRequest UI. */
     public CardEditor getCardEditor() {
         return mCardEditor;
@@ -281,11 +276,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     /** Get the ShippingAddressesSection of the PaymentRequest UI. */
     public SectionInformation getShippingAddressesSection() {
         return mShippingAddressesSection;
-    }
-
-    /** Set the ShippingAddressesSection of the PaymentRequest UI. */
-    public void setShippingAddressesSection(SectionInformation shippingAddressesSection) {
-        mShippingAddressesSection = shippingAddressesSection;
     }
 
     /** Get the ContactSection of the PaymentRequest UI. */
@@ -317,11 +307,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         return mUiShoppingCart;
     }
 
-    /** Set the shopping cart on the PaymentRequest UI. */
-    public void setUiShoppingCart(ShoppingCart uiShoppingCart) {
-        mUiShoppingCart = uiShoppingCart;
-    }
-
     /** @return Get a map of currency code to CurrencyFormatter. */
     public Map<String, CurrencyFormatter> getCurrencyFormatterMap() {
         return mCurrencyFormatterMap;
@@ -333,14 +318,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
      */
     public SectionInformation getUiShippingOptions() {
         return mUiShippingOptions;
-    }
-
-    /**
-     * Set the shipping options for the Payment Request UI.
-     * @param uiShippingOptions A shipping options to be displayed on the Payment Request UI.
-     */
-    public void setUiShippingOptions(SectionInformation uiShippingOptions) {
-        mUiShippingOptions = uiShippingOptions;
     }
 
     /**
@@ -670,7 +647,7 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
      *
      * @param details The given payment details.
      */
-    public void loadCurrencyFormattersForPaymentDetails(PaymentDetails details) {
+    private void loadCurrencyFormattersForPaymentDetails(PaymentDetails details) {
         if (details.total != null) {
             getOrCreateCurrencyFormatter(details.total.amount);
         }
@@ -1249,6 +1226,31 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
             }
         }
         return anAppCanProvideAllInfo;
+    }
+
+    /**
+     * Update the details related fields on the PaymentRequest UI.
+     * @param details The details whose information is used for the update.
+     * @param rawTotal The raw total parsed from the details to be used for the update.
+     * @param rawLineItems The raw line items parsed from the details to be used for the update.
+     */
+    public void updateDetailsOnPaymentRequestUI(
+            PaymentDetails details, PaymentItem rawTotal, List<PaymentItem> rawLineItems) {
+        loadCurrencyFormattersForPaymentDetails(details);
+        // Total is never pending.
+        CurrencyFormatter formatter = getOrCreateCurrencyFormatter(rawTotal.amount);
+        LineItem uiTotal = new LineItem(rawTotal.label, formatter.getFormattedCurrencyCode(),
+                formatter.format(rawTotal.amount.value), /*isPending=*/false);
+
+        List<LineItem> uiLineItems = getLineItems(rawLineItems);
+
+        mUiShoppingCart = new ShoppingCart(uiTotal, uiLineItems);
+
+        if (mUiShippingOptions == null || details.shippingOptions != null) {
+            mUiShippingOptions = getShippingOptions(details.shippingOptions);
+        }
+
+        updateAppModifiedTotals();
     }
 
     /**
