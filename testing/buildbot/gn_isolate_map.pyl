@@ -46,9 +46,11 @@
 #  : the test is a python script; the path to the script is specified in
 #    the "script" field.
 #  "generated_script"
-#  : the test is a script generated at build time; the script *must* be
+#  : the test is a script generated at build time; the script *should* be
 #    in output_dir/bin/run_$target (or output_dir\bin\run_$target.bat on
-#    Windows).
+#    Windows), but an alternative path *may* be specified,
+#    in the "script" field, as *relative to the output directory*.
+#    TODO(crbug.com/816629): remove support for "script".
 #  "unknown"
 #  : (the default), which indicates that we don't know what the command line
 #    needs to be (this is a fatal error).
@@ -1421,22 +1423,27 @@
   "resource_sizes_chrome_modern_public_minimal_apks": {
     "label": "//chrome/android:resource_sizes_chrome_modern_public_minimal_apks",
     "type": "generated_script",
+    "script": "bin/resource_sizes_chrome_modern_public_minimal_apks",
   },
   "resource_sizes_cronet_sample_apk": {
     "label": "//components/cronet/android:resource_sizes_cronet_sample_apk",
     "type": "generated_script",
+    "script": "bin/resource_sizes_cronet_sample_apk",
   },
   "resource_sizes_monochrome_public_minimal_apks": {
     "label": "//chrome/android:resource_sizes_monochrome_public_minimal_apks",
     "type": "generated_script",
+    "script": "bin/resource_sizes_monochrome_public_minimal_apks",
   },
   "resource_sizes_trichrome": {
     "label": "//chrome/android:resource_sizes_trichrome",
     "type": "generated_script",
+    "script": "bin/resource_sizes_trichrome",
   },
   "resource_sizes_system_webview_bundle": {
     "label": "//android_webview:resource_sizes_system_webview_bundle",
     "type": "generated_script",
+    "script": "bin/resource_sizes_system_webview_bundle",
   },
   "sandbox_linux_unittests": {
     "label": "//sandbox/linux:sandbox_linux_unittests",
@@ -1669,6 +1676,7 @@
   "upload_trace_processor": {
     "label": "//tools/perf/core/perfetto_binary_roller:upload_trace_processor",
     "type": "generated_script",
+    "script": "bin/upload_trace_processor",
   },
   "url_unittests": {
     "label": "//url:url_unittests",
