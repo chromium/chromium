@@ -314,9 +314,9 @@ FileList* FileInputType::CreateFileList(const FileChooserFileInfoList& files,
 void FileInputType::CountUsage() {
   ExecutionContext* context = GetElement().GetExecutionContext();
   if (context->IsSecureContext())
-    UseCounter::Count(context, WebFeature::kInputTypeFileInsecureOrigin);
-  else
     UseCounter::Count(context, WebFeature::kInputTypeFileSecureOrigin);
+  else
+    UseCounter::Count(context, WebFeature::kInputTypeFileInsecureOrigin);
 }
 
 void FileInputType::CreateShadowSubtree() {
