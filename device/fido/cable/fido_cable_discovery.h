@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   virtual std::unique_ptr<FidoCableHandshakeHandler> CreateV1HandshakeHandler(
       FidoCableDevice* device,
       const CableDiscoveryData& discovery_data,
-      const CableEidArray& eid);
+      const CableEidArray& authenticator_eid);
 
  private:
   enum class CableV1DiscoveryEvent : int;

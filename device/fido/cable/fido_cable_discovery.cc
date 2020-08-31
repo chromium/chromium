@@ -198,13 +198,14 @@ std::unique_ptr<FidoCableHandshakeHandler>
 FidoCableDiscovery::CreateV1HandshakeHandler(
     FidoCableDevice* device,
     const CableDiscoveryData& discovery_data,
-    const CableEidArray& eid) {
+    const CableEidArray& authenticator_eid) {
   std::unique_ptr<FidoCableHandshakeHandler> handler;
   switch (discovery_data.version) {
     case CableDiscoveryData::Version::V1: {
       // Nonce is embedded as first 8 bytes of client EID.
       std::array<uint8_t, 8> nonce;
-      const bool ok = fido_parsing_utils::ExtractArray(eid, 0, &nonce);
+      const bool ok = fido_parsing_utils::ExtractArray(
+          discovery_data.v1->client_eid, 0, &nonce);
       DCHECK(ok);
 
       return std::make_unique<FidoCableV1HandshakeHandler>(
@@ -681,7 +682,8 @@ base::Optional<FidoCableDiscovery::Result>
 FidoCableDiscovery::GetCableDiscoveryDataFromAuthenticatorEid(
     CableEidArray authenticator_eid) const {
   for (const auto& candidate : discovery_data_) {
-    if (candidate.MatchV1(authenticator_eid)) {
+    if (candidate.version == CableDiscoveryData::Version::V1 &&
+        candidate.MatchV1(authenticator_eid)) {
       return Result(candidate, authenticator_eid, base::nullopt, base::nullopt);
     }
   }
