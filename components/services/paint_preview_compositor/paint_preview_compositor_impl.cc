@@ -144,6 +144,7 @@ void PaintPreviewCompositorImpl::BeginSeparatedFrameComposite(
     std::move(callback).Run(mojom::PaintPreviewCompositor::
                                 BeginCompositeStatus::kDeserializingFailure,
                             std::move(response));
+    return;
   }
   auto frames = DeserializeAllFrames(std::move(request->recording_map));
 
@@ -216,6 +217,7 @@ void PaintPreviewCompositorImpl::BeginMainFrameComposite(
     DVLOG(1) << "No valid root frame guid";
     std::move(callback).Run(mojom::PaintPreviewCompositor::
                                 BeginCompositeStatus::kDeserializingFailure);
+    return;
   }
 
   base::flat_map<base::UnguessableToken, sk_sp<SkPicture>> loaded_frames;
