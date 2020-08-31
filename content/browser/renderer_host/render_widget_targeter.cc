@@ -306,6 +306,8 @@ void RenderWidgetTargeter::QueryClient(
     return;
   }
 
+  const gfx::PointF location = request.GetLocation();
+
   request_in_flight_ = std::move(request);
   async_depth_++;
 
@@ -325,7 +327,7 @@ void RenderWidgetTargeter::QueryClient(
   TRACE_EVENT_WITH_FLOW2(
       "viz,benchmark", "Event.Pipeline", TRACE_ID_GLOBAL(trace_id_),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "QueryClient", "event_location", request.GetLocation().ToString());
+      "QueryClient", "event_location", location.ToString());
 
   target_client->FrameSinkIdAt(
       target_location, trace_id_,
