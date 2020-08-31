@@ -1363,6 +1363,10 @@ crbug.com/680331 external/wpt/css/cssom-view/scrollIntoView-sideways-rl-writing-
 
 # 'overflow: clip' not implemented.
 crbug.com/966283 external/wpt/css/css-overflow/clip-001.html [ Skip ]
+crbug.com/966283 external/wpt/css/css-overflow/clip-002.html [ Skip ]
+crbug.com/966283 external/wpt/css/css-overflow/clip-003.html [ Skip ]
+crbug.com/966283 external/wpt/css/css-overflow/clip-004.html [ Skip ]
+crbug.com/966283 external/wpt/css/css-overflow/clip-005.html [ Skip ]
 crbug.com/966283 external/wpt/css/css-overflow/dynamic-visible-to-clip-001.html [ Skip ]
 crbug.com/966283 external/wpt/css/css-overflow/overflow-body-propagation-007.html [ Skip ]
 crbug.com/966283 external/wpt/css/css-overflow/overflow-body-propagation-008.html [ Skip ]
