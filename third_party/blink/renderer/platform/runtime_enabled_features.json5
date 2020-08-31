@@ -1009,7 +1009,7 @@
     {
       name: "LayoutNGFragmentItem",
       implied_by: ["LayoutNGBlockFragmentation", "LayoutNGFragmentTraversal", "EditingNG"],
-      status: "test",
+      status: "stable",
     },
     {
       // Traverse the fragment tree when painting and hit-testing, instead of
