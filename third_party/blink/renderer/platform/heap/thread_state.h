@@ -674,6 +674,10 @@ class PLATFORM_EXPORT ThreadState final {
 
   bool skip_incremental_marking_for_testing_ = false;
 
+  size_t last_concurrently_marked_bytes_ = 0;
+  base::TimeTicks last_concurrently_marked_bytes_update_;
+  bool concurrent_marking_priority_increased_ = false;
+
   friend class BlinkGCObserver;
   friend class incremental_marking_test::IncrementalMarkingScope;
   friend class IncrementalMarkingTestDriver;

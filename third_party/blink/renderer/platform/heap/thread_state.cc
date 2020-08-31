@@ -99,6 +99,8 @@ uint8_t ThreadState::main_thread_state_storage_[sizeof(ThreadState)];
 
 namespace {
 
+constexpr double kMarkingScheduleRatioBeforeConcurrentPriorityIncrease = 0.5;
+
 constexpr size_t kMaxTerminationGCLoops = 20;
 
 // Helper function to convert a byte count to a KB count, capping at
@@ -1119,6 +1121,9 @@ void ThreadState::IncrementalMarkingStart(BlinkGC::GCReason reason) {
           MarkingWorklist::kNumTasks == WriteBarrierWorklist::kNumTasks,
           "Marking worklist and write-barrier worklist should be the "
           "same size");
+      last_concurrently_marked_bytes_ = 0;
+      last_concurrently_marked_bytes_update_ = base::TimeTicks::Now();
+      concurrent_marking_priority_increased_ = false;
       ScheduleConcurrentMarking();
     }
     SetGCState(kIncrementalMarkingStepScheduled);
@@ -1181,6 +1186,32 @@ bool ThreadState::ConcurrentMarkingStep() {
     // Notifies the scheduler that max concurrency might have increased.
     // This will adjust the number of markers if necessary.
     marker_handle_.NotifyConcurrencyIncrease();
+    if (!concurrent_marking_priority_increased_) {
+      // If concurrent tasks aren't executed, it might delay GC finalization.
+      // As long as GC is active so is the write barrier, which incurs a
+      // performance cost. Marking is estimated to take overall
+      // |MarkingSchedulingOracle::kEstimatedMarkingTimeMs| (500ms). If
+      // concurrent marking tasks have not reported any progress (i.e. the
+      // concurrently marked bytes count as not changed) in over
+      // |kMarkingScheduleRatioBeforeConcurrentPriorityIncrease| (50%) of
+      // that expected duration, we increase the concurrent task priority
+      // for the duration of the current GC. This is meant to prevent the
+      // GC from exceeding it's expected end time.
+      size_t current_concurrently_marked_bytes_ =
+          marking_scheduling_->GetConcurrentlyMarkedBytes();
+      if (current_concurrently_marked_bytes_ >
+          last_concurrently_marked_bytes_) {
+        last_concurrently_marked_bytes_ = current_concurrently_marked_bytes_;
+        last_concurrently_marked_bytes_update_ = base::TimeTicks::Now();
+      } else if ((base::TimeTicks::Now() -
+                  last_concurrently_marked_bytes_update_)
+                     .InMilliseconds() >
+                 kMarkingScheduleRatioBeforeConcurrentPriorityIncrease *
+                     MarkingSchedulingOracle::kEstimatedMarkingTimeMs) {
+        marker_handle_.UpdatePriority(base::TaskPriority::USER_BLOCKING);
+        concurrent_marking_priority_increased_ = true;
+      }
+    }
     return false;
   }
   return marker_handle_.IsCompleted();
@@ -1674,7 +1705,6 @@ void ThreadState::ScheduleConcurrentMarking() {
   DCHECK(base::FeatureList::IsEnabled(
       blink::features::kBlinkHeapConcurrentMarking));
 
-  // |USER_BLOCKING| is used to minimize marking on foreground thread.
   marker_handle_ = base::PostJob(
       FROM_HERE, {base::ThreadPool(), base::TaskPriority::USER_VISIBLE},
       ConvertToBaseRepeatingCallback(

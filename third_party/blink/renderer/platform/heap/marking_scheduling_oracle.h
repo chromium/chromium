@@ -36,6 +36,7 @@ class PLATFORM_EXPORT MarkingSchedulingOracle {
   void UpdateIncrementalMarkingStats(size_t, base::TimeDelta, base::TimeDelta);
   void AddConcurrentlyMarkedBytes(size_t);
 
+  size_t GetConcurrentlyMarkedBytes();
   size_t GetOverallMarkedBytes();
 
   base::TimeDelta GetNextIncrementalStepDurationForTask(size_t);
