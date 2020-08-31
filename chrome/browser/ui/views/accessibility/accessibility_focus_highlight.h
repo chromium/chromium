@@ -42,10 +42,13 @@ class AccessibilityFocusHighlight : public ui::LayerDelegate,
  private:
   FRIEND_TEST_ALL_PREFIXES(AccessibilityFocusHighlightBrowserTest,
                            DrawsHighlight);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityFocusHighlightBrowserTest,
+                           FocusAppearance);
   // For testing.
   static void SetNoFadeForTesting();
   static void SkipActivationCheckForTesting();
   static void UseDefaultColorForTesting();
+  ui::Layer* GetLayerForTesting();
 
   // Create the layer if needed, and set node_bounds_
   void CreateOrUpdateLayer(gfx::Rect node_bounds);
@@ -73,6 +76,11 @@ class AccessibilityFocusHighlight : public ui::LayerDelegate,
   // Compute the highlight color based on theme colors and defaults.
   SkColor GetHighlightColor();
 
+  // Compute the opacity based on the fade in and fade out times.
+  // TODO(aboxhall): figure out how to use cubic beziers
+  float ComputeOpacity(base::TimeDelta time_since_layer_create,
+                       base::TimeDelta time_since_focus_move);
+
   // The layer, if visible.
   std::unique_ptr<ui::Layer> layer_;
 
@@ -93,6 +101,9 @@ class AccessibilityFocusHighlight : public ui::LayerDelegate,
 
   // The default color used for the highlight.
   static SkColor default_color_;
+
+  // Whether to skip fade in/fade out for testing.
+  static bool no_fade_for_testing_;
 
   // The amount of time it should take for the highlight to fade in.
   static base::TimeDelta fade_in_time_;
