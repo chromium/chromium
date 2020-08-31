@@ -753,11 +753,11 @@ TEST(ChromeContentBrowserClientTest, GenerateBrandVersionList) {
 TEST(ChromeContentBrowserClientTest, LowEntropyCpuArchitecture) {
   std::string arch = content::GetLowEntropyCpuArchitecture();
 
-#if (!defined(OS_POSIX) && !defined(OS_WIN)) || defined(OS_MAC) || \
-    defined(OS_ANDROID)
-  EXPECT_EQ("", arch);
-#elif (defined(OS_POSIX) && !defined(OS_MAC)) || defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_MAC) || \
+    (defined(OS_POSIX) && !defined(OS_ANDROID))
   EXPECT_TRUE("arm" == arch || "x86" == arch);
+#else
+  EXPECT_EQ("", arch);
 #endif
 }
 

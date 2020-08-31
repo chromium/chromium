@@ -15,6 +15,10 @@
 #include "build/lacros_buildflags.h"
 #include "build/util/webkit_version.h"
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
 #elif defined(OS_POSIX) && !defined(OS_MAC)
@@ -90,10 +94,27 @@ std::string BuildCpuInfo() {
   return cpuinfo;
 }
 
-// Return the CPU architecture in Linux or Windows and the empty string
+// Return the CPU architecture in Windows/Mac/POSIX and the empty string
 // elsewhere.
 std::string GetLowEntropyCpuArchitecture() {
-#if !defined(OS_MAC) && !defined(OS_ANDROID) && defined(OS_POSIX)
+#if defined(OS_WIN)
+  base::win::OSInfo::WindowsArchitecture windows_architecture =
+      base::win::OSInfo::GetInstance()->GetArchitecture();
+  if (windows_architecture == base::win::OSInfo::ARM64_ARCHITECTURE) {
+    return "arm";
+  } else if ((windows_architecture == base::win::OSInfo::X86_ARCHITECTURE) ||
+             (windows_architecture == base::win::OSInfo::X64_ARCHITECTURE)) {
+    return "x86";
+  }
+#elif defined(OS_MAC)
+  base::mac::CPUType cpu_type = base::mac::GetCPUType();
+  if (cpu_type == base::mac::CPUType::kIntel) {
+    return "x86";
+  } else if (cpu_type == base::mac::CPUType::kArm ||
+             cpu_type == base::mac::CPUType::kTranslatedIntel) {
+    return "arm";
+  }
+#elif defined(OS_POSIX) && !defined(OS_ANDROID)
   // This extra cpu_info_str variable is required to make sure the compiler
   // doesn't optimize the copy away and have the StringPiece point at the
   // internal std::string, resulting in a memory violation.
@@ -105,15 +126,6 @@ std::string GetLowEntropyCpuArchitecture() {
   } else if ((base::StartsWith(cpu_info, "i") &&
               cpu_info.substr(2, 2) == "86") ||
              base::StartsWith(cpu_info, "x86")) {
-    return "x86";
-  }
-#elif defined(OS_WIN)
-  base::win::OSInfo::WindowsArchitecture windows_architecture =
-      base::win::OSInfo::GetInstance()->GetArchitecture();
-  if (windows_architecture == base::win::OSInfo::ARM64_ARCHITECTURE) {
-    return "arm";
-  } else if ((windows_architecture == base::win::OSInfo::X86_ARCHITECTURE) ||
-             (windows_architecture == base::win::OSInfo::X64_ARCHITECTURE)) {
     return "x86";
   }
 #endif
