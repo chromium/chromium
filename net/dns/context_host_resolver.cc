@@ -326,7 +326,7 @@ HostCache* ContextHostResolver::GetHostCache() {
   return resolve_context_->host_cache();
 }
 
-std::unique_ptr<base::Value> ContextHostResolver::GetDnsConfigAsValue() const {
+base::Value ContextHostResolver::GetDnsConfigAsValue() const {
   return manager_->GetDnsConfigAsValue();
 }
 

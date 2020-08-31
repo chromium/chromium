@@ -85,51 +85,47 @@ void DnsConfig::CopyIgnoreHosts(const DnsConfig& d) {
   disabled_upgrade_providers = d.disabled_upgrade_providers;
 }
 
-std::unique_ptr<base::Value> DnsConfig::ToValue() const {
-  auto dict = std::make_unique<base::DictionaryValue>();
+base::Value DnsConfig::ToValue() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
 
-  auto list = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < nameservers.size(); ++i)
-    list->AppendString(nameservers[i].ToString());
-  dict->Set("nameservers", std::move(list));
+  base::Value list(base::Value::Type::LIST);
+  for (const auto& nameserver : nameservers)
+    list.Append(nameserver.ToString());
+  dict.SetKey("nameservers", std::move(list));
 
-  dict->SetBoolean("dns_over_tls_active", dns_over_tls_active);
-  dict->SetString("dns_over_tls_hostname", dns_over_tls_hostname);
+  dict.SetBoolKey("dns_over_tls_active", dns_over_tls_active);
+  dict.SetStringKey("dns_over_tls_hostname", dns_over_tls_hostname);
 
-  list = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < search.size(); ++i)
-    list->AppendString(search[i]);
-  dict->Set("search", std::move(list));
-
-  dict->SetBoolean("unhandled_options", unhandled_options);
-  dict->SetBoolean("append_to_multi_label_name", append_to_multi_label_name);
-  dict->SetInteger("ndots", ndots);
-  dict->SetDouble("timeout", timeout.InSecondsF());
-  dict->SetInteger("attempts", attempts);
-  dict->SetInteger("doh_attempts", doh_attempts);
-  dict->SetBoolean("rotate", rotate);
-  dict->SetBoolean("use_local_ipv6", use_local_ipv6);
-  dict->SetInteger("num_hosts", hosts.size());
-  list = std::make_unique<base::ListValue>();
+  list = base::Value(base::Value::Type::LIST);
+  for (const auto& suffix : search)
+    list.Append(suffix);
+  dict.SetKey("search", std::move(list));
+  dict.SetBoolKey("unhandled_options", unhandled_options);
+  dict.SetBoolKey("append_to_multi_label_name", append_to_multi_label_name);
+  dict.SetIntKey("ndots", ndots);
+  dict.SetDoubleKey("timeout", timeout.InSecondsF());
+  dict.SetIntKey("attempts", attempts);
+  dict.SetIntKey("doh_attempts", doh_attempts);
+  dict.SetBoolKey("rotate", rotate);
+  dict.SetBoolKey("use_local_ipv6", use_local_ipv6);
+  dict.SetIntKey("num_hosts", hosts.size());
+  list = base::Value(base::Value::Type::LIST);
   for (auto& server : dns_over_https_servers) {
     base::Value val(base::Value::Type::DICTIONARY);
-    base::DictionaryValue* dict;
-    val.GetAsDictionary(&dict);
-    dict->SetString("server_template", server.server_template);
-    dict->SetBoolean("use_post", server.use_post);
-    list->Append(std::move(val));
+    val.SetStringKey("server_template", server.server_template);
+    val.SetBoolKey("use_post", server.use_post);
+    list.Append(std::move(val));
   }
-  dict->Set("doh_servers", std::move(list));
-  dict->SetInteger("secure_dns_mode", static_cast<int>(secure_dns_mode));
-  dict->SetBoolean("allow_dns_over_https_upgrade",
-                   allow_dns_over_https_upgrade);
+  dict.SetKey("doh_servers", std::move(list));
+  dict.SetIntKey("secure_dns_mode", static_cast<int>(secure_dns_mode));
+  dict.SetBoolKey("allow_dns_over_https_upgrade", allow_dns_over_https_upgrade);
 
-  list = std::make_unique<base::ListValue>();
+  list = base::Value(base::Value::Type::LIST);
   for (const auto& provider : disabled_upgrade_providers)
-    list->AppendString(provider);
-  dict->Set("disabled_upgrade_providers", std::move(list));
+    list.Append(provider);
+  dict.SetKey("disabled_upgrade_providers", std::move(list));
 
-  return std::move(dict);
+  return dict;
 }
 
 }  // namespace net

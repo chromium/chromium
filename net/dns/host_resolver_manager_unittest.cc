@@ -6864,28 +6864,21 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAfterConfig) {
       {DnsOverHttpsServerConfig(server, true)});
   overrides.secure_dns_mode = DnsConfig::SecureDnsMode::AUTOMATIC;
   resolver_->SetDnsConfigOverrides(overrides);
-  base::DictionaryValue* config;
-
-  auto value = resolver_->GetDnsConfigAsValue();
-  EXPECT_TRUE(value);
-  if (!value)
-    return;
-  value->GetAsDictionary(&config);
-  base::ListValue* doh_servers;
-  config->GetListWithoutPathExpansion("doh_servers", &doh_servers);
+  base::Value config = resolver_->GetDnsConfigAsValue();
+  base::Value* doh_servers = config.FindListKey("doh_servers");
   EXPECT_TRUE(doh_servers);
   if (!doh_servers)
     return;
-  EXPECT_EQ(doh_servers->GetSize(), 1u);
-  base::DictionaryValue* server_method;
-  EXPECT_TRUE(doh_servers->GetDictionary(0, &server_method));
-  bool use_post;
-  EXPECT_TRUE(server_method->GetBoolean("use_post", &use_post));
+  EXPECT_EQ(doh_servers->GetList().size(), 1u);
+  base::Value& server_method = doh_servers->GetList()[0];
+  EXPECT_TRUE(server_method.is_dict());
+  base::Optional<bool> use_post = server_method.FindBoolKey("use_post");
   EXPECT_TRUE(use_post);
-  std::string server_template;
-  EXPECT_TRUE(server_method->GetString("server_template", &server_template));
-  EXPECT_EQ(server_template, server);
-  EXPECT_EQ(config->FindKey("secure_dns_mode")->GetInt(),
+  const std::string* server_template =
+      server_method.FindStringKey("server_template");
+  EXPECT_TRUE(server_template);
+  EXPECT_EQ(*server_template, server);
+  EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
             static_cast<int>(DnsConfig::SecureDnsMode::AUTOMATIC));
 }
 
@@ -6904,27 +6897,21 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeConfig) {
       NetworkChangeNotifier::CONNECTION_WIFI);
   ChangeDnsConfig(CreateValidDnsConfig());
 
-  base::DictionaryValue* config;
-  auto value = resolver_->GetDnsConfigAsValue();
-  EXPECT_TRUE(value);
-  if (!value)
-    return;
-  value->GetAsDictionary(&config);
-  base::ListValue* doh_servers;
-  config->GetListWithoutPathExpansion("doh_servers", &doh_servers);
+  base::Value config = resolver_->GetDnsConfigAsValue();
+  base::Value* doh_servers = config.FindListKey("doh_servers");
   EXPECT_TRUE(doh_servers);
   if (!doh_servers)
     return;
-  EXPECT_EQ(doh_servers->GetSize(), 1u);
-  base::DictionaryValue* server_method;
-  EXPECT_TRUE(doh_servers->GetDictionary(0, &server_method));
-  bool use_post;
-  EXPECT_TRUE(server_method->GetBoolean("use_post", &use_post));
+  EXPECT_EQ(doh_servers->GetList().size(), 1u);
+  base::Value& server_method = doh_servers->GetList()[0];
+  EXPECT_TRUE(server_method.is_dict());
+  base::Optional<bool> use_post = server_method.FindBoolKey("use_post");
   EXPECT_TRUE(use_post);
-  std::string server_template;
-  EXPECT_TRUE(server_method->GetString("server_template", &server_template));
-  EXPECT_EQ(server_template, server);
-  EXPECT_EQ(config->FindKey("secure_dns_mode")->GetInt(),
+  const std::string* server_template =
+      server_method.FindStringKey("server_template");
+  EXPECT_TRUE(server_template);
+  EXPECT_EQ(*server_template, server);
+  EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
             static_cast<int>(DnsConfig::SecureDnsMode::AUTOMATIC));
 }
 
@@ -6943,27 +6930,21 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerBeforeClient) {
       NetworkChangeNotifier::CONNECTION_WIFI);
   ChangeDnsConfig(CreateValidDnsConfig());
 
-  base::DictionaryValue* config;
-  auto value = resolver_->GetDnsConfigAsValue();
-  EXPECT_TRUE(value);
-  if (!value)
-    return;
-  value->GetAsDictionary(&config);
-  base::ListValue* doh_servers;
-  config->GetListWithoutPathExpansion("doh_servers", &doh_servers);
+  base::Value config = resolver_->GetDnsConfigAsValue();
+  base::Value* doh_servers = config.FindListKey("doh_servers");
   EXPECT_TRUE(doh_servers);
   if (!doh_servers)
     return;
-  EXPECT_EQ(doh_servers->GetSize(), 1u);
-  base::DictionaryValue* server_method;
-  EXPECT_TRUE(doh_servers->GetDictionary(0, &server_method));
-  bool use_post;
-  EXPECT_TRUE(server_method->GetBoolean("use_post", &use_post));
+  EXPECT_EQ(doh_servers->GetList().size(), 1u);
+  base::Value& server_method = doh_servers->GetList()[0];
+  EXPECT_TRUE(server_method.is_dict());
+  base::Optional<bool> use_post = server_method.FindBoolKey("use_post");
   EXPECT_TRUE(use_post);
-  std::string server_template;
-  EXPECT_TRUE(server_method->GetString("server_template", &server_template));
-  EXPECT_EQ(server_template, server);
-  EXPECT_EQ(config->FindKey("secure_dns_mode")->GetInt(),
+  const std::string* server_template =
+      server_method.FindStringKey("server_template");
+  EXPECT_TRUE(server_template);
+  EXPECT_EQ(*server_template, server);
+  EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
             static_cast<int>(DnsConfig::SecureDnsMode::AUTOMATIC));
 }
 
@@ -6984,41 +6965,31 @@ TEST_F(HostResolverManagerDnsTest, AddDnsOverHttpsServerAndThenRemove) {
   network_dns_config.dns_over_https_servers.clear();
   ChangeDnsConfig(network_dns_config);
 
-  base::DictionaryValue* config;
-  auto value = resolver_->GetDnsConfigAsValue();
-  EXPECT_TRUE(value);
-  if (!value)
-    return;
-  value->GetAsDictionary(&config);
-  base::ListValue* doh_servers;
-  config->GetListWithoutPathExpansion("doh_servers", &doh_servers);
+  base::Value config = resolver_->GetDnsConfigAsValue();
+  base::Value* doh_servers = config.FindListKey("doh_servers");
   EXPECT_TRUE(doh_servers);
   if (!doh_servers)
     return;
-  EXPECT_EQ(doh_servers->GetSize(), 1u);
-  base::DictionaryValue* server_method;
-  EXPECT_TRUE(doh_servers->GetDictionary(0, &server_method));
-  bool use_post;
-  EXPECT_TRUE(server_method->GetBoolean("use_post", &use_post));
+  EXPECT_EQ(doh_servers->GetList().size(), 1u);
+  base::Value& server_method = doh_servers->GetList()[0];
+  EXPECT_TRUE(server_method.is_dict());
+  base::Optional<bool> use_post = server_method.FindBoolKey("use_post");
   EXPECT_TRUE(use_post);
-  std::string server_template;
-  EXPECT_TRUE(server_method->GetString("server_template", &server_template));
-  EXPECT_EQ(server_template, server);
-  EXPECT_EQ(config->FindKey("secure_dns_mode")->GetInt(),
+  const std::string* server_template =
+      server_method.FindStringKey("server_template");
+  EXPECT_TRUE(server_template);
+  EXPECT_EQ(*server_template, server);
+  EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
             static_cast<int>(DnsConfig::SecureDnsMode::AUTOMATIC));
 
   resolver_->SetDnsConfigOverrides(DnsConfigOverrides());
-  value = resolver_->GetDnsConfigAsValue();
-  EXPECT_TRUE(value);
-  if (!value)
-    return;
-  value->GetAsDictionary(&config);
-  config->GetListWithoutPathExpansion("doh_servers", &doh_servers);
+  config = resolver_->GetDnsConfigAsValue();
+  doh_servers = config.FindListKey("doh_servers");
   EXPECT_TRUE(doh_servers);
   if (!doh_servers)
     return;
-  EXPECT_EQ(doh_servers->GetSize(), 0u);
-  EXPECT_EQ(config->FindKey("secure_dns_mode")->GetInt(),
+  EXPECT_EQ(doh_servers->GetList().size(), 0u);
+  EXPECT_EQ(config.FindKey("secure_dns_mode")->GetInt(),
             static_cast<int>(DnsConfig::SecureDnsMode::OFF));
 }
 

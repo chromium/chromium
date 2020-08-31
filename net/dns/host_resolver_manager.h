@@ -171,7 +171,7 @@ class NET_EXPORT HostResolverManager
   // Setting to |true| has no effect if |ENABLE_BUILT_IN_DNS| not defined.
   virtual void SetInsecureDnsClientEnabled(bool enabled);
 
-  std::unique_ptr<base::Value> GetDnsConfigAsValue() const;
+  base::Value GetDnsConfigAsValue() const;
 
   // Sets overriding configuration that will replace or add to configuration
   // read from the system for DnsClient resolution.

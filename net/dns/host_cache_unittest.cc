@@ -1093,6 +1093,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Text) {
   HostCache restored_cache(kMaxCacheEntries);
   restored_cache.RestoreFromListValue(serialized_cache);
 
+  ASSERT_EQ(1u, serialized_cache.GetList().size());
   ASSERT_EQ(1u, restored_cache.size());
   HostCache::EntryStaleness stale;
   const std::pair<const HostCache::Key, HostCache::Entry>* result =

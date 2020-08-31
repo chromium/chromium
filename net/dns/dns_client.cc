@@ -27,9 +27,9 @@ namespace {
 // Creates NetLog parameters for the DNS_CONFIG_CHANGED event.
 base::Value NetLogDnsConfigParams(const DnsConfig* config) {
   if (!config)
-    return base::DictionaryValue();
+    return base::Value(base::Value::Type::DICTIONARY);
 
-  return base::Value::FromUniquePtrValue(config->ToValue());
+  return config->ToValue();
 }
 
 bool IsEqual(const base::Optional<DnsConfig>& c1, const DnsConfig* c2) {

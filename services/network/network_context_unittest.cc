@@ -3698,7 +3698,7 @@ TEST_F(NetworkContextTest, CreateHostResolverWithConfigOverrides) {
   ASSERT_EQ(1u, factory->resolvers().size());
   net::ContextHostResolver* internal_resolver = factory->resolvers().front();
 
-  EXPECT_TRUE(internal_resolver->GetDnsConfigAsValue());
+  EXPECT_TRUE(internal_resolver->GetDnsConfigAsValue().is_dict());
 
   // Override DnsClient with a basic mock.
   net::DnsConfig base_configuration;

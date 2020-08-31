@@ -88,7 +88,7 @@ class StaleHostResolver : public net::HostResolver {
   // The remaining public methods pass through to the inner resolver:
 
   net::HostCache* GetHostCache() override;
-  std::unique_ptr<base::Value> GetDnsConfigAsValue() const override;
+  base::Value GetDnsConfigAsValue() const override;
   void SetRequestContext(net::URLRequestContext* request_context) override;
 
  private:

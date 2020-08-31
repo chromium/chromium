@@ -241,7 +241,7 @@ class NET_EXPORT HostCache {
     // those from |source|.
     void MergeAddressesFrom(const HostCache::Entry& source);
 
-    base::DictionaryValue GetAsValue(bool include_staleness) const;
+    base::Value GetAsValue(bool include_staleness) const;
 
     // The resolve results for this entry.
     int error_ = ERR_FAILED;

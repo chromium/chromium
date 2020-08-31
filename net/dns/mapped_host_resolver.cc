@@ -48,7 +48,7 @@ HostCache* MappedHostResolver::GetHostCache() {
   return impl_->GetHostCache();
 }
 
-std::unique_ptr<base::Value> MappedHostResolver::GetDnsConfigAsValue() const {
+base::Value MappedHostResolver::GetDnsConfigAsValue() const {
   return impl_->GetDnsConfigAsValue();
 }
 

@@ -332,7 +332,7 @@ net::HostCache* StaleHostResolver::GetHostCache() {
   return inner_resolver_->GetHostCache();
 }
 
-std::unique_ptr<base::Value> StaleHostResolver::GetDnsConfigAsValue() const {
+base::Value StaleHostResolver::GetDnsConfigAsValue() const {
   return inner_resolver_->GetDnsConfigAsValue();
 }
 

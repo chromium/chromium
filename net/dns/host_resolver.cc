@@ -129,8 +129,8 @@ HostCache* HostResolver::GetHostCache() {
   return nullptr;
 }
 
-std::unique_ptr<base::Value> HostResolver::GetDnsConfigAsValue() const {
-  return nullptr;
+base::Value HostResolver::GetDnsConfigAsValue() const {
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
 void HostResolver::SetRequestContext(URLRequestContext* request_context) {

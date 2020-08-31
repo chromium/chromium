@@ -281,14 +281,14 @@ bool HaveOnlyLoopbackAddresses() {
 base::Value NetLogProcTaskFailedParams(uint32_t attempt_number,
                                        int net_error,
                                        int os_error) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   if (attempt_number)
-    dict.SetInteger("attempt_number", attempt_number);
+    dict.SetIntKey("attempt_number", attempt_number);
 
-  dict.SetInteger("net_error", net_error);
+  dict.SetIntKey("net_error", net_error);
 
   if (os_error) {
-    dict.SetInteger("os_error", os_error);
+    dict.SetIntKey("os_error", os_error);
 #if defined(OS_WIN)
     // Map the error code to a human-readable string.
     LPWSTR error_string = nullptr;
@@ -299,50 +299,50 @@ base::Value NetLogProcTaskFailedParams(uint32_t attempt_number,
                   (LPWSTR)&error_string,
                   0,         // Buffer size.
                   nullptr);  // Arguments (unused).
-    dict.SetString("os_error_string", base::WideToUTF8(error_string));
+    dict.SetStringKey("os_error_string", base::WideToUTF8(error_string));
     LocalFree(error_string);
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-    dict.SetString("os_error_string", gai_strerror(os_error));
+    dict.SetStringKey("os_error_string", gai_strerror(os_error));
 #endif
   }
 
-  return std::move(dict);
+  return dict;
 }
 
 // Creates NetLog parameters when the DnsTask failed.
 base::Value NetLogDnsTaskFailedParams(const HostCache::Entry& results,
                                       int dns_error) {
-  base::DictionaryValue dict;
-  dict.SetInteger("net_error", results.error());
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("net_error", results.error());
   if (dns_error)
-    dict.SetInteger("dns_error", dns_error);
+    dict.SetIntKey("dns_error", dns_error);
   dict.SetKey("resolve_results", results.NetLogParams());
-  return std::move(dict);
+  return dict;
 }
 
 // Creates NetLog parameters for the creation of a HostResolverManager::Job.
 base::Value NetLogJobCreationParams(const NetLogSource& source,
                                     const std::string& host) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   source.AddToEventParameters(&dict);
-  dict.SetString("host", host);
-  return std::move(dict);
+  dict.SetStringKey("host", host);
+  return dict;
 }
 
 // Creates NetLog parameters for HOST_RESOLVER_IMPL_JOB_ATTACH/DETACH events.
 base::Value NetLogJobAttachParams(const NetLogSource& source,
                                   RequestPriority priority) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   source.AddToEventParameters(&dict);
-  dict.SetString("priority", RequestPriorityToString(priority));
-  return std::move(dict);
+  dict.SetStringKey("priority", RequestPriorityToString(priority));
+  return dict;
 }
 
 base::Value NetLogIPv6AvailableParams(bool ipv6_available, bool cached) {
-  base::DictionaryValue dict;
-  dict.SetBoolean("ipv6_available", ipv6_available);
-  dict.SetBoolean("cached", cached);
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetBoolKey("ipv6_available", ipv6_available);
+  dict.SetBoolKey("cached", cached);
+  return dict;
 }
 
 // The logging routines are defined here because some requests are resolved
@@ -2874,14 +2874,14 @@ void HostResolverManager::SetInsecureDnsClientEnabled(bool enabled) {
     AbortInsecureDnsTasks(ERR_NETWORK_CHANGED, false /* fallback_only */);
 }
 
-std::unique_ptr<base::Value> HostResolverManager::GetDnsConfigAsValue() const {
+base::Value HostResolverManager::GetDnsConfigAsValue() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!dns_client_.get())
-    return nullptr;
+    return base::Value(base::Value::Type::DICTIONARY);
 
   const DnsConfig* dns_config = dns_client_->GetEffectiveConfig();
   if (!dns_config)
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value(base::Value::Type::DICTIONARY);
 
   return dns_config->ToValue();
 }

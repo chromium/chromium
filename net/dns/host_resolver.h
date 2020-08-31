@@ -323,9 +323,8 @@ class NET_EXPORT HostResolver {
   // Used primarily to clear the cache and for getting debug information.
   virtual HostCache* GetHostCache();
 
-  // Returns the current DNS configuration |this| is using, as a Value, or
-  // nullptr if it's configured to always use the system host resolver.
-  virtual std::unique_ptr<base::Value> GetDnsConfigAsValue() const;
+  // Returns the current DNS configuration |this| is using, as a Value.
+  virtual base::Value GetDnsConfigAsValue() const;
 
   // Set the associated URLRequestContext, generally expected to be called by
   // URLRequestContextBuilder on passing ownership of |this| to a context. May

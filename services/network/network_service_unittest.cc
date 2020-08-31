@@ -538,7 +538,8 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
   service()->ConfigureStubHostResolver(false /* insecure_dns_client_enabled */,
                                        net::DnsConfig::SecureDnsMode::AUTOMATIC,
                                        std::move(dns_over_https_servers_ptr));
-  EXPECT_TRUE(service()->host_resolver_manager()->GetDnsConfigAsValue());
+  EXPECT_TRUE(
+      service()->host_resolver_manager()->GetDnsConfigAsValue().is_dict());
   std::vector<net::DnsOverHttpsServerConfig> dns_over_https_servers =
       dns_client_ptr->GetEffectiveConfig()->dns_over_https_servers;
   ASSERT_EQ(1u, dns_over_https_servers.size());
@@ -561,7 +562,8 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
   service()->ConfigureStubHostResolver(true /* insecure_dns_client_enabled */,
                                        net::DnsConfig::SecureDnsMode::SECURE,
                                        std::move(dns_over_https_servers_ptr));
-  EXPECT_TRUE(service()->host_resolver_manager()->GetDnsConfigAsValue());
+  EXPECT_TRUE(
+      service()->host_resolver_manager()->GetDnsConfigAsValue().is_dict());
   dns_over_https_servers =
       dns_client_ptr->GetEffectiveConfig()->dns_over_https_servers;
   ASSERT_EQ(2u, dns_over_https_servers.size());

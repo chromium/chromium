@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "base/value_iterators.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/trace_constants.h"
@@ -49,7 +50,7 @@ const char kTextRecordsKey[] = "text_records";
 const char kHostnameResultsKey[] = "hostname_results";
 const char kHostPortsKey[] = "host_ports";
 
-bool AddressListFromListValue(const base::ListValue* value,
+bool AddressListFromListValue(const base::Value* value,
                               base::Optional<AddressList>* out_list) {
   if (!value) {
     out_list->reset();
@@ -57,10 +58,10 @@ bool AddressListFromListValue(const base::ListValue* value,
   }
 
   out_list->emplace();
-  for (auto it = value->begin(); it != value->end(); it++) {
+  for (const auto& it : value->GetList()) {
     IPAddress address;
     std::string addr_string;
-    if (!it->GetAsString(&addr_string) ||
+    if (!it.GetAsString(&addr_string) ||
         !address.AssignFromIPLiteral(addr_string)) {
       return false;
     }
@@ -302,29 +303,29 @@ void HostCache::Entry::MergeAddressesFrom(const HostCache::Entry& source) {
                    });
 }
 
-base::DictionaryValue HostCache::Entry::GetAsValue(
-    bool include_staleness) const {
-  base::DictionaryValue entry_dict;
+base::Value HostCache::Entry::GetAsValue(bool include_staleness) const {
+  base::Value entry_dict(base::Value::Type::DICTIONARY);
 
   if (include_staleness) {
     // The kExpirationKey value is using TimeTicks instead of Time used if
     // |include_staleness| is false, so it cannot be used to deserialize.
     // This is ok as it is used only for netlog.
-    entry_dict.SetString(kExpirationKey, NetLog::TickCountToString(expires()));
-    entry_dict.SetInteger(kTtlKey, ttl().InMilliseconds());
-    entry_dict.SetInteger(kNetworkChangesKey, network_changes());
+    entry_dict.SetStringKey(kExpirationKey,
+                            NetLog::TickCountToString(expires()));
+    entry_dict.SetIntKey(kTtlKey, ttl().InMilliseconds());
+    entry_dict.SetIntKey(kNetworkChangesKey, network_changes());
   } else {
     // Convert expiration time in TimeTicks to Time for serialization, using a
     // string because base::Value doesn't handle 64-bit integers.
     base::Time expiration_time =
         base::Time::Now() - (base::TimeTicks::Now() - expires());
-    entry_dict.SetString(
+    entry_dict.SetStringKey(
         kExpirationKey,
         base::NumberToString(expiration_time.ToInternalValue()));
   }
 
   if (error() != OK) {
-    entry_dict.SetInteger(kNetErrorKey, error());
+    entry_dict.SetIntKey(kNetErrorKey, error());
   } else {
     if (addresses()) {
       // Append all of the resolved addresses.
@@ -636,18 +637,18 @@ void HostCache::GetAsListValue(base::ListValue* entry_list,
           base::Value(key.network_isolation_key.ToDebugString());
     }
 
-    auto entry_dict = std::make_unique<base::DictionaryValue>(
-        entry.GetAsValue(include_staleness));
+    auto entry_dict =
+        std::make_unique<base::Value>(entry.GetAsValue(include_staleness));
 
-    entry_dict->SetString(kHostnameKey, key.hostname);
-    entry_dict->SetInteger(kDnsQueryTypeKey,
-                           static_cast<int>(key.dns_query_type));
-    entry_dict->SetInteger(kFlagsKey, key.host_resolver_flags);
-    entry_dict->SetInteger(kHostResolverSourceKey,
-                           static_cast<int>(key.host_resolver_source));
+    entry_dict->SetStringKey(kHostnameKey, key.hostname);
+    entry_dict->SetIntKey(kDnsQueryTypeKey,
+                          static_cast<int>(key.dns_query_type));
+    entry_dict->SetIntKey(kFlagsKey, key.host_resolver_flags);
+    entry_dict->SetIntKey(kHostResolverSourceKey,
+                          static_cast<int>(key.host_resolver_source));
     entry_dict->SetKey(kNetworkIsolationKeyKey,
                        std::move(network_isolation_key_value));
-    entry_dict->SetBoolean(kSecureKey, static_cast<bool>(key.secure));
+    entry_dict->SetBoolKey(kSecureKey, static_cast<bool>(key.secure));
 
     entry_list->Append(std::move(entry_dict));
   }
@@ -657,52 +658,54 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
   // Reset the restore size to 0.
   restore_size_ = 0;
 
-  for (auto it = old_cache.begin(); it != old_cache.end(); it++) {
+  for (const auto& entry_dict : old_cache) {
     // If the cache is already full, don't bother prioritizing what to evict,
     // just stop restoring.
     if (size() == max_entries_)
       break;
 
-    const base::DictionaryValue* entry_dict;
-    if (!it->GetAsDictionary(&entry_dict))
+    if (!entry_dict.is_dict())
       return false;
 
-    std::string hostname;
-    HostResolverFlags flags;
-    std::string expiration;
-    if (!entry_dict->GetString(kHostnameKey, &hostname) ||
-        !entry_dict->GetInteger(kFlagsKey, &flags) ||
-        !entry_dict->GetString(kExpirationKey, &expiration)) {
+    const std::string* hostname_ptr = entry_dict.FindStringKey(kHostnameKey);
+    const std::string* expiration_ptr =
+        entry_dict.FindStringKey(kExpirationKey);
+    base::Optional<int> maybe_flags = entry_dict.FindIntKey(kFlagsKey);
+    if (hostname_ptr == nullptr || expiration_ptr == nullptr ||
+        !maybe_flags.has_value()) {
       return false;
     }
+    std::string hostname(*hostname_ptr);
+    std::string expiration(*expiration_ptr);
+    HostResolverFlags flags = maybe_flags.value();
 
     // If there is no DnsQueryType, look for an AddressFamily.
     //
     // TODO(crbug.com/846423): Remove kAddressFamilyKey support after a enough
     // time has passed to minimize loss-of-persistence impact from backwards
     // incompatibility.
-    int dns_query_type_val;
+    base::Optional<int> maybe_dns_query_type =
+        entry_dict.FindIntKey(kDnsQueryTypeKey);
     DnsQueryType dns_query_type;
-    if (entry_dict->GetInteger(kDnsQueryTypeKey, &dns_query_type_val)) {
-      dns_query_type = static_cast<DnsQueryType>(dns_query_type_val);
+    if (maybe_dns_query_type.has_value()) {
+      dns_query_type = static_cast<DnsQueryType>(maybe_dns_query_type.value());
     } else {
-      int address_family;
-      if (!entry_dict->GetInteger(kAddressFamilyKey, &address_family)) {
+      base::Optional<int> maybe_address_family =
+          entry_dict.FindIntKey(kAddressFamilyKey);
+      if (!maybe_address_family.has_value()) {
         return false;
       }
       dns_query_type = AddressFamilyToDnsQueryType(
-          static_cast<AddressFamily>(address_family));
+          static_cast<AddressFamily>(maybe_address_family.value()));
     }
 
     // HostResolverSource is optional.
-    int host_resolver_source;
-    if (!entry_dict->GetInteger(kHostResolverSourceKey,
-                                &host_resolver_source)) {
-      host_resolver_source = static_cast<int>(HostResolverSource::ANY);
-    }
+    int host_resolver_source =
+        entry_dict.FindIntKey(kHostResolverSourceKey)
+            .value_or(static_cast<int>(HostResolverSource::ANY));
 
     const base::Value* network_isolation_key_value =
-        entry_dict->FindKey(kNetworkIsolationKeyKey);
+        entry_dict.FindKey(kNetworkIsolationKeyKey);
     NetworkIsolationKey network_isolation_key;
     if (!network_isolation_key_value ||
         network_isolation_key_value->type() == base::Value::Type::STRING ||
@@ -711,22 +714,24 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
       return false;
     }
 
-    bool secure;
-    if (!entry_dict->GetBoolean(kSecureKey, &secure)) {
-      secure = false;
-    }
+    bool secure = entry_dict.FindBoolKey(kSecureKey).value_or(false);
 
     int error = OK;
-    const base::ListValue* addresses_value = nullptr;
-    const base::ListValue* text_records_value = nullptr;
-    const base::ListValue* hostname_records_value = nullptr;
-    const base::ListValue* host_ports_value = nullptr;
-    if (!entry_dict->GetInteger(kNetErrorKey, &error)) {
-      entry_dict->GetList(kAddressesKey, &addresses_value);
-      entry_dict->GetList(kTextRecordsKey, &text_records_value);
+    const base::Value* addresses_value = nullptr;
+    const base::Value* text_records_value = nullptr;
+    const base::Value* hostname_records_value = nullptr;
+    const base::Value* host_ports_value = nullptr;
+    base::Optional<int> maybe_error = entry_dict.FindIntKey(kNetErrorKey);
+    if (maybe_error.has_value()) {
+      error = maybe_error.value();
+    } else {
+      addresses_value = entry_dict.FindListKey(kAddressesKey);
+      text_records_value = entry_dict.FindListKey(kTextRecordsKey);
+      hostname_records_value = entry_dict.FindListKey(kHostnameResultsKey);
+      host_ports_value = entry_dict.FindListKey(kHostPortsKey);
 
-      if (entry_dict->GetList(kHostnameResultsKey, &hostname_records_value) !=
-          entry_dict->GetList(kHostPortsKey, &host_ports_value)) {
+      if ((hostname_records_value == nullptr && host_ports_value != nullptr) ||
+          (hostname_records_value != nullptr && host_ports_value == nullptr)) {
         return false;
       }
     }

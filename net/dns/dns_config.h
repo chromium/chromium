@@ -45,7 +45,7 @@ struct NET_EXPORT DnsConfig {
 
   // Returns a Value representation of |this|. For performance reasons, the
   // Value only contains the number of hosts rather than the full list.
-  std::unique_ptr<base::Value> ToValue() const;
+  base::Value ToValue() const;
 
   bool IsValid() const {
     return !nameservers.empty() || !dns_over_https_servers.empty();

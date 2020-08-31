@@ -58,7 +58,7 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
       override;
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   HostCache* GetHostCache() override;
-  std::unique_ptr<base::Value> GetDnsConfigAsValue() const override;
+  base::Value GetDnsConfigAsValue() const override;
   void SetRequestContext(URLRequestContext* request_context) override;
   HostResolverManager* GetManagerForTesting() override;
 

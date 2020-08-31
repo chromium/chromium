@@ -367,11 +367,8 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context,
     HostCache* cache = host_resolver->GetHostCache();
     if (cache) {
       base::Value dict(base::Value::Type::DICTIONARY);
-      std::unique_ptr<base::Value> dns_config =
-          host_resolver->GetDnsConfigAsValue();
-      if (dns_config)
-        dict.SetKey("dns_config",
-                    base::Value::FromUniquePtrValue(std::move(dns_config)));
+      base::Value dns_config = host_resolver->GetDnsConfigAsValue();
+      dict.SetKey("dns_config", std::move(dns_config));
 
       base::Value cache_info_dict(base::Value::Type::DICTIONARY);
       base::Value cache_contents_list(base::Value::Type::LIST);
