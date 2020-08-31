@@ -45,6 +45,7 @@ source_set("common") {
   if (is_chromeos) {
     deps += [
       "//ash/public/cpp",
+      "//chromeos/components/diagnostics_ui",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/media_app_ui",
       "//chromeos/components/print_management",

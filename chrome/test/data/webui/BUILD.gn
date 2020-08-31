@@ -338,6 +338,7 @@ if (include_js_tests) {
       sources += [
         "chromeos/crostini_installer_browsertest.js",
         "chromeos/crostini_upgrader_browsertest.js",
+        "chromeos/diagnostics/diagnostics_browsertest.js",
         "chromeos/machine_learning_internals_browsertest.js",
         "chromeos/print_management/print_management_browsertest.js",
         "chromeos/scanning/scanning_app_browsertest.js",

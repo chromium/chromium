@@ -195,6 +195,8 @@
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
+#include "chromeos/components/diagnostics_ui/diagnostics_ui.h"
+#include "chromeos/components/diagnostics_ui/url_constants.h"
 #include "chromeos/components/help_app_ui/help_app_ui.h"
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/components/media_app_ui/media_app_guest_ui.h"
@@ -649,6 +651,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::settings::OSSettingsUI>;
   if (url.host_piece() == chrome::kChromeUIPowerHost)
     return &NewWebUI<chromeos::PowerUI>;
+  if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp) &&
+      url.host_piece() == chromeos::kChromeUIDiagnosticsAppHost) {
+    return &NewWebUI<chromeos::DiagnosticsUI>;
+  }
   if (base::FeatureList::IsEnabled(
           chromeos::features::kPrintJobManagementApp) &&
       url.host_piece() == chromeos::kChromeUIPrintManagementHost)

@@ -226,3 +226,24 @@ grit("scanning_app_resources") {
 
   output_dir = "$root_gen_dir/chromeos"
 }
+
+grit("diagnostics_app_resources") {
+  source =
+      "../components/diagnostics_ui/resources/diagnostics_app_resources.grd"
+
+  deps = [ "../components/diagnostics_ui/resources:web_components" ]
+
+  outputs = [
+    "chromeos_diagnostics_app_resources.pak",
+    "grit/chromeos_diagnostics_app_resources.h",
+    "grit/chromeos_diagnostics_app_resources_map.cc",
+    "grit/chromeos_diagnostics_app_resources_map.h",
+  ]
+
+  grit_flags = [
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  ]
+
+  output_dir = "$root_gen_dir/chromeos"
+}
