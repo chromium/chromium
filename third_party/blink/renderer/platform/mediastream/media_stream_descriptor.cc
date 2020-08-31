@@ -89,17 +89,23 @@ void MediaStreamDescriptor::RemoveComponent(MediaStreamComponent* component) {
 }
 
 void MediaStreamDescriptor::AddRemoteTrack(MediaStreamComponent* component) {
-  if (client_)
-    client_->AddTrackByComponentAndFireEvents(component);
-  else
+  if (client_) {
+    client_->AddTrackByComponentAndFireEvents(
+        component,
+        MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
+  } else {
     AddComponent(component);
+  }
 }
 
 void MediaStreamDescriptor::RemoveRemoteTrack(MediaStreamComponent* component) {
-  if (client_)
-    client_->RemoveTrackByComponentAndFireEvents(component);
-  else
+  if (client_) {
+    client_->RemoveTrackByComponentAndFireEvents(
+        component,
+        MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
+  } else {
     RemoveComponent(component);
+  }
 }
 
 void MediaStreamDescriptor::SetActive(bool active) {

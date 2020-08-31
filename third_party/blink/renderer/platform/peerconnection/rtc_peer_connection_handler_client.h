@@ -80,9 +80,10 @@ class PLATFORM_EXPORT RTCPeerConnectionHandlerClient {
       webrtc::PeerConnectionInterface::IceConnectionState) = 0;
   virtual void DidChangePeerConnectionState(
       webrtc::PeerConnectionInterface::PeerConnectionState) {}
-  virtual void DidAddReceiverPlanB(std::unique_ptr<RTCRtpReceiverPlatform>) = 0;
-  virtual void DidRemoveReceiverPlanB(
-      std::unique_ptr<RTCRtpReceiverPlatform>) = 0;
+  virtual void DidModifyReceiversPlanB(
+      Vector<std::unique_ptr<RTCRtpReceiverPlatform>> platform_receivers_added,
+      Vector<std::unique_ptr<RTCRtpReceiverPlatform>>
+          platform_receivers_removed) = 0;
   virtual void DidModifyTransceivers(
       Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>,
       Vector<uintptr_t>,

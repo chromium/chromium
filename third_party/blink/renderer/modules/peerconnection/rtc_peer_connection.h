@@ -350,8 +350,10 @@ class MODULES_EXPORT RTCPeerConnection final
       webrtc::PeerConnectionInterface::IceConnectionState) override;
   void DidChangePeerConnectionState(
       webrtc::PeerConnectionInterface::PeerConnectionState) override;
-  void DidAddReceiverPlanB(std::unique_ptr<RTCRtpReceiverPlatform>) override;
-  void DidRemoveReceiverPlanB(std::unique_ptr<RTCRtpReceiverPlatform>) override;
+  void DidModifyReceiversPlanB(
+      Vector<std::unique_ptr<RTCRtpReceiverPlatform>> platform_receivers_added,
+      Vector<std::unique_ptr<RTCRtpReceiverPlatform>>
+          platform_receivers_removed) override;
   void DidModifySctpTransport(WebRTCSctpTransportSnapshot) override;
   void DidModifyTransceivers(Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>,
                              Vector<uintptr_t>,

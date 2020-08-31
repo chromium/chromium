@@ -164,7 +164,9 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
     const MediaStreamTrackVector tracks = media_stream_->getTracks();
     for (const auto& track : tracks) {
       track->stopTrack(context);
-      media_stream_->RemoveTrackByComponentAndFireEvents(track->Component());
+      media_stream_->RemoveTrackByComponentAndFireEvents(
+          track->Component(),
+          MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
     }
 
     media_stream_->StreamEnded();
@@ -178,17 +180,21 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
     const MediaStreamTrackVector tracks = media_stream_->getTracks();
     for (const auto& track : tracks) {
       track->stopTrack(context);
-      media_stream_->RemoveTrackByComponentAndFireEvents(track->Component());
+      media_stream_->RemoveTrackByComponentAndFireEvents(
+          track->Component(),
+          MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
     }
     MediaStreamDescriptor* const descriptor = media_element_->GetSrcObject();
     DCHECK(descriptor);
     for (unsigned i = 0; i < descriptor->NumberOfAudioComponents(); i++) {
       media_stream_->AddTrackByComponentAndFireEvents(
-          descriptor->AudioComponent(i));
+          descriptor->AudioComponent(i),
+          MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
     }
     for (unsigned i = 0; i < descriptor->NumberOfVideoComponents(); i++) {
       media_stream_->AddTrackByComponentAndFireEvents(
-          descriptor->VideoComponent(i));
+          descriptor->VideoComponent(i),
+          MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
     }
     UpdateSources(context);
     return;
@@ -214,12 +220,18 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
   }
 
   MediaStreamComponentVector video_components = descriptor->VideoComponents();
-  for (auto component : video_components)
-    media_stream_->AddTrackByComponentAndFireEvents(component);
+  for (auto component : video_components) {
+    media_stream_->AddTrackByComponentAndFireEvents(
+        component,
+        MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
+  }
 
   MediaStreamComponentVector audio_components = descriptor->AudioComponents();
-  for (auto component : audio_components)
-    media_stream_->AddTrackByComponentAndFireEvents(component);
+  for (auto component : audio_components) {
+    media_stream_->AddTrackByComponentAndFireEvents(
+        component,
+        MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
+  }
 
   DVLOG(2) << "#videotracks: " << video_components.size()
            << " #audiotracks: " << audio_components.size();

@@ -126,13 +126,15 @@ class MODULES_EXPORT MediaStream final
 
   // MediaStreamDescriptorClient implementation
   void StreamEnded() override;
-  void AddTrackByComponentAndFireEvents(MediaStreamComponent*) override;
-  void RemoveTrackByComponentAndFireEvents(MediaStreamComponent*) override;
+  void AddTrackByComponentAndFireEvents(MediaStreamComponent*,
+                                        DispatchEventTiming) override;
+  void RemoveTrackByComponentAndFireEvents(MediaStreamComponent*,
+                                           DispatchEventTiming) override;
 
   // Adds the track and, unlike JavaScript-invoked addTrack(), fires related
-  // events like "onaddtrack".
-  void AddTrackAndFireEvents(MediaStreamTrack*);
-  void RemoveTrackAndFireEvents(MediaStreamTrack*);
+  // events like "onaddtrack" either synchronously or in a scheduled event.
+  void AddTrackAndFireEvents(MediaStreamTrack*, DispatchEventTiming);
+  void RemoveTrackAndFireEvents(MediaStreamTrack*, DispatchEventTiming);
 
   void AddRemoteTrack(MediaStreamTrack*);
   void RemoveRemoteTrack(MediaStreamTrack*);

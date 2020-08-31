@@ -272,8 +272,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   void OnIceGatheringChange(
       webrtc::PeerConnectionInterface::IceGatheringState new_state);
   void OnRenegotiationNeeded();
-  void OnAddReceiverPlanB(blink::RtpReceiverState receiver_state);
-  void OnRemoveReceiverPlanB(uintptr_t receiver_id);
+  void OnReceiversModifiedPlanB(Vector<blink::RtpReceiverState> receiver_state,
+                                Vector<uintptr_t> receiver_id);
   void OnModifySctpTransport(blink::WebRTCSctpTransportSnapshot state);
   void OnModifyTransceivers(
       std::vector<blink::RtpTransceiverState> transceiver_states,

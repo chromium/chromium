@@ -16,12 +16,9 @@ MockRTCPeerConnectionHandlerClient::MockRTCPeerConnectionHandlerClient() {
       .WillByDefault(testing::Invoke(
           this,
           &MockRTCPeerConnectionHandlerClient::didGenerateICECandidateWorker));
-  ON_CALL(*this, DidAddReceiverPlanBForMock(_))
+  ON_CALL(*this, DidModifyReceiversPlanBForMock(_, _))
       .WillByDefault(testing::Invoke(
-          this, &MockRTCPeerConnectionHandlerClient::didAddReceiverWorker));
-  ON_CALL(*this, DidRemoveReceiverPlanBForMock(_))
-      .WillByDefault(testing::Invoke(
-          this, &MockRTCPeerConnectionHandlerClient::didRemoveReceiverWorker));
+          this, &MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker));
 }
 
 MockRTCPeerConnectionHandlerClient::~MockRTCPeerConnectionHandlerClient() {}
@@ -33,16 +30,18 @@ void MockRTCPeerConnectionHandlerClient::didGenerateICECandidateWorker(
   candidate_mid_ = candidate->SdpMid().Utf8();
 }
 
-void MockRTCPeerConnectionHandlerClient::didAddReceiverWorker(
-    std::unique_ptr<RTCRtpReceiverPlatform>* web_rtp_receiver) {
-  WebVector<String> stream_ids = (*web_rtp_receiver)->StreamIds();
-  DCHECK_EQ(1u, stream_ids.size());
-  remote_stream_id_ = stream_ids[0];
-}
-
-void MockRTCPeerConnectionHandlerClient::didRemoveReceiverWorker(
-    std::unique_ptr<RTCRtpReceiverPlatform>* web_rtp_receiver) {
-  remote_stream_id_ = String();
+void MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker(
+    Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_added,
+    Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_removed) {
+  // This fake implication is very limited. It is only used as a sanity check
+  // if a stream was added or removed.
+  if (!receivers_added->IsEmpty()) {
+    WebVector<String> stream_ids = (*receivers_added)[0]->StreamIds();
+    DCHECK_EQ(1u, stream_ids.size());
+    remote_stream_id_ = stream_ids[0];
+  } else if (receivers_removed->IsEmpty()) {
+    remote_stream_id_ = String();
+  }
 }
 
 }  // namespace blink

@@ -49,13 +49,11 @@ class MockRTCPeerConnectionHandlerClient
   MOCK_METHOD1(
       DidChangePeerConnectionState,
       void(webrtc::PeerConnectionInterface::PeerConnectionState state));
-  void DidAddReceiverPlanB(
-      std::unique_ptr<RTCRtpReceiverPlatform> web_rtp_receiver) override {
-    DidAddReceiverPlanBForMock(&web_rtp_receiver);
-  }
-  void DidRemoveReceiverPlanB(
-      std::unique_ptr<RTCRtpReceiverPlatform> web_rtp_receiver) override {
-    DidRemoveReceiverPlanBForMock(&web_rtp_receiver);
+  void DidModifyReceiversPlanB(
+      Vector<std::unique_ptr<RTCRtpReceiverPlatform>> receivers_added,
+      Vector<std::unique_ptr<RTCRtpReceiverPlatform>> receivers_removed)
+      override {
+    DidModifyReceiversPlanBForMock(&receivers_added, &receivers_removed);
   }
   MOCK_METHOD1(DidModifySctpTransport,
                void(blink::WebRTCSctpTransportSnapshot snapshot));
@@ -72,18 +70,16 @@ class MockRTCPeerConnectionHandlerClient
 
   // Move-only arguments do not play nicely with MOCK, the workaround is to
   // EXPECT_CALL with these instead.
-  MOCK_METHOD1(DidAddReceiverPlanBForMock,
-               void(std::unique_ptr<RTCRtpReceiverPlatform>*));
-  MOCK_METHOD1(DidRemoveReceiverPlanBForMock,
-               void(std::unique_ptr<RTCRtpReceiverPlatform>*));
+  MOCK_METHOD2(DidModifyReceiversPlanBForMock,
+               void(Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*,
+                    Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*));
   MOCK_METHOD2(DidModifyTransceiversForMock,
                void(Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>*, bool));
 
   void didGenerateICECandidateWorker(RTCIceCandidatePlatform* candidate);
-  void didAddReceiverWorker(
-      std::unique_ptr<RTCRtpReceiverPlatform>* stream_web_rtp_receivers);
-  void didRemoveReceiverWorker(
-      std::unique_ptr<RTCRtpReceiverPlatform>* stream_web_rtp_receivers);
+  void didModifyReceiversWorker(
+      Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_added,
+      Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_removed);
 
   const std::string& candidate_sdp() const { return candidate_sdp_; }
   const base::Optional<uint16_t>& candidate_mlineindex() const {

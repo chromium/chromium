@@ -670,100 +670,86 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
       return;
     }
 
-    if (handler_) {
-      // Copy/move some of the states to be able to use them after moving
-      // |state| below.
-      webrtc::PeerConnectionInterface::SignalingState signaling_state =
-          states.signaling_state;
-      std::unique_ptr<webrtc::SessionDescriptionInterface>
-          pending_local_description(states.pending_local_description.release());
-      std::unique_ptr<webrtc::SessionDescriptionInterface>
-          current_local_description(states.current_local_description.release());
-      std::unique_ptr<webrtc::SessionDescriptionInterface>
-          pending_remote_description(
-              states.pending_remote_description.release());
-      std::unique_ptr<webrtc::SessionDescriptionInterface>
-          current_remote_description(
-              states.current_remote_description.release());
+    // Copy/move some of the states to be able to use them after moving
+    // |state| below.
+    webrtc::PeerConnectionInterface::SignalingState signaling_state =
+        states.signaling_state;
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        pending_local_description(states.pending_local_description.release());
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        current_local_description(states.current_local_description.release());
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        pending_remote_description(states.pending_remote_description.release());
+    std::unique_ptr<webrtc::SessionDescriptionInterface>
+        current_remote_description(states.current_remote_description.release());
 
-      // Track result in chrome://webrtc-internals/.
-      if (tracker_ && handler_) {
-        StringBuilder value;
-        if (action_ ==
-            PeerConnectionTracker::ACTION_SET_LOCAL_DESCRIPTION_IMPLICIT) {
-          webrtc::SessionDescriptionInterface* created_session_description =
-              nullptr;
-          // Deduce which SDP was created based on signaling state.
-          if (signaling_state ==
-                  webrtc::PeerConnectionInterface::kHaveLocalOffer &&
-              pending_local_description) {
-            created_session_description = pending_local_description.get();
-          } else if (signaling_state ==
-                         webrtc::PeerConnectionInterface::kStable &&
-                     current_local_description) {
-            created_session_description = current_local_description.get();
-          }
-          // Be prepared for not knowing |created_session_description|, even
-          // though a successful implicit setLocalDescription() will always have
-          // created a local or pending description. See
-          // https://crbug.com/1019232 documenting that SLD's observer is
-          // delayed in an OnMessage. It is thus conceivable that the pending or
-          // local description is no longer set when examined here, even though
-          // this would only happen if the application code had rare races.
-          // TODO(hbos): When setLocalDescription() is updated to invoke the
-          // observer synchronously, DCHECK that |created_session_description|
-          // is not null here.
-          if (created_session_description) {
-            std::string sdp;
-            created_session_description->ToString(&sdp);
-            value.Append("type: ");
-            value.Append(webrtc::SdpTypeToString(
-                created_session_description->GetType()));
-            value.Append(", sdp: ");
-            value.Append(sdp.c_str());
-          }
+    // Track result in chrome://webrtc-internals/.
+    if (tracker_ && handler_) {
+      StringBuilder value;
+      if (action_ ==
+          PeerConnectionTracker::ACTION_SET_LOCAL_DESCRIPTION_IMPLICIT) {
+        webrtc::SessionDescriptionInterface* created_session_description =
+            nullptr;
+        // Deduce which SDP was created based on signaling state.
+        if (signaling_state ==
+                webrtc::PeerConnectionInterface::kHaveLocalOffer &&
+            pending_local_description) {
+          created_session_description = pending_local_description.get();
+        } else if (signaling_state ==
+                       webrtc::PeerConnectionInterface::kStable &&
+                   current_local_description) {
+          created_session_description = current_local_description.get();
         }
-        tracker_->TrackSessionDescriptionCallback(
-            handler_.get(), action_, "OnSuccess", value.ToString());
+        // Be prepared for not knowing |created_session_description|, even
+        // though a successful implicit setLocalDescription() will always have
+        // created a local or pending description. See
+        // https://crbug.com/1019232 documenting that SLD's observer is
+        // delayed in an OnMessage. It is thus conceivable that the pending or
+        // local description is no longer set when examined here, even though
+        // this would only happen if the application code had rare races.
+        // TODO(hbos): When setLocalDescription() is updated to invoke the
+        // observer synchronously, DCHECK that |created_session_description|
+        // is not null here.
+        if (created_session_description) {
+          std::string sdp;
+          created_session_description->ToString(&sdp);
+          value.Append("type: ");
+          value.Append(
+              webrtc::SdpTypeToString(created_session_description->GetType()));
+          value.Append(", sdp: ");
+          value.Append(sdp.c_str());
+        }
       }
+      tracker_->TrackSessionDescriptionCallback(handler_.get(), action_,
+                                                "OnSuccess", value.ToString());
+    }
 
+    if (handler_) {
       handler_->OnSessionDescriptionsUpdated(
           std::move(pending_local_description),
           std::move(current_local_description),
           std::move(pending_remote_description),
           std::move(current_remote_description));
+    }
 
-      // Process the rest of the state changes differently depending on SDP
-      // semantics.
-      if (sdp_semantics_ == webrtc::SdpSemantics::kPlanB) {
-        ProcessStateChangesPlanB(std::move(states));
-      } else {
-        DCHECK_EQ(sdp_semantics_, webrtc::SdpSemantics::kUnifiedPlan);
-        ProcessStateChangesUnifiedPlan(std::move(states));
-      }
+    // Process the rest of the state changes differently depending on SDP
+    // semantics. This fires events, and |handler_| may become null.
+    if (sdp_semantics_ == webrtc::SdpSemantics::kPlanB) {
+      ProcessStateChangesPlanB(std::move(states));
+    } else {
+      DCHECK_EQ(sdp_semantics_, webrtc::SdpSemantics::kUnifiedPlan);
+      ProcessStateChangesUnifiedPlan(std::move(states));
+    }
 
-      // |handler_| can become null after this call.
+    // |handler_| may become null on firing events.
+    // TODO(hbos): This event should fire first, but it has to fire after the
+    // state changes have been processed. Move the firing of this event to the
+    // algorithm for processing the rest of the state changes.
+    if (handler_) {
       handler_->OnSignalingChange(signaling_state);
     }
-    if (action_ == PeerConnectionTracker::ACTION_SET_REMOTE_DESCRIPTION) {
-      // Resolve the promise in a post to ensure any events scheduled for
-      // dispatching will have fired by the time the promise is resolved.
-      // TODO(hbos): Don't schedule/post to fire events/resolve the promise.
-      // Instead, do it all synchronously. This must happen as the last step
-      // before returning so that all effects of SRD have occurred when the
-      // event executes. https://crbug.com/788558
-      PostCrossThreadTask(
-          *main_thread_.get(), FROM_HERE,
-          CrossThreadBindOnce(
-              &RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl::
-                  ResolvePromise,
-              WrapRefCounted(this)));
-    } else {
-      // Resolve promise immediately if we can. https://crbug.com/788558 still
-      // needs to be addressed for "setLocalDescription(answer)" rejecting a
-      // transceiver in Unified Plan, but this is a minor edge-case.
-      ResolvePromise();
-    }
+
+    ResolvePromise();
   }
 
  private:
@@ -781,27 +767,30 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
 
     // Determine which receivers have been removed before processing the
     // removal as to not invalidate the iterator.
-    std::vector<blink::RTCRtpReceiverImpl*> removed_receivers;
+    Vector<blink::RTCRtpReceiverImpl*> removed_receivers;
     for (auto it = handler_->rtp_receivers_.begin();
          it != handler_->rtp_receivers_.end(); ++it) {
       if (ReceiverWasRemoved(*(*it), states.transceiver_states))
         removed_receivers.push_back(it->get());
     }
 
-    // Process the addition of remote receivers/tracks.
-    for (auto& transceiver_state : states.transceiver_states) {
-      if (handler_ && ReceiverWasAdded(transceiver_state)) {
-        // |handler_| can become null after this call.
-        handler_->OnAddReceiverPlanB(transceiver_state.MoveReceiverState());
+    // Process the addition and removal of remote receivers/tracks.
+    if (handler_) {
+      Vector<blink::RtpReceiverState> added_receiver_states;
+      for (auto& transceiver_state : states.transceiver_states) {
+        if (ReceiverWasAdded(transceiver_state)) {
+          added_receiver_states.push_back(
+              transceiver_state.MoveReceiverState());
+        }
       }
-    }
-    // Process the removal of remote receivers/tracks.
-    for (auto* removed_receiver : removed_receivers) {
-      if (handler_) {
-        // |handler_| can become null after this call.
-        handler_->OnRemoveReceiverPlanB(blink::RTCRtpReceiverImpl::getId(
+      Vector<uintptr_t> removed_receiver_ids;
+      for (auto* removed_receiver : removed_receivers) {
+        removed_receiver_ids.push_back(blink::RTCRtpReceiverImpl::getId(
             removed_receiver->state().webrtc_receiver().get()));
       }
+      // |handler_| can become null after this call.
+      handler_->OnReceiversModifiedPlanB(std::move(added_receiver_states),
+                                         std::move(removed_receiver_ids));
     }
   }
 
@@ -2317,77 +2306,90 @@ void RTCPeerConnectionHandler::OnRenegotiationNeeded() {
     client_->NegotiationNeeded();
 }
 
-void RTCPeerConnectionHandler::OnAddReceiverPlanB(
-    blink::RtpReceiverState receiver_state) {
+void RTCPeerConnectionHandler::OnReceiversModifiedPlanB(
+    Vector<blink::RtpReceiverState> added_receiver_states,
+    Vector<uintptr_t> removed_receiver_ids) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(receiver_state.is_initialized());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnAddReceiverPlanB");
-  auto* track = receiver_state.track_ref()->track();
-  // Update metrics.
-  track_metrics_.AddTrack(MediaStreamTrackMetrics::Direction::kReceive,
-                          MediaStreamTrackMetricsKind(track),
-                          track->Id().Utf8());
-  for (const auto& stream_id : receiver_state.stream_ids()) {
-    // New remote stream?
-    if (!IsRemoteStream(rtp_receivers_, stream_id)) {
-      blink::PerSessionWebRTCAPIMetrics::GetInstance()
-          ->IncrementStreamCounter();
-    }
-  }
-  uintptr_t receiver_id =
-      blink::RTCRtpReceiverImpl::getId(receiver_state.webrtc_receiver().get());
-  DCHECK(FindReceiver(receiver_id) == rtp_receivers_.end());
-  auto rtp_receiver = std::make_unique<blink::RTCRtpReceiverImpl>(
-      native_peer_connection_, std::move(receiver_state),
-      force_encoded_audio_insertable_streams_,
-      force_encoded_video_insertable_streams_);
-  rtp_receivers_.push_back(
-      std::make_unique<blink::RTCRtpReceiverImpl>(*rtp_receiver));
-  if (peer_connection_tracker_) {
-    auto receiver_only_transceiver =
-        std::make_unique<blink::RTCRtpReceiverOnlyTransceiver>(
-            std::make_unique<blink::RTCRtpReceiverImpl>(*rtp_receiver));
-    size_t receiver_index = GetTransceiverIndex(*receiver_only_transceiver);
-    peer_connection_tracker_->TrackAddTransceiver(
-        this,
-        PeerConnectionTracker::TransceiverUpdatedReason::kSetRemoteDescription,
-        *receiver_only_transceiver.get(), receiver_index);
-  }
-  if (!is_closed_)
-    client_->DidAddReceiverPlanB(rtp_receiver->ShallowCopy());
-}
+  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnReceiversModifiedPlanB");
 
-void RTCPeerConnectionHandler::OnRemoveReceiverPlanB(uintptr_t receiver_id) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnRemoveReceiverPlanB");
-
-  auto it = FindReceiver(receiver_id);
-  DCHECK(it != rtp_receivers_.end());
-  auto receiver = std::make_unique<blink::RTCRtpReceiverImpl>(*(*it));
-  // Update metrics.
-  track_metrics_.RemoveTrack(MediaStreamTrackMetrics::Direction::kReceive,
-                             MediaStreamTrackMetricsKind(receiver->Track()),
-                             receiver->Track()->Id().Utf8());
-  if (peer_connection_tracker_) {
-    auto receiver_only_transceiver =
-        std::make_unique<blink::RTCRtpReceiverOnlyTransceiver>(
-            std::make_unique<blink::RTCRtpReceiverImpl>(*receiver));
-    size_t receiver_index = GetTransceiverIndex(*receiver_only_transceiver);
-    peer_connection_tracker_->TrackRemoveTransceiver(
-        this,
-        PeerConnectionTracker::TransceiverUpdatedReason::kSetRemoteDescription,
-        *receiver_only_transceiver.get(), receiver_index);
-  }
-  rtp_receivers_.erase(it);
-  for (const auto& stream_id : receiver->state().stream_ids()) {
-    // This was the last occurence of the stream?
-    if (!IsRemoteStream(rtp_receivers_, stream_id)) {
-      blink::PerSessionWebRTCAPIMetrics::GetInstance()
-          ->IncrementStreamCounter();
+  // Process the addition of receivers.
+  Vector<std::unique_ptr<RTCRtpReceiverPlatform>> platform_receivers_added;
+  for (blink::RtpReceiverState& receiver_state : added_receiver_states) {
+    DCHECK(receiver_state.is_initialized());
+    auto* track = receiver_state.track_ref()->track();
+    // Update metrics.
+    track_metrics_.AddTrack(MediaStreamTrackMetrics::Direction::kReceive,
+                            MediaStreamTrackMetricsKind(track),
+                            track->Id().Utf8());
+    for (const auto& stream_id : receiver_state.stream_ids()) {
+      // New remote stream?
+      if (!IsRemoteStream(rtp_receivers_, stream_id)) {
+        blink::PerSessionWebRTCAPIMetrics::GetInstance()
+            ->IncrementStreamCounter();
+      }
     }
+    uintptr_t receiver_id = blink::RTCRtpReceiverImpl::getId(
+        receiver_state.webrtc_receiver().get());
+    DCHECK(FindReceiver(receiver_id) == rtp_receivers_.end());
+    auto rtp_receiver = std::make_unique<blink::RTCRtpReceiverImpl>(
+        native_peer_connection_, std::move(receiver_state),
+        force_encoded_audio_insertable_streams_,
+        force_encoded_video_insertable_streams_);
+    rtp_receivers_.push_back(
+        std::make_unique<blink::RTCRtpReceiverImpl>(*rtp_receiver));
+    if (peer_connection_tracker_) {
+      auto receiver_only_transceiver =
+          std::make_unique<blink::RTCRtpReceiverOnlyTransceiver>(
+              std::make_unique<blink::RTCRtpReceiverImpl>(*rtp_receiver));
+      size_t receiver_index = GetTransceiverIndex(*receiver_only_transceiver);
+      peer_connection_tracker_->TrackAddTransceiver(
+          this,
+          PeerConnectionTracker::TransceiverUpdatedReason::
+              kSetRemoteDescription,
+          *receiver_only_transceiver.get(), receiver_index);
+    }
+
+    platform_receivers_added.push_back(rtp_receiver->ShallowCopy());
   }
-  if (!is_closed_)
-    client_->DidRemoveReceiverPlanB(std::move(receiver));
+
+  // Process the removal of receivers.
+  Vector<std::unique_ptr<RTCRtpReceiverPlatform>> platform_receivers_removed;
+  for (uintptr_t receiver_id : removed_receiver_ids) {
+    auto it = FindReceiver(receiver_id);
+    DCHECK(it != rtp_receivers_.end());
+    auto receiver = std::make_unique<blink::RTCRtpReceiverImpl>(*(*it));
+    // Update metrics.
+    track_metrics_.RemoveTrack(MediaStreamTrackMetrics::Direction::kReceive,
+                               MediaStreamTrackMetricsKind(receiver->Track()),
+                               receiver->Track()->Id().Utf8());
+    if (peer_connection_tracker_) {
+      auto receiver_only_transceiver =
+          std::make_unique<blink::RTCRtpReceiverOnlyTransceiver>(
+              std::make_unique<blink::RTCRtpReceiverImpl>(*receiver));
+      size_t receiver_index = GetTransceiverIndex(*receiver_only_transceiver);
+      peer_connection_tracker_->TrackRemoveTransceiver(
+          this,
+          PeerConnectionTracker::TransceiverUpdatedReason::
+              kSetRemoteDescription,
+          *receiver_only_transceiver.get(), receiver_index);
+    }
+    rtp_receivers_.erase(it);
+    for (const auto& stream_id : receiver->state().stream_ids()) {
+      // This was the last occurence of the stream?
+      if (!IsRemoteStream(rtp_receivers_, stream_id)) {
+        blink::PerSessionWebRTCAPIMetrics::GetInstance()
+            ->IncrementStreamCounter();
+      }
+    }
+
+    platform_receivers_removed.push_back(std::move(receiver));
+  }
+
+  // Surface changes to RTCPeerConnection.
+  if (!is_closed_) {
+    client_->DidModifyReceiversPlanB(std::move(platform_receivers_added),
+                                     std::move(platform_receivers_removed));
+  }
 }
 
 void RTCPeerConnectionHandler::OnModifySctpTransport(

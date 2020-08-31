@@ -427,17 +427,19 @@ const AtomicString& MediaStream::InterfaceName() const {
 }
 
 void MediaStream::AddTrackByComponentAndFireEvents(
-    MediaStreamComponent* component) {
+    MediaStreamComponent* component,
+    DispatchEventTiming event_timing) {
   DCHECK(component);
   if (!GetExecutionContext())
     return;
   auto* track =
       MakeGarbageCollected<MediaStreamTrack>(GetExecutionContext(), component);
-  AddTrackAndFireEvents(track);
+  AddTrackAndFireEvents(track, event_timing);
 }
 
 void MediaStream::RemoveTrackByComponentAndFireEvents(
-    MediaStreamComponent* component) {
+    MediaStreamComponent* component,
+    DispatchEventTiming event_timing) {
   DCHECK(component);
   if (!GetExecutionContext())
     return;
@@ -467,16 +469,29 @@ void MediaStream::RemoveTrackByComponentAndFireEvents(
   MediaStreamTrack* track = (*tracks)[index];
   track->UnregisterMediaStream(this);
   tracks->EraseAt(index);
-  ScheduleDispatchEvent(MakeGarbageCollected<MediaStreamTrackEvent>(
-      event_type_names::kRemovetrack, track));
 
+  bool became_inactive = false;
   if (active() && EmptyOrOnlyEndedTracks()) {
     descriptor_->SetActive(false);
-    ScheduleDispatchEvent(Event::Create(event_type_names::kInactive));
+    became_inactive = true;
+  }
+
+  // Fire events synchronously or asynchronously.
+  if (event_timing == DispatchEventTiming::kImmediately) {
+    DispatchEvent(*MakeGarbageCollected<MediaStreamTrackEvent>(
+        event_type_names::kRemovetrack, track));
+    if (became_inactive)
+      DispatchEvent(*Event::Create(event_type_names::kInactive));
+  } else {
+    ScheduleDispatchEvent(MakeGarbageCollected<MediaStreamTrackEvent>(
+        event_type_names::kRemovetrack, track));
+    if (became_inactive)
+      ScheduleDispatchEvent(Event::Create(event_type_names::kInactive));
   }
 }
 
-void MediaStream::AddTrackAndFireEvents(MediaStreamTrack* track) {
+void MediaStream::AddTrackAndFireEvents(MediaStreamTrack* track,
+                                        DispatchEventTiming event_timing) {
   DCHECK(track);
   switch (track->Component()->Source()->GetType()) {
     case MediaStreamSource::kTypeAudio:
@@ -489,18 +504,30 @@ void MediaStream::AddTrackAndFireEvents(MediaStreamTrack* track) {
   track->RegisterMediaStream(this);
   descriptor_->AddComponent(track->Component());
 
-  ScheduleDispatchEvent(MakeGarbageCollected<MediaStreamTrackEvent>(
-      event_type_names::kAddtrack, track));
-
+  bool became_active = false;
   if (!active() && !track->Ended()) {
     descriptor_->SetActive(true);
-    ScheduleDispatchEvent(Event::Create(event_type_names::kActive));
+    became_active = true;
+  }
+
+  // Fire events synchronously or asynchronously.
+  if (event_timing == DispatchEventTiming::kImmediately) {
+    DispatchEvent(*MakeGarbageCollected<MediaStreamTrackEvent>(
+        event_type_names::kAddtrack, track));
+    if (became_active)
+      DispatchEvent(*Event::Create(event_type_names::kActive));
+  } else {
+    ScheduleDispatchEvent(MakeGarbageCollected<MediaStreamTrackEvent>(
+        event_type_names::kAddtrack, track));
+    if (became_active)
+      ScheduleDispatchEvent(Event::Create(event_type_names::kActive));
   }
 }
 
-void MediaStream::RemoveTrackAndFireEvents(MediaStreamTrack* track) {
+void MediaStream::RemoveTrackAndFireEvents(MediaStreamTrack* track,
+                                           DispatchEventTiming event_timing) {
   DCHECK(track);
-  RemoveTrackByComponentAndFireEvents(track->Component());
+  RemoveTrackByComponentAndFireEvents(track->Component(), event_timing);
 }
 
 void MediaStream::ScheduleDispatchEvent(Event* event) {
