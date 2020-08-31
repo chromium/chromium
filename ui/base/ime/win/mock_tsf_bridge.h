@@ -16,7 +16,7 @@
 
 namespace ui {
 
-class MockTSFBridge : public TSFBridge {
+class COMPONENT_EXPORT(UI_BASE_IME_WIN) MockTSFBridge : public TSFBridge {
  public:
   MockTSFBridge();
   ~MockTSFBridge() override;

@@ -774,13 +774,6 @@ static_library("test_support") {
       "ime/dummy_text_input_client.h",
     ]
 
-    if (is_win) {
-      sources += [
-        "ime/win/mock_tsf_bridge.cc",
-        "ime/win/mock_tsf_bridge.h",
-      ]
-    }
-
     deps += [
       "//ui/base/ime",
       "//ui/events",
