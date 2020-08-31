@@ -367,6 +367,10 @@ std::string DecodeJobName(const std::string& raw_job_name) {
 enum class UpstartOperation {
   JOB_START = 0,
   JOB_STOP,
+  // This sends STOP D-Bus message, then sends START. Unlike 'initctl restart',
+  // this starts the job even when the job hasn't been started yet (and
+  // therefore the stop operation fails.)
+  JOB_STOP_AND_START,
 };
 
 struct JobDesc {
@@ -390,6 +394,13 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
     return;
   }
 
+  if (jobs.front().operation == UpstartOperation::JOB_STOP_AND_START) {
+    // Expand the restart operation into two, stop and start.
+    jobs.front().operation = UpstartOperation::JOB_START;
+    jobs.push_front({jobs.front().job_name, UpstartOperation::JOB_STOP,
+                     jobs.front().environment});
+  }
+
   const auto& job_name = jobs.front().job_name;
   const auto& operation = jobs.front().operation;
   const auto& environment = jobs.front().environment;
@@ -408,6 +419,9 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
     case UpstartOperation::JOB_STOP:
       chromeos::UpstartClient::Get()->StopJob(job_name, environment,
                                               std::move(wrapped_callback));
+      break;
+    case UpstartOperation::JOB_STOP_AND_START:
+      NOTREACHED();
       break;
   }
 }
@@ -587,15 +601,11 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         JobDesc{kArcVmMountMyFilesJobName, UpstartOperation::JOB_STOP, {}},
         JobDesc{
             kArcVmMountRemovableMediaJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcKeymasterJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcKeymasterJobName, UpstartOperation::JOB_START, {}},
-        JobDesc{kArcSensorServiceJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcSensorServiceJobName, UpstartOperation::JOB_START, {}},
+        JobDesc{kArcKeymasterJobName, UpstartOperation::JOB_STOP_AND_START, {}},
+        JobDesc{
+            kArcSensorServiceJobName, UpstartOperation::JOB_STOP_AND_START, {}},
         JobDesc{kArcVmBootNotificationServerJobName,
-                UpstartOperation::JOB_STOP,
-                {}},
-        JobDesc{kArcVmBootNotificationServerJobName,
-                UpstartOperation::JOB_START,
+                UpstartOperation::JOB_STOP_AND_START,
                 {}},
     };
     ConfigureUpstartJobs(

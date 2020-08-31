@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -412,6 +413,22 @@ class ArcVmClientAdapterTest : public testing::Test,
         }));
   }
 
+  void StartRecordingUpstartOperations() {
+    auto* upstart_client = chromeos::FakeUpstartClient::Get();
+    upstart_client->set_start_job_cb(
+        base::BindLambdaForTesting([this](const std::string& job_name,
+                                          const std::vector<std::string>& env) {
+          upstart_operations_.emplace_back(job_name, true);
+          return true;
+        }));
+    upstart_client->set_stop_job_cb(
+        base::BindLambdaForTesting([this](const std::string& job_name,
+                                          const std::vector<std::string>& env) {
+          upstart_operations_.emplace_back(job_name, false);
+          return true;
+        }));
+  }
+
   void RemoveUpstartStartStopJobFailures() {
     auto* upstart_client = chromeos::FakeUpstartClient::Get();
     upstart_client->set_start_job_cb(
@@ -430,6 +447,9 @@ class ArcVmClientAdapterTest : public testing::Test,
   }
   void reset_arc_instance_stopped_called() {
     arc_instance_stopped_called_ = false;
+  }
+  const std::vector<std::pair<std::string, bool>>& upstart_operations() const {
+    return upstart_operations_;
   }
   TestConciergeClient* GetTestConciergeClient() {
     return static_cast<TestConciergeClient*>(
@@ -470,6 +490,10 @@ class ArcVmClientAdapterTest : public testing::Test,
   // Variables to override the value in FileSystemStatus.
   bool host_rootfs_writable_;
   bool system_image_ext_format_;
+
+  // List of upstart operations recorded. When it's "start" the boolean is set
+  // to true.
+  std::vector<std::pair<std::string, bool>> upstart_operations_;
 
   std::unique_ptr<TestArcVmBootNotificationServer> boot_server_;
 
@@ -579,6 +603,25 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_StartArcVmPerBoardFeaturesJobFail) {
   StartMiniArcWithParams(false, {});
   // Confirm that no VM is started.
   EXPECT_FALSE(GetTestConciergeClient()->start_arc_vm_called());
+}
+
+// Tests that StartMiniArc()'s JOB_RESTART for |kArcSensorServiceJobName| is
+// properly implemented.
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_JobRestart) {
+  StartRecordingUpstartOperations();
+  StartMiniArc();
+
+  const auto& ops = upstart_operations();
+  // Find the STOP operation for the job.
+  auto it =
+      std::find(ops.begin(), ops.end(),
+                std::make_pair(std::string(kArcSensorServiceJobName), false));
+  ASSERT_NE(ops.end(), it);
+  ++it;
+  ASSERT_NE(ops.end(), it);
+  // The next operation must be START for the job.
+  EXPECT_EQ(it->first, kArcSensorServiceJobName);
+  EXPECT_TRUE(it->second);  // true means START.
 }
 
 // Tests that StopArcInstance() eventually notifies the observer.
