@@ -32,7 +32,7 @@ defaults.execution_timeout.set(3 * time.hour)
 defaults.os.set(os.LINUX_DEFAULT)
 defaults.pool.set("luci.chromium.ci")
 defaults.service_account.set(
-    "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
+    "goma-release-testing@chops-service-accounts.iam.gserviceaccount.com",
 )
 defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 defaults.triggered_by.set(["master-gitiles-trigger"])
