@@ -707,7 +707,6 @@ TSFBridge* TSFBridge::GetInstance() {
   }
 
   TSFBridgeImpl* delegate = GetThreadLocalTSFBridge();
-  DCHECK(delegate) << "Do no call GetInstance before TSFBridge::Initialize.";
   return delegate;
 }
 
