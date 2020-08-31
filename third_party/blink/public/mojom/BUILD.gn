@@ -592,6 +592,7 @@ mojom("mojom_platform") {
 mojom("android_mojo_bindings") {
   generate_java = true
   sources = [
+    "android_font_lookup/android_font_lookup.mojom",
     "blob/blob.mojom",
     "blob/blob_registry.mojom",
     "blob/blob_url_store.mojom",

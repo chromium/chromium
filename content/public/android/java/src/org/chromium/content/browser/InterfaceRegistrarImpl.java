@@ -8,7 +8,9 @@ import android.content.Context;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.blink.mojom.AndroidFontLookup;
 import org.chromium.content.browser.androidoverlay.AndroidOverlayProviderImpl;
+import org.chromium.content.browser.font.AndroidFontLookupImpl;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -62,6 +64,8 @@ class InterfaceRegistrarImpl {
             registry.addInterface(AndroidOverlayProvider.MANAGER,
                     new AndroidOverlayProviderImpl.Factory(applicationContext));
             // TODO(avayvod): Register the PresentationService implementation here.
+            registry.addInterface(AndroidFontLookup.MANAGER,
+                    new AndroidFontLookupImpl.Factory(applicationContext));
         }
     }
 }

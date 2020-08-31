@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 #include "mojo/public/java/system/system_impl_java_jni_headers/CoreImpl_jni.h"
 
 namespace mojo {
@@ -337,6 +338,12 @@ static jint JNI_CoreImpl_GetNativeBufferOffset(
   if (offset == 0)
     return 0;
   return alignment - offset;
+}
+
+static jint JNI_CoreImpl_CreatePlatformHandle(JNIEnv* env, jint fd) {
+  mojo::ScopedHandle handle =
+      mojo::WrapPlatformHandle(mojo::PlatformHandle(base::ScopedFD(fd)));
+  return handle.release().value();
 }
 
 }  // namespace android

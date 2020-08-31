@@ -23,8 +23,7 @@ import java.util.concurrent.Executor;
  * A factory which provides per-thread executors, which enable execution on the thread from which
  * they were obtained.
  */
-class ExecutorFactory {
-
+public class ExecutorFactory {
     /**
      * A null buffer which is used to send messages without any data on the PipedExecutor's
      * signaling handles.

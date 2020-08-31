@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+
+// Interface for renderer to request Android downloaded fonts from font
+// providers on-device.
+interface AndroidFontLookup {
+  // Returns a list of unique full font names available to be fetched locally
+  // from on-device storage, without a network roundtrip.
+  // TODO(crbug.com/1111148): Complete implementation of this method in
+  // AndroidFontLookupImpl.java. Currently returns empty list.
+  GetUniqueNameLookupTable()
+    => (array<string> available_unique_font_names);
+
+  // Returns an opened read-only File for a font with the given unique full
+  // font name or null if the font is not available.
+  [Sync]
+  MatchLocalFontByUniqueName(string font_unique_name)
+    => (mojo_base.mojom.File? font_file_handle);
+};
