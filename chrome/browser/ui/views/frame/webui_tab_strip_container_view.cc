@@ -477,6 +477,13 @@ WebUITabStripContainerView::~WebUITabStripContainerView() {
 }
 
 // static
+bool WebUITabStripContainerView::SupportsTouchableTabStrip(
+    const Browser* browser) {
+  return browser->is_type_normal() &&
+         base::FeatureList::IsEnabled(features::kWebUITabStrip);
+}
+
+// static
 bool WebUITabStripContainerView::UseTouchableTabStrip(const Browser* browser) {
   return browser->is_type_normal() &&
          base::FeatureList::IsEnabled(features::kWebUITabStrip) &&

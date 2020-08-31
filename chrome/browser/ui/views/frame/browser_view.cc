@@ -2337,15 +2337,39 @@ views::View* BrowserView::GetInitiallyFocusedView() {
   return nullptr;
 }
 
+#if defined(OS_WIN)
+bool BrowserView::CanShowWindowTitle() const {
+  return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR) ||
+         WebUITabStripContainerView::SupportsTouchableTabStrip(browser());
+}
+
+bool BrowserView::CanShowWindowIcon() const {
+  return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
+}
+#endif
+
 bool BrowserView::ShouldShowWindowTitle() const {
 #if defined(OS_CHROMEOS)
   // For Chrome OS only, trusted windows (apps and settings) do not show a
   // title, crbug.com/119411. Child windows (i.e. popups) do show a title.
-  if (browser_->is_trusted_source()) {
+  if (browser_->is_trusted_source())
     return false;
-  }
-#endif  // OS_CHROMEOS
+#elif defined(OS_WIN)
+  // On Windows in touch mode we display a window title.
+  if (WebUITabStripContainerView::UseTouchableTabStrip(browser()))
+    return true;
+#endif
 
+  return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
+}
+
+bool BrowserView::ShouldShowWindowIcon() const {
+#if defined(OS_CHROMEOS)
+  // For Chrome OS only, trusted windows (apps and settings) do not show a
+  // window icon, crbug.com/119411. Child windows (i.e. popups) do show an icon.
+  if (browser_->is_trusted_source())
+    return false;
+#endif
   return browser_->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
 }
 
@@ -2380,11 +2404,6 @@ gfx::ImageSkia BrowserView::GetWindowIcon() {
     return browser_->GetCurrentPageIcon().AsImageSkia();
 
   return gfx::ImageSkia();
-}
-
-bool BrowserView::ShouldShowWindowIcon() const {
-  // Currently the icon and title are always shown together.
-  return ShouldShowWindowTitle();
 }
 
 bool BrowserView::ExecuteWindowsCommand(int command_id) {
@@ -2962,8 +2981,9 @@ void BrowserView::LoadingAnimationCallback() {
     // be correct).
     tabstrip_->UpdateLoadingAnimations(base::TimeTicks::Now() -
                                        loading_animation_start_);
-  } else if (ShouldShowWindowIcon()) {
-    // ... or in the window icon area for popups and app windows.
+  }
+
+  if (ShouldShowWindowIcon()) {
     WebContents* web_contents =
         browser_->tab_strip_model()->GetActiveWebContents();
     // GetActiveWebContents can return null for example under Purify when

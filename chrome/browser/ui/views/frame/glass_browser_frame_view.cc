@@ -92,7 +92,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
   // is true. Everything else here is only used when
   // ShouldCustomDrawSystemTitlebar() is true.
 
-  if (browser_view->ShouldShowWindowIcon()) {
+  if (browser_view->CanShowWindowIcon()) {
     InitThrobberIcons();
 
     window_icon_ = new TabIconView(this, nullptr);
@@ -115,7 +115,7 @@ GlassBrowserFrameView::GlassBrowserFrameView(BrowserFrame* frame,
   // The window title appears above the web app frame toolbar (if present),
   // which surrounds the title with minimal-ui buttons on the left,
   // and other controls (such as the app menu button) on the right.
-  if (browser_view->ShouldShowWindowTitle()) {
+  if (browser_view->CanShowWindowTitle()) {
     window_title_ = new views::Label(browser_view->GetWindowTitle());
     window_title_->SetSubpixelRenderingEnabled(false);
     window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -207,20 +207,18 @@ SkColor GlassBrowserFrameView::GetCaptionColor(
 }
 
 void GlassBrowserFrameView::UpdateThrobber(bool running) {
-  if (ShowCustomIcon())
+  if (ShouldShowWindowIcon(TitlebarType::kCustom)) {
     window_icon_->Update();
-
-  if (!ShowSystemIcon())
-    return;
-
-  if (throbber_running_) {
-    if (running) {
-      DisplayNextThrobberFrame();
-    } else {
-      StopThrobber();
+  } else if (ShouldShowWindowIcon(TitlebarType::kSystem)) {
+    if (throbber_running_) {
+      if (running) {
+        DisplayNextThrobberFrame();
+      } else {
+        StopThrobber();
+      }
+    } else if (running) {
+      StartThrobber();
     }
-  } else if (running) {
-    StartThrobber();
   }
 }
 
@@ -278,7 +276,7 @@ int GlassBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
 
   // See if we're in the sysmenu region.  We still have to check the tabstrip
   // first so that clicks in a tab don't get treated as sysmenu clicks.
-  if (browser_view()->ShouldShowWindowIcon() && frame_component != HTCLIENT) {
+  if (frame_component != HTCLIENT && ShouldShowWindowIcon(TitlebarType::kAny)) {
     gfx::Rect sys_menu_region(
         0, display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSIZEFRAME),
         display::win::ScreenWin::GetSystemMetricsInDIP(SM_CXSMICON),
@@ -291,7 +289,7 @@ int GlassBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
     return frame_component;
 
   // Then see if the point is within any of the window controls.
-  if (OwnsCaptionButtons()) {
+  if (caption_button_container_) {
     gfx::Point local_point = point;
     ConvertPointToTarget(parent(), caption_button_container_, &local_point);
     if (caption_button_container_->HitTestPoint(local_point)) {
@@ -344,15 +342,14 @@ int GlassBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
 }
 
 void GlassBrowserFrameView::UpdateWindowIcon() {
-  if (ShowCustomIcon() && !frame()->IsFullscreen())
+  if (window_icon_ && window_icon_->GetVisible())
     window_icon_->SchedulePaint();
 }
 
 void GlassBrowserFrameView::UpdateWindowTitle() {
-  if (ShowCustomTitle() && !frame()->IsFullscreen()) {
-    LayoutTitleBar();
+  LayoutTitleBar();
+  if (window_title_ && window_title_->GetVisible())
     window_title_->SchedulePaint();
-  }
 }
 
 void GlassBrowserFrameView::ResetWindowControls() {
@@ -368,13 +365,13 @@ void GlassBrowserFrameView::ButtonPressed(views::Button* sender,
 }
 
 bool GlassBrowserFrameView::ShouldTabIconViewAnimate() const {
-  DCHECK(ShowCustomIcon());
+  DCHECK(ShouldShowWindowIcon(TitlebarType::kCustom));
   content::WebContents* current_tab = browser_view()->GetActiveWebContents();
   return current_tab && current_tab->IsLoading();
 }
 
 gfx::ImageSkia GlassBrowserFrameView::GetFaviconForTabIconView() {
-  DCHECK(ShowCustomIcon());
+  DCHECK(ShouldShowWindowIcon(TitlebarType::kCustom));
   return frame()->widget_delegate()->GetWindowIcon();
 }
 
@@ -402,12 +399,8 @@ void GlassBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
 
 void GlassBrowserFrameView::Layout() {
   TRACE_EVENT0("views.frame", "GlassBrowserFrameView::Layout");
-  if (ShouldCustomDrawSystemTitlebar() || IsWebUITabStrip())
-    LayoutCaptionButtons();
-
-  if (ShouldCustomDrawSystemTitlebar())
-    LayoutTitleBar();
-
+  LayoutCaptionButtons();
+  LayoutTitleBar();
   LayoutClientView();
 }
 
@@ -550,25 +543,24 @@ int GlassBrowserFrameView::MinimizeButtonX() const {
              : frame()->GetMinimizeButtonOffset();
 }
 
-bool GlassBrowserFrameView::ShowCustomIcon() const {
-  // Web-app windows don't include the window icon as per UI mocks.
-  return !web_app_frame_toolbar() && ShouldCustomDrawSystemTitlebar() &&
-         browser_view()->ShouldShowWindowIcon();
+bool GlassBrowserFrameView::ShouldShowWindowIcon(TitlebarType type) const {
+  if (type == TitlebarType::kCustom && !ShouldCustomDrawSystemTitlebar())
+    return false;
+  if (type == TitlebarType::kSystem && ShouldCustomDrawSystemTitlebar())
+    return false;
+  if (frame()->IsFullscreen() || browser_view()->IsBrowserTypeWebApp())
+    return false;
+  return browser_view()->ShouldShowWindowIcon();
 }
 
-bool GlassBrowserFrameView::ShowCustomTitle() const {
-  return ShouldCustomDrawSystemTitlebar() &&
-         browser_view()->ShouldShowWindowTitle();
-}
-
-bool GlassBrowserFrameView::ShowSystemIcon() const {
-  return !ShouldCustomDrawSystemTitlebar() &&
-         browser_view()->ShouldShowWindowIcon();
-}
-
-bool GlassBrowserFrameView::OwnsCaptionButtons() const {
-  return caption_button_container_ &&
-         caption_button_container_->parent() == this;
+bool GlassBrowserFrameView::ShouldShowWindowTitle(TitlebarType type) const {
+  if (type == TitlebarType::kCustom && !ShouldCustomDrawSystemTitlebar())
+    return false;
+  if (type == TitlebarType::kSystem && ShouldCustomDrawSystemTitlebar())
+    return false;
+  if (frame()->IsFullscreen())
+    return false;
+  return browser_view()->ShouldShowWindowTitle();
 }
 
 SkColor GlassBrowserFrameView::GetTitlebarColor() const {
@@ -642,14 +634,21 @@ void GlassBrowserFrameView::PaintTitlebar(gfx::Canvas* canvas) const {
                          frame_overlay_image.height() * scale, true);
   }
 
-  if (ShowCustomTitle())
+  if (ShouldShowWindowTitle(TitlebarType::kCustom)) {
     window_title_->SetEnabledColor(
         GetCaptionColor(BrowserFrameActiveState::kUseCurrent));
+  }
 }
 
 void GlassBrowserFrameView::LayoutTitleBar() {
   TRACE_EVENT0("views.frame", "GlassBrowserFrameView::LayoutTitleBar");
-  if (!ShowCustomIcon() && !ShowCustomTitle())
+  const bool show_icon = ShouldShowWindowIcon(TitlebarType::kCustom);
+  const bool show_title = ShouldShowWindowTitle(TitlebarType::kCustom);
+  if (window_icon_)
+    window_icon_->SetVisible(show_icon);
+  if (window_title_)
+    window_title_->SetVisible(show_title);
+  if (!show_icon && !show_title && !web_app_frame_toolbar())
     return;
 
   const int icon_size =
@@ -671,7 +670,7 @@ void GlassBrowserFrameView::LayoutTitleBar() {
       gfx::Rect(next_leading_x, y, icon_size, icon_size);
 
   constexpr int kIconTitleSpacing = 5;
-  if (ShowCustomIcon()) {
+  if (show_icon) {
     window_icon_->SetBoundsRect(window_icon_bounds);
     next_leading_x = window_icon_bounds.right() + kIconTitleSpacing;
   }
@@ -685,7 +684,7 @@ void GlassBrowserFrameView::LayoutTitleBar() {
     next_trailing_x = remaining_bounds.second;
   }
 
-  if (ShowCustomTitle()) {
+  if (show_title) {
     // If nothing has been added to the left, match native Windows 10 UWP apps
     // that don't have window icons.
     constexpr int kMinimumTitleLeftBorderMargin = 11;
@@ -701,8 +700,16 @@ void GlassBrowserFrameView::LayoutTitleBar() {
 
 void GlassBrowserFrameView::LayoutCaptionButtons() {
   TRACE_EVENT0("views.frame", "GlassBrowserFrameView::LayoutCaptionButtons");
-  if (!OwnsCaptionButtons())
+  if (!caption_button_container_)
     return;
+
+  // Non-custom system titlebar already contains caption buttons.
+  if (!ShouldCustomDrawSystemTitlebar()) {
+    caption_button_container_->SetVisible(false);
+    return;
+  }
+
+  caption_button_container_->SetVisible(true);
 
   const gfx::Size preferred_size =
       caption_button_container_->GetPreferredSize();
@@ -722,7 +729,7 @@ void GlassBrowserFrameView::LayoutClientView() {
 }
 
 void GlassBrowserFrameView::StartThrobber() {
-  DCHECK(ShowSystemIcon());
+  DCHECK(ShouldShowWindowIcon(TitlebarType::kSystem));
   if (!throbber_running_) {
     throbber_running_ = true;
     throbber_frame_ = 0;
@@ -734,7 +741,7 @@ void GlassBrowserFrameView::StartThrobber() {
 }
 
 void GlassBrowserFrameView::StopThrobber() {
-  DCHECK(ShowSystemIcon());
+  DCHECK(ShouldShowWindowIcon(TitlebarType::kSystem));
   if (throbber_running_) {
     throbber_running_ = false;
 

@@ -86,6 +86,17 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
  private:
   friend class GlassBrowserCaptionButtonContainer;
 
+  // Describes the type of titlebar that a window might have; used to query
+  // whether specific elements may be present.
+  enum class TitlebarType {
+    // A custom drawn titlebar, with window title and/or icon.
+    kCustom,
+    // The system titlebar, drawn by Windows.
+    kSystem,
+    // Any visible titlebar.
+    kAny
+  };
+
   // Returns the thickness of the window border for the left, right, and bottom
   // edges of the frame. On Windows 10 this is a mostly-transparent handle that
   // allows you to resize the window.
@@ -118,15 +129,13 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   // edge of the caption buttons.
   int MinimizeButtonX() const;
 
-  bool ShowCustomIcon() const;
-  bool ShowCustomTitle() const;
-  bool ShowSystemIcon() const;
+  // Returns whether or not the window should display an icon of the specified
+  // |type|.
+  bool ShouldShowWindowIcon(TitlebarType type) const;
 
-  // Returns true if caption buttons are present on the frame (as opposed to
-  // somewhere else, or not present at all). In some modes, the frame can "lend"
-  // the caption buttons to another view which needs to display them - e.g. in
-  // tablet mode on Windows.
-  bool OwnsCaptionButtons() const;
+  // Returns whether or not the window should display a title of the specified
+  // |type|.
+  bool ShouldShowWindowTitle(TitlebarType type) const;
 
   // Paint various sub-components of this view.
   void PaintTitlebar(gfx::Canvas* canvas) const;

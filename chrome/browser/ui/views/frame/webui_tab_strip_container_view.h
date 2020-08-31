@@ -53,6 +53,7 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
                              views::View* omnibox);
   ~WebUITabStripContainerView() override;
 
+  static bool SupportsTouchableTabStrip(const Browser* browser);
   static bool UseTouchableTabStrip(const Browser* browser);
 
   // For drag-and-drop support:
