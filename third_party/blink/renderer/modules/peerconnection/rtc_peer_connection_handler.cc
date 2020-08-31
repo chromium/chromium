@@ -720,6 +720,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
           value.Append(sdp.c_str());
         }
       }
+      handler_->OnSignalingChange(signaling_state);
       tracker_->TrackSessionDescriptionCallback(handler_.get(), action_,
                                                 "OnSuccess", value.ToString());
     }
@@ -745,9 +746,6 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     // TODO(hbos): This event should fire first, but it has to fire after the
     // state changes have been processed. Move the firing of this event to the
     // algorithm for processing the rest of the state changes.
-    if (handler_) {
-      handler_->OnSignalingChange(signaling_state);
-    }
 
     ResolvePromise();
   }
@@ -789,7 +787,8 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
             removed_receiver->state().webrtc_receiver().get()));
       }
       // |handler_| can become null after this call.
-      handler_->OnReceiversModifiedPlanB(std::move(added_receiver_states),
+      handler_->OnReceiversModifiedPlanB(states.signaling_state,
+                                         std::move(added_receiver_states),
                                          std::move(removed_receiver_ids));
     }
   }
@@ -823,7 +822,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     if (handler_) {
       handler_->OnModifySctpTransport(std::move(states.sctp_transport_state));
       handler_->OnModifyTransceivers(
-          std::move(states.transceiver_states),
+          states.signaling_state, std::move(states.transceiver_states),
           action_ == PeerConnectionTracker::ACTION_SET_REMOTE_DESCRIPTION);
     }
   }
@@ -2193,6 +2192,9 @@ void RTCPeerConnectionHandler::OnSignalingChange(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnSignalingChange");
 
+  // Note: This function is purely for chrome://webrtc-internals/ tracking
+  // purposes. The JavaScript visible event and attribute is processed together
+  // with transceiver or receiver changes.
   if (previous_signaling_state_ ==
           webrtc::PeerConnectionInterface::kHaveLocalOffer &&
       new_state == webrtc::PeerConnectionInterface::kHaveRemoteOffer) {
@@ -2200,18 +2202,10 @@ void RTCPeerConnectionHandler::OnSignalingChange(
     auto stable_state = webrtc::PeerConnectionInterface::kStable;
     if (peer_connection_tracker_)
       peer_connection_tracker_->TrackSignalingStateChange(this, stable_state);
-    if (!is_closed_)
-      client_->DidChangeSignalingState(stable_state);
-    // The callback may have closed the PC. If so, do not continue.
-    if (is_closed_ || !client_) {
-      return;
-    }
   }
   previous_signaling_state_ = new_state;
   if (peer_connection_tracker_)
     peer_connection_tracker_->TrackSignalingStateChange(this, new_state);
-  if (!is_closed_)
-    client_->DidChangeSignalingState(new_state);
 }
 
 // Called any time the IceConnectionState changes
@@ -2311,6 +2305,7 @@ void RTCPeerConnectionHandler::OnNegotiationNeededEvent(uint32_t event_id) {
 }
 
 void RTCPeerConnectionHandler::OnReceiversModifiedPlanB(
+    webrtc::PeerConnectionInterface::SignalingState signaling_state,
     Vector<blink::RtpReceiverState> added_receiver_states,
     Vector<uintptr_t> removed_receiver_ids) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -2391,7 +2386,8 @@ void RTCPeerConnectionHandler::OnReceiversModifiedPlanB(
 
   // Surface changes to RTCPeerConnection.
   if (!is_closed_) {
-    client_->DidModifyReceiversPlanB(std::move(platform_receivers_added),
+    client_->DidModifyReceiversPlanB(signaling_state,
+                                     std::move(platform_receivers_added),
                                      std::move(platform_receivers_removed));
   }
 }
@@ -2403,6 +2399,7 @@ void RTCPeerConnectionHandler::OnModifySctpTransport(
 }
 
 void RTCPeerConnectionHandler::OnModifyTransceivers(
+    webrtc::PeerConnectionInterface::SignalingState signaling_state,
     std::vector<blink::RtpTransceiverState> transceiver_states,
     bool is_remote_description) {
   DCHECK_EQ(configuration_.sdp_semantics, webrtc::SdpSemantics::kUnifiedPlan);
@@ -2465,7 +2462,8 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
   }
   previous_transceiver_ids_ = ids;
   if (!is_closed_) {
-    client_->DidModifyTransceivers(std::move(platform_transceivers),
+    client_->DidModifyTransceivers(signaling_state,
+                                   std::move(platform_transceivers),
                                    removed_transceivers, is_remote_description);
   }
 }

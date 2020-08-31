@@ -2888,13 +2888,6 @@ void RTCPeerConnection::DidChangeSessionDescriptions(
           : nullptr;
 }
 
-void RTCPeerConnection::DidChangeSignalingState(
-    webrtc::PeerConnectionInterface::SignalingState new_state) {
-  DCHECK(!closed_);
-  DCHECK(GetExecutionContext()->IsContextThread());
-  ChangeSignalingState(new_state, true);
-}
-
 void RTCPeerConnection::DidChangeIceGatheringState(
     webrtc::PeerConnectionInterface::IceGatheringState new_state) {
   DCHECK(!closed_);
@@ -2927,6 +2920,7 @@ void RTCPeerConnection::DidChangePeerConnectionState(
 }
 
 void RTCPeerConnection::DidModifyReceiversPlanB(
+    webrtc::PeerConnectionInterface::SignalingState signaling_state,
     Vector<std::unique_ptr<RTCRtpReceiverPlatform>> platform_receivers_added,
     Vector<std::unique_ptr<RTCRtpReceiverPlatform>>
         platform_receivers_removed) {
@@ -3019,6 +3013,14 @@ void RTCPeerConnection::DidModifyReceiversPlanB(
   }
   MediaStreamVector current_streams = getRemoteStreams();
 
+  // Modify and fire "pc.onsignalingchange" synchronously.
+  if (signaling_state_ == webrtc::PeerConnectionInterface::kHaveLocalOffer &&
+      signaling_state == webrtc::PeerConnectionInterface::kHaveRemoteOffer) {
+    // Inject missing kStable in case of implicit rollback.
+    ChangeSignalingState(webrtc::PeerConnectionInterface::kStable, true);
+  }
+  ChangeSignalingState(signaling_state, true);
+
   // Mute the tracks, this fires "track.onmute" synchronously.
   for (auto& track : mute_tracks) {
     track->Component()->Source()->SetReadyState(
@@ -3088,6 +3090,7 @@ void RTCPeerConnection::DidModifySctpTransport(
 }
 
 void RTCPeerConnection::DidModifyTransceivers(
+    webrtc::PeerConnectionInterface::SignalingState signaling_state,
     Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> platform_transceivers,
     Vector<uintptr_t> removed_transceiver_ids,
     bool is_remote_description) {
@@ -3147,6 +3150,14 @@ void RTCPeerConnection::DidModifyTransceivers(
     }
   }
   MediaStreamVector current_streams = getRemoteStreams();
+
+  // Modify and fire "pc.onsignalingchange" synchronously.
+  if (signaling_state_ == webrtc::PeerConnectionInterface::kHaveLocalOffer &&
+      signaling_state == webrtc::PeerConnectionInterface::kHaveRemoteOffer) {
+    // Inject missing kStable in case of implicit rollback.
+    ChangeSignalingState(webrtc::PeerConnectionInterface::kStable, true);
+  }
+  ChangeSignalingState(signaling_state, true);
 
   // Mute the tracks, this fires "track.onmute" synchronously.
   for (auto& track : mute_tracks) {

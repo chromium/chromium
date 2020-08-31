@@ -342,8 +342,6 @@ class MODULES_EXPORT RTCPeerConnection final
       RTCSessionDescriptionPlatform* current_local_description,
       RTCSessionDescriptionPlatform* pending_remote_description,
       RTCSessionDescriptionPlatform* current_remote_description) override;
-  void DidChangeSignalingState(
-      webrtc::PeerConnectionInterface::SignalingState) override;
   void DidChangeIceGatheringState(
       webrtc::PeerConnectionInterface::IceGatheringState) override;
   void DidChangeIceConnectionState(
@@ -351,11 +349,13 @@ class MODULES_EXPORT RTCPeerConnection final
   void DidChangePeerConnectionState(
       webrtc::PeerConnectionInterface::PeerConnectionState) override;
   void DidModifyReceiversPlanB(
+      webrtc::PeerConnectionInterface::SignalingState,
       Vector<std::unique_ptr<RTCRtpReceiverPlatform>> platform_receivers_added,
       Vector<std::unique_ptr<RTCRtpReceiverPlatform>>
           platform_receivers_removed) override;
   void DidModifySctpTransport(WebRTCSctpTransportSnapshot) override;
-  void DidModifyTransceivers(Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>,
+  void DidModifyTransceivers(webrtc::PeerConnectionInterface::SignalingState,
+                             Vector<std::unique_ptr<RTCRtpTransceiverPlatform>>,
                              Vector<uintptr_t>,
                              bool is_remote_description) override;
   void DidAddRemoteDataChannel(

@@ -16,7 +16,7 @@ MockRTCPeerConnectionHandlerClient::MockRTCPeerConnectionHandlerClient() {
       .WillByDefault(testing::Invoke(
           this,
           &MockRTCPeerConnectionHandlerClient::didGenerateICECandidateWorker));
-  ON_CALL(*this, DidModifyReceiversPlanBForMock(_, _))
+  ON_CALL(*this, DidModifyReceiversPlanBForMock(_, _, _))
       .WillByDefault(testing::Invoke(
           this, &MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker));
 }
@@ -31,6 +31,7 @@ void MockRTCPeerConnectionHandlerClient::didGenerateICECandidateWorker(
 }
 
 void MockRTCPeerConnectionHandlerClient::didModifyReceiversWorker(
+    webrtc::PeerConnectionInterface::SignalingState signaling_state,
     Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_added,
     Vector<std::unique_ptr<RTCRtpReceiverPlatform>>* receivers_removed) {
   // This fake implication is very limited. It is only used as a sanity check

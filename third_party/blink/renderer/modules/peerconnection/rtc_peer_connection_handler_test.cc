@@ -610,10 +610,6 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
       mock_dependency_factory_->CreateIceCandidate("sdpMid", 1, kDummySdp));
   pc_handler_->observer()->OnIceCandidate(native_candidate.get());
 
-  EXPECT_CALL(*mock_client_.get(), DidChangeSignalingState(_)).Times(0);
-  pc_handler_->observer()->OnSignalingChange(
-      webrtc::PeerConnectionInterface::kHaveRemoteOffer);
-
   EXPECT_CALL(*mock_client_.get(), DidChangeIceGatheringState(_)).Times(0);
   pc_handler_->observer()->OnIceGatheringChange(
       webrtc::PeerConnectionInterface::kIceGatheringNew);
@@ -622,13 +618,13 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
   pc_handler_->observer()->OnIceConnectionChange(
       webrtc::PeerConnectionInterface::kIceConnectionDisconnected);
 
-  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _))
+  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _, _))
       .Times(0);
   rtc::scoped_refptr<webrtc::MediaStreamInterface> remote_stream(
       AddRemoteMockMediaStream("remote_stream", "video", "audio"));
   InvokeOnAddStream(remote_stream);
 
-  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _))
+  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _, _))
       .Times(0);
   InvokeOnRemoveStream(remote_stream);
 
@@ -1198,13 +1194,14 @@ TEST_F(RTCPeerConnectionHandlerTest, DISABLED_OnAddAndOnRemoveStream) {
   // Grab receivers when they're added to/removed from the PC.
   std::vector<std::unique_ptr<RTCRtpReceiverPlatform>> receivers_added;
   std::vector<std::unique_ptr<RTCRtpReceiverPlatform>> receivers_removed;
-  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _))
-      .WillRepeatedly(
-          Invoke([&receivers_added, &receivers_removed](
-                     Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*
-                         platform_receivers_added,
-                     Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*
-                         platform_receivers_removed) {
+  EXPECT_CALL(*mock_client_.get(), DidModifyReceiversPlanBForMock(_, _, _))
+      .WillRepeatedly(Invoke(
+          [&receivers_added, &receivers_removed](
+              webrtc::PeerConnectionInterface::SignalingState signaling_state,
+              Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*
+                  platform_receivers_added,
+              Vector<std::unique_ptr<RTCRtpReceiverPlatform>>*
+                  platform_receivers_removed) {
             if (!platform_receivers_added->IsEmpty()) {
               receivers_added.push_back(
                   std::move((*platform_receivers_added)[0]));
