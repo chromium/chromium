@@ -1613,6 +1613,15 @@ bool BrowserView::IsTabStripEditable() const {
 }
 
 bool BrowserView::IsToolbarVisible() const {
+#if defined(OS_MAC)
+  // This Mac-only preference disables display of the toolbar in fullscreen mode
+  // so we need to take it into account when determining if the toolbar is
+  // visible - especially as pertains to anchoring views.
+  if (IsFullscreen() && !browser()->profile()->GetPrefs()->GetBoolean(
+                            prefs::kShowFullscreenToolbar)) {
+    return false;
+  }
+#endif
   if (immersive_mode_controller_->ShouldHideTopViews())
     return false;
   // It's possible to reach here before we've been notified of being added to a
