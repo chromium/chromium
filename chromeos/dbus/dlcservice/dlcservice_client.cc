@@ -130,8 +130,12 @@ class DlcserviceClientImpl : public DlcserviceClient {
     writer.AppendString(dlc_id);
 
     VLOG(1) << "Requesting to install DLC(s).";
+    // TODO(b/166782419): dlcservice hashes preloadable DLC images which can
+    // cause timeouts during preloads. Transitioning into F20 will fix this as
+    // preloading will be deprecated.
+    constexpr int timeout_ms = 5 * 60 * 1000;
     dlcservice_proxy_->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, timeout_ms,
         base::BindOnce(
             &DlcserviceClientImpl::OnInstall, weak_ptr_factory_.GetWeakPtr(),
             dlc_id, std::move(install_callback), std::move(progress_callback)));
