@@ -197,7 +197,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
     DebugScopedSetImplThread impl(task_runner_provider_);
 
-    host_impl_->ReadyToCommit(commit_args);
+    host_impl_->ReadyToCommit(commit_args, nullptr);
     host_impl_->BeginCommit();
 
     if (host_impl_->EvictedUIResourcesExist())

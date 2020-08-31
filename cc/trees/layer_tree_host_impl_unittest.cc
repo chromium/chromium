@@ -13868,6 +13868,77 @@ TEST_F(LayerTreeHostImplTest,
   // there is less than 20 frames in its pending frames list.
 }
 
+// Test that DroppedFrameCounter and TotalFrameCounter reset themselves under
+// certain conditions
+TEST_F(LayerTreeHostImplTest, FrameCounterReset) {
+  TotalFrameCounter* total_frame_counter =
+      host_impl_->total_frame_counter_for_testing();
+  DroppedFrameCounter* dropped_frame_counter =
+      host_impl_->dropped_frame_counter_for_testing();
+  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
+  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
+  total_frame_counter->set_total_frames_for_testing(1u);
+  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
+  dropped_frame_counter->AddGoodFrame();
+  EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
+
+  auto interval = base::TimeDelta::FromMilliseconds(16);
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto deadline = now + interval;
+  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 1u /*source_id*/, 1u /*sequence_number*/, now,
+      deadline, interval, viz::BeginFrameArgs::NORMAL);
+  BeginMainFrameMetrics begin_frame_metrics;
+  begin_frame_metrics.should_measure_smoothness = true;
+  host_impl_->ReadyToCommit(args, &begin_frame_metrics);
+  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
+  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
+
+  total_frame_counter->set_total_frames_for_testing(1u);
+  dropped_frame_counter->AddGoodFrame();
+  host_impl_->SetActiveURL(GURL(), 1u);
+  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
+  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
+}
+
+// Test that DroppedFrameCounter and TotalFrameCounter do not reset themselves
+// under certain conditions
+TEST_F(LayerTreeHostImplTest, FrameCounterNotReset) {
+  TotalFrameCounter* total_frame_counter =
+      host_impl_->total_frame_counter_for_testing();
+  DroppedFrameCounter* dropped_frame_counter =
+      host_impl_->dropped_frame_counter_for_testing();
+  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
+  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
+
+  auto interval = base::TimeDelta::FromMilliseconds(16);
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto deadline = now + interval;
+  viz::BeginFrameArgs arg1 = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 1u /*source_id*/, 1u /*sequence_number*/, now,
+      deadline, interval, viz::BeginFrameArgs::NORMAL);
+  BeginMainFrameMetrics begin_frame_metrics;
+  begin_frame_metrics.should_measure_smoothness = true;
+  host_impl_->ReadyToCommit(arg1, &begin_frame_metrics);
+  EXPECT_EQ(total_frame_counter->total_frames(), 0u);
+  EXPECT_EQ(dropped_frame_counter->total_frames(), 0u);
+  total_frame_counter->set_total_frames_for_testing(1u);
+  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
+  dropped_frame_counter->AddGoodFrame();
+  EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
+
+  now = deadline;
+  deadline = now + interval;
+  viz::BeginFrameArgs arg2 = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 1u /*source_id*/, 2u /*sequence_number*/, now,
+      deadline, interval, viz::BeginFrameArgs::NORMAL);
+  // Consecutive BeginFrameMetrics with the same |should_measure_smoothness|
+  // flag should not reset the counter.
+  host_impl_->ReadyToCommit(arg2, &begin_frame_metrics);
+  EXPECT_EQ(total_frame_counter->total_frames(), 1u);
+  EXPECT_EQ(dropped_frame_counter->total_frames(), 1u);
+}
+
 // Tests that the scheduled autoscroll task aborts if a 2nd mousedown occurs in
 // the same frame.
 TEST_F(LayerTreeHostImplTest, AutoscrollTaskAbort) {

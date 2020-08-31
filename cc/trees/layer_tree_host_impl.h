@@ -378,7 +378,9 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
       CommitEarlyOutReason reason,
       std::vector<std::unique_ptr<SwapPromise>> swap_promises,
       const viz::BeginFrameArgs& args);
-  virtual void ReadyToCommit(const viz::BeginFrameArgs& commit_args);
+  virtual void ReadyToCommit(
+      const viz::BeginFrameArgs& commit_args,
+      const BeginMainFrameMetrics* begin_main_frame_metrics);
   virtual void BeginCommit();
   virtual void CommitComplete();
   virtual void UpdateAnimationState(bool start_ready_animations);
@@ -842,6 +844,13 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
 
   Viewport& viewport() const { return *viewport_.get(); }
 
+  TotalFrameCounter* total_frame_counter_for_testing() {
+    return &total_frame_counter_;
+  }
+  DroppedFrameCounter* dropped_frame_counter_for_testing() {
+    return &dropped_frame_counter_;
+  }
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -1205,6 +1214,10 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   bool has_observed_first_scroll_delay_ = false;
 
   bool enable_frame_rate_throttling_ = false;
+
+  // True if we are measuring smoothness in TotalFrameCounter and
+  // DroppedFrameCounter. Currently true when first contentful paint is done.
+  bool is_measuring_smoothness_ = false;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

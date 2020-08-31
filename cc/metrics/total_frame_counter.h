@@ -31,6 +31,10 @@ class CC_EXPORT TotalFrameCounter {
 
   size_t total_frames() const { return total_frames_; }
 
+  void set_total_frames_for_testing(size_t total_frames) {
+    total_frames_ = total_frames;
+  }
+
  private:
   void UpdateTotalFramesSinceLastVisible(base::TimeTicks until);
 

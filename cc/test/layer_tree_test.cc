@@ -216,8 +216,10 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     test_hooks_->BeginMainFrameAbortedOnThread(this, reason);
   }
 
-  void ReadyToCommit(const viz::BeginFrameArgs& commit_args) override {
-    LayerTreeHostImpl::ReadyToCommit(commit_args);
+  void ReadyToCommit(
+      const viz::BeginFrameArgs& commit_args,
+      const BeginMainFrameMetrics* begin_main_frame_metrics) override {
+    LayerTreeHostImpl::ReadyToCommit(commit_args, begin_main_frame_metrics);
     test_hooks_->ReadyToCommitOnThread(this);
   }
 

@@ -531,8 +531,16 @@ void LayerTreeHostImpl::BeginMainFrameAborted(
   }
 }
 
-void LayerTreeHostImpl::ReadyToCommit(const viz::BeginFrameArgs& commit_args) {
+void LayerTreeHostImpl::ReadyToCommit(
+    const viz::BeginFrameArgs& commit_args,
+    const BeginMainFrameMetrics* begin_main_frame_metrics) {
   frame_trackers_.NotifyMainFrameProcessed(commit_args);
+  if (!is_measuring_smoothness_ && begin_main_frame_metrics &&
+      begin_main_frame_metrics->should_measure_smoothness) {
+    is_measuring_smoothness_ = true;
+    total_frame_counter_.Reset();
+    dropped_frame_counter_.Reset();
+  }
 }
 
 void LayerTreeHostImpl::BeginCommit() {
@@ -4888,6 +4896,7 @@ void LayerTreeHostImpl::SetActiveURL(const GURL& url, ukm::SourceId source_id) {
   }
   total_frame_counter_.Reset();
   dropped_frame_counter_.Reset();
+  is_measuring_smoothness_ = false;
 }
 
 void LayerTreeHostImpl::AllocateLocalSurfaceId() {

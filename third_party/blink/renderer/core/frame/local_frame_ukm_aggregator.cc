@@ -203,6 +203,8 @@ LocalFrameUkmAggregator::GetBeginMainFrameMetrics() {
       main_frame_percentage_records_[static_cast<unsigned>(
                                          MetricId::kCompositingCommit)]
           .interval_duration;
+  metrics_data->should_measure_smoothness =
+      (fcp_state_ >= kThisFrameReachedFCP);
   return metrics_data;
 }
 

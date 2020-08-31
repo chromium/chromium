@@ -273,7 +273,8 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   // But, we can avoid a PostTask in here.
   scheduler_->NotifyBeginMainFrameStarted(main_thread_start_time);
 
-  host_impl_->ReadyToCommit(commit_args);
+  auto begin_main_frame_metrics = layer_tree_host->begin_main_frame_metrics();
+  host_impl_->ReadyToCommit(commit_args, begin_main_frame_metrics.get());
 
   commit_completion_event_ =
       std::make_unique<ScopedCompletionEvent>(completion);
@@ -288,7 +289,7 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
 
   // Extract metrics data from the layer tree host and send them to the
   // scheduler to pass them to the compositor_timing_history object.
-  scheduler_->NotifyReadyToCommit(layer_tree_host->begin_main_frame_metrics());
+  scheduler_->NotifyReadyToCommit(std::move(begin_main_frame_metrics));
 }
 
 void ProxyImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
