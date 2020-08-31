@@ -120,9 +120,10 @@ class PasswordCheckDelegate
   // Raw pointer to the underlying profile. Needs to outlive this instance.
   Profile* profile_ = nullptr;
 
-  // Handle to the password store, powering both |saved_passwords_presenter_|
+  // Handles to the password stores, powering both |saved_passwords_presenter_|
   // and |compromised_credentials_manager_|.
-  scoped_refptr<password_manager::PasswordStore> password_store_;
+  scoped_refptr<password_manager::PasswordStore> profile_password_store_;
+  scoped_refptr<password_manager::PasswordStore> account_password_store_;
 
   // Used by |compromised_credentials_manager_| to obtain the list of saved
   // passwords.

@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -230,12 +231,17 @@ std::vector<CompromisedCredentialAndType> OrderCompromisedCredentials(
 
 PasswordCheckDelegate::PasswordCheckDelegate(Profile* profile)
     : profile_(profile),
-      password_store_(PasswordStoreFactory::GetForProfile(
+      profile_password_store_(PasswordStoreFactory::GetForProfile(
           profile,
           ServiceAccessType::EXPLICIT_ACCESS)),
-      saved_passwords_presenter_(password_store_),
+      account_password_store_(AccountPasswordStoreFactory::GetForProfile(
+          profile,
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      saved_passwords_presenter_(profile_password_store_,
+                                 account_password_store_),
       compromised_credentials_manager_(&saved_passwords_presenter_,
-                                       password_store_),
+                                       profile_password_store_,
+                                       account_password_store_),
       bulk_leak_check_service_adapter_(
           &saved_passwords_presenter_,
           BulkLeakCheckServiceFactory::GetForProfile(profile_),
