@@ -853,7 +853,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   actual_size = allocator.root()->GetSize(ptr);
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_LT(requested_size, actual_size);
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
   for (size_t offset = 0; offset < requested_size; ++offset) {
     EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
               offset);
@@ -870,7 +870,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   actual_size = allocator.root()->GetSize(ptr);
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_EQ(requested_size, actual_size);
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
   for (size_t offset = 0; offset < requested_size; offset += 877) {
     EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
               offset);
@@ -891,7 +891,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   actual_size = allocator.root()->GetSize(ptr);
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_EQ(requested_size + kSystemPageSize, actual_size);
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
     EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
               offset);
@@ -939,7 +939,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   EXPECT_EQ(requested_size, predicted_size);
 }
 
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
 TEST_F(PartitionAllocTest, GetOffsetMultiplePages) {
   const size_t real_size = 80;
   const size_t requested_size = real_size - kExtraAllocSize;
@@ -966,7 +966,7 @@ TEST_F(PartitionAllocTest, GetOffsetMultiplePages) {
     allocator.root()->Free(ptr);
   }
 }
-#endif  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 // Test the realloc() contract.
 TEST_F(PartitionAllocTest, Realloc) {

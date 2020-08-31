@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -31,7 +32,7 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
   // It also cannot be enabled conditionally when PartitionAlloc is the default
   // allocator, as base::Feature allocates. However as this is the intended use
   // case, we enable it for all builds then.
-#if !(defined(ARCH_CPU_64_BITS) && !defined(OS_NACL))
+#if !defined(PA_HAS_64_BITS_POINTERS)
   return false;
 #else
 #if defined(OS_WIN)
@@ -48,7 +49,7 @@ ALWAYS_INLINE bool IsPartitionAllocGigaCageEnabled() {
 #else
   return FeatureList::IsEnabled(kPartitionAllocGigaCage);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#endif  // !(defined(ARCH_CPU_64_BITS) && !defined(OS_NACL))
+#endif  // !defined(PA_HAS_64_BITS_POINTERS)
 }
 
 }  // namespace base

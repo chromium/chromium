@@ -189,12 +189,12 @@ void DeferredUnmap::Unmap() {
   // changes, the if statement below has to be updated.
   PA_DCHECK(!IsManagedByPartitionAllocNormalBuckets(ptr));
   if (IsManagedByPartitionAllocDirectMap(ptr)) {
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
     internal::AddressPoolManager::GetInstance()->Free(
         internal::GetDirectMapPool(), ptr, size);
 #else
     NOTREACHED();
-#endif  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
   } else {
     FreePages(ptr, size);
   }

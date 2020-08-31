@@ -13,7 +13,7 @@
 namespace base {
 namespace internal {
 
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
 
 class AddressPoolManagerTest : public testing::Test {
  protected:
@@ -144,7 +144,7 @@ TEST_F(AddressPoolManagerTest, DecommittedDataIsErased) {
 
   EXPECT_EQ(0u, sum) << sum / 42 << " bytes were not zeroed";
 }
-#endif  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal
 }  // namespace base

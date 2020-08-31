@@ -20,13 +20,7 @@ namespace base {
 namespace internal {
 
 // The feature is not applicable to 32-bit address space.
-// ARCH_CPU_64_BITS implies 64-bit instruction set, but not necessarily 64-bit
-// address space. The only known case where address space is 32-bit is NaCl, so
-// eliminate it explicitly. static_assert below ensures that other won't slip
-// through.
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
-
-static_assert(sizeof(size_t) >= 8, "Nee more than 32-bit address space");
+#if defined(PA_HAS_64_BITS_POINTERS)
 
 // AddressPoolManager takes a reserved virtual address space and manages address
 // space allocation.
@@ -91,7 +85,7 @@ class BASE_EXPORT AddressPoolManager {
   DISALLOW_COPY_AND_ASSIGN(AddressPoolManager);
 };
 
-#endif  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal
 }  // namespace base

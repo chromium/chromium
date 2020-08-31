@@ -51,12 +51,12 @@ ALWAYS_INLINE PartitionPage<thread_safe>* PartitionDirectMap(
   // tags aren't allowed, as CheckedPtr assumes that everything inside GigaCage
   // uses tags (specifically, inside the GigaCage's normal bucket pool).
   if (root->allow_extras && IsPartitionAllocGigaCageEnabled()) {
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
     ptr = internal::AddressPoolManager::GetInstance()->Alloc(GetDirectMapPool(),
                                                              map_size);
 #else
     NOTREACHED();
-#endif  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
   } else {
     ptr = reinterpret_cast<char*>(AllocPages(nullptr, map_size, kSuperPageSize,
                                              PageReadWrite,
@@ -277,7 +277,7 @@ ALWAYS_INLINE void* PartitionBucket<thread_safe>::AllocNewSlotSpan(
   // tags aren't allowed, as CheckedPtr assumes that everything inside GigaCage
   // uses tags (specifically, inside the GigaCage's normal bucket pool).
   if (root->allow_extras && IsPartitionAllocGigaCageEnabled()) {
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
     super_page = AddressPoolManager::GetInstance()->Alloc(GetNormalBucketPool(),
                                                           kSuperPageSize);
 #else

@@ -21,7 +21,7 @@
 namespace base {
 namespace internal {
 
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
 
 namespace {
 
@@ -217,7 +217,7 @@ ALWAYS_INLINE AddressPoolManager::Pool* AddressPoolManager::GetPool(
   return &pools_[handle - 1];
 }
 
-#endif  // defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 }  // namespace internal
 }  // namespace base

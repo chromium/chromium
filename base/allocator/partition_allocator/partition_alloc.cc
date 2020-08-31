@@ -196,7 +196,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 }
 
 void PartitionAllocGlobalUninitForTesting() {
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
   if (IsPartitionAllocGigaCageEnabled())
     internal::PartitionAddressSpace::UninitForTesting();
 #endif
@@ -209,7 +209,7 @@ void PartitionRoot<thread_safe>::Init(bool enforce_alignment) {
   if (initialized)
     return;
 
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(PA_HAS_64_BITS_POINTERS)
   // Reserve address space for partition alloc.
   if (IsPartitionAllocGigaCageEnabled())
     internal::PartitionAddressSpace::Init();
