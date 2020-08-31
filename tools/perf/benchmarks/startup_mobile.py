@@ -307,3 +307,10 @@ class MobileStartupBenchmark(perf_benchmark.PerfBenchmark):
   @classmethod
   def Name(cls):
     return 'startup.mobile'
+
+  def SetExtraBrowserOptions(self, options):
+    super(MobileStartupBenchmark, self).SetExtraBrowserOptions(options)
+    # Force online state for the offline indicator so it doesn't show and affect
+    # the benchmarks on bots, which are offline by default.
+    options.AppendExtraBrowserArgs(
+        '--force-online-connection-state-for-indicator')
