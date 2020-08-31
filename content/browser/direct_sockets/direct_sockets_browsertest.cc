@@ -66,6 +66,17 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_NotAllowedError) {
             EvalJs(shell(), script));
 }
 
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  // HTTPS uses port 443.
+  const std::string script =
+      "openTcp({remoteAddress: '127.0.0.1', remotePort: 443})";
+
+  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+}
+
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_Success) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
@@ -86,6 +97,17 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_NotAllowedError) {
   // TODO(crbug.com/1119620): Use port from a listening net::UDPServerSocket.
   const std::string script = base::StringPrintf(
       "openUdp({remoteAddress: '127.0.0.1', remotePort: %d})", 0);
+
+  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_CannotEvadeCors) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  // QUIC uses port 443.
+  const std::string script =
+      "openUdp({remoteAddress: '127.0.0.1', remotePort: 443})";
 
   EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
             EvalJs(shell(), script));

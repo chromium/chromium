@@ -100,7 +100,11 @@ net::Error DirectSocketsServiceImpl::EnsurePermission(
   // TODO(crbug.com/1119659): Check permissions policy.
   // TODO(crbug.com/1119600): Check for transient activation.
   // TODO(crbug.com/1119600): Implement rate limiting.
-  // TODO(crbug.com/1119601): Check CORS iff requested port is HTTPS.
+
+  if (options.remote_port == 443) {
+    // TODO(crbug.com/1119601): Issue a CORS preflight request.
+    return net::ERR_UNSAFE_PORT;
+  }
 
   // EnsurePermission() will need to become asynchronous:
   // TODO(crbug.com/1119597): Show consent dialog
