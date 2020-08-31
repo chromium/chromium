@@ -189,14 +189,14 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     }
 
     private void configureSignOutSwitch() {
-        Preference signOutSwitch = findPreference(PREF_SIGN_OUT);
+        Preference signOutPreference = findPreference(PREF_SIGN_OUT);
         if (mProfile.isChild()) {
-            getPreferenceScreen().removePreference(signOutSwitch);
+            getPreferenceScreen().removePreference(signOutPreference);
             getPreferenceScreen().removePreference(findPreference(PREF_SIGN_OUT_DIVIDER));
         } else {
-            signOutSwitch.setTitle(R.string.sign_out_and_turn_off_sync);
-            signOutSwitch.setEnabled(getSignOutAllowedPreferenceValue());
-            signOutSwitch.setOnPreferenceClickListener(preference -> {
+            signOutPreference.setTitle(getSignOutPreferenceText());
+            signOutPreference.setEnabled(getSignOutAllowedPreferenceValue());
+            signOutPreference.setOnPreferenceClickListener(preference -> {
                 if (!isVisible() || !isResumed()) return false;
 
                 if (mSignedInAccountName != null && getSignOutAllowedPreferenceValue()) {
@@ -262,6 +262,18 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             prefScreen.removePreference(childContent);
             prefScreen.removePreference(findPreference(PREF_CHILD_CONTENT_DIVIDER));
         }
+    }
+
+    private int getSignOutPreferenceText() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
+            if (!IdentityServicesProvider.get()
+                            .getIdentityManager(Profile.getLastUsedRegularProfile())
+                            .hasPrimaryAccount()) {
+                // There is no syncing account.
+                return R.string.sign_out;
+            }
+        }
+        return R.string.sign_out_and_turn_off_sync;
     }
 
     private void updateAccountsList() {
