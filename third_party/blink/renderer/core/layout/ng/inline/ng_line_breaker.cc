@@ -146,13 +146,15 @@ void CreateHyphen(NGInlineNode node,
   item_result->hyphen_shape_result = shaper.Shape(&style.GetFont(), direction);
 }
 
-inline void ClearNeedsLayout(const NGInlineItem& item) {
+}  // namespace
+
+inline void NGLineBreaker::ClearNeedsLayout(const NGInlineItem& item) {
+  if (mode_ != NGLineBreakerMode::kContent)
+    return;
   LayoutObject* layout_object = item.GetLayoutObject();
   if (layout_object->NeedsLayout())
     layout_object->ClearNeedsLayout();
 }
-
-}  // namespace
 
 LayoutUnit NGLineBreaker::ComputeAvailableWidth() const {
   LayoutUnit available_width = line_opportunity_.AvailableInlineSize();

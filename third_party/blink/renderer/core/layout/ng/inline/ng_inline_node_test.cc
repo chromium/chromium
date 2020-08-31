@@ -517,6 +517,25 @@ TEST_F(NGInlineNodeTest, MinMaxSizesTabulationWithBreakWord) {
   EXPECT_EQ(170, sizes.max_size);
 }
 
+// For http://crbug.com/1116713
+TEST_F(NGInlineNodeTest, MinMaxSizesNeedsLayout) {
+  LoadAhem();
+  SetupHtml("t",
+            "<style>#t { width: 2ch; }</style>"
+            "<div id=t> a <b>b</b></div>");
+
+  auto& text = To<Text>(*GetElementById("t")->firstChild());
+  LayoutText& layout_text = *text.GetLayoutObject();
+  EXPECT_FALSE(layout_text.NeedsLayout());
+
+  text.replaceData(0, 1, u"X", ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(layout_text.NeedsLayout());
+
+  NGInlineNodeForTest node = CreateInlineNode();
+  ComputeMinMaxSizes(node);
+  EXPECT_TRUE(layout_text.NeedsLayout());
+}
+
 TEST_F(NGInlineNodeTest, AssociatedItemsWithControlItem) {
   SetBodyInnerHTML(
       "<pre id=t style='-webkit-rtl-ordering:visual'>ab\nde</pre>");

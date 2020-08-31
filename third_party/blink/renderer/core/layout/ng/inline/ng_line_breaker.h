@@ -212,6 +212,8 @@ class CORE_EXPORT NGLineBreaker {
   bool CanFitOnLine() const { return position_ <= AvailableWidthToFit(); }
   LayoutUnit ComputeAvailableWidth() const;
 
+  void ClearNeedsLayout(const NGInlineItem& item);
+
   // Represents the current offset of the input.
   LineBreakState state_;
   unsigned item_index_ = 0;
