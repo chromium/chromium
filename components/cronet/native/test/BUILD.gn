@@ -31,6 +31,7 @@ source_set("cronet_native_tests") {
   deps = [
     ":cronet_native_testutil",
     "//base",
+    "//base/allocator:buildflags",
     "//base/test:test_support",
     "//components/cronet/native:cronet_native_headers",
     "//components/cronet/test:test_support",

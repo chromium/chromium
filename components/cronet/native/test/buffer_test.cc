@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/allocator/buildflags.h"
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -74,10 +75,11 @@ TEST_F(BufferTest, TestInitWithAlloc) {
 }
 
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(THREAD_SANITIZER) || defined(OS_FUCHSIA)
+    defined(THREAD_SANITIZER) || defined(OS_FUCHSIA) ||        \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // ASAN and MSAN malloc by default triggers crash instead of returning null on
 // failure. Fuchsia malloc() also crashes on allocation failure in some kernel
-// builds.
+// builds. PartitionAlloc malloc also crashes on allocation failure by design.
 #define MAYBE_TestInitWithHugeAllocFails DISABLED_TestInitWithHugeAllocFails
 #else
 #define MAYBE_TestInitWithHugeAllocFails TestInitWithHugeAllocFails
