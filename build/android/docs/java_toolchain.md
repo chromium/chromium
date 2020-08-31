@@ -257,7 +257,7 @@ We use several tools for static analysis.
 ### [PRESUBMIT.py](/PRESUBMIT.py):
 * Checks for banned patterns via `_BANNED_JAVA_FUNCTIONS`.
   * (These should likely be moved to checkstyle).
-* Checks for a random set of things in `_AndroidSpecificOnUploadChecks()`.
+* Checks for a random set of things in `ChecksAndroidSpecificOnUpload()`.
   * Including running Checkstyle.
   * (Some of these other checks should likely also be moved to checkstyle).
 * Checks run only on changed lines.
