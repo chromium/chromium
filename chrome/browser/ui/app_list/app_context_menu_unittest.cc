@@ -177,6 +177,9 @@ class AppContextMenuTest : public AppListTestBase,
   }
 
   void TearDown() override {
+    // Let any in-flight tasks finish, otherwise the test might flake
+    // (crbug.com/1115763).
+    app_service_test().WaitForAppService();
     menu_delegate_.reset();
     controller_.reset();
     menu_manager_.reset();
