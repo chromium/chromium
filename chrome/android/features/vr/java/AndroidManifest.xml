@@ -23,4 +23,12 @@
 
     <application>
     </application>
+
+    {% if channel in ['default'] %}
+      <queries>
+        <!-- TODO(https://crbug.com/1122210): This is needed for Android 11 to
+             allow checking if GVR is installed when using ToT builds. -->
+        <package android:name="com.google.vr.vrcore" />
+      </queries>
+    {% endif %}
 </manifest>

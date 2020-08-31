@@ -124,6 +124,27 @@ by a child template that "extends" this file.
     {% block extra_keyset_definitions %}
     {% endblock %}
 
+    {% if channel in ['default'] %}
+      <!--
+        Android 11 (R) restricts querying for installed packages. WebXR uses
+        ARCore and/or GVR, and needs to be able to check their installation
+        status so that it can show install/update infobars if necessary.
+        Official builds (stable, beta, dev, canary) handle this differently,
+        this setting is for locally deployed ToT builds only.
+
+        TODO(https://crbug.com/1122210): remove if this is replaced by an
+        alternate mechanism.
+      -->
+      <queries>
+        {% if include_arcore_manifest_flag == 'true' %}
+          <package android:name="com.google.ar.core" />
+        {% endif %}
+        {% if enable_vr == "true" %}
+          <package android:name="com.google.vr.vrcore" />
+        {% endif %}
+      </queries>
+    {% endif %}
+
     <!-- Set android:largeHeap to "true" to allow more than the default
          Java heap limit (32Mb on Nexus S, 48Mb on Xoom). -->
     <application android:name="{% block application_name %}org.chromium.chrome.browser.ChromeApplication{% endblock %}"
