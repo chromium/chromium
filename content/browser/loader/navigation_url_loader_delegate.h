@@ -12,6 +12,7 @@
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_params.h"
+#include "content/public/common/navigation_policy.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 

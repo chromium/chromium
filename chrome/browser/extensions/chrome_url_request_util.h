@@ -19,6 +19,10 @@ namespace base {
 class FilePath;
 }
 
+namespace network {
+struct ResourceRequest;
+}
+
 namespace extensions {
 class Extension;
 class ExtensionSet;

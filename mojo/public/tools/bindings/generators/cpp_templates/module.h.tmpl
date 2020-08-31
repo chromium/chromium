@@ -62,19 +62,8 @@ namespace {{variant}} {
 #include "{{module.path}}-shared.h"
 #include "{{variant_path}}-forward.h"
 
-{#- Imported struct and union types must be fully defined if used in this
-    mojom. #}
-{%- set import_definition_header = namespace(need=false) %}
-{%- for struct in structs %}
-{%-   for field in struct.fields %}
-{%-     if field.kind|is_object_kind or field.kind|is_union_kind %}
-{%-       set import_definition_header.need = true %}
-{%-     endif %}
-{%-   endfor %}
-{%- endfor %}
-
 {%- for import in imports %}
-{%-   if import_definition_header.need %}
+{%-   if import|is_full_header_required_for_import %}
 {%-     if variant %}
 #include "{{"%s-%s.h"|format(import.path, variant)}}"
 {%-     else %}

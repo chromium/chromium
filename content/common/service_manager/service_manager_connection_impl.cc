@@ -25,6 +25,7 @@
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
+#include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"

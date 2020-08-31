@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_TEST_FAKE_TEST_CERT_VERIFIER_PARAMS_FACTORY_H_
 
 #include "net/cert/cert_verifier.h"
-#include "services/network/public/mojom/cert_verifier_service.mojom-forward.h"
+#include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace network {

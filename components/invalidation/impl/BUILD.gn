@@ -57,6 +57,7 @@ static_library("impl") {
   public_deps = [
     ":feature_list",
     "//components/invalidation/public",
+    "//services/data_decoder/public/cpp",
   ]
   deps = [
     "//base",
@@ -74,7 +75,6 @@ static_library("impl") {
     "//components/sync/base",
     "//google_apis",
     "//net:net",
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]

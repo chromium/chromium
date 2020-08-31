@@ -9,6 +9,7 @@
 
 #include "base/test/task_environment.h"
 #include "fuchsia/engine/common/cors_exempt_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 

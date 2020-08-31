@@ -9,6 +9,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "fuchsia/engine/common/cors_exempt_headers.h"
+#include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
 
 namespace {

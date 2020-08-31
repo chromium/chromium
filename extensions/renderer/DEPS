@@ -4,6 +4,7 @@ include_rules = [
 
   "+gin",
   "+net/base/backoff_entry.h",
+  "+net/base/net_errors.h",
 
   "+third_party/skia/include/core",
   "+third_party/cld_3",

@@ -5,6 +5,7 @@
 #include "components/variations/net/omnibox_url_loader_throttle.h"
 
 #include "components/variations/net/omnibox_http_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace variations {
