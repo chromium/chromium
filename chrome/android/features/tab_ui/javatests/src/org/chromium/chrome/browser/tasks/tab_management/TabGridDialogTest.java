@@ -317,10 +317,7 @@ public class TabGridDialogTest {
         float expectedHeight = sourceRect.height() - 2 * tabGridCardPadding;
 
         // Setup the callback to verify the animation source Rect.
-        StartSurfaceLayout layout = (StartSurfaceLayout) cta.getLayoutManager().getOverviewLayout();
-        TabSwitcher.TabDialogDelegation delegation =
-                layout.getStartSurfaceForTesting().getTabDialogDelegate();
-        delegation.setSourceRectCallbackForTesting((result -> {
+        TabGridDialogView.setSourceRectCallbackForTesting((result -> {
             mHasReceivedSourceRect = true;
             assertEquals(expectedTop, result.top, 0.0);
             assertEquals(expectedHeight, result.height(), 0.0);
@@ -330,75 +327,6 @@ public class TabGridDialogTest {
         TabUiTestHelper.clickFirstCardFromTabSwitcher(cta);
         CriteriaHelper.pollUiThread(() -> mHasReceivedSourceRect);
         CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));
-    }
-
-    @Test
-    @MediumTest
-    public void testUndoClosureInDialog_GTS() throws ExecutionException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Open dialog and verify dialog is showing correct content.
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-
-        // Click close button to close the first tab in group.
-        closeFirstTabInDialog();
-        verifyShowingDialog(cta, 1, null);
-
-        // Exit dialog, wait for the undo bar showing and undo the closure.
-        clickScrimToExitDialog(cta);
-        waitForDialogHidingAnimationInTabSwitcher(cta);
-        onViewWaiting(
-                allOf(withId(R.id.snackbar_button), isDescendantOfA(withId(R.id.bottom_container)),
-                        isCompletelyDisplayed()))
-                .perform(click());
-
-        // Verify the undo has happened.
-        verifyFirstCardTitle("2 tabs");
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-    }
-
-    @Test
-    @MediumTest
-    public void testUndoClosureInDialog_TabStrip() throws ExecutionException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Enter first tab page.
-        assertTrue(cta.getLayoutManager().overviewVisible());
-        clickFirstCardFromTabSwitcher(cta);
-        clickFirstTabInDialog(cta);
-
-        // Open dialog from tab strip and verify dialog is showing correct content.
-        openDialogFromStripAndVerify(cta, 2, null);
-
-        // Click close button to close the first tab in group.
-        closeFirstTabInDialog();
-        verifyShowingDialog(cta, 1, null);
-
-        // Exit dialog, wait for the undo bar showing and undo the closure.
-        clickScrimToExitDialog(cta);
-        waitForDialogHidingAnimation(cta);
-        onViewWaiting(
-                allOf(withId(R.id.snackbar_button), isDescendantOfA(withId(R.id.bottom_container)),
-                        isCompletelyDisplayed()))
-                .perform(click());
-
-        // Verify the undo has happened.
-        verifyTabStripFaviconCount(cta, 2);
-        openDialogFromStripAndVerify(cta, 2, null);
     }
 
     @Test
@@ -416,10 +344,7 @@ public class TabGridDialogTest {
         // Verify close and undo in dialog from tab switcher.
         closeFirstTabInDialog();
         verifyShowingDialog(cta, 1, null);
-        onViewWaiting(allOf(withId(R.id.snackbar_button),
-                              isDescendantOfA(withId(R.id.dialog_snack_bar_container_view)),
-                              isCompletelyDisplayed()))
-                .perform(click());
+        verifyDialogUndoBarAndClick();
         verifyShowingDialog(cta, 2, null);
 
         // Verify close and undo in dialog from tab strip.
@@ -427,10 +352,7 @@ public class TabGridDialogTest {
         openDialogFromStripAndVerify(cta, 2, null);
         closeFirstTabInDialog();
         verifyShowingDialog(cta, 1, null);
-        onViewWaiting(allOf(withId(R.id.snackbar_button),
-                              isDescendantOfA(withId(R.id.dialog_snack_bar_container_view)),
-                              isCompletelyDisplayed()))
-                .perform(click());
+        verifyDialogUndoBarAndClick();
         verifyShowingDialog(cta, 2, null);
         clickScrimToExitDialog(cta);
         verifyTabStripFaviconCount(cta, 2);
@@ -909,6 +831,61 @@ public class TabGridDialogTest {
         verifyShowingDialog(cta, 2, null);
     }
 
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group", START_SURFACE_BASE_PARAMS + "/single"})
+    public void testUndoClosureInDialog_WithStartSurface() throws Exception {
+        // Create a tab group with 2 tabs.
+        finishActivity(mActivityTestRule.getActivity());
+        createThumbnailBitmapAndWriteToFile(0);
+        createThumbnailBitmapAndWriteToFile(1);
+        TabAttributeCache.setRootIdForTesting(0, 0);
+        TabAttributeCache.setRootIdForTesting(1, 0);
+        createTabStateFile(new int[] {0, 1});
+
+        // Restart Chrome and make sure tab strip is showing.
+        mActivityTestRule.startMainActivityFromLauncher();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
+        CriteriaHelper.pollUiThread(
+                () -> cta.getBrowserControlsManager().getBottomControlOffset() == 0);
+        waitForView(allOf(withId(R.id.toolbar_left_button), isCompletelyDisplayed()));
+
+        // Test undo closure in dialog from tab strip.
+        openDialogFromStripAndVerify(cta, 2, null);
+        closeFirstTabInDialog();
+        verifyShowingDialog(cta, 1, null);
+        verifyDialogUndoBarAndClick();
+        verifyShowingDialog(cta, 2, null);
+        clickScrimToExitDialog(cta);
+        verifyTabStripFaviconCount(cta, 2);
+
+        // Test undo closure in dialog from StartSurface tab switcher.
+        enterTabSwitcher(cta);
+        onView(allOf(withParent(withId(R.id.tasks_surface_body)), withId(R.id.tab_list_view)))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));
+        verifyShowingDialog(cta, 2, null);
+        closeFirstTabInDialog();
+        verifyShowingDialog(cta, 1, null);
+        verifyDialogUndoBarAndClick();
+        verifyShowingDialog(cta, 2, null);
+
+        // Test undo closure in dialog from StartSurface home page.
+        clickScrimToExitDialog(cta);
+        onView(withId(org.chromium.chrome.start_surface.R.id.new_tab_button)).perform(click());
+        onView(allOf(withParent(withId(R.id.carousel_tab_switcher_container)),
+                       withId(R.id.tab_list_view)))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        CriteriaHelper.pollUiThread(() -> isDialogShowing(cta));
+        verifyShowingDialog(cta, 2, null);
+        closeFirstTabInDialog();
+        verifyShowingDialog(cta, 1, null);
+        verifyDialogUndoBarAndClick();
+        verifyShowingDialog(cta, 2, null);
+    }
+
     private void openDialogFromTabSwitcherAndVerify(
             ChromeTabbedActivity cta, int tabCount, String customizedTitle) {
         clickFirstCardFromTabSwitcher(cta);
@@ -1137,5 +1114,17 @@ public class TabGridDialogTest {
         assertEquals(isDialogShowing ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                                      : IMPORTANT_FOR_ACCESSIBILITY_AUTO,
                 bottomContainer.getImportantForAccessibility());
+    }
+
+    private void verifyDialogUndoBarAndClick() {
+        // Verify that the dialog undo bar is showing and the default undo bar is hidden.
+        onViewWaiting(allOf(withId(R.id.snackbar_button),
+                isDescendantOfA(withId(R.id.dialog_snack_bar_container_view)), isDisplayed()));
+        onView(allOf(withId(R.id.snackbar), isDescendantOfA(withId(R.id.bottom_container))))
+                .check(doesNotExist());
+        onView(allOf(withId(R.id.snackbar_button),
+                       isDescendantOfA(withId(R.id.dialog_snack_bar_container_view)),
+                       isDisplayed()))
+                .perform(click());
     }
 }

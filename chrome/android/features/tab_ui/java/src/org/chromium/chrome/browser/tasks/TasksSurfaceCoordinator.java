@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
@@ -39,6 +40,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private TrendyTermsCoordinator mTrendyTermsCoordinator;
     private final PropertyModel mPropertyModel;
     private final boolean mHasTrendyTerm;
+    private final @TabSwitcherType int mTabSwitcherType;
 
     public TasksSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType, boolean hasMVTiles,
@@ -49,6 +51,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                 PropertyModelChangeProcessor.create(propertyModel, mView, TasksViewBinder::bind);
         mPropertyModel = propertyModel;
         mHasTrendyTerm = hasTrendyTerms;
+        mTabSwitcherType = tabSwitcherType;
         if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createCarouselTabSwitcher(
                     activity, mView.getCarouselTabSwitcherContainer(), scrimCoordinator);
@@ -117,6 +120,16 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     @Override
     public @Nullable TabSwitcher.TabListDelegate getTabListDelegate() {
         return mTabSwitcher != null ? mTabSwitcher.getTabListDelegate() : null;
+    }
+
+    @Override
+    public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
+        if (mTabSwitcherType != TabSwitcherType.CAROUSEL
+                && mTabSwitcherType != TabSwitcherType.GRID) {
+            return null;
+        }
+        assert mTabSwitcher != null;
+        return mTabSwitcher.getTabGridDialogVisibilitySupplier();
     }
 
     @Override
