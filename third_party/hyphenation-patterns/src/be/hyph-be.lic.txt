@@ -1,0 +1,65 @@
+% title: Hyphenation patterns for Belarusian
+% copyright: Copyright (c) 2016 Maksim Salau <maksim.salau at gmail.com>
+% notice: >
+%     This file is part of hyph-utf8 package.
+%     See http://www.hyphenation.org for more information
+%     Original source: https://github.com/hyphenation/hyph-be
+% language:
+%     name: Belarusian
+%     tag: be
+% version: 1.01 (October 2016)
+% authors:
+%   -
+%     name: Maksim Salau
+%     contact: maksim.salau at gmail.com
+% hyphenmins:
+%     typesetting:
+%         left: 2
+%         right: 2
+% license:
+%     name: MIT
+%     url: https://opensource.org/licenses/MIT
+%     text: >
+%             Permission is hereby granted, free of charge, to any person
+%             obtaining a copy of this software and associated documentation
+%             files (the "Software"), to deal in the Software without
+%             restriction, including without limitation the rights to use,
+%             copy, modify, merge, publish, distribute, sublicense, and/or sell
+%             copies of the Software, and to permit persons to whom the
+%             Software is furnished to do so, subject to the following
+%             conditions:
+%
+%             The above copyright notice and this permission notice shall be
+%             included in all copies or substantial portions of the Software.
+%
+%             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+%             EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+%             OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+%             NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+%             HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+%             WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+%             FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+%             OTHER DEALINGS IN THE SOFTWARE.
+% changes:
+%     - Version 1.01 <2016/10/03> Added YAML header
+%     - Version 1.00 <2016/09/29> Initial version
+% ==========================================
+%
+% Many thanks to Aleś Bułojčyk <alex73mail@gmail.com> and
+% Sviatlana Liasovich <xelj.gjkz@bk.ru> for their work on
+% Belarusian hyphenation dictionary for OpenOffice.
+% http://extensions.services.openoffice.org/en/project/dict-be-official
+%
+% Створана адпаведна правілаў, зацверджаных законам
+% ад 23 лiпеня 2008 г. No 420-З
+% Аб Правiлах беларускай арфаграфii i пунктуацыi
+% http://academy.edu.by/files/zak_420-3.pdf
+%
+% РАЗДЗЕЛ I. АРФАГРАФIЯ
+% ГЛАВА 8 ПРАВIЛЫ ПЕРАНОСУ
+% § 41. Правiлы пераносу простых, складаных, складанаскарочаных слоў,
+%       умоўных графiчных скарачэнняў i iншых знакаў
+%
+% Based on rules approved by the law No 420-3 dated 23 July 2008
+% About Belarusian orthography and punctuation
+%

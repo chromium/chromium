@@ -1,0 +1,104 @@
+% This file is part of hyph-utf8 package and resulted from
+% semi-manual conversions of hyphenation patterns into UTF-8 in June 2008.
+%
+% Source: pthyph.tex (Version 1.2, 1996-07-21 - date in file)
+% Author: Pedro J. de Rezende <rezende at dcc.unicamp.br>, J.Joao Dias Almeida <jj at di.uminho.pt>
+%
+% The above mentioned file should become obsolete,
+% and the author of the original file should preferably modify this file instead.
+%
+% Modifications were needed in order to support native UTF-8 engines,
+% but functionality (hopefully) didn't change in any way, at least not intentionally.
+% This file is no longer stand-alone; at least for 8-bit engines
+% you probably want to use loadhyph-foo.tex (which will load this file) instead.
+%
+% Modifications were done by Jonathan Kew, Mojca Miklavec & Arthur Reutenauer
+% with help & support from:
+% - Karl Berry, who gave us free hands and all resources
+% - Taco Hoekwater, with useful macros
+% - Hans Hagen, who did the unicodification of patterns already long before
+%               and helped with testing, suggestions and bug reports
+% - Norbert Preining, who tested & integrated patterns into TeX Live
+%
+% However, the "copyright/copyleft" owner of patterns remains the original author.
+%
+% The copyright statement of this file is thus:
+%
+% BSD 3-Clause License (https://opensource.org/licenses/BSD-3-Clause):
+% 
+% Copyright (c) 1987, Pedro J. de Rezende (rezende@ic.unicamp.br) and J.Joao Dias Almeida (jj@di.uminho.pt)
+% 
+% All rights reserved.
+% 
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions are met:
+%     * Redistributions of source code must retain the above copyright
+%       notice, this list of conditions and the following disclaimer.
+%     * Redistributions in binary form must reproduce the above copyright
+%       notice, this list of conditions and the following disclaimer in the
+%       documentation and/or other materials provided with the distribution.
+%     * Neither the name of the University of Campinas, of the University of
+%       Minho nor the names of its contributors may be used to endorse or
+%       promote products derived from this software without specific prior
+%       written permission.
+% 
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+% ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+% WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+% DISCLAIMED. IN NO EVENT SHALL PEDRO J. DE REZENDE OR J.JOAO DIAS ALMEIDA BE
+% LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+% CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+% GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+% HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+% LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+% OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+%
+% If you want to change this file, rather than uploading directly to CTAN,
+% we would be grateful if you could send it to us (http://tug.org/tex-hyphen)
+% or ask for credentials for SVN repository and commit it yourself;
+% we will then upload the whole "package" to CTAN.
+%
+% Before a new "pattern-revolution" starts,
+% please try to follow some guidelines if possible:
+%
+% - \lccode is *forbidden*, and I really mean it
+% - all the patterns should be in UTF-8
+% - the only "allowed" TeX commands in this file are: \patterns, \hyphenation,
+%   and if you really cannot do without, also \input and \message
+% - in particular, please no \catcode or \lccode changes,
+%   they belong to loadhyph-foo.tex,
+%   and no \lefthyphenmin and \righthyphenmin,
+%   they have no influence here and belong elsewhere
+% - \begingroup and/or \endinput is not needed
+% - feel free to do whatever you want inside comments
+%
+% We know that TeX is extremely powerful, but give a stupid parser
+% at least a chance to read your patterns.
+%
+% For more information see
+%
+%    http://tug.org/tex-hyphen
+%
+%------------------------------------------------------------------
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Portuguese TeX hyphenation table.
+% (C) 2015 by  Pedro J. de Rezende (rezende@ic.unicamp.br)
+%          and J.Joao Dias Almeida (jj@di.uminho.pt)
+% Version: 1.3 Release date: 12/08/2015
+%
+% (C) 1996 by  Pedro J. de Rezende (rezende@ic.unicamp.br)
+%          and J.Joao Dias Almeida (jj@di.uminho.pt)
+% Version: 1.2 Release date: 07/21/1996
+%
+% (C) 1994 by Pedro J. de Rezende (rezende@ic.unicamp.br)
+% Version: 1.1 Release date: 04/12/1994
+%
+% (C) 1987 by Pedro J. de Rezende
+% Version: 1.0 Release date: 02/13/1987
+%
+% -----------------------------------------------------------------
+% Remember! If you *must* change it, then call the resulting file
+% something  else and attach your name to your *documented* changes.
+% =================================================================
+%
