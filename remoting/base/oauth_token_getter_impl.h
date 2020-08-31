@@ -67,18 +67,23 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
   void GetOauthTokensFromAuthCode();
   void RefreshAccessToken();
 
+  bool IsResponsePending() const;
+  void SetResponsePending(bool is_pending);
+  void OnResponseTimeout();
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<OAuthIntermediateCredentials> intermediate_credentials_;
   std::unique_ptr<OAuthAuthorizationCredentials> authorization_credentials_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
   OAuthTokenGetter::CredentialsUpdatedCallback credentials_updated_callback_;
 
-  bool response_pending_ = false;
   bool email_verified_ = false;
   bool email_discovery_ = false;
   std::string oauth_access_token_;
   base::Time access_token_expiry_time_;
   base::queue<OAuthTokenGetter::TokenCallback> pending_callbacks_;
   std::unique_ptr<base::OneShotTimer> refresh_timer_;
+  base::OneShotTimer response_timeout_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
