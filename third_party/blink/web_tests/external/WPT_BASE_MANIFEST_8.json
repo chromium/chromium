@@ -594,6 +594,13 @@
          {}
         ]
        ],
+       "multicol-legend-becomes-floated-crash.html": [
+        "0e7f87232abb99000e7bc351dd73aee207c3b13a",
+        [
+         null,
+         {}
+        ]
+       ],
        "second-legend-becomes-rendered-legend-crash.html": [
         "6e36b3bb5aed7550b12bcbdf7a94d9f8fd372687",
         [
@@ -158121,11 +158128,11 @@
      ],
      "es-exceptions": {
       "DOMException-custom-bindings.any-expected.txt": [
-       "bf77d035dfcc90d2269627af3708a06d598dfde1",
+       "4ac464735cf8dfd78f11e9bbf16ec0d882b8d97c",
        []
       ],
       "DOMException-custom-bindings.any.worker-expected.txt": [
-       "bf77d035dfcc90d2269627af3708a06d598dfde1",
+       "4ac464735cf8dfd78f11e9bbf16ec0d882b8d97c",
        []
       ]
      },
@@ -205930,7 +205937,7 @@
      "origin": {
       "cross-origin-objects": {
        "cross-origin-objects-expected.txt": [
-        "ef5b5459dc44b35a44939f82d32fbe3cfdb4aaf0",
+        "4081eb14964a30cd765fa92e906f28fde7ecdf08",
         []
        ],
        "frame-with-then.html": [
@@ -208492,6 +208499,14 @@
       ],
       "postback.html.headers": [
        "4e798cd9f5d3f756df077a43ce9a1a6f9b41fd28",
+       []
+      ],
+      "resource-cleanup.html": [
+       "3ae5587c7d0c7740f7ff5e70059d61035aa6c592",
+       []
+      ],
+      "resource-popup.html": [
+       "f6b811407f1b0a728ff56252255916e61b0ad883",
        []
       ],
       "universal-worker.js": [
@@ -229874,6 +229889,18 @@
       []
      ]
     },
+    "transferable": {
+     "resources": {
+      "create-wasm-module.js": [
+       "37064af95c55c00e27d5f73b8fc3b0603ac63077",
+       []
+      ],
+      "deserialize-error-frame.html": [
+       "5ec2fcda2cdd8dba66ed97240cb836d45596c905",
+       []
+      ]
+     }
+    },
     "transform-streams": {
      "patched-global.any-expected.txt": [
       "104cda5742fbac4459c2ccd8ccd23004a3d4bf62",
@@ -240530,14 +240557,6 @@
     ],
     "RTCPeerConnection-mandatory-getStats.https-expected.txt": [
      "41724bf47fe24c5c947428a74b21711c56e45e67",
-     []
-    ],
-    "RTCPeerConnection-onnegotiationneeded-expected.txt": [
-     "b36abef413d9cc798d2e75c6e09881d45e3666a6",
-     []
-    ],
-    "RTCPeerConnection-perfect-negotiation.https-expected.txt": [
-     "a4eb397e2077c1d8371cee0ef1a244fd24cb6ca4",
      []
     ],
     "RTCPeerConnection-restartIce.https-expected.txt": [
@@ -256692,7 +256711,7 @@
        ]
       ],
       "DOMException-custom-bindings.any.js": [
-       "ed05d27646f606f379fa821bd9358d1be3455f65",
+       "cd4e5b6341948cb8fad29cc29483dcf6b8444bcd",
        [
         "WebIDL/ecmascript-binding/es-exceptions/DOMException-custom-bindings.any.html",
         {}
@@ -319646,7 +319665,7 @@
         ]
        ],
        "cross-origin-objects.html": [
-        "1d4560601b79cb14eba85862e898ec3eab5bc160",
+        "3b7c7832d7e7f215ccc810ae583f8cfdf925d497",
         [
          null,
          {
@@ -338633,7 +338652,14 @@
         ]
        ]
       }
-     }
+     },
+     "resource-popup.https.html": [
+      "481cceb72f0d0ab47f79dc0cdf84ad442a420509",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "dom": {
      "documents": {
@@ -369897,6 +369923,15 @@
     }
    },
    "raw-sockets": {
+    "open-consume-activation.https.html": [
+     "f6dda4488bafef83fddb4af0e9958ae8a5892153",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "open-securecontext.http.html": [
      "371f13781a4e2bdea9d9fa2545a13b8e4add9ba8",
      [
@@ -369904,11 +369939,20 @@
       {}
      ]
     ],
-    "remotePort-required.html": [
-     "22bba2c1bd37fa3d79cd3da3f3d363dfe284e7ac",
+    "open-without-user-gesture.https.html": [
+     "ed9a9e0d2c63428d39d7c2ebbde8fd1d58d9b02b",
      [
       null,
       {}
+     ]
+    ],
+    "remotePort-required.https.html": [
+     "6d738da845ae09b265d1ce4ad93d3ec6528b46b3",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ]
    },
@@ -389303,6 +389347,31 @@
       ]
      ]
     },
+    "transferable": {
+     "deserialize-error.window.js": [
+      "64cf2bbfb1293e90a67df02cebddeee51ae0ef78",
+      [
+       "streams/transferable/deserialize-error.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "resources/create-wasm-module.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ]
+    },
     "transform-streams": {
      "backpressure.any.js": [
       "64c9d0930ed2f26af775fa0cb4bc58edac7fface",
@@ -402596,7 +402665,7 @@
      ]
     ],
     "disabled-by-feature-policy.https.sub.html": [
-     "9c1893232997ac27d493d54c74d0bfd0b8b8888b",
+     "6fc49fa4d97a5fe27173fc89d20e0fc32b18d78d",
      [
       null,
       {
@@ -402605,7 +402674,7 @@
      ]
     ],
     "feature-policy-listed.html": [
-     "6892c56be4fcc0d1128e20c89764503a35800cc6",
+     "127498dde121648453050bd8f5562fddda4cf831",
      [
       null,
       {}
@@ -402635,7 +402704,7 @@
      ]
     ],
     "share-consume-activation.https.html": [
-     "4b4ecd560c6746dd4d1902ffa36388fbf92a9796",
+     "301469f83d8a6f27aa2ef0b87eb0e6fa583ecf2a",
      [
       null,
       {
@@ -402644,7 +402713,7 @@
      ]
     ],
     "share-empty.https.html": [
-     "c8fbb8ad451fdc6eb8779a2788ca1d41ed61aaab",
+     "23c2ddbf7782f6d87935ae15db87a50a14043d05",
      [
       null,
       {
@@ -402653,7 +402722,7 @@
      ]
     ],
     "share-securecontext.http.html": [
-     "8139c411e128f6fc556e6f1d63682e066cb39992",
+     "6344330c6b47b32e3872f3168c0edb604aef5499",
      [
       null,
       {}
@@ -405889,7 +405958,7 @@
      ]
     ],
     "RTCPeerConnection-onsignalingstatechanged.https.html": [
-     "0c8405770b616d1d0f3be226a815780cc1ad0413",
+     "fa096c1fb60d9f257f0505826c28e9cecd5c93c6",
      [
       null,
       {}
@@ -405910,7 +405979,7 @@
      ]
     ],
     "RTCPeerConnection-perfect-negotiation.https.html": [
-     "ad2725c33ca66b303959f32d107ae516bade4a61",
+     "bd1a7c1bcb9a1e1a26a599ad611c308bf096df9b",
      [
       null,
       {
