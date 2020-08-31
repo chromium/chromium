@@ -37,6 +37,12 @@ chrome.fileManagerPrivate = {
     NO_NETWORK: 'NO_NETWORK',
     NO_SERVICE: 'NO_SERVICE',
   },
+  InspectionType: {
+    NORMAL: 'normal',
+    CONSOLE: 'console',
+    ELEMENT: 'element',
+    BACKGROUND: 'background',
+  },
   SearchType: {
     ALL: 'ALL',
     SHARED_WITH_ME: 'SHARED_WITH_ME',
@@ -84,6 +90,9 @@ chrome.fileManagerPrivate = {
   executeTask: (taskId, entries, callback) => {
     // Returns opened|message_sent|failed|empty.
     setTimeout(callback, 0, 'failed');
+  },
+  getContentMimeType: (entry, callback) => {
+    setTimeout(callback, 0, '');
   },
   getDriveConnectionState: (callback) => {
     setTimeout(callback, 0, mockVolumeManager.getDriveConnectionState());
