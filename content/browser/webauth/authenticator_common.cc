@@ -1064,7 +1064,7 @@ void AuthenticatorCommon::GetAssertion(
       NOTREACHED();
 
       InvokeCallbackAndCleanup(
-          std::move(callback),
+          std::move(get_assertion_response_callback_),
           blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR);
       return;
     }
