@@ -1077,8 +1077,8 @@ TEST_P(RemoteTest, SharedRemoteSyncCallsFromBoundNonConstructionSequence) {
   int32_t value = 0;
   base::RunLoop loop;
   base::OnceClosure quit = loop.QuitClosure();
-  SharedRemote<mojom::SharedRemoteSyncTest> remote(
-      std::move(pending_remote), std::move(background_task_runner));
+  SharedRemote<mojom::SharedRemoteSyncTest> remote(std::move(pending_remote),
+                                                   background_task_runner);
   background_task_runner->PostTask(
       FROM_HERE, base::BindLambdaForTesting([remote, &value, &quit] {
         EXPECT_TRUE(remote->Fetch(&value));
