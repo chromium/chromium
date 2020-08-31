@@ -113,8 +113,8 @@ BluetoothClassicMedium::ListenForService(const std::string& service_name,
 
 BluetoothDevice* BluetoothClassicMedium::FindRemoteDevice(
     const std::string& mac_address) {
-  // TODO(hansberry): Implement.
-  return nullptr;
+  auto it = discovered_bluetooth_devices_map_.find(mac_address);
+  return it == discovered_bluetooth_devices_map_.end() ? nullptr : &it->second;
 }
 
 void BluetoothClassicMedium::PresentChanged(bool present) {

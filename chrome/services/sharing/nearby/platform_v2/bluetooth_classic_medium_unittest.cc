@@ -159,11 +159,21 @@ TEST_F(BluetoothClassicMediumTest,
        TestDiscovery_DeviceDiscovered_BluetoothClassicDevice) {
   StartDiscovery();
 
+  ASSERT_FALSE(bluetooth_classic_medium_->FindRemoteDevice(kDeviceAddress1));
+  ASSERT_FALSE(bluetooth_classic_medium_->FindRemoteDevice(kDeviceAddress2));
+
   NotifyDeviceAdded(kDeviceAddress1, kDeviceName1);
+  EXPECT_TRUE(bluetooth_classic_medium_->FindRemoteDevice(kDeviceAddress1));
+  EXPECT_EQ(last_device_discovered_,
+            bluetooth_classic_medium_->FindRemoteDevice(kDeviceAddress1));
   EXPECT_EQ(kDeviceName1, last_device_discovered_->GetName());
+
   auto* first_device_discovered = last_device_discovered_;
 
   NotifyDeviceAdded(kDeviceAddress2, kDeviceName2);
+  EXPECT_TRUE(bluetooth_classic_medium_->FindRemoteDevice(kDeviceAddress2));
+  EXPECT_EQ(last_device_discovered_,
+            bluetooth_classic_medium_->FindRemoteDevice(kDeviceAddress2));
   EXPECT_EQ(kDeviceName2, last_device_discovered_->GetName());
 
   EXPECT_NE(first_device_discovered, last_device_discovered_);
