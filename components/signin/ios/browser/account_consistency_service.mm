@@ -178,7 +178,8 @@ AccountConsistencyService::AccountConsistencyService(
       prefs_(prefs),
       account_reconcilor_(account_reconcilor),
       cookie_settings_(cookie_settings),
-      identity_manager_(identity_manager) {
+      identity_manager_(identity_manager),
+      active_cookie_manager_requests_for_testing_(0) {
   identity_manager_->AddObserver(this);
   LoadFromPrefs();
   if (identity_manager_->HasPrimaryAccount()) {
