@@ -176,6 +176,27 @@ public class NavigationHandlerTest {
 
     @Test
     @SmallTest
+    public void testReleaseGlowWithoutPrecedingPullIgnored() {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        mActivityTestRule.loadUrl(mTestServer.getURL(RENDERED_PAGE));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Right swipe on a rendered page to initiate overscroll glow.
+            mNavigationHandler.onDown();
+            mNavigationHandler.triggerUi(true, 0, 0);
+
+            // Test that a release without preceding pull requests works
+            // without crashes.
+            mNavigationHandler.release(true);
+        });
+
+        // Just check we're still on the same URL.
+        Assert.assertEquals(mTestServer.getURL(RENDERED_PAGE),
+                ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
+    }
+
+    @Test
+    @SmallTest
     public void testSwipeNavigateOnNativePage() {
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         mActivityTestRule.loadUrl(UrlConstants.RECENT_TABS_URL);
