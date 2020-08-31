@@ -151,6 +151,7 @@
           on-click="onZoomOutClick_">
       </cr-icon-button>
       <input type="text" value="100%" on-input="onZoomInput_"
+          on-pointerup="onZoomInputPointerup_"
           on-blur="onZoomInputBlur_">
       </input>
       <cr-icon-button iron-icon="pdf:add" title="$i18n{tooltipZoomIn}"

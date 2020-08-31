@@ -308,6 +308,14 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
     this.getZoomInput_().value = zoomString;
   }
 
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onZoomInputPointerup_(e) {
+    /* @type {!HTMLInputElement} */ (e.target).select();
+  }
+
   /** @private */
   onMoreClick_() {
     const anchor =
