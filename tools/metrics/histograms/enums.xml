@@ -29324,6 +29324,8 @@ Called by update_feature_policy_enum.py.-->
   <int value="13"
       label="Ephemeral change undone, likely due to pressing 'undo' on the
              snackbar"/>
+  <int value="14" label="Turn on"/>
+  <int value="15" label="Turn off"/>
   <int value="16" label="Tapped Manage Activity"/>
 </enum>
 
