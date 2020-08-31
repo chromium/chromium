@@ -323,6 +323,74 @@ TEST(CSPSourceTest, RedirectMatching) {
   EXPECT_FALSE(Allow(source, GURL("http://a.com:9000/foo/"), &context, false));
 }
 
+TEST(CSPSourceTest, Intersect) {
+  struct TestCase {
+    const char* a;
+    const char* b;
+    const char* intersection;
+  } cases[]{
+      // Scheme only.
+      {"http:", "https:", "https:"},
+      {"http:", "http:", "http:"},
+      // b is stronger than a.
+      {"http:", "http://example.org/page.html", "http://example.org/page.html"},
+      {"http://example.org", "http://example.org/page.html",
+       "http://example.org/page.html"},
+      {"http://example.org", "http://example.org/page.html",
+       "http://example.org/page.html"},
+      {"http://example.org/page.html", "http://example.org/page.html",
+       "http://example.org/page.html"},
+      {"http:", "https://example.org/page.html",
+       "https://example.org/page.html"},
+      {"http://example.org:80", "http://example.org", "http://example.org:80"},
+      {"http://example.org:80", "http://example.org:*",
+       "http://example.org:80"},
+      {"http://example.org:90", "http://example.org:*",
+       "http://example.org:90"},
+      // Nontrivial intersection.
+      {"https:", "http://example.org/page.html",
+       "https://example.org/page.html"},
+      {"https://*.org/page.html", "https://example.org/",
+       "https://example.org/page.html"},
+      {"http://*.org/page.html", "https://example.org/",
+       "https://example.org/page.html"},
+      {"http://example.org:*/page.html", "https://example.org/",
+       "https://example.org/page.html"},
+      {"http://example.org:*/page.html", "https://example.org/",
+       "https://example.org/page.html"},
+      // Empty intersection
+      {"data:", "http:", nullptr},
+      {"data:", "http://example.org", nullptr},
+      {"data://example.org", "http://example.org", nullptr},
+      {"http://example.com", "http://example.org", nullptr},
+      {"http://example.org:90", "http://example.org", nullptr},
+      {"http://example.org/page.html", "http://example.org/about.html",
+       nullptr},
+  };
+
+  for (const auto& test : cases) {
+    auto a = CSPSource(test.a);
+    auto b = CSPSource(test.b);
+
+    auto a_intersect_b = CSPSourcesIntersect(a, b);
+    auto b_intersect_a = CSPSourcesIntersect(a, b);
+    if (test.intersection) {
+      EXPECT_EQ(test.intersection, ToString(a_intersect_b))
+          << "The intersection of " << test.a << " and " << test.b
+          << " should be " << test.intersection;
+      // Intersection should be symmetric.
+      EXPECT_EQ(test.intersection, ToString(b_intersect_a))
+          << "The intersection of " << test.b << " and " << test.a
+          << " should be " << test.intersection;
+    } else {
+      EXPECT_FALSE(a_intersect_b) << "The intersection of " << test.a << " and "
+                                  << test.b << " should be empty.";
+      EXPECT_FALSE(b_intersect_a) << "The intersection of " << test.b << " and "
+                                  << test.a << " should be empty.";
+    }
+  }
+}
+
 TEST(CSPSourceTest, DoesNotSubsume) {
   struct TestCase {
     const char* a;

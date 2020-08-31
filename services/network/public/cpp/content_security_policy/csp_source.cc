@@ -204,6 +204,73 @@ bool CheckCSPSource(const mojom::CSPSourcePtr& source,
          SourceAllowPath(source, url, has_followed_redirect);
 }
 
+mojom::CSPSourcePtr CSPSourcesIntersect(const mojom::CSPSourcePtr& source_a,
+                                        const mojom::CSPSourcePtr& source_b) {
+  // If the original source expressions didn't have a scheme, we should have
+  // filled that already with origin's scheme.
+  DCHECK(!source_a->scheme.empty());
+  DCHECK(!source_b->scheme.empty());
+
+  auto result = mojom::CSPSource::New();
+  if (MatchScheme(source_a->scheme, source_b->scheme) !=
+      SchemeMatchingResult::NotMatching) {
+    result->scheme = source_b->scheme;
+  } else if (MatchScheme(source_b->scheme, source_a->scheme) !=
+             SchemeMatchingResult::NotMatching) {
+    result->scheme = source_a->scheme;
+  } else {
+    return nullptr;
+  }
+
+  if (IsSchemeOnly(source_a)) {
+    auto new_result = source_b->Clone();
+    new_result->scheme = result->scheme;
+    return new_result;
+  } else if (IsSchemeOnly(source_b)) {
+    auto new_result = source_a->Clone();
+    new_result->scheme = result->scheme;
+    return new_result;
+  }
+
+  const std::string host_a =
+      (source_a->is_host_wildcard ? "*." : "") + source_a->host;
+  const std::string host_b =
+      (source_b->is_host_wildcard ? "*." : "") + source_b->host;
+  if (SourceAllowHost(source_a, host_b)) {
+    result->host = source_b->host;
+    result->is_host_wildcard = source_b->is_host_wildcard;
+  } else if (SourceAllowHost(source_b, host_a)) {
+    result->host = source_a->host;
+    result->is_host_wildcard = source_a->is_host_wildcard;
+  } else {
+    return nullptr;
+  }
+
+  if (SourceAllowPort(source_a, source_b->port, source_b->scheme) !=
+          PortMatchingResult::NotMatching &&
+      // If port_a is explicitly specified but port_b is omitted, then we should
+      // take port_a instead of port_b, since port_a is stricter.
+      !(source_a->port != url::PORT_UNSPECIFIED &&
+        source_b->port == url::PORT_UNSPECIFIED)) {
+    result->port = source_b->port;
+    result->is_port_wildcard = source_b->is_port_wildcard;
+  } else if (SourceAllowPort(source_b, source_a->port, source_a->scheme) !=
+             PortMatchingResult::NotMatching) {
+    result->port = source_a->port;
+  } else {
+    return nullptr;
+  }
+
+  if (SourceAllowPath(source_a, source_b->path))
+    result->path = source_b->path;
+  else if (SourceAllowPath(source_b, source_a->path))
+    result->path = source_a->path;
+  else
+    return nullptr;
+
+  return result;
+}
+
 // Check whether |source_a| subsumes |source_b|.
 bool CSPSourceSubsumes(const mojom::CSPSourcePtr& source_a,
                        const mojom::CSPSourcePtr& source_b) {

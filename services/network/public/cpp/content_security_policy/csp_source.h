@@ -22,6 +22,12 @@ bool CheckCSPSource(const mojom::CSPSourcePtr& source,
                     CSPContext* context,
                     bool has_followed_redirect = false);
 
+// Compute the source intersection of |source_a| and |source_b|.
+// https://w3c.github.io/webappsec-cspee/#intersection-source-expressions
+COMPONENT_EXPORT(NETWORK_CPP)
+mojom::CSPSourcePtr CSPSourcesIntersect(const mojom::CSPSourcePtr& source_a,
+                                        const mojom::CSPSourcePtr& source_b);
+
 // Check if |source_a| subsumes |source_b| according to
 // https://w3c.github.io/webappsec-cspee/#subsume-source-expressions
 COMPONENT_EXPORT(NETWORK_CPP)
