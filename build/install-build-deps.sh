@@ -233,8 +233,6 @@ if file -L /sbin/init | grep -q 'ELF 64-bit'; then
   elif package_exists lib32gcc1; then
     dev_list="${dev_list} lib32gcc1"
   fi
-
-  dev_list="${dev_list} libc6-i386 lib32gcc-s1 lib32stdc++6"
 fi
 
 # Run-time libraries required by chromeos only
