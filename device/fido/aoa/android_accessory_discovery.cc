@@ -183,6 +183,7 @@ void AndroidAccessoryDiscovery::OnOpenAccessory(
         base::BindOnce(&AndroidAccessoryDiscovery::OnAccessoryConfigured,
                        weak_factory_.GetWeakPtr(), std::move(device),
                        interface_info));
+    return;
   }
 
   OnAccessoryConfigured(std::move(device), interface_info, /*success=*/true);
