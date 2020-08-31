@@ -16,6 +16,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy {
       'launchSelectedProfile',
       'askOnStartupChanged',
       'getNewProfileSuggestedThemeInfo',
+      'getProfileThemeInfo',
       'removeProfile',
       'getProfileStatistics',
       'loadSignInProfileCreationFlow',
@@ -54,6 +55,19 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy {
     return Promise.resolve({
       colorId: 0,
       color: 0,
+      themeFrameColor: '',
+      themeShapeColor: '',
+      themeFrameTextColor: '',
+      themeGenericAvatar: ''
+    });
+  }
+
+  /** @override */
+  getProfileThemeInfo(theme) {
+    this.methodCalled('getProfileThemeInfo');
+    return Promise.resolve({
+      colorId: theme.colorId,
+      color: theme.color || 0,
       themeFrameColor: '',
       themeShapeColor: '',
       themeFrameTextColor: '',

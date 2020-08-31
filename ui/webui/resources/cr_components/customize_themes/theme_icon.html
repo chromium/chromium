@@ -1,8 +1,12 @@
 <style>
+  :host {
+    --cr-theme-icon-size: 72px;
+  }
+
   :host,
   svg {
-    height: 72px;
-    width: 72px;
+    height: var(--cr-theme-icon-size);
+    width: var(--cr-theme-icon-size);
   }
 
   #ring {
@@ -52,7 +56,7 @@
     }
   }
 </style>
-<svg xmlns="http://www.w3.org/2000/svg"
+<svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
     <linearGradient id="gradient" gradientUnits="objectBoundingBox"

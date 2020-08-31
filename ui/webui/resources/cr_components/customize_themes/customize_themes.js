@@ -41,6 +41,7 @@ export class CustomizeThemesElement extends mixinBehaviors
       selectedTheme: {
         type: Object,
         observer: 'onThemeChange_',
+        notify: true,
       },
 
       /** @private {!Array<!customizeThemes.mojom.ChromeTheme>} */

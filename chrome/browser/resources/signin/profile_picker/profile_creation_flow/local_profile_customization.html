@@ -60,9 +60,23 @@
     width: 300px;
   }
 
+  #colorPickerContainer {
+    border: 1px solid var(--google-grey-refresh-300);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px 36px 23px;
+  }
+
+  #colorPickerHeader {
+    color: var(--cr-primary-text-color);
+    padding-bottom: 16px;
+  }
+
   #colorPicker {
-    height: 220px;
-    width: 370px;
+    --cr-customize-themes-grid-gap: 8px;
+    --cr-customize-themes-icon-size: 44px;
+    align-self: center;
   }
 
   cr-checkbox {
@@ -114,9 +128,12 @@
         auto-validate spellcheck="false">
     </cr-input>
 
-    <!-- TODO(crbug.com/1115301): Add color picker. -->
-    <div id="colorPicker"
-        style$="background-color:[[profileThemeInfo.themeFrameColor]]">
+    <div id="colorPickerContainer">
+      <div id="colorPickerHeader">
+        $i18n{localProfileCreationThemeText}
+      </div>
+      <cr-customize-themes id="colorPicker" selected-theme="{{selectedTheme_}}">
+      </cr-customize-themes>
     </div>
   </div>
 </div>
