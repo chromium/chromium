@@ -101,13 +101,16 @@ Polymer({
   },
 
   /**
-   * Sets device language.
+   * Sets device language and restarts device.
    * @private
    */
   onActionButtonTap_() {
     assert(this.selectedLanguage_);
     this.languageHelper.setProspectiveUILanguage(this.selectedLanguage_.code);
-    this.$.dialog.close();
+    settings.recordSettingChange();
+    settings.LanguagesMetricsProxyImpl.getInstance().recordInteraction(
+        settings.LanguagesPageInteraction.RESTART);
+    settings.LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();
   },
 
   /**

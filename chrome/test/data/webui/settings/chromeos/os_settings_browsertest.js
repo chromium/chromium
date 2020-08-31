@@ -1542,6 +1542,7 @@ var OSSettingsLanguagesPageV2Test = class extends OSSettingsBrowserTest {
       'os_languages_page_v2_tests.js',
       'test_os_languages_browser_proxy.js',
       'test_os_languages_metrics_proxy.js',
+      'test_os_lifetime_browser_proxy.js',
     ]);
   }
 };

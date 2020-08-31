@@ -27,6 +27,7 @@ js_type_check("closure_compile") {
 
 js_library("change_device_language_dialog") {
   deps = [
+    "../..:lifetime_browser_proxy",
     "../../languages_page:languages",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
@@ -165,6 +166,7 @@ js_type_check("closure_compile_module") {
 js_library("change_device_language_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/change_device_language_dialog.m.js" ]
   deps = [
+    "../..:lifetime_browser_proxy.m",
     "../../languages_page:languages.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
