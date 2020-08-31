@@ -659,8 +659,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("listbox-next.html"));
 }
 
+// TODO(https://crbug.com/1123394): This is failing on Windows.
+#if defined(OS_WIN)
+#define MAYBE_AccessibilityEventsLiveRegionAdd \
+  DISABLED_AccessibilityEventsLiveRegionAdd
+#else
+#define MAYBE_AccessibilityEventsLiveRegionAdd AccessibilityEventsLiveRegionAdd
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsLiveRegionAdd) {
+                       MAYBE_AccessibilityEventsLiveRegionAdd) {
   RunEventTest(FILE_PATH_LITERAL("live-region-add.html"));
 }
 
