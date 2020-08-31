@@ -56,9 +56,11 @@ enum class LiteVideoBlocklistReason {
   kNavigationReload,
   // LiteVideo not shown because it was a forward-back navigation.
   kNavigationForwardBack,
+  // LiteVideo not shown because the host was permanently blocklisted.
+  kHostPermanentlyBlocklisted,
 
   // Insert new values before this line.
-  kMaxValue = kNavigationForwardBack,
+  kMaxValue = kHostPermanentlyBlocklisted,
 };
 
 // The LiteVideoUserBlocklist maintains information about hosts the user

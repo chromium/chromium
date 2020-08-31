@@ -39993,6 +39993,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Blocklisted due to frequent reloads/back-forwards"/>
   <int value="5" label="Blocklisted because page transition was a reload"/>
   <int value="6" label="Blocklisted because page transition was back-forwards"/>
+  <int value="7" label="Blocklisted because the host was permanently blocked"/>
 </enum>
 
 <enum name="LiteVideoDecision">

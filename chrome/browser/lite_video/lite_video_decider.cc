@@ -83,7 +83,8 @@ LiteVideoDecider::LiteVideoDecider(
     optimization_guide::OptimizationGuideDecider* opt_guide_decider)
     : hint_cache_(std::make_unique<LiteVideoHintCache>()),
       opt_guide_decider_(opt_guide_decider),
-      cached_opt_guide_hints_(features::MaxOptimizationGuideHintCacheSize()) {
+      cached_opt_guide_hints_(features::MaxOptimizationGuideHintCacheSize()),
+      permanent_host_blocklist_(features::GetLiteVideoPermanentBlocklist()) {
   user_blocklist_ = std::make_unique<LiteVideoUserBlocklist>(
       std::move(opt_out_store), clock, this);
 
@@ -155,6 +156,16 @@ void LiteVideoDecider::CanApplyLiteVideo(
   GURL url = navigation_handle->GetURL();
 
   if (!url.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(
+        base::nullopt, blocklist_reason,
+        optimization_guide::OptimizationGuideDecision::kFalse);
+    return;
+  }
+
+  if (url.has_host() && IsHostPermanentlyBlockedlisted(url.host())) {
+    blocklist_reason = LiteVideoBlocklistReason::kHostPermanentlyBlocklisted;
+    ScopedLiteVideoDecisionRecorder scoped_decision_recorder(
+        blocklist_reason, navigation_handle->IsInMainFrame());
     std::move(callback).Run(
         base::nullopt, blocklist_reason,
         optimization_guide::OptimizationGuideDecision::kFalse);
@@ -346,6 +357,14 @@ void LiteVideoDecider::ClearData(const base::Time& delete_begin,
 
 void LiteVideoDecider::OnBlocklistCleared(base::Time time) {
   LOCAL_HISTOGRAM_BOOLEAN("LiteVideo.UserBlocklist.ClearBlocklist", true);
+}
+
+bool LiteVideoDecider::IsHostPermanentlyBlockedlisted(
+    const std::string& host) const {
+  if (permanent_host_blocklist_.size() == 0)
+    return false;
+  return permanent_host_blocklist_.find(host) !=
+         permanent_host_blocklist_.end();
 }
 
 void LiteVideoDecider::DidMediaRebuffer(const GURL& mainframe_url,
