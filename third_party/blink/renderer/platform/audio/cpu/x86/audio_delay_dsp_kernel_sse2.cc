@@ -11,27 +11,40 @@ namespace blink {
 static ALWAYS_INLINE __m128i WrapIndexVector(__m128i v_write_index,
                                              __m128i v_buffer_length) {
   // Wrap the write_index if any index is past the end of the buffer.
+  // This implements
+  //
+  //   if (write_index >= buffer_length)
+  //     write_index -= buffer_length
 
-  // cmp = 0xffffffff if buffer length < write index and 0 otherwise.  (That is,
-  // 0xffffffff if index >= buffer length.)
-  __m128i cmp = _mm_cmplt_epi32(v_buffer_length, v_write_index);
+  // There's no mm_cmpge_epi32, so we need to use mm_cmplt_epi32.  Thus, the
+  // above becomes
+  //
+  //   if (!(write_index < buffer_length))
+  //     write_index -= buffer_length
 
-  // Bitwise and cmp with buffer length to get buffer length or 0 depending on
-  // whether buffer length < index or not.  Subtract this from the index to wrap
-  // the index appropriately.
-  return _mm_sub_epi32(v_write_index, _mm_and_si128(cmp, v_buffer_length));
+  // If write_index < buffer_length, set cmp = 0xffffffff.  Otherwise 0.
+  __m128i cmp = _mm_cmplt_epi32(v_write_index, v_buffer_length);
+
+  // Invert cmp and bitwise-and with buffer_length to get buffer_length or 0
+  // depending on whether write_index >= buffer_length or not.  Subtract from
+  // write_index to wrap it.
+  return _mm_sub_epi32(v_write_index, _mm_andnot_si128(cmp, v_buffer_length));
 }
 
 static ALWAYS_INLINE __m128 WrapPositionVector(__m128 v_position,
                                                __m128 v_buffer_length) {
   // Wrap the read position if it exceed the buffer length.
+  // This implements
+  //
+  //   if (position >= buffer_length)
+  //     read_position -= buffer_length
 
-  // If buffer length < read_position, set cmp to 0xffffffff.  Otherwise zero.
-  __m128 cmp = _mm_cmplt_ps(v_buffer_length, v_position);
+  // If position >= buffer length, set cmp = 0xffffffff.  Otherwise 0.
+  __m128 cmp = _mm_cmpge_ps(v_position, v_buffer_length);
 
-  // Bitwise and buffer_length with cmp to get buffer_length or 0 depending on
+  // Bitwise-and buffer_length with cmp to get buffer_length or 0 depending on
   // whether read_position >= buffer length or not.  Then subtract from the
-  // psoition to wrap it around if needed.
+  // position to wrap it.
   return _mm_sub_ps(v_position, _mm_and_ps(v_buffer_length, cmp));
 }
 

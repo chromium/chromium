@@ -14,28 +14,35 @@ namespace blink {
 static ALWAYS_INLINE int32x4_t WrapIndexVector(int32x4_t v_write_index,
                                                int32x4_t v_buffer_length) {
   // Wrap the write_index if any index is past the end of the buffer.
+  // This implements
+  //
+  //   if (write_index >= buffer_length)
+  //     write_index -= buffer_length
 
-  // cmp = 0xffffffff if buffer length < write index and 0 otherwise.  (That is,
-  // 0xffffffff if index >= buffer length.)
+  // If write_index >= buffer_length, cmp = 0xffffffff.  Otherwise 0.
   int32x4_t cmp =
       reinterpret_cast<int32x4_t>(vcgeq_s32(v_write_index, v_buffer_length));
 
-  // Bitwise and cmp with buffer length to get buffer length or 0 depending on
-  // whether buffer length < index or not.  Subtract this from the index to wrap
-  // the index appropriately.
+  // Bitwise-and cmp with buffer length to get buffer length or 0 depending on
+  // whether write_index >= buffer_length or not.  Subtract this from the index
+  // to wrap the index appropriately.
   return vsubq_s32(v_write_index, vandq_s32(cmp, v_buffer_length));
 }
 
 static ALWAYS_INLINE float32x4_t
 WrapPositionVector(float32x4_t v_position, float32x4_t v_buffer_length) {
   // Wrap the read position if it exceed the buffer length.
+  // This implements
+  //
+  //   if (position >= buffer_length)
+  //     read_position -= buffer_length
 
-  // If buffer length < read_position, set cmp to 0xffffffff.  Otherwise zero.
+  // If position >= buffer length, set cmp = 0xffffffff.  Otherwise 0.
   uint32x4_t cmp = vcgeq_f32(v_position, v_buffer_length);
 
-  // Bitwise and buffer_length with cmp to get buffer_length or 0 depending on
+  // Bitwise-and buffer_length with cmp to get buffer_length or 0 depending on
   // whether read_position >= buffer length or not.  Then subtract from the
-  // psoition to wrap it around if needed.
+  // position to wrap it around if needed.
   return vsubq_f32(v_position,
                    reinterpret_cast<float32x4_t>(vandq_u32(
                        reinterpret_cast<uint32x4_t>(v_buffer_length), cmp)));
