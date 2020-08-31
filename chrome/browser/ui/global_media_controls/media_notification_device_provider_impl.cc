@@ -21,7 +21,10 @@ void MaybeRemoveDefaultDevice(media::AudioDeviceDescriptions& descriptions) {
         return description.unique_id ==
                media::AudioDeviceDescription::kDefaultDeviceId;
       });
-  DCHECK(default_device_it != descriptions.end());
+
+  // If there is no default device, there is nothing to remove.
+  if (default_device_it == descriptions.end())
+    return;
 
   // If name of the device associated with the default id is known, the default
   // device description will contain that name prefixed by a localized string.

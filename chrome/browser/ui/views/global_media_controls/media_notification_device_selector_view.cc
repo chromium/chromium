@@ -230,10 +230,8 @@ MediaNotificationDeviceSelectorView::MediaNotificationDeviceSelectorView(
 
 void MediaNotificationDeviceSelectorView::UpdateCurrentAudioDevice(
     const std::string& current_device_id) {
-  if (current_device_entry_view_) {
+  if (current_device_entry_view_)
     current_device_entry_view_->SetHighlighted(false);
-    current_device_entry_view_ = nullptr;
-  }
 
   auto it = util::ranges::find_if(
       audio_device_entries_container_->children(),
@@ -242,9 +240,13 @@ void MediaNotificationDeviceSelectorView::UpdateCurrentAudioDevice(
                current_device_id;
       });
 
-  if (it == audio_device_entries_container_->children().end())
+  if (it == audio_device_entries_container_->children().end()) {
+    current_device_entry_view_ = nullptr;
+    current_device_id_ = "";
     return;
+  }
 
+  current_device_id_ = current_device_id;
   current_device_entry_view_ = static_cast<DeviceEntryView*>(*it);
   current_device_entry_view_->SetHighlighted(true);
   audio_device_entries_container_->ReorderChildView(current_device_entry_view_,

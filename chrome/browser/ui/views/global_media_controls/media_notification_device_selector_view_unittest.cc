@@ -266,14 +266,36 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceButtonsChange) {
                       media::AudioDeviceDescription::kDefaultDeviceId);
   provider->RunUICallback();
 
-  auto& container_children = view_->audio_device_entries_container_->children();
-  EXPECT_EQ(container_children.size(), 1u);
-  ASSERT_FALSE(container_children.empty());
-  EXPECT_EQ(EntryLabelText(container_children.front()), "Monitor");
+  {
+    auto& container_children =
+        view_->audio_device_entries_container_->children();
+    EXPECT_EQ(container_children.size(), 1u);
+    ASSERT_FALSE(container_children.empty());
+    EXPECT_EQ(EntryLabelText(container_children.front()), "Monitor");
 
-  // When the device highlighted in the UI is removed, the UI should fall back
-  // to highlighting the default device.
-  EXPECT_TRUE(IsHighlighted(container_children.front()));
+    // When the device highlighted in the UI is removed, the UI should fall back
+    // to highlighting the default device.
+    EXPECT_TRUE(IsHighlighted(container_children.front()));
+  }
+
+  provider->ResetDevices();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+  provider->RunUICallback();
+
+  {
+    auto& container_children =
+        view_->audio_device_entries_container_->children();
+    EXPECT_EQ(container_children.size(), 3u);
+    ASSERT_FALSE(container_children.empty());
+
+    // When the device highlighted in the UI is removed, and there is no default
+    // device, the UI should not highlight any of the devices.
+    for (auto* device_view : container_children) {
+      EXPECT_FALSE(IsHighlighted(device_view));
+    }
+  }
 }
 
 TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {

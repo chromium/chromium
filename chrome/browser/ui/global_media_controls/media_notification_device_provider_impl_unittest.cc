@@ -143,3 +143,14 @@ TEST(MediaNotificationDeviceProviderTest,
   auto result = DescriptionsFromProvider(std::move(descriptions));
   EXPECT_TRUE(DescriptionsAreEqual(result, original_descriptions));
 }
+
+TEST(MediaNotificationDeviceProviderTest, NoDefaultDevice) {
+  media::AudioDeviceDescriptions descriptions;
+  descriptions.emplace_back("Speaker", "1", "");
+  descriptions.emplace_back("Headphones", "2", "");
+  descriptions.emplace_back("Monitor", "3", "");
+
+  media::AudioDeviceDescriptions original_descriptions = descriptions;
+  auto result = DescriptionsFromProvider(std::move(descriptions));
+  EXPECT_TRUE(DescriptionsAreEqual(result, original_descriptions));
+}
