@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 
+#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/barrier_closure.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "storage/browser/file_system/file_system_context.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace holding_space_util {
@@ -83,6 +86,21 @@ void PartitionItemsByExistence(Profile* profile,
                    std::move(item), base::Unretained(existing_items_ptr),
                    base::Unretained(non_existing_items_ptr), barrier_closure));
   }
+}
+
+GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
+  GURL file_system_url;
+  if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+          profile, file_path, file_manager::kFileManagerAppId,
+          &file_system_url)) {
+    VLOG(2) << "Unable to convert file path to File System URL.";
+  }
+  return file_system_url;
+}
+
+// TODO(dmblack): Use thumbnail service to asynchronously replace placeholders.
+gfx::ImageSkia ResolveImage(const base::FilePath& file_path) {
+  return GetIconForPath(file_path);
 }
 
 }  // namespace holding_space_util

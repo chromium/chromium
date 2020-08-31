@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 
-#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/files/file_path.h"
@@ -14,21 +13,14 @@
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {
 
 namespace {
-
-PrefService* GetPrefService(content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  DCHECK(profile);
-  return profile->GetPrefs();
-}
 
 ProfileManager* GetProfileManager() {
   return g_browser_process->profile_manager();
@@ -36,9 +28,7 @@ ProfileManager* GetProfileManager() {
 
 }  // namespace
 
-// static
-constexpr char HoldingSpaceKeyedService::kPersistencePath[];
-
+// TODO(dmblack): Add a delegate for downloads.
 HoldingSpaceKeyedService::HoldingSpaceKeyedService(
     content::BrowserContext* context,
     const AccountId& account_id)
@@ -46,17 +36,11 @@ HoldingSpaceKeyedService::HoldingSpaceKeyedService(
       account_id_(account_id),
       holding_space_client_(Profile::FromBrowserContext(context)),
       thumbnail_loader_(Profile::FromBrowserContext(context)) {
-  // TODO(dmblack): Add delegates for downloads and persistence.
-  delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
-      &holding_space_model_,
-      base::BindRepeating(&HoldingSpaceKeyedService::OnFileRemoved,
-                          weak_factory_.GetWeakPtr())));
-
-  // If the service's associated profile is ready, we can proceed to restore the
-  // `holding_space_model_` from persistence.
+  // The associated profile may not be ready yet. If it is, we can immediately
+  // proceed with profile dependent initialization.
   ProfileManager* const profile_manager = GetProfileManager();
   if (profile_manager->IsValidProfile(Profile::FromBrowserContext(context))) {
-    RestoreModelFromPersistence();
+    OnProfileReady();
     return;
   }
   // Otherwise we need to wait for the profile to be added.
@@ -68,15 +52,15 @@ HoldingSpaceKeyedService::~HoldingSpaceKeyedService() = default;
 // static
 void HoldingSpaceKeyedService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(kPersistencePath);
+  HoldingSpacePersistenceDelegate::RegisterProfilePrefs(registry);
 }
 
 void HoldingSpaceKeyedService::AddPinnedFile(
     const storage::FileSystemURL& file_system_url) {
-  auto item = HoldingSpaceItem::CreateFileBackedItem(
+  AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kPinnedFile, file_system_url.path(),
-      file_system_url.ToGURL(), gfx::ImageSkia());
-  holding_space_model_.AddItem(std::move(item));
+      file_system_url.ToGURL(),
+      holding_space_util::ResolveImage(file_system_url.path())));
 }
 
 void HoldingSpaceKeyedService::RemovePinnedFile(
@@ -103,25 +87,29 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
 void HoldingSpaceKeyedService::AddScreenshot(
     const base::FilePath& screenshot_file,
     const gfx::ImageSkia& image) {
-  GURL file_system_url = ResolveFileSystemUrl(screenshot_file);
+  GURL file_system_url = holding_space_util::ResolveFileSystemUrl(
+      Profile::FromBrowserContext(browser_context_), screenshot_file);
   if (file_system_url.is_empty())
     return;
 
-  auto item = HoldingSpaceItem::CreateFileBackedItem(
+  AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kScreenshot, screenshot_file, file_system_url,
-      image);
-  holding_space_model_.AddItem(std::move(item));
+      image));
 }
 
 void HoldingSpaceKeyedService::AddDownload(
     const base::FilePath& download_file) {
-  GURL file_system_url = ResolveFileSystemUrl(download_file);
+  GURL file_system_url = holding_space_util::ResolveFileSystemUrl(
+      Profile::FromBrowserContext(browser_context_), download_file);
   if (file_system_url.is_empty())
     return;
 
-  auto item = HoldingSpaceItem::CreateFileBackedItem(
+  AddItem(HoldingSpaceItem::CreateFileBackedItem(
       HoldingSpaceItem::Type::kDownload, download_file, file_system_url,
-      ResolveImage(download_file));
+      holding_space_util::ResolveImage(download_file)));
+}
+
+void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
   holding_space_model_.AddItem(std::move(item));
 }
 
@@ -136,35 +124,10 @@ void HoldingSpaceKeyedService::Shutdown() {
   RemoveDownloadManagerObservers();
 }
 
-void HoldingSpaceKeyedService::OnHoldingSpaceItemAdded(
-    const HoldingSpaceItem* item) {
-  // `kDownload` type holding space items have their own persistence mechanism.
-  if (item->type() == HoldingSpaceItem::Type::kDownload)
-    return;
-
-  // Write the new |item| to persistent storage.
-  ListPrefUpdate update(GetPrefService(browser_context_), kPersistencePath);
-  update->Append(item->Serialize());
-}
-
-void HoldingSpaceKeyedService::OnHoldingSpaceItemRemoved(
-    const HoldingSpaceItem* item) {
-  // `kDownload` type holding space items have their own persistence mechanism.
-  if (item->type() == HoldingSpaceItem::Type::kDownload)
-    return;
-
-  // Remove the |item| from persistent storage.
-  ListPrefUpdate update(GetPrefService(browser_context_), kPersistencePath);
-  update->EraseListValueIf([&item](const base::Value& existing_item) {
-    return HoldingSpaceItem::DeserializeId(
-               base::Value::AsDictionaryValue(existing_item)) == item->id();
-  });
-}
-
 void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
   if (profile == Profile::FromBrowserContext(browser_context_)) {
     profile_manager_observer_.Remove(GetProfileManager());
-    RestoreModelFromPersistence();
+    OnProfileReady();
   }
 }
 
@@ -201,65 +164,46 @@ void HoldingSpaceKeyedService::RemoveDownloadManagerObservers() {
   download_items_observer_.RemoveAll();
 }
 
-// TODO(dmblack): Restore download holding space items.
-void HoldingSpaceKeyedService::RestoreModelFromPersistence() {
-  DCHECK(holding_space_model_.items().empty());
+void HoldingSpaceKeyedService::OnProfileReady() {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
 
-  const auto* persisted_holding_space_items =
-      GetPrefService(browser_context_)->GetList(kPersistencePath);
+  // The `HoldingSpaceFileSystemDelegate` monitors the file system for changes.
+  delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
+      profile, &holding_space_model_,
+      /*file_removed_callback=*/
+      base::BindRepeating(&HoldingSpaceKeyedService::OnFileRemoved,
+                          weak_factory_.GetWeakPtr())));
 
-  if (persisted_holding_space_items->GetList().empty()) {
-    OnModelRestored();
-    return;
-  }
+  // The `HoldingSpacePersistenceDelegate` manages holding space persistence.
+  delegates_.push_back(std::make_unique<HoldingSpacePersistenceDelegate>(
+      profile, &holding_space_model_,
+      /*item_restored_callback=*/
+      base::BindRepeating(&HoldingSpaceKeyedService::AddItem,
+                          weak_factory_.GetWeakPtr()),
+      /*model_restored_callback=*/
+      base::BindOnce(&HoldingSpaceKeyedService::OnModelRestored,
+                     weak_factory_.GetWeakPtr())));
 
-  std::vector<HoldingSpaceItemPtr> holding_space_items;
-  for (const auto& persisted_holding_space_item :
-       persisted_holding_space_items->GetList()) {
-    holding_space_items.push_back(HoldingSpaceItem::Deserialize(
-        base::Value::AsDictionaryValue(persisted_holding_space_item),
-        base::BindOnce(&HoldingSpaceKeyedService::ResolveFileSystemUrl,
-                       base::Unretained(this)),
-        base::BindOnce(&HoldingSpaceKeyedService::ResolveImage,
-                       base::Unretained(this))));
-  }
-
-  holding_space_util::PartitionItemsByExistence(
-      Profile::FromBrowserContext(browser_context_),
-      std::move(holding_space_items),
-      base::BindOnce(&HoldingSpaceKeyedService::RestoreModelByExistence,
-                     weak_factory_.GetWeakPtr()));
+  // Initialize all delegates only after they have been added to our collection.
+  // Delegates should not fire their respective callbacks during construction
+  // but once they have been initialized they are free to do so.
+  for (auto& delegate : delegates_)
+    delegate->Init();
 }
 
-void HoldingSpaceKeyedService::RestoreModelByExistence(
-    std::vector<HoldingSpaceItemPtr> existing_items,
-    std::vector<HoldingSpaceItemPtr> non_existing_items) {
-  DCHECK(holding_space_model_.items().empty());
-
-  // Restore existing holding space items.
-  for (auto& holding_space_item : existing_items)
-    holding_space_model_.AddItem(std::move(holding_space_item));
-
-  // Clean up non-existing holding space items from persistence.
-  if (!non_existing_items.empty()) {
-    ListPrefUpdate update(GetPrefService(browser_context_), kPersistencePath);
-    update->EraseListValueIf([&non_existing_items](
-                                 const base::Value& persisted_item) {
-      const std::string& persisted_item_id = HoldingSpaceItem::DeserializeId(
-          base::Value::AsDictionaryValue(persisted_item));
-      return std::any_of(
-          non_existing_items.begin(), non_existing_items.end(),
-          [&persisted_item_id](const HoldingSpaceItemPtr& non_existing_item) {
-            return non_existing_item->id() == persisted_item_id;
-          });
-    });
-  }
-
-  OnModelRestored();
+void HoldingSpaceKeyedService::OnFileRemoved(const base::FilePath& file_path) {
+  // When `file_path` is removed, we need to remove any associated items.
+  holding_space_model_.RemoveIf(base::BindRepeating(
+      [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
+        return item->file_path() == file_path;
+      },
+      std::cref(file_path)));
 }
 
 void HoldingSpaceKeyedService::OnModelRestored() {
-  holding_space_model_observer_.Add(&holding_space_model_);
+  for (auto& delegate : delegates_)
+    delegate->NotifyHoldingSpaceModelRestored();
+
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
       account_id_, &holding_space_client_, &holding_space_model_);
 
@@ -272,32 +216,6 @@ void HoldingSpaceKeyedService::OnModelRestored() {
   download_manager_ =
       content::BrowserContext::GetDownloadManager(browser_context_);
   download_manager_->AddObserver(this);
-}
-
-GURL HoldingSpaceKeyedService::ResolveFileSystemUrl(
-    const base::FilePath& file_path) const {
-  GURL file_system_url;
-  if (!file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-          Profile::FromBrowserContext(browser_context_), file_path,
-          file_manager::kFileManagerAppId, &file_system_url)) {
-    VLOG(2) << "Unable to convert file path to File System URL.";
-  }
-  return file_system_url;
-}
-
-// TODO(dmblack): Use thumbnail service to asynchronously replace placeholders.
-gfx::ImageSkia HoldingSpaceKeyedService::ResolveImage(
-    const base::FilePath& file_path) const {
-  return GetIconForPath(file_path);
-}
-
-void HoldingSpaceKeyedService::OnFileRemoved(const base::FilePath& file_path) {
-  // When `file_path` is removed, we need to remove any associated items.
-  holding_space_model_.RemoveIf(base::BindRepeating(
-      [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
-        return item->file_path() == file_path;
-      },
-      std::cref(file_path)));
 }
 
 }  // namespace ash

@@ -4,13 +4,33 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
+
 namespace ash {
+
+namespace {
+
+ProfileManager* GetProfileManager() {
+  return g_browser_process->profile_manager();
+}
+
+}  // namespace
 
 HoldingSpaceKeyedServiceDelegate::~HoldingSpaceKeyedServiceDelegate() = default;
 
+void HoldingSpaceKeyedServiceDelegate::NotifyHoldingSpaceModelRestored() {
+  DCHECK(is_restoring_);
+  is_restoring_ = false;
+  OnHoldingSpaceModelRestored();
+}
+
 HoldingSpaceKeyedServiceDelegate::HoldingSpaceKeyedServiceDelegate(
+    Profile* profile,
     HoldingSpaceModel* model)
-    : model_(model) {
+    : profile_(profile), model_(model) {
+  // It is expected that `profile` already be ready prior to delegate creation.
+  DCHECK(GetProfileManager()->IsValidProfile(profile));
   holding_space_model_observer_.Add(model);
 }
 
@@ -19,5 +39,7 @@ void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemAdded(
 
 void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {}
+
+void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceModelRestored() {}
 
 }  // namespace ash

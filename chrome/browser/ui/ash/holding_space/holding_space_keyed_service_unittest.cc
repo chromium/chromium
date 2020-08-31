@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
@@ -436,7 +437,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     primary_holding_space_model->AddItem(std::move(holding_space_item));
 
     EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
-                  HoldingSpaceKeyedService::kPersistencePath),
+                  HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }
 
@@ -452,7 +453,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, UpdatePersistentStorage) {
     primary_holding_space_model->RemoveItem(holding_space_item->id());
 
     EXPECT_EQ(*GetProfile()->GetPrefs()->GetList(
-                  HoldingSpaceKeyedService::kPersistencePath),
+                  HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }
 }
@@ -514,7 +515,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
         }
 
         pref_store->SetValueSilently(
-            HoldingSpaceKeyedService::kPersistencePath,
+            HoldingSpacePersistenceDelegate::kPersistencePath,
             std::move(persisted_holding_space_items_before_restoration),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -546,7 +547,7 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
 
   // Verify persisted holding space items.
   EXPECT_EQ(*secondary_profile->GetPrefs()->GetList(
-                HoldingSpaceKeyedService::kPersistencePath),
+                HoldingSpacePersistenceDelegate::kPersistencePath),
             persisted_holding_space_items_after_restoration);
 }
 

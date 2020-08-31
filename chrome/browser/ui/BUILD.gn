@@ -1876,6 +1876,8 @@ static_library("ui") {
       "ash/holding_space/holding_space_keyed_service_delegate.h",
       "ash/holding_space/holding_space_keyed_service_factory.cc",
       "ash/holding_space/holding_space_keyed_service_factory.h",
+      "ash/holding_space/holding_space_persistence_delegate.cc",
+      "ash/holding_space/holding_space_persistence_delegate.h",
       "ash/holding_space/holding_space_thumbnail_loader.cc",
       "ash/holding_space/holding_space_thumbnail_loader.h",
       "ash/holding_space/holding_space_util.cc",

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_model.h"
-#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -47,22 +46,14 @@ class FileSystemURL;
 
 namespace ash {
 
-class HoldingSpaceItem;
-using HoldingSpaceItemPtr = std::unique_ptr<HoldingSpaceItem>;
-
 // Browser context keyed service that:
 // *   Manages the temporary holding space per-profile data model.
 // *   Serves as an entry point to add holding space items from Chrome.
 class HoldingSpaceKeyedService : public KeyedService,
-                                 public HoldingSpaceModelObserver,
                                  public ProfileManagerObserver,
                                  public content::DownloadManager::Observer,
                                  public download::DownloadItem::Observer {
  public:
-  // Preference path at which holding space items are persisted.
-  // NOTE: Any changes to persistence must be backwards compatible.
-  static constexpr char kPersistencePath[] = "ash.holding_space.items";
-
   HoldingSpaceKeyedService(content::BrowserContext* context,
                            const AccountId& account_id);
   HoldingSpaceKeyedService(const HoldingSpaceKeyedService& other) = delete;
@@ -97,6 +88,9 @@ class HoldingSpaceKeyedService : public KeyedService,
   // Adds a download item backed by the provided absolute file path.
   void AddDownload(const base::FilePath& download_path);
 
+  // Adds the specified `item` to the holding space model.
+  void AddItem(std::unique_ptr<HoldingSpaceItem> item);
+
   const HoldingSpaceClient* client_for_testing() const {
     return &holding_space_client_;
   }
@@ -115,10 +109,6 @@ class HoldingSpaceKeyedService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // HoldingSpaceModelObserver:
-  void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
-  void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
-
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
 
@@ -135,19 +125,14 @@ class HoldingSpaceKeyedService : public KeyedService,
   // - `download_items_observer_`.
   void RemoveDownloadManagerObservers();
 
-  // Restores `holding_space_model_` from persistent storage.
-  void RestoreModelFromPersistence();
-  void RestoreModelByExistence(
-      std::vector<HoldingSpaceItemPtr> existing_items,
-      std::vector<HoldingSpaceItemPtr> non_existing_items);
-  void OnModelRestored();
-
-  // Resolves file attributes from a `file_path`;
-  GURL ResolveFileSystemUrl(const base::FilePath& file_path) const;
-  gfx::ImageSkia ResolveImage(const base::FilePath& file_path) const;
+  // Invoked when the associated profile is ready.
+  void OnProfileReady();
 
   // Invoked when the specified `file_path` is removed.
   void OnFileRemoved(const base::FilePath& file_path);
+
+  // Invoked when the holding space model has been restored from persistence.
+  void OnModelRestored();
 
   content::BrowserContext* const browser_context_;
   const AccountId account_id_;
@@ -161,9 +146,6 @@ class HoldingSpaceKeyedService : public KeyedService,
   // each tasked with an independent area of responsibility on behalf of the
   // service. They operate autonomously of one another.
   std::vector<std::unique_ptr<HoldingSpaceKeyedServiceDelegate>> delegates_;
-
-  ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver>
-      holding_space_model_observer_{this};
 
   ScopedObserver<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};

@@ -9,6 +9,8 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/scoped_observer.h"
 
+class Profile;
+
 namespace ash {
 
 // Abstract class for a delegate of `HoldingSpaceKeyedService`. Multiple
@@ -17,19 +19,41 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
  public:
   ~HoldingSpaceKeyedServiceDelegate() override;
 
+  // Invoked by `HoldingSpaceKeyedService` to initialize the delegate
+  // immediately after its construction. Delegates accepting callbacks from
+  // the service should *not* invoke callbacks during construction but are free
+  // to do so during or anytime after initialization.
+  virtual void Init() = 0;
+
+  // Invoked by `HoldingSpaceKeyedService` to notify delegates when the holding
+  // space model has been restored from persistence.
+  void NotifyHoldingSpaceModelRestored();
+
  protected:
-  explicit HoldingSpaceKeyedServiceDelegate(HoldingSpaceModel* model);
+  HoldingSpaceKeyedServiceDelegate(Profile* profile, HoldingSpaceModel* model);
+
+  // Returns the `profile_` associated with the `HoldingSpaceKeyedService`.
+  Profile* profile() { return profile_; }
 
   // Returns the holding space model owned by `HoldingSpaceKeyedService`.
   const HoldingSpaceModel* model() const { return model_; }
+
+  // Returns if the holding space model is being restored from persistence.
+  bool is_restoring() const { return is_restoring_; }
 
  private:
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
 
-  // Owned by `HoldingSpaceKeyedService`.
+  // Invoked when the holding space model has been restored from persistence.
+  void OnHoldingSpaceModelRestored();
+
+  Profile* const profile_;
   const HoldingSpaceModel* const model_;
+
+  // If the holding space model is being restored from persistence.
+  bool is_restoring_ = true;
 
   ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver>
       holding_space_model_observer_{this};

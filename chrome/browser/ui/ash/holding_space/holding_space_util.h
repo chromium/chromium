@@ -10,7 +10,16 @@
 
 #include "base/callback_forward.h"
 
+class GURL;
 class Profile;
+
+namespace base {
+class FilePath;
+}  // namespace base
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace ash {
 
@@ -35,6 +44,12 @@ using PartitionItemsByExistenceCallback =
 void PartitionItemsByExistence(Profile* profile,
                                HoldingSpaceItemPtrList items,
                                PartitionItemsByExistenceCallback callback);
+
+// Resolves the file system URL associated with the specified `file_path`.
+GURL ResolveFileSystemUrl(Profile* profile, const base::FilePath& file_path);
+
+// Resolves the image associated with the specified `file_path`.
+gfx::ImageSkia ResolveImage(const base::FilePath& file_path);
 
 }  // namespace holding_space_util
 }  // namespace ash

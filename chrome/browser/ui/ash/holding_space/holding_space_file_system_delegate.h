@@ -25,8 +25,10 @@ class HoldingSpaceFileSystemDelegate : public HoldingSpaceKeyedServiceDelegate {
   using FileRemovedCallback =
       base::RepeatingCallback<void(const base::FilePath&)>;
 
-  HoldingSpaceFileSystemDelegate(HoldingSpaceModel* model,
+  HoldingSpaceFileSystemDelegate(Profile* profile,
+                                 HoldingSpaceModel* model,
                                  FileRemovedCallback file_removed_callback);
+
   HoldingSpaceFileSystemDelegate(const HoldingSpaceFileSystemDelegate&) =
       delete;
   HoldingSpaceFileSystemDelegate& operator=(
@@ -37,6 +39,7 @@ class HoldingSpaceFileSystemDelegate : public HoldingSpaceKeyedServiceDelegate {
   class FileSystemWatcher;
 
   // HoldingSpaceKeyedServiceDelegate:
+  void Init() override;
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item) override;
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
 

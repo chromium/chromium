@@ -65,16 +65,14 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
 // HoldingSpaceFileSystemDelegate ----------------------------------------------
 
 HoldingSpaceFileSystemDelegate::HoldingSpaceFileSystemDelegate(
+    Profile* profile,
     HoldingSpaceModel* model,
     FileRemovedCallback file_removed_callback)
-    : HoldingSpaceKeyedServiceDelegate(model),
+    : HoldingSpaceKeyedServiceDelegate(profile, model),
       file_removed_callback_(file_removed_callback),
       file_system_watcher_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  file_system_watcher_ = std::make_unique<FileSystemWatcher>(
-      base::Bind(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
-                 weak_factory_.GetWeakPtr()));
 }
 
 HoldingSpaceFileSystemDelegate::~HoldingSpaceFileSystemDelegate() {
@@ -82,6 +80,13 @@ HoldingSpaceFileSystemDelegate::~HoldingSpaceFileSystemDelegate() {
   weak_factory_.InvalidateWeakPtrs();
   file_system_watcher_runner_->DeleteSoon(FROM_HERE,
                                           file_system_watcher_.release());
+}
+
+void HoldingSpaceFileSystemDelegate::Init() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  file_system_watcher_ = std::make_unique<FileSystemWatcher>(
+      base::Bind(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
+                 weak_factory_.GetWeakPtr()));
 }
 
 // TODO(dmblack): Watch `item`'s parent directory instead of its backing file so
