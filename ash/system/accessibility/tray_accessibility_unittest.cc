@@ -15,10 +15,8 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/command_line.h"
 #include "base/macros.h"
 #include "components/prefs/pref_service.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -101,8 +99,6 @@ class TrayAccessibilityTest : public AshTestBase, public AccessibilityObserver {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableExperimentalAccessibilitySwitchAccess);
     Shell::Get()->accessibility_controller()->AddObserver(this);
   }
 

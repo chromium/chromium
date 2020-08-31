@@ -3483,12 +3483,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardFloatingResizableName,
      flag_descriptions::kVirtualKeyboardFloatingResizableDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kVirtualKeyboardFloatingResizable)},
-    {"enable-experimental-accessibility-switch-access",
-     flag_descriptions::kExperimentalAccessibilitySwitchAccessName,
-     flag_descriptions::kExperimentalAccessibilitySwitchAccessDescription,
-     kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::kEnableExperimentalAccessibilitySwitchAccess)},
     {"enable-experimental-accessibility-switch-access-text",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextName,
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextDescription,
