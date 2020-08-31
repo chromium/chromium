@@ -2327,11 +2327,14 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
       active_tree_->source_frame_number());
 
   auto compositor_frame = GenerateCompositorFrame(frame);
-  frame->frame_token = compositor_frame.metadata.frame_token;
+  const auto frame_token = compositor_frame.metadata.frame_token;
+  frame->frame_token = frame_token;
+  const viz::BeginFrameId begin_frame_ack_frame_id =
+      compositor_frame.metadata.begin_frame_ack.frame_id;
 
   // Collect |latency_info| information for tracking
   lag_tracking_manager_.CollectScrollEventsFromFrame(
-      frame->frame_token, compositor_frame.metadata.latency_info);
+      frame_token, compositor_frame.metadata.latency_info);
   layer_tree_frame_sink_->SubmitCompositorFrame(
       std::move(compositor_frame),
       /*hit_test_data_changed=*/false, debug_state_.show_hit_test_borders);
@@ -2358,8 +2361,7 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     // No begin-frame is available when doing sync draws, so avoid doing this
     // check in that case.
     const auto& bfargs = current_begin_frame_tracker_.Current();
-    const auto& ack = compositor_frame.metadata.begin_frame_ack;
-    DCHECK_EQ(bfargs.frame_id, ack.frame_id);
+    DCHECK_EQ(bfargs.frame_id, begin_frame_ack_frame_id);
   }
 #endif
 
@@ -2367,9 +2369,9 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   // outside of begin-impl frame pipeline. Avoid notifying the trackers in such
   // cases.
   if (impl_thread_phase_ == ImplThreadPhase::INSIDE_IMPL_FRAME) {
-    frame_trackers_.NotifySubmitFrame(
-        compositor_frame.metadata.frame_token, frame->has_missing_content,
-        frame->begin_frame_ack, frame->origin_begin_main_frame_args);
+    frame_trackers_.NotifySubmitFrame(frame_token, frame->has_missing_content,
+                                      frame->begin_frame_ack,
+                                      frame->origin_begin_main_frame_args);
   }
 
   if (!mutator_host_->NextFrameHasPendingRAF())
