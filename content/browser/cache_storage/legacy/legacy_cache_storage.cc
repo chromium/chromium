@@ -1400,11 +1400,11 @@ void LegacyCacheStorage::GetSizeThenCloseAllCachesImpl(SizeCallback callback) {
 
   for (const auto& cache_metadata : cache_index_->ordered_cache_metadata()) {
     auto cache_handle = GetLoadedCache(cache_metadata.name);
-    LegacyCacheStorageCache::From(cache_handle)
-        ->GetSizeThenClose(
-            base::BindOnce(&LegacyCacheStorage::SizeRetrievedFromCache,
-                           weak_factory_.GetWeakPtr(), std::move(cache_handle),
-                           barrier_closure, accumulator_ptr));
+    LegacyCacheStorageCache* cache =
+        LegacyCacheStorageCache::From(cache_handle);
+    cache->GetSizeThenClose(base::BindOnce(
+        &LegacyCacheStorage::SizeRetrievedFromCache, weak_factory_.GetWeakPtr(),
+        std::move(cache_handle), barrier_closure, accumulator_ptr));
   }
 
   for (const auto& cache_it : doomed_caches_) {
@@ -1441,11 +1441,11 @@ void LegacyCacheStorage::SizeImpl(SizeCallback callback) {
       continue;
     }
     CacheStorageCacheHandle cache_handle = GetLoadedCache(cache_metadata.name);
-    LegacyCacheStorageCache::From(cache_handle)
-        ->Size(base::BindOnce(&LegacyCacheStorage::SizeRetrievedFromCache,
-                              weak_factory_.GetWeakPtr(),
-                              std::move(cache_handle), barrier_closure,
-                              accumulator_ptr));
+    LegacyCacheStorageCache* cache =
+        LegacyCacheStorageCache::From(cache_handle);
+    cache->Size(base::BindOnce(
+        &LegacyCacheStorage::SizeRetrievedFromCache, weak_factory_.GetWeakPtr(),
+        std::move(cache_handle), barrier_closure, accumulator_ptr));
   }
 }
 
