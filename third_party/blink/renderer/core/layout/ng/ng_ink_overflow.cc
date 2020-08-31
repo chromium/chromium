@@ -24,6 +24,8 @@ struct SameSizeAsNGInkOverflow {
 ASSERT_SIZE(NGInkOverflow, SameSizeAsNGInkOverflow);
 
 inline bool HasOverflow(const PhysicalRect& rect, const PhysicalSize& size) {
+  if (rect.IsEmpty())
+    return false;
   return rect.X() < 0 || rect.Y() < 0 || rect.Right() > size.width ||
          rect.Bottom() > size.height;
 }

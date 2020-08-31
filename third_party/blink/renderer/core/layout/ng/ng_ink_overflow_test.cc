@@ -26,6 +26,16 @@ class NGInkOverflowTest : public testing::Test, private ScopedLayoutNGForTest {
   NGInkOverflowTest() : ScopedLayoutNGForTest(true) {}
 };
 
+TEST_F(NGInkOverflowTest, Empty) {
+  NGInkOverflow overflow;
+  NGInkOverflow::Type type =
+      overflow.Set(NGInkOverflow::Type::kNotSet, {0, 0, 100, 117},
+                   // This does not affect the visual rect even if the offset is
+                   // outside, because the size is empty.
+                   {-24, 50, 0, 0}, {100, 117});
+  EXPECT_EQ(type, NGInkOverflow::Type::kNone);
+}
+
 #define MIN_LARGE32 4
 #define MIN_LARGE64 1024
 #if UINTPTR_MAX == 0xFFFFFFFF
