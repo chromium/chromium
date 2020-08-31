@@ -165,6 +165,12 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
       device_info.properties.driverVersion < VK_MAKE_VERSION(19, 0, 0)) {
     return false;
   }
+
+  // https://crbug.com/1122650: Poor performance and untriaged crashes with
+  // Imagination GPUs.
+  constexpr uint32_t kVendorImagination = 0x1010;
+  if (device_info.properties.vendorID == kVendorImagination)
+    return false;
 #endif  // defined(OS_ANDROID)
 
   return true;
