@@ -82,8 +82,4 @@ interface KaleidoscopeDataProvider {
   // Called when the user clicks the "Send Feedback" button in Kaleidoscope.
   // Will trigger a feedback dialog to be displayed.
   SendFeedback();
-
-  // Gets the collections from the backend to be displayed. Takes a string that
-  // contains the request to be sent to the server.
-  GetCollections(string request) => (string response);
 };

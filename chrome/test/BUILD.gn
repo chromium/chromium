@@ -3748,7 +3748,6 @@ test("unit_tests") {
       "../browser/media/feeds/media_feeds_fetcher_unittest.cc",
       "../browser/media/feeds/media_feeds_service_unittest.cc",
       "../browser/media/kaleidoscope/kaleidoscope_metrics_recorder_unittest.cc",
-      "../browser/media/kaleidoscope/kaleidoscope_service_unittest.cc",
       "../browser/media/kaleidoscope/kaleidoscope_switches_unittest.cc",
       "../browser/nearby_sharing/fake_nearby_connection.cc",
       "../browser/nearby_sharing/fake_nearby_connection.h",

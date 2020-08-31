@@ -27,6 +27,8 @@ const KALEIDOSCOPE_RESOURCES = [
         'chrome://kaleidoscope/chrome/browser/media/feeds/media_feeds_store.mojom-lite.js'
   },
   {url: 'chrome://kaleidoscope/kaleidoscope.mojom-lite.js'},
+  {url: 'chrome://kaleidoscope/messages.js'},
+  {url: 'chrome://kaleidoscope/kaleidoscope.js'},
   {url: 'chrome://kaleidoscope/content.js'},
   {url: 'chrome://kaleidoscope/resources/_locales/strings.js'},
   {url: 'chrome://kaleidoscope/module.js', module: true},

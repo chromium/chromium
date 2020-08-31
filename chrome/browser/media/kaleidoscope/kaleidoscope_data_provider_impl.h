@@ -61,16 +61,9 @@ class KaleidoscopeDataProviderImpl
       const std::vector<int64_t>& disabled_feed_ids) override;
   void GetHighWatchTimeOrigins(GetHighWatchTimeOriginsCallback cb) override;
   void SendFeedback() override;
-  void GetCollections(const std::string& request,
-                      GetCollectionsCallback cb) override;
 
  private:
   media_history::MediaHistoryKeyedService* GetMediaHistoryService();
-
-  void OnGotCredentialsForCollections(const std::string& request,
-                                      GetCollectionsCallback cb,
-                                      media::mojom::CredentialsPtr credentials,
-                                      media::mojom::CredentialsResult result);
 
   // Called when an access token request completes (successfully or not).
   void OnAccessTokenAvailable(GoogleServiceAuthError error,
