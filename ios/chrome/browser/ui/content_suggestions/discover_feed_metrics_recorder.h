@@ -14,6 +14,22 @@
 // feed.
 - (void)recordInfiniteFeedTriggered;
 
+// Record metrics for when the user selects the 'Learn More' item in the feed
+// header menu.
+- (void)recordHeaderMenuLearnMoreTapped;
+
+// Record metrics for when the user selects the 'Manage Activity' item in the
+// feed header menu.
+- (void)recordHeaderMenuManageActivityTapped;
+
+// Record metrics for when the user selects the 'Manage Interests' item in the
+// feed header menu.
+- (void)recordHeaderMenuManageInterestsTapped;
+
+// Record metrics for when the user toggles the feed visibility from the feed
+// header menu.
+- (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_

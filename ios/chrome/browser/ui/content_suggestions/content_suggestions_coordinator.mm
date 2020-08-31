@@ -292,6 +292,7 @@
   self.NTPMediator.suggestionsMediator = self.contentSuggestionsMediator;
   self.NTPMediator.suggestionsService = contentSuggestionsService;
   [self.NTPMediator setUp];
+  self.NTPMediator.discoverFeedMetrics = self.discoverFeedMetricsRecorder;
 
   [self.suggestionsViewController addChildViewController:self.headerController];
   [self.headerController
@@ -659,6 +660,8 @@
   [self.contentSuggestionsVisible setValue:visible];
   [self.discoverFeedHeaderDelegate changeDiscoverFeedHeaderVisibility:visible];
   [self.contentSuggestionsMediator reloadAllData];
+  [self.discoverFeedMetricsRecorder
+      recordDiscoverFeedVisibilityChanged:visible];
 }
 
 @end

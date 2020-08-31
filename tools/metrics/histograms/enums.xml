@@ -29321,6 +29321,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="13"
       label="Ephemeral change undone, likely due to pressing 'undo' on the
              snackbar"/>
+  <int value="16" label="Tapped Manage Activity"/>
 </enum>
 
 <enum name="FeedZeroStateShowReason">
