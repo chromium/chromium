@@ -30,6 +30,7 @@ class FileSystemStatus {
   bool is_system_image_ext_format() const {
     return is_system_image_ext_format_;
   }
+  bool has_adbd_json() const { return has_adbd_json_; }
   const base::FilePath& system_image_path() const { return system_image_path_; }
   const base::FilePath& vendor_image_path() const { return vendor_image_path_; }
   const base::FilePath& guest_kernel_path() const { return guest_kernel_path_; }
@@ -92,6 +93,7 @@ class FileSystemStatus {
   base::FilePath guest_kernel_path_;
   base::FilePath fstab_path_;
   bool is_system_image_ext_format_;
+  bool has_adbd_json_;
 };
 
 }  // namespace arc

@@ -38,6 +38,9 @@ void SetArcVmBootNotificationServerAddressForTesting(
     base::TimeDelta connect_timeout_limit,
     base::TimeDelta connect_sleep_duration_initial);
 
+// Enable adb-over-usb and let the adapter start the support daemon for testing.
+void EnableAdbOverUsbForTesting();
+
 // Generates a list of props from |upgrade_params|, each of which takes the form
 // "prefix.prop_name=value"
 std::vector<std::string> GenerateUpgradeProps(
