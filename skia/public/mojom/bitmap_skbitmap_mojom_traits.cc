@@ -5,6 +5,14 @@
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 
 namespace mojo {
+namespace {
+
+// Maximum reasonable width and height. We don't try to deserialize bitmaps
+// bigger than these dimensions. Arbitrarily chosen.
+constexpr int kMaxWidth = 32 * 1024;
+constexpr int kMaxHeight = 32 * 1024;
+
+}  // namespace
 
 // static
 bool StructTraits<skia::mojom::BitmapDataView, SkBitmap>::IsNull(
@@ -41,9 +49,12 @@ mojo_base::BigBufferView StructTraits<skia::mojom::BitmapDataView,
 bool StructTraits<skia::mojom::BitmapDataView, SkBitmap>::Read(
     skia::mojom::BitmapDataView data,
     SkBitmap* b) {
-  // TODO: Ensure width and height are reasonable, eg. <= kMaxBitmapSize?
   SkImageInfo image_info;
   if (!data.ReadImageInfo(&image_info))
+    return false;
+
+  // Ensure width and height are reasonable.
+  if (image_info.width() > kMaxWidth || image_info.height() > kMaxHeight)
     return false;
 
   *b = SkBitmap();
@@ -108,9 +119,12 @@ StructTraits<skia::mojom::InlineBitmapDataView, SkBitmap>::pixel_data(
 bool StructTraits<skia::mojom::InlineBitmapDataView, SkBitmap>::Read(
     skia::mojom::InlineBitmapDataView data,
     SkBitmap* b) {
-  // TODO: Ensure width and height are reasonable, eg. <= kMaxBitmapSize?
   SkImageInfo image_info;
   if (!data.ReadImageInfo(&image_info))
+    return false;
+
+  // Ensure width and height are reasonable.
+  if (image_info.width() > kMaxWidth || image_info.height() > kMaxHeight)
     return false;
 
   *b = SkBitmap();

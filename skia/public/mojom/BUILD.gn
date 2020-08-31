@@ -23,6 +23,7 @@ component("shared_typemap_traits") {
     "//base",
     "//mojo/public/cpp/base:shared_typemap_traits",
     "//skia",
+    "//skia:skcms",
     "//skia/public/mojom:mojom_shared",
   ]
 }

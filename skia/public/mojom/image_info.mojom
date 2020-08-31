@@ -4,7 +4,9 @@
 
 module skia.mojom;
 
-// Mirror of SkColorType.
+// Mirror of SkColorType. Intentionally not marked [Extensible] as we want
+// unsupported image formats to fail to deserialize.
+[Stable]
 enum ColorType {
   UNKNOWN,
   ALPHA_8,
@@ -12,11 +14,13 @@ enum ColorType {
   ARGB_4444,
   RGBA_8888,
   BGRA_8888,
-  INDEX_8,
+  DEPRECATED_INDEX_8,
   GRAY_8,
 };
 
-// Mirror of SkAlphaType.
+// Mirror of SkAlphaType. Intentionally not marked [Extensible] as we want
+// unsupported image formats to fail to deserialize.
+[Stable]
 enum AlphaType {
   UNKNOWN,
   ALPHA_TYPE_OPAQUE,
@@ -24,10 +28,25 @@ enum AlphaType {
   UNPREMUL,
 };
 
+// Mirror of SkImageInfo.
+[Stable]
 struct ImageInfo {
   ColorType color_type;
   AlphaType alpha_type;
-  array<uint8> serialized_color_space;  // Empty means "null" SkColorSpace.
   uint32 width;
   uint32 height;
+
+  // Color transfer function mapping encoded values to linear values,
+  // represented by this 7-parameter piecewise function:
+  //   linear = sign(encoded) *  (c*|encoded| + f)       , 0 <= |encoded| < d
+  //          = sign(encoded) * ((a*|encoded| + b)^g + e), d <= |encoded|
+  // (A simple gamma transfer function sets g to gamma and a to 1.)
+  // See SkColorSpace and skcms_TransferFunction. Null if the image has no
+  // explicit color space. Parameters are serialized as: g, a, b, c, d, e, f.
+  array<float, 7>? color_transfer_function;
+
+  // Color transformation matrix to convert colors to XYZ D50, represented as
+  // a row-major 3x3 matrix. See SkColorSpace::MakeRGB(). Null if the image has
+  // no explicit color space.
+  array<float, 9>? color_to_xyz_matrix;
 };

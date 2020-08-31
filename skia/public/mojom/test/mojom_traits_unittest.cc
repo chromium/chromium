@@ -8,11 +8,13 @@
 #include "skia/public/mojom/test/traits_test_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/effects/SkBlurImageFilter.h"
 #include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
 #include "ui/gfx/skia_util.h"
 
 namespace skia {
@@ -73,6 +75,21 @@ TEST_F(StructTraitsTest, ImageInfo) {
   EXPECT_EQ(another_input_with_null_color_space, output);
 }
 
+TEST_F(StructTraitsTest, ImageInfoCustomColorSpace) {
+  skcms_TransferFunction transfer{0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f};
+  skcms_Matrix3x3 gamut{
+      .vals = {{0.1f, 0.2f, 0.3f}, {0.4f, 0.5f, 0.6f}, {0.7f, 0.8f, 0.9f}}};
+  sk_sp<SkColorSpace> color_space = SkColorSpace::MakeRGB(transfer, gamut);
+  SkImageInfo input =
+      SkImageInfo::Make(12, 34, SkColorType::kRGBA_8888_SkColorType,
+                        kUnpremul_SkAlphaType, color_space);
+  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
+  SkImageInfo output;
+  remote->EchoImageInfo(input, &output);
+  EXPECT_TRUE(output.colorSpace());
+  EXPECT_EQ(input, output);
+}
+
 TEST_F(StructTraitsTest, Bitmap) {
   SkBitmap input;
   input.allocPixels(SkImageInfo::MakeN32Premul(
@@ -87,6 +104,30 @@ TEST_F(StructTraitsTest, Bitmap) {
   EXPECT_EQ(input.info(), output.info());
   EXPECT_EQ(input.rowBytes(), output.rowBytes());
   EXPECT_TRUE(gfx::BitmapsAreEqual(input, output));
+}
+
+TEST_F(StructTraitsTest, BitmapTooWideToSerialize) {
+  SkBitmap input;
+  constexpr int kTooWide = 32 * 1024 + 1;
+  input.allocPixels(
+      SkImageInfo::MakeN32(kTooWide, 1, SkAlphaType::kUnpremul_SkAlphaType));
+  input.eraseColor(SK_ColorYELLOW);
+  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
+  SkBitmap output;
+  remote->EchoBitmap(input, &output);
+  EXPECT_TRUE(output.isNull());
+}
+
+TEST_F(StructTraitsTest, BitmapTooTallToSerialize) {
+  SkBitmap input;
+  constexpr int kTooTall = 32 * 1024 + 1;
+  input.allocPixels(
+      SkImageInfo::MakeN32(1, kTooTall, SkAlphaType::kUnpremul_SkAlphaType));
+  input.eraseColor(SK_ColorYELLOW);
+  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
+  SkBitmap output;
+  remote->EchoBitmap(input, &output);
+  EXPECT_TRUE(output.isNull());
 }
 
 TEST_F(StructTraitsTest, BitmapWithExtraRowBytes) {

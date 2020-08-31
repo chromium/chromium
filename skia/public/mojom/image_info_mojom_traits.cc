@@ -4,6 +4,11 @@
 
 #include "skia/public/mojom/image_info_mojom_traits.h"
 
+#include "base/numerics/safe_conversions.h"
+#include "base/optional.h"
+#include "mojo/public/cpp/bindings/array_data_view.h"
+#include "third_party/skia/include/third_party/skcms/skcms.h"
+
 namespace mojo {
 
 namespace {
@@ -24,7 +29,7 @@ SkColorType MojoColorTypeToSk(skia::mojom::ColorType type) {
       return kBGRA_8888_SkColorType;
     case skia::mojom::ColorType::GRAY_8:
       return kGray_8_SkColorType;
-    case skia::mojom::ColorType::INDEX_8:
+    case skia::mojom::ColorType::DEPRECATED_INDEX_8:
       // no longer supported
       break;
   }
@@ -103,55 +108,79 @@ StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::alpha_type(
 }
 
 // static
-std::vector<uint8_t>
-StructTraits<skia::mojom::ImageInfoDataView,
-             SkImageInfo>::serialized_color_space(const SkImageInfo& info) {
-  std::vector<uint8_t> serialized_color_space;
-  if (auto* sk_color_space = info.colorSpace()) {
-    serialized_color_space.resize(sk_color_space->writeToMemory(nullptr));
-    // Assumption 1: Since a "null" SkColorSpace is represented as an empty byte
-    // array, the serialization of a non-null SkColorSpace should produce at
-    // least one byte.
-    CHECK_GT(serialized_color_space.size(), 0u);
-    // Assumption 2: Serialized data should be reasonably small, since
-    // SkImageInfo should efficiently pass through mojo message pipes. As of
-    // this writing, the max would be 80 bytes. However, that could change in
-    // the future. So, set an upper-bound of 1 KB here.
-    CHECK_LE(serialized_color_space.size(), 1024u);
-    sk_color_space->writeToMemory(serialized_color_space.data());
-  } else {
-    // Represent the "null" color space as an empty byte vector.
-  }
-  return serialized_color_space;
-}
-
-// static
 uint32_t StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::width(
     const SkImageInfo& info) {
-  return info.width() < 0 ? 0 : static_cast<uint32_t>(info.width());
+  // Negative width images are invalid.
+  return base::checked_cast<uint32_t>(info.width());
 }
 
 // static
 uint32_t StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::height(
     const SkImageInfo& info) {
-  return info.height() < 0 ? 0 : static_cast<uint32_t>(info.height());
+  // Negative height images are invalid.
+  return base::checked_cast<uint32_t>(info.height());
+}
+
+// static
+base::Optional<std::vector<float>>
+StructTraits<skia::mojom::ImageInfoDataView,
+             SkImageInfo>::color_transfer_function(const SkImageInfo& info) {
+  SkColorSpace* color_space = info.colorSpace();
+  if (!color_space)
+    return base::nullopt;
+  skcms_TransferFunction fn;
+  color_space->transferFn(&fn);
+  return std::vector<float>({fn.g, fn.a, fn.b, fn.c, fn.d, fn.e, fn.f});
+}
+
+// static
+base::Optional<std::vector<float>>
+StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::color_to_xyz_matrix(
+    const SkImageInfo& info) {
+  SkColorSpace* color_space = info.colorSpace();
+  if (!color_space)
+    return base::nullopt;
+  skcms_Matrix3x3 to_xyz_matrix;
+  CHECK(color_space->toXYZD50(&to_xyz_matrix));
+
+  // C-style arrays-of-arrays are tightly packed, so directly copy into vector.
+  static_assert(sizeof(to_xyz_matrix.vals) == sizeof(float) * 9,
+                "matrix must be 3x3 floats");
+  float* values = &to_xyz_matrix.vals[0][0];
+  return std::vector<float>(values, values + 9);
 }
 
 // static
 bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
     skia::mojom::ImageInfoDataView data,
     SkImageInfo* info) {
-  mojo::ArrayDataView<uint8_t> serialized_color_space;
-  data.GetSerializedColorSpaceDataView(&serialized_color_space);
+  mojo::ArrayDataView<float> color_transfer_function;
+  data.GetColorTransferFunctionDataView(&color_transfer_function);
+  mojo::ArrayDataView<float> color_to_xyz_matrix;
+  data.GetColorToXyzMatrixDataView(&color_to_xyz_matrix);
+
+  // Sender must supply both color space fields or neither. This approach is
+  // simpler than having an optional ColorSpace mojo struct, due to BUILD.gn
+  // complexity with blink variants.
+  CHECK_EQ(color_transfer_function.is_null(), color_to_xyz_matrix.is_null());
+
   sk_sp<SkColorSpace> sk_color_space;
-  if (serialized_color_space.size() != 0u) {
-    sk_color_space = SkColorSpace::Deserialize(serialized_color_space.data(),
-                                               serialized_color_space.size());
-    // Deserialize() returns nullptr on invalid input.
-    if (!sk_color_space)
-      return false;
-  } else {
-    // Empty byte array is interpreted as "null."
+  if (!color_transfer_function.is_null() && !color_to_xyz_matrix.is_null()) {
+    const float* data = color_transfer_function.data();
+    skcms_TransferFunction transfer_function;
+    CHECK_EQ(7u, color_transfer_function.size());
+    transfer_function.g = data[0];
+    transfer_function.a = data[1];
+    transfer_function.b = data[2];
+    transfer_function.c = data[3];
+    transfer_function.d = data[4];
+    transfer_function.e = data[5];
+    transfer_function.f = data[6];
+
+    skcms_Matrix3x3 to_xyz_matrix;
+    CHECK_EQ(9u, color_to_xyz_matrix.size());
+    memcpy(to_xyz_matrix.vals, color_to_xyz_matrix.data(), 9 * sizeof(float));
+    sk_color_space = SkColorSpace::MakeRGB(transfer_function, to_xyz_matrix);
   }
 
   *info = SkImageInfo::Make(

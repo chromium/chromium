@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/optional.h"
 #include "skia/public/mojom/image_info.mojom-shared.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
@@ -18,9 +19,13 @@ struct COMPONENT_EXPORT(SKIA_SHARED_TRAITS)
     StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo> {
   static skia::mojom::ColorType color_type(const SkImageInfo& info);
   static skia::mojom::AlphaType alpha_type(const SkImageInfo& info);
-  static std::vector<uint8_t> serialized_color_space(const SkImageInfo& info);
   static uint32_t width(const SkImageInfo& info);
   static uint32_t height(const SkImageInfo& info);
+  static base::Optional<std::vector<float>> color_transfer_function(
+      const SkImageInfo& info);
+  static base::Optional<std::vector<float>> color_to_xyz_matrix(
+      const SkImageInfo& info);
+
   static bool Read(skia::mojom::ImageInfoDataView data, SkImageInfo* info);
 };
 

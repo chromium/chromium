@@ -8,6 +8,7 @@ module skia.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "skia/public/mojom/image_info.mojom";
 
+[Stable]
 struct Bitmap {
   ImageInfo image_info;
   uint64 row_bytes;
