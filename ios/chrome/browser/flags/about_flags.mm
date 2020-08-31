@@ -673,6 +673,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtendOpenInFilesSupportName,
      flag_descriptions::kExtendOpenInFilesSupportDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kExtendOpenInFilesSupport)},
+    {"well-known-change-password",
+     flag_descriptions::kWellKnownChangePasswordName,
+     flag_descriptions::kWellKnownChangePasswordDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kWellKnownChangePassword)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
