@@ -21,6 +21,12 @@
 
 #if !defined(OS_ANDROID)
 
+// SkBlendMode is declared in the global namespace, so this function also needs
+// to be in the global namespace.
+void PrintTo(SkBlendMode mode, std::ostream* os) {
+  *os << SkBlendMode_Name(mode);
+}
+
 namespace cc {
 namespace {
 
@@ -271,7 +277,8 @@ std::vector<RasterTestConfig> const kTestCases = {
 INSTANTIATE_TEST_SUITE_P(B,
                          LayerTreeHostBlendingPixelTest,
                          ::testing::Combine(::testing::ValuesIn(kTestCases),
-                                            ::testing::ValuesIn(kBlendModes)));
+                                            ::testing::ValuesIn(kBlendModes)),
+                         PrintTupleToStringParamName());
 
 TEST_P(LayerTreeHostBlendingPixelTest, BlendingWithRoot) {
   const int kRootWidth = 2;
