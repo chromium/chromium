@@ -228,7 +228,7 @@ void NodeChannel::NotifyBadMessage(const std::string& error) {
 }
 
 void NodeChannel::SetRemoteProcessHandle(ScopedProcessHandle process_handle) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   {
     base::AutoLock lock(channel_lock_);
     if (channel_)
@@ -253,7 +253,7 @@ ScopedProcessHandle NodeChannel::CloneRemoteProcessHandle() {
 }
 
 void NodeChannel::SetRemoteNodeName(const ports::NodeName& name) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   remote_node_name_ = name;
 }
 
@@ -468,15 +468,15 @@ NodeChannel::NodeChannel(
     Channel::HandlePolicy channel_handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     const ProcessErrorCallback& process_error_callback)
-    : delegate_(delegate),
-      io_task_runner_(io_task_runner),
+    : base::RefCountedDeleteOnSequence<NodeChannel>(io_task_runner),
+      delegate_(delegate),
       process_error_callback_(process_error_callback)
 #if !defined(OS_NACL_SFI)
       ,
       channel_(Channel::Create(this,
                                std::move(connection_params),
                                channel_handle_policy,
-                               io_task_runner_))
+                               std::move(io_task_runner)))
 #endif
 {
 }
@@ -499,14 +499,9 @@ void NodeChannel::CreateAndBindLocalBrokerHost(
 void NodeChannel::OnChannelMessage(const void* payload,
                                    size_t payload_size,
                                    std::vector<PlatformHandle> handles) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   RequestContext request_context(RequestContext::Source::SYSTEM);
-
-  // Ensure this NodeChannel stays alive through the extent of this method. The
-  // delegate may have the only other reference to this object and it may choose
-  // to drop it here in response to, e.g., a malformed message.
-  scoped_refptr<NodeChannel> keepalive = this;
 
   if (payload_size <= sizeof(Header)) {
     delegate_->OnChannelError(remote_node_name_, this);
@@ -739,7 +734,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
 }
 
 void NodeChannel::OnChannelError(Channel::Error error) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   RequestContext request_context(RequestContext::Source::SYSTEM);
 

@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
@@ -21,13 +21,15 @@
 #include "mojo/core/embedder/process_error_callback.h"
 #include "mojo/core/ports/name.h"
 #include "mojo/core/scoped_process_handle.h"
+#include "mojo/core/system_impl_export.h"
 
 namespace mojo {
 namespace core {
 
 // Wraps a Channel to send and receive Node control messages.
-class NodeChannel : public base::RefCountedThreadSafe<NodeChannel>,
-                    public Channel::Delegate {
+class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
+    : public base::RefCountedDeleteOnSequence<NodeChannel>,
+      public Channel::Delegate {
  public:
   class Delegate {
    public:
@@ -92,8 +94,6 @@ class NodeChannel : public base::RefCountedThreadSafe<NodeChannel>,
                                   void** data,
                                   size_t* num_data_bytes);
 
-  Channel* channel() const { return channel_.get(); }
-
   // Start receiving messages.
   void Start();
 
@@ -155,7 +155,8 @@ class NodeChannel : public base::RefCountedThreadSafe<NodeChannel>,
 #endif
 
  private:
-  friend class base::RefCountedThreadSafe<NodeChannel>;
+  friend class base::RefCountedDeleteOnSequence<NodeChannel>;
+  friend class base::DeleteHelper<NodeChannel>;
 
   using PendingMessageQueue = base::queue<Channel::MessagePtr>;
   using PendingRelayMessageQueue =
@@ -181,13 +182,12 @@ class NodeChannel : public base::RefCountedThreadSafe<NodeChannel>,
   void WriteChannelMessage(Channel::MessagePtr message);
 
   Delegate* const delegate_;
-  const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   const ProcessErrorCallback process_error_callback_;
 
   base::Lock channel_lock_;
-  scoped_refptr<Channel> channel_;
+  scoped_refptr<Channel> channel_ GUARDED_BY(channel_lock_);
 
-  // Must only be accessed from |io_task_runner_|'s thread.
+  // Must only be accessed from the owning task runner's thread.
   ports::NodeName remote_node_name_;
 
   base::Lock remote_process_handle_lock_;

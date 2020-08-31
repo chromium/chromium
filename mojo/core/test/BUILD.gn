@@ -7,6 +7,8 @@ import("//third_party/protobuf/proto_library.gni")
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_node_channel_delegate.cc",
+    "mock_node_channel_delegate.h",
     "mojo_test_base.cc",
     "mojo_test_base.h",
     "test_utils.h",
@@ -27,8 +29,10 @@ static_library("test_support") {
   public_deps = [
     "//base",
     "//base/test:test_support",
+    "//mojo/core:embedder_internal",
     "//mojo/core/embedder",
     "//mojo/public/cpp/system",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

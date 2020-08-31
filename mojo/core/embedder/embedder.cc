@@ -28,7 +28,7 @@ void Init() {
   Init(Configuration());
 }
 
-scoped_refptr<base::TaskRunner> GetIOTaskRunner() {
+scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() {
   return Core::Get()->GetNodeController()->io_task_runner();
 }
 

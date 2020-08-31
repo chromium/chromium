@@ -19,6 +19,7 @@ component("embedder_internal") {
     ":test_sources",
     "//mojo:*",
     "//mojo/core/embedder",
+    "//mojo/core/test:test_support",
   ]
 }
 
@@ -58,6 +59,7 @@ template("core_impl_source_set") {
       "handle_table.h",
       "invitation_dispatcher.h",
       "message_pipe_dispatcher.h",
+      "node_channel.h",
       "node_controller.h",
       "options_validation.h",
       "platform_handle_dispatcher.h",
@@ -87,7 +89,6 @@ template("core_impl_source_set") {
       "invitation_dispatcher.cc",
       "message_pipe_dispatcher.cc",
       "node_channel.cc",
-      "node_channel.h",
       "node_controller.cc",
       "platform_handle_dispatcher.cc",
       "platform_handle_in_transit.cc",
@@ -293,6 +294,7 @@ source_set("test_sources") {
     "handle_table_unittest.cc",
     "message_pipe_unittest.cc",
     "message_unittest.cc",
+    "node_channel_unittest.cc",
     "options_validation_unittest.cc",
     "platform_handle_dispatcher_unittest.cc",
     "quota_unittest.cc",
@@ -391,6 +393,7 @@ fuzzer_test("mojo_core_node_channel_fuzzer") {
   deps = [
     ":core_impl_for_fuzzers",
     "//base",
+    "//mojo/core/test:test_support",
     "//mojo/public/cpp/platform",
   ]
 }
