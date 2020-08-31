@@ -85,13 +85,11 @@ const base::Feature kProactivelyThrottleLowPriorityRequests{
 const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables Cross-Origin-Opener-Policy reporting API origin trial.  Serves a dual
-// purpose:
-// 1) Disable the field trial up until it gets approuved.
-// 2) Used as a kill-switch during the experiment.
+// Enables Cross-Origin-Opener-Policy reporting API origin trial. It will be
+// used as a kill switch during the experiment.
 const base::Feature kCrossOriginOpenerPolicyReportingOriginTrial{
     "CrossOriginOpenerPolicyReportingOriginTrial",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables Cross-Origin Opener Policy (COOP) reporting.
 // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
@@ -101,8 +99,7 @@ const base::Feature kCrossOriginOpenerPolicyReporting{
 // Enables Cross-Origin Opener Policy (COOP) access reporting.
 // https://github.com/camillelamy/explainers/blob/master/coop_reporting.md#report-blocked-accesses-to-other-windows
 const base::Feature kCrossOriginOpenerPolicyAccessReporting{
-    "CrossOriginOpenerPolicyAccessReporting",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    "CrossOriginOpenerPolicyAccessReporting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables Cross-Origin Embedder Policy (COEP).
 // https://github.com/mikewest/corpp
