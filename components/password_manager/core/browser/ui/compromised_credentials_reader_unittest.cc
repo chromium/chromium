@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -113,6 +114,33 @@ TEST_F(CompromisedCredentialsReaderTest, AddCredentialsToBothStores) {
   RunUntilIdle();
 
   reader().RemoveObserver(&mock_observer);
+}
+
+TEST_F(CompromisedCredentialsReaderTest, GetAllCompromisedCredentials) {
+  CompromisedCredentials profile_cred;
+  profile_cred.signon_realm = kTestWebRealm;
+  profile_cred.username = base::ASCIIToUTF16("profile@gmail.com");
+  profile_cred.in_store = PasswordForm::Store::kProfileStore;
+
+  CompromisedCredentials account_cred;
+  account_cred.signon_realm = kTestWebRealm;
+  account_cred.username = base::ASCIIToUTF16("account1@gmail.com");
+  account_cred.in_store = PasswordForm::Store::kAccountStore;
+
+  profile_store().AddCompromisedCredentials(profile_cred);
+  account_store().AddCompromisedCredentials(account_cred);
+
+  base::MockCallback<
+      CompromisedCredentialsReader::GetCompromisedCredentialsCallback>
+      get_all_compromised_credentials_cb;
+
+  reader().GetAllCompromisedCredentials(
+      get_all_compromised_credentials_cb.Get());
+
+  // The callback is run only after the stores respond in RunUntilIdle().
+  EXPECT_CALL(get_all_compromised_credentials_cb,
+              Run(UnorderedElementsAre(profile_cred, account_cred)));
+  RunUntilIdle();
 }
 
 }  // namespace password_manager

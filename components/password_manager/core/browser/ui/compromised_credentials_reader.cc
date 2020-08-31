@@ -17,8 +17,14 @@ CompromisedCredentialsReader::CompromisedCredentialsReader(
     : profile_store_(profile_store), account_store_(account_store) {
   DCHECK(profile_store_);
   observed_password_store_.Add(profile_store_);
-  if (account_store_)
+  if (account_store_) {
     observed_password_store_.Add(account_store_);
+  } else {
+    // Since we aren't expecting any response from the account store, mark it as
+    // responded not to block responses from the the profile waiting for the
+    // account store to respond.
+    account_store_responded_ = true;
+  }
 }
 
 CompromisedCredentialsReader::~CompromisedCredentialsReader() = default;
@@ -52,6 +58,8 @@ void CompromisedCredentialsReader::OnGetCompromisedCredentials(
 void CompromisedCredentialsReader::OnGetCompromisedCredentialsFrom(
     PasswordStore* store,
     std::vector<CompromisedCredentials> compromised_credentials) {
+  profile_store_responded_ |= store == profile_store_;
+  account_store_responded_ |= store == account_store_;
   // Remove all previously cached credentials from `store` and then insert
   // the just received `compromised_credentials`.
   autofill::PasswordForm::Store to_remove =
@@ -65,9 +73,41 @@ void CompromisedCredentialsReader::OnGetCompromisedCredentialsFrom(
   util::ranges::move(compromised_credentials,
                      std::back_inserter(compromised_credentials_));
 
-  // Inform the observers
+  // Observers are reptitively notified of compromised credentials, and hence
+  // vbservers can expect partial view of the compromised credentials, so inform
+  // the observers directly.
   for (auto& observer : observers_)
     observer.OnCompromisedCredentialsChanged(compromised_credentials_);
+
+  // For the callbacks waiting for the results of
+  // `GetAllCompromisedCredentials()`, they should be notified only when both
+  // stores responded.
+  if (!profile_store_responded_ || !account_store_responded_)
+    return;
+
+  for (auto& callback :
+       std::exchange(get_all_compromised_credentials_callbacks_, {})) {
+    std::move(callback).Run(compromised_credentials_);
+  }
+}
+
+void CompromisedCredentialsReader::GetAllCompromisedCredentials(
+    GetCompromisedCredentialsCallback cb) {
+  if (profile_store_responded_ && account_store_responded_) {
+    std::move(cb).Run(compromised_credentials_);
+    return;
+  }
+  // Add the callback *before* triggering any of the fetches. This ensures
+  // that we don't miss a notitication if the fetches return synchronously
+  // (which is the case in tests).
+  get_all_compromised_credentials_callbacks_.push_back(std::move(cb));
+
+  if (!profile_store_responded_)
+    profile_store_->GetAllCompromisedCredentials(this);
+  if (!account_store_responded_) {
+    DCHECK(account_store_);
+    account_store_->GetAllCompromisedCredentials(this);
+  }
 }
 
 void CompromisedCredentialsReader::AddObserver(Observer* observer) {

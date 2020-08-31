@@ -17,6 +17,8 @@ class CompromisedCredentialsReader
     : public PasswordStore::DatabaseCompromisedCredentialsObserver,
       public CompromisedCredentialsConsumer {
  public:
+  using GetCompromisedCredentialsCallback =
+      base::OnceCallback<void(std::vector<CompromisedCredentials>)>;
   // Observer interface. Clients can implement this to get notified about
   // changes to the list of compromised credentials. Clients can register and
   // de-register themselves, and are expected to do so before the provider gets
@@ -36,6 +38,9 @@ class CompromisedCredentialsReader
   ~CompromisedCredentialsReader() override;
 
   void Init();
+
+  // `callback` must outlive this object.
+  void GetAllCompromisedCredentials(GetCompromisedCredentialsCallback callback);
 
   // Allows clients and register and de-register themselves.
   void AddObserver(Observer* observer);
@@ -70,6 +75,13 @@ class CompromisedCredentialsReader
       observed_password_store_{this};
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
+  std::vector<GetCompromisedCredentialsCallback>
+      get_all_compromised_credentials_callbacks_;
+
+  // Whether we are still waiting for a first response from the profile and
+  // account stores.
+  bool profile_store_responded_ = false;
+  bool account_store_responded_ = false;
 };
 
 }  // namespace password_manager
