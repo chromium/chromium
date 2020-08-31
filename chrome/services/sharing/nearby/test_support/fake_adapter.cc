@@ -72,6 +72,7 @@ void FakeAdapter::GetDevices(GetDevicesCallback callback) {}
 
 void FakeAdapter::GetInfo(GetInfoCallback callback) {
   mojom::AdapterInfoPtr adapter_info = mojom::AdapterInfo::New();
+  adapter_info->address = address_;
   adapter_info->name = name_;
   adapter_info->present = present_;
   adapter_info->powered = powered_;

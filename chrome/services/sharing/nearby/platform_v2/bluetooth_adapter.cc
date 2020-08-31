@@ -55,7 +55,7 @@ bool BluetoothAdapter::SetScanMode(BluetoothAdapter::ScanMode scan_mode) {
 std::string BluetoothAdapter::GetName() const {
   bluetooth::mojom::AdapterInfoPtr info;
   bool success = adapter_->GetInfo(&info);
-  return success ? info->name : "";
+  return success ? info->name : std::string();
 }
 
 bool BluetoothAdapter::SetName(absl::string_view name) {
@@ -65,8 +65,9 @@ bool BluetoothAdapter::SetName(absl::string_view name) {
 }
 
 std::string BluetoothAdapter::GetMacAddress() const {
-  // TODO(hansberry): Implement.
-  return std::string();
+  bluetooth::mojom::AdapterInfoPtr info;
+  bool success = adapter_->GetInfo(&info);
+  return success ? info->address : std::string();
 }
 
 }  // namespace chrome

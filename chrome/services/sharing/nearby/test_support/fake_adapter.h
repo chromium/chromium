@@ -53,6 +53,7 @@ class FakeAdapter : public mojom::Adapter {
       const device::BluetoothUUID& service_uuid);
 
   mojo::Receiver<mojom::Adapter> adapter_{this};
+  std::string address_ = "AdapterAddress";
   std::string name_ = "AdapterName";
   bool present_ = true;
   bool powered_ = true;

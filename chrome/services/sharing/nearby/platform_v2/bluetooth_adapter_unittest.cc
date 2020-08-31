@@ -125,6 +125,10 @@ TEST_F(BluetoothAdapterTest, TestSetName) {
   EXPECT_EQ(name, fake_adapter_->name_);
 }
 
+TEST_F(BluetoothAdapterTest, TestGetAddress) {
+  EXPECT_EQ(fake_adapter_->address_, bluetooth_adapter_->GetMacAddress());
+}
+
 }  // namespace chrome
 }  // namespace nearby
 }  // namespace location
