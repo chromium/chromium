@@ -53,6 +53,9 @@ class ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   // Returns menu bounds in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;
 
+  // views::MenuModelAdapter:
+  void OnMenuClosed(views::MenuItemView* menu) override;
+
  private:
   // views::MenuModelAdapter:
   views::MenuItemView* AppendMenuItem(views::MenuItemView* menu,
