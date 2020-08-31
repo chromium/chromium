@@ -219,10 +219,6 @@ def AddCommonOptions(parser):
       '--isolated-script-test-repeat',
       dest='repeat', type=int, default=0,
       help='Number of times to repeat the specified set of tests.')
-  parser.add_argument('--result-sink-upload',
-                      action='store_true',
-                      help='Whether to upload the results to result-sink. '
-                      'To run locally, an "rdb stream" must be active.')
 
   # This is currently only implemented for gtests and instrumentation tests.
   parser.add_argument(
@@ -914,7 +910,7 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
 
         iteration_count += 1
         for r in iteration_results.GetAll():
-          if args.result_sink_upload and result_sink_client:
+          if result_sink_client:
             result_sink_client.Post(r.GetName(), r.GetType())
 
           result_counts[r.GetName()][r.GetType()] += 1
@@ -1074,9 +1070,8 @@ def main():
       args.wait_for_java_debugger)):
     args.num_retries = 0
 
-  result_sink_client = None
-  if args.result_sink_upload:
-    result_sink_client = result_sink.InitResultSinkClient()
+  # Result-sink may not exist in the environment if rdb stream is not enabled.
+  result_sink_client = result_sink.TryInitClient()
 
   try:
     return RunTestsCommand(args, result_sink_client)

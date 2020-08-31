@@ -20,15 +20,20 @@ RESULT_MAP = {
 }
 
 
-def InitResultSinkClient():
-  """Initializes a result_sink_client object.
+def TryInitClient():
+  """Tries to initialize a result_sink_client object.
 
-  Returns a ResultSinkClient for the result_sink server. Assumes that
-  rdb stream is running.
+  Assumes that rdb stream is already running.
+
+  Returns:
+    A ResultSinkClient for the result_sink server else returns None.
   """
-  with open(os.environ['LUCI_CONTEXT']) as f:
-    sink = json.load(f)['result_sink']
-    return ResultSinkClient(sink)
+  try:
+    with open(os.environ['LUCI_CONTEXT']) as f:
+      sink = json.load(f)['result_sink']
+      return ResultSinkClient(sink)
+  except KeyError:
+    return None
 
 
 class ResultSinkClient(object):
