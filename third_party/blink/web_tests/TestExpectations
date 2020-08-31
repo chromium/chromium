@@ -795,6 +795,7 @@ crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftest
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/flexbox/flexbox-safe-overflow-position-001.html [ Failure ]
 
 # [css-lists]
+crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-005.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-004.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/li-value-reversed-003.html [ Failure ]
@@ -2556,7 +2557,6 @@ crbug.com/1110512 external/wpt/css/css-pseudo/selection-contenteditable-011.html
 crbug.com/1105958 external/wpt/payment-request/payment-is-showing.https.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
 crbug.com/626703 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/pageshow-event.window.html [ Timeout ]
 crbug.com/626703 [ Win7 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/replaced-element-016.tentative.html [ Failure ]
