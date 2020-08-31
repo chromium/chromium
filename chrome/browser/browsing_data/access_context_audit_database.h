@@ -12,7 +12,6 @@
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
-#include "sql/test/test_helpers.h"
 #include "url/origin.h"
 
 // Provides the backend SQLite storage to support access context auditing. This
