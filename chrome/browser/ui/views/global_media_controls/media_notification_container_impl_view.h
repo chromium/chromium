@@ -101,6 +101,9 @@ class MediaNotificationContainerImplView
   RegisterAudioOutputDeviceDescriptionsCallback(
       MediaNotificationDeviceProvider::GetOutputDevicesCallbackList::
           CallbackType callback) override;
+  std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+  RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+      base::RepeatingCallback<void(bool)> callback) override;
 
   // Sets up the notification to be ready to display in an overlay instead of
   // the dialog.

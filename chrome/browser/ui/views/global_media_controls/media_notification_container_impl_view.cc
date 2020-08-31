@@ -281,8 +281,9 @@ void MediaNotificationContainerImplView::OnMediaSessionInfoChanged(
   if (session_info) {
     audio_sink_id_ = session_info->audio_sink_id.value_or(
         media::AudioDeviceDescription::kDefaultDeviceId);
-    if (audio_device_selector_view_)
+    if (audio_device_selector_view_) {
       audio_device_selector_view_->UpdateCurrentAudioDevice(audio_sink_id_);
+    }
   }
 }
 
@@ -360,6 +361,14 @@ MediaNotificationContainerImplView::
             CallbackType callback) {
   return service_->RegisterAudioOutputDeviceDescriptionsCallback(
       std::move(callback));
+}
+
+std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+MediaNotificationContainerImplView::
+    RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+        base::RepeatingCallback<void(bool)> callback) {
+  return service_->RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+      id_, std::move(callback));
 }
 
 ui::Layer* MediaNotificationContainerImplView::GetSlideOutLayer() {

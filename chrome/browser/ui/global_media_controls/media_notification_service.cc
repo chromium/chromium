@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 
+#include "base/callback_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/util/ranges/algorithm.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -159,6 +161,21 @@ void MediaNotificationService::Session::MediaSessionInfoChanged(
   StartInactiveTimer();
 }
 
+void MediaNotificationService::Session::MediaSessionActionsChanged(
+    const std::vector<media_session::mojom::MediaSessionAction>& actions) {
+  bool is_audio_device_switching_supported =
+      util::ranges::find(
+          actions,
+          media_session::mojom::MediaSessionAction::kSwitchAudioDevice) !=
+      actions.end();
+  if (is_audio_device_switching_supported !=
+      is_audio_device_switching_supported_) {
+    is_audio_device_switching_supported_ = is_audio_device_switching_supported;
+    is_audio_device_switching_supported_callback_list_.Notify(
+        is_audio_device_switching_supported_);
+  }
+}
+
 void MediaNotificationService::Session::MediaSessionPositionChanged(
     const base::Optional<media_session::MediaPosition>& position) {
   OnSessionInteractedWith();
@@ -224,6 +241,15 @@ bool MediaNotificationService::Session::IsPlaying() {
 
 void MediaNotificationService::Session::SetAudioSinkId(const std::string& id) {
   controller_->SetAudioSinkId(id);
+}
+
+std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+MediaNotificationService::Session::
+    RegisterIsAudioDeviceSwitchingSupportedCallback(
+        base::RepeatingCallback<void(bool)> callback) {
+  callback.Run(is_audio_device_switching_supported_);
+  return is_audio_device_switching_supported_callback_list_.Add(
+      std::move(callback));
 }
 
 // static
@@ -729,6 +755,17 @@ MediaNotificationService::RegisterAudioOutputDeviceDescriptionsCallback(
     device_provider_ = std::make_unique<MediaNotificationDeviceProviderImpl>(
         content::CreateAudioSystemForAudioService());
   return device_provider_->RegisterOutputDeviceDescriptionsCallback(
+      std::move(callback));
+}
+
+std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+MediaNotificationService::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+    const std::string& id,
+    base::RepeatingCallback<void(bool)> callback) {
+  auto it = sessions_.find(id);
+  DCHECK(it != sessions_.end());
+
+  return it->second.RegisterIsAudioDeviceSwitchingSupportedCallback(
       std::move(callback));
 }
 

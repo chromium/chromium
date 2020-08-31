@@ -115,6 +115,14 @@ class MediaNotificationService
   RegisterAudioOutputDeviceDescriptionsCallback(
       MediaNotificationDeviceProvider::GetOutputDevicesCallback callback);
 
+  // Used by a |MediaNotificationAudioDeviceSelectorView| to become notified of
+  // audio device switching capabilities. The callback will be immediately run
+  // with the current availability.
+  std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+  RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+      const std::string& id,
+      base::RepeatingCallback<void(bool)> callback);
+
   void set_device_provider_for_testing(
       std::unique_ptr<MediaNotificationDeviceProvider> device_provider);
 
@@ -167,7 +175,7 @@ class MediaNotificationService
     }
     void MediaSessionActionsChanged(
         const std::vector<media_session::mojom::MediaSessionAction>& actions)
-        override {}
+        override;
     void MediaSessionChanged(
         const base::Optional<base::UnguessableToken>& request_id) override {}
     void MediaSessionPositionChanged(
@@ -201,6 +209,10 @@ class MediaNotificationService
 
     void SetAudioSinkId(const std::string& id);
 
+    std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+    RegisterIsAudioDeviceSwitchingSupportedCallback(
+        base::RepeatingCallback<void(bool)> callback);
+
    private:
     static void RecordDismissReason(GlobalMediaControlsDismissReason reason);
 
@@ -232,6 +244,13 @@ class MediaNotificationService
 
     // True if we're in an overlay notification.
     bool is_in_overlay_ = false;
+
+    // True if the audio output device can be switched.
+    bool is_audio_device_switching_supported_ = true;
+
+    // Used to notify changes in audio output device switching capabilities.
+    base::RepeatingCallbackList<void(bool)>
+        is_audio_device_switching_supported_callback_list_;
 
     // Used to receive updates to the Media Session playback state.
     mojo::Receiver<media_session::mojom::MediaControllerObserver>

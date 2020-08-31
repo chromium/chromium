@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view.h"
 
+#include "base/callback_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/util/ranges/algorithm.h"
@@ -80,8 +81,23 @@ class MockMediaNotificationDeviceSelectorViewDelegate
 
   MockMediaNotificationDeviceProvider* GetProvider() { return provider_.get(); }
 
+  std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+  RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
+      base::RepeatingCallback<void(bool)> callback) override {
+    callback.Run(supports_switching);
+    supports_switching_callback_ = std::move(callback);
+    return nullptr;
+  }
+
+  void RunSupportsDeviceSwitchingCallback() {
+    supports_switching_callback_.Run(supports_switching);
+  }
+
+  bool supports_switching = true;
+
  private:
   std::unique_ptr<MockMediaNotificationDeviceProvider> provider_;
+  base::RepeatingCallback<void(bool)> supports_switching_callback_;
 };
 
 }  // anonymous namespace
@@ -269,12 +285,10 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
   provider->AddDevice(media::AudioDeviceDescription::GetDefaultDeviceName(),
                       media::AudioDeviceDescription::kDefaultDeviceId);
 
+  EXPECT_CALL(delegate, OnDeviceSelectorViewSizeChanged).Times(2);
   view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
-
-  EXPECT_CALL(delegate, OnDeviceSelectorViewSizeChanged).Times(1);
-  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
-      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+      &delegate, media::AudioDeviceDescription::kDefaultDeviceId,
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor);
   EXPECT_FALSE(view_->GetVisible());
 
   testing::Mock::VerifyAndClearExpectations(&delegate);
@@ -297,4 +311,21 @@ TEST_F(MediaNotificationDeviceSelectorViewTest, VisibilityChanges) {
   provider->RunUICallback();
   EXPECT_TRUE(view_->GetVisible());
   testing::Mock::VerifyAndClearExpectations(&delegate);
+}
+
+TEST_F(MediaNotificationDeviceSelectorViewTest, DeviceChangeIsNotSupported) {
+  MockMediaNotificationDeviceSelectorViewDelegate delegate;
+  auto* provider = delegate.GetProvider();
+  provider->AddDevice("Speaker", "1");
+  provider->AddDevice("Headphones", "2");
+  provider->AddDevice("Earbuds", "3");
+  delegate.supports_switching = false;
+
+  view_ = std::make_unique<MediaNotificationDeviceSelectorView>(
+      &delegate, "1", gfx::kPlaceholderColor, gfx::kPlaceholderColor);
+  EXPECT_FALSE(view_->GetVisible());
+
+  delegate.supports_switching = true;
+  delegate.RunSupportsDeviceSwitchingCallback();
+  EXPECT_TRUE(view_->GetVisible());
 }

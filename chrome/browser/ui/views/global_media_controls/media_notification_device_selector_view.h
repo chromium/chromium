@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_SELECTOR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_SELECTOR_VIEW_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_device_provider.h"
 #include "media/audio/audio_device_description.h"
 #include "ui/views/controls/button/image_button.h"
@@ -35,7 +36,10 @@ class MediaNotificationDeviceSelectorView : public views::View,
   void OnColorsChanged(const SkColor& foreground_color,
                        const SkColor& background_color);
 
-  // ButtonListener
+  // Called when the audio device switching has become enabled or disabled.
+  void UpdateIsAudioDeviceSwitchingEnabled(bool enabled);
+
+  // views::ButtonListener
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   static std::string get_entry_label_for_testing(views::View* entry_view);
@@ -55,13 +59,15 @@ class MediaNotificationDeviceSelectorView : public views::View,
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,
                            DeviceButtonsChange);
 
-  bool ShouldBeVisible(
-      const media::AudioDeviceDescriptions& device_descriptions);
+  void UpdateVisibility();
+
+  bool ShouldBeVisible();
 
   void ShowDevices();
   void HideDevices();
 
   bool is_expanded_ = false;
+  bool is_audio_device_switching_enabled_ = false;
   MediaNotificationDeviceSelectorViewDelegate* const delegate_;
   std::string current_device_id_;
   SkColor foreground_color_, background_color_;
@@ -75,6 +81,9 @@ class MediaNotificationDeviceSelectorView : public views::View,
   std::unique_ptr<MediaNotificationDeviceProvider::
                       GetOutputDevicesCallbackList::Subscription>
       audio_device_subscription_;
+
+  std::unique_ptr<base::RepeatingCallbackList<void(bool)>::Subscription>
+      is_device_switching_enabled_subscription_;
 
   base::WeakPtrFactory<MediaNotificationDeviceSelectorView> weak_ptr_factory_{
       this};
