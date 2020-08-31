@@ -467,6 +467,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
 
   bool hidden_ = true;
 
+  std::string signin_partition_name_;
+
   // Handler for |samlChallengeMachineKey| request.
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_;
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_for_test_;

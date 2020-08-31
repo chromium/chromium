@@ -70,7 +70,10 @@ std::string GetDmTokenFromPolicy(const std::string& blob) {
 
 class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
  public:
-  EnrollmentLocalPolicyServerBase() = default;
+  EnrollmentLocalPolicyServerBase() {
+    gaia_frame_parent_ = "authView";
+    authenticator_id_ = "$('enterprise-enrollment').authenticator_";
+  }
 
   void SetUpOnMainThread() override {
     fake_gaia_.SetupFakeGaiaForLogin(FakeGaiaMixin::kFakeUserEmail,
@@ -105,13 +108,18 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
   }
 
   void TriggerEnrollmentAndSignInSuccessfully() {
-    host()->StartWizard(EnrollmentScreenView::kScreenId);
+    host()->HandleAccelerator(ash::LoginAcceleratorAction::kStartEnrollment);
     OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
     ASSERT_FALSE(StartupUtils::IsDeviceRegistered());
     ASSERT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
-    enrollment_screen()->OnLoginDone(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeAuthCode);
+    WaitForGaiaPageBackButtonUpdate();
+
+    SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+    SigninFrameJS().TapOn("nextButton");
+    SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                                 {"password"});
+    SigninFrameJS().TapOn("nextButton");
   }
 
   std::unique_ptr<content::WindowedNotificationObserver>
@@ -146,8 +154,8 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
   LocalPolicyTestServerMixin policy_server_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
-  DeviceStateMixin device_state_{&mixin_host_,
-                                 DeviceStateMixin::State::BEFORE_OOBE};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(EnrollmentLocalPolicyServerBase);
@@ -155,7 +163,9 @@ class EnrollmentLocalPolicyServerBase : public OobeBaseTest {
 
 class AutoEnrollmentLocalPolicyServer : public EnrollmentLocalPolicyServerBase {
  public:
-  AutoEnrollmentLocalPolicyServer() = default;
+  AutoEnrollmentLocalPolicyServer() {
+    device_state_.SetState(DeviceStateMixin::State::BEFORE_OOBE);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnrollmentLocalPolicyServerBase::SetUpCommandLine(command_line);

@@ -576,6 +576,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     params.SetString("lsbReleaseBoard", base::SysInfo::GetLsbReleaseBoard());
 
   params.SetString("webviewPartitionName", partition_name);
+  signin_partition_name_ = partition_name;
 
   params.SetBoolean("extractSamlPasswordAttributes",
                     ExtractSamlPasswordAttributesEnabled());
@@ -969,6 +970,10 @@ void GaiaScreenHandler::ContinueAuthenticationWhenCookiesAvailable() {
       signin_partition_manager->GetCurrentStoragePartition();
   if (!partition)
     return;
+
+  // Validity check that partition did not change during login flow.
+  DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
+            signin_partition_name_);
 
   network::mojom::CookieManager* cookie_manager =
       partition->GetCookieManagerForBrowserProcess();

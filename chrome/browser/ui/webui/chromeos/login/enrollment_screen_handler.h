@@ -182,6 +182,8 @@ class EnrollmentScreenHandler
 
   ErrorScreen* error_screen_ = nullptr;
 
+  std::string signin_partition_name_;
+
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
   // Help application used for help dialogs.

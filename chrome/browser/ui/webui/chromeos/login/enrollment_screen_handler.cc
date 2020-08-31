@@ -769,6 +769,10 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user) {
   content::StoragePartition* partition =
       signin_partition_manager->GetCurrentStoragePartition();
 
+  // Validity check that partition did not change during enrollment flow.
+  DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
+            signin_partition_name_);
+
   partition->GetCookieManagerForBrowserProcess()->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(),
       net::CookieOptions::MakeAllInclusive(),
@@ -874,7 +878,10 @@ void EnrollmentScreenHandler::DoShow() {
 void EnrollmentScreenHandler::DoShowWithPartition(
     const std::string& partition_name) {
   base::DictionaryValue screen_data;
+
   screen_data.SetString("webviewPartitionName", partition_name);
+  signin_partition_name_ = partition_name;
+
   screen_data.SetString("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
   screen_data.SetString("clientId",
                         GaiaUrls::GetInstance()->oauth2_chrome_client_id());
