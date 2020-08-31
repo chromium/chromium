@@ -667,6 +667,21 @@ BUILDERS = {
         'platform': 'linux',
         'perf_processor': True,
     },
+    'chromeos-amd64-generic-lacros-builder-perf': {
+        'tests': [
+            {
+                'name': 'resource_sizes_lacros_chrome',
+                'isolate': 'resource_sizes_lacros_chrome',
+                'type': TEST_TYPES.GENERIC,
+            },
+        ],
+        'dimension': {
+            'cpu': 'x86-64',
+            'os': 'Ubuntu-16.04',
+            'pool': 'chrome.tests',
+        },
+        'perf_trigger': False,
+    }
 }
 
 # pylint: enable=line-too-long
@@ -787,6 +802,17 @@ OTHER_BENCHMARKS = {
     'resource_sizes_system_webview_google_bundle': RESOURCE_SIZES_METADATA,
 }
 
+
+OTHER_BENCHMARKS.update({
+    'resource_sizes_lacros_chrome':
+    BenchmarkMetadata(
+        emails='erikchen@chromium.org, huangs@chormium.org',
+        component='OS>LaCrOS',
+        documentation_url=(
+            'https://chromium.googlesource.com/chromium/'
+            'src/+/HEAD/tools/binary_size/README.md#resource_sizes_py'),
+    ),
+})
 
 SYSTEM_HEALTH_BENCHMARKS = set([
     'system_health.common_desktop',

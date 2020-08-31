@@ -26,6 +26,7 @@ _VALID_PERF_POOLS = {
     'android_arm64-builder-perf': {'chrome.tests'},
     'android-pixel4a_power-perf': {'chrome.tests.pinpoint'},
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
+    'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
 }
 
 

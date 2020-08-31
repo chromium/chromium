@@ -1430,6 +1430,11 @@
     "type": "generated_script",
     "script": "bin/resource_sizes_cronet_sample_apk",
   },
+  'resource_sizes_lacros_chrome': {
+    "label": "//chromeos/lacros:resource_sizes_lacros_chrome",
+    "type": "generated_script",
+    "script": "bin/resource_sizes_lacros_chrome",
+  },
   "resource_sizes_monochrome_public_minimal_apks": {
     "label": "//chrome/android:resource_sizes_monochrome_public_minimal_apks",
     "type": "generated_script",
