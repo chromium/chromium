@@ -30,8 +30,8 @@ class TabCloseButton : public views::ImageButton,
   TabCloseButton& operator=(const TabCloseButton&) = delete;
   ~TabCloseButton() override;
 
-  // Returns the width of the tab close button.
-  static int GetWidth();
+  // Returns the width/height of the tab close button, sans insets/padding.
+  static int GetGlyphSize();
 
   // This function must be called before the tab is painted so it knows what
   // colors to use. It must also be called when the background color of the tab

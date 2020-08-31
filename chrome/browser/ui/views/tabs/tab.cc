@@ -337,19 +337,17 @@ void Tab::Layout() {
     // for touch events.
     // TODO(pkasting): The padding should maybe be removed, see comments in
     // TabCloseButton::TargetForRect().
-    close_button_->SetBorder(views::NullBorder());
-    const gfx::Size close_button_size(close_button_->GetPreferredSize());
-    const int top = contents_rect.y() +
-                    Center(contents_rect.height(), close_button_size.height());
+    const int close_button_size = TabCloseButton::GetGlyphSize();
+    const int top =
+        contents_rect.y() + Center(contents_rect.height(), close_button_size);
     // Clamp the close button position to "centered within the tab"; this should
     // only have an effect when animating in a new active tab, which might start
     // out narrower than the minimum active tab width.
-    close_x = std::max(contents_rect.right() - close_button_size.width(),
-                       Center(width(), close_button_size.width()));
+    close_x = std::max(contents_rect.right() - close_button_size,
+                       Center(width(), close_button_size));
     const int left = std::min(after_title_padding, close_x);
-    const int bottom = height() - close_button_size.height() - top;
-    const int right =
-        std::max(0, width() - (close_x + close_button_size.width()));
+    const int bottom = height() - close_button_size - top;
+    const int right = std::max(0, width() - (close_x + close_button_size));
     close_button_->SetBorder(
         views::CreateEmptyBorder(top, left, bottom, right));
     close_button_->SetBoundsRect(

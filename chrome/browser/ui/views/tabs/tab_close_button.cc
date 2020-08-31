@@ -33,8 +33,8 @@
 #endif
 
 namespace {
-constexpr int kGlyphWidth = 16;
-constexpr int kTouchGlyphWidth = 24;
+constexpr int kGlyphSize = 16;
+constexpr int kTouchGlyphSize = 24;
 
 }  //  namespace
 
@@ -78,9 +78,9 @@ TabCloseButton::TabCloseButton(views::ButtonListener* listener,
 TabCloseButton::~TabCloseButton() {}
 
 // static
-int TabCloseButton::GetWidth() {
-  return ui::TouchUiController::Get()->touch_ui() ? kTouchGlyphWidth
-                                                  : kGlyphWidth;
+int TabCloseButton::GetGlyphSize() {
+  return ui::TouchUiController::Get()->touch_ui() ? kTouchGlyphSize
+                                                  : kGlyphSize;
 }
 
 void TabCloseButton::SetIconColors(SkColor foreground_color,
@@ -131,7 +131,7 @@ void TabCloseButton::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 gfx::Size TabCloseButton::CalculatePreferredSize() const {
-  int width = GetWidth();
+  int width = GetGlyphSize();
   gfx::Size size(width, width);
   gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
@@ -141,8 +141,8 @@ gfx::Size TabCloseButton::CalculatePreferredSize() const {
 void TabCloseButton::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   constexpr float kStrokeWidth = 1.5f;
-  float touch_scale = float{GetWidth()} / kGlyphWidth;
-  float size = (kGlyphWidth - 8) * touch_scale - kStrokeWidth;
+  float touch_scale = float{GetGlyphSize()} / kGlyphSize;
+  float size = (kGlyphSize - 8) * touch_scale - kStrokeWidth;
   gfx::RectF glyph_bounds(GetContentsBounds());
   glyph_bounds.ClampToCenteredSize(gfx::SizeF(size, size));
   flags.setAntiAlias(true);

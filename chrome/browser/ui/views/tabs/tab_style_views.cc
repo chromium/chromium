@@ -958,7 +958,7 @@ std::unique_ptr<TabStyleViews> TabStyleViews::CreateForTab(Tab* tab) {
 int TabStyleViews::GetMinimumActiveWidth() {
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
     return 72;
-  return TabCloseButton::GetWidth() + GetContentsHorizontalInsetSize() * 2;
+  return TabCloseButton::GetGlyphSize() + GetContentsHorizontalInsetSize() * 2;
 }
 
 // static
