@@ -739,6 +739,7 @@
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="1856715684130786728">ലൊക്കേഷൻ ചേർക്കുക...</translation>
 <translation id="1858585891038687145">സോഫ്‌റ്റ്‌വെയർ നിർമ്മാതാക്കളെ തിരിച്ചറിയുന്നതിന് ഈ സർട്ടിഫിക്കറ്റിനെ വിശ്വസിക്കുക</translation>
+<translation id="1860346308203060432">ഉപകരണ ദൃശ്യപരത കാണുക</translation>
 <translation id="1861262398884155592">ഈ ഫോൾഡറിൽ ഒന്നുമില്ല</translation>
 <translation id="1863182668524159459">സീരിയൽ പോർട്ടുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="1863316578636157783">മാൽവേർ അടങ്ങിയിരിക്കുന്നതിനാൽ "<ph name="EXTENSION_NAME" />" എന്നതിനെ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
@@ -763,6 +764,7 @@
 <translation id="1880905663253319515">"<ph name="CERTIFICATE_NAME" />" എന്ന സർട്ടിഫിക്കറ്റ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="1881445033931614352">കീബോർഡ് ലേഔട്ട്</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, കണക്‌റ്റ് ചെയ്യുക</translation>
+<translation id="1884340228047885921">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം ചില കോൺടാക്റ്റുകളാണ്</translation>
 <translation id="1884705339276589024">Linux ഡിസ്‌ക്കിന്റെ വലുപ്പം‌ മാറ്റുക</translation>
 <translation id="1885106732301550621">ഡിസ്ക് സ്പെയ്സ്</translation>
 <translation id="1886996562706621347">പ്രോട്ടോകോളുകള്‍ക്കായി ഡിഫോൾട്ട് ഹാന്‍ഡ്‌ലറുകള്‍ ആകുന്നത് ആവശ്യപ്പെടാൻ സൈറ്റുകളെ അനുവദിക്കുന്നു (ശുപാർശ ചെയ്തിരിക്കുന്നത്)</translation>
@@ -1099,6 +1101,7 @@
 <translation id="2307462900900812319">നെറ്റ്‌വർക്ക് കോൺഫിഗർ ചെയ്യുക</translation>
 <translation id="230927227160767054">ഈ പേജ് ഒരു സേവന ഹാൻഡ്‌ലർ ഇൻസ്റ്റാൾ ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു.</translation>
 <translation id="2309620859903500144">നിങ്ങളുടെ ചലന സെൻസർ അല്ലെങ്കിൽ പ്രകാശ സെൻസർ ആക്‌സസ് ചെയ്യുന്നതിൽ നിന്ന് ഈ സൈറ്റിനെ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു.</translation>
+<translation id="2314165183524574721">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം മറച്ചിരിക്കുന്നു</translation>
 <translation id="2314873619957287124">നിങ്ങളുടെ കുട്ടിയെ പഠിക്കാനും കളിക്കാനും അടുത്തറിയാനും സഹായിക്കുന്നതിന് ഡിജിറ്റൽ അടിസ്ഥാന നിയമങ്ങൾ സജ്ജീകരിക്കുക</translation>
 <translation id="2315414688463285945">Linux ഫയലുകൾ കോൺഫിഗർ ചെയ്യുന്നതിൽ പിശക്. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2315587498123194634"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് ലിങ്ക് അയയ്ക്കുക</translation>
@@ -1685,6 +1688,7 @@
 <translation id="3004391367407090544">പിന്നീട് വീണ്ടും വരിക</translation>
 <translation id="3006881078666935414">ഉപയോഗ ഡാറ്റ ഇല്ല</translation>
 <translation id="3007771295016901659">ഡ്യൂപ്ലിക്കേറ്റ് ടാബ്</translation>
+<translation id="3008232374986381779">Linux ടൂകളും എഡിറ്ററുകളും IDE-കളും നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ റൺ ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">അനുമതികൾ പുനഃസജ്ജീകരിക്കുക</translation>
 <translation id="3009300415590184725">മൊബൈൽ ഡാറ്റാ സേവന സജ്ജീകരണ പ്രോസസ് റദ്ദാക്കാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുവെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="3009779501245596802">ഇൻഡെക്‌സ് ചെയ്‌ത ഡാറ്റബേസുകള്‍</translation>
@@ -1826,6 +1830,7 @@
 <translation id="3183143381919926261">മൊബൈൽ ഡാറ്റാ നെറ്റ്‌വർക്കുകൾ</translation>
 <translation id="3183944777708523606">മോണിറ്റർ ക്രമീകരണം</translation>
 <translation id="3184536091884214176">CUPS പ്രിന്ററുകൾ സജ്ജമാക്കുക അല്ലെങ്കിൽ മാനേജ് ചെയ്യുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">ഫിസിക്കൽ സിം</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="3188465121994729530">ശരാശരി നീക്കുന്നു</translation>
 <translation id="3189187154924005138">വലിയ കഴ്‌സർ</translation>
@@ -2447,6 +2452,7 @@
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> കാലഹരണപ്പെട്ടു</translation>
 <translation id="3908501907586732282">വിപുലീകരണം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3909791450649380159">&amp;മുറിക്കുക</translation>
+<translation id="39103738135459590">സജീവമാക്കൽ കോഡ്</translation>
 <translation id="3911824782900911339">പുതിയ ടാബ് പേജ്</translation>
 <translation id="3915280005470252504">വോയ്‌സ് ഉപയോഗിച്ച് തിരയുക</translation>
 <translation id="3916233823027929090">സുരക്ഷാപരിശോധനകൾ പൂർത്തിയാക്കി</translation>
@@ -2659,6 +2665,7 @@
 <translation id="4159681666905192102">ഇത് <ph name="CUSTODIAN_EMAIL" />, <ph name="SECOND_CUSTODIAN_EMAIL" /> എന്നിവർ നിയന്ത്രിക്കുന്ന കുട്ടികൾക്കുള്ള അക്കൗണ്ടാണ്.</translation>
 <translation id="4163560723127662357">അജ്ഞാത കീബോർഡ്</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />-ന് സ്വന്തമായ ചില ക്രമീകരണങ്ങൾ നിങ്ങളുമായി പങ്കിടുന്നു. ഒന്നിലധികം സൈൻ ഇന്നുകൾ ഉപയോഗിക്കുമ്പോൾ മാത്രം ഈ ക്രമീകരണങ്ങൾ നിങ്ങളുടെ അക്കൗണ്ടിനെ ബാധിക്കുന്നു.</translation>
+<translation id="4170256733935344210">ഉപകരണത്തിന്റെ ക്യാമറ ഉപയോഗിച്ച് QR കോഡ് സ്‌കാൻ ചെയ്യുക അല്ലെങ്കിൽ നിങ്ങളുടെ സേവനദാതാവ് നൽകിയ സജീവമാക്കൽ കോഡ് നൽകുക</translation>
 <translation id="4170314459383239649">പുറത്തുകടക്കുമ്പോൾ മായ്‌ക്കുക</translation>
 <translation id="4175137578744761569">ഇളം പർപ്പിളും വെള്ളയും</translation>
 <translation id="4175737294868205930">സ്ഥിരമായ സ്‌റ്റോറേജ്</translation>
@@ -2747,6 +2754,7 @@
 <translation id="4296575653627536209">മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവിനെ ചേർക്കുക</translation>
 <translation id="4297219207642690536">പുനഃരാരംഭിച്ച് പുനഃസജ്ജീകരിക്കുക</translation>
 <translation id="4297813521149011456">ഡിസ്പ്ലേ റൊട്ടേഷൻ</translation>
+<translation id="4299596693977045093">eSim സജ്ജീകരിക്കൽ</translation>
 <translation id="4301671483919369635">ഫയലുകൾ എഡിറ്റ് ചെയ്യാൻ ഈ പേജിനെ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="4303079906735388947">നിങ്ങളുടെ സുരക്ഷാ കോഡിന് പുതിയൊരു പിൻ സജ്ജീകരിക്കുക</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് പകർത്തുക</translation>
@@ -3461,6 +3469,7 @@
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="52232769093306234">പായ്ക്ക് ചെയ്യുന്നത് പരാജയപ്പെട്ടു.</translation>
 <translation id="5225324770654022472">ആപ്പുകളുടെ കുറുക്കുവഴികൾ കാണിക്കുക</translation>
+<translation id="52254442782792731">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം ഇതുവരെ സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="5227679487546032910">ഡിഫോൾട്ടായ ടീൽ അവതാർ</translation>
 <translation id="5228088094491423618">തത്സമയ ക്യാപ്ഷനുകൾ</translation>
 <translation id="5228579091201413441">സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -4059,6 +4068,7 @@
 <translation id="5941153596444580863">ഉപയോക്താവിനെ ചേർക്കുക...</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" /> എന്നതിലേക്ക് ദയവായി പ്രവേശിക്കുക.</translation>
 <translation id="5941711191222866238">ചെറുതാക്കുക</translation>
+<translation id="5942779427914696408">ഉപകരണ ദൃശ്യപരത</translation>
 <translation id="5942964813783878922">ഈ അപ്ഡേറ്റിന് ശേഷം നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യും. ഭാവിയിൽ സോഫ്‌റ്റ്‌വെയറും സുരക്ഷാ അപ്ഡേറ്റുകളും സ്വയമേവ ഇൻസ്റ്റാൾ ചെയ്യും.</translation>
 <translation id="5944869793365969636">QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="5946591249682680882">റിപ്പോർട്ട് ഐഡി <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4232,6 +4242,7 @@
 <translation id="6148576794665275391">ഇപ്പോള്‍ തുറക്കുക</translation>
 <translation id="6149015141270619212">ഇന്റർനെറ്റ് കണ‌ക്‌റ്റ് ചെയ്യാനാവുന്നില്ല</translation>
 <translation id="614940544461990577">പരീക്ഷിച്ചുനോക്കൂ:</translation>
+<translation id="6150278227694566734">ചില കോൺടാക്‌റ്റുകൾ</translation>
 <translation id="6150961653851236686">പേജുകൾ വിവർത്തനം ചെയ്യുമ്പോൾ ഈ ഭാഷ ഉപയോഗിക്കുന്നു</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> തിരയുന്നതിനായി <ph name="SEARCH_KEY" /> അമര്‍ത്തുക</translation>
 <translation id="6151771661215463137">നിങ്ങളുടെ ഡൗൺലോഡ് ഫോൾഡറിൽ ഇതിനകം തന്നെ ഫയൽ നിലവിലുണ്ട്.</translation>
@@ -5079,6 +5090,7 @@
 <translation id="7210499381659830293">വിപുലീകരണ പ്രിന്ററുകള്‍</translation>
 <translation id="7211890396916697230">ഇ-സിം സജ്ജീകരിക്കുക</translation>
 <translation id="7212097698621322584">പിൻ മാറ്റാൻ നിലവിലെ പിൻ നൽകുക. നിങ്ങളുടെ പിൻ അറിയില്ലെങ്കിൽ, സുരക്ഷാ കീ പുനഃസജ്ജീകരിച്ച് പുതിയ പിൻ സൃഷ്‌ടിക്കേണ്ടി വരും.</translation>
+<translation id="7213903639823314449">വിലാസ ബാറിൽ ഉപയോഗിക്കുന്ന തിരയൽ യന്ത്രം</translation>
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
 <translation id="7216595297012131718">നിങ്ങളുടെ മുൻഗണന അനുസരിച്ച് ഭാഷകൾ ക്രമപ്പെടുത്തുക</translation>
 <translation id="7220019174139618249">"<ph name="FOLDER" />" ഫോൾഡറിലേക്ക് പാസ്‍വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാനാകില്ല</translation>
@@ -6169,6 +6181,7 @@
 <translation id="8539766201049804895">അപ്‍ഗ്രേഡ് ചെയ്യുക</translation>
 <translation id="8540136935098276800">ശരിയായി ഫോർമാറ്റ് ചെയ്‌ത URL നൽകുക</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
+<translation id="854071720451629801">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
 <translation id="8541462173655894684">പ്രിന്റ് സെർവറിൽ നിന്ന് പ്രിന്ററുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="8542618328173222274">നിങ്ങളുടെ വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും സൈറ്റിന് ഉപയോഗിക്കണമെങ്കിൽ ചോദിക്കുക</translation>
 <translation id="8543556556237226809">ചോദ്യങ്ങളുണ്ടോ? നിങ്ങളുടെ പ്രൊഫൈൽ മേൽനോട്ടത്തിലുള്ള വ്യക്തിയെ ബന്ധപ്പെടുക.</translation>
@@ -6442,6 +6455,7 @@
 <translation id="8846141544112579928">കീബോർഡിനായി തിരയുന്നു...</translation>
 <translation id="8847523528195140327">കവർ അടയ്‌ക്കുമ്പോൾ സൈൻ ഔട്ട് ചെയ്യുന്നു</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">മറച്ചിരിക്കുന്നു</translation>
 <translation id="8850251000316748990">കൂടുതൽ കാണുക...</translation>
 <translation id="885246833287407341">API ഫംഗ്‌ഷൻ സൂത്രവാക്യങ്ങൾ</translation>
 <translation id="8853586775156634952">ഈ ഉപകരണത്തിൽ മാത്രമേ ഈ കാർഡ് സംരക്ഷിക്കപ്പെടൂ</translation>
@@ -6467,6 +6481,7 @@
 <translation id="8872777911145321141">നിങ്ങളുടെ വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും സൈറ്റിന് ഉപയോഗിക്കണമെങ്കിൽ ചോദിക്കുക (ശുപാർശ ചെയ്യുന്നു)</translation>
 <translation id="8874184842967597500">കണക്റ്റല്ല</translation>
 <translation id="8875520811099717934">Linux അപ്ഗ്രേഡ് ചെയ്യൽ</translation>
+<translation id="8875736897340638404">നിങ്ങളുടെ ദൃശ്യപരത തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8876307312329369159">ഒരു ഡെമോ സെഷനിൽ ഈ ക്രമീകരണം മാറ്റാനാകില്ല.</translation>
 <translation id="8877448029301136595">[രക്ഷാകര്‍തൃ ഡയറക്റ്ററി]</translation>
 <translation id="8879284080359814990">&amp;ടാബായി കാണിക്കുക</translation>
@@ -6623,6 +6638,7 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />-മത്തെ വരി മുതൽ <ph name="ERROR_LINE_END" />-മത്തെ വരി വരെ പിശക്</translation>
 <translation id="9064275926664971810">ഒരൊറ്റ ക്ലിക്കിലൂടെ ഫോമുകള്‍ പൂരിപ്പിക്കുന്നതിന്, ഓട്ടോഫിൽ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="9065772380960598487">പിന്നീട് വായിക്കുക എന്നതിലേക്ക് ചേർക്കുക</translation>
 <translation id="9066773882585798925">ടെക്‌സ്‌റ്റ് ഉച്ചത്തിൽ വായിച്ച് കേൾപ്പിക്കുക</translation>
 <translation id="9066782832737749352">ടെക്‌സ്‌റ്റ് ടു സ്‌പീച്ച്</translation>
 <translation id="9068849894565669697">വർണ്ണം തിരഞ്ഞെടുക്കുക</translation>
@@ -6704,6 +6720,7 @@
 <translation id="9169496697824289689">കീബോർഡ് കുറുക്കുവഴികൾ കാണുക</translation>
 <translation id="916964310188958970">എന്തിനാണ് ഈ നിർദ്ദേശം?</translation>
 <translation id="9169931577761441333">ഹോം സ്‌ക്രീനിലേക്ക് <ph name="APP_NAME" /> ചേർക്കുക</translation>
+<translation id="9170061643796692986">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം എല്ലാ കോൺടാക്റ്റുകളുമാണ്</translation>
 <translation id="9170848237812810038">‍&amp;പൂര്‍വാവസ്ഥയിലാക്കുക</translation>
 <translation id="9170884462774788842">നിങ്ങളുടെ കമ്പ്യൂട്ടറിലെ മറ്റൊരു പ്രോഗ്രാം Chrome പ്രവർത്തിക്കുന്ന രീതി മാറ്റിയേക്കാവുന്ന ഒരു തീം ചേർത്തു.</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" />-നായി നിങ്ങളുടെ രക്ഷിതാവ് സജ്ജീകരിച്ച സമയ പരിധിയിലെത്തി. നിങ്ങൾക്ക് ഇത് നാളെ <ph name="TIME_LIMIT" /> ഉപയോഗിക്കാം.</translation>

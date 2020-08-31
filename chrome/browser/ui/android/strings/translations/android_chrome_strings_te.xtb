@@ -188,7 +188,7 @@
 ఏదైనా పదంపై తాకి &amp; అలాగే నొక్కి ఉంచడం ద్వారా, దానిని వెతకండి. మీ శోధనను మెరుగుపరచడానికి, మరిన్ని లేదా తక్కువ పదాలను ఎంచుకోండి. మీ శోధనను ఎడిట్ చేయడానికి, ప్యానెల్‌ను తెరిచి, చిహ్నంపై ట్యాప్ చేయడం ద్వారా కొత్త ట్యాబ్‌లో తెరిచి, శోధన పెట్టెలో మీ మార్పులు చేయండి.</translation>
 <translation id="246532703174860178">షేర్ చేయండి</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
-<translation id="2482878487686419369">ప్రకటనలు</translation>
+<translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2494974097748878569">Chromeలో Google అసిస్టెంట్</translation>
 <translation id="2496180316473517155">బ్రౌజింగ్ చరిత్ర</translation>
 <translation id="2497852260688568942">సింక్‌ను మీ నిర్వాహకులు నిలిపివేశారు</translation>
@@ -262,7 +262,7 @@
 <translation id="3062802207422175757">Chromeలోని మీ అభిరుచులకు అనుగుణమైన కథనాలు</translation>
 <translation id="3089395242580810162">అజ్ఞాత ట్యాబ్‌లో తెరువు</translation>
 <translation id="3114507951000454849">ఈరోజు వార్తలను చదవండి <ph name="NEWS_ICON" /></translation>
-<translation id="3123734510202723619">ప్రకటనలు</translation>
+<translation id="3123734510202723619">అనౌన్స్‌మెంట్‌లు</translation>
 <translation id="3137521801621304719">అజ్ఞాత మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="3143515551205905069">సింక్‌ను రద్దు చేయి</translation>
 <translation id="314939179385989105">Chrome హోమ్ పేజీ</translation>
@@ -272,7 +272,7 @@
 <translation id="3181954750937456830">సురక్షిత బ్రౌజింగ్ (ప్రమాదకరమైన సైట్‌ల నుండి మిమ్మల్ని, మీ పరికరాన్ని రక్షిస్తుంది)</translation>
 <translation id="3205824638308738187">దాదాపు పూర్తయింది!</translation>
 <translation id="3207960819495026254">బుక్‌మార్క్ చేయబడింది</translation>
-<translation id="3208584281581115441">ఇప్పుడే తనిఖీ చేయి</translation>
+<translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> తొలగించబడింది</translation>
 <translation id="321773570071367578">మీరు మీ రహస్య పదబంధాన్ని మర్చిపోతే లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకుంటే, <ph name="BEGIN_LINK" />సింక్‌ను రీసెట్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="3232754137068452469">వెబ్ యాప్‌</translation>
@@ -530,6 +530,7 @@
 <translation id="5199929503336119739">కార్యాలయ ప్రొఫైల్</translation>
 <translation id="5210286577605176222">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="5210365745912300556">ట్యాబ్‌ను మూసివేయి</translation>
+<translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> సమీపంలోని బ్లూటూత్ పరికరాల కోసం స్కాన్ చేయాలనుకుంటోంది. కింది పరికరాలు కనుగొనబడ్డాయి:</translation>
 <translation id="5233638681132016545">కొత్త‌ టాబ్</translation>
 <translation id="526421993248218238">ఈ పేజీని లోడ్ చేయడం సాధ్యం కాదు</translation>

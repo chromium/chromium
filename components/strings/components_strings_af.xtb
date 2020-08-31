@@ -263,6 +263,7 @@
 <translation id="1974060860693918893">Gevorderd</translation>
 <translation id="1975584088563498795">Posbus 10</translation>
 <translation id="1978555033938440688">Fermwareweergawe</translation>
+<translation id="1988881251331415125">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Konnektiwiteitdiagnostiek probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Kry toegang tot webkoekies en werfdata.
 
@@ -306,6 +307,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2154054054215849342">Sinkronisering is nie vir jou domein beskikbaar nie</translation>
 <translation id="2154484045852737596">Wysig kaart</translation>
 <translation id="2161656808144014275">Teks</translation>
+<translation id="2164510882479075877">Kyk of daar 'n tikfout is in <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Volle administrateurtoegang</translation>
 <translation id="2166378884831602661">Hierdie werf kan nie 'n veilige verbinding bied nie</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
@@ -1561,7 +1563,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7416351320495623771">Bestuur wagwoorde …</translation>
 <translation id="7419106976560586862">Profielpad</translation>
 <translation id="7437289804838430631">Voeg kontakinligting by</translation>
-<translation id="743897106051685947">Oorspronklike</translation>
 <translation id="7438976808740265764">Flash Player sal ná Desember 2020 nie meer gesteun word nie.</translation>
 <translation id="7440140511386898319">Verken terwyl jy vanlyn is</translation>
 <translation id="7441627299479586546">Verkeerde beleidonderwerp</translation>
@@ -1574,7 +1575,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7473891865547856676">Nee, dankie</translation>
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7485870689360869515">Geen data gevind nie.</translation>
-<translation id="7488762544858401571">Gewysig</translation>
 <translation id="7495290002932347110">'n Dataskending op 'n werf of program het jou wagwoord blootgestel. Chrome beveel aan dat jy jou gestoorde wagwoorde nagaan en jou wagwoord op <ph name="ORIGIN" /> nou verander.</translation>
 <translation id="7495528107193238112">Hierdie inhoud is geblokkeer. Kontak die werfeienaar om die kwessie reg te stel.</translation>
 <translation id="7498234416455752244">Hou aan wysig</translation>
@@ -1689,6 +1689,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7887683347370398519">Gaan jou CVC na en probeer weer</translation>
 <translation id="7887885240995164102">Gaan na prent-in-prent</translation>
 <translation id="7888575728750733395">Drukleweringvoorneme</translation>
+<translation id="7894280532028510793">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Netwerkdiagnostiek probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7932579305932748336">Bestryk</translation>
 <translation id="79338296614623784">Voer 'n geldige foonnommer in</translation>
@@ -1835,6 +1836,7 @@ Bykomende besonderhede:
 <translation id="8508648098325802031">Search-ikoon</translation>
 <translation id="8522552481199248698">Chrome kan jou help om jou Google-rekening te beskerm en jou wagwoord te verander.</translation>
 <translation id="8530813470445476232">Vee jou blaaigeskiedenis, webkoekies, kasgeheue en meer in Chrome-instellings uit</translation>
+<translation id="8533619373899488139">Besoek &lt;strong&gt;chrome://policy&lt;/strong&gt; om die lys geblokkeerde URL'e en ander beleide wat jou stelseladministrateur toepas, te sien.</translation>
 <translation id="8541158209346794904">Bluetooth-toestel</translation>
 <translation id="8542014550340843547">Tripelkram onder</translation>
 <translation id="8543181531796978784">Jy kan <ph name="BEGIN_ERROR_LINK" />'n bespeuringsprobleem aangee<ph name="END_ERROR_LINK" /> of, as jy die risikos vir jou sekuriteit verstaan, kan jy <ph name="BEGIN_LINK" />hierdie onveilige werf besoek<ph name="END_LINK" />.</translation>
@@ -1894,6 +1896,7 @@ Bykomende besonderhede:
 <translation id="884923133447025588">Geen herroepingmeganisme gevind nie.</translation>
 <translation id="885730110891505394">Deling met Google</translation>
 <translation id="8858065207712248076">Chrome beveel aan dat jy jou <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
+<translation id="885906927438988819">As die spelling korrek is, kan jy <ph name="BEGIN_LINK" />Windows Network Diagnostics probeer gebruik<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Kon nie beleidinstellings ontleed nie</translation>
 <translation id="8866928039507595380">Vou</translation>
 <translation id="886872106311861689">B3</translation>

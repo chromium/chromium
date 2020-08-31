@@ -739,6 +739,7 @@
 <translation id="1854180393107901205">停止投射</translation>
 <translation id="1856715684130786728">添加位置…</translation>
 <translation id="1858585891038687145">信任该证书，以便标识软件编写者的身份</translation>
+<translation id="1860346308203060432">查看设备公开范围</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
 <translation id="1863182668524159459">未发现串行端口</translation>
 <translation id="1863316578636157783">“<ph name="EXTENSION_NAME" />”含有恶意软件，因此已被停用</translation>
@@ -763,6 +764,7 @@
 <translation id="1880905663253319515">要删除证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="1881445033931614352">键盘布局</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，连接</translation>
+<translation id="1884340228047885921">当前的公开范围设置是“部分联系人”</translation>
 <translation id="1884705339276589024">调整 Linux 磁盘大小</translation>
 <translation id="1885106732301550621">磁盘空间</translation>
 <translation id="1886996562706621347">允许网站要求成为协议的默认处理程序（推荐）</translation>
@@ -1099,6 +1101,7 @@
 <translation id="2307462900900812319">配置网络</translation>
 <translation id="230927227160767054">此页面想要安装一个服务处理程序。</translation>
 <translation id="2309620859903500144">此网站已被禁止使用您的动态传感器或光传感器。</translation>
+<translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
 <translation id="2314873619957287124">设置数字设备基本使用规则，帮助您的孩子学习、玩乐和探索</translation>
 <translation id="2315414688463285945">配置 Linux 文件时出错。请重试。</translation>
 <translation id="2315587498123194634">将链接发送到<ph name="DEVICE_NAME" /></translation>
@@ -1684,6 +1687,7 @@
 <translation id="3004391367407090544">请稍后再试</translation>
 <translation id="3006881078666935414">无使用情况数据</translation>
 <translation id="3007771295016901659">复制标签</translation>
+<translation id="3008232374986381779">在您的 <ph name="DEVICE_TYPE" /> 上运行 Linux 工具、编辑器和 IDE。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">重置权限</translation>
 <translation id="3009300415590184725">确定要取消移动数据服务安装过程吗？</translation>
 <translation id="3009779501245596802">索引型数据库</translation>
@@ -1825,6 +1829,7 @@
 <translation id="3183143381919926261">移动数据网络</translation>
 <translation id="3183944777708523606">显示器排列方式</translation>
 <translation id="3184536091884214176">设置或管理 CUPS 打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">实体 SIM 卡</translation>
 <translation id="3188257591659621405">我的文件</translation>
 <translation id="3188465121994729530">移动平均值</translation>
 <translation id="3189187154924005138">大号光标</translation>
@@ -2446,6 +2451,7 @@
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> 不是最新版本</translation>
 <translation id="3908501907586732282">启用扩展程序</translation>
 <translation id="3909791450649380159">剪切(&amp;T)</translation>
+<translation id="39103738135459590">激活码</translation>
 <translation id="3911824782900911339">打开新的标签页</translation>
 <translation id="3915280005470252504">语音搜索</translation>
 <translation id="3916233823027929090">已完成安全检查</translation>
@@ -2658,6 +2664,7 @@
 <translation id="4159681666905192102">此帐号是由 <ph name="CUSTODIAN_EMAIL" /> 和 <ph name="SECOND_CUSTODIAN_EMAIL" /> 管理的未成年人帐号。</translation>
 <translation id="4163560723127662357">未知键盘</translation>
 <translation id="4168015872538332605">属于<ph name="PRIMARY_EMAIL" />的部分设置现在也会用于您的帐号。仅当您使用多帐号登录时，这些设置才会影响您的帐号。</translation>
+<translation id="4170256733935344210">使用设备的摄像头扫描二维码，或者输入您的运营商提供的激活码</translation>
 <translation id="4170314459383239649">退出时清除</translation>
 <translation id="4175137578744761569">浅紫色和白色</translation>
 <translation id="4175737294868205930">永久存储</translation>
@@ -2746,6 +2753,7 @@
 <translation id="4296575653627536209">添加受监管用户</translation>
 <translation id="4297219207642690536">重启并重置</translation>
 <translation id="4297813521149011456">显示屏旋转</translation>
+<translation id="4299596693977045093">eSIM 卡设置</translation>
 <translation id="4301671483919369635">此页面可修改文件</translation>
 <translation id="4303079906735388947">为您的安全密钥设置一个新 PIN 码</translation>
 <translation id="4305402730127028764">复制到“<ph name="DEVICE_NAME" />”</translation>
@@ -3460,6 +3468,7 @@
 <translation id="5222676887888702881">退出</translation>
 <translation id="52232769093306234">打包失败。</translation>
 <translation id="5225324770654022472">显示应用快捷方式</translation>
+<translation id="52254442782792731">当前的公开范围设置是“尚未设置”</translation>
 <translation id="5227679487546032910">默认的蓝绿色头像</translation>
 <translation id="5228088094491423618">实时字幕</translation>
 <translation id="5228579091201413441">启用同步功能</translation>
@@ -4057,6 +4066,7 @@
 <translation id="5941153596444580863">添加用户…</translation>
 <translation id="5941343993301164315">请登录 <ph name="TOKEN_NAME" />。</translation>
 <translation id="5941711191222866238">最小化</translation>
+<translation id="5942779427914696408">设备公开范围</translation>
 <translation id="5942964813783878922">安装此更新之后，您的 <ph name="DEVICE_TYPE" /> 将会重启。后续的软件更新和安全更新将会自动安装。</translation>
 <translation id="5944869793365969636">扫描二维码</translation>
 <translation id="5946591249682680882">报告ID：<ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4229,6 +4239,7 @@
 <translation id="6148576794665275391">立即打开</translation>
 <translation id="6149015141270619212">无法连接到互联网</translation>
 <translation id="614940544461990577">请试试以下办法：</translation>
+<translation id="6150278227694566734">部分联系人</translation>
 <translation id="6150961653851236686">将网页翻译成此语言</translation>
 <translation id="6151323131516309312">按 <ph name="SEARCH_KEY" /> 可通过 <ph name="SITE_NAME" /> 进行搜索</translation>
 <translation id="6151771661215463137">“下载”文件夹中已存在此文件。</translation>
@@ -5076,6 +5087,7 @@
 <translation id="7210499381659830293">扩展打印机</translation>
 <translation id="7211890396916697230">设置 eSIM 卡</translation>
 <translation id="7212097698621322584">请输入您的当前 PIN 码以更改它。如果您不知道 PIN 码，则需要重置安全密钥，然后创建新 PIN 码。</translation>
+<translation id="7213903639823314449">地址栏中使用的搜索引擎</translation>
 <translation id="7216409898977639127">移动网络服务提供商</translation>
 <translation id="7216595297012131718">根据您的偏好设置对语言进行排序</translation>
 <translation id="7220019174139618249">无法将密码导出到“<ph name="FOLDER" />”</translation>
@@ -6165,6 +6177,7 @@
 <translation id="8539766201049804895">升级</translation>
 <translation id="8540136935098276800">请输入格式正确的网址</translation>
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
+<translation id="854071720451629801">标记为已读</translation>
 <translation id="8541462173655894684">通过打印服务器找不到任何打印机</translation>
 <translation id="8542618328173222274">在网站想使用您的虚拟实境设备和数据时询问您</translation>
 <translation id="8543556556237226809">有问题？请与负责监管您的个人资料的人员联系。</translation>
@@ -6439,6 +6452,7 @@
 <translation id="8846141544112579928">正在搜索键盘…</translation>
 <translation id="8847523528195140327">合盖后退出帐号</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">已隐藏</translation>
 <translation id="8850251000316748990">查看更多…</translation>
 <translation id="885246833287407341">API 函数参数</translation>
 <translation id="8853586775156634952">此信用卡信息将仅保存到此设备上</translation>
@@ -6464,6 +6478,7 @@
 <translation id="8872777911145321141">在网站想使用您的虚拟实境设备和数据时询问您（推荐）</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8875520811099717934">Linux 升级</translation>
+<translation id="8875736897340638404">选择您的公开范围</translation>
 <translation id="8876307312329369159">在演示会话中，此设置无法更改。</translation>
 <translation id="8877448029301136595">[上级目录]</translation>
 <translation id="8879284080359814990">显示为标签页(&amp;S)</translation>
@@ -6620,6 +6635,7 @@
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>
 <translation id="9064275926664971810">启用自动填充功能后，只需点击一次即可填写多个表单</translation>
 <translation id="9065203028668620118">编辑</translation>
+<translation id="9065772380960598487">添加到“稍后阅读”</translation>
 <translation id="9066773882585798925">让系统大声朗读文字</translation>
 <translation id="9066782832737749352">文字转语音</translation>
 <translation id="9068849894565669697">选择颜色</translation>
@@ -6701,6 +6717,7 @@
 <translation id="9169496697824289689">查看键盘快捷键</translation>
 <translation id="916964310188958970">为什么显示这项推荐内容？</translation>
 <translation id="9169931577761441333">将“<ph name="APP_NAME" />”添加到主屏幕</translation>
+<translation id="9170061643796692986">当前的公开范围设置是“所有联系人”</translation>
 <translation id="9170848237812810038">撤消(&amp;U)</translation>
 <translation id="9170884462774788842">您计算机上的其他程序添加了一个主题背景，该主题背景可能会改变 Chrome 的工作方式。</translation>
 <translation id="917350715406657904">您已达到您家长为“<ph name="APP_NAME" />”设定的使用时限。明天可以使用 <ph name="TIME_LIMIT" />。</translation>

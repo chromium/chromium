@@ -3,6 +3,7 @@
 <translationbundle lang="af">
 <translation id="1282031177488366470">Help om Chrome se kenmerke en werkverrigting te verbeter</translation>
 <translation id="1479202195792305274">Chrome kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
+<translation id="1504372625950710826">Chrome kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="1682483655351012182">Sinkroniseer jou Chrome-data</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Hierdie rekening en enige ongstoorde data sal uit Chrome en ander Google-programme op hierdie toestel verwyder word.</translation>
@@ -14,6 +15,7 @@
 <translation id="2574249610672786438">Meld op al jou toestelle aan om jou oortjies te sien van waar ook al jy Chrome gebruik</translation>
 <translation id="2576431527583832481">Chrome het pas beter geword! 'n Nuwe weergawe is beskikbaar.</translation>
 <translation id="257708665678654955">Wil jy hê dat Google Chrome volgende keer moet aanbied om bladsye in <ph name="LANGUAGE_NAME" /> van hierdie werf af te vertaal?</translation>
+<translation id="2695886661449553974">Chrome kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
 <translation id="2732745070297234559">Chrome kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
 <translation id="2919738076569633423">Deur Chrome te gebruik, stem jy in tot die <ph name="BEGIN_LINK_TOS" />diensbepalings<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chrome-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
@@ -31,15 +33,20 @@
 <translation id="3988789688219830639">Google Chrome het nie toegang tot jou foto's of video's nie. Aktiveer toegang in iOS-instellings &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">Help om Chrome te verbeter deur gebruikstatistiek en omvalverslae na Google te stuur.</translation>
 <translation id="415767770115540173">Kry 'n beter Google-ervaring in Chrome gegrond op jou ligging.</translation>
+<translation id="417201473131094001">Nie gesteun op Chrome Kanarie nie</translation>
 <translation id="424864128008805179">Meld af uit Chrome?</translation>
 <translation id="4249068189593983585">Chrome-wenk. Vir meer oortjieopsies, raak en hou die Wys Oortjies-knoppie op die nutsbalk aan die onderkant of bokant van jou skerm.</translation>
 <translation id="4523886039239821078">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer:</translation>
+<translation id="4633328489441962921">Chrome kan nie vir opdaterings kyk nie</translation>
 <translation id="4698415050768537821">Chrome kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
+<translation id="484033449593719797">Nie op Chrome Beta gesteun nie</translation>
 <translation id="5030102366287574140">Chrome kan help om jou teen dataskendings, onveilige webwerwe en meer te beskerm.</translation>
+<translation id="5162467219239570114">Chrome is verouderd. As geen opdatering in die <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> beskikbaar is nie, is dit moontlik dat jou toestel nie meer nuwe weergawes van Chrome ondersteun nie.</translation>
 <translation id="5389212809648216794">Google Chrome kan nie jou kamera gebruik nie omdat dit deur 'n ander program gebruik word</translation>
 <translation id="5639704535586432836">Maak Instellings &gt; Privaatheid &gt; Kamera &gt; Google Chrome oop en skakel die kamera aan.</translation>
 <translation id="5642200033778930880">Google Chrome kan nie jou kamera in deelaansigmodus gebruik nie</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">Chrome kan nie vanlyn vir opdaterings kyk nie</translation>
 <translation id="5854621639439811139">Chrome-wenk. Sekere knoppies soos Back, Forward en Search is nou aan die onderkant van jou skerm.</translation>
 <translation id="6036420186814142909">Google Chrome het kenmerke wat jou help om jou internetdata te bestuur, asook hoe vinnig jy webbladsye kan oplaai.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
@@ -52,6 +59,7 @@
         2. Tik op Verstekblaaierprogram.
         3. Kies Chrome.</translation>
 <translation id="6822673484890854830">Chrome kon nie alle wagwoorde nagaan nie. Probeer later weer.</translation>
+<translation id="7161390184744336561">Google Chrome is verouderd</translation>
 <translation id="7165736900384873061">Begin om Google Chrome se QR-skandeerder te gebruik</translation>
 <translation id="7172660552945675509">Wenk: <ph name="BEGIN_LINK" />Skuif Chrome na jou dok<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome gebruik Gesig-ID om gemagtigde toegang tot jou wagwoorde te verseker.</translation>
@@ -65,6 +73,7 @@
 <translation id="766361182512894255">Jou wagwoord is in 'n dataskending blootgestel. Chrome beveel aan dat jy die wagwoord nou verander.</translation>
 <translation id="7698568245838009292">Chrome wil toegang tot die kamera hê</translation>
 <translation id="7855730255114109580">Google Chrome is op datum</translation>
+<translation id="8160472928944011082">Chrome kan nie opdateer nie</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="840168496893712993">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer.</translation>
 <translation id="8459495907675268833">Die gekose data is van Chrome en gesinkroniseerde toestelle af verwyder. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en aktiwiteit, vanaf ander Google-dienste by history.google.com.</translation>

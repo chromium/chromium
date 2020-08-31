@@ -436,6 +436,7 @@
 <translation id="4278486392851938658">אין קישור קודם שהפעלת</translation>
 <translation id="4281245629646759298">צהוב בהיר</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
+<translation id="4294967782363273192">מיון בסדר עולה</translation>
 <translation id="4300318234632215983">הכרזה על כתובת האתר של קישור</translation>
 <translation id="4322625298640984693">סיינה</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{נקודה}=3{שלוש נקודות}two{# נקודות}many{# נקודות}other{# נקודות}}</translation>
@@ -644,6 +645,7 @@
 <translation id="5999630716831179808">קולות</translation>
 <translation id="6006050241733874051">טופס</translation>
 <translation id="6006064078185310784">{COUNT,plural, =1{קו נטוי שמאלי}two{# סימני קו נטוי שמאלי}many{# סימני קו נטוי שמאלי}other{# סימני קו נטוי שמאלי}}</translation>
+<translation id="6010616110396250088">מיון בסדר יורד</translation>
 <translation id="6017514345406065928">ירוק</translation>
 <translation id="602001110135236999">גלילה שמאלה</translation>
 <translation id="6034000775414344507">אפור בהיר</translation>

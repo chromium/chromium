@@ -262,6 +262,7 @@
 <translation id="1974060860693918893">Qo‘shimcha</translation>
 <translation id="1975584088563498795">Pochta qutisi 10</translation>
 <translation id="1978555033938440688">Mikrodastur versiyasi</translation>
+<translation id="1988881251331415125">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Ulanish diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Cookie-fayllari va boshqa sayt maʼlumotlariga ruxsat.
 
@@ -305,6 +306,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2154054054215849342">Domeningizda sinxronizatsiya xizmati o‘chirib qo‘yilgan</translation>
 <translation id="2154484045852737596">Karta ma’lumotlarini tahrirlash</translation>
 <translation id="2161656808144014275">Matn</translation>
+<translation id="2164510882479075877"><ph name="HOST_NAME" /> xatosiz kiritilganini tekshiring.</translation>
 <translation id="2166049586286450108">Administratorning barcha ma’lumotlarga to‘liq ruxsati</translation>
 <translation id="2166378884831602661">Bu sayt bilan xavfsiz aloqa o‘rnatib bo‘lmaydi</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
@@ -1555,7 +1557,6 @@ Batafsil axborot:
 <translation id="7416351320495623771">Parollarni boshqarish…</translation>
 <translation id="7419106976560586862">Profil saqlanadigan jild</translation>
 <translation id="7437289804838430631">Aloqa ma’lumotini qo‘shish</translation>
-<translation id="743897106051685947">Asli</translation>
 <translation id="7438976808740265764">Flash Player 2020-yil dekabrdan boshlab ishlamaydi.</translation>
 <translation id="7440140511386898319">Oflayn rejim bilan tanishuv</translation>
 <translation id="7441627299479586546">Noma’lum subyekt siyosati</translation>
@@ -1568,7 +1569,6 @@ Batafsil axborot:
 <translation id="7473891865547856676">Yo‘q, rahmat</translation>
 <translation id="7481312909269577407">Oldinga</translation>
 <translation id="7485870689360869515">Ma‘lumotlar topilmadi.</translation>
-<translation id="7488762544858401571">Tahrirlangan</translation>
 <translation id="7495290002932347110">Siz ishlatadigan sayt yoki ilovada axborot sizib chiqishi yuz bergan. Chrome hoziroq saqlangan parollaringizni tekshirishni va <ph name="ORIGIN" /> parolingizni yangilashni tavsiya qiladi.</translation>
 <translation id="7495528107193238112">Bu kontent bloklandi. Muammoni yechish uchun sayt egasiga murojaat qiling.</translation>
 <translation id="7498234416455752244">Tahrirlashda davom etish</translation>
@@ -1683,6 +1683,7 @@ Batafsil axborot:
 <translation id="7887683347370398519">CVC-kodni tekshiring va qayta urinib ko‘ring.</translation>
 <translation id="7887885240995164102">Tasvir ustida tasvir rejimiga kirish</translation>
 <translation id="7888575728750733395">Bosma uchun rangli renderlash usuli</translation>
+<translation id="7894280532028510793">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Tarmoq diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7932579305932748336">Muqovalash</translation>
 <translation id="79338296614623784">Telefon raqamini xatosiz kiriting</translation>
@@ -1829,6 +1830,7 @@ Batafsil axborot:
 <translation id="8508648098325802031">Qidiruv ikonkasi</translation>
 <translation id="8522552481199248698">Chrome Google hisobingizni himoyalash va parolni almashtirish uchun yordam beradi.</translation>
 <translation id="8530813470445476232">Brauzer tarixi, cookie fayllar, kesh va boshqa Chrome sozlamalarini tozalang</translation>
+<translation id="8533619373899488139">Administrator tomonidan tuzilgan URL manzillar qora roʻyxati va boshqa parametrlarni &lt;strong&gt;chrome://policy&lt;/strong&gt; sahifasi orqali koʻrish mumkin.</translation>
 <translation id="8541158209346794904">Bluetooth qurilma</translation>
 <translation id="8542014550340843547">Quyidan 3 marta steplerlash</translation>
 <translation id="8543181531796978784">Siz <ph name="BEGIN_ERROR_LINK" />aniqlangan muammo haqida xabar berishingiz<ph name="END_ERROR_LINK" /> yoki shaxsiy ma’lumotlaringizni xavf ostiga qo‘yishga tayyor bo‘lsangiz, <ph name="BEGIN_LINK" />ushbu xavfli saytga kirishingiz mumkin<ph name="END_LINK" />.</translation>
@@ -1888,6 +1890,7 @@ Batafsil axborot:
 <translation id="884923133447025588">Javob mexanizmi topilmadi.</translation>
 <translation id="885730110891505394">Google bilan baham ko‘rish</translation>
 <translation id="8858065207712248076">Parolingizni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> domenidan tashqaridagi saytda kiritgan bo‘lsangiz, uni zudlik bilan almashtirishingizni tavsiya etamiz.</translation>
+<translation id="885906927438988819">Xatosiz kiritilgan boʻlsa, <ph name="BEGIN_LINK" />Windows Tarmoq diagnostikasini<ph name="END_LINK" /> ishga tushiring.</translation>
 <translation id="8866481888320382733">Siyosat sozlamalarini tahlil qilib bo‘lmadi</translation>
 <translation id="8866928039507595380">Taxlash</translation>
 <translation id="886872106311861689">B3</translation>

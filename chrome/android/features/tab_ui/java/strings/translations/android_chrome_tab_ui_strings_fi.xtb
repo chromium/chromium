@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
 <translation id="1657719826150349398">Siirrä välilehti alaspäin</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
+<translation id="2277224997687551299">Muokkaa ryhmän nimeä</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Poista <ph name="TABS_COUNT_ONE" /> valittu välilehti ryhmästä.}other{Poista <ph name="TABS_COUNT_MANY" /> valittua välilehteä ryhmästä.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tiivistä <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="2569352796411618312">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="257674075312929031">Ryhmä</translation>
 <translation id="2613747923081026172">Luo ryhmä</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442">Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
 <translation id="2977480621796371840">Poista ryhmästä</translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Tiivistä <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä <ph name="TITLE_OF_GROUP" /> välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
 <translation id="4212246570487010370">Jatka selaamista</translation>
 <translation id="4450893287417543264">Älä näytä uudelleen</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Tarkista</translation>
 <translation id="5073204694187207510">Piilota koko näytön ruudukko</translation>
 <translation id="5082793167783849073">Luo ryhmä vertaillaksesi sivuja nopeasti. Aloita koskettamalla linkkiä pitkään.</translation>
+<translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5533021382642990449">Näytä myöhemmin</translation>
+<translation id="5558362125926932819">Sulje välilehtiryhmä, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> välilehteä ryhmiteltiin</translation>
 <translation id="58326064309361797">Ryhmittele välilehtiä vetämällä niitä</translation>
+<translation id="5846292395804797011">Sulje ryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6193448654517602979">Valitse välilehdet</translation>
 <translation id="6510648526783655549">Sulje välilehtirivi</translation>
 <translation id="6562820390860419811">Siirrä välilehti vasemmalle</translation>
 <translation id="6615455863669487791">Näytä</translation>
 <translation id="6840760312327750441">Kun haluat ryhmitellä välilehtiä, kosketa yhtä pitkään. Vedä se sitten toisen välilehden päälle.</translation>
+<translation id="6856809498882026482">Piilota monivalintatila</translation>
 <translation id="7151209024774799310">Poista välilehtiä ryhmästä</translation>
+<translation id="7204204600596740190">Monivalintatila</translation>
+<translation id="753732157349120914">Välilehtien vaihtaja</translation>
 <translation id="7559245342362162951">Näytä ryhmän välilehdet koko näytön ruudukossa</translation>
 <translation id="7792771145871471484">Tarkista ehdotukset.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Lisää <ph name="TABS_COUNT_ONE" /> valittu välilehti ryhmäksi}other{Lisää <ph name="TABS_COUNT_MANY" /> valittua välilehteä ryhmäksi}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Siirrä välilehti ylöspäin</translation>
 <translation id="8304833501377495048">Etkö halua nähdä välilehtiriviä uudelleen?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
+<translation id="8557923272772633250">Laajenna välilehtiryhmä, jossa on <ph name="NUMBER_OF_TABS" /> välilehteä.</translation>
 <translation id="8749939518995770034">Suljettu välilehtirivi</translation>
 <translation id="9150694013019234766">Vaihda välilehteä välilehtiryhmässä näytön alalaidassa</translation>
 <translation id="9169594135889675189">Luo ryhmään uusi välilehti</translation>

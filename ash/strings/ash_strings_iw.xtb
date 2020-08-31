@@ -170,6 +170,7 @@
 <translation id="2819276065543622893">תצא עכשיו מהחשבון.</translation>
 <translation id="2825224105325558319">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">מדף</translation>
+<translation id="2841907151129139818">עברת למצב טאבלט</translation>
 <translation id="2844169650293029770">‏מכשיר עם יציאת USB-C (יציאה שמאלית-קדמית)</translation>
 <translation id="2865888419503095837">פרטי רשת</translation>
 <translation id="2872961005593481000">כיבוי</translation>
@@ -221,6 +222,7 @@
 <translation id="3255483164551725916">מה אפשר לעשות?</translation>
 <translation id="3290356915286466215">לא מאובטחת</translation>
 <translation id="3294437725009624529">אורח</translation>
+<translation id="3307642347673023554">עברת למצב מחשב נייד</translation>
 <translation id="3308453408813785101">ל-<ph name="USER_EMAIL_ADDRESS" /> תהיה עדיין אפשרות להיכנס לחשבון מאוחר יותר.</translation>
 <translation id="3321628682574733415">קוד הורה שגוי</translation>
 <translation id="332587331255250389">יש להחליף את הסוללה</translation>

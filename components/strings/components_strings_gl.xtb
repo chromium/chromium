@@ -262,6 +262,7 @@
 <translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1975584088563498795">Caixa de correo 10</translation>
 <translation id="1978555033938440688">Versión do firmware</translation>
+<translation id="1988881251331415125">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos de conectividade<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Acceder ás cookies e aos datos dos sitios.
 
@@ -305,6 +306,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2154054054215849342">A sincronización non está dispoñible para o teu dominio</translation>
 <translation id="2154484045852737596">Editar tarxeta</translation>
 <translation id="2161656808144014275">Texto</translation>
+<translation id="2164510882479075877">Comproba que <ph name="HOST_NAME" /> estea ben escrito.</translation>
 <translation id="2166049586286450108">Acceso de administrador completo</translation>
 <translation id="2166378884831602661">Este sitio non pode fornecer unha conexión segura</translation>
 <translation id="2169984857010174799">Kaku2 (sobre)</translation>
@@ -1558,7 +1560,6 @@ Detalles adicionais:
 <translation id="7416351320495623771">Xestionar contrasinais…</translation>
 <translation id="7419106976560586862">Ruta do perfil</translation>
 <translation id="7437289804838430631">Engadir información de contacto</translation>
-<translation id="743897106051685947">Orixinal</translation>
 <translation id="7438976808740265764">A partir de decembro de 2020, Flash Player deixará de ser compatible.</translation>
 <translation id="7440140511386898319">Explorar contido mentres estás sen conexión</translation>
 <translation id="7441627299479586546">Asunto de política incorrecto</translation>
@@ -1571,7 +1572,6 @@ Detalles adicionais:
 <translation id="7473891865547856676">Non, grazas</translation>
 <translation id="7481312909269577407">Adiante</translation>
 <translation id="7485870689360869515">Non se atoparon datos.</translation>
-<translation id="7488762544858401571">Contido editado</translation>
 <translation id="7495290002932347110">O teu contrasinal está en risco debido a unha violación da seguranza dos datos dun sitio ou aplicación. Chrome recoméndache que comprobes os teus contrasinais gardados e que cambies o de <ph name="ORIGIN" /> agora.</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
 <translation id="7498234416455752244">Seguir editando</translation>
@@ -1686,6 +1686,7 @@ Detalles adicionais:
 <translation id="7887683347370398519">Comproba o CVC e téntao de novo</translation>
 <translation id="7887885240995164102">Acceder ao modo de pantalla superposta</translation>
 <translation id="7888575728750733395">Intent de renderización da impresión</translation>
+<translation id="7894280532028510793">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos de rede<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (sobre)</translation>
 <translation id="7932579305932748336">Recubrimento</translation>
 <translation id="79338296614623784">Introduce un número de teléfono válido</translation>
@@ -1832,6 +1833,7 @@ Detalles adicionais:
 <translation id="8508648098325802031">Icona de busca</translation>
 <translation id="8522552481199248698">Chrome pode axudarche a protexer a túa Conta de Google e a cambiar o teu contrasinal.</translation>
 <translation id="8530813470445476232">Borra o historial de navegación, as cookies, a memoria caché e moito máis na configuración de Chrome</translation>
+<translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URL bloqueados e outras políticas aplicadas polo teu administrador do sistema.</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8542014550340843547">Tres grampas na parte inferior</translation>
 <translation id="8543181531796978784">Podes <ph name="BEGIN_ERROR_LINK" />notificar un problema de detección<ph name="END_ERROR_LINK" /> ou, se aceptas os riscos que supón para a túa seguranza, <ph name="BEGIN_LINK" />visita este sitio non seguro<ph name="END_LINK" />.</translation>
@@ -1891,6 +1893,7 @@ Detalles adicionais:
 <translation id="884923133447025588">Non se atopou ningún mecanismo de revogación.</translation>
 <translation id="885730110891505394">Compartindo con Google</translation>
 <translation id="8858065207712248076">Chrome recoméndache que restablezas o contrasinal de <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se o reutilizaches noutros sitios.</translation>
+<translation id="885906927438988819">Se está ben escrito, podes <ph name="BEGIN_LINK" />probar a executar diagnósticos da rede de Windows<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Erro ao analizar a configuración da política</translation>
 <translation id="8866928039507595380">Dobrez</translation>
 <translation id="886872106311861689">B3</translation>

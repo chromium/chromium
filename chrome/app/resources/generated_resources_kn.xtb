@@ -743,6 +743,7 @@
 <translation id="1854180393107901205">ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1856715684130786728">ಸ್ಥಳ ಸೇರಿಸಿ...</translation>
 <translation id="1858585891038687145">ಸಾಫ್ಟ್‌ವೇರ್ ತಯಾರಕರನ್ನು ಗುರುತಿಸುವುದಕ್ಕಾಗಿ ಈ ಪ್ರಮಾಣಪತ್ರದ ಮೇಲೆ ವಿಶ್ವಾಸವಿಡಿ</translation>
+<translation id="1860346308203060432">ಸಾಧನದ ಗೋಚರತೆಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1861262398884155592">ಈ ಫೋಲ್ಡರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1863182668524159459">ಯಾವುದೇ ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="1863316578636157783">ಮಾಲ್‌ವೇರ್‌ ಅನ್ನು "<ph name="EXTENSION_NAME" />" ಒಳಗೊಂಡಿರುವುದರಿಂದ, ಅದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -767,6 +768,7 @@
 <translation id="1880905663253319515">"<ph name="CERTIFICATE_NAME" />" ಪ್ರಮಾಣಪತ್ರವನ್ನು ಅಳಿಸುವುದೆ?</translation>
 <translation id="1881445033931614352">ಕೀಬೋರ್ಡ್‌ ವಿನ್ಯಾಸ</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ಕನೆಕ್ಟ್</translation>
+<translation id="1884340228047885921">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಕೆಲವು ಸಂಪರ್ಕಗಳು ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="1884705339276589024">Linux ಡಿಸ್ಕ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಿ</translation>
 <translation id="1885106732301550621">ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶ</translation>
 <translation id="1886996562706621347">ಪ್ರೊಟೋಕಾಲ್‌ಗಳಿಗಾಗಿ ಡಿಫಾಲ್ಟ್ ಹ್ಯಾಂಡ್ಲರ್‌‌ಗಳಾಗಲು ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
@@ -1103,6 +1105,7 @@
 <translation id="2307462900900812319">ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರ್ ಮಾಡು</translation>
 <translation id="230927227160767054">ಸೇವೆ ಹ್ಯಾಂಡ್ಲರ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಈ ಪುಟವು ಬಯಸುತ್ತದೆ.</translation>
 <translation id="2309620859903500144">ನಿಮ್ಮ ಚಲನೆಯ ಅಥವಾ ಲೈಟ್‌ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸದಂತೆ ಈ ಸೈಟ್‌ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
+<translation id="2314165183524574721">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="2314873619957287124">ನಿಮ್ಮ ಮಕ್ಕಳು ಕಲಿಯಲು, ಆಟವಾಡಲು ಮತ್ತು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಲು ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ ತಳಮಟ್ಟದ ಡಿಜಿಟಲ್ ನಿಯಮಗಳನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="2315414688463285945">Linux ಫೈಲ್‌ಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2315587498123194634"><ph name="DEVICE_NAME" /> ಗೆ ಲಿಂಕ್ ಕಳುಹಿಸಿ</translation>
@@ -1688,6 +1691,7 @@
 <translation id="3004391367407090544">ದಯವಿಟ್ಟು ನಂತರ ಮರಳಿ ಬನ್ನಿ</translation>
 <translation id="3006881078666935414">ಯಾವುದೇ ಬಳಕೆ ಡೇಟಾ ಇಲ್ಲ</translation>
 <translation id="3007771295016901659">ನಕಲಿ ಟ್ಯಾಬ್‌</translation>
+<translation id="3008232374986381779">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Linux ಪರಿಕರಗಳು, ಎಡಿಟರ್‌ಗಳು ಮತ್ತು IDE ಗಳನ್ನು ರನ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">ಅನುಮತಿಗಳನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="3009300415590184725">ಮೊಬೈಲ್ ಡೇಟಾ ಸೇವೆಯ ಪ್ರಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
 <translation id="3009779501245596802">ಸೂಚ್ಯಂಕಗೊಳಿಸಿದ ಡೇಟಾಬೇಸ್‌ಗಳು</translation>
@@ -1829,6 +1833,7 @@
 <translation id="3183143381919926261">ಮೊಬೈಲ್ ಡೇಟಾ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="3183944777708523606">ಮಾನಿಟರ್ ಜೋಡಣೆ</translation>
 <translation id="3184536091884214176">CUPS ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಿ ಅಥವಾ ನಿರ್ವಹಿಸಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">ಭೌತಿಕ ಸಿಮ್</translation>
 <translation id="3188257591659621405">ನನ್ನ ಫೈಲ್‌ಗಳು</translation>
 <translation id="3188465121994729530">ಸರಿಸುವಿಕೆ ಸರಾಸರಿ</translation>
 <translation id="3189187154924005138">ದೊಡ್ಡ ಕರ್ಸರ್</translation>
@@ -2450,6 +2455,7 @@
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="3908501907586732282">ವಿಸ್ತರಣೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="3909791450649380159">ಕತ್ತರಿ&amp;ಸು</translation>
+<translation id="39103738135459590">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್</translation>
 <translation id="3911824782900911339">ಹೊಸ ಟ್ಯಾಬ್ ಪುಟ</translation>
 <translation id="3915280005470252504">ಧ್ವನಿ ಮೂಲಕ ಹುಡುಕಿ</translation>
 <translation id="3916233823027929090">ಭದ್ರತೆ ಪರಿಶೀಲನೆಗಳನ್ನು ಮಾಡಲಾಗಿದೆ</translation>
@@ -2663,6 +2669,7 @@
 <translation id="4159681666905192102"><ph name="CUSTODIAN_EMAIL" /> ಮತ್ತು <ph name="SECOND_CUSTODIAN_EMAIL" /> ಅವರು ಮಕ್ಕಳಿಗೆ ನಿರ್ವಹಿಸುವಂತಹ ಖಾತೆಯಾಗಿರುತ್ತದೆ.</translation>
 <translation id="4163560723127662357">ಅಪರಿಚಿತ ಕೀಬೋರ್ಡ್</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> ಸೇರಿದಂತಹ ಕೆಲವು ಸೆಟ್ಟಿಂಗ್‍ಗಳನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ. ಬಹು ಸೈನ್‍-ಇನ್ ಬಳಸುವಾಗ ಮಾತ್ರ ಈ ಸೆಟ್ಟಿಂಗ್‍ಗಳು ನಿಮ್ಮ ಖಾತೆಯ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರುತ್ತವೆ.</translation>
+<translation id="4170256733935344210">ಸಾಧನ ಕ್ಯಾಮರಾ ಬಳಸಿ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಅಥವಾ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಒದಗಿಸಿದ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="4170314459383239649">ನಿರ್ಗಮಿಸುವಲ್ಲಿ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="4175137578744761569">ತಿಳಿ ನೇರಳೆ ಮತ್ತು ಬಿಳಿ</translation>
 <translation id="4175737294868205930">ಶಾಶ್ವತವಾಗಿರುವ ಸಂಗ್ರಹಣೆ</translation>
@@ -2751,6 +2758,7 @@
 <translation id="4296575653627536209">ಮೇಲ್ವಿಚಾರಣೆಯ ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4297219207642690536">ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಮರುಹೊಂದಿಸಿ</translation>
 <translation id="4297813521149011456">ಡಿಸ್‌ಪ್ಲೇ ತಿರುಗಿಸುವಿಕೆ</translation>
+<translation id="4299596693977045093">eSim ಸೆಟಪ್</translation>
 <translation id="4301671483919369635">ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಈ ಪುಟಕ್ಕೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4303079906735388947">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಗಾಗಿ ಹೊಸ ಪಿನ್ ಹೊಂದಿಸಿ</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> ಗೆ ನಕಲಿಸಿ</translation>
@@ -3466,6 +3474,7 @@
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="52232769093306234">ಪ್ಯಾಕಿಂಗ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="5225324770654022472">ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್ ತೋರಿಸು</translation>
+<translation id="52254442782792731">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಇನ್ನೂ ಹೊಂದಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="5227679487546032910">ಡಿಫಾಲ್ಟ್ ಕೆನ್ನೀಲಿ ಅವತಾರ್</translation>
 <translation id="5228088094491423618">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್‌ಗಳು</translation>
 <translation id="5228579091201413441">ಸಿಂಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -4064,6 +4073,7 @@
 <translation id="5941153596444580863">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ...</translation>
 <translation id="5941343993301164315">ದಯವಿಟ್ಟು <ph name="TOKEN_NAME" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="5941711191222866238">ಕುಗ್ಗಿಸಿ</translation>
+<translation id="5942779427914696408">ಸಾಧನದ ಗೋಚರತೆ</translation>
 <translation id="5942964813783878922">ಈ ಅಪ್‌ಡೇಟ್‌ನ ನಂತರ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ. ನಂತರದ ಸಾಫ್ಟವೇರ್ ಮತ್ತು ಭದ್ರತೆ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="5944869793365969636">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="5946591249682680882">ವರದಿ ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4236,6 +4246,7 @@
 <translation id="6148576794665275391">ಈಗ ತೆರೆಯಿರಿ</translation>
 <translation id="6149015141270619212">ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="614940544461990577">ಪ್ರಯತ್ನಿಸಿ:</translation>
+<translation id="6150278227694566734">ಕೆಲವು ಸಂಪರ್ಕಗಳು</translation>
 <translation id="6150961653851236686">ಪುಟಗಳನ್ನು ಅನುವಾದಿಸುತ್ತಿರುವಾಗ ಈ ಭಾಷೆಯನ್ನು ಬಳಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6151323131516309312"><ph name="SITE_NAME" /> ಹುಡುಕಲು <ph name="SEARCH_KEY" /> ಒತ್ತಿ</translation>
 <translation id="6151771661215463137">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಈಗಾಗಲೇ ಫೈಲ್ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ.</translation>
@@ -5084,6 +5095,7 @@
 <translation id="7210499381659830293">ವಿಸ್ತರಣೆ ಪ್ರಿಂಟರ್‌ಗಳು</translation>
 <translation id="7211890396916697230">eSIM ಅನ್ನು ಸೆಟಪ್‌ ಮಾಡಿ</translation>
 <translation id="7212097698621322584">ಪಿನ್ ಬದಲಾಯಿಸಲು, ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪಿನ್ ಅನ್ನು ನಮೂದಿಸಿ. ನಿಮ್ಮ ಪಿನ್ ನಿಮಗೆ ಗೊತ್ತಿಲ್ಲದಿದ್ದರೆ, ನೀವು ಭದ್ರತೆ ಕೀ ಅನ್ನು ಮರುಹೊಂದಿಸಿ, ಆಮೇಲೆ ಹೊಸ ಪಿನ್ ಅನ್ನು ರಚಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
+<translation id="7213903639823314449">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಬಳಸಲಾದ ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
 <translation id="7216595297012131718">ನಿಮ್ಮ ಆದ್ಯತೆಯನ್ನು ಆಧರಿಸಿ ಭಾಷೆಗಳನ್ನು ಕ್ರಮಗೊಳಿಸಿ</translation>
 <translation id="7220019174139618249">"<ph name="FOLDER" />" ಗೆ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -6170,6 +6182,7 @@
 <translation id="8539766201049804895">ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
 <translation id="8540136935098276800">ಸರಿಯಾಗಿ ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಲಾದ URL ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ವಿವರಗಳು</translation>
+<translation id="854071720451629801">ಓದಿದಂತೆ ಗುರುತಿಸಿ</translation>
 <translation id="8541462173655894684">ಪ್ರಿಂಟ್ ಸರ್ವರ್‌ನಿಂದ ಯಾವುದೇ ಪ್ರಿಂಟರ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="8542618328173222274">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸಲು ಸೈಟ್ ಬಯಸಿದಾಗ, ಕೇಳಿ</translation>
 <translation id="8543556556237226809">ಪ್ರಶ್ನೆಗಳಿವೆಯೇ? ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡುವ ವ್ಯಕ್ತಿಯನ್ನು ಸಂಪರ್ಕಸಿ.</translation>
@@ -6444,6 +6457,7 @@
 <translation id="8846141544112579928">ಕೀಬೋರ್ಡ್‍ಗಾಗಿ ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8847523528195140327">ಕವರ್ ಮುಚ್ಚಿದ ನಂತರ ಸೈನ್ ಔಟ್ ಆಗಿ</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8850251000316748990">ಇನ್ನಷ್ಟು ನೋಡಿ...</translation>
 <translation id="885246833287407341">API ಕಾರ್ಯಾಚರಣೆಯ ಆರ್ಗ್ಯುಮೆಂಟ್‌ಗಳು</translation>
 <translation id="8853586775156634952">ಈ ಕಾರ್ಡ್ ಅನ್ನು ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರವೇ ಉಳಿಸಲಾಗುತ್ತದೆ</translation>
@@ -6469,6 +6483,7 @@
 <translation id="8872777911145321141">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸುವ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುವ ಮೊದಲು ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="8874184842967597500">ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="8875520811099717934">Linux ಅಪ್‌ಗ್ರೇಡ್</translation>
+<translation id="8875736897340638404">ನಿಮ್ಮ ಗೋಚರತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8876307312329369159">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಡೆಮೊ ಸೆಷನ್‌ನಲ್ಲಿ ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="8877448029301136595">[ಮೂಲ ಡೈರೆಕ್ಟರಿ]</translation>
 <translation id="8879284080359814990">ಟ್ಯಾಬ್‌ನಂತೆ &amp;ತೋರಿಸಿ</translation>
@@ -6625,6 +6640,7 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> ನೇ ಸಾಲಿನಿಂದ <ph name="ERROR_LINE_END" /> ನೇ ಸಾಲಿನವರೆಗೆ ದೋಷವಿದೆ</translation>
 <translation id="9064275926664971810">ಒಂದು ಕ್ಲಿಕ್‌ನೊಂದಿಗೆ ವೆಬ್ ಫಾರ್ಮ್‌ಗಳನ್ನು ತುಂಬಲು ಸ್ವಯಂ ತುಂಬುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
+<translation id="9065772380960598487">ನಂತರ ಓದಿ ಎಂಬ ಆಯ್ಕೆಗೆ ಸೇರಿಸಿ</translation>
 <translation id="9066773882585798925">ಪಠ್ಯವನ್ನು ಗಟ್ಟಿಯಾಗಿ ಓದುವುದನ್ನು ಆಲಿಸಿ</translation>
 <translation id="9066782832737749352">ಪಠ್ಯದಿಂದ ಧ್ವನಿ</translation>
 <translation id="9068849894565669697">ಬಣ್ಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -6706,6 +6722,7 @@
 <translation id="9169496697824289689">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="916964310188958970">ಈ ಸಲಹೆ ಏಕೆ ಕಾಣಿಸುತ್ತಿದೆ?</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ಅನ್ನು ಹೋಮ್‌ನ ಪರದೆಗೆ ಸೇರಿಸಿ</translation>
+<translation id="9170061643796692986">ಪ್ರಸ್ತುತ ಗೋಚರತೆ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಎಲ್ಲಾ ಸಂಪರ್ಕಗಳು ಎಂಬುದಕ್ಕೆ ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="9170848237812810038">&amp;ರದ್ದುಮಾಡು</translation>
 <translation id="9170884462774788842">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತೊಂದು ಪ್ರೋಗ್ರಾಂ Chrome ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದಂತಹ ಥೀಮ್ ಅನ್ನು ಸೇರಿಸಿದೆ.</translation>
 <translation id="917350715406657904"><ph name="APP_NAME" /> ಗೆ ನಿಮ್ಮ ಪೋಷಕರು ಹೊಂದಿಸಿದ ಸಮಯ-ಮಿತಿಯನ್ನು ನೀವು ತಲುಪಿದ್ದೀರಿ. ನೀವು ಇದನ್ನು ನಾಳೆ <ph name="TIME_LIMIT" /> ಸಮಯದವರೆಗೆ ಬಳಸಬಹುದು.</translation>

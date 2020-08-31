@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">Parar de transmitir</translation>
 <translation id="1856715684130786728">Adicionar localização...</translation>
 <translation id="1858585891038687145">Confiar neste certificado para identificar fabricantes de software</translation>
+<translation id="1860346308203060432">Ver visibilidade do dispositivo</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1863182668524159459">Nenhuma porta de série encontrada.</translation>
 <translation id="1863316578636157783">A extensão "<ph name="EXTENSION_NAME" />" foi desativada porque contém software malicioso.</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">Eliminar o certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Esquema de teclado</translation>
 <translation id="1884013283844450420">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ligar</translation>
+<translation id="1884340228047885921">A definição de visibilidade atual é Alguns contactos.</translation>
 <translation id="1884705339276589024">Redimensione o disco do Linux</translation>
 <translation id="1885106732301550621">Espaço em disco</translation>
 <translation id="1886996562706621347">Permitir que os Web sites peçam para se tornarem os processadores de protocolos predefinidos (recomendado)</translation>
@@ -1102,6 +1104,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2307462900900812319">Configurar rede</translation>
 <translation id="230927227160767054">Esta página pretende instalar um controlador de serviço.</translation>
 <translation id="2309620859903500144">Este site foi impedido de aceder aos seus sensores de movimento ou de luz.</translation>
+<translation id="2314165183524574721">A definição de visibilidade atual é Oculto.</translation>
 <translation id="2314873619957287124">Defina regras digitais básicas para ajudar a criança a aprender, jogar e explorar.</translation>
 <translation id="2315414688463285945">Ocorreu um erro ao configurar os ficheiros Linux. Tente novamente.</translation>
 <translation id="2315587498123194634">Enviar link para <ph name="DEVICE_NAME" /></translation>
@@ -1688,6 +1691,7 @@ Pretende pará-lo?</translation>
 <translation id="3004391367407090544">Volte novamente mais tarde</translation>
 <translation id="3006881078666935414">Sem dados de utilização</translation>
 <translation id="3007771295016901659">Duplicar o separador</translation>
+<translation id="3008232374986381779">Execute ferramentas, editores e IDEs do Linux no seu dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="3009300415590184725">Tem a certeza de que pretende cancelar o processo de configuração do serviço de dados móveis?</translation>
 <translation id="3009779501245596802">Bases de dados indexadas</translation>
@@ -1829,6 +1833,7 @@ Pretende pará-lo?</translation>
 <translation id="3183143381919926261">Redes de dados móveis</translation>
 <translation id="3183944777708523606">Posicionamento do monitor</translation>
 <translation id="3184536091884214176">Configure ou efetue a gestão de impressoras CUPS. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">SIM físico</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
 <translation id="3188465121994729530">Média de movimentações</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
@@ -2450,6 +2455,7 @@ Pretende pará-lo?</translation>
 <translation id="3908393983276948098">O <ph name="PLUGIN_NAME" /> está desatualizado</translation>
 <translation id="3908501907586732282">Ativar extensão</translation>
 <translation id="3909791450649380159">Cor&amp;tar</translation>
+<translation id="39103738135459590">Código de ativação</translation>
 <translation id="3911824782900911339">Página Novo separador</translation>
 <translation id="3915280005470252504">Pesquisar por voz</translation>
 <translation id="3916233823027929090">As verificações de segurança estão concluídas.</translation>
@@ -2663,6 +2669,7 @@ Pretende pará-lo?</translation>
 <translation id="4159681666905192102">Esta é uma conta para crianças gerida por <ph name="CUSTODIAN_EMAIL" /> e <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconhecido</translation>
 <translation id="4168015872538332605">Algumas definições pertencentes a <ph name="PRIMARY_EMAIL" /> estão a ser partilhadas consigo. Estas definições afetam apenas a sua conta quando utilizar o início de sessão integrado.</translation>
+<translation id="4170256733935344210">Leia o código QR com a câmara do dispositivo ou introduza o código de ativação fornecido pelo seu operador.</translation>
 <translation id="4170314459383239649">Limpar ao sair</translation>
 <translation id="4175137578744761569">Roxo claro e branco</translation>
 <translation id="4175737294868205930">Armazenamento persistente</translation>
@@ -2751,6 +2758,7 @@ Pretende pará-lo?</translation>
 <translation id="4296575653627536209">Adicionar utilizador supervisionado</translation>
 <translation id="4297219207642690536">Reiniciar e repor</translation>
 <translation id="4297813521149011456">Rotação do ecrã</translation>
+<translation id="4299596693977045093">Configuração do eSim</translation>
 <translation id="4301671483919369635">Esta página tem autorização para editar ficheiros</translation>
 <translation id="4303079906735388947">Configure um novo PIN para a sua chave de segurança.</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
@@ -3465,6 +3473,7 @@ Pretende pará-lo?</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
 <translation id="52232769093306234">Falha no acondicionamento.</translation>
 <translation id="5225324770654022472">Mostrar atalho das aplicações</translation>
+<translation id="52254442782792731">A definição de visibilidade atual ainda não está configurada.</translation>
 <translation id="5227679487546032910">Avatar azul esverdeado predefinido</translation>
 <translation id="5228088094491423618">Legendas instantâneas</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
@@ -4063,6 +4072,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5941153596444580863">Adicionar pessoa...</translation>
 <translation id="5941343993301164315">Inicie sessão em <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
+<translation id="5942779427914696408">Visibilidade do dispositivo</translation>
 <translation id="5942964813783878922">O dispositivo <ph name="DEVICE_TYPE" /> irá reiniciar após esta atualização. As atualizações de software e segurança futuras serão instaladas automaticamente.</translation>
 <translation id="5944869793365969636">Leia o código QR</translation>
 <translation id="5946591249682680882">ID do relatório <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4235,6 +4245,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6148576794665275391">Abrir agora</translation>
 <translation id="6149015141270619212">Não é possível ligar à Internet</translation>
 <translation id="614940544461990577">Experimente:</translation>
+<translation id="6150278227694566734">Alguns contactos</translation>
 <translation id="6150961653851236686">Este idioma é utilizado ao traduzir páginas</translation>
 <translation id="6151323131516309312">Prima <ph name="SEARCH_KEY" /> para pesquisar no <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">O ficheiro já existe na sua pasta de transferências.</translation>
@@ -5082,6 +5093,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7210499381659830293">Impressoras por extensão</translation>
 <translation id="7211890396916697230">Configurar eSIM</translation>
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>
+<translation id="7213903639823314449">Motor de pesquisa utilizado na barra de endereço</translation>
 <translation id="7216409898977639127">Operador de telemóvel</translation>
 <translation id="7216595297012131718">Ordene idiomas com base na sua preferência</translation>
 <translation id="7220019174139618249">Não é possível exportar as palavras-passe para "<ph name="FOLDER" />"</translation>
@@ -6171,6 +6183,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8539766201049804895">Atualizar</translation>
 <translation id="8540136935098276800">Introduza um URL formatado corretamente.</translation>
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
+<translation id="854071720451629801">Marcar como lido</translation>
 <translation id="8541462173655894684">Não foram encontradas quaisquer impressoras no servidor de impressão.</translation>
 <translation id="8542618328173222274">Perguntar quando um site pretender utilizar os seus dados e dispositivos de realidade virtual</translation>
 <translation id="8543556556237226809">Tem dúvidas? Contacte a pessoa que supervisiona o seu perfil.</translation>
@@ -6445,6 +6458,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8846141544112579928">A pesquisar teclado...</translation>
 <translation id="8847523528195140327">Terminar sessão quando a tampa for fechada</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Oculto</translation>
 <translation id="8850251000316748990">Veja mais…</translation>
 <translation id="885246833287407341">Argumentos de função da API</translation>
 <translation id="8853586775156634952">Este cartão será guardado apenas neste dispositivo.</translation>
@@ -6470,6 +6484,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8872777911145321141">Perguntar quando um site pretender utilizar os seus dados e dispositivos de realidade virtual (recomendado)</translation>
 <translation id="8874184842967597500">Sem ligação</translation>
 <translation id="8875520811099717934">Atualização do Linux</translation>
+<translation id="8875736897340638404">Escolha a sua visibilidade</translation>
 <translation id="8876307312329369159">Não é possível alterar esta definição numa sessão de demonstração.</translation>
 <translation id="8877448029301136595">[directório principal]</translation>
 <translation id="8879284080359814990">Mo&amp;strar Como Separador</translation>
@@ -6626,6 +6641,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> até <ph name="ERROR_LINE_END" />.</translation>
 <translation id="9064275926664971810">Ativar a funcionalidade de Preenchimento Automático para preencher formulários Web com um único clique</translation>
 <translation id="9065203028668620118">Editar</translation>
+<translation id="9065772380960598487">Adicionar a Ler mais tarde</translation>
 <translation id="9066773882585798925">Ouvir o texto em voz alta</translation>
 <translation id="9066782832737749352">Síntese de voz</translation>
 <translation id="9068849894565669697">Selecionar cor</translation>
@@ -6707,6 +6723,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9169496697824289689">Ver atalhos de teclado</translation>
 <translation id="916964310188958970">Porquê esta sugestão?</translation>
 <translation id="9169931577761441333">Adicionar <ph name="APP_NAME" /> ao ecrã principal</translation>
+<translation id="9170061643796692986">A definição de visibilidade atual é Todos os contactos.</translation>
 <translation id="9170848237812810038">An&amp;ular</translation>
 <translation id="9170884462774788842">Outro programa do computador adicionou um tema que pode alterar o funcionamento do Chrome.</translation>
 <translation id="917350715406657904">Atingiste o limite de tempo que o teu Pai ou Mãe definiu para a app <ph name="APP_NAME" />. Amanhã, podes utilizá-la durante <ph name="TIME_LIMIT" />.</translation>

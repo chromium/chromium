@@ -8,7 +8,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="2277224997687551299">गटाचे नाव संपादित करा</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{गटामधून निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब काढून टाका.}other{गटामधून निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब काढून टाका.}}</translation>
-<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले टॅब बंद करा.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले टॅब कोलॅप्स करा.}}</translation>
 <translation id="2569352796411618312">सूचना: तुमच्या टॅबपैकी <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
 <translation id="257674075312929031">गट</translation>
 <translation id="2613747923081026172">गट तयार करा</translation>

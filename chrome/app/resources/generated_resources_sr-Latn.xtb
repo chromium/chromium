@@ -739,6 +739,7 @@
 <translation id="1854180393107901205">Zaustavi prebacivanje</translation>
 <translation id="1856715684130786728">Dodaj lokaciju...</translation>
 <translation id="1858585891038687145">Ovaj sertifikat je pouzdan za identifikaciju proizvođača softvera</translation>
+<translation id="1860346308203060432">Prikaži vidljivost uređaja</translation>
 <translation id="1861262398884155592">Ovaj direktorijum je prazan</translation>
 <translation id="1863182668524159459">Nismo pronašli nijedan serijski port</translation>
 <translation id="1863316578636157783">Dodatak <ph name="EXTENSION_NAME" /> je onemogućen jer sadrži malver</translation>
@@ -749,7 +750,7 @@
 <translation id="186612162884103683">„<ph name="EXTENSION" />“ može da čita slike, video i audio datoteke na navedenim lokacijama, kao i da upisuje podatke u njih.</translation>
 <translation id="1867780286110144690"><ph name="PRODUCT_NAME" /> je spreman da dovrši instalaciju</translation>
 <translation id="1868193363684582383">„Ok Google“</translation>
-<translation id="1868553836791672080">Provera lozinke nije dostupna u Chromium-u</translation>
+<translation id="1868553836791672080">Provera lozinki nije dostupna u Chromium-u</translation>
 <translation id="1871534214638631766">Prikažite povezane informacije kada kliknete desnim tasterom na sadržaj ili ga dugo pritisnete</translation>
 <translation id="1871615898038944731"><ph name="DEVICE_TYPE" /> je ažuriran</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Premesti karticu u drugi prozor}one{Premesti kartice u drugi prozor}few{Premesti kartice u drugi prozor}other{Premesti kartice u drugi prozor}}</translation>
@@ -763,6 +764,7 @@
 <translation id="1880905663253319515">Želite da izbrišete sertifikat „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="1881445033931614352">Raspored tastature</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, poveži</translation>
+<translation id="1884340228047885921">Aktuelno podešavanje vidljivosti je: Neki kontakti</translation>
 <translation id="1884705339276589024">Promenite veličinu Linux diska</translation>
 <translation id="1885106732301550621">Prostor na disku</translation>
 <translation id="1886996562706621347">Dozvoli sajtovima da zahtevaju da postanu podrazumevani obrađivači za protokole (preporučeno)</translation>
@@ -1099,6 +1101,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2307462900900812319">Konfiguriši mrežu</translation>
 <translation id="230927227160767054">Ova stranica želi da instalira obrađivača usluge.</translation>
 <translation id="2309620859903500144">Ovom sajtu je zabranjen pristup senzorima za pokret ili svetlo.</translation>
+<translation id="2314165183524574721">Aktuelno podešavanje vidljivosti je: Skriveno</translation>
 <translation id="2314873619957287124">Postavite osnovna pravila u digitalnom svetu da biste pomogli detetu da uči, igra se i istražuje</translation>
 <translation id="2315414688463285945">Greška pri konfigurisanju Linux datoteka. Probajte ponovo.</translation>
 <translation id="2315587498123194634">Pošalji vezu na uređaj <ph name="DEVICE_NAME" /></translation>
@@ -1685,6 +1688,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3004391367407090544">Vratite se kasnije</translation>
 <translation id="3006881078666935414">Nema podataka o korišćenju</translation>
 <translation id="3007771295016901659">Napravi duplikat kartice</translation>
+<translation id="3008232374986381779">Pokrećite Linux alatke, uređivače i IDE-ove na uređaju <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Resetuj dozvole</translation>
 <translation id="3009300415590184725">Da li ste sigurni da želite da otkažete proces podešavanja usluge mobilnog prenosa podataka?</translation>
 <translation id="3009779501245596802">Indeksirane baze podataka</translation>
@@ -1826,6 +1830,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3183143381919926261">Mobilne mreže za prenos podataka</translation>
 <translation id="3183944777708523606">Raspored monitora</translation>
 <translation id="3184536091884214176">Podesite CUPS štampače ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">Fizički SIM</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
 <translation id="3188465121994729530">Pokretni prosek</translation>
 <translation id="3189187154924005138">Veliki kursor</translation>
@@ -2447,6 +2452,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3908393983276948098">Dodatna komponenta <ph name="PLUGIN_NAME" /> je zastarela</translation>
 <translation id="3908501907586732282">Omogući dodatak</translation>
 <translation id="3909791450649380159">Is&amp;eci</translation>
+<translation id="39103738135459590">Aktivacioni kôd</translation>
 <translation id="3911824782900911339">Stranica Nova kartica</translation>
 <translation id="3915280005470252504">Pretražujte glasom</translation>
 <translation id="3916233823027929090">Bezbednosne provere su gotove</translation>
@@ -2660,6 +2666,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4159681666905192102">Ovo je nalog za decu kojim upravljaju <ph name="CUSTODIAN_EMAIL" /> i <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Nepoznata tastatura</translation>
 <translation id="4168015872538332605">Neka podešavanja čiji je vlasnik <ph name="PRIMARY_EMAIL" /> se dele sa vama. Ta podešavanja utiču na nalog samo kada koristite višestruko prijavljivanje.</translation>
+<translation id="4170256733935344210">Skenirajte QR kôd pomoću kamere uređaja ili unesite aktivacioni kôd koji ste dobili od mobilnog operatera</translation>
 <translation id="4170314459383239649">Obriši pri zatvaranju</translation>
 <translation id="4175137578744761569">Svetloljubičasta i bela</translation>
 <translation id="4175737294868205930">Stalni memorijski prostor</translation>
@@ -2748,6 +2755,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4296575653627536209">Dodaj korisnika pod nadzorom</translation>
 <translation id="4297219207642690536">Restartuj i resetuj</translation>
 <translation id="4297813521149011456">Rotiranje ekrana</translation>
+<translation id="4299596693977045093">Podešavanje eSim-a</translation>
 <translation id="4301671483919369635">Ova stranica može da menja datoteke</translation>
 <translation id="4303079906735388947">Podesite novi PIN za bezbednosni ključ</translation>
 <translation id="4305402730127028764">Kopiraj na: <ph name="DEVICE_NAME" /></translation>
@@ -3462,6 +3470,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="52232769093306234">Pakovanje nije uspelo.</translation>
 <translation id="5225324770654022472">Prikaži prečicu za aplikacije</translation>
+<translation id="52254442782792731">Aktuelna vidljivost još uvek nije podešena</translation>
 <translation id="5227679487546032910">Podrazumevani tirkizni avatar</translation>
 <translation id="5228088094491423618">Titl uživo</translation>
 <translation id="5228579091201413441">Omogući sinhronizaciju</translation>
@@ -4060,6 +4069,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5941153596444580863">Dodaj osobu...</translation>
 <translation id="5941343993301164315">Prijavite se na <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Umanji</translation>
+<translation id="5942779427914696408">Vidljivost uređaja</translation>
 <translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> će se restartovati posle ovog ažuriranja. Buduća softverska i bezbednosna ažuriranja će se instalirati automatski.</translation>
 <translation id="5944869793365969636">Skenirajte QR kôd</translation>
 <translation id="5946591249682680882">ID izveštaja <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4232,6 +4242,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6148576794665275391">Otvori odmah</translation>
 <translation id="6149015141270619212">Ne možete da se povežete na internet</translation>
 <translation id="614940544461990577">Pokušajte:</translation>
+<translation id="6150278227694566734">Neki kontakti</translation>
 <translation id="6150961653851236686">Ovaj jezik se koristi pri prevođenju stranica</translation>
 <translation id="6151323131516309312">Pritisnite <ph name="SEARCH_KEY" /> da biste pretražili <ph name="SITE_NAME" /> sajt</translation>
 <translation id="6151771661215463137">Datoteka već postoji u direktorijumu sa preuzimanjima.</translation>
@@ -5079,6 +5090,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7210499381659830293">Štampači dodaci</translation>
 <translation id="7211890396916697230">Podesite eSIM</translation>
 <translation id="7212097698621322584">Unesite aktuelni PIN da biste ga promenili. Ako ne znate PIN, morate da resetujete bezbednosni ključ, pa da napravite novi PIN.</translation>
+<translation id="7213903639823314449">Pretraživač koji se koristi na traci za adresu</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="7216595297012131718">Rasporedite jezike po želji</translation>
 <translation id="7220019174139618249">Izvoz lozinki u datoteku „<ph name="FOLDER" />“ nije uspeo</translation>
@@ -6169,6 +6181,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8539766201049804895">Nadogradi</translation>
 <translation id="8540136935098276800">Unesite ispravno formatiran URL</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
+<translation id="854071720451629801">Označi kao pročitano</translation>
 <translation id="8541462173655894684">Nije pronađen nijedan štampač sa servera za štampanje</translation>
 <translation id="8542618328173222274">Pitaj kada sajt želi da koristi uređaje i podatke virtuelne realnosti</translation>
 <translation id="8543556556237226809">Imate pitanja? Kontaktirajte osobu koja vam nadgleda profil.</translation>
@@ -6443,6 +6456,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8846141544112579928">Tražimo tastaturu...</translation>
 <translation id="8847523528195140327">Odjavi me kada se poklopac zatvori</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Skriveno</translation>
 <translation id="8850251000316748990">Prikaži više...</translation>
 <translation id="885246833287407341">Promenljive za API funkciju</translation>
 <translation id="8853586775156634952">Ova kartica će se sačuvati samo na ovom uređaju</translation>
@@ -6468,6 +6482,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8872777911145321141">Pitaj kada sajt želi da koristi uređaje i podatke virtuelne realnosti (preporučeno)</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8875520811099717934">Nadogradnja Linux-a</translation>
+<translation id="8875736897340638404">Izaberite vidljivost</translation>
 <translation id="8876307312329369159">Ovo podešavanje ne možete da promenite u sesiji demonstracije.</translation>
 <translation id="8877448029301136595">[matični direktorijum]</translation>
 <translation id="8879284080359814990">&amp;Prikaži kao karticu</translation>
@@ -6624,6 +6639,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9063208415146866933">Greška od <ph name="ERROR_LINE_START" />. do <ph name="ERROR_LINE_END" />. reda</translation>
 <translation id="9064275926664971810">Omogućavanje automatskog popunjavanja veb-obrazaca jednim klikom</translation>
 <translation id="9065203028668620118">Izmeni</translation>
+<translation id="9065772380960598487">Dodaj u odeljak Pročitajte kasnije</translation>
 <translation id="9066773882585798925">Slušajte čitanje teksta naglas</translation>
 <translation id="9066782832737749352">Pretvaranje teksta u govor</translation>
 <translation id="9068849894565669697">Izaberite boju</translation>
@@ -6705,6 +6721,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="9169496697824289689">Prikaz tasterskih prečica</translation>
 <translation id="916964310188958970">Zašto ovaj predlog?</translation>
 <translation id="9169931577761441333">Dodajte <ph name="APP_NAME" /> na početni ekran</translation>
+<translation id="9170061643796692986">Aktuelno podešavanje vidljivosti je: Svi kontakti</translation>
 <translation id="9170848237812810038">&amp;Opozovi</translation>
 <translation id="9170884462774788842">Drugi program na računaru je dodao temu koja može da promeni način na koji Chrome funkcioniše.</translation>
 <translation id="917350715406657904">Dostigao/la si vremensko ograničenje koje je roditelj podesio za: <ph name="APP_NAME" />. Sutra imaš <ph name="TIME_LIMIT" /> na raspolaganju.</translation>

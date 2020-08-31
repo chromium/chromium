@@ -29,7 +29,7 @@
 <translation id="1779089405699405702">చిత్ర డీకోడర్</translation>
 <translation id="1818308510395330587">ARని వినియోగించడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా కెమెరాను ఆన్ చేయండి.</translation>
 <translation id="1887786770086287077">ఈ పరికరానికి స్థానం యాక్సెస్ ఆఫ్ చేయబడింది. దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో తిరిగి ఆన్ చేయండి.</translation>
-<translation id="1919345977826869612">ప్రకటనలు</translation>
+<translation id="1919345977826869612">యాడ్స్</translation>
 <translation id="1919950603503897840">పరిచయాలను ఎంచుకోండి</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1984937141057606926">మూడవ-పక్షం మినహా మిగిలినవి అనుమతించబడ్డాయి</translation>
@@ -51,7 +51,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2434158240863470628">డౌన్‌లోడ్ పూర్తయింది <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2440823041667407902">స్థాన యాక్సెస్</translation>
-<translation id="2482878487686419369">ప్రకటనలు</translation>
+<translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> ద్వారా నిర్వహించబడుతున్నాయి</translation>
 <translation id="2498359688066513246">సహాయం &amp; అభిప్రాయం</translation>
 <translation id="2501278716633472235">వెనుకకు వెళ్ళు</translation>

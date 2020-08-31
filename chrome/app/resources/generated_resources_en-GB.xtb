@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">Stop casting</translation>
 <translation id="1856715684130786728">Add location...</translation>
 <translation id="1858585891038687145">Trust this certificate for identifying software makers</translation>
+<translation id="1860346308203060432">View device visibility</translation>
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1863182668524159459">No serial ports found</translation>
 <translation id="1863316578636157783">'<ph name="EXTENSION_NAME" />' has been disabled because it contains malware</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">Delete certificate "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Keyboard layout</translation>
 <translation id="1884013283844450420">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connect</translation>
+<translation id="1884340228047885921">Current visibility setting is some contacts</translation>
 <translation id="1884705339276589024">Resize Linux disk</translation>
 <translation id="1885106732301550621">Disk space</translation>
 <translation id="1886996562706621347">Allow sites to ask to become default handlers for protocols (recommended)</translation>
@@ -1102,6 +1104,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2307462900900812319">Configure network</translation>
 <translation id="230927227160767054">This page wants to install a service handler.</translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
+<translation id="2314165183524574721">Current visibility setting is hidden</translation>
 <translation id="2314873619957287124">Set digital ground rules to help your child learn, play and explore</translation>
 <translation id="2315414688463285945">Error configuring Linux files. Please try again.</translation>
 <translation id="2315587498123194634">Send link to <ph name="DEVICE_NAME" /></translation>
@@ -1688,6 +1691,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3004391367407090544">Please come back later</translation>
 <translation id="3006881078666935414">No usage data</translation>
 <translation id="3007771295016901659">Duplicate tab</translation>
+<translation id="3008232374986381779">Run Linux tools, editors and IDEs on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="3009300415590184725">Are you sure you want to cancel the mobile data service set-up process?</translation>
 <translation id="3009779501245596802">Indexed Databases</translation>
@@ -1829,6 +1833,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3183143381919926261">Mobile data networks</translation>
 <translation id="3183944777708523606">Monitor arrangement</translation>
 <translation id="3184536091884214176">Set up or manage CUPS printers. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">Physical SIM</translation>
 <translation id="3188257591659621405">My files</translation>
 <translation id="3188465121994729530">Moving Average</translation>
 <translation id="3189187154924005138">Large cursor</translation>
@@ -2450,6 +2455,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> is out of date</translation>
 <translation id="3908501907586732282">Enable extension</translation>
 <translation id="3909791450649380159">Cu&amp;t</translation>
+<translation id="39103738135459590">Activation code</translation>
 <translation id="3911824782900911339">New Tab page</translation>
 <translation id="3915280005470252504">Search by voice</translation>
 <translation id="3916233823027929090">Security checks are done</translation>
@@ -2663,6 +2669,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4159681666905192102">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" /> and <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Unknown keyboard</translation>
 <translation id="4168015872538332605">Some settings belonging to <ph name="PRIMARY_EMAIL" /> are being shared with you. These settings only affect your account when using multiple sign-in.</translation>
+<translation id="4170256733935344210">Scan QR code using device camera or enter activation code provided by your operator</translation>
 <translation id="4170314459383239649">Clear On Exit</translation>
 <translation id="4175137578744761569">Light purple and white</translation>
 <translation id="4175737294868205930">Persistent storage</translation>
@@ -2751,6 +2758,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4296575653627536209">Add Supervised User</translation>
 <translation id="4297219207642690536">Restart and reset</translation>
 <translation id="4297813521149011456">Display rotation</translation>
+<translation id="4299596693977045093">eSIM setup</translation>
 <translation id="4301671483919369635">This page is allowed to edit files</translation>
 <translation id="4303079906735388947">Set up a new PIN for your security key</translation>
 <translation id="4305402730127028764">Copy to <ph name="DEVICE_NAME" /></translation>
@@ -3465,6 +3473,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="52232769093306234">Packing failed.</translation>
 <translation id="5225324770654022472">Show apps shortcut</translation>
+<translation id="52254442782792731">Current visibility setting is not set yet</translation>
 <translation id="5227679487546032910">Default teal avatar</translation>
 <translation id="5228088094491423618">Live Captions</translation>
 <translation id="5228579091201413441">Enable sync</translation>
@@ -4062,6 +4071,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5941153596444580863">Add person</translation>
 <translation id="5941343993301164315">Please sign in to <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimise</translation>
+<translation id="5942779427914696408">Device visibility</translation>
 <translation id="5942964813783878922">Your <ph name="DEVICE_TYPE" /> will restart after this update. Future software and security updates will install automatically.</translation>
 <translation id="5944869793365969636">Scan QR code</translation>
 <translation id="5946591249682680882">Report ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4234,6 +4244,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6148576794665275391">Open now</translation>
 <translation id="6149015141270619212">Can't connect to the Internet</translation>
 <translation id="614940544461990577">Try:</translation>
+<translation id="6150278227694566734">Some contacts</translation>
 <translation id="6150961653851236686">This language is used when translating pages</translation>
 <translation id="6151323131516309312">Press <ph name="SEARCH_KEY" /> to search <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">The file already exists in your download folder.</translation>
@@ -5081,6 +5092,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211890396916697230">Set up eSIM</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
+<translation id="7213903639823314449">Search engine used in the address bar</translation>
 <translation id="7216409898977639127">Mobile provider</translation>
 <translation id="7216595297012131718">Order languages based on your preference</translation>
 <translation id="7220019174139618249">Can't export passwords to '<ph name="FOLDER" />'</translation>
@@ -6171,6 +6183,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8539766201049804895">Upgrade</translation>
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
+<translation id="854071720451629801">Mark as read</translation>
 <translation id="8541462173655894684">Did not find any printers from the print server</translation>
 <translation id="8542618328173222274">Ask when a site wants to use your virtual reality devices and data</translation>
 <translation id="8543556556237226809">Questions? Contact the person who supervises your profile.</translation>
@@ -6445,6 +6458,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8846141544112579928">Searching for keyboard...</translation>
 <translation id="8847523528195140327">Sign out when cover is closed</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Hidden</translation>
 <translation id="8850251000316748990">See more...</translation>
 <translation id="885246833287407341">API function arguments</translation>
 <translation id="8853586775156634952">This card will be saved to this device only</translation>
@@ -6470,6 +6484,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8872777911145321141">Ask when a site wants to use your virtual reality devices and data (recommended)</translation>
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8875520811099717934">Linux upgrade</translation>
+<translation id="8875736897340638404">Choose your visibility</translation>
 <translation id="8876307312329369159">This setting can't be changed in a demo session.</translation>
 <translation id="8877448029301136595">[parent directory]</translation>
 <translation id="8879284080359814990">&amp;Show As Tab</translation>
@@ -6626,6 +6641,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Enable Auto-fill to fill out forms in a single click</translation>
 <translation id="9065203028668620118">Edit</translation>
+<translation id="9065772380960598487">Add to read later</translation>
 <translation id="9066773882585798925">Hear text read aloud</translation>
 <translation id="9066782832737749352">Text-to-Speech</translation>
 <translation id="9068849894565669697">Select colour</translation>
@@ -6707,6 +6723,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9169496697824289689">View keyboard shortcuts</translation>
 <translation id="916964310188958970">Why this suggestion?</translation>
 <translation id="9169931577761441333">Add <ph name="APP_NAME" /> to Home screen</translation>
+<translation id="9170061643796692986">Current visibility setting is all contacts</translation>
 <translation id="9170848237812810038">&amp;Undo</translation>
 <translation id="9170884462774788842">Another programme on your computer added a theme that may change the way Chrome works.</translation>
 <translation id="917350715406657904">You reached the time limit that your parent set for <ph name="APP_NAME" />. You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>

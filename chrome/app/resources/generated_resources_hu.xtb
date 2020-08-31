@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">Átküldés leállítása</translation>
 <translation id="1856715684130786728">Hely hozzáadása...</translation>
 <translation id="1858585891038687145">Bízzon meg ebben a tanúsítványban a szoftvergyártók azonosításakor</translation>
+<translation id="1860346308203060432">Az eszköz láthatóságának megtekintése</translation>
 <translation id="1861262398884155592">Ez a mappa üres</translation>
 <translation id="1863182668524159459">Nem található soros port</translation>
 <translation id="1863316578636157783">A(z) „<ph name="EXTENSION_NAME" />” bővítményt letiltottuk, mert rosszindulatú programot tartalmaz</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">Törli a "<ph name="CERTIFICATE_NAME" />" tanúsítványt?</translation>
 <translation id="1881445033931614352">Billentyűzetkiosztás</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, csatlakozás</translation>
+<translation id="1884340228047885921">Jelenlegi láthatósági beállítás: néhány névjegy</translation>
 <translation id="1884705339276589024">Linux-lemez átméretezése</translation>
 <translation id="1885106732301550621">Lemezterület</translation>
 <translation id="1886996562706621347">A webhelyek kérhetik, hogy protokollok alapértelmezett kezelői legyenek (ajánlott)</translation>
@@ -1102,6 +1104,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2307462900900812319">Hálózat beállítása</translation>
 <translation id="230927227160767054">Ez az oldal szolgáltatáskezelőt akar telepíteni.</translation>
 <translation id="2309620859903500144">Ennél a webhelynél le van tiltva a hozzáférés a felhasználó mozgás- vagy fényérzékelőihez.</translation>
+<translation id="2314165183524574721">Jelenlegi láthatósági beállítás: rejtett</translation>
 <translation id="2314873619957287124">Digitális alapszabályok beállításával segíthet gyermekének a tanulásban, játékban és felfedezésben</translation>
 <translation id="2315414688463285945">Hiba történt a Linux-fájlok konfigurálása során. Próbálja újra.</translation>
 <translation id="2315587498123194634">Link küldése ide: <ph name="DEVICE_NAME" /></translation>
@@ -1688,6 +1691,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3004391367407090544">Kérjük, jöjjön vissza később</translation>
 <translation id="3006881078666935414">Nincsenek használati adatok</translation>
 <translation id="3007771295016901659">Másodpéldány készítése</translation>
+<translation id="3008232374986381779">Linuxos eszközök, szerkesztők és IDE-szoftverek futtatása <ph name="DEVICE_TYPE" /> eszközén. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="3008272652534848354">Engedélyek visszavonása</translation>
 <translation id="3009300415590184725">Biztosan meg akarja szakítani a mobil adatátszolgáltatás telepítési folyamatát?</translation>
 <translation id="3009779501245596802">Indexelt adatbázisok</translation>
@@ -1829,6 +1833,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3183143381919926261">Mobiladat-hálózatok</translation>
 <translation id="3183944777708523606">Monitorelrendezés</translation>
 <translation id="3184536091884214176">CUPS-nyomtatók beállítása és kezelése. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
+<translation id="3184809672319591980">Fizikai SIM-kártya</translation>
 <translation id="3188257591659621405">Saját fájlok</translation>
 <translation id="3188465121994729530">Mozgás átlaga</translation>
 <translation id="3189187154924005138">Nagy kurzor</translation>
@@ -2450,6 +2455,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3908393983276948098">A(z) <ph name="PLUGIN_NAME" /> elavult</translation>
 <translation id="3908501907586732282">Bővítmény engedélyezése</translation>
 <translation id="3909791450649380159">Ki&amp;vágás</translation>
+<translation id="39103738135459590">Aktiváló kód</translation>
 <translation id="3911824782900911339">Új lap oldal</translation>
 <translation id="3915280005470252504">Hangalapú keresés</translation>
 <translation id="3916233823027929090">Biztonsági ellenőrzések sikeresen végrehajtva</translation>
@@ -2662,6 +2668,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4159681666905192102">Ez a fiók gyerekeknek készült; <ph name="CUSTODIAN_EMAIL" /> és <ph name="SECOND_CUSTODIAN_EMAIL" /> felügyelete mellett.</translation>
 <translation id="4163560723127662357">Ismeretlen billentyűzet</translation>
 <translation id="4168015872538332605">A(z) <ph name="PRIMARY_EMAIL" /> fiókhoz tartozó egyes beállítások meg vannak osztva Önnel. E beállítások csak a többfiókos bejelentkezés használata során érintik az Ön fiókját.</translation>
+<translation id="4170256733935344210">Olvassa be a QR-kódot az eszköz kamerájával, vagy adja meg a szolgáltató által adott aktiválási kódot.</translation>
 <translation id="4170314459383239649">Törlés kilépéskor</translation>
 <translation id="4175137578744761569">Világoslila-fehér</translation>
 <translation id="4175737294868205930">Állandó tárhely</translation>
@@ -2750,6 +2757,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4296575653627536209">Felügyelt felhasználók hozzáadása</translation>
 <translation id="4297219207642690536">Újraindítás és visszaállítás</translation>
 <translation id="4297813521149011456">Kijelző elforgatása</translation>
+<translation id="4299596693977045093">eSIM beállítása</translation>
 <translation id="4301671483919369635">Ez az oldal szerkeszthet fájlokat</translation>
 <translation id="4303079906735388947">Új PIN-kód beállítása a biztonsági hardverkulcshoz</translation>
 <translation id="4305402730127028764">Másolás ide: <ph name="DEVICE_NAME" /></translation>
@@ -3464,6 +3472,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="52232769093306234">Sikertelen csomagolás.</translation>
 <translation id="5225324770654022472">Alkalmazások parancsikon megjelenítése</translation>
+<translation id="52254442782792731">Jelenleg nincs megadott láthatósági beállítás</translation>
 <translation id="5227679487546032910">Alapértelmezett kékeszöld avatar</translation>
 <translation id="5228088094491423618">Élő feliratozás</translation>
 <translation id="5228579091201413441">Szinkronizálás bekapcsolása</translation>
@@ -4063,6 +4072,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5941153596444580863">Személy hozzáadása…</translation>
 <translation id="5941343993301164315">Kérjük, jelentkezzen be ide: <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Kis méret</translation>
+<translation id="5942779427914696408">Az eszköz láthatósága</translation>
 <translation id="5942964813783878922"><ph name="DEVICE_TYPE" /> eszköze újraindul a frissítés után. A továbbiakban a biztonsági és szoftverfrissítéseket automatikusan telepíti a rendszer.</translation>
 <translation id="5944869793365969636">QR-kód beolvasása</translation>
 <translation id="5946591249682680882">Jelentésazonosító: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4235,6 +4245,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6148576794665275391">Megnyitás most</translation>
 <translation id="6149015141270619212">Nem lehet kapcsolódni az internethez</translation>
 <translation id="614940544461990577">Próbálja ki a következőket:</translation>
+<translation id="6150278227694566734">Néhány névjegy</translation>
 <translation id="6150961653851236686">A böngésző erre a nyelvre fordítja le az oldalakat.</translation>
 <translation id="6151323131516309312">Nyomja meg a(z) <ph name="SEARCH_KEY" /> gombot a(z) <ph name="SITE_NAME" /> kereséshez</translation>
 <translation id="6151771661215463137">A fájl már megtalálható a letöltések mappájában.</translation>
@@ -5082,6 +5093,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7210499381659830293">Bővítményalapú nyomtatók</translation>
 <translation id="7211890396916697230">eSIM beállítása</translation>
 <translation id="7212097698621322584">A módosításhoz adja meg jelenlegi PIN-kódját. Ha nem tudja a PIN-kódot, vissza kell állítania a biztonsági hardverkulcsot, majd új PIN-kódot kell létrehoznia.</translation>
+<translation id="7213903639823314449">A címsávban használt keresőmotor</translation>
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
 <translation id="7216595297012131718">A nyelveket tetszés szerint rendezheti</translation>
 <translation id="7220019174139618249">Nem sikerült a jelszavak exportálása a következő helyre: <ph name="FOLDER" /></translation>
@@ -6172,6 +6184,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8539766201049804895">Frissítés</translation>
 <translation id="8540136935098276800">Megfelelő formátumú URL-t adjon meg</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
+<translation id="854071720451629801">Megjelölés olvasottként</translation>
 <translation id="8541462173655894684">Nem található nyomtató a nyomtatószerveren</translation>
 <translation id="8542618328173222274">Kérdezzen rá, ha valamelyik webhely használni szeretné az Ön virtuálisvalóság-eszközeit vagy -adatait</translation>
 <translation id="8543556556237226809">Kérdése van? Vegye fel a kapcsolatot a fiókját felügyelő személlyel.</translation>
@@ -6446,6 +6459,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8846141544112579928">Billentyűzet keresése…</translation>
 <translation id="8847523528195140327">Kijelentkezés a képernyő lecsukásakor</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Rejtett</translation>
 <translation id="8850251000316748990">Továbbiak...</translation>
 <translation id="885246833287407341">API-funkció argumentumai</translation>
 <translation id="8853586775156634952">A rendszer csak erre az eszközre menti a kártyát</translation>
@@ -6471,6 +6485,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8872777911145321141">Kérdezzen rá, ha valamelyik webhely használni szeretné az Ön virtuálisvalóság-eszközeit vagy -adatait (ajánlott)</translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>
 <translation id="8875520811099717934">A Linux frissítése</translation>
+<translation id="8875736897340638404">Itt megadhatja a láthatóságot</translation>
 <translation id="8876307312329369159">Ezt a beállítást nem lehet módosítani demó munkamenetben.</translation>
 <translation id="8877448029301136595">[szülőkönyvtár]</translation>
 <translation id="8879284080359814990">Megjeleníté&amp;s lapként</translation>
@@ -6627,6 +6642,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="9063208415146866933">Hiba a következő sorokban: <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Használja az Automatikus kitöltést, amellyel az űrlapokat egyetlen kattintással kitöltheti</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
+<translation id="9065772380960598487">Hozzáadás a későbbi olvasnivalókhoz</translation>
 <translation id="9066773882585798925">Szöveg felolvastatása</translation>
 <translation id="9066782832737749352">Szövegfelolvasás</translation>
 <translation id="9068849894565669697">Szín kiválasztása</translation>
@@ -6708,6 +6724,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="9169496697824289689">Billentyűparancsok megtekintése</translation>
 <translation id="916964310188958970">Miért jelent meg ez a javaslat?</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> hozzáadása a kezdőképernyőhöz</translation>
+<translation id="9170061643796692986">Jelenlegi láthatósági beállítás: az összes névjegy</translation>
 <translation id="9170848237812810038">&amp;Visszavonás</translation>
 <translation id="9170884462774788842">A számítógépen lévő egyik program olyan témát adott hozzá, amely módosíthatja a Chrome működését.</translation>
 <translation id="917350715406657904">Elérted a szülő által beállított időkorlátot a(z) <ph name="APP_NAME" /> alkalmazásban. Holnap újra használhatod a megadott ideig (<ph name="TIME_LIMIT" />).</translation>

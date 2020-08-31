@@ -3,6 +3,7 @@
 <translationbundle lang="fa">
 <translation id="1282031177488366470">‏کمک به بهبود ویژگی‌ها و عملکرد Chrome</translation>
 <translation id="1479202195792305274">‏Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که با «حساب Google» خود به سیستم وارد شوید.</translation>
+<translation id="1504372625950710826">‏Chrome موفق نشد به‌روزرسانی‌ها را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="1682483655351012182">‏همگام‌سازی داده‌های Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">‏این حساب و همه داده‌های ذخیره‌نشده از Chrome و دیگر برنامه‌های Google در این دستگاه برداشته می‌شود.</translation>
@@ -14,6 +15,7 @@
 <translation id="2574249610672786438">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، به سیستم وارد شوید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="2576431527583832481">‏‫Chrome بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="257708665678654955">‏می‌خواهید دفعه بعد Google Chrome ترجمه صفحات <ph name="LANGUAGE_NAME" /> این سایت را به شما پیشنهاد دهد؟</translation>
+<translation id="2695886661449553974">‏Chrome موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="2732745070297234559">‏Chrome نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید.</translation>
 <translation id="2919738076569633423">‏بااستفاده از Chrome، موافقت خود را با <ph name="BEGIN_LINK_TOS" />شرایط خدمات<ph name="END_LINK_TOS" /> اعلام می‌کنید.</translation>
 <translation id="3030414234702425231">‏ازآنجایی‌که درحال خارج شدن از حسابی هستید که <ph name="SIGNOUT_MANAGED_DOMAIN" /> آن را مدیریت می‌کند، داده‌های Chrome شما از این دستگاه حذف خواهد شد. داده‌هایتان در حساب Google شما باقی می‌ماند.</translation>
@@ -31,15 +33,20 @@
 <translation id="3988789688219830639">‏Google Chrome به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
 <translation id="4099578267706723511">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهتر شدن Chrome کمک کنید.</translation>
 <translation id="415767770115540173">‏با Chrome تجربه بهتری از Google براساس موقعیت مکانی‌تان داشته باشید.</translation>
+<translation id="417201473131094001">‏در Chrome Canary پشتیبانی نمی‌شود</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="4249068189593983585">‏نکته Chrome. برای دیدن گزینه‌های بیشتر برگه، دکمه «نمایش برگه‌ها» را در نوارابزار (واقع در پایین یا بالای صفحه) لمس کنید و نگه دارید.</translation>
 <translation id="4523886039239821078">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید:</translation>
+<translation id="4633328489441962921">‏Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
 <translation id="4698415050768537821">‏Chrome نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
+<translation id="484033449593719797">‏در «Chrome بتا» پشتیبانی نمی‌شود</translation>
 <translation id="5030102366287574140">‏Chrome می‌تواند به محافظت از شما دربرابر نقض داده، وب‌سایت‌های ناامن، و موارد دیگر کمک کند.</translation>
+<translation id="5162467219239570114">‏نسخه Chrome قدیمی است. اگر به‌روزرسانی‌ای در <ph name="BEGIN_LINK" />فروشگاه برنامه<ph name="END_LINK" /> دردسترس نیست، احتمالاً دستگاهتان نسخه‌های جدید Chrome را دیگر پشتیبانی نمی‌کند.</translation>
 <translation id="5389212809648216794">‏Google Chrome نمی‌تواند از دوربین استفاده کند زیرا برنامه دیگری از آن استفاده می‌کند</translation>
 <translation id="5639704535586432836">‏Settings (تنظیمات) &gt; Privacy (حریم خصوصی) &gt; Camera (دوربین) &gt; Google Chrome را باز کنید و دوربین را روشن کنید.</translation>
 <translation id="5642200033778930880">‏Google Chrome نمی‌تواند از دوربین درحالت «نمای تقسیم‌شده» استفاده کند</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">‏آفلاین هستید، Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند.</translation>
 <translation id="5854621639439811139">‏نکته Chrome. بعضی از دکمه‌ها مثل Back (برگشت)، Forward (به جلو) و Search (جستجو) اکنون در پایین صفحه هستند.</translation>
 <translation id="6036420186814142909">‏Google Chrome دارای قابلیت‌هایی است که به شما کمک می‌کند داده‌های اینترنت و سرعت بارگیری صفحه‌های وبتان را مدیریت کنید.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -52,6 +59,7 @@
         ۲. روی «برنامه مرورگر پیش‌فرض» ضربه بزنید؛
         ۳. Chrome را باز کنید.</translation>
 <translation id="6822673484890854830">‏Chrome نتوانست همه گذرواژه‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
+<translation id="7161390184744336561">‏نسخه Google Chrome قدیمی است</translation>
 <translation id="7165736900384873061">‏استفاده از اسکنر QR در Google Chrome را شروع کنید</translation>
 <translation id="7172660552945675509">‏نکته: <ph name="BEGIN_LINK" />Chrome را به داکتان انتقال دهید<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">‏Chrome برای اطمینان از دسترسی مجاز به گذرواژه‌هایتان از «شناسه تشخیص چهره» استفاده می‌کند.</translation>
@@ -65,6 +73,7 @@
 <translation id="766361182512894255">‏گذرواژه‌تان به‌دلیل نقض داده لو رفته است. Chrome توصیه می‌کند همین‌حالا گذرواژه را تغییر دهید.</translation>
 <translation id="7698568245838009292">‏Chrome می‌خواهد به «دوربین» دسترسی داشته باشد</translation>
 <translation id="7855730255114109580">‏Google Chrome به‌روز است</translation>
+<translation id="8160472928944011082">‏Chrome به‌روزرسانی نمی‌شود</translation>
 <translation id="8370517070665726704">‏حق نسخه‌برداری <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="840168496893712993">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید.</translation>
 <translation id="8459495907675268833">‏داده‌های انتخاب‌‌شده از Chrome و دستگاه‌های همگام‌سازی‌شده حذف شدند. ممکن است اشکال دیگری از سابقه مرورتان در حساب Google شما وجود داشته باشد، مانند جستجو‌ها و فعالیت دیگر سرویس‌های Google در history.google.com.</translation>

@@ -4,6 +4,7 @@
 <translation id="102360288709523007">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهبود Chromium کمک کنید.</translation>
 <translation id="1185134272377778587">‏درباره Chromium</translation>
 <translation id="1257458525759135959">‏برای ذخیره کردن تصاویر، روی «تنظیمات» ضربه بزنید و به Chromium اجازه دهید آن‌ها را به عکس‌ها اضافه کند</translation>
+<translation id="1361748954329991663">‏نسخه Chromium قدیمی است. اگر به‌روزرسانی‌ای در <ph name="BEGIN_LINK" />فروشگاه برنامه<ph name="END_LINK" /> دردسترس نیست، احتمالاً دستگاهتان نسخه‌های جدید Chromium را دیگر پشتیبانی نمی‌کند.</translation>
 <translation id="1472013873724362412">‏حساب شما در Chromium کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
 <translation id="1507010443238049608">‏کمک به بهبود ویژگی‌ها و عملکرد Chromium</translation>
 <translation id="1617663976202781617">‏داده‌های مربوط به همگام‌سازی Chromium</translation>
@@ -11,6 +12,7 @@
 <translation id="1838412507805038478">‏Chromium تأیید کرد که <ph name="ISSUER" /> گواهینامه این وب‌سایت را صادر کرده است.</translation>
 <translation id="1843424232666537147">‏Chromium دارای قابلیت‌هایی است که به شما کمک می‌کند داده‌های اینترنت و سرعت بارگیری صفحه‌های‌ وبتان را مدیریت کنید.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="2006345422933397527">‏Chromium موفق نشد به‌روزرسانی‌ها را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="2075400798887076382">‏از اینجا، به برگه‌هایی که دررایانه‌تان باز کرده‌اید دسترسی داشته باشید. کافی است Chromium را در رایانه‌تان باز کنید، به منو بروید و «...Sign in to Chromium» (ورود به سیستم Chromium) را انتخاب کنید.</translation>
 <translation id="2168108852149185974">‏برخی از افزونه‌ها باعث خرابی Chromium می‌شود. لطفاً آن‌ها را حذف نصب کنید:</translation>
 <translation id="2178608107313874732">‏Chromium اکنون نمی‌تواند از دوربین استفاده کند</translation>
@@ -22,15 +24,19 @@
 <translation id="2977470724722393594">‏Chromium به‌روز است</translation>
 <translation id="3256316712990552818">‏به Chromium کپی شد</translation>
 <translation id="3344973607274501920">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
+<translation id="3472200483164753384">‏در Chromium Canary پشتیبانی نمی‌شود</translation>
 <translation id="3639997914391704523">‏Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که با «حساب Google» خود به سیستم وارد شوید.</translation>
 <translation id="3805899903892079518">‏Chromium به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
+<translation id="4099085513035183040">‏در «Chromium بتا» پشتیبانی نمی‌شود</translation>
 <translation id="4166206055865952171">‏Chromium را مرورگر پیش‌فرض کنید</translation>
 <translation id="4555020257205549924">‏وقتی این قابلیت روشن است، Chromium ترجمه صفحات نوشته‌شده به سایر زبان‌ها را با استفاده از مترجم Google پیشنهاد می‌دهد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">‏روشن کردن اسکنر Chromium</translation>
 <translation id="4787850887676698916">‏برگه‌هایی که در دستگاه‌های دیگر در Chromium باز کرده‌اید، در اینجا نشان داده می‌شوند.</translation>
 <translation id="4828317641996116749">‏Chromium نتوانست همه گذرواژه‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
+<translation id="4985291216379576555">‏آفلاین هستید، Chromium نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
 <translation id="4999538639245140991">‏ازآنجایی‌که درحال خارج شدن از حسابی هستید که <ph name="SIGNOUT_MANAGED_DOMAIN" /> آن را مدیریت می‌کند، داده‌های Chromium شما از این دستگاه حذف خواهد شد. داده‌هایتان در حساب Google شما باقی می‌ماند.</translation>
 <translation id="5224391634244552924">‏گذرواژه ذخیره‌شده‌ای وجود ندارد. Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید.</translation>
+<translation id="5308226104666789935">‏Chromium نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
 <translation id="5521125884468363740">‏در همه دستگاه‌هایی که در آن‌ها از Chromium استفاده می‌کنید، به سیستم وارد شوید و همگام‌سازی را روشن کنید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="5573014823074921752">‏نکته Chromium. برای دیدن گزینه‌های بیشتر برگه، دکمه «نمایش برگه‌ها» را در نوارابزار (واقع در پایین یا بالای صفحه) لمس کنید و نگه دارید.</translation>
 <translation id="5700709190537129682">‏Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
@@ -42,6 +48,7 @@
 <translation id="6424492062988593837">‏Chromium بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="6604711459180487467">‏تجربه بهتری از Chromium بر مبنای مکانتان کسب کنید.</translation>
 <translation id="6820823224820483452">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید.</translation>
+<translation id="7018284295775193585">‏Chromium به‌روزرسانی نمی‌شود</translation>
 <translation id="7099326575020694068">‏Chromium نمی‌تواند از دوربین درحالت «نمای تقسیم» استفاده کند</translation>
 <translation id="7118091470949186573">‏اکنون می‌توانید با ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد و دیگر برنامه‌ها، از Chromium استفاده کنید.</translation>
 <translation id="7208566199746267865">‏Chromium با آوردن حساب‌هایتان به وب، در وقت شما صرفه‌جویی می‌کند. در «تنظیمات» می‌توانید حساب‌ها را اضافه یا حذف کنید.</translation>
@@ -62,6 +69,7 @@
 <translation id="8013573822802650211">‏در همه دستگاه‌هایی که در آن‌ها از Chromium استفاده می‌کنید، به سیستم وارد شوید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="8073677936375100957">‏داده‌های Chromium شما از این دستگاه پاک شود؟</translation>
 <translation id="8175055321229419309">‏نکته: <ph name="BEGIN_LINK" />Chromium را به لنگرگاهتان انتقال دهید<ph name="END_LINK" /></translation>
+<translation id="8240981428553046115">‏Chromium موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="8252885722420466166">‏با استفاده از مکانتان در Chromium، تجربه بهتری از Google داشته باشید.</translation>
 <translation id="8586442755830160949">‏حق نسخه‌برداری <ph name="YEAR" /> نویسندگان Chromium. کلیه حقوق محفوظ است.</translation>
 <translation id="8776843108004031667">‏این حساب و همه داده‌های ذخیره‌نشده از Chromium برداشته می‌شود.</translation>

@@ -3454,7 +3454,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5206215183583316675">"<ph name="CERTIFICATE_NAME" />" ezabatu nahi duzu?</translation>
 <translation id="520621735928254154">Ziurtagiria inportatzeko errorea</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Aldatu da arriskuan zegoen pasahitza. Arriskuan dauden # pasahitz gehiago daukazu. Pasahitz hori orain egiaztatzea gomendatzen dizu Chrome-k.}other{Aldatu da arriskuan zegoen pasahitza. Arriskuan dauden # pasahitz gehiago dauzkazu. Pasahitz horiek orain egiaztatzea gomendatzen dizu Chrome-k.}}</translation>
-<translation id="5207949376430453814">Nabarmendu tartekatze-ikurra</translation>
+<translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
 <translation id="5209320130288484488">Ez da aurkitu gailurik</translation>
 <translation id="5210365745912300556">Itxi fitxa</translation>
 <translation id="5213481667492808996">"<ph name="NAME" />" datu-zerbitzua erabiltzeko prest dago</translation>
@@ -4738,7 +4738,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6790497603648687708">Urrunetik gehitu da <ph name="EXTENSION_NAME" /></translation>
 <translation id="6790820461102226165">Gehitu pertsona bat...</translation>
 <translation id="6792072150955115067"><ph name="APP_NAME" /> aplikazioak pantailan duzun edukia <ph name="TARGET_NAME" /> fitxarekin partekatu nahi ditu. Aukeratu zer partekatu nahi duzun.</translation>
-<translation id="6793604637258913070">Agertzen edo mugitzen denean, nabarmendu tartekatze-ikurra</translation>
+<translation id="6793604637258913070">Agertzen edo mugitzen denean, nabarmendu testu-kurtsorea</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Arazoren bat izan da.</translation>
 <translation id="6798578729981748444">Inportazioa amaitzeko, itxi Firefox-eko leiho guztiak.</translation>

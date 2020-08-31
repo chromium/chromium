@@ -1640,6 +1640,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="3412937883532015092">Als je het beleid instelt op een getal, toont <ph name="PRODUCT_NAME" /> gedurende dat aantal milliseconden een melding en wordt vervolgens de alternatieve browser geopend.
 
       Als je dit beleid niet instelt of instelt op '0', wordt de URL onmiddellijk in een alternatieve browser geopend als je naar de URL navigeert.</translation>
+<translation id="3415954062311826850">Dit beleid wordt niet ondersteund binnen ARC.</translation>
 <translation id="34160070798637152">Beheert apparaatbrede netwerkconfiguratie.</translation>
 <translation id="3417130629744653218">Websites toestaan beschikbare betaalmethoden op te vragen</translation>
 <translation id="3417418267404583991">Als dit beleid is ingesteld op 'true' of niet is geconfigureerd, staat <ph name="PRODUCT_OS_NAME" /> gasten toe zich aan te melden. Gastensessies zijn anonieme sessies waar geen wachtwoord voor hoeft te worden ingevoerd.
@@ -1962,6 +1963,13 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen n
 <translation id="3870300103958000506">Advertenties zijn op alle sites toegestaan als je <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> instelt op 1 of niet instelt, tenzij <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> is ingesteld op False.
 
       Als je het beleid instelt op 2, worden advertenties geblokkeerd op alle sites met opdringerige advertenties.</translation>
+<translation id="387226665655554104">Het beleid beheert een lijst met modi voor snel ontgrendelen die gebruikers kunnen configureren en gebruiken om het vergrendelscherm te ontgrendelen.
+
+          Deze waarde bestaat uit een lijst met tekenreeksen. Geldige lijstitems zijn: "all", "PIN", "FINGERPRINT". Als je "all" toevoegt aan de lijst, zijn alle modi voor snel ontgrendelen beschikbaar voor gebruikers, waaronder modi die in de toekomst worden geïmplementeerd. Doe je dit niet, dan zijn alleen de modi voor snel ontgrendelen in de lijst beschikbaar.
+
+          Gebruik bijvoorbeeld ["all"] om alle modi voor snel ontgrendelen toe te staan. Gebruik ["PIN"] om alleen ontgrendelen via een pincode toe te staan. Gebruik ["PIN", "FINGERPRINT"] om een pincode en een vingerafdruk toe te staan.
+
+          Als je het beleid niet instelt of instelt op een lege lijst, zijn er geen modi voor snel ontgrendelen beschikbaar voor beheerde apparaten.</translation>
 <translation id="3877517141460819966">Geïntegreerde modus voor authenticatie met twee factoren</translation>
 <translation id="3879196885908353077">Downloads controleren op schendingen van de beveiligingsregels voor gevoelige gegevens</translation>
 <translation id="3879208481373875102">Lijst met afgedwongen geïnstalleerde web-apps instellen</translation>
@@ -3249,6 +3257,15 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="URL_BLOCKLIST_POLICY_NAME" />.
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
+<translation id="5628811596950455942">Het beleid beheert een lijst met modi voor snel ontgrendelen die gebruikers kunnen configureren en gebruiken om het vergrendelscherm te ontgrendelen.
+
+          Deze waarde bestaat uit een lijst met tekenreeksen. Geldige lijstitems zijn: "all", "PIN", "FINGERPRINT". Als je "all" toevoegt aan de lijst, zijn alle modi voor snel ontgrendelen beschikbaar voor gebruikers, waaronder modi die in de toekomst worden geïmplementeerd. Doe je dit niet, dan zijn alleen de modi voor snel ontgrendelen in de lijst beschikbaar.
+
+          Gebruik bijvoorbeeld ["all"] om alle modi voor snel ontgrendelen toe te staan. Gebruik ["PIN"] om alleen ontgrendelen via een pincode toe te staan. Gebruik ["PIN", "FINGERPRINT"] om een pincode en een vingerafdruk toe te staan.
+
+          Als je het beleid niet instelt of instelt op een lege lijst, zijn er geen modi voor snel ontgrendelen beschikbaar voor beheerde apparaten.
+
+          Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
 <translation id="5633871703004128675">De toegankelijkheidsfunctie voor markering van het caret-teken inschakelen</translation>
 <translation id="5641279111657132737">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid '<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />'.

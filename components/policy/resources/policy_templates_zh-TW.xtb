@@ -1626,6 +1626,7 @@
 <translation id="3412937883532015092">如果將這項政策設為數值，<ph name="PRODUCT_NAME" /> 在開啟替代瀏覽器前會先顯示一則等待訊息，並依據該數值 (以毫秒為單位) 來設定這則訊息要顯示多久的時間。
 
       如果未設定這項政策或設為 0，當使用者前往指定網址時，系統會立即在替代瀏覽器中開啟該網址。</translation>
+<translation id="3415954062311826850">ARC 中不支援這項政策。</translation>
 <translation id="34160070798637152">控管裝置通用的網路設定。</translation>
 <translation id="3417130629744653218">允許網站查詢可用的付款方式。</translation>
 <translation id="3417418267404583991">如果這項政策設為 True 或未設定，<ph name="PRODUCT_OS_NAME" /> 會啟用訪客登入。訪客登入是匿名的使用者工作階段，並且不需要密碼。
@@ -1943,6 +1944,13 @@
 <translation id="3870300103958000506">除非 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 設為 False，否則將 <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> 設為 1 或不設定將允許所有網站顯示廣告。
 
       如果將這項政策設為 2，系統會禁止包含侵入式廣告的網站顯示廣告。</translation>
+<translation id="387226665655554104">這項政策控管快速解鎖模式的清單，可供使用者進行設定並用來解鎖螢幕畫面。
+
+          這項政策的值是字串清單；有效的清單項目為：「all」、「PIN」、「FINGERPRINT」。如果將「all」加入清單，則所有快速解鎖模式都可供使用，包括日後導入的模式。否則，只有清單中顯示的快速解鎖模式可供使用。
+
+          舉例來說，如要允許所有快速解鎖模式，請使用 ["all"]。如果只要允許 PIN 碼解鎖，請使用 ["PIN"]。如要允許 PIN 碼和指紋解鎖，請使用 ["PIN", "FINGERPRINT"]。
+
+          如果不設定這項政策或將清單設為空白，受管理的裝置將無法使用任何快速解鎖模式</translation>
 <translation id="3877517141460819966">整合式雙重驗證模式</translation>
 <translation id="3879196885908353077">檢查下載內容是否違反機密資料保護規則</translation>
 <translation id="3879208481373875102">設定強制安裝的網頁應用程式清單</translation>
@@ -3223,6 +3231,15 @@
       如果未設定這項政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 就不會有例外。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="5628811596950455942">這項政策控管快速解鎖模式的清單，可供使用者進行設定並用來解鎖螢幕畫面。
+
+          這項政策的值是字串清單；有效的清單項目為：「all」、「PIN」、「FINGERPRINT」。如果將「all」加入清單，則所有快速解鎖模式都可供使用，包括日後導入的模式。否則，只有清單中顯示的快速解鎖模式可供使用。
+
+          舉例來說，如要允許所有快速解鎖模式，請使用 ["all"]。如果只要允許 PIN 碼解鎖，請使用 ["PIN"]。如要允許 PIN 碼和指紋解鎖，請使用 ["PIN", "FINGERPRINT"]。
+
+          如果不設定這項政策或將清單設為空白，受管理的裝置將無法使用任何快速解鎖模式
+
+          這項政策已遭淘汰，請改用 <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /></translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>
 <translation id="5641279111657132737">這項政策已遭淘汰，請改用「<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />」政策。

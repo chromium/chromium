@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">Peata ülekandmine</translation>
 <translation id="1856715684130786728">Lisa asukoht ...</translation>
 <translation id="1858585891038687145">Usalda seda sertifikaati tarkvaraloojate tuvastamiseks</translation>
+<translation id="1860346308203060432">Kuva seadme nähtavuse seade</translation>
 <translation id="1861262398884155592">See kaust on tühi</translation>
 <translation id="1863182668524159459">Jadaporte ei leitud</translation>
 <translation id="1863316578636157783">Laiendus „<ph name="EXTENSION_NAME" />” keelati, kuna see sisaldab pahavara</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">Kas kustutada sertifikaat „<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="1881445033931614352">Klahvipaigutus</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, ühenda</translation>
+<translation id="1884340228047885921">Praegune nähtavuse seade on Mõned kontaktid</translation>
 <translation id="1884705339276589024">Linuxi ketta suuruse muutmine</translation>
 <translation id="1885106732301550621">Kettaruum</translation>
 <translation id="1886996562706621347">Võimalda saitidel küsida luba protokollide vaikimisi töötlemiseks (soovitatav)</translation>
@@ -1102,6 +1104,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2307462900900812319">Seadista võrk</translation>
 <translation id="230927227160767054">Leht soovib installida teenusetöötleja.</translation>
 <translation id="2309620859903500144">Sellel saidil on juurdepääs teie liikumis- ja valgusanduritele blokeeritud.</translation>
+<translation id="2314165183524574721">Praegune nähtavuse seade on Peidetud</translation>
 <translation id="2314873619957287124">Määrake digitaalse tegevuse põhireeglid, mis aitavad lapsel õppida, mängida ja avastada</translation>
 <translation id="2315414688463285945">Linuxi failide seadistamisel ilmnes viga. Proovige uuesti.</translation>
 <translation id="2315587498123194634">Saada link seadmesse <ph name="DEVICE_NAME" /></translation>
@@ -1688,6 +1691,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3004391367407090544">Tulge hiljem tagasi</translation>
 <translation id="3006881078666935414">Kasutusandmed puuduvad</translation>
 <translation id="3007771295016901659">Topeltvaheleht</translation>
+<translation id="3008232374986381779">Linuxi tööriistade, redaktorite ja IDE-de käitamine teie seadmes <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Lähtesta load</translation>
 <translation id="3009300415590184725">Kas soovite mobiilse andmesideteenuse seadistamise protsessi kindlasti tühistada?</translation>
 <translation id="3009779501245596802">Indekseeritud andmebaasid</translation>
@@ -1829,6 +1833,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3183143381919926261">Mobiilsidevõrgud</translation>
 <translation id="3183944777708523606">Kuvari paigutus</translation>
 <translation id="3184536091884214176">CUPS-printerite seadistamine või haldamine. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">Füüsiline SIM-kaart</translation>
 <translation id="3188257591659621405">Minu failid</translation>
 <translation id="3188465121994729530">Liikuv keskmine</translation>
 <translation id="3189187154924005138">Suur kursor</translation>
@@ -2450,6 +2455,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3908393983276948098">Pistikprogramm <ph name="PLUGIN_NAME" /> on aegunud</translation>
 <translation id="3908501907586732282">Luba laiendus</translation>
 <translation id="3909791450649380159">Lõ&amp;ika</translation>
+<translation id="39103738135459590">Aktiveerimiskood</translation>
 <translation id="3911824782900911339">Uus vaheleht</translation>
 <translation id="3915280005470252504">Häälotsing</translation>
 <translation id="3916233823027929090">Turvakontrollid on tehtud</translation>
@@ -2663,6 +2669,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4159681666905192102">Seda lastekontot haldavad <ph name="CUSTODIAN_EMAIL" /> ja <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Tundmatu klaviatuur</translation>
 <translation id="4168015872538332605">Teiega jagatakse teatud seadeid, mille omanik on <ph name="PRIMARY_EMAIL" />. Seaded mõjutavad teie kontot vaid juhul, kui kasutate mitmesse kontosse sisselogimist.</translation>
+<translation id="4170256733935344210">Skannige QR-kood seadme kaameraga või sisestage operaatorilt saadud aktiveerimiskood</translation>
 <translation id="4170314459383239649">Kustuta väljumisel</translation>
 <translation id="4175137578744761569">Helelilla ja valge</translation>
 <translation id="4175737294868205930">Püsiv salvestusruum</translation>
@@ -2751,6 +2758,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4296575653627536209">Jälgitava kasutaja lisamine</translation>
 <translation id="4297219207642690536">Taaskäivita ja lähtesta</translation>
 <translation id="4297813521149011456">Ekraanikuva pööramine</translation>
+<translation id="4299596693977045093">eSIM-i seadistamine</translation>
 <translation id="4301671483919369635">Lehel on lubatud faile muuta</translation>
 <translation id="4303079906735388947">Looge turvavõtme jaoks uus PIN-kood</translation>
 <translation id="4305402730127028764">Kopeeri seadmesse <ph name="DEVICE_NAME" /></translation>
@@ -3465,6 +3473,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="52232769093306234">Pakkimine ebaõnnestus.</translation>
 <translation id="5225324770654022472">Kuva rakenduste otsetee</translation>
+<translation id="52254442782792731">Praegust nähtavuse seadet pole veel määratud</translation>
 <translation id="5227679487546032910">Sinakasroheline vaikeavatar</translation>
 <translation id="5228088094491423618">Reaalajas subtiitrid</translation>
 <translation id="5228579091201413441">Sünkroonimise lubamine</translation>
@@ -4062,6 +4071,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5941153596444580863">Lisa isik ...</translation>
 <translation id="5941343993301164315">Logige üksusele <ph name="TOKEN_NAME" /> sisse.</translation>
 <translation id="5941711191222866238">Minimeeri</translation>
+<translation id="5942779427914696408">Seadme nähtavus</translation>
 <translation id="5942964813783878922">Pärast värskendamist teie seade <ph name="DEVICE_TYPE" /> taaskäivitatakse. Tulevased tarkvara- ja turvavärskendused installitakse automaatselt.</translation>
 <translation id="5944869793365969636">QR-koodi skannimine</translation>
 <translation id="5946591249682680882">Aruande ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4234,6 +4244,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6148576794665275391">Praegu avatud</translation>
 <translation id="6149015141270619212">Internetiga ei saa ühendust luua</translation>
 <translation id="614940544461990577">Proovige järgmist.</translation>
+<translation id="6150278227694566734">Mõned kontaktid</translation>
 <translation id="6150961653851236686">Seda keelt kasutatakse lehtede tõlkimiseks</translation>
 <translation id="6151323131516309312">Vajutage <ph name="SEARCH_KEY" />, et otsida <ph name="SITE_NAME" />-st</translation>
 <translation id="6151771661215463137">Fail on allalaadimiste kaustas juba olemas.</translation>
@@ -5081,6 +5092,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7210499381659830293">Laienduse printerid</translation>
 <translation id="7211890396916697230">eSIM-i seadistamine</translation>
 <translation id="7212097698621322584">PIN-koodi muutmiseks sisestage see. Kui te oma PIN-koodi ei tea, peate lähtestama turvavõtme ja looma siis uue PIN-koodi.</translation>
+<translation id="7213903639823314449">Aadressiribal kasutatud otsingumootor</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
 <translation id="7216595297012131718">Keeled järjestatakse teie eelistuste põhjal</translation>
 <translation id="7220019174139618249">Paroole ei saa kausta „<ph name="FOLDER" />” eksportida</translation>
@@ -6171,6 +6183,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8539766201049804895">Uuenda versiooni</translation>
 <translation id="8540136935098276800">Sisestage õigesti vormindatud URL</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
+<translation id="854071720451629801">Märgi loetuks</translation>
 <translation id="8541462173655894684">Prindiserverist ei leitud ühtegi printerit</translation>
 <translation id="8542618328173222274">Küsi, kui sait soovib kasutada teie virtuaalreaalsuse seadmeid ja andmeid</translation>
 <translation id="8543556556237226809">Kas teil on küsimusi? Võtke ühendust profiili operaatoriga.</translation>
@@ -6445,6 +6458,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8846141544112579928">Klaviatuuri otsimine ...</translation>
 <translation id="8847523528195140327">Logi välja, kui kaas on suletud</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Peidetud</translation>
 <translation id="8850251000316748990">Vaadake rohkem …</translation>
 <translation id="885246833287407341">API funktsiooni argumendid</translation>
 <translation id="8853586775156634952">Kaart salvestatakse ainult sellesse seadmesse</translation>
@@ -6470,6 +6484,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8872777911145321141">Küsi, kui sait soovib kasutada teie virtuaalreaalsuse seadmeid ja andmeid (soovitatav)</translation>
 <translation id="8874184842967597500">Ühendus puudub</translation>
 <translation id="8875520811099717934">Linux versiooniuuendus</translation>
+<translation id="8875736897340638404">Valige oma nähtavuse seade</translation>
 <translation id="8876307312329369159">Seda seadet ei saa demoseansis muuta.</translation>
 <translation id="8877448029301136595">[emakataloog]</translation>
 <translation id="8879284080359814990">&amp;Kuva vahelehena</translation>
@@ -6626,6 +6641,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9063208415146866933">Viga ridadel <ph name="ERROR_LINE_START" /> kuni <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Lubatakse automaattäide, et vorme ühe klikiga täita</translation>
 <translation id="9065203028668620118">Muuda</translation>
+<translation id="9065772380960598487">Lisa loendisse Hiljem lugemiseks</translation>
 <translation id="9066773882585798925">Teksti ettelugemine</translation>
 <translation id="9066782832737749352">Kõnesüntees</translation>
 <translation id="9068849894565669697">Värvi valimine</translation>
@@ -6707,6 +6723,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9169496697824289689">Kuva klaviatuuri otseteed</translation>
 <translation id="916964310188958970">Miks see soovitus?</translation>
 <translation id="9169931577761441333">Lisa <ph name="APP_NAME" /> avaekraanile</translation>
+<translation id="9170061643796692986">Praegune nähtavuse seade on Kõik kontaktid</translation>
 <translation id="9170848237812810038">&amp;Võta tagasi</translation>
 <translation id="9170884462774788842">Teine programm teie arvutis lisas teema, mis võib muuta Chrome'i toimimist.</translation>
 <translation id="917350715406657904">Jõudsid piiranguni, mille sinu vanem teenuses <ph name="APP_NAME" /> määras. Saad seda homme kasutada <ph name="TIME_LIMIT" />.</translation>

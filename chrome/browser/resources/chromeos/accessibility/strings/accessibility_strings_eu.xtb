@@ -339,7 +339,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{eskuineko kako zuzena}other{eskuineko # kako zuzen}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{galdera-ikurra}other{# galdera-ikur}}</translation>
-<translation id="3514822174137761109">{COUNT,plural, =1{tartekatze-ikurra}other{# tartekatze-ikur}}</translation>
+<translation id="3514822174137761109">{COUNT,plural, =1{azentu zirkunflexua}other{# azentu zirkunflexu}}</translation>
 <translation id="352577523970648069">Edita daitekeen testu-eremu bat</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">ebaki <ph name="TEXT" />.</translation>
@@ -449,7 +449,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Zeru-urdin iluna</translation>
 <translation id="4432457053224379116">Indiako gorria</translation>
-<translation id="4437615272777527928">Idatzi menuetan bilatu nahi duzuna. Erabili Gora eta Behera geziak emaitza batetik bestera joateko. Erabili Ezkerrera eta Eskuinera geziak tartekatze-ikurra doitzeko eta menu batetik bestera aldatzeko.</translation>
+<translation id="4437615272777527928">Idatzi menuetan bilatu nahi duzuna. Erabili Gora eta Behera geziak emaitza batetik bestera joateko. Erabili Ezkerrera eta Eskuinera geziak testu-kurtsorea doitzeko eta menu batetik bestera aldatzeko.</translation>
 <translation id="4457472090507035117">Hautatu uneko ahotsa:</translation>
 <translation id="4476183483923481720">lerro berria</translation>
 <translation id="4479068155583208887">Adreilu gorriaren kolorekoa</translation>

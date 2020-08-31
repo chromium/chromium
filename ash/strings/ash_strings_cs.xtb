@@ -107,6 +107,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2012624427112548395">Ctrl+Hledat+H</translation>
 <translation id="2016340657076538683">Zadejte zprávu</translation>
 <translation id="2018630726571919839">Řekni mi vtip</translation>
+<translation id="2049240716062114887">Název plochy byl změněn na <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
 <translation id="2083190527011054446">Dobrou noc, <ph name="GIVEN_NAME" />,</translation>
@@ -375,6 +376,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
 <translation id="4961318399572185831">Odesílání obrazovky</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
+<translation id="4975771730019223894">Označování aplikací odznakem</translation>
 <translation id="5030687792513154421">Čas vypršel</translation>
 <translation id="5035236842988137213">Zařízení <ph name="DEVICE_NAME" /> je připojeno k novému telefonu</translation>
 <translation id="5035389544768382859">Potvrzení konfigurace monitoru</translation>

@@ -259,6 +259,7 @@
 <translation id="1974060860693918893">高级</translation>
 <translation id="1975584088563498795">信箱 10</translation>
 <translation id="1978555033938440688">固件版本</translation>
+<translation id="1988881251331415125">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行连接诊断工具<ph name="END_LINK" />。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">访问 Cookie 和网站数据。
 
@@ -302,6 +303,7 @@
 <translation id="2154054054215849342">您的网域不支持同步</translation>
 <translation id="2154484045852737596">修改支付卡</translation>
 <translation id="2161656808144014275">文字</translation>
+<translation id="2164510882479075877">检查 <ph name="HOST_NAME" /> 中有无拼写错误。</translation>
 <translation id="2166049586286450108">完全的管理员访问权限</translation>
 <translation id="2166378884831602661">此网站无法提供安全连接</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
@@ -1545,7 +1547,6 @@
 <translation id="7416351320495623771">管理密码…</translation>
 <translation id="7419106976560586862">个人资料路径</translation>
 <translation id="7437289804838430631">添加联系信息</translation>
-<translation id="743897106051685947">原始</translation>
 <translation id="7438976808740265764">自 2020 年 12 月开始，Flash Player 将不再受支持。</translation>
 <translation id="7440140511386898319">离线浏览</translation>
 <translation id="7441627299479586546">策略主题有误</translation>
@@ -1558,7 +1559,6 @@
 <translation id="7473891865547856676">不，谢谢</translation>
 <translation id="7481312909269577407">前进</translation>
 <translation id="7485870689360869515">找不到数据。</translation>
-<translation id="7488762544858401571">已修改</translation>
 <translation id="7495290002932347110">某个网站或应用发生了数据泄露，导致您的密码外泄。Chrome 建议您立即检查并更改您在<ph name="ORIGIN" />上保存的密码。</translation>
 <translation id="7495528107193238112">该内容被屏蔽了。请联系网站所有者以解决此问题。</translation>
 <translation id="7498234416455752244">继续修改</translation>
@@ -1673,6 +1673,7 @@
 <translation id="7887683347370398519">请检查您的银行卡验证码 (CVC)，然后重试</translation>
 <translation id="7887885240995164102">进入“画中画”模式</translation>
 <translation id="7888575728750733395">打印操作渲染方式</translation>
+<translation id="7894280532028510793">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行网络诊断<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7932579305932748336">涂层</translation>
 <translation id="79338296614623784">请输入有效的电话号码</translation>
@@ -1819,6 +1820,7 @@
 <translation id="8508648098325802031">搜索图标</translation>
 <translation id="8522552481199248698">Chrome 可以帮助您保护您的 Google 帐号和更改密码。</translation>
 <translation id="8530813470445476232">请在 Chrome 设置中清除您的浏览记录、Cookie、缓存及其他数据</translation>
+<translation id="8533619373899488139">请访问 &lt;strong&gt;chrome://policy&lt;/strong&gt;，查看被屏蔽的网址列表以及您的系统管理员强制执行的其他政策。</translation>
 <translation id="8541158209346794904">蓝牙设备</translation>
 <translation id="8542014550340843547">三钉（底部）</translation>
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />报告检测问题<ph name="END_ERROR_LINK" />；或者，如果您了解自己将面临的安全风险，则可以<ph name="BEGIN_LINK" />访问这个不安全的网站<ph name="END_LINK" />。</translation>
@@ -1879,6 +1881,7 @@
 <translation id="884923133447025588">未找到任何吊销机制。</translation>
 <translation id="885730110891505394">与 Google 分享</translation>
 <translation id="8858065207712248076">如果您在其他网站上重复使用了您的 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密码，Chrome 建议您重置该密码。</translation>
+<translation id="885906927438988819">如果拼写无误，请<ph name="BEGIN_LINK" />尝试运行 Windows 网络诊断<ph name="END_LINK" />。</translation>
 <translation id="8866481888320382733">解析策略设置时出错</translation>
 <translation id="8866928039507595380">对折</translation>
 <translation id="886872106311861689">B3</translation>

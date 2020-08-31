@@ -6,6 +6,9 @@
 <translation id="125153950246128346">แตะเพื่อดูแท็บอื่น</translation>
 <translation id="1657719826150349398">ย้ายแท็บลงล่าง</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
+<translation id="2277224997687551299">แก้ไขชื่อกลุ่ม</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{นำแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บออกจากกลุ่ม}other{นำแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บออกจากกลุ่ม}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{ยุบ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ยุบกลุ่มแท็บที่มีแท็บอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2569352796411618312">คำแนะนำ: คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
 <translation id="257674075312929031">จัดกลุ่ม</translation>
 <translation id="2613747923081026172">สร้างกลุ่ม</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442">ขยายกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> จำนวน <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="2977480621796371840">นำออกจากกลุ่ม</translation>
 <translation id="3328308545011660196">คำแนะนำ: ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{ยุบ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ยุบกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="4133493477912226187">ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
 <translation id="4212246570487010370">ท่องเว็บต่อไป</translation>
 <translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">ดู</translation>
 <translation id="5073204694187207510">ซ่อนตารางกริดแบบเต็มหน้าจอ</translation>
 <translation id="5082793167783849073">เปรียบเทียบหน้าต่างๆ อย่างรวดเร็วด้วยการสร้างกลุ่ม แตะลิงก์ค้างไว้เพื่อเริ่มต้น</translation>
+<translation id="5490235265819901748">ขยายกลุ่มแท็บแล้ว</translation>
 <translation id="5533021382642990449">แสดงทีหลัง</translation>
+<translation id="5558362125926932819">ปิดกลุ่มแท็บที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="5580090775658607195">จัดกลุ่มไว้ <ph name="TAB_COUNT" /> แท็บ</translation>
 <translation id="58326064309361797">ลากแท็บเพื่อจัดกลุ่ม</translation>
+<translation id="5846292395804797011">เลือกกลุ่ม <ph name="TITLE_OF_GROUP" /> ที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6193448654517602979">เลือกแท็บ</translation>
 <translation id="6510648526783655549">ปิดแนวแท็บ</translation>
 <translation id="6562820390860419811">ย้ายแท็บไปทางซ้าย</translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
 <translation id="6840760312327750441">หากต้องการจัดกลุ่มแท็บ ให้แตะแท็บหนึ่งค้างไว้ แล้วลากไปที่อีกแท็บ</translation>
+<translation id="6856809498882026482">ซ่อนโหมดเลือกหลายรายการ</translation>
 <translation id="7151209024774799310">นำแท็บออกจากกลุ่ม</translation>
+<translation id="7204204600596740190">โหมดเลือกหลายรายการ</translation>
+<translation id="753732157349120914">ตัวสลับแท็บ</translation>
 <translation id="7559245342362162951">แสดงแท็บของกลุ่มในตารางกริดแบบเต็มหน้าจอ</translation>
 <translation id="7792771145871471484">ดูคำแนะนำ</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{จัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{จัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">เลื่อนแท็บขึ้น</translation>
 <translation id="8304833501377495048">ไม่ต้องแสดงแนวแท็บอีกใช่ไหม</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ปิดแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{ปิดแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
+<translation id="8557923272772633250">ขยายกลุ่มแท็บที่มีแท็บอยู่ <ph name="NUMBER_OF_TABS" /> แท็บ</translation>
 <translation id="8749939518995770034">ปิดแนวแท็บแล้ว</translation>
 <translation id="9150694013019234766">สลับไปมาระหว่างแท็บในกลุ่มแท็บบริเวณด้านล่างของหน้าจอ</translation>
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>

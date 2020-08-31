@@ -259,6 +259,7 @@
 <translation id="1974060860693918893">詳細設定</translation>
 <translation id="1975584088563498795">用紙受け 10</translation>
 <translation id="1978555033938440688">ファームウェアのバージョン</translation>
+<translation id="1988881251331415125">タイプミスでない場合は、<ph name="BEGIN_LINK" />接続診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Cookie とサイトデータへのアクセス。
 
@@ -302,6 +303,7 @@
 <translation id="2154054054215849342">お使いのドメインでは同期機能をご利用いただけません</translation>
 <translation id="2154484045852737596">カードを編集</translation>
 <translation id="2161656808144014275">テキスト</translation>
+<translation id="2164510882479075877"><ph name="HOST_NAME" /> にタイプミスがないか確認してください。</translation>
 <translation id="2166049586286450108">すべてのデータへの管理者アクセス</translation>
 <translation id="2166378884831602661">このサイトは安全に接続できません</translation>
 <translation id="2169984857010174799">角2（封筒）</translation>
@@ -1550,7 +1552,6 @@
 <translation id="7416351320495623771">パスワードを管理…</translation>
 <translation id="7419106976560586862">プロフィール パス</translation>
 <translation id="7437289804838430631">連絡先情報を追加</translation>
-<translation id="743897106051685947">オリジナル</translation>
 <translation id="7438976808740265764">Flash Player のサポートは 2020 年 12 月で終了します。</translation>
 <translation id="7440140511386898319">オフラインで利用できるコンテンツ</translation>
 <translation id="7441627299479586546">ポリシーの対象が間違っています</translation>
@@ -1563,7 +1564,6 @@
 <translation id="7473891865547856676">スキップ</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7485870689360869515">データが見つかりません。</translation>
-<translation id="7488762544858401571">編集済み</translation>
 <translation id="7495290002932347110">サイトまたはアプリでのデータ侵害により、パスワード情報が漏洩しました。保存したパスワードを確認し、<ph name="ORIGIN" /> のパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>
 <translation id="7498234416455752244">編集を続ける</translation>
@@ -1678,6 +1678,7 @@
 <translation id="7887683347370398519">CVC を確認してからもう一度お試しください</translation>
 <translation id="7887885240995164102">ピクチャー イン ピクチャーを開始</translation>
 <translation id="7888575728750733395">印刷時のレンダリング インテント</translation>
+<translation id="7894280532028510793">タイプミスでない場合は、<ph name="BEGIN_LINK" />ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3（封筒）</translation>
 <translation id="7932579305932748336">コーティング</translation>
 <translation id="79338296614623784">有効な電話番号を入力してください</translation>
@@ -1824,6 +1825,7 @@
 <translation id="8508648098325802031">検索アイコン</translation>
 <translation id="8522552481199248698">Chrome には Google アカウントの保護とパスワードの変更をサポートする機能があります。</translation>
 <translation id="8530813470445476232">Chrome の設定で閲覧履歴、Cookie、キャッシュなどを消去する</translation>
+<translation id="8533619373899488139">&lt;strong&gt;chrome://policy&lt;/strong&gt; で、ブロックされた URL のリストとシステム管理者が設定した他のポリシーを確認できます。</translation>
 <translation id="8541158209346794904">Bluetooth デバイス</translation>
 <translation id="8542014550340843547">3 か所のステープル（下）</translation>
 <translation id="8543181531796978784"><ph name="BEGIN_ERROR_LINK" />検出の問題をご報告<ph name="END_ERROR_LINK" />ください。<ph name="BEGIN_LINK" />安全でないこのサイトにアクセス<ph name="END_LINK" />する場合は、セキュリティ上のリスクがあることをご承知おきください。</translation>
@@ -1884,6 +1886,7 @@
 <translation id="884923133447025588">取り消し機構が見つかりません。</translation>
 <translation id="885730110891505394">Google との共有</translation>
 <translation id="8858065207712248076"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> パスワードを他のサイトで再使用した場合、Chrome ではパスワードの再設定を促すメッセージが表示されます。</translation>
+<translation id="885906927438988819">タイプミスでない場合は、<ph name="BEGIN_LINK" />Windows ネットワーク診断をお試しください<ph name="END_LINK" />。</translation>
 <translation id="8866481888320382733">ポリシー設定の解析中にエラーが発生しました</translation>
 <translation id="8866928039507595380">折りたたみ</translation>
 <translation id="886872106311861689">B3</translation>

@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1856715684130786728">Adicionar local...</translation>
 <translation id="1858585891038687145">Confiar neste certificado para a identificação de criadores do software</translation>
+<translation id="1860346308203060432">Ver visibilidade do dispositivo</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1863182668524159459">Nenhuma porta serial encontrada</translation>
 <translation id="1863316578636157783">"<ph name="EXTENSION_NAME" />" foi desativada porque contém malware</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">Você quer mesmo excluir o certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Layout do teclado</translation>
 <translation id="1884013283844450420">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
+<translation id="1884340228047885921">A configuração de visibilidade atual é: alguns contatos</translation>
 <translation id="1884705339276589024">Redimensionar disco do Linux</translation>
 <translation id="1885106732301550621">Espaço em disco</translation>
 <translation id="1886996562706621347">Permitir que os sites peçam para se tornar manipuladores padrão de protocolos (recomendado)</translation>
@@ -1102,6 +1104,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2307462900900812319">Configurar rede</translation>
 <translation id="230927227160767054">Esta página quer instalar um manipulador de serviço.</translation>
 <translation id="2309620859903500144">Este site foi impedido de acessar os sensores de luz ou movimento.</translation>
+<translation id="2314165183524574721">A configuração de visibilidade atual é: oculto</translation>
 <translation id="2314873619957287124">Defina regras digitais para ajudar a criança a aprender, brincar e explorar</translation>
 <translation id="2315414688463285945">Erro ao configurar arquivos do Linux. Tente novamente.</translation>
 <translation id="2315587498123194634">Enviar link para este dispositivo: <ph name="DEVICE_NAME" /></translation>
@@ -1688,6 +1691,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3004391367407090544">Volte mais tarde</translation>
 <translation id="3006881078666935414">Nenhum dado de uso</translation>
 <translation id="3007771295016901659">Duplicar guia</translation>
+<translation id="3008232374986381779">Execute ferramentas, editores e ambientes de desenvolvimento integrado do Linux no seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Redefinir permissões</translation>
 <translation id="3009300415590184725">Você quer mesmo cancelar o processo de configuração do serviço de dados móveis?</translation>
 <translation id="3009779501245596802">Bancos de dados indexados</translation>
@@ -1829,6 +1833,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3183143381919926261">Redes de dados móveis</translation>
 <translation id="3183944777708523606">Disposição do monitor</translation>
 <translation id="3184536091884214176">Configurar ou gerenciar impressoras CUPS. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">Chip físico</translation>
 <translation id="3188257591659621405">Meus arquivos</translation>
 <translation id="3188465121994729530">Média móvel</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
@@ -2451,6 +2456,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3908393983276948098">O plug-in <ph name="PLUGIN_NAME" /> está desatualizado</translation>
 <translation id="3908501907586732282">Ativar extensão</translation>
 <translation id="3909791450649380159">&amp;Recortar</translation>
+<translation id="39103738135459590">Código de ativação</translation>
 <translation id="3911824782900911339">Página Nova guia</translation>
 <translation id="3915280005470252504">Pesquisar por voz</translation>
 <translation id="3916233823027929090">As verificações de segurança foram concluídas</translation>
@@ -2664,6 +2670,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4159681666905192102">Esta é uma conta para crianças gerenciada por <ph name="CUSTODIAN_EMAIL" /> e <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconhecido</translation>
 <translation id="4168015872538332605">Algumas configurações pertencentes a <ph name="PRIMARY_EMAIL" /> estão sendo compartilhadas com você. Essas configurações afetam sua conta apenas quando o recurso de login múltiplo é usado.</translation>
+<translation id="4170256733935344210">Use a câmera do dispositivo para ler o código QR ou insira o código de ativação fornecido pela operadora</translation>
 <translation id="4170314459383239649">Limpar ao sair</translation>
 <translation id="4175137578744761569">Roxo-claro e branco</translation>
 <translation id="4175737294868205930">Armazenamento persistente</translation>
@@ -2752,6 +2759,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4296575653627536209">Adicionar usuário supervisionado</translation>
 <translation id="4297219207642690536">Reiniciar e redefinir</translation>
 <translation id="4297813521149011456">Rotação da tela</translation>
+<translation id="4299596693977045093">Configuração do eSIM</translation>
 <translation id="4301671483919369635">Esta página tem permissão para editar arquivos</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
@@ -3466,6 +3474,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5222676887888702881">Sair</translation>
 <translation id="52232769093306234">O empacotamento falhou.</translation>
 <translation id="5225324770654022472">Mostrar atalho para aplicativos</translation>
+<translation id="52254442782792731">A configuração de visibilidade atual é: não definida</translation>
 <translation id="5227679487546032910">Avatar verde-azulado padrão</translation>
 <translation id="5228088094491423618">Legenda instantânea</translation>
 <translation id="5228579091201413441">Ativar sincronização</translation>
@@ -4064,6 +4073,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5941153596444580863">Adicionar pessoa...</translation>
 <translation id="5941343993301164315">Faça login em <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
+<translation id="5942779427914696408">Visibilidade do dispositivo</translation>
 <translation id="5942964813783878922">Seu <ph name="DEVICE_TYPE" /> será reiniciado depois desta atualização. As atualizações de software e de segurança futuras serão instaladas automaticamente.</translation>
 <translation id="5944869793365969636">Ler código QR</translation>
 <translation id="5946591249682680882">Código de relatório <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4236,6 +4246,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6148576794665275391">Abrir agora</translation>
 <translation id="6149015141270619212">Não foi possível se conectar à Internet</translation>
 <translation id="614940544461990577">Tente:</translation>
+<translation id="6150278227694566734">Alguns contatos</translation>
 <translation id="6150961653851236686">Este idioma é usado ao traduzir as páginas</translation>
 <translation id="6151323131516309312">Pressione <ph name="SEARCH_KEY" /> para pesquisar <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">O arquivo já existe na sua pasta de download.</translation>
@@ -5084,6 +5095,7 @@ permanentemente excluídos assim que esse usuário for removido. Os websites vis
 <translation id="7210499381659830293">Impressoras de extensão</translation>
 <translation id="7211890396916697230">Configurar eSIM</translation>
 <translation id="7212097698621322584">Insira seu PIN atual para alterá-lo. Se você não sabe seu PIN, redefina a chave de segurança e crie um novo.</translation>
+<translation id="7213903639823314449">O mecanismo de pesquisa usado na barra de endereço</translation>
 <translation id="7216409898977639127">Operadora de celular</translation>
 <translation id="7216595297012131718">Ordenar idiomas com base na sua preferência</translation>
 <translation id="7220019174139618249">Não é possível exportar senhas para "<ph name="FOLDER" />"</translation>
@@ -6174,6 +6186,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8539766201049804895">Fazer upgrade</translation>
 <translation id="8540136935098276800">Insira um URL formatado corretamente</translation>
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
+<translation id="854071720451629801">Marcar como "Lida"</translation>
 <translation id="8541462173655894684">Não foram encontradas impressoras no servidor</translation>
 <translation id="8542618328173222274">Perguntar quando um site quiser usar seus dispositivos e dados de realidade virtual</translation>
 <translation id="8543556556237226809">Dúvidas? Entre em contato com a pessoa que supervisiona seu perfil.</translation>
@@ -6448,6 +6461,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8846141544112579928">Procurando teclado...</translation>
 <translation id="8847523528195140327">Sair quando a capa for fechada</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Oculto</translation>
 <translation id="8850251000316748990">Ver mais…</translation>
 <translation id="885246833287407341">Argumentos de função da API</translation>
 <translation id="8853586775156634952">O cartão será salvo apenas neste dispositivo</translation>
@@ -6473,6 +6487,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8872777911145321141">Perguntar quando um site quiser usar seus dispositivos e dados de realidade virtual (recomendado)</translation>
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8875520811099717934">Upgrade do Linux</translation>
+<translation id="8875736897340638404">Escolher sua visibilidade</translation>
 <translation id="8876307312329369159">Não é possível alterar essa configuração em uma sessão de demonstração.</translation>
 <translation id="8877448029301136595">[diretório pai]</translation>
 <translation id="8879284080359814990">&amp;Mostrar como guia</translation>
@@ -6629,6 +6644,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> a <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Ativar o Preenchimento automático e preencher formulários com um clique</translation>
 <translation id="9065203028668620118">Editar</translation>
+<translation id="9065772380960598487">Adicionar a "Ler mais tarde"</translation>
 <translation id="9066773882585798925">Ouvir o texto lido em voz alta</translation>
 <translation id="9066782832737749352">Conversão de texto em voz</translation>
 <translation id="9068849894565669697">Selecionar cor</translation>
@@ -6710,6 +6726,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="9169496697824289689">Ver atalhos de teclado</translation>
 <translation id="916964310188958970">Por que essa sugestão?</translation>
 <translation id="9169931577761441333">Adicionar o app <ph name="APP_NAME" /> à tela inicial</translation>
+<translation id="9170061643796692986">A configuração de visibilidade atual é: todos os contatos</translation>
 <translation id="9170848237812810038">&amp;Desfazer</translation>
 <translation id="9170884462774788842">Outro programa em seu computador adicionou um tema que pode mudar a forma como o Google Chrome funciona.</translation>
 <translation id="917350715406657904">Você atingiu o limite de tempo que seu pai/mãe definiu para o app <ph name="APP_NAME" />. Você poderá usá-lo amanhã por <ph name="TIME_LIMIT" />.</translation>

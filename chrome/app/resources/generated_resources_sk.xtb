@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">Zastaviť prenášanie</translation>
 <translation id="1856715684130786728">Pridať umiestnenie...</translation>
 <translation id="1858585891038687145">Dôverovať tomuto certifikátu na identifikáciu tvorcov softvéru</translation>
+<translation id="1860346308203060432">Zobraziť viditeľnosť zariadenia</translation>
 <translation id="1861262398884155592">Tento priečinok je prázdny</translation>
 <translation id="1863182668524159459">Nenašli sa žiadne sériové porty</translation>
 <translation id="1863316578636157783">Rozšírenie <ph name="EXTENSION_NAME" /> bolo zakázané, pretože obsahuje malvér</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">Odstrániť certifikát „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="1881445033931614352">Rozloženie klávesnice</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, pripojenie</translation>
+<translation id="1884340228047885921">Aktuálne nastavenie viditeľnosti je Niektoré kontakty</translation>
 <translation id="1884705339276589024">Zmena veľkosti disku Linux</translation>
 <translation id="1885106732301550621">Priestor disku</translation>
 <translation id="1886996562706621347">Povoliť webovým stránkam požiadať o nastavenie za predvolené obslužné nástroje protokolov (odporúčané)</translation>
@@ -1102,6 +1104,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2307462900900812319">Konfigurovať sieť</translation>
 <translation id="230927227160767054">Táto stránka chce nainštalovať obslužný nástroj služby.</translation>
 <translation id="2309620859903500144">Tento web má zablokovaný prístup k senzorom pohybu alebo svetla.</translation>
+<translation id="2314165183524574721">Aktuálne nastavenie viditeľnosti je Skryté</translation>
 <translation id="2314873619957287124">Nastavte základné digitálne pravidlá, ktoré pomôžu vášmu dieťaťu pri učení, hraní aj objavovaní</translation>
 <translation id="2315414688463285945">Pri konfigurovaní súborov systému Linux sa vyskytla chyba. Skúste to znova.</translation>
 <translation id="2315587498123194634">Odoslať odkaz do zariadenia <ph name="DEVICE_NAME" /></translation>
@@ -1687,6 +1690,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3004391367407090544">Vráťte sa neskôr</translation>
 <translation id="3006881078666935414">Žiadne údaje o používaní</translation>
 <translation id="3007771295016901659">Duplikovať kartu</translation>
+<translation id="3008232374986381779">Spustite nástroje aj editory pre systém Linux a súbory IDE vo svojom zariadení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Obnoviť povolenia</translation>
 <translation id="3009300415590184725">Naozaj chcete zrušiť proces nastavenia mobilnej dátovej služby?</translation>
 <translation id="3009779501245596802">Indexované databázy</translation>
@@ -1828,6 +1832,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3183143381919926261">Mobilné dátové siete</translation>
 <translation id="3183944777708523606">Usporiadanie monitora</translation>
 <translation id="3184536091884214176">Nastaviť alebo spravovať tlačiarne CUPS. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">Fyzická SIM karta</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
 <translation id="3188465121994729530">Kĺzavý priemer</translation>
 <translation id="3189187154924005138">Veľký kurzor</translation>
@@ -2449,6 +2454,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3908393983276948098">Doplnok <ph name="PLUGIN_NAME" /> je zastaraný</translation>
 <translation id="3908501907586732282">Povoliť rozšírenie</translation>
 <translation id="3909791450649380159">&amp;Vystrihnúť</translation>
+<translation id="39103738135459590">Aktivačný kód</translation>
 <translation id="3911824782900911339">Stránka na novej karte</translation>
 <translation id="3915280005470252504">Vyhľadávanie podľa hlasu</translation>
 <translation id="3916233823027929090">Kontroly boli uskutočnené</translation>
@@ -2662,6 +2668,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4159681666905192102">Toto je detský účet spravovaný používateľmi <ph name="CUSTODIAN_EMAIL" /> a <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Neznáma klávesnica</translation>
 <translation id="4168015872538332605">Používateľ <ph name="PRIMARY_EMAIL" /> s vami zdieľa niektoré svoje nastavenia. Tieto nastavenia váš účet ovplyvnia iba počas používania viacnásobného prihlásenia.</translation>
+<translation id="4170256733935344210">Naskenujte QR kód fotoaparátom zariadenia alebo zadajte aktivačný kód poskytnutý operátorom</translation>
 <translation id="4170314459383239649">Vymazať po ukončení</translation>
 <translation id="4175137578744761569">Svetlofialová a biela</translation>
 <translation id="4175737294868205930">Trvalé úložisko</translation>
@@ -2750,6 +2757,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4296575653627536209">Pridať kontrolovaného používateľa</translation>
 <translation id="4297219207642690536">Reštartovať a resetovať</translation>
 <translation id="4297813521149011456">Otočenie obrazovky</translation>
+<translation id="4299596693977045093">Nastavenie eSIM</translation>
 <translation id="4301671483919369635">Táto stránka má povolené upravovať súbory</translation>
 <translation id="4303079906735388947">Nastavte pre svoj bezpečnostný kľúč nový kód PIN</translation>
 <translation id="4305402730127028764">Kopírovať do zariadenia <ph name="DEVICE_NAME" /></translation>
@@ -3464,6 +3472,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="52232769093306234">Nepodarilo sa zbaliť.</translation>
 <translation id="5225324770654022472">Zobrazovať odkaz aplikácií</translation>
+<translation id="52254442782792731">Aktuálne nastavenie viditeľnosti zatiaľ nie je nakonfigurované</translation>
 <translation id="5227679487546032910">Predvolený modrozelený avatar</translation>
 <translation id="5228088094491423618">Živý prepis</translation>
 <translation id="5228579091201413441">Povoliť synchronizáciu</translation>
@@ -4061,6 +4070,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5941153596444580863">Pridať osobu...</translation>
 <translation id="5941343993301164315">Prihláste sa do <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimalizovať</translation>
+<translation id="5942779427914696408">Viditeľnosť zariadenia</translation>
 <translation id="5942964813783878922">Zariadenie <ph name="DEVICE_TYPE" /> sa po tejto aktualizácii reštartuje. Budúce aktualizácie softvéru a zabezpečenia sa budú inštalovať automaticky.</translation>
 <translation id="5944869793365969636">Skenovanie QR kódu</translation>
 <translation id="5946591249682680882">ID prehľadu <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4233,6 +4243,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6148576794665275391">Otvoriť</translation>
 <translation id="6149015141270619212">Nedá sa pripojiť k internetu</translation>
 <translation id="614940544461990577">Vyskúšajte:</translation>
+<translation id="6150278227694566734">Niektoré kontakty</translation>
 <translation id="6150961653851236686">Tento jazyk sa používa na preklad stránok</translation>
 <translation id="6151323131516309312">Stlačte kláves <ph name="SEARCH_KEY" /> na prehľadanie webu <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">Súbor už existuje v priečinku so stiahnutými súbormi</translation>
@@ -5080,6 +5091,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7210499381659830293">Tlačiarne s rozšíreniami</translation>
 <translation id="7211890396916697230">Nastaviť eSIM</translation>
 <translation id="7212097698621322584">Zadajte svoj aktuálny kód PIN a zmeňte ho. Ak ho nepoznáte, musíte resetovať bezpečnostný kľúč a potom vytvoriť nový PIN.</translation>
+<translation id="7213903639823314449">Vyhľadávač používaný v paneli s adresou</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
 <translation id="7216595297012131718">Zoraďte si jazyky podľa svojich požiadaviek</translation>
 <translation id="7220019174139618249">Heslá sa nedajú exportovať do priečinka <ph name="FOLDER" /></translation>
@@ -6169,6 +6181,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8539766201049804895">Inovovať</translation>
 <translation id="8540136935098276800">Zadajte správne naformátovanú webovú adresu</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
+<translation id="854071720451629801">Označiť ako prečítané</translation>
 <translation id="8541462173655894684">Na tlačovom serveri neboli nájdené žiadne tlačiarne</translation>
 <translation id="8542618328173222274">Opýtať sa, keď chce web používať vaše zariadenia a údaje virtuálnej reality</translation>
 <translation id="8543556556237226809">Máte otázky? Obráťte sa na osobu, ktorá kontroluje váš profil.</translation>
@@ -6443,6 +6456,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8846141544112579928">Hľadá sa klávesnica...</translation>
 <translation id="8847523528195140327">Pri zavretí krytu sa odhlásiť</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Skryté</translation>
 <translation id="8850251000316748990">Zobraziť ďalšie…</translation>
 <translation id="885246833287407341">Argumenty funkcie rozhrania API</translation>
 <translation id="8853586775156634952">Táto karta sa uloží iba do tohto zariadenia</translation>
@@ -6468,6 +6482,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8872777911145321141">Opýtať sa, keď chce web používať vaše zariadenia a údaje virtuálnej reality (odporúčané)</translation>
 <translation id="8874184842967597500">Nepripojené</translation>
 <translation id="8875520811099717934">Inovácia systému Linux</translation>
+<translation id="8875736897340638404">Vyberte svoju viditeľnosť</translation>
 <translation id="8876307312329369159">Toto nastavenie sa nedá zmeniť v relácii ukážky.</translation>
 <translation id="8877448029301136595">[rodičovský adresár]</translation>
 <translation id="8879284080359814990">&amp;Zobraziť ako kartu</translation>
@@ -6624,6 +6639,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9063208415146866933">Chyba od riadka <ph name="ERROR_LINE_START" /> po <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Zapnúť automatické dopĺňanie a vypĺňať webové formuláre jediným kliknutím</translation>
 <translation id="9065203028668620118">Upraviť</translation>
+<translation id="9065772380960598487">Pridať do zoznamu Prečítať neskôr</translation>
 <translation id="9066773882585798925">Čítanie textu nahlas</translation>
 <translation id="9066782832737749352">Prevod textu na reč</translation>
 <translation id="9068849894565669697">Výber farby</translation>
@@ -6705,6 +6721,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9169496697824289689">Zobraziť klávesové skratky</translation>
 <translation id="916964310188958970">Prečo tento návrh?</translation>
 <translation id="9169931577761441333">Pridať aplikáciu <ph name="APP_NAME" /> na plochu</translation>
+<translation id="9170061643796692986">Aktuálne nastavenie viditeľnosti je Všetky kontakty</translation>
 <translation id="9170848237812810038">&amp;Naspäť</translation>
 <translation id="9170884462774788842">Iný program v počítači pridal motív, ktorý môže zmeniť spôsob fungovania prehliadača Chrome.</translation>
 <translation id="917350715406657904">Vypršal časový limit, ktorý tvoj rodič nastavil pre aplikáciu <ph name="APP_NAME" />. Zajtra ju môžeš používať <ph name="TIME_LIMIT" />.</translation>

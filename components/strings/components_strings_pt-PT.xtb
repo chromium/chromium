@@ -263,6 +263,7 @@
 <translation id="1974060860693918893">Avançadas</translation>
 <translation id="1975584088563498795">Caixa de correio 10</translation>
 <translation id="1978555033938440688">Versão do firmware</translation>
+<translation id="1988881251331415125">Se a ortografia estiver correta, <ph name="BEGIN_LINK" />experimente executar o diagnóstico de conetividade<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Aceder aos cookies e dados de sites.
 
@@ -306,6 +307,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2154054054215849342">A sincronização não está disponível para o domínio</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
 <translation id="2161656808144014275">Texto</translation>
+<translation id="2164510882479075877">Verifique se existe algum erro ortográfico em <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acesso de gestor total</translation>
 <translation id="2166378884831602661">Este site não consegue fornecer uma ligação segura</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
@@ -1560,7 +1562,6 @@ Detalhes adicionais:
 <translation id="7416351320495623771">Gerir palavras-passe…</translation>
 <translation id="7419106976560586862">Caminho do Perfil</translation>
 <translation id="7437289804838430631">Adicionar informações de contacto</translation>
-<translation id="743897106051685947">Original</translation>
 <translation id="7438976808740265764">O leitor de Flash deixará de ser suportado depois de dezembro de 2020.</translation>
 <translation id="7440140511386898319">Explorar offline</translation>
 <translation id="7441627299479586546">Assunto da política incorreto</translation>
@@ -1573,7 +1574,6 @@ Detalhes adicionais:
 <translation id="7473891865547856676">Não, obrigado</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7485870689360869515">Não foram encontrados dados.</translation>
-<translation id="7488762544858401571">Editado</translation>
 <translation id="7495290002932347110">Uma violação de dados num site ou numa aplicação expôs a sua palavra-passe. O Chrome recomenda que verifique as palavras-passe guardadas e altere a sua palavra-passe em <ph name="ORIGIN" /> agora.</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>
 <translation id="7498234416455752244">Continuar a editar</translation>
@@ -1688,6 +1688,7 @@ Detalhes adicionais:
 <translation id="7887683347370398519">Verifique o Código de Segurança/CVC e tente novamente</translation>
 <translation id="7887885240995164102">Entrar no modo ecrã no ecrã</translation>
 <translation id="7888575728750733395">Imprimir intenção de renderização</translation>
+<translation id="7894280532028510793">Se a ortografia estiver correta, <ph name="BEGIN_LINK" />experimente executar o diagnóstico de rede<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Envelope)</translation>
 <translation id="7932579305932748336">Revestir</translation>
 <translation id="79338296614623784">Introduza um número de telefone válido</translation>
@@ -1834,6 +1835,7 @@ Detalhes adicionais:
 <translation id="8508648098325802031">Ícone de pesquisa</translation>
 <translation id="8522552481199248698">O Chrome pode ajudá-lo a proteger a sua Conta Google e a alterar a palavra-passe.</translation>
 <translation id="8530813470445476232">Limpe o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome.</translation>
+<translation id="8533619373899488139">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URLs bloqueados e outras políticas aplicadas pelo administrador do sistema.</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8542014550340843547">Agrafo triplo na parte inferior</translation>
 <translation id="8543181531796978784">Pode <ph name="BEGIN_ERROR_LINK" />comunicar um problema de deteção<ph name="END_ERROR_LINK" /> ou, se compreende os riscos para a sua segurança, <ph name="BEGIN_LINK" />aceda a este site não seguro<ph name="END_LINK" />.</translation>
@@ -1894,6 +1896,7 @@ Detalhes adicionais:
 <translation id="884923133447025588">Não foi encontrado qualquer mecanismo de revogação.</translation>
 <translation id="885730110891505394">Partilha com a Google</translation>
 <translation id="8858065207712248076">O Chrome recomenda a reposição da palavra-passe da <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> se a tiver reutilizado noutros sites.</translation>
+<translation id="885906927438988819">Se a ortografia estiver correta, <ph name="BEGIN_LINK" />experimente executar o Diagnóstico de rede do Windows<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Erro ao analisar as definições da política</translation>
 <translation id="8866928039507595380">Dobrar</translation>
 <translation id="886872106311861689">B3</translation>

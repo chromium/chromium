@@ -1633,6 +1633,7 @@
 <translation id="3412937883532015092">如果此政策设为一个数字，则意味着在打开备用浏览器之前，<ph name="PRODUCT_NAME" /> 会先按照与该数字等同的毫秒数显示一条消息。
 
       如果此政策未设置或设为 0，当用户要前往指定的网址时，系统会立即在备用浏览器中打开相应网页。</translation>
+<translation id="3415954062311826850">此政策在 Arc 中不受支持。</translation>
 <translation id="34160070798637152">控制设备级网络配置。</translation>
 <translation id="3417130629744653218">允许网站查询可用的付款方式。</translation>
 <translation id="3417418267404583991">如果未配置此政策或将其设置为 true，<ph name="PRODUCT_OS_NAME" />将启用访客登录。访客登录是匿名用户会话，不需要密码。
@@ -1950,6 +1951,13 @@
 <translation id="3870300103958000506">如果 <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> 设为 1 或不设置，系统会允许所有网站展示广告，除非 <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> 设为 False。
 
       如果此政策设为 2，系统会阻止含侵扰性广告的网站展示广告。</translation>
+<translation id="387226665655554104">此政策旨在以列表形式控制用户可配置和使用哪些快速解锁模式来解锁屏幕。
+
+          此政策的值是一个字符串列表；有效的列表项包括“all”、“PIN”和“FINGERPRINT”。如果您向该列表中添加“all”，用户将能够使用所有快速解锁模式（包括日后会实施的那些模式）。如果您未向该列表中添加“all”，用户将仅能使用该列表中指定的快速解锁模式。
+
+          例如，若要允许使用所有快速解锁模式，请指定 ["all"]。若要仅允许使用 PIN 码解锁，请指定 ["PIN"]。若要允许使用 PIN 码和指纹，请指定 ["PIN", "FINGERPRINT"]。
+
+          如果此政策未设置或设为一个空列表，用户将无法在受管理的设备上使用任何快速解锁模式</translation>
 <translation id="3877517141460819966">集成的双重身份验证模式</translation>
 <translation id="3879196885908353077">检查下载内容是否违反敏感数据保护规则</translation>
 <translation id="3879208481373875102">配置强制安装的 Web 应用的列表</translation>
@@ -3220,6 +3228,15 @@
       如果您不设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
+<translation id="5628811596950455942">此政策旨在以列表形式控制用户可配置和使用哪些快速解锁模式来解锁屏幕。
+
+          此政策的值是一个字符串列表；有效的列表项包括“all”、“PIN”和“FINGERPRINT”。如果您向该列表中添加“all”，用户将能够使用所有快速解锁模式（包括日后会实施的那些模式）。如果您未向该列表中添加“all”，用户将仅能使用该列表中指定的快速解锁模式。
+
+          例如，若要允许使用所有快速解锁模式，请指定 ["all"]。若要仅允许使用 PIN 码解锁，请指定 ["PIN"]。若要允许使用 PIN 码和指纹，请指定 ["PIN", "FINGERPRINT"]。
+
+          如果此政策未设置或设为一个空列表，用户将无法在受管理的设备上使用任何快速解锁模式
+
+          此政策已被弃用，请改用 <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" /></translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
 <translation id="5641279111657132737">此政策已被弃用，请改用“<ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />”政策。

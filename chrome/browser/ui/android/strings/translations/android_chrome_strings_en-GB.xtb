@@ -530,6 +530,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5199929503336119739">Work profile</translation>
 <translation id="5210286577605176222">Jump to the previous tab</translation>
 <translation id="5210365745912300556">Close tab</translation>
+<translation id="5222676887888702881">Sign out</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> wants to scan for nearby Bluetooth devices. The following devices have been found:</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="526421993248218238">Can't load this page</translation>
@@ -616,6 +617,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5836192821815272682">Downloading Chrome Update…</translation>
 <translation id="5853623416121554550">paused</translation>
 <translation id="5854790677617711513">Older than 30 days</translation>
+<translation id="5855546874025048181">Refine: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome is unable to turn on Bluetooth adaptor</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5862731021271217234">To get your tabs from your other devices, turn on sync</translation>

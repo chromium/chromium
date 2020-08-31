@@ -259,6 +259,7 @@
 <translation id="1974060860693918893">進階選項</translation>
 <translation id="1975584088563498795">出紙槽 10</translation>
 <translation id="1978555033938440688">韌體版本</translation>
+<translation id="1988881251331415125">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行連線診斷<ph name="END_LINK" />。</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">存取 Cookie 和網站資料。
 
@@ -301,6 +302,7 @@
 <translation id="2154054054215849342">您的網域無法使用同步處理功能</translation>
 <translation id="2154484045852737596">編輯付款信用卡</translation>
 <translation id="2161656808144014275">文字</translation>
+<translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理存取權</translation>
 <translation id="2166378884831602661">這個網站無法提供安全連線</translation>
 <translation id="2169984857010174799">Kaku2 (信封)</translation>
@@ -1548,7 +1550,6 @@
 <translation id="7416351320495623771">管理密碼…</translation>
 <translation id="7419106976560586862">設定檔路徑</translation>
 <translation id="7437289804838430631">新增聯絡人資料</translation>
-<translation id="743897106051685947">原始版本</translation>
 <translation id="7438976808740265764">由 2020 年 12 月起，系統將不再支援 Flash Player。</translation>
 <translation id="7440140511386898319">探索可供離線檢視的內容</translation>
 <translation id="7441627299479586546">政策主體有誤</translation>
@@ -1561,7 +1562,6 @@
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7481312909269577407">向前</translation>
 <translation id="7485870689360869515">找不到任何數據。</translation>
-<translation id="7488762544858401571">編輯版本</translation>
 <translation id="7495290002932347110">由於您使用的網站或應用程式發生資料外洩，密碼已被洩露。Chrome 建議您檢查已儲存的密碼，並立即變更 <ph name="ORIGIN" /> 上的密碼。</translation>
 <translation id="7495528107193238112">此內容已被封鎖。如要修正問題，請聯絡網站擁有者。</translation>
 <translation id="7498234416455752244">繼續編輯</translation>
@@ -1676,6 +1676,7 @@
 <translation id="7887683347370398519">請檢查您的 CVC，然後再試一次</translation>
 <translation id="7887885240995164102">進入畫中畫</translation>
 <translation id="7888575728750733395">列印輸出意圖</translation>
+<translation id="7894280532028510793">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行網路診斷<ph name="END_LINK" />。</translation>
 <translation id="7904208859782148177">C3 (信封)</translation>
 <translation id="7932579305932748336">塗布</translation>
 <translation id="79338296614623784">請輸入有效的電話號碼</translation>
@@ -1822,6 +1823,7 @@
 <translation id="8508648098325802031">搜尋圖示</translation>
 <translation id="8522552481199248698">Chrome 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="8530813470445476232">清除您的瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
+<translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看遭到封鎖的網址清單，以及由系統管理員所強制執行的其他政策。</translation>
 <translation id="8541158209346794904">藍牙裝置</translation>
 <translation id="8542014550340843547">三釘 (底部)</translation>
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />報告偵測問題<ph name="END_ERROR_LINK" />；或如果您瞭解安全性風險，也可以<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
@@ -1881,6 +1883,7 @@
 <translation id="884923133447025588">未發現撤銷機制。</translation>
 <translation id="885730110891505394">與 Google 分享</translation>
 <translation id="8858065207712248076">如果您已在其他網站上重用 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 密碼，Chrome 建議您重設密碼。</translation>
+<translation id="885906927438988819">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行 Windows 網路診斷<ph name="END_LINK" />。</translation>
 <translation id="8866481888320382733">解析政策設定時發生錯誤</translation>
 <translation id="8866928039507595380">對摺</translation>
 <translation id="886872106311861689">B3</translation>

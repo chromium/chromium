@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">キャストを停止</translation>
 <translation id="1856715684130786728">位置情報を追加...</translation>
 <translation id="1858585891038687145">ソフトウェア作成元の識別でこの証明書を信頼します</translation>
+<translation id="1860346308203060432">デバイスの公開設定を表示</translation>
 <translation id="1861262398884155592">このフォルダは空です</translation>
 <translation id="1863182668524159459">シリアルポートが見つかりません</translation>
 <translation id="1863316578636157783">「<ph name="EXTENSION_NAME" />」はマルウェアが含まれるため無効になっています</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">証明書「<ph name="CERTIFICATE_NAME" />」を削除しますか？</translation>
 <translation id="1881445033931614352">キーボードのレイアウト</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、接続</translation>
+<translation id="1884340228047885921">現在の公開設定は一部の連絡先です</translation>
 <translation id="1884705339276589024">Linux ディスクのサイズ変更</translation>
 <translation id="1885106732301550621">ディスク容量</translation>
 <translation id="1886996562706621347">サイトからのプロトコルのデフォルト ハンドラとしての登録要求を許可する（推奨）</translation>
@@ -1102,6 +1104,7 @@
 <translation id="2307462900900812319">ネットワークを設定</translation>
 <translation id="230927227160767054">このページはサービス ハンドラのインストールを求めています。</translation>
 <translation id="2309620859903500144">このサイトではモーション センサーまたは光センサーへのアクセスがブロックされています。</translation>
+<translation id="2314165183524574721">現在の公開設定は非表示です</translation>
 <translation id="2314873619957287124">お子様が学習や遊び、インターネットにデバイスを利用する際のデジタルルールを設定できます</translation>
 <translation id="2315414688463285945">[Linux ファイル] の設定中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="2315587498123194634"><ph name="DEVICE_NAME" /> にリンクを送信</translation>
@@ -1688,6 +1691,7 @@
 <translation id="3004391367407090544">後でもう一度お試しください</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
 <translation id="3007771295016901659">タブを複製</translation>
+<translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> で Linux のツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">権限をリセット</translation>
 <translation id="3009300415590184725">モバイル データ サービスの設定処理をキャンセルしてもよろしいですか？</translation>
 <translation id="3009779501245596802">Indexed Database</translation>
@@ -1829,6 +1833,7 @@
 <translation id="3183143381919926261">モバイルデータ ネットワーク</translation>
 <translation id="3183944777708523606">モニターの配置</translation>
 <translation id="3184536091884214176">CUPS プリンタを設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">物理的な SIM</translation>
 <translation id="3188257591659621405">マイファイル</translation>
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大きいカーソル</translation>
@@ -2450,6 +2455,7 @@
 <translation id="3908393983276948098"><ph name="PLUGIN_NAME" /> は期限切れです</translation>
 <translation id="3908501907586732282">拡張機能を有効にする</translation>
 <translation id="3909791450649380159">切り取り(&amp;T)</translation>
+<translation id="39103738135459590">アクティベーション コード</translation>
 <translation id="3911824782900911339">新しいタブ ページ</translation>
 <translation id="3915280005470252504">音声検索</translation>
 <translation id="3916233823027929090">セキュリティ チェックが完了しました</translation>
@@ -2663,6 +2669,7 @@
 <translation id="4159681666905192102">これは <ph name="CUSTODIAN_EMAIL" /> と <ph name="SECOND_CUSTODIAN_EMAIL" /> によって管理されている子供向けのアカウントです。</translation>
 <translation id="4163560723127662357">不明なキーボード</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> に帰属する設定の一部を共有しています。これらの設定は、マルチログインを使用した場合にのみこのアカウントに適用されます。</translation>
+<translation id="4170256733935344210">QR コードをデバイスのカメラでスキャンするか、携帯通信会社から提供されたアクティベーション コードを入力してください</translation>
 <translation id="4170314459383239649">終了時に削除</translation>
 <translation id="4175137578744761569">明るい紫と白</translation>
 <translation id="4175737294868205930">永続的ストレージ</translation>
@@ -2751,6 +2758,7 @@
 <translation id="4296575653627536209">監視対象ユーザーを追加</translation>
 <translation id="4297219207642690536">再起動してリセット</translation>
 <translation id="4297813521149011456">ディスプレイの回転</translation>
+<translation id="4299596693977045093">eSIM の設定</translation>
 <translation id="4301671483919369635">このページはファイルの編集が許可されています</translation>
 <translation id="4303079906735388947">セキュリティ キーの新しい PIN を設定します</translation>
 <translation id="4305402730127028764">「<ph name="DEVICE_NAME" />」にコピー</translation>
@@ -3465,6 +3473,7 @@
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="52232769093306234">圧縮できませんでした。</translation>
 <translation id="5225324770654022472">アプリのショートカットを表示</translation>
+<translation id="52254442782792731">公開設定はまだ設定されていません</translation>
 <translation id="5227679487546032910">デフォルトの青緑のアバター</translation>
 <translation id="5228088094491423618">自動字幕起こし</translation>
 <translation id="5228579091201413441">同期を有効にする</translation>
@@ -4062,6 +4071,7 @@
 <translation id="5941153596444580863">ユーザーを追加...</translation>
 <translation id="5941343993301164315"><ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="5941711191222866238">最小化</translation>
+<translation id="5942779427914696408">デバイスの公開設定</translation>
 <translation id="5942964813783878922">この更新が行われた後、<ph name="DEVICE_TYPE" /> は再起動します。今後はソフトウェアとセキュリティに関するアップデートが自動的にインストールされます。</translation>
 <translation id="5944869793365969636">QR コードのスキャン</translation>
 <translation id="5946591249682680882">レポート ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4234,6 +4244,7 @@
 <translation id="6148576794665275391">開く</translation>
 <translation id="6149015141270619212">インターネットに接続できません</translation>
 <translation id="614940544461990577">次をお試しください</translation>
+<translation id="6150278227694566734">一部の連絡先</translation>
 <translation id="6150961653851236686">この言語がページを翻訳する場合に使用されます</translation>
 <translation id="6151323131516309312"><ph name="SEARCH_KEY" /> を押して <ph name="SITE_NAME" /> を検索</translation>
 <translation id="6151771661215463137">このファイルはダウンロード フォルダにすでにあります。</translation>
@@ -5081,6 +5092,7 @@
 <translation id="7210499381659830293">拡張プリンタ</translation>
 <translation id="7211890396916697230">eSIM をセットアップする</translation>
 <translation id="7212097698621322584">PIN を変更するには、現在の PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットしたうえで新しい PIN を作成する必要があります。</translation>
+<translation id="7213903639823314449">アドレスバーで使用する検索エンジン</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
 <translation id="7216595297012131718">言語を希望の順序に並べ替えます</translation>
 <translation id="7220019174139618249">パスワードを「<ph name="FOLDER" />」にエクスポートできません</translation>
@@ -6171,6 +6183,7 @@
 <translation id="8539766201049804895">アップグレード</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
+<translation id="854071720451629801">既読にする</translation>
 <translation id="8541462173655894684">プリント サーバーでプリンタが見つかりませんでした</translation>
 <translation id="8542618328173222274">サイトからバーチャル リアリティ デバイスとデータの使用を求められたときに確認する</translation>
 <translation id="8543556556237226809">ご不明な点は、プロフィールの管理担当者にお問い合わせください。</translation>
@@ -6445,6 +6458,7 @@
 <translation id="8846141544112579928">キーボードを探しています...</translation>
 <translation id="8847523528195140327">ディスプレイを閉じたときにログアウトする</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">非表示</translation>
 <translation id="8850251000316748990">もっと見る...</translation>
 <translation id="885246833287407341">API 関数の引数</translation>
 <translation id="8853586775156634952">このカードはこのデバイスにのみ保存されます</translation>
@@ -6470,6 +6484,7 @@
 <translation id="8872777911145321141">サイトからバーチャル リアリティ デバイスとデータの使用を求められたときに確認する（推奨）</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8875520811099717934">Linux のアップグレード</translation>
+<translation id="8875736897340638404">公開設定を選択します</translation>
 <translation id="8876307312329369159">この設定はデモセッションでは変更できません。</translation>
 <translation id="8877448029301136595">[親ディレクトリ]</translation>
 <translation id="8879284080359814990">タブで表示(&amp;S)</translation>
@@ -6626,6 +6641,7 @@
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>
 <translation id="9064275926664971810">フォームにワンクリックで自動入力できるようにします</translation>
 <translation id="9065203028668620118">編集</translation>
+<translation id="9065772380960598487">[後で読む] に追加</translation>
 <translation id="9066773882585798925">テキストを読み上げます</translation>
 <translation id="9066782832737749352">テキスト読み上げ</translation>
 <translation id="9068849894565669697">色の選択</translation>
@@ -6707,6 +6723,7 @@
 <translation id="9169496697824289689">キーボード ショートカットの表示</translation>
 <translation id="916964310188958970">この候補が表示された理由</translation>
 <translation id="9169931577761441333">ホーム画面に <ph name="APP_NAME" /> を追加</translation>
+<translation id="9170061643796692986">現在の公開設定はすべての連絡先です</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
 <translation id="9170884462774788842">パソコン上の別のプログラムにより、Chrome の動作方法を変更する可能性のあるテーマが追加されました。</translation>
 <translation id="917350715406657904">保護者が設定した <ph name="APP_NAME" /> の利用時間の上限に達しました。明日は <ph name="TIME_LIMIT" />まで使えます。</translation>

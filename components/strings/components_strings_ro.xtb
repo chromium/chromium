@@ -263,6 +263,7 @@
 <translation id="1974060860693918893">Avansate</translation>
 <translation id="1975584088563498795">Căsuța de e-mail 10</translation>
 <translation id="1978555033938440688">Versiune de firmware</translation>
+<translation id="1988881251331415125">Dacă ortografia este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea de conectivitate<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">să acceseze cookie-urile și datele privind site-urile.
 
@@ -306,6 +307,7 @@ Permiți ca <ph name="EMBEDDED_URL" /> să folosească cookie-uri și date privi
 <translation id="2154054054215849342">Sincronizarea nu este disponibilă pentru domeniul tău</translation>
 <translation id="2154484045852737596">Editează cardul</translation>
 <translation id="2161656808144014275">Text</translation>
+<translation id="2164510882479075877">Verifică dacă există vreo greșeală de ortografie în <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Acces complet de administrare</translation>
 <translation id="2166378884831602661">Acest site nu poate oferi o conexiune sigură</translation>
 <translation id="2169984857010174799">Kaku2 (Plic)</translation>
@@ -1559,7 +1561,6 @@ Detalii suplimentare:
 <translation id="7416351320495623771">Gestionează parolele…</translation>
 <translation id="7419106976560586862">Calea profilului</translation>
 <translation id="7437289804838430631">Adaugă informații de contact</translation>
-<translation id="743897106051685947">Original</translation>
 <translation id="7438976808740265764">Flash Player nu va mai fi acceptat după decembrie 2020.</translation>
 <translation id="7440140511386898319">Explorează în timp ce ești offline</translation>
 <translation id="7441627299479586546">Subiectul politicii este greșit</translation>
@@ -1572,7 +1573,6 @@ Detalii suplimentare:
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7481312909269577407">Înainte</translation>
 <translation id="7485870689360869515">Nu s-au găsit date.</translation>
-<translation id="7488762544858401571">Editat</translation>
 <translation id="7495290002932347110">O încălcare a securității datelor de pe un site sau dintr-o aplicație ți-a expus parola. Chrome recomandă să verifici parolele salvate și să-ți schimbi acum parola de pe <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Acest conținut este blocat. Contactează proprietarul site-ului pentru a remedia problema.</translation>
 <translation id="7498234416455752244">Continuați editarea</translation>
@@ -1687,6 +1687,7 @@ Detalii suplimentare:
 <translation id="7887683347370398519">Verifică codul CVC și încearcă din nou</translation>
 <translation id="7887885240995164102">Intră în modul picture-in-picture</translation>
 <translation id="7888575728750733395">Intenția de redare a printării</translation>
+<translation id="7894280532028510793">Dacă ortografia este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea rețelei<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Plic)</translation>
 <translation id="7932579305932748336">Acoperire</translation>
 <translation id="79338296614623784">Introdu un număr de telefon valid</translation>
@@ -1833,6 +1834,7 @@ Detalii suplimentare:
 <translation id="8508648098325802031">Pictograma Căutare</translation>
 <translation id="8522552481199248698">Chrome te poate ajuta să îți protejezi Contul Google și să îți schimbi parola.</translation>
 <translation id="8530813470445476232">Șterge istoricul de navigare, cookie-urile, memoria cache și altele din setările Chrome</translation>
+<translation id="8533619373899488139">Accesează &lt;strong&gt;chrome://policy&lt;/strong&gt; ca să vezi lista de adrese URL blocate și alte politici aplicate de administratorul de sistem.</translation>
 <translation id="8541158209346794904">Dispozitivul Bluetooth</translation>
 <translation id="8542014550340843547">Capsare triplă în partea de jos</translation>
 <translation id="8543181531796978784">Poți să <ph name="BEGIN_ERROR_LINK" />raportezi o problemă privind detectarea<ph name="END_ERROR_LINK" /> sau, dacă îți asumi riscurile de securitate, poți să <ph name="BEGIN_LINK" />accesezi acest site nesigur<ph name="END_LINK" />.</translation>
@@ -1893,6 +1895,7 @@ Detalii suplimentare:
 <translation id="884923133447025588">Nu a fost găsit niciun mecanism de revocare.</translation>
 <translation id="885730110891505394">Permiterea accesului pentru Google</translation>
 <translation id="8858065207712248076">Chrome îți recomandă să resetezi parola pentru <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> dacă ai folosit-o și pe alte site-uri.</translation>
+<translation id="885906927438988819">Dacă ortografia este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea rețelei Windows<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Eroare la analizarea setărilor pentru politică</translation>
 <translation id="8866928039507595380">Îndoire</translation>
 <translation id="886872106311861689">B3</translation>

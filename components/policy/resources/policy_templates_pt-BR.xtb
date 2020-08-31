@@ -1647,6 +1647,7 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3412937883532015092">Se a política for definida como um número, o <ph name="PRODUCT_NAME" /> exibirá uma mensagem de milésimos de segundo para o número e abrirá um navegador alternativo.
 
       Se ela não for definida ou for definida como 0, a navegação para um URL designado o abrirá imediatamente em um navegador alternativo.</translation>
+<translation id="3415954062311826850">Esta política não é compatível com o ARC.</translation>
 <translation id="34160070798637152">Controla a configuração de rede em todo o dispositivo.</translation>
 <translation id="3417130629744653218">Permitir que sites consultem formas de pagamento disponíveis.</translation>
 <translation id="3417418267404583991">Se esta política for definida como true ou não for configurada, o <ph name="PRODUCT_OS_NAME" /> permitirá o login de visitantes. Os logins de visitantes são sessões anônimas de usuários e não requerem uma senha. Se esta política for configurada para false, o <ph name="PRODUCT_OS_NAME" /> não permitirá que sejam iniciadas sessões de visitantes.</translation>
@@ -1965,6 +1966,13 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 <translation id="3870300103958000506">A não ser que <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> esteja definida como falsa, definir a política <ph name="ADS_SETTINGS_FOR_INTRUSIVE_ADS_SITES_POLICY_NAME" /> como 1 ou deixá-la sem definição permitirá anúncios em todos os sites.
 
       Se a política for definida como 2, os anúncios serão bloqueados em sites com anúncios invasivos.</translation>
+<translation id="387226665655554104">A política controla uma lista de modos de desbloqueio rápido que podem ser configurados e usados para desbloquear a tela de bloqueio.
+
+          Esse valor é uma lista de strings, e as entradas válidas da lista precisam ser de um dos seguintes tipos: "all", "PIN", "FINGERPRINT". Se a opção "all" for adicionada à lista, todos os modos de desbloqueio rápido estarão disponíveis, incluindo os implementados no futuro. Caso contrário, somente os modos presentes na lista serão disponibilizados.
+
+          Por exemplo, para permitir todos os modos de desbloqueio rápido, use ["all"]. Para permitir apenas o desbloqueio com PIN, use ["PIN"]. Para permitir o desbloqueio com PIN e impressão digital, use ["PIN", "FINGERPRINT"].
+
+          Se a política não for definida ou se ela for definida como uma lista vazia, nenhum modo de desbloqueio rápido estará disponível nos dispositivos gerenciados.</translation>
 <translation id="3877517141460819966">Modo de autenticação de segundo fator integrado</translation>
 <translation id="3879196885908353077">Verifica violações da regra de proteção de dados confidenciais em downloads</translation>
 <translation id="3879208481373875102">Configurar a lista de apps da Web de instalação forçada</translation>
@@ -3233,6 +3241,15 @@ O campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> permite que você especifi
       Se a política não for definida, nenhuma exceção a <ph name="URL_BLOCKLIST_POLICY_NAME" /> será permitida.
 
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" /> executado no Windows 10 Pro ou registradas em <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
+<translation id="5628811596950455942">A política controla uma lista de modos de desbloqueio rápido que podem ser configurados e usados para desbloquear a tela de bloqueio.
+
+          Esse valor é uma lista de strings, e as entradas válidas da lista precisam ser de um dos seguintes tipos: "all", "PIN", "FINGERPRINT". Se a opção "all" for adicionada à lista, todos os modos de desbloqueio rápido estarão disponíveis, incluindo os implementados no futuro. Caso contrário, somente os modos presentes na lista serão disponibilizados.
+
+          Por exemplo, para permitir todos os modos de desbloqueio rápido, use ["all"]. Para permitir apenas o desbloqueio com PIN, use ["PIN"]. Para permitir o desbloqueio com PIN e impressão digital, use ["PIN", "FINGERPRINT"].
+
+          Se a política não for definida ou se ela for definida como uma lista vazia, nenhum modo de desbloqueio rápido estará disponível nos dispositivos gerenciados
+
+          Esta política está obsoleta. Use a <ph name="QUICK_UNLOCK_MODE_ALLOW_LIST_POLICY_NAME" />.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
 <translation id="5641279111657132737">Esta política está obsoleta. Use a <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />.

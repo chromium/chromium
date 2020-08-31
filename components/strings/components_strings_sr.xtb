@@ -263,6 +263,7 @@
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1975584088563498795">10. поштанско сандуче</translation>
 <translation id="1978555033938440688">Верзија фирмвера</translation>
+<translation id="1988881251331415125">Ако нема грешака, <ph name="BEGIN_LINK" />покрените дијагностику повезивања<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">приступа колачићима и подацима о сајтовима.
 
@@ -306,6 +307,7 @@
 <translation id="2154054054215849342">Синхронизација није доступна за домен</translation>
 <translation id="2154484045852737596">Измените картицу</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2164510882479075877">Уверите се да <ph name="HOST_NAME" /> не садржи словне грешке.</translation>
 <translation id="2166049586286450108">Потпуни администраторски приступ</translation>
 <translation id="2166378884831602661">Овај сајт не може да пружи безбедну везу</translation>
 <translation id="2169984857010174799">Kaku2 (коверат)</translation>
@@ -1560,7 +1562,6 @@
 <translation id="7416351320495623771">Управљај лозинкама...</translation>
 <translation id="7419106976560586862">Путања профила</translation>
 <translation id="7437289804838430631">Додај контакт информације</translation>
-<translation id="743897106051685947">Оригинал</translation>
 <translation id="7438976808740265764">Flash Player више неће бити подржан од децембра 2020.</translation>
 <translation id="7440140511386898319">Истражујте док сте офлајн</translation>
 <translation id="7441627299479586546">Погрешан субјекат смерница</translation>
@@ -1573,7 +1574,6 @@
 <translation id="7473891865547856676">Не, хвала</translation>
 <translation id="7481312909269577407">Проследи</translation>
 <translation id="7485870689360869515">Нису пронађени подаци.</translation>
-<translation id="7488762544858401571">Измењено</translation>
 <translation id="7495290002932347110">Ваша лозинка је откривена при упаду у податке на сајту или у апликацији. Chrome препоручује да проверите сачуване лозинке и да одмах промените лозинку на <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Овај садржај је блокиран. Обратите се власнику сајта да бисте решили проблем.</translation>
 <translation id="7498234416455752244">Наставите са изменама</translation>
@@ -1688,6 +1688,7 @@
 <translation id="7887683347370398519">Проверите CVC и покушајте поново</translation>
 <translation id="7887885240995164102">Покрени режим слике у слици</translation>
 <translation id="7888575728750733395">Намера рендеровања штампања</translation>
+<translation id="7894280532028510793">Ако нема грешака, <ph name="BEGIN_LINK" />покрените дијагностику мреже<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (коверат)</translation>
 <translation id="7932579305932748336">Омот</translation>
 <translation id="79338296614623784">Унесите важећи број телефона</translation>
@@ -1834,6 +1835,7 @@
 <translation id="8508648098325802031">Икона Претрага</translation>
 <translation id="8522552481199248698">Chrome може да вам помогне да заштитите Google налог и промените лозинку.</translation>
 <translation id="8530813470445476232">Обришите историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
+<translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је наметнуо администратор система.</translation>
 <translation id="8541158209346794904">Bluetooth уређај</translation>
 <translation id="8542014550340843547">Троструко спајање на дну</translation>
 <translation id="8543181531796978784">Можете да <ph name="BEGIN_ERROR_LINK" />пријавите проблем са откривањем<ph name="END_ERROR_LINK" /> или, ако схватате безбедносне ризике, <ph name="BEGIN_LINK" />посетите овај небезбедан сајт<ph name="END_LINK" />.</translation>
@@ -1894,6 +1896,7 @@
 <translation id="884923133447025588">Није пронађен ниједан механизам опозива.</translation>
 <translation id="885730110891505394">Дељење са Google-ом</translation>
 <translation id="8858065207712248076">Chrome вам препоручује да ресетујете лозинку за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако сте је користили на другим сајтовима.</translation>
+<translation id="885906927438988819">Ако нема грешака, <ph name="BEGIN_LINK" />покрените Windows дијагностику мреже<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Грешка при рашчлањивању подешавања смерница</translation>
 <translation id="8866928039507595380">Пресавијање</translation>
 <translation id="886872106311861689">B3</translation>

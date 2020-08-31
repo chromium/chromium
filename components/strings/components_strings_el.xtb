@@ -263,6 +263,7 @@
 <translation id="1974060860693918893">Σύνθετες</translation>
 <translation id="1975584088563498795">Γραμματοκιβώτιο 10</translation>
 <translation id="1978555033938440688">Έκδοση υλικολογισμικού</translation>
+<translation id="1988881251331415125">Εάν δεν υπάρχει ορθογραφικό λάθος, <ph name="BEGIN_LINK" />δοκιμάστε να εκτελέσετε έναν έλεγχο Διαγνωστικών συνδεσιμότητας<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Πρόσβαση σε cookie και δεδομένα ιστοτόπου.
 
@@ -306,6 +307,7 @@
 <translation id="2154054054215849342">Ο συγχρονισμός δεν είναι διαθέσιμος για τον τομέα σας</translation>
 <translation id="2154484045852737596">Επεξεργασία κάρτας</translation>
 <translation id="2161656808144014275">Κείμενο</translation>
+<translation id="2164510882479075877">Ελέγξτε μήπως υπάρχει κάποιο ορθογραφικό λάθος στη διεύθυνση <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Πλήρης πρόσβαση διαχειριστή</translation>
 <translation id="2166378884831602661">Αυτός ο ιστότοπος δεν μπορεί να προσφέρει ασφαλή σύνδεση</translation>
 <translation id="2169984857010174799">Kaku2 (Φάκελος)</translation>
@@ -1562,7 +1564,6 @@
 <translation id="7416351320495623771">Διαχείριση κωδικών πρόσβασης…</translation>
 <translation id="7419106976560586862">Διαδρομή προφίλ</translation>
 <translation id="7437289804838430631">Προσθήκη στοιχείων επικοινωνίας</translation>
-<translation id="743897106051685947">Αρχικό</translation>
 <translation id="7438976808740265764">Το Flash Player δεν θα υποστηρίζεται πλέον μετά τον Δεκέμβριο του 2020.</translation>
 <translation id="7440140511386898319">Αναζήτηση εκτός σύνδεσης</translation>
 <translation id="7441627299479586546">Εσφαλμένο θέμα πολιτικής</translation>
@@ -1575,7 +1576,6 @@
 <translation id="7473891865547856676">Όχι, ευχαριστώ</translation>
 <translation id="7481312909269577407">Προώθηση</translation>
 <translation id="7485870689360869515">Δεν βρέθηκαν δεδομένα</translation>
-<translation id="7488762544858401571">Τροποποιήθηκε</translation>
 <translation id="7495290002932347110">Μια παραβίαση δεδομένων σε έναν ιστότοπο ή μια εφαρμογή αποκάλυψε τον κωδικό πρόσβασης που χρησιμοποιείτε. Το Chrome συνιστά να ελέγξετε τους αποθηκευμένους κωδικούς πρόσβασής και να αλλάξετε άμεσα τον κωδικό πρόσβασης που χρησιμοποιείτε στο <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Αυτό το περιεχόμενο είναι αποκλεισμένο. Επικοινωνήστε με τον κάτοχο του ιστοτόπου για να διορθώσετε το πρόβλημα.</translation>
 <translation id="7498234416455752244">Συνέχιση επεξεργασίας</translation>
@@ -1690,6 +1690,7 @@
 <translation id="7887683347370398519">Ελέγξτε τον κωδικό σας CVC και δοκιμάστε ξανά</translation>
 <translation id="7887885240995164102">Είσοδος στη λειτουργία picture-in-picture</translation>
 <translation id="7888575728750733395">Εκτύπωση intent απόδοσης</translation>
+<translation id="7894280532028510793">Εάν δεν υπάρχει ορθογραφικό λάθος, <ph name="BEGIN_LINK" />δοκιμάστε να εκτελέσετε έναν έλεγχο Διαγνωστικών δικτύου<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (Φάκελος)</translation>
 <translation id="7932579305932748336">Επικάλυψη</translation>
 <translation id="79338296614623784">Εισαγάγετε έναν έγκυρο αριθμό τηλεφώνου</translation>
@@ -1836,6 +1837,7 @@
 <translation id="8508648098325802031">Εικονίδιο αναζήτησης</translation>
 <translation id="8522552481199248698">Το Chrome μπορεί να σας βοηθήσει να προστατεύσετε τον Λογαριασμό σας Google και να αλλάξετε τον κωδικό πρόσβασής σας.</translation>
 <translation id="8530813470445476232">Διαγράψτε το ιστορικό περιήγησης, τα cookie, την κρυφή μνήμη και άλλα στοιχεία στις ρυθμίσεις του Chrome.</translation>
+<translation id="8533619373899488139">Μεταβείτε στη διεύθυνση &lt;strong&gt;chrome://policy&lt;/strong&gt; για να δείτε τη λίστα των αποκλεισμένων URL και άλλες πολιτικές που έχουν τεθεί σε εφαρμογή από τον διαχειριστή του συστήματός σας.</translation>
 <translation id="8541158209346794904">Συσκευή Bluetooth</translation>
 <translation id="8542014550340843547">Τριπλή συρραφή στο κάτω μέρος</translation>
 <translation id="8543181531796978784">Μπορείτε να <ph name="BEGIN_ERROR_LINK" />αναφέρετε ένα πρόβλημα εντοπισμού<ph name="END_ERROR_LINK" /> ή, εάν κατανοείτε τους κινδύνους ασφαλείας, να <ph name="BEGIN_LINK" />επισκεφτείτε αυτόν τον μη ασφαλή ιστότοπο<ph name="END_LINK" />.</translation>
@@ -1896,6 +1898,7 @@
 <translation id="884923133447025588">Δεν εντοπίστηκε μηχανισμός ακύρωσης.</translation>
 <translation id="885730110891505394">Κοινοποίηση στις υπηρεσίες της Google</translation>
 <translation id="8858065207712248076">Το Chrome συνιστά την επαναφορά του κωδικού πρόσβασης <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> εάν τον έχετε χρησιμοποιήσει και σε άλλους ιστοτόπους.</translation>
+<translation id="885906927438988819">Εάν δεν υπάρχει ορθογραφικό λάθος, <ph name="BEGIN_LINK" />δοκιμάστε να εκτελέσετε έναν έλεγχο Διαγνωστικών δικτύου των Windows<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Σφάλμα ανάλυσης ρυθμίσεων πολιτικής</translation>
 <translation id="8866928039507595380">Δίπλωση</translation>
 <translation id="886872106311861689">B3</translation>

@@ -788,7 +788,7 @@
 <translation id="1915073950770830761">కెనరీ</translation>
 <translation id="1916502483199172559">డిఫాల్ట్ ఎరుపు రంగు అవతార్</translation>
 <translation id="1918141783557917887">&amp;చిన్నగా</translation>
-<translation id="1919345977826869612">ప్రకటనలు</translation>
+<translation id="1919345977826869612">యాడ్స్</translation>
 <translation id="1919814239594435008">శాండ్‌బాక్స్ చేయని ప్లగ్ఇన్‌ అనుమతించబడింది</translation>
 <translation id="1920390473494685033">పరిచయాలు</translation>
 <translation id="1921050530041573580">మీ ఫోన్‌ని సందేశాలతో జత చేయండి</translation>
@@ -1248,7 +1248,7 @@
 <translation id="247949520305900375">ఆడియోను భాగస్వామ్యం చేయి</translation>
 <translation id="248003956660572823">పాస్‌వర్డ్‌లు సేవ్ చేయబడలేదు</translation>
 <translation id="2480868415629598489">మీరు కాపీ చేసి, అతికించే డేటాను సవరించడం</translation>
-<translation id="2482878487686419369">ప్రకటనలు</translation>
+<translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
 <translation id="2484959914739448251">మీ అన్ని సమకాలీకరించబడుతున్న పరికరాలతో సహా, మీ Google ఖాతా నుండి బ్రౌజింగ్ డేటాను తీసివేయడానికి, <ph name="BEGIN_LINK" />మీ రహస్య పదబంధాన్ని నమోదు చేయండి<ph name="END_LINK" />.</translation>
 <translation id="2485005079599453134">ఈ పరికరంలో పాస్‌వర్డ్ సేవ్ చేయబడింది</translation>
 <translation id="2485394160472549611">మీ కోసం ఉత్తమంగా ఎంపిక చేసినవి</translation>
@@ -1315,7 +1315,7 @@
 <translation id="2544853746127077729">ప్రామాణీకరణ ప్రమాణపత్రం నెట్‌వర్క్ ద్వారా తిరస్కరించబడింది</translation>
 <translation id="2546229857744484369">ఈ పరికరంలో మీకు 1 పాస్‌వర్డ్ సేవ్ చేయబడి ఉంది</translation>
 <translation id="2546283357679194313">కుక్కీలు మరియు సైట్ డేటా</translation>
-<translation id="2548347166720081527"><ph name="PERMISSION" />ను అనుమతించారు</translation>
+<translation id="2548347166720081527"><ph name="PERMISSION" />‌ను అనుమతించారు</translation>
 <translation id="2549985041256363841">రికార్డింగ్‌ను ప్రారంభించు</translation>
 <translation id="2550212893339833758">వినిమయం చేసిన మెమరీ</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" />ని <ph name="FILE_NAME" /> తెరవడానికి అనుమతించాలా?</translation>
@@ -1840,7 +1840,7 @@
 <translation id="3202131003361292969">పాథ్‌</translation>
 <translation id="3202173864863109533">ఈ ట్యాబ్ ఆడియో మ్యూట్ చేయబడుతోంది.</translation>
 <translation id="3208321278970793882">యాప్</translation>
-<translation id="3208584281581115441">ఇప్పుడే తనిఖీ చేయి</translation>
+<translation id="3208584281581115441">ఇప్పుడే చెక్ చేయండి</translation>
 <translation id="3208703785962634733">నిర్థారించబడలేదు</translation>
 <translation id="32101887417650595">ప్రింటర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="321084946921799184">పసుపు పచ్చ మరియు తెలుపు</translation>
@@ -6035,7 +6035,7 @@
 <translation id="835951711479681002">మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="8363095875018065315">స్థిరం</translation>
 <translation id="8363142353806532503">మైక్రోఫోన్ బ్లాక్ చేయబడింది</translation>
-<translation id="8363763184161554204"><ph name="PERMISSION" />ను అనుమతించారు</translation>
+<translation id="8363763184161554204"><ph name="PERMISSION" />‌ను అనుమతించారు</translation>
 <translation id="8364946094152050673">ఖాళీ పేరు సర్వర్‌లు</translation>
 <translation id="8366396658833131068">మీ నెట్‌వర్క్ కనెక్టివిటీ పునరుద్ధరించబడింది. దయచేసి వేరే నెట్‌వర్క్‌ను ఎంచుకోండి లేదా మీ కియోస్క్ యాప్‌ను ప్రారంభించడానికి కింది 'కొనసాగించు' బటన్ నొక్కండి.</translation>
 <translation id="8368027906805972958">తెలియని లేదా మద్దతు లేని పరికరం (<ph name="DEVICE_ID" />)</translation>

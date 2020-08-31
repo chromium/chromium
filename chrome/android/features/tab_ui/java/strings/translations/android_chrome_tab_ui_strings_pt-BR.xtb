@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Toque para ver outra guia</translation>
 <translation id="1657719826150349398">Mover guia para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
+<translation id="2277224997687551299">Editar nome do grupo</translation>
+<translation id="228946090561406413">{TABS_COUNT,plural, =1{Remover <ph name="TABS_COUNT_ONE" /> guia selecionada do grupo.}one{Remover <ph name="TABS_COUNT_MANY" /> guia selecionada do grupo.}other{Remover <ph name="TABS_COUNT_MANY" /> guias selecionadas do grupo.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2613747923081026172">Criar grupo</translation>
@@ -13,6 +16,7 @@
 <translation id="2759453070259087442">Expandir grupo "<ph name="TITLE_OF_GROUP" />" que tem <ph name="NUMBER_OF_TABS" /> guias.</translation>
 <translation id="2977480621796371840">Remover do grupo</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
+<translation id="3819916404117584598">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="4450893287417543264">Não mostrar novamente</translation>
@@ -20,16 +24,22 @@
 <translation id="5007392906805964215">Revisar</translation>
 <translation id="5073204694187207510">Ocultar grade de tela cheia</translation>
 <translation id="5082793167783849073">Compare as páginas rapidamente criando um grupo. Para começar, toque em um link e mantenha-o pressionado.</translation>
+<translation id="5490235265819901748">Grupo de guias expandido</translation>
 <translation id="5533021382642990449">Mostrar mais tarde</translation>
+<translation id="5558362125926932819">Fechar grupo de guias com <ph name="NUMBER_OF_TABS" /> guias</translation>
 <translation id="5580090775658607195">Guias agrupadas: <ph name="TAB_COUNT" /></translation>
 <translation id="58326064309361797">Arraste as guias para agrupá-las</translation>
+<translation id="5846292395804797011">Fechar grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="NUMBER_OF_TABS" /> guias</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6193448654517602979">Selecione as guias</translation>
 <translation id="6510648526783655549">Fechar barra de guias</translation>
 <translation id="6562820390860419811">Mover guia para a esquerda</translation>
 <translation id="6615455863669487791">Exibir</translation>
 <translation id="6840760312327750441">Para agrupar guias, toque em uma delas e a mantenha pressionada. Depois disso, arraste-a para outra guia.</translation>
+<translation id="6856809498882026482">Ocultar modo de seleção múltipla</translation>
 <translation id="7151209024774799310">Remover guias do grupo</translation>
+<translation id="7204204600596740190">Modo de seleção múltipla</translation>
+<translation id="753732157349120914">Alternador de guias</translation>
 <translation id="7559245342362162951">Mostrar guias do grupo em grade de tela cheia</translation>
 <translation id="7792771145871471484">Revisar as sugestões.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Colocar <ph name="TABS_COUNT_ONE" /> guia selecionada no grupo}one{Colocar <ph name="TABS_COUNT_MANY" /> guia selecionada no grupo}other{Colocar <ph name="TABS_COUNT_MANY" /> guias selecionadas no grupo}}</translation>
@@ -39,6 +49,7 @@
 <translation id="8205266828577616993">Mover guia para cima</translation>
 <translation id="8304833501377495048">Deixar de mostrar a barra de guias?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> guia selecionada}one{Fechar <ph name="TABS_COUNT_MANY" /> guia selecionada}other{Fechar <ph name="TABS_COUNT_MANY" /> guias selecionadas}}</translation>
+<translation id="8557923272772633250">Expandir grupo de guias com <ph name="NUMBER_OF_TABS" /> guias.</translation>
 <translation id="8749939518995770034">Barra de guias fechada</translation>
 <translation id="9150694013019234766">Alterne entre as guias do seu grupo de guias perto da parte inferior da tela</translation>
 <translation id="9169594135889675189">Adicionar nova guia ao grupo</translation>

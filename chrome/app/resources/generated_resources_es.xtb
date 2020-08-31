@@ -742,6 +742,7 @@
 <translation id="1854180393107901205">Detener el envío</translation>
 <translation id="1856715684130786728">Añadir ubicación...</translation>
 <translation id="1858585891038687145">Confiar en este certificado para identificar a los fabricantes de software</translation>
+<translation id="1860346308203060432">Ver visibilidad del dispositivo</translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1863182668524159459">No se ha encontrado ningún puerto serie</translation>
 <translation id="1863316578636157783">Se ha inhabilitado <ph name="EXTENSION_NAME" /> porque contiene software malicioso</translation>
@@ -766,6 +767,7 @@
 <translation id="1880905663253319515">¿Eliminar el certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Diseño de teclado</translation>
 <translation id="1884013283844450420">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
+<translation id="1884340228047885921">El ajuste de visibilidad actual es algunos contactos</translation>
 <translation id="1884705339276589024">Cambiar el tamaño de disco de Linux</translation>
 <translation id="1885106732301550621">Espacio en disco</translation>
 <translation id="1886996562706621347">Permitir que los sitios web se conviertan en controladores de protocolos predeterminados (recomendado)</translation>
@@ -1102,6 +1104,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2307462900900812319">Configurar red</translation>
 <translation id="230927227160767054">Esta página quiere instalar un controlador de servicios</translation>
 <translation id="2309620859903500144">Esta página no tiene permiso para acceder a los sensores de luz y movimiento.</translation>
+<translation id="2314165183524574721">El ajuste de visibilidad actual es oculto</translation>
 <translation id="2314873619957287124">Pon unas normas digitales básicas que ayuden a tu hijo/a a aprender, jugar y navegar</translation>
 <translation id="2315414688463285945">No se han podido configurar los archivos de Linux. Inténtalo de nuevo.</translation>
 <translation id="2315587498123194634">Enviar enlace a <ph name="DEVICE_NAME" /></translation>
@@ -1688,6 +1691,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3004391367407090544">Vuelve a intentarlo más tarde</translation>
 <translation id="3006881078666935414">No hay datos de uso</translation>
 <translation id="3007771295016901659">Duplicar pestaña</translation>
+<translation id="3008232374986381779">Ejecuta IDEs, editores y herramientas de Linux en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Borrar permisos</translation>
 <translation id="3009300415590184725">¿Seguro que quieres cancelar el proceso de configuración del servicio de datos para móviles?</translation>
 <translation id="3009779501245596802">Bases de datos indexadas</translation>
@@ -1829,6 +1833,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3183143381919926261">Redes de datos móviles</translation>
 <translation id="3183944777708523606">Disposición del monitor</translation>
 <translation id="3184536091884214176">Configurar o gestionar impresoras CUPS. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="3184809672319591980">SIM física</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
 <translation id="3188465121994729530">Media móvil</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
@@ -2450,6 +2455,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3908393983276948098">El complemento <ph name="PLUGIN_NAME" /> no está actualizado</translation>
 <translation id="3908501907586732282">Habilitar extensión</translation>
 <translation id="3909791450649380159">Cor&amp;tar</translation>
+<translation id="39103738135459590">Código de activación</translation>
 <translation id="3911824782900911339">Página Nueva pestaña</translation>
 <translation id="3915280005470252504">Búsqueda por voz</translation>
 <translation id="3916233823027929090">Se han realizado las comprobaciones de seguridad</translation>
@@ -2662,6 +2668,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4159681666905192102">Esta es una cuenta infantil administrada por <ph name="CUSTODIAN_EMAIL" /> y <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Teclado desconocido</translation>
 <translation id="4168015872538332605">Algunas opciones que pertenecen a <ph name="PRIMARY_EMAIL" /> se están compartiendo contigo. Estas opciones solo se aplican a tu cuenta cuando utilizas el inicio de sesión múltiple.</translation>
+<translation id="4170256733935344210">Escanea el código QR con la cámara del dispositivo o introduce el código de activación proporcionado por tu operador</translation>
 <translation id="4170314459383239649">Borrar al salir</translation>
 <translation id="4175137578744761569">Morado claro y blanco</translation>
 <translation id="4175737294868205930">Almacenamiento permanente</translation>
@@ -2750,6 +2757,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4296575653627536209">Añadir usuario supervisado</translation>
 <translation id="4297219207642690536">Reiniciar y restablecer</translation>
 <translation id="4297813521149011456">Rotación de pantalla</translation>
+<translation id="4299596693977045093">Configuración de eSIM</translation>
 <translation id="4301671483919369635">Esta página tiene permiso para editar archivos</translation>
 <translation id="4303079906735388947">Configura un nuevo PIN para tu llave de seguridad</translation>
 <translation id="4305402730127028764">Copiar en <ph name="DEVICE_NAME" /></translation>
@@ -3464,6 +3472,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="52232769093306234">No se ha podido comprimir.</translation>
 <translation id="5225324770654022472">Mostrar acceso directo de aplicaciones</translation>
+<translation id="52254442782792731">El ajuste de visibilidad actual aún no se ha establecido</translation>
 <translation id="5227679487546032910">Avatar verde azulado predeterminado</translation>
 <translation id="5228088094491423618">Subtítulos instantáneos</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
@@ -4061,6 +4070,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5941153596444580863">Añadir perfil...</translation>
 <translation id="5941343993301164315">Inicia sesión en <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
+<translation id="5942779427914696408">Visibilidad del dispositivo</translation>
 <translation id="5942964813783878922">Tu <ph name="DEVICE_TYPE" /> se reiniciará después de esta actualización. Las futuras actualizaciones de software y seguridad se instalarán automáticamente.</translation>
 <translation id="5944869793365969636">Escanear código QR</translation>
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4233,6 +4243,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6148576794665275391">Abrir ahora</translation>
 <translation id="6149015141270619212">No se puede establecer conexión a Internet</translation>
 <translation id="614940544461990577">Prueba a:</translation>
+<translation id="6150278227694566734">Algunos contactos</translation>
 <translation id="6150961653851236686">Las páginas se traducen a este idioma</translation>
 <translation id="6151323131516309312">Pulsa <ph name="SEARCH_KEY" /> para buscar en <ph name="SITE_NAME" /></translation>
 <translation id="6151771661215463137">El archivo ya existe en tu carpeta de descargas.</translation>
@@ -5080,6 +5091,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
 <translation id="7211890396916697230">Configurar eSIM</translation>
 <translation id="7212097698621322584">Introduce tu PIN actual para cambiarlo. Si no sabes cuál es tu PIN, tendrás que restablecer la llave de seguridad y crear un nuevo PIN.</translation>
+<translation id="7213903639823314449">Buscador utilizado en la barra de direcciones</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
 <translation id="7216595297012131718">Ordena los idiomas según tus preferencias</translation>
 <translation id="7220019174139618249">No se pueden exportar contraseñas a la carpeta "<ph name="FOLDER" />"</translation>
@@ -6170,6 +6182,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8539766201049804895">Actualizar</translation>
 <translation id="8540136935098276800">Introduce una URL con el formato correcto</translation>
 <translation id="8540608333167683902">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
+<translation id="854071720451629801">Marcar como leído</translation>
 <translation id="8541462173655894684">No se ha encontrado ninguna impresora en el servidor de impresión</translation>
 <translation id="8542618328173222274">Preguntar cuando un sitio web quiera usar tus dispositivos y datos de realidad virtual</translation>
 <translation id="8543556556237226809">¿Tienes alguna pregunta? Ponte en contacto con la persona que supervisa tu perfil.</translation>
@@ -6444,6 +6457,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8846141544112579928">Buscando teclado...</translation>
 <translation id="8847523528195140327">Cerrar sesión cuando se cierre la tapa</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8849001918648564819">Oculto</translation>
 <translation id="8850251000316748990">Ver más...</translation>
 <translation id="885246833287407341">Argumentos de función de API</translation>
 <translation id="8853586775156634952">Esta tarjeta solo se guardará en este dispositivo</translation>
@@ -6469,6 +6483,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8872777911145321141">Preguntar cuando un sitio web quiera usar tus dispositivos y datos de realidad virtual (recomendado)</translation>
 <translation id="8874184842967597500">No conectado</translation>
 <translation id="8875520811099717934">Actualización de Linux</translation>
+<translation id="8875736897340638404">Elige tu visibilidad</translation>
 <translation id="8876307312329369159">Este ajuste no se puede cambiar en una sesión de demostración.</translation>
 <translation id="8877448029301136595">[directorio principal]</translation>
 <translation id="8879284080359814990">&amp;Mostrar como pestaña</translation>
@@ -6625,6 +6640,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9063208415146866933">Error de la línea <ph name="ERROR_LINE_START" /> a la <ph name="ERROR_LINE_END" /></translation>
 <translation id="9064275926664971810">Habilita Autocompletar para rellenar formularios web con un solo clic</translation>
 <translation id="9065203028668620118">Editar</translation>
+<translation id="9065772380960598487">Añadir a Leer más tarde</translation>
 <translation id="9066773882585798925">Escuchar el texto leído en voz alta</translation>
 <translation id="9066782832737749352">Síntesis de voz</translation>
 <translation id="9068849894565669697">Seleccionar color</translation>
@@ -6706,6 +6722,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9169496697824289689">Ver combinaciones de teclas</translation>
 <translation id="916964310188958970">¿Por qué aparece esta sugerencia?</translation>
 <translation id="9169931577761441333">Añadir <ph name="APP_NAME" /> a la pantalla de inicio</translation>
+<translation id="9170061643796692986">El ajuste de visibilidad actual es todos los contactos</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
 <translation id="9170884462774788842">Otro programa de tu ordenador ha añadido un tema que puede cambiar el funcionamiento de Chrome.</translation>
 <translation id="917350715406657904">Has llegado al límite de tiempo de uso de <ph name="APP_NAME" /> que ha establecido tu padre o madre. Podrás usar esta aplicación mañana durante <ph name="TIME_LIMIT" />.</translation>

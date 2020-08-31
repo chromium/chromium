@@ -107,6 +107,7 @@
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">พิมพ์ข้อความ</translation>
 <translation id="2018630726571919839">เล่าเรื่องตลกให้ฟังหน่อย</translation>
+<translation id="2049240716062114887">เปลี่ยนชื่อโต๊ะเป็น <ph name="DESK_NAME" /> แล้ว</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
 <translation id="2067602449040652523">ความสว่างของแป้นพิมพ์</translation>
 <translation id="2083190527011054446">ราตรีสวัสดิ์ <ph name="GIVEN_NAME" /></translation>
@@ -375,6 +376,7 @@
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
 <translation id="4961318399572185831">แคสต์หน้าจอ</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> ชม. <ph name="MINUTES" /> นาที <ph name="SECONDS" /> วินาที</translation>
+<translation id="4975771730019223894">การติดป้ายแอป</translation>
 <translation id="5030687792513154421">หมดเวลา</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> เชื่อมต่อโทรศัพท์เครื่องใหม่แล้ว</translation>
 <translation id="5035389544768382859">ยืนยันการกำหนดค่าจอแสดงผล</translation>

@@ -261,6 +261,7 @@
 <translation id="1974060860693918893">Разширени</translation>
 <translation id="1975584088563498795">Пощенска кутия 10</translation>
 <translation id="1978555033938440688">Версия на фърмуера</translation>
+<translation id="1988881251331415125">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте диагностика на свързаността<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">Осъществява достъп до „бисквитки“ и данни за сайтове.
 
@@ -304,6 +305,7 @@
 <translation id="2154054054215849342">Синхронизирането не е налице за въведения от вас домейн</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
 <translation id="2161656808144014275">Текст</translation>
+<translation id="2164510882479075877">Проверете дали <ph name="HOST_NAME" /> е изписано правилно.</translation>
 <translation id="2166049586286450108">Пълен администраторски достъп</translation>
 <translation id="2166378884831602661">Този сайт не може да осигури защитена връзка</translation>
 <translation id="2169984857010174799">Kaku2 (плик)</translation>
@@ -1557,7 +1559,6 @@
 <translation id="7416351320495623771">Управление на паролите…</translation>
 <translation id="7419106976560586862">Път на потребителския профил</translation>
 <translation id="7437289804838430631">Добавяне на информация за връзка</translation>
-<translation id="743897106051685947">Оригинал</translation>
 <translation id="7438976808740265764">Поддръжката на Flash Player ще бъде прекратена след декември 2020 г.</translation>
 <translation id="7440140511386898319">Разгледайте, докато сте офлайн</translation>
 <translation id="7441627299479586546">Грешен предмет на правилото</translation>
@@ -1570,7 +1571,6 @@
 <translation id="7473891865547856676">Не, благодаря</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7485870689360869515">Няма намерени данни.</translation>
-<translation id="7488762544858401571">Редактиран</translation>
 <translation id="7495290002932347110">Паролата ви е била разкрита при нарушение на сигурността на данните на сайт или приложение. Chrome препоръчва да проверите запазените си пароли и да промените паролата си за <ph name="ORIGIN" /> сега.</translation>
 <translation id="7495528107193238112">Това съдържание е блокирано. Свържете се със собственика на сайта, за да отстрани проблема.</translation>
 <translation id="7498234416455752244">Продължаване с редактирането</translation>
@@ -1685,6 +1685,7 @@
 <translation id="7887683347370398519">Прегледайте кода за проверка и опитайте отново</translation>
 <translation id="7887885240995164102">Преминаване в режим „Картина в картината“</translation>
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>
+<translation id="7894280532028510793">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (плик)</translation>
 <translation id="7932579305932748336">Покритие</translation>
 <translation id="79338296614623784">Въведете валиден телефонен номер</translation>
@@ -1831,6 +1832,7 @@
 <translation id="8508648098325802031">Икона за търсене</translation>
 <translation id="8522552481199248698">Chrome може да ви помогне да защитите профила си в Google и да промените паролата си.</translation>
 <translation id="8530813470445476232">Изчистете историята си на сърфиране, „бисквитките“, кеша и др. в настройките на Chrome</translation>
+<translation id="8533619373899488139">Посетете &lt;strong&gt;chrome://policy&lt;/strong&gt;, за да видите блокираните URL адреси и другите правила, наложени от системния ви администратор.</translation>
 <translation id="8541158209346794904">Bluetooth устройства</translation>
 <translation id="8542014550340843547">Триточково телбодиране в долната част</translation>
 <translation id="8543181531796978784">Можете да <ph name="BEGIN_ERROR_LINK" />подадете сигнал за проблем при откриването<ph name="END_ERROR_LINK" /> или, ако разбирате рисковете за сигурността си, да <ph name="BEGIN_LINK" />посетите този небезопасен сайт<ph name="END_LINK" />.</translation>
@@ -1890,6 +1892,7 @@
 <translation id="884923133447025588">Не е намерен механизъм за анулиране.</translation>
 <translation id="885730110891505394">Споделяне с Google</translation>
 <translation id="8858065207712248076">Chrome препоръчва да зададете повторно паролата си за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, ако сте я използвали и на други сайтове.</translation>
+<translation id="885906927438988819">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика в Windows<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Грешка при синтактичния анализ на настройките за правилото</translation>
 <translation id="8866928039507595380">Сгъване</translation>
 <translation id="886872106311861689">B3</translation>

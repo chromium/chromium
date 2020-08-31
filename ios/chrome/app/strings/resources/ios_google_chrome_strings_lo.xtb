@@ -3,6 +3,7 @@
 <translationbundle lang="lo">
 <translation id="1282031177488366470">ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chrome</translation>
 <translation id="1479202195792305274">Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ ເມື່ອທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານໄດ້.</translation>
+<translation id="1504372625950710826">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ລອງກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
 <translation id="1682483655351012182">ຊິ້ງຂໍ້ມູນ Chrome ຂອງທ່ານ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">ບັນຊີນີ້ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຕ່າງໆຈະຖືກລຶບອອກຈາກ Chrome ແລະ ແອັບອື່ນຂອງ Google ໃນອຸປະກອນນີ້.</translation>
@@ -14,6 +15,7 @@
 <translation id="2574249610672786438">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເຂົ້າສູ່ລະບົບໃນອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="2576431527583832481">Chrome ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
 <translation id="257708665678654955">ທ່ານຕ້ອງການໃຫ້ Google Chrome ສະເໜີແປໜ້າ <ph name="LANGUAGE_NAME" /> ຈາກເວັບໄຊນີ້ໃນຄັ້ງຕໍ່ໄປບໍ່?</translation>
+<translation id="2695886661449553974">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="2732745070297234559">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>
 <translation id="2919738076569633423">ໂດຍການໃຊ້ Chrome, ແມ່ນຖືວ່າທ່ານເຫັນນຳ <ph name="BEGIN_LINK_TOS" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="SIGNOUT_MANAGED_DOMAIN" />, ຂໍ້ມູນ Chrome ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -31,15 +33,20 @@
 <translation id="3988789688219830639">Google Chrome ບໍ່​ມີ​ການ​ເຂົ້າເຖິງຮູບຖ່າຍ ຫຼື ​ວິ​ດີ​ໂອ​ຂອງ​ທ່ານ. ເປີດ​ໃຊ້​ການ​ເຂົ້າ​ເຖິງ​ຢູ່​ໃນ​ການ​ຕັ້ງ​ຄ່າ iOS &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">ຊ່ວຍເຮັດໃຫ້ Chrome ດີກ່ວາໂດຍການສົ່ງສະຖິຕິການໃຊ້ ແລະລາຍງານການຂັດຂ້ອງຫາ Google.</translation>
 <translation id="415767770115540173">ເອົາ​ປະ​ສົບ​ການ Google ​ທີ່​ດີ​ກ່​ວາ​ຢູ່​ໃນ Chrome ອີງ​ຕາມ​ທີ່​ຕັ້ງ​ຂອງ​ທ່ານ.</translation>
+<translation id="417201473131094001">ບໍ່ຮອງຮັບໃນ Chrome Canary</translation>
 <translation id="424864128008805179">ອອກຈາກລະບົບ Chrome ບໍ?</translation>
 <translation id="4249068189593983585">ເຄັດລັບກ່ຽວກັບ Chrome. ສຳລັບຕົວເລືອກແຖບເພີ່ມເຕີມ, ກະລຸນາແຕະປຸ່ມສະແດງແຖບໃນແຖບເຄື່ອງມືຄ້າງໄວ້ ເຊິ່ງຢູ່ລຸ່ມສຸດ ຫຼື ເທິງສຸດຂອງໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="4523886039239821078">ການ​ເພີ່ມ​ໃສ່​ບາງ​ອັນ​ເຮັດ​ໃຫ້ Chrome ເກີດ​ຂັດ​ຂ້ອງ. ກະ​ລຸ​ນາ​ຖອນ​ຕິດ​ຕັ້ງ​.</translation>
+<translation id="4633328489441962921">Chrome ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="4698415050768537821">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
+<translation id="484033449593719797">ບໍ່ຮອງຮັບໃນ Chrome Beta</translation>
 <translation id="5030102366287574140">Chrome ສາມາດຊ່ວຍຮັກສາທ່ານໃຫ້ປອດໄພຈາກການລະເມີດຂໍ້ມູນ, ເວັບໄຊທີ່ບໍ່ປອດໄພ ແລະ ອື່ນໆອີກ.</translation>
+<translation id="5162467219239570114">Chrome ເກົ່າແລ້ວ. ຖ້າບໍ່ມີການອັບເດດໃນ <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ມັນເປັນໄປໄດ້ວ່າອຸປະກອນຂອງທ່ານບໍ່ຮອງຮັບ Chrome ເວີຊັນໃໝ່ອີກຕໍ່ໄປ.</translation>
 <translation id="5389212809648216794">Google Chrome ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້ ເພາະວ່າກ້ອງຖືກໃຊ້ໂດຍແອັບພລິເຄຊັນອື່ນ</translation>
 <translation id="5639704535586432836">ເປີດການຕັ້ງຄ່າ &gt; ຄວາມເປັນສ່ວນຕົວ &gt; ກ້ອງຖ່າຍຮູບ &gt; Google Chrome ແລະ ເປີດກ້ອງຖ່າຍຮູບ.</translation>
 <translation id="5642200033778930880">Google Chrome ບໍ່ສາມາດໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານໃນໂໝດມຸມມອງແຍກກັນໄດ້</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="571296537125272375">ອອບລາຍຢູ່, Chrome ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="5854621639439811139">ເຄັດລັບກ່ຽວກັບ Chrome. ດຽວນີ້ບາງປຸ່ມຢູ່ສ່ວນລຸ່ມຂອງໜ້າຈໍ ເຊັ່ນ: ກັບຄືນ, ສົ່ງຕໍ່ ແລະ ຊອກຫາ.</translation>
 <translation id="6036420186814142909">Google Chrome ມີ​ຄຸນສົມບັດໃຊ້ງານ​ທີ່​ຊ່ວຍ​ທ່ານ​ຈັດ​ການ​ຂໍ້​ມູນ​ອິນ​ເຕີ​ເນັດ​ຂອງ​ທ່ານ ແລະ​ທ່ານ​ສາ​ມາດ​ໂຫຼດ​ໜ້າ​ເວັບ​ໄດ້​ໄວ​ປານ​ໃດ.
 <ph name="BEGIN_LINK" />ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ<ph name="END_LINK" /></translation>
@@ -52,6 +59,7 @@
         2. ແຕະແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ.
         3. ເລືອກ Chrome.</translation>
 <translation id="6822673484890854830">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນພາຍຫລັງ.</translation>
+<translation id="7161390184744336561">Google Chrome ເກົ່າແລ້ວ</translation>
 <translation id="7165736900384873061">ເລີ່ມໃຊ້ເຄື່ອງສະແກນ QR ຂອງ Google Chrome</translation>
 <translation id="7172660552945675509">ເຄັດລັບ: <ph name="BEGIN_LINK" />ຍ້າຍ Chrome ໄປໃສ່ດັອກຂອງທ່ານ<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome ໃຊ້ Face ID ເພື່ອຮັບປະກັນການເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານແບບໄດ້ຮັບອະນຸຍາດ.</translation>
@@ -65,6 +73,7 @@
 <translation id="766361182512894255">ລະຫັດຜ່ານຂອງທ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ. Chrome ແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຕອນນີ້ເລີຍ.</translation>
 <translation id="7698568245838009292">Chrome ຕ້ອງການເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="7855730255114109580">Google Chrome ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
+<translation id="8160472928944011082">Chrome ບໍ່ສາມາດອັບເດດໄດ້</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນລິຂະສິດ.</translation>
 <translation id="840168496893712993">ການ​ເພີ່ມ​ໃສ່​ບາງ​ອັນ​ເຮັດ​ໃຫ້ Chrome ເກີດ​ຂັດ​ຂ້ອງ. ກະ​ລຸ​ນາ​ລອງຖອນ​ຕິດ​ຕັ້ງ​ພວກ​ມັນ.</translation>
 <translation id="8459495907675268833">ຂໍ້ມູນທີ່ເລືອກໄດ້ຖືກລຶບອອກຈາກ Chrome ແລະ ອຸປະກອນທີ່ຊິ້ງແລ້ວ. ບັນຊີ Google ຂອງທ່ານອາດຈະມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນ ເຊັ່ນວ່າ ການຄົ້ນຫາ ແລະ ກິດຈະກຳຈາກການບໍລິການອື່ນຂອງ Google ຢູ່ history.google.com.</translation>

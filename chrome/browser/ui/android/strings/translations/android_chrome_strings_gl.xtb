@@ -530,6 +530,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5199929503336119739">Perfil de traballo</translation>
 <translation id="5210286577605176222">Saltar á pestana anterior</translation>
 <translation id="5210365745912300556">Pechar pestana</translation>
+<translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> quere buscar dispositivos Bluetooth cerca. Atopáronse os seguintes dispositivos:</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="526421993248218238">Non se puido cargar esta páxina</translation>
@@ -616,6 +617,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5836192821815272682">Descargando actualización de Chrome…</translation>
 <translation id="5853623416121554550">en pausa</translation>
 <translation id="5854790677617711513">Con máis de 30 días</translation>
+<translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">Chrome non é capaz de activar o adaptador de Bluetooth</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5862731021271217234">Activa a sincronización para sincronizar as pestanas dos demais dispositivos</translation>

@@ -1549,7 +1549,6 @@
 <translation id="7416351320495623771">비밀번호 관리...</translation>
 <translation id="7419106976560586862">프로필 경로</translation>
 <translation id="7437289804838430631">연락처 정보 추가</translation>
-<translation id="743897106051685947">원본</translation>
 <translation id="7438976808740265764">Flash Player는 2020년 12월 이후 더 이상 지원되지 않습니다.</translation>
 <translation id="7440140511386898319">오프라인 상태일 때 탐색</translation>
 <translation id="7441627299479586546">잘못된 정책 주체</translation>
@@ -1562,7 +1561,6 @@
 <translation id="7473891865547856676">건너뛰기</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7485870689360869515">데이터 없음</translation>
-<translation id="7488762544858401571">수정된 문서</translation>
 <translation id="7495290002932347110">사이트 또는 앱의 정보 유출로 인해 비밀번호가 노출되었습니다. 지금 저장된 비밀번호를 확인하고 <ph name="ORIGIN" />의 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="7495528107193238112">이 콘텐츠는 차단되어 있습니다. 문제를 해결하려면 사이트 소유자에게 문의하세요.</translation>
 <translation id="7498234416455752244">계속 수정</translation>

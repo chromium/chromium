@@ -262,6 +262,7 @@
 <translation id="1974060860693918893">നൂതനം</translation>
 <translation id="1975584088563498795">മെയിൽബോക്സ് 10</translation>
 <translation id="1978555033938440688">ഫേംവെയർ പതിപ്പ്</translation>
+<translation id="1988881251331415125">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ, <ph name="BEGIN_LINK" />കണക്റ്റിവിറ്റി ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">കുക്കികളും സൈറ്റ് ഡാറ്റയും ആക്‌സസ് ചെയ്യുക.
 
@@ -305,6 +306,7 @@
 <translation id="2154054054215849342">നിങ്ങളുടെ ഡൊമെയ്‌നിന് വേണ്ടി സമന്വയം ലഭ്യമല്ല</translation>
 <translation id="2154484045852737596">കാർഡ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2161656808144014275">വാചകം</translation>
+<translation id="2164510882479075877"><ph name="HOST_NAME" /> എന്നതിൽ അക്ഷരത്തെറ്റ് ഉണ്ടോ എന്ന് പരിശോധിക്കുക.</translation>
 <translation id="2166049586286450108">പൂർണ്ണമായ അഡ്‌മിൻ ആക്‌സസ്</translation>
 <translation id="2166378884831602661">ഈ സൈറ്റിന് സുരക്ഷിതമായ കണക്ഷൻ നൽകാനാകില്ല</translation>
 <translation id="2169984857010174799">കാകു2 (എൻവലപ്പ്)</translation>
@@ -1553,7 +1555,6 @@
 <translation id="7416351320495623771">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക…</translation>
 <translation id="7419106976560586862">പ്രൊഫൈൽ പാത</translation>
 <translation id="7437289804838430631">ബന്ധപ്പെടാനുള്ള വിവരങ്ങൾ ചേർക്കുക</translation>
-<translation id="743897106051685947">ഒറിജിനൽ</translation>
 <translation id="7438976808740265764">2020 ഡിസംബറിന് ശേഷം Flash Player പിന്തുണയ്‌ക്കില്ല.</translation>
 <translation id="7440140511386898319">ഓഫ്‌ലൈനായിരിക്കുമ്പോൾ ഉള്ളടക്കം അടുത്തറിയുക</translation>
 <translation id="7441627299479586546">തെറ്റായ നയ വിഷയം</translation>
@@ -1566,7 +1567,6 @@
 <translation id="7473891865547856676">വേണ്ട, നന്ദി</translation>
 <translation id="7481312909269577407">മുന്നോട്ട്</translation>
 <translation id="7485870689360869515">ഡാറ്റകളൊന്നും കണ്ടെത്തിയില്ല.</translation>
-<translation id="7488762544858401571">എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="7495290002932347110">സൈറ്റിലോ ആപ്പിലോ ഉണ്ടായ ഡാറ്റാ ലംഘനം കാരണം നിങ്ങളുടെ പാസ്‌വേഡ് പുറത്തായി. നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിച്ച് ഇപ്പോൾ തന്നെ <ph name="ORIGIN" /> എന്നതിലെ പാസ്‌വേഡ് മാറ്റാൻ Chrome ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="7495528107193238112">ഈ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു. പ്രശ്‌നം പരിഹരിക്കാൻ സൈറ്റിന്റെ ഉടമയുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="7498234416455752244">എഡിറ്റ് ചെയ്യുന്നത് തുടരുക</translation>
@@ -1681,6 +1681,7 @@
 <translation id="7887683347370398519">നിങ്ങളുടെ CVC പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7887885240995164102">ചിത്രത്തിനുള്ളിലെ ചിത്രത്തിലേക്ക് പ്രവേശിക്കുക</translation>
 <translation id="7888575728750733395">പ്രിന്റ് റെൻഡറിംഗ് ഇന്റന്റ്</translation>
+<translation id="7894280532028510793">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ <ph name="BEGIN_LINK" /> നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (എൻവലപ്പ്)</translation>
 <translation id="7932579305932748336">കോട്ട്</translation>
 <translation id="79338296614623784">ശരിയായ ഒരു ഫോൺ നമ്പർ നൽകുക</translation>
@@ -1827,6 +1828,7 @@
 <translation id="8508648098325802031">തിരയൽ ഐക്കൺ</translation>
 <translation id="8522552481199248698">നിങ്ങളുടെ Google അക്കൗണ്ട് പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chrome സഹായിക്കും.</translation>
 <translation id="8530813470445476232">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും മായ്‌ക്കുക</translation>
+<translation id="8533619373899488139">ബ്ലോക്ക് ചെയ്ത URL-കളുടെ ലിസ്റ്റും നിങ്ങളുടെ സിസ്റ്റം അഡ്‌മിനിൻ നടപ്പിലാക്കിയ മറ്റ് നയങ്ങളും കാണുന്നതിന് &lt;strong&gt;chrome://policy&lt;/strong&gt; സന്ദർശിക്കുക.</translation>
 <translation id="8541158209346794904">Bluetooth ഉപകരണം</translation>
 <translation id="8542014550340843547">താഴെ മൂന്ന് തവണ സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="8543181531796978784">നിങ്ങൾക്ക് <ph name="BEGIN_ERROR_LINK" />സുരക്ഷാപ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യാം<ph name="END_ERROR_LINK" /> അല്ലെങ്കിൽ, സുരക്ഷയെ ബാധിച്ചേക്കാവുന്ന അപകട സാധ്യതകളെക്കുറിച്ച് ബോധ്യമുണ്ടെങ്കിൽ <ph name="BEGIN_LINK" />സുരക്ഷിതമല്ലാത്ത ഈ സൈറ്റ്<ph name="END_LINK" />സന്ദർശിക്കുക.</translation>
@@ -1886,6 +1888,7 @@
 <translation id="884923133447025588">അസാധുവാക്കല്‍ പ്രവര്‍ത്തനം കണ്ടെത്തിയിട്ടില്ല.</translation>
 <translation id="885730110891505394">Google-മായി പങ്കിടുന്നു</translation>
 <translation id="8858065207712248076">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് പുനഃസജ്ജീകരിക്കാൻ Chrome ശുപാർ‌ശ ചെയ്യുന്നു.</translation>
+<translation id="885906927438988819">അക്ഷരങ്ങൾ ശരിയാണെങ്കിൽ, <ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">നയ ക്രമീകരണങ്ങൾ പാഴ്‌സ് ചെയ്യുന്നതിൽ പിശക്</translation>
 <translation id="8866928039507595380">മടക്ക്</translation>
 <translation id="886872106311861689">B3</translation>

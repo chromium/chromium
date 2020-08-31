@@ -263,6 +263,7 @@
 <translation id="1974060860693918893">Napredne opcije</translation>
 <translation id="1975584088563498795">10. poštansko sanduče</translation>
 <translation id="1978555033938440688">Verzija firmvera</translation>
+<translation id="1988881251331415125">Ako nema grešaka, <ph name="BEGIN_LINK" />pokrenite dijagnostiku povezivanja<ph name="END_LINK" />.</translation>
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1992796205810278279">pristupa kolačićima i podacima o sajtovima.
 
@@ -306,6 +307,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2154054054215849342">Sinhronizacija nije dostupna za domen</translation>
 <translation id="2154484045852737596">Izmenite karticu</translation>
 <translation id="2161656808144014275">Tekst</translation>
+<translation id="2164510882479075877">Uverite se da <ph name="HOST_NAME" /> ne sadrži slovne greške.</translation>
 <translation id="2166049586286450108">Potpuni administratorski pristup</translation>
 <translation id="2166378884831602661">Ovaj sajt ne može da pruži bezbednu vezu</translation>
 <translation id="2169984857010174799">Kaku2 (koverat)</translation>
@@ -1560,7 +1562,6 @@ Dodatni detalji:
 <translation id="7416351320495623771">Upravljaj lozinkama...</translation>
 <translation id="7419106976560586862">Putanja profila</translation>
 <translation id="7437289804838430631">Dodaj kontakt informacije</translation>
-<translation id="743897106051685947">Original</translation>
 <translation id="7438976808740265764">Flash Player više neće biti podržan od decembra 2020.</translation>
 <translation id="7440140511386898319">Istražujte dok ste oflajn</translation>
 <translation id="7441627299479586546">Pogrešan subjekat smernica</translation>
@@ -1573,7 +1574,6 @@ Dodatni detalji:
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7481312909269577407">Prosledi</translation>
 <translation id="7485870689360869515">Nisu pronađeni podaci.</translation>
-<translation id="7488762544858401571">Izmenjeno</translation>
 <translation id="7495290002932347110">Vaša lozinka je otkrivena pri upadu u podatke na sajtu ili u aplikaciji. Chrome preporučuje da proverite sačuvane lozinke i da odmah promenite lozinku na <ph name="ORIGIN" />.</translation>
 <translation id="7495528107193238112">Ovaj sadržaj je blokiran. Obratite se vlasniku sajta da biste rešili problem.</translation>
 <translation id="7498234416455752244">Nastavite sa izmenama</translation>
@@ -1688,6 +1688,7 @@ Dodatni detalji:
 <translation id="7887683347370398519">Proverite CVC i pokušajte ponovo</translation>
 <translation id="7887885240995164102">Pokreni režim slike u slici</translation>
 <translation id="7888575728750733395">Namera renderovanja štampanja</translation>
+<translation id="7894280532028510793">Ako nema grešaka, <ph name="BEGIN_LINK" />pokrenite dijagnostiku mreže<ph name="END_LINK" />.</translation>
 <translation id="7904208859782148177">C3 (koverat)</translation>
 <translation id="7932579305932748336">Omot</translation>
 <translation id="79338296614623784">Unesite važeći broj telefona</translation>
@@ -1834,6 +1835,7 @@ Dodatni detalji:
 <translation id="8508648098325802031">Ikona Pretraga</translation>
 <translation id="8522552481199248698">Chrome može da vam pomogne da zaštitite Google nalog i promenite lozinku.</translation>
 <translation id="8530813470445476232">Obrišite istoriju pregledanja, kolačiće, keš i drugo u podešavanjima Chrome-a</translation>
+<translation id="8533619373899488139">Posetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste videli listu blokiranih URL-ova i druge smernice koje je nametnuo administrator sistema.</translation>
 <translation id="8541158209346794904">Bluetooth uređaj</translation>
 <translation id="8542014550340843547">Trostruko spajanje na dnu</translation>
 <translation id="8543181531796978784">Možete da <ph name="BEGIN_ERROR_LINK" />prijavite problem sa otkrivanjem<ph name="END_ERROR_LINK" /> ili, ako shvatate bezbednosne rizike, <ph name="BEGIN_LINK" />posetite ovaj nebezbedan sajt<ph name="END_LINK" />.</translation>
@@ -1894,6 +1896,7 @@ Dodatni detalji:
 <translation id="884923133447025588">Nije pronađen nijedan mehanizam opoziva.</translation>
 <translation id="885730110891505394">Deljenje sa Google-om</translation>
 <translation id="8858065207712248076">Chrome vam preporučuje da resetujete lozinku za <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako ste je koristili na drugim sajtovima.</translation>
+<translation id="885906927438988819">Ako nema grešaka, <ph name="BEGIN_LINK" />pokrenite Windows dijagnostiku mreže<ph name="END_LINK" />.</translation>
 <translation id="8866481888320382733">Greška pri raščlanjivanju podešavanja smernica</translation>
 <translation id="8866928039507595380">Presavijanje</translation>
 <translation id="886872106311861689">B3</translation>

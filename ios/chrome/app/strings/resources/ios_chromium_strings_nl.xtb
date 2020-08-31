@@ -4,6 +4,7 @@
 <translation id="102360288709523007">Help Chromium te verbeteren door gebruiksstatistieken en crashrapporten naar Google te verzenden.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1257458525759135959">Als je afbeeldingen wilt opslaan, tik je op Instellingen om ze door Chromium aan je foto's te laten toevoegen</translation>
+<translation id="1361748954329991663">Chromium is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chromium mogelijk niet.</translation>
 <translation id="1472013873724362412">Je account werkt niet in Chromium. Neem contact op met je domeinbeheerder of gebruik een gewoon Google-account om je aan te melden.</translation>
 <translation id="1507010443238049608">Help de functies en prestaties van Chromium te verbeteren</translation>
 <translation id="1617663976202781617">Gegevens van Chromium-synchronisatie</translation>
@@ -11,6 +12,7 @@
 <translation id="1838412507805038478">Chromium heeft bevestigd dat <ph name="ISSUER" /> het certificaat voor deze website heeft verstrekt.</translation>
 <translation id="1843424232666537147">Chromium bevat functies waarmee je je internetgegevens kunt beheren en kunt bepalen hoe snel je webpagina's kunt laden.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="2006345422933397527">Chromium kan niet checken op updates. Check de internetverbinding.</translation>
 <translation id="2075400798887076382">Bekijk hier de tabbladen die je op je computer hebt geopend. Open Chromium op je computer, ga naar het menu en selecteer 'Inloggen bij Chromium'.</translation>
 <translation id="2168108852149185974">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder de volgende add-ons:</translation>
 <translation id="2178608107313874732">Chromium kan je camera momenteel niet gebruiken</translation>
@@ -22,15 +24,19 @@
 <translation id="2977470724722393594">Chromium is up-to-date</translation>
 <translation id="3256316712990552818">Gekopieerd naar Chromium</translation>
 <translation id="3344973607274501920">Chromium kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
+<translation id="3472200483164753384">Niet ondersteund in Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
 <translation id="3805899903892079518">Chromium heeft geen toegang tot je foto's of video's. Schakel toegang in via iOS-instellingen &gt; Privacy &gt; Foto's.</translation>
+<translation id="4099085513035183040">Niet ondersteund in Chromium (bèta)</translation>
 <translation id="4166206055865952171">Chromium instellen als je standaardbrowser</translation>
 <translation id="4555020257205549924">Als deze functie is ingeschakeld, biedt Chromium aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium-scanner inschakelen</translation>
 <translation id="4787850887676698916">Tabbladen die je op andere apparaten in Chromium hebt geopend, worden hier weergegeven.</translation>
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
+<translation id="4985291216379576555">Offline. Chromium kan niet checken op updates</translation>
 <translation id="4999538639245140991">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chromium-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
 <translation id="5224391634244552924">Geen opgeslagen wachtwoorden. Chromium kan je wachtwoorden checken als je deze hebt opgeslagen.</translation>
+<translation id="5308226104666789935">Chromium kan niet checken op updates</translation>
 <translation id="5521125884468363740">Log in en schakel synchroniseren in om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="5573014823074921752">Chromium-tip. Voor meer tabbladopties tik je op de werkbalk onder- of bovenaan het scherm op de knop 'Tabbladen weergeven' en houd je deze vast.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
@@ -42,6 +48,7 @@
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
 <translation id="6604711459180487467">Een betere ervaring in Chromium op basis van je locatie.</translation>
 <translation id="6820823224820483452">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
+<translation id="7018284295775193585">Chromium kan niet updaten</translation>
 <translation id="7099326575020694068">Chromium kan je camera niet gebruiken in de modus 'Gesplitste weergave'</translation>
 <translation id="7118091470949186573">Je kunt Chromium nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="7208566199746267865">Chromium bespaart je tijd door je accounts beschikbaar te maken op internet. Je kunt accounts toevoegen of verwijderen bij Instellingen.</translation>
@@ -62,6 +69,7 @@
 <translation id="8013573822802650211">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="8073677936375100957">Je Chromium-gegevens van dit apparaat wissen?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Verplaats Chromium naar je dock<ph name="END_LINK" /></translation>
+<translation id="8240981428553046115">Chromium kan niet checken op updates. Probeer het later opnieuw.</translation>
 <translation id="8252885722420466166">Gebruik Google in Chromium beter en efficiënter op basis van je locatie.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="8776843108004031667">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chromium.</translation>

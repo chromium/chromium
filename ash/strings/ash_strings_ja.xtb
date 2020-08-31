@@ -107,6 +107,7 @@
 <translation id="2012624427112548395">Ctrl+検索+H</translation>
 <translation id="2016340657076538683">メッセージを入力</translation>
 <translation id="2018630726571919839">面白いこと言って</translation>
+<translation id="2049240716062114887">デスクの名前を <ph name="DESK_NAME" /> に変更しました</translation>
 <translation id="2050339315714019657">縦</translation>
 <translation id="2067602449040652523">キーボードの明るさ</translation>
 <translation id="2083190527011054446">おやすみなさい、<ph name="GIVEN_NAME" /> さん</translation>
@@ -375,6 +376,7 @@
 <translation id="495046168593986294">上にスクロール</translation>
 <translation id="4961318399572185831">画面をキャスト</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />時間<ph name="MINUTES" />分<ph name="SECONDS" />秒</translation>
+<translation id="4975771730019223894">アプリのバッジ</translation>
 <translation id="5030687792513154421">時間切れです</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> が新しいスマートフォンに接続されました</translation>
 <translation id="5035389544768382859">ディスプレイ設定の確定</translation>

@@ -107,6 +107,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Type a message</translation>
 <translation id="2018630726571919839">Tell me a joke</translation>
+<translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2083190527011054446">Good night <ph name="GIVEN_NAME" />,</translation>
@@ -375,6 +376,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="495046168593986294">Scroll up</translation>
 <translation id="4961318399572185831">Cast screen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
+<translation id="4975771730019223894">App badging</translation>
 <translation id="5030687792513154421">Time is up</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> connected to a new phone</translation>
 <translation id="5035389544768382859">Confirm display configuration</translation>
