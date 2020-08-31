@@ -154,6 +154,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:multiwindow_util",
     "//ios/chrome/browser/ui/voice",
+    "//ios/chrome/browser/ui/whats_new",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/voice:voice",

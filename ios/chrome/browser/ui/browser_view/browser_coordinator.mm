@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
@@ -64,6 +65,7 @@
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/translate/legacy_translate_infobar_coordinator.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/whats_new/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/features.h"
@@ -81,6 +83,7 @@
 
 @interface BrowserCoordinator () <ActivityServiceCommands,
                                   BrowserCoordinatorCommands,
+                                  DefaultBrowserPromoCommands,
                                   FormInputAccessoryCoordinatorNavigator,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
@@ -171,6 +174,10 @@
 @property(nonatomic, strong)
     LegacyTranslateInfobarCoordinator* translateInfobarCoordinator;
 
+// Coordinator that manages the default browser promo modal.
+@property(nonatomic, strong)
+    DefaultBrowserPromoCoordinator* defaultBrowserPromoCoordinator;
+
 // The container coordinators for the infobar modalities.
 @property(nonatomic, strong)
     OverlayContainerCoordinator* infobarBannerOverlayContainerCoordinator;
@@ -204,6 +211,9 @@
   [self startBrowserContainer];
   [self.dispatcher startDispatchingToTarget:self
                                 forProtocol:@protocol(TextZoomCommands)];
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(WhatsNewCommands)];
   [self.dispatcher startDispatchingToTarget:self
                                 forProtocol:@protocol(FindInPageCommands)];
   [self createViewController];
@@ -539,6 +549,25 @@
 - (void)showAddCreditCard {
   [self.formInputAccessoryCoordinator reset];
   [self.addCreditCardCoordinator start];
+}
+
+#pragma mark - WhatsNewCommands
+
+- (void)showDefaultBrowserFullscreenPromo {
+  if (!self.defaultBrowserPromoCoordinator) {
+    self.defaultBrowserPromoCoordinator =
+        [[DefaultBrowserPromoCoordinator alloc]
+            initWithBaseViewController:self.viewController
+                               browser:self.browser];
+    self.defaultBrowserPromoCoordinator.handler = self;
+  }
+  [self.defaultBrowserPromoCoordinator start];
+}
+
+#pragma mark - DefaultBrowserPromoCommands
+
+- (void)hidePromo {
+  [self.defaultBrowserPromoCoordinator stop];
 }
 
 #pragma mark - FindInPageCommands

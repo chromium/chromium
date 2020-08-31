@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
+#import "ios/chrome/browser/ui/commands/whats_new_commands.h"
 
 class GURL;
 @class ReadingListAddCommand;
@@ -30,7 +31,8 @@ class GURL;
                            PageInfoCommands,
                            PopupMenuCommands,
                            QRScannerCommands,
-                           SnackbarCommands>
+                           SnackbarCommands,
+                           WhatsNewCommands>
 
 // Closes the current tab.
 - (void)closeCurrentTab;
