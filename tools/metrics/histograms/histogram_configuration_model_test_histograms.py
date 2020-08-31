@@ -377,13 +377,13 @@ PRETTY_XML_WITH_TOKEN = """
 <histograms>
 
 <variants name="OmniboxProviderVersion">
-  <variant name="" label="all versions"/>
-  <variant name=".Provider" label="the old version">
+  <variant name="" summary="all versions"/>
+  <variant name=".Provider" summary="the old version">
     <obsolete>
       Deprecated. Replaced by Provider2.
     </obsolete>
   </variant>
-  <variant name=".Provider2" label="the second version"/>
+  <variant name=".Provider2" summary="the second version"/>
 </variants>
 
 <histogram name="Omnibox{version}{content}.Time" units="ms"
@@ -398,14 +398,14 @@ PRETTY_XML_WITH_TOKEN = """
   </summary>
   <token key="version" variants="OmniboxProviderVersion"/>
   <token key="content">
-    <variant name=".ExtensionApp" label="ExtensionApp">
+    <variant name=".ExtensionApp" summary="ExtensionApp">
       <obsolete>
         Obsolete variant
       </obsolete>
       <owner>you@google.com</owner>
     </variant>
-    <variant name=".HistoryContents" label="HistoryContents"/>
-    <variant name=".HistoryQuick" label="HistoryQuick"/>
+    <variant name=".HistoryContents" summary="HistoryContents"/>
+    <variant name=".HistoryQuick" summary="HistoryQuick"/>
   </token>
 </histogram>
 
@@ -422,13 +422,13 @@ XML_WRONG_VARIANT_CHILDREN_ORDER = """
 <histograms>
 
 <variants name="OmniboxProviderVersion">
-  <variant name="" label="all versions"/>
-  <variant name=".Provider" label="the old version">
+  <variant name="" summary="all versions"/>
+  <variant name=".Provider" summary="the old version">
     <obsolete>
       Deprecated. Replaced by Provider2.
     </obsolete>
   </variant>
-  <variant name=".Provider2" label="the second version"/>
+  <variant name=".Provider2" summary="the second version"/>
 </variants>
 
 <histogram name="Omnibox{version}{content}.Time" units="ms"
@@ -443,14 +443,14 @@ XML_WRONG_VARIANT_CHILDREN_ORDER = """
   </summary>
   <token key="version" variants="OmniboxProviderVersion"/>
   <token key="content">
-    <variant name=".ExtensionApp" label="ExtensionApp">
+    <variant name=".ExtensionApp" summary="ExtensionApp">
       <owner>you@google.com</owner>
       <obsolete>
         Obsolete variant
       </obsolete>
     </variant>
-    <variant name=".HistoryContents" label="HistoryContents"/>
-    <variant name=".HistoryQuick" label="HistoryQuick"/>
+    <variant name=".HistoryContents" summary="HistoryContents"/>
+    <variant name=".HistoryQuick" summary="HistoryQuick"/>
   </token>
 </histogram>
 
@@ -467,9 +467,9 @@ XML_WRONG_VARIANT_ORDER = """
 <histograms>
 
 <variants name="OmniboxProviderVersion">
-  <variant name="" label="all versions"/>
-  <variant name=".Provider2" label="the second version"/>
-  <variant name=".Provider" label="the old version">
+  <variant name="" summary="all versions"/>
+  <variant name=".Provider2" summary="the second version"/>
+  <variant name=".Provider" summary="the old version">
     <obsolete>
       Deprecated. Replaced by Provider2.
     </obsolete>
@@ -488,14 +488,14 @@ XML_WRONG_VARIANT_ORDER = """
   </summary>
   <token key="version" variants="OmniboxProviderVersion"/>
   <token key="content">
-    <variant name=".ExtensionApp" label="ExtensionApp">
+    <variant name=".ExtensionApp" summary="ExtensionApp">
       <obsolete>
         Obsolete variant
       </obsolete>
       <owner>you@google.com</owner>
     </variant>
-    <variant name=".HistoryQuick" label="HistoryQuick"/>
-    <variant name=".HistoryContents" label="HistoryContents"/>
+    <variant name=".HistoryQuick" summary="HistoryQuick"/>
+    <variant name=".HistoryContents" summary="HistoryContents"/>
   </token>
 </histogram>
 
@@ -523,25 +523,25 @@ XML_WRONG_HISTOGRAM_VARIANTS_ORDER = """
   </summary>
   <token key="version" variants="OmniboxProviderVersion"/>
   <token key="content">
-    <variant name=".ExtensionApp" label="ExtensionApp">
+    <variant name=".ExtensionApp" summary="ExtensionApp">
       <obsolete>
         Obsolete variant
       </obsolete>
       <owner>you@google.com</owner>
     </variant>
-    <variant name=".HistoryContents" label="HistoryContents"/>
-    <variant name=".HistoryQuick" label="HistoryQuick"/>
+    <variant name=".HistoryContents" summary="HistoryContents"/>
+    <variant name=".HistoryQuick" summary="HistoryQuick"/>
   </token>
 </histogram>
 
 <variants name="OmniboxProviderVersion">
-  <variant name="" label="all versions"/>
-  <variant name=".Provider" label="the old version">
+  <variant name="" summary="all versions"/>
+  <variant name=".Provider" summary="the old version">
     <obsolete>
       Deprecated. Replaced by Provider2.
     </obsolete>
   </variant>
-  <variant name=".Provider2" label="the second version"/>
+  <variant name=".Provider2" summary="the second version"/>
 </variants>
 
 </histograms>

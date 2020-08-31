@@ -84,6 +84,9 @@ def ValidateSingleFile(input_api, output_api, file_obj, cwd, results):
     return False
   filepath = input_api.os_path.relpath(p, cwd)
 
+  if 'test_data' in filepath:
+    return False
+
   # If the changed file is obsolete_histograms.xml, validate all histograms
   # inside are obsolete.
   if 'obsolete_histograms.xml' in filepath:

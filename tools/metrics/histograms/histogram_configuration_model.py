@@ -85,9 +85,9 @@ _VARIANT_TYPE = models.ObjectNodeType(
     'variant',
     attributes=[
         ('name', str, None),
-        ('label', str, None),
+        ('summary', str, None),
     ],
-    required_attributes=['name', 'label'],
+    required_attributes=['name'],
     alphabetization=[
         (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
         (_OWNER_TYPE.tag, _KEEP_ORDER),
@@ -95,7 +95,8 @@ _VARIANT_TYPE = models.ObjectNodeType(
     children=[
         models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
         models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
-    ])
+    ],
+)
 
 _VARIANTS_TYPE = models.ObjectNodeType(
     'variants',

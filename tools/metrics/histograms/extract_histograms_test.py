@@ -127,25 +127,25 @@ TEST_HISTOGRAM_WITH_TOKENS = """
     This is a histogram for button of {Color} color and {Size} size.
   </summary>
   <token key="Color">
-    <variant name=".red" label="red">
+    <variant name=".red" summary="red">
       <obsolete>
         Obsolete red
       </obsolete>
     </variant>
-    <variant name=".green" label="green">
+    <variant name=".green" summary="green">
       <owner>green@chromium.org</owner>
     </variant>
   </token>
   <token key="Size">
-    <variant name="" label="all"/>
-    <variant name=".small" label="small">
+    <variant name="" summary="all"/>
+    <variant name=".small" summary="small">
       <owner>small@chromium.org</owner>
       <obsolete>
         Obsolete small
       </obsolete>
     </variant>
-    <variant name=".medium" label="medium"/>
-    <variant name=".large" label="large"/>
+    <variant name=".medium" summary="medium"/>
+    <variant name=".large" summary="large"/>
   </token>
 </histogram>
 </histograms>
@@ -156,15 +156,15 @@ TEST_HISTOGRAM_WITH_VARIANTS = """
 <histogram-configuration>
 <histograms>
 <variants name="HistogramNameSize">
-  <variant name="" label="all"/>
-  <variant name=".small" label="small">
+  <variant name="" summary="all"/>
+  <variant name=".small" summary="small">
     <owner>small@chromium.org</owner>
     <obsolete>
       Obsolete small
     </obsolete>
   </variant>
-  <variant name=".medium" label="medium"/>
-  <variant name=".large" label="large"/>
+  <variant name=".medium" summary="medium"/>
+  <variant name=".large" summary="large"/>
 </variants>
 
 <histogram name="HistogramName{Color}{Size}" expires_after="2017-10-16">
@@ -173,12 +173,12 @@ TEST_HISTOGRAM_WITH_VARIANTS = """
     This is a histogram for button of {Color} color and {Size} size.
   </summary>
   <token key="Color">
-    <variant name=".red" label="red">
+    <variant name=".red" summary="red">
       <obsolete>
         Obsolete red
       </obsolete>
     </variant>
-    <variant name=".green" label="green">
+    <variant name=".green" summary="green">
       <owner>green@chromium.org</owner>
     </variant>
   </token>
@@ -198,16 +198,16 @@ TEST_HISTOGRAM_TOKENS_DUPLICATE = """
     This is a histogram for button of {Color} color and {Size} size.
   </summary>
   <token key="Color">
-    <variant name="" label="all"/>
-    <variant name=".red" label="red"/>
-    <variant name=".green" label="green"/>
+    <variant name="" summary="all"/>
+    <variant name=".red" summary="red"/>
+    <variant name=".green" summary="green"/>
   </token>
   <token key="Size">
-    <variant name="" label="all"/>
-    <variant name=".red" label="red"/>
-    <variant name=".small" label="small"/>
-    <variant name=".medium" label="medium"/>
-    <variant name=".large" label="large"/>
+    <variant name="" summary="all"/>
+    <variant name=".red" summary="red"/>
+    <variant name=".small" summary="small"/>
+    <variant name=".medium" summary="medium"/>
+    <variant name=".large" summary="large"/>
   </token>
 </histogram>
 </histograms>
@@ -217,11 +217,11 @@ TEST_HISTOGRAM_TOKENS_DUPLICATE = """
 TEST_HISTOGRAM_VARIANTS_DUPLICATE = """
 <histogram-configuration>
 <variants name="HistogramNameSize">
-  <variant name="" label="all"/>
-  <variant name=".red" label="red"/>
-  <variant name=".small" label="small"/>
-  <variant name=".medium" label="medium"/>
-  <variant name=".large" label="large"/>
+  <variant name="" summary="all"/>
+  <variant name=".red" summary="red"/>
+  <variant name=".small" summary="small"/>
+  <variant name=".medium" summary="medium"/>
+  <variant name=".large" summary="large"/>
 </variants>
 
 <histograms>
@@ -232,9 +232,9 @@ TEST_HISTOGRAM_VARIANTS_DUPLICATE = """
     This is a histogram for button of {Color} color and {Size} size.
   </summary>
   <token key="Color">
-    <variant name="" label="all"/>
-    <variant name=".red" label="red"/>
-    <variant name=".green" label="green"/>
+    <variant name="" summary="all"/>
+    <variant name=".red" summary="red"/>
+    <variant name=".green" summary="green"/>
   </token>
   <token key="Size" variants="HistogramNameSize"/>
 </histogram>
@@ -795,9 +795,9 @@ class ExtractHistogramsTest(unittest.TestCase):
     This is a histogram for button of {Color} color and {SizeNone} size.
   </summary>
   <token key="Color">
-    <variant name="" label="all"/>
-    <variant name=".red" label="red"/>
-    <variant name=".green" label="green"/>
+    <variant name="" summary="all"/>
+    <variant name=".red" summary="red"/>
+    <variant name=".green" summary="green"/>
   </token>
   <token key="SizeNone" variants="HistogramNameSize"/>
 </histogram>

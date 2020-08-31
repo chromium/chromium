@@ -46,8 +46,8 @@ class MergeXmlTest(unittest.TestCase):
 <histograms>
 
 <variants name="TestToken">
-  <variant name="Variant1" label="Label1"/>
-  <variant name="Variant2" label="Label2"/>
+  <variant name="Variant1" summary="Label1"/>
+  <variant name="Variant2" summary="Label2"/>
 </variants>
 
 <histogram name="Foo.Bar" units="xxxxxxxxxxxxxxxxxxyyyyyyyyyyyyyyyyyyyyyyzzzz"
@@ -145,8 +145,8 @@ class MergeXmlTest(unittest.TestCase):
 <histograms>
 
 <variants name="TestToken">
-  <variant name="Variant1" label="Label1"/>
-  <variant name="Variant2" label="Label2"/>
+  <variant name="Variant1" summary="Label1"/>
+  <variant name="Variant2" summary="Label2"/>
 </variants>
 
 <histogram name="Foo.Bar" units="xxxxxxxxxxxxxxxxxxyyyyyyyyyyyyyyyyyyyyyyzzzz"

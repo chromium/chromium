@@ -31,10 +31,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="LocalStorageSizes">
-  <variant name="" label=""/>
-  <variant name="1MBTo5MB" label="DB size between 1MB and 5MB."/>
-  <variant name="100KBTo1MB" label="DB size between 100KB and 1MB."/>
-  <variant name="Under100KB" label="DB size under 100KB."/>
+  <variant name="" summary=""/>
+  <variant name="1MBTo5MB" summary="DB size between 1MB and 5MB."/>
+  <variant name="100KBTo1MB" summary="DB size between 100KB and 1MB."/>
+  <variant name="Under100KB" summary="DB size under 100KB."/>
 </variants>
 
 <histogram name="Accessibility.Android.AnimationsEnabled" enum="BooleanEnabled"
@@ -9800,8 +9800,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     screen or from screen idle.
   </summary>
   <token key="TabletOrClamshell">
-    <variant name="ClamshellMode" label="Clamshell mode"/>
-    <variant name="TabletMode" label="Tablet mode"/>
+    <variant name="ClamshellMode" summary="Clamshell mode"/>
+    <variant name="TabletMode" summary="Tablet mode"/>
   </token>
 </histogram>
 
@@ -9838,8 +9838,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     session. The metric is uploaded when ambient mode is ended.
   </summary>
   <token key="TabletOrClamshell">
-    <variant name="ClamshellMode" label="Clamshell mode"/>
-    <variant name="TabletMode" label="Tablet mode"/>
+    <variant name="ClamshellMode" summary="Clamshell mode"/>
+    <variant name="TabletMode" summary="Tablet mode"/>
   </token>
 </histogram>
 
@@ -33519,16 +33519,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     {CookieConnectionType} {CookieSiteAffinity}
   </summary>
   <token key="Age">
-    <variant name=".AgeFor" label="the oldest"/>
-    <variant name=".AllAgesFor" label="all"/>
+    <variant name=".AgeFor" summary="the oldest"/>
+    <variant name=".AllAgesFor" summary="all"/>
   </token>
   <token key="CookieConnectionType">
-    <variant name="NonSecure" label="For non-secure,"/>
-    <variant name="Secure" label="For secure,"/>
+    <variant name="NonSecure" summary="For non-secure,"/>
+    <variant name="Secure" summary="For secure,"/>
   </token>
   <token key="CookieSiteAffinity">
-    <variant name="CrossSiteRequest" label="cross-site requests."/>
-    <variant name="SameSiteRequest" label="same-site requests."/>
+    <variant name="CrossSiteRequest" summary="cross-site requests."/>
+    <variant name="SameSiteRequest" summary="same-site requests."/>
   </token>
 </histogram>
 
@@ -84596,19 +84596,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
     Error codes reported by libva (via VaapiWrapper) while being used from the
-    specified client name.
+    specified client name. {VaapiClientName}
   </summary>
   <token key="VaapiClientName">
-    <variant name="VaapiImageDecodeAcceleratorWorker" label=""/>
-    <variant name="VaapiJpegEncodeAccelerator" label=""/>
-    <variant name="VaapiJpegEncodeAccelerator.Vpp" label=""/>
-    <variant name="VaapiMjpegDecodeAccelerator" label=""/>
-    <variant name="VaapiMjpegDecodeAccelerator.Vpp" label=""/>
-    <variant name="VaapiVideoDecodeAccelerator" label=""/>
-    <variant name="VaapiVideoDecodeAccelerator.Vpp" label=""/>
-    <variant name="VaapiVideoDecoder" label=""/>
-    <variant name="VaapiVideoEncodeAccelerator" label=""/>
-    <variant name="VaapiVideoEncodeAccelerator.Vpp" label=""/>
+    <variant name="VaapiImageDecodeAcceleratorWorker" summary=""/>
+    <variant name="VaapiJpegEncodeAccelerator" summary=""/>
+    <variant name="VaapiJpegEncodeAccelerator.Vpp" summary=""/>
+    <variant name="VaapiMjpegDecodeAccelerator" summary=""/>
+    <variant name="VaapiMjpegDecodeAccelerator.Vpp" summary=""/>
+    <variant name="VaapiVideoDecodeAccelerator" summary=""/>
+    <variant name="VaapiVideoDecodeAccelerator.Vpp" summary=""/>
+    <variant name="VaapiVideoDecoder" summary=""/>
+    <variant name="VaapiVideoEncodeAccelerator" summary=""/>
+    <variant name="VaapiVideoEncodeAccelerator.Vpp" summary=""/>
   </token>
 </histogram>
 
@@ -102741,22 +102741,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     If a QUIC connection timed out locally with open streams, this contains the
     time since any data was read from the network until the connection was
     closed. The suffix specifies whether there were any unacked packets pending
-    when the connection timed out.
+    when the connection timed out. {UnackedPackets}
   </summary>
   <token key="UnackedPackets">
-    <variant name="" label="">
+    <variant name="" summary="">
       <obsolete>
         Removed as of 08/2016.
       </obsolete>
     </variant>
     <variant name=".NoUnackedPackets"
-        label="The session had no outstanding unacked packets.">
+        summary="The session had no outstanding unacked packets.">
       <obsolete>
         Removed as of 08/2016.
       </obsolete>
     </variant>
     <variant name=".UnackedPackets"
-        label="The session had outstanding unacked packets.">
+        summary="The session had outstanding unacked packets.">
       <obsolete>
         Removed as of 08/2016.
       </obsolete>
@@ -159340,12 +159340,12 @@ should be kept until we remove incident reporting. -->
     that were visible at commit time.
   </summary>
   <token key="SafetyTipInitiator">
-    <variant name="CrossOrigin" label="Initiated by an unrelated origin"/>
-    <variant name="SameOrigin" label="Initiated by the same origin"/>
+    <variant name="CrossOrigin" summary="Initiated by an unrelated origin"/>
+    <variant name="SameOrigin" summary="Initiated by the same origin"/>
     <variant name="SameRegDomain"
-        label="Initiated by the same registered domain"/>
-    <variant name="UnexpectedUrl" label="Metrics failure"/>
-    <variant name="Unknown" label="Initiator unknown"/>
+        summary="Initiated by the same registered domain"/>
+    <variant name="UnexpectedUrl" summary="Metrics failure"/>
+    <variant name="Unknown" summary="Initiator unknown"/>
   </token>
 </histogram>
 
