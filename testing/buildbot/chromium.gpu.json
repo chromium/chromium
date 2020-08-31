@@ -4637,7 +4637,7 @@
           "--browser=debug_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --no-sandbox"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -4668,7 +4668,7 @@
           "--browser=debug_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --no-sandbox"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -4731,7 +4731,7 @@
           "--browser=debug_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --no-sandbox"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -4793,7 +4793,7 @@
           "--browser=debug_x64",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --no-sandbox",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--expected-vendor-id",
           "10de",
           "--expected-device-id",

@@ -1069,13 +1069,6 @@
           '--is-asan',
         ]
       },
-      'Win10 x64 Debug (NVIDIA)': {
-        'args': [
-          # TODO(https://crbug.com/1007013): Remove this flag when it's no
-          # longer necessary to figure out why the renderer process is hanging.
-          '--extra-browser-args=--no-sandbox',
-        ],
-      },
     },
   },
   'context_lost_validating_tests': {
@@ -1136,15 +1129,6 @@
     'remove_from': [
       'Android FYI Release (Pixel 2)',
     ],
-    'modifications': {
-      'Win10 x64 Debug (NVIDIA)': {
-        'args': [
-          # TODO(https://crbug.com/1007013): Remove this flag when it's no
-          # longer necessary to figure out why the renderer process is hanging.
-          '--extra-browser-args=--no-sandbox',
-        ],
-      },
-    },
   },
   'disk_usage_tast_test': {
     # TODO(crbug.com/1077659): Add the test back after it's fixed.
@@ -1350,15 +1334,6 @@
     'remove_from': [
       'Android FYI Release (Pixel 2)',
     ],
-    'modifications': {
-      'Win10 x64 Debug (NVIDIA)': {
-        'args': [
-          # TODO(https://crbug.com/1007013): Remove this flag when it's no
-          # longer necessary to figure out why the renderer process is hanging.
-          '--extra-browser-args=--no-sandbox',
-        ],
-      },
-    },
   },
   'hardware_accelerated_feature_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
@@ -1389,13 +1364,6 @@
           # Swarming does not report a GPU since tests are run in a VM, but
           # the VM does report that a GPU is present.
           '--expected-device-id', '1050',
-        ],
-      },
-      'Win10 x64 Debug (NVIDIA)': {
-        'args': [
-          # TODO(https://crbug.com/1007013): Remove this flag when it's no
-          # longer necessary to figure out why the renderer process is hanging.
-          '--extra-browser-args=--no-sandbox',
         ],
       },
     },
