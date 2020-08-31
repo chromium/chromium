@@ -230,6 +230,7 @@ void FidoDeviceAuthenticator::OnHaveEphemeralKey(
     base::Optional<pin::KeyAgreementResponse> key) {
   if (status != CtapDeviceResponseCode::kSuccess) {
     std::move(callback).Run(status, base::nullopt);
+    return;
   }
   DCHECK(key.has_value());
 
