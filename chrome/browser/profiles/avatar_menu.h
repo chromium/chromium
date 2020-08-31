@@ -87,8 +87,7 @@ class AvatarMenu :
     base::FilePath profile_path;
   };
 
-  // The load status of an avatar image. This is used to back an UMA histogram,
-  // and should therefore be treated as append-only.
+  // The load status of an avatar image.
   enum class ImageLoadStatus {
     // If there is a Gaia image used by the user, it is loaded. Otherwise, a
     // default avatar image is loaded.
@@ -100,8 +99,8 @@ class AvatarMenu :
     MISSING,
     // Nothing is loaded as the profile has been deleted.
     PROFILE_DELETED,
-    // This is always the last one.
-    MAX = PROFILE_DELETED
+    // The image could not be loaded because the browser is shutting down.
+    BROWSER_SHUTTING_DOWN,
   };
 
   // Constructor. |observer| can be NULL. |browser| can be NULL and a new one

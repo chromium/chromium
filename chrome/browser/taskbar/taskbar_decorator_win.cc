@@ -205,15 +205,12 @@ void UpdateTaskbarDecoration(Profile* profile, gfx::NativeWindow window) {
   AvatarMenu::ImageLoadStatus status =
       AvatarMenu::GetImageForMenuButton(profile->GetPath(), &decoration);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Profile.AvatarLoadStatus", status,
-      static_cast<int>(AvatarMenu::ImageLoadStatus::MAX) + 1);
-
   // If the user is using a Gaia picture and the picture is still being loaded,
   // wait until the load finishes. This taskbar decoration will be triggered
   // again upon the finish of the picture load.
   if (status == AvatarMenu::ImageLoadStatus::LOADING ||
-      status == AvatarMenu::ImageLoadStatus::PROFILE_DELETED) {
+      status == AvatarMenu::ImageLoadStatus::PROFILE_DELETED ||
+      status == AvatarMenu::ImageLoadStatus::BROWSER_SHUTTING_DOWN) {
     return;
   }
 
