@@ -1816,7 +1816,7 @@ def main(argv):
                       'android_app_bundle'):
     deps_info['device_classpath'] = device_classpath
     if options.tested_apk_config:
-      deps_info['java_runtime_classpath_extended'] = (device_classpath_extended)
+      deps_info['device_classpath_extended'] = device_classpath_extended
 
   if options.type in ('android_apk', 'dist_jar'):
     all_interface_jars = []

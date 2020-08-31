@@ -2917,7 +2917,11 @@ if (enable_java_templates) {
           input_dex_filearg =
               "@FileArg(${_rebased_build_config}:final_dex:all_dex_files)"
           if (_enable_main_dex_list) {
-            main_dex_list_input_classes_filearg = "@FileArg(${_rebased_build_config}:deps_info:java_runtime_classpath_extended)"
+            if (defined(invoker.apk_under_test)) {
+              main_dex_list_input_classes_filearg = "@FileArg(${_rebased_build_config}:deps_info:device_classpath_extended)"
+            } else {
+              main_dex_list_input_classes_filearg = "@FileArg(${_rebased_build_config}:deps_info:device_classpath)"
+            }
           }
         } else {
           input_classes_filearg =

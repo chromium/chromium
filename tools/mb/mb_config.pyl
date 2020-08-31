@@ -2590,6 +2590,7 @@
       'mixins': ['cronet_common'],
       'gn_args': ('use_partition_alloc=false enable_reporting=true '
                   'use_hashed_jni_names=true '
+                  'default_min_sdk_version=16 '
                   'clang_use_default_sample_profile=false '
                   'enable_resource_whitelist_generation=false'),
     },

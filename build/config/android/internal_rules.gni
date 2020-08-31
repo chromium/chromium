@@ -1469,7 +1469,7 @@ if (enable_java_templates) {
           "--min-api=$_min_sdk_version",
         ]
         if (defined(invoker.has_apk_under_test) && invoker.has_apk_under_test) {
-          args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:java_runtime_classpath_extended)" ]
+          args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:device_classpath_extended)" ]
         } else {
           args += [ "--input-paths=@FileArg($_rebased_build_config:deps_info:device_classpath)" ]
         }
