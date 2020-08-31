@@ -20,7 +20,10 @@ enum class MenuActionType {
   Delete = 8,
   Remove = 9,
   Hide = 10,
-  kMaxValue = Hide
+  Read = 11,
+  Unread = 12,
+  ViewOffline = 13,
+  kMaxValue = ViewOffline
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_ACTION_TYPE_H_

@@ -1562,6 +1562,12 @@ While in incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_READING_LIST_MARK_ALL_UNREAD_ACTION" desc="Label of the action button to mark all reading list entries as unread. [Length: 25em]" meaning="Mark all entries as unread. [Length: 25em]">
         Mark All Unread
       </message>
+      <message name="IDS_IOS_READING_LIST_MARK_AS_READ_ACTION" desc="Label of the action button to mark a reading list entry as read. [Length: 25em]" meaning="Mark an entry as read. [Length: 25em]">
+        Mark As Read
+      </message>
+      <message name="IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION" desc="Label of the action button to mark a reading list entry as unread. [Length: 25em]" meaning="Mark an entry as unread. [Length: 25em]">
+        Mark As Unread
+      </message>
       <message name="IDS_IOS_READING_LIST_MARK_BUTTON" desc="Label of the button to mark the selected reading list as either read or unread [Length: 25em]" meaning="Display options letting the user mark all the selected entries as read or as unread. [Length: 25em]">
         Mark…
       </message>
