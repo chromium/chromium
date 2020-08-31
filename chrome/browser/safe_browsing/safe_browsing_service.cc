@@ -370,7 +370,7 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
   RefreshState();
 
   // Record the current pref state for standard protection.
-  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.Pref.General",
+  UMA_HISTOGRAM_BOOLEAN(kSafeBrowsingEnabledHistogramName,
                         pref_service->GetBoolean(prefs::kSafeBrowsingEnabled));
   // Record the current pref state for enhanced protection. Enhanced protection
   // is a subset of the standard protection. Thus, |kSafeBrowsingEnabled| count

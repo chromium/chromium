@@ -28,6 +28,9 @@ extern const char kCustomCancelReasonForURLLoader[];
 // error_code to use when Safe Browsing blocks a request.
 extern const int kNetErrorCodeForSafeBrowsing;
 
+// The name of the histogram that records whether Safe Browsing is enabled.
+extern const char kSafeBrowsingEnabledHistogramName[];
+
 // Countries that has no endpoint for Safe Browsing.
 const std::vector<std::string> GetExcludedCountries();
 

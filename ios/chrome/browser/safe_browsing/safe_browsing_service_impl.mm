@@ -87,6 +87,9 @@ void SafeBrowsingServiceImpl::Initialize(PrefService* prefs,
       prefs::kSafeBrowsingEnabled,
       base::Bind(&SafeBrowsingServiceImpl::UpdateSafeBrowsingEnabledState,
                  base::Unretained(this)));
+  UMA_HISTOGRAM_BOOLEAN(
+      safe_browsing::kSafeBrowsingEnabledHistogramName,
+      pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled));
   UpdateSafeBrowsingEnabledState();
 }
 
