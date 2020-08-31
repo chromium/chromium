@@ -42,8 +42,10 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final Context mContext;
     private final BackPressListener mBackPressListener;
     private final View mContentView;
+    private final ImageView mLogoImage;
     private final TextView mAccountPickerTitle;
     private final TextViewWithLeading mAccountPickerSubtitle;
+    private final View mHorizontalDivider;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
     private final View mIncognitoInterstitialView;
@@ -52,11 +54,14 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     AccountPickerBottomSheetView(Context context, BackPressListener backPressListener) {
         mContext = context;
         mBackPressListener = backPressListener;
+
         mContentView = LayoutInflater.from(mContext).inflate(
                 R.layout.account_picker_bottom_sheet_view, null);
+        mLogoImage = mContentView.findViewById(R.id.account_picker_bottom_sheet_logo);
         mAccountPickerTitle = mContentView.findViewById(R.id.account_picker_bottom_sheet_title);
         mAccountPickerSubtitle =
                 mContentView.findViewById(R.id.account_picker_bottom_sheet_subtitle);
+        mHorizontalDivider = mContentView.findViewById(R.id.account_picker_horizontal_divider);
         mAccountListView = mContentView.findViewById(R.id.account_picker_account_list);
         mIncognitoInterstitialView =
                 mContentView.findViewById(R.id.incognito_interstitial_bottom_sheet_view);
@@ -88,6 +93,23 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     /**
+     * Updates the views related to the selected account.
+     *
+     * This method only updates the UI elements like text related to the selected account, it
+     * does not change the visibility.
+     */
+    void updateSelectedAccount(DisplayableProfileData accountProfileData) {
+        ExistingAccountRowViewBinder.bindAccountView(accountProfileData, mSelectedAccountView);
+
+        ImageView rowEndImage = mSelectedAccountView.findViewById(R.id.account_selection_mark);
+        rowEndImage.setImageResource(R.drawable.ic_expand_more_in_circle_24dp);
+
+        String continueAsButtonText = mContext.getString(R.string.signin_promo_continue_as,
+                accountProfileData.getGivenNameOrFullNameOrEmail());
+        mContinueAsButton.setText(continueAsButtonText);
+    }
+
+    /**
      * Expands the account list.
      */
     void expandAccountList() {
@@ -116,23 +138,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     /**
-     * Updates the views related to the selected account.
-     *
-     * This method only updates the UI elements like text related to the selected account, it
-     * does not change the visibility.
-     */
-    void updateSelectedAccount(DisplayableProfileData accountProfileData) {
-        ExistingAccountRowViewBinder.bindAccountView(accountProfileData, mSelectedAccountView);
-
-        ImageView rowEndImage = mSelectedAccountView.findViewById(R.id.account_selection_mark);
-        rowEndImage.setImageResource(R.drawable.ic_expand_more_in_circle_24dp);
-
-        String continueAsButtonText = mContext.getString(R.string.signin_promo_continue_as,
-                accountProfileData.getGivenNameOrFullNameOrEmail());
-        mContinueAsButton.setText(continueAsButtonText);
-    }
-
-    /**
      * Sets up the sign-in in progress view.
      */
     void setUpSignInInProgressView() {
@@ -144,20 +149,19 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 .setVisibility(View.VISIBLE);
         mContinueAsButton.setVisibility(View.INVISIBLE);
 
-        mContentView.findViewById(R.id.account_picker_horizontal_divider).setVisibility(View.GONE);
+        mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
     }
 
     void setUpIncognitoInterstitialView() {
         // TODO(crbug.com/1103262): Setup the incognito interstitial strings.
-        ImageView logo = mContentView.findViewById(R.id.account_picker_bottom_sheet_logo);
-        logo.setImageResource(R.drawable.location_bar_incognito_badge);
+        mLogoImage.setImageResource(R.drawable.location_bar_incognito_badge);
+        mIncognitoInterstitialView.setVisibility(View.VISIBLE);
 
         mAccountPickerTitle.setVisibility(View.GONE);
         mAccountPickerSubtitle.setVisibility(View.GONE);
-        mContentView.findViewById(R.id.account_picker_horizontal_divider).setVisibility(View.GONE);
+        mHorizontalDivider.setVisibility(View.GONE);
         mAccountListView.setVisibility(View.GONE);
-        mIncognitoInterstitialView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -172,7 +176,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mContinueAsButton.setText(R.string.signin_account_picker_general_error_button);
         mContinueAsButton.setVisibility(View.VISIBLE);
 
-        mContentView.findViewById(R.id.account_picker_horizontal_divider).setVisibility(View.GONE);
+        mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
     }
 
@@ -188,7 +192,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         mContinueAsButton.setText(R.string.auth_error_card_button);
         mContinueAsButton.setVisibility(View.VISIBLE);
 
-        mContentView.findViewById(R.id.account_picker_horizontal_divider).setVisibility(View.GONE);
+        mHorizontalDivider.setVisibility(View.GONE);
         mSelectedAccountView.setVisibility(View.GONE);
     }
 
