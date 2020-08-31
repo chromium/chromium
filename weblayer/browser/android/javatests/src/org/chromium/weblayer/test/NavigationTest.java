@@ -29,6 +29,7 @@ import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.LoadError;
 import org.chromium.weblayer.NavigateParams;
 import org.chromium.weblayer.Navigation;
@@ -37,6 +38,7 @@ import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.NavigationState;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TabCallback;
+import org.chromium.weblayer.TabListCallback;
 import org.chromium.weblayer.WebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -826,6 +828,62 @@ public class NavigationTest {
         setNavigationCallback(activity);
         mActivityTestRule.navigateAndWait(URL2);
         assertFalse(mCallback.onStartedCallback.isPageInitiated());
+    }
+
+    // Verifies the following sequence doesn't crash:
+    // 1. create a new background tab.
+    // 2. show modal dialog.
+    // 3. destroy tab with modal dialog.
+    // 4. switch to background tab created in step 1.
+    // This is a regression test for https://crbug.com/1121388.
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(87)
+    public void testDestroyTabWithModalDialog() throws Exception {
+        // Load a page with a form.
+        InstrumentationActivity activity =
+                mActivityTestRule.launchShellWithUrl(mActivityTestRule.getTestDataURL("form.html"));
+        assertNotNull(activity);
+        setNavigationCallback(activity);
+
+        // Touch the page; this should submit the form.
+        int currentCallCount = mCallback.onCompletedCallback.getCallCount();
+        EventUtils.simulateTouchCenterOfView(activity.getWindow().getDecorView());
+        String targetUrl = mActivityTestRule.getTestDataURL("simple_page.html");
+        mCallback.onCompletedCallback.assertCalledWith(currentCallCount, targetUrl);
+
+        Tab secondTab = runOnUiThreadBlocking(() -> activity.getTab().getBrowser().createTab());
+        // Make sure a tab modal shows after we attempt a reload.
+        Boolean isTabModalShowingResult[] = new Boolean[1];
+        CallbackHelper callbackHelper = new CallbackHelper();
+        runOnUiThreadBlocking(() -> {
+            Tab tab = activity.getTab();
+            Browser browser = tab.getBrowser();
+            TabCallback callback = new TabCallback() {
+                @Override
+                public void onTabModalStateChanged(boolean isTabModalShowing) {
+                    tab.unregisterTabCallback(this);
+                    isTabModalShowingResult[0] = isTabModalShowing;
+                    callbackHelper.notifyCalled();
+                }
+            };
+            tab.registerTabCallback(callback);
+
+            browser.registerTabListCallback(new TabListCallback() {
+                @Override
+                public void onTabRemoved(Tab tab) {
+                    browser.unregisterTabListCallback(this);
+                    browser.setActiveTab(secondTab);
+                }
+            });
+            tab.getNavigationController().reload();
+        });
+
+        callbackHelper.waitForFirst();
+        runOnUiThreadBlocking(() -> {
+            Tab tab = activity.getTab();
+            tab.getBrowser().destroyTab(tab);
+        });
     }
 
     /**
