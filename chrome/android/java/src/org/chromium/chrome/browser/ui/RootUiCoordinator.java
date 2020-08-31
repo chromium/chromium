@@ -504,8 +504,9 @@ public class RootUiCoordinator
                     new ObservableSupplierImpl<>();
             bottomToolbarVisibilitySupplier.set(false);
 
-            mIdentityDiscController = new IdentityDiscController(
-                    mActivity, mActivity.getLifecycleDispatcher(), bottomToolbarVisibilitySupplier);
+            mIdentityDiscController =
+                    new IdentityDiscController(mActivity, mActivity.getLifecycleDispatcher(),
+                            bottomToolbarVisibilitySupplier, mProfileSupplier);
             ShareButtonController shareButtonController = new ShareButtonController(mActivity,
                     mActivityTabProvider, mShareDelegateSupplier, new ShareUtils(),
                     bottomToolbarVisibilitySupplier, mActivity.getLifecycleDispatcher(),

@@ -106,6 +106,18 @@ public class IdentityDiscControllerTest {
                 withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
 
+    @Test
+    @MediumTest
+    public void testIdentityDiscWithSwitchToIncognito() {
+        mAccountManagerTestRule.addAndSignInTestAccount();
+        waitForView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
+
+        // Identity Disc should not be visible, when switched from sign in state to incognito NTP.
+        mActivityTestRule.newIncognitoTabFromMenu();
+        waitForView(allOf(withId(R.id.optional_toolbar_button),
+                withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+    }
+
     private void leaveNTP() {
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         ChromeTabUtils.waitForTabPageLoaded(mTab, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);

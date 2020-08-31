@@ -68,6 +68,8 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     private final Context mContext;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final ObservableSupplier<Boolean> mBottomToolbarVisibilitySupplier;
+    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final Callback<Profile> mProfileSupplierObserver = this::setProfile;
 
     private @Nullable Callback<Boolean> mBottomToolbarVisibilityObserver;
 
@@ -98,10 +100,12 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
      */
     public IdentityDiscController(Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            ObservableSupplier<Boolean> bottomToolbarVisibilitySupplier) {
+            ObservableSupplier<Boolean> bottomToolbarVisibilitySupplier,
+            ObservableSupplier<Profile> profileSupplier) {
         mContext = context;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mBottomToolbarVisibilitySupplier = bottomToolbarVisibilitySupplier;
+        mProfileSupplier = profileSupplier;
         mActivityLifecycleDispatcher.register(this);
 
         mButtonData = new ButtonData(false, null,
@@ -128,11 +132,10 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         mActivityLifecycleDispatcher = null;
         mNativeIsInitialized = true;
 
-        mIdentityManager = IdentityServicesProvider.get().getIdentityManager();
-        mIdentityManager.addObserver(this);
+        mProfileSupplier.addObserver(mProfileSupplierObserver);
 
-        mBottomToolbarVisibilityObserver = (bottomToolbarIsVisible)
-                -> notifyObservers(mIdentityManager.getPrimaryAccountInfo() != null);
+        mBottomToolbarVisibilityObserver =
+                (bottomToolbarIsVisible) -> notifyObservers(getSyncAccountInfo() != null);
         mBottomToolbarVisibilitySupplier.addObserver(mBottomToolbarVisibilityObserver);
     }
 
@@ -174,8 +177,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
             return;
         }
 
-        String email = CoreAccountInfo.getEmailFrom(
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
+        String email = CoreAccountInfo.getEmailFrom(getSyncAccountInfo());
         boolean canShowIdentityDisc = email != null;
         boolean menuBottomOnBottom =
                 bottomToolbarVisible && BottomToolbarVariationManager.isMenuButtonOnBottom();
@@ -247,8 +249,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         if (mState == IdentityDiscState.NONE) return;
         assert mProfileDataCache[mState] != null;
 
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo();
-        if (accountEmail.equals(CoreAccountInfo.getEmailFrom(accountInfo))) {
+        if (accountEmail.equals(CoreAccountInfo.getEmailFrom(getSyncAccountInfo()))) {
             notifyObservers(true);
         }
     }
@@ -291,6 +292,10 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
             mBottomToolbarVisibilitySupplier.removeObserver(mBottomToolbarVisibilityObserver);
             mBottomToolbarVisibilityObserver = null;
         }
+
+        if (mNativeIsInitialized) {
+            mProfileSupplier.removeObserver(mProfileSupplierObserver);
+        }
     }
 
     /**
@@ -298,12 +303,36 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
      * whether to show in-product help.
      */
     private void recordIdentityDiscUsed() {
-        // TODO (https://crbug.com/1048632): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It works correctly now, but
-        // it is not safe.
-        Profile profile = Profile.getLastUsedRegularProfile();
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        assert mProfileSupplier != null && mProfileSupplier.get() != null;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         tracker.notifyEvent(EventConstants.IDENTITY_DISC_USED);
         RecordUserAction.record("MobileToolbarIdentityDiscTap");
+    }
+
+    /**
+     * Returns the account info of mIdentityManager if current profile is regular, and
+     * null for off-the-record ones.
+     * @return account info for the current profile. Returns null for OTR profile.
+     */
+    private CoreAccountInfo getSyncAccountInfo() {
+        return mIdentityManager != null ? mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC)
+                                        : null;
+    }
+
+    /**
+     * Triggered by mProfileSupplierObserver when profile is changed in mProfileSupplier.
+     * mIdentityManager is updated with the profile, as set to null if profile is off-the-record.
+     */
+    private void setProfile(Profile profile) {
+        if (mIdentityManager != null) {
+            mIdentityManager.removeObserver(this);
+        }
+
+        if (profile.isOffTheRecord()) {
+            mIdentityManager = null;
+        } else {
+            mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+            mIdentityManager.addObserver(this);
+        }
     }
 }
