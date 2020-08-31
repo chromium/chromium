@@ -75,8 +75,6 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
   void executeBundles(const HeapVector<Member<GPURenderBundle>>& bundles);
   void endPass();
 
-  void Trace(Visitor*) const override;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(GPURenderPassEncoder);
 };

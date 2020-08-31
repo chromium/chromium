@@ -187,9 +187,4 @@ GPURenderBundle* GPURenderBundleEncoder::finish(
   return MakeGarbageCollected<GPURenderBundle>(device_, render_bundle);
 }
 
-void GPURenderBundleEncoder::Trace(Visitor* visitor) const {
-  visitor->Trace(device_);
-  DawnObject::Trace(visitor);
-}
-
 }  // namespace blink

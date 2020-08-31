@@ -182,9 +182,4 @@ void GPURenderPassEncoder::endPass() {
   GetProcs().renderPassEncoderEndPass(GetHandle());
 }
 
-void GPURenderPassEncoder::Trace(Visitor* visitor) const {
-  visitor->Trace(device_);
-  DawnObject::Trace(visitor);
-}
-
 }  // namespace blink

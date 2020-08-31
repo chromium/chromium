@@ -70,8 +70,6 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
 
   GPURenderBundle* finish(const GPURenderBundleDescriptor* webgpu_desc);
 
-  void Trace(Visitor*) const override;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(GPURenderBundleEncoder);
 };
