@@ -50,12 +50,12 @@ const std::vector<SearchConcept>& GetDateTimeSearchConcepts() {
 
 const std::vector<SearchConcept>& GetFineGrainedTimeZoneSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_DATE_TIME_ZONE_SUBPAGE,
+      {IDS_OS_SETTINGS_TAG_DATE_TIME_ZONE,
        mojom::kTimeZoneSubpagePath,
        mojom::SearchResultIcon::kClock,
        mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kTimeZone}},
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kChangeTimeZone}},
   });
   return *tags;
 }
