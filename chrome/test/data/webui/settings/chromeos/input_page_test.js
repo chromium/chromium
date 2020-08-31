@@ -99,6 +99,15 @@ suite('input page', () => {
     });
   });
 
+  suite('add input methods dialog', () => {
+    test('opens when clicking addInputMethod button', () => {
+      assertFalse(!!inputPage.$$('os-settings-add-input-methods-dialog'));
+      inputPage.$$('#addInputMethod').click();
+      Polymer.dom.flush();
+      assertTrue(!!inputPage.$$('os-settings-add-input-methods-dialog'));
+    });
+  });
+
   suite('records metrics', () => {
     test('when deactivating show ime menu', async () => {
       inputPage.setPrefValue('settings.language.ime_menu_activated', true);

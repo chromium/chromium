@@ -683,6 +683,12 @@
                  file="languages_page/languages_browser_proxy.js"
                  preprocess="true"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_LANGUAGES_ADD_INPUT_METHODS_DIALOG_HTML"
+                 file="chromeos/os_languages_page/add_input_methods_dialog.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_LANGUAGES_ADD_INPUT_METHODS_DIALOG_JS"
+                 file="chromeos/os_languages_page/add_input_methods_dialog.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_LANGUAGES_ADD_LANGUAGES_DIALOG_HTML"
                  file="chromeos/os_languages_page/os_add_languages_dialog.html"
                  compress="false" type="chrome_html" />

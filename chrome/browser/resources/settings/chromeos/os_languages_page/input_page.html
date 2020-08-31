@@ -2,8 +2,11 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="add_input_methods_dialog.html">
 <link rel="import" href="input_method_util.html">
 <link rel="import" href="languages_metrics_proxy.html">
 <link rel="import" href="../os_route.html">
@@ -116,6 +119,12 @@
           on-settings-boolean-control-change="onSpellcheckToggleChange_">
       </settings-toggle-button>
     </div>
+
+    <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
+      <os-settings-add-input-methods-dialog
+          on-close="onAddInputMethodsDialogClose_">
+      </os-settings-add-input-methods-dialog>
+    </template>
   </template>
   <script src="input_page.js"></script>
 </dom-module>

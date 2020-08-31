@@ -44,6 +44,12 @@ Polymer({
         return [];
       },
     },
+
+    /** @private */
+    showAddInputMethodsDialog_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @private {?settings.LanguagesMetricsProxy} */
@@ -173,7 +179,13 @@ Polymer({
   /** @private */
   onAddInputMethodClick_() {
     this.languagesMetricsProxy_.recordAddInputMethod();
-    // TODO(crbug/1113439): Add input methods dialog.
+    this.showAddInputMethodsDialog_ = true;
+  },
+
+  /** @private */
+  onAddInputMethodsDialogClose_() {
+    this.showAddInputMethodsDialog_ = false;
+    cr.ui.focusWithoutInk(assert(this.$.addInputMethod));
   },
 
   /**
