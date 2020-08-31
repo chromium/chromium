@@ -63,6 +63,8 @@ class ClipboardHistoryItemView : public views::View,
     // Called when the parent's selection state will change.
     void SelectionWillChange(bool target_is_selected);
 
+    const views::View* delete_button() const { return delete_button_; }
+
    protected:
     virtual DeleteButton* CreateDeleteButton() = 0;
 
@@ -93,6 +95,8 @@ class ClipboardHistoryItemView : public views::View,
   views::MenuItemView* const container_;
 
   ContentsView* contents_view_ = nullptr;
+
+  const views::View* main_button_ = nullptr;
 };
 
 }  // namespace ash

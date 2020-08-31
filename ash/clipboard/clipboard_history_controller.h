@@ -44,11 +44,6 @@ class ASH_EXPORT ClipboardHistoryController {
   // Returns the history which tracks what is being copied to the clipboard.
   const ClipboardHistory* history() const { return clipboard_history_.get(); }
 
-  // Do not use it. Will be removed soon.
-  const std::vector<ClipboardHistoryItem>& clipboard_items() const {
-    return clipboard_items_;
-  }
-
   // Returns the resource manager which gets labels and images for items copied
   // to the clipboard.
   const ClipboardHistoryResourceManager* resource_manager() const {
@@ -66,7 +61,10 @@ class ASH_EXPORT ClipboardHistoryController {
   bool CanShowMenu() const;
   void ShowMenu();
   void ExecuteSelectedMenuItem(int event_flags);
-  void MenuOptionSelected(int index, int event_flags);
+  void MenuOptionSelected(int command_id, int event_flags);
+
+  // Delete the menu item being selected and its corresponding data.
+  void DeleteSelectedMenuItem();
 
   gfx::Rect CalculateAnchorRect() const;
 
@@ -80,8 +78,6 @@ class ASH_EXPORT ClipboardHistoryController {
   std::unique_ptr<AcceleratorTarget> accelerator_target_;
   // Handles events on the contextual menu.
   std::unique_ptr<MenuDelegate> menu_delegate_;
-  // The items we show in the contextual menu. Saved so we can paste them later.
-  std::vector<ClipboardHistoryItem> clipboard_items_;
   // Controller that shows contextual nudges for multipaste.
   std::unique_ptr<ClipboardNudgeController> nudge_controller_;
 

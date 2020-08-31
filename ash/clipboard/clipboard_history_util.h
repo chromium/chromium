@@ -17,6 +17,12 @@ enum class ClipboardInternalFormat;
 namespace ash {
 namespace ClipboardHistoryUtil {
 
+// The command id for deletion.
+constexpr int kDeleteCommandId = 0;
+
+// The first available command id for normal clipboard history menu items.
+constexpr int kFirstItemCommandId = 1;
+
 // Returns the main format of the specified clipboard `data`.
 // NOTE: One `ui::ClipboardData` instance may contain multiple formats.
 ASH_EXPORT base::Optional<ui::ClipboardInternalFormat> CalculateMainFormat(

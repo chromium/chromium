@@ -45,21 +45,14 @@ class MainButton : public views::Button {
   const char* GetClassName() const override { return "MainButton"; }
 
   void StateChanged(ButtonState old_state) override {
-    if (GetState() != ButtonState::STATE_HOVERED &&
-        GetState() != ButtonState::STATE_NORMAL) {
-      return;
-    }
-
-    container_->SelectionWillChange(GetState() == ButtonState::STATE_HOVERED);
+    container_->SelectionWillChange(IsSelected());
   }
 
   void PaintButtonContents(gfx::Canvas* canvas) override {
-    if (GetState() != ButtonState::STATE_HOVERED &&
-        GetState() != ButtonState::STATE_PRESSED) {
+    if (!IsSelected())
       return;
-    }
 
-    // Highlight the background when the menu item is under selection.
+    // Highlight the background when the menu item is selected or pressed.
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
 
@@ -69,6 +62,18 @@ class MainButton : public views::Button {
 
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawRect(GetLocalBounds(), flags);
+  }
+
+  bool IsSelected() const {
+    // We should check both the mouse hovering state and the button state,
+    // because:
+    // (1) When the menu item is selected by the key traversal, the item is not
+    // hovered by mouse.
+    // (2) When the mouse moves within the bounds of DeleteButton, the menu item
+    // is still selected but the button state is not
+    // `ButtonState::STATE_HOVERED`.
+    return IsMouseHovered() || GetState() == ButtonState::STATE_HOVERED ||
+           GetState() == ButtonState::STATE_PRESSED;
   }
 
   // The parent view.
@@ -106,7 +111,13 @@ void ClipboardHistoryItemView::ContentsView::InstallDeleteButton() {
 bool ClipboardHistoryItemView::ContentsView::DoesIntersectRect(
     const views::View* target,
     const gfx::Rect& rect) const {
-  return delete_button_->GetVisible() && delete_button_->HitTestRect(rect);
+  if (!delete_button_->GetVisible())
+    return false;
+
+  gfx::RectF rect_in_delete_button(rect);
+  ConvertRectToTarget(this, delete_button_, &rect_in_delete_button);
+  return delete_button_->HitTestRect(
+      gfx::ToEnclosedRect(rect_in_delete_button));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +176,7 @@ void ClipboardHistoryItemView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   // Ensures that MainButton is below any other child views.
-  AddChildView(std::make_unique<MainButton>(this));
+  main_button_ = AddChildView(std::make_unique<MainButton>(this));
 
   contents_view_ = AddChildView(CreateContentsView());
 }
@@ -182,8 +193,11 @@ gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
 
 void ClipboardHistoryItemView::ButtonPressed(views::Button* sender,
                                              const ui::Event& event) {
-  container_->GetDelegate()->ExecuteCommand(container_->GetCommand(),
-                                            event.flags());
+  DCHECK(sender == contents_view_->delete_button() || sender == main_button_);
+  const int command_id = sender == contents_view_->delete_button()
+                             ? ClipboardHistoryUtil::kDeleteCommandId
+                             : container_->GetCommand();
+  container_->GetDelegate()->ExecuteCommand(command_id, event.flags());
 }
 
 }  // namespace ash

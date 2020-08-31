@@ -4,11 +4,12 @@
 
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 
+#include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -18,15 +19,31 @@
 
 namespace ash {
 
-ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(
-    std::unique_ptr<ui::SimpleMenuModel> model)
-    : views::MenuModelAdapter(model.get()), model_(std::move(model)) {}
+// static
+std::unique_ptr<ClipboardHistoryMenuModelAdapter>
+ClipboardHistoryMenuModelAdapter::Create(
+    ui::SimpleMenuModel::Delegate* delegate,
+    const ClipboardHistory* clipboard_history) {
+  return base::WrapUnique(new ClipboardHistoryMenuModelAdapter(
+      std::make_unique<ui::SimpleMenuModel>(delegate), clipboard_history));
+}
 
 ClipboardHistoryMenuModelAdapter::~ClipboardHistoryMenuModelAdapter() = default;
 
 void ClipboardHistoryMenuModelAdapter::Run(const gfx::Rect& anchor_rect) {
   DCHECK(!root_view_);
   DCHECK(model_);
+  DCHECK(item_snapshots_.empty());
+
+  int command_id = ClipboardHistoryUtil::kFirstItemCommandId;
+  for (const auto& item : clipboard_history_->GetItems()) {
+    model_->AddItem(command_id, base::string16());
+    item_snapshots_.emplace(command_id, item);
+    ++command_id;
+  }
+
+  // Enable the command execution through the model delegate.
+  model_->AddItem(ClipboardHistoryUtil::kDeleteCommandId, base::string16());
 
   // Start async rendering of HTML, if any exists.
   ClipboardImageModelFactory::Get()->Activate();
@@ -58,32 +75,55 @@ ClipboardHistoryMenuModelAdapter::GetSelectedMenuItemCommand() const {
                    : base::nullopt;
 }
 
+const ClipboardHistoryItem&
+ClipboardHistoryMenuModelAdapter::GetItemFromCommandId(int command_id) const {
+  auto iter = item_snapshots_.find(command_id);
+  DCHECK(iter != item_snapshots_.cend());
+  return iter->second;
+}
+
+int ClipboardHistoryMenuModelAdapter::GetMenuItemsCount() const {
+  return root_view_->GetSubmenu()->GetRowCount();
+}
+
+void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
+    int command_id) {
+  model_->RemoveItemAt(model_->GetIndexOfCommandId(command_id));
+  root_view_->RemoveMenuItem(root_view_->GetMenuItemByID(command_id));
+  root_view_->ChildrenChanged();
+}
+
 gfx::Rect ClipboardHistoryMenuModelAdapter::GetMenuBoundsInScreenForTest()
     const {
   DCHECK(root_view_);
   return root_view_->GetSubmenu()->GetBoundsInScreen();
 }
 
-void ClipboardHistoryMenuModelAdapter::OnMenuClosed(views::MenuItemView* menu) {
-  ClipboardImageModelFactory::Get()->Deactivate();
-}
+ClipboardHistoryMenuModelAdapter::ClipboardHistoryMenuModelAdapter(
+    std::unique_ptr<ui::SimpleMenuModel> model,
+    const ClipboardHistory* clipboard_history)
+    : views::MenuModelAdapter(model.get()),
+      model_(std::move(model)),
+      clipboard_history_(clipboard_history) {}
 
 views::MenuItemView* ClipboardHistoryMenuModelAdapter::AppendMenuItem(
     views::MenuItemView* menu,
     ui::MenuModel* model,
     int index) {
-  const int item_index = model->GetCommandIdAt(index);
-  views::MenuItemView* container = menu->AppendMenuItem(item_index);
+  const int command_id = model->GetCommandIdAt(index);
+
+  // Do not create the view for the deletion command.
+  if (command_id == ClipboardHistoryUtil::kDeleteCommandId)
+    return nullptr;
+
+  views::MenuItemView* container = menu->AppendMenuItem(command_id);
 
   // Margins are managed by `ClipboardHistoryItemView`.
   container->SetMargins(/*top_margin=*/0, /*bottom_margin=*/0);
 
-  const auto& items =
-      Shell::Get()->clipboard_history_controller()->clipboard_items();
-
   std::unique_ptr<ClipboardHistoryItemView> item_view =
       ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
-          items[item_index], container);
+          GetItemFromCommandId(command_id), container);
   item_view->Init();
   container->AddChildView(std::move(item_view));
 

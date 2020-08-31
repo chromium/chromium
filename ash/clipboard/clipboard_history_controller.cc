@@ -10,6 +10,7 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/clipboard_history_resource_manager.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -98,7 +99,12 @@ class ClipboardHistoryController::MenuDelegate
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override {
-    controller_->MenuOptionSelected(/*index=*/command_id, event_flags);
+    if (command_id == ClipboardHistoryUtil::kDeleteCommandId) {
+      controller_->DeleteSelectedMenuItem();
+      return;
+    }
+
+    controller_->MenuOptionSelected(command_id, event_flags);
   }
 
  private:
@@ -140,36 +146,28 @@ void ClipboardHistoryController::ExecuteSelectedMenuItem(int event_flags) {
   auto command = context_menu_->GetSelectedMenuItemCommand();
 
   // If no menu item is currently selected, we'll fallback to the first item.
-  menu_delegate_->ExecuteCommand(command.value_or(0), event_flags);
+  menu_delegate_->ExecuteCommand(
+      command.value_or(ClipboardHistoryUtil::kFirstItemCommandId), event_flags);
 }
 
 void ClipboardHistoryController::ShowMenu() {
   if (IsMenuShowing() || !CanShowMenu())
     return;
 
-  clipboard_items_ =
-      std::vector<ClipboardHistoryItem>(clipboard_history_->GetItems().begin(),
-                                        clipboard_history_->GetItems().end());
-
-  std::unique_ptr<ui::SimpleMenuModel> menu_model =
-      std::make_unique<ui::SimpleMenuModel>(menu_delegate_.get());
-  for (size_t i = 0; i < clipboard_items_.size(); ++i)
-    menu_model->AddItem(i, base::string16());
-
-  context_menu_ =
-      std::make_unique<ClipboardHistoryMenuModelAdapter>(std::move(menu_model));
+  context_menu_ = ClipboardHistoryMenuModelAdapter::Create(
+      menu_delegate_.get(), clipboard_history_.get());
   context_menu_->Run(CalculateAnchorRect());
 }
 
-void ClipboardHistoryController::MenuOptionSelected(int index,
+void ClipboardHistoryController::MenuOptionSelected(int command_id,
                                                     int event_flags) {
   // Force close the context menu. Failure to do so before dispatching our
   // synthetic key event will result in the context menu consuming the event.
   DCHECK(context_menu_);
   context_menu_->Cancel();
 
-  auto selected_item = clipboard_items_.begin();
-  std::advance(selected_item, index);
+  const ClipboardHistoryItem& selected_item =
+      context_menu_->GetItemFromCommandId(command_id);
 
   auto* clipboard = GetClipboard();
   std::unique_ptr<ui::ClipboardData> original_data;
@@ -179,19 +177,19 @@ void ClipboardHistoryController::MenuOptionSelected(int index,
   const bool shift_key_pressed = event_flags & ui::EF_SHIFT_DOWN;
   ui::ClipboardDataEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   if (shift_key_pressed ||
-      selected_item->data() != *clipboard->GetClipboardData(&data_dst)) {
+      selected_item.data() != *clipboard->GetClipboardData(&data_dst)) {
     std::unique_ptr<ui::ClipboardData> temp_data;
     if (shift_key_pressed) {
       // When the shift key is pressed, we only paste plain text.
       temp_data = std::make_unique<ui::ClipboardData>();
-      temp_data->set_text(selected_item->data().text());
-      ui::ClipboardDataEndpoint* data_src = selected_item->data().source();
+      temp_data->set_text(selected_item.data().text());
+      ui::ClipboardDataEndpoint* data_src = selected_item.data().source();
       if (data_src) {
         temp_data->set_source(
             std::make_unique<ui::ClipboardDataEndpoint>(*data_src));
       }
     } else {
-      temp_data = std::make_unique<ui::ClipboardData>(selected_item->data());
+      temp_data = std::make_unique<ui::ClipboardData>(selected_item.data());
     }
 
     // Pause clipboard history when manipulating the clipboard for a paste.
@@ -232,6 +230,26 @@ void ClipboardHistoryController::MenuOptionSelected(int index,
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(original_data)),
       base::TimeDelta::FromMilliseconds(200));
+}
+
+void ClipboardHistoryController::DeleteSelectedMenuItem() {
+  DCHECK(context_menu_);
+  auto selected_command = context_menu_->GetSelectedMenuItemCommand();
+
+  DCHECK(selected_command.has_value());
+  DCHECK_GE(*selected_command, ClipboardHistoryUtil::kFirstItemCommandId);
+
+  clipboard_history_->RemoveItemForId(
+      context_menu_->GetItemFromCommandId(*selected_command).id());
+
+  // If the item to be deleted is the last one, close the whole menu.
+  if (context_menu_->GetMenuItemsCount() == 1) {
+    context_menu_->Cancel();
+    context_menu_.reset();
+    return;
+  }
+
+  context_menu_->RemoveMenuItemWithCommandId(*selected_command);
 }
 
 gfx::Rect ClipboardHistoryController::CalculateAnchorRect() const {

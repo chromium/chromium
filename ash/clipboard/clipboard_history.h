@@ -66,6 +66,10 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // Returns whether the clipboard history of the active account is empty.
   bool IsEmpty() const;
 
+  // Remove the item specified by `id`. If the target item does not exist,
+  // do nothing.
+  void RemoveItemForId(const base::UnguessableToken& id);
+
   // ClipboardMonitor:
   void OnClipboardDataChanged() override;
   void OnClipboardDataRead() override;

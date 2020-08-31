@@ -62,6 +62,21 @@ bool ClipboardHistory::IsEmpty() const {
   return GetItems().empty();
 }
 
+void ClipboardHistory::RemoveItemForId(const base::UnguessableToken& id) {
+  auto iter = std::find_if(history_list_.cbegin(), history_list_.cend(),
+                           [&id](const auto& item) { return item.id() == id; });
+
+  // It is possible that the item specified by `id` has been removed. For
+  // example, `history_list_` has reached its maximum capacity. while the
+  // clipboard history menu is showing, a new item is added to `history_list_`.
+  // Then the user wants to delete the item which has already been removed due
+  // to overflow in `history_list_`.
+  if (iter == history_list_.cend())
+    return;
+
+  history_list_.erase(iter);
+}
+
 void ClipboardHistory::OnClipboardDataChanged() {
   // TODO(newcomer): Prevent Clipboard from recording metrics when pausing
   // observation.
