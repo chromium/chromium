@@ -188,7 +188,7 @@ message CardIssuer {
 }
 
 message WalletMaskedCreditCard {
-  reserved 9;
+  reserved 9, 14;
   reserved "card_class";
 
   enum WalletCardStatus {
@@ -247,9 +247,9 @@ message WalletMaskedCreditCard {
   // Issuer of the card.
   optional CardIssuer card_issuer = 13;
 
-  // Server-generated unique ID string. This is opaque to the client.
+  // Server-generated unique ID. This is opaque to the client.
   // |id| is the legacy version of this.
-  optional string instrument_id = 14;
+  optional int64 instrument_id = 15;
 }
 
 // Different than an AutofillProfile because this represents some known address

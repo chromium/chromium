@@ -139,9 +139,9 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillCullingFlags& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillOfferSpecifics& proto) {
   VISIT(id);
-  VISIT(offer_details_deep_link_clank);
-  VISIT(merchant_domain);
-  VISIT(merchant_app_package);
+  VISIT(offer_details_url);
+  VISIT_REP(merchant_domain);
+  VISIT_REP(merchant_app_package);
   VISIT(offer_expiry_date);
   VISIT(card_linked_offer_data);
   VISIT(percentage_reward);
@@ -151,7 +151,6 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillOfferSpecifics& proto) {
 VISIT_PROTO_FIELDS(
     const sync_pb::AutofillOfferSpecifics::CardLinkedOfferData& proto) {
   VISIT_REP(instrument_id);
-  VISIT_REP(legacy_instrument_id);
 }
 
 VISIT_PROTO_FIELDS(

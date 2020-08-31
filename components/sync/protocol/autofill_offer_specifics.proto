@@ -16,18 +16,19 @@ package sync_pb;
 
 // Properties of Autofill wallet offer related objects.
 
+// Next tag: 9
 message AutofillOfferSpecifics {
   // The id for this offer data. Will be used as the client tag.
   optional int64 id = 1;
 
   // The link leading to the offer details page on Gpay app. Will be populated
   // on Android only.
-  optional string offer_details_deep_link_clank = 2;
+  optional string offer_details_url = 2;
 
   // Merchant domain and merchant app package name refers to the merchant this
   // offer is applied to.
-  optional string merchant_domain = 3;
-  optional string merchant_app_package = 4;
+  repeated string merchant_domain = 3;
+  repeated string merchant_app_package = 4;
 
   // The expiry of this offer. Will be represented in the form of unix epoch
   // time in seconds. Once the offer is expired it will not be shown in the
@@ -35,13 +36,10 @@ message AutofillOfferSpecifics {
   optional int64 offer_expiry_date = 5;
 
   message CardLinkedOfferData {
-    // The server id of the card to which the offer is linked. Both the id and
-    // the legacy id should be passed down to the client. Right now only the
-    // legacy_instrument_id will be used but in the future the server will
-    // migrate to instrument_id. The legacy_instrument_id matches the id in the
-    // masked_credit_cards table.
-    repeated string instrument_id = 1;
-    repeated string legacy_instrument_id = 2;
+    reserved 1, 2;
+
+    // The server id of the card to which the offer is linked.
+    repeated int64 instrument_id = 3;
   }
 
   // The unique offer data for different offer types.
