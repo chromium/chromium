@@ -122,6 +122,14 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     private final JourneyLogger mJourneyLogger;
     private PaymentUIsObserver mObserver;
 
+    /**
+     * True if we should skip showing PaymentRequest UI.
+     *
+     * <p>In cases where there is a single payment app and the merchant does not request shipping
+     * or billing, we can skip showing UI as Payment Request UI is not benefiting the user at all.
+     */
+    private boolean mShouldSkipShowingPaymentRequestUi;
+
     /** The delegate of this class. */
     public interface Delegate {
         /** Dispatch the payer detail change event if needed. */
@@ -349,11 +357,6 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
         return mContactEditor;
     }
 
-    /** Get the retry queue. */
-    public Queue<Runnable> getRetryQueue() {
-        return mRetryQueue;
-    }
-
     /** @return The autofill profiles. */
     public List<AutofillProfile> getAutofillProfiles() {
         return mAutofillProfiles;
@@ -362,6 +365,11 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
     /** @return Whether PaymentRequestUI has requested autofill data. */
     public boolean haveRequestedAutofillData() {
         return mHaveRequestedAutofillData;
+    }
+
+    /** @return Whether PaymentRequestUI should be skipped. */
+    public boolean shouldSkipShowingPaymentRequestUi() {
+        return mShouldSkipShowingPaymentRequestUi;
     }
 
     // Implement SettingsAutofillAndPaymentsObserver.Observer:
@@ -1241,5 +1249,37 @@ public class PaymentUIsManager implements SettingsAutofillAndPaymentsObserver.Ob
             }
         }
         return anAppCanProvideAllInfo;
+    }
+
+    /**
+     * Calculate whether the browser payment sheet should be skipped directly into the payment app.
+     * @param isUserGestureShow Whether the PaymentRequest.show() is triggered by user gesture.
+     * @param urlPaymentMethodIdentifiersSupported True when at least one url payment method
+     *         identifier is specified in payment request.
+     * @param skipUiForNonUrlPaymentMethodIdentifiers True when skip UI is available for non-url
+     *         based payment method identifiers (e.g., basic-card).
+     */
+    public void calculateWhetherShouldSkipShowingPaymentRequestUi(boolean isUserGestureShow,
+            boolean urlPaymentMethodIdentifiersSupported,
+            boolean skipUiForNonUrlPaymentMethodIdentifiers) {
+        assert mPaymentMethodsSection != null;
+        PaymentApp selectedApp = (PaymentApp) mPaymentMethodsSection.getSelectedItem();
+
+        // If there is only a single payment app which can provide all merchant requested
+        // information, we can safely go directly to the payment app instead of showing Payment
+        // Request UI.
+        mShouldSkipShowingPaymentRequestUi =
+                PaymentFeatureList.isEnabled(PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP)
+                // Only allowing payment apps that own their own UIs.
+                // This excludes AutofillPaymentInstrument as its UI is rendered inline in
+                // the payment request UI, thus can't be skipped.
+                && (urlPaymentMethodIdentifiersSupported || skipUiForNonUrlPaymentMethodIdentifiers)
+                && mPaymentMethodsSection.getSize() >= 1
+                && onlySingleAppCanProvideAllRequiredInformation()
+                // Skip to payment app only if it can be pre-selected.
+                && selectedApp != null
+                // Skip to payment app only if user gesture is provided when it is required to
+                // skip-UI.
+                && (isUserGestureShow || !selectedApp.isUserGestureRequiredToSkipUi());
     }
 }
