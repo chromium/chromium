@@ -113,7 +113,6 @@ net::Error DirectSocketsServiceImpl::EnsurePermission(
 
   // TODO(crbug.com/1119662): Check for enterprise software policies.
   // TODO(crbug.com/1119659): Check permissions policy.
-  // TODO(crbug.com/1119600): Check for transient activation.
   // TODO(crbug.com/1119600): Implement rate limiting.
 
   if (options.remote_port == 443) {

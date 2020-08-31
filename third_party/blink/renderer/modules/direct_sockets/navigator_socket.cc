@@ -237,6 +237,15 @@ bool NavigatorSocket::OpenSocketPermitted(ScriptState* script_state,
     return false;
   }
 
+  // TODO(crbug.com/1119600): Do not consume (or check) transient activation
+  // for reconnection attempts.
+  if (!LocalFrame::ConsumeTransientUserActivation(window->GetFrame())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Must be handling a user gesture to open a socket.");
+    return false;
+  }
+
   DCHECK(options);
   if (!options->hasRemotePort()) {
     exception_state.ThrowTypeError("remotePort was not specified.");
