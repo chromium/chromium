@@ -1862,7 +1862,11 @@ void XRSession::RemoveTransientInputSource(XRInputSource* input_source) {
 }
 
 void XRSession::OnMojoSpaceReset() {
-  for (const auto& reference_space : reference_spaces_) {
+  // Since this eventually dispatches an event to the page, the page could
+  // create a new reference space which would invalidate our iterators; so
+  // iterate over a copy of the reference space list.
+  HeapVector<Member<XRReferenceSpace>> ref_spaces_copy = reference_spaces_;
+  for (const auto& reference_space : ref_spaces_copy) {
     reference_space->OnReset();
   }
 }
