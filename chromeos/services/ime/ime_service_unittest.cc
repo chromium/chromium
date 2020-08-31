@@ -257,13 +257,13 @@ TEST_F(ImeServiceTest, RuleBasedHandlesAltRight) {
                                            false, false, false),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote->ProcessKeypressForRulebased(
-      mojom::KeypressInfoForRulebased::New("keydown", "A", false, false, false,
-                                           false, true),
+      mojom::KeypressInfoForRulebased::New("keydown", "KeyA", false, false,
+                                           false, false, true),
       base::BindOnce(&TestProcessKeypressForRulebasedCallback, &response));
   to_engine_remote.FlushForTesting();
 
-  EXPECT_EQ(response.result, false);
-  ASSERT_EQ(0U, response.operations.size());
+  EXPECT_EQ(response.result, true);
+  ASSERT_EQ(1U, response.operations.size());
 }
 
 // Tests that the rule-based Arabic keyboard can work correctly.
