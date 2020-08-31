@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
+#include "chrome/browser/media/offscreen_tab.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "components/mirroring/mojom/mirroring_service_host.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
@@ -23,12 +24,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/size.h"
-
-// TODO(crbug.com/879012): Remove the build flag. OffscreenTab should not only
-// be defined when extension is enabled.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/media/offscreen_tab.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace content {
 class AudioLoopbackStreamCreator;
@@ -47,9 +42,7 @@ namespace mirroring {
 // Service, and provides the resources to the Mirroring Service as requested.
 class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
                                        public mojom::ResourceProvider,
-#if BUILDFLAG(ENABLE_EXTENSIONS)
                                        public OffscreenTab::Owner,
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
                                        public content::WebContentsObserver {
  public:
   static void GetForTab(

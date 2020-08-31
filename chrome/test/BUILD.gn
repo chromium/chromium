@@ -4990,7 +4990,6 @@ test("unit_tests") {
       "../browser/extensions/webstore_installer_unittest.cc",
       "../browser/extensions/zipfile_installer_unittest.cc",
       "../browser/media/cast_mirroring_service_host_unittest.cc",
-      "../browser/media/cast_transport_host_filter_unittest.cc",
       "../browser/metrics/extensions_metrics_provider_unittest.cc",
       "../browser/notifications/notification_system_observer_unittest.cc",
       "../browser/policy/chrome_extension_policy_migrator_unittest.cc",

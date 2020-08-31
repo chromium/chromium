@@ -646,8 +646,6 @@ static_library("browser") {
     "lookalikes/lookalike_url_tab_storage.h",
     "media/audio_service_util.cc",
     "media/audio_service_util.h",
-    "media/cast_remoting_connector.cc",
-    "media/cast_remoting_connector.h",
     "media/feeds/media_feeds_utils.cc",
     "media/feeds/media_feeds_utils.h",
     "media/history/media_history_contents_observer.cc",
@@ -2112,11 +2110,9 @@ static_library("browser") {
     "//media",
     "//media:media_buildflags",
     "//media/capture",
-    "//media/cast:net",
     "//media/midi",
     "//media/mojo:buildflags",
     "//media/mojo/common",
-    "//media/mojo/mojom:remoting",
     "//media/mojo/services",
     "//media/webrtc",
     "//mojo/core/embedder",
@@ -4988,6 +4984,30 @@ static_library("browser") {
     }
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [
+      "media/cast_mirroring_service_host.cc",
+      "media/cast_mirroring_service_host.h",
+      "media/offscreen_tab.cc",
+      "media/offscreen_tab.h",
+    ]
+    deps += [
+      "//components/mirroring/browser",
+      "//components/mirroring/mojom:host",
+      "//components/mirroring/mojom:service",
+      "//components/mirroring/service:mirroring_service",
+      "//media/cast:net",
+    ]
+  }
+
+  if (enable_media_remoting) {
+    sources += [
+      "media/cast_remoting_connector.cc",
+      "media/cast_remoting_connector.h",
+    ]
+    deps += [ "//media/mojo/mojom:remoting" ]
+  }
+
   if (enable_extensions) {
     sources += [
       "accessibility/accessibility_extension_api.cc",
@@ -5016,16 +5036,8 @@ static_library("browser") {
       "guest_view/web_view/chrome_web_view_permission_helper_delegate.h",
       "guest_view/web_view/context_menu_content_type_web_view.cc",
       "guest_view/web_view/context_menu_content_type_web_view.h",
-
-      # TODO(crbug.com/879012): this shouldn't depend on enable_extensions.
-      "media/cast_mirroring_service_host.cc",
-      "media/cast_mirroring_service_host.h",
-      "media/cast_transport_host_filter.cc",
-      "media/cast_transport_host_filter.h",
       "media/extension_media_access_handler.cc",
       "media/extension_media_access_handler.h",
-      "media/offscreen_tab.cc",
-      "media/offscreen_tab.h",
       "media/webrtc/desktop_capture_access_handler.cc",
       "media/webrtc/desktop_capture_access_handler.h",
       "media/webrtc/tab_capture_access_handler.cc",
@@ -5210,7 +5222,6 @@ static_library("browser") {
       "//components/mirroring/service:mirroring_service",
       "//extensions/components/javascript_dialog_extensions_client",
       "//google_apis/drive",
-      "//media/cast:net",
       "//services/device/public/mojom",
     ]
   }
