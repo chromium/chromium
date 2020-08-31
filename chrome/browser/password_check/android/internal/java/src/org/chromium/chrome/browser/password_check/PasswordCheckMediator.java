@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_check;
 
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.COMPROMISED_CREDENTIAL;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.CREDENTIAL_HANDLER;
+import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.HAS_MANUAL_CHANGE_BUTTON;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.DELETION_CONFIRMATION_HANDLER;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.DELETION_ORIGIN;
@@ -26,6 +27,7 @@ import android.util.Pair;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
+import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper.ReauthReason;
 import org.chromium.ui.modelutil.ListModel;
@@ -49,11 +51,14 @@ class PasswordCheckMediator
     private PasswordCheckComponentUi.Delegate mDelegate;
     private Runnable mLaunchCheckupInAccount;
     private HashSet<CompromisedCredential> mPreCheckSet;
+    private final PasswordCheckIconHelper mIconHelper;
 
     PasswordCheckMediator(PasswordCheckChangePasswordHelper changePasswordDelegate,
-            PasswordCheckReauthenticationHelper reauthenticationHelper) {
+            PasswordCheckReauthenticationHelper reauthenticationHelper,
+            PasswordCheckIconHelper passwordCheckIconHelper) {
         mChangePasswordDelegate = changePasswordDelegate;
         mReauthenticationHelper = reauthenticationHelper;
+        mIconHelper = passwordCheckIconHelper;
     }
 
     void initialize(PropertyModel model, PasswordCheckComponentUi.Delegate delegate,
@@ -257,16 +262,21 @@ class PasswordCheckMediator
     }
 
     private ListItem createEntryForCredential(CompromisedCredential credential) {
-        return new ListItem(credential.hasScript()
-                        ? PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL_WITH_SCRIPT
-                        : PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL,
+        PropertyModel credentialModel =
                 new PropertyModel
                         .Builder(PasswordCheckProperties.CompromisedCredentialProperties.ALL_KEYS)
                         .with(COMPROMISED_CREDENTIAL, credential)
                         .with(HAS_MANUAL_CHANGE_BUTTON,
                                 mChangePasswordDelegate.canManuallyChangeCredential(credential))
                         .with(CREDENTIAL_HANDLER, this)
-                        .build());
+                        .build();
+        mIconHelper.getLargeIcon(credential, (faviconOrFallback) -> {
+            credentialModel.set(FAVICON_OR_FALLBACK, faviconOrFallback);
+        });
+        return new ListItem(credential.hasScript()
+                        ? PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL_WITH_SCRIPT
+                        : PasswordCheckProperties.ItemType.COMPROMISED_CREDENTIAL,
+                credentialModel);
     }
 
     private void sortCredentials(List<CompromisedCredential> credentials) {

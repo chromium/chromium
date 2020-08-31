@@ -8,6 +8,7 @@ import android.util.Pair;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper.FaviconOrFallback;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -52,9 +53,12 @@ class PasswordCheckProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("credential_handler");
         static final PropertyModel.ReadableBooleanPropertyKey HAS_MANUAL_CHANGE_BUTTON =
                 new PropertyModel.ReadableBooleanPropertyKey("has_change_button");
+        static final PropertyModel
+                .WritableObjectPropertyKey<FaviconOrFallback> FAVICON_OR_FALLBACK =
+                new PropertyModel.WritableObjectPropertyKey<>("favicon");
 
-        static final PropertyKey[] ALL_KEYS = {
-                COMPROMISED_CREDENTIAL, CREDENTIAL_HANDLER, HAS_MANUAL_CHANGE_BUTTON};
+        static final PropertyKey[] ALL_KEYS = {COMPROMISED_CREDENTIAL, CREDENTIAL_HANDLER,
+                HAS_MANUAL_CHANGE_BUTTON, FAVICON_OR_FALLBACK};
 
         private CompromisedCredentialProperties() {}
     }

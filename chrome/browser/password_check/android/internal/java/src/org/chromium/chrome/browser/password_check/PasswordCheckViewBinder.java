@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_check;
 
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.COMPROMISED_CREDENTIAL;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.CREDENTIAL_HANDLER;
+import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.FAVICON_OR_FALLBACK;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.HAS_MANUAL_CHANGE_BUTTON;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.DELETION_CONFIRMATION_HANDLER;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.DELETION_ORIGIN;
@@ -39,7 +40,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
+import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_check.internal.R;
+import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -178,6 +181,15 @@ class PasswordCheckViewBinder {
             changeHint.setVisibility(model.get(HAS_MANUAL_CHANGE_BUTTON) || credential.hasScript()
                             ? View.GONE
                             : View.VISIBLE);
+        } else if (propertyKey == FAVICON_OR_FALLBACK) {
+            ImageView imageView = view.findViewById(R.id.credential_favicon);
+            PasswordCheckIconHelper.FaviconOrFallback data = model.get(FAVICON_OR_FALLBACK);
+            imageView.setImageDrawable(FaviconUtils.getIconDrawableWithoutFilter(data.mIcon,
+                    data.mUrl, PasswordCheckIconHelper.getIconColor(data, view.getResources()),
+                    FaviconUtils.createCircularIconGenerator(view.getResources()),
+                    view.getResources(),
+                    view.getResources().getDimensionPixelSize(
+                            org.chromium.chrome.browser.ui.favicon.R.dimen.default_favicon_size)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
