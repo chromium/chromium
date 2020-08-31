@@ -253,14 +253,16 @@ TEST_P(NGStaticPositionTest, Convert) {
   // It asserts that it is the same as the expected physical static-position,
   // then performs the same operation in reverse.
 
-  NGPhysicalStaticPosition physical_result = data.logical.ConvertToPhysical(
-      data.writing_mode, data.direction, PhysicalSize(100, 100));
+  const WritingModeConverter converter({data.writing_mode, data.direction},
+                                       PhysicalSize(100, 100));
+  NGPhysicalStaticPosition physical_result =
+      data.logical.ConvertToPhysical(converter);
   EXPECT_EQ(physical_result.offset, data.physical.offset);
   EXPECT_EQ(physical_result.horizontal_edge, data.physical.horizontal_edge);
   EXPECT_EQ(physical_result.vertical_edge, data.physical.vertical_edge);
 
-  NGLogicalStaticPosition logical_result = data.physical.ConvertToLogical(
-      data.writing_mode, data.direction, PhysicalSize(100, 100));
+  NGLogicalStaticPosition logical_result =
+      data.physical.ConvertToLogical(converter);
   EXPECT_EQ(logical_result.offset, data.logical.offset);
   EXPECT_EQ(logical_result.inline_edge, data.logical.inline_edge);
   EXPECT_EQ(logical_result.block_edge, data.logical.block_edge);

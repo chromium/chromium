@@ -560,10 +560,10 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
 
   NGLogicalStaticPosition candidate_static_position =
       static_position
-          .ConvertToPhysical(writing_mode_, default_direction,
-                             container_physical_content_size)
-          .ConvertToLogical(candidate_writing_mode, candidate_direction,
-                            container_physical_content_size);
+          .ConvertToPhysical({{writing_mode_, default_direction},
+                              container_physical_content_size})
+          .ConvertToLogical({{candidate_writing_mode, candidate_direction},
+                             container_physical_content_size});
 
   // Need a constraint space to resolve offsets.
   NGConstraintSpaceBuilder builder(writing_mode_, candidate_writing_mode,
@@ -665,10 +665,10 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
 
   NGLogicalStaticPosition descendant_static_position =
       static_position
-          .ConvertToPhysical(default_writing_mode, default_direction,
-                             container_physical_content_size)
-          .ConvertToLogical(descendant_writing_mode, descendant_direction,
-                            container_physical_content_size);
+          .ConvertToPhysical({{default_writing_mode, default_direction},
+                              container_physical_content_size})
+          .ConvertToLogical({{descendant_writing_mode, descendant_direction},
+                             container_physical_content_size});
 
   // Need a constraint space to resolve offsets.
   NGConstraintSpaceBuilder builder(default_writing_mode,

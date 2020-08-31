@@ -9,9 +9,8 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
@@ -25,8 +24,8 @@ struct CORE_EXPORT NGLogicalStaticPosition {
   enum InlineEdge { kInlineStart, kInlineCenter, kInlineEnd };
   enum BlockEdge { kBlockStart, kBlockCenter, kBlockEnd };
 
-  inline NGPhysicalStaticPosition
-  ConvertToPhysical(WritingMode, TextDirection, const PhysicalSize& size) const;
+  inline NGPhysicalStaticPosition ConvertToPhysical(
+      const WritingModeConverter& converter) const;
 
   LogicalOffset offset;
   InlineEdge inline_edge;
@@ -42,12 +41,10 @@ struct CORE_EXPORT NGPhysicalStaticPosition {
   HorizontalEdge horizontal_edge;
   VerticalEdge vertical_edge;
 
-  NGLogicalStaticPosition ConvertToLogical(WritingMode writing_mode,
-                                           TextDirection direction,
-                                           const PhysicalSize& size) const {
+  NGLogicalStaticPosition ConvertToLogical(
+      const WritingModeConverter& converter) const {
     LogicalOffset logical_offset =
-        offset.ConvertToLogical(writing_mode, direction, /* outer_size */ size,
-                                /* inner_size */ PhysicalSize());
+        converter.ToLogical(offset, /* inner_size */ PhysicalSize());
 
     using InlineEdge = NGLogicalStaticPosition::InlineEdge;
     using BlockEdge = NGLogicalStaticPosition::BlockEdge;
@@ -55,9 +52,9 @@ struct CORE_EXPORT NGPhysicalStaticPosition {
     InlineEdge inline_edge;
     BlockEdge block_edge;
 
-    switch (writing_mode) {
+    switch (converter.GetWritingMode()) {
       case WritingMode::kHorizontalTb:
-        inline_edge = ((horizontal_edge == kLeft) == IsLtr(direction))
+        inline_edge = ((horizontal_edge == kLeft) == converter.IsLtr())
                           ? InlineEdge::kInlineStart
                           : InlineEdge::kInlineEnd;
         block_edge = (vertical_edge == kTop) ? BlockEdge::kBlockStart
@@ -65,21 +62,21 @@ struct CORE_EXPORT NGPhysicalStaticPosition {
         break;
       case WritingMode::kVerticalRl:
       case WritingMode::kSidewaysRl:
-        inline_edge = ((vertical_edge == kTop) == IsLtr(direction))
+        inline_edge = ((vertical_edge == kTop) == converter.IsLtr())
                           ? InlineEdge::kInlineStart
                           : InlineEdge::kInlineEnd;
         block_edge = (horizontal_edge == kRight) ? BlockEdge::kBlockStart
                                                  : BlockEdge::kBlockEnd;
         break;
       case WritingMode::kVerticalLr:
-        inline_edge = ((vertical_edge == kTop) == IsLtr(direction))
+        inline_edge = ((vertical_edge == kTop) == converter.IsLtr())
                           ? InlineEdge::kInlineStart
                           : InlineEdge::kInlineEnd;
         block_edge = (horizontal_edge == kLeft) ? BlockEdge::kBlockStart
                                                 : BlockEdge::kBlockEnd;
         break;
       case WritingMode::kSidewaysLr:
-        inline_edge = ((vertical_edge == kBottom) == IsLtr(direction))
+        inline_edge = ((vertical_edge == kBottom) == converter.IsLtr())
                           ? InlineEdge::kInlineStart
                           : InlineEdge::kInlineEnd;
         block_edge = (horizontal_edge == kLeft) ? BlockEdge::kBlockStart
@@ -88,7 +85,7 @@ struct CORE_EXPORT NGPhysicalStaticPosition {
     }
 
     // Adjust for uncommon "center" static-positions.
-    switch (writing_mode) {
+    switch (converter.GetWritingMode()) {
       case WritingMode::kHorizontalTb:
         inline_edge = (horizontal_edge == kHorizontalCenter)
                           ? InlineEdge::kInlineCenter
@@ -115,12 +112,9 @@ struct CORE_EXPORT NGPhysicalStaticPosition {
 };
 
 inline NGPhysicalStaticPosition NGLogicalStaticPosition::ConvertToPhysical(
-    WritingMode writing_mode,
-    TextDirection direction,
-    const PhysicalSize& size) const {
+    const WritingModeConverter& converter) const {
   PhysicalOffset physical_offset =
-      offset.ConvertToPhysical(writing_mode, direction, /* outer_size */ size,
-                               /* inner_size */ PhysicalSize());
+      converter.ToPhysical(offset, /* inner_size */ PhysicalSize());
 
   using HorizontalEdge = NGPhysicalStaticPosition::HorizontalEdge;
   using VerticalEdge = NGPhysicalStaticPosition::VerticalEdge;
@@ -128,9 +122,9 @@ inline NGPhysicalStaticPosition NGLogicalStaticPosition::ConvertToPhysical(
   HorizontalEdge horizontal_edge;
   VerticalEdge vertical_edge;
 
-  switch (writing_mode) {
+  switch (converter.GetWritingMode()) {
     case WritingMode::kHorizontalTb:
-      horizontal_edge = ((inline_edge == kInlineStart) == IsLtr(direction))
+      horizontal_edge = ((inline_edge == kInlineStart) == converter.IsLtr())
                             ? HorizontalEdge::kLeft
                             : HorizontalEdge::kRight;
       vertical_edge = (block_edge == kBlockStart) ? VerticalEdge::kTop
@@ -140,28 +134,28 @@ inline NGPhysicalStaticPosition NGLogicalStaticPosition::ConvertToPhysical(
     case WritingMode::kSidewaysRl:
       horizontal_edge = (block_edge == kBlockEnd) ? HorizontalEdge::kLeft
                                                   : HorizontalEdge::kRight;
-      vertical_edge = ((inline_edge == kInlineStart) == IsLtr(direction))
+      vertical_edge = ((inline_edge == kInlineStart) == converter.IsLtr())
                           ? VerticalEdge::kTop
                           : VerticalEdge::kBottom;
       break;
     case WritingMode::kVerticalLr:
       horizontal_edge = (block_edge == kBlockStart) ? HorizontalEdge::kLeft
                                                     : HorizontalEdge::kRight;
-      vertical_edge = ((inline_edge == kInlineStart) == IsLtr(direction))
+      vertical_edge = ((inline_edge == kInlineStart) == converter.IsLtr())
                           ? VerticalEdge::kTop
                           : VerticalEdge::kBottom;
       break;
     case WritingMode::kSidewaysLr:
       horizontal_edge = (block_edge == kBlockStart) ? HorizontalEdge::kLeft
                                                     : HorizontalEdge::kRight;
-      vertical_edge = ((inline_edge == kInlineEnd) == IsLtr(direction))
+      vertical_edge = ((inline_edge == kInlineEnd) == converter.IsLtr())
                           ? VerticalEdge::kTop
                           : VerticalEdge::kBottom;
       break;
   }
 
   // Adjust for uncommon "center" static-positions.
-  switch (writing_mode) {
+  switch (converter.GetWritingMode()) {
     case WritingMode::kHorizontalTb:
       horizontal_edge = (inline_edge == kInlineCenter)
                             ? HorizontalEdge::kHorizontalCenter

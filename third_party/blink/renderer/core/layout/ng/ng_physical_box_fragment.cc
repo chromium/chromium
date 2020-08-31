@@ -162,12 +162,13 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
     : mathml_paint_info(std::move(builder->mathml_paint_info_)) {
   oof_positioned_fragmentainer_descendants.ReserveCapacity(
       builder->oof_positioned_fragmentainer_descendants_.size());
+  const WritingModeConverter converter(
+      {builder->Style().GetWritingMode(), builder->Direction()}, size);
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
     oof_positioned_fragmentainer_descendants.emplace_back(
         descendant.node,
-        descendant.static_position.ConvertToPhysical(
-            builder->Style().GetWritingMode(), builder->Direction(), size),
+        descendant.static_position.ConvertToPhysical(converter),
         descendant.inline_container,
         descendant.fragmentainer_consumed_block_size,
         descendant.containing_block_offset.ConvertToPhysical(

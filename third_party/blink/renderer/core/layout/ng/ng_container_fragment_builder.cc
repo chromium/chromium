@@ -40,10 +40,10 @@ void NGContainerFragmentBuilder::PropagateChildData(
     const LogicalOffset& child_offset,
     const LayoutInline* inline_container) {
   // Collect the child's out of flow descendants.
+  const WritingModeConverter converter(GetWritingDirection(), child.Size());
   for (const auto& descendant : child.OutOfFlowPositionedDescendants()) {
     NGLogicalStaticPosition static_position =
-        descendant.static_position.ConvertToLogical(GetWritingMode(),
-                                                    Direction(), child.Size());
+        descendant.static_position.ConvertToLogical(converter);
     static_position.offset += child_offset;
 
     const LayoutInline* new_inline_container = descendant.inline_container;
@@ -66,22 +66,21 @@ void NGContainerFragmentBuilder::PropagateChildData(
     if (fragment->HasOutOfFlowPositionedFragmentainerDescendants()) {
       const auto& out_of_flow_fragmentainer_descendants =
           fragment->OutOfFlowPositionedFragmentainerDescendants();
-
+      const WritingModeConverter empty_outer_size(GetWritingDirection(),
+                                                  PhysicalSize());
       for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
         const NGPhysicalContainerFragment* containing_block_fragment =
             descendant.containing_block_fragment.get();
         if (!containing_block_fragment)
           containing_block_fragment = fragment;
 
-        LogicalOffset containing_block_offset =
-            descendant.containing_block_offset.ConvertToLogical(
-                GetWritingMode(), Direction(), child.Size(), PhysicalSize());
+        LogicalOffset containing_block_offset = converter.ToLogical(
+            descendant.containing_block_offset, PhysicalSize());
         if (!child.IsFragmentainerBox())
           containing_block_offset.block_offset += child_offset.block_offset;
 
         NGLogicalStaticPosition static_position =
-            descendant.static_position.ConvertToLogical(
-                GetWritingMode(), Direction(), PhysicalSize());
+            descendant.static_position.ConvertToLogical(empty_outer_size);
         oof_positioned_fragmentainer_descendants_.emplace_back(
             descendant.node, static_position, descendant.inline_container,
             /* needs_block_offset_adjustment */ false,

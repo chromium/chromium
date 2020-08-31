@@ -57,11 +57,12 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
   if (oof_positioned_descendants_) {
     oof_positioned_descendants_->ReserveCapacity(
         builder->oof_positioned_descendants_.size());
+    const WritingModeConverter converter(
+        {builder->Style().GetWritingMode(), builder->Direction()}, size);
     for (const auto& descendant : builder->oof_positioned_descendants_) {
       oof_positioned_descendants_->emplace_back(
           descendant.node,
-          descendant.static_position.ConvertToPhysical(
-              builder->Style().GetWritingMode(), builder->Direction(), size),
+          descendant.static_position.ConvertToPhysical(converter),
           descendant.inline_container);
     }
   }

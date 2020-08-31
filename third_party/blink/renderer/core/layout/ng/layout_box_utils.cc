@@ -152,10 +152,10 @@ NGLogicalStaticPosition LayoutBoxUtils::ComputeStaticPositionFromLegacy(
   // why we use |TextDirection::kLtr| for the first conversion.
   logical_static_position =
       logical_static_position
-          .ConvertToPhysical(container_writing_mode, TextDirection::kLtr,
-                             container_size)
-          .ConvertToLogical(container_writing_mode, container_direction,
-                            container_size);
+          .ConvertToPhysical(
+              {{container_writing_mode, TextDirection::kLtr}, container_size})
+          .ConvertToLogical(
+              {{container_writing_mode, container_direction}, container_size});
 
   // Finally we shift the static-position from being relative to the
   // padding-box, to the border-box.
