@@ -68,10 +68,10 @@ static_assert(
 namespace test_attributes_v8_internal {
 
 static void LenientThisLongAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  // [LenientThis]
-  // Make sure that info.Holder() really points to an instance if [LenientThis].
+  // [LegacyLenientThis]
+  // Make sure that info.Holder() really points to an instance if [LegacyLenientThis].
   if (!V8TestAttributes::HasInstance(info.Holder(), info.GetIsolate()))
-    return; // Return silently because of [LenientThis].
+    return; // Return silently because of [LegacyLenientThis].
 
   v8::Local<v8::Object> holder = info.Holder();
 
@@ -103,10 +103,10 @@ static void StringPromiseAttributeAttributeGetter(const v8::FunctionCallbackInfo
 }
 
 static void LenientThisStringPromiseAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  // [LenientThis]
-  // Make sure that info.Holder() really points to an instance if [LenientThis].
+  // [LegacyLenientThis]
+  // Make sure that info.Holder() really points to an instance if [LegacyLenientThis].
   if (!V8TestAttributes::HasInstance(info.Holder(), info.GetIsolate()))
-    return; // Return silently because of [LenientThis].
+    return; // Return silently because of [LegacyLenientThis].
 
   v8::Local<v8::Object> holder = info.Holder();
 

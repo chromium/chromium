@@ -64,6 +64,7 @@ HighEntropy=|Direct
 HTMLConstructor
 ImmutablePrototype
 ImplementedAs=*
+LegacyLenientThis
 LegacyOverrideBuiltins
 LegacyTreatAsPartialInterface
 LegacyTreatNonObjectAsNull
@@ -73,7 +74,6 @@ LegacyWindowAlias=*
 LegacyWindowAlias_Measure=|*
 LegacyWindowAlias_RuntimeEnabled=*
 LenientSetter
-LenientThis
 LogActivity=|GetterOnly|SetterOnly
 LogAllWorlds
 NewObject

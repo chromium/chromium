@@ -247,7 +247,7 @@ def attribute_context(interface, attribute, interfaces, component_info):
         'is_keep_alive_for_gc': keep_alive_for_gc,
         'is_lazy_data_attribute': is_lazy_data_attribute,
         'is_lenient_setter': is_lenient_setter,
-        'is_lenient_this': 'LenientThis' in extended_attributes,
+        'is_lenient_this': 'LegacyLenientThis' in extended_attributes,
         'is_nullable': idl_type.is_nullable,
         'is_explicit_nullable': idl_type.is_explicit_nullable,
         'is_named_constructor': is_named_constructor_attribute(attribute),

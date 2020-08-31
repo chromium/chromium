@@ -15,10 +15,10 @@ const v8::FunctionCallbackInfo<v8::Value>& info
   {%- endset %}
 
   {% if attribute.is_lenient_this %}
-  // [LenientThis]
-  // Make sure that info.Holder() really points to an instance if [LenientThis].
+  // [LegacyLenientThis]
+  // Make sure that info.Holder() really points to an instance if [LegacyLenientThis].
   if (!{{v8_class}}::HasInstance(info.Holder(), info.GetIsolate()))
-    return; // Return silently because of [LenientThis].
+    return; // Return silently because of [LegacyLenientThis].
   {% elif attribute.has_promise_type %}
   // This attribute returns a Promise.
   // Per https://heycam.github.io/webidl/#dfn-attribute-getter, all exceptions
@@ -345,10 +345,10 @@ static void {{attribute.camel_case_name}}AttributeSetter{{world_suffix}}(
   {%- endset %}
 
   {% if attribute.is_lenient_this %}
-  // [LenientThis]
-  // Make sure that info.Holder() really points to an instance if [LenientThis].
+  // [LegacyLenientThis]
+  // Make sure that info.Holder() really points to an instance if [LegacyLenientThis].
   if (!{{v8_class}}::HasInstance(holder, isolate))
-    return; // Return silently because of [LenientThis].
+    return; // Return silently because of [LegacyLenientThis].
   {% endif %}
 
   {% if not attribute.is_static and not attribute.is_replaceable and not attribute.is_put_forwards %}

@@ -6,19 +6,21 @@
 // https://heycam.github.io/webidl/#dfn-attribute-setter
 
 // This interface tests unique behaviors of getters and setters of specific
-// types, e.g. returning Promise<T>, having [LenientThis] or [LenientSetter].
+// types, e.g. returning Promise<T>, having [LegacyLenientThis] or
+// [LenientSetter].
 
 interface TestAttributes {
-    // [LenientThis] causes some V8 type checks to be bypassed; they are done
-    // on the Blink side instead and access exceptions just return undefined.
-    [LenientThis] readonly attribute long lenientThisLongAttribute;
+    // [LegacyLenientThis] causes some V8 type checks to be bypassed; they are
+    // done on the Blink side instead and access exceptions just return
+    // undefined.
+    [LegacyLenientThis] readonly attribute long lenientThisLongAttribute;
 
     // Promise types must turn exceptions into promise rejections.
     readonly attribute Promise<DOMString> stringPromiseAttribute;
 
-    // Mixing both should cause [LenientThis] to return without raising an
+    // Mixing both should cause [LegacyLenientThis] to return without raising an
     // exception if type checking fails.
-    [LenientThis] readonly attribute Promise<DOMString> lenientThisStringPromiseAttribute;
+    [LegacyLenientThis] readonly attribute Promise<DOMString> lenientThisStringPromiseAttribute;
 
     // [RaisesException] also creates an ExceptionState instance. Make sure it
     // is not declared twice.

@@ -135,7 +135,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [RaisesException] boolean queryCommandSupported(DOMString commandId);
     [RaisesException] DOMString queryCommandValue(DOMString commandId);
 
-    [LenientThis] attribute EventHandler onreadystatechange;
+    [LegacyLenientThis] attribute EventHandler onreadystatechange;
 
     // HTML obsolete features
     // https://html.spec.whatwg.org/C/#Document-partial

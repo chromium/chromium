@@ -842,10 +842,10 @@ def make_check_receiver(cg_context):
     if cg_context.member_like.is_static:
         return None
 
-    if (cg_context.attribute
-            and "LenientThis" in cg_context.attribute.extended_attributes):
+    if (cg_context.attribute and
+            "LegacyLenientThis" in cg_context.attribute.extended_attributes):
         return SequenceNode([
-            T("// [LenientThis]"),
+            T("// [LegacyLenientThis]"),
             CxxUnlikelyIfNode(
                 cond="!${class_name}::HasInstance(${isolate}, ${v8_receiver})",
                 body=T("return;")),
@@ -4363,7 +4363,7 @@ def _make_property_entry_check_cross_origin_access(property_,
 
 
 def _make_property_entry_check_receiver(property_):
-    if ("LenientThis" in property_.extended_attributes
+    if ("LegacyLenientThis" in property_.extended_attributes
             or (isinstance(property_, web_idl.Attribute)
                 and property_.idl_type.unwrap().is_promise)
             or (isinstance(property_, web_idl.OverloadGroup)

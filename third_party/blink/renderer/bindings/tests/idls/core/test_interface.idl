@@ -129,7 +129,7 @@ typedef [StringContext=TrustedScriptURL] USVString TrustedScriptURLString;
 
     iterable<ByteString, long>;
 
-    [LenientThis] attribute any lenientThisAttribute;
+    [LegacyLenientThis] attribute any lenientThisAttribute;
 
     [Affects=Nothing] void sideEffectFreeMethod();
     [Affects=Nothing] attribute boolean attributeWithSideEffectFreeGetter;

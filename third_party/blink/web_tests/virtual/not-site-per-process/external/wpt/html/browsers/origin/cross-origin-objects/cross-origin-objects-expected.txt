@@ -87,8 +87,8 @@ PASS Resolving a promise with a cross-origin window with a 'then' subframe shoul
 PASS Resolving a promise with a cross-origin location should work (cross-origin)
 PASS Resolving a promise with a cross-origin location should work (same-origin + document.domain)
 PASS Resolving a promise with a cross-origin location should work (cross-site)
-PASS LenientThis behavior (cross-origin)
-PASS LenientThis behavior (same-origin + document.domain)
-PASS LenientThis behavior (cross-site)
+PASS LegacyLenientThis behavior (cross-origin)
+PASS LegacyLenientThis behavior (same-origin + document.domain)
+PASS LegacyLenientThis behavior (cross-site)
 Harness: the test ran to completion.
 

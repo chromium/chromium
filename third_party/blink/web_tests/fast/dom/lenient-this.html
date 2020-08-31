@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<title>[LenientThis] test</title>
+<title>[LegacyLenientThis] test</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
 test(function() {
-  // GlobalEventHandlers.onmouseenter is [LenientThis].
+  // GlobalEventHandlers.onmouseenter is [LegacyLenientThis].
   assert_equals(document.onmouseenter, null, "|this| is an appropriate object.");
   assert_equals(Document.prototype.onmouseenter, undefined, "|this| is not an appropriate object.");
   Document.prototype.onmouseenter = 'foo'; // must not throw.
   assert_equals(Document.prototype.onmouseenter, undefined, "the value must not change.");
 
-  // GlobalEventHandlers.onmousedown is NOT [LenientThis].
+  // GlobalEventHandlers.onmousedown is NOT [LegacyLenientThis].
   assert_equals(document.onmousedown, null, "|this| is an appropriate object.");
   assert_throws_js(TypeError, function() {
     Document.prototype.onmousedown;
@@ -18,7 +18,7 @@ test(function() {
   assert_throws_js(TypeError, function() {
     Document.prototype.onmousedown = 'foo';
   }, "Document.prototype is invalid as |this|.");
-}, "Test [LenientThis] and non-[LenientThis].");
+}, "Test [LegacyLenientThis] and non-[LegacyLenientThis].");
 
 test(function() {
   var noop = function() {};

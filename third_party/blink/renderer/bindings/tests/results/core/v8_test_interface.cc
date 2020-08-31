@@ -665,10 +665,10 @@ static void WindowExposedAttributeAttributeSetter(
 }
 
 static void LenientThisAttributeAttributeGetter(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  // [LenientThis]
-  // Make sure that info.Holder() really points to an instance if [LenientThis].
+  // [LegacyLenientThis]
+  // Make sure that info.Holder() really points to an instance if [LegacyLenientThis].
   if (!V8TestInterface::HasInstance(info.Holder(), info.GetIsolate()))
-    return; // Return silently because of [LenientThis].
+    return; // Return silently because of [LegacyLenientThis].
 
   v8::Local<v8::Object> holder = info.Holder();
 
@@ -685,10 +685,10 @@ static void LenientThisAttributeAttributeSetter(
   v8::Local<v8::Object> holder = info.Holder();
   ALLOW_UNUSED_LOCAL(holder);
 
-  // [LenientThis]
-  // Make sure that info.Holder() really points to an instance if [LenientThis].
+  // [LegacyLenientThis]
+  // Make sure that info.Holder() really points to an instance if [LegacyLenientThis].
   if (!V8TestInterface::HasInstance(holder, isolate))
-    return; // Return silently because of [LenientThis].
+    return; // Return silently because of [LegacyLenientThis].
 
   TestInterfaceImplementation* impl = V8TestInterface::ToImpl(holder);
 

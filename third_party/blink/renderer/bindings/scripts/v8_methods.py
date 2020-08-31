@@ -189,8 +189,8 @@ def method_context(interface, method, component_info, is_visible=True):
 
     is_raises_exception = 'RaisesException' in extended_attributes
 
-    if 'LenientThis' in extended_attributes:
-        raise Exception('[LenientThis] is not supported for operations.')
+    if 'LegacyLenientThis' in extended_attributes:
+        raise Exception('[LegacyLenientThis] is not supported for operations.')
 
     if has_extended_attribute_value(method, 'Affects', 'Nothing'):
         side_effect_type = 'V8DOMConfiguration::kHasNoSideEffect'
