@@ -26,11 +26,8 @@ const base::Feature kNetworkService {
       base::FEATURE_ENABLED_BY_DEFAULT
 };
 
-// Out of Blink CORS for browsers is launched at m79 (http://crbug.com/1001450),
-// and one for WebView will be at m81 (http://crbug.com/1035763).
-// The legacy CORS will be also maintained at least until m81 for enterprise
-// users. See https://sites.google.com/a/chromium.org/dev/Home/loading/oor-cors
-// for FYI Builders information.
+// FYI bots were just turned down, and we support only OOR-CORS enabled mode.
+// Legacy Blink CORS code will be removed quickly. (https://crbug.com/1053866)
 const base::Feature kOutOfBlinkCors{"OutOfBlinkCors",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -246,10 +243,6 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>
 // Enables the Content Security Policy Embedded Enforcement check out of blink
 const base::Feature kOutOfBlinkCSPEE{"OutOfBlinkCSPEE",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool ShouldEnableOutOfBlinkCorsForTesting() {
-  return base::FeatureList::IsEnabled(features::kOutOfBlinkCors);
-}
 
 const base::Feature kWebSocketReassembleShortMessages{
     "WebSocketReassembleShortMessages", base::FEATURE_ENABLED_BY_DEFAULT};

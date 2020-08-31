@@ -12,7 +12,6 @@
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -22,7 +21,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,11 +43,8 @@ const char kTestSubdomainHost[] = "subdomain.crossorigin.example.com";
 // Tests end to end functionality of CORS access origin allow lists.
 class CorsOriginAccessListBrowserTest : public InProcessBrowserTest {
  protected:
-  CorsOriginAccessListBrowserTest() {
-    // This test verifies if the CorsOriginAccessList works with OOR-CORS.
-    scoped_feature_list_.InitAndEnableFeature(
-        network::features::kOutOfBlinkCors);
-  }
+  CorsOriginAccessListBrowserTest() = default;
+
   std::unique_ptr<content::TitleWatcher> CreateWatcher() {
     // Register all possible result strings here.
     std::unique_ptr<content::TitleWatcher> watcher =
@@ -137,8 +132,6 @@ class CorsOriginAccessListBrowserTest : public InProcessBrowserTest {
   const base::string16 pass_string_ = base::ASCIIToUTF16("PASS");
   const base::string16 fail_string_ = base::ASCIIToUTF16("FAIL");
   const base::string16 script_ = base::ASCIIToUTF16("reason");
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(CorsOriginAccessListBrowserTest);
 };

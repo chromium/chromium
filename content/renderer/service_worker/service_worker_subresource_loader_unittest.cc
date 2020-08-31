@@ -15,9 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/common/service_worker/service_worker_utils.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/test/fake_network_url_loader_factory.h"
@@ -26,7 +24,6 @@
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_data_pipe_getter.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -1383,87 +1380,6 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, TooManyRedirects) {
   histogram_tester.ExpectUniqueSample(kHistogramSubresourceFetchEvent,
                                       blink::ServiceWorkerStatusCode::kOk,
                                       net::URLRequest::kMaxRedirects + 1);
-}
-
-// Test when the service worker responds with network fallback to CORS request.
-TEST_F(ServiceWorkerSubresourceLoaderTest, CorsFallbackResponseWithoutOORCors) {
-  base::test::ScopedFeatureList test_features;
-  test_features.InitAndDisableFeature(network::features::kOutOfBlinkCors);
-
-  fake_controller_.RespondWithFallback();
-
-  mojo::Remote<network::mojom::URLLoaderFactory> factory =
-      CreateSubresourceLoaderFactory();
-
-  struct TestCase {
-    network::mojom::RequestMode request_mode;
-    base::Optional<url::Origin> request_initiator;
-    bool expected_was_fallback_required_by_service_worker;
-  };
-  const TestCase kTests[] = {
-      {network::mojom::RequestMode::kSameOrigin, base::Optional<url::Origin>(),
-       false},
-      {network::mojom::RequestMode::kNoCors, base::Optional<url::Origin>(),
-       false},
-      {network::mojom::RequestMode::kCors, base::Optional<url::Origin>(), true},
-      {network::mojom::RequestMode::kCorsWithForcedPreflight,
-       base::Optional<url::Origin>(), true},
-      {network::mojom::RequestMode::kNavigate, base::Optional<url::Origin>(),
-       false},
-      {network::mojom::RequestMode::kSameOrigin,
-       url::Origin::Create(GURL("https://www.example.com/")), false},
-      {network::mojom::RequestMode::kNoCors,
-       url::Origin::Create(GURL("https://www.example.com/")), false},
-      {network::mojom::RequestMode::kCors,
-       url::Origin::Create(GURL("https://www.example.com/")), false},
-      {network::mojom::RequestMode::kCorsWithForcedPreflight,
-       url::Origin::Create(GURL("https://www.example.com/")), false},
-      {network::mojom::RequestMode::kNavigate,
-       url::Origin::Create(GURL("https://other.example.com/")), false},
-      {network::mojom::RequestMode::kSameOrigin,
-       url::Origin::Create(GURL("https://other.example.com/")), false},
-      {network::mojom::RequestMode::kNoCors,
-       url::Origin::Create(GURL("https://other.example.com/")), false},
-      {network::mojom::RequestMode::kCors,
-       url::Origin::Create(GURL("https://other.example.com/")), true},
-      {network::mojom::RequestMode::kCorsWithForcedPreflight,
-       url::Origin::Create(GURL("https://other.example.com/")), true},
-      {network::mojom::RequestMode::kNavigate,
-       url::Origin::Create(GURL("https://other.example.com/")), false}};
-
-  for (const auto& test : kTests) {
-    base::HistogramTester histogram_tester;
-
-    SCOPED_TRACE(
-        ::testing::Message()
-        << "fetch_request_mode: " << static_cast<int>(test.request_mode)
-        << " request_initiator: "
-        << (test.request_initiator ? test.request_initiator->Serialize()
-                                   : std::string("null")));
-    // Perform the request.
-    network::ResourceRequest request =
-        CreateRequest(GURL("https://www.example.com/foo.png"));
-    request.mode = test.request_mode;
-    request.request_initiator = test.request_initiator;
-    mojo::Remote<network::mojom::URLLoader> loader;
-    std::unique_ptr<network::TestURLLoaderClient> client;
-    StartRequest(factory, request, &loader, &client);
-    client->RunUntilComplete();
-
-    auto& info = client->response_head();
-    EXPECT_EQ(test.expected_was_fallback_required_by_service_worker,
-              info->was_fetched_via_service_worker);
-    EXPECT_EQ(test.expected_was_fallback_required_by_service_worker,
-              info->was_fallback_required_by_service_worker);
-    if (info->was_fallback_required_by_service_worker) {
-      EXPECT_EQ("HTTP/1.1 400 Service Worker Fallback Required",
-                info->headers->GetStatusLine());
-    }
-    histogram_tester.ExpectTotalCount(
-        "ServiceWorker.LoadTiming.Subresource."
-        "FetchHandlerEndToFallbackNetwork",
-        1);
-  }
 }
 
 TEST_F(ServiceWorkerSubresourceLoaderTest, FallbackWithRequestBody_String) {

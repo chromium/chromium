@@ -33,7 +33,6 @@
 #include "services/network/cors/cors_url_loader_factory.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -159,9 +158,6 @@ class CorsURLLoaderTest : public testing::Test {
  protected:
   // testing::Test implementation.
   void SetUp(network::mojom::NetworkContextParamsPtr context_params) {
-    feature_list_.InitWithFeatures(
-        {features::kOutOfBlinkCors, features::kNetworkService}, {});
-
     network_service_ = NetworkService::CreateForTesting();
 
     // Use a dummy CertVerifier that always passes cert verification, since
@@ -406,9 +402,6 @@ class CorsURLLoaderTest : public testing::Test {
   NetworkContext* network_context() { return network_context_.get(); }
 
  private:
-  // Testing instance to enable kOutOfBlinkCors feature.
-  base::test::ScopedFeatureList feature_list_;
-
   // Test environment.
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;

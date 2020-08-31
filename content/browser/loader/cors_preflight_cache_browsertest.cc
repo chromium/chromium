@@ -20,7 +20,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/cors/cors.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -111,15 +110,14 @@ IN_PROC_BROWSER_TEST_F(CorsPreflightCacheBrowserTest, Default) {
   EXPECT_EQ(2u, get_count());
 
   // Make another fetch request with reload cache mode, and it should not hit
-  // the preflight cache. Only OOR-CORS mode take the cache mode count in.
+  // the preflight cache.
   std::unique_ptr<TitleWatcher> watcher3 =
       std::make_unique<TitleWatcher>(shell()->web_contents(), kTestDone);
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(base::StringPrintf(
                    "%s?;%d;reload", kTestPath, cross_origin_port()))));
   EXPECT_EQ(kTestDone, watcher3->WaitAndGetTitle());
-  EXPECT_EQ(network::features::ShouldEnableOutOfBlinkCorsForTesting() ? 2u : 1u,
-            options_count());
+  EXPECT_EQ(2u, options_count());
   EXPECT_EQ(3u, get_count());
 }
 

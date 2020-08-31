@@ -882,7 +882,7 @@ void TestingProfile::SetCreationTimeForTesting(base::Time creation_time) {
 }
 
 bool TestingProfile::ShouldEnableOutOfBlinkCors() {
-  return network::features::ShouldEnableOutOfBlinkCorsForTesting();
+  return true;
 }
 
 PrefService* TestingProfile::GetOffTheRecordPrefs() {
