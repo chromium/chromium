@@ -61,6 +61,8 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/text_zoom/text_zoom_coordinator.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/translate/legacy_translate_infobar_coordinator.h"
@@ -183,6 +185,9 @@
     OverlayContainerCoordinator* infobarBannerOverlayContainerCoordinator;
 @property(nonatomic, strong)
     OverlayContainerCoordinator* infobarModalOverlayContainerCoordinator;
+
+// Coordinator for the thumb strip.
+@property(nonatomic, strong) ThumbStripCoordinator* thumbStripCoordinator;
 
 @end
 
@@ -403,6 +408,15 @@
     self.viewController.infobarModalOverlayContainerViewController =
         self.infobarModalOverlayContainerCoordinator.viewController;
   }
+
+  if (IsThumbStripEnabled()) {
+    self.thumbStripCoordinator = [[ThumbStripCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    [self.thumbStripCoordinator start];
+    self.viewController.thumbStripPanHandler =
+        self.thumbStripCoordinator.panHandler;
+  }
 }
 
 // Stops child coordinators.
@@ -462,6 +476,9 @@
 
   [self.infobarModalOverlayContainerCoordinator stop];
   self.infobarModalOverlayContainerCoordinator = nil;
+
+  [self.thumbStripCoordinator stop];
+  self.thumbStripCoordinator = nil;
 }
 
 #pragma mark - ActivityServiceCommands

@@ -9,6 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
@@ -64,6 +65,10 @@ class Browser;
 // Positioner for activity services attached to the toolbar.
 @property(nonatomic, readonly) id<ActivityServicePositioner>
     activityServicePositioner;
+
+// The thumb strip's pan gesture handler.
+@property(nonatomic, weak)
+    ViewRevealingVerticalPanHandler* thumbStripPanHandler;
 
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;

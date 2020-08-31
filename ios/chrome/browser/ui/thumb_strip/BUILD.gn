@@ -16,3 +16,16 @@ source_set("thumb_strip") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
+
+source_set("feature_flags") {
+  sources = [
+    "thumb_strip_feature.h",
+    "thumb_strip_feature.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/util",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

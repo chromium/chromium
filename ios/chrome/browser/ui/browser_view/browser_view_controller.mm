@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/infobars/infobar_container_coordinator.h"
@@ -117,6 +118,7 @@
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
 #import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_legacy_coordinator.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
@@ -329,6 +331,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      CaptivePortalDetectorTabHelperDelegate,
                                      CRWWebStateDelegate,
                                      CRWWebStateObserver,
+                                     FindBarPresentationDelegate,
                                      FullscreenUIElement,
                                      InfobarPositioner,
                                      KeyCommandsPlumbing,
@@ -345,11 +348,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      SigninPresenter,
                                      SnapshotGeneratorDelegate,
                                      TabStripPresentation,
-                                     FindBarPresentationDelegate,
                                      ToolbarHeightProviderForFullscreen,
-                                     WebStateListObserving,
                                      UIGestureRecognizerDelegate,
-                                     URLLoadingObserver> {
+                                     URLLoadingObserver,
+                                     ViewRevealingAnimatee,
+                                     WebStateListObserving> {
   // The dependency factory passed on initialization.  Used to vend objects used
   // by the BVC.
   BrowserViewControllerDependencyFactory* _dependencyFactory;
@@ -619,6 +622,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)displayWebState:(web::WebState*)webState;
 // Initializes the bookmark interaction controller if not already initialized.
 - (void)initializeBookmarkInteractionController;
+// Sets up the thumb strip.
+- (void)setUpThumbStrip;
 
 // UI Configuration, update and Layout
 // -----------------------------------
@@ -1430,6 +1435,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [tapRecognizer setDelegate:self];
   [tapRecognizer setCancelsTouchesInView:NO];
   [self.contentArea addGestureRecognizer:tapRecognizer];
+
+  if (IsThumbStripEnabled()) {
+    [self setUpThumbStrip];
+  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -1832,6 +1841,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)installFakeStatusBar {
+  if (IsThumbStripEnabled()) {
+    // A fake status bar on the browser view is not necessary when the thumb
+    // strip feature is enabled because the view behind the browser view already
+    // has a dark background. Adding a fake status bar would block the
+    // visibility of the thumb strip thumbnails when moving the browser view.
+    return;
+  }
   CGRect statusBarFrame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 0);
   _fakeStatusBarView = [[UIView alloc] initWithFrame:statusBarFrame];
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
@@ -1929,6 +1945,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.infobarContainerCoordinator.syncPresenter = self;
     [self.infobarContainerCoordinator start];
   }
+}
+
+// Sets up the thumb strip pan gesture handler.
+- (void)setUpThumbStrip {
+  [self.thumbStripPanHandler
+      addAnimatee:self.primaryToolbarCoordinator.animatee];
+  [self.thumbStripPanHandler addAnimatee:self];
+
+  self.primaryToolbarCoordinator.panGestureHandler = self.thumbStripPanHandler;
+  self.tabStripCoordinator.panGestureHandler = self.thumbStripPanHandler;
 }
 
 // Called by NSNotificationCenter when the view's window becomes key to account
@@ -2173,12 +2199,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       }
     }
 
-    // Add the primary toolbar.  On iPad, it should be behind the tab strip.
+    // Add the primary toolbar. On iPad, it should be in front of the tab strip
+    // because the tab strip slides behind it when showing the thumb strip.
     UIView* primaryToolbarView =
         self.primaryToolbarCoordinator.viewController.view;
     if (IsIPadIdiom()) {
       [self.view insertSubview:primaryToolbarView
-                  belowSubview:self.tabStripView];
+                  aboveSubview:self.tabStripView];
     } else {
       [self.view addSubview:primaryToolbarView];
     }
@@ -2694,6 +2721,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - ** Protocol Implementations and Helpers **
+
+#pragma mark - ViewRevealingAnimatee
+
+- (void)animateViewReveal:(BOOL)viewRevealed {
+  [self slideTabStripDown:!viewRevealed];
+}
 
 #pragma mark - BubblePresenterDelegate
 
@@ -4601,7 +4634,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   tabStripFrame.origin.y = self.headerOffset;
   tabStripFrame.size.width = CGRectGetWidth([self view].bounds);
   [self.tabStripView setFrame:tabStripFrame];
-  [[self view] addSubview:tabStripView];
+  // The tab strip should be behind the toolbar, because it slides behind the
+  // toolbar during the transition to the thumb strip.
+  [self.view insertSubview:tabStripView
+              belowSubview:self.primaryToolbarCoordinator.viewController.view];
+}
+
+- (void)slideTabStripDown:(BOOL)slide {
+  self.tabStripView.transform =
+      slide ? CGAffineTransformMakeTranslation(
+                  0, self.tabStripView.frame.size.height)
+            : CGAffineTransformIdentity;
 }
 
 #pragma mark - FindBarPresentationDelegate

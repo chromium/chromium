@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -150,7 +151,7 @@
   [self setUpProgressBar];
   [self setUpCollapsedToolbarButton];
   [self setUpSeparator];
-  if (IsIPadIdiom() && base::FeatureList::IsEnabled(kExpandedTabStrip)) {
+  if (IsThumbStripEnabled()) {
     [self setUpHandleBar];
   }
 

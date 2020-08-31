@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
+#import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 
 #include <ostream>
 
@@ -45,6 +46,12 @@
   // Let the system know that the child has changed so appearance updates can
   // be made.
   [self setNeedsStatusBarAppearanceUpdate];
+
+  if (IsThumbStripEnabled()) {
+    // The background needs to be clear to allow the thumb strip to be seen
+    // during the enter/exit thumb strip animation.
+    self.currentBVC.view.backgroundColor = [UIColor clearColor];
+  }
 
   DCHECK(self.currentBVC == bvc);
 }

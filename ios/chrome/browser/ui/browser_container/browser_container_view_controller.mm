@@ -95,6 +95,8 @@
   [self removeOldContentView];
   _contentView = contentView;
 
+  _contentView.clipsToBounds = YES;
+
   if (contentView)
     [self.view insertSubview:contentView atIndex:0];
 }
