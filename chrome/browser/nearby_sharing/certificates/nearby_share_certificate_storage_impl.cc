@@ -10,6 +10,7 @@
 
 #include "base/base64url.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -27,6 +28,89 @@
 #include "components/prefs/pref_service.h"
 
 namespace {
+
+// Compare to leveldb_proto::Enums::InitStatus. Using a separate enum so that
+// the values don't change.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum InitStatusMetric {
+  kOK = 0,
+  kNotInitialized = 1,
+  kError = 2,
+  kCorrupt = 3,
+  kInvalidOperation = 4,
+  kMaxValue = kInvalidOperation
+};
+
+void RecordInitializationSuccessRateMetric(bool success, size_t num_attempts) {
+  base::UmaHistogramBoolean(
+      "Nearby.Share.Certificates.Storage.InitializeSuccessRate", success);
+  if (success) {
+    base::UmaHistogramExactLinear(
+        "Nearby.Share.Certificates.Storage.InitializeAttemptCount",
+        num_attempts,
+        kNearbyShareCertificateStorageMaxNumInitializeAttempts + 1);
+  }
+}
+
+void RecordInitializationAttemptResultMetric(
+    leveldb_proto::Enums::InitStatus init_status) {
+  InitStatusMetric metric;
+  switch (init_status) {
+    case leveldb_proto::Enums::InitStatus::kOK:
+      metric = InitStatusMetric::kOK;
+      break;
+    case leveldb_proto::Enums::InitStatus::kNotInitialized:
+      metric = InitStatusMetric::kNotInitialized;
+      break;
+    case leveldb_proto::Enums::InitStatus::kError:
+      metric = InitStatusMetric::kError;
+      break;
+    case leveldb_proto::Enums::InitStatus::kCorrupt:
+      metric = InitStatusMetric::kCorrupt;
+      break;
+    case leveldb_proto::Enums::InitStatus::kInvalidOperation:
+      metric = InitStatusMetric::kInvalidOperation;
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      "Nearby.Share.Certificates.Storage.InitializeAttemptResult", metric);
+}
+
+void RecordReplacePublicCertificatesDestroySuccessRateMetric(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Share.Certificates.Storage."
+      "ReplacePublicCertificatesDestroySuccessRate",
+      success);
+}
+
+void RecordReplacePublicCertificatesUpdateEntriesSuccessRateMetric(
+    bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Share.Certificates.Storage."
+      "ReplacePublicCertificatesUpdateEntriesSuccessRate",
+      success);
+}
+
+void RecordAddPublicCertificatesSuccessRateMetric(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Share.Certificates.Storage.AddPublicCertificatesSuccessRate",
+      success);
+}
+
+void RecordRemoveExpiredPublicCertificatesSuccessMetric(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Share.Certificates.Storage."
+      "RemoveExpiredPublicCertificatesSuccessRate",
+      success);
+}
+
+void RecordClearPublicCertificatesSuccessRateMetric(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Share.Certificates.Storage.ClearPublicCertificatesSuccessRate",
+      success);
+}
+
 const base::FilePath::CharType kPublicCertificateDatabaseName[] =
     FILE_PATH_LITERAL("NearbySharePublicCertificateDatabase");
 
@@ -71,6 +155,7 @@ base::Time TimestampToTime(nearbyshare::proto::Timestamp timestamp) {
          base::TimeDelta::FromSeconds(timestamp.seconds()) +
          base::TimeDelta::FromNanoseconds(timestamp.nanos());
 }
+
 }  // namespace
 
 // static
@@ -174,6 +259,7 @@ void NearbyShareCertificateStorageImpl::OnDatabaseInitialized(
       FinishInitialization(false);
       break;
   }
+  RecordInitializationAttemptResultMetric(status);
 }
 
 void NearbyShareCertificateStorageImpl::FinishInitialization(bool success) {
@@ -185,6 +271,7 @@ void NearbyShareCertificateStorageImpl::FinishInitialization(bool success) {
     NS_LOG(ERROR) << __func__
                   << "Public certificate database initialization failed.";
   }
+  RecordInitializationSuccessRateMetric(success, num_initialize_attempts_);
 
   // We run deferred callbacks even if initialization failed not to cause
   // possible client-side blocks of next calls to the database.
@@ -213,6 +300,7 @@ void NearbyShareCertificateStorageImpl::OnDatabaseDestroyedReinitialize(
 void NearbyShareCertificateStorageImpl::OnDatabaseDestroyed(
     ResultCallback callback,
     bool success) {
+  RecordClearPublicCertificatesSuccessRateMetric(success);
   if (!success) {
     NS_LOG(ERROR) << __func__
                   << ": Failed to destroy public certificate database.";
@@ -234,6 +322,7 @@ void NearbyShareCertificateStorageImpl::
         std::unique_ptr<ExpirationList> expirations,
         ResultCallback callback,
         bool proceed) {
+  RecordReplacePublicCertificatesDestroySuccessRateMetric(proceed);
   if (!proceed) {
     std::move(callback).Run(false);
     return;
@@ -255,6 +344,7 @@ void NearbyShareCertificateStorageImpl::
         std::unique_ptr<ExpirationList> expirations,
         ResultCallback callback,
         bool proceed) {
+  RecordReplacePublicCertificatesUpdateEntriesSuccessRateMetric(proceed);
   if (!proceed) {
     NS_LOG(ERROR) << __func__ << ": Failed to replace public certificates.";
     std::move(callback).Run(false);
@@ -272,6 +362,7 @@ void NearbyShareCertificateStorageImpl::AddPublicCertificatesCallback(
     std::unique_ptr<ExpirationList> new_expirations,
     ResultCallback callback,
     bool proceed) {
+  RecordAddPublicCertificatesSuccessRateMetric(proceed);
   if (!proceed) {
     NS_LOG(ERROR) << __func__ << ": Failed to add public certificates.";
     std::move(callback).Run(false);
@@ -289,6 +380,7 @@ void NearbyShareCertificateStorageImpl::RemoveExpiredPublicCertificatesCallback(
     std::unique_ptr<base::flat_set<std::string>> ids_to_remove,
     ResultCallback callback,
     bool proceed) {
+  RecordRemoveExpiredPublicCertificatesSuccessMetric(proceed);
   if (!proceed) {
     NS_LOG(ERROR) << __func__
                   << ": Failed to remove expired public certificates.";

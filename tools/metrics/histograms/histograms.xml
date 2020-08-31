@@ -94518,6 +94518,130 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesCount"
+    units="certificates" expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    If the Nearby Share certificate manager successfully downloads public
+    certificates, then record the total number of certificates downloaded across
+    all pages.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesFailuePageCount"
+    units="pages" expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    If the Nearby Share certificate manager fails to download public
+    certificates, then record the page number of the page on which the failure
+    occurred.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesHttpResult"
+    enum="NearbyShareHttpResult" expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async ListPublicCertificates API call to the
+    Nearby Sharing server when the certificate manager periodically downloads
+    public certificates. Recorded when the async callback is invoked or when the
+    call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesSuccessPageCount"
+    units="pages" expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    If the Nearby Share certificate manager successfully downloads public
+    certificates, then record the number of pages downloaded by the RPC.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesSuccessRate"
+    enum="BooleanSuccess" expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether the Nearby Share certificate manager successfully downloaded
+    public certificates from the server and stored them in leveldb.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Certificates.Manager.GetDecryptedPublicCertificateResult"
+    enum="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult"
+    expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async GetDecryptedPublicCertificate call in
+    certificate manager.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Certificates.Storage.InitializeAttemptCount"
+    units="attempts" expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    If the Nearby Share certificate storage successfully initializes the public
+    certificate database, then record the number of attempts it took.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Certificates.Storage.InitializeAttemptResult"
+    enum="NearbyShareCertificateStorageInitializationResult"
+    expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    For individual initialization attempts of the Nearby Share certificate
+    storage public certificate database, record the init status returned by
+    leveldb_proto.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Certificates.Storage.{Operation}SuccessRate"
+    enum="BooleanSuccess" expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Record success rate of Nearby Share storage operation {Operation}.
+  </summary>
+  <token key="Operation">
+    <variant name="AddPublicCertificates" label="AddPublicCertificates"/>
+    <variant name="ClearPublicCertificates" label="ClearPublicCertificates"/>
+    <variant name="Initialize" label="Initialize"/>
+    <variant name="RemoveExpiredPublicCertificates"
+        label="RemoveExpiredPublicCertificates"/>
+    <variant name="ReplacePublicCertificatesDestroy"
+        label="ReplacePublicCertificatesDestroy"/>
+    <variant name="ReplacePublicCertificatesUpdateEntries"
+        label="ReplacePublicCertificatesUpdateEntries"/>
+  </token>
+</histogram>
+
+<histogram name="Nearby.Share.LocalDeviceData.DeviceDataUpdater.HttpResult"
+    enum="NearbyShareHttpResult" expires_after="2021-08-19">
+  <owner>cclem@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async UpdateDevice API call to the Nearby Sharing
+    server when the device data updater makes a request. Recorded when the async
+    callback is invoked or when the call times out.
+  </summary>
+</histogram>
+
 <histogram name="Net.AlternateProtocolBrokenLocation"
     enum="BrokenAlternateProtocolLocation" expires_after="2021-05-11">
   <owner>dschinazi@chromium.org</owner>

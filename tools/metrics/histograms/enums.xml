@@ -48514,6 +48514,32 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="Active network was unblocked"/>
 </enum>
 
+<enum name="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No Match"/>
+  <int value="2" label="Storage Failure"/>
+</enum>
+
+<enum name="NearbyShareCertificateStorageInitializationResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Not Initialized"/>
+  <int value="2" label="Error"/>
+  <int value="3" label="Corrupt"/>
+  <int value="4" label="Invalid Operation"/>
+</enum>
+
+<enum name="NearbyShareHttpResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Offline"/>
+  <int value="3" label="Endpoint Not Found"/>
+  <int value="4" label="Authentication Error"/>
+  <int value="5" label="Bad Request"/>
+  <int value="6" label="Response Malformed"/>
+  <int value="7" label="Internal Server Error"/>
+  <int value="8" label="Unknown"/>
+</enum>
+
 <enum name="NearOomDetectionEndReason">
   <obsolete>
     Removed in Feb 2020.

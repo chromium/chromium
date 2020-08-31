@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -39,6 +40,49 @@ constexpr std::array<NearbyShareVisibility, 2> kVisibilities = {
     NearbyShareVisibility::kAllContacts,
     NearbyShareVisibility::kSelectedContacts};
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum GetDecryptedPublicCertificateResult {
+  kSuccess = 0,
+  kNoMatch = 1,
+  kStorageFailure = 2,
+  kMaxValue = kStorageFailure
+};
+
+void RecordGetDecryptedPublicCertificateResultMetric(
+    GetDecryptedPublicCertificateResult result) {
+  base::UmaHistogramEnumeration(
+      "Nearby.Share.Certificates.Manager.GetDecryptedPublicCertificateResult",
+      result);
+}
+
+void RecordDownloadPublicCertificatesResultMetrics(bool success,
+                                                   NearbyShareHttpResult result,
+                                                   size_t page_number,
+                                                   size_t certificate_count) {
+  base::UmaHistogramBoolean(
+      "Nearby.Share.Certificates.Manager.DownloadPublicCertificatesSuccessRate",
+      success);
+  base::UmaHistogramEnumeration(
+      "Nearby.Share.Certificates.Manager.DownloadPublicCertificatesHttpResult",
+      result);
+  if (success) {
+    base::UmaHistogramExactLinear(
+        "Nearby.Share.Certificates.Manager."
+        "DownloadPublicCertificatesSuccessPageCount",
+        page_number, 20);
+    base::UmaHistogramCounts10000(
+        "Nearby.Share.Certificates.Manager."
+        "DownloadPublicCertificatesCount",
+        certificate_count);
+  } else {
+    base::UmaHistogramExactLinear(
+        "Nearby.Share.Certificates.Manager."
+        "DownloadPublicCertificatesFailuePageCount",
+        page_number, 20);
+  }
+}
+
 void TryDecryptPublicCertificates(
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key,
     NearbyShareCertificateManager::CertDecryptedCallback callback,
@@ -48,6 +92,8 @@ void TryDecryptPublicCertificates(
   if (!success || !public_certificates) {
     NS_LOG(ERROR) << __func__
                   << ": Failed to read public certificates from storage.";
+    RecordGetDecryptedPublicCertificateResultMetric(
+        GetDecryptedPublicCertificateResult::kStorageFailure);
     std::move(callback).Run(base::nullopt);
     return;
   }
@@ -60,6 +106,8 @@ void TryDecryptPublicCertificates(
       NS_LOG(VERBOSE) << __func__
                       << ": Successfully decrypted public certificate with ID "
                       << base::HexEncode(decrypted->id());
+      RecordGetDecryptedPublicCertificateResultMetric(
+          GetDecryptedPublicCertificateResult::kSuccess);
       std::move(callback).Run(std::move(decrypted));
       return;
     }
@@ -67,11 +115,9 @@ void TryDecryptPublicCertificates(
   NS_LOG(VERBOSE)
       << __func__
       << ": Metadata key could not decrypt any public certificates.";
+  RecordGetDecryptedPublicCertificateResultMetric(
+      GetDecryptedPublicCertificateResult::kNoMatch);
   std::move(callback).Run(base::nullopt);
-}
-
-void RecordResultMetrics(NearbyShareHttpResult result) {
-  // TODO(crbug.com/1105579): Record a histogram value for each result.
 }
 
 }  // namespace
@@ -156,7 +202,9 @@ NearbyShareCertificateManagerImpl::NearbyShareCertificateManagerImpl(
               base::BindRepeating(&NearbyShareCertificateManagerImpl::
                                       OnDownloadPublicCertificatesRequest,
                                   base::Unretained(this),
-                                  /*page_token=*/base::nullopt),
+                                  /*page_token=*/base::nullopt,
+                                  /*page_number=*/1,
+                                  /*certificate_count=*/0),
               clock_)),
       cert_store_(NearbyShareCertificateStorageImpl::Factory::Create(
           pref_service_,
@@ -361,7 +409,9 @@ void NearbyShareCertificateManagerImpl::OnLocalDeviceCertificateUploadFinished(
 }
 
 void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
-    base::Optional<std::string> page_token) {
+    base::Optional<std::string> page_token,
+    size_t page_number,
+    size_t certificate_count) {
   DCHECK(!client_);
 
   nearbyshare::proto::ListPublicCertificatesRequest request;
@@ -380,12 +430,14 @@ void NearbyShareCertificateManagerImpl::OnDownloadPublicCertificatesRequest(
   client_->ListPublicCertificates(
       request,
       base::BindOnce(&NearbyShareCertificateManagerImpl::OnRpcSuccess,
-                     base::Unretained(this)),
+                     base::Unretained(this), page_number, certificate_count),
       base::BindOnce(&NearbyShareCertificateManagerImpl::OnRpcFailure,
-                     base::Unretained(this)));
+                     base::Unretained(this), page_number, certificate_count));
 }
 
 void NearbyShareCertificateManagerImpl::OnRpcSuccess(
+    size_t page_number,
+    size_t certificate_count,
     const nearbyshare::proto::ListPublicCertificatesResponse& response) {
   std::vector<nearbyshare::proto::PublicCertificate> certs(
       response.public_certificates().begin(),
@@ -403,30 +455,40 @@ void NearbyShareCertificateManagerImpl::OnRpcSuccess(
   cert_store_->AddPublicCertificates(
       certs, base::BindOnce(
                  &NearbyShareCertificateManagerImpl::OnPublicCertificatesAdded,
-                 base::Unretained(this), page_token));
+                 base::Unretained(this), page_token, page_number,
+                 certificate_count + certs.size()));
 }
 
 void NearbyShareCertificateManagerImpl::OnRpcFailure(
+    size_t page_number,
+    size_t certificate_count,
     NearbyShareHttpError error) {
   client_.reset();
 
-  FinishDownloadPublicCertificates(/*success=*/false,
-                                   NearbyShareHttpErrorToResult(error));
+  FinishDownloadPublicCertificates(
+      /*success=*/false, NearbyShareHttpErrorToResult(error), page_number,
+      certificate_count);
 }
 
 void NearbyShareCertificateManagerImpl::OnPublicCertificatesAdded(
     base::Optional<std::string> page_token,
+    size_t page_number,
+    size_t certificate_count,
     bool success) {
   if (success && page_token) {
-    OnDownloadPublicCertificatesRequest(page_token);
+    OnDownloadPublicCertificatesRequest(page_token, page_number + 1,
+                                        certificate_count);
   } else {
-    FinishDownloadPublicCertificates(success, NearbyShareHttpResult::kSuccess);
+    FinishDownloadPublicCertificates(success, NearbyShareHttpResult::kSuccess,
+                                     page_number, certificate_count);
   }
 }
 
 void NearbyShareCertificateManagerImpl::FinishDownloadPublicCertificates(
     bool success,
-    NearbyShareHttpResult http_result) {
+    NearbyShareHttpResult http_result,
+    size_t page_number,
+    size_t certificate_count) {
   if (success) {
     NS_LOG(VERBOSE)
         << __func__
@@ -439,6 +501,7 @@ void NearbyShareCertificateManagerImpl::FinishDownloadPublicCertificates(
                   << ": Public certificates download failed with HTTP error: "
                   << http_result;
   }
-  RecordResultMetrics(http_result);
+  RecordDownloadPublicCertificatesResultMetrics(success, http_result,
+                                                page_number, certificate_count);
   download_public_certificates_scheduler_->HandleResult(success);
 }

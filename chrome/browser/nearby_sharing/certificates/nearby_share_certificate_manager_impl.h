@@ -119,14 +119,24 @@ class NearbyShareCertificateManagerImpl : public NearbyShareCertificateManager {
   void OnLocalDeviceCertificateUploadFinished(bool success);
 
   void OnDownloadPublicCertificatesRequest(
-      base::Optional<std::string> page_token);
+      base::Optional<std::string> page_token,
+      size_t page_number,
+      size_t certificate_count);
   void OnRpcSuccess(
+      size_t page_number,
+      size_t certificate_count,
       const nearbyshare::proto::ListPublicCertificatesResponse& response);
-  void OnRpcFailure(NearbyShareHttpError error);
+  void OnRpcFailure(size_t page_number,
+                    size_t certificate_count,
+                    NearbyShareHttpError error);
   void OnPublicCertificatesAdded(base::Optional<std::string> page_token,
+                                 size_t page_number,
+                                 size_t certificate_count,
                                  bool success);
   void FinishDownloadPublicCertificates(bool success,
-                                        NearbyShareHttpResult http_result);
+                                        NearbyShareHttpResult http_result,
+                                        size_t page_number,
+                                        size_t certificate_count);
 
   NearbyShareLocalDeviceDataManager* local_device_data_manager_ = nullptr;
   PrefService* pref_service_ = nullptr;
