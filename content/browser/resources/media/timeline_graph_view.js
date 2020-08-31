@@ -28,7 +28,7 @@ var TimelineGraphView = (function() {
   var TEXT_COLOR = '#000';
   var BACKGROUND_COLOR = '#FFF';
 
-  var MAX_DECIMAL_PRECISION = 2;
+  var MAX_DECIMAL_PRECISION = 3;
   /**
    * @constructor
    */
