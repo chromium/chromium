@@ -40,8 +40,15 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(AccessibilityIpcErrorBrowserTest);
 };
 
+// Failed on Android x86 in crbug.com/1123641.
+#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
+#define MAYBE_ResetBrowserAccessibilityManager \
+  DISABLED_WeeklyAggregateDataUseResetBrowserAccessibilityManager
+#else
+#define MAYBE_ResetBrowserAccessibilityManager WeeklyAggregateDataUse
+#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
-                       ResetBrowserAccessibilityManager) {
+                       MAYBE_ResetBrowserAccessibilityManager) {
   // Create a data url and load it.
   const char url_str[] =
       "data:text/html,"
