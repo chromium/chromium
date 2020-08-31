@@ -362,7 +362,7 @@ id<GREYMatcher> SearchIconButton() {
 
 - (void)verifyEmptyBackgroundAppears {
   id<GREYMatcher> emptyBackground =
-      grey_accessibilityID(base::FeatureList::IsEnabled(kIllustratedEmptyStates)
+      grey_accessibilityID([ChromeEarlGrey isIllustratedEmptyStatesEnabled]
                                ? kTableViewIllustratedEmptyViewID
                                : kBookmarkEmptyStateExplanatoryLabelIdentifier);
   [[EarlGrey selectElementWithMatcher:emptyBackground]
@@ -375,7 +375,7 @@ id<GREYMatcher> SearchIconButton() {
   id<GREYInteraction> searchBar =
       [EarlGrey selectElementWithMatcher:grey_accessibilityTrait(
                                              UIAccessibilityTraitSearchField)];
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
     // With the illustrated empty state, the search bar should be hidden.
     [searchBar assertWithMatcher:grey_nil()];
   } else {

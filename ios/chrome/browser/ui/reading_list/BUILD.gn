@@ -196,6 +196,7 @@ source_set("eg2_tests") {
     "//ios/web/public/navigation:navigation",
     "//net",
     "//net:test_support",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

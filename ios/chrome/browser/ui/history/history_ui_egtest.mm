@@ -583,7 +583,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
 
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
     // Toolbar should only contain CBD button and the background should contain
     // the Illustrated empty view
     [[EarlGrey selectElementWithMatcher:chrome_test_util::

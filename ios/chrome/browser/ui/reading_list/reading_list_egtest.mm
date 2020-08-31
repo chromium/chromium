@@ -36,6 +36,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -966,16 +967,43 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                   @"Unable to add Reading List entry.");
   }
 
-  // Delete them from the Reading List view.
   OpenReadingList();
-  [[EarlGrey selectElementWithMatcher:EmptyBackground()]
-      assertWithMatcher:grey_nil()];
+
+  // Make sure the Reading List view is not empty.
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kTableViewIllustratedEmptyViewID)]
+        assertWithMatcher:grey_nil()];
+    id<GREYMatcher> noReadingListMessageMatcher = grey_allOf(
+        grey_text(
+            l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_MESSAGE)),
+        grey_sufficientlyVisible(), nil);
+    [[EarlGrey selectElementWithMatcher:noReadingListMessageMatcher]
+        assertWithMatcher:grey_nil()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:EmptyBackground()]
+        assertWithMatcher:grey_nil()];
+  }
+
+  // Delete them from the Reading List view.
   TapToolbarButtonWithID(kReadingListToolbarEditButtonID);
   TapToolbarButtonWithID(kReadingListToolbarDeleteAllReadButtonID);
 
   // Verify the background string is displayed.
-  [[EarlGrey selectElementWithMatcher:EmptyBackground()]
-      assertWithMatcher:grey_notNil()];
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kTableViewIllustratedEmptyViewID)]
+        assertWithMatcher:grey_notNil()];
+    id<GREYMatcher> noReadingListMessageMatcher = grey_allOf(
+        grey_text(
+            l10n_util::GetNSString(IDS_IOS_READING_LIST_NO_ENTRIES_MESSAGE)),
+        grey_sufficientlyVisible(), nil);
+    [[EarlGrey selectElementWithMatcher:noReadingListMessageMatcher]
+        assertWithMatcher:grey_notNil()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:EmptyBackground()]
+        assertWithMatcher:grey_notNil()];
+  }
 }
 
 // Tests that the VC can be dismissed by swiping down.

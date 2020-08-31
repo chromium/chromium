@@ -523,6 +523,9 @@ id ExecuteJavaScript(NSString* javascript, NSError* __autoreleasing* out_error);
 // Returns whether the mobile version of the websites are requested by default.
 - (BOOL)isMobileModeByDefault WARN_UNUSED_RESULT;
 
+// Returns whether the illustrated empty stated feature is enabled.
+- (BOOL)isIllustratedEmptyStatesEnabled;
+
 #pragma mark - Popup Blocking
 
 // Gets the current value of the popup content setting preference for the

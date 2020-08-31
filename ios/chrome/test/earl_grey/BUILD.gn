@@ -224,6 +224,7 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/browser/ui/toolbar:eg_test_support+eg2",
     "//ios/testing:http_server_bundle_data",
     "//ios/testing:nserror_support",

@@ -254,7 +254,7 @@ id<GREYMatcher> TitleOfTestPage() {
           grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabelId(
                          IDS_IOS_RECENT_TABS_RECENTLY_CLOSED_EMPTY),
                      grey_sufficientlyVisible(), nil)];
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
     [detailTextCell assertWithMatcher:grey_notNil()];
   } else {
     [detailTextCell assertWithMatcher:grey_nil()];
@@ -272,7 +272,7 @@ id<GREYMatcher> TitleOfTestPage() {
               grey_accessibilityID(
                   kRecentTabsOtherDevicesIllustratedCellAccessibilityIdentifier),
               grey_sufficientlyVisible(), nil)];
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
+  if ([ChromeEarlGrey isIllustratedEmptyStatesEnabled]) {
     [illustratedCell assertWithMatcher:grey_notNil()];
   } else {
     [illustratedCell assertWithMatcher:grey_nil()];

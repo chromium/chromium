@@ -768,6 +768,10 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return webClientUserAgent == web::UserAgentType::MOBILE;
 }
 
++ (BOOL)isIllustratedEmptyStatesEnabled {
+  return base::FeatureList::IsEnabled(kIllustratedEmptyStates);
+}
+
 #pragma mark - ScopedBlockPopupsPref
 
 + (ContentSetting)popupPrefValue {
