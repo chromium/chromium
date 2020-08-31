@@ -482,13 +482,13 @@ TEST_F(DisplayTest, DisplayDamaged) {
                                 .AddRenderPass(kOutputRect, kDamageRect)
                                 .AddLatencyInfo(ui::LatencyInfo())
                                 .Build();
+    frame.metadata.latency_info.push_back(ui::LatencyInfo());
 
     support_->SubmitCompositorFrame(
         id_allocator_.GetCurrentLocalSurfaceIdAllocation().local_surface_id(),
         std::move(frame));
     EXPECT_TRUE(scheduler_->damaged());
 
-    frame.metadata.latency_info.push_back(ui::LatencyInfo());
     scheduler_->reset_swapped_for_test();
     display_->DrawAndSwap(base::TimeTicks::Now());
     EXPECT_TRUE(scheduler_->swapped());
