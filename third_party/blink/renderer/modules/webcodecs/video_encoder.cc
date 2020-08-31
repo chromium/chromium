@@ -477,6 +477,12 @@ void VideoEncoder::ProcessConfigure(Request* request) {
       break;
   }
 
+  if (!media_encoder_) {
+    // CreateAcceleratedVideoEncoder() can return a nullptr.
+    HandleError(DOMExceptionCode::kOperationError, "Encoder creation error.");
+    return;
+  }
+
   frame_size_ = gfx::Size(config->options.width, config->options.height);
 
   auto output_cb = WTF::BindRepeating(&VideoEncoder::MediaEncoderOutputCallback,
