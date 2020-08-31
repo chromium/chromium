@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.sync.settings;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -30,6 +32,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -50,11 +53,13 @@ import org.chromium.chrome.browser.signin.SigninUtils;
 import org.chromium.chrome.browser.signin.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -76,7 +81,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
                    PassphraseTypeDialogFragment.Listener, Preference.OnPreferenceChangeListener,
                    ProfileSyncService.SyncStateChangedListener,
                    SettingsActivity.OnBackPressedListener,
-                   SignOutDialogFragment.SignOutDialogListener {
+                   SignOutDialogFragment.SignOutDialogListener,
+                   SyncErrorCardPreference.SyncErrorCardPreferenceListener {
     private static final String IS_FROM_SIGNIN_SCREEN = "ManageSyncSettings.isFromSigninScreen";
     private static final String FRAGMENT_CANCEL_SYNC = "cancel_sync_dialog";
     private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
@@ -89,6 +95,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     @VisibleForTesting
     public static final String FRAGMENT_PASSPHRASE_TYPE = "password_type";
 
+    @VisibleForTesting
+    public static final String PREF_SYNC_ERROR_CARD_PREFERENCE = "sync_error_card";
     @VisibleForTesting
     public static final String PREF_SYNCING_CATEGORY = "syncing_category";
     @VisibleForTesting
@@ -127,6 +135,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     private boolean mIsFromSigninScreen;
 
+    private SyncErrorCardPreference mSyncErrorCardPreference;
     private PreferenceCategory mSyncingCategory;
 
     private ChromeSwitchPreference mSyncEverything;
@@ -170,6 +179,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         // TODO(https://crbug.com/1063982): Change accessibility text for Advanced Sync Flow.
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
+
+        mSyncErrorCardPreference =
+                (SyncErrorCardPreference) findPreference(PREF_SYNC_ERROR_CARD_PREFERENCE);
+        mSyncErrorCardPreference.setSyncErrorCardPreferenceListener(this);
 
         mSyncingCategory = (PreferenceCategory) findPreference(PREF_SYNCING_CATEGORY);
 
@@ -638,6 +651,67 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         }
         showCancelSyncDialog();
         return true;
+    }
+
+    @Override
+    public void onSyncErrorCardPrimaryButtonClicked() {
+        @SyncError
+        int syncError = mSyncErrorCardPreference.getSyncError();
+        Profile profile = Profile.getLastUsedRegularProfile();
+        final CoreAccountInfo primaryAccountInfo =
+                IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
+                        ConsentLevel.SYNC);
+        assert primaryAccountInfo != null;
+
+        switch (syncError) {
+            case SyncError.ANDROID_SYNC_DISABLED:
+                IntentUtils.safeStartActivity(
+                        getActivity(), new Intent(Settings.ACTION_SYNC_SETTINGS));
+                return;
+            case SyncError.AUTH_ERROR:
+                AccountManagerFacadeProvider.getInstance().updateCredentials(
+                        CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), getActivity(),
+                        null);
+                return;
+            case SyncError.CLIENT_OUT_OF_DATE:
+                // Opens the client in play store for update.
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("market://details?id="
+                        + ContextUtils.getApplicationContext().getPackageName()));
+                startActivity(intent);
+                return;
+            case SyncError.OTHER_ERRORS:
+                SignOutDialogFragment signOutFragment =
+                        SignOutDialogFragment.create(GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+                signOutFragment.setTargetFragment(this, 0);
+                signOutFragment.show(getParentFragmentManager(), SIGN_OUT_DIALOG_TAG);
+                return;
+            case SyncError.PASSPHRASE_REQUIRED:
+                displayPassphraseDialog();
+                return;
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                SyncSettingsUtils.openTrustedVaultKeyRetrievalDialog(
+                        this, primaryAccountInfo, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
+                return;
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+                mProfileSyncService.requestStart();
+                mProfileSyncService.setFirstSetupComplete(
+                        SyncFirstSetupCompleteSource.ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON);
+                return;
+            case SyncError.NO_ERROR:
+            default:
+                return;
+        }
+    }
+
+    @Override
+    public void onSyncErrorCardSecondaryButtonClicked() {
+        assert mSyncErrorCardPreference.getSyncError() == SyncError.SYNC_SETUP_INCOMPLETE;
+        IdentityServicesProvider.get()
+                .getSigninManager(Profile.getLastUsedRegularProfile())
+                .signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
+        getActivity().finish();
     }
 
     private void showCancelSyncDialog() {

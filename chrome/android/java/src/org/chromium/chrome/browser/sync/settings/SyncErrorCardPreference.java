@@ -114,7 +114,11 @@ public class SyncErrorCardPreference extends Preference
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .getPrimaryAccountInfo(ConsentLevel.SYNC));
-        assert signedInAccount != null : "There should be a signed in account";
+        // May happen if account is removed from the device while this screen is shown.
+        // ManageSyncSettings will take care of finishing the activity in such case.
+        if (signedInAccount == null) {
+            return;
+        }
 
         mProfileDataCache.update(Collections.singletonList(signedInAccount));
         Drawable accountImage =
