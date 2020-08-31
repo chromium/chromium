@@ -187,11 +187,88 @@ void SharingDialogView::Hide() {
   CloseBubble();
 }
 
+bool SharingDialogView::ShouldShowCloseButton() const {
+  return true;
+}
+
+base::string16 SharingDialogView::GetWindowTitle() const {
+  return data_.title;
+}
+
+void SharingDialogView::WindowClosing() {
+  if (data_.close_callback)
+    std::move(data_.close_callback).Run(this);
+}
+
+void SharingDialogView::WebContentsDestroyed() {
+  LocationBarBubbleDelegateView::WebContentsDestroyed();
+  // Call the close callback here already so we can log metrics for closed
+  // dialogs before the controller is destroyed.
+  WindowClosing();
+}
+
+gfx::Size SharingDialogView::CalculatePreferredSize() const {
+  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  return gfx::Size(width, GetHeightForWidth(width));
+}
+
+void SharingDialogView::AddedToWidget() {
+  views::BubbleFrameView* frame_view = GetBubbleFrameView();
+  if (frame_view && data_.header_icons) {
+    frame_view->SetHeaderView(
+        std::make_unique<HeaderImageView>(frame_view, *data_.header_icons));
+  }
+}
+
 void SharingDialogView::StyledLabelLinkClicked(views::StyledLabel* label,
                                                const gfx::Range& range,
                                                int event_flags) {
   std::move(data_.help_callback).Run(GetDialogType());
   CloseBubble();
+}
+
+void SharingDialogView::ButtonPressed(views::Button* sender,
+                                      const ui::Event& event) {
+  DCHECK(data_.device_callback);
+  DCHECK(data_.app_callback);
+  if (!sender || sender->tag() < 0)
+    return;
+  size_t index{sender->tag()};
+
+  if (index < data_.devices.size()) {
+    LogSharingSelectedDeviceIndex(data_.prefix, kSharingUiDialog, index);
+    std::move(data_.device_callback).Run(*data_.devices[index]);
+    CloseBubble();
+    return;
+  }
+
+  index -= data_.devices.size();
+
+  if (index < data_.apps.size()) {
+    LogSharingSelectedAppIndex(data_.prefix, kSharingUiDialog, index);
+    std::move(data_.app_callback).Run(data_.apps[index]);
+    CloseBubble();
+  }
+}
+
+// static
+views::BubbleDialogDelegateView* SharingDialogView::GetAsBubble(
+    SharingDialog* dialog) {
+  return static_cast<SharingDialogView*>(dialog);
+}
+
+// static
+views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
+    SharingDialog* dialog) {
+#if defined(OS_CHROMEOS)
+  if (!dialog) {
+    auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
+    if (bubble && bubble->icon_type() == PageActionIconType::kClickToCall)
+      return bubble;
+  }
+#endif
+  return static_cast<SharingDialogView*>(dialog);
 }
 
 SharingDialogType SharingDialogView::GetDialogType() const {
@@ -229,38 +306,6 @@ void SharingDialogView::Init() {
 
   if (GetWidget())
     SizeToContents();
-}
-
-void SharingDialogView::ButtonPressed(views::Button* sender,
-                                      const ui::Event& event) {
-  DCHECK(data_.device_callback);
-  DCHECK(data_.app_callback);
-  if (!sender || sender->tag() < 0)
-    return;
-  size_t index{sender->tag()};
-
-  if (index < data_.devices.size()) {
-    LogSharingSelectedDeviceIndex(data_.prefix, kSharingUiDialog, index);
-    std::move(data_.device_callback).Run(*data_.devices[index]);
-    CloseBubble();
-    return;
-  }
-
-  index -= data_.devices.size();
-
-  if (index < data_.apps.size()) {
-    LogSharingSelectedAppIndex(data_.prefix, kSharingUiDialog, index);
-    std::move(data_.app_callback).Run(data_.apps[index]);
-    CloseBubble();
-  }
-}
-
-void SharingDialogView::AddedToWidget() {
-  views::BubbleFrameView* frame_view = GetBubbleFrameView();
-  if (frame_view && data_.header_icons) {
-    frame_view->SetHeaderView(
-        std::make_unique<HeaderImageView>(frame_view, *data_.header_icons));
-  }
 }
 
 void SharingDialogView::InitListView() {
@@ -345,49 +390,4 @@ void SharingDialogView::InitErrorView() {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
   AddChildView(std::move(label));
-}
-
-gfx::Size SharingDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-bool SharingDialogView::ShouldShowCloseButton() const {
-  return true;
-}
-
-base::string16 SharingDialogView::GetWindowTitle() const {
-  return data_.title;
-}
-
-void SharingDialogView::WebContentsDestroyed() {
-  LocationBarBubbleDelegateView::WebContentsDestroyed();
-  // Call the close callback here already so we can log metrics for closed
-  // dialogs before the controller is destroyed.
-  WindowClosing();
-}
-
-void SharingDialogView::WindowClosing() {
-  if (data_.close_callback)
-    std::move(data_.close_callback).Run(this);
-}
-
-// static
-views::BubbleDialogDelegateView* SharingDialogView::GetAsBubble(
-    SharingDialog* dialog) {
-  return static_cast<SharingDialogView*>(dialog);
-}
-
-// static
-views::BubbleDialogDelegateView* SharingDialogView::GetAsBubbleForClickToCall(
-    SharingDialog* dialog) {
-#if defined(OS_CHROMEOS)
-  if (!dialog) {
-    auto* bubble = IntentPickerBubbleView::intent_picker_bubble();
-    if (bubble && bubble->icon_type() == PageActionIconType::kClickToCall)
-      return bubble;
-  }
-#endif
-  return static_cast<SharingDialogView*>(dialog);
 }

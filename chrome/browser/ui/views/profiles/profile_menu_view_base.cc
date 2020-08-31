@@ -431,6 +431,19 @@ void BuildProfileBackgroundContainer(
 
 // ProfileMenuViewBase ---------------------------------------------------------
 
+ProfileMenuViewBase::EditButtonParams::EditButtonParams(
+    const gfx::VectorIcon* edit_icon,
+    const base::string16& edit_tooltip_text,
+    base::RepeatingClosure edit_action)
+    : edit_icon(edit_icon),
+      edit_tooltip_text(edit_tooltip_text),
+      edit_action(edit_action) {}
+
+ProfileMenuViewBase::EditButtonParams::~EditButtonParams() = default;
+
+ProfileMenuViewBase::EditButtonParams::EditButtonParams(
+    const EditButtonParams&) = default;
+
 // static
 void ProfileMenuViewBase::ShowBubble(
     profiles::BubbleViewMode view_mode,
@@ -472,19 +485,6 @@ void ProfileMenuViewBase::Hide() {
 ProfileMenuViewBase* ProfileMenuViewBase::GetBubbleForTesting() {
   return g_profile_bubble_;
 }
-
-ProfileMenuViewBase::EditButtonParams::EditButtonParams(
-    const gfx::VectorIcon* edit_icon,
-    const base::string16& edit_tooltip_text,
-    base::RepeatingClosure edit_action)
-    : edit_icon(edit_icon),
-      edit_tooltip_text(edit_tooltip_text),
-      edit_action(edit_action) {}
-
-ProfileMenuViewBase::EditButtonParams::~EditButtonParams() = default;
-
-ProfileMenuViewBase::EditButtonParams::EditButtonParams(
-    const EditButtonParams&) = default;
 
 ProfileMenuViewBase::ProfileMenuViewBase(views::Button* anchor_button,
                                          Browser* browser)
@@ -831,58 +831,6 @@ void ProfileMenuViewBase::RecordClick(ActionableItem item) {
   base::UmaHistogramEnumeration("Profile.Menu.ClickedActionableItem", item);
 }
 
-ax::mojom::Role ProfileMenuViewBase::GetAccessibleWindowRole() {
-  // Return |ax::mojom::Role::kDialog| which will make screen readers announce
-  // the following in the listed order:
-  // the title of the dialog, labels (if any), the focused View within the
-  // dialog (if any)
-  return ax::mojom::Role::kDialog;
-}
-
-void ProfileMenuViewBase::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DialogBackground)));
-  UpdateSyncInfoContainerBackground();
-}
-
-bool ProfileMenuViewBase::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
-    const content::ContextMenuParams& params) {
-  // Suppresses the context menu because some features, such as inspecting
-  // elements, are not appropriate in a bubble.
-  return true;
-}
-
-void ProfileMenuViewBase::Init() {
-  Reset();
-  BuildMenu();
-}
-
-void ProfileMenuViewBase::WindowClosing() {
-  DCHECK_EQ(g_profile_bubble_, this);
-  if (anchor_button())
-    anchor_button()->AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
-  g_profile_bubble_ = nullptr;
-}
-
-void ProfileMenuViewBase::ButtonPressed(views::Button* button,
-                                        const ui::Event& event) {
-  OnClick(button);
-}
-
-void ProfileMenuViewBase::StyledLabelLinkClicked(views::StyledLabel* link,
-                                                 const gfx::Range& range,
-                                                 int event_flags) {
-  OnClick(link);
-}
-
-void ProfileMenuViewBase::OnClick(views::View* clickable_view) {
-  DCHECK(!click_actions_[clickable_view].is_null());
-  signin_ui_util::RecordProfileMenuClick(browser()->profile());
-  click_actions_[clickable_view].Run();
-}
-
 int ProfileMenuViewBase::GetMaxHeight() const {
   gfx::Rect anchor_rect = GetAnchorRect();
   gfx::Rect screen_space =
@@ -963,6 +911,63 @@ void ProfileMenuViewBase::Reset() {
   layout->AddView(std::move(scroll_view));
 }
 
+void ProfileMenuViewBase::FocusButtonOnKeyboardOpen() {
+  if (first_profile_button_)
+    first_profile_button_->RequestFocus();
+}
+
+void ProfileMenuViewBase::Init() {
+  Reset();
+  BuildMenu();
+}
+
+void ProfileMenuViewBase::WindowClosing() {
+  DCHECK_EQ(g_profile_bubble_, this);
+  if (anchor_button())
+    anchor_button()->AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+  g_profile_bubble_ = nullptr;
+}
+
+void ProfileMenuViewBase::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
+      ui::NativeTheme::kColorId_DialogBackground)));
+  UpdateSyncInfoContainerBackground();
+}
+
+ax::mojom::Role ProfileMenuViewBase::GetAccessibleWindowRole() {
+  // Return |ax::mojom::Role::kDialog| which will make screen readers announce
+  // the following in the listed order:
+  // the title of the dialog, labels (if any), the focused View within the
+  // dialog (if any)
+  return ax::mojom::Role::kDialog;
+}
+
+bool ProfileMenuViewBase::HandleContextMenu(
+    content::RenderFrameHost* render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Suppresses the context menu because some features, such as inspecting
+  // elements, are not appropriate in a bubble.
+  return true;
+}
+
+void ProfileMenuViewBase::ButtonPressed(views::Button* button,
+                                        const ui::Event& event) {
+  OnClick(button);
+}
+
+void ProfileMenuViewBase::StyledLabelLinkClicked(views::StyledLabel* link,
+                                                 const gfx::Range& range,
+                                                 int event_flags) {
+  OnClick(link);
+}
+
+void ProfileMenuViewBase::OnClick(views::View* clickable_view) {
+  DCHECK(!click_actions_[clickable_view].is_null());
+  signin_ui_util::RecordProfileMenuClick(browser()->profile());
+  click_actions_[clickable_view].Run();
+}
+
 void ProfileMenuViewBase::RegisterClickAction(views::View* clickable_view,
                                               base::RepeatingClosure action) {
   DCHECK(click_actions_.count(clickable_view) == 0);
@@ -988,9 +993,4 @@ void ProfileMenuViewBase::UpdateSyncInfoContainerBackground() {
       GetNativeTheme()->GetSystemColor(bg_color),
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::EMPHASIS_HIGH)));
-}
-
-void ProfileMenuViewBase::FocusButtonOnKeyboardOpen() {
-  if (first_profile_button_)
-    first_profile_button_->RequestFocus();
 }
