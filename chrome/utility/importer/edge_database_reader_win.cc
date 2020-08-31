@@ -230,6 +230,12 @@ bool EdgeDatabaseReader::OpenDatabase(const base::string16& database_file) {
                                             JET_paramLogFilePath, 0,
                                             log_folder_.c_str())))
       return false;
+    // Set location of checkpoint file "edb.chk", which stores persistent state.
+    if (!SetLastError(JetSetSystemParameter(&instance_id_, JET_sesidNil,
+                                            JET_paramSystemPath, 0,
+                                            log_folder_.c_str()))) {
+      return false;
+    }
   } else {
     if (!SetLastError(JetSetSystemParameter(&instance_id_, JET_sesidNil,
                                           JET_paramRecovery, 0, L"Off")))
