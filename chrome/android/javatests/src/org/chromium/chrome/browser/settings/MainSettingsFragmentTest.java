@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
@@ -258,10 +259,20 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SAFETY_CHECK_ANDROID)
+    @EnableFeatures({ChromeFeatureList.SAFETY_CHECK_ANDROID, ChromeFeatureList.PASSWORD_CHECK})
     public void testSafetyCheckFlagOn() {
         launchSettingsActivity();
         assertSettingsExists(MainSettings.PREF_SAFETY_CHECK, SafetyCheckSettingsFragment.class);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SAFETY_CHECK_ANDROID)
+    @DisableFeatures(ChromeFeatureList.PASSWORD_CHECK)
+    public void testSafetyCheckWithoutPasswordCheck() {
+        launchSettingsActivity();
+        Assert.assertNull("Safety check section should be hidden",
+                mMainSettings.findPreference(MainSettings.PREF_SAFETY_CHECK));
     }
 
     @Test
