@@ -203,8 +203,8 @@ bool WebAppMigrationManager::CanMigrateBookmarkApp(const AppId& app_id) const {
     return false;
   }
 
-  GURL launch_url = bookmark_app_registrar_.GetAppLaunchURL(app_id);
-  return GenerateAppIdFromURL(launch_url) == app_id;
+  GURL start_url = bookmark_app_registrar_.GetAppLaunchURL(app_id);
+  return GenerateAppIdFromURL(start_url) == app_id;
 }
 
 std::unique_ptr<WebApp> WebAppMigrationManager::MigrateBookmarkApp(
@@ -215,7 +215,7 @@ std::unique_ptr<WebApp> WebAppMigrationManager::MigrateBookmarkApp(
 
   web_app->SetName(bookmark_app_registrar_.GetAppShortName(app_id));
   web_app->SetDescription(bookmark_app_registrar_.GetAppDescription(app_id));
-  web_app->SetLaunchUrl(bookmark_app_registrar_.GetAppLaunchURL(app_id));
+  web_app->SetStartUrl(bookmark_app_registrar_.GetAppLaunchURL(app_id));
   web_app->SetLastLaunchTime(
       bookmark_app_registrar_.GetAppLastLaunchTime(app_id));
   web_app->SetInstallTime(bookmark_app_registrar_.GetAppInstallTime(app_id));

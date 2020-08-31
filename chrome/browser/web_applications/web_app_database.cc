@@ -92,11 +92,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   auto local_data = std::make_unique<WebAppProto>();
 
   // Required fields:
-  const GURL launch_url = web_app.launch_url();
-  DCHECK(!launch_url.is_empty() && launch_url.is_valid());
+  const GURL start_url = web_app.start_url();
+  DCHECK(!start_url.is_empty() && start_url.is_valid());
 
   DCHECK(!web_app.app_id().empty());
-  DCHECK_EQ(web_app.app_id(), GenerateAppIdFromURL(launch_url));
+  DCHECK_EQ(web_app.app_id(), GenerateAppIdFromURL(start_url));
 
   // Set sync data to sync proto.
   *(local_data->mutable_sync_data()) = WebAppToSyncProto(web_app);
@@ -248,7 +248,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   const AppId app_id = GenerateAppIdFromURL(start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->SetLaunchUrl(start_url);
+  web_app->SetStartUrl(start_url);
 
   // Required fields:
   if (!local_data.has_sources()) {

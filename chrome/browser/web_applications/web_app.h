@@ -43,7 +43,7 @@ class WebApp {
   // UTF8 encoded long application description (a full application name).
   const std::string& description() const { return description_; }
 
-  const GURL& launch_url() const { return launch_url_; }
+  const GURL& start_url() const { return start_url_; }
   const GURL& scope() const { return scope_; }
 
   const base::Optional<SkColor>& theme_color() const { return theme_color_; }
@@ -168,7 +168,7 @@ class WebApp {
 
   void SetName(const std::string& name);
   void SetDescription(const std::string& description);
-  void SetLaunchUrl(const GURL& launch_url);
+  void SetStartUrl(const GURL& launch_url);
   void SetScope(const GURL& scope);
   void SetThemeColor(base::Optional<SkColor> theme_color);
   void SetBackgroundColor(base::Optional<SkColor> background_color);
@@ -215,8 +215,8 @@ class WebApp {
 
   std::string name_;
   std::string description_;
-  GURL launch_url_;
-  // TODO(loyso): Implement IsValid() function that verifies that the launch_url
+  GURL start_url_;
+  // TODO(loyso): Implement IsValid() function that verifies that the start_url
   // is within the scope.
   GURL scope_;
   base::Optional<SkColor> theme_color_;

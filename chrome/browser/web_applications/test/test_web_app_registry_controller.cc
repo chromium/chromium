@@ -65,7 +65,7 @@ void TestWebAppRegistryController::ApplySyncChanges_AddApps(
 
     auto web_app_server_data = std::make_unique<WebApp>(app_id);
     web_app_server_data->SetName("WebApp name");
-    web_app_server_data->SetLaunchUrl(app_url);
+    web_app_server_data->SetStartUrl(app_url);
     web_app_server_data->SetUserDisplayMode(DisplayMode::kStandalone);
 
     WebApp::SyncFallbackData sync_fallback_data;

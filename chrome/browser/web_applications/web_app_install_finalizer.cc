@@ -194,7 +194,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
     // There is an existing app from other source(s). Preserve
     // |user_display_mode| and any user-controllable fields here, do not modify
     // them. Prepare copy-on-write:
-    DCHECK_EQ(web_app_info.app_url, existing_web_app->launch_url());
+    DCHECK_EQ(web_app_info.app_url, existing_web_app->start_url());
     web_app = std::make_unique<WebApp>(*existing_web_app);
 
     // The UI may initiate a full install to overwrite the existing
@@ -205,7 +205,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
   } else {
     // New app.
     web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetLaunchUrl(web_app_info.app_url);
+    web_app->SetStartUrl(web_app_info.app_url);
     web_app->SetIsLocallyInstalled(options.locally_installed);
     web_app->SetUserDisplayMode(web_app_info.open_as_window
                                     ? DisplayMode::kStandalone
@@ -344,7 +344,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
 
   if (!existing_web_app || existing_web_app->is_in_sync_install() ||
-      web_app_info.app_url != existing_web_app->launch_url()) {
+      web_app_info.app_url != existing_web_app->start_url()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), AppId(),
                                   InstallResultCode::kWebAppDisabled));

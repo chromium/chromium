@@ -292,12 +292,12 @@ class SystemWebAppManagerTest : public WebAppTest {
   }
 
   std::unique_ptr<WebApp> CreateWebApp(
-      const GURL& launch_url,
+      const GURL& start_url,
       Source::Type source_type = Source::kDefault) {
-    const AppId app_id = GenerateAppIdFromURL(launch_url);
+    const AppId app_id = GenerateAppIdFromURL(start_url);
 
     auto web_app = std::make_unique<WebApp>(app_id);
-    web_app->SetLaunchUrl(launch_url);
+    web_app->SetStartUrl(start_url);
     web_app->SetName("App Name");
     web_app->AddSource(source_type);
     web_app->SetDisplayMode(DisplayMode::kStandalone);
@@ -305,8 +305,8 @@ class SystemWebAppManagerTest : public WebAppTest {
     return web_app;
   }
 
-  std::unique_ptr<WebApp> CreateSystemWebApp(const GURL& launch_url) {
-    return CreateWebApp(launch_url, Source::Type::kSystem);
+  std::unique_ptr<WebApp> CreateSystemWebApp(const GURL& start_url) {
+    return CreateWebApp(start_url, Source::Type::kSystem);
   }
 
   void InitRegistrarWithRegistry(const Registry& registry) {

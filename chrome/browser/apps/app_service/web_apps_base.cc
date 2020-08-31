@@ -319,7 +319,7 @@ void WebAppsBase::SetPermission(const std::string& app_id,
       HostContentSettingsMapFactory::GetForProfile(profile_);
   DCHECK(host_content_settings_map);
 
-  const GURL url = web_app->launch_url();
+  const GURL url = web_app->start_url();
 
   ContentSettingsType permission_type =
       static_cast<ContentSettingsType>(permission->permission_id);
@@ -359,7 +359,7 @@ void WebAppsBase::OpenNativeSettings(const std::string& app_id) {
     return;
   }
 
-  chrome::ShowSiteSettings(profile_, web_app->launch_url());
+  chrome::ShowSiteSettings(profile_, web_app->start_url());
 }
 
 void WebAppsBase::OnContentSettingChanged(
@@ -387,7 +387,7 @@ void WebAppsBase::OnContentSettingChanged(
       continue;
     }
 
-    if (primary_pattern.Matches(web_app.launch_url()) &&
+    if (primary_pattern.Matches(web_app.start_url()) &&
         Accepts(web_app.app_id())) {
       apps::mojom::AppPtr app = apps::mojom::App::New();
       app->app_type = apps::mojom::AppType::kWeb;
@@ -467,7 +467,7 @@ void WebAppsBase::SetShowInFields(apps::mojom::AppPtr& app,
 void WebAppsBase::PopulatePermissions(
     const web_app::WebApp* web_app,
     std::vector<mojom::PermissionPtr>* target) {
-  const GURL url = web_app->launch_url();
+  const GURL url = web_app->start_url();
 
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile_);

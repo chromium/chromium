@@ -439,7 +439,7 @@ TEST_F(WebAppInstallTaskTest, InstallFromWebContents) {
   EXPECT_EQ(app_id, web_app->app_id());
   EXPECT_EQ(manifest_name, web_app->name());
   EXPECT_EQ(description, web_app->description());
-  EXPECT_EQ(url, web_app->launch_url());
+  EXPECT_EQ(url, web_app->start_url());
   EXPECT_EQ(scope, web_app->scope());
   EXPECT_EQ(theme_color, web_app->theme_color());
 }
@@ -591,7 +591,7 @@ TEST_F(WebAppInstallTaskTest, InstallableCheck) {
   // Manifest data overrides Renderer data, except |description|.
   EXPECT_EQ(app_id, web_app->app_id());
   EXPECT_EQ(manifest_name, web_app->name());
-  EXPECT_EQ(manifest_start_url, web_app->launch_url());
+  EXPECT_EQ(manifest_start_url, web_app->start_url());
   EXPECT_EQ(renderer_description, web_app->description());
   EXPECT_EQ(manifest_scope, web_app->scope());
   EXPECT_EQ(expected_theme_color, web_app->theme_color());
@@ -1249,7 +1249,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
 
   EXPECT_EQ(app_id, web_app->app_id());
   EXPECT_EQ(description, web_app->description());
-  EXPECT_EQ(url, web_app->launch_url());
+  EXPECT_EQ(url, web_app->start_url());
   EXPECT_EQ(scope, web_app->scope());
   EXPECT_EQ(theme_color, web_app->theme_color());
   EXPECT_EQ(1u,
@@ -1295,7 +1295,7 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
 
   EXPECT_EQ(app_id, web_app->app_id());
   EXPECT_EQ(description, web_app->description());
-  EXPECT_EQ(url, web_app->launch_url());
+  EXPECT_EQ(url, web_app->start_url());
   EXPECT_EQ(scope, web_app->scope());
   EXPECT_EQ(theme_color, web_app->theme_color());
   EXPECT_EQ(0u,

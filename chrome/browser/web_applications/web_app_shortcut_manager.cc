@@ -111,7 +111,7 @@ std::unique_ptr<ShortcutInfo> WebAppShortcutManager::BuildShortcutInfoForWebApp(
   auto shortcut_info = std::make_unique<ShortcutInfo>();
 
   shortcut_info->extension_id = app->app_id();
-  shortcut_info->url = app->launch_url();
+  shortcut_info->url = app->start_url();
   shortcut_info->title = base::UTF8ToUTF16(app->name());
   shortcut_info->description = base::UTF8ToUTF16(app->description());
   shortcut_info->profile_path = profile()->GetPath();

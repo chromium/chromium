@@ -55,7 +55,7 @@ std::unique_ptr<syncer::EntityData> CreateSyncEntityData(const WebApp& app) {
   entity_data->name = app.name();
   // TODO(crbug.com/1103570): Remove this fallback later.
   if (entity_data->name.empty())
-    entity_data->name = app.launch_url().spec();
+    entity_data->name = app.start_url().spec();
 
   *(entity_data->specifics.mutable_web_app()) = WebAppToSyncProto(app);
   return entity_data;
@@ -65,7 +65,7 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
                         WebApp* app) {
   app->AddSource(Source::kSync);
 
-  // app_id is a hash of launch_url. Parse launch_url first:
+  // app_id is a hash of start_url. Parse start_url first:
   GURL start_url(sync_data.start_url());
   if (start_url.is_empty() || !start_url.is_valid()) {
     DLOG(ERROR) << "ApplySyncDataToApp: start_url parse error.";
@@ -76,9 +76,9 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
     return;
   }
 
-  if (app->launch_url().is_empty()) {
-    app->SetLaunchUrl(std::move(start_url));
-  } else if (app->launch_url() != start_url) {
+  if (app->start_url().is_empty()) {
+    app->SetStartUrl(std::move(start_url));
+  } else if (app->start_url() != start_url) {
     DLOG(ERROR)
         << "ApplySyncDataToApp: existing start_url doesn't match start_url.";
     return;

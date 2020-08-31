@@ -184,7 +184,7 @@ class WebAppDatabaseTest : public WebAppTest {
 
     app->SetName(name);
     app->SetDescription(description);
-    app->SetLaunchUrl(GURL(start_url));
+    app->SetStartUrl(GURL(start_url));
     app->SetScope(GURL(scope));
     app->SetThemeColor(theme_color);
     app->SetBackgroundColor(background_color);
@@ -480,7 +480,7 @@ TEST_F(WebAppDatabaseTest, BackwardCompatibility_WebAppWithOnlyRequiredFields) {
 
   const WebApp* app = registrar().GetAppById(app_id);
   EXPECT_EQ(app_id, app->app_id());
-  EXPECT_EQ(start_url, app->launch_url());
+  EXPECT_EQ(start_url, app->start_url());
   EXPECT_EQ(name, app->name());
   EXPECT_EQ(user_display_mode, app->user_display_mode());
   EXPECT_EQ(is_locally_installed, app->is_locally_installed());
@@ -508,7 +508,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   auto app = std::make_unique<WebApp>(app_id);
 
   // Required fields:
-  app->SetLaunchUrl(start_url);
+  app->SetStartUrl(start_url);
   app->SetName(name);
   app->SetUserDisplayMode(user_display_mode);
   app->SetIsLocallyInstalled(false);
@@ -555,7 +555,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
 
   // Required fields were serialized:
   EXPECT_EQ(app_id, app_copy->app_id());
-  EXPECT_EQ(start_url, app_copy->launch_url());
+  EXPECT_EQ(start_url, app_copy->start_url());
   EXPECT_EQ(name, app_copy->name());
   EXPECT_EQ(user_display_mode, app_copy->user_display_mode());
   EXPECT_FALSE(app_copy->is_locally_installed());

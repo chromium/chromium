@@ -131,9 +131,9 @@ void WebApp::SetDescription(const std::string& description) {
   description_ = description;
 }
 
-void WebApp::SetLaunchUrl(const GURL& launch_url) {
-  DCHECK(!launch_url.is_empty() && launch_url.is_valid());
-  launch_url_ = launch_url;
+void WebApp::SetStartUrl(const GURL& start_url) {
+  DCHECK(!start_url.is_empty() && start_url.is_valid());
+  start_url_ = start_url;
 }
 
 void WebApp::SetScope(const GURL& scope) {
@@ -286,7 +286,7 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out, const WebApp& app) {
   out << "app_id: " << app.app_id_ << std::endl
       << "  name: " << app.name_ << std::endl
-      << "  launch_url: " << app.launch_url_ << std::endl
+      << "  start_url: " << app.start_url_ << std::endl
       << "  scope: " << app.scope_ << std::endl
       << "  theme_color: " << ColorToString(app.theme_color_) << std::endl
       << "  background_color: " << ColorToString(app.background_color_)
@@ -350,7 +350,7 @@ bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
 }
 
 bool operator==(const WebApp& app1, const WebApp& app2) {
-  return std::tie(app1.app_id_, app1.sources_, app1.name_, app1.launch_url_,
+  return std::tie(app1.app_id_, app1.sources_, app1.name_, app1.start_url_,
                   app1.description_, app1.scope_, app1.theme_color_,
                   app1.background_color_, app1.icon_infos_,
                   app1.downloaded_icon_sizes_any_,
@@ -363,7 +363,7 @@ bool operator==(const WebApp& app1, const WebApp& app2) {
                   app1.protocol_handlers_, app1.sync_fallback_data_,
                   app1.last_launch_time_, app1.install_time_,
                   app1.run_on_os_login_mode_) ==
-         std::tie(app2.app_id_, app2.sources_, app2.name_, app2.launch_url_,
+         std::tie(app2.app_id_, app2.sources_, app2.name_, app2.start_url_,
                   app2.description_, app2.scope_, app2.theme_color_,
                   app2.background_color_, app2.icon_infos_,
                   app2.downloaded_icon_sizes_any_,

@@ -137,7 +137,7 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
   DCHECK(provider());
   DCHECK(provider()->install_finalizer().CanUserUninstallExternalApp(app_id));
 
-  auto origin = url::Origin::Create(web_app->launch_url());
+  auto origin = url::Origin::Create(web_app->start_url());
   // TODO(crbug.com/1104696): Update web_app::InstallFinalizer to accommodate
   // when install_source == apps::mojom::UninstallSource::kMigration.
   provider()->install_finalizer().UninstallExternalAppByUser(app_id,

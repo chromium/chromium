@@ -92,7 +92,7 @@ std::unique_ptr<WebApp> CreateWebApp(const std::string& url) {
   const AppId app_id = GenerateAppIdFromURL(start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
-  web_app->SetLaunchUrl(start_url);
+  web_app->SetStartUrl(start_url);
   web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   web_app->SetName("Name");
   return web_app;
@@ -104,7 +104,7 @@ std::unique_ptr<WebApp> CreateWebAppWithSyncOnlyFields(const std::string& url) {
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->AddSource(Source::kSync);
-  web_app->SetLaunchUrl(start_url);
+  web_app->SetStartUrl(start_url);
   web_app->SetName("Name");
   web_app->SetUserDisplayMode(DisplayMode::kStandalone);
   return web_app;

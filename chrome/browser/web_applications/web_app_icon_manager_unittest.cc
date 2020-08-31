@@ -236,7 +236,7 @@ class WebAppIconManagerTest : public WebAppTest {
     web_app->SetDisplayMode(DisplayMode::kStandalone);
     web_app->SetUserDisplayMode(DisplayMode::kStandalone);
     web_app->SetName("Name");
-    web_app->SetLaunchUrl(app_url);
+    web_app->SetStartUrl(app_url);
 
     return web_app;
   }
