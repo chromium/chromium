@@ -6,6 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -34,7 +35,9 @@
 
 namespace {
 
+using base::UmaHistogramEnumeration;
 using password_manager::metrics_util::LogPasswordSettingsReauthResult;
+using password_manager::metrics_util::PasswordCheckInteraction;
 using password_manager::metrics_util::ReauthResult;
 
 // Padding used between the image and the text labels.
@@ -255,6 +258,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
         DCHECK(self.password.changePasswordURL.is_valid());
         OpenNewTabCommand* command = [OpenNewTabCommand
             commandWithURLFromChrome:self.password.changePasswordURL];
+        UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
+                                PasswordCheckInteraction::kChangePassword);
         [self.commandsDispatcher closeSettingsUIAndOpenURL:command];
       }
       break;
@@ -399,6 +404,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           [[UIImage imageNamed:@"infobar_hide_password_icon"]
               imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
+      UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
+                              PasswordCheckInteraction::kShowPassword);
       break;
     case ReauthenticationReasonCopy:
       // TODO:(crbug.com/1075494) - Implement copy password functionality.
@@ -432,6 +439,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   [self.delegate passwordDetailsViewController:self
                         didEditPasswordDetails:self.password];
   [super editButtonPressed];
+  UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
+                          PasswordCheckInteraction::kEditPassword);
   [self reloadData];
 }
 

@@ -309,7 +309,8 @@ PasswordManagerProxy.PasswordCheckStatus;
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  *
- * Needs to stay in sync with PasswordCheckInteraction in enums.xml.
+ * Needs to stay in sync with PasswordCheckInteraction in enums.xml and
+ * password_manager_metrics_util.h.
  *
  * @enum {number}
  */

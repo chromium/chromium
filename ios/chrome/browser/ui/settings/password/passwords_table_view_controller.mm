@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -24,6 +25,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_member.h"
@@ -88,6 +90,9 @@
 #endif
 
 namespace {
+
+using base::UmaHistogramEnumeration;
+using password_manager::metrics_util::PasswordCheckInteraction;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
@@ -320,6 +325,8 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
 - (void)startPasswordCheck {
   if (_passwordCheck->GetPasswordCheckState() != PasswordCheckState::kRunning) {
     _passwordCheck->StartPasswordCheck();
+    UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
+                            PasswordCheckInteraction::kAutomaticPasswordCheck);
   }
 }
 
@@ -1421,6 +1428,8 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
   _passwordIssuesCoordinator.delegate = self;
   _passwordIssuesCoordinator.reauthModule = _reauthenticationModule;
   [_passwordIssuesCoordinator start];
+  password_manager::LogPasswordCheckReferrer(
+      password_manager::PasswordCheckReferrer::kPasswordSettings);
 }
 
 #pragma mark UITableViewDelegate
@@ -1473,6 +1482,8 @@ std::vector<std::unique_ptr<autofill::PasswordForm>> CopyOf(
     case ItemTypeCheckForProblemsButton:
       if (self.passwordCheckState != PasswordCheckStateRunning) {
         _passwordCheck->StartPasswordCheck();
+        UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
+                                PasswordCheckInteraction::kManualPasswordCheck);
       }
       break;
     default:
