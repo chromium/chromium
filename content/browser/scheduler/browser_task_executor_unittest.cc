@@ -136,11 +136,6 @@ class BrowserTaskTraitsMappingTest : public BrowserTaskExecutorTest {
   class TestExecutor : public BaseBrowserTaskExecutor {
    public:
     ~TestExecutor() override = default;
-
-    BrowserThread::ID GetCurrentThreadID() const override {
-      NOTREACHED();
-      return BrowserThread::UI;
-    }
   };
 
  private:

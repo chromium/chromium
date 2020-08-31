@@ -75,8 +75,6 @@ class CONTENT_EXPORT BaseBrowserTaskExecutor : public base::TaskExecutor {
       const base::TaskTraits& traits);
 
  protected:
-  virtual BrowserThread::ID GetCurrentThreadID() const = 0;
-
   scoped_refptr<BrowserUIThreadScheduler::Handle> browser_ui_thread_handle_;
   scoped_refptr<BrowserIOThreadDelegate::Handle> browser_io_thread_handle_;
 };
@@ -196,8 +194,6 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
     void BindToCurrentThread();
 
    private:
-    BrowserThread::ID GetCurrentThreadID() const override;
-
     std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler_;
     bool bound_to_thread_ = false;
   };
@@ -221,8 +217,6 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
     }
 
    private:
-    BrowserThread::ID GetCurrentThreadID() const override;
-
     std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate_;
   };
 
@@ -245,8 +239,6 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler,
       std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate);
   ~BrowserTaskExecutor() override;
-
-  BrowserThread::ID GetCurrentThreadID() const override;
 
   static BrowserTaskExecutor* Get();
 

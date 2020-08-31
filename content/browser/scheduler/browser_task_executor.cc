@@ -336,12 +336,6 @@ std::unique_ptr<BrowserProcessSubThread> BrowserTaskExecutor::CreateIOThread() {
   return io_thread;
 }
 
-BrowserThread::ID BrowserTaskExecutor::GetCurrentThreadID() const {
-  NOTREACHED()
-      << "Should have been routed to UIThreadExecutor or IOThreadExecutor";
-  return BrowserThread::UI;
-}
-
 BrowserTaskExecutor::UIThreadExecutor::UIThreadExecutor(
     std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler)
     : browser_ui_thread_scheduler_(std::move(browser_ui_thread_scheduler)) {
@@ -368,11 +362,6 @@ void BrowserTaskExecutor::UIThreadExecutor::SetIOThreadHandle(
   browser_io_thread_handle_ = std::move(io_thread_handle);
 }
 
-BrowserThread::ID BrowserTaskExecutor::UIThreadExecutor::GetCurrentThreadID()
-    const {
-  return BrowserThread::UI;
-}
-
 BrowserTaskExecutor::IOThreadExecutor::IOThreadExecutor(
     std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate)
     : browser_io_thread_delegate_(std::move(browser_io_thread_delegate)) {
@@ -393,11 +382,6 @@ BrowserTaskExecutor::IOThreadExecutor::GetIOThreadHandle() {
 void BrowserTaskExecutor::IOThreadExecutor::SetUIThreadHandle(
     scoped_refptr<BrowserUIThreadScheduler::Handle> ui_thread_handle) {
   browser_ui_thread_handle_ = std::move(ui_thread_handle);
-}
-
-BrowserThread::ID BrowserTaskExecutor::IOThreadExecutor::GetCurrentThreadID()
-    const {
-  return BrowserThread::IO;
 }
 
 }  // namespace content
