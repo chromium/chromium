@@ -115,6 +115,9 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     /** A delegate for the photo picker. */
     private static PhotoPickerDelegate sPhotoPickerDelegate;
 
+    /** The active photo picker, or null if none is active. */
+    private static PhotoPicker sPhotoPicker;
+
     /**
      * Allows setting a delegate to override the default Android stock photo picker.
      * @param delegate A {@link PhotoPickerDelegate} instance.
@@ -127,8 +130,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * Called when the photo picker dialog has been dismissed.
      */
     public static void onPhotoPickerDismissed() {
-        if (sPhotoPickerDelegate == null) return;
-        sPhotoPickerDelegate.onPhotoPickerDismissed();
+        assert sPhotoPicker != null;
+        sPhotoPicker = null;
     }
 
     SelectFileDialog(long nativeSelectFileDialog) {
@@ -508,6 +511,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         return photoFile;
     }
 
+    // WindowAndroid.IntentCallback:
+
     /**
      * Callback method to handle the intent results and pass on the path to the native
      * SelectFileDialog.
@@ -518,6 +523,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void onIntentCompleted(WindowAndroid window, int resultCode, Intent results) {
+        if (sPhotoPicker != null) {
+            sPhotoPicker.onExternalIntentCompleted();
+        }
+
         if (resultCode != Activity.RESULT_OK) {
             onFileNotSelected();
             return;
@@ -857,7 +866,9 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     private static boolean showPhotoPicker(WindowAndroid windowAndroid,
             PhotoPickerListener listener, boolean allowMultiple, List<String> mimeTypes) {
         if (sPhotoPickerDelegate == null) return false;
-        sPhotoPickerDelegate.showPhotoPicker(windowAndroid, listener, allowMultiple, mimeTypes);
+        assert sPhotoPicker == null;
+        sPhotoPicker = sPhotoPickerDelegate.showPhotoPicker(
+                windowAndroid, listener, allowMultiple, mimeTypes);
         return true;
     }
 

@@ -4,18 +4,15 @@
 
 package org.chromium.components.browser_ui.photo_picker;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.net.Uri;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
-import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.ContextUtils;
+import org.chromium.ui.base.PhotoPicker;
 import org.chromium.ui.base.PhotoPickerListener;
+import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.vr.VrModeProvider;
 
@@ -26,7 +23,7 @@ import java.util.List;
  * &lt;input type=file accept=image &gt; form element.
  */
 public class PhotoPickerDialog
-        extends AlertDialog implements PhotoPickerToolbar.PhotoPickerToolbarDelegate {
+        extends AlertDialog implements PhotoPickerToolbar.PhotoPickerToolbarDelegate, PhotoPicker {
     // Our window.
     private WindowAndroid mWindowAndroid;
 
@@ -118,23 +115,7 @@ public class PhotoPickerDialog
         if (!mListenerWrapper.externalIntentSelected() || mDoneWaitingForExternalIntent) {
             super.dismiss();
             mCategoryView.onDialogDismissed();
-        } else {
-            ApplicationStatus.registerStateListenerForActivity(new ActivityStateListener() {
-                @Override
-                public void onActivityStateChange(Activity activity, int newState) {
-                    // When an external intent, such as the Camera intent, is launched, this
-                    // listener will first receive the PAUSED event. Normally, STOPPED is the next
-                    // event, as the Camera intent appears. But if the user presses Back quickly
-                    // after the PAUSED event, the STOPPED event will not arrive, and this listener
-                    // gets RESUMED instead. However, we are already in teardown mode, so the
-                    // safe thing to do is to close the dialog.
-                    if (newState == ActivityState.STOPPED || newState == ActivityState.RESUMED) {
-                        mDoneWaitingForExternalIntent = true;
-                        ApplicationStatus.unregisterActivityStateListener(this);
-                        dismiss();
-                    }
-                }
-            }, ContextUtils.activityFromContext(mWindowAndroid.getContext().get()));
+            SelectFileDialog.onPhotoPickerDismissed();
         }
     }
 
@@ -144,6 +125,14 @@ public class PhotoPickerDialog
     @Override
     public void onNavigationBackCallback() {
         cancel();
+    }
+
+    // PhotoPicker:
+
+    @Override
+    public void onExternalIntentCompleted() {
+        mDoneWaitingForExternalIntent = true;
+        dismiss();
     }
 
     @VisibleForTesting
