@@ -673,7 +673,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
              value_id == CSSValueID::kScroll || value_id == CSSValueID::kAuto ||
-             value_id == CSSValueID::kOverlay;
+             value_id == CSSValueID::kOverlay ||
+             (RuntimeEnabledFeatures::OverflowClipEnabled() &&
+              value_id == CSSValueID::kClip);
     case CSSPropertyID::kBreakAfter:
     case CSSPropertyID::kBreakBefore:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kAvoid ||

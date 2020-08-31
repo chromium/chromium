@@ -97,4 +97,51 @@ TEST_F(StylePropertyMapTest, SetRevertWithFeatureDisabled) {
   EXPECT_FALSE(y);
 }
 
+TEST_F(StylePropertyMapTest, SetOverflowClipString) {
+  ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
+
+  DummyExceptionStateForTesting exception_state;
+
+  HeapVector<CSSStyleValueOrString> clip_string;
+  clip_string.push_back(CSSStyleValueOrString::FromString(" clip"));
+
+  auto* map =
+      MakeGarbageCollected<InlineStylePropertyMap>(GetDocument().body());
+
+  map->set(GetDocument().GetExecutionContext(), "overflow-x", clip_string,
+           exception_state);
+
+  CSSStyleValue* overflow = map->get(GetDocument().GetExecutionContext(),
+                                     "overflow-x", exception_state);
+  ASSERT_TRUE(DynamicTo<CSSKeywordValue>(overflow));
+  EXPECT_EQ(CSSValueID::kClip,
+            DynamicTo<CSSKeywordValue>(overflow)->KeywordValueID());
+
+  EXPECT_FALSE(exception_state.HadException());
+}
+
+TEST_F(StylePropertyMapTest, SetOverflowClipStyleValue) {
+  ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
+
+  DummyExceptionStateForTesting exception_state;
+
+  HeapVector<CSSStyleValueOrString> clip_style_value;
+  clip_style_value.push_back(CSSStyleValueOrString::FromCSSStyleValue(
+      CSSKeywordValue::Create("clip", exception_state)));
+
+  auto* map =
+      MakeGarbageCollected<InlineStylePropertyMap>(GetDocument().body());
+
+  map->set(GetDocument().GetExecutionContext(), "overflow-x", clip_style_value,
+           exception_state);
+
+  CSSStyleValue* overflow = map->get(GetDocument().GetExecutionContext(),
+                                     "overflow-x", exception_state);
+  ASSERT_TRUE(DynamicTo<CSSKeywordValue>(overflow));
+  EXPECT_EQ(CSSValueID::kClip,
+            DynamicTo<CSSKeywordValue>(overflow)->KeywordValueID());
+
+  EXPECT_FALSE(exception_state.HadException());
+}
+
 }  // namespace blink

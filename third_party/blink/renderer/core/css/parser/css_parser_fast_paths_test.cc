@@ -225,4 +225,14 @@ TEST(CSSParserFastPathsTest, ParseColorWithDecimal) {
   EXPECT_EQ(Color::kWhite, To<cssvalue::CSSColorValue>(*value).Value());
 }
 
+TEST(CSSParserFastPathsTest, IsValidKeywordPropertyAndValueOverflowClip) {
+  EXPECT_FALSE(CSSParserFastPaths::IsValidKeywordPropertyAndValue(
+      CSSPropertyID::kOverflowX, CSSValueID::kClip,
+      CSSParserMode::kHTMLStandardMode));
+  ScopedOverflowClipForTest overflow_clip_feature_enabler(true);
+  EXPECT_TRUE(CSSParserFastPaths::IsValidKeywordPropertyAndValue(
+      CSSPropertyID::kOverflowX, CSSValueID::kClip,
+      CSSParserMode::kHTMLStandardMode));
+}
+
 }  // namespace blink

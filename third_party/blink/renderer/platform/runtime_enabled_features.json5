@@ -1376,6 +1376,9 @@
       name: "OutOfBlinkCors",
     },
     {
+      name: "OverflowClip",
+    },
+    {
       name: "OverflowIconsForMediaControls",
     },
     {

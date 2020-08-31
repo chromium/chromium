@@ -2852,7 +2852,7 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
       keywords: [
-        "visible", "hidden", "scroll", "auto", "overlay"
+        "visible", "hidden", "scroll", "auto", "overlay", "clip"
       ],
       typedom_types: ["Keyword"],
       default_value: "visible",
@@ -2863,7 +2863,7 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
       keywords: [
-        "visible", "hidden", "scroll", "auto", "overlay",
+        "visible", "hidden", "scroll", "auto", "overlay", "clip"
       ],
       typedom_types: ["Keyword"],
       default_value: "visible",

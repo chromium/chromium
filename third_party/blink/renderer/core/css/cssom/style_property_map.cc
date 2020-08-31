@@ -130,6 +130,18 @@ const CSSValue* StyleValueToCSSValue(
       }
       break;
     }
+    case CSSPropertyID::kOverflowX:
+    case CSSPropertyID::kOverflowY: {
+      if (!RuntimeEnabledFeatures::OverflowClipEnabled()) {
+        auto* identifier_value =
+            DynamicTo<CSSIdentifierValue>(style_value.ToCSSValue());
+        if (identifier_value &&
+            identifier_value->GetValueID() == CSSValueID::kClip) {
+          return nullptr;
+        }
+      }
+      break;
+    }
     case CSSPropertyID::kPaintOrder: {
       // level 1 only accepts single keywords
       const auto* value = style_value.ToCSSValue();
