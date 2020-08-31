@@ -740,5 +740,12 @@
     "prefix": "bfcache-experiment-control",
     "bases": [ "http/tests/origin_trials/webexposed/bfcache-experiment-http-header-origin-trial.php" ],
     "args": [ "--enable-features=BackForwardCacheABExperimentControl" ]
+  },
+  {
+    "prefix": "threaded-composited-iframes",
+    "bases": ["external/wpt/is-input-pending"],
+    "args": ["--enable-threaded-compositing",
+             "--enable-features=CompositeCrossOriginIframes",
+             "--disable-auto-wpt-origin-isolation"]
   }
 ]
