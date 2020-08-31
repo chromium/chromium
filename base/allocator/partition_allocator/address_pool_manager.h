@@ -7,6 +7,7 @@
 
 #include <bitset>
 
+#include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/atomicops.h"
 #include "base/no_destructor.h"
@@ -17,8 +18,6 @@
 namespace base {
 
 namespace internal {
-
-using pool_handle = unsigned;
 
 // The feature is not applicable to 32-bit address space.
 // ARCH_CPU_64_BITS implies 64-bit instruction set, but not necessarily 64-bit

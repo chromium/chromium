@@ -802,32 +802,6 @@ ALWAYS_INLINE void DCheckIfManagedByPartitionAllocNormalBuckets(const void*) {}
 #endif
 }  // namespace internal
 
-// Gets the offset from the beginning of the allocated slot, adjusted for cookie
-// (if any).
-// CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
-// lead to undefined behavior.
-//
-// This function is not a template, and can be used on either variant
-// (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
-// having the same layout, which is enforced by static_assert().
-ALWAYS_INLINE size_t PartitionAllocGetSlotOffset(void* ptr) {
-  internal::DCheckIfManagedByPartitionAllocNormalBuckets(ptr);
-  // The only allocations that don't use tag are allocated outside of GigaCage,
-  // hence we'd never get here in the use_tag=false case.
-  ptr = internal::PartitionPointerAdjustSubtract(true /* use_tag */, ptr);
-  auto* page =
-      internal::PartitionAllocGetPageForSize<internal::ThreadSafe>(ptr);
-  PA_DCHECK(PartitionRoot<internal::ThreadSafe>::FromPage(page)->allow_extras);
-
-  // Get the offset from the beginning of the slot span.
-  uintptr_t ptr_addr = reinterpret_cast<uintptr_t>(ptr);
-  uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
-      internal::PartitionPage<internal::ThreadSafe>::ToPointer(page));
-  size_t offset_in_slot_span = ptr_addr - slot_span_start;
-
-  return page->bucket->GetSlotOffset(offset_in_slot_span);
-}
-
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 template <bool thread_safe>

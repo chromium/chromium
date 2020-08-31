@@ -11,6 +11,8 @@
 #include <utility>
 
 #include "base/allocator/partition_allocator/checked_ptr_support.h"
+#include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -116,11 +118,25 @@ static_assert((kTopBit & kGenerationMask) > 0,
 // overridden by tests.
 struct CheckedPtr2OrMTEImplPartitionAllocSupport {
   // Checks if the necessary support is enabled in PartitionAlloc for |ptr|.
-  //
-  // The implementation is in the .cc file, because including partition_alloc.h
-  // here could lead to cyclic includes.
-  // TODO(bartekn): Check if this function gets inlined.
-  BASE_EXPORT static bool EnabledForPtr(void* ptr);
+  static ALWAYS_INLINE bool EnabledForPtr(void* ptr) {
+    // CheckedPtr2 and MTECheckedPtr algorithms work only when memory is
+    // allocated by PartitionAlloc, from normal buckets pool. CheckedPtr2
+    // additionally requires that the pointer points to the beginning of the
+    // allocated slot.
+    //
+    // TODO(bartekn): Allow direct-map buckets for MTECheckedPtr, once
+    // PartitionAlloc supports it. (Currently not implemented for simplicity,
+    // but there are no technological obstacles preventing it; whereas in case
+    // of CheckedPtr2, PartitionAllocGetSlotOffset won't work with direct-map.)
+    return IsManagedByPartitionAllocNormalBuckets(ptr)
+    // Checking offset is not needed for ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR,
+    // but call it anyway for apples-to-apples comparison with
+    // ENABLE_TAG_FOR_CHECKED_PTR2.
+#if ENABLE_TAG_FOR_CHECKED_PTR2 || ENABLE_TAG_FOR_SINGLE_TAG_CHECKED_PTR
+           && base::internal::PartitionAllocGetSlotOffset(ptr) == 0
+#endif
+        ;
+  }
 
   // Returns pointer to the tag that protects are pointed by |ptr|.
   static ALWAYS_INLINE void* TagPointer(void* ptr) {

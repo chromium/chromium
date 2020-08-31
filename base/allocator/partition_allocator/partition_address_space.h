@@ -7,13 +7,12 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/base_export.h"
 #include "base/bits.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
@@ -144,12 +143,17 @@ class BASE_EXPORT PartitionAddressSpace {
 };
 
 ALWAYS_INLINE internal::pool_handle GetDirectMapPool() {
-  PA_DCHECK(IsPartitionAllocGigaCageEnabled());
+  // This file is included from checked_ptr.h. This will result in a cycle if it
+  // includes partition_alloc_features.h where IsPartitionAllocGigaCageEnabled
+  // resides, because it includes Finch headers which may include checked_ptr.h.
+  // TODO(bartekn): Uncomment once Finch is no longer used there.
+  // PA_DCHECK(IsPartitionAllocGigaCageEnabled());
   return PartitionAddressSpace::GetDirectMapPool();
 }
 
 ALWAYS_INLINE internal::pool_handle GetNormalBucketPool() {
-  PA_DCHECK(IsPartitionAllocGigaCageEnabled());
+  // TODO(bartekn): Uncomment once Finch is no longer used there (see above).
+  // PA_DCHECK(IsPartitionAllocGigaCageEnabled());
   return PartitionAddressSpace::GetNormalBucketPool();
 }
 
