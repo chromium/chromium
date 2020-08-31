@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/api/preference/preference_api_constants.h"
 #include "chrome/browser/extensions/api/preference/preference_helpers.h"
 #include "chrome/browser/extensions/api/proxy/proxy_api.h"
+#include "chrome/browser/extensions/api/system_indicator/system_indicator_api.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/net/prediction_options.h"
 #include "chrome/common/pref_names.h"
@@ -124,7 +125,7 @@ const PrefMappingEntry kPrefMapping[] = {
      APIPermission::kPrivacy, APIPermission::kPrivacy},
     {"spellingServiceEnabled", spellcheck::prefs::kSpellCheckUseSpellingService,
      APIPermission::kPrivacy, APIPermission::kPrivacy},
-    {"thirdPartyCookiesAllowed", prefs::kBlockThirdPartyCookies,
+    {"thirdPartyCookiesAllowed", prefs::kCookieControlsMode,
      APIPermission::kPrivacy, APIPermission::kPrivacy},
     {"translationServiceEnabled", prefs::kOfferTranslateEnabled,
      APIPermission::kPrivacy, APIPermission::kPrivacy},
@@ -195,32 +196,40 @@ class IdentityPrefTransformer : public PrefTransformerInterface {
   }
 
   std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref) override {
+      const base::Value* browser_pref,
+      bool is_incognito_profile) override {
     return browser_pref->CreateDeepCopy();
   }
 };
 
-class InvertBooleanTransformer : public PrefTransformerInterface {
+// Transform the thirdPartyCookiesAllowed extension api to CookieControlsMode
+// enum values.
+class CookieControlsModeTransformer : public PrefTransformerInterface {
+  using CookieControlsMode = content_settings::CookieControlsMode;
+
  public:
   std::unique_ptr<base::Value> ExtensionToBrowserPref(
       const base::Value* extension_pref,
       std::string* error,
       bool* bad_message) override {
-    return InvertBooleanValue(extension_pref);
+    bool third_party_cookies_allowed = extension_pref->GetBool();
+    return std::make_unique<base::Value>(static_cast<int>(
+        third_party_cookies_allowed ? CookieControlsMode::kOff
+                                    : CookieControlsMode::kBlockThirdParty));
   }
 
   std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref) override {
-    return InvertBooleanValue(browser_pref);
-  }
+      const base::Value* browser_pref,
+      bool is_incognito_profile) override {
+    auto cookie_control_mode =
+        static_cast<CookieControlsMode>(browser_pref->GetInt());
 
- private:
-  static std::unique_ptr<base::Value> InvertBooleanValue(
-      const base::Value* value) {
-    bool bool_value = false;
-    bool result = value->GetAsBoolean(&bool_value);
-    DCHECK(result);
-    return std::make_unique<base::Value>(!bool_value);
+    bool third_party_cookies_allowed =
+        cookie_control_mode == content_settings::CookieControlsMode::kOff ||
+        (!is_incognito_profile &&
+         cookie_control_mode == CookieControlsMode::kIncognitoOnly);
+
+    return std::make_unique<base::Value>(third_party_cookies_allowed);
   }
 };
 
@@ -242,7 +251,8 @@ class NetworkPredictionTransformer : public PrefTransformerInterface {
   }
 
   std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref) override {
+      const base::Value* browser_pref,
+      bool is_incognito_profile) override {
     int int_value = chrome_browser_net::NETWORK_PREDICTION_DEFAULT;
     const bool pref_found = browser_pref->GetAsInteger(&int_value);
     DCHECK(pref_found) << "Preference not found.";
@@ -308,14 +318,13 @@ class PrefMapping {
     DCHECK_EQ(base::size(kPrefMapping), event_mapping_.size());
     RegisterPrefTransformer(proxy_config::prefs::kProxy,
                             std::make_unique<ProxyPrefTransformer>());
-    RegisterPrefTransformer(prefs::kBlockThirdPartyCookies,
-                            std::make_unique<InvertBooleanTransformer>());
+    RegisterPrefTransformer(prefs::kCookieControlsMode,
+                            std::make_unique<CookieControlsModeTransformer>());
     RegisterPrefTransformer(prefs::kNetworkPredictionOptions,
                             std::make_unique<NetworkPredictionTransformer>());
   }
 
-  ~PrefMapping() {
-  }
+  ~PrefMapping() = default;
 
   void RegisterPrefTransformer(
       const std::string& browser_pref,
@@ -402,7 +411,7 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
   std::unique_ptr<base::Value> transformed_value =
-      transformer->BrowserToExtensionPref(pref->GetValue());
+      transformer->BrowserToExtensionPref(pref->GetValue(), incognito);
   if (!transformed_value) {
     LOG(ERROR) << ErrorUtils::FormatErrorMessage(kConversionErrorMessage,
                                                  pref->name());
@@ -548,8 +557,7 @@ PreferenceAPI::PreferenceAPI(content::BrowserContext* context)
   content_settings_store()->AddObserver(this);
 }
 
-PreferenceAPI::~PreferenceAPI() {
-}
+PreferenceAPI::~PreferenceAPI() = default;
 
 void PreferenceAPI::Shutdown() {
   EventRouter::Get(profile_)->UnregisterObserver(this);
@@ -624,9 +632,9 @@ BrowserContextKeyedAPIFactory<PreferenceAPI>::DeclareFactoryDependencies() {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-PreferenceFunction::~PreferenceFunction() { }
+PreferenceFunction::~PreferenceFunction() = default;
 
-GetPreferenceFunction::~GetPreferenceFunction() { }
+GetPreferenceFunction::~GetPreferenceFunction() = default;
 
 ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   std::string pref_key;
@@ -684,7 +692,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   PrefTransformerInterface* transformer =
       PrefMapping::GetInstance()->FindTransformerForBrowserPref(browser_pref);
   std::unique_ptr<base::Value> transformed_value =
-      transformer->BrowserToExtensionPref(pref->GetValue());
+      transformer->BrowserToExtensionPref(pref->GetValue(), incognito);
   if (!transformed_value) {
     // TODO(devlin): Can this happen?  When?  Should it be an error, or a bad
     // message?
@@ -705,7 +713,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   return RespondNow(OneArgument(std::move(result)));
 }
 
-SetPreferenceFunction::~SetPreferenceFunction() {}
+SetPreferenceFunction::~SetPreferenceFunction() = default;
 
 ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   std::string pref_key;
@@ -788,7 +796,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   // Validate also that the stored value can be converted back by the
   // transformer.
   std::unique_ptr<base::Value> extension_pref_value(
-      transformer->BrowserToExtensionPref(browser_pref_value.get()));
+      transformer->BrowserToExtensionPref(browser_pref_value.get(), incognito));
   EXTENSION_FUNCTION_VALIDATE(extension_pref_value);
 
   PreferenceAPI* preference_api = PreferenceAPI::Get(browser_context());
@@ -818,23 +826,6 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
                                                scope, base::Value(false));
   }
 
-  // Whenever an extension takes control of the |kBlockThirdPartyCookies|
-  // preference, we must also set |kCookieControlsMode|.
-  // See crbug.com/1065392 for more background.
-  //
-  // kCookieControlsMode offers an additional setting to only block third-party
-  // cookies in incognito mode that can't be selected by extensions.
-  // Instead they can use the preference api in incognito mode directly if they
-  // are permitted to run there.
-  if (browser_pref == prefs::kBlockThirdPartyCookies) {
-    preference_api->SetExtensionControlledPref(
-        extension_id(), prefs::kCookieControlsMode, scope,
-        base::Value(static_cast<int>(
-            browser_pref_value->GetBool()
-                ? content_settings::CookieControlsMode::kBlockThirdParty
-                : content_settings::CookieControlsMode::kOff)));
-  }
-
   preference_api->SetExtensionControlledPref(
       extension_id(), browser_pref, scope,
       base::Value::FromUniquePtrValue(std::move(browser_pref_value)));
@@ -842,7 +833,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-ClearPreferenceFunction::~ClearPreferenceFunction() { }
+ClearPreferenceFunction::~ClearPreferenceFunction() = default;
 
 ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   std::string pref_key;
@@ -884,15 +875,6 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
     return RespondNow(
         Error(extensions::preference_api_constants::kPermissionErrorMessage,
               pref_key));
-
-  // Whenever an extension clears the |kBlockThirdPartyCookies| preference,
-  // it must also clear |kCookieControlsMode|.
-  // See crbug.com/1065392 for more background.
-  if (browser_pref == prefs::kBlockThirdPartyCookies) {
-    PreferenceAPI::Get(browser_context())
-        ->RemoveExtensionControlledPref(extension_id(),
-                                        prefs::kCookieControlsMode, scope);
-  }
 
   PreferenceAPI::Get(browser_context())
       ->RemoveExtensionControlledPref(extension_id(), browser_pref, scope);

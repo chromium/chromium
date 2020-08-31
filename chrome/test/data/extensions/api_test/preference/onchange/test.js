@@ -87,7 +87,7 @@ chrome.test.runTests([
       'levelOfControl': 'controllable_by_this_extension'
     },
     {
-      'value': true,
+      'value': false,
       'incognitoSpecific': false,
       'levelOfControl': 'controllable_by_this_extension'
     }]);

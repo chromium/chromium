@@ -37,7 +37,8 @@ class ProxyPrefTransformer : public PrefTransformerInterface {
       std::string* error,
       bool* bad_message) override;
   std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref) override;
+      const base::Value* browser_pref,
+      bool is_incognito_profile) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ProxyPrefTransformer);

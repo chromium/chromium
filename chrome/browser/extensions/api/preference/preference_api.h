@@ -153,7 +153,7 @@ class PreferenceAPI : public PreferenceAPIBase,
 
 class PrefTransformerInterface {
  public:
-  virtual ~PrefTransformerInterface() {}
+  virtual ~PrefTransformerInterface() = default;
 
   // Converts the representation of a preference as seen by the extension
   // into a representation that is used in the pref stores of the browser.
@@ -171,7 +171,8 @@ class PrefTransformerInterface {
   // Returns the extension representation in case of success or NULL otherwise.
   // The ownership of the returned value is passed to the caller.
   virtual std::unique_ptr<base::Value> BrowserToExtensionPref(
-      const base::Value* browser_pref) = 0;
+      const base::Value* browser_pref,
+      bool is_incognito_profile) = 0;
 };
 
 // A base class to provide functionality common to the other *PreferenceFunction

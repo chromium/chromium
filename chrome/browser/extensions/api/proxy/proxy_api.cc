@@ -141,7 +141,8 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
 }
 
 std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
-    const base::Value* browser_pref) {
+    const base::Value* browser_pref,
+    bool is_incognito_profile) {
   CHECK(browser_pref->is_dict());
 
   // This is a dictionary wrapper that exposes the proxy configuration stored in
