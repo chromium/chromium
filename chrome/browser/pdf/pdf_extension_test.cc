@@ -315,13 +315,21 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
         "var viewportPosition = viewer.viewport.position;"
         "var screenOffsetX = visiblePageDimensions.x - viewportPosition.x;"
         "var screenOffsetY = visiblePageDimensions.y - viewportPosition.y;"
+        "if (document.documentElement.hasAttribute("
+        "        'pdf-viewer-update-enabled')) {"
+        "  const scrollParent = viewer.shadowRoot.querySelector('#main');"
+        "  screenOffsetX += scrollParent.offsetLeft;"
+        "  screenOffsetY += scrollParent.offsetTop;"
+        "}"
         "var linkScreenPositionX ="
         "    Math.floor(" +
             base::NumberToString(point->x()) +
+            " * viewer.viewport.internalZoom_" +
             " + screenOffsetX);"
             "var linkScreenPositionY ="
             "    Math.floor(" +
             base::NumberToString(point->y()) +
+            " * viewer.viewport.internalZoom_" +
             " +"
             "    screenOffsetY);"));
 
@@ -1661,12 +1669,27 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MultipleDomains) {
   EXPECT_EQ(2, CountPDFProcesses());
 }
 
-class PDFExtensionLinkClickTest : public PDFExtensionTest {
+class PDFExtensionLinkClickTest : public PDFExtensionTest,
+                                  public testing::WithParamInterface<bool> {
  public:
   PDFExtensionLinkClickTest() : guest_contents_(nullptr) {}
   ~PDFExtensionLinkClickTest() override {}
 
  protected:
+  const std::vector<base::Feature> GetEnabledFeatures() const override {
+    if (GetParam()) {
+      return {chrome_pdf::features::kPDFViewerUpdate};
+    }
+    return {};
+  }
+
+  const std::vector<base::Feature> GetDisabledFeatures() const override {
+    if (GetParam()) {
+      return {};
+    }
+    return {chrome_pdf::features::kPDFViewerUpdate};
+  }
+
   void LoadTestLinkPdfGetGuestContents() {
     GURL test_pdf_url(embedded_test_server()->GetURL("/pdf/test-link.pdf"));
     guest_contents_ = LoadPdfGetGuestContents(test_pdf_url);
@@ -1701,7 +1724,7 @@ class PDFExtensionLinkClickTest : public PDFExtensionTest {
   WebContents* guest_contents_;
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlLeft) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -1726,7 +1749,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlLeft) {
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, Middle) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, Middle) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -1751,7 +1774,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, Middle) {
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlShiftLeft) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, CtrlShiftLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -1773,7 +1796,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, CtrlShiftLeft) {
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, ShiftMiddle) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftMiddle) {
   LoadTestLinkPdfGetGuestContents();
 
   WebContents* web_contents = GetActiveWebContents();
@@ -1793,7 +1816,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, ShiftMiddle) {
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, ShiftLeft) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, ShiftLeft) {
   LoadTestLinkPdfGetGuestContents();
 
   ASSERT_EQ(1U, chrome::GetTotalBrowserCount());
@@ -1819,7 +1842,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, ShiftLeft) {
 // the PDF is loaded and functional by clicking a link in the PDF. The link
 // click in the PDF opens a new tab. The main page handles the pageShow event
 // and updates the history state.
-IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
   // Navigate to the main page.
   GURL test_url(
       embedded_test_server()->GetURL("/pdf/pdf_href_replace_state.html"));
@@ -1864,6 +1887,10 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionLinkClickTest, OpenPDFWithReplaceState) {
   const GURL& url = new_web_contents->GetURL();
   EXPECT_EQ("http://www.example.com/", url.spec());
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PDFExtensionLinkClickTest,
+                         testing::Bool());
 
 class PDFExtensionInternalLinkClickTest : public PDFExtensionTest {
  public:
