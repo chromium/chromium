@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
+#include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "url/origin.h"
@@ -72,7 +74,8 @@ void SecurePaymentConfirmationAppFactory::
   if (!delegate)
     return;
 
-  if (!is_available) {
+  if (!is_available && !base::FeatureList::IsEnabled(
+                           features::kSecurePaymentConfirmationDebug)) {
     delegate->OnDoneCreatingPaymentApps();
     return;
   }

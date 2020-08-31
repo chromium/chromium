@@ -1176,6 +1176,9 @@ extern const char kScrollableTabStripDescription[];
 extern const char kScrollUnificationName[];
 extern const char kScrollUnificationDescription[];
 
+extern const char kSecurePaymentConfirmationDebugName[];
+extern const char kSecurePaymentConfirmationDebugDescription[];
+
 extern const char kSendTabToSelfOmniboxSendingAnimationName[];
 extern const char kSendTabToSelfOmniboxSendingAnimationDescription[];
 
