@@ -1350,7 +1350,8 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
 
 void TabStrip::SetTabData(int model_index, TabRendererData data) {
   Tab* tab = tab_at(model_index);
-  const bool pinned_state_changed = tab->data().pinned != data.pinned;
+  const bool pinned = data.pinned;
+  const bool pinned_state_changed = tab->data().pinned != pinned;
   tab->SetData(std::move(data));
 
   if (HoverCardIsShowingForTab(tab))
@@ -1364,7 +1365,7 @@ void TabStrip::SetTabData(int model_index, TabRendererData data) {
     }
 
     layout_helper_->SetTabPinned(
-        model_index, data.pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+        model_index, pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
     if (GetWidget() && GetWidget()->IsVisible())
       StartPinnedTabAnimation();
     else
