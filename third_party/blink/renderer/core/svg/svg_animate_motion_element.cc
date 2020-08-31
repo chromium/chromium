@@ -58,8 +58,7 @@ bool TargetCanHaveMotionTransform(const SVGElement& target) {
 }
 
 SVGAnimateMotionElement::SVGAnimateMotionElement(Document& document)
-    : SVGAnimationElement(svg_names::kAnimateMotionTag, document),
-      has_to_point_at_end_of_duration_(false) {
+    : SVGAnimationElement(svg_names::kAnimateMotionTag, document) {
   SetCalcMode(kCalcModePaced);
 }
 
@@ -177,16 +176,17 @@ void SVGAnimateMotionElement::ClearAnimatedType() {
 bool SVGAnimateMotionElement::CalculateToAtEndOfDurationValue(
     const String& to_at_end_of_duration_string) {
   ParsePoint(to_at_end_of_duration_string, to_point_at_end_of_duration_);
-  has_to_point_at_end_of_duration_ = true;
   return true;
 }
 
 bool SVGAnimateMotionElement::CalculateFromAndToValues(
     const String& from_string,
     const String& to_string) {
-  has_to_point_at_end_of_duration_ = false;
   ParsePoint(from_string, from_point_);
   ParsePoint(to_string, to_point_);
+  // TODO(fs): Looks like this would clobber the at-end-of-duration
+  // value for a cumulative 'values' animation.
+  to_point_at_end_of_duration_ = to_point_;
   return true;
 }
 
@@ -198,6 +198,7 @@ bool SVGAnimateMotionElement::CalculateFromAndByValues(
   // is 'by', |from_string| will be the empty string and yield a point
   // of (0,0).
   to_point_ += from_point_;
+  to_point_at_end_of_duration_ = to_point_;
   return true;
 }
 
@@ -216,22 +217,14 @@ void SVGAnimateMotionElement::CalculateAnimatedValue(float percentage,
     transform->MakeIdentity();
 
   if (GetAnimationMode() != kPathAnimation) {
-    FloatPoint to_point_at_end_of_duration = to_point_;
-    if (!parameters.is_to_animation) {
-      if (repeat_count && parameters.is_cumulative &&
-          has_to_point_at_end_of_duration_) {
-        to_point_at_end_of_duration = to_point_at_end_of_duration_;
-      }
-    }
-
     float animated_x = 0;
     AnimateAdditiveNumber(parameters, percentage, repeat_count, from_point_.X(),
-                          to_point_.X(), to_point_at_end_of_duration.X(),
+                          to_point_.X(), to_point_at_end_of_duration_.X(),
                           animated_x);
 
     float animated_y = 0;
     AnimateAdditiveNumber(parameters, percentage, repeat_count, from_point_.Y(),
-                          to_point_.Y(), to_point_at_end_of_duration.Y(),
+                          to_point_.Y(), to_point_at_end_of_duration_.Y(),
                           animated_y);
 
     transform->Translate(animated_x, animated_y);

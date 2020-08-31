@@ -119,8 +119,7 @@ class SVGListPropertyHelper : public SVGListPropertyBase {
 
   bool AdjustFromToListValues(Derived* from_list,
                               Derived* to_list,
-                              float percentage,
-                              bool is_to_animation);
+                              float percentage);
 
   virtual ItemPropertyType* CreatePaddingItem() const {
     return MakeGarbageCollected<ItemPropertyType>();
@@ -139,8 +138,7 @@ template <typename Derived, typename ItemProperty>
 bool SVGListPropertyHelper<Derived, ItemProperty>::AdjustFromToListValues(
     Derived* from_list,
     Derived* to_list,
-    float percentage,
-    bool is_to_animation) {
+    float percentage) {
   // If no 'to' value is given, nothing to animate.
   uint32_t to_list_size = to_list->length();
   if (!to_list_size)
@@ -150,12 +148,12 @@ bool SVGListPropertyHelper<Derived, ItemProperty>::AdjustFromToListValues(
   // list length, fallback to a discrete animation.
   uint32_t from_list_size = from_list->length();
   if (from_list_size != to_list_size && from_list_size) {
-    if (percentage < 0.5) {
-      if (!is_to_animation)
-        DeepCopy(from_list);
-    } else {
-      DeepCopy(to_list);
-    }
+    const Derived* result = percentage < 0.5 ? from_list : to_list;
+    // If this is a 'to' animation, the "from" value will be the same
+    // list as this list, so avoid the copy in that case since it
+    // would clobber the list.
+    if (result != this)
+      DeepCopy(result);
     return false;
   }
 

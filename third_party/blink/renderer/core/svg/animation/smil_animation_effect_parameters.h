@@ -12,7 +12,6 @@ namespace blink {
 // https://www.w3.org/TR/SMIL/smil-animation.html#animationNS-AnimationEffectFcn
 struct SMILAnimationEffectParameters {
   bool is_discrete = false;
-  bool is_to_animation = false;
   bool is_additive = false;
   bool is_cumulative = false;
 };
@@ -31,12 +30,10 @@ inline void AnimateAdditiveNumber(
     number = percentage < 0.5 ? from_number : to_number;
   else
     number = (to_number - from_number) * percentage + from_number;
-  if (!parameters.is_to_animation) {
-    if (repeat_count && parameters.is_cumulative)
-      number += to_at_end_of_duration_number * repeat_count;
-    if (parameters.is_additive)
-      number += animated_number;
-  }
+  if (repeat_count && parameters.is_cumulative)
+    number += to_at_end_of_duration_number * repeat_count;
+  if (parameters.is_additive)
+    number += animated_number;
   animated_number = number;
 }
 

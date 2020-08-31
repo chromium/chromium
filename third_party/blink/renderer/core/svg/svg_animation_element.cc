@@ -653,9 +653,11 @@ SMILAnimationEffectParameters SVGAnimationElement::ComputeEffectParameters()
     const {
   SMILAnimationEffectParameters parameters;
   parameters.is_discrete = GetCalcMode() == kCalcModeDiscrete;
-  parameters.is_to_animation = GetAnimationMode() == kToAnimation;
-  parameters.is_additive = IsAdditive() || GetAnimationMode() == kByAnimation;
-  parameters.is_cumulative = IsAccumulated();
+  // 'to'-animations are neither additive nor cumulative.
+  if (GetAnimationMode() != kToAnimation) {
+    parameters.is_additive = IsAdditive() || GetAnimationMode() == kByAnimation;
+    parameters.is_cumulative = IsAccumulated();
+  }
   return parameters;
 }
 

@@ -60,8 +60,6 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   enum RotateMode { kRotateAngle, kRotateAuto, kRotateAutoReverse };
   RotateMode GetRotateMode() const;
 
-  bool has_to_point_at_end_of_duration_;
-
   void UpdateAnimationMode() override;
 
   void InvalidateForAnimateMotionTransformChange(LayoutObject& target);

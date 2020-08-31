@@ -468,10 +468,17 @@ void SVGTransformList::CalculateAnimatedValue(
       SVGTransformDistance(effective_from, to_transform)
           .ScaledDistance(percentage)
           .AddToSVGTransform(effective_from);
-  if (parameters.is_to_animation) {
-    Clear();
-    Append(current_transform);
-    return;
+
+  // Handle accumulation.
+  if (repeat_count && parameters.is_cumulative) {
+    SVGTransform* effective_to_at_end =
+        !to_at_end_of_duration_list->IsEmpty()
+            ? to_at_end_of_duration_list->at(0)
+            : MakeGarbageCollected<SVGTransform>(
+                  to_transform->TransformType(),
+                  SVGTransform::kConstructZeroTransform);
+    current_transform = SVGTransformDistance::AddSVGTransforms(
+        current_transform, effective_to_at_end, repeat_count);
   }
 
   // If additive, we accumulate into (append to) the underlying value.
@@ -482,18 +489,7 @@ void SVGTransformList::CalculateAnimatedValue(
       Clear();
   }
 
-  if (repeat_count && parameters.is_cumulative) {
-    SVGTransform* effective_to_at_end =
-        !to_at_end_of_duration_list->IsEmpty()
-            ? to_at_end_of_duration_list->at(0)
-            : MakeGarbageCollected<SVGTransform>(
-                  to_transform->TransformType(),
-                  SVGTransform::kConstructZeroTransform);
-    Append(SVGTransformDistance::AddSVGTransforms(
-        current_transform, effective_to_at_end, repeat_count));
-  } else {
-    Append(current_transform);
-  }
+  Append(current_transform);
 }
 
 float SVGTransformList::CalculateDistance(SVGPropertyBase* to_value,

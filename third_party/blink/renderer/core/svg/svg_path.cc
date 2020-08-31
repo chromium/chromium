@@ -139,45 +139,39 @@ void SVGPath::CalculateAnimatedValue(
     return;
 
   const auto& from = To<SVGPath>(*from_value);
-  const SVGPathByteStream* from_stream = &from.ByteStream();
-
-  std::unique_ptr<SVGPathByteStream> copy;
-  if (parameters.is_to_animation) {
-    copy = ByteStream().Clone();
-    from_stream = copy.get();
-  }
+  const SVGPathByteStream& from_stream = from.ByteStream();
 
   // If the 'from' value is given and it's length doesn't match the 'to' value
   // list length, fallback to a discrete animation.
-  if (from_stream->size() != to_stream.size() && from_stream->size()) {
-    if (percentage < 0.5) {
-      if (!parameters.is_to_animation) {
-        path_value_ = from.PathValue();
-        return;
-      }
-    } else {
-      path_value_ = to.PathValue();
-      return;
-    }
+  if (from_stream.size() != to_stream.size() && from_stream.size()) {
+    // If this is a 'to' animation, the "from" value will be the same
+    // object as this object, so this will be a no-op but shouldn't
+    // clobber the object.
+    path_value_ = percentage < 0.5 ? from.PathValue() : to.PathValue();
+    return;
   }
 
+  // If this is a 'to' animation, the "from" value will be the same
+  // object as this object, so make sure to update the state of this
+  // object as the last thing to avoid clobbering the result. As long
+  // as all intermediate results are computed into |new_stream| that
+  // should be unproblematic.
   std::unique_ptr<SVGPathByteStream> new_stream =
-      BlendPathByteStreams(*from_stream, to_stream, percentage);
+      BlendPathByteStreams(from_stream, to_stream, percentage);
 
-  if (!parameters.is_to_animation) {
-    // Handle additive='sum'.
-    if (parameters.is_additive) {
-      new_stream =
-          ConditionallyAddPathByteStreams(std::move(new_stream), ByteStream());
-    }
-
-    // Handle accumulate='sum'.
-    if (repeat_count && parameters.is_cumulative) {
-      new_stream = ConditionallyAddPathByteStreams(
-          std::move(new_stream),
-          To<SVGPath>(to_at_end_of_duration_value)->ByteStream(), repeat_count);
-    }
+  // Handle accumulate='sum'.
+  if (repeat_count && parameters.is_cumulative) {
+    new_stream = ConditionallyAddPathByteStreams(
+        std::move(new_stream),
+        To<SVGPath>(to_at_end_of_duration_value)->ByteStream(), repeat_count);
   }
+
+  // Handle additive='sum'.
+  if (parameters.is_additive) {
+    new_stream =
+        ConditionallyAddPathByteStreams(std::move(new_stream), ByteStream());
+  }
+
   path_value_ = MakeGarbageCollected<CSSPathValue>(std::move(new_stream));
 }
 
