@@ -1400,8 +1400,14 @@ void Layer::SetBoundsFromAnimation(const gfx::Rect& bounds,
   if (old_bounds.origin() != bounds_.origin())
     RecomputePosition();
 
+  auto ptr = weak_ptr_factory_.GetWeakPtr();
+
   if (delegate_)
     delegate_->OnLayerBoundsChanged(old_bounds, reason);
+
+  // The layer may be deleted in the observer.
+  if (!ptr)
+    return;
 
   if (bounds.size() == old_bounds.size()) {
     // Don't schedule a draw if we're invisible. We'll schedule one

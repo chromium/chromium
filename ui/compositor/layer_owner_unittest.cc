@@ -212,4 +212,37 @@ TEST_F(LayerOwnerTestWithCompositor,
   EXPECT_TRUE(animation->animation_timeline());
 }
 
+namespace {
+
+class TestLayerDelegate : public LayerDelegate {
+ public:
+  explicit TestLayerDelegate(ui::LayerOwner* owner) : owner_(owner) {}
+  TestLayerDelegate(TestLayerDelegate&) = delete;
+  TestLayerDelegate& operator=(TestLayerDelegate&) = delete;
+  ~TestLayerDelegate() override = default;
+
+  // LayerDelegate:
+  void OnPaintLayer(const PaintContext& context) override {}
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+  void OnLayerBoundsChanged(const gfx::Rect& old_bounds,
+                            PropertyChangeReason reason) override {
+    owner_->RecreateLayer();
+  }
+
+ private:
+  ui::LayerOwner* owner_;
+};
+
+}  // namespace
+
+// Test if recreating a layer in OnLayerBoundsChanged will not
+// cause a use-after-free.
+TEST_F(LayerOwnerTestWithCompositor, DeleteOnLayerBoundsChanged) {
+  LayerOwnerForTesting owner(std::make_unique<Layer>());
+  TestLayerDelegate delegate(&owner);
+  owner.layer()->set_delegate(&delegate);
+  owner.layer()->SetBounds(gfx::Rect(100, 100));
+}
+
 }  // namespace ui
