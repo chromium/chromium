@@ -21,6 +21,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
@@ -128,18 +129,18 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   static void Create(
       const Options& options,
       StartUploadCb start_upload_cb,
+      scoped_refptr<EncryptionModule> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
           completion_cb);
 
-  // Serializes EncryptedRecord (taking ownership of it) and writes the
-  // resulting blob into the StorageQueue (the last file of it) with the next
-  // sequencing number assigned. The write is a non-blocking operation - caller
-  // can "fire and forget" it (|completion_cb| allows to verify that record has
-  // been successfully enqueued). If file is going to become too large, it is
-  // closed and new file is created.
+  // Wraps and serializes Record (taking ownership of it), encrypts and writes
+  // the resulting blob into the StorageQueue (the last file of it) with the
+  // next sequencing number assigned. The write is a non-blocking operation -
+  // caller can "fire and forget" it (|completion_cb| allows to verify that
+  // record has been successfully enqueued). If file is going to become too
+  // large, it is closed and new file is created.
   // Helper methods: AssignLastFile, WriteHeaderAndBlock.
-  void Write(EncryptedRecord record,
-             base::OnceCallback<void(Status)> completion_cb);
+  void Write(Record record, base::OnceCallback<void(Status)> completion_cb);
 
   // Confirms acceptance of the records up to |seq_number| (inclusively).
   // All records with sequencing numbers <= this one can be removed from
@@ -237,7 +238,9 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   };
 
   // Private constructor, to be called by Create factory method only.
-  StorageQueue(const Options& options, StartUploadCb start_upload_cb);
+  StorageQueue(const Options& options,
+               StartUploadCb start_upload_cb,
+               scoped_refptr<EncryptionModule> encryption_module);
 
   // Initializes the object by enumerating files in the assigned directory
   // and determines the sequencing information of the last record.
@@ -313,6 +316,9 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
   // Upload provider callback.
   const StartUploadCb start_upload_cb_;
+
+  // Encryption module.
+  scoped_refptr<EncryptionModule> encryption_module_;
 
   // Sequential task runner for all activities in this StorageQueue.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

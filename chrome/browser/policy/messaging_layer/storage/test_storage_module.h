@@ -26,23 +26,23 @@ class TestStorageModule : public StorageModule {
 
   MOCK_METHOD(void,
               AddRecord,
-              (EncryptedRecord record,
-               Priority priority,
+              (Priority priority,
+               Record record,
                base::OnceCallback<void(Status)> callback),
               (override));
 
-  WrappedRecord wrapped_record() const;
+  Record record() const;
   Priority priority() const;
 
  protected:
   ~TestStorageModule() override;
 
  private:
-  void AddRecordSuccessfully(EncryptedRecord record,
-                             Priority priority,
+  void AddRecordSuccessfully(Priority priority,
+                             Record record,
                              base::OnceCallback<void(Status)> callback);
 
-  base::Optional<WrappedRecord> wrapped_record_;
+  base::Optional<Record> record_;
   base::Optional<Priority> priority_;
 };
 

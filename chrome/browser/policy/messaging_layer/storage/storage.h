@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_queue.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -79,14 +80,15 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   static void Create(
       const Options& options,
       StartUploadCb start_upload_cb,
+      scoped_refptr<EncryptionModule> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb);
 
-  // Serializes EncryptedRecord (taking ownership of it) and writes the
-  // resulting blob into the Storage (the last file of it) according to the
+  // Wraps and serializes Record (taking ownership of it), encrypts and writes
+  // the resulting blob into the Storage (the last file of it) according to the
   // priority with the next sequencing number assigned. If file is going to
   // become too large, it is closed and new file is created.
   void Write(Priority priority,
-             EncryptedRecord record,
+             Record record,
              base::OnceCallback<void(Status)> completion_cb);
 
   // Confirms acceptance of the records according to the priority up to

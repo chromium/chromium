@@ -9,6 +9,8 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -23,6 +25,7 @@ class StorageModule : public base::RefCountedThreadSafe<StorageModule> {
   static void Create(
       const Storage::Options& options,
       Storage::StartUploadCb start_upload_cb,
+      scoped_refptr<EncryptionModule> encryption_module,
       base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)>
           callback);
 
@@ -32,8 +35,8 @@ class StorageModule : public base::RefCountedThreadSafe<StorageModule> {
   // AddRecord will add |record| (taking ownership) to the |StorageModule|
   // according to the provided |priority|. On completion, |callback| will be
   // called.
-  virtual void AddRecord(reporting::EncryptedRecord record,
-                         reporting::Priority priority,
+  virtual void AddRecord(Priority priority,
+                         Record record,
                          base::OnceCallback<void(Status)> callback);
 
   // Once a record has been successfully uploaded, the sequencing information

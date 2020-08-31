@@ -28,26 +28,22 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/proto/record.pb.h"
 #include "components/policy/proto/record_constants.pb.h"
-#include "crypto/sha2.h"
 
 namespace reporting {
 
 std::unique_ptr<ReportQueue> ReportQueue::Create(
     std::unique_ptr<ReportQueueConfiguration> config,
-    scoped_refptr<StorageModule> storage,
-    scoped_refptr<EncryptionModule> encryption) {
+    scoped_refptr<StorageModule> storage) {
   return base::WrapUnique<ReportQueue>(
-      new ReportQueue(std::move(config), storage, encryption));
+      new ReportQueue(std::move(config), storage));
 }
 
 ReportQueue::~ReportQueue() = default;
 
 ReportQueue::ReportQueue(std::unique_ptr<ReportQueueConfiguration> config,
-                         scoped_refptr<StorageModule> storage,
-                         scoped_refptr<EncryptionModule> encryption)
+                         scoped_refptr<StorageModule> storage)
     : config_(std::move(config)),
       storage_(storage),
-      encryption_(encryption),
       sequenced_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits())) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -91,49 +87,18 @@ Status ReportQueue::AddRecord(base::StringPiece record,
   return Status::StatusOK();
 }
 
-void ReportQueue::SendRecordToStorage(std::string record,
+void ReportQueue::SendRecordToStorage(base::StringPiece record_data,
                                       EnqueueCallback callback) {
-  ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(WrappedRecord wrapped_record, callback,
-                                     WrapRecord(record));
-
-  std::string serialized_wrapped_record;
-  wrapped_record.SerializeToString(&serialized_wrapped_record);
-
-  encryption_->EncryptRecord(
-      serialized_wrapped_record,
-      base::BindOnce(
-          [](const Priority& priority, scoped_refptr<StorageModule> storage,
-             EnqueueCallback callback,
-             StatusOr<EncryptedRecord> encrypted_record_result) {
-            if (!encrypted_record_result.ok()) {
-              std::move(callback).Run(encrypted_record_result.status());
-              return;
-            }
-            // Complete EncryptedRecord.
-            auto& encrypted_record = encrypted_record_result.ValueOrDie();
-            auto* sequencing_information =
-                encrypted_record.mutable_sequencing_information();
-            sequencing_information->set_priority(priority);
-            storage->AddRecord(encrypted_record, priority, std::move(callback));
-          },
-          config_->priority(), storage_, std::move(callback)));
+  storage_->AddRecord(config_->priority(), AugmentRecord(record_data),
+                      std::move(callback));
 }
 
-StatusOr<WrappedRecord> ReportQueue::WrapRecord(base::StringPiece record_data) {
-  WrappedRecord wrapped_record;
-
-  Record* record = wrapped_record.mutable_record();
-  record->set_data(std::string(record_data));
-  record->set_destination(config_->destination());
-  record->set_dm_token(config_->dm_token().value());
-
-  std::string record_digest;
-  record->SerializeToString(&record_digest);
-  wrapped_record.set_record_digest(crypto::SHA256HashString(record_digest));
-
-  ASSIGN_OR_RETURN(*wrapped_record.mutable_last_record_digest(),
-                   GetLastRecordDigest());
-  return wrapped_record;
+Record ReportQueue::AugmentRecord(base::StringPiece record_data) {
+  Record record;
+  record.set_data(std::string(record_data));
+  record.set_destination(config_->destination());
+  record.set_dm_token(config_->dm_token().value());
+  return record;
 }
 
 StatusOr<std::string> ReportQueue::GetLastRecordDigest() {

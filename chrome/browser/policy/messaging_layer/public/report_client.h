@@ -10,7 +10,6 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/singleton.h"
-#include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_module.h"
@@ -23,8 +22,7 @@
 namespace reporting {
 
 // ReportingClient acts a single point for creating |reporting::ReportQueue|s.
-// It ensures that all ReportQueues are created with the same storage and
-// encryption settings.
+// It ensures that all ReportQueues are created with the same storage settings.
 //
 // Example Usage:
 // Status SendMessage(google::protobuf::ImportantMessage important_message,
@@ -43,7 +41,6 @@ class ReportingClient {
 
     std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client;
     scoped_refptr<StorageModule> storage;
-    scoped_refptr<EncryptionModule> encryption;
   };
 
   using CreateReportQueueResponse = StatusOr<std::unique_ptr<ReportQueue>>;
@@ -136,12 +133,6 @@ class ReportingClient {
     void OnStorageModuleConfigured(
         StatusOr<scoped_refptr<StorageModule>> storage_result);
 
-    // ConfigureEncryptionModule will build an |EncryptionModule| and add it
-    // to the |client_config_|.
-    void ConfigureEncryptionModule();
-    void OnEncryptionModuleConfigured(
-        StatusOr<scoped_refptr<EncryptionModule>> encryption_result);
-
     void UpdateConfiguration();
 
     // Complete calls response with |client_config_|
@@ -162,12 +153,9 @@ class ReportingClient {
 
   // Allows a user to asynchronously create a |ReportQueue|. Will create an
   // underlying ReportingClient if it doesn't exists. The callback will contain
-  // an error if |storage_| or |encryption_| cannot be instantiated for any
-  // reason.
+  // an error if |storage_| cannot be instantiated for any reason.
   //
   // TODO(chromium:1078512): Once the StorageModule is ready, update this
-  // comment with concrete failure conditions.
-  // TODO(chromium:1078512): Once the EncryptionModule is ready, update this
   // comment with concrete failure conditions.
   static void CreateReportQueue(
       std::unique_ptr<ReportQueueConfiguration> config,
@@ -253,6 +241,7 @@ class ReportingClient {
   scoped_refptr<InitializationStateTracker> init_state_tracker_;
   BuildCloudPolicyClientCallback build_cloud_policy_client_cb_;
 
+  scoped_refptr<StorageModule> storage_;
   std::unique_ptr<UploadClient> upload_client_;
   std::unique_ptr<Configuration> config_;
 };

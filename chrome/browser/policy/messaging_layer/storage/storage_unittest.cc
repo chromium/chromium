@@ -11,8 +11,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
+#include "components/policy/proto/record.pb.h"
+#include "components/policy/proto/record_constants.pb.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +29,7 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::Sequence;
 using ::testing::StrEq;
+using ::testing::WithArg;
 
 namespace reporting {
 namespace {
@@ -73,17 +77,23 @@ class MockUploadClient : public Storage::UploaderInterface {
  public:
   MockUploadClient() = default;
 
-  void ProcessRecord(StatusOr<EncryptedRecord> record,
+  void ProcessRecord(StatusOr<EncryptedRecord> encrypted_record,
                      base::OnceCallback<void(bool)> processed_cb) override {
-    if (!record.ok()) {
-      std::move(processed_cb).Run(UploadRecordFailure(record.status()));
+    if (!encrypted_record.ok()) {
+      std::move(processed_cb)
+          .Run(UploadRecordFailure(encrypted_record.status()));
       return;
     }
+    WrappedRecord wrapped_record;
+    ASSERT_TRUE(wrapped_record.ParseFromString(
+        encrypted_record.ValueOrDie().encrypted_wrapped_record()));
     std::move(processed_cb)
         .Run(UploadRecord(
-            record.ValueOrDie().sequencing_information().priority(),
-            record.ValueOrDie().sequencing_information().sequencing_id(),
-            record.ValueOrDie().encrypted_wrapped_record()));
+            encrypted_record.ValueOrDie().sequencing_information().priority(),
+            encrypted_record.ValueOrDie()
+                .sequencing_information()
+                .sequencing_id(),
+            wrapped_record.record().data()));
   }
 
   void Completed(Status status) override { UploadComplete(status); }
@@ -162,11 +172,13 @@ class StorageTest : public ::testing::Test {
 
   void CreateStorageTestOrDie(const Storage::Options& options) {
     ASSERT_FALSE(storage_) << "StorageTest already assigned";
+    test_encryption_module_ =
+        base::MakeRefCounted<test::TestEncryptionModule>();
     TestEvent<StatusOr<scoped_refptr<Storage>>> e;
     Storage::Create(options,
                     base::BindRepeating(&StorageTest::BuildMockUploader,
                                         base::Unretained(this)),
-                    e.cb());
+                    test_encryption_module_, e.cb());
     StatusOr<scoped_refptr<Storage>> storage_result = e.result();
     ASSERT_OK(storage_result)
         << "Failed to create StorageTest, error=" << storage_result.status();
@@ -185,13 +197,19 @@ class StorageTest : public ::testing::Test {
     return uploader;
   }
 
-  void WriteStringOrDie(Priority priority, base::StringPiece data) {
+  Status WriteString(Priority priority, base::StringPiece data) {
     TestEvent<Status> w;
-    ASSERT_TRUE(storage_) << "Storage not created yet";
-    EncryptedRecord record;
-    record.mutable_encrypted_wrapped_record()->assign(data.data(), data.size());
+    EXPECT_TRUE(storage_) << "Storage not created yet";
+    Record record;
+    record.set_data(std::string(data));
+    record.set_destination(UPLOAD_EVENTS);
+    record.set_dm_token("DM TOKEN");
     storage_->Write(priority, std::move(record), w.cb());
-    const Status write_result = w.result();
+    return w.result();
+  }
+
+  void WriteStringOrDie(Priority priority, base::StringPiece data) {
+    const Status write_result = WriteString(priority, data);
     ASSERT_OK(write_result) << write_result;
   }
 
@@ -203,6 +221,7 @@ class StorageTest : public ::testing::Test {
   }
 
   base::ScopedTempDir location_;
+  scoped_refptr<test::TestEncryptionModule> test_encryption_module_;
   scoped_refptr<Storage> storage_;
 
   ::testing::MockFunction<void(Priority, MockUploadClient*)>
@@ -608,6 +627,19 @@ TEST_F(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
                 .Required(2, more_data[2]);
           }));
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(20));
+}
+
+TEST_F(StorageTest, WriteEncryptFailure) {
+  CreateStorageTestOrDie(BuildStorageOptions());
+  DCHECK(test_encryption_module_);
+  EXPECT_CALL(*test_encryption_module_, EncryptRecord(_, _))
+      .WillOnce(WithArg<1>(
+          Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
+            std::move(cb).Run(Status(error::UNKNOWN, "Failing for tests"));
+          })));
+  const Status result = WriteString(FAST_BATCH, "TEST_MESSAGE");
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error_code(), error::UNKNOWN);
 }
 
 }  // namespace

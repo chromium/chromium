@@ -15,8 +15,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
-#include "chrome/browser/policy/messaging_layer/encryption/test_encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/proto/test.pb.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_module.h"
@@ -37,7 +35,6 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArg;
 
-using ::reporting::test::TestEncryptionModule;
 using ::reporting::test::TestStorageModule;
 
 namespace reporting {
@@ -105,7 +102,6 @@ class ReportQueueTest : public testing::Test {
         dm_token_(DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN")),
         destination_(Destination::UPLOAD_EVENTS),
         storage_module_(base::MakeRefCounted<TestStorageModule>()),
-        encryption_module_(base::MakeRefCounted<TestEncryptionModule>()),
         policy_check_callback_(
             base::BindRepeating(&ReportQueueTest::MockedPolicyCheck,
                                 base::Unretained(this))) {}
@@ -121,7 +117,7 @@ class ReportQueueTest : public testing::Test {
 
     StatusOr<std::unique_ptr<ReportQueue>> report_queue_result =
         ReportQueue::Create(std::move(config_result.ValueOrDie()),
-                            storage_module_, encryption_module_);
+                            storage_module_);
 
     ASSERT_TRUE(report_queue_result.ok());
 
@@ -133,14 +129,6 @@ class ReportQueueTest : public testing::Test {
         google::protobuf::down_cast<TestStorageModule*>(storage_module_.get());
     DCHECK(test_storage_module);
     return test_storage_module;
-  }
-
-  TestEncryptionModule* test_encryption_module() const {
-    TestEncryptionModule* test_encryption_module =
-        google::protobuf::down_cast<TestEncryptionModule*>(
-            encryption_module_.get());
-    DCHECK(test_encryption_module);
-    return test_encryption_module;
   }
 
   MOCK_METHOD(Status, MockedPolicyCheck, (), ());
@@ -156,7 +144,6 @@ class ReportQueueTest : public testing::Test {
   const DMToken dm_token_;
   const Destination destination_;
   scoped_refptr<StorageModule> storage_module_;
-  scoped_refptr<EncryptionModule> encryption_module_;
   ReportQueueConfiguration::PolicyCheckCallback policy_check_callback_;
 };
 
@@ -171,8 +158,7 @@ TEST_F(ReportQueueTest, SuccessfulStringRecord) {
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
 
-  EXPECT_EQ(test_storage_module()->wrapped_record().record().data(),
-            kTestString);
+  EXPECT_EQ(test_storage_module()->record().data(), kTestString);
 }
 
 // Enqueues a |base::Value| dictionary and ensures it arrives unaltered in the
@@ -189,8 +175,8 @@ TEST_F(ReportQueueTest, SuccessfulBaseValueRecord) {
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
 
-  base::Optional<base::Value> value_result = base::JSONReader::Read(
-      test_storage_module()->wrapped_record().record().data());
+  base::Optional<base::Value> value_result =
+      base::JSONReader::Read(test_storage_module()->record().data());
   ASSERT_TRUE(value_result);
   EXPECT_EQ(value_result.value(), test_dict);
 }
@@ -208,8 +194,8 @@ TEST_F(ReportQueueTest, SuccessfulProtoRecord) {
   EXPECT_EQ(test_storage_module()->priority(), priority_);
 
   reporting::test::TestMessage result_message;
-  ASSERT_TRUE(result_message.ParseFromString(
-      test_storage_module()->wrapped_record().record().data()));
+  ASSERT_TRUE(
+      result_message.ParseFromString(test_storage_module()->record().data()));
   ASSERT_EQ(result_message.test(), test_message.test());
 }
 
@@ -223,25 +209,6 @@ TEST_F(ReportQueueTest, CallSuccessCallbackFailure) {
             std::move(callback).Run(Status(error::UNKNOWN, "Failing for Test"));
           })));
 
-  reporting::test::TestMessage test_message;
-  test_message.set_test("TEST_MESSAGE");
-  TestEvent<Status> a;
-  Status status = report_queue_->Enqueue(&test_message, a.cb());
-  ASSERT_OK(status);
-  auto result = a.result();
-  EXPECT_FALSE(result.ok());
-  EXPECT_EQ(result.error_code(), error::UNKNOWN);
-}
-
-// The call to enqueue should succeed, indicating that the encryption operation
-// has been scheduled. The callback should fail, indicating that encryption was
-// unsuccessful.
-TEST_F(ReportQueueTest, EnqueueSuccessEncryptFailure) {
-  EXPECT_CALL(*test_encryption_module(), EncryptRecord(_, _))
-      .WillOnce(WithArg<1>(
-          Invoke([](base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb) {
-            std::move(cb).Run(Status(error::UNKNOWN, "Failing for tests"));
-          })));
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
   TestEvent<Status> a;

@@ -25,9 +25,9 @@ TestStorageModule::TestStorageModule() {
 
 TestStorageModule::~TestStorageModule() = default;
 
-WrappedRecord TestStorageModule::wrapped_record() const {
-  EXPECT_TRUE(wrapped_record_.has_value());
-  return wrapped_record_.value();
+Record TestStorageModule::record() const {
+  EXPECT_TRUE(record_.has_value());
+  return record_.value();
 }
 
 Priority TestStorageModule::priority() const {
@@ -36,13 +36,10 @@ Priority TestStorageModule::priority() const {
 }
 
 void TestStorageModule::AddRecordSuccessfully(
-    EncryptedRecord record,
     Priority priority,
+    Record record,
     base::OnceCallback<void(Status)> callback) {
-  WrappedRecord wrapped_record;
-  ASSERT_TRUE(
-      wrapped_record.ParseFromString(record.encrypted_wrapped_record()));
-  wrapped_record_ = wrapped_record;
+  record_ = std::move(record);
   priority_ = priority;
   std::move(callback).Run(Status::StatusOK());
 }

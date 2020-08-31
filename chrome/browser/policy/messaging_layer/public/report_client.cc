@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_module.h"
@@ -433,7 +433,7 @@ void ReportingClient::InitializingContext::ConfigureStorageModule() {
   base::FilePath reporting_path = user_data_dir.Append(kReportingDirectory);
   StorageModule::Create(
       Storage::Options().set_directory(reporting_path),
-      std::move(start_upload_cb_),
+      std::move(start_upload_cb_), base::MakeRefCounted<EncryptionModule>(),
       base::BindOnce(
           &ReportingClient::InitializingContext::OnStorageModuleConfigured,
           base::Unretained(this)));
@@ -449,26 +449,6 @@ void ReportingClient::InitializingContext::OnStorageModuleConfigured(
   }
 
   client_config_->storage = storage_result.ValueOrDie();
-  Schedule(&ReportingClient::InitializingContext::ConfigureEncryptionModule,
-           base::Unretained(this));
-}
-
-// TODO(chromium:1078512) Currently we use a stub encryption module. In the
-// future it needs to be replaced with a real one.
-void ReportingClient::InitializingContext::ConfigureEncryptionModule() {
-  OnEncryptionModuleConfigured(base::MakeRefCounted<EncryptionModule>());
-}
-
-void ReportingClient::InitializingContext::OnEncryptionModuleConfigured(
-    StatusOr<scoped_refptr<EncryptionModule>> encryption_result) {
-  if (!encryption_result.ok()) {
-    Complete(Status(error::FAILED_PRECONDITION,
-                    base::StrCat({"Unable to build EncryptionModule: ",
-                                  encryption_result.status().message()})));
-    return;
-  }
-
-  client_config_->encryption = encryption_result.ValueOrDie();
   Schedule(&ReportingClient::InitializingContext::UpdateConfiguration,
            base::Unretained(this));
 }
@@ -605,17 +585,14 @@ void ReportingClient::BuildRequestQueue(
   // the create_request_queue_.sequenced_task_runner_, so we post the task to a
   // general thread.
   base::ThreadPool::PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<StorageModule> storage_module,
-             scoped_refptr<EncryptionModule> encryption_module,
-             CreateReportQueueRequest report_queue_request) {
-            std::move(report_queue_request.create_cb())
-                .Run(ReportQueue::Create(report_queue_request.config(),
-                                         storage_module, encryption_module));
-          },
-          config_->storage, config_->encryption,
-          std::move(pop_result.ValueOrDie())));
+      FROM_HERE, base::BindOnce(
+                     [](scoped_refptr<StorageModule> storage_module,
+                        CreateReportQueueRequest report_queue_request) {
+                       std::move(report_queue_request.create_cb())
+                           .Run(ReportQueue::Create(
+                               report_queue_request.config(), storage_module));
+                     },
+                     config_->storage, std::move(pop_result.ValueOrDie())));
 
   // Build the next item asynchronously
   create_request_queue_->Pop(base::BindOnce(&ReportingClient::BuildRequestQueue,

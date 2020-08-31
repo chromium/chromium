@@ -30,6 +30,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption_module.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -72,6 +73,7 @@ struct RecordHeader {
 void StorageQueue::Create(
     const Options& options,
     StartUploadCb start_upload_cb,
+    scoped_refptr<EncryptionModule> encryption_module,
     base::OnceCallback<void(StatusOr<scoped_refptr<StorageQueue>>)>
         completion_cb) {
   // Initialize StorageQueue object loading the data.
@@ -109,7 +111,7 @@ void StorageQueue::Create(
   // Cannot use base::MakeRefCounted<StorageQueue>, because constructor is
   // private.
   scoped_refptr<StorageQueue> storage_queue = base::WrapRefCounted(
-      new StorageQueue(options, std::move(start_upload_cb)));
+      new StorageQueue(options, std::move(start_upload_cb), encryption_module));
 
   // Asynchronously run initialization.
   Start<StorageQueueInitContext>(std::move(storage_queue),
@@ -117,9 +119,11 @@ void StorageQueue::Create(
 }
 
 StorageQueue::StorageQueue(const Options& options,
-                           StartUploadCb start_upload_cb)
+                           StartUploadCb start_upload_cb,
+                           scoped_refptr<EncryptionModule> encryption_module)
     : options_(options),
       start_upload_cb_(std::move(start_upload_cb)),
+      encryption_module_(encryption_module),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
   DETACH_FROM_SEQUENCE(storage_queue_sequence_checker_);
@@ -619,7 +623,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
 
 class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
  public:
-  WriteContext(EncryptedRecord record,
+  WriteContext(Record record,
                base::OnceCallback<void(Status)> write_callback,
                scoped_refptr<StorageQueue> storage_queue)
       : TaskRunnerContext<Status>(std::move(write_callback),
@@ -648,18 +652,70 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
 
     // Make sure the record is valid.
-    if (record_.has_sequencing_information()) {
+    if (!record_.has_destination()) {
       Response(Status(error::FAILED_PRECONDITION,
-                      "Malformed record: already has sequeincing information"));
+                      "Malformed record: missing destination"));
+      return;
+    }
+    if (!record_.has_dm_token()) {
+      Response(Status(error::FAILED_PRECONDITION,
+                      "Malformed record: missing dm_token"));
       return;
     }
 
-    // Serialize record into a string.
+    // Wrap the record.
+    WrappedRecord wrapped_record;
+    *wrapped_record.mutable_record() = std::move(record_);
+    // Later: add digests to the wrapped record.
+
+    // Serialize and encrypt wrapped record on a thread pool.
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        base::BindOnce(&WriteContext::SerializeAndEncryptWrappedRecord,
+                       base::Unretained(this), std::move(wrapped_record)));
+  }
+
+  void SerializeAndEncryptWrappedRecord(WrappedRecord wrapped_record) {
+    // Serialize wrapped record into a string.
     std::string buffer;
-    if (!record_.SerializeToString(&buffer)) {
-      Response(Status(error::DATA_LOSS, "Cannot serialize record"));
+    if (!wrapped_record.SerializeToString(&buffer)) {
+      Schedule(&ReadContext::Response, base::Unretained(this),
+               Status(error::DATA_LOSS, "Cannot serialize record"));
       return;
     }
+    wrapped_record.Clear();  // Release wrapped record memory.
+
+    // Encrypt the result.
+    storage_queue_->encryption_module_->EncryptRecord(
+        buffer, base::BindOnce(&WriteContext::OnEncryptedRecordReady,
+                               base::Unretained(this)));
+  }
+
+  void OnEncryptedRecordReady(
+      StatusOr<EncryptedRecord> encrypted_record_result) {
+    if (!encrypted_record_result.ok()) {
+      // Failed to serialize or encrypt.
+      Schedule(&ReadContext::Response, base::Unretained(this),
+               encrypted_record_result.status());
+      return;
+    }
+
+    // Serialize encrypted record.
+    std::string buffer;
+    if (!encrypted_record_result.ValueOrDie().SerializeToString(&buffer)) {
+      Schedule(&ReadContext::Response, base::Unretained(this),
+               Status(error::DATA_LOSS, "Cannot serialize EncryptedRecord"));
+      return;
+    }
+    encrypted_record_result.ValueOrDie()
+        .Clear();  // Release encrypted record memory.
+
+    // Write into storage on sequntial task runner.
+    Schedule(&WriteContext::WriteRecord, base::Unretained(this), buffer);
+  }
+
+  void WriteRecord(base::StringPiece buffer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
 
     // Prepare uploader, if need to run it after Write.
     if (storage_queue_->options_.upload_period().is_zero()) {
@@ -694,7 +750,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
 
   scoped_refptr<StorageQueue> storage_queue_;
 
-  EncryptedRecord record_;
+  Record record_;
 
   // Upload provider (if any).
   std::unique_ptr<UploaderInterface> uploader_;
@@ -702,7 +758,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   SEQUENCE_CHECKER(write_sequence_checker_);
 };
 
-void StorageQueue::Write(EncryptedRecord record,
+void StorageQueue::Write(Record record,
                          base::OnceCallback<void(Status)> completion_cb) {
   Start<WriteContext>(std::move(record), std::move(completion_cb), this);
 }
