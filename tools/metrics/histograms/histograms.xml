@@ -692,34 +692,119 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaptions" enum="BooleanEnabled"
+<histogram name="Accessibility.LiveCaption" enum="BooleanEnabled"
     expires_after="2021-04-30">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Whether Live Captions are enabled. This is logged once, 45 seconds after
-    startup.
+    Whether the Live Caption feature is enabled. This is logged once, 45 seconds
+    after startup.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.LiveCaptions.Session"
-    enum="LiveCaptionsSessionEvent" expires_after="2021-04-30">
+<histogram name="Accessibility.LiveCaption.AudioPropertyChanged"
+    enum="BooleanEnabled" expires_after="2021-04-30">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Logged when there's a change in the lifetime of a Live Captions audio
-    stream: When a session started and captions began arriving from the service,
-    when a session ended because the audio stream finished, or when the session
-    ended because a user clicked the close button on the caption bubble.
+    Whether the sample rate or channel count of a Live Caption audio stream
+    changed midstream. This is logged once per audio stream on the destruction
+    of the Cloud speech recognition client.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.FeatureEnabled"
+    enum="BooleanEnabled" expires_after="2021-04-30">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Live Caption feature flag is enabled. This is logged once at the
+    time of component registration.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.Session"
+    enum="LiveCaptionSessionEvent" expires_after="2021-04-30">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Logged when there's a change in the lifetime of a Live Caption audio stream:
+    When a session started and captions began arriving from the service, when a
+    session ended because the audio stream finished, or when the session ended
+    because a user clicked the close button on the caption bubble.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.ToggleEnabled" enum="BooleanEnabled"
+    expires_after="2021-04-30">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when a user enables or disables the Live Caption feature from
+    chrome://settings.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.WebsiteBlocked"
+    enum="BooleanEnabled" expires_after="2021-04-30">
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Live Caption feature is blocked because the website is on the
+    captioning blocklist. This is logged once per stream when the speech
+    recognition client is created.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaptions" enum="BooleanEnabled"
+    expires_after="2020-09-30">
+  <obsolete>
+    Removed 08/2020. Replaced by Accessibility.LiveCaption.
+  </obsolete>
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Live Caption feature is enabled. This is logged once, 45 seconds
+    after startup.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveCaptions.Session"
+    enum="LiveCaptionSessionEvent" expires_after="2020-09-30">
+  <obsolete>
+    Removed 08/2020. Replaced by Accessibility.LiveCaption.Session.
+  </obsolete>
+  <owner>katie@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Logged when there's a change in the lifetime of a Live Caption audio stream:
+    When a session started and captions began arriving from the service, when a
+    session ended because the audio stream finished, or when the session ended
+    because a user clicked the close button on the caption bubble.
   </summary>
 </histogram>
 
 <histogram name="Accessibility.LiveCaptions.ToggleEnabled"
-    enum="BooleanEnabled" expires_after="2021-04-30">
+    enum="BooleanEnabled" expires_after="2020-09-30">
+  <obsolete>
+    Removed 08/2020. Replaced by Accessibility.LiveCaption.ToggleEnabled.
+  </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>

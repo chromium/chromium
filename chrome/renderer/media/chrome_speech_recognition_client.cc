@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_frame.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -45,8 +46,11 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
       std::move(speech_recognition_context_receiver));
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       caption_host_.BindNewPipeAndPassReceiver());
+
   is_website_blocked_ = IsUrlBlocked(
       render_frame->GetWebFrame()->GetSecurityOrigin().ToString().Utf8());
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.WebsiteBlocked",
+                            is_website_blocked_);
 
   send_audio_callback_ = media::BindToCurrentLoop(base::BindRepeating(
       &ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService,

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/registration.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -49,6 +50,7 @@
 #if !defined(OS_ANDROID)
 #include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
+#include "media/base/media_switches.h"
 #endif
 
 #if defined(OS_CHROMEOS)
@@ -181,6 +183,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled",
+                            base::FeatureList::IsEnabled(media::kLiveCaption));
   component_updater::RegisterSODAComponent(cus, profile_prefs,
                                            base::OnceClosure());
   component_updater::RegisterSodaLanguageComponent(cus, profile_prefs);

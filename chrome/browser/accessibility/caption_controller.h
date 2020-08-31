@@ -43,7 +43,7 @@ class CaptionController : public BrowserListObserver, public KeyedService {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. These should be the same as
-  // LiveCaptionsSessionEvent in enums.xml.
+  // LiveCaptionSessionEvent in enums.xml.
   enum class SessionEvent {
     // We began receiving captions for an audio stream.
     kStreamStarted = 0,

@@ -493,7 +493,7 @@ void CaptionBubble::ButtonPressed(views::Button* sender,
     // bucket, but it will eventually be extended to report session starts and
     // natural session ends (when the audio stream ends).
     UMA_HISTOGRAM_ENUMERATION(
-        "Accessibility.LiveCaptions.Session",
+        "Accessibility.LiveCaption.Session",
         CaptionController::SessionEvent::kCloseButtonClicked);
     if (model_)
       model_->Close();

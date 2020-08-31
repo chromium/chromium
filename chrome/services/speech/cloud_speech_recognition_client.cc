@@ -5,6 +5,7 @@
 #include "chrome/services/speech/cloud_speech_recognition_client.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/google_streaming_api.pb.h"
@@ -44,11 +45,17 @@ CloudSpeechRecognitionClient::CloudSpeechRecognitionClient(
   ResetUrlLoaderFactory();
 }
 
-CloudSpeechRecognitionClient::~CloudSpeechRecognitionClient() = default;
+CloudSpeechRecognitionClient::~CloudSpeechRecognitionClient() {
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.AudioPropertyChanged",
+                            audio_property_changed_midstream_);
+}
 
 bool CloudSpeechRecognitionClient::DidAudioPropertyChange(int sample_rate,
                                                           int channel_count) {
-  return sample_rate != sample_rate_ || channel_count != channel_count_;
+  bool property_changed =
+      sample_rate != sample_rate_ || channel_count != channel_count_;
+  audio_property_changed_midstream_ |= property_changed;
+  return property_changed;
 }
 
 void CloudSpeechRecognitionClient::Initialize(const CloudSpeechConfig& config) {

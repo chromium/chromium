@@ -97,7 +97,6 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
   if (enabled == enabled_)
     return;
   enabled_ = enabled;
-
   UpdateSpeechRecognitionServiceEnabled();
   UpdateSpeechRecognitionLanguage();
   UpdateUIEnabled();
@@ -164,7 +163,7 @@ void CaptionController::UpdateUIEnabled() {
 }
 
 void CaptionController::UpdateAccessibilityCaptionHistograms() {
-  base::UmaHistogramBoolean("Accessibility.LiveCaptions", enabled_);
+  base::UmaHistogramBoolean("Accessibility.LiveCaption", enabled_);
 }
 
 void CaptionController::OnBrowserAdded(Browser* browser) {

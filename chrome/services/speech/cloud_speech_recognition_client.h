@@ -83,6 +83,10 @@ class CloudSpeechRecognitionClient : public speech::UpstreamLoaderClient,
   void ResetUrlLoaderFactory();
 
   bool is_initialized_ = false;
+
+  // Used by histogram only.
+  bool audio_property_changed_midstream_ = false;
+
   int sample_rate_ = 0;
   int channel_count_ = 0;
   std::string language_code_;
