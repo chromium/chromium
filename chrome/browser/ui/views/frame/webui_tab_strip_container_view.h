@@ -39,6 +39,7 @@ class WebView;
 
 class Browser;
 class BrowserView;
+enum class WebUITabStripDragDirection;
 class ImmersiveRevealedLock;
 
 class WebUITabStripContainerView : public TabStripUIEmbedder,
@@ -86,18 +87,14 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   class IPHController;
 
   // Called as we are dragged open.
+  bool CanStartDragToOpen(WebUITabStripDragDirection direction) const;
   void UpdateHeightForDragToOpen(float height_delta);
-
-  enum class FlingDirection {
-    kUp,
-    kDown,
-  };
 
   // Called when drag-to-open finishes. If |fling_direction| is present,
   // the user released their touch with a high velocity. We should use
   // just this direction to animate open or closed.
-  void EndDragToOpen(
-      base::Optional<FlingDirection> fling_direction = base::nullopt);
+  void EndDragToOpen(base::Optional<WebUITabStripDragDirection>
+                         fling_direction = base::nullopt);
 
   void SetContainerTargetVisibility(bool target_visible);
 

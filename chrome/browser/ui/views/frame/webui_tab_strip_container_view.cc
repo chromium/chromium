@@ -77,7 +77,29 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
+// Represents a drag or fling that either goes up or down. Defined here so we
+// can use it in module local methods.
+enum class WebUITabStripDragDirection { kUp, kDown };
+
 namespace {
+
+// Converts a y-delta to a drag direction.
+WebUITabStripDragDirection DragDirectionFromDelta(float delta) {
+  DCHECK(delta != 0.0f);
+  return delta > 0.0f ? WebUITabStripDragDirection::kDown
+                      : WebUITabStripDragDirection::kUp;
+}
+
+// Converts a swipe gesture to a drag direction, or none if the swipe is neither
+// up nor down.
+base::Optional<WebUITabStripDragDirection> DragDirectionFromSwipe(
+    const ui::GestureEvent* event) {
+  if (event->details().swipe_down())
+    return WebUITabStripDragDirection::kDown;
+  if (event->details().swipe_up())
+    return WebUITabStripDragDirection::kUp;
+  return base::nullopt;
+}
 
 bool EventTypeCanCloseTabStrip(const ui::EventType& type) {
   switch (type) {
@@ -268,19 +290,20 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
-      case ui::ET_GESTURE_SCROLL_BEGIN:
+      case ui::ET_GESTURE_SCROLL_BEGIN: {
         // Only treat this scroll as drag-to-open if the y component is
         // larger. Otherwise, leave the event unhandled. Horizontal
         // scrolls are used in the toolbar, e.g. for text scrolling in
         // the Omnibox.
-        if (event->details().scroll_y_hint() >
-            std::fabs(event->details().scroll_x_hint())) {
+        float y_delta = event->details().scroll_y_hint();
+        if (std::fabs(y_delta) > std::fabs(event->details().scroll_x_hint()) &&
+            container_->CanStartDragToOpen(DragDirectionFromDelta(y_delta))) {
           drag_in_progress_ = true;
-          container_->UpdateHeightForDragToOpen(
-              event->details().scroll_y_hint());
+          container_->UpdateHeightForDragToOpen(y_delta);
           event->SetHandled();
         }
         break;
+      }
       case ui::ET_GESTURE_SCROLL_UPDATE:
         if (drag_in_progress_) {
           container_->UpdateHeightForDragToOpen(event->details().scroll_y());
@@ -294,30 +317,31 @@ class WebUITabStripContainerView::DragToOpenHandler : public ui::EventHandler {
           drag_in_progress_ = false;
         }
         break;
-      case ui::ET_GESTURE_SWIPE:
+      case ui::ET_GESTURE_SWIPE: {
         // If a touch is released at high velocity, the scroll gesture
         // is "converted" to a swipe gesture. ET_GESTURE_END is still
         // sent after. From logging, it seems like ET_GESTURE_SCROLL_END
         // is sometimes also sent after this. It will be ignored here
         // since |drag_in_progress_| is set to false.
+        const auto direction = DragDirectionFromSwipe(event);
+
+        // If a swipe happens quickly enough, scroll events might not have
+        // been sent, so we may have to start one.
         if (!drag_in_progress_) {
-          // If a swipe happens quickly enough, scroll events might not
-          // have been sent. Tell the container a drag began.
+          if (!direction.has_value() ||
+              !container_->CanStartDragToOpen(direction.value())) {
+            break;
+          }
           container_->UpdateHeightForDragToOpen(0.0f);
         }
 
-        if (event->details().swipe_down() || event->details().swipe_up()) {
-          container_->EndDragToOpen(event->details().swipe_down()
-                                        ? FlingDirection::kDown
-                                        : FlingDirection::kUp);
-        } else {
-          // Treat a sideways swipe as a normal drag end.
-          container_->EndDragToOpen();
-        }
+        // If there is a direction, then end the drag with a fling, otherwise
+        // (in the case of a sideways fling) use the default release logic.
+        container_->EndDragToOpen(direction);
 
         event->SetHandled();
         drag_in_progress_ = false;
-        break;
+      } break;
       case ui::ET_GESTURE_END:
         if (drag_in_progress_) {
           // If an unsupported gesture is sent, ensure that we still
@@ -568,15 +592,23 @@ void WebUITabStripContainerView::CloseContainer() {
   iph_controller_->NotifyClosed();
 }
 
+bool WebUITabStripContainerView::CanStartDragToOpen(
+    WebUITabStripDragDirection direction) const {
+  // If we're already in a drag, then we can always continue dragging.
+  if (current_drag_height_)
+    return true;
+  return direction == (GetVisible() ? WebUITabStripDragDirection::kUp
+                                    : WebUITabStripDragDirection::kDown);
+}
+
 void WebUITabStripContainerView::UpdateHeightForDragToOpen(float height_delta) {
   if (!current_drag_height_) {
-    // If we are visible and aren't already dragging, ignore; either we are
-    // animating open, or the touch would've triggered autoclose.
-    if (GetVisible())
-      return;
+    const bool was_open = GetVisible();
+    DCHECK(!was_open || height_delta <= 0.0f);
+    DCHECK(was_open || height_delta >= 0.0f);
 
     SetVisible(true);
-    current_drag_height_ = 0;
+    current_drag_height_ = was_open ? height() : 0.0f;
     animation_.Reset();
   }
 
@@ -587,7 +619,7 @@ void WebUITabStripContainerView::UpdateHeightForDragToOpen(float height_delta) {
 }
 
 void WebUITabStripContainerView::EndDragToOpen(
-    base::Optional<FlingDirection> fling_direction) {
+    base::Optional<WebUITabStripDragDirection> fling_direction) {
   if (!current_drag_height_)
     return;
 
@@ -602,7 +634,7 @@ void WebUITabStripContainerView::EndDragToOpen(
   if (fling_direction) {
     // If this was a fling, ignore the final height and use the fling
     // direction.
-    opening = fling_direction == FlingDirection::kDown;
+    opening = (fling_direction == WebUITabStripDragDirection::kDown);
   }
 
   if (opening) {
