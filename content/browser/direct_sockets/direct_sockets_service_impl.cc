@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -28,7 +29,8 @@ GetPermissionCallbackForTesting() {
 }  // namespace
 
 DirectSocketsServiceImpl::DirectSocketsServiceImpl(RenderFrameHost& frame_host)
-    : frame_host_(&frame_host) {}
+    : WebContentsObserver(WebContents::FromRenderFrameHost(&frame_host)),
+      frame_host_(&frame_host) {}
 
 // static
 void DirectSocketsServiceImpl::CreateForFrame(
@@ -86,9 +88,22 @@ void DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
   GetPermissionCallbackForTesting() = std::move(callback);
 }
 
+void DirectSocketsServiceImpl::RenderFrameDeleted(
+    RenderFrameHost* render_frame_host) {
+  if (render_frame_host == frame_host_)
+    frame_host_ = nullptr;
+}
+
+void DirectSocketsServiceImpl::WebContentsDestroyed() {
+  frame_host_ = nullptr;
+}
+
 net::Error DirectSocketsServiceImpl::EnsurePermission(
     const blink::mojom::DirectSocketOptions& options) {
   DCHECK(base::FeatureList::IsEnabled(features::kDirectSockets));
+
+  if (!frame_host_)
+    return net::ERR_CONTEXT_SHUT_DOWN;
 
   if (GetPermissionCallbackForTesting())
     return GetPermissionCallbackForTesting().Run(options);

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
@@ -24,7 +25,8 @@ namespace content {
 
 // Implementation of the DirectSocketsService Mojo service.
 class CONTENT_EXPORT DirectSocketsServiceImpl
-    : public blink::mojom::DirectSocketsService {
+    : public blink::mojom::DirectSocketsService,
+      public WebContentsObserver {
  public:
   using PermissionCallback = base::RepeatingCallback<net::Error(
       const blink::mojom::DirectSocketOptions&)>;
@@ -45,14 +47,20 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   void OpenUdpSocket(blink::mojom::DirectSocketOptionsPtr options,
                      OpenUdpSocketCallback callback) override;
 
+  // WebContentsObserver override:
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
+  void WebContentsDestroyed() override;
+
   static void SetPermissionCallbackForTesting(PermissionCallback callback);
 
  private:
+  friend class DirectSocketsUnitTest;
+
   net::Error EnsurePermission(const blink::mojom::DirectSocketOptions& options);
 
   network::mojom::NetworkContext* GetNetworkContext();
 
-  RenderFrameHost* const frame_host_;
+  RenderFrameHost* frame_host_;
 };
 
 }  // namespace content
