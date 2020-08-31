@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.paint_preview.services;
 
+import android.app.Activity;
+import android.support.test.InstrumentationRegistry;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -13,7 +16,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -60,7 +62,61 @@ public class PaintPreviewTabServiceTest {
     }
 
     /**
-     * Verifies that a Tab's contents are captured when the page is loaded and subsequently deleted
+     * Verifies that a Tab's contents are captured when the activity is stopped.
+     */
+    @Test
+    @MediumTest
+    @Feature({"PaintPreview"})
+    public void testCapturedOnStopped() throws Exception {
+        EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
+        final String url = testServer.getURL("/chrome/test/data/android/about.html");
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true, false);
+            mTab.loadUrl(new LoadUrlParams(url));
+        });
+        // Give the tab time to complete layout before hiding.
+        TimeUnit.SECONDS.sleep(1);
+        int tabId = mTab.getId();
+
+        // Simulate closing the app.
+        Activity activity = mActivityTestRule.getActivity();
+        activity.getWindow().setLocalFocus(false, false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstrumentationRegistry.getInstrumentation().callActivityOnPause(activity);
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstrumentationRegistry.getInstrumentation().callActivityOnStop(activity);
+        });
+
+        // Allow time to capture.
+        CriteriaHelper.pollUiThread(() -> {
+            mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
+            return mPaintPreviewTabService.hasCaptureForTab(tabId);
+        }, "Paint Preview didn't get captured.", TIMEOUT_MS, POLLING_INTERVAL_MS);
+
+        // Simulate unpausing the app (for cleanup).
+        activity.getWindow().setLocalFocus(true, true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            InstrumentationRegistry.getInstrumentation().callActivityOnRestart(activity);
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
+            mTab = mTabModelSelector.getTabById(tabId);
+            mTabModel = mTabModelSelector.getModel(/*incognito*/ false);
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mTabModel.closeTab(mTab); });
+
+        CriteriaHelper.pollUiThread(() -> {
+            return !mPaintPreviewTabService.hasCaptureForTab(tabId);
+        }, "Paint Preview didn't get deleted.", TIMEOUT_MS, POLLING_INTERVAL_MS);
+    }
+
+    /**
+     * Verifies that a Tab's contents are captured when the tab is switched and subsequently deleted
      * when the tab is closed.
      */
     @Test
@@ -72,7 +128,8 @@ public class PaintPreviewTabServiceTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPaintPreviewTabService = PaintPreviewTabServiceFactory.getServiceInstance();
-            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true);
+            // Use capture on switch mode.
+            mPaintPreviewTabService.onRestoreCompleted(mTabModelSelector, true, true);
             mTab.loadUrl(new LoadUrlParams(url));
         });
         // Give the tab time to complete layout before hiding.
@@ -86,8 +143,6 @@ public class PaintPreviewTabServiceTest {
             return mPaintPreviewTabService.hasCaptureForTab(tabId);
         }, "Paint Preview didn't get captured.", TIMEOUT_MS, POLLING_INTERVAL_MS);
 
-        CallbackHelper callbackHelper = new CallbackHelper();
-        int callCount = callbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mTabModel.closeTab(mTab); });
 
         CriteriaHelper.pollUiThread(() -> {

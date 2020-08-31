@@ -58,8 +58,8 @@ public class PaintPreviewHelper {
                 // data that is possibly in use by the other Activity's TabModelSelector.
                 PaintPreviewTabServiceFactory.getServiceInstance().onRestoreCompleted(
                         tabModelSelector, /*runAudit=*/
-                        !MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(
-                                activity));
+                        !MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(activity),
+                        /*captureOnSwitch=*/false);
                 tabModelSelector.removeObserver(this);
             }
         });

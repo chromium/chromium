@@ -38,16 +38,19 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     private class PaintPreviewTabServiceTabModelSelectorTabObserver
             extends TabModelSelectorTabObserver {
         private PaintPreviewTabService mTabService;
+        private boolean mCaptureOnSwitch;
 
-        private PaintPreviewTabServiceTabModelSelectorTabObserver(
-                PaintPreviewTabService tabService, TabModelSelector tabModelSelector) {
+        private PaintPreviewTabServiceTabModelSelectorTabObserver(PaintPreviewTabService tabService,
+                TabModelSelector tabModelSelector, boolean captureOnSwitch) {
             super(tabModelSelector);
             mTabService = tabService;
+            mCaptureOnSwitch = captureOnSwitch;
         }
 
         @Override
         public void onHidden(Tab tab, @TabHidingType int reason) {
-            if (qualifiesForCapture(tab)) {
+            if (qualifiesForCapture(tab)
+                    && (reason == TabHidingType.ACTIVITY_HIDDEN || mCaptureOnSwitch)) {
                 mTabService.captureTab(tab, success -> {
                     if (!success) {
                         // Treat the tab as if it was closed to cleanup any partial capture data.
@@ -113,10 +116,13 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
      * remove any failed deletions.
      * @param tabModelSelector the TabModelSelector for the activity.
      * @param runAudit whether to delete tabs not in the tabModelSelector.
+     * @param captureOnSwitch whether to capture tabs on tab switch in addition to on activity
+     *   stopped.
      */
-    public void onRestoreCompleted(TabModelSelector tabModelSelector, boolean runAudit) {
-        mTabModelSelectorTabObserver =
-                new PaintPreviewTabServiceTabModelSelectorTabObserver(this, tabModelSelector);
+    public void onRestoreCompleted(
+            TabModelSelector tabModelSelector, boolean runAudit, boolean captureOnSwitch) {
+        mTabModelSelectorTabObserver = new PaintPreviewTabServiceTabModelSelectorTabObserver(
+                this, tabModelSelector, captureOnSwitch);
         TabModel regularTabModel = tabModelSelector.getModel(/*incognito*/ false);
 
         int tabCount = regularTabModel.getCount();
