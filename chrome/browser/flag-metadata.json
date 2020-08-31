@@ -975,17 +975,17 @@
   {
     "name": "download-auto-resumption-native",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 89
   },
   {
     "name": "download-later",
     "owners": [ "xingliu", "dtrainor" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 89
   },
   {
     "name": "download-later-debug-on-wifi",
     "owners": [ "xingliu", "dtrainor" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 89
   },
   {
     "name": "drag_and_drop",
@@ -1810,7 +1810,7 @@
   {
     "name": "enable-new-download-backend",
     "owners": [ "shaktisahu", "dtrainor" ],
-    "expiry_milestone": 86
+    "expiry_milestone": 89
   },
   {
     "name": "enable-new-profile-picker",
