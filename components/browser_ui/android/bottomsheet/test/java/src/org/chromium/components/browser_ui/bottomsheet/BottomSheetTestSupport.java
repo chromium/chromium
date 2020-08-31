@@ -99,6 +99,11 @@ public class BottomSheetTestSupport {
         return getBottomSheet().forceScrollingStateForTesting(sheetHeight, yVelocity);
     }
 
+    /** Dismiss all content currently queued in the controller including custom lifecycles. */
+    public void forceDismissAllContent() {
+        mController.forceDismissAllContent();
+    }
+
     /** @return The bottom sheet view. */
     private BottomSheet getBottomSheet() {
         return (BottomSheet) mController.getBottomSheetViewForTesting();

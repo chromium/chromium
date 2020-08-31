@@ -367,6 +367,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mBottomSheet.endAnimations();
     }
 
+    @VisibleForTesting
+    public void forceDismissAllContent() {
+        clearRequestsAndHide();
+
+        // Handle content that has a custom lifecycle.
+        hideContent(mBottomSheet.getCurrentSheetContent(), /* animate= */ true);
+    }
+
     @Override
     public boolean requestShowContent(BottomSheetContent content, boolean animate) {
         if (mBottomSheet == null) mSheetInitializer.run();
