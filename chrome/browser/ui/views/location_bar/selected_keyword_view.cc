@@ -55,8 +55,8 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
     IconLabelBubbleView::SetImageModel(ui::ImageModel::FromImage(image));
   } else {
     IconLabelBubbleView::SetImageModel(ui::ImageModel::FromVectorIcon(
-        vector_icons::kSearchIcon, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-        GetForegroundColor()));
+        vector_icons::kSearchIcon, GetForegroundColor(),
+        GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
   }
 }
 

@@ -239,8 +239,8 @@ void PermissionChip::UpdatePermissionIconAndTextColor() {
   chip_button_->SetEnabledTextColors(enabled_text_color);
   chip_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(GetPermissionIconId(), GetIconSize(),
-                                     enabled_text_color));
+      ui::ImageModel::FromVectorIcon(GetPermissionIconId(), enabled_text_color,
+                                     GetIconSize()));
 }
 
 const gfx::VectorIcon& PermissionChip::GetPermissionIconId() {

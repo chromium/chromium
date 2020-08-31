@@ -437,8 +437,8 @@ ui::ImageModel CustomTabBarView::GetLocationIcon(
     LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
   return ui::ImageModel::FromVectorIcon(
       delegate_->GetLocationBarModel()->GetVectorIcon(),
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-      GetSecurityChipColor(GetLocationBarModel()->GetSecurityLevel()));
+      GetSecurityChipColor(GetLocationBarModel()->GetSecurityLevel()),
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
 }
 
 void CustomTabBarView::ButtonPressed(views::Button* sender,
