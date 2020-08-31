@@ -33,12 +33,12 @@ luci.gitiles_poller(
 )
 
 defaults.bucket.set("webrtc.fyi")
+defaults.builder_group.set("chromium.webrtc.fyi")
 defaults.builderless.set(None)
 defaults.build_numbers.set(True)
 defaults.cpu.set(cpu.X86_64)
 defaults.executable.set("recipe:chromium")
 defaults.execution_timeout.set(2 * time.hour)
-defaults.mastername.set("chromium.webrtc.fyi")
 defaults.os.set(os.LINUX_DEFAULT)
 defaults.pool.set("luci.chromium.webrtc.fyi")
 defaults.service_account.set("chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com")

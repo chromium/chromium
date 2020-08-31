@@ -17,19 +17,19 @@ try_.set_defaults(
 # Builder functions are defined in lexicographic order by name ignoring the
 # '_builder' suffix
 
-# Builder functions are defined for GPU builders on each master where they
-# appear: gpu_XXX_builder where XXX is the part after the last dot in the
-# mastername
-# Builder functions are defined for each master, with additional functions
-# for specializing on OS: XXX_builder and XXX_YYY_builder where XXX is the part
-# after the last dot in the mastername and YYY is the OS
+# Builder functions are defined for GPU builders in each builder group where
+# they appear: gpu_XXX_builder where XXX is the part after the last dot in the
+# builder group
+# Builder functions are defined for each builder group, with additional
+# functions for specializing on OS: XXX_builder and XXX_YYY_builder where XXX is
+# the part after the last dot in the builder group and YYY is the OS
 
 def gpu_android_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
+        builder_group = "tryserver.chromium.android",
         builderless = True,
         goma_backend = goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.android",
         ssd = None,
         **kwargs
     )
@@ -112,9 +112,9 @@ gpu_android_builder(
 def gpu_chromeos_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
+        builder_group = "tryserver.chromium.chromiumos",
         builderless = True,
         goma_backend = goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.chromiumos",
         ssd = None,
         **kwargs
     )
@@ -132,9 +132,9 @@ gpu_chromeos_builder(
 def gpu_linux_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
+        builder_group = "tryserver.chromium.linux",
         builderless = True,
         goma_backend = goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.linux",
         ssd = None,
         **kwargs
     )
@@ -207,10 +207,10 @@ gpu_linux_builder(
 def gpu_mac_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
+        builder_group = "tryserver.chromium.mac",
         builderless = True,
         cores = None,
         goma_backend = goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.mac",
         os = os.MAC_ANY,
         ssd = None,
         **kwargs
@@ -305,9 +305,9 @@ gpu_mac_builder(
 def gpu_win_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
+        builder_group = "tryserver.chromium.win",
         builderless = True,
         goma_backend = goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.win",
         os = os.WINDOWS_ANY,
         ssd = None,
         **kwargs

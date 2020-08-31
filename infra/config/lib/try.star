@@ -270,11 +270,7 @@ def try_builder(
     if add_to_list_view:
         list_view = defaults.get_value("list_view", list_view)
         if list_view == args.COMPUTE:
-            # The builder function guarantees that at most one of builder_group
-            # or mastername is set
-            builder_group = defaults.get_value_from_kwargs("builder_group", kwargs)
-            mastername = defaults.get_value_from_kwargs("mastername", kwargs)
-            list_view = builder_group or mastername
+            list_view = defaults.get_value_from_kwargs("builder_group", kwargs)
 
         if list_view:
             add_to_list_view = defaults.get_value(
@@ -297,8 +293,8 @@ def try_builder(
 def blink_builder(*, name, goma_backend = None, **kwargs):
     return try_builder(
         name = name,
+        builder_group = "tryserver.blink",
         goma_backend = goma_backend,
-        mastername = "tryserver.blink",
         **kwargs
     )
 
@@ -316,26 +312,26 @@ def blink_mac_builder(*, name, **kwargs):
 def chromium_builder(*, name, **kwargs):
     return try_builder(
         name = name,
+        builder_group = "tryserver.chromium",
         builderless = True,
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium",
         **kwargs
     )
 
 def chromium_android_builder(*, name, **kwargs):
     return try_builder(
         name = name,
+        builder_group = "tryserver.chromium.android",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.android",
         **kwargs
     )
 
 def chromium_angle_builder(*, name, **kwargs):
     return try_builder(
         name = name,
+        builder_group = "tryserver.chromium.angle",
         builderless = False,
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.angle",
         service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
         **kwargs
     )
@@ -343,7 +339,7 @@ def chromium_angle_builder(*, name, **kwargs):
 def chromium_chromiumos_builder(*, name, **kwargs):
     return try_builder(
         name = name,
-        mastername = "tryserver.chromium.chromiumos",
+        builder_group = "tryserver.chromium.chromiumos",
         goma_backend = builders.goma.backend.RBE_PROD,
         **kwargs
     )
@@ -351,10 +347,10 @@ def chromium_chromiumos_builder(*, name, **kwargs):
 def chromium_dawn_builder(*, name, **kwargs):
     return try_builder(
         name = name,
+        builder_group = "tryserver.chromium.dawn",
         builderless = False,
         cores = None,
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.dawn",
         service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
         **kwargs
     )
@@ -362,8 +358,8 @@ def chromium_dawn_builder(*, name, **kwargs):
 def chromium_linux_builder(*, name, goma_backend = builders.goma.backend.RBE_PROD, **kwargs):
     return try_builder(
         name = name,
+        builder_group = "tryserver.chromium.linux",
         goma_backend = goma_backend,
-        mastername = "tryserver.chromium.linux",
         **kwargs
     )
 
@@ -377,9 +373,9 @@ def chromium_mac_builder(
         **kwargs):
     return try_builder(
         name = name,
+        builder_group = "tryserver.chromium.mac",
         cores = cores,
         goma_backend = goma_backend,
-        mastername = "tryserver.chromium.mac",
         os = os,
         builderless = builderless,
         ssd = True,
@@ -403,11 +399,11 @@ def chromium_mac_ios_builder(
         }
     return try_builder(
         name = name,
+        builder_group = "tryserver.chromium.mac",
         caches = caches,
         cores = None,
         executable = executable,
         goma_backend = goma_backend,
-        mastername = "tryserver.chromium.mac",
         os = os,
         properties = properties,
         **kwargs
@@ -417,8 +413,8 @@ def chromium_swangle_builder(*, name, pinned = True, **kwargs):
     builder_args = dict(kwargs)
     builder_args.update(
         name = name,
+        builder_group = "tryserver.chromium.swangle",
         builderless = True,
-        mastername = "tryserver.chromium.swangle",
         service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
     )
     if pinned:
@@ -460,9 +456,9 @@ def chromium_win_builder(
         **kwargs):
     return try_builder(
         name = name,
+        builder_group = "tryserver.chromium.win",
         builderless = builderless,
         goma_backend = goma_backend,
-        mastername = "tryserver.chromium.win",
         os = os,
         **kwargs
     )
@@ -479,25 +475,25 @@ def gpu_try_builder(*, name, builderless = False, execution_timeout = 6 * time.h
 def gpu_chromium_android_builder(*, name, **kwargs):
     return gpu_try_builder(
         name = name,
+        builder_group = "tryserver.chromium.android",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.android",
         **kwargs
     )
 
 def gpu_chromium_linux_builder(*, name, **kwargs):
     return gpu_try_builder(
         name = name,
+        builder_group = "tryserver.chromium.linux",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.linux",
         **kwargs
     )
 
 def gpu_chromium_mac_builder(*, name, **kwargs):
     return gpu_try_builder(
         name = name,
+        builder_group = "tryserver.chromium.mac",
         cores = None,
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.mac",
         os = builders.os.MAC_ANY,
         **kwargs
     )
@@ -505,8 +501,8 @@ def gpu_chromium_mac_builder(*, name, **kwargs):
 def gpu_chromium_win_builder(*, name, os = builders.os.WINDOWS_ANY, **kwargs):
     return gpu_try_builder(
         name = name,
+        builder_group = "tryserver.chromium.win",
         goma_backend = builders.goma.backend.RBE_PROD,
-        mastername = "tryserver.chromium.win",
         os = os,
         **kwargs
     )

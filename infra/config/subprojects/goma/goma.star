@@ -42,15 +42,15 @@ defaults.triggered_by.set(["master-gitiles-trigger"])
 # Builder functions are defined in lexicographic order by name ignoring the
 # '_builder' suffix
 
-# Builder functions are defined for each master that goma builders appear on,
-# with additional functions for specializing on OS or goma grouping (canary,
+# Builder functions are defined for each builder group that goma builders appear
+# in, with additional functions for specializing on OS or goma grouping (canary,
 # latest client, etc.): XXX_YYY_builder where XXX is the part after the last dot
-# in the mastername and YYY is the OS or goma grouping
+# in the builder group and YYY is the OS or goma grouping
 
 def fyi_goma_canary_builder(*, name, **kwargs):
     return builder(
         name = name,
-        mastername = "chromium.goma.fyi",
+        builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
         **kwargs
     )
@@ -151,9 +151,9 @@ def fyi_goma_rbe_canary_builder(
         **kwargs):
     return builder(
         name = name,
+        builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
         goma_backend = goma_backend,
-        mastername = "chromium.goma.fyi",
         os = os,
         goma_use_luci_auth = True,
         **kwargs
@@ -213,7 +213,7 @@ fyi_goma_rbe_canary_builder(
 def fyi_goma_latest_client_builder(*, name, os = os.LINUX_DEFAULT, **kwargs):
     return builder(
         name = name,
-        mastername = "chromium.goma.fyi",
+        builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
         os = os,
         **kwargs
@@ -312,9 +312,9 @@ def fyi_goma_rbe_latest_client_builder(
         **kwargs):
     return builder(
         name = name,
+        builder_group = "chromium.goma.fyi",
         execution_timeout = 10 * time.hour,
         goma_backend = goma_backend,
-        mastername = "chromium.goma.fyi",
         os = os,
         goma_use_luci_auth = True,
         **kwargs
@@ -394,8 +394,8 @@ def goma_builder(
         **kwargs):
     return builder(
         name = name,
+        builder_group = "chromium.goma",
         builderless = builderless,
-        mastername = "chromium.goma",
         os = os,
         goma_use_luci_auth = goma_use_luci_auth,
         **kwargs

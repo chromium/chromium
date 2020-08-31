@@ -883,9 +883,6 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-rel",
     branch_selector = branches.STANDARD_RELEASES,
-    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
-    # not explicitly set
-    builder_group = "tryserver.chromium.linux",
     goma_jobs = goma.jobs.J150,
     main_list_view = settings.main_list_view_name,
     tryjob = try_.job(),

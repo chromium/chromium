@@ -2867,7 +2867,7 @@ ci.fyi_mac_builder(
 
 ci.thin_tester(
     name = "Mac11.0 Tests",
-    mastername = "chromium.fyi",
+    builder_group = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
         category = "mac",
         short_name = "11.0",
@@ -2987,9 +2987,6 @@ ci.gpu_builder(
 ci.gpu_builder(
     name = "GPU Linux Builder",
     branch_selector = branches.STANDARD_RELEASES,
-    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
-    # not explicitly set
-    builder_group = "chromium.gpu",
     console_view_entry = ci.console_view_entry(
         category = "Linux",
     ),
@@ -3061,9 +3058,6 @@ ci.gpu_thin_tester(
 ci.gpu_thin_tester(
     name = "Linux Release (NVIDIA)",
     branch_selector = branches.STANDARD_RELEASES,
-    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
-    # not explicitly set
-    builder_group = "chromium.gpu",
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     console_view_entry = ci.console_view_entry(
         category = "Linux",
@@ -3965,9 +3959,6 @@ ci.linux_builder(
 ci.linux_builder(
     name = "Linux Builder",
     branch_selector = branches.STANDARD_RELEASES,
-    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
-    # not explicitly set
-    builder_group = "chromium.linux",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "bld",
@@ -3999,9 +3990,6 @@ ci.linux_builder(
 ci.linux_builder(
     name = "Linux Tests",
     branch_selector = branches.STANDARD_RELEASES,
-    # TODO(https://crbug.com/1109276) Once support for mastername is removed, do
-    # not explicitly set
-    builder_group = "chromium.linux",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "tst",
@@ -4206,7 +4194,7 @@ ci.mac_builder(
 ci.thin_tester(
     name = "Mac10.10 Tests",
     branch_selector = branches.STANDARD_RELEASES,
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "10",
@@ -4219,7 +4207,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.11 Tests",
     branch_selector = branches.STANDARD_RELEASES,
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "11",
@@ -4232,7 +4220,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.12 Tests",
     branch_selector = branches.STANDARD_RELEASES,
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "12",
@@ -4245,7 +4233,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.13 Tests",
     branch_selector = branches.STANDARD_RELEASES,
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "13",
@@ -4258,7 +4246,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.14 Tests",
     branch_selector = branches.STANDARD_RELEASES,
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "14",
@@ -4271,7 +4259,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.15 Tests",
     branch_selector = branches.STANDARD_RELEASES,
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "15",
@@ -4284,7 +4272,7 @@ ci.thin_tester(
 ci.thin_tester(
     name = "Mac10.13 Tests (dbg)",
     branch_selector = branches.STANDARD_RELEASES,
-    mastername = "chromium.mac",
+    builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "debug",
         short_name = "13",
