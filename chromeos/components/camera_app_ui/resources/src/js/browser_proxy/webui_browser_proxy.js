@@ -124,13 +124,8 @@ class WebUIBrowserProxy {
   }
 
   /** @override */
-  getAppId() {
-    throw new NotImplementedError();
-  }
-
-  /** @override */
   getAppVersion() {
-    throw new NotImplementedError();
+    return 'SWA';
   }
 
   /** @override */
@@ -140,11 +135,6 @@ class WebUIBrowserProxy {
 
   /** @override */
   addOnConnectExternalListener(listener) {
-    throw new NotImplementedError();
-  }
-
-  /** @override */
-  sendMessage(extensionId, message) {
     throw new NotImplementedError();
   }
 
@@ -205,6 +195,12 @@ class WebUIBrowserProxy {
   /** @override */
   addOnMinimizedListener(listener) {
     // TODO(crbug.com/980846): Implement the minimization monitor.
+  }
+
+  /** @override */
+  openFeedback() {
+    ChromeHelper.getInstance().openFeedbackDialog(
+        this.getI18nMessage('feedback_description_placeholder'));
   }
 }
 

@@ -128,11 +128,6 @@ class ChromeAppBrowserProxy {
   }
 
   /** @override */
-  getAppId() {
-    return chrome.runtime.id;
-  }
-
-  /** @override */
   getAppVersion() {
     return chrome.runtime.getManifest().version;
   }
@@ -145,11 +140,6 @@ class ChromeAppBrowserProxy {
   /** @override */
   addOnConnectExternalListener(listener) {
     chrome.runtime.onConnectExternal.addListener(listener);
-  }
-
-  /** @override */
-  sendMessage(extensionId, message) {
-    chrome.runtime.sendMessage(extensionId, message);
   }
 
   /** @override */
@@ -240,6 +230,24 @@ class ChromeAppBrowserProxy {
   /** @override */
   addOnMinimizedListener(listener) {
     chrome.app.window.current().onMinimized.addListener(listener);
+  }
+
+  /** @override */
+  openFeedback() {
+    const data = {
+      'categoryTag': 'chromeos-camera-app',
+      'requestFeedback': true,
+      'feedbackInfo': {
+        'descriptionPlaceholder':
+            this.getI18nMessage('feedback_description_placeholder'),
+        'systemInformation': [
+          {key: 'APP ID', value: chrome.runtime.id},
+          {key: 'APP VERSION', value: chrome.runtime.getManifest().version},
+        ],
+      },
+    };
+    const id = 'gfdkimpbcpahaombhbimeihdjnejgicl';  // Feedback extension id.
+    chrome.runtime.sendMessage(id, data);
   }
 }
 

@@ -60,6 +60,7 @@ class CameraAppHelperImpl : public ash::TabletModeObserver,
       mojo::PendingRemote<ExternalScreenMonitor> monitor,
       SetExternalScreenMonitorCallback callback) override;
   void OpenFileInGallery(const std::string& name) override;
+  void OpenFeedbackDialog(const std::string& placeholder) override;
 
  private:
   void CheckExternalScreenState();

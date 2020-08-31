@@ -84,4 +84,9 @@ interface CameraAppHelper {
   // usable for SWA version. For platform app version, we use Chrome
   // FileManagerPrivate API.
   OpenFileInGallery(string name);
+
+  // Opens the chrome feedback dialog and show |placeholder| in the description
+  // field. It is only usable for SWA version. For platform app version, we send
+  // message to Feedback extension via chrome.runtime API.
+  OpenFeedbackDialog(string placeholder);
 };

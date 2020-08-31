@@ -435,6 +435,11 @@
       <message desc="Indicator message for recording paused." name="IDS_RECORD_VIDEO_PAUSED_MSG">
         PAUSED
       </message>
+      <message desc="Provide a template for providing good feedback to the Camera team and encourage users to attach a sample photo if reasonable." name="IDS_FEEDBACK_DESCRIPTION_PLACEHOLDER">
+        Thanks for giving feedback on the Camera app.
+
+If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)
+      </message>
     </messages>
   </release>
 </grit>

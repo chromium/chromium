@@ -101,33 +101,14 @@ export class MasterSettings extends BaseSettings {
       'settings-resolution': () =>
           this.openSubSettings(ViewName.RESOLUTION_SETTINGS),
       'settings-expert': () => this.openSubSettings(ViewName.EXPERT_SETTINGS),
-      'settings-feedback': () => this.openFeedback(),
+      'settings-feedback': () => {
+        // Prevent setting view overlapping preview when sending app window
+        // feedback screenshot b/155938542.
+        this.leave();
+        browserProxy.openFeedback();
+      },
       'settings-help': () => util.openHelp(),
     });
-  }
-
-  /**
-   * Opens feedback.
-   * @private
-   */
-  openFeedback() {
-    // Prevent setting view overlapping preview when sending app window feedback
-    // screenshot b/155938542.
-    this.leave();
-
-    const data = {
-      'categoryTag': 'chromeos-camera-app',
-      'requestFeedback': true,
-      'feedbackInfo': {
-        'description': '',
-        'systemInformation': [
-          {key: 'APP ID', value: browserProxy.getAppId()},
-          {key: 'APP VERSION', value: browserProxy.getAppVersion()},
-        ],
-      },
-    };
-    const id = 'gfdkimpbcpahaombhbimeihdjnejgicl';  // Feedback extension id.
-    browserProxy.sendMessage(id, data);
   }
 }
 

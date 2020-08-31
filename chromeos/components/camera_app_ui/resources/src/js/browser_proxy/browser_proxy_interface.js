@@ -85,12 +85,6 @@ export class BrowserProxy {
    * @return {string}
    * @abstract
    */
-  getAppId() {}
-
-  /**
-   * @return {string}
-   * @abstract
-   */
   getAppVersion() {}
 
   /**
@@ -105,13 +99,6 @@ export class BrowserProxy {
    * @abstract
    */
   addOnConnectExternalListener(listener) {}
-
-  /**
-   * @param {string} extensionId
-   * @param {*} message
-   * @abstract
-   */
-  sendMessage(extensionId, message) {}
 
   /**
    * @abstract
@@ -163,4 +150,9 @@ export class BrowserProxy {
    * @abstract
    */
   addOnMinimizedListener(listener) {}
+
+  /**
+   * @abstract
+   */
+  openFeedback() {}
 }

@@ -14,6 +14,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
@@ -134,4 +135,19 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,
                           /* preferred_container=*/false),
       apps::mojom::LaunchSource::kFromOtherApp, std::move(launch_files));
+}
+
+void ChromeCameraAppUIDelegate::OpenFeedbackDialog(
+    const std::string& placeholder) {
+  // TODO(crbug/1045222): Additional strings are blank right now while we decide
+  // on the language and relevant information we want feedback to include.
+  // Note that category_tag is the name of the listnr bucket we want our
+  // reports to end up in.
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  chrome::ShowFeedbackPage(GURL(chromeos::kChromeUICameraAppURL), profile,
+                           chrome::kFeedbackSourceCameraApp,
+                           std::string() /* description_template */,
+                           placeholder /* description_placeholder_text */,
+                           "chromeos-camera-app" /* category_tag */,
+                           std::string() /* extra_diagnostics */);
 }

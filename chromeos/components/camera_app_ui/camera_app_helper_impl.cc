@@ -129,6 +129,11 @@ void CameraAppHelperImpl::OpenFileInGallery(const std::string& name) {
   camera_app_ui_->delegate()->OpenFileInGallery(name);
 }
 
+void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
+  DCHECK_NE(camera_app_ui_, nullptr);
+  camera_app_ui_->delegate()->OpenFeedbackDialog(placeholder);
+}
+
 void CameraAppHelperImpl::OnTabletModeStarted() {
   if (tablet_monitor_.is_bound())
     tablet_monitor_->Update(true);

@@ -99,6 +99,7 @@ const struct {
     {"take_video_snapshot_button", IDS_TAKE_VIDEO_SNAPSHOT_BUTTON},
     {"record_video_pause_button", IDS_RECORD_VIDEO_PAUSE_BUTTON},
     {"record_video_resume_button", IDS_RECORD_VIDEO_RESUME_BUTTON},
+    {"feedback_description_placeholder", IDS_FEEDBACK_DESCRIPTION_PLACEHOLDER},
 };
 
 const struct {

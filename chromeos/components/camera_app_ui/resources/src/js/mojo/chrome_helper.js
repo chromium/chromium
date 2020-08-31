@@ -110,6 +110,15 @@ export class ChromeHelper {
   }
 
   /**
+   * Opens the chrome feedback dialog.
+   * @param {string} placeholder The text of the placeholder in the description
+   *     field.
+   */
+  openFeedbackDialog(placeholder) {
+    this.remote_.openFeedbackDialog(placeholder);
+  }
+
+  /**
    * Checks return value from |handleCameraResult|.
    * @param {string} caller Caller identifier.
    * @param {!Promise<{isSuccess: boolean}>|null} value
