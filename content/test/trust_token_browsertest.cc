@@ -611,13 +611,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 IN_PROC_BROWSER_TEST_F(
     TrustTokenBrowsertest,
     CorsModeCrossOriginRedirectIssuanceUsesNewOriginAsIssuer) {
-  // This test's first release is M86, where Blink-CORS is unconditionally
-  // unavailable (even via enterprise policy). Add this early return (okayed by
-  // Blink-CORS OWNERS) to avoid failing Blink-CORS FYI bots for the next week
-  // and a half until they are deleted.
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors))
-    return;
-
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test", "b.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");
@@ -650,13 +643,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TrustTokenBrowsertest,
     NoCorsModeCrossOriginRedirectIssuanceUsesOriginalOriginAsIssuer) {
-  // This test's first release is M86, where Blink-CORS is unconditionally
-  // unavailable (even via enterprise policy). Add this early return (okayed by
-  // Blink-CORS OWNERS) to avoid failing Blink-CORS FYI bots for the next week
-  // and a half until they are deleted.
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors))
-    return;
-
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
 
   GURL start_url = server_.GetURL("a.test", "/title1.html");

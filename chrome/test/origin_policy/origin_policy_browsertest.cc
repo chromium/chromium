@@ -13,7 +13,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/network/public/cpp/features.h"
 
 namespace {
 const base::FilePath::CharType kDataRoot[] =
@@ -122,8 +121,6 @@ IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ApplyPolicy) {
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ErrorPolicy301Redirect) {
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors))
-    return;
   SetStatus(net::HTTP_MOVED_PERMANENTLY);
   SetLocationHeader("/.well-known/origin-policy/example-policy");
   EXPECT_EQ(base::ASCIIToUTF16(kErrorInterstitialTitle),
@@ -131,8 +128,6 @@ IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ErrorPolicy301Redirect) {
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ErrorPolicy302Redirect) {
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors))
-    return;
   SetStatus(net::HTTP_FOUND);
   SetLocationHeader("/.well-known/origin-policy/example-policy");
   EXPECT_EQ(base::ASCIIToUTF16(kErrorInterstitialTitle),
@@ -140,8 +135,6 @@ IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ErrorPolicy302Redirect) {
 }
 
 IN_PROC_BROWSER_TEST_F(OriginPolicyBrowserTest, ErrorPolicy307Redirect) {
-  if (!base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors))
-    return;
   SetStatus(net::HTTP_TEMPORARY_REDIRECT);
   SetLocationHeader("/.well-known/origin-policy/example-policy");
   EXPECT_EQ(base::ASCIIToUTF16(kErrorInterstitialTitle),
