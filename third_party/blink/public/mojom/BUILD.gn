@@ -555,6 +555,8 @@ mojom("mojom_platform") {
         "//third_party/blink/renderer/platform/loader/fetch/resource_request.h",
       ]
       traits_private_headers = [ "//third_party/blink/renderer/platform/loader/fetch/fetch_api_request_body_mojom_traits.h" ]
+      traits_deps =
+          [ "//third_party/blink/renderer/platform/network:make_generated" ]
     },
     {
       types = [
