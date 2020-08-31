@@ -22,6 +22,9 @@ class KaleidoscopeToolbarElement extends PolymerElement {
 
       // Sets the tooltip text displayed on the menu button.
       menuLabel: {type: String, value: ''},
+
+      // Sets the text displayed beside the menu button.
+      pageName: {type: String, value: ''},
     };
   }
 }
