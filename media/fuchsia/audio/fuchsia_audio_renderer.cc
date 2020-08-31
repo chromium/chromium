@@ -113,6 +113,14 @@ void FuchsiaAudioRenderer::Initialize(DemuxerStream* stream,
 
   InitializeStreamSink(stream->audio_decoder_config());
 
+  // AAC streams require bitstream conversion. Without it the demuxer may
+  // produce decoded stream without ADTS headers which are required for AAC
+  // streams in AudioConsumer.
+  // TODO(crbug.com/1120095): Reconsider this logic.
+  if (stream->audio_decoder_config().codec() == kCodecAAC) {
+    stream->EnableBitstreamConverter();
+  }
+
   // DecryptingDemuxerStream handles both encrypted and clear streams, so
   // initialize it long as we have cdm_context.
   if (cdm_context) {
