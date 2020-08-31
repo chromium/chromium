@@ -1535,7 +1535,7 @@ TEST_F(LegacySWPictureLayerImplTest, ClampSingleTileToToMaxTileSize) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, DisallowTileDrawQuads) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_bounds(1300, 1900);
   gfx::Rect layer_rect(layer_bounds);
@@ -1563,7 +1563,7 @@ TEST_F(LegacySWPictureLayerImplTest, DisallowTileDrawQuads) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ResourcelessPartialRecording) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_bounds(700, 650);
   gfx::Rect layer_rect(layer_bounds);
@@ -1600,7 +1600,7 @@ TEST_F(LegacySWPictureLayerImplTest, ResourcelessPartialRecording) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, ResourcelessEmptyRecording) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_bounds(700, 650);
   scoped_refptr<FakeRasterSource> active_raster_source =
@@ -1621,7 +1621,7 @@ TEST_F(LegacySWPictureLayerImplTest, ResourcelessEmptyRecording) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, FarScrolledQuadsShifted) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_bounds(1000, 10000);
   scoped_refptr<FakeRasterSource> active_raster_source =
@@ -1698,7 +1698,7 @@ TEST_F(LegacySWPictureLayerImplTest, FarScrolledQuadsShifted) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, FarScrolledSolidColorQuadsShifted) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_bounds(1000, 10000);
   scoped_refptr<FakeRasterSource> active_raster_source =
@@ -1776,7 +1776,7 @@ TEST_F(LegacySWPictureLayerImplTest, FarScrolledSolidColorQuadsShifted) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, SolidColorLayerHasVisibleFullCoverage) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_bounds(1500, 1500);
   gfx::Rect visible_rect(250, 250, 1000, 1000);
@@ -1926,7 +1926,7 @@ TEST_F(NoLowResPictureLayerImplTest,
   ActivateTree();
   active_layer()->draw_properties().visible_layer_rect = visible_layer_rect;
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -1955,7 +1955,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsComplete) {
       active_layer()->tilings()->tiling_at(0)->AllTilesForTesting();
   host_impl()->tile_manager()->InitializeTilesWithResourcesForTesting(tiles);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -1979,7 +1979,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncomplete) {
   SetupPendingTreeWithFixedTileSize(pending_raster_source, tile_size, Region());
   ActivateTree();
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -2007,7 +2007,7 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncompleteLowResComplete) {
   host_impl()->tile_manager()->InitializeTilesWithResourcesForTesting(
       low_tiles);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -2043,7 +2043,7 @@ TEST_F(LegacySWPictureLayerImplTest, LowResTileIsIncomplete) {
   host_impl()->tile_manager()->InitializeTilesWithResourcesForTesting(
       low_tiles);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -2098,7 +2098,7 @@ TEST_F(LegacySWPictureLayerImplTest,
   host_impl()->tile_manager()->InitializeTilesWithResourcesForTesting(
       high_tiles);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -2134,7 +2134,7 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   SetupPendingTreeWithFixedTileSize(pending_raster_source, tile_size, Region());
   ActivateTree();
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -3886,7 +3886,7 @@ TEST_F(NoLowResPictureLayerImplTest, ReleaseTileResources) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, SharedQuadStateContainsMaxTilingScale) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_bounds(1000, 2000);
   host_impl()->active_tree()->SetDeviceViewportRect(gfx::Rect(10000, 20000));
@@ -3966,7 +3966,7 @@ TEST_F(PictureLayerImplTestWithDelegatingRenderer,
   host_impl()->SetTreePriority(SAME_PRIORITY_FOR_BOTH_TREES);
   host_impl()->PrepareTiles();
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_HARDWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -4686,7 +4686,7 @@ void PictureLayerImplTest::TestQuadsForSolidColor(bool test_for_solid,
         resource_tiles);
   }
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer()->AppendQuads(render_pass.get(), &data);
@@ -5407,7 +5407,7 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageIgnoreIdealContentsScale) {
       active_layer->tilings()->tiling_at(0)->AllTilesForTesting());
 
   // Draw.
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   active_layer->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
   active_layer->AppendQuads(render_pass.get(), &data);
@@ -6034,7 +6034,7 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
 }
 
 TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_bounds(1000, 10000);
   scoped_refptr<FakeRasterSource> active_raster_source =

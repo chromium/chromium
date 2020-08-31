@@ -23,7 +23,7 @@
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -142,8 +142,8 @@ void SurfacesInstance::DrawAndSwap(gfx::Size viewport,
 
   // Create a frame with a single SurfaceDrawQuad referencing the child
   // Surface and transformed using the given transform.
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
-  render_pass->SetNew(viz::RenderPassId{1}, gfx::Rect(viewport), clip,
+  auto render_pass = viz::CompositorRenderPass::Create();
+  render_pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(viewport), clip,
                       gfx::Transform());
   render_pass->has_transparent_background = false;
 
@@ -227,8 +227,9 @@ void SurfacesInstance::SetSolidColorRootFrame() {
   gfx::Rect rect(surface_size_);
   bool is_clipped = false;
   bool are_contents_opaque = true;
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
-  render_pass->SetNew(viz::RenderPassId{1}, rect, rect, gfx::Transform());
+  auto render_pass = viz::CompositorRenderPass::Create();
+  render_pass->SetNew(viz::CompositorRenderPassId{1}, rect, rect,
+                      gfx::Transform());
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
   quad_state->SetAll(gfx::Transform(), rect, rect, gfx::RRectF(), rect,
@@ -296,7 +297,7 @@ bool SurfacesInstance::BackdropFiltersPreventMerge(
     return false;
 
   const auto& frame = surface->GetActiveFrame();
-  base::flat_set<viz::RenderPassId> backdrop_filter_passes;
+  base::flat_set<viz::CompositorRenderPassId> backdrop_filter_passes;
   for (const auto& render_pass : frame.render_pass_list) {
     if (!render_pass->backdrop_filters.IsEmpty())
       backdrop_filter_passes.insert(render_pass->id);
@@ -309,7 +310,8 @@ bool SurfacesInstance::BackdropFiltersPreventMerge(
   for (const auto* quad : root_pass->quad_list) {
     if (quad->material != viz::DrawQuad::Material::kCompositorRenderPass)
       continue;
-    const auto* pass_quad = viz::RenderPassDrawQuad::MaterialCast(quad);
+    const auto* pass_quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(quad);
     if (backdrop_filter_passes.find(pass_quad->render_pass_id) !=
         backdrop_filter_passes.end()) {
       return true;

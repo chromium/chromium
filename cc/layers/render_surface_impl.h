@@ -16,7 +16,7 @@
 #include "cc/layers/layer_collections.h"
 #include "cc/trees/occlusion.h"
 #include "cc/trees/property_tree.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -161,7 +161,9 @@ class CC_EXPORT RenderSurfaceImpl {
   }
 
   uint64_t id() const { return stable_id_; }
-  viz::RenderPassId render_pass_id() const { return viz::RenderPassId{id()}; }
+  viz::CompositorRenderPassId render_pass_id() const {
+    return viz::CompositorRenderPassId{id()};
+  }
 
   bool HasMaskingContributingSurface() const;
 
@@ -187,12 +189,12 @@ class CC_EXPORT RenderSurfaceImpl {
   DamageTracker* damage_tracker() const { return damage_tracker_.get(); }
   gfx::Rect GetDamageRect() const;
 
-  std::unique_ptr<viz::RenderPass> CreateRenderPass();
+  std::unique_ptr<viz::CompositorRenderPass> CreateRenderPass();
   viz::ResourceId GetMaskResourceFromLayer(PictureLayerImpl* mask_layer,
                                            gfx::Size* mask_texture_size,
                                            gfx::RectF* mask_uv_rect) const;
   void AppendQuads(DrawMode draw_mode,
-                   viz::RenderPass* render_pass,
+                   viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data);
 
   int TransformTreeIndex() const;
@@ -208,7 +210,7 @@ class CC_EXPORT RenderSurfaceImpl {
   gfx::Rect CalculateClippedAccumulatedContentRect();
   gfx::Rect CalculateExpandedClipForFilters(
       const gfx::Transform& target_to_surface);
-  void TileMaskLayer(viz::RenderPass* render_pass,
+  void TileMaskLayer(viz::CompositorRenderPass* render_pass,
                      viz::SharedQuadState* shared_quad_state,
                      const gfx::Rect& unoccluded_content_rect);
 

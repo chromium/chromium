@@ -10,7 +10,7 @@
 #include "cc/test/fake_mask_layer_impl.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/layer_tree_impl_test_base.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -66,7 +66,7 @@ TEST(RenderSurfaceLayerImplTest, Occlusion) {
   }
 }
 
-static std::unique_ptr<viz::RenderPass> DoAppendQuadsWithScaledMask(
+static std::unique_ptr<viz::CompositorRenderPass> DoAppendQuadsWithScaledMask(
     DrawMode draw_mode,
     float device_scale_factor) {
   gfx::Size layer_size(1000, 1000);
@@ -102,7 +102,7 @@ static std::unique_ptr<viz::RenderPass> DoAppendQuadsWithScaledMask(
   UpdateDrawProperties(active_tree);
 
   RenderSurfaceImpl* render_surface_impl = GetRenderSurface(surface);
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
   render_surface_impl->AppendQuads(draw_mode, render_pass.get(),
                                    &append_quads_data);
@@ -110,11 +110,12 @@ static std::unique_ptr<viz::RenderPass> DoAppendQuadsWithScaledMask(
 }
 
 TEST(RenderSurfaceLayerImplTest, AppendQuadsWithScaledMask) {
-  std::unique_ptr<viz::RenderPass> render_pass =
+  std::unique_ptr<viz::CompositorRenderPass> render_pass =
       DoAppendQuadsWithScaledMask(DRAW_MODE_HARDWARE, 1.f);
   DCHECK(render_pass->quad_list.front());
-  const viz::RenderPassDrawQuad* quad =
-      viz::RenderPassDrawQuad::MaterialCast(render_pass->quad_list.front());
+  const viz::CompositorRenderPassDrawQuad* quad =
+      viz::CompositorRenderPassDrawQuad::MaterialCast(
+          render_pass->quad_list.front());
   // Mask layers don't use quad's mask functionality.
   EXPECT_EQ(gfx::RectF(), quad->mask_uv_rect);
   EXPECT_EQ(gfx::Vector2dF(2.f, 2.f), quad->filters_scale);
@@ -122,21 +123,23 @@ TEST(RenderSurfaceLayerImplTest, AppendQuadsWithScaledMask) {
 }
 
 TEST(RenderSurfaceLayerImplTest, ResourcelessAppendQuadsSkipMask) {
-  std::unique_ptr<viz::RenderPass> render_pass =
+  std::unique_ptr<viz::CompositorRenderPass> render_pass =
       DoAppendQuadsWithScaledMask(DRAW_MODE_RESOURCELESS_SOFTWARE, 1.f);
   DCHECK(render_pass->quad_list.front());
-  const viz::RenderPassDrawQuad* quad =
-      viz::RenderPassDrawQuad::MaterialCast(render_pass->quad_list.front());
+  const viz::CompositorRenderPassDrawQuad* quad =
+      viz::CompositorRenderPassDrawQuad::MaterialCast(
+          render_pass->quad_list.front());
   EXPECT_EQ(0u, quad->mask_resource_id());
 }
 
 TEST(RenderSurfaceLayerImplTest,
      AppendQuadsWithSolidColorMaskAndDeviceScaleFactor) {
-  std::unique_ptr<viz::RenderPass> render_pass =
+  std::unique_ptr<viz::CompositorRenderPass> render_pass =
       DoAppendQuadsWithScaledMask(DRAW_MODE_HARDWARE, 2.f);
   DCHECK(render_pass->quad_list.front());
-  const viz::RenderPassDrawQuad* quad =
-      viz::RenderPassDrawQuad::MaterialCast(render_pass->quad_list.front());
+  const viz::CompositorRenderPassDrawQuad* quad =
+      viz::CompositorRenderPassDrawQuad::MaterialCast(
+          render_pass->quad_list.front());
   EXPECT_EQ(gfx::Transform(),
             quad->shared_quad_state->quad_to_target_transform);
   // With tiled mask layer, we only generate mask quads for visible rect. In

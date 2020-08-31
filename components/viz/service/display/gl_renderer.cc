@@ -36,8 +36,8 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/platform_color.h"
@@ -235,7 +235,7 @@ static GLint GetActiveTextureUnit(GLES2Interface* gl) {
   return active_unit;
 }
 
-// Parameters needed to draw a RenderPassDrawQuad.
+// Parameters needed to draw a CompositorRenderPassDrawQuad.
 struct GLRenderer::DrawRenderPassDrawQuadParams {
   DrawRenderPassDrawQuadParams() {}
   ~DrawRenderPassDrawQuadParams() {
@@ -3855,7 +3855,7 @@ void GLRenderer::ScheduleOutputSurfaceAsOverlay() {
 }
 
 #if defined(OS_APPLE)
-// This function draws the RenderPassDrawQuad into a temporary
+// This function draws the CompositorRenderPassDrawQuad into a temporary
 // texture/framebuffer, and then copies the result into an IOSurface. The
 // inefficient (but simple) way to do this would be to:
 //   1. Allocate a framebuffer the size of the screen.
@@ -4014,8 +4014,8 @@ GLRenderer::FindOrCreateOverlayTexture(
     int width,
     int height,
     const gfx::ColorSpace& color_space) {
-  // First try to use a texture for the same RenderPassId, to keep things more
-  // stable and less likely to clobber each others textures.
+  // First try to use a texture for the same CompositorRenderPassId, to keep
+  // things more stable and less likely to clobber each others textures.
   auto match_with_id = [&](const std::unique_ptr<OverlayTexture>& overlay) {
     return overlay->render_pass_id == render_pass_id &&
            overlay->texture.size().width() >= width &&

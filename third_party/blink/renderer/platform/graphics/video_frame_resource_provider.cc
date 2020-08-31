@@ -10,7 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
@@ -64,7 +64,7 @@ void VideoFrameResourceProvider::OnContextLost() {
 }
 
 void VideoFrameResourceProvider::AppendQuads(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     scoped_refptr<media::VideoFrame> frame,
     media::VideoRotation rotation,
     bool is_opaque) {

@@ -4,7 +4,7 @@
 
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 
-#include "services/viz/public/cpp/compositing/render_pass_id_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
@@ -21,7 +21,7 @@ viz::DrawQuad* AllocateAndConstruct(
       quad->material = viz::DrawQuad::Material::kDebugBorder;
       return quad;
     case viz::mojom::DrawQuadStateDataView::Tag::RENDER_PASS_QUAD_STATE:
-      quad = list->AllocateAndConstruct<viz::RenderPassDrawQuad>();
+      quad = list->AllocateAndConstruct<viz::CompositorRenderPassDrawQuad>();
       quad->material = viz::DrawQuad::Material::kCompositorRenderPass;
       return quad;
     case viz::mojom::DrawQuadStateDataView::Tag::SOLID_COLOR_QUAD_STATE:
@@ -67,11 +67,12 @@ bool StructTraits<viz::mojom::DebugBorderQuadStateDataView, viz::DrawQuad>::
 }
 
 // static
-bool StructTraits<viz::mojom::RenderPassQuadStateDataView, viz::DrawQuad>::Read(
-    viz::mojom::RenderPassQuadStateDataView data,
-    viz::DrawQuad* out) {
-  viz::RenderPassDrawQuad* quad = static_cast<viz::RenderPassDrawQuad*>(out);
-  quad->resources.ids[viz::RenderPassDrawQuad::kMaskResourceIdIndex] =
+bool StructTraits<
+    viz::mojom::CompositorRenderPassQuadStateDataView,
+    viz::DrawQuad>::Read(viz::mojom::CompositorRenderPassQuadStateDataView data,
+                         viz::DrawQuad* out) {
+  auto* quad = static_cast<viz::CompositorRenderPassDrawQuad*>(out);
+  quad->resources.ids[viz::CompositorRenderPassDrawQuad::kMaskResourceIdIndex] =
       data.mask_resource_id();
   quad->resources.count = data.mask_resource_id() ? 1 : 0;
   if (!data.ReadMaskUvRect(&quad->mask_uv_rect) ||
@@ -82,7 +83,7 @@ bool StructTraits<viz::mojom::RenderPassQuadStateDataView, viz::DrawQuad>::Read(
       !data.ReadRenderPassId(&quad->render_pass_id)) {
     return false;
   }
-  // RenderPass ids are never zero.
+  // CompositorRenderPass ids are never zero.
   if (!quad->render_pass_id) {
     viz::SetDeserializationCrashKeyString("Draw quad invalid render pass ID");
     return false;

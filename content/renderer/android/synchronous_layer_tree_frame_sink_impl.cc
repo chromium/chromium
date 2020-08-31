@@ -20,7 +20,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display.h"
@@ -350,12 +350,13 @@ void SynchronousLayerTreeFrameSinkImpl::SubmitCompositorFrame(
     embed_frame.metadata.begin_frame_ack = frame.metadata.begin_frame_ack;
     embed_frame.metadata.device_scale_factor =
         frame.metadata.device_scale_factor;
-    embed_frame.render_pass_list.push_back(viz::RenderPass::Create());
+    embed_frame.render_pass_list.push_back(viz::CompositorRenderPass::Create());
 
     // The embedding RenderPass covers the entire Display's area.
     const auto& embed_render_pass = embed_frame.render_pass_list.back();
-    embed_render_pass->SetNew(viz::RenderPassId{1}, gfx::Rect(display_size),
-                              gfx::Rect(display_size), gfx::Transform());
+    embed_render_pass->SetNew(viz::CompositorRenderPassId{1},
+                              gfx::Rect(display_size), gfx::Rect(display_size),
+                              gfx::Transform());
     embed_render_pass->has_transparent_background = false;
 
     // The RenderPass has a single SurfaceDrawQuad (and SharedQuadState for it).

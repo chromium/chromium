@@ -7,7 +7,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/aggregated_frame.h"
@@ -66,7 +66,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::PrintToStringParamName());
 
 SharedQuadState* CreateAndAppendTestSharedQuadState(
-    RenderPass* render_pass,
+    CompositorRenderPass* render_pass,
     const gfx::Transform& transform,
     const gfx::Size& size) {
   const gfx::Rect layer_rect = gfx::Rect(size);
@@ -87,8 +87,8 @@ SharedQuadState* CreateAndAppendTestSharedQuadState(
 // Draws a very simple frame with no surface references.
 TEST_P(SurfaceAggregatorPixelTest, DrawSimpleFrame) {
   gfx::Rect rect(this->device_viewport_size_);
-  RenderPassId id{1};
-  auto pass = RenderPass::Create();
+  CompositorRenderPassId id{1};
+  auto pass = CompositorRenderPass::Create();
   pass->SetNew(id, rect, rect, gfx::Transform());
 
   CreateAndAppendTestSharedQuadState(pass.get(), gfx::Transform(),
@@ -146,8 +146,8 @@ TEST_P(SurfaceAggregatorPixelTest, DrawSimpleAggregatedFrame) {
 
   {
     gfx::Rect rect(this->device_viewport_size_);
-    RenderPassId id{1};
-    auto pass = RenderPass::Create();
+    CompositorRenderPassId id{1};
+    auto pass = CompositorRenderPass::Create();
     pass->SetNew(id, rect, rect, gfx::Transform());
 
     CreateAndAppendTestSharedQuadState(pass.get(), gfx::Transform(),
@@ -173,8 +173,8 @@ TEST_P(SurfaceAggregatorPixelTest, DrawSimpleAggregatedFrame) {
 
   {
     gfx::Rect rect(child_size);
-    RenderPassId id{1};
-    auto pass = RenderPass::Create();
+    CompositorRenderPassId id{1};
+    auto pass = CompositorRenderPass::Create();
     pass->SetNew(id, rect, rect, gfx::Transform());
 
     CreateAndAppendTestSharedQuadState(pass.get(), gfx::Transform(),
@@ -242,8 +242,8 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAggregatedFrameWithSurfaceTransforms) {
 
   {
     gfx::Rect rect(this->device_viewport_size_);
-    RenderPassId id{1};
-    auto pass = RenderPass::Create();
+    CompositorRenderPassId id{1};
+    auto pass = CompositorRenderPass::Create();
     pass->SetNew(id, rect, rect, gfx::Transform());
 
     gfx::Transform surface_transform;
@@ -275,8 +275,8 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAggregatedFrameWithSurfaceTransforms) {
 
   {
     gfx::Rect rect(child_size);
-    RenderPassId id{1};
-    auto pass = RenderPass::Create();
+    CompositorRenderPassId id{1};
+    auto pass = CompositorRenderPass::Create();
     pass->SetNew(id, rect, rect, gfx::Transform());
 
     CreateAndAppendTestSharedQuadState(pass.get(), gfx::Transform(),
@@ -303,8 +303,8 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAggregatedFrameWithSurfaceTransforms) {
 
   {
     gfx::Rect rect(child_size);
-    RenderPassId id{1};
-    auto pass = RenderPass::Create();
+    CompositorRenderPassId id{1};
+    auto pass = CompositorRenderPass::Create();
     pass->SetNew(id, rect, rect, gfx::Transform());
 
     CreateAndAppendTestSharedQuadState(pass.get(), gfx::Transform(),

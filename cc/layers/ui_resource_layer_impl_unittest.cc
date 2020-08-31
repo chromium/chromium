@@ -52,7 +52,7 @@ UIResourceLayerImpl* GenerateUIResourceLayer(
 void QuadSizeTest(FakeUIResourceLayerTreeHostImpl* host_impl,
                   UIResourceLayerImpl* layer,
                   size_t expected_quad_size) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   AppendQuadsData data;
   host_impl->active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);
@@ -100,7 +100,7 @@ TEST(UIResourceLayerImplTest, VerifyDrawQuads) {
 void NeedsBlendingTest(FakeUIResourceLayerTreeHostImpl* host_impl,
                        UIResourceLayerImpl* layer,
                        bool needs_blending) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   AppendQuadsData data;
   host_impl->active_tree()->root_layer()->AppendQuads(render_pass.get(), &data);

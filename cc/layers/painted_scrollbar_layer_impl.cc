@@ -92,7 +92,7 @@ bool PaintedScrollbarLayerImpl::WillDraw(
 }
 
 void PaintedScrollbarLayerImpl::AppendQuads(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   bool premultipled_alpha = true;
   bool flipped = false;

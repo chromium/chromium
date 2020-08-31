@@ -135,7 +135,7 @@ class VideoDetectorTest : public testing::Test {
 
   void SubmitRootFrame() {
     CompositorFrame frame = MakeDefaultCompositorFrame();
-    RenderPass* render_pass = frame.render_pass_list.back().get();
+    CompositorRenderPass* render_pass = frame.render_pass_list.back().get();
     SharedQuadState* shared_quad_state =
         render_pass->CreateAndAppendSharedQuadState();
     for (CompositorFrameSinkSupport* frame_sink : embedded_clients_) {

@@ -15,14 +15,14 @@ namespace cc {
 
 // This type of layer is used to mirror contents of another layer (specified by
 // |mirrored_layer_id_|) by forcing a render pass for the mirrored layer and
-// adding a RenderPassDrawQuad in the compositor frame for this layer referring
-// to that render pass. The mirroring layer should not be a descendant of the
-// mirrored layer (in terms of the effect tree). Due to ordering requirements
-// for render passes in the compositor frame, the render pass containing
-// mirroring layer should appear after the render pass created for the mirrored
-// layer. Currently, render passes are in reverse-draw order of the effect tree,
-// so we should be careful that this reverse-draw order does not conflict with
-// render pass ordering requirement mentioned above.
+// adding a CompositorRenderPassDrawQuad in the compositor frame for this layer
+// referring to that render pass. The mirroring layer should not be a descendant
+// of the mirrored layer (in terms of the effect tree). Due to ordering
+// requirements for render passes in the compositor frame, the render pass
+// containing mirroring layer should appear after the render pass created for
+// the mirrored layer. Currently, render passes are in reverse-draw order of the
+// effect tree, so we should be careful that this reverse-draw order does not
+// conflict with render pass ordering requirement mentioned above.
 // TODO(mohsen): If necessary, reorder render passes in compositor frame such
 // that the render pass containing mirroring layer appears after the render pass
 // created for the mirrored layer.
@@ -43,7 +43,7 @@ class CC_EXPORT MirrorLayerImpl : public LayerImpl {
 
   // LayerImpl overrides.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   void PushPropertiesTo(LayerImpl* layer) override;
   gfx::Rect GetDamageRect() const override;
@@ -54,8 +54,8 @@ class CC_EXPORT MirrorLayerImpl : public LayerImpl {
 
  private:
   const char* LayerTypeAsString() const override;
-  viz::RenderPassId mirrored_layer_render_pass_id() const {
-    return viz::RenderPassId{mirrored_layer_id()};
+  viz::CompositorRenderPassId mirrored_layer_render_pass_id() const {
+    return viz::CompositorRenderPassId{mirrored_layer_id()};
   }
 
   int mirrored_layer_id_ = 0;

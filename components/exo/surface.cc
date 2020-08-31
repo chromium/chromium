@@ -22,7 +22,7 @@
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wm_helper.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -1028,7 +1028,7 @@ void Surface::UpdateBufferTransform(bool y_invert) {
 void Surface::AppendContentsToFrame(const gfx::Point& origin,
                                     float device_scale_factor,
                                     viz::CompositorFrame* frame) {
-  const std::unique_ptr<viz::RenderPass>& render_pass =
+  const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
   gfx::Rect output_rect(origin, content_size_);
   gfx::Rect quad_rect(0, 0, 1, 1);

@@ -17,7 +17,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface.h"

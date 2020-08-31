@@ -69,7 +69,7 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   void PushPropertiesTo(LayerImpl* layer) override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   bool is_surface_layer() const override;
   gfx::Rect GetEnclosingRectInTargetSpace() const override;
@@ -79,7 +79,7 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
 
  private:
   void GetDebugBorderProperties(SkColor* color, float* width) const override;
-  void AppendRainbowDebugBorder(viz::RenderPass* render_pass);
+  void AppendRainbowDebugBorder(viz::CompositorRenderPass* render_pass);
   void AsValueInto(base::trace_event::TracedValue* dict) const override;
   const char* LayerTypeAsString() const override;
 

@@ -16,8 +16,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/delegated_ink_metadata.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -98,9 +98,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   // Helper function that gets a list of render passes and returns a map from
   // render pass ids to render passes.
-  static base::flat_map<RenderPassId, RenderPassMapEntry> GenerateRenderPassMap(
-      const RenderPassList& render_pass_list,
-      bool is_root_surface);
+  static base::flat_map<CompositorRenderPassId, RenderPassMapEntry>
+  GenerateRenderPassMap(const CompositorRenderPassList& render_pass_list,
+                        bool is_root_surface);
 
   ClipData CalculateClipRect(const ClipData& surface_clip,
                              const ClipData& quad_clip,
@@ -215,7 +215,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   gfx::Rect PrewalkRenderPass(
       RenderPassMapEntry* render_pass_entry,
       const Surface* surface,
-      base::flat_map<RenderPassId, RenderPassMapEntry>* render_pass_map,
+      base::flat_map<CompositorRenderPassId, RenderPassMapEntry>*
+          render_pass_map,
       bool will_draw,
       const gfx::Rect& damage_from_parent,
       const gfx::Transform& target_to_root_transform,
@@ -247,12 +248,12 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Returns true if the quad list from the render pass provided can be merged
   // with its target render pass based on rounded corners.
   bool CanMergeRoundedCorner(const RoundedCornerInfo& rounded_corner_info,
-                             const RenderPass& root_render_pass);
+                             const CompositorRenderPass& root_render_pass);
 
   int ChildIdForSurface(Surface* surface);
   bool IsSurfaceFrameIndexSameAsPrevious(const Surface* surface) const;
   gfx::Rect DamageRectForSurface(const Surface* surface,
-                                 const RenderPass& source,
+                                 const CompositorRenderPass& source,
                                  const gfx::Rect& full_rect) const;
   gfx::Rect CalculateOccludingSurfaceDamageRect(
       const DrawQuad* quad,
@@ -268,13 +269,13 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // id.
   DrawQuad* ProcessSurfaceOccludingDamage(
       const Surface* surface,
-      const RenderPassList& render_pass_list,
+      const CompositorRenderPassList& render_pass_list,
       const gfx::Transform& target_transform,
-      const RenderPass* dest_pass,
+      const CompositorRenderPass* dest_pass,
       gfx::Rect* occluding_damage_rect);
   DrawQuad* ProcessSurfaceOccludingDamage(
       const Surface* surface,
-      const RenderPassList& render_pass_list,
+      const CompositorRenderPassList& render_pass_list,
       const gfx::Transform& target_transform,
       const AggregatedRenderPass* dest_pass,
       gfx::Rect* occluding_damage_rect);
@@ -341,7 +342,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // An internal helper for the `ProcessSurfaceOccludingDamage()` functions.
   DrawQuad* ProcessSurfaceOccludingDamageInternal(
       const Surface* surface,
-      const RenderPassList& render_pass_list,
+      const CompositorRenderPassList& render_pass_list,
       const gfx::Transform& parent_target_transform,
       const gfx::Transform& dest_transform_to_root_target,
       const AggregatedRenderPassId& dest_pass_id,

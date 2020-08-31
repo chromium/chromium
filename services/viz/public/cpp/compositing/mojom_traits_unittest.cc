@@ -10,8 +10,8 @@
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_settings.h"
@@ -30,13 +30,13 @@
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_frame_metadata_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_frame_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/copy_output_result_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/filter_operation_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/filter_operations_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/local_surface_id_mojom_traits.h"
-#include "services/viz/public/cpp/compositing/render_pass_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_settings_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/returned_resource_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
@@ -445,11 +445,11 @@ TEST_F(StructTraitsTest, SharedQuadState) {
 
 // Note that this is a fairly trivial test of CompositorFrame serialization as
 // most of the heavy lifting has already been done by CompositorFrameMetadata,
-// RenderPass, and QuadListBasic unit tests.
+// CompositorRenderPass, and QuadListBasic unit tests.
 TEST_F(StructTraitsTest, CompositorFrame) {
-  std::unique_ptr<RenderPass> render_pass = RenderPass::Create();
-  render_pass->SetNew(RenderPassId{1}, gfx::Rect(5, 6), gfx::Rect(2, 3),
-                      gfx::Transform());
+  auto render_pass = CompositorRenderPass::Create();
+  render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(5, 6),
+                      gfx::Rect(2, 3), gfx::Transform());
 
   // SharedQuadState.
   const gfx::Transform sqs_quad_to_target_transform(
@@ -538,7 +538,8 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   EXPECT_EQ(tr_size, out_resource.size);
 
   EXPECT_EQ(1u, output.render_pass_list.size());
-  const RenderPass* out_render_pass = output.render_pass_list[0].get();
+  const CompositorRenderPass* out_render_pass =
+      output.render_pass_list[0].get();
   ASSERT_EQ(2u, out_render_pass->quad_list.size());
   ASSERT_EQ(1u, out_render_pass->shared_quad_state_list.size());
 
@@ -699,7 +700,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   // The CopyOutputRequest struct traits require a TaskRunner.
   base::test::TaskEnvironment task_environment;
 
-  const RenderPassId render_pass_id{3u};
+  const CompositorRenderPassId render_pass_id{3u};
   const gfx::Rect output_rect(45, 22, 120, 13);
   const gfx::Transform transform_to_root =
       gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
@@ -718,7 +719,7 @@ TEST_F(StructTraitsTest, RenderPass) {
   const bool cache_render_pass = true;
   const bool has_damage_from_contributing_content = true;
   const bool generate_mipmap = true;
-  std::unique_ptr<RenderPass> input = RenderPass::Create();
+  auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 filters, backdrop_filters, backdrop_filter_bounds,
                 content_color_usage, has_transparent_background,
@@ -774,8 +775,9 @@ TEST_F(StructTraitsTest, RenderPass) {
   surface_quad->is_reflection = !surface_quad->is_reflection;
   surface_quad->allow_merge = !surface_quad->allow_merge;
 
-  std::unique_ptr<RenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::RenderPass>(&input, &output);
+  std::unique_ptr<CompositorRenderPass> output;
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&input,
+                                                                   &output);
 
   EXPECT_EQ(input->quad_list.size(), output->quad_list.size());
   EXPECT_EQ(input->shared_quad_state_list.size(),
@@ -856,7 +858,7 @@ TEST_F(StructTraitsTest, RenderPass) {
 }
 
 TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
-  const RenderPassId render_pass_id{3u};
+  const CompositorRenderPassId render_pass_id{3u};
   const gfx::Rect output_rect(45, 22, 120, 13);
   const gfx::Rect damage_rect(56, 123, 19, 43);
   const gfx::Transform transform_to_root =
@@ -867,7 +869,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   const bool cache_render_pass = false;
   const bool has_damage_from_contributing_content = false;
   const bool generate_mipmap = false;
-  std::unique_ptr<RenderPass> input = RenderPass::Create();
+  auto input = CompositorRenderPass::Create();
   input->SetAll(render_pass_id, output_rect, damage_rect, transform_to_root,
                 cc::FilterOperations(), cc::FilterOperations(),
                 backdrop_filter_bounds, content_color_usage,
@@ -876,8 +878,9 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
 
   // Unlike the previous test, don't add any quads to the list; we need to
   // verify that the serialization code can deal with that.
-  std::unique_ptr<RenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::RenderPass>(&input, &output);
+  std::unique_ptr<CompositorRenderPass> output;
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&input,
+                                                                   &output);
 
   EXPECT_EQ(input->quad_list.size(), output->quad_list.size());
   EXPECT_EQ(input->shared_quad_state_list.size(),
@@ -892,8 +895,8 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
 }
 
 TEST_F(StructTraitsTest, QuadListBasic) {
-  std::unique_ptr<RenderPass> render_pass = RenderPass::Create();
-  render_pass->SetNew(RenderPassId{1}, gfx::Rect(), gfx::Rect(),
+  auto render_pass = CompositorRenderPass::Create();
+  render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(), gfx::Rect(),
                       gfx::Transform());
 
   SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
@@ -928,7 +931,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const gfx::Rect rect4(1234, 5678, 91012, 13141);
   const bool needs_blending = true;
   const ResourceId resource_id4(1337);
-  const RenderPassId render_pass_id{1234u};
+  const CompositorRenderPassId render_pass_id{1234u};
   const gfx::RectF mask_uv_rect(0, 0, 1337.1f, 1234.2f);
   const gfx::Size mask_texture_size(1234, 5678);
   gfx::Vector2dF filters_scale(1234.1f, 4321.2f);
@@ -937,8 +940,8 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const float backdrop_filter_quality = 1.0f;
   const bool can_use_backdrop_filter_cache = true;
 
-  RenderPassDrawQuad* render_pass_quad =
-      render_pass->CreateAndAppendDrawQuad<RenderPassDrawQuad>();
+  CompositorRenderPassDrawQuad* render_pass_quad =
+      render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
   render_pass_quad->SetAll(sqs, rect4, rect4, needs_blending, render_pass_id,
                            resource_id4, mask_uv_rect, mask_texture_size,
                            filters_scale, filters_origin, tex_coord_rect,
@@ -976,8 +979,9 @@ TEST_F(StructTraitsTest, QuadListBasic) {
                                  resource_id6, resource_size_in_pixels,
                                  uv_top_left, uv_bottom_right);
 
-  std::unique_ptr<RenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::RenderPass>(&render_pass, &output);
+  std::unique_ptr<CompositorRenderPass> output;
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&render_pass,
+                                                                   &output);
 
   ASSERT_EQ(render_pass->quad_list.size(), output->quad_list.size());
 
@@ -1010,8 +1014,9 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(fallback_surface_id,
             out_primary_surface_draw_quad->surface_range.start());
 
-  const RenderPassDrawQuad* out_render_pass_draw_quad =
-      RenderPassDrawQuad::MaterialCast(output->quad_list.ElementAt(3));
+  const CompositorRenderPassDrawQuad* out_render_pass_draw_quad =
+      CompositorRenderPassDrawQuad::MaterialCast(
+          output->quad_list.ElementAt(3));
   EXPECT_EQ(rect4, out_render_pass_draw_quad->rect);
   EXPECT_EQ(rect4, out_render_pass_draw_quad->visible_rect);
   EXPECT_EQ(render_pass_id, out_render_pass_draw_quad->render_pass_id);
@@ -1121,8 +1126,8 @@ TEST_F(StructTraitsTest, TransferableResource) {
 }
 
 TEST_F(StructTraitsTest, YUVDrawQuad) {
-  std::unique_ptr<RenderPass> render_pass = RenderPass::Create();
-  render_pass->SetNew(RenderPassId{1}, gfx::Rect(), gfx::Rect(),
+  auto render_pass = CompositorRenderPass::Create();
+  render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(), gfx::Rect(),
                       gfx::Transform());
 
   const DrawQuad::Material material = DrawQuad::Material::kYuvVideoContent;
@@ -1153,8 +1158,9 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
                video_color_space, resource_offset, resource_multiplier,
                bits_per_channel, protected_video_type);
 
-  std::unique_ptr<RenderPass> output;
-  mojo::test::SerializeAndDeserialize<mojom::RenderPass>(&render_pass, &output);
+  std::unique_ptr<CompositorRenderPass> output;
+  mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(&render_pass,
+                                                                   &output);
 
   ASSERT_EQ(render_pass->quad_list.size(), output->quad_list.size());
 

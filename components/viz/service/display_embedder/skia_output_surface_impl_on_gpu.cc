@@ -896,7 +896,7 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
       context->set_promise_image_texture(sk_ref_sp(it->second.fulfill()));
       if (!context->promise_image_texture()) {
         DLOG(ERROR) << "Failed to fulfill the promise texture created from "
-                       "RenderPassId:"
+                       "CompositorRenderPassId:"
                     << context->render_pass_id();
       }
     } else {

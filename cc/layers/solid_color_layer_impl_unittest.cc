@@ -23,7 +23,7 @@ class SolidColorLayerImplTest : public LayerTreeImplTestBase,
                                 public ::testing::Test {};
 
 TEST_F(SolidColorLayerImplTest, VerifyTilingCompleteAndNoOverlap) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
 
   gfx::Size layer_size = gfx::Size(800, 600);
   gfx::Rect visible_layer_rect = gfx::Rect(layer_size);
@@ -44,7 +44,7 @@ TEST_F(SolidColorLayerImplTest, VerifyTilingCompleteAndNoOverlap) {
 
 TEST_F(SolidColorLayerImplTest, VerifyCorrectBackgroundColorInQuad) {
   SkColor test_color = 0xFFA55AFF;
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
   gfx::Rect visible_layer_rect = gfx::Rect(layer_size);
   root_layer()->SetBounds(layer_size);
@@ -71,7 +71,7 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectBackgroundColorInQuad) {
 
 TEST_F(SolidColorLayerImplTest, VerifyCorrectOpacityInQuad) {
   const float opacity = 0.5f;
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
 
   auto* layer = AddLayer<SolidColorLayerImpl>();
@@ -97,7 +97,7 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectOpacityInQuad) {
 
 TEST_F(SolidColorLayerImplTest, VerifyCorrectRenderSurfaceOpacityInQuad) {
   const float opacity = 0.5f;
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
 
   auto* layer = AddLayer<SolidColorLayerImpl>();
@@ -126,7 +126,7 @@ TEST_F(SolidColorLayerImplTest, VerifyCorrectRenderSurfaceOpacityInQuad) {
 
 TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentAlpha) {
   SkColor test_color = 0;
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
 
   auto* layer = AddLayer<SolidColorLayerImpl>();
@@ -144,7 +144,7 @@ TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentAlpha) {
 
 TEST_F(SolidColorLayerImplTest, VerifyEliminateTransparentOpacity) {
   SkColor test_color = 0xFFA55AFF;
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Size layer_size = gfx::Size(100, 100);
 
   auto* layer = AddLayer<SolidColorLayerImpl>();
@@ -198,7 +198,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     // should be the false.
     layer_impl->draw_properties().opacity = 1;
 
-    std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+    auto render_pass = viz::CompositorRenderPass::Create();
 
     AppendQuadsData data;
     layer_impl->AppendQuads(render_pass.get(), &data);
@@ -225,7 +225,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
     // needs_blending should be true.
     layer_impl->draw_properties().opacity = 1;
 
-    std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+    auto render_pass = viz::CompositorRenderPass::Create();
 
     AppendQuadsData data;
     layer_impl->AppendQuads(render_pass.get(), &data);

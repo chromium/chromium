@@ -67,7 +67,7 @@ class SurfaceAggregatorPerfTest : public testing::Test {
     for (int i = 0; i < num_surfaces; i++) {
       LocalSurfaceId local_surface_id(i + 1, child_tokens[i]);
 
-      auto pass = RenderPass::Create();
+      auto pass = CompositorRenderPass::Create();
       pass->output_rect = gfx::Rect(0, 0, 1, 2);
 
       CompositorFrameBuilder frame_builder;
@@ -123,7 +123,7 @@ class SurfaceAggregatorPerfTest : public testing::Test {
         base::TimeTicks() + base::TimeDelta::FromSeconds(1);
     timer_.Reset();
     do {
-      auto pass = RenderPass::Create();
+      auto pass = CompositorRenderPass::Create();
 
       auto* sqs = pass->CreateAndAppendSharedQuadState();
       auto* surface_quad = pass->CreateAndAppendDrawQuad<SurfaceDrawQuad>();

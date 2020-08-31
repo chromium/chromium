@@ -29,7 +29,7 @@
 
 namespace viz {
 class AggregatedRenderPass;
-class RenderPassDrawQuad;
+class CompositorRenderPassDrawQuad;
 class AggregatedRenderPassDrawQuad;
 
 using AggregatedRenderPassId = util::IdTypeU64<AggregatedRenderPass>;
@@ -64,7 +64,7 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
               bool generate_mipmap);
 
   AggregatedRenderPassDrawQuad* CopyFromAndAppendRenderPassDrawQuad(
-      const RenderPassDrawQuad* quad,
+      const CompositorRenderPassDrawQuad* quad,
       AggregatedRenderPassId render_pass_id);
   AggregatedRenderPassDrawQuad* CopyFromAndAppendRenderPassDrawQuad(
       const AggregatedRenderPassDrawQuad* quad);
@@ -80,8 +80,9 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
 
   template <typename DrawQuadType>
   DrawQuadType* CreateAndAppendDrawQuad() {
-    static_assert(!std::is_same<DrawQuadType, RenderPassDrawQuad>::value,
-                  "cannot create RenderPassDrawQuad in AggregatedRenderPass");
+    static_assert(
+        !std::is_same<DrawQuadType, CompositorRenderPassDrawQuad>::value,
+        "cannot create CompositorRenderPassDrawQuad in AggregatedRenderPass");
     return quad_list.AllocateAndConstruct<DrawQuadType>();
   }
 
@@ -92,8 +93,9 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
   template <typename DrawQuadType>
   DrawQuadType* CopyFromAndAppendTypedDrawQuad(const DrawQuad* quad) {
     static_assert(
-        !std::is_same<DrawQuadType, RenderPassDrawQuad>::value,
-        "cannot copy RenderPassDrawQuad type into AggregatedRenderPass");
+        !std::is_same<DrawQuadType, CompositorRenderPassDrawQuad>::value,
+        "cannot copy CompositorRenderPassDrawQuad type into "
+        "AggregatedRenderPass");
     return quad_list.AllocateAndCopyFrom(DrawQuadType::MaterialCast(quad));
   }
 

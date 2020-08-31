@@ -8,7 +8,7 @@
 
 #include "base/test/null_task_runner.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -81,11 +81,11 @@ class DisplayDamageTrackerTest : public testing::Test {
     }
 
     void SubmitCompositorFrame(const BeginFrameArgs& args) {
-      RenderPassList pass_list;
-      auto pass = RenderPass::Create();
+      CompositorRenderPassList pass_list;
+      auto pass = CompositorRenderPass::Create();
       pass->output_rect = gfx::Rect(0, 0, 100, 100);
       pass->damage_rect = gfx::Rect(10, 10, 1, 1);
-      pass->id = RenderPassId{1u};
+      pass->id = CompositorRenderPassId{1u};
       pass_list.push_back(std::move(pass));
 
       BeginFrameAck ack;

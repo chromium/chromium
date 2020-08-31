@@ -77,9 +77,10 @@ void DeJellyState::AdvanceFrame(LayerTreeImpl* layer_tree_impl) {
   should_de_jelly_ = true;
 }
 
-void DeJellyState::UpdateSharedQuadState(LayerTreeImpl* layer_tree_impl,
-                                         int transform_id,
-                                         viz::RenderPass* target_render_pass) {
+void DeJellyState::UpdateSharedQuadState(
+    LayerTreeImpl* layer_tree_impl,
+    int transform_id,
+    viz::CompositorRenderPass* target_render_pass) {
   if (!should_de_jelly_)
     return;
   DCHECK(layer_tree_impl->settings().allow_de_jelly_effect);

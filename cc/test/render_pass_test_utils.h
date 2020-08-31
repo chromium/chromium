@@ -11,7 +11,7 @@
 
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {
@@ -27,7 +27,7 @@ namespace viz {
 class ClientResourceProvider;
 class ContextProvider;
 class DisplayResourceProvider;
-class RenderPass;
+class CompositorRenderPass;
 class SolidColorDrawQuad;
 }  // namespace viz
 
@@ -35,11 +35,12 @@ namespace cc {
 
 // Adds a new render pass with the provided properties to the given
 // render pass list.
-viz::RenderPass* AddRenderPass(viz::RenderPassList* pass_list,
-                               viz::RenderPassId render_pass_id,
-                               const gfx::Rect& output_rect,
-                               const gfx::Transform& root_transform,
-                               const FilterOperations& filters);
+viz::CompositorRenderPass* AddRenderPass(
+    viz::CompositorRenderPassList* pass_list,
+    viz::CompositorRenderPassId render_pass_id,
+    const gfx::Rect& output_rect,
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters);
 
 viz::AggregatedRenderPass* AddRenderPass(
     viz::AggregatedRenderPassList* pass_list,
@@ -50,12 +51,13 @@ viz::AggregatedRenderPass* AddRenderPass(
 
 // Adds a new render pass with the provided properties to the given
 // render pass list.
-viz::RenderPass* AddRenderPassWithDamage(viz::RenderPassList* pass_list,
-                                         viz::RenderPassId render_pass_id,
-                                         const gfx::Rect& output_rect,
-                                         const gfx::Rect& damage_rect,
-                                         const gfx::Transform& root_transform,
-                                         const FilterOperations& filters);
+viz::CompositorRenderPass* AddRenderPassWithDamage(
+    viz::CompositorRenderPassList* pass_list,
+    viz::CompositorRenderPassId render_pass_id,
+    const gfx::Rect& output_rect,
+    const gfx::Rect& damage_rect,
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters);
 viz::AggregatedRenderPass* AddRenderPassWithDamage(
     viz::AggregatedRenderPassList* pass_list,
     viz::AggregatedRenderPassId render_pass_id,
@@ -90,8 +92,9 @@ viz::SolidColorDrawQuad* AddTransformedQuad(viz::AggregatedRenderPass* pass,
                                             const gfx::Transform& transform);
 
 // Adds a render pass quad to an existing render pass.
-viz::RenderPassDrawQuad* AddRenderPassQuad(viz::RenderPass* to_pass,
-                                           viz::RenderPass* contributing_pass);
+viz::CompositorRenderPassDrawQuad* AddRenderPassQuad(
+    viz::CompositorRenderPass* to_pass,
+    viz::CompositorRenderPass* contributing_pass);
 viz::AggregatedRenderPassDrawQuad* AddRenderPassQuad(
     viz::AggregatedRenderPass* to_pass,
     viz::AggregatedRenderPass* contributing_pass);
@@ -104,9 +107,9 @@ void AddRenderPassQuad(viz::AggregatedRenderPass* to_pass,
                        SkBlendMode blend_mode);
 
 std::vector<viz::ResourceId> AddOneOfEveryQuadType(
-    viz::RenderPass* to_pass,
+    viz::CompositorRenderPass* to_pass,
     viz::ClientResourceProvider* resource_provider,
-    viz::RenderPassId child_pass_id);
+    viz::CompositorRenderPassId child_pass_id);
 
 // Adds a render pass quad with the given mask resource, filter, and transform.
 // The resource used in render pass is created by viz::ClientResourceProvider,

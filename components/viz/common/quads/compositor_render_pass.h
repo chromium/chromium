@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_COMMON_QUADS_RENDER_PASS_H_
-#define COMPONENTS_VIZ_COMMON_QUADS_RENDER_PASS_H_
+#ifndef COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_RENDER_PASS_H_
+#define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_RENDER_PASS_H_
 
 #include <stddef.h>
 
@@ -37,30 +37,30 @@ namespace viz {
 class AggregatedRenderPass;
 class AggregatedRenderPassDrawQuad;
 class DrawQuad;
-class RenderPass;
-class RenderPassDrawQuad;
+class CompositorRenderPass;
+class CompositorRenderPassDrawQuad;
 
-using RenderPassId = util::IdTypeU64<RenderPass>;
+using CompositorRenderPassId = util::IdTypeU64<CompositorRenderPass>;
 
 // This class represents a render pass that is submitted from the UI or renderer
 // compositor to viz. It is mojo-serializable and typically has a unique
-// RenderPassId within its surface id.
-// TODO(vmpstr): Rename this to CompositorRenderPass.
-class VIZ_COMMON_EXPORT RenderPass : public RenderPassInternal {
+// CompositorRenderPassId within its surface id.
+class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
  public:
-  ~RenderPass();
+  ~CompositorRenderPass();
 
-  static std::unique_ptr<RenderPass> Create();
-  static std::unique_ptr<RenderPass> Create(size_t num_layers);
-  static std::unique_ptr<RenderPass> Create(size_t shared_quad_state_list_size,
-                                            size_t quad_list_size);
+  static std::unique_ptr<CompositorRenderPass> Create();
+  static std::unique_ptr<CompositorRenderPass> Create(size_t num_layers);
+  static std::unique_ptr<CompositorRenderPass> Create(
+      size_t shared_quad_state_list_size,
+      size_t quad_list_size);
 
-  void SetNew(RenderPassId id,
+  void SetNew(CompositorRenderPassId id,
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target);
 
-  void SetAll(RenderPassId id,
+  void SetAll(CompositorRenderPassId id,
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target,
@@ -79,38 +79,40 @@ class VIZ_COMMON_EXPORT RenderPass : public RenderPassInternal {
   DrawQuadType* CreateAndAppendDrawQuad() {
     static_assert(
         !std::is_same<DrawQuadType, AggregatedRenderPassDrawQuad>::value,
-        "cannot create RenderPassDrawQuad in AggregatedRenderPass");
+        "cannot create CompositorRenderPassDrawQuad in AggregatedRenderPass");
     return quad_list.AllocateAndConstruct<DrawQuadType>();
   }
 
   // Uniquely identifies the render pass in the compositor's current frame.
-  RenderPassId id;
+  CompositorRenderPassId id;
 
   // For testing functions.
   // TODO(vmpstr): See if we can clean these up by moving the tests to use
   // AggregatedRenderPasses where appropriate.
-  RenderPassDrawQuad* CopyFromAndAppendRenderPassDrawQuad(
-      const RenderPassDrawQuad* quad,
-      RenderPassId render_pass_id);
+  CompositorRenderPassDrawQuad* CopyFromAndAppendRenderPassDrawQuad(
+      const CompositorRenderPassDrawQuad* quad,
+      CompositorRenderPassId render_pass_id);
   DrawQuad* CopyFromAndAppendDrawQuad(const DrawQuad* quad);
 
   // A deep copy of the render pass that includes quads.
-  std::unique_ptr<RenderPass> DeepCopy() const;
+  std::unique_ptr<CompositorRenderPass> DeepCopy() const;
 
  protected:
   // This is essentially "using RenderPassInternal::RenderPassInternal", but
   // since that generates inline (complex) ctors, the chromium-style plug-in
   // refuses to compile it.
-  RenderPass();
-  explicit RenderPass(size_t num_layers);
-  RenderPass(size_t shared_quad_state_list_size, size_t quad_list_size);
+  CompositorRenderPass();
+  explicit CompositorRenderPass(size_t num_layers);
+  CompositorRenderPass(size_t shared_quad_state_list_size,
+                       size_t quad_list_size);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RenderPass);
+  DISALLOW_COPY_AND_ASSIGN(CompositorRenderPass);
 };
 
-using RenderPassList = std::vector<std::unique_ptr<RenderPass>>;
+using CompositorRenderPassList =
+    std::vector<std::unique_ptr<CompositorRenderPass>>;
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_COMMON_QUADS_RENDER_PASS_H_
+#endif  // COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_RENDER_PASS_H_

@@ -22,9 +22,9 @@
 #include "components/viz/common/display/de_jelly.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -49,8 +49,8 @@ namespace {
 constexpr float kOpacityEpsilon = 0.001f;
 
 void MoveMatchingRequests(
-    RenderPassId render_pass_id,
-    std::multimap<RenderPassId, std::unique_ptr<CopyOutputRequest>>*
+    CompositorRenderPassId render_pass_id,
+    std::multimap<CompositorRenderPassId, std::unique_ptr<CopyOutputRequest>>*
         copy_requests,
     std::vector<std::unique_ptr<CopyOutputRequest>>* output_requests) {
   auto request_range = copy_requests->equal_range(render_pass_id);
@@ -119,7 +119,7 @@ struct SurfaceAggregator::RoundedCornerInfo {
 };
 
 struct SurfaceAggregator::RenderPassMapEntry {
-  explicit RenderPassMapEntry(RenderPass* render_pass)
+  explicit RenderPassMapEntry(CompositorRenderPass* render_pass)
       : render_pass(render_pass) {}
 
   // Make this move-only.
@@ -128,7 +128,7 @@ struct SurfaceAggregator::RenderPassMapEntry {
   RenderPassMapEntry& operator=(RenderPassMapEntry&&) = default;
   RenderPassMapEntry& operator=(const RenderPassMapEntry&) = delete;
 
-  RenderPass* render_pass;
+  CompositorRenderPass* render_pass;
   bool is_visited = false;
 };
 
@@ -152,14 +152,16 @@ SurfaceAggregator::~SurfaceAggregator() {
 }
 
 // static
-base::flat_map<RenderPassId, SurfaceAggregator::RenderPassMapEntry>
-SurfaceAggregator::GenerateRenderPassMap(const RenderPassList& render_pass_list,
-                                         bool is_root_surface) {
+base::flat_map<CompositorRenderPassId, SurfaceAggregator::RenderPassMapEntry>
+SurfaceAggregator::GenerateRenderPassMap(
+    const CompositorRenderPassList& render_pass_list,
+    bool is_root_surface) {
   const auto* root_pass_in_root_surface =
       is_root_surface ? render_pass_list.back().get() : nullptr;
   // This data is created once and typically small or empty. Collect all items
   // and pass to a flat_map to sort once.
-  std::vector<std::pair<RenderPassId, RenderPassMapEntry>> render_pass_data;
+  std::vector<std::pair<CompositorRenderPassId, RenderPassMapEntry>>
+      render_pass_data;
   render_pass_data.reserve(render_pass_list.size());
   for (const auto& render_pass : render_pass_list) {
     if (render_pass->backdrop_filters.HasFilterThatMovesPixels()) {
@@ -171,7 +173,7 @@ SurfaceAggregator::GenerateRenderPassMap(const RenderPassList& render_pass_list,
                                   std::forward_as_tuple(render_pass->id),
                                   std::forward_as_tuple(render_pass.get()));
   }
-  return base::flat_map<RenderPassId, RenderPassMapEntry>(
+  return base::flat_map<CompositorRenderPassId, RenderPassMapEntry>(
       std::move(render_pass_data));
 }
 
@@ -225,7 +227,7 @@ bool SurfaceAggregator::IsSurfaceFrameIndexSameAsPrevious(
 
 gfx::Rect SurfaceAggregator::DamageRectForSurface(
     const Surface* surface,
-    const RenderPass& source,
+    const CompositorRenderPass& source,
     const gfx::Rect& full_rect) const {
   if (IsSurfaceFrameIndexSameAsPrevious(surface))
     return gfx::Rect();
@@ -303,9 +305,9 @@ void SurfaceAggregator::UnionSurfaceDamageRectsOnTop(
 // appropriate rectangle.
 DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamage(
     const Surface* surface,
-    const RenderPassList& render_pass_list,
+    const CompositorRenderPassList& render_pass_list,
     const gfx::Transform& parent_target_transform,
-    const RenderPass* render_pass,
+    const CompositorRenderPass* render_pass,
     gfx::Rect* occluding_damage_rect) {
   auto aggregated_id =
       pass_id_remapper_.Remap(render_pass->id, surface->surface_id());
@@ -317,7 +319,7 @@ DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamage(
 
 DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamage(
     const Surface* surface,
-    const RenderPassList& render_pass_list,
+    const CompositorRenderPassList& render_pass_list,
     const gfx::Transform& parent_target_transform,
     const AggregatedRenderPass* render_pass,
     gfx::Rect* occluding_damage_rect) {
@@ -329,7 +331,7 @@ DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamage(
 
 DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamageInternal(
     const Surface* surface,
-    const RenderPassList& render_pass_list,
+    const CompositorRenderPassList& render_pass_list,
     const gfx::Transform& parent_target_transform,
     const gfx::Transform& dest_transform_to_root_target,
     const AggregatedRenderPassId& dest_pass_id,
@@ -338,7 +340,7 @@ DrawQuad* SurfaceAggregator::ProcessSurfaceOccludingDamageInternal(
   if (!needs_surface_occluding_damage_rect_)
     return nullptr;
 
-  RenderPass* last_render_pass = render_pass_list.back().get();
+  CompositorRenderPass* last_render_pass = render_pass_list.back().get();
   gfx::Transform quad_to_root_target_transform =
       gfx::Transform(dest_transform_to_root_target, parent_target_transform);
 
@@ -537,7 +539,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   Surface::CopyRequestsMap copy_requests;
   surface->TakeCopyOutputRequests(&copy_requests);
 
-  const RenderPassList& render_pass_list = frame.render_pass_list;
+  const CompositorRenderPassList& render_pass_list = frame.render_pass_list;
   if (!valid_surfaces_.count(surface_id)) {
     // As |copy_requests| goes out-of-scope, all copy requests in that container
     // will auto-send an empty result upon destruction.
@@ -582,12 +584,12 @@ void SurfaceAggregator::EmitSurfaceContent(
       surface, render_pass_list, combined_transform, dest_pass,
       &occluding_damage_rect);
 
-  const RenderPassList& referenced_passes = render_pass_list;
+  const CompositorRenderPassList& referenced_passes = render_pass_list;
   // TODO(fsamuel): Move this to a separate helper function.
   size_t passes_to_copy =
       merge_pass ? referenced_passes.size() - 1 : referenced_passes.size();
   for (size_t j = 0; j < passes_to_copy; ++j) {
-    const RenderPass& source = *referenced_passes[j];
+    const CompositorRenderPass& source = *referenced_passes[j];
 
     size_t sqs_size = source.shared_quad_state_list.size();
     size_t dq_size = source.quad_list.size();
@@ -693,7 +695,7 @@ void SurfaceAggregator::EmitSurfaceContent(
         /* occluding_damage_rect_valid */ false);
 
     // At this point, we need to calculate three values in order to construct
-    // the RenderPassDrawQuad:
+    // the CompositorRenderPassDrawQuad:
 
     // |quad_rect| - A rectangle representing the RenderPass's output area in
     //   content space. This is equal to the root render pass (|last_pass|)
@@ -1111,14 +1113,15 @@ void SurfaceAggregator::CopyQuadsToPass(
 
       DrawQuad* dest_quad;
       if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
-        const auto* pass_quad = RenderPassDrawQuad::MaterialCast(quad);
-        RenderPassId original_pass_id = pass_quad->render_pass_id;
+        const auto* pass_quad =
+            CompositorRenderPassDrawQuad::MaterialCast(quad);
+        CompositorRenderPassId original_pass_id = pass_quad->render_pass_id;
         AggregatedRenderPassId remapped_pass_id =
             pass_id_remapper_.Remap(original_pass_id, surface_id);
 
-        // If the RenderPassDrawQuad is referring to other render pass with the
-        // |has_damage_from_contributing_content| set on it, then the dest_pass
-        // should have the flag set on it as well.
+        // If the CompositorRenderPassDrawQuad is referring to other render pass
+        // with the |has_damage_from_contributing_content| set on it, then the
+        // dest_pass should have the flag set on it as well.
         if (contributing_content_damaged_passes_.count(remapped_pass_id))
           dest_pass->has_damage_from_contributing_content = true;
 
@@ -1276,7 +1279,7 @@ void SurfaceAggregator::ProcessAddedAndRemovedSurfaces() {
 gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     RenderPassMapEntry* render_pass_entry,
     const Surface* surface,
-    base::flat_map<RenderPassId, RenderPassMapEntry>* render_pass_map,
+    base::flat_map<CompositorRenderPassId, RenderPassMapEntry>* render_pass_map,
     bool will_draw,
     const gfx::Rect& damage_from_parent,
     const gfx::Transform& target_to_root_transform,
@@ -1288,7 +1291,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   }
 
   base::AutoReset<bool> reset_visited(&render_pass_entry->is_visited, true);
-  const RenderPass& render_pass = *render_pass_entry->render_pass;
+  const CompositorRenderPass& render_pass = *render_pass_entry->render_pass;
 
   if (render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
     has_pixel_moving_backdrop_filter_ = true;
@@ -1310,7 +1313,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   DCHECK(transform_inverted);
 
   const CompositorFrame& frame = surface->GetActiveFrame();
-  RenderPass* last_pass = frame.render_pass_list.back().get();
+  CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
   gfx::Rect full_damage = last_pass->output_rect;
 
   // The damage on the root render pass of the surface comes from damage
@@ -1397,13 +1400,13 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       if (quad_damage_rect.IsEmpty())
         continue;
     } else if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
-      auto* render_pass_quad = RenderPassDrawQuad::MaterialCast(quad);
+      auto* render_pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
 
-      RenderPassId child_pass_id = render_pass_quad->render_pass_id;
+      CompositorRenderPassId child_pass_id = render_pass_quad->render_pass_id;
       auto child_it = render_pass_map->find(child_pass_id);
       DCHECK(child_it != render_pass_map->end());
       RenderPassMapEntry& child_render_pass_entry = child_it->second;
-      const RenderPass& child_render_pass =
+      const CompositorRenderPass& child_render_pass =
           *child_render_pass_entry.render_pass;
 
       gfx::Rect rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
@@ -1518,7 +1521,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   const gfx::Transform& root_pass_transform =
       IsRootSurface(surface) ? root_surface_transform_ : gfx::Transform();
 
-  base::flat_map<RenderPassId, RenderPassMapEntry> render_pass_map =
+  base::flat_map<CompositorRenderPassId, RenderPassMapEntry> render_pass_map =
       GenerateRenderPassMap(frame.render_pass_list, IsRootSurface(surface));
 
   std::vector<ResourceId> referenced_resources;
@@ -1548,7 +1551,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(
   if (provider_)
     provider_->DeclareUsedResourcesFromChild(child_id, resource_set);
 
-  RenderPass* last_pass = frame.render_pass_list.back().get();
+  CompositorRenderPass* last_pass = frame.render_pass_list.back().get();
   gfx::Rect full_damage = last_pass->output_rect;
   gfx::Rect damage_rect =
       DamageRectForSurface(surface, *last_pass, full_damage);
@@ -1689,7 +1692,7 @@ void SurfaceAggregator::PropagateCopyRequestPasses() {
 
 bool SurfaceAggregator::CanMergeRoundedCorner(
     const RoundedCornerInfo& rounded_corner_info,
-    const RenderPass& root_render_pass) {
+    const CompositorRenderPass& root_render_pass) {
   // If the quad has no rounded corner, then we do not have to block merging.
   if (rounded_corner_info.bounds.IsEmpty())
     return true;
@@ -2106,8 +2109,8 @@ void SurfaceAggregator::CreateDeJellyRenderPassQuads(
   // Next, if this is a RenderPass quad, find any filters and expand the
   // visible rect.
   if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
-    auto target_id = AggregatedRenderPassId(
-        uint64_t{RenderPassDrawQuad::MaterialCast(quad)->render_pass_id});
+    auto target_id = AggregatedRenderPassId(uint64_t{
+        CompositorRenderPassDrawQuad::MaterialCast(quad)->render_pass_id});
     for (auto& rp : *dest_pass_list_) {
       if (rp->id == target_id) {
         render_pass_visible_rect_f = gfx::RectF(

@@ -19,8 +19,8 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
@@ -334,14 +334,14 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
 
   // Schedules the |ca_layer_overlay|, which is guaranteed to have a non-null
   // |rpdq| parameter. Returns ownership of a GL texture that contains the
-  // output of the RenderPassDrawQuad.
+  // output of the CompositorRenderPassDrawQuad.
   std::unique_ptr<OverlayTexture> ScheduleRenderPassDrawQuad(
       const CALayerOverlay* ca_layer_overlay);
 
   // Copies the contents of the render pass draw quad, including filter effects,
   // to a GL texture, returned in |overlay_texture|. The resulting texture may
-  // be larger than the RenderPassDrawQuad's output, in order to reuse existing
-  // textures. The new size and position is placed in |new_bounds|.
+  // be larger than the CompositorRenderPassDrawQuad's output, in order to reuse
+  // existing textures. The new size and position is placed in |new_bounds|.
   void CopyRenderPassDrawQuadToOverlayResource(
       const CALayerOverlay* ca_layer_overlay,
       std::unique_ptr<OverlayTexture>* overlay_texture,

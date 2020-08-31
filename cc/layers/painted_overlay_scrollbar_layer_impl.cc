@@ -71,7 +71,7 @@ bool PaintedOverlayScrollbarLayerImpl::WillDraw(
 }
 
 void PaintedOverlayScrollbarLayerImpl::AppendQuads(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
@@ -80,7 +80,7 @@ void PaintedOverlayScrollbarLayerImpl::AppendQuads(
 }
 
 void PaintedOverlayScrollbarLayerImpl::AppendThumbQuads(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state) {
   if (aperture_.IsEmpty())
@@ -133,7 +133,7 @@ void PaintedOverlayScrollbarLayerImpl::AppendThumbQuads(
 }
 
 void PaintedOverlayScrollbarLayerImpl::AppendTrackQuads(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state) {
   viz::ResourceId track_resource_id =

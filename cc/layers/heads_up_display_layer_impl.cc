@@ -168,8 +168,9 @@ bool HeadsUpDisplayLayerImpl::WillDraw(
   return true;
 }
 
-void HeadsUpDisplayLayerImpl::AppendQuads(viz::RenderPass* render_pass,
-                                          AppendQuadsData* append_quads_data) {
+void HeadsUpDisplayLayerImpl::AppendQuads(
+    viz::CompositorRenderPass* render_pass,
+    AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
   PopulateScaledSharedQuadState(shared_quad_state, internal_contents_scale_,
@@ -193,7 +194,7 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     LayerTreeFrameSink* layer_tree_frame_sink,
     viz::ClientResourceProvider* resource_provider,
     bool gpu_raster,
-    const viz::RenderPassList& list) {
+    const viz::CompositorRenderPassList& list) {
   if (draw_mode == DRAW_MODE_RESOURCELESS_SOFTWARE)
     return;
 

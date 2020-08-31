@@ -86,7 +86,7 @@ bool SolidColorScrollbarLayerImpl::IsThumbResizable() const {
 }
 
 void SolidColorScrollbarLayerImpl::AppendQuads(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();

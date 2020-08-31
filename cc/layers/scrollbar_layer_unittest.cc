@@ -623,7 +623,7 @@ TEST_F(ScrollbarLayerTest, SolidColorDrawQuads) {
 
   // Thickness should be overridden to 3.
   {
-    std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+    auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData data;
     scrollbar_layer_impl->AppendQuads(render_pass.get(), &data);
 
@@ -638,7 +638,7 @@ TEST_F(ScrollbarLayerTest, SolidColorDrawQuads) {
   scrollbar_layer_impl->SetClipLayerLength(25.f);
   scrollbar_layer_impl->SetScrollLayerLength(125.f);
   {
-    std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+    auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData data;
     scrollbar_layer_impl->AppendQuads(render_pass.get(), &data);
 
@@ -653,7 +653,7 @@ TEST_F(ScrollbarLayerTest, SolidColorDrawQuads) {
   scrollbar_layer_impl->SetClipLayerLength(125.f);
   scrollbar_layer_impl->SetScrollLayerLength(125.f);
   {
-    std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+    auto render_pass = viz::CompositorRenderPass::Create();
     AppendQuadsData data;
     scrollbar_layer_impl->AppendQuads(render_pass.get(), &data);
 
@@ -708,7 +708,7 @@ TEST_F(ScrollbarLayerTest, LayerDrivenSolidColorDrawQuads) {
   layer_tree_host_->active_tree()->UpdateScrollbarGeometries();
 
   {
-    std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+    auto render_pass = viz::CompositorRenderPass::Create();
 
     AppendQuadsData data;
     scrollbar_layer_impl->AppendQuads(render_pass.get(), &data);

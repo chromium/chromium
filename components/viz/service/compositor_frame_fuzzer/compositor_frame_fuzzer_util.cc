@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "cc/base/math_util.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
@@ -100,22 +100,23 @@ class FuzzedCompositorFrameBuilder {
   FuzzedCompositorFrameBuilder() = default;
   ~FuzzedCompositorFrameBuilder() = default;
 
-  FuzzedData Build(const proto::RenderPass& render_pass_spec);
+  FuzzedData Build(const proto::CompositorRenderPass& render_pass_spec);
 
  private:
-  RenderPassId AddRenderPass(const proto::RenderPass& render_pass_spec);
+  CompositorRenderPassId AddRenderPass(
+      const proto::CompositorRenderPass& render_pass_spec);
 
   // Helper methods for AddRenderPass. Try* methods may return before
   // creating the quad in order to adhere to memory limits.
-  void AddSolidColorDrawQuad(RenderPass* pass,
+  void AddSolidColorDrawQuad(CompositorRenderPass* pass,
                              const gfx::Rect& rect,
                              const gfx::Rect& visible_rect,
                              const proto::DrawQuad& quad_spec);
-  void TryAddTileDrawQuad(RenderPass* pass,
+  void TryAddTileDrawQuad(CompositorRenderPass* pass,
                           const gfx::Rect& rect,
                           const gfx::Rect& visible_rect,
                           const proto::DrawQuad& quad_spec);
-  void TryAddRenderPassDrawQuad(RenderPass* pass,
+  void TryAddRenderPassDrawQuad(CompositorRenderPass* pass,
                                 const gfx::Rect& rect,
                                 const gfx::Rect& visible_rect,
                                 const proto::DrawQuad& quad_spec);
@@ -143,7 +144,7 @@ class FuzzedCompositorFrameBuilder {
   // specific bitmaps/textures.
   uint64_t reserved_bytes_ = 0;
 
-  RenderPassId::Generator pass_id_generator_;
+  CompositorRenderPassId::Generator pass_id_generator_;
 
   // Frame and data being built.
   FuzzedData data_;
@@ -152,7 +153,7 @@ class FuzzedCompositorFrameBuilder {
 };
 
 FuzzedData FuzzedCompositorFrameBuilder::Build(
-    const proto::RenderPass& render_pass_spec) {
+    const proto::CompositorRenderPass& render_pass_spec) {
   static FrameTokenGenerator next_frame_token;
 
   data_.frame.metadata.begin_frame_ack.frame_id = BeginFrameId(
@@ -168,9 +169,9 @@ FuzzedData FuzzedCompositorFrameBuilder::Build(
   return std::move(data_);
 }
 
-RenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
-    const proto::RenderPass& render_pass_spec) {
-  std::unique_ptr<RenderPass> pass = RenderPass::Create();
+CompositorRenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
+    const proto::CompositorRenderPass& render_pass_spec) {
+  auto pass = CompositorRenderPass::Create();
   gfx::Rect rp_output_rect =
       GetRectFromProtobuf(render_pass_spec.output_rect());
   gfx::Rect rp_damage_rect =
@@ -230,7 +231,7 @@ RenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
 }
 
 void FuzzedCompositorFrameBuilder::AddSolidColorDrawQuad(
-    RenderPass* pass,
+    CompositorRenderPass* pass,
     const gfx::Rect& rect,
     const gfx::Rect& visible_rect,
     const proto::DrawQuad& quad_spec) {
@@ -243,7 +244,7 @@ void FuzzedCompositorFrameBuilder::AddSolidColorDrawQuad(
 }
 
 void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
-    RenderPass* pass,
+    CompositorRenderPass* pass,
     const gfx::Rect& rect,
     const gfx::Rect& visible_rect,
     const proto::DrawQuad& quad_spec) {
@@ -280,7 +281,7 @@ void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
 }
 
 void FuzzedCompositorFrameBuilder::TryAddRenderPassDrawQuad(
-    RenderPass* pass,
+    CompositorRenderPass* pass,
     const gfx::Rect& rect,
     const gfx::Rect& visible_rect,
     const proto::DrawQuad& quad_spec) {
@@ -297,7 +298,7 @@ void FuzzedCompositorFrameBuilder::TryAddRenderPassDrawQuad(
   constexpr int multiple = 64;
   if (!cc::MathUtil::VerifyRoundup(render_pass_size.width(), multiple) ||
       !cc::MathUtil::VerifyRoundup(render_pass_size.height(), multiple)) {
-    VLOG(1) << "Skipping RenderPassDrawQuad: bitmap of size "
+    VLOG(1) << "Skipping CompositorRenderPassDrawQuad: bitmap of size "
             << render_pass_size.ToString() << " can't be allocated.";
     return;
   }
@@ -306,14 +307,14 @@ void FuzzedCompositorFrameBuilder::TryAddRenderPassDrawQuad(
       cc::MathUtil::UncheckedRoundUp(render_pass_size.height(), multiple));
 
   if (!TryReserveBitmapBytes(render_pass_size)) {
-    VLOG(1) << "Skipping RenderPassDrawQuad: bitmap of size "
+    VLOG(1) << "Skipping CompositorRenderPassDrawQuad: bitmap of size "
             << render_pass_size.ToString() << " can't be allocated.";
     return;
   }
 
   // Build the child RenderPass and add it to the frame's
-  // RenderPassList.
-  RenderPassId child_pass_id =
+  // CompositorRenderPassList.
+  CompositorRenderPassId child_pass_id =
       AddRenderPass(quad_spec.render_pass_quad().render_pass());
 
   // Unless a tex_coord_rect is defined in the protobuf specification,
@@ -325,7 +326,7 @@ void FuzzedCompositorFrameBuilder::TryAddRenderPassDrawQuad(
 
   auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
   ConfigureSharedQuadState(shared_quad_state, quad_spec);
-  auto* quad = pass->CreateAndAppendDrawQuad<RenderPassDrawQuad>();
+  auto* quad = pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, rect, visible_rect, child_pass_id,
                /*mask_resource_id=*/ResourceId(),
                /*mask_uv_rect=*/gfx::RectF(),
@@ -415,7 +416,7 @@ FuzzedData::~FuzzedData() = default;
 FuzzedData::FuzzedData(FuzzedData&& other) noexcept = default;
 
 FuzzedData BuildFuzzedCompositorFrame(
-    const proto::RenderPass& render_pass_spec) {
+    const proto::CompositorRenderPass& render_pass_spec) {
   return FuzzedCompositorFrameBuilder().Build(render_pass_spec);
 }
 

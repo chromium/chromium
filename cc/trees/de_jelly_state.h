@@ -15,7 +15,7 @@
 
 namespace viz {
 class SharedQuadState;
-class RenderPass;
+class CompositorRenderPass;
 }  // namespace viz
 
 namespace cc {
@@ -36,7 +36,7 @@ class CC_EXPORT DeJellyState {
   // |target_render_pass|.
   void UpdateSharedQuadState(LayerTreeImpl* layer_tree_impl,
                              int transform_id,
-                             viz::RenderPass* target_render_pass);
+                             viz::CompositorRenderPass* target_render_pass);
 
  private:
   bool should_de_jelly_ = false;

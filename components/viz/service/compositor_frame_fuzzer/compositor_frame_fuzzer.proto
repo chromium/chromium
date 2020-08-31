@@ -6,7 +6,7 @@ syntax = "proto2";
 
 package viz.proto;
 
-message RenderPass {
+message CompositorRenderPass {
   required Rect output_rect = 1;
   required Rect damage_rect = 2;
   repeated DrawQuad quad_list = 3;
@@ -16,7 +16,7 @@ message RenderPass {
 message DrawQuad {
   // If not present, defaults to same dimensions as quad, with identity
   // transform (or with |transform_to_root_target| if quad is a
-  // RenderPassDrawQuad).
+  // CompositorRenderPassDrawQuad).
   optional SharedQuadState sqs = 1;
 
   required Rect rect = 2;
@@ -27,7 +27,7 @@ message DrawQuad {
   oneof quad {
     SolidColorDrawQuad solid_color_quad = 4;
     TileDrawQuad tile_quad = 5;
-    RenderPassDrawQuad render_pass_quad = 6;
+    CompositorRenderPassDrawQuad render_pass_quad = 6;
   }
 }
 
@@ -72,8 +72,8 @@ message TileDrawQuad {
   required bool force_anti_aliasing_off = 8;
 }
 
-message RenderPassDrawQuad {
-  required RenderPass render_pass = 1;
+message CompositorRenderPassDrawQuad {
+  required CompositorRenderPass render_pass = 1;
 
   // If not present, defaults to DrawQuad's |rect|
   optional Rect tex_coord_rect = 2;

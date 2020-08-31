@@ -198,8 +198,8 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
     frame.metadata.frame_token = 1;
     frame.metadata.device_scale_factor = 1;
     frame.metadata.local_surface_id_allocation_time = base::TimeTicks::Now();
-    std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-    pass->SetNew(viz::RenderPassId{1}, gfx::Rect(buffer_size),
+    auto pass = viz::CompositorRenderPass::Create();
+    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
                  gfx::Rect(buffer_size), gfx::Transform());
     frame.render_pass_list.push_back(std::move(pass));
     frame.resource_list.push_back(resource);
@@ -250,8 +250,8 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
     frame.metadata.frame_token = 1;
     frame.metadata.device_scale_factor = 1;
     frame.metadata.local_surface_id_allocation_time = base::TimeTicks::Now();
-    std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-    pass->SetNew(viz::RenderPassId{1}, gfx::Rect(buffer_size),
+    auto pass = viz::CompositorRenderPass::Create();
+    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
                  gfx::Rect(buffer_size), gfx::Transform());
     frame.render_pass_list.push_back(std::move(pass));
     frame.resource_list.push_back(resource);
@@ -285,8 +285,8 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
     frame.metadata.frame_token = 1;
     frame.metadata.device_scale_factor = 1;
     frame.metadata.local_surface_id_allocation_time = base::TimeTicks::Now();
-    std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-    pass->SetNew(viz::RenderPassId{1}, gfx::Rect(buffer_size),
+    auto pass = viz::CompositorRenderPass::Create();
+    pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(buffer_size),
                  gfx::Rect(buffer_size), gfx::Transform());
     frame.render_pass_list.push_back(std::move(pass));
     frame_sink_holder->SubmitCompositorFrame(std::move(frame));

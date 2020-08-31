@@ -344,8 +344,9 @@ RenderSurfaceReason ComputeRenderSurfaceReason(const MutatorHost& mutator_host,
 
   // If the layer has blending.
   // TODO(rosca): this is temporary, until blending is implemented for other
-  // types of quads than viz::RenderPassDrawQuad. Layers having descendants that
-  // draw content will still create a separate rendering surface.
+  // types of quads than viz::CompositorRenderPassDrawQuad. Layers having
+  // descendants that draw content will still create a separate rendering
+  // surface.
   if (layer->blend_mode() != SkBlendMode::kSrcOver) {
     return RenderSurfaceReason::kBlendMode;
   }

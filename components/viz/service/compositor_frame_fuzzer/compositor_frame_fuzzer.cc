@@ -59,7 +59,8 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   return 0;
 }
 
-DEFINE_BINARY_PROTO_FUZZER(const viz::proto::RenderPass& render_pass_spec) {
+DEFINE_BINARY_PROTO_FUZZER(
+    const viz::proto::CompositorRenderPass& render_pass_spec) {
   static base::NoDestructor<Env> env;
 
   viz::FuzzedData fuzzed_frame =

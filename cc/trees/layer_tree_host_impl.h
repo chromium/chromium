@@ -64,7 +64,7 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -224,7 +224,7 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
     std::vector<viz::SurfaceId> activation_dependencies;
     base::Optional<uint32_t> deadline_in_frames;
     bool use_default_lower_bound_deadline = false;
-    viz::RenderPassList render_passes;
+    viz::CompositorRenderPassList render_passes;
     const RenderSurfaceList* render_surface_list = nullptr;
     LayerImplList will_draw_layers;
     bool has_no_damage = false;

@@ -186,7 +186,7 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->SanityCheckTilingState();
 }
 
-void PictureLayerImpl::AppendQuads(viz::RenderPass* render_pass,
+void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   // RenderSurfaceImpl::AppendQuads sets mask properties in the DrawQuad for
   // the masked surface, which will apply to both the backdrop filter and the

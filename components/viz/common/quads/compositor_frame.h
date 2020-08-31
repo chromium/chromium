@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/viz_common_export.h"
 
@@ -41,10 +41,10 @@ class VIZ_COMMON_EXPORT CompositorFrame {
 
   CompositorFrameMetadata metadata;
   std::vector<TransferableResource> resource_list;
-  // This list is in the order that each RenderPass will be drawn. The last one
-  // is the "root" RenderPass that all others are directly or indirectly drawn
-  // into.
-  RenderPassList render_pass_list;
+  // This list is in the order that each CompositorRenderPass will be drawn.
+  // The last one is the "root" CompositorRenderPass that all others are
+  // directly or indirectly drawn into.
+  CompositorRenderPassList render_pass_list;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CompositorFrame);

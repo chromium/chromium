@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/viz/public/cpp/compositing/render_pass_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/compositor_render_pass_mojom_traits.h"
 
 #include "base/numerics/safe_conversions.h"
-#include "components/viz/common/quads/render_pass.h"
-#include "services/viz/public/cpp/compositing/render_pass_id_mojom_traits.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 #include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
 namespace mojo {
 
 // static
-bool StructTraits<viz::mojom::RenderPassDataView,
-                  std::unique_ptr<viz::RenderPass>>::
-    Read(viz::mojom::RenderPassDataView data,
-         std::unique_ptr<viz::RenderPass>* out) {
-  *out = viz::RenderPass::Create();
+bool StructTraits<viz::mojom::CompositorRenderPassDataView,
+                  std::unique_ptr<viz::CompositorRenderPass>>::
+    Read(viz::mojom::CompositorRenderPassDataView data,
+         std::unique_ptr<viz::CompositorRenderPass>* out) {
+  *out = viz::CompositorRenderPass::Create();
   if (!data.ReadOutputRect(&(*out)->output_rect) ||
       !data.ReadDamageRect(&(*out)->damage_rect) ||
       !data.ReadTransformToRootTarget(&(*out)->transform_to_root_target) ||
@@ -29,7 +29,7 @@ bool StructTraits<viz::mojom::RenderPassDataView,
       !data.ReadId(&(*out)->id)) {
     return false;
   }
-  // RenderPass ids are never zero.
+  // CompositorRenderPass ids are never zero.
   if (!(*out)->id) {
     viz::SetDeserializationCrashKeyString("Invalid render pass ID");
     return false;

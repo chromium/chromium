@@ -28,7 +28,7 @@
 #include "components/viz/client/shared_bitmap_reporter.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/video_hole_draw_quad.h"
@@ -528,7 +528,7 @@ void VideoResourceUpdater::ReleaseFrameResources() {
   frame_resources_.clear();
 }
 
-void VideoResourceUpdater::AppendQuads(viz::RenderPass* render_pass,
+void VideoResourceUpdater::AppendQuads(viz::CompositorRenderPass* render_pass,
                                        scoped_refptr<VideoFrame> frame,
                                        gfx::Transform transform,
                                        gfx::Rect quad_rect,

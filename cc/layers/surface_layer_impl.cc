@@ -120,7 +120,7 @@ bool SurfaceLayerImpl::WillDraw(
   return will_draw;
 }
 
-void SurfaceLayerImpl::AppendQuads(viz::RenderPass* render_pass,
+void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   AppendRainbowDebugBorder(render_pass);
 
@@ -189,7 +189,8 @@ void SurfaceLayerImpl::GetDebugBorderProperties(SkColor* color,
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1);
 }
 
-void SurfaceLayerImpl::AppendRainbowDebugBorder(viz::RenderPass* render_pass) {
+void SurfaceLayerImpl::AppendRainbowDebugBorder(
+    viz::CompositorRenderPass* render_pass) {
   if (!ShowDebugBorders(DebugBorderType::SURFACE))
     return;
 

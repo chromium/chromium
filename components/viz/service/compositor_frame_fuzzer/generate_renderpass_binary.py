@@ -26,7 +26,7 @@ class RenderPassProtoGenerator(BinaryProtoGenerator):
     globals()['compositor_frame_fuzzer_pb2'] = compositor_frame_fuzzer_pb2
 
   def EmptyProtoInstance(self):
-    return compositor_frame_fuzzer_pb2.RenderPass()
+    return compositor_frame_fuzzer_pb2.CompositorRenderPass()
 
   def ProcessPb(self, opts, pb):
     with open(os.path.join(opts.outdir, opts.outbasename), 'wb') as out_file:

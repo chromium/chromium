@@ -3566,8 +3566,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysWithAllQuadsPromoted) {
   // Draw an empty frame to make sure output surface is reshaped before tests.
   DrawBlackFrame(viewport_size);
 
-  // This frame has a root pass with a RenderPassDrawQuad pointing to a child
-  // pass that is at 1,2 to make it identifiable.
+  // This frame has a root pass with a CompositorRenderPassDrawQuad pointing to
+  // a child pass that is at 1,2 to make it identifiable.
   AggregatedRenderPassId child_pass_id{2};
   AggregatedRenderPassId root_pass_id{1};
   {
@@ -3594,7 +3594,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysWithAllQuadsPromoted) {
             Invoke([](GLuint contents_texture_id, const GLfloat* contents_rect,
                       GLuint background_color, GLuint edge_aa_mask,
                       const GLfloat* bounds_rect, GLuint filter) {
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
             }));
@@ -3626,12 +3626,12 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysWithAllQuadsPromoted) {
 
   renderer().DecideRenderPassAllocationsForFrame(render_passes_in_draw_order_);
 
-  // The child RenderPassDrawQuad gets promoted again, but importantly it
-  // did not itself have to be drawn this time as it can use the cached texture.
-  // Because we can skip the child pass, and the root pass (all quads were
-  // promoted), this exposes edge cases in GLRenderer if it assumes we draw
+  // The child CompositorRenderPassDrawQuad gets promoted again, but importantly
+  // it did not itself have to be drawn this time as it can use the cached
+  // texture. Because we can skip the child pass, and the root pass (all quads
+  // were promoted), this exposes edge cases in GLRenderer if it assumes we draw
   // at least one RenderPass. This still works, doesn't crash, etc, and the
-  // RenderPassDrawQuad is emitted.
+  // CompositorRenderPassDrawQuad is emitted.
   {
     InSequence sequence;
     EXPECT_CALL(gl(), ScheduleCALayerSharedStateCHROMIUM(_, _, _, _, _, _));
@@ -3709,10 +3709,10 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReusesTextureWithDifferentSizes) {
   // Draw an empty frame to make sure output surface is reshaped before tests.
   DrawBlackFrame(viewport_size);
 
-  // This frame has a root pass with a RenderPassDrawQuad pointing to a child
-  // pass that is at 1,2 to make it identifiable.
-  // The child's size is 250x251, but it will be rounded up to a multiple of 64
-  // in order to promote easier texture reuse. See https://crbug.com/146070.
+  // This frame has a root pass with a CompositorRenderPassDrawQuad pointing to
+  // a child pass that is at 1,2 to make it identifiable. The child's size is
+  // 250x251, but it will be rounded up to a multiple of 64 in order to promote
+  // easier texture reuse. See https://crbug.com/146070.
   AggregatedRenderPassId child_pass_id{2};
   AggregatedRenderPassId root_pass_id{1};
   {
@@ -3741,7 +3741,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReusesTextureWithDifferentSizes) {
             Invoke([&](GLuint contents_texture_id, const GLfloat* contents_rect,
                        GLuint background_color, GLuint edge_aa_mask,
                        const GLfloat* bounds_rect, GLuint filter) {
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
               // The size is rounded to a multiple of 64.
@@ -3844,7 +3844,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReusesTextureWithDifferentSizes) {
                        const GLfloat* bounds_rect, GLuint filter) {
               // The first texture is reused.
               EXPECT_EQ(saved_texture_id, contents_texture_id);
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
               // The size here is the size of the texture being used, not
@@ -3864,10 +3864,10 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysDontReuseTooBigTexture) {
   // Draw an empty frame to make sure output surface is reshaped before tests.
   DrawBlackFrame(viewport_size);
 
-  // This frame has a root pass with a RenderPassDrawQuad pointing to a child
-  // pass that is at 1,2 to make it identifiable.
-  // The child's size is 250x251, but it will be rounded up to a multiple of 64
-  // in order to promote easier texture reuse. See https://crbug.com/146070.
+  // This frame has a root pass with a CompositorRenderPassDrawQuad pointing to
+  // a child pass that is at 1,2 to make it identifiable. The child's size is
+  // 250x251, but it will be rounded up to a multiple of 64 in order to promote
+  // easier texture reuse. See https://crbug.com/146070.
   AggregatedRenderPassId child_pass_id{2};
   AggregatedRenderPassId root_pass_id{1};
   {
@@ -3896,7 +3896,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysDontReuseTooBigTexture) {
             Invoke([&](GLuint contents_texture_id, const GLfloat* contents_rect,
                        GLuint background_color, GLuint edge_aa_mask,
                        const GLfloat* bounds_rect, GLuint filter) {
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
               // The size is rounded to a multiple of 64.
@@ -3996,7 +3996,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysDontReuseTooBigTexture) {
                        const GLfloat* bounds_rect, GLuint filter) {
               // The first texture is not reused.
               EXPECT_NE(saved_texture_id, contents_texture_id);
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
               // The new texture has a smaller size.
@@ -4012,8 +4012,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysDontReuseTooBigTexture) {
 TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseAfterNoSwapBuffers) {
   gfx::Size viewport_size(300, 300);
 
-  // This frame has a root pass with a RenderPassDrawQuad pointing to a child
-  // pass that is at 1,2 to make it identifiable.
+  // This frame has a root pass with a CompositorRenderPassDrawQuad pointing to
+  // a child pass that is at 1,2 to make it identifiable.
   AggregatedRenderPassId child_pass_id{2};
   AggregatedRenderPassId root_pass_id{1};
   {
@@ -4041,7 +4041,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseAfterNoSwapBuffers) {
             Invoke([&](GLuint contents_texture_id, const GLfloat* contents_rect,
                        GLuint background_color, GLuint edge_aa_mask,
                        const GLfloat* bounds_rect, GLuint filter) {
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
               saved_texture_id = contents_texture_id;
@@ -4130,7 +4130,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseAfterNoSwapBuffers) {
                        const GLfloat* bounds_rect, GLuint filter) {
               // The second texture is reused.
               EXPECT_EQ(second_saved_texture_id, contents_texture_id);
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
             }));
@@ -4146,9 +4146,10 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseManyIfReturnedSlowly) {
   // Draw an empty frame to make sure output surface is reshaped before tests.
   DrawBlackFrame(viewport_size);
 
-  // Each frame has a root pass with a RenderPassDrawQuad pointing to a child
-  // pass. We generate a bunch of frames and swap them, each with a different
-  // child RenderPass id, without getting any of the resources back from the OS.
+  // Each frame has a root pass with a CompositorRenderPassDrawQuad pointing to
+  // a child pass. We generate a bunch of frames and swap them, each with a
+  // different child RenderPass id, without getting any of the resources back
+  // from the OS.
   AggregatedRenderPassId root_pass_id{1};
 
   // The number is at least 2 larger than the number of textures we expect to
@@ -4177,7 +4178,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseManyIfReturnedSlowly) {
             Invoke([&](GLuint contents_texture_id, const GLfloat* contents_rect,
                        GLuint background_color, GLuint edge_aa_mask,
                        const GLfloat* bounds_rect, GLuint filter) {
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
               sent_texture_ids[i] = contents_texture_id;
@@ -4238,7 +4239,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysReuseManyIfReturnedSlowly) {
                              const GLfloat* contents_rect,
                              GLuint background_color, GLuint edge_aa_mask,
                              const GLfloat* bounds_rect, GLuint filter) {
-          // This is the child RenderPassDrawQuad.
+          // This is the child CompositorRenderPassDrawQuad.
           EXPECT_EQ(1, bounds_rect[0]);
           EXPECT_EQ(2, bounds_rect[1]);
 
@@ -4275,9 +4276,10 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysCachedTexturesAreFreed) {
   // Draw an empty frame to make sure output surface is reshaped before tests.
   DrawBlackFrame(viewport_size);
 
-  // Each frame has a root pass with a RenderPassDrawQuad pointing to a child
-  // pass. We generate a bunch of frames and swap them, each with a different
-  // child RenderPass id, without getting any of the resources back from the OS.
+  // Each frame has a root pass with a CompositorRenderPassDrawQuad pointing to
+  // a child pass. We generate a bunch of frames and swap them, each with a
+  // different child RenderPass id, without getting any of the resources back
+  // from the OS.
   AggregatedRenderPassId child_pass_id{2};
   AggregatedRenderPassId root_pass_id{1};
 
@@ -4305,7 +4307,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysCachedTexturesAreFreed) {
             Invoke([&](GLuint contents_texture_id, const GLfloat* contents_rect,
                        GLuint background_color, GLuint edge_aa_mask,
                        const GLfloat* bounds_rect, GLuint filter) {
-              // This is the child RenderPassDrawQuad.
+              // This is the child CompositorRenderPassDrawQuad.
               EXPECT_EQ(1, bounds_rect[0]);
               EXPECT_EQ(2, bounds_rect[1]);
               sent_texture_ids[i] = contents_texture_id;
@@ -4362,8 +4364,8 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysCachedTexturesAreFreed) {
 
   // By now the cache should be empty, to show that we don't keep cached
   // textures that won't be used forever. We generate a frame with a
-  // RenderPassDrawQuad and verify that it does not reuse a texture from the
-  // (empty) cache.
+  // CompositorRenderPassDrawQuad and verify that it does not reuse a texture
+  // from the (empty) cache.
   {
     AggregatedRenderPass* child_pass =
         cc::AddRenderPass(&render_passes_in_draw_order_, child_pass_id,
@@ -4385,7 +4387,7 @@ TEST_F(CALayerGLRendererTest, CALayerOverlaysCachedTexturesAreFreed) {
                            const GLfloat* contents_rect,
                            GLuint background_color, GLuint edge_aa_mask,
                            const GLfloat* bounds_rect, GLuint filter) {
-        // This is the child RenderPassDrawQuad.
+        // This is the child CompositorRenderPassDrawQuad.
         EXPECT_EQ(1, bounds_rect[0]);
         EXPECT_EQ(2, bounds_rect[1]);
 
@@ -4493,8 +4495,8 @@ TEST_F(GLRendererTest, UndamagedRenderPassStillDrawnWhenNoPartialSwap) {
 
     // We had to draw the root, and the child.
     EXPECT_EQ(1, renderer.bind_child_framebuffer_calls());
-    // When the RenderPassDrawQuad in the root is drawn, we may re-bind the root
-    // framebuffer. So it can be bound more than once.
+    // When the CompositorRenderPassDrawQuad in the root is drawn, we may
+    // re-bind the root framebuffer. So it can be bound more than once.
     EXPECT_GE(renderer.bind_root_framebuffer_calls(), 1);
 
     // Reset counting.
@@ -4531,9 +4533,9 @@ TEST_F(GLRendererTest, UndamagedRenderPassStillDrawnWhenNoPartialSwap) {
       // Without partial swap, we have to draw the child still, this means
       // the child is bound as the framebuffer.
       EXPECT_EQ(1, renderer.bind_child_framebuffer_calls());
-      // When the RenderPassDrawQuad in the root is drawn, as it must be since
-      // we must draw the entire output, we may re-bind the root framebuffer. So
-      // it can be bound more than once.
+      // When the CompositorRenderPassDrawQuad in the root is drawn, as it must
+      // be since we must draw the entire output, we may re-bind the root
+      // framebuffer. So it can be bound more than once.
       EXPECT_GE(renderer.bind_root_framebuffer_calls(), 1);
     }
   }

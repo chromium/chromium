@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 
 #include <stddef.h>
 
@@ -15,11 +15,11 @@
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
@@ -32,37 +32,40 @@
 
 namespace viz {
 
-std::unique_ptr<RenderPass> RenderPass::Create() {
-  return base::WrapUnique(new RenderPass());
+std::unique_ptr<CompositorRenderPass> CompositorRenderPass::Create() {
+  return base::WrapUnique(new CompositorRenderPass());
 }
 
-std::unique_ptr<RenderPass> RenderPass::Create(size_t num_layers) {
-  return base::WrapUnique(new RenderPass(num_layers));
+std::unique_ptr<CompositorRenderPass> CompositorRenderPass::Create(
+    size_t num_layers) {
+  return base::WrapUnique(new CompositorRenderPass(num_layers));
 }
 
-std::unique_ptr<RenderPass> RenderPass::Create(
+std::unique_ptr<CompositorRenderPass> CompositorRenderPass::Create(
     size_t shared_quad_state_list_size,
     size_t quad_list_size) {
   return base::WrapUnique(
-      new RenderPass(shared_quad_state_list_size, quad_list_size));
+      new CompositorRenderPass(shared_quad_state_list_size, quad_list_size));
 }
 
-RenderPass::RenderPass() = default;
-RenderPass::RenderPass(size_t num_layers) : RenderPassInternal(num_layers) {}
-RenderPass::RenderPass(size_t shared_quad_state_list_size,
-                       size_t quad_list_size)
+CompositorRenderPass::CompositorRenderPass() = default;
+CompositorRenderPass::CompositorRenderPass(size_t num_layers)
+    : RenderPassInternal(num_layers) {}
+CompositorRenderPass::CompositorRenderPass(size_t shared_quad_state_list_size,
+                                           size_t quad_list_size)
     : RenderPassInternal(shared_quad_state_list_size, quad_list_size) {}
 
-RenderPass::~RenderPass() {
+CompositorRenderPass::~CompositorRenderPass() {
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
-      TRACE_DISABLED_BY_DEFAULT("viz.quads"), "RenderPass",
+      TRACE_DISABLED_BY_DEFAULT("viz.quads"), "CompositorRenderPass",
       reinterpret_cast<void*>(static_cast<uint64_t>(id)));
 }
 
-void RenderPass::SetNew(RenderPassId id,
-                        const gfx::Rect& output_rect,
-                        const gfx::Rect& damage_rect,
-                        const gfx::Transform& transform_to_root_target) {
+void CompositorRenderPass::SetNew(
+    CompositorRenderPassId id,
+    const gfx::Rect& output_rect,
+    const gfx::Rect& damage_rect,
+    const gfx::Transform& transform_to_root_target) {
   DCHECK(id);
   DCHECK(damage_rect.IsEmpty() || output_rect.Contains(damage_rect))
       << "damage_rect: " << damage_rect.ToString()
@@ -77,8 +80,8 @@ void RenderPass::SetNew(RenderPassId id,
   DCHECK(shared_quad_state_list.empty());
 }
 
-void RenderPass::SetAll(
-    RenderPassId id,
+void CompositorRenderPass::SetAll(
+    CompositorRenderPassId id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
     const gfx::Transform& transform_to_root_target,
@@ -110,7 +113,8 @@ void RenderPass::SetAll(
   DCHECK(shared_quad_state_list.empty());
 }
 
-void RenderPass::AsValueInto(base::trace_event::TracedValue* value) const {
+void CompositorRenderPass::AsValueInto(
+    base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("output_rect", output_rect, value);
   cc::MathUtil::AddToTracedValue("damage_rect", damage_rect, value);
 
@@ -152,13 +156,14 @@ void RenderPass::AsValueInto(base::trace_event::TracedValue* value) const {
   value->EndArray();
 
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
-      TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "RenderPass",
+      TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "CompositorRenderPass",
       reinterpret_cast<void*>(static_cast<uint64_t>(id)));
 }
 
-RenderPassDrawQuad* RenderPass::CopyFromAndAppendRenderPassDrawQuad(
-    const RenderPassDrawQuad* quad,
-    RenderPassId render_pass_id) {
+CompositorRenderPassDrawQuad*
+CompositorRenderPass::CopyFromAndAppendRenderPassDrawQuad(
+    const CompositorRenderPassDrawQuad* quad,
+    CompositorRenderPassId render_pass_id) {
   DCHECK(!shared_quad_state_list.empty());
   auto* copy_quad = quad_list.AllocateAndCopyFrom(quad);
   copy_quad->shared_quad_state = shared_quad_state_list.back();
@@ -166,7 +171,8 @@ RenderPassDrawQuad* RenderPass::CopyFromAndAppendRenderPassDrawQuad(
   return copy_quad;
 }
 
-DrawQuad* RenderPass::CopyFromAndAppendDrawQuad(const DrawQuad* quad) {
+DrawQuad* CompositorRenderPass::CopyFromAndAppendDrawQuad(
+    const DrawQuad* quad) {
   DCHECK(!shared_quad_state_list.empty());
   switch (quad->material) {
     case DrawQuad::Material::kDebugBorder:
@@ -209,13 +215,13 @@ DrawQuad* RenderPass::CopyFromAndAppendDrawQuad(const DrawQuad* quad) {
   return quad_list.back();
 }
 
-std::unique_ptr<RenderPass> RenderPass::DeepCopy() const {
+std::unique_ptr<CompositorRenderPass> CompositorRenderPass::DeepCopy() const {
   // Since we can't copy these, it's wrong to use DeepCopy in a situation where
   // you may have copy_requests present.
   DCHECK_EQ(copy_requests.size(), 0u);
 
-  auto copy_pass =
-      RenderPass::Create(shared_quad_state_list.size(), quad_list.size());
+  auto copy_pass = CompositorRenderPass::Create(shared_quad_state_list.size(),
+                                                quad_list.size());
   copy_pass->SetAll(id, output_rect, damage_rect, transform_to_root_target,
                     filters, backdrop_filters, backdrop_filter_bounds,
                     content_color_usage, has_transparent_background,
@@ -241,7 +247,7 @@ std::unique_ptr<RenderPass> RenderPass::DeepCopy() const {
     DCHECK(quad->shared_quad_state == *sqs_iter);
 
     if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
-      const auto* pass_quad = RenderPassDrawQuad::MaterialCast(quad);
+      const auto* pass_quad = CompositorRenderPassDrawQuad::MaterialCast(quad);
       copy_pass->CopyFromAndAppendRenderPassDrawQuad(pass_quad,
                                                      pass_quad->render_pass_id);
     } else {

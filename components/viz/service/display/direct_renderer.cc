@@ -24,8 +24,8 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/output_surface.h"
@@ -832,8 +832,8 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
       if (!backdrop_filter_output_rects_.empty() &&
           !root_damage_rect.IsEmpty()) {
         for (auto* quad : render_pass->quad_list) {
-          // Sanity check: we should not have a Compositor RenderPassDrawQuad
-          // here.
+          // Sanity check: we should not have a Compositor
+          // CompositorRenderPassDrawQuad here.
           DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
           if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
             auto iter = backdrop_filter_output_rects_.find(

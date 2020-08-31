@@ -16,8 +16,8 @@
 #include "base/strings/string_tokenizer.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -49,8 +49,8 @@ enum RenderPassField {
   kRenderPassAllFields = 0xFFFFFFFF,
 };
 
-// This controls which fields are processed in RenderPass::ToDict() and
-// RenderPass::FromDict().
+// This controls which fields are processed in CompositorRenderPassToDict() and
+// CompositorRenderPassFromDict().
 // Values other than kAllFields should never be checked in. This is only for
 // local debugging convenience.
 RenderPassField g_render_pass_fields = kRenderPassAllFields;
@@ -1039,8 +1039,9 @@ base::Optional<ContentDrawQuadCommon> GetContentDrawQuadCommonFromDict(
       nearest_neighbor.value(), force_anti_aliasing_off.value()};
 }
 
-void RenderPassDrawQuadToDict(const RenderPassDrawQuad* draw_quad,
-                              base::Value* dict) {
+void CompositorRenderPassDrawQuadToDict(
+    const CompositorRenderPassDrawQuad* draw_quad,
+    base::Value* dict) {
   DCHECK(draw_quad);
   DCHECK(dict);
   dict->SetStringKey(
@@ -1181,7 +1182,8 @@ base::Value DrawQuadToDict(const DrawQuad* draw_quad,
   base::Value dict(base::Value::Type::DICTIONARY);
   DrawQuadCommonToDict(draw_quad, &dict, shared_quad_state_list);
   switch (draw_quad->material) {
-    WRITE_DRAW_QUAD_TYPE_FIELDS(kCompositorRenderPass, RenderPassDrawQuad)
+    WRITE_DRAW_QUAD_TYPE_FIELDS(kCompositorRenderPass,
+                                CompositorRenderPassDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kSolidColor, SolidColorDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kStreamVideoContent, StreamVideoDrawQuad)
     WRITE_DRAW_QUAD_TYPE_FIELDS(kTextureContent, TextureDrawQuad)
@@ -1208,9 +1210,10 @@ base::Value QuadListToList(const QuadList& quad_list,
   return list;
 }
 
-bool RenderPassDrawQuadFromDict(const base::Value& dict,
-                                const DrawQuadCommon& common,
-                                RenderPassDrawQuad* draw_quad) {
+bool CompositorRenderPassDrawQuadFromDict(
+    const base::Value& dict,
+    const DrawQuadCommon& common,
+    CompositorRenderPassDrawQuad* draw_quad) {
   DCHECK(draw_quad);
   if (!dict.is_dict())
     return false;
@@ -1247,11 +1250,11 @@ bool RenderPassDrawQuadFromDict(const base::Value& dict,
       !RectFFromDict(*tex_coord_rect, &t_tex_coord_rect)) {
     return false;
   }
-  RenderPassId t_render_pass_id{render_pass_id_as_int};
+  CompositorRenderPassId t_render_pass_id{render_pass_id_as_int};
 
   ResourceId mask_resource_id = 0u;
   if (common.resources.count == 1u) {
-    const size_t kIndex = RenderPassDrawQuad::kMaskResourceIdIndex;
+    const size_t kIndex = CompositorRenderPassDrawQuad::kMaskResourceIdIndex;
     mask_resource_id = common.resources.ids[kIndex];
   }
   draw_quad->SetAll(
@@ -1527,7 +1530,7 @@ bool QuadListFromList(const base::Value& list,
     if (!common)
       return false;
     switch (common->material) {
-      GET_QUAD_FROM_DICT(kCompositorRenderPass, RenderPassDrawQuad)
+      GET_QUAD_FROM_DICT(kCompositorRenderPass, CompositorRenderPassDrawQuad)
       GET_QUAD_FROM_DICT(kSolidColor, SolidColorDrawQuad)
       GET_QUAD_FROM_DICT(kStreamVideoContent, StreamVideoDrawQuad)
       GET_QUAD_FROM_DICT(kTextureContent, TextureDrawQuad)
@@ -1740,7 +1743,7 @@ bool SharedQuadStateListFromList(const base::Value& list,
   return true;
 }
 
-base::Value GetRenderPassMetadata(const RenderPass& render_pass) {
+base::Value GetRenderPassMetadata(const CompositorRenderPass& render_pass) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey(
       "render_pass_id",
@@ -1751,7 +1754,8 @@ base::Value GetRenderPassMetadata(const RenderPass& render_pass) {
   return dict;
 }
 
-base::Value GetRenderPassListMetadata(const RenderPassList& render_pass_list) {
+base::Value GetRenderPassListMetadata(
+    const CompositorRenderPassList& render_pass_list) {
   base::Value metadata(base::Value::Type::LIST);
   for (size_t ii = 0; ii < render_pass_list.size(); ++ii)
     metadata.Append(GetRenderPassMetadata(*(render_pass_list[ii].get())));
@@ -1760,7 +1764,8 @@ base::Value GetRenderPassListMetadata(const RenderPassList& render_pass_list) {
 
 }  // namespace
 
-base::Value RenderPassToDict(const RenderPass& render_pass) {
+base::Value CompositorRenderPassToDict(
+    const CompositorRenderPass& render_pass) {
   base::Value dict(base::Value::Type::DICTIONARY);
   if (ProcessRenderPassField(kRenderPassID))
     dict.SetStringKey(
@@ -1785,9 +1790,8 @@ base::Value RenderPassToDict(const RenderPass& render_pass) {
                 RRectFToDict(render_pass.backdrop_filter_bounds.value()));
   }
   if (ProcessRenderPassField(kRenderPassColorSpace)) {
-    // RenderPasses used to have a color space field, but this was removed in
-    // favor of color usage.
-    // https://crbug.com/1049334
+    // CompositorRenderPasses used to have a color space field, but this was
+    // removed in favor of color usage. https://crbug.com/1049334
     gfx::ColorSpace render_pass_color_space = gfx::ColorSpace::CreateSRGB();
     dict.SetKey("color_space", ColorSpaceToDict(render_pass_color_space));
   }
@@ -1818,10 +1822,11 @@ base::Value RenderPassToDict(const RenderPass& render_pass) {
   return dict;
 }
 
-std::unique_ptr<RenderPass> RenderPassFromDict(const base::Value& dict) {
+std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
+    const base::Value& dict) {
   if (!dict.is_dict())
     return nullptr;
-  std::unique_ptr<RenderPass> pass = RenderPass::Create();
+  auto pass = CompositorRenderPass::Create();
 
   if (ProcessRenderPassField(kRenderPassID)) {
     const std::string* id = dict.FindStringKey("id");
@@ -1830,7 +1835,7 @@ std::unique_ptr<RenderPass> RenderPassFromDict(const base::Value& dict) {
     uint64_t pass_id_as_int = 0;
     if (!base::StringToUint64(*id, &pass_id_as_int))
       return nullptr;
-    pass->id = RenderPassId{pass_id_as_int};
+    pass->id = CompositorRenderPassId{pass_id_as_int};
   }
 
   if (ProcessRenderPassField(kRenderPassOutputRect)) {
@@ -1894,9 +1899,8 @@ std::unique_ptr<RenderPass> RenderPassFromDict(const base::Value& dict) {
     if (!color_space)
       return nullptr;
 
-    // RenderPasses used to have a color space field, but this was removed in
-    // favor of color usage.
-    // https://crbug.com/1049334
+    // CompositorRenderPasses used to have a color space field, but this was
+    // removed in favor of color usage. https://crbug.com/1049334
     gfx::ColorSpace pass_color_space = gfx::ColorSpace::CreateSRGB();
     if (!ColorSpaceFromDict(*color_space, &pass_color_space))
       return nullptr;
@@ -1964,7 +1968,8 @@ std::unique_ptr<RenderPass> RenderPassFromDict(const base::Value& dict) {
   return pass;
 }
 
-base::Value RenderPassListToDict(const RenderPassList& render_pass_list) {
+base::Value CompositorRenderPassListToDict(
+    const CompositorRenderPassList& render_pass_list) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetIntKey("render_pass_count",
                  static_cast<int>(render_pass_list.size()));
@@ -1972,13 +1977,14 @@ base::Value RenderPassListToDict(const RenderPassList& render_pass_list) {
 
   base::Value list(base::Value::Type::LIST);
   for (size_t ii = 0; ii < render_pass_list.size(); ++ii)
-    list.Append(RenderPassToDict(*(render_pass_list[ii])));
+    list.Append(CompositorRenderPassToDict(*(render_pass_list[ii])));
   dict.SetKey("render_pass_list", std::move(list));
   return dict;
 }
 
-bool RenderPassListFromDict(const base::Value& dict,
-                            RenderPassList* render_pass_list) {
+bool CompositorRenderPassListFromDict(
+    const base::Value& dict,
+    CompositorRenderPassList* render_pass_list) {
   DCHECK(render_pass_list);
   DCHECK(render_pass_list->empty());
   if (!dict.is_dict())
@@ -1987,7 +1993,8 @@ bool RenderPassListFromDict(const base::Value& dict,
   if (!list || !list->is_list())
     return false;
   for (size_t ii = 0; ii < list->GetList().size(); ++ii) {
-    render_pass_list->push_back(RenderPassFromDict(list->GetList()[ii]));
+    render_pass_list->push_back(
+        CompositorRenderPassFromDict(list->GetList()[ii]));
     if (!(*render_pass_list)[ii].get()) {
       render_pass_list->clear();
       return false;

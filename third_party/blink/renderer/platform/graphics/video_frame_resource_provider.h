@@ -20,7 +20,7 @@ class VideoResourceUpdater;
 }  // namespace media
 
 namespace viz {
-class RenderPass;
+class CompositorRenderPass;
 class RasterContextProvider;
 }
 
@@ -42,7 +42,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
 
   virtual void Initialize(viz::RasterContextProvider* media_context_provider,
                           viz::SharedBitmapReporter* shared_bitmap_reporter);
-  virtual void AppendQuads(viz::RenderPass*,
+  virtual void AppendQuads(viz::CompositorRenderPass*,
                            scoped_refptr<media::VideoFrame>,
                            media::VideoRotation,
                            bool is_opaque);

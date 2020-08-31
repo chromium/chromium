@@ -8,7 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/surfaces/surface_id.h"
 
 namespace viz {
@@ -18,7 +18,7 @@ RenderPassIdRemapper::RenderPassIdRemapper() = default;
 RenderPassIdRemapper::~RenderPassIdRemapper() = default;
 
 AggregatedRenderPassId RenderPassIdRemapper::Remap(
-    RenderPassId surface_local_pass_id,
+    CompositorRenderPassId surface_local_pass_id,
     const SurfaceId& surface_id) {
   auto key = std::make_pair(surface_id, surface_local_pass_id);
   auto it = render_pass_allocator_map_.find(key);

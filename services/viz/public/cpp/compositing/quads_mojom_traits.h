@@ -9,9 +9,9 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -199,69 +199,71 @@ struct StructTraits<viz::mojom::DebugBorderQuadStateDataView, viz::DrawQuad> {
 };
 
 template <>
-struct StructTraits<viz::mojom::RenderPassQuadStateDataView, viz::DrawQuad> {
-  static viz::RenderPassId render_pass_id(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+struct StructTraits<viz::mojom::CompositorRenderPassQuadStateDataView,
+                    viz::DrawQuad> {
+  static viz::CompositorRenderPassId render_pass_id(
+      const viz::DrawQuad& input) {
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     DCHECK(quad->render_pass_id);
     return quad->render_pass_id;
   }
 
   static uint32_t mask_resource_id(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->mask_resource_id();
   }
 
   static const gfx::RectF& mask_uv_rect(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->mask_uv_rect;
   }
 
   static const gfx::Size& mask_texture_size(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->mask_texture_size;
   }
 
   static const gfx::Vector2dF& filters_scale(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->filters_scale;
   }
 
   static const gfx::PointF& filters_origin(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->filters_origin;
   }
 
   static const gfx::RectF& tex_coord_rect(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->tex_coord_rect;
   }
 
   static bool force_anti_aliasing_off(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->force_anti_aliasing_off;
   }
 
   static float backdrop_filter_quality(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->backdrop_filter_quality;
   }
 
   static bool can_use_backdrop_filter_cache(const viz::DrawQuad& input) {
-    const viz::RenderPassDrawQuad* quad =
-        viz::RenderPassDrawQuad::MaterialCast(&input);
+    const viz::CompositorRenderPassDrawQuad* quad =
+        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
     return quad->can_use_backdrop_filter_cache;
   }
 
-  static bool Read(viz::mojom::RenderPassQuadStateDataView data,
+  static bool Read(viz::mojom::CompositorRenderPassQuadStateDataView data,
                    viz::DrawQuad* out);
 };
 
@@ -575,7 +577,8 @@ struct StructTraits<viz::mojom::DrawQuadDataView, DrawQuadWithSharedQuadState> {
   }
 };
 
-// This StructTraits is only used for deserialization within RenderPasses.
+// This StructTraits is only used for deserialization within
+// CompositorRenderPasses.
 template <>
 struct StructTraits<viz::mojom::DrawQuadDataView, viz::DrawQuad> {
   static bool Read(viz::mojom::DrawQuadDataView data, viz::DrawQuad* out);

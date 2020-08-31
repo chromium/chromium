@@ -148,7 +148,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   void ActivatePendingFrameForDeadline();
 
   using CopyRequestsMap =
-      std::multimap<RenderPassId, std::unique_ptr<CopyOutputRequest>>;
+      std::multimap<CompositorRenderPassId, std::unique_ptr<CopyOutputRequest>>;
 
   // Adds each CopyOutputRequest in the current frame to copy_requests. The
   // caller takes ownership of them. |copy_requests| is keyed by RenderPass

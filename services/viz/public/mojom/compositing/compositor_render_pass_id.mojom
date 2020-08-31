@@ -4,6 +4,6 @@
 
 module viz.mojom;
 
-struct RenderPassId {
+struct CompositorRenderPassId {
   uint64 value;
 };

@@ -40,7 +40,7 @@ void NinePatchLayerLayoutTest(const gfx::Size& bitmap_size,
                               const gfx::Rect& border,
                               bool fill_center,
                               size_t expected_quad_size) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Rect visible_layer_rect(layer_size);
   gfx::Rect expected_remaining(border.x(), border.y(),
                                layer_size.width() - border.width(),
@@ -128,7 +128,7 @@ void NinePatchLayerLayoutTestWithOcclusion(const gfx::Size& bitmap_size,
                                            const gfx::Rect& occlusion,
                                            bool fill_center,
                                            size_t expected_quad_size) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   gfx::Rect visible_layer_rect(layer_size);
   int border_left = std::min(border.x(), occlusion.x()),
       border_top = std::min(border.y(), occlusion.y()),

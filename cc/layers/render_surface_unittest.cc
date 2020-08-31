@@ -60,7 +60,7 @@ class FakePictureLayerImplForRenderSurfaceTest : public FakePictureLayerImpl {
 
   bool HasValidTilePriorities() const override { return false; }
 
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override {
     viz::SharedQuadState* shared_quad_state =
         render_pass->CreateAndAppendSharedQuadState();
@@ -160,7 +160,7 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
   render_surface->SetDrawOpacity(1.f);
   render_surface->SetDrawTransform(origin);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
 
   render_surface->AppendQuads(DRAW_MODE_HARDWARE, render_pass.get(),
@@ -205,7 +205,7 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectRenderPass) {
 
   auto pass = render_surface->CreateRenderPass();
 
-  EXPECT_EQ(viz::RenderPassId{2}, pass->id);
+  EXPECT_EQ(viz::CompositorRenderPassId{2}, pass->id);
   EXPECT_EQ(content_rect, pass->output_rect);
   EXPECT_EQ(origin, pass->transform_to_root_target);
 }
@@ -245,7 +245,7 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceIgnoreMaskLayerOcclusion) {
       Occlusion(gfx::Transform(), SimpleEnclosedRegion(occluded),
                 SimpleEnclosedRegion(occluded));
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData append_quads_data;
 
   render_surface->AppendQuads(DRAW_MODE_HARDWARE, render_pass.get(),

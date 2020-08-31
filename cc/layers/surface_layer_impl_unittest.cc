@@ -100,7 +100,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   gfx::Size viewport_size(1000, 1000);
   impl.CalcDrawProps(viewport_size);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   {
     AppendQuadsData data;
     surface_layer_impl->AppendQuads(render_pass.get(), &data);
@@ -201,7 +201,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
   surface_layer_impl2->SetRange(viz::SurfaceRange(surface_id1, surface_id2),
                                 base::nullopt);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   surface_layer_impl->AppendQuads(render_pass.get(), &data);
   EXPECT_EQ(1u, data.deadline_in_frames);
@@ -238,7 +238,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
   gfx::Size viewport_size(1000, 1000);
   impl.CalcDrawProps(viewport_size);
 
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   surface_layer_impl->AppendQuads(render_pass.get(), &data);
   EXPECT_THAT(data.activation_dependencies, UnorderedElementsAre(surface_id1));

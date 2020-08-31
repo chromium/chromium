@@ -65,8 +65,8 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -6872,7 +6872,8 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
     if (frame_data->has_no_damage)
       return 0.f;
     float frame_scale = 0.f;
-    viz::RenderPass* root_pass = frame_data->render_passes.back().get();
+    viz::CompositorRenderPass* root_pass =
+        frame_data->render_passes.back().get();
     for (auto* draw_quad : root_pass->quad_list) {
       // Checkerboards mean an incomplete frame.
       if (draw_quad->material != viz::DrawQuad::Material::kTiledContent)
@@ -7170,7 +7171,8 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
     if (frame_data->has_no_damage)
       return 0.f;
     float frame_scale = 0.f;
-    viz::RenderPass* root_pass = frame_data->render_passes.back().get();
+    viz::CompositorRenderPass* root_pass =
+        frame_data->render_passes.back().get();
     for (auto* draw_quad : root_pass->quad_list) {
       const viz::TileDrawQuad* quad =
           viz::TileDrawQuad::MaterialCast(draw_quad);
@@ -7875,15 +7877,16 @@ class LayerTreeHostTestSubmitFrameResources : public LayerTreeHostTest {
                                    DrawResult draw_result) override {
     frame->render_passes.clear();
 
-    viz::RenderPass* child_pass = AddRenderPass(
-        &frame->render_passes, viz::RenderPassId{2}, gfx::Rect(3, 3, 10, 10),
-        gfx::Transform(), FilterOperations());
-    std::vector<viz::ResourceId> child_resources = AddOneOfEveryQuadType(
-        child_pass, host_impl->resource_provider(), viz::RenderPassId{0});
+    viz::CompositorRenderPass* child_pass = AddRenderPass(
+        &frame->render_passes, viz::CompositorRenderPassId{2},
+        gfx::Rect(3, 3, 10, 10), gfx::Transform(), FilterOperations());
+    std::vector<viz::ResourceId> child_resources =
+        AddOneOfEveryQuadType(child_pass, host_impl->resource_provider(),
+                              viz::CompositorRenderPassId{0});
 
-    viz::RenderPass* pass = AddRenderPass(
-        &frame->render_passes, viz::RenderPassId{1}, gfx::Rect(3, 3, 10, 10),
-        gfx::Transform(), FilterOperations());
+    viz::CompositorRenderPass* pass = AddRenderPass(
+        &frame->render_passes, viz::CompositorRenderPassId{1},
+        gfx::Rect(3, 3, 10, 10), gfx::Transform(), FilterOperations());
     std::vector<viz::ResourceId> root_resources = AddOneOfEveryQuadType(
         pass, host_impl->resource_provider(), child_pass->id);
 

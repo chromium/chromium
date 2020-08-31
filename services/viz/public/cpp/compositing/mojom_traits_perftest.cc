@@ -193,7 +193,7 @@ class VizSerializationPerfTest : public testing::Test {
     SkScalar arbitrary_sigma = SkFloatToScalar(2.0f);
     gfx::ContentColorUsage arbitrary_content_color_usage =
         gfx::ContentColorUsage::kSRGB;
-    RenderPassId root_id{14};
+    CompositorRenderPassId root_id{14};
 
     cc::FilterOperations arbitrary_filters1;
     arbitrary_filters1.Append(
@@ -207,7 +207,7 @@ class VizSerializationPerfTest : public testing::Test {
     arbitrary_filters2.Append(
         cc::FilterOperation::CreateBrightnessFilter(arbitrary_float2));
 
-    std::unique_ptr<RenderPass> pass_in = RenderPass::Create();
+    auto pass_in = CompositorRenderPass::Create();
     pass_in->SetAll(root_id, arbitrary_rect1, arbitrary_rect2,
                     arbitrary_matrix1, arbitrary_filters2, arbitrary_filters1,
                     arbitrary_rrectf1, arbitrary_content_color_usage,
@@ -301,9 +301,9 @@ class VizSerializationPerfTest : public testing::Test {
     CompositorFrame frame = MakeEmptyCompositorFrame();
 
     for (uint32_t i = 0; i < num_passes; ++i) {
-      std::unique_ptr<RenderPass> render_pass = RenderPass::Create();
-      render_pass->SetNew(RenderPassId{1}, gfx::Rect(20, 20), gfx::Rect(),
-                          gfx::Transform());
+      auto render_pass = CompositorRenderPass::Create();
+      render_pass->SetNew(CompositorRenderPassId{1}, gfx::Rect(20, 20),
+                          gfx::Rect(), gfx::Transform());
       for (uint32_t j = 0; j < num_quads; ++j) {
         if (j == 0 || single_sqs == UseSingleSharedQuadState::NO)
           render_pass->CreateAndAppendSharedQuadState();

@@ -7,7 +7,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 
 namespace cc {
 
@@ -21,7 +21,7 @@ std::unique_ptr<LayerImpl> MirrorLayerImpl::CreateLayerImpl(
   return MirrorLayerImpl::Create(tree_impl, id());
 }
 
-void MirrorLayerImpl::AppendQuads(viz::RenderPass* render_pass,
+void MirrorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                                   AppendQuadsData* append_quads_data) {
   // TODO(mohsen): Currently, effects on the mirrored layer (e.g mask and
   // opacity) are ignored. Consider applying them here.
@@ -52,7 +52,8 @@ void MirrorLayerImpl::AppendQuads(viz::RenderPass* render_pass,
   gfx::Size mask_texture_size;
 
   auto* mirrored_effect_node = mirrored_render_surface->OwningEffectNode();
-  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
+  auto* quad =
+      render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, content_rect, unoccluded_content_rect,
                mirrored_layer_render_pass_id(), mask_resource_id, mask_uv_rect,
                mask_texture_size, mirrored_effect_node->surface_contents_scale,

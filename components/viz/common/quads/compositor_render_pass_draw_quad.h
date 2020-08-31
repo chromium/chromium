@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_COMMON_QUADS_RENDER_PASS_DRAW_QUAD_H_
-#define COMPONENTS_VIZ_COMMON_QUADS_RENDER_PASS_DRAW_QUAD_H_
+#ifndef COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_RENDER_PASS_DRAW_QUAD_H_
+#define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_RENDER_PASS_DRAW_QUAD_H_
 
 #include <stddef.h>
 
 #include <memory>
 
 #include "cc/paint/filter_operations.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
 #include "components/viz/common/quads/render_pass_draw_quad_internal.h"
 #include "components/viz/common/viz_common_export.h"
 
@@ -20,16 +20,17 @@
 
 namespace viz {
 
-class VIZ_COMMON_EXPORT RenderPassDrawQuad : public RenderPassDrawQuadInternal {
+class VIZ_COMMON_EXPORT CompositorRenderPassDrawQuad
+    : public RenderPassDrawQuadInternal {
  public:
-  RenderPassDrawQuad();
-  RenderPassDrawQuad(const RenderPassDrawQuad& other);
-  ~RenderPassDrawQuad() override;
+  CompositorRenderPassDrawQuad();
+  CompositorRenderPassDrawQuad(const CompositorRenderPassDrawQuad& other);
+  ~CompositorRenderPassDrawQuad() override;
 
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              RenderPassId render_pass_id,
+              CompositorRenderPassId render_pass_id,
               ResourceId mask_resource_id,
               const gfx::RectF& mask_uv_rect,
               const gfx::Size& mask_texture_size,
@@ -43,7 +44,7 @@ class VIZ_COMMON_EXPORT RenderPassDrawQuad : public RenderPassDrawQuadInternal {
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              RenderPassId render_pass_id,
+              CompositorRenderPassId render_pass_id,
               ResourceId mask_resource_id,
               const gfx::RectF& mask_uv_rect,
               const gfx::Size& mask_texture_size,
@@ -54,9 +55,9 @@ class VIZ_COMMON_EXPORT RenderPassDrawQuad : public RenderPassDrawQuadInternal {
               float backdrop_filter_quality,
               bool can_use_backdrop_filter_cache);
 
-  RenderPassId render_pass_id;
+  CompositorRenderPassId render_pass_id;
 
-  static const RenderPassDrawQuad* MaterialCast(const DrawQuad*);
+  static const CompositorRenderPassDrawQuad* MaterialCast(const DrawQuad*);
 
  private:
   void ExtendValue(base::trace_event::TracedValue* value) const override;
@@ -64,4 +65,4 @@ class VIZ_COMMON_EXPORT RenderPassDrawQuad : public RenderPassDrawQuadInternal {
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_COMMON_QUADS_RENDER_PASS_DRAW_QUAD_H_
+#endif  // COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_RENDER_PASS_DRAW_QUAD_H_

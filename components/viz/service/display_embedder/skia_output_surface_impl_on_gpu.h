@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/gpu/context_lost_reason.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_frame.h"

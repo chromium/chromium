@@ -125,7 +125,7 @@ bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
   return true;
 }
 
-void VideoLayerImpl::AppendQuads(viz::RenderPass* render_pass,
+void VideoLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                                  AppendQuadsData* append_quads_data) {
   DCHECK(frame_.get());
 

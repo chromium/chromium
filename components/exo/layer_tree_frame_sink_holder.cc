@@ -57,8 +57,8 @@ void LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
   frame.metadata.device_scale_factor = holder->last_frame_device_scale_factor_;
   frame.metadata.local_surface_id_allocation_time =
       holder->last_local_surface_id_allocation_time_;
-  std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-  pass->SetNew(viz::RenderPassId{1},
+  auto pass = viz::CompositorRenderPass::Create();
+  pass->SetNew(viz::CompositorRenderPassId{1},
                gfx::Rect(holder->last_frame_size_in_pixels_),
                gfx::Rect(holder->last_frame_size_in_pixels_), gfx::Transform());
   frame.render_pass_list.push_back(std::move(pass));

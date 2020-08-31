@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 
 #include <stddef.h>
 #include <utility>
@@ -11,7 +11,7 @@
 #include "cc/test/geometry_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/effects/SkBlurImageFilter.h"
@@ -41,12 +41,13 @@ struct RenderPassSize {
   SharedQuadStateList shared_quad_state_list;
 };
 
-static void CompareRenderPassLists(const RenderPassList& expected_list,
-                                   const RenderPassList& actual_list) {
+static void CompareRenderPassLists(
+    const CompositorRenderPassList& expected_list,
+    const CompositorRenderPassList& actual_list) {
   EXPECT_EQ(expected_list.size(), actual_list.size());
   for (size_t i = 0; i < actual_list.size(); ++i) {
-    RenderPass* expected = expected_list[i].get();
-    RenderPass* actual = actual_list[i].get();
+    CompositorRenderPass* expected = expected_list[i].get();
+    CompositorRenderPass* actual = actual_list[i].get();
 
     EXPECT_EQ(expected->id, actual->id);
     EXPECT_EQ(expected->output_rect, actual->output_rect);
@@ -74,7 +75,7 @@ static void CompareRenderPassLists(const RenderPassList& expected_list,
   }
 }
 
-TEST(RenderPassTest, CopyShouldBeIdenticalExceptIdAndQuads) {
+TEST(CompositorRenderPassTest, CopyShouldBeIdenticalExceptIdAndQuads) {
   AggregatedRenderPassId render_pass_id{3u};
   gfx::Rect output_rect(45, 22, 120, 13);
   gfx::Transform transform_to_root =
@@ -133,13 +134,13 @@ TEST(RenderPassTest, CopyShouldBeIdenticalExceptIdAndQuads) {
   EXPECT_EQ(1u, pass->copy_requests.size());
   EXPECT_EQ(0u, copy->copy_requests.size());
 
-  EXPECT_EQ(sizeof(RenderPassSize), sizeof(RenderPass));
+  EXPECT_EQ(sizeof(RenderPassSize), sizeof(CompositorRenderPass));
 }
 
-TEST(RenderPassTest, CopyAllShouldBeIdentical) {
-  RenderPassList pass_list;
+TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
+  CompositorRenderPassList pass_list;
 
-  RenderPassId id{3};
+  CompositorRenderPassId id{3};
   gfx::Rect output_rect(45, 22, 120, 13);
   gfx::Transform transform_to_root =
       gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
@@ -156,7 +157,7 @@ TEST(RenderPassTest, CopyAllShouldBeIdentical) {
   bool has_damage_from_contributing_content = false;
   bool generate_mipmap = false;
 
-  std::unique_ptr<RenderPass> pass = RenderPass::Create();
+  auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, content_color_usage,
                has_transparent_background, cache_render_pass,
@@ -195,7 +196,7 @@ TEST(RenderPassTest, CopyAllShouldBeIdentical) {
                       false);
 
   // A second render pass with a quad.
-  RenderPassId contrib_id{4};
+  CompositorRenderPassId contrib_id{4};
   gfx::Rect contrib_output_rect(10, 15, 12, 17);
   gfx::Transform contrib_transform_to_root =
       gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
@@ -213,7 +214,7 @@ TEST(RenderPassTest, CopyAllShouldBeIdentical) {
   bool contrib_has_damage_from_contributing_content = false;
   bool contrib_generate_mipmap = false;
 
-  std::unique_ptr<RenderPass> contrib = RenderPass::Create();
+  auto contrib = CompositorRenderPass::Create();
   contrib->SetAll(
       contrib_id, contrib_output_rect, contrib_damage_rect,
       contrib_transform_to_root, contrib_filters, contrib_backdrop_filters,
@@ -232,8 +233,8 @@ TEST(RenderPassTest, CopyAllShouldBeIdentical) {
                        gfx::Rect(3, 3, 3, 3), gfx::Rect(3, 3, 3, 3), SkColor(),
                        false);
 
-  // And a RenderPassDrawQuad for the contributing pass.
-  auto pass_quad = std::make_unique<RenderPassDrawQuad>();
+  // And a CompositorRenderPassDrawQuad for the contributing pass.
+  auto pass_quad = std::make_unique<CompositorRenderPassDrawQuad>();
   pass_quad->SetNew(pass->shared_quad_state_list.back(), contrib_output_rect,
                     contrib_output_rect, contrib_id, 0, gfx::RectF(),
                     gfx::Size(), gfx::Vector2dF(), gfx::PointF(), gfx::RectF(),
@@ -243,16 +244,16 @@ TEST(RenderPassTest, CopyAllShouldBeIdentical) {
   pass_list.push_back(std::move(contrib));
 
   // Make a copy with CopyAll().
-  RenderPassList copy_list;
-  RenderPass::CopyAllForTest(pass_list, &copy_list);
+  CompositorRenderPassList copy_list;
+  CompositorRenderPass::CopyAllForTest(pass_list, &copy_list);
 
   CompareRenderPassLists(pass_list, copy_list);
 }
 
-TEST(RenderPassTest, CopyAllWithCulledQuads) {
-  RenderPassList pass_list;
+TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
+  CompositorRenderPassList pass_list;
 
-  RenderPassId id{3};
+  CompositorRenderPassId id{3};
   gfx::Rect output_rect(45, 22, 120, 13);
   gfx::Transform transform_to_root =
       gfx::Transform(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
@@ -269,7 +270,7 @@ TEST(RenderPassTest, CopyAllWithCulledQuads) {
   bool has_damage_from_contributing_content = false;
   bool generate_mipmap = false;
 
-  std::unique_ptr<RenderPass> pass = RenderPass::Create();
+  auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, content_color_usage,
                has_transparent_background, cache_render_pass,
@@ -312,13 +313,13 @@ TEST(RenderPassTest, CopyAllWithCulledQuads) {
   pass_list.push_back(std::move(pass));
 
   // Make a copy with CopyAll().
-  RenderPassList copy_list;
-  RenderPass::CopyAllForTest(pass_list, &copy_list);
+  CompositorRenderPassList copy_list;
+  CompositorRenderPass::CopyAllForTest(pass_list, &copy_list);
 
   CompareRenderPassLists(pass_list, copy_list);
 }
 
-TEST(RenderPassTest, ReplacedQuadsShouldntMove) {
+TEST(CompositorRenderPassTest, ReplacedQuadsShouldntMove) {
   auto quad_state = std::make_unique<SharedQuadState>();
   QuadList quad_list;
   auto* quad = quad_list.AllocateAndConstruct<SolidColorDrawQuad>();

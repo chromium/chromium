@@ -15,8 +15,8 @@
 #include "base/bind_helpers.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
@@ -50,15 +50,16 @@ viz::ResourceId CreateAndImportResource(
 
 }  // anonymous namespace
 
-viz::RenderPass* AddRenderPass(viz::RenderPassList* pass_list,
-                               viz::RenderPassId render_pass_id,
-                               const gfx::Rect& output_rect,
-                               const gfx::Transform& root_transform,
-                               const FilterOperations& filters) {
-  std::unique_ptr<viz::RenderPass> pass(viz::RenderPass::Create());
+viz::CompositorRenderPass* AddRenderPass(
+    viz::CompositorRenderPassList* pass_list,
+    viz::CompositorRenderPassId render_pass_id,
+    const gfx::Rect& output_rect,
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters) {
+  auto pass = viz::CompositorRenderPass::Create();
   pass->SetNew(render_pass_id, output_rect, output_rect, root_transform);
   pass->filters = filters;
-  viz::RenderPass* saved = pass.get();
+  viz::CompositorRenderPass* saved = pass.get();
   pass_list->push_back(std::move(pass));
   return saved;
 }
@@ -77,16 +78,17 @@ viz::AggregatedRenderPass* AddRenderPass(
   return saved;
 }
 
-viz::RenderPass* AddRenderPassWithDamage(viz::RenderPassList* pass_list,
-                                         viz::RenderPassId render_pass_id,
-                                         const gfx::Rect& output_rect,
-                                         const gfx::Rect& damage_rect,
-                                         const gfx::Transform& root_transform,
-                                         const FilterOperations& filters) {
-  std::unique_ptr<viz::RenderPass> pass(viz::RenderPass::Create());
+viz::CompositorRenderPass* AddRenderPassWithDamage(
+    viz::CompositorRenderPassList* pass_list,
+    viz::CompositorRenderPassId render_pass_id,
+    const gfx::Rect& output_rect,
+    const gfx::Rect& damage_rect,
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters) {
+  auto pass = viz::CompositorRenderPass::Create();
   pass->SetNew(render_pass_id, output_rect, damage_rect, root_transform);
   pass->filters = filters;
-  viz::RenderPass* saved = pass.get();
+  viz::CompositorRenderPass* saved = pass.get();
   pass_list->push_back(std::move(pass));
   return saved;
 }
@@ -147,10 +149,11 @@ QuadType* AddRenderPassQuadInternal(RenderPassType* to_pass,
   return quad;
 }
 
-viz::RenderPassDrawQuad* AddRenderPassQuad(viz::RenderPass* to_pass,
-                                           viz::RenderPass* contributing_pass) {
-  return AddRenderPassQuadInternal<viz::RenderPassDrawQuad>(to_pass,
-                                                            contributing_pass);
+viz::CompositorRenderPassDrawQuad* AddRenderPassQuad(
+    viz::CompositorRenderPass* to_pass,
+    viz::CompositorRenderPass* contributing_pass) {
+  return AddRenderPassQuadInternal<viz::CompositorRenderPassDrawQuad>(
+      to_pass, contributing_pass);
 }
 viz::AggregatedRenderPassDrawQuad* AddRenderPassQuad(
     viz::AggregatedRenderPass* to_pass,
@@ -179,9 +182,9 @@ void AddRenderPassQuad(viz::AggregatedRenderPass* to_pass,
 }
 
 std::vector<viz::ResourceId> AddOneOfEveryQuadType(
-    viz::RenderPass* to_pass,
+    viz::CompositorRenderPass* to_pass,
     viz::ClientResourceProvider* resource_provider,
-    viz::RenderPassId child_pass_id) {
+    viz::CompositorRenderPassId child_pass_id) {
   gfx::Rect rect(0, 0, 100, 100);
   gfx::Rect visible_rect(0, 0, 100, 100);
   bool needs_blending = true;
@@ -223,7 +226,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
 
   if (child_pass_id) {
     auto* render_pass_quad =
-        to_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
+        to_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
     render_pass_quad->SetNew(shared_state, rect, visible_rect, child_pass_id,
                              resource5, gfx::RectF(rect), gfx::Size(73, 26),
                              gfx::Vector2dF(), gfx::PointF(), gfx::RectF(),

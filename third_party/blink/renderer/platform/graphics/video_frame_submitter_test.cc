@@ -135,7 +135,7 @@ class MockVideoFrameResourceProvider
   MOCK_METHOD2(Initialize,
                void(viz::RasterContextProvider*, viz::SharedBitmapReporter*));
   MOCK_METHOD4(AppendQuads,
-               void(viz::RenderPass*,
+               void(viz::CompositorRenderPass*,
                     scoped_refptr<media::VideoFrame>,
                     media::VideoRotation,
                     bool));

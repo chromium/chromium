@@ -14,7 +14,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread.h"
 #include "cc/test/fake_layer_tree_frame_sink_client.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -150,7 +150,7 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
     layer_tree_frame_sink_->BindToClient(&layer_tree_frame_sink_client_);
   }
 
-  void SendRenderPassList(viz::RenderPassList* pass_list,
+  void SendRenderPassList(viz::CompositorRenderPassList* pass_list,
                           bool hit_test_data_changed) {
     auto frame = viz::CompositorFrameBuilder()
                      .SetRenderPassList(std::move(*pass_list))
@@ -175,9 +175,9 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
 };
 
 TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListEmpty) {
-  viz::RenderPassList pass_list;
-  auto pass = viz::RenderPass::Create();
-  pass->id = viz::RenderPassId{1};
+  viz::CompositorRenderPassList pass_list;
+  auto pass = viz::CompositorRenderPass::Create();
+  pass->id = viz::CompositorRenderPassId{1};
   pass->output_rect = display_rect_;
   pass_list.push_back(move(pass));
 
@@ -189,10 +189,10 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListEmpty) {
 }
 
 TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
-  viz::RenderPassList pass_list;
+  viz::CompositorRenderPassList pass_list;
   // Initial submission.
-  auto pass1 = viz::RenderPass::Create();
-  pass1->id = viz::RenderPassId{1};
+  auto pass1 = viz::CompositorRenderPass::Create();
+  pass1->id = viz::CompositorRenderPassId{1};
   pass1->output_rect = display_rect_;
   pass_list.push_back(move(pass1));
 
@@ -206,8 +206,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   const viz::HitTestRegionList hit_test_region_list = GetHitTestData();
 
   // Identical submission.
-  auto pass2 = viz::RenderPass::Create();
-  pass2->id = viz::RenderPassId{2};
+  auto pass2 = viz::CompositorRenderPass::Create();
+  pass2->id = viz::CompositorRenderPassId{2};
   pass2->output_rect = display_rect_;
   pass_list.push_back(move(pass2));
 
@@ -218,8 +218,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
       viz::HitTestRegionList::IsEqual(hit_test_region_list, GetHitTestData()));
 
   // Different submission.
-  auto pass3 = viz::RenderPass::Create();
-  pass3->id = viz::RenderPassId{3};
+  auto pass3 = viz::CompositorRenderPass::Create();
+  pass3->id = viz::CompositorRenderPassId{3};
   pass3->output_rect = display_rect_;
   pass_list.push_back(move(pass3));
 
@@ -236,11 +236,11 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
 
 TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
        HitTestRegionListDuplicateChangedFlip) {
-  viz::RenderPassList pass_list;
+  viz::CompositorRenderPassList pass_list;
 
   // Initial submission.
-  auto pass1 = viz::RenderPass::Create();
-  pass1->id = viz::RenderPassId{1};
+  auto pass1 = viz::CompositorRenderPass::Create();
+  pass1->id = viz::CompositorRenderPassId{1};
   pass1->output_rect = display_rect_;
   pass_list.push_back(move(pass1));
 
@@ -254,8 +254,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
   viz::HitTestRegionList hit_test_region_list = GetHitTestData();
 
   // Different submission with |hit_test_data_changed| set to true.
-  auto pass2 = viz::RenderPass::Create();
-  pass2->id = viz::RenderPassId{2};
+  auto pass2 = viz::CompositorRenderPass::Create();
+  pass2->id = viz::CompositorRenderPassId{2};
   pass2->output_rect = display_rect_;
   pass_list.push_back(std::move(pass2));
 
@@ -273,8 +273,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
 
   // Different submission with |hit_test_data_changed| set back to false. We
   // expect the hit-data to still have been sent.
-  auto pass3 = viz::RenderPass::Create();
-  pass3->id = viz::RenderPassId{3};
+  auto pass3 = viz::CompositorRenderPass::Create();
+  pass3->id = viz::CompositorRenderPassId{3};
   pass3->output_rect = display_rect_;
   pass_list.push_back(move(pass3));
 

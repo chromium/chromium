@@ -47,7 +47,7 @@ class CC_EXPORT UIResourceLayerImpl : public LayerImpl {
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
   void AsValueInto(base::trace_event::TracedValue* state) const override;

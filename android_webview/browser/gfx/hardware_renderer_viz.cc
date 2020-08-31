@@ -172,8 +172,8 @@ void HardwareRendererViz::OnViz::DrawAndSwapOnViz(
 
   // Create a frame with a single SurfaceDrawQuad referencing the child
   // Surface and transformed using the given transform.
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
-  render_pass->SetNew(viz::RenderPassId{1}, gfx::Rect(viewport), clip,
+  auto render_pass = viz::CompositorRenderPass::Create();
+  render_pass->SetNew(viz::CompositorRenderPassId{1}, gfx::Rect(viewport), clip,
                       gfx::Transform());
   render_pass->has_transparent_background = false;
 

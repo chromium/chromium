@@ -7,7 +7,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/trees/layer_tree_impl.h"
-#include "components/viz/common/quads/render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -332,7 +332,7 @@ std::vector<NinePatchGenerator::Patch> NinePatchGenerator::GeneratePatches()
 
 void NinePatchGenerator::AppendQuads(LayerImpl* layer_impl,
                                      UIResourceId ui_resource_id,
-                                     viz::RenderPass* render_pass,
+                                     viz::CompositorRenderPass* render_pass,
                                      viz::SharedQuadState* shared_quad_state,
                                      const std::vector<Patch>& patches) {
   if (!ui_resource_id)

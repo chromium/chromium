@@ -19,11 +19,11 @@
 #include "cc/test/geometry_test_utils.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -66,7 +66,7 @@ TEST(DrawQuadTest, CopySharedQuadState) {
   EXPECT_EQ(blend_mode, copy->blend_mode);
 }
 
-SharedQuadState* CreateSharedQuadState(RenderPass* render_pass) {
+SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
   gfx::Transform quad_transform = gfx::Transform(1.0, 0.0, 0.5, 1.0, 0.5, 0.0);
   gfx::Rect layer_rect(26, 28);
   gfx::Rect visible_layer_rect(10, 12, 14, 16);
@@ -107,7 +107,7 @@ void CompareDrawQuad(DrawQuad* quad, DrawQuad* copy) {
 }
 
 #define CREATE_SHARED_STATE()                                              \
-  std::unique_ptr<RenderPass> render_pass = RenderPass::Create();          \
+  auto render_pass = CompositorRenderPass::Create();                       \
   SharedQuadState* shared_state(CreateSharedQuadState(render_pass.get())); \
   SharedQuadState* copy_shared_state =                                     \
       render_pass->CreateAndAppendSharedQuadState();                       \
@@ -193,7 +193,7 @@ TEST(DrawQuadTest, CopyDebugBorderDrawQuad) {
 
 TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  RenderPassId render_pass_id{61};
+  CompositorRenderPassId render_pass_id{61};
   ResourceId mask_resource_id = 78;
   gfx::RectF mask_uv_rect(0, 0, 33.f, 19.f);
   gfx::Size mask_texture_size(128, 134);
@@ -204,10 +204,10 @@ TEST(DrawQuadTest, CopyRenderPassDrawQuad) {
   float backdrop_filter_quality = 1.0f;
   bool can_use_backdrop_filter_cache = true;
 
-  RenderPassId copied_render_pass_id{235};
+  CompositorRenderPassId copied_render_pass_id{235};
   CREATE_SHARED_STATE();
 
-  CREATE_QUAD_ALL_RP(RenderPassDrawQuad, visible_rect, render_pass_id,
+  CREATE_QUAD_ALL_RP(CompositorRenderPassDrawQuad, visible_rect, render_pass_id,
                      mask_resource_id, mask_uv_rect, mask_texture_size,
                      filters_scale, filters_origin, tex_coord_rect,
                      force_anti_aliasing_off, backdrop_filter_quality,
@@ -529,9 +529,9 @@ TEST_F(DrawQuadIteratorTest, DebugBorderDrawQuad) {
   EXPECT_EQ(0, IterateAndCount(quad_new));
 }
 
-TEST_F(DrawQuadIteratorTest, RenderPassDrawQuad) {
+TEST_F(DrawQuadIteratorTest, CompositorRenderPassDrawQuad) {
   gfx::Rect visible_rect(40, 50, 30, 20);
-  RenderPassId render_pass_id{61};
+  CompositorRenderPassId render_pass_id{61};
   ResourceId mask_resource_id = 78;
   gfx::RectF mask_uv_rect(0.f, 0.f, 33.f, 19.f);
   gfx::Size mask_texture_size(128, 134);
@@ -540,10 +540,10 @@ TEST_F(DrawQuadIteratorTest, RenderPassDrawQuad) {
   gfx::RectF tex_coord_rect(1.f, 1.f, 33.f, 19.f);
   bool force_anti_aliasing_off = false;
   float backdrop_filter_quality = 1.0f;
-  RenderPassId copied_render_pass_id{235};
+  CompositorRenderPassId copied_render_pass_id{235};
 
   CREATE_SHARED_STATE();
-  CREATE_QUAD_NEW_RP(RenderPassDrawQuad, visible_rect, render_pass_id,
+  CREATE_QUAD_NEW_RP(CompositorRenderPassDrawQuad, visible_rect, render_pass_id,
                      mask_resource_id, mask_uv_rect, mask_texture_size,
                      filters_scale, filters_origin, tex_coord_rect,
                      force_anti_aliasing_off, backdrop_filter_quality,
@@ -700,7 +700,7 @@ TEST(DrawQuadTest, LargestQuadType) {
         largest = std::max(largest, sizeof(TextureDrawQuad));
         break;
       case DrawQuad::Material::kCompositorRenderPass:
-        largest = std::max(largest, sizeof(RenderPassDrawQuad));
+        largest = std::max(largest, sizeof(CompositorRenderPassDrawQuad));
         break;
       case DrawQuad::Material::kSolidColor:
         largest = std::max(largest, sizeof(SolidColorDrawQuad));
@@ -747,7 +747,8 @@ TEST(DrawQuadTest, LargestQuadType) {
         LOG(ERROR) << "TextureDrawQuad " << sizeof(TextureDrawQuad);
         break;
       case DrawQuad::Material::kCompositorRenderPass:
-        LOG(ERROR) << "RenderPassDrawQuad " << sizeof(RenderPassDrawQuad);
+        LOG(ERROR) << "CompositorRenderPassDrawQuad "
+                   << sizeof(CompositorRenderPassDrawQuad);
         break;
       case DrawQuad::Material::kSolidColor:
         LOG(ERROR) << "SolidColorDrawQuad " << sizeof(SolidColorDrawQuad);

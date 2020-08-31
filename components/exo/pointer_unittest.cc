@@ -145,7 +145,7 @@ TEST_F(PointerTest, SetCursor) {
   pointer->SetCursor(pointer_surface.get(), gfx::Point(5, 5));
   base::RunLoop().RunUntilIdle();
 
-  const viz::RenderPass* last_render_pass;
+  const viz::CompositorRenderPass* last_render_pass;
   {
     viz::SurfaceId surface_id = pointer->host_window()->GetSurfaceId();
     viz::SurfaceManager* surface_manager = GetSurfaceManager();

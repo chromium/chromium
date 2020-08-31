@@ -22,9 +22,9 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -257,7 +257,8 @@ bool IsAAForcedOff(const DrawQuad* quad) {
     case DrawQuad::Material::kCompositorRenderPass:
       // We should not have compositor render passes here.
       NOTREACHED();
-      return RenderPassDrawQuad::MaterialCast(quad)->force_anti_aliasing_off;
+      return CompositorRenderPassDrawQuad::MaterialCast(quad)
+          ->force_anti_aliasing_off;
     case DrawQuad::Material::kAggregatedRenderPass:
       return AggregatedRenderPassDrawQuad::MaterialCast(quad)
           ->force_anti_aliasing_off;
@@ -406,7 +407,7 @@ bool RenderPassRemainsTransparent(SkBlendMode blendMode) {
 // uses base::Optional, the style also requires it to have a declared ctor
 SkiaRenderer::BatchedQuadState::BatchedQuadState() = default;
 
-// Parameters needed to draw a RenderPassDrawQuad.
+// Parameters needed to draw a CompositorRenderPassDrawQuad.
 struct SkiaRenderer::DrawRPDQParams {
   explicit DrawRPDQParams(const gfx::RectF& visible_rect);
 
@@ -1365,7 +1366,8 @@ bool SkiaRenderer::CanExplicitlyScissor(
   if (!contents_device_transform.IsScaleOrTranslation())
     return false;
 
-  // Sanity check: we should not have a Compositor RenderPassDrawQuad here.
+  // Sanity check: we should not have a Compositor CompositorRenderPassDrawQuad
+  // here.
   DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
   if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
     // If the renderpass has filters, the filters may modify the effective
@@ -2644,7 +2646,7 @@ void SkiaRenderer::FinishDrawingQuadList() {
 
 void SkiaRenderer::GenerateMipmap() {
   // This is a no-op since setting FilterQuality to high during drawing of
-  // RenderPassDrawQuad is what actually generates generate_mipmap.
+  // CompositorRenderPassDrawQuad is what actually generates generate_mipmap.
 }
 
 GrDirectContext* SkiaRenderer::GetGrContext() {

@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -30,7 +30,7 @@ perf_test::PerfResultReporter SetUpDrawQuadReporter(const std::string& story) {
   return reporter;
 }
 
-SharedQuadState* CreateSharedQuadState(RenderPass* render_pass) {
+SharedQuadState* CreateSharedQuadState(CompositorRenderPass* render_pass) {
   gfx::Transform quad_transform = gfx::Transform(1.0, 0.0, 0.5, 1.0, 0.5, 0.0);
   gfx::Rect content_rect(26, 28);
   gfx::Rect visible_layer_rect(10, 12, 14, 16);
@@ -56,7 +56,7 @@ class DrawQuadPerfTest : public testing::Test {
                kTimeCheckInterval) {}
 
   void CreateRenderPass() {
-    render_pass_ = RenderPass::Create();
+    render_pass_ = CompositorRenderPass::Create();
     SharedQuadState* new_shared_state(
         CreateSharedQuadState(render_pass_.get()));
     shared_state_ = render_pass_->CreateAndAppendSharedQuadState();
@@ -111,7 +111,7 @@ class DrawQuadPerfTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<RenderPass> render_pass_;
+  std::unique_ptr<CompositorRenderPass> render_pass_;
   SharedQuadState* shared_state_;
   base::LapTimer timer_;
 };

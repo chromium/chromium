@@ -40,7 +40,7 @@ namespace viz {
 class ClientResourceProvider;
 class ContextProvider;
 class RasterContextProvider;
-class RenderPass;
+class CompositorRenderPass;
 class SharedBitmapReporter;
 }  // namespace viz
 
@@ -114,7 +114,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   // of this class (e.g: VideoFrameSubmitter). Producing only one quad will
   // allow viz to optimize compositing when the only content changing per-frame
   // is the video.
-  void AppendQuads(viz::RenderPass* render_pass,
+  void AppendQuads(viz::CompositorRenderPass* render_pass,
                    scoped_refptr<VideoFrame> frame,
                    gfx::Transform transform,
                    gfx::Rect quad_rect,

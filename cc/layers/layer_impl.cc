@@ -34,8 +34,8 @@
 #include "cc/trees/transform_node.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
 #include "components/viz/common/traced_value.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -232,7 +232,7 @@ void LayerImpl::GetDebugBorderProperties(SkColor* color, float* width) const {
 }
 
 void LayerImpl::AppendDebugBorderQuad(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     const gfx::Rect& quad_rect,
     const viz::SharedQuadState* shared_quad_state,
     AppendQuadsData* append_quads_data) const {
@@ -244,7 +244,7 @@ void LayerImpl::AppendDebugBorderQuad(
 }
 
 void LayerImpl::AppendDebugBorderQuad(
-    viz::RenderPass* render_pass,
+    viz::CompositorRenderPass* render_pass,
     const gfx::Rect& quad_rect,
     const viz::SharedQuadState* shared_quad_state,
     AppendQuadsData* append_quads_data,

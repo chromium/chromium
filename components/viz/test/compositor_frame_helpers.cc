@@ -34,7 +34,7 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddDefaultRenderPass() {
 CompositorFrameBuilder& CompositorFrameBuilder::AddRenderPass(
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect) {
-  std::unique_ptr<RenderPass> pass = RenderPass::Create();
+  auto pass = CompositorRenderPass::Create();
   pass->SetNew(render_pass_id_generator_.GenerateNextId(), output_rect,
                damage_rect, gfx::Transform());
   frame_->render_pass_list.push_back(std::move(pass));
@@ -42,7 +42,7 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddRenderPass(
 }
 
 CompositorFrameBuilder& CompositorFrameBuilder::AddRenderPass(
-    std::unique_ptr<RenderPass> render_pass) {
+    std::unique_ptr<CompositorRenderPass> render_pass) {
   // Give the render pass a unique id if one hasn't been assigned.
   if (render_pass->id.is_null())
     render_pass->id = render_pass_id_generator_.GenerateNextId();
@@ -51,7 +51,7 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddRenderPass(
 }
 
 CompositorFrameBuilder& CompositorFrameBuilder::SetRenderPassList(
-    RenderPassList render_pass_list) {
+    CompositorRenderPassList render_pass_list) {
   DCHECK(frame_->render_pass_list.empty());
   frame_->render_pass_list = std::move(render_pass_list);
   return *this;

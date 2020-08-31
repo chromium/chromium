@@ -9,11 +9,11 @@
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
@@ -86,7 +86,7 @@ void AggregatedRenderPass::SetAll(
 
 AggregatedRenderPassDrawQuad*
 AggregatedRenderPass::CopyFromAndAppendRenderPassDrawQuad(
-    const RenderPassDrawQuad* quad,
+    const CompositorRenderPassDrawQuad* quad,
     AggregatedRenderPassId render_pass_id) {
   DCHECK(!shared_quad_state_list.empty());
   auto* copy_quad = CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();

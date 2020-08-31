@@ -5,7 +5,7 @@
 module viz.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "services/viz/public/mojom/compositing/render_pass_id.mojom";
+import "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom";
 import "services/viz/public/mojom/compositing/shared_quad_state.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -26,8 +26,8 @@ struct DebugBorderQuadState {
   int32 width;
 };
 
-struct RenderPassQuadState {
-  RenderPassId render_pass_id;
+struct CompositorRenderPassQuadState {
+  CompositorRenderPassId render_pass_id;
 
   // If nonzero, resource id of mask to use when drawing this pass.
   uint32 mask_resource_id;
@@ -122,7 +122,7 @@ struct VideoHoleQuadState {
 
 union DrawQuadState {
   DebugBorderQuadState debug_border_quad_state;
-  RenderPassQuadState render_pass_quad_state;
+  CompositorRenderPassQuadState render_pass_quad_state;
   SolidColorQuadState solid_color_quad_state;
   StreamVideoQuadState stream_video_quad_state;
   SurfaceQuadState surface_quad_state;

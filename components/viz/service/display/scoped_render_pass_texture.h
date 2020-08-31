@@ -50,7 +50,7 @@ class VIZ_SERVICE_EXPORT ScopedRenderPassTexture {
   // generate mipmaps at powers of 2.
   bool mipmap_ = false;
   // TODO(xing.xu): Remove this and set the color space when we draw the
-  // RenderPassDrawQuad.
+  // CompositorRenderPassDrawQuad.
   gfx::ColorSpace color_space_;
   enum MipmapState { INVALID, GENERATE, VALID };
   MipmapState mipmap_state_ = INVALID;

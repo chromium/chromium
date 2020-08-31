@@ -21,7 +21,7 @@ class TracedValue;
 }
 
 namespace viz {
-class RenderPass;
+class CompositorRenderPass;
 class SharedQuadState;
 }  // namespace viz
 
@@ -101,7 +101,7 @@ class CC_EXPORT NinePatchGenerator {
 
   void AppendQuads(LayerImpl* layer_impl,
                    UIResourceId ui_resource_id,
-                   viz::RenderPass* render_pass,
+                   viz::CompositorRenderPass* render_pass,
                    viz::SharedQuadState* shared_quad_state,
                    const std::vector<Patch>& patches);
 

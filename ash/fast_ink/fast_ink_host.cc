@@ -104,8 +104,9 @@ class FastInkHost::LayerTreeFrameSinkHolder
     frame.metadata.local_surface_id_allocation_time =
         last_local_surface_id_allocation_time_;
     frame.metadata.frame_token = ++next_frame_token_;
-    std::unique_ptr<viz::RenderPass> pass = viz::RenderPass::Create();
-    pass->SetNew(viz::RenderPassId{1}, gfx::Rect(last_frame_size_in_pixels_),
+    auto pass = viz::CompositorRenderPass::Create();
+    pass->SetNew(viz::CompositorRenderPassId{1},
+                 gfx::Rect(last_frame_size_in_pixels_),
                  gfx::Rect(last_frame_size_in_pixels_), gfx::Transform());
     frame.render_pass_list.push_back(std::move(pass));
     frame_sink_->SubmitCompositorFrame(std::move(frame),
@@ -378,8 +379,8 @@ void FastInkHost::SubmitCompositorFrame() {
   bool rv = target_to_buffer_transform.GetInverse(&buffer_to_target_transform);
   DCHECK(rv);
 
-  const viz::RenderPassId kRenderPassId{1};
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  const viz::CompositorRenderPassId kRenderPassId{1};
+  auto render_pass = viz::CompositorRenderPass::Create();
   render_pass->SetNew(kRenderPassId, output_rect, damage_rect,
                       buffer_to_target_transform);
 
