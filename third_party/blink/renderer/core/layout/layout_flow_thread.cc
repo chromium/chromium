@@ -48,6 +48,17 @@ LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
   while (curr) {
     if (curr->IsSVGChild())
       return nullptr;
+    // Always consider an in-flow legend child to be part of the flow
+    // thread. The containing block of the rendered legend is actually the
+    // multicol container itself (not its flow thread child), but since which
+    // element is the rendered legend might change (if we insert another legend
+    // in front of it, for instance), and such a change won't be detected by
+    // this child, we'll just pretend that it's part of the flow thread. This
+    // shouldn't have any negative impact on LayoutNG, and in the legacy engine,
+    // a fieldset isn't allowed to be a multicol container anyway.
+    if (curr->IsHTMLLegendElement() && !curr->IsOutOfFlowPositioned() &&
+        curr->Parent()->IsLayoutFlowThread())
+      return ToLayoutFlowThread(curr->Parent());
     if (curr->IsLayoutFlowThread())
       return ToLayoutFlowThread(curr);
     LayoutObject* container = curr->Container();
