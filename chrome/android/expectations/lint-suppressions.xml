@@ -17,17 +17,12 @@ Still reading?
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res/xml/network_security_config.xml"/>
     <ignore regexp="android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"/>
-    <ignore regexp="test"/>
   </issue>
   <issue id="Autofill">
     <!-- Filed https://crbug.com/1073966 to fix -->
     <ignore regexp="chrome/android/features/tab_ui/java/res/layout/bottom_tab_grid_toolbar.xml"/>
     <ignore regexp="chrome/android/java/res/layout/password_entry_editor.xml"/>
     <ignore regexp="components/browser_ui/widget/android/java/res/layout/radio_button_with_edit_text.xml"/>
-  </issue>
-  <issue id="AuthLeak">
-    <ignore regexp="chrome/android/javatests"/>
-    <ignore regexp="Test.java"/>
   </issue>
   <issue id="ButtonOrder">
     <ignore regexp="chrome/android/java/res/layout/homepage_editor.xml"/>
@@ -101,8 +96,6 @@ Still reading?
     <ignore regexp="chrome/android/webapk/shell_apk/res/mipmap-mdpi/ic_launcher_background.png"/>
   </issue>
   <issue id="IconLocation">
-    <!-- This is just for testing -->
-    <ignore regexp="chrome/test/chromedriver/test/webview_shell/java/res/drawable/icon.png"/>
     <!-- It is OK for content_shell_apk to have missing assets. -->
     <ignore regexp="content/shell/android/java/res/"/>
     <!-- Memconsumer is only for tooling -->
@@ -133,7 +126,6 @@ Still reading?
     <!-- See https://crbug.com/827265 and comment in the file for context. -->
     <ignore regexp="chrome/android/java/res/xml/network_security_config.xml"/>
     <ignore regexp="android_webview/tools/system_webview_shell/apk/res/xml/network_security_config.xml"/>
-    <ignore regexp="test"/>
   </issue>
   <issue id="Instantiatable" severity="ignore"/>
   <issue id="InconsistentArrays">
@@ -184,14 +176,10 @@ Still reading?
     <ignore regexp="Static interface  method requires API level 24"/>
     <!-- 1: TaskInfo is refactored at API 29. -->
     <ignore regexp="Field requires API level .*`android.app.TaskInfo"/>
-    <!-- 1: This is for testonly target android_support_chromium_java in android_sdk. -->
-    <ignore regexp="third_party/android_sdk/public/extras/chromium/support/src/org/chromium/android/support/PackageManagerWrapper.java"/>
     <!-- 1: TODO(crbug.com/1082222): Fix -->
     <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/omnibox/suggestions/header/HeaderView.java"/>
     <!-- 1: TODO(crbug.com/1085410): Fix -->
     <ignore regexp="components/content_capture/android/java/src/org/chromium/components/content_capture"/>
-    <!-- 1: TODO(crbug.com/1085487): Fix -->
-    <ignore regexp="chrome/android/javatests/src/org/chromium/chrome/browser/directactions/DirectActionTestRule.java"/>
     <!-- 1: TODO(wnwen): File bugs to fix -->
     <ignore regexp="android_webview/support_library/boundary_interfaces/src/org/chromium/support_lib_boundary/util/BoundaryInterfaceReflectionUtil.java"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
@@ -219,9 +207,6 @@ Still reading?
   <issue id="Recycle" severity="ignore"/>
   <issue id="Registered" severity="ignore"/>
   <issue id="ResourceAsColor" severity="ignore"/>
-  <issue id="ResourceType">
-    <ignore regexp="/javatests/"/>
-  </issue>
   <issue id="RtlCompat" severity="ignore"/>
   <issue id="RtlEnabled" severity="ignore"/>
   <issue id="RtlHardcoded">
@@ -230,10 +215,6 @@ Still reading?
     <ignore regexp="chrome/android/java/res/layout/sheet_tab_toolbar.xml"/>
   </issue>
   <issue id="RtlSymmetry" severity="ignore"/>
-  <issue id="SetTextI18n">
-    <!-- Tests can use setText without translating. -->
-    <ignore regexp="/javatests/"/>
-  </issue>
   <issue id="SetJavaScriptEnabled" severity="ignore"/>
   <issue id="SignatureOrSystemPermissions" severity="ignore"/>
   <issue id="StaticFieldLeak">
@@ -315,10 +296,6 @@ Still reading?
     <ignore regexp="The resource `R.style.SplashTheme` appears to be unused"/>
     <!-- 1 resource used by android webview glue layer, could be refactored -->
     <ignore regexp="android_webview/java/res/drawable-hdpi/ic_play_circle_outline_black_48dp.png"/>
-    <!-- 3 resources test only, used in webview tests dynamically -->
-    <ignore regexp="android_webview/test/shell/res/raw/resource_file.html"/>
-    <ignore regexp="android_webview/test/shell/res/raw/resource_icon.png"/>
-    <ignore regexp="android_webview/tools/automated_ui_tests/java/res/layout/"/>
     <!-- 1: resource in //ui because it's used by multiple deps. -->
     <ignore regexp="The resource `R.drawable.*_expand_.*` appears to be unused"/>
     <!-- 1 string used by Android's policies system, pulled from app directly -->
@@ -399,8 +376,6 @@ Still reading?
   <issue id="VectorPath" severity="ignore"/>
   <issue id="ViewConstructor" severity="ignore"/>
   <issue id="VisibleForTests">
-    <ignore regexp="/javatests/"/>
-    <ignore regexp="/test/"/>
     <!-- TODO(crbug.com/757124): Remove all these specific Feedback files after underlying issue is resolved -->
     <!-- Underlying issue is that Android FeedbackOptions.Builder using @VisibleForTesting without 'otherwise='. -->
     <ignore regexp="clank/java/src/com/google/android/apps/chrome/feedback/FeedbackUtil.java"/>
@@ -411,18 +386,7 @@ Still reading?
   <issue id="WebViewApiAvailability" severity="ignore"/>
   <issue id="WrongCall" severity="ignore"/>
   <issue id="WrongConstant">
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"/>
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/instantapps/InstantAppsHandler.java"/>
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/widget/prefeditor/EditorDialog.java"/>
-    <ignore regexp="components/browser_ui/client_certificate/android/java/src/org/chromium/components/browser_ui/client_certificate/SSLClientCertificateRequest.java"/>
-    <ignore regexp="third_party/android_data_chart/java/src/org/chromium/third_party/android/datausagechart/ChartDataUsageView.java"/>
-    <!-- 1: TODO(crbug.com/1085411): Fix -->
-    <ignore regexp="media/base/android/java/src/org/chromium/media/MediaCodecEncoder.java"/>
     <!-- Discussed in crbug.com/1069204, ignoring this class of errors since these are Q+ constants. -->
     <ignore regexp="Must be one of: LineBreaker.BREAK_STRATEGY_SIMPLE, LineBreaker.BREAK_STRATEGY_HIGH_QUALITY, LineBreaker.BREAK_STRATEGY_BALANCED"/>
-  </issue>
-  <issue id="WrongThread">
-    <!-- TODO(wnwen): File bug to fix -->
-    <ignore regexp="chrome/test/android/test_trusted_web_activity/src/org/chromium/chrome/browser/browserservices/TestTrustedWebActivityService.java"/>
   </issue>
 </lint>

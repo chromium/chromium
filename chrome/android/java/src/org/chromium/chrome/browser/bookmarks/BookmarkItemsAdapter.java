@@ -42,8 +42,9 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkItem>
      * Specifies the view types that the bookmark delegate screen can contain.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO,
-            ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK})
+    @IntDef({ViewType.INVALID_PROMO, ViewType.PERSONALIZED_SIGNIN_PROMO,
+            ViewType.PERSONALIZED_SYNC_PROMO, ViewType.SYNC_PROMO, ViewType.FOLDER,
+            ViewType.BOOKMARK})
     private @interface ViewType {
         int INVALID_PROMO = -1;
         int PERSONALIZED_SIGNIN_PROMO = 0;
@@ -60,6 +61,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkItem>
 
     // There can only be one promo header at a time. This takes on one of the values:
     // ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.SYNC_PROMO, or ViewType.INVALID_PROMO
+    @ViewType
     private int mPromoHeaderType = ViewType.INVALID_PROMO;
     private BookmarkDelegate mDelegate;
     private BookmarkPromoHeader mPromoHeaderManager;

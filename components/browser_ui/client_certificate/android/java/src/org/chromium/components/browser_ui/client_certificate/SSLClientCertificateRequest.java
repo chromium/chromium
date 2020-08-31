@@ -205,7 +205,10 @@ public class SSLClientCertificateRequest {
 
         /**
          * Calls KeyChain#choosePrivateKeyAlias with the provided arguments.
+         *
          */
+        // WrongConstant: @KeyProperties.KeyAlgorithmEnum for mKeyTypes is hidden with @hide.
+        @SuppressWarnings("WrongConstant")
         public void choosePrivateKeyAlias() throws ActivityNotFoundException {
             KeyChain.choosePrivateKeyAlias(mActivity, mCallback, mKeyTypes, mPrincipalsForCallback,
                     mHostName, mPort, mAlias);

@@ -48,7 +48,8 @@ class MediaCodecEncoder extends MediaCodecBridge {
     }
 
     // Save the config frame(SPS/PPS NALs) and append it to each keyframe.
-    @SuppressWarnings("deprecation")
+    // WrongConstant: MediaCodec#dequeueOutputBuffer returns the index when successful.
+    @SuppressWarnings({"deprecation", "WrongConstant"})
     @Override
     protected int dequeueOutputBufferInternal(MediaCodec.BufferInfo info, long timeoutUs) {
         int indexOrStatus = -1;
