@@ -139,16 +139,15 @@ MULTIPROCESS_TEST_MAIN(SleepyChildProcess) {
 
 // TODO(https://crbug.com/726484): Enable these tests on Fuchsia when
 // CreationTime() is implemented.
-//
-// Disabled on Android because Process::CreationTime() is not supported.
-// https://issuetracker.google.com/issues/37140047
-#if !defined(OS_FUCHSIA) && !defined(OS_ANDROID)
+#if !defined(OS_FUCHSIA)
 TEST_F(ProcessTest, CreationTimeCurrentProcess) {
   // The current process creation time should be less than or equal to the
   // current time.
   EXPECT_LE(Process::Current().CreationTime(), Time::Now());
 }
 
+#if !defined(OS_ANDROID)  // Cannot read other processes' creation time on
+                          // Android.
 TEST_F(ProcessTest, CreationTimeOtherProcess) {
   // The creation time of a process should be between a time recorded before it
   // was spawned and a time recorded after it was spawned. However, since the
@@ -178,6 +177,7 @@ TEST_F(ProcessTest, CreationTimeOtherProcess) {
   EXPECT_LE(creation, after_creation + kTolerance);
   EXPECT_TRUE(process.Terminate(kDummyExitCode, true));
 }
+#endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_FUCHSIA)
 
 TEST_F(ProcessTest, Terminate) {

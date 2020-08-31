@@ -76,13 +76,26 @@ const int kBackgroundPriority = 5;
 }  // namespace
 
 Time Process::CreationTime() const {
+#if defined(OS_ANDROID)
+  // On Android, /proc is mounted (on recent-enough versions) with hidepid=2,
+  // which hides other PIDs in /proc. This means that only /proc/self is
+  // accessible. Instead of trying (and failing) to read the file, don't attempt
+  // to read it. This also provides consistency across releases.
+  int64_t start_ticks = is_current()
+                            ? internal::ReadProcSelfStatsAndGetFieldAsInt64(
+                                  internal::VM_STARTTIME)
+                            : 0;
+#else
   int64_t start_ticks = is_current()
                             ? internal::ReadProcSelfStatsAndGetFieldAsInt64(
                                   internal::VM_STARTTIME)
                             : internal::ReadProcStatsAndGetFieldAsInt64(
                                   Pid(), internal::VM_STARTTIME);
+#endif
+
   if (!start_ticks)
     return Time();
+
   TimeDelta start_offset = internal::ClockTicksToTimeDelta(start_ticks);
   Time boot_time = internal::GetBootTime();
   if (boot_time.is_null())
