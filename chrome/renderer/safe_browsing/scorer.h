@@ -42,11 +42,10 @@ class Scorer {
   // (range is inclusive on both ends).
   virtual double ComputeScore(const FeatureMap& features) const;
 
-  // This method matches the given |bitmap| against the visual model. It
-  // modifies |request| appropriately, and returns the new request.
-  virtual std::unique_ptr<ClientPhishingRequest> GetMatchingVisualTargets(
-      const SkBitmap& bitmap,
-      std::unique_ptr<ClientPhishingRequest> request) const;
+  // This method matches the given |bitmap| against the visual model. It returns
+  // true if any visual target matches, and populates |request| appropriately.
+  virtual bool GetMatchingVisualTargets(const SkBitmap& bitmap,
+                                        ClientPhishingRequest* request) const;
 
   // Returns the version number of the loaded client model.
   int model_version() const;

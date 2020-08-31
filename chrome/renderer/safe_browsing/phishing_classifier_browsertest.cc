@@ -127,7 +127,7 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
         page_text,
         base::BindOnce(&PhishingClassifierTest::ClassificationFinished,
                        base::Unretained(this)));
-    run_loop_.Run();
+    base::RunLoop().RunUntilIdle();
   }
 
   // Completion callback for classification.
@@ -141,8 +141,6 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
     screenshot_digest_ = verdict.screenshot_digest();
     screenshot_phash_ = verdict.screenshot_phash();
     phash_dimension_size_ = verdict.phash_dimension_size();
-
-    run_loop_.Quit();
   }
 
   void LoadHtml(const GURL& url, const std::string& content) {
@@ -158,7 +156,6 @@ class PhishingClassifierTest : public ChromeRenderViewTest {
   std::string response_content_;
   std::unique_ptr<Scorer> scorer_;
   std::unique_ptr<PhishingClassifier> classifier_;
-  base::RunLoop run_loop_;
 
   // Features that are in the model.
   const std::string url_tld_token_net_;

@@ -189,11 +189,10 @@ TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchOne) {
   for (int x = 0; x < 164; x++)
     *bitmap_.getAddr32(x, 0) = 0xff000000;
 
-  std::unique_ptr<ClientPhishingRequest> request =
-      std::make_unique<ClientPhishingRequest>();
-  request = scorer->GetMatchingVisualTargets(bitmap_, std::move(request));
-  ASSERT_EQ(request->vision_match_size(), 1);
-  EXPECT_EQ(request->vision_match(0).matched_target_digest(), "target1");
+  ClientPhishingRequest request;
+  scorer->GetMatchingVisualTargets(bitmap_, &request);
+  ASSERT_EQ(request.vision_match_size(), 1);
+  EXPECT_EQ(request.vision_match(0).matched_target_digest(), "target1");
 }
 
 TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchBoth) {
@@ -213,12 +212,11 @@ TEST_F(PhishingScorerTest, GetMatchingVisualTargetsMatchBoth) {
   for (int x = 168; x < 248; x++)
     *bitmap_.getAddr32(x, 0) = 0xff000000;
 
-  std::unique_ptr<ClientPhishingRequest> request =
-      std::make_unique<ClientPhishingRequest>();
-  request = scorer->GetMatchingVisualTargets(bitmap_, std::move(request));
-  ASSERT_EQ(request->vision_match_size(), 2);
-  EXPECT_EQ(request->vision_match(0).matched_target_digest(), "target1");
-  EXPECT_EQ(request->vision_match(1).matched_target_digest(), "target2");
+  ClientPhishingRequest request;
+  scorer->GetMatchingVisualTargets(bitmap_, &request);
+  ASSERT_EQ(request.vision_match_size(), 2);
+  EXPECT_EQ(request.vision_match(0).matched_target_digest(), "target1");
+  EXPECT_EQ(request.vision_match(1).matched_target_digest(), "target2");
 }
 
 }  // namespace safe_browsing
