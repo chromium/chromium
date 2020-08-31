@@ -14,6 +14,9 @@ enum class OverlayModality {
   // Used to schedule overlay UI to be displayed modally over a WebState's
   // content area (i.e. present UI requested by script execution on a page).
   kWebContentArea,
+  // Used to schedule overlay UI to be displayed modally over a WebState's
+  // content area, above all other overlays in the web content area.
+  kScreenTime,
   // Used to schedule overlay UI to display Infobar banners.  This modality is
   // in front of the Browser view, allowing the banner to be displayed over the
   // toolbar.

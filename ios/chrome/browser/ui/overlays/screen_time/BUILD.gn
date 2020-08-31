@@ -1,0 +1,12 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("screen_time") {
+  public = [ "screen_time_supported_overlay_coordinator_classes.h" ]
+  sources = [ "screen_time_supported_overlay_coordinator_classes.mm" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = []
+}
