@@ -72,13 +72,15 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   WebString GetErrorMessage() const override { return WebString(); }
 
   bool DidLoadingProgress() override { return true; }
-  bool WouldTaintOrigin() const override { return false; }
+  bool WouldTaintOrigin() const override { return would_taint_origin_; }
   double MediaTimeForTimeValue(double timeValue) const override { return 0.0; }
   unsigned DecodedFrameCount() const override { return 0; }
   unsigned DroppedFrameCount() const override { return 0; }
   unsigned CorruptedFrameCount() const override { return 0; }
   uint64_t AudioDecodedByteCount() const override { return 0; }
   uint64_t VideoDecodedByteCount() const override { return 0; }
+
+  void SetWouldTaintOrigin(bool taint) { would_taint_origin_ = taint; }
 
   void Paint(cc::PaintCanvas* canvas,
              const WebRect& rect,
@@ -99,6 +101,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
 
   bool is_video_opaque_ = true;
   gfx::Size size_ = gfx::Size(16, 10);
+  bool would_taint_origin_ = false;
 
   base::WeakPtrFactory<MockWebMediaPlayer> weak_factory_{this};
 };
@@ -322,6 +325,38 @@ TEST_F(HTMLVideoElementCapturerSourceTest, SizeChange) {
             DoAll(SaveArg<0>(&frame), RunOnceClosure(std::move(quit_closure))));
     run_loop.Run();
   }
+
+  html_video_capturer_->StopCapture();
+  Mock::VerifyAndClearExpectations(this);
+}
+
+// Checks that the usual sequence of GetPreferredFormats() ->
+// StartCapture() -> StopCapture() works as expected and let it capture two
+// frames, that are tested for format vs the expected source opacity.
+TEST_F(HTMLVideoElementCapturerSourceTest, TaintedPlayerDoesNotDeliverFrames) {
+  InSequence s;
+  media::VideoCaptureFormats formats =
+      html_video_capturer_->GetPreferredFormats();
+  ASSERT_EQ(1u, formats.size());
+  EXPECT_EQ(web_media_player_->NaturalSize(), formats[0].frame_size);
+  web_media_player_->SetWouldTaintOrigin(true);
+
+  media::VideoCaptureParams params;
+  params.requested_format = formats[0];
+
+  EXPECT_CALL(*this, DoOnRunning(true)).Times(1);
+
+  // No frames should be delivered.
+  EXPECT_CALL(*this, DoOnDeliverFrame(_, _)).Times(0);
+  html_video_capturer_->StartCapture(
+      params,
+      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
+                         base::Unretained(this)),
+      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
+                         base::Unretained(this)));
+
+  // Wait for frames to be potentially sent in a follow-up task.
+  base::RunLoop().RunUntilIdle();
 
   html_video_capturer_->StopCapture();
   Mock::VerifyAndClearExpectations(this);
