@@ -355,8 +355,6 @@ std::string GetCookieSettingDescription(Profile* profile) {
   auto content_setting =
       map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr);
 
-  bool block_third_party =
-      profile->GetPrefs()->GetBoolean(prefs::kBlockThirdPartyCookies);
   auto control_mode = static_cast<content_settings::CookieControlsMode>(
       profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
 
@@ -368,20 +366,22 @@ std::string GetCookieSettingDescription(Profile* profile) {
         GetNumCookieExceptionsOfTypes(
             map, {ContentSetting::CONTENT_SETTING_ALLOW,
                   ContentSetting::CONTENT_SETTING_SESSION_ONLY}));
-  } else if (block_third_party) {
-    return l10n_util::GetStringUTF8(
-        IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY);
-  } else if (control_mode ==
-             content_settings::CookieControlsMode::kIncognitoOnly) {
-    return l10n_util::GetStringUTF8(
-        IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO);
-  } else {
-    // We do not make a distinction between allow and clear on exit.
-    return l10n_util::GetPluralStringFUTF8(
-        IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW,
-        GetNumCookieExceptionsOfTypes(map,
-                                      {ContentSetting::CONTENT_SETTING_BLOCK}));
   }
+  switch (control_mode) {
+    case content_settings::CookieControlsMode::kBlockThirdParty:
+      return l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY);
+    case content_settings::CookieControlsMode::kIncognitoOnly:
+      return l10n_util::GetStringUTF8(
+          IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO);
+    case content_settings::CookieControlsMode::kOff:
+      // We do not make a distinction between allow and clear on exit.
+      return l10n_util::GetPluralStringFUTF8(
+          IDS_SETTINGS_SITE_SETTINGS_COOKIES_ALLOW,
+          GetNumCookieExceptionsOfTypes(
+              map, {ContentSetting::CONTENT_SETTING_BLOCK}));
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -530,10 +530,6 @@ void SiteSettingsHandler::OnJavascriptAllowed() {
 
   // Listen for prefs that impact the effective cookie setting
   pref_change_registrar_->Add(
-      prefs::kBlockThirdPartyCookies,
-      base::Bind(&SiteSettingsHandler::SendCookieSettingDescription,
-                 base::Unretained(this)));
-  pref_change_registrar_->Add(
       prefs::kCookieControlsMode,
       base::Bind(&SiteSettingsHandler::SendCookieSettingDescription,
                  base::Unretained(this)));
@@ -551,7 +547,6 @@ void SiteSettingsHandler::OnJavascriptDisallowed() {
   chooser_observer_.RemoveAll();
   host_zoom_map_subscription_.reset();
   pref_change_registrar_->Remove(prefs::kBlockAutoplayEnabled);
-  pref_change_registrar_->Remove(prefs::kBlockThirdPartyCookies);
   pref_change_registrar_->Remove(prefs::kCookieControlsMode);
 #if defined(OS_CHROMEOS)
   pref_change_registrar_->Remove(prefs::kEnableDRM);

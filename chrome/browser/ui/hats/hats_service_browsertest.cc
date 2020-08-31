@@ -426,7 +426,10 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
                        ThirdPartyCookiesBlockedShow) {
   SetMetricsConsent(true);
   PrefService* pref_service = browser()->profile()->GetPrefs();
-  pref_service->SetBoolean(prefs::kBlockThirdPartyCookies, true);
+  pref_service->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSatisfaction);
   WaitForSurveyStatusCallback();
   EXPECT_TRUE(HatsBubbleShown());

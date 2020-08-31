@@ -945,7 +945,7 @@ UkmPageLoadMetricsObserver::GetThirdPartyCookieBlockingEnabled() const {
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
   auto cookie_settings = CookieSettingsFactory::GetForProfile(profile);
-  if (!cookie_settings->IsCookieControlsEnabled())
+  if (!cookie_settings->ShouldBlockThirdPartyCookies())
     return base::nullopt;
 
   return !cookie_settings->IsThirdPartyAccessAllowed(GetDelegate().GetUrl(),

@@ -449,9 +449,10 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
     return false;
   }
 
+  // TODO(crbug.com/1054460): Handle first-party blocking with new ui.
   if (type == ContentSettingsType::COOKIES &&
       CookieSettingsFactory::GetForProfile(profile)
-          ->IsCookieControlsEnabled()) {
+          ->ShouldBlockThirdPartyCookies()) {
     return false;
   }
 

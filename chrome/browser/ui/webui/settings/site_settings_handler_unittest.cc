@@ -2500,7 +2500,6 @@ TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
       IDS_SETTINGS_SITE_SETTINGS_COOKIES_BLOCK_THIRD_PARTY_INCOGNITO);
 
   // Enforce expected default profile setting.
-  profile()->GetPrefs()->SetBoolean(prefs::kBlockThirdPartyCookies, false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kIncognitoOnly));
@@ -2528,7 +2527,9 @@ TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
   const int kContentSettingListenerIndex = 2;
 
   // Check updates are working,
-  profile()->GetPrefs()->SetBoolean(prefs::kBlockThirdPartyCookies, true);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
   expected_call_index += kPrefListenerIndex;
   ValidateCookieSettingUpdate(kBlockThirdParty, expected_call_index);
 
@@ -2538,10 +2539,6 @@ TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
   ValidateCookieSettingUpdate(kBlocked(0), expected_call_index);
 
   // Check changes which do not affect the effective cookie setting.
-  profile()->GetPrefs()->SetBoolean(prefs::kBlockThirdPartyCookies, false);
-  expected_call_index += kPrefListenerIndex;
-  ValidateCookieSettingUpdate(kBlocked(0), expected_call_index);
-
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kOff));

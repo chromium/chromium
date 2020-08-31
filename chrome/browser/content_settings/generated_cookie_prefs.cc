@@ -75,13 +75,6 @@ extensions::settings_private::SetPrefResult SetAllCookieSettings(
   }
 
   auto* pref_service = profile->GetPrefs();
-  if (pref_service->FindPreference(prefs::kBlockThirdPartyCookies)
-          ->IsUserModifiable()) {
-    pref_service->SetBoolean(
-        prefs::kBlockThirdPartyCookies,
-        controls_mode == CookieControlsMode::kBlockThirdParty);
-    setting_changed = true;
-  }
   if (pref_service->FindPreference(prefs::kCookieControlsMode)
           ->IsUserModifiable()) {
     pref_service->SetInteger(prefs::kCookieControlsMode,
