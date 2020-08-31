@@ -446,3 +446,9 @@ QUIC_FLAG(bool,
 QUIC_FLAG(bool,
           FLAGS_quic_reloadable_flag_quic_enable_mtu_discovery_at_server,
           false)
+
+// If true, neuter initial packet in the coalescer when discarding initial keys.
+QUIC_FLAG(
+    bool,
+    FLAGS_quic_reloadable_flag_quic_neuter_initial_packet_in_coalescer_with_initial_key_discarded,
+    true)
