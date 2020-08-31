@@ -4,8 +4,9 @@
 
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 
-#include <stdint.h>
+#import <UIKit/UIKit.h>
 
+#include <stdint.h>
 #include <utility>
 #include <vector>
 
@@ -339,9 +340,30 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
     UMA_HISTOGRAM_MEMORY_KB(
         "Memory.Browser",
         (task_info_data.resident_size - task_info_data.reusable) / 1024);
-    UMA_HISTOGRAM_MEMORY_LARGE_MB(
-        "Memory.Browser.MemoryFootprint",
-        (task_info_data.phys_footprint) / 1024 / 1024);
+    mach_vm_size_t footprint_mb = task_info_data.phys_footprint / 1024 / 1024;
+    UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Browser.MemoryFootprint",
+                                  footprint_mb);
+
+    switch (UIApplication.sharedApplication.applicationState) {
+      case UIApplicationStateActive:
+        UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Browser.MemoryFootprint.Active",
+                                      footprint_mb);
+        // According to Apple, apps on iPhone 6 and older devices get terminated
+        // by the OS if memory usage crosses 200MB watermark. Obviously this
+        // metric will not be recorded with true on iPhone 6 and older devices.
+        UMA_HISTOGRAM_BOOLEAN(
+            "Memory.Browser.MemoryFootprint.Active.Over200MBWatermark",
+            footprint_mb >= 200);
+        break;
+      case UIApplicationStateInactive:
+        UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Browser.MemoryFootprint.Inactive",
+                                      footprint_mb);
+        break;
+      case UIApplicationStateBackground:
+        UMA_HISTOGRAM_MEMORY_LARGE_MB(
+            "Memory.Browser.MemoryFootprint.Background", footprint_mb);
+        break;
+    }
   }
 
   std::move(collect_final_metrics_done_callback_).Run();

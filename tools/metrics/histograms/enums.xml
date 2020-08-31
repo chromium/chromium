@@ -7523,6 +7523,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="User edited the generated password"/>
 </enum>
 
+<enum name="BooleanGreaterOrEqualThan200MB">
+  <int value="0" label="lt; 200MB"/>
+  <int value="1" label="gt;= 200MB"/>
+</enum>
+
 <enum name="BooleanHadAddress">
   <int value="0" label="Did not have address."/>
   <int value="1" label="Had address."/>
