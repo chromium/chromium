@@ -47,9 +47,6 @@ class ASH_PUBLIC_EXPORT ClipboardImageModelFactory {
   // Called after Activate() to pause rendering requests.
   virtual void Deactivate() = 0;
 
-  // Called during shutdown to cleanup references to Profile.
-  virtual void OnShutdown() = 0;
-
  protected:
   ClipboardImageModelFactory();
   virtual ~ClipboardImageModelFactory();

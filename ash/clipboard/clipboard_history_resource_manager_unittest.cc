@@ -75,7 +75,6 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
   MOCK_METHOD(void, CancelRequest, (const base::UnguessableToken&), (override));
   MOCK_METHOD(void, Activate, (), (override));
   MOCK_METHOD(void, Deactivate, (), (override));
-  void OnShutdown() override {}
 };
 
 class ClipboardHistoryResourceManagerTest : public AshTestBase {
@@ -289,6 +288,21 @@ TEST_F(ClipboardHistoryResourceManagerTest, IneligibleItem) {
   FlushMessageLoop();
 
   EXPECT_EQ(2u, clipboard_history()->GetItems().size());
+}
+
+// Tests that incomplete requests are canceled when the item corresponding with
+// the request is forgotten by ClipboardHistory.
+TEST_F(ClipboardHistoryResourceManagerTest, IncompleteRequestCanceled) {
+  EXPECT_CALL(*mock_image_factory(), Render).Times(1);
+  EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(1);
+  // Because we do not provide an ON_CALL for MockClipboardImageModelFactory,
+  // Render will do nothing. This simulates an incomplete request from the
+  // perspective of ClipboardHistoryResourceManager.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteHTML(base::UTF8ToUTF16("test"), "source_url");
+  }
+  FlushMessageLoop();
 }
 
 }  // namespace ash

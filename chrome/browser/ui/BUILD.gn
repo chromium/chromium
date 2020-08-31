@@ -1864,8 +1864,6 @@ static_library("ui") {
       "ash/chrome_shell_delegate.h",
       "ash/clipboard_image_model_factory_impl.cc",
       "ash/clipboard_image_model_factory_impl.h",
-      "ash/clipboard_image_model_request.cc",
-      "ash/clipboard_image_model_request.h",
       "ash/clipboard_util.cc",
       "ash/clipboard_util.h",
       "ash/holding_space/holding_space_client_impl.cc",
