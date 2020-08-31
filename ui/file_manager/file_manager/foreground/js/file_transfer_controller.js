@@ -314,6 +314,15 @@ class FileTransferController {
 
     clipboardData.setData(
         'fs/missingFileContents', missingFileContents.toString());
+
+    if(util.isCopyImageEnabled()) {
+      if ((entries.length == 1) && FileType.isImage(entries[0])) {
+        chrome.fileManagerPrivate.copyImageToClipboard(entries[0],
+          () => {
+            console.log("Image is being copied!");
+        });
+      }
+    }
   }
 
   /**

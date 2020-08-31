@@ -1401,6 +1401,14 @@ util.isFilesNg = () => {
 };
 
 /**
+ * Returns true when copy image to clipboard is enabled.
+ * @return {boolean}
+ */
+util.isCopyImageEnabled = () => {
+  return loadTimeData.getBoolean('COPY_IMAGE_ENABLED');
+};
+
+/**
  * Returns true if the unified media view is enabled.
  * @return {boolean}
  */

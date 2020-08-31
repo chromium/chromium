@@ -46,6 +46,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateGetStringsFunction::Run() {
                        Profile::FromBrowserContext(browser_context())));
   dict->SetBoolean("FILES_NG_ENABLED",
                    base::FeatureList::IsEnabled(chromeos::features::kFilesNG));
+  dict->SetBoolean("COPY_IMAGE_ENABLED",
+                   base::FeatureList::IsEnabled(
+                       chromeos::features::kEnableFilesAppCopyImage));
   dict->SetBoolean(
       "UNIFIED_MEDIA_VIEW_ENABLED",
       base::FeatureList::IsEnabled(chromeos::features::kUnifiedMediaView));
