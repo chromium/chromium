@@ -11,6 +11,9 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/logging.h"  // DCHECK
 #include "ui/base/class_property.h"
+#include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_tree_owner.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
@@ -28,6 +31,9 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(ash::FrameHeader*)
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kFrameActivationAnimationDuration =
+    base::TimeDelta::FromMilliseconds(200);
 
 DEFINE_UI_CLASS_PROPERTY_KEY(FrameHeader*, kFrameHeaderKey, nullptr)
 
@@ -61,29 +67,6 @@ gfx::Rect GetAvailableTitleBounds(const views::View* left_view,
   return gfx::Rect(x, y, width, title_height);
 }
 
-// Returns true if the header for |widget| can animate to new visuals when the
-// widget's activation changes. Returns false if the header should switch to
-// new visuals instantaneously.
-bool CanAnimateActivation(views::Widget* widget) {
-  // Do not animate the header if the parent (e.g. the active desk container) is
-  // already animating. All of the implementers of FrameHeader animate
-  // activation by continuously painting during the animation. This gives the
-  // parent's animation a slower frame rate.
-  // TODO(sky): Expose a better way to determine this rather than assuming the
-  // parent is a toplevel container.
-  aura::Window* window = widget->GetNativeWindow();
-  // TODO(sky): parent()->layer() is for mash until animations ported.
-  if (!window || !window->parent() || !window->parent()->layer())
-    return true;
-
-  ui::LayerAnimator* parent_layer_animator =
-      window->parent()->layer()->GetAnimator();
-  return !parent_layer_animator->IsAnimatingProperty(
-             ui::LayerAnimationElement::OPACITY) &&
-         !parent_layer_animator->IsAnimatingProperty(
-             ui::LayerAnimationElement::VISIBILITY);
-}
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,29 +90,102 @@ int FrameHeader::GetMinimumHeaderWidth() const {
          caption_button_container_->GetMinimumSize().width();
 }
 
-void FrameHeader::PaintHeader(gfx::Canvas* canvas, Mode mode) {
-  Mode old_mode = mode_;
-  mode_ = mode;
-
-  if (mode_ != old_mode) {
-    UpdateCaptionButtonColors();
-
-    if (!initial_paint_ && CanAnimateActivation(target_widget_)) {
-      activation_animation_.SetSlideDuration(
-          base::TimeDelta::FromMilliseconds(200));
-      if (mode_ == MODE_ACTIVE)
-        activation_animation_.Show();
-      else
-        activation_animation_.Hide();
-    } else {
-      if (mode_ == MODE_ACTIVE)
-        activation_animation_.Reset(1);
-      else
-        activation_animation_.Reset(0);
-    }
-    initial_paint_ = false;
+// An invisible view that drives the frame's animation. This holds the animating
+// layer as a layer beneath this view so that it's behind all other child layers
+// of the window to avoid hiding their contents.
+class FrameHeader::FrameAnimatorView : public views::View,
+                                       public views::ViewObserver,
+                                       public ui::ImplicitAnimationObserver {
+ public:
+  FrameAnimatorView(FrameHeader* frame_header, views::View* parent)
+      : frame_header_(frame_header), parent_(parent) {
+    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+    parent_->AddChildViewAt(this, 0);
+    parent_->AddObserver(this);
+  }
+  FrameAnimatorView(const FrameAnimatorView&) = delete;
+  FrameAnimatorView& operator=(const FrameAnimatorView&) = delete;
+  ~FrameAnimatorView() override {
+    StopAnimation();
+    // A child view should always be removed first.
+    parent_->RemoveObserver(this);
   }
 
+  void StartAnimation(base::TimeDelta duration) {
+    StopAnimation();
+    aura::Window* window = frame_header_->target_widget()->GetNativeWindow();
+
+    // Make sure the this view is at the bottom of root view's children.
+    parent_->ReorderChildView(this, 0);
+
+    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner =
+        std::make_unique<ui::LayerTreeOwner>(window->RecreateLayer());
+    ui::Layer* old_layer = old_layer_owner->root();
+    ui::Layer* new_layer = window->layer();
+    new_layer->SetName(old_layer->name());
+    old_layer->SetName(old_layer->name() + ":Old");
+    old_layer->SetTransform(gfx::Transform());
+
+    layer_owner_ = std::move(old_layer_owner);
+
+    AddLayerBeneathView(old_layer);
+
+    // The old layer is on top and should fade out.
+    old_layer->SetOpacity(1.f);
+    new_layer->SetOpacity(1.f);
+    {
+      ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
+      settings.SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+      settings.AddObserver(this);
+      settings.SetTransitionDuration(duration);
+      old_layer->SetOpacity(0.f);
+      settings.SetTweenType(gfx::Tween::EASE_OUT);
+    }
+  }
+
+  // views::Views:
+  const char* GetClassName() const override { return "FrameAnimatorView"; }
+  std::unique_ptr<ui::Layer> RecreateLayer() override {
+    // A layer may be recreated for another animation (maximize/restore).
+    // Just cancel the animation if that happens during animation.
+    StopAnimation();
+    return views::View::RecreateLayer();
+  }
+
+  // ViewObserver::
+  void OnChildViewReordered(views::View* observed_view,
+                            views::View* child) override {
+    // Stop animation if the child view order has changed during animation.
+    StopAnimation();
+  }
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    // Stop animation if the frame size changed during animation.
+    StopAnimation();
+    SetBoundsRect(parent_->GetLocalBounds());
+  }
+
+  // ui::ImplicitAnimationObserver overrides:
+  void OnImplicitAnimationsCompleted() override {
+    RemoveLayerBeneathView(layer_owner_->root());
+    layer_owner_ = nullptr;
+  }
+
+ private:
+  void StopAnimation() {
+    if (layer_owner_) {
+      layer_owner_->root()->GetAnimator()->StopAnimating();
+      layer_owner_ = nullptr;
+    }
+  }
+
+  FrameHeader* frame_header_;
+  views::View* parent_;
+  std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
+};
+
+void FrameHeader::PaintHeader(gfx::Canvas* canvas) {
+  painted_ = true;
   DoPaintHeader(canvas);
 }
 
@@ -157,6 +213,18 @@ void FrameHeader::SchedulePaintForTitle() {
 }
 
 void FrameHeader::SetPaintAsActive(bool paint_as_active) {
+  // No need to animate if already active.
+  const bool already_active = (mode_ == Mode::MODE_ACTIVE);
+
+  if (already_active == paint_as_active)
+    return;
+
+  mode_ = paint_as_active ? MODE_ACTIVE : MODE_INACTIVE;
+
+  // The frame has no content yet to animatie.
+  if (painted_)
+    StartTransitionAnimation(kFrameActivationAnimationDuration);
+
   caption_button_container_->SetPaintAsActive(paint_as_active);
   if (back_button_)
     back_button_->set_paint_as_active(paint_as_active);
@@ -199,22 +267,14 @@ void FrameHeader::SetFrameTextOverride(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// gfx::AnimationDelegate overrides:
-
-void FrameHeader::AnimationProgressed(const gfx::Animation* animation) {
-  view_->SchedulePaintInRect(GetPaintedBounds());
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // FrameHeader, protected:
 
 FrameHeader::FrameHeader(views::Widget* target_widget, views::View* view)
-    : views::AnimationDelegateViews(view),
-      target_widget_(target_widget),
-      view_(view) {
+    : target_widget_(target_widget), view_(view) {
   DCHECK(target_widget);
   DCHECK(view);
   UpdateFrameHeaderKey();
+  frame_animator_ = new FrameAnimatorView(this, view);
 }
 
 void FrameHeader::UpdateFrameHeaderKey() {
@@ -267,6 +327,18 @@ void FrameHeader::SetCaptionButtonContainer(
 
   // Perform layout to ensure the container height is correct.
   LayoutHeaderInternal();
+}
+
+void FrameHeader::StartTransitionAnimation(base::TimeDelta duration) {
+  aura::Window* window = target_widget_->GetNativeWindow();
+  // Don't start another animation if the window is already animating
+  // such as maximize/restore/unminimize.
+  if (window->layer()->GetAnimator()->is_animating())
+    return;
+
+  frame_animator_->StartAnimation(duration);
+
+  frame_animator_->SchedulePaint();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

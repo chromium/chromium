@@ -410,8 +410,7 @@ NonClientFrameViewAsh::GetFrameCaptionButtonContainerViewForTest() {
 }
 
 void NonClientFrameViewAsh::PaintAsActiveChanged() {
-  // The icons differ between active and inactive.
-  header_view_->SchedulePaint();
+  header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
   frame_->non_client_view()->Layout();
 }
 

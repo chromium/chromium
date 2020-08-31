@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/caption_buttons/frame_back_button.h"
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -13,13 +14,16 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/i18n/rtl.h"
+#include "base/stl_util.h"
 #include "base/test/icu_test_util.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
+#include "ui/wm/core/window_util.h"
 
 using views::NonClientFrameView;
 using views::Widget;
@@ -82,70 +86,197 @@ TEST_F(DefaultFrameHeaderTest, MinimumHeaderWidthRTL) {
 
 // Ensure the right frame colors are used.
 TEST_F(DefaultFrameHeaderTest, FrameColors) {
-  std::unique_ptr<Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
-  FrameCaptionButtonContainerView container(widget.get());
-  views::StaticSizedView window_icon(gfx::Size(16, 16));
-  window_icon.SetBounds(0, 0, 16, 16);
-  widget->SetBounds(gfx::Rect(0, 0, 500, 500));
-  widget->Show();
-
-  DefaultFrameHeader frame_header(
-      widget.get(), widget->non_client_view()->frame_view(), &container);
+  const auto win0_bounds = gfx::Rect{1, 2, 3, 4};
+  auto win0 = CreateAppWindow(win0_bounds, AppType::BROWSER);
+  Widget* widget = Widget::GetWidgetForNativeWindow(win0.get());
+  DefaultFrameHeader* frame_header =
+      static_cast<DefaultFrameHeader*>(FrameHeader::Get(widget));
   // Check frame color is sensitive to mode.
   SkColor active = SkColorSetRGB(70, 70, 70);
   SkColor inactive = SkColorSetRGB(200, 200, 200);
-  widget->GetNativeWindow()->SetProperty(kFrameActiveColorKey, active);
-  widget->GetNativeWindow()->SetProperty(kFrameInactiveColorKey, inactive);
-  frame_header.UpdateFrameColors();
-  frame_header.mode_ = FrameHeader::MODE_ACTIVE;
-  EXPECT_EQ(active, frame_header.GetCurrentFrameColor());
-  frame_header.mode_ = FrameHeader::MODE_INACTIVE;
-  EXPECT_EQ(inactive, frame_header.GetCurrentFrameColor());
-  EXPECT_EQ(active, frame_header.GetActiveFrameColorForPaintForTest());
+  win0->SetProperty(kFrameActiveColorKey, active);
+  win0->SetProperty(kFrameInactiveColorKey, inactive);
+  frame_header->UpdateFrameColors();
+  frame_header->mode_ = FrameHeader::MODE_ACTIVE;
+  EXPECT_EQ(active, frame_header->GetCurrentFrameColor());
+  frame_header->mode_ = FrameHeader::MODE_INACTIVE;
+  EXPECT_EQ(inactive, frame_header->GetCurrentFrameColor());
+  EXPECT_EQ(active, frame_header->GetActiveFrameColorForPaintForTest());
 
   // Update to the new value which has no blue, which should animate.
-  frame_header.mode_ = FrameHeader::MODE_ACTIVE;
+  frame_header->mode_ = FrameHeader::MODE_ACTIVE;
   SkColor new_active = SkColorSetRGB(70, 70, 0);
-  widget->GetNativeWindow()->SetProperty(kFrameActiveColorKey, new_active);
-  frame_header.UpdateFrameColors();
-
-  gfx::SlideAnimation* animation =
-      frame_header.GetAnimationForActiveFrameColorForTest();
-  gfx::AnimationTestApi test_api(animation);
-
-  // animate half way through.
-  base::TimeTicks now = base::TimeTicks::Now();
-  test_api.SetStartTime(now);
-  test_api.Step(now + base::TimeDelta::FromMilliseconds(120));
-
-  // GetCurrentFrameColor should return the target color.
-  EXPECT_EQ(new_active, frame_header.GetCurrentFrameColor());
-
-  // The color used for paint should be somewhere between 0 and 70.
-  SkColor new_active_for_paint =
-      frame_header.GetActiveFrameColorForPaintForTest();
-  EXPECT_NE(new_active, new_active_for_paint);
-  EXPECT_EQ(53u, SkColorGetB(new_active_for_paint));
+  win0->SetProperty(kFrameActiveColorKey, new_active);
+  frame_header->UpdateFrameColors();
 
   // Now update to the new value which is full blue.
   SkColor new_new_active = SkColorSetRGB(70, 70, 255);
-  widget->GetNativeWindow()->SetProperty(kFrameActiveColorKey, new_new_active);
-  frame_header.UpdateFrameColors();
-
-  now = base::TimeTicks::Now();
-  test_api.SetStartTime(now);
-  test_api.Step(now + base::TimeDelta::FromMilliseconds(20));
+  win0->SetProperty(kFrameActiveColorKey, new_new_active);
+  frame_header->UpdateFrameColors();
 
   // Again, GetCurrentFrameColor should return the target color.
-  EXPECT_EQ(new_new_active, frame_header.GetCurrentFrameColor());
+  EXPECT_EQ(new_new_active, frame_header->GetCurrentFrameColor());
+}
 
-  // The start value should be the previous paint color, so it should be
-  // near 53.
-  SkColor new_new_active_for_paint =
-      frame_header.GetActiveFrameColorForPaintForTest();
-  EXPECT_NE(new_active_for_paint, new_new_active_for_paint);
-  EXPECT_EQ(54u, SkColorGetB(new_new_active_for_paint));
+namespace {
+
+class LayerDestroyedChecker : public ui::LayerObserver {
+ public:
+  explicit LayerDestroyedChecker(ui::Layer* layer) { layer->AddObserver(this); }
+  LayerDestroyedChecker(const LayerDestroyedChecker&) = delete;
+  LayerDestroyedChecker& operator=(const LayerDestroyedChecker&) = delete;
+  ~LayerDestroyedChecker() override = default;
+
+  void LayerDestroyed(ui::Layer* layer) override {
+    layer->RemoveObserver(this);
+    destroyed_ = true;
+  }
+  bool destroyed() const { return destroyed_; }
+
+ private:
+  bool destroyed_ = false;
+};
+
+}  // namespace
+
+// A class to wait until hthe frame header is painted.
+class FramePaintWaiter : public ui::CompositorObserver {
+ public:
+  explicit FramePaintWaiter(aura::Window* window)
+      : frame_header_(
+            FrameHeader::Get(Widget::GetWidgetForNativeWindow(window))) {
+    frame_header_->view()->GetWidget()->GetCompositor()->AddObserver(this);
+  }
+  FramePaintWaiter(const FramePaintWaiter&) = delete;
+  FramePaintWaiter& operator=(FramePaintWaiter&) = delete;
+  ~FramePaintWaiter() override {
+    frame_header_->view()->GetWidget()->GetCompositor()->RemoveObserver(this);
+  }
+
+  // ui::CompositorObserver:
+  void OnCompositingDidCommit(ui::Compositor* compositor) override {
+    if (frame_header_->painted_)
+      run_loop_.Quit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+  FrameHeader* frame_header_ = nullptr;
+};
+
+TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
+  const auto bounds = gfx::Rect(100, 100);
+  auto win0 = CreateAppWindow(bounds, AppType::BROWSER);
+  auto win1 = CreateAppWindow(bounds, AppType::BROWSER);
+
+  Widget* widget = Widget::GetWidgetForNativeWindow(win0.get());
+  EXPECT_TRUE(FrameHeader::Get(widget));
+
+  EXPECT_TRUE(wm::IsActiveWindow(win1.get()));
+
+  // A frame will not animate until it is painted first.
+  FramePaintWaiter(win0.get()).Wait();
+  FramePaintWaiter(win1.get()).Wait();
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  wm::ActivateWindow(win0.get());
+
+  auto* header_view = NonClientFrameViewAsh::Get(win0.get())->GetHeaderView();
+  ASSERT_TRUE(header_view);
+  auto* animating_layer_holding_view = header_view->children()[0];
+  EXPECT_TRUE(!std::strcmp(animating_layer_holding_view->GetClassName(),
+                           "FrameAnimatorView"));
+  ASSERT_TRUE(animating_layer_holding_view->layer());
+  ASSERT_GT(animating_layer_holding_view->layer()->parent()->children().size(),
+            2u);
+  auto* animating_layer =
+      animating_layer_holding_view->layer()->parent()->children()[0];
+  EXPECT_EQ(ui::LAYER_TEXTURED, animating_layer->type());
+  EXPECT_NE(std::string::npos, animating_layer->name().find(":Old", 0));
+  EXPECT_TRUE(animating_layer->GetAnimator()->is_animating());
+
+  LayerDestroyedChecker checker(animating_layer);
+
+  win0.reset();
+
+  EXPECT_TRUE(checker.destroyed());
+}
+
+// Make sure that the animation is canceled when resized.
+TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
+  const auto bounds = gfx::Rect(100, 100);
+  auto win_0 = CreateAppWindow(bounds, AppType::BROWSER);
+  auto win_1 = CreateAppWindow(bounds, AppType::BROWSER);
+
+  EXPECT_TRUE(wm::IsActiveWindow(win_1.get()));
+
+  // A frame will not animate until it is painted first.
+  FramePaintWaiter(win_0.get()).Wait();
+  FramePaintWaiter(win_1.get()).Wait();
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* header_view_0 =
+      NonClientFrameViewAsh::Get(win_0.get())->GetHeaderView();
+  auto* animating_layer_holding_view_0 = header_view_0->children()[0];
+  EXPECT_TRUE(!std::strcmp(animating_layer_holding_view_0->GetClassName(),
+                           "FrameAnimatorView"));
+  size_t original_layers_count_0 =
+      animating_layer_holding_view_0->layer()->parent()->children().size();
+
+  auto* header_view_1 =
+      NonClientFrameViewAsh::Get(win_1.get())->GetHeaderView();
+  auto* animating_layer_holding_view_1 = header_view_1->children()[0];
+  EXPECT_TRUE(!std::strcmp(animating_layer_holding_view_1->GetClassName(),
+                           "FrameAnimatorView"));
+  size_t original_layers_count_1 =
+      animating_layer_holding_view_1->layer()->parent()->children().size();
+
+  wm::ActivateWindow(win_0.get());
+
+  {
+    // Resize during animation
+    EXPECT_EQ(
+        animating_layer_holding_view_0->layer()->parent()->children().size(),
+        original_layers_count_0 + 1);
+    auto* animating_layer =
+        animating_layer_holding_view_0->layer()->parent()->children()[0];
+    EXPECT_TRUE(animating_layer->GetAnimator()->is_animating());
+
+    LayerDestroyedChecker checker(animating_layer);
+
+    win_0->SetBounds(gfx::Rect(200, 200));
+
+    // Animating layer shuld have been removed.
+    EXPECT_EQ(
+        animating_layer_holding_view_0->layer()->parent()->children().size(),
+        original_layers_count_0);
+    EXPECT_TRUE(checker.destroyed());
+  }
+
+  {
+    // wind_1 should still be animating.
+    EXPECT_EQ(
+        animating_layer_holding_view_1->layer()->parent()->children().size(),
+        original_layers_count_1 + 1);
+    auto* animating_layer =
+        animating_layer_holding_view_1->layer()->parent()->children()[0];
+    EXPECT_TRUE(animating_layer->GetAnimator()->is_animating());
+    LayerDestroyedChecker checker(animating_layer);
+
+    // Change the view's stacking order should stop the animation.
+    ASSERT_EQ(3u, header_view_1->children().size());
+    header_view_1->ReorderChildView(header_view_1->children()[2], 0);
+
+    EXPECT_EQ(
+        animating_layer_holding_view_1->layer()->parent()->children().size(),
+        original_layers_count_1);
+    EXPECT_TRUE(checker.destroyed());
+  }
 }
 
 }  // namespace ash
