@@ -15,6 +15,9 @@
 // The "Primary Action" was touched.
 - (void)confirmationAlertPrimaryAction;
 
+// The "Secondary Action" was touched.
+- (void)confirmationAlertSecondaryAction;
+
 // The "Learn More" button was touched.
 - (void)confirmationAlertLearnMoreAction;
 

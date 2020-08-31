@@ -4,6 +4,7 @@
 
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
+#include "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -23,6 +24,8 @@ NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier =
     @"kConfirmationAlertSubtitleAccessibilityIdentifier";
 NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier =
     @"kConfirmationAlertPrimaryActionAccessibilityIdentifier";
+NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier =
+    @"kConfirmationAlertSecondaryActionAccessibilityIdentifier";
 NSString* const kConfirmationAlertBarPrimaryActionAccessibilityIdentifier =
     @"kConfirmationAlertBarPrimaryActionAccessibilityIdentifier";
 
@@ -46,6 +49,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 // References to the UI properties that need to be updated when the trait
 // collection changes.
 @property(nonatomic, strong) UIButton* primaryActionButton;
+@property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIToolbar* topToolbar;
 @property(nonatomic, strong) NSArray* regularHeightToolbarItems;
 @property(nonatomic, strong) NSArray* compactHeightToolbarItems;
@@ -59,8 +63,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
     NSLayoutConstraint* regularHeightScrollViewBottomVerticalConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* compactHeightScrollViewBottomVerticalConstraint;
-@property(nonatomic, strong)
-    NSLayoutConstraint* primaryButtonBottomVerticalConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* buttonBottomVerticalConstraint;
 @end
 
 @implementation ConfirmationAlertViewController
@@ -71,6 +74,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   self = [super init];
   if (self) {
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
+    _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
   }
   return self;
@@ -143,29 +147,65 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
                                          multiplier:kSafeAreaMultiplier],
   ];
 
-  // The bottom anchor for the scroll view. It will be updated to the button top
-  // anchor if it exists.
-  NSLayoutYAxisAnchor* scrollViewBottomAnchor =
-      self.view.safeAreaLayoutGuide.bottomAnchor;
-
   if (self.primaryActionAvailable) {
     UIButton* primaryActionButton = [self createPrimaryActionButton];
     [self.view addSubview:primaryActionButton];
 
     // Primary Action Button constraints.
-    self.primaryButtonBottomVerticalConstraint =
-        [primaryActionButton.bottomAnchor
-            constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+    self.buttonBottomVerticalConstraint = [primaryActionButton.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
     [NSLayoutConstraint activateConstraints:@[
       [primaryActionButton.leadingAnchor
           constraintEqualToAnchor:scrollView.leadingAnchor],
       [primaryActionButton.trailingAnchor
           constraintEqualToAnchor:scrollView.trailingAnchor],
-      self.primaryButtonBottomVerticalConstraint,
     ]];
 
-    scrollViewBottomAnchor = primaryActionButton.topAnchor;
     self.primaryActionButton = primaryActionButton;
+  }
+
+  if (self.secondaryActionAvailable) {
+    UIButton* secondaryActionButton = [self createSecondaryActionButton];
+    [self.view addSubview:secondaryActionButton];
+
+    // Secondary Action Button constraints.
+    self.buttonBottomVerticalConstraint = [secondaryActionButton.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+    [NSLayoutConstraint activateConstraints:@[
+      [secondaryActionButton.leadingAnchor
+          constraintEqualToAnchor:scrollView.leadingAnchor],
+      [secondaryActionButton.trailingAnchor
+          constraintEqualToAnchor:scrollView.trailingAnchor]
+    ]];
+
+    self.secondaryActionButton = secondaryActionButton;
+  }
+
+  // The bottom anchor for the scroll view. It will be updated to the button top
+  // anchor if it exists.
+  NSLayoutYAxisAnchor* scrollViewBottomAnchor =
+      self.view.safeAreaLayoutGuide.bottomAnchor;
+
+  if (self.primaryActionAvailable || self.secondaryActionAvailable) {
+    // Set the ScrollView bottom anchor to the top anchor of the highest
+    // positioned button. It is always |primaryActionButton| if it is there,
+    // |secondaryActionButton| otherwise.
+    scrollViewBottomAnchor = self.primaryActionButton
+                                 ? self.primaryActionButton.topAnchor
+                                 : self.secondaryActionButton.topAnchor;
+    // Add |buttonBottomVerticalConstraint|. It is always the
+    // |secondaryActionButton|'s bottom anchor if it is there,
+    // |primaryActionButton|'s otherwise.
+    self.buttonBottomVerticalConstraint.active = YES;
+
+    if (self.primaryActionAvailable && self.secondaryActionAvailable) {
+      // If both buttons are there, then |primaryActionButton| needs to be
+      // constrainted to the top of |secondaryActionButton|.
+      [NSLayoutConstraint activateConstraints:@[
+        [self.primaryActionButton.bottomAnchor
+            constraintEqualToAnchor:self.secondaryActionButton.topAnchor]
+      ]];
+    }
   }
 
   self.regularHeightScrollViewBottomVerticalConstraint =
@@ -248,7 +288,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 - (void)updateViewConstraints {
   CGFloat marginValue =
       self.view.layoutMargins.left - self.view.safeAreaInsets.left;
-  self.primaryButtonBottomVerticalConstraint.constant = -marginValue;
+  self.buttonBottomVerticalConstraint.constant = -marginValue;
   if (self.traitCollection.horizontalSizeClass ==
       UIUserInterfaceSizeClassCompact) {
     [NSLayoutConstraint deactivateConstraints:self.regularWidthConstraints];
@@ -313,6 +353,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 
 // Handle taps on the dismiss button.
 - (void)didTapDismissBarButton {
+  DCHECK(self.showDismissBarButton);
   [self.actionHandler confirmationAlertDismissAction];
 }
 
@@ -324,6 +365,12 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 // Handle taps on the primary action button.
 - (void)didTapPrimaryActionButton {
   [self.actionHandler confirmationAlertPrimaryAction];
+}
+
+// Handle taps on the secondary action button
+- (void)didTapSecondaryActionButton {
+  DCHECK(self.secondaryActionAvailable);
+  [self.actionHandler confirmationAlertSecondaryAction];
 }
 
 // Helper to create the top toolbar.
@@ -387,12 +434,14 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   [regularHeightItems addObject:spacer];
   [compactHeightItems addObject:spacer];
 
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:self.dismissBarButtonSystemItem
-                           target:self
-                           action:@selector(didTapDismissBarButton)];
-  [regularHeightItems addObject:dismissButton];
-  [compactHeightItems addObject:dismissButton];
+  if (self.showDismissBarButton) {
+    UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:self.dismissBarButtonSystemItem
+                             target:self
+                             action:@selector(didTapDismissBarButton)];
+    [regularHeightItems addObject:dismissButton];
+    [compactHeightItems addObject:dismissButton];
+  }
 
   topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -516,6 +565,43 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
 #endif  // defined(__IPHONE_13_4)
 
   return primaryActionButton;
+}
+
+// Helper to create the primary action button.
+- (UIButton*)createSecondaryActionButton {
+  DCHECK(self.secondaryActionAvailable);
+  UIButton* secondaryActionButton =
+      [UIButton buttonWithType:UIButtonTypeSystem];
+  [secondaryActionButton addTarget:self
+                            action:@selector(didTapSecondaryActionButton)
+                  forControlEvents:UIControlEventTouchUpInside];
+  [secondaryActionButton setTitle:self.secondaryActionString.capitalizedString
+                         forState:UIControlStateNormal];
+  secondaryActionButton.contentEdgeInsets =
+      UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
+  [secondaryActionButton setBackgroundColor:[UIColor clearColor]];
+  UIColor* titleColor = [UIColor colorNamed:kBlueColor];
+  [secondaryActionButton setTitleColor:titleColor
+                              forState:UIControlStateNormal];
+  secondaryActionButton.titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  secondaryActionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
+  secondaryActionButton.titleLabel.adjustsFontForContentSizeCategory = NO;
+  secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
+  secondaryActionButton.accessibilityIdentifier =
+      kConfirmationAlertSecondaryActionAccessibilityIdentifier;
+
+#if defined(__IPHONE_13_4)
+  if (@available(iOS 13.4, *)) {
+    if (self.pointerInteractionEnabled) {
+      secondaryActionButton.pointerInteractionEnabled = YES;
+      secondaryActionButton.pointerStyleProvider =
+          CreateOpaqueButtonPointerStyleProvider();
+    }
+  }
+#endif  // defined(__IPHONE_13_4)
+
+  return secondaryActionButton;
 }
 
 @end

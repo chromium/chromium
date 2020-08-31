@@ -126,6 +126,10 @@
   [self.activityServiceCoordinator start];
 }
 
+- (void)confirmationAlertSecondaryAction {
+  // No-op.
+}
+
 - (void)confirmationAlertLearnMoreAction {
   NSString* message =
       l10n_util::GetNSString(IDS_IOS_QR_CODE_LEARN_MORE_MESSAGE);

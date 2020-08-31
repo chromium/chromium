@@ -67,9 +67,8 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertDismissAction {
-  UMA_HISTOGRAM_ENUMERATION("IOS.DefaultBrowserFullscreenPromo", CANCEL);
-  LogUserInteractionWithFullscreenPromo();
-  [self.handler hidePromo];
+  // There should be no cancel toolbar button for this UI.
+  NOTREACHED();
 }
 
 - (void)confirmationAlertPrimaryAction {
@@ -80,6 +79,12 @@ enum IOSDefaultBrowserFullscreenPromoAction {
                 options:{}
       completionHandler:nil];
 
+  [self.handler hidePromo];
+}
+
+- (void)confirmationAlertSecondaryAction {
+  UMA_HISTOGRAM_ENUMERATION("IOS.DefaultBrowserFullscreenPromo", CANCEL);
+  LogUserInteractionWithFullscreenPromo();
   [self.handler hidePromo];
 }
 

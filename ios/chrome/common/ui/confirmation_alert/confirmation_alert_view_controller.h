@@ -38,6 +38,13 @@ extern NSString* const
 // The text for the primary action. Must be set before the view is loaded.
 @property(nonatomic, strong) NSString* primaryActionString;
 
+// Controls if there is a secondary action in the view. Must be set before the
+// view is loaded.
+@property(nonatomic) BOOL secondaryActionAvailable;
+
+// The text for the secondary action. Must be set before the view is loaded.
+@property(nonatomic, strong) NSString* secondaryActionString;
+
 // The image. Must be set before the view is loaded.
 @property(nonatomic, strong) UIImage* image;
 
@@ -70,6 +77,10 @@ extern NSString* const
 
 // The help button item in the top left of the view. Nil if not available.
 @property(nonatomic, readonly) UIBarButtonItem* helpButton;
+
+// Controls if the toolbar dismiss button is available in the view. Default is
+// YES. Must be set before the view is loaded.
+@property(nonatomic) BOOL showDismissBarButton;
 
 // Allows to modify the system item for the dismiss bar button (defaults to
 // UIBarButtonSystemItemDone). Must be set before the view is loaded.

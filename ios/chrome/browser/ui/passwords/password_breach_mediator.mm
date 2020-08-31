@@ -99,6 +99,10 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
   }
 }
 
+- (void)confirmationAlertSecondaryAction {
+  // No-op.
+}
+
 - (void)confirmationAlertLearnMoreAction {
   [self.presenter presentLearnMore];
 }
