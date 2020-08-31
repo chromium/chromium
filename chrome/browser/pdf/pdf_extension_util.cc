@@ -39,7 +39,6 @@ void AddCommonStrings(base::Value* dict) {
       {"tooltipFitToWidth", IDS_PDF_TOOLTIP_FIT_WIDTH},
       {"tooltipZoomIn", IDS_PDF_TOOLTIP_ZOOM_IN},
       {"tooltipZoomOut", IDS_PDF_TOOLTIP_ZOOM_OUT},
-      {"twoUpViewDisable", IDS_PDF_TWO_UP_VIEW_DISABLE},
       {"twoUpViewEnable", IDS_PDF_TWO_UP_VIEW_ENABLE},
   };
   for (const auto& resource : kPdfResources)

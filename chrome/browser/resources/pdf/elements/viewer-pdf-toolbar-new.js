@@ -216,16 +216,10 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
   }
 
   /** @private */
-  onSinglePageViewClick_() {
-    this.twoUpViewEnabled_ = false;
-    this.dispatchEvent(new CustomEvent('two-up-view-changed', {detail: false}));
-    this.getMenu_().close();
-  }
-
-  /** @private */
-  onTwoPageViewClick_() {
-    this.twoUpViewEnabled_ = true;
-    this.dispatchEvent(new CustomEvent('two-up-view-changed', {detail: true}));
+  toggleTwoPageViewClick_() {
+    this.twoUpViewEnabled_ = !this.twoUpViewEnabled_;
+    this.dispatchEvent(new CustomEvent(
+        'two-up-view-changed', {detail: this.twoUpViewEnabled_}));
     this.getMenu_().close();
   }
 

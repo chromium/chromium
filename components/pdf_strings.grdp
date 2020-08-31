@@ -58,9 +58,6 @@
     <message name="IDS_PDF_TWO_UP_VIEW_ENABLE" desc="Button text for the button which enables displaying two pages of a PDF on the screen horizontally">
       Two page view
     </message>
-    <message name="IDS_PDF_TWO_UP_VIEW_DISABLE" desc="Button text for the button which stops displaying two pages of a PDF on the screen horizontally">
-      Single page view
-    </message>
     <message name="IDS_PDF_ANNOTATIONS_SHOW_TOGGLE" desc="Button text for toggling showing annotations on the PDF document">
       Show annotations
     </message>

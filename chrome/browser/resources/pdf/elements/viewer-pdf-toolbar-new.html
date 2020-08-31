@@ -130,10 +130,6 @@
     margin-inline-end: 12px;
     width: 16px;
   }
-
-  #show-annotations-button {
-    border-top: var(--cr-separator-line);
-  }
 </style>
 <!-- TODO(dpapad): Add aria-label and title for all buttons -->
 <div id="toolbar">
@@ -195,18 +191,9 @@
 </paper-progress>
 
 <cr-action-menu>
-  <button id="single-page-view-button"
-      class="dropdown-item" on-click="onSinglePageViewClick_"
-      role="radio"
-      aria-checked="[[getSinglePageAriaChecked_(twoUpViewEnabled_)]]">
-    <span class="check-container">
-      <iron-icon icon="pdf:check" hidden="[[twoUpViewEnabled_]]"></iron-icon>
-    </span>
-    $i18n{twoUpViewDisable}
-  </button>
   <button id="two-page-view-button"
-      class="dropdown-item" on-click="onTwoPageViewClick_"
-      role="radio"
+      class="dropdown-item" on-click="toggleTwoPageViewClick_"
+      role="checkbox"
       aria-checked="[[getTwoPageViewAriaChecked_(twoUpViewEnabled_)]]">
     <span class="check-container">
       <iron-icon icon="pdf:check" hidden="[[!twoUpViewEnabled_]]"></iron-icon>

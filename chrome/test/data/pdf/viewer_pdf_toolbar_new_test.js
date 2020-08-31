@@ -26,6 +26,16 @@ function getCrIconButtons(toolbar, parentId) {
       toolbar.shadowRoot.querySelectorAll(`#${parentId} cr-icon-button`));
 }
 
+/**
+ * @param {!HTMLElement} button
+ * @param {boolean} enabled
+ */
+function assertCheckboxMenuButton(button, enabled) {
+  chrome.test.assertEq(
+      enabled ? 'true' : 'false', button.getAttribute('aria-checked'));
+  chrome.test.assertEq(enabled, !button.querySelector('iron-icon').hidden);
+}
+
 // Unit tests for the viewer-pdf-toolbar-new element.
 const tests = [
   /**
@@ -169,69 +179,50 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testSinglePageView() {
+  function testTwoPageViewToggle() {
     const toolbar = createToolbar();
-    const singlePageViewButton =
-        toolbar.shadowRoot.querySelector('#single-page-view-button');
-    const twoPageViewButton =
-        toolbar.shadowRoot.querySelector('#two-page-view-button');
+    const button = /** @type {!HTMLElement} */ (
+        toolbar.shadowRoot.querySelector('#two-page-view-button'));
+    assertCheckboxMenuButton(button, false);
 
-    toolbar.addEventListener('two-up-view-changed', function(e) {
-      chrome.test.assertEq(false, e.detail);
-      chrome.test.assertEq(
-          'true', singlePageViewButton.getAttribute('aria-checked'));
-      chrome.test.assertFalse(
-          singlePageViewButton.querySelector('iron-icon').hidden);
-      chrome.test.assertEq(
-          'false', twoPageViewButton.getAttribute('aria-checked'));
-      chrome.test.assertTrue(
-          twoPageViewButton.querySelector('iron-icon').hidden);
-      chrome.test.succeed();
-    });
-    singlePageViewButton.click();
-  },
-
-  function testTwoPageView() {
-    const toolbar = createToolbar();
-    const singlePageViewButton =
-        toolbar.shadowRoot.querySelector('#single-page-view-button');
-    const twoPageViewButton =
-        toolbar.shadowRoot.querySelector('#two-page-view-button');
-
-    toolbar.addEventListener('two-up-view-changed', function(e) {
-      chrome.test.assertEq(true, e.detail);
-      chrome.test.assertEq(
-          'true', twoPageViewButton.getAttribute('aria-checked'));
-      chrome.test.assertFalse(
-          twoPageViewButton.querySelector('iron-icon').hidden);
-      chrome.test.assertEq(
-          'false', singlePageViewButton.getAttribute('aria-checked'));
-      chrome.test.assertTrue(
-          singlePageViewButton.querySelector('iron-icon').hidden);
-      chrome.test.succeed();
-    });
-    twoPageViewButton.click();
+    let whenChanged = eventToPromise('two-up-view-changed', toolbar);
+    button.click();
+    whenChanged
+        .then(e => {
+          chrome.test.assertEq(true, e.detail);
+          assertCheckboxMenuButton(button, true);
+          whenChanged = eventToPromise('two-up-view-changed', toolbar);
+          button.click();
+          return whenChanged;
+        })
+        .then(e => {
+          chrome.test.assertEq(false, e.detail);
+          assertCheckboxMenuButton(button, false);
+          chrome.test.succeed();
+        });
   },
 
   function testShowAnnotationsToggle() {
     const toolbar = createToolbar();
+    const button = /** @type {!HTMLElement} */ (
+        toolbar.shadowRoot.querySelector('#show-annotations-button'));
+    assertCheckboxMenuButton(button, true);
 
-    const showAnnotationsButton =
-        toolbar.shadowRoot.querySelector('#show-annotations-button');
-    chrome.test.assertEq(
-        'true', showAnnotationsButton.getAttribute('aria-checked'));
-    chrome.test.assertFalse(
-        showAnnotationsButton.querySelector('iron-icon').hidden);
-
-    toolbar.addEventListener('display-annotations-changed', (e) => {
-      chrome.test.assertEq(false, e.detail);
-      chrome.test.assertEq(
-          'false', showAnnotationsButton.getAttribute('aria-checked'));
-      chrome.test.assertTrue(
-          showAnnotationsButton.querySelector('iron-icon').hidden);
-      chrome.test.succeed();
-    });
-    showAnnotationsButton.click();
+    let whenChanged = eventToPromise('display-annotations-changed', toolbar);
+    button.click();
+    whenChanged
+        .then(e => {
+          chrome.test.assertEq(false, e.detail);
+          assertCheckboxMenuButton(button, false);
+          whenChanged = eventToPromise('display-annotations-changed', toolbar);
+          button.click();
+          return whenChanged;
+        })
+        .then(e => {
+          chrome.test.assertEq(true, e.detail);
+          assertCheckboxMenuButton(button, true);
+          chrome.test.succeed();
+        });
   },
 
   function testSidenavToggleButton() {
