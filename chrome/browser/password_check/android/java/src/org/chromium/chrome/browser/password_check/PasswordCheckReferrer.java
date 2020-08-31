@@ -8,6 +8,11 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused. To be kept in sync with PasswordCheckReferrerAndroid in
+ * enums.xml.
+ */
 @IntDef({PasswordCheckReferrer.PASSWORD_SETTINGS, PasswordCheckReferrer.SAFETY_CHECK,
         PasswordCheckReferrer.LEAK_DIALOG})
 @Retention(RetentionPolicy.SOURCE)
@@ -25,4 +30,5 @@ public @interface PasswordCheckReferrer {
      * which was part of a data breach;
      */
     int LEAK_DIALOG = 2;
+    int COUNT = 3;
 }

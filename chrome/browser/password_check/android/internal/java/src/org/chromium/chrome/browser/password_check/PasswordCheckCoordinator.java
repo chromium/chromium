@@ -108,8 +108,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
 
     @Override
     public void onDestroyFragment() {
-        PasswordCheck check = PasswordCheckFactory.getPasswordCheckInstance();
-        if (check != null) check.stopCheck();
+        mMediator.stopCheck();
         if (mFragmentView.getActivity() == null || mFragmentView.getActivity().isFinishing()) {
             mMediator.destroy();
             mModel = null;
