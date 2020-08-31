@@ -55,7 +55,7 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
     host_impl->SetViewportDamage(gfx::Rect(0, 0, 10, 20));
 
     // Request update from the main-thread too.
-    PostSetNeedsCommitToMainThread();
+    host_impl->SetNeedsCommit();
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
