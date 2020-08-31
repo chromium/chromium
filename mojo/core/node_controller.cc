@@ -446,6 +446,7 @@ void NodeController::AcceptBrokerClientInvitationOnIOThread(
       inviter_name_ = ports::kInvalidNodeName;
     }
 
+    const bool leak_endpoint = connection_params.leak_endpoint();
     // At this point we don't know the inviter's name, so we can't yet insert it
     // into our |peers_| map. That will happen as soon as we receive an
     // AcceptInvitee message from them.
@@ -454,7 +455,7 @@ void NodeController::AcceptBrokerClientInvitationOnIOThread(
                             Channel::HandlePolicy::kAcceptHandles,
                             io_task_runner_, ProcessErrorCallback());
 
-    if (connection_params.leak_endpoint()) {
+    if (leak_endpoint) {
       // Prevent the inviter pipe handle from being closed on shutdown. Pipe
       // closure may be used by the inviter to detect that the invited process
       // has terminated. In such cases, the invited process must not be invited
