@@ -164,6 +164,10 @@ bool CheckSecurityRequirementsBeforeRequest(
             "document. Feature Policy may be used to delegate Web "
             "Authentication capabilities to cross-origin child frames."));
         return false;
+      } else {
+        UseCounter::Count(
+            resolver->GetExecutionContext(),
+            WebFeature::kCredentialManagerCrossOriginPublicKeyGetRequest);
       }
       break;
   }
