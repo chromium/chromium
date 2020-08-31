@@ -674,14 +674,14 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     // |state| below.
     webrtc::PeerConnectionInterface::SignalingState signaling_state =
         states.signaling_state;
-    std::unique_ptr<webrtc::SessionDescriptionInterface>
-        pending_local_description(states.pending_local_description.release());
-    std::unique_ptr<webrtc::SessionDescriptionInterface>
-        current_local_description(states.current_local_description.release());
-    std::unique_ptr<webrtc::SessionDescriptionInterface>
-        pending_remote_description(states.pending_remote_description.release());
-    std::unique_ptr<webrtc::SessionDescriptionInterface>
-        current_remote_description(states.current_remote_description.release());
+    auto pending_local_description =
+        std::move(states.pending_local_description);
+    auto current_local_description =
+        std::move(states.current_local_description);
+    auto pending_remote_description =
+        std::move(states.pending_remote_description);
+    auto current_remote_description =
+        std::move(states.current_remote_description);
 
     // Track result in chrome://webrtc-internals/.
     if (tracker_ && handler_) {
@@ -700,29 +700,18 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
                    current_local_description) {
           created_session_description = current_local_description.get();
         }
-        // Be prepared for not knowing |created_session_description|, even
-        // though a successful implicit setLocalDescription() will always have
-        // created a local or pending description. See
-        // https://crbug.com/1019232 documenting that SLD's observer is
-        // delayed in an OnMessage. It is thus conceivable that the pending or
-        // local description is no longer set when examined here, even though
-        // this would only happen if the application code had rare races.
-        // TODO(hbos): When setLocalDescription() is updated to invoke the
-        // observer synchronously, DCHECK that |created_session_description|
-        // is not null here.
-        if (created_session_description) {
-          std::string sdp;
-          created_session_description->ToString(&sdp);
-          value.Append("type: ");
-          value.Append(
-              webrtc::SdpTypeToString(created_session_description->GetType()));
-          value.Append(", sdp: ");
-          value.Append(sdp.c_str());
-        }
+        RTC_DCHECK(created_session_description);
+        std::string sdp;
+        created_session_description->ToString(&sdp);
+        value.Append("type: ");
+        value.Append(
+            webrtc::SdpTypeToString(created_session_description->GetType()));
+        value.Append(", sdp: ");
+        value.Append(sdp.c_str());
       }
-      handler_->OnSignalingChange(signaling_state);
       tracker_->TrackSessionDescriptionCallback(handler_.get(), action_,
                                                 "OnSuccess", value.ToString());
+      handler_->TrackSignalingChange(signaling_state);
     }
 
     if (handler_) {
@@ -734,18 +723,13 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     }
 
     // Process the rest of the state changes differently depending on SDP
-    // semantics. This fires events, and |handler_| may become null.
+    // semantics. This fires JS events could cause |handler_| to become null.
     if (sdp_semantics_ == webrtc::SdpSemantics::kPlanB) {
       ProcessStateChangesPlanB(std::move(states));
     } else {
       DCHECK_EQ(sdp_semantics_, webrtc::SdpSemantics::kUnifiedPlan);
       ProcessStateChangesUnifiedPlan(std::move(states));
     }
-
-    // |handler_| may become null on firing events.
-    // TODO(hbos): This event should fire first, but it has to fire after the
-    // state changes have been processed. Move the firing of this event to the
-    // algorithm for processing the rest of the state changes.
 
     ResolvePromise();
   }
@@ -766,31 +750,27 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     // Determine which receivers have been removed before processing the
     // removal as to not invalidate the iterator.
     Vector<blink::RTCRtpReceiverImpl*> removed_receivers;
-    for (auto it = handler_->rtp_receivers_.begin();
-         it != handler_->rtp_receivers_.end(); ++it) {
-      if (ReceiverWasRemoved(*(*it), states.transceiver_states))
-        removed_receivers.push_back(it->get());
+    for (const auto& receiver : handler_->rtp_receivers_) {
+      if (ReceiverWasRemoved(*receiver, states.transceiver_states))
+        removed_receivers.push_back(receiver.get());
     }
 
     // Process the addition and removal of remote receivers/tracks.
-    if (handler_) {
-      Vector<blink::RtpReceiverState> added_receiver_states;
-      for (auto& transceiver_state : states.transceiver_states) {
-        if (ReceiverWasAdded(transceiver_state)) {
-          added_receiver_states.push_back(
-              transceiver_state.MoveReceiverState());
-        }
+    Vector<blink::RtpReceiverState> added_receiver_states;
+    for (auto& transceiver_state : states.transceiver_states) {
+      if (ReceiverWasAdded(transceiver_state)) {
+        added_receiver_states.push_back(transceiver_state.MoveReceiverState());
       }
-      Vector<uintptr_t> removed_receiver_ids;
-      for (auto* removed_receiver : removed_receivers) {
-        removed_receiver_ids.push_back(blink::RTCRtpReceiverImpl::getId(
-            removed_receiver->state().webrtc_receiver().get()));
-      }
-      // |handler_| can become null after this call.
-      handler_->OnReceiversModifiedPlanB(states.signaling_state,
-                                         std::move(added_receiver_states),
-                                         std::move(removed_receiver_ids));
     }
+    Vector<uintptr_t> removed_receiver_ids;
+    for (const auto* removed_receiver : removed_receivers) {
+      removed_receiver_ids.push_back(blink::RTCRtpReceiverImpl::getId(
+          removed_receiver->state().webrtc_receiver().get()));
+    }
+    // |handler_| can become null after this call.
+    handler_->OnReceiversModifiedPlanB(states.signaling_state,
+                                       std::move(added_receiver_states),
+                                       std::move(removed_receiver_ids));
   }
 
   bool ReceiverWasAdded(const blink::RtpTransceiverState& transceiver_state) {
@@ -821,6 +801,8 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
     DCHECK_EQ(sdp_semantics_, webrtc::SdpSemantics::kUnifiedPlan);
     if (handler_) {
       handler_->OnModifySctpTransport(std::move(states.sctp_transport_state));
+    }
+    if (handler_) {
       handler_->OnModifyTransceivers(
           states.signaling_state, std::move(states.transceiver_states),
           action_ == PeerConnectionTracker::ACTION_SET_REMOTE_DESCRIPTION);
@@ -2187,14 +2169,13 @@ void RTCPeerConnectionHandler::OnSessionDescriptionsUpdated(
           : nullptr);
 }
 
-void RTCPeerConnectionHandler::OnSignalingChange(
+// Note: This function is purely for chrome://webrtc-internals/ tracking
+// purposes. The JavaScript visible event and attribute is processed together
+// with transceiver or receiver changes.
+void RTCPeerConnectionHandler::TrackSignalingChange(
     webrtc::PeerConnectionInterface::SignalingState new_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::OnSignalingChange");
-
-  // Note: This function is purely for chrome://webrtc-internals/ tracking
-  // purposes. The JavaScript visible event and attribute is processed together
-  // with transceiver or receiver changes.
+  TRACE_EVENT0("webrtc", "RTCPeerConnectionHandler::TrackSignalingChange");
   if (previous_signaling_state_ ==
           webrtc::PeerConnectionInterface::kHaveLocalOffer &&
       new_state == webrtc::PeerConnectionInterface::kHaveRemoteOffer) {

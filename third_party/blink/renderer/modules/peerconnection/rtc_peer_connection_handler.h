@@ -261,7 +261,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
           pending_remote_description,
       std::unique_ptr<webrtc::SessionDescriptionInterface>
           current_remote_description);
-  void OnSignalingChange(
+  void TrackSignalingChange(
       webrtc::PeerConnectionInterface::SignalingState new_state);
   void OnIceConnectionChange(
       webrtc::PeerConnectionInterface::IceConnectionState new_state);
