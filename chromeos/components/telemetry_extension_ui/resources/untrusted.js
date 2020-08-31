@@ -74,6 +74,29 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests battery capacity routine to be run.
+     * @param { !number } lowMah
+     * @param { !number } highMah
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runBatteryCapacityRoutine(lowMah, highMah) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunBatteryCapacityRoutineRequest}
+               */
+          ({lowMah: lowMah, highMah: highMah});
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

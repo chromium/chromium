@@ -20,6 +20,8 @@ const dpsl_internal = {};
 dpsl_internal.Message = {
   DIAGNOSTICS_AVAILABLE_ROUTINES: 'DiagnosticsService.GetAvailableRoutines',
   DIAGNOSTICS_ROUTINE_UPDATE: 'DiagnosticsService.GetRoutineUpdate',
+  DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE:
+      'DiagnosticsService.RunBatteryCapacityRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -53,6 +55,22 @@ dpsl_internal.DiagnosticsGetRoutineUpdateRequest;
  * @typedef { !Object | !Error }
  */
 dpsl_internal.DiagnosticsGetRoutineUpdateResponse;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run battery capacity routine.
+ * @typedef {{
+ *  lowMah: !number,
+ *  highMah: !number}}
+ */
+dpsl_internal.DiagnosticsRunBatteryCapacityRoutineRequest;
+
+/**
+ * Response message sent by the privileged context containing routine
+ * information.
+ * @typedef { !Object | !Error }
+ */
+dpsl_internal.DiagnosticsRunRoutineResponse;
 
 /**
  * Request message sent by the unprivileged context to request the privileged

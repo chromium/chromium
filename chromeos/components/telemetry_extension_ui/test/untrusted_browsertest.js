@@ -129,6 +129,14 @@ UNTRUSTED_TEST(
           `Diagnostic command \'this-command-must-not-exist\' is unknown.`);
     });
 
+// Tests that runBatteryCapacityRoutine returns the correct Object.
+UNTRUSTED_TEST(
+    'UntrustedDiagnosticsRequestRunBatteryCapacityRoutine', async () => {
+      const response =
+          await chromeos.diagnostics.runBatteryCapacityRoutine(3000, 4000);
+      assertDeepEquals(response, {id: 123456789, status: 'ready'});
+    });
+
 // Tests that TelemetryInfo can be successfully requested from
 // from chrome-untrusted://.
 UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
