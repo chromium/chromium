@@ -68,7 +68,7 @@ public class DownloadLaterDialogTest {
     private DownloadLaterDialogController mController;
 
     @Mock
-    DownloadDateTimePickerDialogCoordinator mDateTimePicker;
+    DownloadDateTimePickerDialog mDateTimePicker;
 
     @Mock
     PrefService mPrefService;

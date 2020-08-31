@@ -175,7 +175,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/download/ServicificationDownloadTest.java",
   "javatests/src/org/chromium/chrome/browser/download/SystemDownloadNotifierTest.java",
   "javatests/src/org/chromium/chrome/browser/download/TestDownloadDirectoryProvider.java",
-  "javatests/src/org/chromium/chrome/browser/download/dialogs/DownloadDateTimePickerDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/download/dialogs/DownloadLaterDialogTest.java",
   "javatests/src/org/chromium/chrome/browser/download/home/DownloadActivityV2Test.java",
   "javatests/src/org/chromium/chrome/browser/download/home/StubbedOfflineContentProvider.java",
