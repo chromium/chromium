@@ -105,9 +105,8 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   if (signin::IsUrlEligibleForMirrorCookie(url)) {
     std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
         url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-    account_consistency_service_->SetChromeConnectedCookieWithDomain(domain);
-    account_consistency_service_->SetChromeConnectedCookieWithDomain(
-        kGoogleDomain);
+    account_consistency_service_->SetChromeConnectedCookieWithDomains(
+        {domain, kGoogleDomain});
     account_consistency_service_->SetGaiaCookiesIfDeleted();
   }
 
@@ -169,33 +168,6 @@ const char AccountConsistencyService::kGaiaCookieName[] = "SAPISID";
 const char AccountConsistencyService::kDomainsWithCookiePref[] =
     "signin.domains_with_cookie";
 
-AccountConsistencyService::CookieRequest
-AccountConsistencyService::CookieRequest::CreateAddCookieRequest(
-    const std::string& domain) {
-  AccountConsistencyService::CookieRequest cookie_request;
-  cookie_request.request_type = ADD_CHROME_CONNECTED_COOKIE;
-  cookie_request.domain = domain;
-  return cookie_request;
-}
-
-AccountConsistencyService::CookieRequest
-AccountConsistencyService::CookieRequest::CreateRemoveCookieRequest(
-    const std::string& domain,
-    base::OnceClosure callback) {
-  AccountConsistencyService::CookieRequest cookie_request;
-  cookie_request.request_type = REMOVE_CHROME_CONNECTED_COOKIE;
-  cookie_request.domain = domain;
-  cookie_request.callback = std::move(callback);
-  return cookie_request;
-}
-
-AccountConsistencyService::CookieRequest::CookieRequest() = default;
-
-AccountConsistencyService::CookieRequest::~CookieRequest() = default;
-
-AccountConsistencyService::CookieRequest::CookieRequest(
-    AccountConsistencyService::CookieRequest&&) = default;
-
 AccountConsistencyService::AccountConsistencyService(
     web::BrowserState* browser_state,
     PrefService* prefs,
@@ -206,14 +178,13 @@ AccountConsistencyService::AccountConsistencyService(
       prefs_(prefs),
       account_reconcilor_(account_reconcilor),
       cookie_settings_(cookie_settings),
-      identity_manager_(identity_manager),
-      applying_cookie_requests_(false) {
+      identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
   LoadFromPrefs();
   if (identity_manager_->HasPrimaryAccount()) {
     AddChromeConnectedCookies();
   } else {
-    RemoveChromeConnectedCookies(base::OnceClosure());
+    RemoveAllChromeConnectedCookies(base::OnceClosure());
   }
 }
 
@@ -281,7 +252,7 @@ void AccountConsistencyService::LogIOSGaiaCookiesPresentOnNavigation(
                             is_present);
 }
 
-void AccountConsistencyService::RemoveChromeConnectedCookies(
+void AccountConsistencyService::RemoveAllChromeConnectedCookies(
     base::OnceClosure callback) {
   DCHECK(!browser_state_->IsOffTheRecord());
   if (last_cookie_update_map_.empty()) {
@@ -289,33 +260,48 @@ void AccountConsistencyService::RemoveChromeConnectedCookies(
       std::move(callback).Run();
     return;
   }
-  std::map<std::string, base::Time> last_cookie_update_map =
-      last_cookie_update_map_;
-  auto iter_last_item = std::prev(last_cookie_update_map.end());
-  for (auto iter = last_cookie_update_map.begin(); iter != iter_last_item;
-       iter++) {
-    RemoveChromeConnectedCookieFromDomain(iter->first, base::OnceClosure());
+
+  network::mojom::CookieManager* cookie_manager =
+      browser_state_->GetCookieManager();
+
+  network::mojom::CookieDeletionFilterPtr filter =
+      network::mojom::CookieDeletionFilter::New();
+  filter->cookie_name = kChromeConnectedCookieName;
+
+  ++active_cookie_manager_requests_for_testing_;
+  cookie_manager->DeleteCookies(
+      std::move(filter),
+      base::BindOnce(&AccountConsistencyService::OnDeleteCookiesFinished,
+                     base::Unretained(this), std::move(callback)));
+  ResetInternalState();
+}
+
+void AccountConsistencyService::OnDeleteCookiesFinished(
+    base::OnceClosure callback,
+    uint32_t unused_num_cookies_deleted) {
+  --active_cookie_manager_requests_for_testing_;
+  if (!callback.is_null()) {
+    std::move(callback).Run();
   }
-  RemoveChromeConnectedCookieFromDomain(iter_last_item->first,
-                                        std::move(callback));
 }
 
-void AccountConsistencyService::SetChromeConnectedCookieWithDomain(
-    const std::string& domain) {
-  SetChromeConnectedCookieWithDomain(
-      domain, kDelayThresholdToUpdateChromeConnectedCookie);
+void AccountConsistencyService::SetChromeConnectedCookieWithDomains(
+    const std::vector<std::string>& domains) {
+  SetChromeConnectedCookieWithDomains(
+      domains, kDelayThresholdToUpdateChromeConnectedCookie);
 }
 
-void AccountConsistencyService::SetChromeConnectedCookieWithDomain(
-    const std::string& domain,
+void AccountConsistencyService::SetChromeConnectedCookieWithDomains(
+    const std::vector<std::string>& domains,
     const base::TimeDelta& cookie_refresh_interval) {
-  if (!ShouldSetChromeConnectedCookieToDomain(domain,
-                                              cookie_refresh_interval)) {
-    return;
+  for (const std::string& domain : domains) {
+    if (!ShouldSetChromeConnectedCookieToDomain(domain,
+                                                cookie_refresh_interval)) {
+      continue;
+    }
+    last_cookie_update_map_[domain] = base::Time::Now();
+    SetChromeConnectedCookieWithDomain(domain);
   }
-  last_cookie_update_map_[domain] = base::Time::Now();
-  cookie_requests_.push_back(CookieRequest::CreateAddCookieRequest(domain));
-  ApplyCookieRequests();
 }
 
 bool AccountConsistencyService::ShouldSetChromeConnectedCookieToDomain(
@@ -325,16 +311,6 @@ bool AccountConsistencyService::ShouldSetChromeConnectedCookieToDomain(
   bool domain_not_found = domain_iterator == last_cookie_update_map_.end();
   return domain_not_found || ((base::Time::Now() - domain_iterator->second) >
                               cookie_refresh_interval);
-}
-
-void AccountConsistencyService::RemoveChromeConnectedCookieFromDomain(
-    const std::string& domain,
-    base::OnceClosure callback) {
-  DCHECK_NE(0ul, last_cookie_update_map_.count(domain));
-  last_cookie_update_map_.erase(domain);
-  cookie_requests_.push_back(
-      CookieRequest::CreateRemoveCookieRequest(domain, std::move(callback)));
-  ApplyCookieRequests();
 }
 
 void AccountConsistencyService::LoadFromPrefs() {
@@ -350,40 +326,16 @@ void AccountConsistencyService::Shutdown() {
   web_state_handlers_.clear();
 }
 
-void AccountConsistencyService::ApplyCookieRequests() {
-  if (applying_cookie_requests_) {
-    // A cookie request is already being applied, the following ones will be
-    // handled as soon as the current one is done.
+void AccountConsistencyService::SetChromeConnectedCookieWithDomain(
+    const std::string& domain) {
+  const GURL url("https://" + domain);
+  std::string cookie_value = signin::BuildMirrorRequestCookieIfPossible(
+      url, identity_manager_->GetPrimaryAccountInfo().gaia,
+      signin::AccountConsistencyMethod::kMirror, cookie_settings_.get(),
+      signin::PROFILE_MODE_DEFAULT);
+  if (cookie_value.empty()) {
+    last_cookie_update_map_.erase(domain);
     return;
-  }
-  if (cookie_requests_.empty()) {
-    return;
-  }
-  applying_cookie_requests_ = true;
-
-  const GURL url("https://" + cookie_requests_.front().domain);
-  std::string cookie_value;
-  base::Time expiration_date;
-  switch (cookie_requests_.front().request_type) {
-    case ADD_CHROME_CONNECTED_COOKIE:
-      cookie_value = signin::BuildMirrorRequestCookieIfPossible(
-          url, identity_manager_->GetPrimaryAccountInfo().gaia,
-          signin::AccountConsistencyMethod::kMirror, cookie_settings_.get(),
-          signin::PROFILE_MODE_DEFAULT);
-      if (cookie_value.empty()) {
-        // Don't add the cookie. Tentatively correct |last_cookie_update_map_|.
-        last_cookie_update_map_.erase(cookie_requests_.front().domain);
-        FinishedApplyingChromeConnectedCookieRequest(false);
-        return;
-      }
-      // Create expiration date of Now+2y to roughly follow the SAPISID cookie.
-      expiration_date = base::Time::Now() + base::TimeDelta::FromDays(730);
-      break;
-    case REMOVE_CHROME_CONNECTED_COOKIE:
-      // Default values correspond to removing the cookie (no value, expiration
-      // date in the past).
-      expiration_date = base::Time::UnixEpoch();
-      break;
   }
 
   std::unique_ptr<net::CanonicalCookie> cookie =
@@ -392,7 +344,11 @@ void AccountConsistencyService::ApplyCookieRequests() {
           /*name=*/kChromeConnectedCookieName, cookie_value,
           /*domain=*/url.host(),
           /*path=*/std::string(),
-          /*creation_time=*/base::Time::Now(), expiration_date,
+          /*creation_time=*/base::Time::Now(),
+          // Create expiration date of Now+2y to roughly follow the SAPISID
+          // cookie.
+          /*expiration_time=*/base::Time::Now() +
+              base::TimeDelta::FromDays(730),
           /*last_access_time=*/base::Time(),
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::LAX_MODE,
@@ -402,71 +358,48 @@ void AccountConsistencyService::ApplyCookieRequests() {
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
+  ++active_cookie_manager_requests_for_testing_;
+
   network::mojom::CookieManager* cookie_manager =
       browser_state_->GetCookieManager();
   cookie_manager->SetCanonicalCookie(
       *cookie, url, options,
       base::BindOnce(
-          &AccountConsistencyService::FinishedSetChromeConnectedCookie,
-          base::Unretained(this)));
+          &AccountConsistencyService::OnChromeConnectedCookieFinished,
+          base::Unretained(this), domain));
 }
 
-void AccountConsistencyService::FinishedSetChromeConnectedCookie(
+void AccountConsistencyService::OnChromeConnectedCookieFinished(
+    const std::string& domain,
     net::CookieAccessResult cookie_access_result) {
   DCHECK(cookie_access_result.status.IsInclude());
-  FinishedApplyingChromeConnectedCookieRequest(true);
-}
-
-void AccountConsistencyService::FinishedApplyingChromeConnectedCookieRequest(
-    bool success) {
-  DCHECK(!cookie_requests_.empty());
-  CookieRequest& request = cookie_requests_.front();
-  if (success) {
-    DictionaryPrefUpdate update(
-        prefs_, AccountConsistencyService::kDomainsWithCookiePref);
-    switch (request.request_type) {
-      case ADD_CHROME_CONNECTED_COOKIE:
-        // Add request.domain to prefs, use |true| as a dummy value (that is
-        // never used), as the dictionary is used as a set.
-        update->SetKey(request.domain, base::Value(true));
-        break;
-      case REMOVE_CHROME_CONNECTED_COOKIE:
-        // Remove request.domain from prefs.
-        update->RemoveKey(request.domain);
-        break;
-    }
-  }
-  base::OnceClosure callback(std::move(request.callback));
-  cookie_requests_.pop_front();
-  applying_cookie_requests_ = false;
-  ApplyCookieRequests();
-  if (!callback.is_null()) {
-    std::move(callback).Run();
-  }
+  DictionaryPrefUpdate update(
+      prefs_, AccountConsistencyService::kDomainsWithCookiePref);
+  // Add request.domain to prefs, use |true| as a dummy value (that is
+  // never used), as the dictionary is used as a set.
+  update->SetKey(domain, base::Value(true));
+  --active_cookie_manager_requests_for_testing_;
 }
 
 void AccountConsistencyService::AddChromeConnectedCookies() {
   DCHECK(!browser_state_->IsOffTheRecord());
-  // These cookie request are preventive and not a strong signal (unlike
+  // These cookie requests are preventive and not a strong signal (unlike
   // navigation to a domain). Don't force update the old cookies in this case.
-  SetChromeConnectedCookieWithDomain(kGoogleDomain, base::TimeDelta::Max());
-  SetChromeConnectedCookieWithDomain(kYoutubeDomain, base::TimeDelta::Max());
+  SetChromeConnectedCookieWithDomains({kGoogleDomain, kYoutubeDomain},
+                                      base::TimeDelta::Max());
+}
+
+void AccountConsistencyService::ResetInternalState() {
+  last_cookie_update_map_.clear();
+  last_gaia_cookie_verification_time_ = base::Time();
+  base::DictionaryValue dict;
+  prefs_->Set(kDomainsWithCookiePref, dict);
 }
 
 void AccountConsistencyService::OnBrowsingDataRemoved() {
   // CHROME_CONNECTED cookies have been removed, update internal state
   // accordingly.
-  for (auto& cookie_request : cookie_requests_) {
-    base::OnceClosure callback(std::move(cookie_request.callback));
-    if (!callback.is_null()) {
-      std::move(callback).Run();
-    }
-  }
-  cookie_requests_.clear();
-  last_cookie_update_map_.clear();
-  last_gaia_cookie_verification_time_ = base::Time();
-  base::DictionaryValue dict;
-  prefs_->Set(kDomainsWithCookiePref, dict);
+  ResetInternalState();
 
   // SAPISID cookie has been removed, notify the GCMS.
   // TODO(https://crbug.com/930582) : Remove the need to expose this method

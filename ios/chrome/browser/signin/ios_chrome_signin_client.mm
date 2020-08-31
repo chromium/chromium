@@ -86,5 +86,6 @@ std::unique_ptr<GaiaAuthFetcher> IOSChromeSigninClient::CreateGaiaAuthFetcher(
 void IOSChromeSigninClient::PreGaiaLogout(base::OnceClosure callback) {
   AccountConsistencyService* accountConsistencyService =
       ios::AccountConsistencyServiceFactory::GetForBrowserState(browser_state_);
-  accountConsistencyService->RemoveChromeConnectedCookies(std::move(callback));
+  accountConsistencyService->RemoveAllChromeConnectedCookies(
+      std::move(callback));
 }
