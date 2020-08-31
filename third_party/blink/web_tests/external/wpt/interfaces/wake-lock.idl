@@ -15,6 +15,7 @@ interface WakeLock {
 
 [SecureContext, Exposed=(Window)]
 interface WakeLockSentinel : EventTarget {
+  readonly attribute boolean released;
   readonly attribute WakeLockType type;
   Promise<undefined> release();
   attribute EventHandler onrelease;

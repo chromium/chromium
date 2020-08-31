@@ -5,11 +5,11 @@
 
 idl_test(
   ['scroll-to-text-fragment'],
-  ['html'],
+  ['dom', 'html'],
   idl_array => {
     idl_array.add_objects({
-      Location: ['document.location'],
-      FragmentDirective: ['document.location.fragmentDirective'],
+      Document: ['document'],
+      FragmentDirective: ['document.fragmentDirective'],
     });
   }
 );

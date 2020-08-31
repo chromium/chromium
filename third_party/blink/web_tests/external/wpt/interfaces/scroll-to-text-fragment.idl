@@ -7,6 +7,6 @@
 interface FragmentDirective {
 };
 
-partial interface Location {
+partial interface Document {
     [SameObject] readonly attribute FragmentDirective fragmentDirective;
 };

@@ -82178,6 +82178,19 @@
        {}
       ]
      ],
+     "marker-content-023.html": [
+      "9ec0ca46e4290dad6b9e3456b76602d05ab5e7c0",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/marker-content-023-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "marker-display-dynamic-001.html": [
       "c06da7ca803455559a7a12b915d9083b32106cd1",
       [
@@ -157548,10 +157561,6 @@
       "11edeb423152e509b947fac72358bbab6277e499",
       []
      ],
-     "filereader_result-expected.txt": [
-      "844743c0ab8cdef1dc8158870e51e7964bff240e",
-      []
-     ],
      "support": {
       "blue-100x100.png": [
        "5748719ff22a34993eeb4de4d1fe7cfd27e92959",
@@ -183542,6 +183551,10 @@
       "1342b0621fc637b287fd7d9268af3ee2c5348962",
       []
      ],
+     "marker-content-023-ref.html": [
+      "d0ce5c1fad714a65b67e6d0f7bf652bc644537d1",
+      []
+     ],
      "marker-font-properties-ref.html": [
       "a8fb980ff09cf8e326e6728976ac6dd8230866f3",
       []
@@ -199263,7 +199276,7 @@
       []
      ],
      "server-pipes.md": [
-      "4f4011a6c2148dc91358e89f31f234a6fd82d7b8",
+      "07723c289dbbeb14adb385d15849a47d648e1d47",
       []
      ],
      "submission-process.md": [
@@ -219656,7 +219669,7 @@
      []
     ],
     "scroll-to-text-fragment.idl": [
-     "6e81adf3fb7fdcb50a95bac6abcc820d28f5cc65",
+     "1cf6b6c7899c5134404528cd2e761fd00a41ef25",
      []
     ],
     "secure-contexts.idl": [
@@ -219740,7 +219753,7 @@
      []
     ],
     "wake-lock.idl": [
-     "e6d3a06a3e7c535879841e853beb052ede17c8a1",
+     "f84976526e79a36c9eff163da009bf86788d8550",
      []
     ],
     "wasm-js-api.idl": [
@@ -226151,6 +226164,10 @@
      "776c59be658f749fcdd0a8ea6a92ac82c88d344e",
      []
     ],
+    "idlharness.https.window-expected.txt": [
+     "9ecbff50efaceff110c6f9a253564406e568495f",
+     []
+    ],
     "resources": {
      "page1.html": [
       "7fc080d380c4bd46dfb011910e570ee412561b92",
@@ -226303,10 +226320,6 @@
     ],
     "force-load-at-top.js": [
      "223e3a4b5a066038135f4ae09f4a13f527f0ed7f",
-     []
-    ],
-    "idlharness.window-expected.txt": [
-     "d99a7dccc4e1f524446b46b5f2c2806e2e42ed35",
      []
     ],
     "navigate-back.html": [
@@ -280929,7 +280942,7 @@
       ]
      ],
      "marker-default-styles.html": [
-      "865a2d01a9927cfc1e26b8655109d14411fc782c",
+      "0f988d8eb064558716ceea4164a24585db8b3c3d",
       [
        null,
        {}
@@ -381737,7 +381750,7 @@
      ]
     ],
     "idlharness.window.js": [
-     "4a3a13529980839b6d1375688810594cfd25c490",
+     "c39216b581124f599cae99a4871c7a29c03bffb0",
      [
       "scroll-to-text-fragment/idlharness.window.html",
       {
