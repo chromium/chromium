@@ -224,7 +224,7 @@ cr.define('cr.ui.login.debug', function() {
       kind: ScreenKind.NORMAL,
     },
     {
-      id: 'eula',
+      id: 'oobe-eula-md',
       kind: ScreenKind.NORMAL,
       // TODO: Current logic triggers switching screens in focus(), making
       // it impossible to trigger  installation settings dialog.
