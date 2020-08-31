@@ -1038,8 +1038,7 @@ void AuthenticatorCommon::GetAssertion(
       base::BindOnce(&AuthenticatorCommon::OnTimeout, base::Unretained(this)));
 
   ctap_get_assertion_request_ = CreateCtapGetAssertionRequest(
-      client_data_json_, std::move(options), app_id_,
-      browser_context()->IsOffTheRecord());
+      client_data_json_, options, app_id_, browser_context()->IsOffTheRecord());
   ctap_get_assertion_options_.emplace();
 
   bool is_first = true;
