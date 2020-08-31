@@ -895,15 +895,7 @@ void PolicyUIHandler::RegisterMessages() {
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  updater_status_provider_ = std::make_unique<UpdaterStatusProvider>();
-  base::PostTaskAndReplyWithResult(
-      base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
-          .get(),
-      FROM_HERE, base::BindOnce(&GetGoogleUpdatePolicies),
-      base::BindOnce(&PolicyUIHandler::SetUpdaterPolicies,
-                     weak_factory_.GetWeakPtr()));
+  ReloadUpdaterPolicies();
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   if (!user_status_provider_.get())
@@ -1185,6 +1177,11 @@ void PolicyUIHandler::HandleReloadPolicies(const base::ListValue* args) {
     }
   }
 #endif
+
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  ReloadUpdaterPolicies();
+#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   GetPolicyService()->RefreshPolicies(base::BindOnce(
       &PolicyUIHandler::OnRefreshPoliciesDone, weak_factory_.GetWeakPtr()));
 }
@@ -1295,6 +1292,20 @@ void PolicyUIHandler::SetUpdaterPolicies(
   if (updater_policies_)
     SendPolicies();
 }
+
+void PolicyUIHandler::ReloadUpdaterPolicies() {
+  if (!updater_status_provider_)
+    updater_status_provider_ = std::make_unique<UpdaterStatusProvider>();
+  base::PostTaskAndReplyWithResult(
+      base::ThreadPool::CreateCOMSTATaskRunner(
+          {base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})
+          .get(),
+      FROM_HERE, base::BindOnce(&GetGoogleUpdatePolicies),
+      base::BindOnce(&PolicyUIHandler::SetUpdaterPolicies,
+                     weak_factory_.GetWeakPtr()));
+}
+
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void PolicyUIHandler::OnRefreshPoliciesDone() {
