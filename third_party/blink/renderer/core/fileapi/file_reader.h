@@ -74,7 +74,7 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
 
   ReadyState getReadyState() const { return state_; }
   DOMException* error() { return error_; }
-  void result(ScriptState*, StringOrArrayBuffer& result_attribute) const;
+  void result(StringOrArrayBuffer& result_attribute) const;
   probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
 
   // ExecutionContextLifecycleObserver

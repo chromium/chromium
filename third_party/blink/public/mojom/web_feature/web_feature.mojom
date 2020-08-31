@@ -1576,7 +1576,6 @@ enum WebFeature {
   kFeaturePolicyAllowAttributeDeprecatedSyntax = 2145,
   kSuppressHistoryEntryWithoutUserGesture = 2146,
   kPerformanceServerTiming = 2157,
-  kFileReaderResultBeforeCompletion = 2158,
   kAnimationSetPlaybackRateCompensatorySeek = 2162,
   kDeepCombinatorInStaticProfile = 2163,
   kPseudoShadowInStaticProfile = 2164,

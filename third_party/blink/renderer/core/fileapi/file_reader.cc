@@ -72,7 +72,6 @@ static const base::TimeDelta kProgressNotificationInterval =
 class FileReader::ThrottlingController final
     : public GarbageCollected<FileReader::ThrottlingController>,
       public Supplement<ExecutionContext> {
-
  public:
   static const char kSupplementName[];
 
@@ -359,14 +358,15 @@ void FileReader::abort() {
   Terminate();
 }
 
-void FileReader::result(ScriptState* state,
-                        StringOrArrayBuffer& result_attribute) const {
+void FileReader::result(StringOrArrayBuffer& result_attribute) const {
   if (error_ || !loader_)
     return;
 
-  if (!loader_->HasFinishedLoading()) {
-    UseCounter::Count(ExecutionContext::From(state),
-                      WebFeature::kFileReaderResultBeforeCompletion);
+  // Only set the result after |loader_| has finished loading which means that
+  // FileReader::DidFinishLoading() has also been called. This ensures that the
+  // result is not available until just before the kLoad event is fired.
+  if (!loader_->HasFinishedLoading() || state_ != ReadyState::kDone) {
+    return;
   }
 
   if (read_type_ == FileReaderLoader::kReadAsArrayBuffer)
