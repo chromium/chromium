@@ -180,8 +180,6 @@ public class AccountPickerBottomSheetTest {
     public void testCollapsedSheetShowsWhenBackpressingOnExpandedSheet() {
         buildAndShowExpandedBottomSheet();
         onView(isRoot()).perform(pressBack());
-        CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
-                R.id.account_picker_continue_as_button)::isShown);
         checkCollapsedAccountList(PROFILE_DATA1);
     }
 
@@ -214,7 +212,6 @@ public class AccountPickerBottomSheetTest {
         checkZeroAccountBottomSheet();
 
         mAccountManagerTestRule.addAccount(PROFILE_DATA1.getAccountName());
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         checkCollapsedAccountList(PROFILE_DATA1);
     }
 
@@ -224,7 +221,6 @@ public class AccountPickerBottomSheetTest {
         buildAndShowCollapsedBottomSheet();
         checkCollapsedAccountList(PROFILE_DATA1);
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA2.getAccountName());
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         checkCollapsedAccountList(PROFILE_DATA1);
     }
 
@@ -233,7 +229,6 @@ public class AccountPickerBottomSheetTest {
     public void testSelectedAccountChangeOnCollapsedSheet() {
         buildAndShowCollapsedBottomSheet();
         mAccountManagerTestRule.removeAccountAndWaitForSeeding(PROFILE_DATA1.getAccountName());
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         checkCollapsedAccountList(PROFILE_DATA2);
     }
 
@@ -382,8 +377,6 @@ public class AccountPickerBottomSheetTest {
         Callback<String> callback = callbackArgumentCaptor.getValue();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> callback.onResult(profileDataAdded.getAccountName()));
-        CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
-                R.id.account_picker_selected_account)::isShown);
         checkCollapsedAccountList(profileDataAdded);
     }
 
@@ -469,6 +462,8 @@ public class AccountPickerBottomSheetTest {
     }
 
     private void checkCollapsedAccountList(ProfileDataSource.ProfileData profileData) {
+        CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
+                R.id.account_picker_selected_account)::isShown);
         onView(withText(R.string.signin_account_picker_dialog_title)).check(matches(isDisplayed()));
         onView(allOf(withText(profileData.getAccountName()), withEffectiveVisibility(VISIBLE)))
                 .check(matches(isDisplayed()));
