@@ -1939,7 +1939,7 @@
     },
     {
       name: "UserAgentClientHint",
-      status: "stable"
+      status: "experimental",
     },
     {
       name: "V8IdleTasks",
