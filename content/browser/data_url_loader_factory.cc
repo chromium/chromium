@@ -25,7 +25,8 @@ struct WriteData {
 
 void OnWrite(std::unique_ptr<WriteData> write_data, MojoResult result) {
   if (result != MOJO_RESULT_OK) {
-    network::URLLoaderCompletionStatus status(net::ERR_FAILED);
+    write_data->client->OnComplete(
+        network::URLLoaderCompletionStatus(net::ERR_FAILED));
     return;
   }
 
