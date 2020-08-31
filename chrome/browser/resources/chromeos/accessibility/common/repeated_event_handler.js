@@ -52,9 +52,18 @@ class RepeatedEventHandler {
     /** @private {boolean} */
     this.capture_ = options.capture || false;
 
+    /** @private {boolean} */
+    this.listening_ = false;
+
     /** @private {!function(!chrome.automation.AutomationEvent)} */
     this.handler_ = this.onEvent_.bind(this);
 
+    this.startListening();
+  }
+
+  /** Starts listening or handling events. */
+  startListening() {
+    this.listening_ = true;
     for (const node of this.nodes_) {
       node.addEventListener(this.type_, this.handler_, this.capture_);
     }
@@ -62,6 +71,7 @@ class RepeatedEventHandler {
 
   /** Stops listening or handling future events. */
   stopListening() {
+    this.listening_ = false;
     for (const node of this.nodes_) {
       node.removeEventListener(this.type_, this.handler_, this.capture_);
     }
@@ -78,7 +88,7 @@ class RepeatedEventHandler {
 
   /** @private */
   handleEvent_() {
-    if (this.eventStack_.length === 0) {
+    if (!this.listening_ || this.eventStack_.length === 0) {
       return;
     }
 
