@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -1235,6 +1236,41 @@ TEST_F(CompositorFrameReportingControllerTest,
   // Verify that no EventLatency histogram is recorded.
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("EventLatency."),
               IsEmpty());
+}
+
+TEST_F(CompositorFrameReportingControllerTest,
+       NewMainUpdateIsNotPartialUpdate) {
+  DroppedFrameCounter dropped_counter;
+  reporting_controller_.SetDroppedFrameCounter(&dropped_counter);
+
+  SimulateBeginMainFrame();
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, {}, {});
+  viz::FrameTimingDetails details = {};
+  details.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(1u, details);
+  EXPECT_EQ(1u, dropped_counter.total_frames());
+  EXPECT_EQ(1u, dropped_counter.total_main_dropped());
+
+  reporting_controller_.WillCommit();
+  reporting_controller_.DidCommit();
+  reporting_controller_.WillActivate();
+  reporting_controller_.DidActivate();
+
+  const auto previous_id = current_id_;
+
+  SimulateBeginMainFrame();
+  reporting_controller_.OnFinishImplFrame(current_id_);
+  reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, previous_id,
+                                                 {});
+  details.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  reporting_controller_.DidPresentCompositorFrame(1u, details);
+
+  EXPECT_EQ(3u, dropped_counter.total_frames());
+  EXPECT_EQ(1u, dropped_counter.total_main_dropped());
+
+  reporting_controller_.ResetReporters();
+  reporting_controller_.SetDroppedFrameCounter(nullptr);
 }
 
 }  // namespace
