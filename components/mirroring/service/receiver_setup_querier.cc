@@ -89,8 +89,9 @@ void ReceiverSetupQuerier::Query() {
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), GetAnnotationTag());
+  auto* const url_loader_ptr = url_loader.get();
 
-  url_loader->DownloadToString(
+  url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&ReceiverSetupQuerier::ProcessResponse,
                      weak_factory_.GetWeakPtr(), std::move(url_loader)),
