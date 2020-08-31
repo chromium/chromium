@@ -326,4 +326,39 @@ TEST_F(InteractiveWindowCycleListGestureHandlerTest,
   EXPECT_TRUE(wm::IsActiveWindow(window4.get()));
 }
 
+// Tests that swiping up closes window cycle if it's open and starts overview
+// mode.
+// TODO(chinsenj): Add this test to
+// WmGestureHandlerTest.VerticalScrolls after this feature is launched.
+TEST_F(InteractiveWindowCycleListGestureHandlerTest, VerticalScroll) {
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+  const float vertical_scroll = 2 * WmGestureHandler::kVerticalThresholdDp;
+  const float horizontal_scroll = WmGestureHandler::kHorizontalThresholdDp;
+  auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+
+  // Start cycling and then swipe up to open up overview.
+  window_cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  Scroll(0, -vertical_scroll, 3);
+  EXPECT_TRUE(InOverviewSession());
+  EXPECT_FALSE(window_cycle_controller->IsCycling());
+
+  // Start cycling and then swipe down.
+  window_cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  Scroll(0, vertical_scroll, 3);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+
+  // Swipe diagonally with horizontal bias.
+  Scroll(horizontal_scroll * 3, -vertical_scroll, 3);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  EXPECT_FALSE(InOverviewSession());
+
+  // Swipe diagonally with vertical bias.
+  Scroll(horizontal_scroll, -vertical_scroll, 3);
+  EXPECT_FALSE(window_cycle_controller->IsCycling());
+  EXPECT_TRUE(InOverviewSession());
+}
+
 }  // namespace ash

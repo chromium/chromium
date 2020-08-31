@@ -19,7 +19,8 @@ namespace ash {
 namespace {
 
 // Handles vertical 3-finger scroll gesture by entering overview on scrolling
-// up, and exiting it on scrolling down.
+// up, and exiting it on scrolling down. If entering overview and window cycle
+// list is open, close the window cycle list.
 // Returns true if the gesture was handled.
 bool Handle3FingerVerticalScroll(float scroll_y) {
   auto* overview_controller = Shell::Get()->overview_controller();
@@ -35,6 +36,10 @@ bool Handle3FingerVerticalScroll(float scroll_y) {
   } else {
     if (scroll_y > -WmGestureHandler::kVerticalThresholdDp)
       return false;
+
+    auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+    if (window_cycle_controller->IsCycling())
+      window_cycle_controller->CancelCycling();
 
     base::RecordAction(base::UserMetricsAction("Touchpad_Gesture_Overview"));
     overview_controller->StartOverview();
