@@ -1,3 +1,6 @@
 sergeyu@chromium.org
 yucliu@chromium.org
 wez@chromium.org
+
+per-file *.cmx=set noparent
+per-file *.cmx=file://fuchsia/SECURITY_OWNERS
