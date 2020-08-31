@@ -51,6 +51,14 @@ Polymer({
     });
   },
 
+  /**
+   * Returns default event target element.
+   * @type {Object}
+   */
+  get defaultControl() {
+    return this.$.familyLinkDialog;
+  },
+
   /*
    * Executed on language change.
    */

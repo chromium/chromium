@@ -101,7 +101,7 @@ found in the LICENSE file. -->
         <oobe-back-button id="backButton" on-tap="onBackClicked_"
             hidden="[[!isBackButtonVisible_]]">
         </oobe-back-button>
-        <oobe-next-button id="nextButton" class="next-button"
+        <oobe-next-button id="nextButton" class="next-button focus-on-show"
             on-tap="onNextClicked_">
         </oobe-next-button>
       </div>
@@ -118,7 +118,7 @@ found in the LICENSE file. -->
         <cr-radio-group id="childSignInMethod" class="layout horizontal"
             selected="{{selectedSignInMethod}}">
           <cr-card-radio-button id="childCreateButton" name="create"
-              class="flex">
+              class="flex focus-on-show">
             <div class="card-container layout vertical center">
               <hd-iron-icon class="card-icon" icon1x="oobe-48:person-add"
                   icon2x="oobe-96:person-add">
