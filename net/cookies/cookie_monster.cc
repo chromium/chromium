@@ -1151,9 +1151,14 @@ CookieMonster::CookieMap::iterator CookieMonster::InternalInsertCookie(
   // |num_keys_| counter.
   bool different_prev =
       inserted == cookies_.begin() || std::prev(inserted)->first != key;
-  bool different_next =
-      inserted == cookies_.end() || std::next(inserted)->first != key;
-  if (different_prev && different_next)
+  // According to std::multiqueue documentation:
+  // "If the container has elements with equivalent key, inserts at the upper
+  // bound of that range. (since C++11)"
+  // This means that "inserted" iterator either points to the last element in
+  // the map, or the element succeeding it has to have different key.
+  DCHECK(std::next(inserted) == cookies_.end() ||
+         std::next(inserted)->first != key);
+  if (different_prev)
     ++num_keys_;
 
   return inserted;
@@ -1381,7 +1386,7 @@ void CookieMonster::InternalDeleteCookie(CookieMap::iterator it,
   bool different_prev =
       it == cookies_.begin() || std::prev(it)->first != it->first;
   bool different_next =
-      it == cookies_.end() || std::next(it)->first != it->first;
+      std::next(it) == cookies_.end() || std::next(it)->first != it->first;
   if (different_prev && different_next)
     --num_keys_;
 
