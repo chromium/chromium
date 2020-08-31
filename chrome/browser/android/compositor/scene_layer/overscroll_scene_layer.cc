@@ -18,12 +18,11 @@ OverscrollSceneLayer::OverscrollSceneLayer(JNIEnv* env,
     : SceneLayer(env, jobj),
       window_(ui::WindowAndroid::FromJavaWindowAndroid(jwindow)),
       glow_effect_(std::make_unique<ui::OverscrollGlow>(this)) {
-  window_->AddObserver(this);
+  if (window_->GetCompositor())
+    window_->AddObserver(this);
 }
 
-OverscrollSceneLayer::~OverscrollSceneLayer() {
-  window_->RemoveObserver(this);
-}
+OverscrollSceneLayer::~OverscrollSceneLayer() {}
 
 std::unique_ptr<ui::EdgeEffect> OverscrollSceneLayer::CreateEdgeEffect() {
   return std::make_unique<ui::EdgeEffect>(resource_manager_);
@@ -70,6 +69,14 @@ jboolean OverscrollSceneLayer::Update(
 void OverscrollSceneLayer::OnAnimate(base::TimeTicks frame_time) {
   if (glow_effect_->Animate(frame_time, layer().get()))
     window_->SetNeedsAnimate();
+}
+
+void OverscrollSceneLayer::OnAttachCompositor() {
+  window_->AddObserver(this);
+}
+
+void OverscrollSceneLayer::OnDetachCompositor() {
+  window_->RemoveObserver(this);
 }
 
 void OverscrollSceneLayer::SetContentTree(
