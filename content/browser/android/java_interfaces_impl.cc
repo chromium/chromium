@@ -26,7 +26,7 @@ class JavaInterfaceProviderHolder {
   JavaInterfaceProviderHolder() {
     mojo::PendingRemote<service_manager::mojom::InterfaceProvider> provider;
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_InterfaceRegistrarImpl_createInterfaceRegistryForContext(
+    Java_InterfaceRegistrarImpl_createInterfaceRegistry(
         env,
         provider.InitWithNewPipeAndPassReceiver().PassPipe().release().value());
     interface_provider_.Bind(std::move(provider));

@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.androidoverlay;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -123,7 +122,7 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
      */
     public static class Factory implements InterfaceFactory<AndroidOverlayProvider> {
         private static AndroidOverlayProviderImpl sImpl;
-        public Factory(Context context) {}
+        public Factory() {}
 
         @Override
         public AndroidOverlayProvider createImpl() {

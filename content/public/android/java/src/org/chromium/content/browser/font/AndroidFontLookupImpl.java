@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.font;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -16,6 +17,7 @@ import androidx.core.provider.FontsContractCompat.FontFamilyResult;
 import androidx.core.provider.FontsContractCompat.FontInfo;
 
 import org.chromium.base.Consumer;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -38,12 +40,10 @@ import java.util.concurrent.Executor;
  */
 public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String TAG = "AndroidFontLookup";
-
     private static final String READ_ONLY_MODE = "r";
-    private final Context mContext;
 
+    private final Context mAppContext;
     private FontsContractWrapper mFontsContract = new FontsContractWrapper();
-
     /**
      * Map from unique full font names to GMS Core font provider query format.
      *
@@ -51,8 +51,8 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      */
     private Map<String, String> mFullFontNameToQuery = createFullFontNameToQueryMap();
 
-    public AndroidFontLookupImpl(Context context) {
-        mContext = context;
+    AndroidFontLookupImpl(Context appContext) {
+        mAppContext = appContext;
     }
 
     /**
@@ -101,7 +101,8 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
 
     private void tryFetchFont(FontRequest request, Consumer<File> consumer) {
         try {
-            FontFamilyResult fontFamilyResult = mFontsContract.fetchFonts(mContext, null, request);
+            FontFamilyResult fontFamilyResult =
+                    mFontsContract.fetchFonts(mAppContext, null, request);
 
             if (fontFamilyResult.getStatusCode() != FontFamilyResult.STATUS_OK) {
                 Log.d(TAG, "Font fetch failed with status code %d.",
@@ -125,7 +126,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
                 return;
             }
 
-            ContentResolver contentResolver = mContext.getContentResolver();
+            ContentResolver contentResolver = mAppContext.getContentResolver();
             ParcelFileDescriptor fileDescriptor =
                     contentResolver.openFileDescriptor(fontInfo.getUri(), READ_ONLY_MODE);
             File file = new File();
@@ -165,16 +166,21 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      * A factory for implementations of the AndroidFontLookup interface.
      */
     public static class Factory implements InterfaceFactory<AndroidFontLookup> {
-        private final Context mContext;
+        /**
+         * It's safe to store this as a global because there's usually only one application context
+         * per process, see {@link ContextUtils#getApplicationContext()} for more info.
+         */
+        @SuppressLint("StaticFieldLeak")
+        private static AndroidFontLookupImpl sImpl;
 
-        public Factory(Context context) {
-            mContext = context;
-        }
+        public Factory() {}
 
         @Override
         public AndroidFontLookup createImpl() {
-            // TODO(crbug.com/1111148): Use a static singleton.
-            return new AndroidFontLookupImpl(mContext);
+            if (sImpl == null) {
+                sImpl = new AndroidFontLookupImpl(ContextUtils.getApplicationContext());
+            }
+            return sImpl;
         }
     }
 }
