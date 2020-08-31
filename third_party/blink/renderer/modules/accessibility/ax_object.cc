@@ -520,8 +520,6 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       have_children_(false),
       role_(ax::mojom::blink::Role::kUnknown),
       aria_role_(ax::mojom::blink::Role::kUnknown),
-      last_known_is_ignored_value_(kDefaultBehavior),
-      last_known_is_ignored_but_included_in_tree_value_(kDefaultBehavior),
       explicit_container_id_(0),
       parent_(nullptr),
       last_modification_count_(-1),
@@ -546,6 +544,7 @@ AXObject::~AXObject() {
 
 void AXObject::Init() {
   role_ = DetermineAccessibilityRole();
+  UpdateCachedAttributeValuesIfNeeded();
 }
 
 void AXObject::Detach() {
@@ -1231,9 +1230,22 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
   cached_is_descendant_of_disabled_node_ = !!DisabledAncestor();
   cached_has_inherited_presentational_role_ =
       !!InheritsPresentationalRoleFrom();
-  cached_is_ignored_ = ComputeAccessibilityIsIgnored();
-  cached_is_ignored_but_included_in_tree_ =
-      cached_is_ignored_ && ComputeAccessibilityIsIgnoredButIncludedInTree();
+  bool is_ignored = ComputeAccessibilityIsIgnored();
+  bool is_ignored_but_included_in_tree =
+      is_ignored && ComputeAccessibilityIsIgnoredButIncludedInTree();
+  bool ignored_states_changed = false;
+  if (parent_) {
+    // Do not compute ignored changed if no parent, because this is the first
+    // time the object is being initialized, and because there are no
+    // ancestors to call ChildrenChanged() on anyway.
+    if (is_ignored != cached_is_ignored_ ||
+        is_ignored_but_included_in_tree !=
+            cached_is_ignored_but_included_in_tree_) {
+      ignored_states_changed = true;
+    }
+  }
+  cached_is_ignored_ = is_ignored;
+  cached_is_ignored_but_included_in_tree_ = is_ignored_but_included_in_tree;
   cached_is_editable_root_ = ComputeIsEditableRoot();
   // Compute live region root, which can be from any ARIA live value, including
   // "off", or from an automatic ARIA live value, e.g. from role="status".
@@ -1246,21 +1258,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded() const {
                                     : nullptr);
   cached_aria_column_index_ = ComputeAriaColumnIndex();
   cached_aria_row_index_ = ComputeAriaRowIndex();
-
-  bool ignored_states_changed = false;
-  if (cached_is_ignored_ != LastKnownIsIgnoredValue()) {
-    last_known_is_ignored_value_ =
-        cached_is_ignored_ ? kIgnoreObject : kIncludeObject;
-    ignored_states_changed = true;
-  }
-
-  if (cached_is_ignored_but_included_in_tree_ !=
-      LastKnownIsIgnoredButIncludedInTreeValue()) {
-    last_known_is_ignored_but_included_in_tree_value_ =
-        cached_is_ignored_but_included_in_tree_ ? kIncludeObject
-                                                : kIgnoreObject;
-    ignored_states_changed = true;
-  }
 
   if (ignored_states_changed) {
     if (AXObject* parent = ParentObjectIfExists())
@@ -1620,32 +1617,11 @@ const AXObject* AXObject::DatetimeAncestor(int max_levels_to_check) const {
 }
 
 bool AXObject::LastKnownIsIgnoredValue() const {
-  if (last_known_is_ignored_value_ == kDefaultBehavior) {
-    last_known_is_ignored_value_ =
-        AccessibilityIsIgnored() ? kIgnoreObject : kIncludeObject;
-  }
-
-  return last_known_is_ignored_value_ == kIgnoreObject;
-}
-
-void AXObject::SetLastKnownIsIgnoredValue(bool is_ignored) {
-  last_known_is_ignored_value_ = is_ignored ? kIgnoreObject : kIncludeObject;
+  return cached_is_ignored_;
 }
 
 bool AXObject::LastKnownIsIgnoredButIncludedInTreeValue() const {
-  if (last_known_is_ignored_but_included_in_tree_value_ == kDefaultBehavior) {
-    last_known_is_ignored_but_included_in_tree_value_ =
-        AccessibilityIsIgnoredButIncludedInTree() ? kIncludeObject
-                                                  : kIgnoreObject;
-  }
-
-  return last_known_is_ignored_but_included_in_tree_value_ == kIncludeObject;
-}
-
-void AXObject::SetLastKnownIsIgnoredButIncludedInTreeValue(
-    bool is_ignored_but_included_in_tree) {
-  last_known_is_ignored_but_included_in_tree_value_ =
-      is_ignored_but_included_in_tree ? kIncludeObject : kIgnoreObject;
+  return cached_is_ignored_but_included_in_tree_;
 }
 
 bool AXObject::HasInheritedPresentationalRole() const {
