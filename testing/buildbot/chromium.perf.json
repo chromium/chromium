@@ -9,7 +9,6 @@
           "--browser=android-chromium",
           "--upload-results",
           "--test-shard-map-filename=android_nexus5_perf_map.json",
-          "--run-ref-build",
           "--assert-gpu-compositing"
         ],
         "isolate_name": "performance_test_suite",
@@ -104,7 +103,6 @@
           "--browser=release_x64",
           "--upload-results",
           "--test-shard-map-filename=win_7_nvidia_gpu_perf_map.json",
-          "--run-ref-build",
           "--assert-gpu-compositing"
         ],
         "isolate_name": "performance_test_suite",
@@ -150,8 +148,7 @@
           "-v",
           "--browser=release",
           "--upload-results",
-          "--test-shard-map-filename=win_7_perf_map.json",
-          "--run-ref-build"
+          "--test-shard-map-filename=win_7_perf_map.json"
         ],
         "isolate_name": "performance_test_suite",
         "merge": {
@@ -388,8 +385,7 @@
           "-v",
           "--browser=android-chrome",
           "--upload-results",
-          "--test-shard-map-filename=android-go-perf_map.json",
-          "--run-ref-build"
+          "--test-shard-map-filename=android-go-perf_map.json"
         ],
         "isolate_name": "performance_test_suite",
         "merge": {
@@ -926,7 +922,6 @@
           "--browser=release",
           "--upload-results",
           "--test-shard-map-filename=linux-perf_map.json",
-          "--run-ref-build",
           "--assert-gpu-compositing"
         ],
         "isolate_name": "performance_test_suite",
@@ -985,7 +980,6 @@
           "--browser=release",
           "--upload-results",
           "--test-shard-map-filename=mac-10_12_laptop_low_end-perf_map.json",
-          "--run-ref-build",
           "--assert-gpu-compositing"
         ],
         "isolate_name": "performance_test_suite",
@@ -1044,7 +1038,6 @@
           "--browser=release",
           "--upload-results",
           "--test-shard-map-filename=mac-10_13_laptop_high_end-perf_map.json",
-          "--run-ref-build",
           "--assert-gpu-compositing"
         ],
         "isolate_name": "performance_test_suite",
@@ -1108,7 +1101,6 @@
           "--browser=release_x64",
           "--upload-results",
           "--test-shard-map-filename=win-10-perf_map.json",
-          "--run-ref-build",
           "--assert-gpu-compositing"
         ],
         "isolate_name": "performance_test_suite",
@@ -1167,7 +1159,6 @@
           "--browser=release_x64",
           "--upload-results",
           "--test-shard-map-filename=win-10_laptop_low_end-perf_map.json",
-          "--run-ref-build",
           "--assert-gpu-compositing"
         ],
         "isolate_name": "performance_test_suite",
