@@ -1402,8 +1402,8 @@ void DownloadManagerImpl::BeginDownloadInternal(
           std::move(web_contents_getter), url, method, std::move(initiator),
           false /* from_download_cross_origin_redirect */, content_initiated,
           std::move(on_can_download_checks_done));
-      return;
     }
+    return;
   }
 
   BeginResourceDownloadOnChecksComplete(
