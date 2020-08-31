@@ -2,4 +2,5 @@
   unicode-bidi: isolate;
   font-variant-numeric: tabular-nums;
   text-transform: none;
+  text-indent: 0 !important;
 }

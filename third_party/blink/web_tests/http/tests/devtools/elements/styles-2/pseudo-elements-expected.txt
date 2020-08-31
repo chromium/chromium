@@ -49,6 +49,7 @@ element.style { ()
     unicode-bidi: isolate;
     font-variant-numeric: tabular-nums;
     text-transform: none;
+    text-indent: 0px !important;
 
 
 Running: dumpBeforeStyles
@@ -73,6 +74,7 @@ Running: dumpMarkerStyles
     unicode-bidi: isolate;
     font-variant-numeric: tabular-nums;
     text-transform: none;
+    text-indent: 0px !important;
 
 
 Running: removeAfter
