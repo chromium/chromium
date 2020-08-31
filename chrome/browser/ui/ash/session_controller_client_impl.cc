@@ -370,8 +370,6 @@ bool SessionControllerClientImpl::CanLockScreen() {
 
 // static
 bool SessionControllerClientImpl::ShouldLockScreenAutomatically() {
-  // TODO(xiyuan): Observe ash::prefs::kEnableAutoScreenLock and update ash.
-  // Tracked in http://crbug.com/670423
   const UserList logged_in_users = UserManager::Get()->GetLoggedInUsers();
   for (auto* user : logged_in_users) {
     Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
