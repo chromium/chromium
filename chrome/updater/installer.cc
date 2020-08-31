@@ -244,12 +244,12 @@ base::FilePath Installer::GetCurrentInstallDir() const {
   return GetAppInstallDir(app_id_).AppendASCII(pv_.GetString());
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 int Installer::RunApplicationInstaller(const base::FilePath& app_installer,
                                        const std::string& arguments) {
   NOTREACHED();
   return -1;
 }
-#endif  // OS_LINUX
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace updater
