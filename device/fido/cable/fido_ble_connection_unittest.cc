@@ -226,8 +226,7 @@ class FidoBleConnectionTest : public ::testing::Test {
     EXPECT_CALL(*fido_device_, GetAddress)
         .WillRepeatedly(::testing::Return(new_address));
     for (auto& observer : adapter_->GetObservers())
-      observer.DeviceAddressChanged(adapter_.get(), fido_device_,
-                                    std::move(old_address));
+      observer.DeviceAddressChanged(adapter_.get(), fido_device_, old_address);
   }
 
   void SetNextReadControlPointLengthReponse(bool success,
