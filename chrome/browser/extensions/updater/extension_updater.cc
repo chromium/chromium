@@ -263,9 +263,12 @@ void ExtensionUpdater::SetBackoffPolicyForTesting(
 }
 
 void ExtensionUpdater::DoCheckSoon() {
-  DCHECK(will_check_soon_);
+  if (!will_check_soon_) {
+    // Another caller called CheckNow() between CheckSoon() and now. Skip this
+    // check.
+    return;
+  }
   CheckNow(CheckParams());
-  will_check_soon_ = false;
 }
 
 void ExtensionUpdater::AddToDownloader(
@@ -299,6 +302,12 @@ void ExtensionUpdater::AddToDownloader(
 }
 
 void ExtensionUpdater::CheckNow(CheckParams params) {
+  if (params.ids.empty()) {
+    // Checking all extensions. Cancel pending DoCheckSoon() call if there's
+    // one, as it would be redundant.
+    will_check_soon_ = false;
+  }
+
   int request_id = next_request_id_++;
 
   VLOG(2) << "Starting update check " << request_id;

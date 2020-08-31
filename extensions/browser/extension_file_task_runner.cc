@@ -30,10 +30,11 @@ scoped_refptr<base::SequencedTaskRunner> GetExtensionFileTaskRunner() {
   return g_task_runner.Get();
 }
 
-scoped_refptr<base::SequencedTaskRunner> GetOneShotFileTaskRunner() {
+scoped_refptr<base::SequencedTaskRunner> GetOneShotFileTaskRunner(
+    base::TaskPriority priority) {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-       base::TaskPriority::USER_VISIBLE});
+       priority});
 }
 
 }  // namespace extensions

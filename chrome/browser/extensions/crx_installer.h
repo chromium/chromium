@@ -361,6 +361,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
       install_flags_ &= ~flag;
   }
 
+  // Returns |unpacker_task_runner_|. Initializes it if it's still nullptr.
+  base::SequencedTaskRunner* GetUnpackerTaskRunner();
+
   // The Profile the extension is being installed in.
   Profile* profile_;
 
@@ -506,10 +509,8 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // unpacker uses its own temp dir, it won't hit race conditions, and can use a
   // separate task runner per instance (for better performance).
   //
-  // TODO(nicolaso): Adjust this task runner's priority based on the install
-  // location. e.g. default apps shouldn't be USER_VISIBLE, to avoid wasting CPU
-  // time.
-  scoped_refptr<base::SequencedTaskRunner> unpacker_task_runner_;
+  // Lazily initialized by GetUnpackerTaskRunner().
+  scoped_refptr<base::SequencedTaskRunner> unpacker_task_runner_ = nullptr;
 
   // Used to show the install dialog.
   ExtensionInstallPrompt::ShowDialogCallback show_dialog_callback_;

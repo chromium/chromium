@@ -126,7 +126,6 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
       did_handle_successfully_(true),
       error_on_unsupported_requirements_(false),
       shared_file_task_runner_(GetExtensionFileTaskRunner()),
-      unpacker_task_runner_(GetOneShotFileTaskRunner()),
       update_from_settings_page_(false),
       install_flags_(kInstallFlagNone) {
   if (!approval)
@@ -187,9 +186,9 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
 
   auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
       install_source_, creation_flags_, install_directory_,
-      unpacker_task_runner_.get(), this);
+      GetUnpackerTaskRunner(), this);
 
-  if (!unpacker_task_runner_->PostTask(
+  if (!GetUnpackerTaskRunner()->PostTask(
           FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithCrx, unpacker,
                                     source_file))) {
     NOTREACHED();
@@ -209,9 +208,9 @@ void CrxInstaller::InstallUnpackedCrx(const std::string& extension_id,
 
   auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
       install_source_, creation_flags_, install_directory_,
-      unpacker_task_runner_.get(), this);
+      GetUnpackerTaskRunner(), this);
 
-  if (!unpacker_task_runner_->PostTask(
+  if (!GetUnpackerTaskRunner()->PostTask(
           FROM_HERE,
           base::BindOnce(&SandboxedUnpacker::StartWithDirectory, unpacker,
                          extension_id, public_key, unpacked_dir))) {
@@ -496,14 +495,14 @@ void CrxInstaller::ShouldComputeHashesOnUI(
       extensions::ExtensionSystem::Get(profile_)->content_verifier();
   bool result = content_verifier &&
                 content_verifier->ShouldComputeHashesOnInstall(*extension);
-  unpacker_task_runner_->PostTask(FROM_HERE,
-                                  base::BindOnce(std::move(callback), result));
+  GetUnpackerTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 void CrxInstaller::ShouldComputeHashesForOffWebstoreExtension(
     scoped_refptr<const Extension> extension,
     base::OnceCallback<void(bool)> callback) {
-  DCHECK(unpacker_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(GetUnpackerTaskRunner()->RunsTasksInCurrentSequence());
   if (!content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(&CrxInstaller::ShouldComputeHashesOnUI, this,
@@ -513,7 +512,7 @@ void CrxInstaller::ShouldComputeHashesForOffWebstoreExtension(
 }
 
 void CrxInstaller::OnUnpackFailure(const CrxInstallError& error) {
-  DCHECK(unpacker_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(GetUnpackerTaskRunner()->RunsTasksInCurrentSequence());
   if (!content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&CrxInstaller::ReportFailureFromUIThread,
                                     this, error))) {
@@ -528,7 +527,7 @@ void CrxInstaller::OnUnpackSuccess(
     const Extension* extension,
     const SkBitmap& install_icon,
     declarative_net_request::RulesetInstallPrefs ruleset_install_prefs) {
-  DCHECK(unpacker_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(GetUnpackerTaskRunner()->RunsTasksInCurrentSequence());
   shared_file_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&CrxInstaller::OnUnpackSuccessOnSharedFileThread, this,
@@ -1046,7 +1045,7 @@ void CrxInstaller::ReportSuccessFromUIThread() {
 
 void CrxInstaller::ReportInstallationStage(InstallationStage stage) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    DCHECK(unpacker_task_runner_->RunsTasksInCurrentSequence() ||
+    DCHECK(GetUnpackerTaskRunner()->RunsTasksInCurrentSequence() ||
            shared_file_task_runner_->RunsTasksInCurrentSequence());
     if (!content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(&CrxInstaller::ReportInstallationStage,
@@ -1201,6 +1200,18 @@ void CrxInstaller::ConfirmReEnable() {
                         std::make_unique<ExtensionInstallPrompt::Prompt>(type),
                         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   }
+}
+
+base::SequencedTaskRunner* CrxInstaller::GetUnpackerTaskRunner() {
+  if (!unpacker_task_runner_) {
+    bool low_priority =
+        (creation_flags_ & Extension::WAS_INSTALLED_BY_DEFAULT) &&
+        !(creation_flags_ & Extension::WAS_INSTALLED_BY_OEM);
+    unpacker_task_runner_ = GetOneShotFileTaskRunner(
+        low_priority ? base::TaskPriority::BEST_EFFORT
+                     : base::TaskPriority::USER_VISIBLE);
+  }
+  return unpacker_task_runner_.get();
 }
 
 void CrxInstaller::set_installer_callback(InstallerResultCallback callback) {

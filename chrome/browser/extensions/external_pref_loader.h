@@ -122,6 +122,9 @@ class ExternalPrefLoader : public ExternalLoader {
   // tests may not be set.
   const std::string user_type_;
 
+  // Task runner for tasks that touch file.
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+
 #if defined(OS_CHROMEOS)
   std::vector<std::unique_ptr<PrioritySyncReadyWaiter>> pending_waiter_list_;
 #endif
