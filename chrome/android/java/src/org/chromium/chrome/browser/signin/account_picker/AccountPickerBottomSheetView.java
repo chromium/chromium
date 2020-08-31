@@ -141,6 +141,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * Sets up the sign-in in progress view.
      */
     void setUpSignInInProgressView() {
+        mLogoImage.setImageResource(R.drawable.chrome_sync_logo);
         mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_signin_title);
         mAccountPickerSubtitle.setVisibility(View.INVISIBLE);
         // Set the account picker subtitle text in case there's an error.
@@ -168,6 +169,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * Sets up the view for sign-in general error.
      */
     void setUpSignInGeneralErrorView() {
+        mLogoImage.setImageResource(R.drawable.ic_warning_red_24dp);
         mAccountPickerTitle.setText(R.string.signin_account_picker_bottom_sheet_error_title);
         mAccountPickerSubtitle.setText(R.string.signin_account_picker_general_error_subtitle);
         mAccountPickerSubtitle.setVisibility(View.VISIBLE);

@@ -166,6 +166,28 @@ public class AccountPickerBottomSheetRenderTest {
         clickContinueButtonAndCheckSigninInProgressView();
     }
 
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSigninGeneralErrorView(boolean nightModeEnabled) throws IOException {
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        CoreAccountInfo coreAccountInfo =
+                mAccountManagerTestRule.toCoreAccountInfo(PROFILE_DATA1.getAccountName());
+        // Throws a connection error during the sign-in action
+        doAnswer(invocation -> {
+            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
+            onSignInErrorCallback.onResult(new GoogleServiceAuthError(State.CONNECTION_FAILED));
+            return null;
+        })
+                .when(mAccountPickerDelegateMock)
+                .signIn(eq(coreAccountInfo), any());
+        buildAndShowCollapsedBottomSheet();
+        clickContinueButtonAndWaitForErrorView();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(), "signin_general_error_sheet");
+    }
+
     private void clickContinueButtonAndWaitForErrorView() {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
