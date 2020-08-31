@@ -60,6 +60,7 @@ class SharesheetService : public KeyedService {
                         views::View* share_action_view);
   SharesheetServiceDelegate* GetDelegate(uint32_t delegate_id);
   bool HasShareTargets(const apps::mojom::IntentPtr& intent);
+  Profile* GetProfile();
 
  private:
   using SharesheetServiceIconLoaderCallback =
@@ -85,6 +86,7 @@ class SharesheetService : public KeyedService {
       apps::mojom::IntentPtr intent);
 
   uint32_t delegate_counter_ = 0;
+  Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;
   apps::AppServiceProxy* app_service_proxy_;
 

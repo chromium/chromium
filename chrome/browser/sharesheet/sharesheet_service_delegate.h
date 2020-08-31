@@ -12,6 +12,7 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
+class Profile;
 class SharesheetBubbleView;
 
 namespace views {
@@ -52,6 +53,7 @@ class SharesheetServiceDelegate : public SharesheetController {
 
   // SharesheetController overrides
   uint32_t GetId() override;
+  Profile* GetProfile() override;
   void SetSharesheetSize(const int& width, const int& height) override;
   void CloseSharesheet() override;
 

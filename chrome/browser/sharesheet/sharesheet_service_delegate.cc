@@ -63,6 +63,10 @@ uint32_t SharesheetServiceDelegate::GetId() {
   return id_;
 }
 
+Profile* SharesheetServiceDelegate::GetProfile() {
+  return sharesheet_service_->GetProfile();
+}
+
 void SharesheetServiceDelegate::SetSharesheetSize(const int& width,
                                                   const int& height) {
   DCHECK_GT(width, 0);

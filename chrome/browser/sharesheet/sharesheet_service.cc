@@ -24,9 +24,10 @@
 namespace sharesheet {
 
 SharesheetService::SharesheetService(Profile* profile)
-    : sharesheet_action_cache_(std::make_unique<SharesheetActionCache>()),
-      app_service_proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)) {
-}
+    : profile_(profile),
+      sharesheet_action_cache_(std::make_unique<SharesheetActionCache>()),
+      app_service_proxy_(
+          apps::AppServiceProxyFactory::GetForProfile(profile_)) {}
 
 SharesheetService::~SharesheetService() = default;
 
@@ -118,6 +119,10 @@ bool SharesheetService::HasShareTargets(const apps::mojom::IntentPtr& intent) {
       app_service_proxy_->GetAppsForIntent(intent);
 
   return !actions.empty() || !intent_launch_info.empty();
+}
+
+Profile* SharesheetService::GetProfile() {
+  return profile_;
 }
 
 void SharesheetService::LoadAppIcons(
