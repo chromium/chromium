@@ -450,7 +450,7 @@ TEST_F(GCMConnectionHandlerImplTest, ReInit) {
 
 // Verify that messages can be received after initialization.
 // Flaky on Linux (crbug.com/906093)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_RecvMsg DISABLED_RecvMsg
 #else
 #define MAYBE_RecvMsg RecvMsg
