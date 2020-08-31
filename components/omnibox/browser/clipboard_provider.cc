@@ -552,8 +552,10 @@ void ClipboardProvider::NewClipboardImageMatch(
 void ClipboardProvider::OnReceiveImage(
     ClipboardImageMatchCallback callback,
     base::Optional<gfx::Image> optional_image) {
-  if (!optional_image)
+  if (!optional_image) {
     std::move(callback).Run(base::nullopt);
+    return;
+  }
   gfx::ImageSkia image_skia = *optional_image.value().ToImageSkia();
   image_skia.MakeThreadSafe();
   base::ThreadPool::PostTaskAndReplyWithResult(
