@@ -2,11 +2,14 @@
 
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_search_field/cr_search_field.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-ripple/paper-ripple.html">
+<link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../../languages_page/languages.html">
 <link rel="import" href="../../settings_shared_css.html">
 
@@ -20,6 +23,11 @@
         overflow: auto;
         padding-inline-end: 0;
         padding-inline-start: 0;
+      }
+
+      cr-search-field {
+        margin-bottom: 16px;
+        margin-top: 16px;
       }
 
       iron-icon[icon='settings:check-circle'] {
@@ -56,9 +64,17 @@
     <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
       <div slot="title">$i18n{changeDeviceLanguageDialogTitle}</div>
       <div id="dialogBody" slot="body" scrollable>
+        <settings-localized-link class="padded"
+            localized-string="[[i18nAdvanced(
+                'changeDeviceLanguageDialogDescription')]]">
+        </settings-localized-link>
+        <cr-search-field class="padded" label="$i18n{searchLanguages}"
+            id="search" on-search-changed="onSearchChanged_"
+            on-keydown="onKeydown_" autofocus>
+        </cr-search-field>
         <iron-list scroll-target="[[$$('[slot=body]')]]"
-            items="[[getPossibleDeviceLanguages_(
-                languages.supported, languages.enabled.*)]]"
+            items="[[getPossibleDeviceLanguages_(languages.supported,
+                languages.enabled.*, lowercaseQueryString_)]]"
             selection-enabled selected-item="{{selectedLanguage_}}">
           <template>
             <!-- |selected| is a property of iron-list -->

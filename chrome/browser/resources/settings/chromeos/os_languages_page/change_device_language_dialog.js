@@ -11,6 +11,7 @@ Polymer({
 
   behaviors: [
     CrScrollableBehavior,
+    I18nBehavior,
   ],
 
   properties: {
@@ -31,6 +32,20 @@ Polymer({
       type: Boolean,
       computed: 'shouldDisableActionButton_(selectedLanguage_)',
     },
+
+    /** @private */
+    lowercaseQueryString_: {
+      type: String,
+      value: '',
+    },
+  },
+
+  /**
+   * @param {!CustomEvent<string>} e
+   * @private
+   */
+  onSearchChanged_(e) {
+    this.lowercaseQueryString_ = e.detail.toLowerCase();
   },
 
   /**
@@ -39,14 +54,17 @@ Polymer({
    * @private
    */
   getPossibleDeviceLanguages_() {
-    // TODO(crbug/1113439): add search and filter based on search value.
     return this.languages.supported.filter(language => {
       if (!language.supportsUI || language.isProhibitedLanguage ||
           language.code === this.languages.prospectiveUILanguage) {
         return false;
       }
 
-      return true;
+      return !this.lowercaseQueryString_ ||
+          language.displayName.toLowerCase().includes(
+              this.lowercaseQueryString_) ||
+          language.nativeDisplayName.toLowerCase().includes(
+              this.lowercaseQueryString_);
     });
   },
 
@@ -90,5 +108,18 @@ Polymer({
     assert(this.selectedLanguage_);
     this.languageHelper.setProspectiveUILanguage(this.selectedLanguage_.code);
     this.$.dialog.close();
+  },
+
+  /**
+   * @param {!KeyboardEvent} e
+   * @private
+   */
+  onKeydown_(e) {
+    // Close dialog if 'esc' is pressed and the search box is already empty.
+    if (e.key === 'Escape' && !this.$.search.getValue().trim()) {
+      this.$.dialog.close();
+    } else if (e.key !== 'PageDown' && e.key !== 'PageUp') {
+      this.$.search.scrollIntoViewIfNeeded();
+    }
   },
 });

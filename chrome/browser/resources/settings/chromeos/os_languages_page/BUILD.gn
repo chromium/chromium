@@ -29,6 +29,7 @@ js_library("change_device_language_dialog") {
   deps = [
     "../../languages_page:languages",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
 }
 
@@ -165,7 +166,9 @@ js_library("change_device_language_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/change_device_language_dialog.m.js" ]
   deps = [
     "../../languages_page:languages.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
+    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field.m",
   ]
   extra_deps = [ ":change_device_language_dialog_module" ]
 }
