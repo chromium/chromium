@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/accessibility/caption_util.h"
@@ -66,6 +67,12 @@ void CaptionController::Init() {
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_->GetPrefs());
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line &&
+      command_line->HasSwitch(switches::kEnableLiveCaptionPrefForTesting)) {
+    profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, true);
+  }
+
   pref_change_registrar_->Add(
       prefs::kLiveCaptionEnabled,
       base::BindRepeating(&CaptionController::OnLiveCaptionEnabledChanged,

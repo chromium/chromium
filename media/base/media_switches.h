@@ -85,6 +85,7 @@ MEDIA_EXPORT extern const char kMSEVideoBufferSizeLimitMb[];
 MEDIA_EXPORT extern const char kClearKeyCdmPathForTesting[];
 MEDIA_EXPORT extern const char kOverrideEnabledCdmInterfaceVersion[];
 MEDIA_EXPORT extern const char kOverrideHardwareSecureCodecsForTesting[];
+MEDIA_EXPORT extern const char kEnableLiveCaptionPrefForTesting[];
 
 namespace autoplay {
 
