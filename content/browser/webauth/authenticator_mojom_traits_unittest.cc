@@ -35,6 +35,7 @@ using device::PublicKeyCredentialDescriptor;
 using device::PublicKeyCredentialParams;
 using device::PublicKeyCredentialRpEntity;
 using device::PublicKeyCredentialUserEntity;
+using device::ResidentKeyRequirement;
 using device::UserVerificationRequirement;
 
 const std::vector<uint8_t> kDescriptorId = {'d', 'e', 's', 'c'};
@@ -104,12 +105,18 @@ TEST(AuthenticatorMojomTraitsTest, SerializeCredentialDescriptors) {
 // Verify serialization and deserialization of AuthenticatorSelectionCriteria.
 TEST(AuthenticatorMojomTraitsTest, SerializeAuthenticatorSelectionCriteria) {
   std::vector<AuthenticatorSelectionCriteria> success_cases = {
-      AuthenticatorSelectionCriteria(AuthenticatorAttachment::kAny, true,
+      AuthenticatorSelectionCriteria(AuthenticatorAttachment::kAny,
+                                     ResidentKeyRequirement::kRequired,
                                      UserVerificationRequirement::kRequired),
-      AuthenticatorSelectionCriteria(AuthenticatorAttachment::kPlatform, false,
+      AuthenticatorSelectionCriteria(AuthenticatorAttachment::kPlatform,
+                                     ResidentKeyRequirement::kPreferred,
+                                     UserVerificationRequirement::kPreferred),
+      AuthenticatorSelectionCriteria(AuthenticatorAttachment::kPlatform,
+                                     ResidentKeyRequirement::kDiscouraged,
                                      UserVerificationRequirement::kPreferred),
       AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kCrossPlatform, true,
+          AuthenticatorAttachment::kCrossPlatform,
+          ResidentKeyRequirement::kRequired,
           UserVerificationRequirement::kDiscouraged)};
 
   AssertSerializeAndDeserializeSucceeds<

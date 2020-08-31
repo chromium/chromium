@@ -296,6 +296,13 @@ enum AttestationConveyancePreference {
   ENTERPRISE,
 };
 
+// https://w3c.github.io/webauthn/#enum-residentKeyRequirement
+enum ResidentKeyRequirement {
+  DISCOURAGED,
+  PREFERRED,
+  REQUIRED,
+};
+
 // https://w3c.github.io/webauthn/#enumdef-authenticatorattachment.
 enum AuthenticatorAttachment {
     NO_PREFERENCE,
@@ -316,10 +323,9 @@ struct AuthenticatorSelectionCriteria {
   // Filter authenticators by attachment type.
   AuthenticatorAttachment authenticator_attachment;
 
-  // Whether the authenticator should store the created key so that the key
-  // can later be selected given only an RP ID (e.g. when |allow_credentials|
-  // is empty).
-  bool require_resident_key;
+  // Indicates a requirement or preference for creating a client-side
+  // discoverable credential. If set, overrides |require_resident_key|.
+  ResidentKeyRequirement resident_key;
 
   // Indicates the relying party's need for a user-verifying authenticator.
   UserVerificationRequirement user_verification;

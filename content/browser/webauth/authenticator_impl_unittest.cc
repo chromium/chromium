@@ -321,7 +321,8 @@ GetTestPublicKeyCredentialParameters(int32_t algorithm_identifier) {
 
 device::AuthenticatorSelectionCriteria GetTestAuthenticatorSelectionCriteria() {
   return device::AuthenticatorSelectionCriteria(
-      device::AuthenticatorAttachment::kAny, false,
+      device::AuthenticatorAttachment::kAny,
+      device::ResidentKeyRequirement::kDiscouraged,
       device::UserVerificationRequirement::kPreferred);
 }
 
@@ -737,7 +738,8 @@ TEST_F(AuthenticatorImplTest, MakeCredentialResidentKeyUnsupported) {
 
   PublicKeyCredentialCreationOptionsPtr options =
       GetTestPublicKeyCredentialCreationOptions();
-  options->authenticator_selection->SetRequireResidentKeyForTesting(true);
+  options->authenticator_selection->SetResidentKeyForTesting(
+      device::ResidentKeyRequirement::kRequired);
 
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
             AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED);
@@ -1646,8 +1648,10 @@ TEST_F(ExtensionAuthenticatorTest, MakeCredentialLargeBlobKeyExtension) {
       virtual_device_factory_->SetCtap2Config(config);
       PublicKeyCredentialCreationOptionsPtr options =
           GetTestPublicKeyCredentialCreationOptions();
-      options->authenticator_selection->SetRequireResidentKeyForTesting(
-          rk_enabled);
+      if (rk_enabled) {
+        options->authenticator_selection->SetResidentKeyForTesting(
+            device::ResidentKeyRequirement::kRequired);
+      }
       options->user.id = {1, 2, 3, 4};
       options->user.name = "name";
       options->user.display_name = "displayName";
@@ -4642,10 +4646,12 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
  protected:
   ResidentKeyTestAuthenticatorContentBrowserClient test_client_;
 
-  static PublicKeyCredentialCreationOptionsPtr make_credential_options() {
+  static PublicKeyCredentialCreationOptionsPtr make_credential_options(
+      device::ResidentKeyRequirement resident_key =
+          device::ResidentKeyRequirement::kRequired) {
     PublicKeyCredentialCreationOptionsPtr options =
         UVAuthenticatorImplTest::make_credential_options();
-    options->authenticator_selection->SetRequireResidentKeyForTesting(true);
+    options->authenticator_selection->SetResidentKeyForTesting(resident_key);
     options->user.id = {1, 2, 3, 4};
     return options;
   }
@@ -4663,7 +4669,7 @@ class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
   DISALLOW_COPY_AND_ASSIGN(ResidentKeyAuthenticatorImplTest);
 };
 
-TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredential) {
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkRequired) {
   for (const bool internal_uv : {false, true}) {
     SCOPED_TRACE(::testing::Message() << "internal_uv=" << internal_uv);
     test_client_.might_create_resident_credential = false;
@@ -4694,6 +4700,78 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredential) {
     EXPECT_EQ(options->user.id, registration.user->id);
     EXPECT_EQ(options->user.icon_url, registration.user->icon_url);
   }
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferred) {
+  for (const bool supports_rk : {false, true}) {
+    SCOPED_TRACE(::testing::Message() << "supports_rk=" << supports_rk);
+    ResetVirtualDevice();
+    test_client_.might_create_resident_credential = false;
+
+    device::VirtualCtap2Device::Config config;
+    config.internal_uv_support = true;
+    config.resident_key_support = supports_rk;
+    virtual_device_factory_->SetCtap2Config(config);
+    virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+
+    MakeCredentialResult result = AuthenticatorMakeCredential(
+        make_credential_options(device::ResidentKeyRequirement::kPreferred));
+
+    ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+    EXPECT_TRUE(test_client_.might_create_resident_credential);
+    EXPECT_TRUE(HasUV(result.response));
+    ASSERT_EQ(1u,
+              virtual_device_factory_->mutable_state()->registrations.size());
+    const device::VirtualFidoDevice::RegistrationData& registration =
+        virtual_device_factory_->mutable_state()->registrations.begin()->second;
+    EXPECT_EQ(registration.is_resident, supports_rk);
+  }
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredStorageFull) {
+  // Making a credential on an authenticator with full storage falls back to
+  // making a non-resident key.
+  ResetVirtualDevice();
+  test_client_.might_create_resident_credential = false;
+
+  device::VirtualCtap2Device::Config config;
+  config.internal_uv_support = true;
+  config.resident_key_support = true;
+  config.resident_credential_storage = 0;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+
+  MakeCredentialResult result = AuthenticatorMakeCredential(
+      make_credential_options(device::ResidentKeyRequirement::kPreferred));
+
+  ASSERT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+  EXPECT_TRUE(test_client_.might_create_resident_credential);
+  EXPECT_TRUE(HasUV(result.response));
+  ASSERT_EQ(1u, virtual_device_factory_->mutable_state()->registrations.size());
+  const device::VirtualFidoDevice::RegistrationData& registration =
+      virtual_device_factory_->mutable_state()->registrations.begin()->second;
+  EXPECT_EQ(registration.is_resident, false);
+}
+
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialRkPreferredSetsPIN) {
+  device::VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.internal_uv_support = false;
+  config.resident_key_support = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->pin = "";
+
+  MakeCredentialResult result = AuthenticatorMakeCredential(
+      make_credential_options(device::ResidentKeyRequirement::kPreferred));
+
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+  EXPECT_TRUE(test_client_.might_create_resident_credential);
+  EXPECT_TRUE(HasUV(result.response));
+  ASSERT_EQ(1u, virtual_device_factory_->mutable_state()->registrations.size());
+  const device::VirtualFidoDevice::RegistrationData& registration =
+      virtual_device_factory_->mutable_state()->registrations.begin()->second;
+  EXPECT_EQ(registration.is_resident, true);
+  EXPECT_EQ(virtual_device_factory_->mutable_state()->pin, kTestPIN);
 }
 
 TEST_F(ResidentKeyAuthenticatorImplTest, StorageFull) {
@@ -4900,8 +4978,9 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
                  << "support=" << test.supported_by_authenticator);
 
     PublicKeyCredentialCreationOptionsPtr options = make_credential_options();
-    options->authenticator_selection->SetRequireResidentKeyForTesting(
-        test.is_resident);
+    options->authenticator_selection->SetResidentKeyForTesting(
+        test.is_resident ? device::ResidentKeyRequirement::kRequired
+                         : device::ResidentKeyRequirement::kDiscouraged);
     options->protection_policy = test.protection;
     options->enforce_protection_policy = test.enforce;
     options->authenticator_selection->SetUserVerificationRequirementForTesting(
@@ -4977,7 +5056,8 @@ TEST_F(ResidentKeyAuthenticatorImplTest, AuthenticatorSetsCredProtect) {
       virtual_device_factory_->mutable_state()->registrations.clear();
 
       PublicKeyCredentialCreationOptionsPtr options = make_credential_options();
-      options->authenticator_selection->SetRequireResidentKeyForTesting(true);
+      options->authenticator_selection->SetResidentKeyForTesting(
+          device::ResidentKeyRequirement::kRequired);
       options->protection_policy = kMojoLevels[requested_level];
       options->authenticator_selection
           ->SetUserVerificationRequirementForTesting(
@@ -5067,7 +5147,8 @@ TEST_F(ResidentKeyAuthenticatorImplTest, AuthenticatorDefaultCredProtect) {
                  << ProtectionPolicyDescription(test.requested_level));
 
     PublicKeyCredentialCreationOptionsPtr options = make_credential_options();
-    options->authenticator_selection->SetRequireResidentKeyForTesting(true);
+    options->authenticator_selection->SetResidentKeyForTesting(
+        device::ResidentKeyRequirement::kRequired);
     options->protection_policy = test.requested_level;
     options->authenticator_selection->SetUserVerificationRequirementForTesting(
         device::UserVerificationRequirement::kRequired);
@@ -5160,7 +5241,8 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WinCredProtectApiVersion) {
     options->relying_party.name = "";
     options->authenticator_selection->SetUserVerificationRequirementForTesting(
         device::UserVerificationRequirement::kRequired);
-    options->authenticator_selection->SetRequireResidentKeyForTesting(true);
+    options->authenticator_selection->SetResidentKeyForTesting(
+        device::ResidentKeyRequirement::kRequired);
     options->protection_policy =
         blink::mojom::ProtectionPolicy::UV_OR_CRED_ID_REQUIRED;
     options->enforce_protection_policy = true;
@@ -5191,8 +5273,9 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
     PublicKeyCredentialCreationOptionsPtr options =
         GetTestPublicKeyCredentialCreationOptions();
     options->prf_enable = true;
-    options->authenticator_selection->SetRequireResidentKeyForTesting(
-        hmac_secret_supported);
+    options->authenticator_selection->SetResidentKeyForTesting(
+        hmac_secret_supported ? device::ResidentKeyRequirement::kRequired
+                              : device::ResidentKeyRequirement::kDiscouraged);
     options->user.id = {1, 2, 3, 4};
     options->user.name = "name";
     options->user.display_name = "displayName";

@@ -630,7 +630,8 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
           request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
-  if (make_credential_options_->require_resident_key) {
+  if (make_credential_options_->resident_key !=
+      device::ResidentKeyRequirement::kDiscouraged) {
     request_delegate_->SetMightCreateResidentCredential(true);
   }
   request_->set_observer(request_delegate_.get());
@@ -777,20 +778,29 @@ void AuthenticatorCommon::MakeCredential(
     return;
   }
 
-  bool resident_key = options->authenticator_selection &&
-                      options->authenticator_selection->require_resident_key();
-  if (resident_key && !request_delegate_->SupportsResidentKeys()) {
-    // Disallow the creation of resident credentials.
-    InvokeCallbackAndCleanup(
-        std::move(callback),
-        blink::mojom::AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED);
-    return;
-  }
+  const device::AuthenticatorSelectionCriteria
+      authenticator_selection_criteria =
+          options->authenticator_selection
+              ? *options->authenticator_selection
+              : device::AuthenticatorSelectionCriteria();
+  make_credential_options_ = device::MakeCredentialRequestHandler::Options(
+      authenticator_selection_criteria);
 
-  device::AuthenticatorSelectionCriteria authenticator_selection_criteria =
-      options->authenticator_selection
-          ? *options->authenticator_selection
-          : device::AuthenticatorSelectionCriteria();
+  const bool might_create_resident_key =
+      make_credential_options_->resident_key !=
+      device::ResidentKeyRequirement::kDiscouraged;
+  if (might_create_resident_key && !request_delegate_->SupportsResidentKeys()) {
+    if (make_credential_options_->resident_key ==
+        device::ResidentKeyRequirement::kRequired) {
+      InvokeCallbackAndCleanup(
+          std::move(callback),
+          blink::mojom::AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED);
+      return;
+    }
+    // Downgrade 'preferred' to 'discouraged'.
+    make_credential_options_->resident_key =
+        device::ResidentKeyRequirement::kDiscouraged;
+  }
 
   // Reject any non-sensical credProtect extension values.
   if (  // Can't require the default policy (or no policy).
@@ -802,7 +812,7 @@ void AuthenticatorCommon::MakeCredential(
       // does because, with CTAP 2.0, just because a resident key isn't
       // _required_ doesn't mean that one won't be created and an RP might want
       // credProtect to take effect if that happens.)
-      (!resident_key &&
+      (!might_create_resident_key &&
        options->protection_policy == blink::mojom::ProtectionPolicy::NONE) ||
       // UV_REQUIRED only makes sense if UV is required overall.
       (options->protection_policy ==
@@ -818,9 +828,9 @@ void AuthenticatorCommon::MakeCredential(
   base::Optional<device::CredProtectRequest> cred_protect_request;
   switch (options->protection_policy) {
     case blink::mojom::ProtectionPolicy::UNSPECIFIED:
-      if (resident_key) {
-        // If not specified, kUVOrCredIDRequired is made the default unless the
-        // authenticator defaults to something better.
+      if (might_create_resident_key) {
+        // If not specified, kUVOrCredIDRequired is made the default unless
+        // the authenticator defaults to something better.
         cred_protect_request =
             device::CredProtectRequest::kUVOrCredIDRequiredOrBetter;
       }
@@ -836,13 +846,10 @@ void AuthenticatorCommon::MakeCredential(
       break;
   }
 
-  make_credential_options_ =
-      cred_protect_request
-          ? device::MakeCredentialRequestHandler::Options(
-                authenticator_selection_criteria, *cred_protect_request,
-                options->enforce_protection_policy)
-          : device::MakeCredentialRequestHandler::Options(
-                authenticator_selection_criteria);
+  if (cred_protect_request) {
+    make_credential_options_->cred_protect_request = {
+        {*cred_protect_request, options->enforce_protection_policy}};
+  }
 
   DCHECK(make_credential_response_callback_.is_null());
   make_credential_response_callback_ = std::move(callback);
@@ -888,7 +895,9 @@ void AuthenticatorCommon::MakeCredential(
   // On dual protocol CTAP2/U2F devices, force credential creation over U2F.
   ctap_make_credential_request_->is_u2f_only = origin_is_crypto_token_extension;
 
-  if (resident_key && caller_origin.scheme() == "chrome-extension") {
+  if (make_credential_options_->resident_key ==
+          device::ResidentKeyRequirement::kRequired &&
+      caller_origin.scheme() == "chrome-extension") {
     // The large blob key extension is set for every request since we cannot
     // know in advance if the RP will attempt storing a blob on a future
     // GetAssertion request.

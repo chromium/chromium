@@ -100,6 +100,15 @@ struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::AuthenticatorAttachment,
 };
 
 template <>
+struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::ResidentKeyRequirement,
+                                      device::ResidentKeyRequirement> {
+  static blink::mojom::ResidentKeyRequirement ToMojom(
+      device::ResidentKeyRequirement input);
+  static bool FromMojom(blink::mojom::ResidentKeyRequirement input,
+                        device::ResidentKeyRequirement* output);
+};
+
+template <>
 struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::UserVerificationRequirement,
                                       device::UserVerificationRequirement> {
   static blink::mojom::UserVerificationRequirement ToMojom(
@@ -117,9 +126,9 @@ struct BLINK_COMMON_EXPORT
     return in.authenticator_attachment();
   }
 
-  static bool require_resident_key(
+  static device::ResidentKeyRequirement resident_key(
       const device::AuthenticatorSelectionCriteria& in) {
-    return in.require_resident_key();
+    return in.resident_key();
   }
 
   static device::UserVerificationRequirement user_verification(

@@ -110,7 +110,8 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     return MakeCredentialStatus::kAuthenticatorMissingResidentKeys;
   }
 
-  const auto& auth_options = authenticator->Options();
+  const base::Optional<AuthenticatorSupportedOptions>& auth_options =
+      authenticator->Options();
   if (!auth_options) {
     // This authenticator doesn't know its capabilities yet, so we need
     // to assume it can handle the request. This is the case for Windows,
@@ -118,7 +119,8 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
     return MakeCredentialStatus::kSuccess;
   }
 
-  if (options.require_resident_key && !auth_options->supports_resident_key) {
+  if (options.resident_key == ResidentKeyRequirement::kRequired &&
+      !auth_options->supports_resident_key) {
     return MakeCredentialStatus::kAuthenticatorMissingResidentKeys;
   }
 
@@ -327,18 +329,9 @@ MakeCredentialRequestHandler::Options::Options(
     const AuthenticatorSelectionCriteria& authenticator_selection_criteria)
     : authenticator_attachment(
           authenticator_selection_criteria.authenticator_attachment()),
-      require_resident_key(
-          authenticator_selection_criteria.require_resident_key()),
+      resident_key(authenticator_selection_criteria.resident_key()),
       user_verification(
           authenticator_selection_criteria.user_verification_requirement()) {}
-MakeCredentialRequestHandler::Options::Options(
-    const AuthenticatorSelectionCriteria& authenticator_selection_criteria,
-    CredProtectRequest cred_protect_request_,
-    bool enforce_cred_protect_policy)
-    : Options(authenticator_selection_criteria) {
-  cred_protect_request.emplace(std::move(cred_protect_request_),
-                               enforce_cred_protect_policy);
-}
 MakeCredentialRequestHandler::Options::Options(Options&&) = default;
 MakeCredentialRequestHandler::Options&
 MakeCredentialRequestHandler::Options::operator=(const Options&) = default;
@@ -361,23 +354,14 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
       options_(options) {
   // These parts of the request should be filled in by
   // |SpecializeRequestForAuthenticator|.
+  DCHECK_EQ(request_.authenticator_attachment, AuthenticatorAttachment::kAny);
+  DCHECK(!request_.resident_key_required);
   DCHECK(!request_.cred_protect);
   DCHECK(!request_.android_client_data_ext);
   DCHECK(!request_.cred_protect_enforce);
 
   transport_availability_info().request_type =
       FidoRequestHandlerBase::RequestType::kMakeCredential;
-
-  // Set the rk, uv and attachment fields, which were only initialized to
-  // default values up to here.
-  if (options_.require_resident_key) {
-    request_.resident_key_required = true;
-    request_.user_verification = UserVerificationRequirement::kRequired;
-  } else {
-    request_.resident_key_required = false;
-    request_.user_verification = options_.user_verification;
-  }
-  request_.authenticator_attachment = options_.authenticator_attachment;
 
   Start();
 }
@@ -570,6 +554,24 @@ void MakeCredentialRequestHandler::HandleResponse(
       return;
     }
     StartPINFallbackForInternalUv(authenticator, std::move(request));
+    return;
+  }
+
+  if (options_.resident_key == ResidentKeyRequirement::kPreferred &&
+      request->resident_key_required &&
+      status == CtapDeviceResponseCode::kCtap2ErrKeyStoreFull) {
+    // TODO(crbug/1117630): This probably requires a second touch and we should
+    // add UI for that. PR #962 aims to change CTAP2.1 to return this error
+    // before UP, so we might need to gate this on the supported CTAP version.
+    FIDO_LOG(DEBUG) << "Downgrading rk=preferred to non-resident credential "
+                       "because key storage is full";
+    request->resident_key_required = false;
+    CtapMakeCredentialRequest request_copy(*request);
+    authenticator->MakeCredential(
+        std::move(request_copy),
+        base::BindOnce(&MakeCredentialRequestHandler::HandleResponse,
+                       weak_factory_.GetWeakPtr(), authenticator,
+                       std::move(request), base::ElapsedTimer()));
     return;
   }
 
@@ -969,6 +971,37 @@ void MakeCredentialRequestHandler::DispatchRequestWithToken(
 void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     CtapMakeCredentialRequest* request,
     const FidoAuthenticator* authenticator) {
+  // Only Windows cares about |authenticator_attachment| on the request.
+  request->authenticator_attachment = options_.authenticator_attachment;
+
+  const base::Optional<AuthenticatorSupportedOptions>& auth_options =
+      authenticator->Options();
+  switch (options_.resident_key) {
+    case ResidentKeyRequirement::kRequired:
+      request->resident_key_required = true;
+      request->user_verification = UserVerificationRequirement::kRequired;
+      break;
+    case ResidentKeyRequirement::kPreferred: {
+      // Create a resident key if the authenticator supports it and the UI is
+      // capable of prompting for PIN/UV.
+      request->resident_key_required =
+#if defined(OS_WIN)
+          // Windows does not yet support rk=preferred.
+          !authenticator->IsWinNativeApiAuthenticator() &&
+#endif
+          observer()->SupportsPIN() && auth_options &&
+          auth_options->supports_resident_key;
+      break;
+    }
+    case ResidentKeyRequirement::kDiscouraged:
+      request->resident_key_required = false;
+      break;
+  }
+
+  request->user_verification = request->resident_key_required
+                                   ? UserVerificationRequirement::kRequired
+                                   : options_.user_verification;
+
   if (options_.cred_protect_request &&
       authenticator->SupportsCredProtectExtension()) {
     request->cred_protect = CredProtectForAuthenticator(
@@ -976,8 +1009,8 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->cred_protect_enforce = options_.cred_protect_request->second;
   }
 
-  if (options_.android_client_data_ext && authenticator->Options() &&
-      authenticator->Options()->supports_android_client_data_ext) {
+  if (options_.android_client_data_ext && auth_options &&
+      auth_options->supports_android_client_data_ext) {
     request->android_client_data_ext = *options_.android_client_data_ext;
   }
 

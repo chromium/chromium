@@ -184,7 +184,7 @@ TEST_F(FidoMakeCredentialHandlerTest, TestU2fRegister) {
 TEST_F(FidoMakeCredentialHandlerTest, U2fRegisterWithUserVerificationRequired) {
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/false,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kDiscouraged,
           UserVerificationRequirement::kRequired));
   discovery()->WaitForCallToStartAndSimulateSuccess();
 
@@ -202,7 +202,7 @@ TEST_F(FidoMakeCredentialHandlerTest, U2fRegisterWithUserVerificationRequired) {
 TEST_F(FidoMakeCredentialHandlerTest, U2fRegisterWithResidentKeyRequirement) {
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/true,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kRequired,
           UserVerificationRequirement::kPreferred));
   discovery()->WaitForCallToStartAndSimulateSuccess();
 
@@ -220,7 +220,7 @@ TEST_F(FidoMakeCredentialHandlerTest, U2fRegisterWithResidentKeyRequirement) {
 TEST_F(FidoMakeCredentialHandlerTest, UserVerificationRequirementNotMet) {
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/false,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kDiscouraged,
           UserVerificationRequirement::kRequired));
   discovery()->WaitForCallToStartAndSimulateSuccess();
 
@@ -240,7 +240,7 @@ TEST_F(FidoMakeCredentialHandlerTest, UserVerificationRequirementNotMet) {
 TEST_F(FidoMakeCredentialHandlerTest, CrossPlatformAttachment) {
   auto request_handler = CreateMakeCredentialHandler(
       AuthenticatorSelectionCriteria(AuthenticatorAttachment::kCrossPlatform,
-                                     /*require_resident_key=*/false,
+                                     ResidentKeyRequirement::kDiscouraged,
                                      UserVerificationRequirement::kPreferred));
 
   // kCloudAssistedBluetoothLowEnergy not yet supported for MakeCredential.
@@ -262,7 +262,7 @@ TEST_F(FidoMakeCredentialHandlerTest, PlatformAttachment) {
 
   auto request_handler = CreateMakeCredentialHandler(
       AuthenticatorSelectionCriteria(AuthenticatorAttachment::kPlatform,
-                                     /*require_resident_key=*/false,
+                                     ResidentKeyRequirement::kDiscouraged,
                                      UserVerificationRequirement::kRequired));
 
   ExpectAllowedTransportsForRequestAre(request_handler.get(),
@@ -272,7 +272,7 @@ TEST_F(FidoMakeCredentialHandlerTest, PlatformAttachment) {
 TEST_F(FidoMakeCredentialHandlerTest, ResidentKeyRequirementNotMet) {
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/true,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kRequired,
           UserVerificationRequirement::kPreferred));
   discovery()->WaitForCallToStartAndSimulateSuccess();
 
@@ -386,7 +386,7 @@ TEST_F(FidoMakeCredentialHandlerTest, ResidentKeyCancelOtherAuthenticator) {
   // on a second authenticator.
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/true,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kRequired,
           UserVerificationRequirement::kRequired));
   discovery()->WaitForCallToStartAndSimulateSuccess();
 
@@ -419,7 +419,7 @@ TEST_F(FidoMakeCredentialHandlerTest, ResidentKeyCancel) {
   // touch creating a resident key.
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/true,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kRequired,
           UserVerificationRequirement::kRequired));
 
   auto delete_request_handler = [&request_handler]() {
@@ -450,7 +450,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
   set_supported_transports({FidoTransportProtocol::kUsbHumanInterfaceDevice});
   auto request_handler = CreateMakeCredentialHandler(
       AuthenticatorSelectionCriteria(AuthenticatorAttachment::kCrossPlatform,
-                                     /*require_resident_key=*/true,
+                                     ResidentKeyRequirement::kRequired,
                                      UserVerificationRequirement::kRequired));
   discovery()->WaitForCallToStartAndSimulateSuccess();
 
@@ -485,10 +485,10 @@ TEST_F(FidoMakeCredentialHandlerTest,
       test_data::kTestMakeCredentialResponse);
   set_mock_platform_device(std::move(platform_device));
 
-  auto request_handler = CreateMakeCredentialHandler(
-      AuthenticatorSelectionCriteria(AuthenticatorAttachment::kPlatform,
-                                     /*require_resident_key=*/true,
-                                     UserVerificationRequirement::kRequired));
+  auto request_handler =
+      CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
+          AuthenticatorAttachment::kPlatform, ResidentKeyRequirement::kRequired,
+          UserVerificationRequirement::kRequired));
 
   callback().WaitForCallback();
   EXPECT_EQ(MakeCredentialStatus::kSuccess, callback().status());
@@ -504,7 +504,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
        CrossPlatformAuthenticatorPretendingToBePlatform) {
   auto request_handler = CreateMakeCredentialHandler(
       AuthenticatorSelectionCriteria(AuthenticatorAttachment::kCrossPlatform,
-                                     /*require_resident_key=*/false,
+                                     ResidentKeyRequirement::kDiscouraged,
                                      UserVerificationRequirement::kPreferred));
   discovery()->WaitForCallToStartAndSimulateSuccess();
 
@@ -530,10 +530,10 @@ TEST_F(FidoMakeCredentialHandlerTest,
       test_data::kTestAuthenticatorGetInfoResponse);
   set_mock_platform_device(std::move(platform_device));
 
-  auto request_handler = CreateMakeCredentialHandler(
-      AuthenticatorSelectionCriteria(AuthenticatorAttachment::kPlatform,
-                                     /*require_resident_key=*/true,
-                                     UserVerificationRequirement::kRequired));
+  auto request_handler =
+      CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
+          AuthenticatorAttachment::kPlatform, ResidentKeyRequirement::kRequired,
+          UserVerificationRequirement::kRequired));
 
   task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(callback().was_called());
@@ -547,7 +547,7 @@ TEST_F(FidoMakeCredentialHandlerTest, SupportedTransportsAreOnlyNfc) {
   set_supported_transports(kNfc);
   auto request_handler = CreateMakeCredentialHandler(
       AuthenticatorSelectionCriteria(AuthenticatorAttachment::kCrossPlatform,
-                                     /*require_resident_key=*/false,
+                                     ResidentKeyRequirement::kDiscouraged,
                                      UserVerificationRequirement::kPreferred));
 
   ExpectAllowedTransportsForRequestAre(request_handler.get(), kNfc);
@@ -556,7 +556,7 @@ TEST_F(FidoMakeCredentialHandlerTest, SupportedTransportsAreOnlyNfc) {
 TEST_F(FidoMakeCredentialHandlerTest, IncorrectRpIdHash) {
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/false,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kDiscouraged,
           UserVerificationRequirement::kPreferred));
   discovery()->WaitForCallToStartAndSimulateSuccess();
 
@@ -583,7 +583,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
 
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/true,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kRequired,
           UserVerificationRequirement::kPreferred));
 
   discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -602,7 +602,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
   auto device = std::make_unique<VirtualCtap2Device>();
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/true,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kRequired,
           UserVerificationRequirement::kPreferred));
 
   discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -628,7 +628,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
 
   auto request_handler = CreateMakeCredentialHandler(
       AuthenticatorSelectionCriteria(AuthenticatorAttachment::kPlatform,
-                                     /*require_resident_key=*/false,
+                                     ResidentKeyRequirement::kDiscouraged,
                                      UserVerificationRequirement::kPreferred));
 
   task_environment_.FastForwardUntilNoTasksRemain();
@@ -647,7 +647,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
 
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/false,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kDiscouraged,
           UserVerificationRequirement::kPreferred));
 
   discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -676,7 +676,7 @@ TEST_F(FidoMakeCredentialHandlerTest,
 
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/false,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kDiscouraged,
           UserVerificationRequirement::kDiscouraged));
   discovery()->AddDevice(std::move(device));
   discovery()->WaitForCallToStartAndSimulateSuccess();
@@ -695,7 +695,7 @@ TEST_F(FidoMakeCredentialHandlerTest, TestRequestWithPinAuthInvalid) {
 
   auto request_handler =
       CreateMakeCredentialHandler(AuthenticatorSelectionCriteria(
-          AuthenticatorAttachment::kAny, /*require_resident_key=*/false,
+          AuthenticatorAttachment::kAny, ResidentKeyRequirement::kDiscouraged,
           UserVerificationRequirement::kPreferred));
 
   discovery()->WaitForCallToStartAndSimulateSuccess();

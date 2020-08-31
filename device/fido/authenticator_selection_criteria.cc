@@ -10,10 +10,10 @@ AuthenticatorSelectionCriteria::AuthenticatorSelectionCriteria() = default;
 
 AuthenticatorSelectionCriteria::AuthenticatorSelectionCriteria(
     AuthenticatorAttachment authenticator_attachment,
-    bool require_resident_key,
+    ResidentKeyRequirement resident_key,
     UserVerificationRequirement user_verification_requirement)
     : authenticator_attachment_(authenticator_attachment),
-      require_resident_key_(require_resident_key),
+      resident_key_(resident_key),
       user_verification_requirement_(user_verification_requirement) {}
 
 AuthenticatorSelectionCriteria::AuthenticatorSelectionCriteria(
@@ -31,7 +31,7 @@ AuthenticatorSelectionCriteria& AuthenticatorSelectionCriteria::operator=(
 bool AuthenticatorSelectionCriteria::operator==(
     const AuthenticatorSelectionCriteria& other) const {
   return authenticator_attachment_ == other.authenticator_attachment_ &&
-         require_resident_key_ == other.require_resident_key_ &&
+         resident_key_ == other.resident_key_ &&
          user_verification_requirement_ == other.user_verification_requirement_;
 }
 

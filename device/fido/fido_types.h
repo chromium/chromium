@@ -29,6 +29,16 @@ enum class AuthenticatorAttachment {
   kCrossPlatform,
 };
 
+// A constraint on whether a client-side discoverable (resident) credential
+// should be created during registration.
+//
+// https://w3c.github.io/webauthn/#enum-residentKeyRequirement
+enum class ResidentKeyRequirement {
+  kDiscouraged,
+  kPreferred,
+  kRequired,
+};
+
 // User verification constraint passed on from the relying party as a parameter
 // for AuthenticatorSelectionCriteria and for CtapGetAssertion request.
 // https://w3c.github.io/webauthn/#enumdef-userverificationrequirement

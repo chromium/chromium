@@ -78,10 +78,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
     Options();
     Options(
         const AuthenticatorSelectionCriteria& authenticator_selection_criteria);
-    Options(
-        const AuthenticatorSelectionCriteria& authenticator_selection_criteria,
-        CredProtectRequest cred_protect_request,
-        bool enforce_cred_protect_policy);
     ~Options();
     Options(const Options&);
     Options(Options&&);
@@ -93,9 +89,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
     AuthenticatorAttachment authenticator_attachment =
         AuthenticatorAttachment::kAny;
 
-    // require_resident_key indicates whether the request must result in the
-    // creation of a client-side discoverable credential (aka resident key).
-    bool require_resident_key = false;
+    // resident_key indicates whether the request should result in the creation
+    // of a client-side discoverable credential (aka resident key).
+    ResidentKeyRequirement resident_key = ResidentKeyRequirement::kDiscouraged;
 
     // user_verification indicates whether the authenticator should (or must)
     // perform user verficiation before creating the credential.

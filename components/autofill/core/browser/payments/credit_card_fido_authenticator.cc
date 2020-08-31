@@ -23,6 +23,8 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "device/fido/authenticator_selection_criteria.h"
+#include "device/fido/fido_types.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -621,9 +623,10 @@ CreditCardFIDOAuthenticator::ParseCreationOptions(
   }
 
   // Only allow user-verifying platform authenticators.
-  options->authenticator_selection = AuthenticatorSelectionCriteria(
-      AuthenticatorAttachment::kPlatform, /*require_resident_key=*/false,
-      UserVerificationRequirement::kRequired);
+  options->authenticator_selection = device::AuthenticatorSelectionCriteria(
+      device::AuthenticatorAttachment::kPlatform,
+      device::ResidentKeyRequirement::kDiscouraged,
+      device::UserVerificationRequirement::kRequired);
 
   // List of keys that Payments already knows about, and so should not make a
   // new credential.

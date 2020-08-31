@@ -151,6 +151,43 @@ bool EnumTraits<blink::mojom::AuthenticatorAttachment,
 }
 
 // static
+blink::mojom::ResidentKeyRequirement EnumTraits<
+    blink::mojom::ResidentKeyRequirement,
+    device::ResidentKeyRequirement>::ToMojom(device::ResidentKeyRequirement
+                                                 input) {
+  switch (input) {
+    case ::device::ResidentKeyRequirement::kDiscouraged:
+      return blink::mojom::ResidentKeyRequirement::DISCOURAGED;
+    case ::device::ResidentKeyRequirement::kPreferred:
+      return blink::mojom::ResidentKeyRequirement::PREFERRED;
+    case ::device::ResidentKeyRequirement::kRequired:
+      return blink::mojom::ResidentKeyRequirement::REQUIRED;
+  }
+  NOTREACHED();
+  return blink::mojom::ResidentKeyRequirement::DISCOURAGED;
+}
+
+// static
+bool EnumTraits<blink::mojom::ResidentKeyRequirement,
+                device::ResidentKeyRequirement>::
+    FromMojom(blink::mojom::ResidentKeyRequirement input,
+              device::ResidentKeyRequirement* output) {
+  switch (input) {
+    case blink::mojom::ResidentKeyRequirement::DISCOURAGED:
+      *output = ::device::ResidentKeyRequirement::kDiscouraged;
+      return true;
+    case blink::mojom::ResidentKeyRequirement::PREFERRED:
+      *output = ::device::ResidentKeyRequirement::kPreferred;
+      return true;
+    case blink::mojom::ResidentKeyRequirement::REQUIRED:
+      *output = ::device::ResidentKeyRequirement::kRequired;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static
 blink::mojom::UserVerificationRequirement
 EnumTraits<blink::mojom::UserVerificationRequirement,
            device::UserVerificationRequirement>::
@@ -193,16 +230,16 @@ bool StructTraits<blink::mojom::AuthenticatorSelectionCriteriaDataView,
     Read(blink::mojom::AuthenticatorSelectionCriteriaDataView data,
          device::AuthenticatorSelectionCriteria* out) {
   device::AuthenticatorAttachment authenticator_attachment;
-  bool require_resident_key = data.require_resident_key();
   device::UserVerificationRequirement user_verification_requirement;
+  device::ResidentKeyRequirement resident_key;
   if (!data.ReadAuthenticatorAttachment(&authenticator_attachment) ||
-      !data.ReadUserVerification(&user_verification_requirement)) {
+      !data.ReadUserVerification(&user_verification_requirement) ||
+      !data.ReadResidentKey(&resident_key)) {
     return false;
   }
 
-  *out = device::AuthenticatorSelectionCriteria(authenticator_attachment,
-                                                require_resident_key,
-                                                user_verification_requirement);
+  *out = device::AuthenticatorSelectionCriteria(
+      authenticator_attachment, resident_key, user_verification_requirement);
   return true;
 }
 

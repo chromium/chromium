@@ -302,8 +302,8 @@ public class Fido2ApiTestHelper {
         options.excludeCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
 
         options.authenticatorSelection = new AuthenticatorSelectionCriteria();
-        /* TODO add back UserVerificationRequirement when the FIDO2 API supports it */
-        options.authenticatorSelection.requireResidentKey = false;
+        /* TODO add UserVerificationRequirement and ResidentKeyRequirement when the FIDO2 API
+         * supports it */
         options.authenticatorSelection.authenticatorAttachment =
                 AuthenticatorAttachment.CROSS_PLATFORM;
         return options;

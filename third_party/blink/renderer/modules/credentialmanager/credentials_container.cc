@@ -642,7 +642,8 @@ void CreatePublicKeyCredentialForPaymentCredential(
         mojom::blink::AuthenticatorSelectionCriteria::New();
     selection_criteria->authenticator_attachment =
         mojom::blink::AuthenticatorAttachment::PLATFORM;
-    selection_criteria->require_resident_key = false;
+    selection_criteria->resident_key =
+        mojom::blink::ResidentKeyRequirement::DISCOURAGED;
     selection_criteria->user_verification =
         mojom::blink::UserVerificationRequirement::REQUIRED;
     mojo_options->authenticator_selection = std::move(selection_criteria);
@@ -804,8 +805,8 @@ ScriptPromise CredentialsContainer::get(
     if (!options->publicKey()->hasUserVerification()) {
       resolver->GetFrame()->Console().AddMessage(MakeGarbageCollected<
                                                  ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning,
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
           "publicKey.userVerification was not set to any value in Web "
           "Authentication navigator.credentials.get() call. This defaults to "
           "'preferred', which is probably not what you want. If in doubt, set "
@@ -1061,8 +1062,8 @@ ScriptPromise CredentialsContainer::create(
              ->hasUserVerification()) {
       resolver->GetFrame()->Console().AddMessage(MakeGarbageCollected<
                                                  ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning,
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
           "publicKey.authenticatorSelection.userVerification was not set to "
           "any value in Web Authentication navigator.credentials.create() "
           "call. This defaults to 'preferred', which is probably not what you "
@@ -1070,7 +1071,17 @@ ScriptPromise CredentialsContainer::create(
           "https://chromium.googlesource.com/chromium/src/+/master/content/"
           "browser/webauth/uv_preferred.md for details"));
     }
-
+    if (options->publicKey()->hasAuthenticatorSelection() &&
+        options->publicKey()->authenticatorSelection()->hasResidentKey() &&
+        !mojo::ConvertTo<base::Optional<mojom::blink::ResidentKeyRequirement>>(
+            options->publicKey()->authenticatorSelection()->residentKey())) {
+      resolver->GetFrame()->Console().AddMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Ignoring unknown publicKey.authenticatorSelection.resident_key "
+              "value"));
+    }
     auto mojo_options =
         MojoPublicKeyCredentialCreationOptions::From(*options->publicKey());
     if (!mojo_options) {
