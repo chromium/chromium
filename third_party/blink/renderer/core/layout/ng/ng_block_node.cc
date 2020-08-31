@@ -131,6 +131,9 @@ NOINLINE void DetermineMathMLAlgorithmAndRun(
     } else if (IsA<MathMLPaddedElement>(element)) {
       CreateAlgorithmAndRun<NGMathPaddedLayoutAlgorithm>(params, callback);
       return;
+    } else if (IsA<MathMLOperatorElement>(element)) {
+      CreateAlgorithmAndRun<NGBlockLayoutAlgorithm>(params, callback);
+      return;
     } else if (IsA<MathMLScriptsElement>(element) &&
                IsValidMathMLScript(params.node)) {
       // TODO(rbuis): take into account movablelimits.

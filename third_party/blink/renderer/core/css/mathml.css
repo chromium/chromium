@@ -47,7 +47,7 @@ math[display="block"] {
     outline: auto 1px -webkit-focus-ring-color;
 }
 
-maction, merror, mfrac, mmultiscripts, mover, mpadded, mphantom, mprescripts, mroot, mrow, msqrt, mspace, mstyle, msub, msup, msubsup, munder, munderover, none
+maction, merror, mfrac, mmultiscripts, mo, mover, mpadded, mphantom, mprescripts, mroot, mrow, msqrt, mspace, mstyle, msub, msup, msubsup, munder, munderover, none
 {
     display: math;
 }

@@ -441,6 +441,8 @@ blink_core_sources("layout") {
     "ng/list/ng_unpositioned_list_marker.h",
     "ng/mathml/layout_ng_mathml_block.cc",
     "ng/mathml/layout_ng_mathml_block.h",
+    "ng/mathml/layout_ng_mathml_block_flow.cc",
+    "ng/mathml/layout_ng_mathml_block_flow.h",
     "ng/mathml/layout_ng_mathml_block_with_anonymous_mrow.cc",
     "ng/mathml/layout_ng_mathml_block_with_anonymous_mrow.h",
     "ng/mathml/ng_math_fraction_layout_algorithm.cc",
