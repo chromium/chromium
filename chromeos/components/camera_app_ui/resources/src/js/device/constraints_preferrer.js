@@ -4,6 +4,7 @@
 
 import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {assert} from '../chrome_util.js';
+import * as dom from '../dom.js';
 import * as state from '../state.js';
 import {
   Facing,
@@ -208,12 +209,11 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
     this.prefFpses_ = {};
 
     /**
-     * @type {!HTMLButtonElement}
+     * @type {!HTMLInputElement}
      * @const
      * @private
      */
-    this.toggleFps_ = /** @type {!HTMLButtonElement} */ (
-        document.querySelector('#toggle-fps'));
+    this.toggleFps_ = dom.get('#toggle-fps', HTMLInputElement);
 
     /**
      * Currently in used recording resolution.

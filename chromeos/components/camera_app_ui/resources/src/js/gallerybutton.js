@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {browserProxy} from './browser_proxy/browser_proxy.js';
-import {assert, assertInstanceof} from './chrome_util.js';
+import {assert} from './chrome_util.js';
+import * as dom from './dom.js';
 import * as filesystem from './models/file_system.js';
 import {
   AbstractDirectoryEntry,  // eslint-disable-line no-unused-vars
@@ -103,8 +104,7 @@ export class GalleryButton {
      * @type {!HTMLButtonElement}
      * @private
      */
-    this.button_ = assertInstanceof(
-        document.querySelector('#gallery-enter'), HTMLButtonElement);
+    this.button_ = dom.get('#gallery-enter', HTMLButtonElement);
 
     /**
      * Directory holding saved pictures showing in gallery.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../../chrome_util.js';
+import * as dom from '../../dom.js';
 import {pictureURL} from '../../models/file_system.js';
 // eslint-disable-next-line no-unused-vars
 import {AbstractFileEntry} from '../../models/file_system_entry.js';
@@ -21,39 +21,32 @@ export class ReviewResult {
      * @const {!HTMLImageElement}
      * @private
      */
-    this.reviewPhotoResult_ = assertInstanceof(
-        document.querySelector('#review-photo-result'), HTMLImageElement);
+    this.reviewPhotoResult_ = dom.get('#review-photo-result', HTMLImageElement);
 
     /**
      * @const {!HTMLVideoElement}
      * @private
      */
-    this.reviewVideoResult_ = assertInstanceof(
-        document.querySelector('#review-video-result'), HTMLVideoElement);
+    this.reviewVideoResult_ = dom.get('#review-video-result', HTMLVideoElement);
 
     /**
      * @const {!HTMLButtonElement}
      * @private
      */
-    this.confirmResultButton_ =
-        /** @type {!HTMLButtonElement} */ (
-            document.querySelector('#confirm-result'));
+    this.confirmResultButton_ = dom.get('#confirm-result', HTMLButtonElement);
 
     /**
      * @const {!HTMLButtonElement}
      * @private
      */
-    this.cancelResultButton_ =
-        /** @type {!HTMLButtonElement} */ (
-            document.querySelector('#cancel-result'));
+    this.cancelResultButton_ = dom.get('#cancel-result', HTMLButtonElement);
 
     /**
      * @const {!HTMLButtonElement}
      * @private
      */
     this.playResultVideoButton_ =
-        /** @type {!HTMLButtonElement} */ (
-            document.querySelector('#play-result-video'));
+        dom.get('#play-result-video', HTMLButtonElement);
 
     /**
      * Function resolving open result call called with whether user confirms

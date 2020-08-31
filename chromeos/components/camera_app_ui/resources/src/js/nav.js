@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {browserProxy} from './browser_proxy/browser_proxy.js';
-import {assertInstanceof} from './chrome_util.js';
+import * as dom from './dom.js';
 import {DeviceOperator} from './mojo/device_operator.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
@@ -33,10 +33,8 @@ let topmostIndex = -1;
 export function setup(views) {
   allViews = views;
   // Manage all tabindex usages in for navigation.
-  document.querySelectorAll('[tabindex]')
-      .forEach(
-          (element) => util.makeUnfocusableByMouse(
-              assertInstanceof(element, HTMLElement)));
+  dom.getAll('[tabindex]', HTMLElement)
+      .forEach((element) => util.makeUnfocusableByMouse(element));
   document.body.addEventListener('keydown', (e) => {
     if (e.key === 'Tab') {
       state.set(state.State.TAB_NAVIGATION, true);
@@ -54,7 +52,7 @@ function activate(index) {
   // Restore the view's child elements' tabindex and then focus the view.
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'false');
-  view.root.querySelectorAll('[data-tabindex]').forEach((element) => {
+  dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
     element.setAttribute('tabindex', element.dataset.tabindex);
     element.removeAttribute('data-tabindex');
   });
@@ -68,7 +66,7 @@ function activate(index) {
 function inactivate(index) {
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'true');
-  view.root.querySelectorAll('[tabindex]').forEach((element) => {
+  dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
     element.dataset.tabindex = element.getAttribute('tabindex');
     element.setAttribute('tabindex', '-1');
   });

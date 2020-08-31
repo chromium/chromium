@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {browserProxy} from '../../browser_proxy/browser_proxy.js';
-import {assertInstanceof} from '../../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
+import * as dom from '../../dom.js';
 import * as nav from '../../nav.js';
 import {PerfEvent} from '../../perf.js';
 import * as state from '../../state.js';
@@ -42,16 +42,14 @@ export class Options {
      * @private
      * @const
      */
-    this.toggleMic_ = assertInstanceof(
-        document.querySelector('#toggle-mic'), HTMLInputElement);
+    this.toggleMic_ = dom.get('#toggle-mic', HTMLInputElement);
 
     /**
      * @type {!HTMLInputElement}
      * @private
      * @const
      */
-    this.toggleMirror_ = assertInstanceof(
-        document.querySelector('#toggle-mirror'), HTMLInputElement);
+    this.toggleMirror_ = dom.get('#toggle-mirror', HTMLInputElement);
 
     /**
      * Device id of the camera device currently used or selected.
@@ -132,8 +130,7 @@ export class Options {
     }
     state.set(PerfEvent.CAMERA_SWITCHING, true);
     const devices = await this.infoUpdater_.getDevicesInfo();
-    util.animateOnce(assertInstanceof(
-        document.querySelector('#switch-device'), HTMLElement));
+    util.animateOnce(dom.get('#switch-device', HTMLElement));
     let index =
         devices.findIndex((entry) => entry.deviceId === this.videoDeviceId_);
     if (index === -1) {

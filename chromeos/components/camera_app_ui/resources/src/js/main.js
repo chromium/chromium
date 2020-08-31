@@ -7,12 +7,13 @@ import {
   ForegroundOps,  // eslint-disable-line no-unused-vars
 } from './background_ops.js';
 import {browserProxy} from './browser_proxy/browser_proxy.js';
-import {assert, assertInstanceof} from './chrome_util.js';
+import {assert} from './chrome_util.js';
 import {
   PhotoConstraintsPreferrer,
   VideoConstraintsPreferrer,
 } from './device/constraints_preferrer.js';
 import {DeviceInfoUpdater} from './device/device_info_updater.js';
+import * as dom from './dom.js';
 import * as error from './error.js';
 import {GalleryButton} from './gallerybutton.js';
 import * as metrics from './metrics.js';
@@ -131,7 +132,7 @@ export class App {
   setupToggles_() {
     browserProxy.localStorageGet({expert: false})
         .then(({expert}) => state.set(state.State.EXPERT, expert));
-    document.querySelectorAll('input').forEach((element) => {
+    dom.getAll('input', HTMLInputElement).forEach((element) => {
       element.addEventListener(
           'keypress',
           (event) =>
@@ -163,9 +164,8 @@ export class App {
         // Restore the previously saved state on startup.
         browserProxy.localStorageGet(payload(element))
             .then(
-                (values) => util.toggleChecked(
-                    assertInstanceof(element, HTMLInputElement),
-                    values[element.dataset.key]));
+                (values) =>
+                    util.toggleChecked(element, values[element.dataset.key]));
       }
     });
   }

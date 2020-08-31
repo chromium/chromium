@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 import {browserProxy} from '../browser_proxy/browser_proxy.js';
-import {assert, assertInstanceof} from '../chrome_util.js';
+import {
+  assert,
+  assertInstanceof,
+} from '../chrome_util.js';
 import {
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
   VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
 } from '../device/constraints_preferrer.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
+import * as dom from '../dom.js';
 import * as metrics from '../metrics.js';
 // eslint-disable-next-line no-unused-vars
 import {ResultSaver} from '../models/result_saver.js';
@@ -329,7 +333,7 @@ export class Camera extends View {
    */
   focus() {
     // Avoid focusing invisible shutters.
-    document.querySelectorAll('.shutter')
+    dom.getAll('button.shutter', HTMLButtonElement)
         .forEach((btn) => btn.offsetParent && btn.focus());
   }
 

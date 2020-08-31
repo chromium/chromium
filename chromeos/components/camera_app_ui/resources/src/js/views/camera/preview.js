@@ -4,6 +4,7 @@
 
 import {browserProxy} from '../../browser_proxy/browser_proxy.js';
 import {assertInstanceof} from '../../chrome_util.js';
+import * as dom from '../../dom.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import * as nav from '../../nav.js';
 import * as state from '../../state.js';
@@ -28,16 +29,14 @@ export class Preview {
      * @type {!HTMLVideoElement}
      * @private
      */
-    this.video_ = assertInstanceof(
-        document.querySelector('#preview-video'), HTMLVideoElement);
+    this.video_ = dom.get('#preview-video', HTMLVideoElement);
 
     /**
      * Element that shows the preview metadata.
      * @type {!HTMLElement}
      * @private
      */
-    this.metadata_ = assertInstanceof(
-        document.querySelector('#preview-metadata'), HTMLElement);
+    this.metadata_ = dom.get('#preview-metadata', HTMLElement);
 
     /**
      * The observer id for preview metadata.
@@ -478,6 +477,7 @@ export class Preview {
    */
   cancelFocus_() {
     this.focus_ = null;
-    document.querySelector('#preview-focus-aim').hidden = true;
+    const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
+    aim.hidden = true;
   }
 }

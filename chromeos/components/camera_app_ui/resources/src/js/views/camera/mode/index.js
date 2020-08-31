@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../../../chrome_util.js';
+import {
+  assert,
+  assertInstanceof,
+} from '../../../chrome_util.js';
 import {
   CaptureCandidate,           // eslint-disable-line no-unused-vars
   ConstraintsPreferrer,       // eslint-disable-line no-unused-vars
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
   VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
 } from '../../../device/constraints_preferrer.js';
+import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceOperator} from '../../../mojo/device_operator.js';
 import * as state from '../../../state.js';
@@ -145,8 +149,7 @@ export class Modes {
      * @type {!HTMLElement}
      * @private
      */
-    this.modesGroup_ =
-        assertInstanceof(document.querySelector('#modes-group'), HTMLElement);
+    this.modesGroup_ = dom.get('#modes-group', HTMLElement);
 
     /**
      * @type {?Resolution}
@@ -246,7 +249,7 @@ export class Modes {
       },
     };
 
-    document.querySelectorAll('.mode-item>input').forEach((element) => {
+    dom.getAll('.mode-item>input', HTMLInputElement).forEach((element) => {
       element.addEventListener('click', (event) => {
         if (!state.get(state.State.STREAMING) ||
             state.get(state.State.TAKING)) {
@@ -289,9 +292,9 @@ export class Modes {
   updateModeUI_(mode) {
     this.allModeNames_.forEach((m) => state.set(m, m === mode));
     const element =
-        document.querySelector(`.mode-item>input[data-mode=${mode}]`);
+        dom.get(`.mode-item>input[data-mode=${mode}]`, HTMLInputElement);
     element.checked = true;
-    const wrapper = element.parentElement;
+    const wrapper = assertInstanceof(element.parentElement, HTMLDivElement);
     let scrollTop = wrapper.offsetTop - this.modesGroup_.offsetHeight / 2 +
         wrapper.offsetHeight / 2;
     // Make photo mode scroll slightly upper so that the third mode item falls
@@ -381,8 +384,8 @@ export class Modes {
    */
   async updateModeSelectionUI(deviceId) {
     const supportedModes = await this.getSupportedModes(deviceId);
-    document.querySelectorAll('.mode-item').forEach((element) => {
-      const radio = element.querySelector('input[type=radio]');
+    dom.getAll('div.mode-item', HTMLDivElement).forEach((element) => {
+      const radio = dom.getFrom(element, 'input[type=radio]', HTMLInputElement);
       element.classList.toggle(
           'hide', !supportedModes.includes(radio.dataset.mode));
     });

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as dom from './dom.js';
+
 /**
  * Plays a sound.
  * @param {string} selector Selector of the sound.
@@ -13,7 +15,7 @@ export function play(selector) {
   // TODO(yuli): Don't play sounds if the speaker settings is muted.
   let cancel;
   const p = new Promise((resolve, reject) => {
-    const element = document.querySelector(selector);
+    const element = dom.get(selector, HTMLAudioElement);
     const timeout = setTimeout(resolve, Number(element.dataset.timeout || 0));
     cancel = () => {
       clearTimeout(timeout);

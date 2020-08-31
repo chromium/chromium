@@ -31,6 +31,7 @@ js_library("compile_resources") {
     "device/camera3_device_info.js",
     "device/constraints_preferrer.js",
     "device/device_info_updater.js",
+    "dom.js",
     "error.js",
     "gallerybutton.js",
     "init.js",

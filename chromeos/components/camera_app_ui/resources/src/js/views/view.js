@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../chrome_util.js';
-// eslint-disable-next-line no-unused-vars
-import {ViewName} from '../type.js';
+import * as dom from '../dom.js';
+import {ViewName} from '../type.js';  // eslint-disable-line no-unused-vars
 
 /* eslint-disable no-unused-vars */
 
@@ -52,8 +51,7 @@ export class View {
      * @type {!HTMLElement}
      * @protected
      */
-    this.rootElement_ =
-        assertInstanceof(document.querySelector(`#${name}`), HTMLElement);
+    this.rootElement_ = dom.get(`#${name}`, HTMLElement);
 
     /**
      * @type {?Promise}

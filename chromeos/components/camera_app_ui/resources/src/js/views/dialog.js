@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof, assertString} from '../chrome_util.js';
-// eslint-disable-next-line no-unused-vars
-import {ViewName} from '../type.js';
+import {assertString} from '../chrome_util.js';
+import * as dom from '../dom.js';
+import {ViewName} from '../type.js';  // eslint-disable-line no-unused-vars
+
 import {View} from './view.js';
 
 /**
@@ -21,22 +22,22 @@ export class Dialog extends View {
      * @type {!HTMLButtonElement}
      * @private
      */
-    this.positiveButton_ = assertInstanceof(
-        this.root.querySelector('.dialog-positive-button'), HTMLButtonElement);
+    this.positiveButton_ =
+        dom.getFrom(this.root, '.dialog-positive-button', HTMLButtonElement);
 
     /**
      * @type {!HTMLButtonElement}
      * @private
      */
-    this.negativeButton_ = assertInstanceof(
-        this.root.querySelector('.dialog-negative-button'), HTMLButtonElement);
+    this.negativeButton_ =
+        dom.getFrom(this.root, '.dialog-negative-button', HTMLButtonElement);
 
     /**
      * @type {!HTMLElement}
      * @private
      */
-    this.messageHolder_ = assertInstanceof(
-        this.root.querySelector('.dialog-msg-holder'), HTMLElement);
+    this.messageHolder_ =
+        dom.getFrom(this.root, '.dialog-msg-holder', HTMLElement);
 
     this.positiveButton_.addEventListener('click', () => this.leave(true));
     if (this.negativeButton_) {

@@ -4,7 +4,6 @@
 
 // eslint-disable-next-line no-unused-vars
 import {browserProxy} from '../browser_proxy/browser_proxy.js';
-import {assertInstanceof} from '../chrome_util.js';
 // eslint-disable-next-line no-unused-vars
 import {Camera3DeviceInfo} from '../device/camera3_device_info.js';
 import {
@@ -13,6 +12,7 @@ import {
 } from '../device/constraints_preferrer.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
+import * as dom from '../dom.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
 import {
@@ -22,6 +22,7 @@ import {
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
+
 import {View} from './view.js';
 
 /* eslint-disable no-unused-vars */
@@ -184,66 +185,59 @@ export class ResolutionSettings extends BaseSettings {
      * @type {!HTMLElement}
      * @private
      */
-    this.resMenu_ =
-        assertInstanceof(this.root.querySelector('div.menu'), HTMLElement);
+    this.resMenu_ = dom.getFrom(this.root, 'div.menu', HTMLDivElement);
 
     /**
      * @type {!HTMLElement}
      * @private
      */
-    this.videoResMenu_ = assertInstanceof(
-        this.videoResolutionSettings.root.querySelector('div.menu'),
-        HTMLElement);
+    this.videoResMenu_ = dom.getFrom(
+        this.videoResolutionSettings.root, 'div.menu', HTMLDivElement);
 
     /**
      * @type {!HTMLElement}
      * @private
      */
-    this.photoResMenu_ = assertInstanceof(
-        this.photoResolutionSettings.root.querySelector('div.menu'),
-        HTMLElement);
+    this.photoResMenu_ = dom.getFrom(
+        this.photoResolutionSettings.root, 'div.menu', HTMLDivElement);
 
     /**
      * @type {!HTMLElement}
      * @private
      */
-    this.frontPhotoItem_ = /** @type {!HTMLElement} */ (
-        document.querySelector('#settings-front-photores'));
+    this.frontPhotoItem_ = dom.get('#settings-front-photores', HTMLElement);
 
     /**
      * @type {!HTMLElement}
      * @private
      */
-    this.frontVideoItem_ = /** @type {!HTMLElement} */ (
-        document.querySelector('#settings-front-videores'));
+    this.frontVideoItem_ = dom.get('#settings-front-videores', HTMLElement);
 
     /**
      * @type {!HTMLElement}
      * @private
      */
-    this.backPhotoItem_ = /** @type {!HTMLElement} */ (
-        document.querySelector('#settings-back-photores'));
+    this.backPhotoItem_ = dom.get('#settings-back-photores', HTMLElement);
 
     /**
      * @type {!HTMLElement}
      * @private
      */
-    this.backVideoItem_ = /** @type {!HTMLElement} */ (
-        document.querySelector('#settings-back-videores'));
+    this.backVideoItem_ = dom.get('#settings-back-videores', HTMLElement);
 
     /**
      * @type {!HTMLTemplateElement}
      * @private
      */
-    this.resItemTempl_ = /** @type {!HTMLTemplateElement} */ (
-        document.querySelector('#resolution-item-template'));
+    this.resItemTempl_ =
+        dom.get('#resolution-item-template', HTMLTemplateElement);
 
     /**
      * @type {!HTMLTemplateElement}
      * @private
      */
-    this.extcamItemTempl_ = /** @type {!HTMLTemplateElement} */ (
-        document.querySelector('#extcam-resolution-item-template'));
+    this.extcamItemTempl_ =
+        dom.get('#extcam-resolution-item-template', HTMLTemplateElement);
 
     /**
      * Device setting of front camera. Null if no front camera.
@@ -330,10 +324,11 @@ export class ResolutionSettings extends BaseSettings {
     // Flips 'disabled' of resolution options.
     [state.State.CAMERA_CONFIGURING, state.State.TAKING].forEach((s) => {
       state.addObserver(s, () => {
-        document.querySelectorAll('.resolution-option>input').forEach((e) => {
-          e.disabled = state.get(state.State.CAMERA_CONFIGURING) ||
-              state.get(state.State.TAKING);
-        });
+        dom.getAll('.resolution-option>input', HTMLInputElement)
+            .forEach((e) => {
+              e.disabled = state.get(state.State.CAMERA_CONFIGURING) ||
+                  state.get(state.State.TAKING);
+            });
       });
     });
   }
@@ -448,7 +443,7 @@ export class ResolutionSettings extends BaseSettings {
     /** @type {?string} */
     const focusedId = focusIdx === -1 ? null : prevFId;
 
-    this.resMenu_.querySelectorAll('.menu-item.external-camera')
+    dom.getAllFrom(this.resMenu_, '.menu-item.external-camera', HTMLElement)
         .forEach(
             (element) => element.dataset.deviceId !== focusedId &&
                 element.parentNode.removeChild(element));
@@ -463,8 +458,7 @@ export class ResolutionSettings extends BaseSettings {
             document.importNode(this.extcamItemTempl_.content, true));
         util.setupI18nElements(extItem);
         [titleItem, photoItem, videoItem] =
-            /** @type {!NodeList<!HTMLElement>}*/ (
-                extItem.querySelectorAll('.menu-item'));
+            dom.getAllFrom(extItem, '.menu-item', HTMLElement);
 
         photoItem.addEventListener('click', () => {
           if (photoItem.classList.contains('multi-option')) {
@@ -523,8 +517,9 @@ export class ResolutionSettings extends BaseSettings {
     } else if (this.backSetting_ && this.backSetting_.deviceId === deviceId) {
       photoItem = this.backPhotoItem_;
     } else {
-      photoItem = /** @type {!HTMLElement} */ (this.resMenu_.querySelector(
-          `.menu-item.photo-item[data-device-id="${deviceId}"]`));
+      photoItem = dom.getFrom(
+          this.resMenu_, `.menu-item.photo-item[data-device-id="${deviceId}"]`,
+          HTMLElement);
     }
     photoItem.querySelector('.description>span').textContent =
         this.photoOptTextTempl_(photo.prefResol, photo.resols);
@@ -532,12 +527,13 @@ export class ResolutionSettings extends BaseSettings {
     // Update setting option if it's opened.
     if (state.get(ViewName.PHOTO_RESOLUTION_SETTINGS) &&
         this.openedSettingDeviceId_ === deviceId) {
-      this.photoResMenu_
-          .querySelector(
-              'input' +
+      const input = dom.getFrom(
+          this.photoResMenu_,
+          'input' +
               `[data-width="${resolution.width}"]` +
-              `[data-height="${resolution.height}"]`)
-          .checked = true;
+              `[data-height="${resolution.height}"]`,
+          HTMLInputElement);
+      input.checked = true;
     }
   }
 
@@ -556,8 +552,9 @@ export class ResolutionSettings extends BaseSettings {
     } else if (this.backSetting_ && this.backSetting_.deviceId === deviceId) {
       videoItem = this.backVideoItem_;
     } else {
-      videoItem = /** @type {!HTMLElement} */ (this.resMenu_.querySelector(
-          `.menu-item.video-item[data-device-id="${deviceId}"]`));
+      videoItem = dom.getFrom(
+          this.resMenu_, `.menu-item.video-item[data-device-id="${deviceId}"]`,
+          HTMLElement);
     }
     videoItem.querySelector('.description>span').textContent =
         this.videoOptTextTempl_(video.prefResol);
@@ -565,12 +562,13 @@ export class ResolutionSettings extends BaseSettings {
     // Update setting option if it's opened.
     if (state.get(ViewName.VIDEO_RESOLUTION_SETTINGS) &&
         this.openedSettingDeviceId_ === deviceId) {
-      this.videoResMenu_
-          .querySelector(
-              'input' +
+      const input = dom.getFrom(
+          this.videoResMenu_,
+          'input' +
               `[data-width="${resolution.width}"]` +
-              `[data-height="${resolution.height}"]`)
-          .checked = true;
+              `[data-height="${resolution.height}"]`,
+          HTMLInputElement);
+      input.checked = true;
     }
   }
 
@@ -629,20 +627,19 @@ export class ResolutionSettings extends BaseSettings {
     resolutions.forEach((r) => {
       const item = /** @type {!HTMLElement} */ (
           document.importNode(this.resItemTempl_.content, true));
-      const inputElement =
-          /** @type {!HTMLElement} */ (item.querySelector('input'));
+      const input = dom.getFrom(item, 'input', HTMLInputElement);
       item.querySelector('span').textContent = optTextTempl(r, resolutions);
-      inputElement.name = menu.dataset.name;
-      inputElement.dataset.width = r.width;
-      inputElement.dataset.height = r.height;
+      input.name = menu.dataset.name;
+      input.dataset.width = r.width;
+      input.dataset.height = r.height;
       if (r.equals(selectedR)) {
         captionText.textContent = optTextTempl(r, resolutions);
-        inputElement.checked = true;
+        input.checked = true;
       }
-      inputElement.disabled = state.get(state.State.CAMERA_CONFIGURING) ||
+      input.disabled = state.get(state.State.CAMERA_CONFIGURING) ||
           state.get(state.State.TAKING);
-      inputElement.addEventListener('change', (event) => {
-        if (inputElement.checked) {
+      input.addEventListener('change', (event) => {
+        if (input.checked) {
           captionText.textContent = optTextTempl(r, resolutions);
           onChange(r);
         }

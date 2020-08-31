@@ -97,6 +97,7 @@ copy("chrome_camera_app_js") {
     "src/js/background.js",
     "src/js/background_ops.js",
     "src/js/chrome_util.js",
+    "src/js/dom.js",
     "src/js/error.js",
     "src/js/gallerybutton.js",
     "src/js/init.js",

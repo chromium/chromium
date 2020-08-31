@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../../chrome_util.js';
+import * as dom from '../../dom.js';
 import {play} from '../../sound.js';
 import * as state from '../../state.js';
 import * as util from '../../util.js';
@@ -24,8 +24,7 @@ export function start() {
   }
   return new Promise((resolve, reject) => {
     let tickTimeout = null;
-    const tickMsg = assertInstanceof(
-        document.querySelector('#timer-tick-msg'), HTMLElement);
+    const tickMsg = dom.get('#timer-tick-msg', HTMLElement);
     doCancel = () => {
       if (tickTimeout) {
         clearTimeout(tickTimeout);

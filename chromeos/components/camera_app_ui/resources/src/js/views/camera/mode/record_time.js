@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import * as dom from '../../../dom.js';
 import {speak} from '../../../toast.js';
 
 /**
@@ -16,8 +17,7 @@ export class RecordTime {
      * @type {!HTMLElement}
      * @private
      */
-    this.recordTime_ =
-        /** @type {!HTMLElement} */ (document.querySelector('#record-time'));
+    this.recordTime_ = dom.get('#record-time', HTMLElement);
 
     /**
      * Timeout to count every tick of elapsed recording time.

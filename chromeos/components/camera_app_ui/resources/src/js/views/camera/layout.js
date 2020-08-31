@@ -3,15 +3,23 @@
 // found in the LICENSE file.
 
 import {browserProxy} from '../../browser_proxy/browser_proxy.js';
-import {assert} from '../../chrome_util.js';
+import {
+  assert,
+  assertInstanceof,
+} from '../../chrome_util.js';
+import * as dom from '../../dom.js';
 import * as state from '../../state.js';
 import {Mode, Resolution} from '../../type.js';
 
 /**
  * CSS rules.
- * @type {!Array<!CSSRule>}
+ * @type {!Array<!CSSStyleRule>}
  */
-const cssRules = [].slice.call(document.styleSheets[0].cssRules);
+const cssRules = (() => {
+  const sheet = assertInstanceof(document.styleSheets[0], CSSStyleSheet);
+  const ruleList = /** @type {!Iterable} */ (sheet.cssRules);
+  return [...ruleList];
+})();
 
 /**
  * Creates a controller to handle layouts of Camera view.
@@ -68,7 +76,7 @@ export class Layout {
     // inner-bounds; it may fill up the window or be letterboxed when
     // fullscreen/maximized. Don't use app-window.innerBounds' width/height
     // properties during resizing as they are not updated immediately.
-    const video = document.querySelector('#preview-video');
+    const video = dom.get('#preview-video', HTMLVideoElement);
     let contentWidth = 0;
     let contentHeight = 0;
     if (video.videoHeight) {

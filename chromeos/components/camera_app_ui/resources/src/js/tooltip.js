@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from './chrome_util.js';
+import * as dom from './dom.js';
 
 /**
  * Wrapper element that shows tooltip.
@@ -68,13 +68,14 @@ function show(element) {
 
 /**
  * Sets up tooltips for elements.
- * @param {!NodeList<!Element>} elements Elements whose tooltips to be shown.
- * @return {!NodeList<!Element>} Elements whose tooltips have been set up.
+ * @param {!NodeList<!HTMLInputElement>} elements Elements whose tooltips to be
+ *     shown.
+ * @return {!NodeList<!HTMLInputElement>} Elements whose tooltips have been set
+ *     up.
  */
 export function setup(elements) {
-  wrapper = assertInstanceof(document.querySelector('#tooltip'), HTMLElement);
-  elements.forEach((element) => {
-    const el = assertInstanceof(element, HTMLElement);
+  wrapper = dom.get('#tooltip', HTMLElement);
+  elements.forEach((el) => {
     const handler = () => {
       // Handler hides tooltip only when it's for the element.
       if (el === hovered) {
