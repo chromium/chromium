@@ -204,6 +204,7 @@ public final class CrashReporterControllerImpl extends ICrashReporterController.
     private String[] processNewMinidumpsOnBackgroundThread() {
         Map<String, Map<String, String>> crashesInfoMap =
                 getCrashFileManager().importMinidumpsCrashKeys();
+        if (crashesInfoMap == null) return new String[0];
         ArrayList<String> localIds = new ArrayList<>(crashesInfoMap.size());
         for (Map.Entry<String, Map<String, String>> entry : crashesInfoMap.entrySet()) {
             JSONObject crashKeysJson = new JSONObject(entry.getValue());
