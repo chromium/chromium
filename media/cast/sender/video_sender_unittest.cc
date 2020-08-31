@@ -567,13 +567,13 @@ TEST_F(VideoSenderTest, CheckVideoFrameFactoryIsNull) {
   EXPECT_EQ(nullptr, video_sender_->CreateVideoFrameFactory().get());
 }
 
-TEST_F(VideoSenderTest, PopulatesResourceUtilizationInFrameMetadata) {
+TEST_F(VideoSenderTest, PopulatesResourceUtilizationInFrameFeedback) {
   InitEncoder(false, true);
   ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
 
   for (int i = 0; i < 3; ++i) {
     scoped_refptr<media::VideoFrame> video_frame = GetNewVideoFrame();
-    ASSERT_FALSE(video_frame->feedback()->resource_utilization.has_value());
+    EXPECT_LE(video_frame->feedback()->resource_utilization, 0.0);
 
     const base::TimeTicks reference_time = testing_clock_.NowTicks();
     video_sender_->InsertRawVideoFrame(video_frame, reference_time);
@@ -586,7 +586,7 @@ TEST_F(VideoSenderTest, PopulatesResourceUtilizationInFrameMetadata) {
     // Check that the resource_utilization value is set and non-negative.  Don't
     // check for specific values because they are dependent on real-world CPU
     // encode time, which can vary across test runs.
-    double utilization = *video_frame->feedback()->resource_utilization;
+    double utilization = video_frame->feedback()->resource_utilization;
     EXPECT_LE(0.0, utilization);
     if (i == 0)
       EXPECT_GE(1.0, utilization);  // Key frames never exceed 1.0.

@@ -273,18 +273,18 @@ struct VideoCaptureParams {
 // how utilization is interpreted. The capturer uses this information to
 // auto-adjust the capture resolution based on performance variances in the
 // live system environment.
+// -1.0 means no value present.
 //
 // |max_framerate_fps| reports requested maximum frame-rate
-// flat::inifinty used to signal no limit.
+// float::inifinty used to signal no limit.
 //
 // |max_pixels| reports requested maximum resolution (in sense of image area).
+// int::max used to signal no limit.
 struct VideoFrameFeedback {
-  bool has_resource_utilization;
   double resource_utilization;
 
   float max_framerate_fps;
 
-  bool has_max_pixels;
   int32 max_pixels;
 };
 

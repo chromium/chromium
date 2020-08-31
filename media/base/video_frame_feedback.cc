@@ -12,32 +12,28 @@ VideoFrameFeedback::VideoFrameFeedback() = default;
 VideoFrameFeedback::VideoFrameFeedback(const VideoFrameFeedback& other) =
     default;
 
-VideoFrameFeedback::VideoFrameFeedback(
-    base::Optional<double> resource_utilization,
-    float max_framerate_fps,
-    base::Optional<int> max_pixels)
+VideoFrameFeedback::VideoFrameFeedback(double resource_utilization,
+                                       float max_framerate_fps,
+                                       int max_pixels)
     : resource_utilization(resource_utilization),
       max_framerate_fps(max_framerate_fps),
       max_pixels(max_pixels) {}
 
 void VideoFrameFeedback::Combine(const VideoFrameFeedback& other) {
   // Take maximum of non-negative and finite |resource_utilization| values.
-  if (other.resource_utilization.has_value() &&
-      *other.resource_utilization >= 0 &&
-      std::isfinite(*other.resource_utilization)) {
-    if (!resource_utilization.has_value() ||
-        !std::isfinite(*resource_utilization) ||
+  if (other.resource_utilization >= 0 &&
+      std::isfinite(other.resource_utilization)) {
+    if (!std::isfinite(resource_utilization) ||
         resource_utilization < other.resource_utilization) {
       resource_utilization = other.resource_utilization;
     }
   }
 
-  // Take minimum max_pixels value to satisfy both constraints.
-  // Explicit checks for nullopt, since it's lower than any other value by
-  // design of base::Optional.
-  if (other.max_pixels.has_value() &&
-      (!max_pixels.has_value() || *max_pixels > *other.max_pixels))
+  // Take minimum non-negative max_pixels value to satisfy both constraints.
+  if (other.max_pixels > 0 &&
+      (max_pixels <= 0 || max_pixels > other.max_pixels)) {
     max_pixels = other.max_pixels;
+  }
 
   // Take minimum of non-negative max_framerate_fps.
   if (other.max_framerate_fps >= 0.0 &&
@@ -46,8 +42,9 @@ void VideoFrameFeedback::Combine(const VideoFrameFeedback& other) {
 }
 
 bool VideoFrameFeedback::Empty() const {
-  return !std::isfinite(max_framerate_fps) && !max_pixels.has_value() &&
-         (!resource_utilization.has_value() || *resource_utilization < 0.0);
+  return !std::isfinite(max_framerate_fps) &&
+         max_pixels == std::numeric_limits<int>::max() &&
+         (resource_utilization < 0.0);
 }
 
 }  // namespace media

@@ -494,9 +494,8 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, CapturesAndDeliversFrames) {
             callbackses[frame_number - first_frame_number];
 
         const media::VideoFrameFeedback fake_feedback =
-            media::VideoFrameFeedback(
-                static_cast<double>(frame_number) / kNumFramesToDeliver,
-                std::numeric_limits<float>::infinity(), base::nullopt);
+            media::VideoFrameFeedback(static_cast<double>(frame_number) /
+                                      kNumFramesToDeliver);
         EXPECT_CALL(callbacks, ProvideFeedback(fake_feedback));
         EXPECT_CALL(callbacks, Done());
         EXPECT_CALL(*receiver, OnBufferRetired(buffer_id));

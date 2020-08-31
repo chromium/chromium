@@ -410,11 +410,11 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
                 DoBufferReady(client_a_route_2, device_format.frame_size));
   }
   client_a_->feedback_.resource_utilization = 0.5;
-  client_b_->feedback_.resource_utilization = base::nullopt;
+  client_b_->feedback_.resource_utilization = -1.0;
   // Expect VideoCaptureController to call the load observer with a
   // resource utilization of 0.5 (the largest of all reported values).
-  const media::VideoFrameFeedback kExpectedFeedback = media::VideoFrameFeedback(
-      0.5, std::numeric_limits<float>::infinity(), base::nullopt);
+  const media::VideoFrameFeedback kExpectedFeedback =
+      media::VideoFrameFeedback(0.5);
   EXPECT_CALL(
       *mock_launched_device_,
       OnUtilizationReport(arbitrary_frame_feedback_id, kExpectedFeedback));
@@ -442,7 +442,7 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   memset(buffer2_access->data(), buffer_no++, buffer2_access->mapped_size());
 
   client_a_->feedback_ = media::VideoFrameFeedback(0.5, 60, 1000);
-  client_b_->feedback_ = media::VideoFrameFeedback(3.14, 30, base::nullopt);
+  client_b_->feedback_ = media::VideoFrameFeedback(3.14, 30);
   // Expect VideoCaptureController to call the load observer with a
   // resource utilization of 3.14 (the largest of all reported values) and
   // sink constraints being the minimum of all reported values.
@@ -710,9 +710,8 @@ TEST_F(VideoCaptureControllerTest, FrameFeedbackIsReportedForSequenceOfFrames) {
        frame_index++) {
     const int stub_frame_feedback_id = frame_index;
     const media::VideoFrameFeedback stub_consumer_feedback =
-        media::VideoFrameFeedback(
-            static_cast<float>(frame_index) / kTestFrameSequenceLength,
-            std::numeric_limits<float>::infinity(), base::nullopt);
+        media::VideoFrameFeedback(static_cast<float>(frame_index) /
+                                  kTestFrameSequenceLength);
 
     client_a_->feedback_ = stub_consumer_feedback;
 

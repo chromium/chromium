@@ -222,14 +222,9 @@ template <>
 struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     StructTraits<media::mojom::VideoFrameFeedbackDataView,
                  media::VideoFrameFeedback> {
-  static bool has_resource_utilization(
-      const media::VideoFrameFeedback& feedback) {
-    return feedback.resource_utilization.has_value();
-  }
-
   static double resource_utilization(
       const media::VideoFrameFeedback& feedback) {
-    return feedback.resource_utilization.value_or(-1.0);
+    return feedback.resource_utilization;
   }
 
   static float max_framerate_fps(const media::VideoFrameFeedback& feedback) {
@@ -237,11 +232,7 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
   }
 
   static int max_pixels(const media::VideoFrameFeedback& feedback) {
-    return feedback.max_pixels.value_or(0);
-  }
-
-  static bool has_max_pixels(const media::VideoFrameFeedback& feedback) {
-    return feedback.max_pixels.has_value();
+    return feedback.max_pixels;
   }
 
   static bool Read(media::mojom::VideoFrameFeedbackDataView data,

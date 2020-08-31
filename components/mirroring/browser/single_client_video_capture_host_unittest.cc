@@ -270,10 +270,7 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
 TEST_F(SingleClientVideoCaptureHostTest, Basic) {
   CreateBuffer(1, 0);
   FrameReadyInBuffer(1, 0, 5);
-  FinishConsumingBuffer(
-      0, 5,
-      media::VideoFrameFeedback(1.0, std::numeric_limits<float>::infinity(),
-                                base::nullopt));
+  FinishConsumingBuffer(0, 5, media::VideoFrameFeedback(1.0));
   RetireBuffer(1, 0);
 }
 
@@ -293,10 +290,7 @@ TEST_F(SingleClientVideoCaptureHostTest, ReuseBufferId) {
   FrameReadyInBuffer(0, 1, 7);
 
   // Finish consuming frame in the retired buffer 0.
-  FinishConsumingBuffer(
-      0, 3,
-      media::VideoFrameFeedback(1.0, std::numeric_limits<float>::infinity(),
-                                base::nullopt));
+  FinishConsumingBuffer(0, 3, media::VideoFrameFeedback(1.0));
   // The retired buffer is expected to be destroyed since the consumer finished
   // consuming the frame in that buffer.
   base::RunLoop run_loop;
@@ -304,10 +298,7 @@ TEST_F(SingleClientVideoCaptureHostTest, ReuseBufferId) {
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   run_loop.Run();
 
-  FinishConsumingBuffer(
-      1, 7,
-      media::VideoFrameFeedback(0.5, std::numeric_limits<float>::infinity(),
-                                base::nullopt));
+  FinishConsumingBuffer(1, 7, media::VideoFrameFeedback(0.5));
   RetireBuffer(0, 1);
 }
 

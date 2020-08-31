@@ -337,18 +337,13 @@ void VideoCaptureOracle::RecordConsumerFeedback(
   if (capture_size_throttling_mode_ == kThrottlingDisabled)
     return;
 
-  if (feedback.resource_utilization &&
-      !std::isfinite(feedback.resource_utilization.value())) {
+  if (!std::isfinite(feedback.resource_utilization)) {
     LOG(DFATAL) << "Non-finite utilization provided by consumer for frame #"
-                << frame_number << ": "
-                << feedback.resource_utilization.value();
+                << frame_number << ": " << feedback.resource_utilization;
     return;
   }
-  if (!feedback.resource_utilization ||
-      feedback.resource_utilization.value() <= 0.0)
+  if (feedback.resource_utilization <= 0.0)
     return;  // Non-positive values are normal, meaning N/A.
-
-  double resource_utilization = *feedback.resource_utilization;
 
   if (capture_size_throttling_mode_ != kThrottlingActive) {
     VLOG(1) << "Received consumer feedback at frame #" << frame_number
@@ -367,8 +362,8 @@ void VideoCaptureOracle::RecordConsumerFeedback(
   // most linearly proportional to area, and typically is sublinear.  Either
   // way, the end-to-end system should converge to the right place using the
   // more-conservative assumption (linear).
-  const int area_at_full_utilization =
-      base::saturated_cast<int>(capture_size_.GetArea() / resource_utilization);
+  const int area_at_full_utilization = base::saturated_cast<int>(
+      capture_size_.GetArea() / feedback.resource_utilization);
   estimated_capable_area_.Update(area_at_full_utilization, timestamp);
 }
 
