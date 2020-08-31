@@ -473,10 +473,14 @@ void SVGTransformList::CalculateAnimatedValue(
     Append(current_transform);
     return;
   }
-  // Never resize the animatedTransformList to the toList size, instead either
-  // clear the list or append to it.
-  if (!IsEmpty() && !parameters.is_additive)
-    Clear();
+
+  // If additive, we accumulate into (append to) the underlying value.
+  if (!parameters.is_additive) {
+    // Never resize the animatedTransformList to the toList size, instead either
+    // clear the list or append to it.
+    if (!IsEmpty())
+      Clear();
+  }
 
   if (repeat_count && parameters.is_cumulative) {
     SVGTransform* effective_to_at_end =

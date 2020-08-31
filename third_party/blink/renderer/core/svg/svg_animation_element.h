@@ -71,11 +71,6 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(end, kEndEvent)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(repeat, kRepeatEvent)
 
-  virtual bool IsAdditive() const;
-  bool IsAccumulated() const;
-  AnimationMode GetAnimationMode() const { return animation_mode_; }
-  CalcMode GetCalcMode() const { return calc_mode_; }
-
   virtual void ResetAnimatedType() = 0;
   virtual void ClearAnimatedType() = 0;
   virtual void ApplyResultsToTarget() = 0;
@@ -95,10 +90,13 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   void SetAnimationMode(AnimationMode animation_mode) {
     animation_mode_ = animation_mode;
   }
+  AnimationMode GetAnimationMode() const { return animation_mode_; }
   void SetCalcMode(CalcMode calc_mode) {
     use_paced_key_times_ = false;
     calc_mode_ = calc_mode;
   }
+  CalcMode GetCalcMode() const { return calc_mode_; }
+
   virtual bool HasValidAnimation() const = 0;
   void UnregisterAnimation(const QualifiedName& attribute_name);
   void RegisterAnimation(const QualifiedName& attribute_name);
@@ -115,6 +113,9 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
 
  private:
   bool IsValid() const final { return SVGTests::IsValid(); }
+
+  bool IsAdditive() const;
+  bool IsAccumulated() const;
 
   String ToValue() const;
   String ByValue() const;

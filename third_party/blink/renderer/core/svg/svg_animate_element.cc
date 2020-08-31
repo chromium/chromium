@@ -518,16 +518,6 @@ bool SVGAnimateElement::AnimatedPropertyTypeSupportsAddition() const {
   }
 }
 
-bool SVGAnimateElement::IsAdditive() const {
-  if (GetAnimationMode() == kByAnimation ||
-      GetAnimationMode() == kFromByAnimation) {
-    if (!AnimatedPropertyTypeSupportsAddition())
-      return false;
-  }
-
-  return SVGAnimationElement::IsAdditive();
-}
-
 float SVGAnimateElement::CalculateDistance(const String& from_string,
                                            const String& to_string) {
   DCHECK(targetElement());

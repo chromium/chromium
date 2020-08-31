@@ -52,7 +52,6 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   const QualifiedName& AttributeName() const { return attribute_name_; }
   AnimatedPropertyType GetAnimatedPropertyType() const;
   bool AnimatedPropertyTypeSupportsAddition() const;
-  bool IsAdditive() const final;
 
  protected:
   void WillChangeAnimationTarget() final;

@@ -211,6 +211,7 @@ void SVGAnimateMotionElement::CalculateAnimatedValue(float percentage,
   AffineTransform* transform = target_element->AnimateMotionTransform();
   DCHECK(transform);
 
+  // If additive, we accumulate into the underlying (transform) value.
   if (!parameters.is_additive)
     transform->MakeIdentity();
 
