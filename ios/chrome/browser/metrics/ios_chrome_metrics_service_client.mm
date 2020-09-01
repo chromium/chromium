@@ -327,10 +327,6 @@ void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
 void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // TODO(ios): Try to extract the flow below into a utility function that is
-  // shared between the iOS port's usage and
-  // ChromeMetricsServiceClient::CollectFinalHistograms()'s usage of
-  // MetricsMemoryDetails.
   task_vm_info task_info_data;
   mach_msg_type_number_t count = sizeof(task_vm_info) / sizeof(natural_t);
   kern_return_t kr =
