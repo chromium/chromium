@@ -557,5 +557,88 @@ TEST_F(SimTest, NestedCrossOriginPaintEligibility) {
   EXPECT_TRUE(inner_frame_timing.FirstEligibleToPaint().is_null());
 }
 
+class TestLifecycleObserver
+    : public GarbageCollected<TestLifecycleObserver>,
+      public LocalFrameView::LifecycleNotificationObserver {
+ public:
+  TestLifecycleObserver() = default;
+
+  void WillStartLifecycleUpdate(const LocalFrameView&) override {
+    ++will_start_lifecycle_count_;
+  }
+  void DidFinishLifecycleUpdate(const LocalFrameView&) override {
+    ++did_finish_lifecycle_count_;
+  }
+
+  int will_start_lifecycle_count() const { return will_start_lifecycle_count_; }
+  int did_finish_lifecycle_count() const { return did_finish_lifecycle_count_; }
+
+  // GC functions.
+  void Trace(Visitor*) const override {}
+
+ private:
+  int will_start_lifecycle_count_ = 0;
+  int did_finish_lifecycle_count_ = 0;
+};
+
+TEST_F(LocalFrameViewTest, LifecycleNotificationsOnlyOnFullLifecycle) {
+  SetBodyInnerHTML("<div></div>");
+  auto* frame_view = GetDocument().View();
+
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+  frame_view->RegisterForLifecycleNotifications(observer);
+
+  EXPECT_EQ(observer->will_start_lifecycle_count(), 0);
+  EXPECT_EQ(observer->did_finish_lifecycle_count(), 0);
+
+  frame_view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kTest);
+  EXPECT_EQ(observer->will_start_lifecycle_count(), 0);
+  EXPECT_EQ(observer->did_finish_lifecycle_count(), 0);
+
+  frame_view->UpdateLifecyclePhasesForPrinting();
+  EXPECT_EQ(observer->will_start_lifecycle_count(), 0);
+  EXPECT_EQ(observer->did_finish_lifecycle_count(), 0);
+
+  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  EXPECT_EQ(observer->will_start_lifecycle_count(), 1);
+  EXPECT_EQ(observer->did_finish_lifecycle_count(), 1);
+
+  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  EXPECT_EQ(observer->will_start_lifecycle_count(), 2);
+  EXPECT_EQ(observer->did_finish_lifecycle_count(), 2);
+
+  frame_view->UnregisterFromLifecycleNotifications(observer);
+  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  EXPECT_EQ(observer->will_start_lifecycle_count(), 2);
+  EXPECT_EQ(observer->did_finish_lifecycle_count(), 2);
+}
+
+TEST_F(LocalFrameViewTest, StartOfLifecycleTaskRunsOnFullLifecycle) {
+  SetBodyInnerHTML("<div></div>");
+  auto* frame_view = GetDocument().View();
+
+  struct TestCallback {
+    void Increment() { ++calls; }
+    int calls = 0;
+  };
+
+  TestCallback callback;
+
+  frame_view->EnqueueStartOfLifecycleTask(
+      base::BindOnce(&TestCallback::Increment, base::Unretained(&callback)));
+  EXPECT_EQ(callback.calls, 0);
+
+  frame_view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kTest);
+  EXPECT_EQ(callback.calls, 0);
+
+  frame_view->UpdateLifecyclePhasesForPrinting();
+  EXPECT_EQ(callback.calls, 0);
+
+  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  EXPECT_EQ(callback.calls, 1);
+
+  frame_view->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  EXPECT_EQ(callback.calls, 1);
+}
 }  // namespace
 }  // namespace blink

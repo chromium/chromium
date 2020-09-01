@@ -21,6 +21,7 @@
 }
 </style>
 <div id="container"></div>
+<div id="onscreen_container"></div>
 <div class=spacer></div>
 <div id="offscreen_container"></div>
 
@@ -41,49 +42,53 @@ test(() => {
 }, "content-visibility: hidden adds contain: size layout style;");
 
 async_test((t) => {
-  setUp(container);
+  setUp(onscreen_container);
   setUp(offscreen_container);
 
-  container.classList.add("auto");
-  offscreen_container.classList.add("auto");
-  // This will be determined to be on-screen immediately.
-  t.step(() => assert_equals(getComputedStyle(container).contain, "size layout style paint", "initial onscreen"));
-  t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "size layout style paint", "initial offscreen"));
-  // Considering this as frame 1:
-  // At frame 2, intersection observation will happen and determine that the container
-  //   is not visible.
-  // At frame 3, the container has size-containment, and intersection
-  //   observations will mark this container as visible at the end of the frame
-  // At frame 4, the container still has size-containment, because visiblility
-  //   switch happens after rAF-callbacks have run.
-  // At frame 5, the container is no longer size-contained since it is visible.
-  requestAnimationFrame(() => {
-    // Frame 2 checks:
-    // The onscreen container should be visible and the switch happens immediately after layout.
-    t.step(() => assert_equals(getComputedStyle(container).contain, "size layout style paint", "frame 2 onscreen"));
-    t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "size layout style paint", "frame 2 offscreen"));
+  function runTest() {
+    onscreen_container.classList.add("auto");
+    offscreen_container.classList.add("auto");
 
+    t.step(() => assert_equals(getComputedStyle(onscreen_container).contain, "size layout style paint", "initial onscreen"));
+    t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "size layout style paint", "initial offscreen"));
+    // Considering this as frame 1, at the end of the frame intersection observation will happen
+    // and determine that on-screen is visible and off-screen is not. The on-screen switch will
+    // happen synchronously since this is the first time we check, so for the remainder of the
+    // frames, on-screen should not have a size containment.
+
+    // For off-screen container:
+    // At frame 2, we verify that it has size containment.
+    // At frame 3, we scroll it into view and verify it has size containment. At the end of the frame
+    //    we will determine that it is visible and schedule a visibility switch to happen at the next
+    //    frame (at post-rAF timing).
+    // At frame 4, we still have size containment until after rAF callbacks.
+    // At frame 5, the container is no longer size-contained since it is visible.
     requestAnimationFrame(() => {
-      offscreen_container.scrollIntoView();
-
-      // Frame 3 checks:
-      // At the beginning of the frame, the onscreen container should already be visible because
-      // the visibility switch should have happened after layout of the previous frame.
-      t.step(() => assert_equals(getComputedStyle(container).contain, "layout style paint", "frame 3 onscreen"));
-      t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "size layout style paint", "frame 3 offscreen"));
+      // Frame 2 checks:
+      t.step(() => assert_equals(getComputedStyle(onscreen_container).contain, "layout style paint", "frame 2 onscreen"));
+      t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "size layout style paint", "frame 2 offscreen"));
 
       requestAnimationFrame(() => {
-        // Frame 4 checks:
-        t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "size layout style paint", "frame 4"));
+        offscreen_container.scrollIntoView();
+
+        // Frame 3 checks:
+        t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "size layout style paint", "frame 3"));
 
         requestAnimationFrame(() => {
-          // Frame 5 checks:
-          t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "layout style paint", "frame 4"));
-          t.done();
+          // Frame 4 checks:
+          t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "size layout style paint", "frame 4"));
+
+          requestAnimationFrame(() => {
+            // Frame 5 checks:
+            t.step(() => assert_equals(getComputedStyle(offscreen_container).contain, "layout style paint", "frame 5"));
+            t.done();
+          });
         });
       });
     });
-  });
+  }
+  // rAF to ensure we know where we are in the lifecycle.
+  requestAnimationFrame(runTest);
 }, "content-visibility: auto adds contain: size layout style paint;");
 
 test(() => {

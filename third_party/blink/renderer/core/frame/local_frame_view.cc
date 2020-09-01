@@ -2395,34 +2395,39 @@ bool LocalFrameView::UpdateLifecyclePhases(
   lifecycle_data_.start_time = base::TimeTicks::Now();
   ++lifecycle_data_.count;
 
-  {
-    TRACE_EVENT0("blink", "LocalFrameView::WillStartLifecycleUpdate");
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    frame_view.Lifecycle().EnsureStateAtMost(
+        DocumentLifecycle::kVisualUpdatePending);
+  });
 
-    ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-      frame_view.Lifecycle().EnsureStateAtMost(
-          DocumentLifecycle::kVisualUpdatePending);
-      auto lifecycle_observers = frame_view.lifecycle_observers_;
-      for (auto& observer : lifecycle_observers)
-        observer->WillStartLifecycleUpdate(frame_view);
-    });
-  }
+  if (target_state == DocumentLifecycle::kPaintClean) {
+    {
+      TRACE_EVENT0("blink", "LocalFrameView::WillStartLifecycleUpdate");
 
-  {
-    TRACE_EVENT0(
-        "blink",
-        "LocalFrameView::UpdateLifecyclePhases - start of lifecycle tasks");
-    ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-      WTF::Vector<base::OnceClosure> tasks;
-      frame_view.start_of_lifecycle_tasks_.swap(tasks);
-      for (auto& task : tasks)
-        std::move(task).Run();
-    });
+      ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+        auto lifecycle_observers = frame_view.lifecycle_observers_;
+        for (auto& observer : lifecycle_observers)
+          observer->WillStartLifecycleUpdate(frame_view);
+      });
+    }
+
+    {
+      TRACE_EVENT0(
+          "blink",
+          "LocalFrameView::UpdateLifecyclePhases - start of lifecycle tasks");
+      ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+        WTF::Vector<base::OnceClosure> tasks;
+        frame_view.start_of_lifecycle_tasks_.swap(tasks);
+        for (auto& task : tasks)
+          std::move(task).Run();
+      });
+    }
   }
 
   // Run the lifecycle updates.
   UpdateLifecyclePhasesInternal(target_state);
 
-  {
+  if (target_state == DocumentLifecycle::kPaintClean) {
     TRACE_EVENT0("blink", "LocalFrameView::DidFinishLifecycleUpdate");
 
     ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
