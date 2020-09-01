@@ -1308,6 +1308,15 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Not QUIC, destination different from origin"/>
 </enum>
 
+<enum name="AmbientModePhotoSource">
+  <int value="0" label="Default"/>
+  <int value="1" label="Art Gallery"/>
+  <int value="2" label="Google Photos Recent Highlights Only"/>
+  <int value="3" label="Google Photos Personal Albums Only"/>
+  <int value="4" label="Google Photos Recent Highlights plus Personal Album"/>
+  <int value="5" label="Google Photos No Albums"/>
+</enum>
+
 <enum name="Android.ChildProcessBindingStateCombination">
   <int value="0" label="No waived no moderate no strong"/>
   <int value="1" label="No waived no moderate has strong"/>

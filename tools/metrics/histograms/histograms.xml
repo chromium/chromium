@@ -9692,6 +9692,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"
+    expires_after="2021-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the source of
+    ambient mode photos. Recorded once for every UMA upload.
+  </summary>
+</histogram>
+
 <histogram name="Ash.AppList.TimeBetweenTaskSwitches" units="seconds"
     expires_after="2016-10-04">
   <obsolete>

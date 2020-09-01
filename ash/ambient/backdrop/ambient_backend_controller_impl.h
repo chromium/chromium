@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/assistant/internal/ambient/backdrop_client_config.h"
@@ -75,6 +76,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
                              const std::string& access_token);
 
   void OnUpdateSettings(UpdateSettingsCallback callback,
+                        const AmbientSettings& settings,
                         std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
                         std::unique_ptr<std::string> response);
 

@@ -15,6 +15,7 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -160,6 +161,13 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     // devices.
     registry->RegisterBooleanPref(ash::ambient::prefs::kAmbientModeEnabled,
                                   true);
+
+    // Used to upload usage metrics. Derived from |AmbientSettings| when
+    // settings are successfully saved by the user. This pref is not displayed
+    // to the user.
+    registry->RegisterIntegerPref(
+        ash::ambient::prefs::kAmbientModePhotoSourcePref,
+        static_cast<int>(ash::ambient::AmbientModePhotoSource::kUnset));
   }
 }
 

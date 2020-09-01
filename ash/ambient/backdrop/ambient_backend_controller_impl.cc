@@ -11,6 +11,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/session/session_controller_impl.h"
@@ -380,18 +381,28 @@ void AmbientBackendControllerImpl::StartToUpdateSettings(
   loader_ptr->Start(
       std::move(resource_request), request.body, NO_TRAFFIC_ANNOTATION_YET,
       base::BindOnce(&AmbientBackendControllerImpl::OnUpdateSettings,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     weak_factory_.GetWeakPtr(), std::move(callback), settings,
                      std::move(backdrop_url_loader)));
 }
 
 void AmbientBackendControllerImpl::OnUpdateSettings(
     UpdateSettingsCallback callback,
+    const AmbientSettings& settings,
     std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
     std::unique_ptr<std::string> response) {
   DCHECK(backdrop_url_loader);
 
   const bool success =
       BackdropClientConfig::ParseUpdateSettingsResponse(*response);
+
+  if (success) {
+    // Store information about the ambient mode settings in a user pref so that
+    // it can be uploaded as a histogram.
+    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetInteger(
+        ambient::prefs::kAmbientModePhotoSourcePref,
+        static_cast<int>(ambient::AmbientSettingsToPhotoSource(settings)));
+  }
+
   std::move(callback).Run(success);
 
   // Clear disk cache when Settings changes.

@@ -17,6 +17,10 @@ ASH_PUBLIC_EXPORT extern const char kAmbientBackdropClientId[];
 // Boolean pref for whether ambient mode is enabled.
 ASH_PUBLIC_EXPORT extern const char kAmbientModeEnabled[];
 
+// Integer pref for reporting metrics with the histogram
+// |Ash.AmbientMode.PhotoSource|. Not displayed to the user in settings.
+ASH_PUBLIC_EXPORT extern const char kAmbientModePhotoSourcePref[];
+
 }  // namespace prefs
 }  // namespace ambient
 }  // namespace ash

@@ -22,6 +22,8 @@ component("cpp") {
     "ambient/ambient_backend_controller.h",
     "ambient/ambient_client.cc",
     "ambient/ambient_client.h",
+    "ambient/ambient_metrics.cc",
+    "ambient/ambient_metrics.h",
     "ambient/ambient_prefs.cc",
     "ambient/ambient_prefs.h",
     "ambient/ambient_ui_model.cc",
@@ -347,6 +349,7 @@ component("cpp") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ambient/ambient_metrics_unittest.cc",
     "android_intent_helper_unittest.cc",
     "app_list/app_list_config_provider_unittest.cc",
     "default_scale_factor_retriever_unittest.cc",

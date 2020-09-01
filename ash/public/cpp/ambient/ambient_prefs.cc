@@ -14,6 +14,9 @@ constexpr char kAmbientBackdropClientId[] = "ash.ambient.backdrop.client.id";
 
 constexpr char kAmbientModeEnabled[] = "settings.ambient_mode.enabled";
 
+constexpr char kAmbientModePhotoSourcePref[] =
+    "settings.ambient_mode.photo_source_enum";
+
 }  // namespace prefs
 }  // namespace ambient
 }  // namespace ash
