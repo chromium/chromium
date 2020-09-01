@@ -2051,25 +2051,11 @@
             ]
         }
     ],
-    "DnsOverHttps": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_crbug1006105",
-                    "enable_features": [
-                        "DnsOverHttps"
-                    ]
-                }
-            ]
-        }
-    ],
     "DnsOverHttpsUi": [
         {
             "platforms": [
+                "android",
+                "android_weblayer",
                 "chromeos",
                 "mac",
                 "windows"
@@ -2078,6 +2064,7 @@
                 {
                     "name": "EnabledLaunch",
                     "params": {
+                        "DisabledProviders": "Comcast",
                         "ShowUi": "true"
                     },
                     "enable_features": [
