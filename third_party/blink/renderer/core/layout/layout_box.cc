@@ -66,7 +66,7 @@
 #include "third_party/blink/renderer/core/layout/layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
-#include "third_party/blink/renderer/core/layout/layout_slider.h"
+#include "third_party/blink/renderer/core/layout/layout_slider_container.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_child.h"
@@ -160,7 +160,7 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
 
 LayoutUnit SliderIntrinsicInlineSize(const HTMLInputElement& input,
                                      const LayoutBox& box) {
-  return LayoutUnit(LayoutSlider::kDefaultTrackLength *
+  return LayoutUnit(LayoutSliderContainer::kDefaultTrackLength *
                     box.StyleRef().EffectiveZoom());
 }
 

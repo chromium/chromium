@@ -185,8 +185,6 @@ blink_core_sources("layout") {
     "layout_shift_region.h",
     "layout_shift_tracker.cc",
     "layout_shift_tracker.h",
-    "layout_slider.cc",
-    "layout_slider.h",
     "layout_slider_container.cc",
     "layout_slider_container.h",
     "layout_state.cc",

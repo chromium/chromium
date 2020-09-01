@@ -36,10 +36,11 @@
 #include "third_party/blink/renderer/core/html/forms/slider_thumb_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
-#include "third_party/blink/renderer/core/layout/layout_slider.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 
 namespace blink {
+
+const int LayoutSliderContainer::kDefaultTrackLength = 129;
 
 LayoutSliderContainer::LayoutSliderContainer(SliderContainerElement* element)
     : LayoutFlexibleBox(element) {}
@@ -57,7 +58,7 @@ void LayoutSliderContainer::ComputeLogicalHeight(
     LogicalExtentComputedValues& computed_values) const {
   auto* input = To<HTMLInputElement>(GetNode()->OwnerShadowHost());
 
-  if (input->GetLayoutObject()->IsSlider() && input->list()) {
+  if (input->GetLayoutObject() && input->list()) {
     int offset_from_center =
         LayoutTheme::GetTheme().SliderTickOffsetFromTrackCenter();
     LayoutUnit track_height;
@@ -88,8 +89,7 @@ void LayoutSliderContainer::ComputeLogicalHeight(
 
 MinMaxSizes LayoutSliderContainer::ComputeIntrinsicLogicalWidths() const {
   MinMaxSizes sizes;
-  sizes += LayoutUnit(LayoutSlider::kDefaultTrackLength *
-                      StyleRef().EffectiveZoom()) +
+  sizes += LayoutUnit(kDefaultTrackLength * StyleRef().EffectiveZoom()) +
            BorderAndPaddingLogicalWidth();
   return sizes;
 }

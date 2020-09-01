@@ -42,6 +42,8 @@ class SliderContainerElement;
 // this class. See http://webkit.org/b/62535
 class LayoutSliderContainer final : public LayoutFlexibleBox {
  public:
+  static const int kDefaultTrackLength;
+
   LayoutSliderContainer(SliderContainerElement*);
   void ComputeLogicalHeight(LayoutUnit logical_height,
                             LayoutUnit logical_top,

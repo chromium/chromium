@@ -111,7 +111,7 @@ bool AXSlider::OnNativeSetValueAction(const String& value) {
 
   input->setValue(value, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
 
-  // Fire change event manually, as LayoutSlider::setValueForPosition does.
+  // Fire change event manually, as SliderThumbElement::StopDragging does.
   input->DispatchFormControlChangeEvent();
 
   // Dispatching an event could result in changes to the document, like
@@ -137,7 +137,7 @@ LayoutObject* AXSliderThumb::LayoutObjectForRelativeBounds() const {
     return nullptr;
 
   LayoutObject* slider_layout_object = parent_->GetLayoutObject();
-  if (!slider_layout_object || !slider_layout_object->IsSlider())
+  if (!slider_layout_object)
     return nullptr;
   Element* thumb_element =
       To<Element>(slider_layout_object->GetNode())

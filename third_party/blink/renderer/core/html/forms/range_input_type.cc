@@ -52,7 +52,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/core/layout/layout_slider.h"
+#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -261,7 +261,9 @@ LayoutObject* RangeInputType::CreateLayoutObject(const ComputedStyle&,
                                                  LegacyLayout) const {
   UseCounter::Count(GetElement().GetDocument(),
                     WebFeature::kLegacyLayoutBySlider);
-  return new LayoutSlider(&GetElement());
+  // TODO(crbug.com/1040826): input[type=range] should not use
+  // LayoutFlexibleBox.
+  return new LayoutFlexibleBox(&GetElement());
 }
 
 Decimal RangeInputType::ParseToNumber(const String& src,

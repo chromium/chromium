@@ -737,8 +737,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   bool IsRubyBase() const { return IsOfType(kLayoutObjectRubyBase); }
   bool IsRubyRun() const { return IsOfType(kLayoutObjectRubyRun); }
   bool IsRubyText() const { return IsOfType(kLayoutObjectRubyText); }
-  bool IsSlider() const { return IsOfType(kLayoutObjectSlider); }
-  bool IsSliderThumb() const { return IsOfType(kLayoutObjectSliderThumb); }
   bool IsTable() const { return IsOfType(kLayoutObjectTable); }
   bool IsTableCaption() const { return IsOfType(kLayoutObjectTableCaption); }
   bool IsTableCell() const { return IsOfType(kLayoutObjectTableCell); }
@@ -2657,8 +2655,6 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
     kLayoutObjectRubyBase,
     kLayoutObjectRubyRun,
     kLayoutObjectRubyText,
-    kLayoutObjectSlider,
-    kLayoutObjectSliderThumb,
     kLayoutObjectTable,
     kLayoutObjectTableCaption,
     kLayoutObjectTableCell,

@@ -64,7 +64,6 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_progress.h"
-#include "third_party/blink/renderer/core/layout/layout_slider.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_table_row.h"
@@ -437,10 +436,13 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
   if (IsA<HTMLOptionElement>(node))
     return MakeGarbageCollected<AXListBoxOption>(layout_object, *this);
 
-  auto* html_input_element = DynamicTo<HTMLInputElement>(node);
-  if (html_input_element &&
-      html_input_element->type() == input_type_names::kRadio)
-    return MakeGarbageCollected<AXRadioInput>(layout_object, *this);
+  if (auto* html_input_element = DynamicTo<HTMLInputElement>(node)) {
+    const AtomicString& type = html_input_element->type();
+    if (type == input_type_names::kRadio)
+      return MakeGarbageCollected<AXRadioInput>(layout_object, *this);
+    if (type == input_type_names::kRange)
+      return MakeGarbageCollected<AXSlider>(layout_object, *this);
+  }
 
   if (layout_object->IsSVGRoot())
     return MakeGarbageCollected<AXSVGRoot>(layout_object, *this);
@@ -461,10 +463,6 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
       return MakeGarbageCollected<AXProgressIndicator>(
           ToLayoutProgress(css_box), *this);
     }
-
-    // input type=range
-    if (auto* slider = DynamicTo<LayoutSlider>(css_box))
-      return MakeGarbageCollected<AXSlider>(slider, *this);
   }
 
   return MakeGarbageCollected<AXLayoutObject>(layout_object, *this);
