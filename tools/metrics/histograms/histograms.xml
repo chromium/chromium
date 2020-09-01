@@ -217174,6 +217174,12 @@ regressions. -->
       name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="SmoothnessSequenceTypeAggregates" separator=".">
+  <suffix name="AnyInteraction" label="At least one active interaction"/>
+  <suffix name="NoInteraction" label="No active interaction"/>
+  <affected-histogram name="CompositorLatency.Type"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="SmoothnessSequenceTypes" separator=".">
   <suffix name="CompositorAnimation" label="Compositor-driven animation"/>
   <suffix name="MainThreadAnimation" label="Main-thread driven animation"/>

@@ -976,6 +976,36 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame2) {
   histogram_tester.ExpectBucketCount("CompositorLatency.Type", 2, 0);
 }
 
+// Testing CompositorLatency.Type metrics
+TEST_F(CompositorFrameReportingControllerTest, ReportingLatencyType) {
+  base::HistogramTester histogram_tester;
+
+  SimulatePresentCompositorFrame();
+  reporting_controller_.AddActiveTracker(
+      FrameSequenceTrackerType::kCompositorAnimation);
+  SimulatePresentCompositorFrame();
+  reporting_controller_.AddActiveTracker(
+      FrameSequenceTrackerType::kWheelScroll);
+  SimulatePresentCompositorFrame();
+  reporting_controller_.RemoveActiveTracker(
+      FrameSequenceTrackerType::kCompositorAnimation);
+  SimulatePresentCompositorFrame();
+  reporting_controller_.RemoveActiveTracker(
+      FrameSequenceTrackerType::kWheelScroll);
+  SimulatePresentCompositorFrame();
+
+  // All frames are presented so only test on-dropped cases.
+  histogram_tester.ExpectBucketCount("CompositorLatency.Type", 0, 5);
+  histogram_tester.ExpectBucketCount(
+      "CompositorLatency.Type.CompositorAnimation", 0, 2);
+  histogram_tester.ExpectBucketCount("CompositorLatency.Type.WheelScroll", 0,
+                                     2);
+  histogram_tester.ExpectBucketCount("CompositorLatency.Type.AnyInteraction", 0,
+                                     3);
+  histogram_tester.ExpectBucketCount("CompositorLatency.Type.NoInteraction", 0,
+                                     2);
+}
+
 // Tests that EventLatency total latency histograms are reported properly when a
 // frame is presented to the user.
 TEST_F(CompositorFrameReportingControllerTest,

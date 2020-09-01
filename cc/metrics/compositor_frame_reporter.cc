@@ -521,11 +521,17 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
       latency_ukm_reporter_->ReportCompositorLatencyUkm(
           report_type, stage_history_, active_trackers_, viz_breakdown_);
     }
+    bool any_active_interaction = false;
     for (size_t fst_type = 0; fst_type < active_trackers_.size(); ++fst_type) {
-      if (!active_trackers_.test(fst_type)) {
+      const auto tracker_type = static_cast<FrameSequenceTrackerType>(fst_type);
+      if (!active_trackers_.test(fst_type) ||
+          tracker_type == FrameSequenceTrackerType::kUniversal ||
+          tracker_type == FrameSequenceTrackerType::kCustom ||
+          tracker_type == FrameSequenceTrackerType::kMaxType) {
         continue;
       }
-      switch (static_cast<FrameSequenceTrackerType>(fst_type)) {
+      any_active_interaction = true;
+      switch (tracker_type) {
         case FrameSequenceTrackerType::kCompositorAnimation:
           UMA_HISTOGRAM_ENUMERATION(
               "CompositorLatency.Type.CompositorAnimation", report_type);
@@ -560,8 +566,16 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
         case FrameSequenceTrackerType::kUniversal:
         case FrameSequenceTrackerType::kCustom:
         case FrameSequenceTrackerType::kMaxType:
+          NOTREACHED();
           break;
       }
+    }
+    if (any_active_interaction) {
+      UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.AnyInteraction",
+                                report_type);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.NoInteraction",
+                                report_type);
     }
   }
 }
