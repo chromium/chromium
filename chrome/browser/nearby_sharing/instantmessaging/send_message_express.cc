@@ -105,10 +105,11 @@ void SendMessageExpress::DoSendMessage(
   std::unique_ptr<network::SimpleURLLoader> send_url_loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kTrafficAnnotation);
+  auto* const send_url_loader_ptr = send_url_loader.get();
   send_url_loader->SetTimeoutDuration(kNetworkTimeout);
   send_url_loader->AttachStringForUpload(request.SerializeAsString(),
                                          "application/x-protobuf");
-  send_url_loader->DownloadToString(
+  send_url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&SendMessageExpress::OnSendMessageResponse,
                      weak_ptr_factory_.GetWeakPtr(), message_id,
