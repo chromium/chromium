@@ -559,6 +559,8 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
       AshColorProvider::AshColorMode::kDark);
   submit_button_->SetBackgroundColor(color);
+  submit_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetEnabled(false);
