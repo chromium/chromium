@@ -265,7 +265,6 @@ def _WriteInputParamForTracingImpl(generator, kind, cpp_parameter_name,
       for line in inner_lines(cpp_parameter_name):
         yield line
 
-  # TODO(crbug.com/1103623): Support more involved types.
   if mojom.IsEnumKind(kind):
     if generator._IsTypemappedKind(kind) or IsNativeOnlyKind(kind):
       yield output_context.AddSingleValue(
