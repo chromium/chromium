@@ -212,6 +212,10 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(views::Button* button,
     // once we AcceptKeyword, we are really in a new scope state and holding
     // onto old suggestions is confusing and error prone. Without this check,
     // a second click of the button violates assumptions in |AcceptKeyword|.
+    // Note: Since keyword mode logic depends on state of the edit model, the
+    // selection must first be set to prepare for keyword mode before accepting.
+    popup_model->SetSelection(OmniboxPopupModel::Selection(
+        model_index_, OmniboxPopupModel::FOCUSED_BUTTON_KEYWORD));
     if (model()->edit_model()->is_keyword_hint()) {
       auto method = metrics::OmniboxEventProto::INVALID;
       if (event.IsMouseEvent()) {
