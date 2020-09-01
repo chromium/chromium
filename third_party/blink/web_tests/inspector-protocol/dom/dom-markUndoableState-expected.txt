@@ -1,0 +1,3 @@
+Tests that DOM.markUndoableState does not crash when DOM is disabled.
+Did not crash
+

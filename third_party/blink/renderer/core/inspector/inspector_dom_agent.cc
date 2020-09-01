@@ -1337,6 +1337,8 @@ Response InspectorDOMAgent::redo() {
 }
 
 Response InspectorDOMAgent::markUndoableState() {
+  if (!enabled_.Get())
+    return Response::ServerError("DOM agent is not enabled");
   history_->MarkUndoableState();
   return Response::Success();
 }
