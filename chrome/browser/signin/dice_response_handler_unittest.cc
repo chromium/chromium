@@ -113,10 +113,7 @@ class DiceResponseHandlerTest : public testing::Test,
                            &signin_client_),
         signin_error_controller_(
             SigninErrorController::AccountMode::PRIMARY_ACCOUNT,
-            identity_test_env_.identity_manager()),
-        about_signin_internals_(identity_test_env_.identity_manager(),
-                                &signin_error_controller_,
-                                signin::AccountConsistencyMethod::kDice) {
+            identity_test_env_.identity_manager()) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     AboutSigninInternals::RegisterPrefs(pref_service_.registry());
     auto account_reconcilor_delegate =
@@ -126,18 +123,23 @@ class DiceResponseHandlerTest : public testing::Test,
     account_reconcilor_ = std::make_unique<AccountReconcilor>(
         identity_test_env_.identity_manager(), &signin_client_,
         std::move(account_reconcilor_delegate));
-    about_signin_internals_.Initialize(&signin_client_);
     account_reconcilor_->AddObserver(this);
+
+    about_signin_internals_ = std::make_unique<AboutSigninInternals>(
+        identity_test_env_.identity_manager(), &signin_error_controller_,
+        signin::AccountConsistencyMethod::kDice, &signin_client_,
+        account_reconcilor_.get());
+
     dice_response_handler_ = std::make_unique<DiceResponseHandler>(
         &signin_client_, identity_test_env_.identity_manager(),
-        account_reconcilor_.get(), &about_signin_internals_,
+        account_reconcilor_.get(), about_signin_internals_.get(),
         temp_dir_.GetPath());
   }
 
   ~DiceResponseHandlerTest() override {
     account_reconcilor_->RemoveObserver(this);
     account_reconcilor_->Shutdown();
-    about_signin_internals_.Shutdown();
+    about_signin_internals_->Shutdown();
     signin_error_controller_.Shutdown();
   }
 
@@ -186,7 +188,7 @@ class DiceResponseHandlerTest : public testing::Test,
   DiceTestSigninClient signin_client_;
   signin::IdentityTestEnvironment identity_test_env_;
   SigninErrorController signin_error_controller_;
-  AboutSigninInternals about_signin_internals_;
+  std::unique_ptr<AboutSigninInternals> about_signin_internals_;
   std::unique_ptr<AccountReconcilor> account_reconcilor_;
   std::unique_ptr<DiceResponseHandler> dice_response_handler_;
   int reconcilor_blocked_count_ = 0;

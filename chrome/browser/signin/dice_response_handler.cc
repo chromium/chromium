@@ -276,6 +276,8 @@ void DiceResponseHandler::ProcessDiceSigninHeader(
   if (no_authorization_code) {
     if (base::FeatureList::IsEnabled(kSupportOAuthOutageInDice)) {
       lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
+      about_signin_internals_->OnRefreshTokenReceived(
+          "Missing authorization code due to OAuth outage in Dice.");
       if (!timer_) {
         timer_ = std::make_unique<base::OneShotTimer>();
         if (task_runner_)

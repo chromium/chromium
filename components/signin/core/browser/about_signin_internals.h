@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/core/browser/signin_internals_util.h"
 #include "components/signin/public/base/signin_client.h"
@@ -40,7 +41,8 @@ class AboutSigninInternals : public KeyedService,
                              public content_settings::Observer,
                              SigninErrorController::Observer,
                              signin::IdentityManager::Observer,
-                             signin::IdentityManager::DiagnosticsObserver {
+                             signin::IdentityManager::DiagnosticsObserver,
+                             AccountReconcilor::Observer {
  public:
   class Observer {
    public:
@@ -54,7 +56,9 @@ class AboutSigninInternals : public KeyedService,
 
   AboutSigninInternals(signin::IdentityManager* identity_manager,
                        SigninErrorController* signin_error_controller,
-                       signin::AccountConsistencyMethod account_consistency);
+                       signin::AccountConsistencyMethod account_consistency,
+                       SigninClient* client,
+                       AccountReconcilor* account_reconcilor);
   ~AboutSigninInternals() override;
 
   // Registers the preferences used by AboutSigninInternals.
@@ -67,8 +71,6 @@ class AboutSigninInternals : public KeyedService,
 
   // Pulls all signin values that have been persisted in the user prefs.
   void RefreshSigninPrefs();
-
-  void Initialize(SigninClient* client);
 
   void OnRefreshTokenReceived(const std::string& status);
   void OnAuthenticationResultReceived(const std::string& status);
@@ -179,7 +181,8 @@ class AboutSigninInternals : public KeyedService,
         signin::IdentityManager* identity_manager,
         SigninErrorController* signin_error_controller,
         SigninClient* signin_client,
-        signin::AccountConsistencyMethod account_consistency);
+        signin::AccountConsistencyMethod account_consistency,
+        AccountReconcilor* account_reconcilor);
   };
 
   // IdentityManager::DiagnosticsObserver implementations.
@@ -224,6 +227,12 @@ class AboutSigninInternals : public KeyedService,
                                ContentSettingsType content_type,
                                const std::string& resource_identifier) override;
 
+  // AccountReconcilor::Observer implementation.
+  void OnBlockReconcile() override;
+
+  // AccountReconcilor::Observer implementation.
+  void OnUnblockReconcile() override;
+
   // Weak pointer to the identity manager.
   signin::IdentityManager* identity_manager_;
 
@@ -232,6 +241,9 @@ class AboutSigninInternals : public KeyedService,
 
   // Weak pointer to the SigninErrorController
   SigninErrorController* signin_error_controller_;
+
+  // Weak pointer to the AccountReconcilor.
+  AccountReconcilor* account_reconcilor_;
 
   // Encapsulates the actual signin and token related values.
   // Most of the values are mirrored in the prefs for persistence.

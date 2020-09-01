@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -115,7 +116,8 @@ class TabManagerTest : public ChromeRenderViewHostTestHarness {
       : scoped_context_(
             std::make_unique<base::TestMockTimeTaskRunner::ScopedContext>(
                 task_runner_)),
-        scoped_set_tick_clock_for_testing_(task_runner_->GetMockTickClock()) {
+        scoped_set_tick_clock_for_testing_(task_runner_->GetMockTickClock()),
+        previous_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
     base::CurrentThread::Get()->SetTaskRunner(task_runner_);
 
     // Start with a non-zero time.
@@ -169,8 +171,7 @@ class TabManagerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     ResetState();
-
-    task_runner_->RunUntilIdle();
+    base::CurrentThread::Get()->SetTaskRunner(std::move(previous_task_runner_));
     scoped_context_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -266,6 +267,7 @@ class TabManagerTest : public ChromeRenderViewHostTestHarness {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   std::unique_ptr<base::TestMockTimeTaskRunner::ScopedContext> scoped_context_;
   ScopedSetTickClockForTesting scoped_set_tick_clock_for_testing_;
+  scoped_refptr<base::SingleThreadTaskRunner> previous_task_runner_;
   std::unique_ptr<BackgroundTabNavigationThrottle> throttle1_;
   std::unique_ptr<BackgroundTabNavigationThrottle> throttle2_;
   std::unique_ptr<BackgroundTabNavigationThrottle> throttle3_;

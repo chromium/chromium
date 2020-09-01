@@ -123,6 +123,9 @@ class AccountReconcilor : public KeyedService,
   // from being invalidated during the deletion.
   std::unique_ptr<ScopedSyncedDataDeletion> GetScopedSyncDataDeletion();
 
+  // Returns true if reconcilor is blocked.
+  bool IsReconcileBlocked() const;
+
  private:
   friend class AccountReconcilorTest;
   friend class DiceBrowserTest;
@@ -291,7 +294,6 @@ class AccountReconcilor : public KeyedService,
   void DecrementLockCount();
   void BlockReconcile();
   void UnblockReconcile();
-  bool IsReconcileBlocked() const;
 
   void HandleReconcileTimeout();
 
