@@ -35,14 +35,4 @@ LayoutSlider::LayoutSlider(HTMLInputElement* element)
 
 LayoutSlider::~LayoutSlider() = default;
 
-LayoutUnit LayoutSlider::BaselinePosition(
-    FontBaseline,
-    bool /*firstLine*/,
-    LineDirectionMode,
-    LinePositionMode line_position_mode) const {
-  DCHECK_EQ(line_position_mode, kPositionOnContainingLine);
-  // FIXME: Patch this function for writing-mode.
-  return Size().Height() + MarginTop();
-}
-
 }  // namespace blink

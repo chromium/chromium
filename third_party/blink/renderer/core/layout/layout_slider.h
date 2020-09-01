@@ -42,12 +42,6 @@ class CORE_EXPORT LayoutSlider final : public LayoutFlexibleBox {
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectSlider || LayoutFlexibleBox::IsOfType(type);
   }
-
-  LayoutUnit BaselinePosition(
-      FontBaseline,
-      bool first_line,
-      LineDirectionMode,
-      LinePositionMode = kPositionOnContainingLine) const override;
 };
 
 template <>

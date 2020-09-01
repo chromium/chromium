@@ -33,7 +33,9 @@
 #include <limits>
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_state.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
@@ -212,6 +214,14 @@ LayoutUnit LayoutFlexibleBox::BaselinePosition(FontBaseline,
                                                LineDirectionMode direction,
                                                LinePositionMode mode) const {
   DCHECK_EQ(mode, kPositionOnContainingLine);
+  // TODO(crbug.com/1040826): input[type=range] should not use
+  // LayoutFlexibleBox. We should move out this code.
+  if (const auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
+    if (input->type() == input_type_names::kRange) {
+      return SynthesizedBaselineFromBorderBox(*this, direction) +
+             MarginBefore();
+    }
+  }
   LayoutUnit baseline = FirstLineBoxBaseline();
   if (baseline == -1) {
     return SynthesizedBaselineFromBorderBox(*this, direction) +
