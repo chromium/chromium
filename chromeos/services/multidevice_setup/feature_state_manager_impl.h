@@ -91,6 +91,10 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   HostStatusProvider* host_status_provider_;
   device_sync::DeviceSyncClient* device_sync_client_;
   AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker_;
+  // TODO(cvandermerwe) Remove once HostBackendDelegate tracks Wifi feature
+  // state. Always initialized to true at the start of each user session for
+  // now.
+  bool wifi_sync_enabled_ = true;
 
   // Map from feature to the pref name which indicates the enabled/disabled
   // boolean state for the feature.

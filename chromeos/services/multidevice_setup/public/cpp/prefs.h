@@ -25,6 +25,7 @@ extern const char kPhoneHubAllowedPrefName[];
 // Note: Notification pref is shared with the notification badge feature.
 extern const char kPhoneHubNotificationsAllowedPrefName[];
 extern const char kPhoneHubTaskContinuationAllowedPrefName[];
+extern const char kWifiSyncAllowedPrefName[];
 
 // Preferences which represent whether features are enabled by the user via
 // settings. If a feature is prohibited (see above preferences), the "enabled"

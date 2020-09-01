@@ -55,7 +55,8 @@ enum Feature {
   kPhoneHub,
   kPhoneHubNotifications,
   kPhoneHubNotificationBadge,
-  kPhoneHubTaskContinuation
+  kPhoneHubTaskContinuation,
+  kWifiSync
 };
 
 // This enum is tied directly to a UMA enum defined in

@@ -24,6 +24,7 @@ const char kPhoneHubNotificationsAllowedPrefName[] =
     "phone_hub_notifications.allowed";
 const char kPhoneHubTaskContinuationAllowedPrefName[] =
     "phone_hub_task_continuation.allowed";
+const char kWifiSyncAllowedPrefName[] = "wifi_sync.allowed";
 
 // "Enabled by user" preferences:
 const char kBetterTogetherSuiteEnabledPrefName[] =
@@ -48,6 +49,7 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kPhoneHubAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubNotificationsAllowedPrefName, true);
   registry->RegisterBooleanPref(kPhoneHubTaskContinuationAllowedPrefName, true);
+  registry->RegisterBooleanPref(kWifiSyncAllowedPrefName, true);
 
   registry->RegisterBooleanPref(kBetterTogetherSuiteEnabledPrefName, true);
   registry->RegisterBooleanPref(kInstantTetheringEnabledPrefName, true);
@@ -68,7 +70,8 @@ bool AreAnyMultiDeviceFeaturesAllowed(const PrefService* pref_service) {
   return pref_service->GetBoolean(kInstantTetheringAllowedPrefName) ||
          pref_service->GetBoolean(kMessagesAllowedPrefName) ||
          pref_service->GetBoolean(kSmartLockAllowedPrefName) ||
-         pref_service->GetBoolean(kPhoneHubAllowedPrefName);
+         pref_service->GetBoolean(kPhoneHubAllowedPrefName) ||
+         pref_service->GetBoolean(kWifiSyncAllowedPrefName);
 }
 
 bool IsFeatureAllowed(mojom::Feature feature, PrefService* pref_service) {
@@ -90,6 +93,8 @@ bool IsFeatureAllowed(mojom::Feature feature, PrefService* pref_service) {
       return pref_service->GetBoolean(kPhoneHubNotificationsAllowedPrefName);
     case mojom::Feature::kPhoneHubTaskContinuation:
       return pref_service->GetBoolean(kPhoneHubTaskContinuationAllowedPrefName);
+    case mojom::Feature::kWifiSync:
+      return pref_service->GetBoolean(kWifiSyncAllowedPrefName);
     default:
       NOTREACHED();
       return false;

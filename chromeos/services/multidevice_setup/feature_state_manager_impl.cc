@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
@@ -59,7 +60,8 @@ GenerateFeatureToAllowedPrefNameMap() {
       {mojom::Feature::kPhoneHubNotificationBadge,
        kPhoneHubNotificationsAllowedPrefName},
       {mojom::Feature::kPhoneHubTaskContinuation,
-       kPhoneHubTaskContinuationAllowedPrefName}};
+       kPhoneHubTaskContinuationAllowedPrefName},
+      {mojom::Feature::kWifiSync, kWifiSyncAllowedPrefName}};
 }
 
 // Each feature's default value is kUnavailableNoVerifiedHost until proven
@@ -82,7 +84,10 @@ GenerateInitialDefaultCachedStateMap() {
       {mojom::Feature::kPhoneHubNotificationBadge,
        mojom::FeatureState::kUnavailableNoVerifiedHost},
       {mojom::Feature::kPhoneHubTaskContinuation,
-       mojom::FeatureState::kUnavailableNoVerifiedHost}};
+       mojom::FeatureState::kUnavailableNoVerifiedHost},
+      {mojom::Feature::kWifiSync,
+       mojom::FeatureState::kUnavailableNoVerifiedHost},
+  };
 }
 
 void ProcessSuiteEdgeCases(
@@ -246,6 +251,13 @@ void LogFeatureStates(
         "PhoneHub.MultiDeviceFeatureState.TaskContinuationFeature",
         new_states.find(mojom::Feature::kPhoneHubTaskContinuation)->second);
   }
+
+  if (HasFeatureStateChanged(previous_states, new_states,
+                             mojom::Feature::kWifiSync)) {
+    base::UmaHistogramEnumeration(
+        "WifiSync.MultiDeviceFeatureState",
+        new_states.find(mojom::Feature::kWifiSync)->second);
+  }
 }
 
 }  // namespace
@@ -344,6 +356,19 @@ FeatureStateManagerImpl::GetFeatureStates() {
 void FeatureStateManagerImpl::PerformSetFeatureEnabledState(
     mojom::Feature feature,
     bool enabled) {
+  // TODO(cvandermerwe) Replace wifi_sync_enabled_ once HostBackendDelegate
+  // tracks Wifi feature state. Wifi sync enabled toggle acts as a 'global'
+  // toggle which applies to all Chrome OS devices and a connected Android
+  // phone.
+  if (feature == mojom::Feature::kWifiSync) {
+    wifi_sync_enabled_ = enabled;
+    // Need to manually trigger UpdateFeatureStateCache since changes to
+    // wifi_sync_enabled_ is not observed by |registrar_| and will not invoke
+    // OnPrefValueChanged
+    UpdateFeatureStateCache(true /* notify_observers_of_changes */);
+    return;
+  }
+
   // Note: Since |registrar_| observes changes to all relevant preferences,
   // this call will result in OnPrefValueChanged() being invoked, resulting in
   // observers being notified of the change.
@@ -448,7 +473,9 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
           {mojom::Feature::kPhoneHubNotificationBadge,
            multidevice::SoftwareFeature::kPhoneHubClient},
           {mojom::Feature::kPhoneHubTaskContinuation,
-           multidevice::SoftwareFeature::kPhoneHubClient}};
+           multidevice::SoftwareFeature::kPhoneHubClient},
+          {mojom::Feature::kWifiSync,
+           multidevice::SoftwareFeature::kWifiSyncClient}};
 
   for (const auto& pair : kFeatureAndClientSoftwareFeaturePairs) {
     if (pair.first != feature)
@@ -498,7 +525,9 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
           {mojom::Feature::kPhoneHubNotificationBadge,
            multidevice::SoftwareFeature::kPhoneHubHost},
           {mojom::Feature::kPhoneHubTaskContinuation,
-           multidevice::SoftwareFeature::kPhoneHubHost}};
+           multidevice::SoftwareFeature::kPhoneHubHost},
+          {mojom::Feature::kWifiSync,
+           multidevice::SoftwareFeature::kWifiSyncHost}};
 
   for (const auto& pair : kFeatureAndHostSoftwareFeaturePairs) {
     if (pair.first != feature)
@@ -529,6 +558,15 @@ bool FeatureStateManagerImpl::RequiresFurtherSetup(mojom::Feature feature) {
 
 mojom::FeatureState FeatureStateManagerImpl::GetEnabledOrDisabledState(
     mojom::Feature feature) {
+  // TODO(cvandermerwe) Replace wifi_sync_enabled_ once HostBackendDelegate
+  // tracks Wifi feature state. Wifi sync enabled toggle acts as a 'global'
+  // toggle which applies to all Chrome OS devices and a connected Android
+  // phone.
+  if (feature == mojom::Feature::kWifiSync) {
+    return wifi_sync_enabled_ ? mojom::FeatureState::kEnabledByUser
+                              : mojom::FeatureState::kDisabledByUser;
+  }
+
   if (!base::Contains(feature_to_enabled_pref_name_map_, feature)) {
     PA_LOG(ERROR) << "FeatureStateManagerImpl::GetEnabledOrDisabledState(): "
                   << "Feature not present in \"enabled pref\" map: " << feature;
