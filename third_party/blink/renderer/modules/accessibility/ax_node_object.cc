@@ -4433,14 +4433,19 @@ String AXNodeObject::NativeTextAlternative(
         }
       }
 
-      name_from = ax::mojom::blink::NameFrom::kRelatedElement;
+      text_alternative = document->title();
+      bool is_empty_title_element =
+          text_alternative.IsEmpty() && document->TitleElement();
+      if (is_empty_title_element)
+        name_from = ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty;
+      else
+        name_from = ax::mojom::blink::NameFrom::kRelatedElement;
+
       if (name_sources) {
         name_sources->push_back(NameSource(*found_text_alternative));
         name_sources->back().type = name_from;
         name_sources->back().native_source = kAXTextFromNativeHTMLTitleElement;
       }
-
-      text_alternative = document->title();
 
       Element* title_element = document->TitleElement();
       AXObject* title_ax_object = AXObjectCache().GetOrCreate(title_element);
