@@ -57,9 +57,6 @@ class LegalMessageView : public views::View, public views::StyledLabelListener {
                               int event_flags) override;
 
  private:
-  std::unique_ptr<views::StyledLabel> CreateLegalMessageLineLabel(
-      const LegalMessageLine& line);
-
   const LegalMessageLines legal_message_lines_;
   const LinkClickedCallback callback_;
 };

@@ -46,33 +46,20 @@
 
 namespace autofill {
 
-namespace {
-const int kTooltipBubbleWidth = 320;
-const int kTooltipIconSize = 12;
-
-std::unique_ptr<LegalMessageView> CreateLegalMessageView(
-    const LegalMessageLines& message_lines,
-    LegalMessageView::LinkClickedCallback callback) {
-  if (message_lines.empty())
-    return nullptr;
-
-  return std::make_unique<LegalMessageView>(message_lines, std::move(callback));
-}
-
-}  // namespace
-
 SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  legal_message_view_ = SetFootnoteView(CreateLegalMessageView(
-      controller->GetLegalMessageLines(),
-      base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
-                          base::Unretained(this))));
-  if (legal_message_view_)
+  const LegalMessageLines message_lines = controller->GetLegalMessageLines();
+  if (!message_lines.empty()) {
+    legal_message_view_ = SetFootnoteView(std::make_unique<LegalMessageView>(
+        message_lines,
+        base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
+                            base::Unretained(this))));
     InitFootnoteView(legal_message_view_);
+  }
 }
 
 void SaveCardOfferBubbleViews::Init() {
@@ -190,6 +177,7 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     if (!prefilled_name.empty() &&
         controller()->GetSyncState() !=
             AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled) {
+      constexpr int kTooltipIconSize = 12;
       std::unique_ptr<views::TooltipIcon> cardholder_name_tooltip =
           std::make_unique<views::TooltipIcon>(
               l10n_util::GetStringUTF16(
@@ -307,7 +295,9 @@ SaveCardOfferBubbleViews::CreateUploadExplanationView() {
        !cardholder_name_textfield_->GetText().empty())
           ? IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_AND_CARDHOLDER_NAME_TOOLTIP
           : IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_TOOLTIP));
-  upload_explanation_tooltip->set_bubble_width(kTooltipBubbleWidth);
+  upload_explanation_tooltip->set_bubble_width(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_BUBBLE_PREFERRED_WIDTH));
   upload_explanation_tooltip->set_anchor_point_arrow(
       views::BubbleBorder::Arrow::TOP_RIGHT);
   upload_explanation_tooltip->SetID(DialogViewId::UPLOAD_EXPLANATION_TOOLTIP);

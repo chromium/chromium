@@ -74,10 +74,10 @@ class SharingDialogView : public SharingDialog,
 
   // Populates the dialog view containing valid devices and apps.
   void InitListView();
-  // Populates the dialog view containing no devices or apps.
-  void InitEmptyView();
   // Populates the dialog view containing error help text.
   void InitErrorView();
+
+  std::unique_ptr<views::StyledLabel> CreateHelpText();
 
   SharingDialogData data_;
 

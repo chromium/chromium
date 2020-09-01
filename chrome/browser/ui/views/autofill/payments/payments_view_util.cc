@@ -136,24 +136,19 @@ LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   for (const LegalMessageLine& line : legal_message_lines) {
-    AddChildView(CreateLegalMessageLineLabel(line).release());
+    views::StyledLabel* label =
+        AddChildView(std::make_unique<views::StyledLabel>(this));
+    label->SetText(line.text());
+    label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+    label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+    for (const LegalMessageLine::Link& link : line.links()) {
+      label->AddStyleRange(link.range,
+                           views::StyledLabel::RangeStyleInfo::CreateForLink());
+    }
   }
 }
 
 LegalMessageView::~LegalMessageView() {}
-
-std::unique_ptr<views::StyledLabel>
-LegalMessageView::CreateLegalMessageLineLabel(const LegalMessageLine& line) {
-  auto label = std::make_unique<views::StyledLabel>(this);
-  label->SetText(line.text());
-  label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-  for (const LegalMessageLine::Link& link : line.links()) {
-    label->AddStyleRange(link.range,
-                         views::StyledLabel::RangeStyleInfo::CreateForLink());
-  }
-  return label;
-}
 
 void LegalMessageView::StyledLabelLinkClicked(views::StyledLabel* label,
                                               const gfx::Range& range,

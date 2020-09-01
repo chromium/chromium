@@ -119,23 +119,6 @@ base::string16 PrepareHelpTextWithOrigin(const SharingDialogData& data,
   return text;
 }
 
-std::unique_ptr<views::StyledLabel> CreateHelpText(
-    const SharingDialogData& data,
-    views::StyledLabelListener* listener,
-    bool show_origin) {
-  DCHECK_NE(0, data.help_link_text_id);
-  const base::string16 link = l10n_util::GetStringUTF16(data.help_link_text_id);
-  size_t offset;
-  auto label = std::make_unique<views::StyledLabel>(listener);
-  label->SetText(show_origin
-                     ? PrepareHelpTextWithOrigin(data, link, &offset)
-                     : PrepareHelpTextWithoutOrigin(data, link, &offset));
-  views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink();
-  label->AddStyleRange(gfx::Range(offset, offset + link.length()), link_style);
-  return label;
-}
-
 std::unique_ptr<views::View> CreateOriginView(const SharingDialogData& data) {
   DCHECK(data.initiating_origin);
   DCHECK_NE(0, data.origin_text_id);
@@ -153,22 +136,6 @@ std::unique_ptr<views::View> CreateOriginView(const SharingDialogData& data) {
   return label;
 }
 
-std::unique_ptr<views::View> CreateHelpOrOriginView(
-    const SharingDialogData& data,
-    content::WebContents* web_contents,
-    views::StyledLabelListener* listener) {
-  bool show_origin = ShouldShowOrigin(data, web_contents);
-  switch (data.type) {
-    case SharingDialogType::kDialogWithoutDevicesWithApp:
-      return CreateHelpText(data, listener, show_origin);
-    case SharingDialogType::kDialogWithDevicesMaybeApps:
-      return show_origin ? CreateOriginView(data) : nullptr;
-    case SharingDialogType::kErrorDialog:
-    case SharingDialogType::kEducationalDialog:
-      return nullptr;
-  }
-}
-
 }  // namespace
 
 SharingDialogView::SharingDialogView(views::View* anchor_view,
@@ -177,7 +144,14 @@ SharingDialogView::SharingDialogView(views::View* anchor_view,
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       data_(std::move(data)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetFootnoteView(CreateHelpOrOriginView(data_, web_contents, this));
+
+  if (data_.type == SharingDialogType::kDialogWithoutDevicesWithApp) {
+    SetFootnoteView(CreateHelpText());
+  } else if ((data_.type == SharingDialogType::kDialogWithDevicesMaybeApps) &&
+             ShouldShowOrigin(data_, web_contents)) {
+    SetFootnoteView(CreateOriginView(data_));
+  }
+
   set_close_on_main_frame_origin_navigation(true);
 }
 
@@ -291,7 +265,7 @@ void SharingDialogView::Init() {
       InitErrorView();
       break;
     case SharingDialogType::kEducationalDialog:
-      InitEmptyView();
+      AddChildView(CreateHelpText());
       break;
     case SharingDialogType::kDialogWithoutDevicesWithApp:
     case SharingDialogType::kDialogWithDevicesMaybeApps:
@@ -378,11 +352,6 @@ void SharingDialogView::InitListView() {
   }
 }
 
-void SharingDialogView::InitEmptyView() {
-  bool show_origin = ShouldShowOrigin(data_, web_contents());
-  AddChildView(CreateHelpText(data_, this, show_origin));
-}
-
 void SharingDialogView::InitErrorView() {
   auto label = std::make_unique<views::Label>(data_.error_text,
                                               views::style::CONTEXT_LABEL,
@@ -390,4 +359,19 @@ void SharingDialogView::InitErrorView() {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
   AddChildView(std::move(label));
+}
+
+std::unique_ptr<views::StyledLabel> SharingDialogView::CreateHelpText() {
+  DCHECK_NE(0, data_.help_link_text_id);
+  const base::string16 link =
+      l10n_util::GetStringUTF16(data_.help_link_text_id);
+  size_t offset;
+  auto label = std::make_unique<views::StyledLabel>(this);
+  label->SetText(ShouldShowOrigin(data_, web_contents())
+                     ? PrepareHelpTextWithOrigin(data_, link, &offset)
+                     : PrepareHelpTextWithoutOrigin(data_, link, &offset));
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink();
+  label->AddStyleRange(gfx::Range(offset, offset + link.length()), link_style);
+  return label;
 }
