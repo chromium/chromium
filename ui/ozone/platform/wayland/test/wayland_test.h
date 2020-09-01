@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
@@ -82,6 +83,7 @@ class WaylandTest : public ::testing::TestWithParam<uint32_t> {
 #endif
 
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
+  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(WaylandTest);
 };

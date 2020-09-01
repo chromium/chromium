@@ -4,7 +4,10 @@
 
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -43,6 +46,15 @@ WaylandTest::WaylandTest()
 WaylandTest::~WaylandTest() {}
 
 void WaylandTest::SetUp() {
+  // TODO(1096425): remove this once Ozone is default on Linux. This is required
+  // to be able to run ozone_unittests locally without passing
+  // --enable-features=UseOzonePlatform explicitly. linux-ozone-rel bot does
+  // that automatically through changes done to "variants", which is also
+  // convenient to have locally so that we don't need to worry about that (it's
+  // the Wayland DragAndDrop that relies on the feature).
+  feature_list_.InitAndEnableFeature(features::kUseOzonePlatform);
+  ASSERT_TRUE(features::IsUsingOzonePlatform());
+
   ASSERT_TRUE(server_.Start(GetParam()));
   ASSERT_TRUE(connection_->Initialize());
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen(
