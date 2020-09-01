@@ -49,6 +49,11 @@ class WizardContext {
   // Indicates whether the device has users. Set during the initialization of
   // WizardController.
   bool device_has_users = false;
+
+  // Whether user creation screen is enabled (could be disabled due to disabled
+  // feature or on managed device). Set by UserCreationScreen::MaybeSkip and
+  // will be flipped to true when screen is shown.
+  bool is_user_creation_enabled = false;
 };
 
 }  // namespace chromeos

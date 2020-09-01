@@ -21,7 +21,10 @@ class ScreenManager;
 // GAIA-based sign-in.
 class GaiaScreen : public BaseScreen {
  public:
-  enum class Result { BACK };
+  enum class Result {
+    BACK,
+    CLOSE_DIALOG,
+  };
 
   static std::string GetResultString(Result result);
 

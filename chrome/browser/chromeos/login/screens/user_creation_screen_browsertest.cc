@@ -178,12 +178,7 @@ class UserCreationScreenLoginTest : public UserCreationScreenTest {
   UserCreationScreenLoginTest() : UserCreationScreenTest() {
     login_manager_mixin_.AppendRegularUsers(1);
     device_state_.SetState(
-        chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
-  }
-
-  void ShowUserCreationScreen() {
-    LoginDisplayHost::default_host()->StartWizard(UserCreationView::kScreenId);
-    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+        chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED);
   }
 
  private:
@@ -194,7 +189,9 @@ class UserCreationScreenLoginTest : public UserCreationScreenTest {
 // existing users) and clicking it closes the oobe dialog. Enterprise
 // enrollment button is hidden when there are existing users.
 IN_PROC_BROWSER_TEST_F(UserCreationScreenLoginTest, Cancel) {
-  ShowUserCreationScreen();
+  EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   ASSERT_FALSE(ash::LoginScreenTestApi::IsEnterpriseEnrollmentButtonShown());
 
   test::OobeJS().ExpectVisiblePath(kUserCreationDialog);
@@ -212,6 +209,29 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenLoginTest, Cancel) {
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), UserCreationScreen::Result::CANCEL);
+  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+}
+
+class UserCreationScreenEnrolledTest : public UserCreationScreenTest {
+ public:
+  UserCreationScreenEnrolledTest() : UserCreationScreenTest() {
+    login_manager_mixin_.AppendRegularUsers(1);
+    device_state_.SetState(
+        chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
+  }
+
+ private:
+  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+};
+
+// Verify user creation screen is skipped when clicking add user button on
+// managed device.
+IN_PROC_BROWSER_TEST_F(UserCreationScreenEnrolledTest,
+                       ShouldSkipUserCreationScreen) {
+  EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  test::OobeJS().ClickOnPath({"gaia-signin", "signin-back-button"});
   EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 

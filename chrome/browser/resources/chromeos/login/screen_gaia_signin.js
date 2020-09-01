@@ -83,18 +83,6 @@ Polymer({
   ],
 
   properties: {
-    /**
-     * Determine the behavior of back button and brings user back to user
-     * creation screen when enabled. True when kChildSpecificSignin feature
-     * flag is enabled.
-     */
-    childSpecificSigninFeatureEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('childSpecificSigninFeatureEnabled');
-      },
-      readOnly: true,
-    },
 
     /**
      * Current mode of this screen.
@@ -523,11 +511,7 @@ Polymer({
    */
   onBackButtonClicked_() {
     if (!this.canGoBack_()) {
-      if (!this.isSaml_ && this.childSpecificSigninFeatureEnabled_) {
-        this.userActed('back');
-      } else {
-        this.cancel();
-      }
+      this.cancel();
     } else {
       this.getActiveFrame_().back();
     }
@@ -1360,11 +1344,7 @@ Polymer({
     if (this.screenMode_ == AuthMode.AD_AUTH)
       chrome.send('cancelAdAuthentication');
 
-    // Only close oobe dialog when it is the first screen in add user flow.
-    if (this.isClosable_() && !this.childSpecificSigninFeatureEnabled_)
-      Oobe.showUserPods();
-    else
-      Oobe.resetSigninUI(true);
+    this.userActed('cancel');
   },
 
   /**

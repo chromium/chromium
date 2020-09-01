@@ -59,14 +59,16 @@ void UserCreationScreen::OnViewDestroyed(UserCreationView* view) {
 }
 
 bool UserCreationScreen::MaybeSkip(WizardContext* context) {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
   if (!features::IsChildSpecificSigninEnabled() ||
-      context->skip_to_login_for_tests ||
-      connector->GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD) {
+      g_browser_process->platform_part()
+          ->browser_policy_connector_chromeos()
+          ->IsEnterpriseManaged() ||
+      context->skip_to_login_for_tests) {
+    context->is_user_creation_enabled = false;
     exit_callback_.Run(Result::SKIPPED);
     return true;
   }
+  context->is_user_creation_enabled = true;
   return false;
 }
 

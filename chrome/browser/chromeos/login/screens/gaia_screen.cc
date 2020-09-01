@@ -10,7 +10,7 @@
 #include "components/account_id/account_id.h"
 
 namespace {
-constexpr char kUserActionBack[] = "back";
+constexpr char kUserActionCancel[] = "cancel";
 }  // namespace
 
 namespace chromeos {
@@ -20,6 +20,8 @@ std::string GaiaScreen::GetResultString(Result result) {
   switch (result) {
     case Result::BACK:
       return "Back";
+    case Result::CLOSE_DIALOG:
+      return "CloseDialog";
   }
 }
 
@@ -78,8 +80,14 @@ void GaiaScreen::HideImpl() {
 }
 
 void GaiaScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionBack) {
-    exit_callback_.Run(Result::BACK);
+  if (action_id == kUserActionCancel) {
+    if (context()->is_user_creation_enabled) {
+      exit_callback_.Run(Result::BACK);
+    } else if (context()->device_has_users) {
+      exit_callback_.Run(Result::CLOSE_DIALOG);
+    } else {
+      LoadOnline(EmptyAccountId());
+    }
   } else {
     BaseScreen::OnUserAction(action_id);
   }

@@ -189,6 +189,9 @@ class WizardController {
   // Set pref value for first run.
   void PrepareFirstRunPrefs();
 
+  // Returns true if we are in user creation screen or gaia signin screen.
+  static bool IsSigninScreen(OobeScreenId screen_id);
+
  private:
   // Create BaseScreen instances. These are owned by |screen_manager_|.
   std::vector<std::unique_ptr<BaseScreen>> CreateScreens();

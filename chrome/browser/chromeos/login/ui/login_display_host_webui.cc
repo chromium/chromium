@@ -574,9 +574,7 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   // Keep parameters to restore if renderer crashes.
   restore_path_ = RESTORE_WIZARD;
   first_screen_ = first_screen;
-  is_showing_login_ = (first_screen == (features::IsChildSpecificSigninEnabled()
-                                            ? UserCreationView::kScreenId
-                                            : GaiaView::kScreenId));
+  is_showing_login_ = WizardController::IsSigninScreen(first_screen);
 
   VLOG(1) << "Login WebUI >> wizard";
 
