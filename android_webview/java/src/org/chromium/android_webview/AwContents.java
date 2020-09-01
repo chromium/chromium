@@ -1744,8 +1744,10 @@ public class AwContents implements SmartClipProvider {
         if (additionalHttpHeaders != null) {
             boolean valid = true;
             for (Map.Entry<String, String> header : additionalHttpHeaders.entrySet()) {
-                if (BAD_HEADER_CHAR.matcher(header.getKey()).find()
-                        || BAD_HEADER_CHAR.matcher(header.getValue()).find()) {
+                String headerName = header.getKey();
+                String headerValue = header.getValue();
+                if ((headerName != null && BAD_HEADER_CHAR.matcher(headerName).find())
+                        || (headerValue != null && BAD_HEADER_CHAR.matcher(headerValue).find())) {
                     valid = false;
                     break;
                 }
