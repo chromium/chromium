@@ -52,6 +52,7 @@ ProfileSigninConfirmationDialogViews::ProfileSigninConfirmationDialogViews(
       username_(username),
       delegate_(std::move(delegate)),
       prompt_for_new_profile_(prompt_for_new_profile) {
+  SetShowCloseButton(false);
   SetTitle(IDS_ENTERPRISE_SIGNIN_TITLE);
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   SetButtonLabel(
