@@ -184,8 +184,8 @@
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_ANDROID)
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
 #include "chrome/browser/webshare/share_service_impl.h"
 #endif
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
@@ -481,7 +481,7 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&payments::CreatePaymentCredential));
 #endif
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kWebShare)) {
     map->Add<blink::mojom::ShareService>(
         base::BindRepeating(&ShareServiceImpl::Create));

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
 class GURL;
@@ -16,9 +17,10 @@ namespace content {
 class RenderFrameHost;
 }
 
-class ShareServiceImpl : public blink::mojom::ShareService {
+class ShareServiceImpl : public blink::mojom::ShareService,
+                         public content::WebContentsObserver {
  public:
-  ShareServiceImpl();
+  explicit ShareServiceImpl(content::RenderFrameHost& render_frame_host);
   ShareServiceImpl(const ShareServiceImpl&) = delete;
   ShareServiceImpl& operator=(const ShareServiceImpl&) = delete;
   ~ShareServiceImpl() override;
@@ -33,6 +35,12 @@ class ShareServiceImpl : public blink::mojom::ShareService {
              const GURL& share_url,
              std::vector<blink::mojom::SharedFilePtr> files,
              ShareCallback callback) override;
+
+  // content::WebContentsObserver:
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+
+ private:
+  content::RenderFrameHost* render_frame_host_;
 };
 
 #endif  // CHROME_BROWSER_WEBSHARE_SHARE_SERVICE_IMPL_H_

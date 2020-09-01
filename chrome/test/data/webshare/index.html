@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    'use strict';
+    async function share_text(text) {
+      try {
+        await navigator.share({text: text});
+        return 'share succeeded';
+      } catch(error) {
+        return ('share failed: ' + error);
+      }
+    }
+  </script>
+</head>
+<body>
+</body>
+</html>
