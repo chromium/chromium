@@ -616,8 +616,10 @@ const IconResourceInfo* GetDefaultAvatarIconResourceInfo(size_t index) {
 gfx::Image GetPlaceholderAvatarIconWithColors(SkColor fill_color,
                                               SkColor stroke_color,
                                               int size) {
+  const gfx::VectorIcon& person_icon =
+      size >= 40 ? kPersonFilledPaddedLargeIcon : kPersonFilledPaddedSmallIcon;
   gfx::ImageSkia icon_without_background = gfx::CreateVectorIcon(
-      gfx::IconDescription(kPersonOutlinePaddedIcon, size, stroke_color));
+      gfx::IconDescription(person_icon, size, stroke_color));
   gfx::ImageSkia icon_with_background(
       std::make_unique<ImageWithBackgroundSource>(icon_without_background,
                                                   fill_color),
