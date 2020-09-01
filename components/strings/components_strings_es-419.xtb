@@ -726,8 +726,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
     Si consideras que se trata de un error, visita https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Desplazamiento del borde</translation>
-<translation id="3996311196211510766">El sitio <ph name="ORIGIN" /> solicitó que se aplique una política de origen
-    a todas las solicitudes. Sin embargo, no es posible en este momento.</translation>
+<translation id="3996311196211510766">El sitio <ph name="ORIGIN" /> solicitó que se aplique una política de origen a todas las solicitudes. Sin embargo, no es posible en este momento.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} página}other{Documento PDF con {COUNT} páginas}}</translation>
 <translation id="4030383055268325496">&amp;Deshacer Agregar</translation>
 <translation id="4032320456957708163"><ph name="ENROLLMENT_DOMAIN" /> administra tu navegador</translation>

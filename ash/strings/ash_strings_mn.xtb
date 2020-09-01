@@ -82,7 +82,7 @@
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="1812997170047690955">Миний дэлгэцэд юу байна вэ?</translation>
 <translation id="1823873187264960516">Этернет: <ph name="ADDRESS" /></translation>
-<translation id="1836215606488044471">Туслах (ачааллаж байна...)</translation>
+<translation id="1836215606488044471">Туслах (ачаалж байна...)</translation>
 <translation id="1838895407229022812">Шөнийн гэрэл унтраалттай байна.</translation>
 <translation id="1850504506766569011">Wi-Fi унтраалттай байна.</translation>
 <translation id="1864454756846565995">USB-C төхөөрөмж (ард талын порт)</translation>
@@ -313,7 +313,7 @@
 <translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Томруулдаг шил</translation>
 <translation id="4350065043422286972">Тэмдэглэсэн файлууд</translation>
-<translation id="4351433414020964307">Туслах ачааллаж байна...</translation>
+<translation id="4351433414020964307">Туслах ачаалж байна...</translation>
 <translation id="4356930093361201197">өндөр ялгаралтай горим</translation>
 <translation id="4368583494516669646">Сайхан амраарай <ph name="GIVEN_NAME" /></translation>
 <translation id="4371348193907997655">Дамжуулах тохиргоо</translation>

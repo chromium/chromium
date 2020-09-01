@@ -546,7 +546,7 @@
 <translation id="1637246113959718501">Шаардлагатай файлуудыг татах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="1637350598157233081">Таны нууц үгийг энэ төхөөрөмж дээр хадгалсан</translation>
 <translation id="1637765355341780467">Таны профайлыг нээхэд алдаа гарлаа. Зарим онцлог боломжгүй байж болзошгүй.</translation>
-<translation id="1639239467298939599">Ачааллаж байна</translation>
+<translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="163993578339087550"><ph name="SERVICE_NAME" /> таныг тохирох Chrome OS төхөөрөмж ашиглаж байгаа эсэхийг шалгах хүсэлтэй байна.</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> нь Linux апп дээр хараахан ажиллахгүй байна</translation>
 <translation id="1640283014264083726">RSA шифрлэлттэй PKCS # 1 MD4</translation>
@@ -1190,7 +1190,7 @@
 <translation id="2423578206845792524">Зургийг ... хэлбэрээр хадгал</translation>
 <translation id="2428510569851653187">Чихтэй хуудсыг гэмтсэн үед хийж байсан зүйлээ тайлбарлана уу</translation>
 <translation id="2428939361789119025">Wi-Fi-г унтраах</translation>
-<translation id="2431027948063157455">Google Туслахыг ачааллаж чадсангүй. Сүлжээний холболтоо шалгаад дахин оролдоно уу.</translation>
+<translation id="2431027948063157455">Google Туслахыг ачаалж чадсангүй. Сүлжээний холболтоо шалгаад дахин оролдоно уу.</translation>
 <translation id="2431846145771260397">Та Linux (Beta)-д тохируулсан хэмжээтэй дискийг хадгалахдаа итгэлтэй байна уу?</translation>
 <translation id="2432753757290432042">Linux (Бэта)-н шинэчлэлт шаардлагатай</translation>
 <translation id="2433452467737464329">Холбоос руу query param-ыг нэмж, : chrome://network/?refresh=&lt;sec&gt; дахь хуудсын автоматаар сэргээнэ үү.</translation>
@@ -1911,7 +1911,7 @@
 <translation id="3305661444342691068">PDF-ийг урьдчилан харах байдлаар нээх</translation>
 <translation id="3308116878371095290">Энэхүү хуудсыг cookies байршуулах тохиргооноос хамгаалсан байна.</translation>
 <translation id="3308134619352333507">Товчлуурыг нуух</translation>
-<translation id="3308852433423051161">Google туслахыг ачааллаж байна...</translation>
+<translation id="3308852433423051161">Google туслахыг ачаалж байна...</translation>
 <translation id="3311445899360743395">Энэ апптай холбоотой өгөгдлийг энэ төхөөрөмжөөс устгаж болзошгүй.</translation>
 <translation id="3312424061798279731">Идэвхжсэн хэл</translation>
 <translation id="3313622045786997898">Certificate Signature Value</translation>
@@ -2373,7 +2373,7 @@
 <translation id="3834775135533257713">"<ph name="TO_INSTALL_APP_NAME" />" апп нь "<ph name="INSTALLED_APP_NAME" />"-тай зөрчилдөж байгаа тул үүнийг нэмэх боломжгүй байна.</translation>
 <translation id="3835522725882634757">Өө үгүй ээ! Энэ сервер нь ойлгомжгүй <ph name="PRODUCT_NAME" /> өгөгдөл илгээж байна. <ph name="BEGIN_LINK" />-ийг эхлүүлж, алдааг мэдэгдэж <ph name="END_LINK" />  <ph name="BEGIN2_LINK" /> жагсаалтыг гаргана уу <ph name="END2_LINK" /> .</translation>
 <translation id="383669374481694771">Энэ нь уг төхөөрөмжийн болон түүнийг хэрхэн ашигладаг тухай (батарейн түвшин, систем болон аппын үйл ажиллагаа, алдаа зэрэг) ерөнхий мэдээлэл юм. Өгөгдлийг Android-г сайжруулах зорилгоор ашиглах бөгөөд хуримтлуулсан зарим мэдээлэл нь Google-н аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд апп болон бүтээгдэхүүнээ сайжруулахад нь мөн тусална.</translation>
-<translation id="3838085852053358637">Өргөтгөлийг ачааллаж чадсангүй</translation>
+<translation id="3838085852053358637">Өргөтгөлийг ачаалж чадсангүй</translation>
 <translation id="3838486795898716504">Илүү их <ph name="PAGE_TITLE" /></translation>
 <translation id="3838543471119263078">Cookies ба бусад сайтын болон нэмэлт өргөтгөлийн мэдээлэл</translation>
 <translation id="383891835335927981">Томруулж, жижигрүүлсэн сайт алга</translation>
