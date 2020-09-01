@@ -42,8 +42,8 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
+#include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/chrome_stability_metrics_provider.h"
 #include "chrome/browser/metrics/desktop_platform_features_metrics_provider.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/metrics/https_engagement_metrics_provider.h"
@@ -68,6 +68,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/metrics/component_metrics_provider.h"
+#include "components/metrics/content/content_stability_metrics_provider.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
 #include "components/metrics/content/rendering_perf_metrics_provider.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -626,7 +627,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<OmniboxMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<ChromeStabilityMetricsProvider>(local_state));
+      std::make_unique<metrics::ContentStabilityMetricsProvider>(
+          local_state, std::make_unique<ChromeMetricsExtensionsHelper>()));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::GPUMetricsProvider>());

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_CHROME_STABILITY_METRICS_PROVIDER_H_
-#define CHROME_BROWSER_METRICS_CHROME_STABILITY_METRICS_PROVIDER_H_
+#ifndef COMPONENTS_METRICS_CONTENT_CONTENT_STABILITY_METRICS_PROVIDER_H_
+#define COMPONENTS_METRICS_CONTENT_CONTENT_STABILITY_METRICS_PROVIDER_H_
+
+#include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
@@ -21,32 +22,51 @@
 
 class PrefService;
 
-// ChromeStabilityMetricsProvider gathers and logs Chrome-specific stability-
+FORWARD_DECLARE_TEST(ChromeStabilityMetricsProviderTest,
+                     BrowserChildProcessObserverGpu);
+FORWARD_DECLARE_TEST(ChromeStabilityMetricsProviderTest,
+                     BrowserChildProcessObserverUtility);
+FORWARD_DECLARE_TEST(ChromeStabilityMetricsProviderTest, NotificationObserver);
+
+namespace metrics {
+
+class ExtensionsHelper;
+
+// ContentStabilityMetricsProvider gathers and logs Chrome-specific stability-
 // related metrics.
-class ChromeStabilityMetricsProvider
-    : public metrics::MetricsProvider,
+class ContentStabilityMetricsProvider
+    : public MetricsProvider,
       public content::BrowserChildProcessObserver,
 #if defined(OS_ANDROID)
       public crash_reporter::CrashMetricsReporter::Observer,
 #endif
       public content::NotificationObserver {
  public:
-  explicit ChromeStabilityMetricsProvider(PrefService* local_state);
-  ~ChromeStabilityMetricsProvider() override;
+  // |extensions_helper| is used to determine if a process corresponds to an
+  // extension and is optional. If an ExtensionsHelper is not supplied it is
+  // assumed the process does not correspond to an extension.
+  ContentStabilityMetricsProvider(
+      PrefService* local_state,
+      std::unique_ptr<ExtensionsHelper> extensions_helper);
+  ContentStabilityMetricsProvider(const ContentStabilityMetricsProvider&) =
+      delete;
+  ContentStabilityMetricsProvider& operator=(
+      const ContentStabilityMetricsProvider&) = delete;
+  ~ContentStabilityMetricsProvider() override;
 
-  // metrics::MetricsDataProvider:
+  // MetricsDataProvider:
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
   void ProvideStabilityMetrics(
-      metrics::SystemProfileProto* system_profile_proto) override;
+      SystemProfileProto* system_profile_proto) override;
   void ClearSavedStabilityMetrics() override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ChromeStabilityMetricsProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(::ChromeStabilityMetricsProviderTest,
                            BrowserChildProcessObserverGpu);
-  FRIEND_TEST_ALL_PREFIXES(ChromeStabilityMetricsProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(::ChromeStabilityMetricsProviderTest,
                            BrowserChildProcessObserverUtility);
-  FRIEND_TEST_ALL_PREFIXES(ChromeStabilityMetricsProviderTest,
+  FRIEND_TEST_ALL_PREFIXES(::ChromeStabilityMetricsProviderTest,
                            NotificationObserver);
 
   // content::NotificationObserver:
@@ -73,12 +93,14 @@ class ChromeStabilityMetricsProvider
       scoped_observer_;
 #endif  // defined(OS_ANDROID)
 
-  metrics::StabilityMetricsHelper helper_;
+  StabilityMetricsHelper helper_;
 
   // Registrar for receiving stability-related notifications.
   content::NotificationRegistrar registrar_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeStabilityMetricsProvider);
+  std::unique_ptr<ExtensionsHelper> extensions_helper_;
 };
 
-#endif  // CHROME_BROWSER_METRICS_CHROME_STABILITY_METRICS_PROVIDER_H_
+}  // namespace metrics
+
+#endif  // COMPONENTS_METRICS_CONTENT_CONTENT_STABILITY_METRICS_PROVIDER_H_

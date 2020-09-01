@@ -217,6 +217,9 @@ static_library("component_metrics") {
 if (!is_ios) {
   static_library("content") {
     sources = [
+      "content/content_stability_metrics_provider.cc",
+      "content/content_stability_metrics_provider.h",
+      "content/extensions_helper.h",
       "content/gpu_metrics_provider.cc",
       "content/gpu_metrics_provider.h",
       "content/rendering_perf_metrics_provider.cc",
@@ -228,8 +231,12 @@ if (!is_ios) {
     deps = [
       "//base",
       "//content/public/browser",
+      "//extensions/buildflags",
       "//gpu/config",
     ]
+    if (is_android) {
+      deps += [ "//components/crash/content/browser" ]
+    }
   }
 }
 

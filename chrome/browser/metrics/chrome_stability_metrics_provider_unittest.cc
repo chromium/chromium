@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/chrome_stability_metrics_provider.h"
+#include "components/metrics/content/content_stability_metrics_provider.h"
 
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -38,6 +39,8 @@ namespace {
 const char kTestGpuProcessName[] = "content_gpu";
 const char kTestUtilityProcessName[] = "test_utility_process";
 
+}  // namespace
+
 class ChromeStabilityMetricsProviderTest : public testing::Test {
  protected:
   ChromeStabilityMetricsProviderTest() : prefs_(new TestingPrefServiceSimple) {
@@ -53,11 +56,9 @@ class ChromeStabilityMetricsProviderTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(ChromeStabilityMetricsProviderTest);
 };
 
-}  // namespace
-
 TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverGpu) {
   base::HistogramTester histogram_tester;
-  ChromeStabilityMetricsProvider provider(prefs());
+  metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
 
   content::ChildProcessData child_process_data(content::PROCESS_TYPE_GPU);
   child_process_data.metrics_name = kTestGpuProcessName;
@@ -89,7 +90,7 @@ TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverGpu) {
 
 TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverUtility) {
   base::HistogramTester histogram_tester;
-  ChromeStabilityMetricsProvider provider(prefs());
+  metrics::ContentStabilityMetricsProvider provider(prefs(), nullptr);
 
   content::ChildProcessData child_process_data(content::PROCESS_TYPE_UTILITY);
   child_process_data.metrics_name = kTestUtilityProcessName;
@@ -131,7 +132,8 @@ TEST_F(ChromeStabilityMetricsProviderTest, BrowserChildProcessObserverUtility) {
 
 TEST_F(ChromeStabilityMetricsProviderTest, NotificationObserver) {
   base::HistogramTester histogram_tester;
-  ChromeStabilityMetricsProvider provider(prefs());
+  metrics::ContentStabilityMetricsProvider provider(
+      prefs(), std::make_unique<ChromeMetricsExtensionsHelper>());
   std::unique_ptr<TestingProfileManager> profile_manager(
       new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
   EXPECT_TRUE(profile_manager->SetUp());
