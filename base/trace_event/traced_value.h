@@ -105,9 +105,10 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
 
   // Call |BeginArray| or |BeginArrayWithCopiedName| with no / the same
   // parameter and return an |ArrayScope| holding |this|.
-  ArrayScope AppendArrayScoped();
-  ArrayScope BeginArrayScoped(const char* name);
-  ArrayScope BeginArrayScopedWithCopiedName(base::StringPiece name);
+  ArrayScope AppendArrayScoped() WARN_UNUSED_RESULT;
+  ArrayScope BeginArrayScoped(const char* name) WARN_UNUSED_RESULT;
+  ArrayScope BeginArrayScopedWithCopiedName(base::StringPiece name)
+      WARN_UNUSED_RESULT;
 
   // Helper to auto-close a dictionary. The call to
   // |DictionaryScope::~DictionaryScope| closes the dictionary.
@@ -147,9 +148,10 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
 
   // Call |BeginDictionary| or |BeginDictionaryWithCopiedName| with no / the
   // same parameter and return a |DictionaryScope| holding |this|.
-  DictionaryScope AppendDictionaryScoped();
-  DictionaryScope BeginDictionaryScoped(const char* name);
-  DictionaryScope BeginDictionaryScopedWithCopiedName(base::StringPiece name);
+  DictionaryScope AppendDictionaryScoped() WARN_UNUSED_RESULT;
+  DictionaryScope BeginDictionaryScoped(const char* name) WARN_UNUSED_RESULT;
+  DictionaryScope BeginDictionaryScopedWithCopiedName(base::StringPiece name)
+      WARN_UNUSED_RESULT;
 
   class BASE_EXPORT Array;
   class BASE_EXPORT Dictionary;
