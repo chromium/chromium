@@ -706,7 +706,9 @@ void ExtensionDownloader::TryFetchingExtensionsFromCache(
   if (error == ExtensionDownloaderDelegate::Error::MANIFEST_FETCH_FAILED) {
     ExtensionDownloaderDelegate::FailureData failure_data(
         -net_error,
-        response_code > 0 ? base::Optional<int>(response_code) : base::nullopt,
+        (net_error == net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE)
+            ? base::Optional<int>(response_code)
+            : base::nullopt,
         manifests_queue_.active_request_failure_count());
     ReportManifestFetchFailure(fetch_data, error, failure_data);
     return;
@@ -760,7 +762,9 @@ void ExtensionDownloader::RetryRequestOrHandleFailureOnManifestFetchFailure(
   } else {
     ExtensionDownloaderDelegate::FailureData failure_data(
         -net_error,
-        response_code > 0 ? base::Optional<int>(response_code) : base::nullopt,
+        (net_error == net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE)
+            ? base::Optional<int>(response_code)
+            : base::nullopt,
         request_failure_count);
     ReportManifestFetchFailure(
         manifests_queue_.active_request(),
@@ -1336,8 +1340,9 @@ void ExtensionDownloader::OnExtensionLoadComplete(base::FilePath crx_path) {
           id, ExtensionDownloaderDelegate::Stage::FINISHED);
       ExtensionDownloaderDelegate::FailureData failure_data(
           -net_error,
-          response_code > 0 ? base::Optional<int>(response_code)
-                            : base::nullopt,
+          (net_error == net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE)
+              ? base::Optional<int>(response_code)
+              : base::nullopt,
           extensions_queue_.active_request_failure_count());
       delegate_->OnExtensionDownloadFailed(
           id, ExtensionDownloaderDelegate::Error::CRX_FETCH_FAILED, ping,

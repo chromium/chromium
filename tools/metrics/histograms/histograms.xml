@@ -58828,6 +58828,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceInstalledHttpErrorCode"
     enum="HttpResponseCode" expires_after="2021-01-24">
+  <obsolete>
+    Removed 2020-08-28, replaced by Extensions.ForceInstalledHttpErrorCode2.
+  </obsolete>
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -58838,6 +58841,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
     CRX_FETCH_FAILED and a HTTP response code was received. HTTP response code
     is received only if there was no network error.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ForceInstalledHttpErrorCode2"
+    enum="HttpResponseCode" expires_after="2021-01-24">
+  <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    HTTP error code for the last retry attempt when CRX fetch failed for
+    enterprise policy forced extensions. Recorded for each forced extension that
+    failed to install after 5 minutes with
+    Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
+    CRX_FETCH_FAILED and a HTTP response code was received. HTTP response code
+    is received only if there was no network error. Replaced
+    Extensions.ForceInstalledHttpErrorCode because error codes are now reported
+    only when network error code is HTTP_RESPONSE_CODE_FAILURE.
   </summary>
 </histogram>
 
@@ -58868,6 +58888,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ForceInstalledManifestFetchFailedHttpErrorCode"
     enum="HttpResponseCode" expires_after="2021-01-24">
+  <obsolete>
+    Removed 2020-08-28, replaced by
+    Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2.
+  </obsolete>
   <owner>burunduk@chromium.org</owner>
   <owner>swapnilgupta@google.com</owner>
   <owner>managed-devices@google.com</owner>
@@ -58878,6 +58902,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
     MANIFEST_FETCH_FAILED and a HTTP response code was received. HTTP response
     code is received only if there was no network error.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2"
+    enum="HttpResponseCode" expires_after="2021-01-24">
+  <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    HTTP error code for the last retry attempt when Manifest fetch failed for
+    enterprise policy forced extensions. Recorded for each forced extension that
+    failed to install after 5 minutes with
+    Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
+    MANIFEST_FETCH_FAILED and a HTTP response code was received. HTTP response
+    code is received only if there was no network error. Replaced
+    Extensions.ForceInstalledManifestFetchFailedHttpErrorCode because error
+    codes are now reported only when network error code is
+    HTTP_RESPONSE_CODE_FAILURE.
   </summary>
 </histogram>
 

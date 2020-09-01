@@ -261,7 +261,7 @@ void ForceInstalledMetrics::ReportMetrics() {
                                installation.network_error_code.value());
 
       if (installation.response_code) {
-        base::UmaHistogramSparse("Extensions.ForceInstalledHttpErrorCode",
+        base::UmaHistogramSparse("Extensions.ForceInstalledHttpErrorCode2",
                                  installation.response_code.value());
       }
       base::UmaHistogramExactLinear("Extensions.ForceInstalledFetchTries",
@@ -278,7 +278,7 @@ void ForceInstalledMetrics::ReportMetrics() {
 
       if (installation.response_code) {
         base::UmaHistogramSparse(
-            "Extensions.ForceInstalledManifestFetchFailedHttpErrorCode",
+            "Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2",
             installation.response_code.value());
       }
       base::UmaHistogramExactLinear(

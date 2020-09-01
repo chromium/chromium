@@ -79,12 +79,13 @@ constexpr char kTotalCountStats[] =
     "Extensions.ForceInstalledTotalCandidateCount";
 constexpr char kNetworkErrorCodeStats[] =
     "Extensions.ForceInstalledNetworkErrorCode";
-constexpr char kHttpErrorCodeStats[] = "Extensions.ForceInstalledHttpErrorCode";
+constexpr char kHttpErrorCodeStats[] =
+    "Extensions.ForceInstalledHttpErrorCode2";
 constexpr char kFetchRetriesStats[] = "Extensions.ForceInstalledFetchTries";
 constexpr char kNetworkErrorCodeManifestFetchFailedStats[] =
     "Extensions.ForceInstalledManifestFetchFailedNetworkErrorCode";
 constexpr char kHttpErrorCodeManifestFetchFailedStats[] =
-    "Extensions.ForceInstalledManifestFetchFailedHttpErrorCode";
+    "Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2";
 constexpr char kFetchRetriesManifestFetchFailedStats[] =
     "Extensions.ForceInstalledManifestFetchFailedFetchTries";
 constexpr char kSandboxUnpackFailureReason[] =
