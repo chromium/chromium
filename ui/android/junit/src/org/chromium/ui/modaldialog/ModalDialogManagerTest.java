@@ -91,6 +91,12 @@ public class ModalDialogManagerTest {
         verify(mObserver, times(1)).onDialogAdded(mDialogModels.get(1));
 
         mModalDialogManager.dismissDialog(mDialogModels.get(1), ModalDialogType.APP);
+        // Calling the same function again, as well as dismissDialogsOfType() should not trigger
+        // notifying of empty (because onLastDialogDismissed() was already called once, and a new
+        // dialog wasn't added).
+        mModalDialogManager.dismissDialog(mDialogModels.get(1), ModalDialogType.APP);
+        mModalDialogManager.dismissDialogsOfType(
+                ModalDialogType.APP, DialogDismissalCause.ACTIVITY_DESTROYED);
         verify(mObserver, times(1)).onLastDialogDismissed();
     }
 

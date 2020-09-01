@@ -298,12 +298,11 @@ public class ModalDialogManager {
                         for (ModalDialogManagerObserver o : mObserverList) {
                             o.onDialogDismissed(model);
                         }
-                        dispatchOnLastDialogDismissed();
+                        dispatchOnLastDialogDismissedIfEmpty();
                         return;
                     }
                 }
             }
-            dispatchOnLastDialogDismissed();
             // If the specified dialog is not found, return without any callbacks.
             return;
         }
@@ -317,7 +316,7 @@ public class ModalDialogManager {
         mCurrentPresenter.setDialogModel(null, null);
         mCurrentPresenter = null;
         mDismissingCurrentDialog = false;
-        dispatchOnLastDialogDismissed();
+        dispatchOnLastDialogDismissedIfEmpty();
         showNextDialog();
     }
 
@@ -368,7 +367,7 @@ public class ModalDialogManager {
     private void dismissPendingDialogsOfType(
             @ModalDialogType int dialogType, @DialogDismissalCause int dismissalCause) {
         List<PropertyModel> dialogs = mPendingDialogs.get(dialogType);
-        if (dialogs == null) return;
+        if (dialogs == null || dialogs.isEmpty()) return;
         while (!dialogs.isEmpty()) {
             PropertyModel model = dialogs.remove(0);
             ModalDialogProperties.Controller controller =
@@ -376,7 +375,7 @@ public class ModalDialogManager {
             controller.onDismiss(model, dismissalCause);
             for (ModalDialogManagerObserver o : mObserverList) o.onDialogDismissed(model);
         }
-        dispatchOnLastDialogDismissed();
+        dispatchOnLastDialogDismissedIfEmpty();
     }
 
     /**
@@ -450,7 +449,8 @@ public class ModalDialogManager {
         return true;
     }
 
-    private void dispatchOnLastDialogDismissed() {
+    // This calls onLastDialogDismissed() if there are no pending dialogs.
+    private void dispatchOnLastDialogDismissedIfEmpty() {
         if (isPendingDialogsEmpty()) {
             for (ModalDialogManagerObserver o : mObserverList) {
                 o.onLastDialogDismissed();
