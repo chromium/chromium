@@ -172,6 +172,12 @@ public abstract class SwipableOverlayView extends FrameLayout {
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        cancelCurrentAnimation();
+    }
+
+    @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         if (!isAllowedToAutoHide()) setTranslationY(0.0f);
