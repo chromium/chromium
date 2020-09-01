@@ -69,16 +69,18 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kMaxValue = kPageAccessLearnMore,
   };
 
-  // The current visibility of the button; this can affect the "hide"/"show"
+  // The current visibility of the extension; this affects the "pin" / "unpin"
   // strings in the menu.
-  // TODO(devlin): Update these to be more appropriate for the extensions menu.
+  // TODO(devlin): Rename this "PinState" when we finish removing the old UI
+  // bits.
   enum ButtonVisibility {
-    // The button is visible on the toolbar.
-    VISIBLE,
-    // The button is temporarily visible on the toolbar, as for showign a popup.
+    // The extension is pinned on the toolbar.
+    PINNED,
+    // The extension is temporarily visible on the toolbar, as for showing a
+    // popup.
     TRANSITIVELY_VISIBLE,
-    // The button is showed in the overflow menu.
-    OVERFLOWED
+    // The extension is not pinned (and is shown in the extensions menu).
+    UNPINNED,
   };
 
   // Delegate to handle showing an ExtensionAction popup.

@@ -90,7 +90,7 @@ int GetVisibilityStringId(
     const Extension* extension,
     ExtensionContextMenuModel::ButtonVisibility button_visibility) {
   if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-    return button_visibility == ExtensionContextMenuModel::VISIBLE
+    return button_visibility == ExtensionContextMenuModel::PINNED
                ? IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR
                : IDS_EXTENSIONS_PIN_TO_TOOLBAR;
   }
@@ -100,13 +100,13 @@ int GetVisibilityStringId(
   // "transitively shown" buttons that are shown only while the button has a
   // popup or menu visible.
   switch (button_visibility) {
-    case (ExtensionContextMenuModel::VISIBLE):
+    case (ExtensionContextMenuModel::PINNED):
       string_id = IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU;
       break;
     case (ExtensionContextMenuModel::TRANSITIVELY_VISIBLE):
       string_id = IDS_EXTENSIONS_KEEP_BUTTON_IN_TOOLBAR;
       break;
-    case (ExtensionContextMenuModel::OVERFLOWED):
+    case (ExtensionContextMenuModel::UNPINNED):
       string_id = IDS_EXTENSIONS_SHOW_BUTTON_IN_TOOLBAR;
       break;
   }
@@ -338,7 +338,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       ExtensionTabUtil::OpenOptionsPage(extension, browser_);
       break;
     case TOGGLE_VISIBILITY: {
-      bool currently_visible = button_visibility_ == VISIBLE;
+      bool currently_visible = button_visibility_ == PINNED;
       ToolbarActionsModel::Get(browser_->profile())
           ->SetActionVisibility(extension->id(), !currently_visible);
       break;

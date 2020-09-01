@@ -276,13 +276,13 @@ extensions::ExtensionContextMenuModel::ButtonVisibility
 ExtensionsToolbarContainer::GetActionVisibility(
     const ToolbarActionViewController* action) const {
   extensions::ExtensionContextMenuModel::ButtonVisibility visibility =
-      extensions::ExtensionContextMenuModel::VISIBLE;
+      extensions::ExtensionContextMenuModel::PINNED;
 
   if (ShouldForceVisibility(action->GetId()) &&
       !model_->IsActionPinned(action->GetId())) {
     visibility = extensions::ExtensionContextMenuModel::TRANSITIVELY_VISIBLE;
   } else if (!IsActionVisibleOnToolbar(action)) {
-    visibility = extensions::ExtensionContextMenuModel::OVERFLOWED;
+    visibility = extensions::ExtensionContextMenuModel::UNPINNED;
   }
   return visibility;
 }

@@ -91,7 +91,7 @@ class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
           "ExtensionUninstallDialogDelegateView");
       extensions::ExtensionContextMenuModel menu_model(
           extensions()[0].get(), browser(),
-          extensions::ExtensionContextMenuModel::VISIBLE, nullptr,
+          extensions::ExtensionContextMenuModel::PINNED, nullptr,
           false /* can_show_icon_in_toolbar */);
       menu_model.ExecuteCommand(
           extensions::ExtensionContextMenuModel::UNINSTALL, 0);
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   // browser.
   extensions::ExtensionContextMenuModel menu(
       extensions()[0].get(), incognito_browser(),
-      extensions::ExtensionContextMenuModel::VISIBLE, nullptr,
+      extensions::ExtensionContextMenuModel::PINNED, nullptr,
       true /* can_show_icon_in_toolbar */);
   EXPECT_FALSE(menu.IsCommandIdEnabled(
       extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY));

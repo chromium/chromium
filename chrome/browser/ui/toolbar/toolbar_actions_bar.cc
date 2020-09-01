@@ -503,12 +503,12 @@ extensions::ExtensionContextMenuModel::ButtonVisibility
 ToolbarActionsBar::GetActionVisibility(
     const ToolbarActionViewController* action) const {
   extensions::ExtensionContextMenuModel::ButtonVisibility visibility =
-      extensions::ExtensionContextMenuModel::VISIBLE;
+      extensions::ExtensionContextMenuModel::PINNED;
 
   if (GetPoppedOutAction() == action) {
     visibility = extensions::ExtensionContextMenuModel::TRANSITIVELY_VISIBLE;
   } else if (!IsActionVisibleOnToolbar(action)) {
-    visibility = extensions::ExtensionContextMenuModel::OVERFLOWED;
+    visibility = extensions::ExtensionContextMenuModel::UNPINNED;
   }
   return visibility;
 }

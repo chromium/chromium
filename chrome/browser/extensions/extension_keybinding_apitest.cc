@@ -381,9 +381,9 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, InactivePageActionDoesntTrigger) {
                        "pageAction.onClicked", expect_dispatch);
 }
 
-// Tests that a page action that is overflowed will still properly trigger when
-// the keybinding is used.
-IN_PROC_BROWSER_TEST_F(CommandsApiTest, OverflowedPageActionTriggers) {
+// Tests that a page action that is unpinned and only shown within the
+// extensions menu will still properly trigger when the keybinding is used.
+IN_PROC_BROWSER_TEST_F(CommandsApiTest, UnpinnedPageActionTriggers) {
   base::AutoReset<bool> disable_toolbar_animations(
       &ToolbarActionsBar::disable_animations_for_testing_, true);
 
