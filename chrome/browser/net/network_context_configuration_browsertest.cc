@@ -167,11 +167,13 @@ class ConnectionTypeWaiter
 
   void Wait(network::mojom::ConnectionType expected_type) {
     auto current_type = network::mojom::ConnectionType::CONNECTION_UNKNOWN;
-    network::NetworkConnectionTracker::ConnectionTypeCallback callback =
-        base::BindOnce(&ConnectionTypeWaiter::OnConnectionChanged,
-                       base::Unretained(this));
-    while (!tracker_->GetConnectionType(&current_type, std::move(callback)) ||
-           current_type != expected_type) {
+    for (;;) {
+      network::NetworkConnectionTracker::ConnectionTypeCallback callback =
+          base::BindOnce(&ConnectionTypeWaiter::OnConnectionChanged,
+                         base::Unretained(this));
+      if (tracker_->GetConnectionType(&current_type, std::move(callback)) &&
+          current_type == expected_type)
+        break;
       run_loop_ = std::make_unique<base::RunLoop>(
           base::RunLoop::Type::kNestableTasksAllowed);
       run_loop_->Run();
