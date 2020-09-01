@@ -56,11 +56,9 @@ ScriptPromise GPUFence::onCompletion(ScriptState* script_state,
 
   GetProcs().fenceOnCompletion(GetHandle(), value, callback->UnboundCallback(),
                                callback->AsUserdata());
-
-  // WebGPU guarantees that submitted commands finish in finite time so we
-  // flush commands to the GPU process now.
-  device_->GetInterface()->FlushCommands();
-
+  // WebGPU guarantees that promises are resolved in finite time so we
+  // need to ensure commands are flushed.
+  EnsureFlush();
   return promise;
 }
 

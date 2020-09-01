@@ -146,16 +146,16 @@ void GPUQueue::submit(const HeapVector<Member<GPUCommandBuffer>>& buffers) {
 
   GetProcs().queueSubmit(GetHandle(), buffers.size(), commandBuffers.get());
   // WebGPU guarantees that submitted commands finish in finite time so we
-  // flush commands to the GPU process now.
-  device_->GetInterface()->FlushCommands();
+  // need to ensure commands are flushed.
+  EnsureFlush();
 }
 
 void GPUQueue::signal(GPUFence* fence, uint64_t signal_value) {
   GetProcs().queueSignal(GetHandle(), fence->GetHandle(), signal_value);
   // Signaling a fence adds a callback to update the fence value to the
   // completed value. WebGPU guarantees that the fence completion is
-  // observable in finite time so we flush commands to the GPU process now.
-  device_->GetInterface()->FlushCommands();
+  // observable in finite time so we need to ensure commands are flushed.
+  EnsureFlush();
 }
 
 GPUFence* GPUQueue::createFence(const GPUFenceDescriptor* descriptor) {

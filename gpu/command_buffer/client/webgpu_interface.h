@@ -28,7 +28,21 @@ class WebGPUInterface : public InterfaceBase {
   virtual ~WebGPUInterface() {}
 
   virtual const DawnProcTable& GetProcs() const = 0;
+
+  // Flush all commands.
   virtual void FlushCommands() = 0;
+
+  // Ensure the awaiting flush flag is set on the device client. Returns false
+  // if a flush has already been indicated, or a flush is not needed (there may
+  // be no commands to flush). Returns true if the caller should schedule a
+  // flush.
+  virtual void EnsureAwaitingFlush(DawnDeviceClientID device_client_id,
+                                   bool* needs_flush) = 0;
+
+  // If the awaiting flush flag is set, flushes commands. Otherwise, does
+  // nothing.
+  virtual void FlushAwaitingCommands(DawnDeviceClientID device_client_id) = 0;
+
   virtual WGPUDevice GetDevice(DawnDeviceClientID device_client_id) = 0;
   virtual ReservedTexture ReserveTexture(
       DawnDeviceClientID device_client_id) = 0;

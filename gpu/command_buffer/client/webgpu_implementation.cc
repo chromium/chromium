@@ -141,10 +141,18 @@ bool WebGPUCommandSerializer::Flush() {
                           c2s_buffer_.offset(), c2s_put_offset_);
     c2s_put_offset_ = 0;
     c2s_buffer_.Release();
+    client_awaiting_flush_ = false;
   }
 
   memory_transfer_service_->FreeHandlesPendingToken(helper_->InsertToken());
   return true;
+}
+
+void WebGPUCommandSerializer::SetClientAwaitingFlush(bool awaiting_flush) {
+  // If awaiting_flush is true, but the c2s_buffer_ is invalid (empty), that
+  // means the last command right before this caused a flush. Another flush is
+  // not needed.
+  client_awaiting_flush_ = awaiting_flush && c2s_buffer_.valid();
 }
 
 void WebGPUCommandSerializer::HandleGpuControlLostContext() {
@@ -570,6 +578,44 @@ void WebGPUImplementation::FlushCommands() {
   FlushAllCommandSerializers();
 #endif
   helper_->Flush();
+}
+
+void WebGPUImplementation::EnsureAwaitingFlush(
+    DawnDeviceClientID device_client_id,
+    bool* needs_flush) {
+#if BUILDFLAG(USE_DAWN)
+  WebGPUCommandSerializer* command_serializer =
+      GetCommandSerializerWithDeviceClientID(device_client_id);
+  DCHECK(command_serializer);
+
+  // If there is already a flush waiting, we don't need to flush.
+  // We only want to set |needs_flush| on state transition from
+  // false -> true.
+  if (command_serializer->ClientAwaitingFlush()) {
+    *needs_flush = false;
+    return;
+  }
+
+  // Set the state to waiting for flush, and then write |needs_flush|.
+  // Could still be false if there's no data to flush.
+  command_serializer->SetClientAwaitingFlush(true);
+  *needs_flush = command_serializer->ClientAwaitingFlush();
+#else
+  *needs_flush = false;
+#endif
+}
+
+void WebGPUImplementation::FlushAwaitingCommands(
+    DawnDeviceClientID device_client_id) {
+#if BUILDFLAG(USE_DAWN)
+  WebGPUCommandSerializer* command_serializer =
+      GetCommandSerializerWithDeviceClientID(device_client_id);
+  DCHECK(command_serializer);
+  if (command_serializer->ClientAwaitingFlush()) {
+    command_serializer->Flush();
+    helper_->Flush();
+  }
+#endif
 }
 
 WGPUDevice WebGPUImplementation::GetDevice(

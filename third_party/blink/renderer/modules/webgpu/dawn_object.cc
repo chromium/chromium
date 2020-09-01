@@ -6,6 +6,7 @@
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 
 namespace blink {
 
@@ -60,6 +61,26 @@ const DawnProcTable& DeviceTreeObject::GetProcs() const {
 
 uint64_t DeviceTreeObject::GetDeviceClientID() const {
   return device_client_serializer_holder_->device_client_id_;
+}
+
+void DeviceTreeObject::EnsureFlush() {
+  bool needs_flush = false;
+  GetInterface()->EnsureAwaitingFlush(
+      device_client_serializer_holder_->device_client_id_, &needs_flush);
+  if (!needs_flush) {
+    // We've already enqueued a task to flush, or the command buffer
+    // is empty. Do nothing.
+    return;
+  }
+  Microtask::EnqueueMicrotask(WTF::Bind(
+      [](scoped_refptr<DawnDeviceClientSerializerHolder> holder) {
+        if (holder->dawn_control_client_->IsDestroyed()) {
+          return;
+        }
+        holder->dawn_control_client_->GetInterface()->FlushAwaitingCommands(
+            holder->device_client_id_);
+      },
+      device_client_serializer_holder_));
 }
 
 DawnObjectImpl::DawnObjectImpl(GPUDevice* device)

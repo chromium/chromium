@@ -88,6 +88,10 @@ class DeviceTreeObject {
 
   uint64_t GetDeviceClientID() const;
 
+  // Ensure commands up until now on this object's parent device are flushed by
+  // the end of the task.
+  void EnsureFlush();
+
  protected:
   scoped_refptr<DawnDeviceClientSerializerHolder>
       device_client_serializer_holder_;

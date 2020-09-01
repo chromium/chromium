@@ -47,6 +47,9 @@ class WebGPUCommandSerializer final : public dawn_wire::CommandSerializer {
   void* GetCmdSpace(size_t size) final;
   bool Flush() final;
 
+  void SetClientAwaitingFlush(bool awaiting_flush);
+  bool ClientAwaitingFlush() const { return client_awaiting_flush_; }
+
   // Called upon context lost.
   void HandleGpuControlLostContext();
 
@@ -66,6 +69,8 @@ class WebGPUCommandSerializer final : public dawn_wire::CommandSerializer {
   uint32_t c2s_put_offset_ = 0;
   std::unique_ptr<TransferBuffer> c2s_transfer_buffer_;
   ScopedTransferBufferPtr c2s_buffer_;
+
+  bool client_awaiting_flush_ = false;
 };
 #endif
 
@@ -153,6 +158,9 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
   // WebGPUInterface implementation
   const DawnProcTable& GetProcs() const override;
   void FlushCommands() override;
+  void EnsureAwaitingFlush(DawnDeviceClientID device_client_id,
+                           bool* needs_flush) override;
+  void FlushAwaitingCommands(DawnDeviceClientID device_client_id) override;
   WGPUDevice GetDevice(DawnDeviceClientID device_client_id) override;
   ReservedTexture ReserveTexture(DawnDeviceClientID device_client_id) override;
   bool RequestAdapterAsync(

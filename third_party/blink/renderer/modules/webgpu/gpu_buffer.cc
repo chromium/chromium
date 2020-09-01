@@ -197,10 +197,9 @@ ScriptPromise GPUBuffer::MapAsyncImpl(ScriptState* script_state,
   GetProcs().bufferMapAsync(GetHandle(), mode, map_offset, map_size,
                             callback->UnboundCallback(),
                             callback->AsUserdata());
-  // WebGPU guarantees callbacks complete in finite time. Flush now so that
-  // commands reach the GPU process.
-  device_->GetInterface()->FlushCommands();
-
+  // WebGPU guarantees that promises are resolved in finite time so we
+  // need to ensure commands are flushed.
+  EnsureFlush();
   return promise;
 }
 
