@@ -67,7 +67,22 @@ proto_library("proto_internal") {
     sources += [ "chrome_extension_policy.proto" ]
   }
 
-  link_deps = [ ":policy_common_definitions_compile_proto" ]
+  extra_configs =
+      [ "//third_party/private_membership:private_membership_config" ]
+
+  import_dirs = [
+    "//third_party/private_membership/src",
+    "//third_party/shell-encryption/src",
+    ".",
+  ]
+
+  proto_in_dir = "//"
+
+  link_deps = [
+    ":policy_common_definitions_compile_proto",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+
   cc_generator_options = "dllexport_decl=POLICY_PROTO_EXPORT:"
   cc_include = "components/policy/proto/policy_proto_export.h"
   component_build_force_source_set = true
