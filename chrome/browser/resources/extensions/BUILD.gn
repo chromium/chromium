@@ -20,7 +20,7 @@ if (optimize_webui) {
 
     deps = [
       ":unpak",
-      "../../../../ui/webui/resources:modulize",
+      "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [ "chrome://resources/js/cr.m.js" ]
   }

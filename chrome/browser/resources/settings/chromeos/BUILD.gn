@@ -79,7 +79,7 @@ if (optimize_webui) {
     deps = [
       ":unpak_nearby_v3",
       ":unpak_v3",
-      "../../../../../ui/webui/resources:modulize",
+      "../../../../../ui/webui/resources:preprocess",
     ]
     excludes = [
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",

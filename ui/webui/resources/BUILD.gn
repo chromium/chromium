@@ -3,6 +3,189 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
+
+preprocess_folder = "preprocessed"
+
+group("preprocess") {
+  deps = [
+    ":preprocess_generated",
+    ":preprocess_src",
+  ]
+}
+
+preprocess_grit("preprocess_src") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "js/action_link.js",
+    "js/color_utils.js",
+    "js/cr.m.js",
+    "js/plural_string_proxy.js",
+  ]
+
+  if (!is_android) {
+    in_files += [
+      "cr_elements/cr_splitter/cr_splitter.js",
+      "cr_components/certificate_manager/certificates_browser_proxy.js",
+      "cr_components/certificate_manager/certificate_manager_types.js",
+      "cr_components/certificate_manager/certificate_provisioning_browser_proxy.js",
+    ]
+  }
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":modulize" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [
+    "js/assert.m.js",
+    "js/event_tracker.m.js",
+    "js/icon.m.js",
+    "js/load_time_data.m.js",
+    "js/parse_html_subset.m.js",
+    "js/promise_resolver.m.js",
+    "js/util.m.js",
+    "js/cr/event_target.m.js",
+    "js/cr/ui/drag_wrapper.m.js",
+    "js/cr/ui/focus_grid.m.js",
+    "js/cr/ui/focus_outline_manager.m.js",
+    "js/cr/ui/focus_row.m.js",
+    "js/cr/ui/keyboard_shortcut_list.m.js",
+    "js/cr/ui/store_client.m.js",
+    "js/cr/ui/store.m.js",
+  ]
+
+  if (!is_android) {
+    in_files += [
+      "cr_components/certificate_manager/ca_trust_edit_dialog.js",
+      "cr_components/certificate_manager/certificate_delete_confirmation_dialog.js",
+      "cr_components/certificate_manager/certificate_entry.js",
+      "cr_components/certificate_manager/certificate_list.js",
+      "cr_components/certificate_manager/certificate_manager.js",
+      "cr_components/certificate_manager/certificate_password_decryption_dialog.js",
+      "cr_components/certificate_manager/certificate_password_encryption_dialog.js",
+      "cr_components/certificate_manager/certificate_provisioning_details_dialog.js",
+      "cr_components/certificate_manager/certificate_provisioning_entry.js",
+      "cr_components/certificate_manager/certificate_provisioning_list.js",
+      "cr_components/certificate_manager/certificates_error_dialog.js",
+      "cr_components/certificate_manager/certificate_shared_css.js",
+      "cr_components/certificate_manager/certificate_subentry.js",
+      "cr_components/managed_footnote/managed_footnote.m.js",
+      "cr_components/omnibox/cr_autocomplete_match_list.js",
+      "cr_elements/shared_vars_css.m.js",
+      "cr_elements/shared_style_css.m.js",
+      "cr_elements/search_highlight_style_css.m.js",
+      "cr_elements/md_select_css.m.js",
+      "cr_elements/icons.m.js",
+      "cr_elements/hidden_style_css.m.js",
+      "cr_elements/cr_scrollable_behavior.m.js",
+      "cr_elements/cr_page_host_style_css.m.js",
+      "cr_elements/cr_icons_css.m.js",
+      "cr_elements/cr_container_shadow_behavior.m.js",
+      "cr_elements/action_link_css.m.js",
+      "cr_elements/cr_grid/cr_grid.js",
+      "cr_elements/cr_view_manager/cr_view_manager.m.js",
+      "cr_elements/cr_toolbar/cr_toolbar_selection_overlay.m.js",
+      "cr_elements/cr_toolbar/cr_toolbar_search_field.m.js",
+      "cr_elements/cr_toolbar/cr_toolbar.m.js",
+      "cr_elements/cr_toggle/cr_toggle.m.js",
+      "cr_elements/cr_toast/cr_toast.m.js",
+      "cr_elements/cr_toast/cr_toast_manager.m.js",
+      "cr_elements/cr_tabs/cr_tabs.m.js",
+      "cr_elements/cr_slider/cr_slider.m.js",
+      "cr_elements/cr_search_field/cr_search_field.m.js",
+      "cr_elements/cr_search_field/cr_search_field_behavior.m.js",
+      "cr_elements/cr_radio_group/cr_radio_group.m.js",
+      "cr_elements/cr_radio_button/cr_radio_button_style_css.m.js",
+      "cr_elements/cr_radio_button/cr_radio_button.m.js",
+      "cr_elements/cr_radio_button/cr_radio_button_behavior.m.js",
+      "cr_elements/cr_radio_button/cr_card_radio_button.m.js",
+      "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js",
+      "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.m.js",
+      "cr_elements/cr_lottie/cr_lottie.m.js",
+      "cr_elements/cr_link_row/cr_link_row.m.js",
+      "cr_elements/cr_lazy_render/cr_lazy_render.m.js",
+      "cr_elements/cr_input/cr_input_style_css.m.js",
+      "cr_elements/cr_input/cr_input.m.js",
+      "cr_elements/cr_icon_button/cr_icon_button.m.js",
+      "cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js",
+      "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
+      "cr_elements/cr_expand_button/cr_expand_button.m.js",
+      "cr_elements/cr_drawer/cr_drawer.m.js",
+      "cr_elements/cr_dialog/cr_dialog.m.js",
+      "cr_elements/cr_checkbox/cr_checkbox.m.js",
+      "cr_elements/cr_button/cr_button.m.js",
+      "cr_elements/cr_action_menu/cr_action_menu.m.js",
+      "cr_elements/policy/cr_policy_indicator_behavior.m.js",
+      "cr_elements/policy/cr_policy_indicator.m.js",
+      "cr_elements/policy/cr_policy_pref_behavior.m.js",
+      "cr_elements/policy/cr_policy_pref_indicator.m.js",
+      "cr_elements/policy/cr_tooltip_icon.m.js",
+      "js/find_shortcut_behavior.m.js",
+      "js/i18n_behavior.m.js",
+      "js/list_property_update_behavior.m.js",
+      "js/search_highlight_utils.m.js",
+      "js/web_ui_listener_behavior.m.js",
+      "js/cr/ui/focus_row_behavior.m.js",
+      "js/cr/ui/focus_without_ink.m.js",
+    ]
+  }
+
+  if (is_chromeos) {
+    in_files += [
+      "cr_components/chromeos/bluetooth/bluetooth_dialog.m.js",
+      "cr_components/chromeos/cellular_setup/base_page.m.js",
+      "cr_components/chromeos/cellular_setup/final_page.m.js",
+      "cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js",
+      "cr_components/chromeos/cellular_setup/sim_detect_page.m.js",
+      "cr_components/chromeos/cellular_setup/webview_post_util.m.js",
+      "cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js",
+      "cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js",
+      "cr_components/chromeos/network_health/network_diagnostics.m.js",
+      "cr_components/chromeos/network_health/network_health_summary.m.js",
+      "cr_components/chromeos/network/mojo_interface_provider.m.js",
+      "cr_components/chromeos/network/network_apnlist.m.js",
+      "cr_components/chromeos/network/network_choose_mobile.m.js",
+      "cr_components/chromeos/network/network_config_element_behavior.m.js",
+      "cr_components/chromeos/network/network_config_input.m.js",
+      "cr_components/chromeos/network/network_config.m.js",
+      "cr_components/chromeos/network/network_config_select.m.js",
+      "cr_components/chromeos/network/network_config_toggle.m.js",
+      "cr_components/chromeos/network/network_icon.m.js",
+      "cr_components/chromeos/network/network_icons.m.js",
+      "cr_components/chromeos/network/network_ip_config.m.js",
+      "cr_components/chromeos/network/network_listener_behavior.m.js",
+      "cr_components/chromeos/network/network_list_item.m.js",
+      "cr_components/chromeos/network/network_list.m.js",
+      "cr_components/chromeos/network/network_list_types.m.js",
+      "cr_components/chromeos/network/network_nameservers.m.js",
+      "cr_components/chromeos/network/network_password_input.m.js",
+      "cr_components/chromeos/network/network_property_list_mojo.m.js",
+      "cr_components/chromeos/network/network_proxy_exclusions.m.js",
+      "cr_components/chromeos/network/network_proxy_input.m.js",
+      "cr_components/chromeos/network/network_proxy.m.js",
+      "cr_components/chromeos/network/network_select.m.js",
+      "cr_components/chromeos/network/network_shared_css.m.js",
+      "cr_components/chromeos/network/network_siminfo.m.js",
+      "cr_components/chromeos/network/onc_mojo.m.js",
+      "cr_components/chromeos/quick_unlock/lock_screen_constants.m.js",
+      "cr_components/chromeos/quick_unlock/pin_keyboard_icon.m.js",
+      "cr_components/chromeos/quick_unlock/pin_keyboard.m.js",
+      "cr_components/chromeos/quick_unlock/setup_pin_keyboard.m.js",
+      "cr_components/chromeos/smb_shares/add_smb_share_dialog.m.js",
+      "cr_components/chromeos/smb_shares/smb_browser_proxy.m.js",
+      "cr_elements/chromeos/cros_color_overrides.m.js",
+      "cr_elements/chromeos/cr_picture/cr_camera.m.js",
+      "cr_elements/chromeos/cr_picture/cr_picture_list.m.js",
+      "cr_elements/chromeos/cr_picture/cr_picture_pane.m.js",
+      "cr_elements/chromeos/cr_picture/cr_picture_types.m.js",
+      "cr_elements/chromeos/cr_picture/icons.m.js",
+      "cr_elements/chromeos/cr_picture/png.m.js",
+      "cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.m.js",
+    ]
+  }
+}
 
 group("closure_compile") {
   deps = [

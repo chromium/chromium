@@ -322,7 +322,7 @@ if (optimize_webui) {
     input = rebase_path("$target_gen_dir/unpak", root_build_dir)
     deps = [
       ":unpak",
-      "//ui/webui/resources:modulize",
+      "../../../../ui/webui/resources:preprocess",
     ]
     js_module_in_files = [ "new_tab_page.js" ]
     js_out_files = [ "new_tab_page.rollup.js" ]

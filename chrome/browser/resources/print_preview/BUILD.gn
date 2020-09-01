@@ -8,7 +8,7 @@ import("//tools/grit/preprocess_grit.gni")
 import("../optimize_webui.gni")
 
 if (optimize_webui) {
-  preprocess_folder = "print_preview_preprocessed"
+  preprocess_folder = "preprocessed"
 
   optimize_webui("build") {
     host = "print"
@@ -19,7 +19,7 @@ if (optimize_webui) {
     deps = [
       ":preprocess",
       ":preprocess_generated",
-      "../../../../ui/webui/resources:modulize",
+      "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [
       "chrome://resources/js/cr.m.js",
