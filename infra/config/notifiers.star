@@ -25,6 +25,7 @@ luci.notifier(
     on_status_change = True,
     notify_emails = [
         "cr-fuchsia+bot@chromium.org",
+        "chrome-fuchsia-gardener@grotations.appspotmail.com",
     ],
 )
 
