@@ -8,6 +8,9 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -27,6 +30,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -253,6 +257,30 @@ void MediaDevices::StopObserving() {
   receiver_.reset();
 }
 
+namespace {
+
+void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
+                             const MediaDeviceInfoVector& media_devices) {
+  if (!IdentifiabilityStudySettings::Get()->IsActive())
+    return;
+  Document* document = LocalDOMWindow::From(resolver->GetScriptState())
+                           ->GetFrame()
+                           ->GetDocument();
+  IdentifiableTokenBuilder builder;
+  for (const auto& device_info : media_devices) {
+    builder.AddToken(IdentifiabilityBenignStringToken(device_info->deviceId()));
+    builder.AddToken(IdentifiabilityBenignStringToken(device_info->kind()));
+    builder.AddToken(IdentifiabilityBenignStringToken(device_info->label()));
+    builder.AddToken(IdentifiabilityBenignStringToken(device_info->groupId()));
+  }
+  IdentifiabilityMetricBuilder(document->UkmSourceID())
+      .SetWebfeature(WebFeature::kMediaDevicesEnumerateDevices,
+                     builder.GetToken())
+      .Record(document->UkmRecorder());
+}
+
+}  // namespace
+
 void MediaDevices::DevicesEnumerated(
     ScriptPromiseResolver* resolver,
     const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
@@ -322,6 +350,8 @@ void MediaDevices::DevicesEnumerated(
       }
     }
   }
+
+  RecordEnumeratedDevices(resolver, media_devices);
 
   if (enumerate_devices_test_callback_)
     std::move(enumerate_devices_test_callback_).Run(media_devices);
