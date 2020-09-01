@@ -35,10 +35,27 @@ async function getStatusList(methods) { // eslint-disable-line no-unused-vars
  * @return {string} - The status field or error message.
  */
 async function getStatusForMethodData(methodData) {
+  return getStatusForMethodDataAfterCanMakePayment(methodData, false);
+}
+
+/**
+ * Returns the status field from the payment handler's response for given
+ * payment method data.
+ * @param {array<PaymentMethodData>} methodData - The method data to use.
+ * @param {bool} checkCanMakePaymentFirst - Whether to wait for canMakePayment()
+ * to complete before invoking show(). The return value of canMakePayment() is
+ * ignored.
+ * @return {string} - The status field or error message.
+ */
+async function getStatusForMethodDataAfterCanMakePayment(
+    methodData, checkCanMakePaymentFirst) {
   try {
     const request = new PaymentRequest(
         methodData,
         {total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}}});
+    if (checkCanMakePaymentFirst) {
+      await request.canMakePayment(); // Ignore the result.
+    }
     const response = await request.show();
     await response.complete();
     if (!response.details.status) {
