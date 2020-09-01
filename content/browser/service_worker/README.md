@@ -226,8 +226,10 @@ service workers, and which message pipes they are on.
 
 #### Browser <->  Renderer (window)
 
-For windows, the browser process and renderer process talk over Mojo interfaces
-bound to the legacy IPC "channel" message pipe.
+For windows (or [clients](https://w3c.github.io/ServiceWorker/#service-worker-client-concept)),
+the browser process and renderer process talk over Mojo interfaces bound to the Mojo pipe to commit
+a navigation, which is considered as the legacy IPC "channel" message pipe. This guarantees the
+order of IPC messages between Mojo interfaces.
 
 Each window in the renderer process is connected to a host in the browser
 process. The renderer talks to the browser process over the
@@ -236,7 +238,7 @@ like registering service workers. The browser talks to the renderer over the
 `mojom.blink.ServiceWorkerContainer` interface.
 
 The window obtains `ServiceWorkerRegistration` and `ServiceWorker` JavaScript
-objects via APIs like `navigator.serviceWorker.ready` and
+objects via APIs like `navigator.serviceWorker.ready`,
 `navigator.serviceWorker.controller`, and `navigator.serviceWorker.register()`.
 Each object has a connection to the browser, again on the channel-associated
 message pipe. `ServiceWorkerRegistration` has a remote to a
@@ -245,10 +247,16 @@ remote to a `ServiceWorkerObjectHost`. Conversely, the browser process has
 remotes to `mojom.blink.ServiceWorkerRegistrationObject` and
 `mojom.blink.ServiceWorkerRegistration`.
 
-> After making this design, there's been some realization that this "too
-> mojofied". It may have worked better to use fewer interfaces, e.g., a single
+> After making this design, there's been some realization that asynchronous
+> ownership makes destruction complicated because of non-deterministic
+> destruction order sometimes caused crashes.
+> It may have worked better to use fewer interfaces, e.g., a single
 > ServiceWorkerContainer interface from which one can manipulate
-> ServiceWorkerRegistration and ServiceWorker.
+> ServiceWorkerRegistration and ServiceWorker, or maybe prohibiting destructions
+> initiated from the renderer may work.
+> In addition, we have a Mojo interface for in-process communication across threads like
+> [this](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/public/mojom/service_worker/controller_service_worker.mojom;l=95;drc=6e8b402a6231405b753919029c9027404325ea00).
+> Mojo is now slightly overused for abstraction of layers for service workers.
 
 #### Browser <-> Renderer (shared worker)
 
@@ -424,21 +432,49 @@ controlled loads:
 Service worker startup time and breakdown:
 - ServiceWorker.StartWorker.Time
 - ServiceWorker.StartTiming.Duration
-- ServiceWorker.StartTiming.\*To\* (e.g.,
+- ServiceWorker.StartTiming.[A]To[B] (e.g.,
   ServiceWorker.StartTiming.StartToReceivedStartWorker)
 
 Fetch event handling:
 - ServiceWorker.LoadTiming.MainFrame.MainResource.\*
 - ServiceWorker.LoadTiming.Subresource.\*
 
-> TODO(falken, bashi): Add a list of the milestones of startup and fetch event
-> handling.
+Service worker's startup sequence is composed of a few steps in
+ServiceWorker.StartTiming.[A]To[B]. These are the milestones that can be in the
+[A] and [B].
+
+1. Start (browser)
+2. SentStartWorker (browser)
+3. ReceivedStartWorker (renderer)
+4. ScriptEvaluationStart (renderer)
+5. ScriptEvaluationEnd (renderer)
+6. End (browser)
+
+Here's the explanation about the each section:
+- **Start to SentStartWorker**: the browser process initiates a starting
+  worker sequence. This may include process creation if not exists, and setting up
+  URLLoaderFactories.
+- **SentStartWorker to ReceivedStartWorker**:  This section measures the IPC
+  delay. SendStartWorker is recorded when the browser sends a Mojo message to
+  start a worker thread to the renderer process. ReceivedStartWorker is
+  recordred when the renderer receives it.
+- **ReceivedStartWorker to ScriptEvaluationStart**: This measures the time to be
+  spent for starting a worker thread, and preparation for the V8 isolate and
+  context.
+- **ScriptEvaluationStart to ScriptEvaluationEnd**: the initial script
+  evaluation. This metrics can be affected by the content of service scripts.
+- **ScriptEvaluationEnd to End**: This measures the IPC delay of OnStarted
+   message from the renderer to the browser.
 
 ### Tests
 
 We run a limited number of
 [Telemetry](https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md)
-benchmark tests for service worker. These tests are part of the [Loading
+benchmark tests for service worker and a few microbenchmarks in
+[blink_perf](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/blink_perf.md#service-worker-perf-tests)
+([crbug](https://crbug.com/1019097)).
+
+Telemetry tests are part of the [Loading
 benchmarks](/docs/speed/benchmark/harnesses/loading.md), as the "pwa" tests
 inside the "loading.mobile" suite. The tests do not run on desktop machines
 (loading.desktop) due to resource constraints.
