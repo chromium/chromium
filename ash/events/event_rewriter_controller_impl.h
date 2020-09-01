@@ -19,8 +19,8 @@ class EventRewriter;
 
 namespace ash {
 
+class AccessibilityEventRewriter;
 class KeyboardDrivenEventRewriter;
-class SpokenFeedbackEventRewriter;
 
 // Owns ui::EventRewriters and ensures that they are added to each root window
 // EventSource, current and future, in the order that they are added to this.
@@ -32,8 +32,8 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
 
   // EventRewriterController:
   void Initialize(ui::EventRewriterChromeOS::Delegate* event_rewriter_delegate,
-                  SpokenFeedbackEventRewriterDelegate*
-                      spoken_feedback_event_rewriter_delegate) override;
+                  AccessibilityEventRewriterDelegate*
+                      accessibility_event_rewriter_delegate) override;
   void AddEventRewriter(std::unique_ptr<ui::EventRewriter> rewriter) override;
   void SetKeyboardDrivenEventRewriterEnabled(bool enabled) override;
   void SetArrowToTabRewritingEnabled(bool enabled) override;
@@ -49,11 +49,9 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   // The |EventRewriter|s managed by this controller.
   std::vector<std::unique_ptr<ui::EventRewriter>> rewriters_;
 
-  // A weak pointer to the KeyboardDrivenEventRewriter owned in |rewriters_|.
+  // Owned by |rewriters_|.
+  AccessibilityEventRewriter* accessibility_event_rewriter_ = nullptr;
   KeyboardDrivenEventRewriter* keyboard_driven_event_rewriter_ = nullptr;
-
-  // A weak pointer to the SpokenFeedbackEventRewriter owned in |rewriters_|.
-  SpokenFeedbackEventRewriter* spoken_feedback_event_rewriter_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(EventRewriterControllerImpl);
 };

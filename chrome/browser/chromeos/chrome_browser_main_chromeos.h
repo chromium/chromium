@@ -13,11 +13,11 @@
 #include "chrome/browser/chromeos/external_metrics.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
+class AccessibilityEventRewriterDelegate;
 class AssistantClientImpl;
 class AssistantStateClient;
 class ChromeKeyboardControllerClient;
 class ImageDownloaderImpl;
-class SpokenFeedbackEventRewriterDelegate;
 
 namespace arc {
 class ArcServiceLauncher;
@@ -133,9 +133,9 @@ class ChromeBrowserMainPartsChromeos : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
 
-  // Handles event dispatch to the spoken feedback extension (ChromeVox).
-  std::unique_ptr<SpokenFeedbackEventRewriterDelegate>
-      spoken_feedback_event_rewriter_delegate_;
+  // Handles event dispatch to the accessibility component extensions.
+  std::unique_ptr<AccessibilityEventRewriterDelegate>
+      accessibility_event_rewriter_delegate_;
 
   scoped_refptr<chromeos::ExternalMetrics> external_metrics_;
 

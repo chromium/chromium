@@ -36,9 +36,6 @@ void FakeAccessibilityController::SetSelectToSpeakState(
 void FakeAccessibilityController::SetSelectToSpeakEventHandlerDelegate(
     ash::SelectToSpeakEventHandlerDelegate* delegate) {}
 
-void FakeAccessibilityController::SetSwitchAccessEventHandlerDelegate(
-    ash::SwitchAccessEventHandlerDelegate* delegate) {}
-
 void FakeAccessibilityController::HideSwitchAccessBackButton() {}
 
 void FakeAccessibilityController::HideSwitchAccessMenu() {}
@@ -58,9 +55,6 @@ void FakeAccessibilityController::ToggleDictationFromSource(
 void FakeAccessibilityController::OnAutoclickScrollableBoundsFound(
     gfx::Rect& bounds_in_screen) {}
 
-void FakeAccessibilityController::ForwardKeyEventsToSwitchAccess(
-    bool should_forward) {}
-
 base::string16 FakeAccessibilityController::GetBatteryDescription() const {
   return base::string16();
 }
@@ -73,9 +67,6 @@ bool FakeAccessibilityController::IsAccessibilityFeatureVisibleInTrayMenu(
     const std::string& path) {
   return true;
 }
-
-void FakeAccessibilityController::
-    SetSwitchAccessIgnoreVirtualKeyEventForTesting(bool should_ignore) {}
 
 void FakeAccessibilityController::
     DisableSwitchAccessDisableConfirmationDialogTesting() {}

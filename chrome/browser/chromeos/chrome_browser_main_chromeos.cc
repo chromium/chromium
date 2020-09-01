@@ -34,9 +34,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/chromeos/accessibility/accessibility_event_rewriter_delegate.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/accessibility/magnification_manager.h"
-#include "chrome/browser/chromeos/accessibility/spoken_feedback_event_rewriter_delegate.h"
 #include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
@@ -993,9 +993,10 @@ void ChromeBrowserMainPartsChromeos::PreBrowserStart() {
 }
 
 void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
-  // Construct a delegate to connect ChromeVox and SpokenFeedbackEventRewriter.
-  spoken_feedback_event_rewriter_delegate_ =
-      std::make_unique<SpokenFeedbackEventRewriterDelegate>();
+  // Construct a delegate to connect the accessibility component extensions and
+  // AccessibilityEventRewriter.
+  accessibility_event_rewriter_delegate_ =
+      std::make_unique<AccessibilityEventRewriterDelegate>();
 
   event_rewriter_delegate_ = std::make_unique<EventRewriterDelegateImpl>(
       ash::Shell::Get()->activation_client());
@@ -1005,7 +1006,7 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
   auto* event_rewriter_controller = ash::EventRewriterController::Get();
   event_rewriter_controller->Initialize(
       event_rewriter_delegate_.get(),
-      spoken_feedback_event_rewriter_delegate_.get());
+      accessibility_event_rewriter_delegate_.get());
 
   // Enable the KeyboardDrivenEventRewriter if the OEM manifest flag is on.
   if (system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation())

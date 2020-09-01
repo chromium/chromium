@@ -28,8 +28,6 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void SetSelectToSpeakState(ash::SelectToSpeakState state) override;
   void SetSelectToSpeakEventHandlerDelegate(
       ash::SelectToSpeakEventHandlerDelegate* delegate) override;
-  void SetSwitchAccessEventHandlerDelegate(
-      ash::SwitchAccessEventHandlerDelegate* delegate) override;
   void HideSwitchAccessBackButton() override;
   void HideSwitchAccessMenu() override;
   void ShowSwitchAccessBackButton(const gfx::Rect& anchor) override;
@@ -38,14 +36,11 @@ class FakeAccessibilityController : ash::AccessibilityController {
   void SetDictationActive(bool is_active) override;
   void ToggleDictationFromSource(ash::DictationToggleSource source) override;
   void OnAutoclickScrollableBoundsFound(gfx::Rect& bounds_in_screen) override;
-  void ForwardKeyEventsToSwitchAccess(bool should_forward) override;
   base::string16 GetBatteryDescription() const override;
   void SetVirtualKeyboardVisible(bool is_visible) override;
   void NotifyAccessibilityStatusChanged() override;
   bool IsAccessibilityFeatureVisibleInTrayMenu(
       const std::string& path) override;
-  void SetSwitchAccessIgnoreVirtualKeyEventForTesting(
-      bool should_ignore) override;
   void DisableSwitchAccessDisableConfirmationDialogTesting() override;
 
  private:

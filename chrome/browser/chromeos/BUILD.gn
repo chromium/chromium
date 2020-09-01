@@ -379,6 +379,8 @@ source_set("chromeos") {
   ]
 
   sources = [
+    "accessibility/accessibility_event_rewriter_delegate.cc",
+    "accessibility/accessibility_event_rewriter_delegate.h",
     "accessibility/accessibility_extension_loader.cc",
     "accessibility/accessibility_extension_loader.h",
     "accessibility/accessibility_input_method_observer.cc",
@@ -398,10 +400,6 @@ source_set("chromeos") {
     "accessibility/magnifier_type.h",
     "accessibility/select_to_speak_event_handler_delegate.cc",
     "accessibility/select_to_speak_event_handler_delegate.h",
-    "accessibility/spoken_feedback_event_rewriter_delegate.cc",
-    "accessibility/spoken_feedback_event_rewriter_delegate.h",
-    "accessibility/switch_access_event_handler_delegate.cc",
-    "accessibility/switch_access_event_handler_delegate.h",
     "account_manager/account_manager_migrator.cc",
     "account_manager/account_manager_migrator.h",
     "account_manager/account_manager_policy_controller.cc",

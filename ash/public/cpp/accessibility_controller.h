@@ -22,7 +22,6 @@ enum class AccessibilityPanelState;
 enum class DictationToggleSource;
 class SelectToSpeakEventHandlerDelegate;
 enum class SelectToSpeakState;
-class SwitchAccessEventHandlerDelegate;
 
 // Interface for ash client (e.g. Chrome) to control and query accessibility
 // features.
@@ -66,10 +65,6 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   virtual void SetSelectToSpeakEventHandlerDelegate(
       SelectToSpeakEventHandlerDelegate* delegate) = 0;
 
-  // Set the delegate used by the Switch Access event handler.
-  virtual void SetSwitchAccessEventHandlerDelegate(
-      SwitchAccessEventHandlerDelegate* delegate) = 0;
-
   // Hides the Switch Access back button.
   virtual void HideSwitchAccessBackButton() = 0;
 
@@ -94,10 +89,6 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   virtual void OnAutoclickScrollableBoundsFound(
       gfx::Rect& bounds_in_screen) = 0;
 
-  // Tells the Switch Access Event Handler whether to forward all key events to
-  // the Switch Access extension.
-  virtual void ForwardKeyEventsToSwitchAccess(bool should_forward) = 0;
-
   // Retrieves a string description of the current battery status.
   virtual base::string16 GetBatteryDescription() const = 0;
 
@@ -114,10 +105,6 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // and false otherwise.
   virtual bool IsAccessibilityFeatureVisibleInTrayMenu(
       const std::string& path) = 0;
-
-  // Sets whether Switch Access ignores virtual key events.
-  virtual void SetSwitchAccessIgnoreVirtualKeyEventForTesting(
-      bool should_ignore) = 0;
 
   // Disables restoring of recommended policy values.
   virtual void DisablePolicyRecommendationRestorerForTesting() {}

@@ -41,7 +41,6 @@
 #include "chrome/browser/chromeos/accessibility/dictation_chromeos.h"
 #include "chrome/browser/chromeos/accessibility/magnification_manager.h"
 #include "chrome/browser/chromeos/accessibility/select_to_speak_event_handler_delegate.h"
-#include "chrome/browser/chromeos/accessibility/switch_access_event_handler_delegate.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -910,11 +909,6 @@ void AccessibilityManager::OnSwitchAccessChanged() {
   NotifyAccessibilityStatusChanged(details);
 
   if (enabled) {
-    // Construct a delegate to connect Switch Access and its EventHandler in
-    // ash. Do this before loading Switch Access so the keys_to_capture will
-    // be properly set.
-    switch_access_event_handler_delegate_ =
-        std::make_unique<SwitchAccessEventHandlerDelegate>();
     switch_access_loader_->Load(
         profile_,
         base::BindRepeating(&AccessibilityManager::PostLoadSwitchAccess,
@@ -924,7 +918,6 @@ void AccessibilityManager::OnSwitchAccessChanged() {
 
 void AccessibilityManager::OnSwitchAccessDisabled() {
   switch_access_loader_->Unload();
-  switch_access_event_handler_delegate_.reset();
 }
 
 bool AccessibilityManager::IsBrailleDisplayConnected() const {
