@@ -5763,16 +5763,15 @@
     # and removes failing ones from ios14-sdk-simulator.
     # The result is test suites with certain tests removed,
     # identified by *_noncq.
-    # The list of variants are ios-simulator's 12.4 passing
-    # sims converted to 14.0, and 12.4 sims used to be on
-    # ios-simulator-full-configs.
+    # The list of variants are 12.4 sims used to be on
+    # ios-simulator and ios-simulator-full-configs.
     'ios_simulator_noncq_tests': {
       'ios_common_tests': {
         'mixins': [
           'xctest',
         ],
         'variants': [
-          'SIM_IPHONE_6S_14_0',
+          'SIM_IPHONE_6S_12_4',
         ]
       },
       'ios_eg2_tests': {
@@ -5780,24 +5779,15 @@
         'variants': [
           'SIM_IPAD_AIR_2_12_4',
           'SIM_IPHONE_X_12_4',
-          'SIM_IPHONE_6S_14_0',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
           'SIM_IPAD_AIR_2_12_4',
-          'SIM_IPHONE_6S_14_0',
+          'SIM_IPHONE_6S_12_4',
         ]
       },
-      'ios_screen_size_dependent_tests': {
-        'mixins': [
-          'xctest',
-        ],
-        'variants': [
-          'SIM_IPHONE_6S_14_0',
-        ]
-      }
     },
 
     'ios_simulator_tests': {
@@ -5806,14 +5796,14 @@
           'xctest',
         ],
         'variants': [
-          'SIM_IPHONE_6S_12_4',
+          'SIM_IPHONE_6S_14_0',
           'SIM_IPHONE_6S_13_6',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPHONE_6S_12_4',
+          'SIM_IPHONE_6S_14_0',
           'SIM_IPHONE_6S_13_6',
         ]
       },
@@ -5825,7 +5815,11 @@
           'SIM_IPHONE_6S_PLUS_13_6',
           'SIM_IPHONE_6S_13_6',
           'SIM_IPHONE_SE_1ST_GEN_13_6',
-          'SIM_IPAD_AIR_2_13_6'
+          'SIM_IPAD_AIR_2_13_6',
+          'SIM_IPHONE_6S_PLUS_14_0',
+          'SIM_IPHONE_6S_14_0',
+          'SIM_IPHONE_SE_1ST_GEN_14_0',
+          'SIM_IPAD_AIR_2_14_0'
         ]
       }
     },
