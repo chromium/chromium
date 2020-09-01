@@ -4462,6 +4462,26 @@ TEST(AXTreeTest, SetSizePosInSetControls) {
   EXPECT_OPTIONAL_EQ(0, button->GetSetSize());
 }
 
+// Tests GetPosInSet and GetSetSize return the assigned int attribute values
+// when a pop-up button is a leaf node.
+TEST(AXTreeTest, SetSizePosInSetLeafPopUpButton) {
+  AXTreeUpdate tree_update;
+  tree_update.root_id = 1;
+  tree_update.nodes.resize(2);
+  tree_update.nodes[0].id = 1;
+  tree_update.nodes[0].role = ax::mojom::Role::kGenericContainer;
+  tree_update.nodes[0].child_ids = {2};
+  tree_update.nodes[1].id = 2;
+  tree_update.nodes[1].role = ax::mojom::Role::kPopUpButton;
+  tree_update.nodes[1].AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, 3);
+  tree_update.nodes[1].AddIntAttribute(ax::mojom::IntAttribute::kSetSize, 77);
+  AXTree tree(tree_update);
+
+  AXNode* pop_up_button = tree.GetFromId(2);
+  EXPECT_OPTIONAL_EQ(3, pop_up_button->GetPosInSet());
+  EXPECT_OPTIONAL_EQ(77, pop_up_button->GetSetSize());
+}
+
 TEST(AXTreeTest, OnNodeWillBeDeletedHasValidUnignoredParent) {
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;

@@ -15,7 +15,7 @@ class ComboBoxNode extends NodeWrapper {
     super(baseNode, parent);
 
     /** @private {?RepeatedEventHandler} */
-    this.childrenChangedHandler_;
+    this.expandedChangedHandler_;
   }
 
   /** @override */
@@ -32,9 +32,9 @@ class ComboBoxNode extends NodeWrapper {
   /** @override */
   onFocus() {
     if (this.automationNode) {
-      this.childrenChangedHandler_ = new RepeatedEventHandler(
-          this.automationNode, chrome.automation.EventType.CHILDREN_CHANGED,
-          () => this.onChildrenChanged(), {exactMatch: true});
+      this.expandedChangedHandler_ = new RepeatedEventHandler(
+          this.automationNode, chrome.automation.EventType.EXPANDED_CHANGED,
+          () => this.onExpandedChanged(), {exactMatch: true});
     }
 
     super.onFocus();
@@ -45,9 +45,9 @@ class ComboBoxNode extends NodeWrapper {
   onUnfocus() {
     super.onUnfocus();
 
-    if (this.childrenChangedHandler_) {
-      this.childrenChangedHandler_.stopListening();
-      this.childrenChangedHandler_ = null;
+    if (this.expandedChangedHandler_) {
+      this.expandedChangedHandler_.stopListening();
+      this.expandedChangedHandler_ = null;
     }
   }
 
@@ -68,7 +68,7 @@ class ComboBoxNode extends NodeWrapper {
     return super.performAction(action);
   }
 
-  onChildrenChanged() {
+  onExpandedChanged() {
     // TODO: figure out why a short timeout is needed here.
     window.setTimeout(() => {
       if (this.isGroup()) {

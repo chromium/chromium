@@ -154,10 +154,14 @@ api::automation::EventType ToAutomationEvent(
       return api::automation::EVENT_TYPE_CHECKEDSTATECHANGED;
     case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
       return api::automation::EVENT_TYPE_CHILDRENCHANGED;
+    case ui::AXEventGenerator::Event::COLLAPSED:
+      return api::automation::EVENT_TYPE_EXPANDEDCHANGED;
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
       return api::automation::EVENT_TYPE_DOCUMENTSELECTIONCHANGED;
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       return api::automation::EVENT_TYPE_DOCUMENTTITLECHANGED;
+    case ui::AXEventGenerator::Event::EXPANDED:
+      return api::automation::EVENT_TYPE_EXPANDEDCHANGED;
     case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
       return api::automation::EVENT_TYPE_INVALIDSTATUSCHANGED;
     case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED:
@@ -185,9 +189,7 @@ api::automation::EventType ToAutomationEvent(
     // Map these into generic attribute changes (not necessarily aria related,
     // but mapping for backward compat).
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
-    case ui::AXEventGenerator::Event::COLLAPSED:
     case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
-    case ui::AXEventGenerator::Event::EXPANDED:
     case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
     case ui::AXEventGenerator::Event::NAME_CHANGED:

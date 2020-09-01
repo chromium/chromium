@@ -2537,6 +2537,7 @@ Output.RULES = {
     popUpButton: {
       speak: `$name $if($value, $value, $descendants) $role @aria_has_popup
           $if($expanded, @@list_with_items($setSize)) $state $restriction
+          $if($posInSet, @describe_index($posInSet, $setSize))
           $description`
     },
     radioButton: {
