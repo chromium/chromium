@@ -156,10 +156,8 @@ void LaunchReleaseNotesImpl(Profile* profile,
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
   // If the flag is enabled, launch the Help app and show the release notes.
   if (base::FeatureList::IsEnabled(chromeos::features::kHelpAppReleaseNotes)) {
-    // Note that AppServiceProxy is null for off-the-record profiles. For more
-    // context, see https://crbug.com/1112197.
-    apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-        profile->GetOriginalProfile());
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
     proxy->LaunchAppWithUrl(
         chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
         GURL("chrome://help-app/updates"), source, display::kDefaultDisplayId);
@@ -212,14 +210,8 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     default:
       NOTREACHED() << "Unhandled help source" << source;
   }
-  // Use the original profile here, which is the same profile unless this is an
-  // OffTheRecord profile. The help app is not installed into the incognito /
-  // OffTheRecord profile.
-  if (profile->IsOffTheRecord() && !profile->IsGuestSession()) {
-    profile = profile->GetOriginalProfile();
-  }
   apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
   proxy->Launch(chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
                 app_launch_source, display::kDefaultDisplayId);
 #else

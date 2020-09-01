@@ -71,6 +71,18 @@ AppServiceProxy* AppServiceProxyFactory::GetForProfile(Profile* profile) {
 }
 
 // static
+AppServiceProxy* AppServiceProxyFactory::GetForProfileRedirectInIncognito(
+    Profile* profile) {
+  // TODO(https://crbug.com/1122463): replace this API and GetForProfile() with
+  // one that allows clients to specify different levels of incognito tolerance,
+  // where the default is to not leak out of incognito.
+  if (!IsAppServiceAvailableForProfile(profile)) {
+    profile = profile->GetOriginalProfile();
+  }
+  return GetForProfile(profile);
+}
+
+// static
 AppServiceProxyFactory* AppServiceProxyFactory::GetInstance() {
   return base::Singleton<AppServiceProxyFactory>::get();
 }

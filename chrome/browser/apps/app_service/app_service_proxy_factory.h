@@ -22,6 +22,11 @@ class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {
 
   static AppServiceProxy* GetForProfile(Profile* profile);
 
+  // Explicitly avoids DumpWithoutCrashing() when App Service is not available
+  // for a Profile. Avoid using this unless you have spoken with App Service
+  // OWNERs.
+  static AppServiceProxy* GetForProfileRedirectInIncognito(Profile* profile);
+
   static AppServiceProxyFactory* GetInstance();
 
  private:

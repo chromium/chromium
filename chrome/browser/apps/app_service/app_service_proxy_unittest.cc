@@ -214,3 +214,37 @@ TEST_F(AppServiceProxyTest, ProxyAccessPerProfile) {
   EXPECT_TRUE(guest_proxy);
   EXPECT_NE(guest_proxy, proxy);
 }
+
+TEST_F(AppServiceProxyTest, RedirectInIncognitoProxyAccessPerProfile) {
+  TestingProfile::Builder profile_builder;
+
+  // We expect an App Service in a regular profile.
+  auto profile = profile_builder.Build();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile.get());
+  EXPECT_TRUE(proxy);
+
+  // We get the same App Service using GetForProfileRedirectInIncognito.
+  auto* redirected_proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(
+          profile.get());
+  EXPECT_EQ(proxy, redirected_proxy);
+
+  // We expect the same App Service in the incognito profile branched from that
+  // regular profile.
+  TestingProfile::Builder incognito_builder;
+  auto* incognito_proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(
+          incognito_builder.BuildIncognito(profile.get()));
+  EXPECT_EQ(proxy, incognito_proxy);
+
+  // We expect a different (but still valid) App Service in the Guest Session
+  // profile.
+  TestingProfile::Builder guest_builder;
+  guest_builder.SetGuestSession();
+  auto guest_profile = guest_builder.Build();
+  auto* guest_proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(
+          guest_profile.get());
+  EXPECT_TRUE(guest_proxy);
+  EXPECT_NE(guest_proxy, proxy);
+}

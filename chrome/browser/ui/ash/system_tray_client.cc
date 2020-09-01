@@ -292,10 +292,8 @@ void SystemTrayClient::ShowGestureEducationHelp() {
   if (!profile)
     return;
 
-  // Note that AppServiceProxy is null for off-the-record profiles. For more
-  // context, see https://crbug.com/1112197.
-  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      profile->GetOriginalProfile());
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
   proxy->LaunchAppWithUrl(
       chromeos::default_web_apps::kHelpAppId, ui::EventFlags::EF_NONE,
       GURL(chrome::kChromeOSGestureEducationHelpURL),
