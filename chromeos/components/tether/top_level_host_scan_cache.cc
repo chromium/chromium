@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/tether/master_host_scan_cache.h"
+#include "chromeos/components/tether/top_level_host_scan_cache.h"
 
 #include <algorithm>
 
@@ -17,7 +17,7 @@ namespace chromeos {
 
 namespace tether {
 
-MasterHostScanCache::MasterHostScanCache(
+TopLevelHostScanCache::TopLevelHostScanCache(
     std::unique_ptr<TimerFactory> timer_factory,
     ActiveHost* active_host,
     HostScanCache* network_host_scan_cache,
@@ -30,14 +30,14 @@ MasterHostScanCache::MasterHostScanCache(
   InitializeFromPersistentCache();
 }
 
-MasterHostScanCache::~MasterHostScanCache() {
+TopLevelHostScanCache::~TopLevelHostScanCache() {
   DCHECK(ActiveHost::ActiveHostStatus::DISCONNECTED ==
          active_host_->GetActiveHostStatus());
   for (const auto& tether_guid : GetTetherGuidsInCache())
     RemoveHostScanResult(tether_guid);
 }
 
-void MasterHostScanCache::SetHostScanResult(const HostScanCacheEntry& entry) {
+void TopLevelHostScanCache::SetHostScanResult(const HostScanCacheEntry& entry) {
   auto found_iter = tether_guid_to_timer_map_.find(entry.tether_network_guid);
   if (found_iter == tether_guid_to_timer_map_.end()) {
     // Only check whether this entry exists in the cache after intialization
@@ -63,7 +63,7 @@ void MasterHostScanCache::SetHostScanResult(const HostScanCacheEntry& entry) {
   StartTimer(entry.tether_network_guid);
 }
 
-bool MasterHostScanCache::RemoveHostScanResultImpl(
+bool TopLevelHostScanCache::RemoveHostScanResultImpl(
     const std::string& tether_network_guid) {
   DCHECK(!tether_network_guid.empty());
 
@@ -104,7 +104,7 @@ bool MasterHostScanCache::RemoveHostScanResultImpl(
          removed_from_timer_map;
 }
 
-std::unordered_set<std::string> MasterHostScanCache::GetTetherGuidsInCache() {
+std::unordered_set<std::string> TopLevelHostScanCache::GetTetherGuidsInCache() {
   std::unordered_set<std::string> tether_guids;
   for (const auto& entry : tether_guid_to_timer_map_)
     tether_guids.insert(entry.first);
@@ -113,7 +113,7 @@ std::unordered_set<std::string> MasterHostScanCache::GetTetherGuidsInCache() {
   return tether_guids;
 }
 
-bool MasterHostScanCache::ExistsInCache(
+bool TopLevelHostScanCache::ExistsInCache(
     const std::string& tether_network_guid) {
   bool exists_in_network_cache =
       network_host_scan_cache_->ExistsInCache(tether_network_guid);
@@ -134,7 +134,7 @@ bool MasterHostScanCache::ExistsInCache(
          exists_in_timer_map;
 }
 
-bool MasterHostScanCache::DoesHostRequireSetup(
+bool TopLevelHostScanCache::DoesHostRequireSetup(
     const std::string& tether_network_guid) {
   // |network_host_scan_cache_| does not keep track of this value since the
   // networking stack does not store it internally. Instead, query
@@ -142,7 +142,7 @@ bool MasterHostScanCache::DoesHostRequireSetup(
   return persistent_host_scan_cache_->DoesHostRequireSetup(tether_network_guid);
 }
 
-void MasterHostScanCache::InitializeFromPersistentCache() {
+void TopLevelHostScanCache::InitializeFromPersistentCache() {
   is_initializing_ = true;
 
   // If a crash occurs, Tether networks which were previously present will no
@@ -159,7 +159,7 @@ void MasterHostScanCache::InitializeFromPersistentCache() {
   is_initializing_ = false;
 }
 
-void MasterHostScanCache::StartTimer(const std::string& tether_network_guid) {
+void TopLevelHostScanCache::StartTimer(const std::string& tether_network_guid) {
   auto found_iter = tether_guid_to_timer_map_.find(tether_network_guid);
   DCHECK(found_iter != tether_guid_to_timer_map_.end());
   DCHECK(!found_iter->second->IsRunning());
@@ -172,11 +172,12 @@ void MasterHostScanCache::StartTimer(const std::string& tether_network_guid) {
   found_iter->second->Start(
       FROM_HERE,
       base::TimeDelta::FromMinutes(kNumMinutesBeforeCacheEntryExpires),
-      base::BindOnce(&MasterHostScanCache::OnTimerFired,
+      base::BindOnce(&TopLevelHostScanCache::OnTimerFired,
                      weak_ptr_factory_.GetWeakPtr(), tether_network_guid));
 }
 
-void MasterHostScanCache::OnTimerFired(const std::string& tether_network_guid) {
+void TopLevelHostScanCache::OnTimerFired(
+    const std::string& tether_network_guid) {
   if (active_host_->GetTetherNetworkGuid() == tether_network_guid) {
     // Log as a warning. This situation should be uncommon in practice since
     // KeepAliveScheduler should schedule a new keep-alive status update every

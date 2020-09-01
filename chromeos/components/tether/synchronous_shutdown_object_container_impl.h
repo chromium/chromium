@@ -44,7 +44,7 @@ class HostScanDevicePrioritizerImpl;
 class HotspotUsageDurationTracker;
 class KeepAliveScheduler;
 class HostConnectionMetricsLogger;
-class MasterHostScanCache;
+class TopLevelHostScanCache;
 class NetworkHostScanCache;
 class NetworkListSorter;
 class NotificationPresenter;
@@ -134,7 +134,7 @@ class SynchronousShutdownObjectContainerImpl
       active_host_network_state_updater_;
   std::unique_ptr<PersistentHostScanCache> persistent_host_scan_cache_;
   std::unique_ptr<NetworkHostScanCache> network_host_scan_cache_;
-  std::unique_ptr<MasterHostScanCache> master_host_scan_cache_;
+  std::unique_ptr<TopLevelHostScanCache> top_level_host_scan_cache_;
   std::unique_ptr<NotificationRemover> notification_remover_;
   std::unique_ptr<KeepAliveScheduler> keep_alive_scheduler_;
   std::unique_ptr<HotspotUsageDurationTracker> hotspot_usage_duration_tracker_;

@@ -14,8 +14,8 @@
 #include "chromeos/components/tether/device_status_util.h"
 #include "chromeos/components/tether/gms_core_notifications_state_tracker_impl.h"
 #include "chromeos/components/tether/host_scan_cache.h"
-#include "chromeos/components/tether/master_host_scan_cache.h"
 #include "chromeos/components/tether/tether_host_fetcher.h"
+#include "chromeos/components/tether/top_level_host_scan_cache.h"
 #include "chromeos/network/network_state.h"
 #include "components/session_manager/core/session_manager.h"
 

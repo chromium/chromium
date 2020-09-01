@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/tether/master_host_scan_cache.h"
+#include "chromeos/components/tether/top_level_host_scan_cache.h"
 
 #include <memory>
 #include <unordered_map>
@@ -102,11 +102,11 @@ class TestTimerFactory : public TimerFactory {
 
 // TODO(khorimoto): The test uses a FakeHostScanCache to keep an in-memory
 // cache of expected values. This has the potential to be confusing, since this
-// is the test for MasterHostScanCache. Clean this up to avoid using
+// is the test for TopLevelHostScanCache. Clean this up to avoid using
 // FakeHostScanCache if possible.
-class MasterHostScanCacheTest : public testing::Test {
+class TopLevelHostScanCacheTest : public testing::Test {
  protected:
-  MasterHostScanCacheTest()
+  TopLevelHostScanCacheTest()
       : test_entries_(host_scan_test_util::CreateTestEntries()) {}
 
   void SetUp() override {
@@ -116,7 +116,7 @@ class MasterHostScanCacheTest : public testing::Test {
     fake_persistent_host_scan_cache_ =
         base::WrapUnique(new FakePersistentHostScanCache());
 
-    host_scan_cache_ = std::make_unique<MasterHostScanCache>(
+    host_scan_cache_ = std::make_unique<TopLevelHostScanCache>(
         base::WrapUnique(test_timer_factory_), fake_active_host_.get(),
         fake_network_host_scan_cache_.get(),
         fake_persistent_host_scan_cache_.get());
@@ -226,13 +226,13 @@ class MasterHostScanCacheTest : public testing::Test {
   std::unique_ptr<DeviceIdTetherNetworkGuidMap>
       device_id_tether_network_guid_map_;
 
-  std::unique_ptr<MasterHostScanCache> host_scan_cache_;
+  std::unique_ptr<TopLevelHostScanCache> host_scan_cache_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MasterHostScanCacheTest);
+  DISALLOW_COPY_AND_ASSIGN(TopLevelHostScanCacheTest);
 };
 
-TEST_F(MasterHostScanCacheTest, TestSetScanResultsAndLetThemExpire) {
+TEST_F(TopLevelHostScanCacheTest, TestSetScanResultsAndLetThemExpire) {
   SetHostScanResult(test_entries_.at(host_scan_test_util::kTetherGuid0));
   VerifyCacheContainsExpectedContents(1u /* expected_size */);
 
@@ -258,7 +258,7 @@ TEST_F(MasterHostScanCacheTest, TestSetScanResultsAndLetThemExpire) {
   VerifyCacheContainsExpectedContents(0 /* expected_size */);
 }
 
-TEST_F(MasterHostScanCacheTest, TestSetScanResultThenUpdateAndRemove) {
+TEST_F(TopLevelHostScanCacheTest, TestSetScanResultThenUpdateAndRemove) {
   SetHostScanResult(test_entries_.at(host_scan_test_util::kTetherGuid0));
   VerifyCacheContainsExpectedContents(1u /* expected_size */);
 
@@ -280,7 +280,7 @@ TEST_F(MasterHostScanCacheTest, TestSetScanResultThenUpdateAndRemove) {
   VerifyCacheContainsExpectedContents(0 /* expected_size */);
 }
 
-TEST_F(MasterHostScanCacheTest, TestSetScanResult_SetActiveHost) {
+TEST_F(TopLevelHostScanCacheTest, TestSetScanResult_SetActiveHost) {
   SetHostScanResult(test_entries_.at(host_scan_test_util::kTetherGuid0));
   VerifyCacheContainsExpectedContents(1u /* expected_size */);
 
@@ -306,7 +306,7 @@ TEST_F(MasterHostScanCacheTest, TestSetScanResult_SetActiveHost) {
   VerifyCacheContainsExpectedContents(0 /* expected_size */);
 }
 
-TEST_F(MasterHostScanCacheTest, TestRecoversFromCrashAndCleansUpWhenDeleted) {
+TEST_F(TopLevelHostScanCacheTest, TestRecoversFromCrashAndCleansUpWhenDeleted) {
   // Delete the cache that was initialized in SetUp(). This test requires extra
   // setup before initialization.
   host_scan_cache_.reset();
@@ -317,7 +317,8 @@ TEST_F(MasterHostScanCacheTest, TestRecoversFromCrashAndCleansUpWhenDeleted) {
   fake_persistent_host_scan_cache_->SetHostScanResult(
       test_entries_.at(host_scan_test_util::kTetherGuid1));
 
-  // These results are expected to be in the master cache after it is created.
+  // These results are expected to be in the top-level cache after it is
+  // created.
   expected_cache_->SetHostScanResult(
       test_entries_.at(host_scan_test_util::kTetherGuid0));
   expected_cache_->SetHostScanResult(
@@ -325,7 +326,7 @@ TEST_F(MasterHostScanCacheTest, TestRecoversFromCrashAndCleansUpWhenDeleted) {
 
   // Alert the timer factory that these GUIDs will be added. To ensure that the
   // timer GUID is set in the correct order, iterate through the stored cache
-  // entries to mimic the iteration order performed in MasterHostScanCache.
+  // entries to mimic the iteration order performed in TopLevelHostScanCache.
   // See crbug.com/750342.
   test_timer_factory_ = new TestTimerFactory();
   std::unordered_map<std::string, HostScanCacheEntry> persisted_entries =
@@ -333,9 +334,9 @@ TEST_F(MasterHostScanCacheTest, TestRecoversFromCrashAndCleansUpWhenDeleted) {
   for (const auto& it : persisted_entries)
     test_timer_factory_->set_tether_network_guid_for_next_timer(it.first);
 
-  // Create the master cache. It should have automatically picked up the
+  // Create the top-level cache. It should have automatically picked up the
   // persisted scan results, even though they were not explicitly added.
-  host_scan_cache_ = std::make_unique<MasterHostScanCache>(
+  host_scan_cache_ = std::make_unique<TopLevelHostScanCache>(
       base::WrapUnique(test_timer_factory_), fake_active_host_.get(),
       fake_network_host_scan_cache_.get(),
       fake_persistent_host_scan_cache_.get());
@@ -350,7 +351,7 @@ TEST_F(MasterHostScanCacheTest, TestRecoversFromCrashAndCleansUpWhenDeleted) {
   EXPECT_TRUE(
       host_scan_cache_->ExistsInCache(host_scan_test_util::kTetherGuid1));
 
-  // Now, delete the master cache. It should result in the sub-caches being
+  // Now, delete the top-level cache. It should result in the sub-caches being
   // cleared. This verifies that the persistent cache is cleared when logging
   // out (i.e., when the Tether component is shut down without a crash).
   host_scan_cache_.reset();

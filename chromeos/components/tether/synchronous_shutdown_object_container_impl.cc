@@ -19,7 +19,6 @@
 #include "chromeos/components/tether/host_scanner_impl.h"
 #include "chromeos/components/tether/hotspot_usage_duration_tracker.h"
 #include "chromeos/components/tether/keep_alive_scheduler.h"
-#include "chromeos/components/tether/master_host_scan_cache.h"
 #include "chromeos/components/tether/network_connection_handler_tether_delegate.h"
 #include "chromeos/components/tether/network_host_scan_cache.h"
 #include "chromeos/components/tether/network_list_sorter.h"
@@ -31,6 +30,7 @@
 #include "chromeos/components/tether/tether_network_disconnection_handler.h"
 #include "chromeos/components/tether/tether_session_completion_logger.h"
 #include "chromeos/components/tether/timer_factory.h"
+#include "chromeos/components/tether/top_level_host_scan_cache.h"
 #include "chromeos/components/tether/wifi_hotspot_connector.h"
 
 namespace chromeos {
@@ -116,21 +116,21 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
           network_state_handler_,
           tether_host_response_recorder_.get(),
           device_id_tether_network_guid_map_.get())),
-      master_host_scan_cache_(std::make_unique<MasterHostScanCache>(
+      top_level_host_scan_cache_(std::make_unique<TopLevelHostScanCache>(
           std::make_unique<TimerFactory>(),
           active_host_.get(),
           network_host_scan_cache_.get(),
           persistent_host_scan_cache_.get())),
-      notification_remover_(
-          std::make_unique<NotificationRemover>(network_state_handler_,
-                                                notification_presenter,
-                                                master_host_scan_cache_.get(),
-                                                active_host_.get())),
+      notification_remover_(std::make_unique<NotificationRemover>(
+          network_state_handler_,
+          notification_presenter,
+          top_level_host_scan_cache_.get(),
+          active_host_.get())),
       keep_alive_scheduler_(std::make_unique<KeepAliveScheduler>(
           device_sync_client,
           secure_channel_client,
           active_host_.get(),
-          master_host_scan_cache_.get(),
+          top_level_host_scan_cache_.get(),
           device_id_tether_network_guid_map_.get())),
       hotspot_usage_duration_tracker_(
           std::make_unique<HotspotUsageDurationTracker>(
@@ -153,7 +153,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
           gms_core_notifications_state_tracker,
           notification_presenter,
           device_id_tether_network_guid_map_.get(),
-          master_host_scan_cache_.get(),
+          top_level_host_scan_cache_.get(),
           connection_preserver_.get(),
           base::DefaultClock::GetInstance())),
       host_scan_scheduler_(
@@ -161,8 +161,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
                                                   host_scanner_.get(),
                                                   session_manager)),
       host_connection_metrics_logger_(
-          std::make_unique<HostConnectionMetricsLogger>(
-              active_host_.get())),
+          std::make_unique<HostConnectionMetricsLogger>(active_host_.get())),
       tether_connector_(std::make_unique<TetherConnectorImpl>(
           device_sync_client,
           secure_channel_client,
@@ -172,7 +171,7 @@ SynchronousShutdownObjectContainerImpl::SynchronousShutdownObjectContainerImpl(
           asychronous_container->tether_host_fetcher(),
           tether_host_response_recorder_.get(),
           device_id_tether_network_guid_map_.get(),
-          master_host_scan_cache_.get(),
+          top_level_host_scan_cache_.get(),
           notification_presenter,
           host_connection_metrics_logger_.get(),
           asychronous_container->disconnect_tethering_request_sender(),
@@ -210,7 +209,7 @@ ActiveHost* SynchronousShutdownObjectContainerImpl::active_host() {
 }
 
 HostScanCache* SynchronousShutdownObjectContainerImpl::host_scan_cache() {
-  return master_host_scan_cache_.get();
+  return top_level_host_scan_cache_.get();
 }
 
 HostScanScheduler*

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_TETHER_MASTER_HOST_SCAN_CACHE_H_
-#define CHROMEOS_COMPONENTS_TETHER_MASTER_HOST_SCAN_CACHE_H_
+#ifndef CHROMEOS_COMPONENTS_TETHER_TOP_LEVEL_HOST_SCAN_CACHE_H_
+#define CHROMEOS_COMPONENTS_TETHER_TOP_LEVEL_HOST_SCAN_CACHE_H_
 
 #include <memory>
 #include <string>
@@ -27,9 +27,9 @@ class TimerFactory;
 // HostScanCache implementation which interfaces with the network stack as well
 // as storing scanned device properties persistently and recovering stored
 // properties after a browser crash. When SetHostScanResult() is called,
-// MasterHostScanCache starts a timer which automatically removes scan results
+// TopLevelHostScanCache starts a timer which automatically removes scan results
 // after |kNumMinutesBeforeCacheEntryExpires| minutes.
-class MasterHostScanCache : public HostScanCache {
+class TopLevelHostScanCache : public HostScanCache {
  public:
   // The number of minutes that a cache entry is considered to be valid before
   // it is removed from the cache. Very old host scan results are removed from
@@ -42,11 +42,11 @@ class MasterHostScanCache : public HostScanCache {
   // cache which are not discovered during the scan are removed.
   static constexpr int kNumMinutesBeforeCacheEntryExpires = 120;
 
-  MasterHostScanCache(std::unique_ptr<TimerFactory> timer_factory,
-                      ActiveHost* active_host,
-                      HostScanCache* network_host_scan_cache,
-                      PersistentHostScanCache* persistent_host_scan_cache);
-  ~MasterHostScanCache() override;
+  TopLevelHostScanCache(std::unique_ptr<TimerFactory> timer_factory,
+                        ActiveHost* active_host,
+                        HostScanCache* network_host_scan_cache,
+                        PersistentHostScanCache* persistent_host_scan_cache);
+  ~TopLevelHostScanCache() override;
 
   // HostScanCache:
   void SetHostScanResult(const HostScanCacheEntry& entry) override;
@@ -59,7 +59,7 @@ class MasterHostScanCache : public HostScanCache {
       const std::string& tether_network_guid) override;
 
  private:
-  friend class MasterHostScanCacheTest;
+  friend class TopLevelHostScanCacheTest;
 
   void InitializeFromPersistentCache();
   void StartTimer(const std::string& tether_network_guid);
@@ -78,13 +78,13 @@ class MasterHostScanCache : public HostScanCache {
   // host).
   std::unordered_map<std::string, std::unique_ptr<base::OneShotTimer>>
       tether_guid_to_timer_map_;
-  base::WeakPtrFactory<MasterHostScanCache> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TopLevelHostScanCache> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(MasterHostScanCache);
+  DISALLOW_COPY_AND_ASSIGN(TopLevelHostScanCache);
 };
 
 }  // namespace tether
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_TETHER_MASTER_HOST_SCAN_CACHE_H_
+#endif  // CHROMEOS_COMPONENTS_TETHER_TOP_LEVEL_HOST_SCAN_CACHE_H_
