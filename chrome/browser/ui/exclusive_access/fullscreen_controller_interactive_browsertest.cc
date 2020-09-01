@@ -332,8 +332,14 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest, EscapingMouseLock) {
 // Disabled due to flakiness.
 // TODO(crbug.com/976883): Fix and re-enable this.
 // Tests mouse lock and fullscreen modes can be escaped with ESC key.
+#if defined(OS_WIN)
+#define MAYBE_EscapingMouseLockAndFullscreen EscapingMouseLockAndFullscreen
+#else
+#define MAYBE_EscapingMouseLockAndFullscreen \
+  DISABLED_EscapingMouseLockAndFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       DISABLED_EscapingMouseLockAndFullscreen) {
+                       MAYBE_EscapingMouseLockAndFullscreen) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(kFullscreenMouseLockHTML));
@@ -385,7 +391,6 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
 // Times out sometimes on Linux. http://crbug.com/135115
 // Mac: http://crbug.com/103912
-// Windows: Failing flakily on try jobs also.
 // Tests mouse lock then fullscreen in same request.
 #if defined(OS_WIN)
 #define MAYBE_MouseLockAndFullscreen MouseLockAndFullscreen
