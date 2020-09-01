@@ -85253,6 +85253,62 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Memory.Browser.MemoryFootprint.Active" units="MB"
+    expires_after="2021-08-27">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
+    but only recorded when UIApplication.sharedApplication.applicationState is
+    UIApplicationStateActive.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Browser.MemoryFootprint.Active.Over200MBWatermark"
+    enum="BooleanGreaterOrEqualThan200MB" expires_after="2021-08-27">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    This metric is only recorded on iOS when
+    UIApplication.sharedApplication.applicationState is
+    UIApplicationStateActive. True if the sum of PrivateMemoryFootprint and
+    SharedMemoryFootprint is greater than 200MB. According to Apple, apps on
+    iPhone 6 and older devices get terminated by the OS if memory usage crosses
+    200MB watermark, so it's important to keep the memory usage under 200MB.
+    &quot;true&quot; value may not show up on iPhone 6 and older devices if iOS
+    is strict about the advertised watermark.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Browser.MemoryFootprint.Background" units="MB"
+    expires_after="2021-08-27">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
+    but only recorded when UIApplication.sharedApplication.applicationState is
+    UIApplicationStateBackground. According to Apple, apps get terminated by the
+    OS if memory usage in background crosses 50MB watermark, so it's important
+    to keep the memory usage under 50MB. The timing of this metric will line up
+    so that it rarely occurs when the app is in the background. With a small
+    data set, the metrics might be biased in ways that we can't think of right
+    now.
+  </summary>
+</histogram>
+
+<histogram name="Memory.Browser.MemoryFootprint.Inactive" units="MB"
+    expires_after="2021-08-27">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
+    but only recorded when UIApplication.sharedApplication.applicationState is
+    UIApplicationStateInactive. The timing of this metric will line up so that
+    it rarely occurs when the app is inactive. With a small data set, the
+    metrics might be biased in ways that we can't think of right now.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Browser.PrivateMemoryFootprint" units="MB"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
