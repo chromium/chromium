@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/timer/timer.h"
 #include "remoting/base/protobuf_http_request_base.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 
@@ -33,6 +34,9 @@ class ProtobufHttpStreamRequest final
   using StreamClosedCallback =
       base::OnceCallback<void(const ProtobufHttpStatus& status)>;
 
+  static constexpr base::TimeDelta kStreamReadyTimeoutDuration =
+      base::TimeDelta::FromSeconds(30);
+
   explicit ProtobufHttpStreamRequest(
       std::unique_ptr<ProtobufHttpRequestConfig> config);
   ~ProtobufHttpStreamRequest() override;
@@ -57,9 +61,6 @@ class ProtobufHttpStreamRequest final
         callback);
   }
 
-  // TODO(yuweih): Consider adding an option to set timeout for
-  // |stream_ready_callback_|.
-
  private:
   friend class ProtobufHttpClient;
 
@@ -79,10 +80,14 @@ class ProtobufHttpStreamRequest final
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;
 
+  void OnStreamReadyTimeout();
+
   // Used to create new response message instances.
   const google::protobuf::MessageLite* default_message_;
 
   std::unique_ptr<ProtobufHttpStreamParser> stream_parser_;
+
+  base::OneShotTimer stream_ready_timeout_timer_;
 
   base::OnceClosure stream_ready_callback_;
   StreamClosedCallback stream_closed_callback_;
