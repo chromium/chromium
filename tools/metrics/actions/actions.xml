@@ -15010,12 +15010,48 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridCloseAllIncognitoTabsConfirmationPresented">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <description>
+    User in the iOS incognito tab grid used the Close All control and the action
+    sheet that asks for confirmation has been displayed.
+  </description>
+</action>
+
 <action name="MobileTabGridCloseAllRegularTabs">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>
     User in the iOS tab grid used the Close All control while viewing the
     regular tabs.
+  </description>
+</action>
+
+<action name="MobileTabGridCloseAllRegularTabsConfirmationPresented">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <description>
+    User in the iOS regular tab grid used the Close All control and the action
+    sheet that asks for confirmation has been displayed.
+  </description>
+</action>
+
+<action name="MobileTabGridCloseAllTabsConfirmationCanceled">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <description>
+    User in the iOS tab grid used the Close All control and the action sheet
+    that asks for confirmation has been Canceled.
+  </description>
+</action>
+
+<action name="MobileTabGridCloseAllTabsConfirmationConfirmed">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <description>
+    User in the iOS tab grid used the Close All control and the action sheet
+    that asks for confirmation has been Confirmed.
   </description>
 </action>
 

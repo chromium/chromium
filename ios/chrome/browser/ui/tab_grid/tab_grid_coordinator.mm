@@ -397,6 +397,14 @@
             (TabGridMediator*)tabGridMediator
                                                  numberOfTabs:
                                                      (NSInteger)numberOfTabs {
+  if (tabGridMediator == self.regularTabsMediator) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileTabGridCloseAllRegularTabsConfirmationPresented"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileTabGridCloseAllIncognitoTabsConfirmationPresented"));
+  }
+
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -413,12 +421,16 @@
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "MobileTabGridCloseAllTabsConfirmationConfirmed"));
                   [tabGridMediator closeAllItems];
                 }
                  style:UIAlertActionStyleDestructive];
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
+                  base::RecordAction(base::UserMetricsAction(
+                      "MobileTabGridCloseAllTabsConfirmationCanceled"));
                 }
                  style:UIAlertActionStyleCancel];
   [self.actionSheetCoordinator start];
