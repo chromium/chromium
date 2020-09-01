@@ -193,7 +193,7 @@ void DisjointRangeLockManager::LockReleased(int level, ScopeLockRange range) {
       auto released_callback = base::BindOnce(
           &DisjointRangeLockManager::LockReleased, weak_factory_.GetWeakPtr());
       // Grant the lock.
-      requester.locks_holder->locks.emplace_back(std::move(range), level,
+      requester.locks_holder->locks.emplace_back(range, level,
                                                  std::move(released_callback));
       std::move(requester.acquired_callback).Run();
       // This can only happen if acquired_count was 0.
