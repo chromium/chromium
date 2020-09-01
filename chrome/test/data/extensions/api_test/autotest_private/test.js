@@ -1261,7 +1261,7 @@ var systemWebAppsTests = [
     chrome.autotestPrivate.getRegisteredSystemWebApps(
       chrome.test.callbackPass(apps => {
         chrome.test.assertEq(1, apps.length)
-        chrome.test.assertEq('OSSettings', apps[0].nameForLogging);
+        chrome.test.assertEq('OSSettings', apps[0].internalName);
         chrome.test.assertEq('chrome://test-system-app/', apps[0].url);
       })
     );

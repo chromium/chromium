@@ -327,7 +327,7 @@ namespace autotestPrivate {
   };
 
   dictionary SystemApp {
-    DOMString nameForLogging;
+    DOMString internalName;
     DOMString url;
   };
 
@@ -691,6 +691,11 @@ namespace autotestPrivate {
 
     // Launches an application from the launcher with the given appId.
     static void launchApp(DOMString appId, VoidCallback callback);
+
+    // Launches an system web app from the launcher with the given app name and
+    // url.
+    static void launchSystemWebApp(DOMString appName, DOMString url,
+                                   VoidCallback callback);
 
     // Closes an application the given appId in case it was running.
     static void closeApp(DOMString appId, VoidCallback callback);

@@ -196,6 +196,8 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kChromeCanvas, launch_source);
   else if (app_id == extension_misc::kCameraAppId)
     RecordDefaultAppLaunch(DefaultAppName::kCamera, launch_source);
+  else if (app_id == chromeos::default_web_apps::kCameraAppId)
+    RecordDefaultAppLaunch(DefaultAppName::kCamera, launch_source);
   else if (app_id == chromeos::default_web_apps::kHelpAppId)
     RecordDefaultAppLaunch(DefaultAppName::kHelpApp, launch_source);
   else if (app_id == chromeos::default_web_apps::kMediaAppId)

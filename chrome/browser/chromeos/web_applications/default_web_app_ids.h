@@ -24,6 +24,11 @@ constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 
 // Generated as
 // web_app::GenerateAppIdFromURL(GURL(
+// "chrome://camera-app/src/views/main.html")).
+constexpr char kCameraAppId[] = "lokiojgebppilomhkceogdnchlbpcoaj";
+
+// Generated as
+// web_app::GenerateAppIdFromURL(GURL(
 // "https://google.com/chromebook/whatsnew/embedded/")).
 constexpr char kReleaseNotesAppId[] = "lddhblppcjmenljhdleiahjighahdcje";
 

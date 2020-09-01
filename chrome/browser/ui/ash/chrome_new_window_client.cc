@@ -653,6 +653,8 @@ void ChromeNewWindowClient::CloseCameraApp() {
 bool ChromeNewWindowClient::IsCameraAppEnabled() {
   return extensions::ExtensionRegistry::Get(
              ProfileManager::GetActiveUserProfile())
-             ->enabled_extensions()
-             .GetByID(extension_misc::kCameraAppId) != nullptr;
+                 ->enabled_extensions()
+                 .GetByID(extension_misc::kCameraAppId) != nullptr ||
+         web_app::SystemWebAppManager::IsAppEnabled(
+             web_app::SystemAppType::CAMERA);
 }

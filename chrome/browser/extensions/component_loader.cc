@@ -154,7 +154,7 @@ ComponentLoader::ComponentExtensionInfo::operator=(
   return *this;
 }
 
-ComponentLoader::ComponentExtensionInfo::~ComponentExtensionInfo() {}
+ComponentLoader::ComponentExtensionInfo::~ComponentExtensionInfo() = default;
 
 ComponentLoader::ComponentLoader(ExtensionSystem* extension_system,
                                  Profile* profile)
@@ -162,8 +162,7 @@ ComponentLoader::ComponentLoader(ExtensionSystem* extension_system,
       extension_system_(extension_system),
       ignore_whitelist_for_testing_(false) {}
 
-ComponentLoader::~ComponentLoader() {
-}
+ComponentLoader::~ComponentLoader() = default;
 
 void ComponentLoader::LoadAll() {
   TRACE_EVENT0("browser,startup", "ComponentLoader::LoadAll");
@@ -219,8 +218,7 @@ std::string ComponentLoader::Add(
     const base::FilePath& root_directory,
     bool skip_whitelist) {
   ComponentExtensionInfo info(std::move(parsed_manifest), root_directory);
-  if (!ignore_whitelist_for_testing_ &&
-      !skip_whitelist &&
+  if (!ignore_whitelist_for_testing_ && !skip_whitelist &&
       !IsComponentExtensionWhitelisted(info.extension_id))
     return std::string();
 
@@ -237,8 +235,8 @@ std::string ComponentLoader::AddOrReplace(const base::FilePath& path) {
   std::unique_ptr<base::DictionaryValue> manifest(
       file_util::LoadManifest(absolute_path, &error));
   if (!manifest) {
-    LOG(ERROR) << "Could not load extension from '" <<
-                  absolute_path.value() << "'. " << error;
+    LOG(ERROR) << "Could not load extension from '" << absolute_path.value()
+               << "'. " << error;
     return std::string();
   }
   Remove(GenerateId(manifest.get(), absolute_path));
@@ -397,6 +395,10 @@ void ComponentLoader::AddKeyboardApp() {
 }
 
 void ComponentLoader::AddChromeCameraApp() {
+  if (base::FeatureList::IsEnabled(chromeos::features::kCameraSystemWebApp)) {
+    return;
+  }
+
   base::FilePath resources_path;
   if (base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
     AddComponentFromDir(resources_path.Append(extension_misc::kCameraAppPath),
@@ -417,16 +419,13 @@ void ComponentLoader::AddZipArchiverExtension() {
 #endif  // defined(OS_CHROMEOS)
 
 scoped_refptr<const Extension> ComponentLoader::CreateExtension(
-    const ComponentExtensionInfo& info, std::string* utf8_error) {
+    const ComponentExtensionInfo& info,
+    std::string* utf8_error) {
   // TODO(abarth): We should REQUIRE_MODERN_MANIFEST_VERSION once we've updated
   //               our component extensions to the new manifest version.
   int flags = Extension::REQUIRE_KEY;
-  return Extension::Create(
-      info.root_directory,
-      Manifest::COMPONENT,
-      *info.manifest,
-      flags,
-      utf8_error);
+  return Extension::Create(info.root_directory, Manifest::COMPONENT,
+                           *info.manifest, flags, utf8_error);
 }
 
 // static
@@ -631,10 +630,9 @@ void ComponentLoader::UnloadComponent(ComponentExtensionInfo* component) {
 }
 
 #if defined(OS_CHROMEOS)
-void ComponentLoader::AddComponentFromDir(
-    const base::FilePath& root_directory,
-    const char* extension_id,
-    const base::Closure& done_cb) {
+void ComponentLoader::AddComponentFromDir(const base::FilePath& root_directory,
+                                          const char* extension_id,
+                                          const base::Closure& done_cb) {
   AddComponentFromDirWithManifestFilename(
       root_directory, extension_id, extensions::kManifestFilename,
       extension_misc::kGuestManifestFilename, done_cb);

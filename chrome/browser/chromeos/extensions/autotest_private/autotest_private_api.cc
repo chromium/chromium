@@ -105,12 +105,14 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
 #include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/autotest_private.h"
 #include "chrome/common/pref_names.h"
@@ -1757,10 +1759,11 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
 
   std::vector<api::autotest_private::SystemApp> result;
 
-  for (const auto& info :
+  for (const auto& type_and_info :
        provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
     api::autotest_private::SystemApp system_app;
-    system_app.name_for_logging = info.name_for_logging;
+    web_app::SystemAppInfo info = type_and_info.second;
+    system_app.internal_name = info.internal_name;
     system_app.url = info.install_url.GetOrigin().spec();
     result.push_back(std::move(system_app));
   }
@@ -1815,6 +1818,44 @@ ExtensionFunction::ResponseAction AutotestPrivateLaunchAppFunction::Run() {
                         ash::ShelfLaunchSource::LAUNCH_FROM_UNKNOWN,
                         0, /* event_flags */
                         display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateLaunchSystemWebAppFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateLaunchSystemWebAppFunction::
+    ~AutotestPrivateLaunchSystemWebAppFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateLaunchSystemWebAppFunction::Run() {
+  std::unique_ptr<api::autotest_private::LaunchSystemWebApp::Params> params(
+      api::autotest_private::LaunchSystemWebApp::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  DVLOG(1) << "AutotestPrivateLaunchSystemWebAppFunction name: "
+           << params->app_name << " url: " << params->url;
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  auto* provider = web_app::WebAppProvider::Get(profile);
+  if (!provider)
+    return RespondNow(Error("Web Apps not enabled for profile."));
+
+  base::Optional<web_app::SystemAppType> app_type;
+  for (const auto& type_and_info :
+       provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
+    if (type_and_info.second.internal_name == params->app_name) {
+      app_type = type_and_info.first;
+      break;
+    }
+  }
+  if (!app_type.has_value())
+    return RespondNow(Error("No mapped system web app found"));
+
+  auto* browser =
+      web_app::LaunchSystemWebApp(profile, *app_type, GURL(params->url));
+  if (!browser)
+    return RespondNow(Error("Failed to launch system web app"));
   return RespondNow(NoArguments());
 }
 

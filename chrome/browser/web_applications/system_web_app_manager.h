@@ -67,11 +67,11 @@ using WebApplicationInfoFactory =
 
 // The configuration options for a System App.
 struct SystemAppInfo {
-  SystemAppInfo(const std::string& name_for_logging, const GURL& install_url);
+  SystemAppInfo(const std::string& internal_name, const GURL& install_url);
   // When installing via a WebApplicationInfo, the url is never loaded. It's
   // needed only for various legacy reasons, maps for tracking state, and
   // generating the AppId and things of that nature.
-  SystemAppInfo(const std::string& name_for_logging,
+  SystemAppInfo(const std::string& internal_name,
                 const GURL& install_url,
                 const WebApplicationInfoFactory& info_factory);
   SystemAppInfo(const SystemAppInfo& other);
@@ -79,7 +79,7 @@ struct SystemAppInfo {
 
   // A developer-friendly name for reporting metrics. Should follow UMA naming
   // conventions.
-  std::string name_for_logging;
+  std::string internal_name;
 
   // The URL that the System App will be installed from.
   GURL install_url;
@@ -210,9 +210,10 @@ class SystemWebAppManager {
   // doesn't specify a minimum.
   gfx::Size GetMinimumWindowSize(const AppId& app_id) const;
 
-  // Returns a list of registered system app infos, these apps will be installed
-  // on the system.
-  std::vector<SystemAppInfo> GetRegisteredSystemAppsForTesting() const;
+  // Returns a map of registered system app types and infos, these apps will be
+  // installed on the system.
+  const base::flat_map<SystemAppType, SystemAppInfo>&
+  GetRegisteredSystemAppsForTesting() const;
 
   const base::OneShotEvent& on_apps_synchronized() const {
     return *on_apps_synchronized_;

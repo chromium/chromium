@@ -337,6 +337,16 @@ class AutotestPrivateLaunchAppFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateLaunchSystemWebAppFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.launchSystemWebApp",
+                             AUTOTESTPRIVATE_LAUNCHSYSTEMWEBAPP)
+
+ private:
+  ~AutotestPrivateLaunchSystemWebAppFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateCloseAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.closeApp",

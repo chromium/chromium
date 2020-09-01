@@ -262,14 +262,14 @@ std::set<SystemAppType> GetDisabledSystemWebApps() {
 
 }  // namespace
 
-SystemAppInfo::SystemAppInfo(const std::string& name_for_logging,
+SystemAppInfo::SystemAppInfo(const std::string& internal_name,
                              const GURL& install_url)
-    : name_for_logging(name_for_logging), install_url(install_url) {}
+    : internal_name(internal_name), install_url(install_url) {}
 
-SystemAppInfo::SystemAppInfo(const std::string& name_for_logging,
+SystemAppInfo::SystemAppInfo(const std::string& internal_name,
                              const GURL& install_url,
                              const WebApplicationInfoFactory& app_info_factory)
-    : name_for_logging(name_for_logging),
+    : internal_name(internal_name),
       install_url(install_url),
       app_info_factory(app_info_factory) {}
 
@@ -446,15 +446,9 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
   run_loop.Run();
 }
 
-std::vector<SystemAppInfo>
+const base::flat_map<SystemAppType, SystemAppInfo>&
 SystemWebAppManager::GetRegisteredSystemAppsForTesting() const {
-  std::vector<SystemAppInfo> result;
-  result.reserve(system_app_infos_.size());
-
-  for (const auto& type_and_app_info : system_app_infos_)
-    result.push_back(type_and_app_info.second);
-
-  return result;
+  return system_app_infos_;
 }
 
 base::Optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
@@ -669,7 +663,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallMetrics(
     if (url_and_result != install_results.cend()) {
       const std::string app_histogram_name =
           std::string(kInstallResultHistogramName) + ".Apps." +
-          type_and_app_info.second.name_for_logging;
+          type_and_app_info.second.internal_name;
       base::UmaHistogramEnumeration(
           app_histogram_name,
           shutting_down_
