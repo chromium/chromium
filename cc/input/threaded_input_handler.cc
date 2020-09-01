@@ -48,6 +48,16 @@ void RecordCompositorSlowScrollMetric(ui::ScrollInputType type,
 InputHandlerCommitData::InputHandlerCommitData() = default;
 InputHandlerCommitData::~InputHandlerCommitData() = default;
 
+// static
+base::WeakPtr<InputHandler> InputHandler::Create(
+    CompositorDelegateForInput& compositor_delegate) {
+  auto input_handler =
+      std::make_unique<ThreadedInputHandler>(compositor_delegate);
+  base::WeakPtr<InputHandler> input_handler_weak = input_handler->AsWeakPtr();
+  compositor_delegate.BindToInputHandler(std::move(input_handler));
+  return input_handler_weak;
+}
+
 ThreadedInputHandler::ThreadedInputHandler(
     CompositorDelegateForInput& compositor_delegate)
     : compositor_delegate_(compositor_delegate),
@@ -59,6 +69,11 @@ ThreadedInputHandler::~ThreadedInputHandler() = default;
 //
 // =========== InputHandler Interface
 //
+
+base::WeakPtr<InputHandler> ThreadedInputHandler::AsWeakPtr() const {
+  return weak_factory_.GetWeakPtr();
+}
+
 void ThreadedInputHandler::BindToClient(InputHandlerClient* client) {
   DCHECK(input_handler_client_ == nullptr);
   input_handler_client_ = client;
@@ -922,6 +937,11 @@ void ThreadedInputHandler::ProcessCommitDeltas(
 
   // Scroll commit data is stored in the scroll tree so it has its own method
   // for getting it.
+  // TODO(bokan): It's a bug that CollectScrollDeltas is here, it means the
+  // compositor cannot commit scroll changes without an InputHandler which it
+  // should be able to. To move it back, we'll need to split out the
+  // |snapped_elements| part of ScrollTree::CollectScrollDeltas though which is
+  // an input responsibility.
   GetScrollTree().CollectScrollDeltas(
       commit_data, inner_viewport_scroll_element_id,
       compositor_delegate_.GetSettings().commit_fractional_scroll_deltas,

@@ -552,7 +552,7 @@ std::unique_ptr<LayerTreeHostImpl> LayerTreeHost::CreateLayerTreeHostImpl(
   }
 
   task_graph_runner_ = nullptr;
-  input_handler_weak_ptr_ = host_impl->AsWeakPtr();
+  compositor_delegate_weak_ptr_ = host_impl->AsWeakPtr();
   return host_impl;
 }
 
@@ -1047,8 +1047,9 @@ void LayerTreeHost::SubmitThroughputData(ukm::SourceId source_id,
                                 main_percent);
 }
 
-const base::WeakPtr<InputHandler>& LayerTreeHost::GetInputHandler() const {
-  return input_handler_weak_ptr_;
+const base::WeakPtr<CompositorDelegateForInput>&
+LayerTreeHost::GetDelegateForInput() const {
+  return compositor_delegate_weak_ptr_;
 }
 
 void LayerTreeHost::UpdateBrowserControlsState(BrowserControlsState constraints,
@@ -1653,8 +1654,10 @@ void LayerTreeHost::PushSurfaceRangesTo(LayerTreeImpl* tree_impl) {
 
 void LayerTreeHost::PushLayerTreeHostPropertiesTo(
     LayerTreeHostImpl* host_impl) {
-  host_impl->GetInputHandler().set_external_pinch_gesture_active(
-      is_external_pinch_gesture_active_);
+  // TODO(bokan): The |external_pinch_gesture_active| should not be going
+  // through the LayerTreeHost but directly from InputHandler to InputHandler.
+  host_impl->SetExternalPinchGestureActive(is_external_pinch_gesture_active_);
+
   RecordGpuRasterizationHistogram(host_impl);
 
   host_impl->SetDebugState(debug_state_);

@@ -236,10 +236,12 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   params.mutator_host = animation_host_.get();
   host_ = cc::LayerTreeHost::CreateSingleThreaded(this, std::move(params));
 
+  const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate =
+      host_->GetDelegateForInput();
   if (base::FeatureList::IsEnabled(features::kUiCompositorScrollWithLayers) &&
-      host_->GetInputHandler()) {
-    scroll_input_handler_.reset(
-        new ScrollInputHandler(host_->GetInputHandler()));
+      compositor_delegate) {
+    input_handler_weak_ = cc::InputHandler::Create(*compositor_delegate);
+    scroll_input_handler_.reset(new ScrollInputHandler(input_handler_weak_));
   }
 
   animation_timeline_ =
@@ -486,17 +488,19 @@ bool Compositor::IsVisible() {
   return host_->IsVisible();
 }
 
+// TODO(bokan): These calls should be delegated through the
+// scroll_input_handler_ so that we don't have to keep a pointer to the
+// cc::InputHandler in this class.
 bool Compositor::ScrollLayerTo(cc::ElementId element_id,
                                const gfx::ScrollOffset& offset) {
-  auto input_handler = host_->GetInputHandler();
-  return input_handler && input_handler->ScrollLayerTo(element_id, offset);
+  return input_handler_weak_ &&
+         input_handler_weak_->ScrollLayerTo(element_id, offset);
 }
 
 bool Compositor::GetScrollOffsetForLayer(cc::ElementId element_id,
                                          gfx::ScrollOffset* offset) const {
-  auto input_handler = host_->GetInputHandler();
-  return input_handler &&
-         input_handler->GetScrollOffsetForLayer(element_id, offset);
+  return input_handler_weak_ &&
+         input_handler_weak_->GetScrollOffsetForLayer(element_id, offset);
 }
 
 void Compositor::SetDisplayVSyncParameters(base::TimeTicks timebase,

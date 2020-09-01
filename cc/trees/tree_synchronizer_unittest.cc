@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <set>
+#include <utility>
 #include <vector>
 
 #include "base/format_macros.h"
@@ -749,11 +750,16 @@ TEST_F(TreeSynchronizerTest, RoundedScrollDeltasOnCommit) {
   LayerTreeSettings settings;
   settings.commit_fractional_scroll_deltas = false;
   ResetLayerTreeHost(settings);
+  FakeLayerTreeHostImpl* host_impl = host_->host_impl();
+
+  // Since this test simulates a scroll it needs an input handler.
+  // TODO(bokan): Required because scroll commit is part of InputHandler - that
+  // shouldn't be. See comment in ThreadedInputHandler::ProcessCommitDeltas.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl));
 
   scoped_refptr<Layer> scroll_layer = SetupScrollLayer();
 
   // Scroll the layer by a fractional amount.
-  FakeLayerTreeHostImpl* host_impl = host_->host_impl();
   LayerImpl* scroll_layer_impl =
       host_impl->active_tree()->LayerById(scroll_layer->id());
   scroll_layer_impl->ScrollBy(gfx::Vector2dF(0, 1.75f));
@@ -770,11 +776,16 @@ TEST_F(TreeSynchronizerTest, PreserveFractionalScrollDeltasOnCommit) {
   LayerTreeSettings settings;
   settings.commit_fractional_scroll_deltas = true;
   ResetLayerTreeHost(settings);
+  FakeLayerTreeHostImpl* host_impl = host_->host_impl();
+
+  // Since this test simulates a scroll it needs an input handler.
+  // TODO(bokan): Required because scroll commit is part of InputHandler - that
+  // shouldn't be. See comment in ThreadedInputHandler::ProcessCommitDeltas.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl));
 
   scoped_refptr<Layer> scroll_layer = SetupScrollLayer();
 
   // Scroll the layer by a fractional amount.
-  FakeLayerTreeHostImpl* host_impl = host_->host_impl();
   LayerImpl* scroll_layer_impl =
       host_impl->active_tree()->LayerById(scroll_layer->id());
   scroll_layer_impl->ScrollBy(gfx::Vector2dF(0, 1.75f));

@@ -162,7 +162,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
       scheduler::WebThreadScheduler* main_thread_scheduler);
   void InitInputHandler();
   void InitOnInputHandlingThread(
-      const base::WeakPtr<cc::InputHandler>& input_handler,
+      const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate,
       bool sync_compositing);
   void BindChannel(
       mojo::PendingReceiver<mojom::blink::WidgetInputHandler> receiver);

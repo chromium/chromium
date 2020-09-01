@@ -458,6 +458,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   scoped_refptr<cc::Layer> root_web_layer_;
   std::unique_ptr<cc::AnimationHost> animation_host_;
   std::unique_ptr<cc::LayerTreeHost> host_;
+  base::WeakPtr<cc::InputHandler> input_handler_weak_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Snapshot of last set vsync parameters, to avoid redundant IPCs.

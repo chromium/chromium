@@ -205,11 +205,11 @@ bool IsGestureScrollOrPinch(WebInputEvent::Type type) {
 
 }  // namespace
 
-InputHandlerProxy::InputHandlerProxy(cc::InputHandler* input_handler,
+InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
                                      InputHandlerProxyClient* client,
                                      bool force_input_to_main_thread)
     : client_(client),
-      input_handler_(input_handler),
+      input_handler_(&input_handler),
       synchronous_input_handler_(nullptr),
       handling_gesture_on_impl_thread_(false),
       scroll_sequence_ignored_(false),

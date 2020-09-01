@@ -138,6 +138,8 @@ class CC_EXPORT LayerTreeImpl {
   bool IsSyncTree() const;
   LayerImpl* FindActiveTreeLayerById(int id);
   LayerImpl* FindPendingTreeLayerById(int id);
+  // TODO(bokan): PinchGestureActive is a layering violation, it's not related
+  // to what LayerTreeImpl does.
   bool PinchGestureActive() const;
   const viz::BeginFrameArgs& CurrentBeginFrameArgs() const;
   base::TimeDelta CurrentBeginFrameInterval() const;

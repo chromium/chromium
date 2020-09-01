@@ -28,6 +28,7 @@
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"
 #include "cc/input/input_handler.h"
 #include "cc/input/layer_selection_bound.h"
@@ -296,9 +297,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
                                   BrowserControlsState current,
                                   bool animate);
 
-  // Returns a reference to the InputHandler used to respond to input events on
-  // the compositor thread.
-  const base::WeakPtr<InputHandler>& GetInputHandler() const;
+  // Returns the delegate that the input handler uses to communicate with the
+  // LayerTreeHostImpl on the compositor thread. Must be dereferenced only on
+  // the input handling thread.
+  const base::WeakPtr<CompositorDelegateForInput>& GetDelegateForInput() const;
 
   // Debugging and benchmarks ---------------------------------
   void SetDebugState(const LayerTreeDebugState& debug_state);
@@ -756,7 +758,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   MicroBenchmarkController micro_benchmark_controller_;
 
-  base::WeakPtr<InputHandler> input_handler_weak_ptr_;
+  // The pointer that input uses to communicate with the layer tree host impl.
+  // Must be dereferenced only from the input-handling thread.
+  base::WeakPtr<CompositorDelegateForInput> compositor_delegate_weak_ptr_;
 
   scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner_;
   std::unique_ptr<UkmRecorderFactory> ukm_recorder_factory_;

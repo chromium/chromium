@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "cc/animation/animation_host.h"
-#include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/begin_frame_args_test.h"
 

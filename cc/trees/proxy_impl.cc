@@ -392,7 +392,7 @@ bool ProxyImpl::IsBeginMainFrameExpected() {
 void ProxyImpl::RenewTreePriority() {
   DCHECK(IsImplThread());
   const bool user_interaction_in_progress =
-      host_impl_->GetInputHandler().pinch_gesture_active() ||
+      host_impl_->IsPinchGestureActive() ||
       host_impl_->page_scale_animation_active() ||
       host_impl_->IsActivelyPrecisionScrolling();
 

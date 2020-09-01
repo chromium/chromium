@@ -221,7 +221,7 @@ void WidgetInputHandlerManager::InitInputHandler() {
   uses_input_handler_ = true;
   base::OnceClosure init_closure = base::BindOnce(
       &WidgetInputHandlerManager::InitOnInputHandlingThread, this,
-      widget_->LayerTreeHost()->GetInputHandler(), sync_compositing);
+      widget_->LayerTreeHost()->GetDelegateForInput(), sync_compositing);
   InputThreadTaskRunner()->PostTask(FROM_HERE, std::move(init_closure));
 }
 
@@ -547,22 +547,28 @@ void WidgetInputHandlerManager::OnDeferCommitsChanged(bool status) {
 }
 
 void WidgetInputHandlerManager::InitOnInputHandlingThread(
-    const base::WeakPtr<cc::InputHandler>& input_handler,
+    const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate,
     bool sync_compositing) {
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
   DCHECK(uses_input_handler_);
 
-  // It is possible that the input_handle has already been destroyed before this
-  // Init() call was invoked. If so, early out.
-  if (!input_handler)
+  // It is possible that the input_handler has already been destroyed before
+  // this Init() call was invoked. If so, early out.
+  if (!compositor_delegate)
     return;
 
   // If there's no compositor thread (i.e. we're in a LayoutTest), force input
   // to go through the main thread.
   bool force_input_handling_on_main = !compositor_task_runner_;
 
+  // The input handler is created and ownership is passed to the compositor
+  // delegate; hence we only receive a WeakPtr back.
+  base::WeakPtr<cc::InputHandler> input_handler =
+      cc::InputHandler::Create(*compositor_delegate);
+  DCHECK(input_handler);
+
   input_handler_proxy_ = std::make_unique<InputHandlerProxy>(
-      input_handler.get(), this, force_input_handling_on_main);
+      *input_handler.get(), this, force_input_handling_on_main);
 
 #if defined(OS_ANDROID)
   if (sync_compositing) {

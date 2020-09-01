@@ -704,7 +704,13 @@ TEST_F(LegacySWPictureLayerImplTest, ZoomOutCrash) {
   EXPECT_EQ(0u, active_layer()->tilings()->num_tilings());
   SetContentsScaleOnBothLayers(32.0f, 1.0f, 32.0f, 1.0f, 0.f, false);
   EXPECT_EQ(32.f, active_layer()->HighResTiling()->contents_scale_key());
-  host_impl()->PinchGestureBegin();
+
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
+  host_impl()->GetInputHandler().PinchGestureBegin();
   SetContentsScaleOnBothLayers(1.0f, 1.0f, 1.0f, 1.0f, 0.f, false);
   SetContentsScaleOnBothLayers(1.0f, 1.0f, 1.0f, 1.0f, 0.f, false);
   EXPECT_EQ(active_layer()->tilings()->NumHighResTilings(), 1);
@@ -761,8 +767,13 @@ TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
 
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
   // Start a pinch gesture.
-  host_impl()->PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin();
 
   // Zoom out by a small amount. We should create a tiling at half
   // the scale (2/kMaxScaleRatioDuringPinch).
@@ -804,7 +815,7 @@ TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   EXPECT_NE(LOW_RESOLUTION, low_res_tiling->resolution());
 
   // Stop a pinch gesture.
-  host_impl()->PinchGestureEnd(gfx::Point(), false);
+  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point(), false);
 
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
@@ -841,8 +852,13 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
 
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
   // Start a pinch gesture.
-  host_impl()->PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin();
 
   // Zoom out by a small amount. We should create a tiling at half
   // the scale (1/kMaxScaleRatioDuringPinch).
@@ -911,7 +927,12 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
       1.f * low_res_factor,
       active_layer()->tilings()->tiling_at(1)->contents_scale_key());
 
-  host_impl()->PinchGestureBegin();
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
+  host_impl()->GetInputHandler().PinchGestureBegin();
 
   // Changing the ideal but not creating new tilings.
   scale = 1.5f;
@@ -934,7 +955,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
       1.f * low_res_factor,
       active_layer()->tilings()->tiling_at(1)->contents_scale_key());
 
-  host_impl()->PinchGestureEnd(gfx::Point(), false);
+  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point(), false);
 
   // Create a 1.2 scale tiling. Now we have 1.0 and 1.2 tilings. Ideal = 1.2.
   scale = 1.2f;
@@ -2629,9 +2650,14 @@ TEST_F(LegacySWPictureLayerImplTest, FirstTilingDuringPinch) {
   // We start with a tiling at scale 1.
   EXPECT_EQ(1.f, pending_layer()->HighResTiling()->contents_scale_key());
 
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
   // When we page scale up by 2.3, we get a new tiling that is a power of 2, in
   // this case 4.
-  host_impl()->PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin();
   float high_res_scale = 2.3f;
   SetContentsScaleOnBothLayers(high_res_scale, 1.f, high_res_scale, 1.f, 0.f,
                                false);
@@ -2644,7 +2670,12 @@ TEST_F(LegacySWPictureLayerImplTest, PinchingTooSmall) {
   // We start with a tiling at scale 1.
   EXPECT_EQ(1.f, pending_layer()->HighResTiling()->contents_scale_key());
 
-  host_impl()->PinchGestureBegin();
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
+  host_impl()->GetInputHandler().PinchGestureBegin();
   float high_res_scale = 0.0001f;
   EXPECT_LT(high_res_scale, pending_layer()->MinimumContentsScale());
 
@@ -2666,7 +2697,12 @@ TEST_F(LegacySWPictureLayerImplTest, PinchingTooSmallWithContentsScale) {
   EXPECT_FLOAT_EQ(contents_scale,
                   pending_layer()->HighResTiling()->contents_scale_key());
 
-  host_impl()->PinchGestureBegin();
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
+  host_impl()->GetInputHandler().PinchGestureBegin();
 
   float page_scale = 0.0001f;
   EXPECT_LT(page_scale * contents_scale,
@@ -3775,7 +3811,12 @@ TEST_F(NoLowResPictureLayerImplTest, CleanUpTilings) {
   active_layer()->CleanUpTilingsOnActiveLayer(used_tilings);
   ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
 
-  host_impl()->PinchGestureBegin();
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
+  host_impl()->GetInputHandler().PinchGestureBegin();
 
   // Changing the ideal but not creating new tilings.
   scale *= 1.5f;
@@ -3789,7 +3830,7 @@ TEST_F(NoLowResPictureLayerImplTest, CleanUpTilings) {
   active_layer()->CleanUpTilingsOnActiveLayer(used_tilings);
   ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
 
-  host_impl()->PinchGestureEnd(gfx::Point(), false);
+  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point(), false);
 
   // Create a 1.2 scale tiling. Now we have 1.0 and 1.2 tilings. Ideal = 1.2.
   scale /= 4.f;
@@ -5259,7 +5300,12 @@ TEST_F(NoLowResPictureLayerImplTest, LowResWasHighResCollision) {
   EXPECT_BOTH_EQ(num_tilings(), 1u);
   EXPECT_BOTH_EQ(tilings()->tiling_at(0)->contents_scale_key(), page_scale);
 
-  host_impl()->PinchGestureBegin();
+  // Since this test simulates a pinch it needs an input handler.
+  // TODO(bokan): This is a raster unit test, it shouldn't be using a real
+  // input handler.
+  InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
+
+  host_impl()->GetInputHandler().PinchGestureBegin();
 
   // Zoom out to exactly the low res factor so that the previous high res
   // would be equal to the current low res (if it were possible to have one).

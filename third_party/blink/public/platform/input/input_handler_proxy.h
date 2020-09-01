@@ -59,7 +59,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
       public SynchronousInputHandlerProxy,
       public cc::SnapFlingClient {
  public:
-  InputHandlerProxy(cc::InputHandler* input_handler,
+  InputHandlerProxy(cc::InputHandler& input_handler,
                     InputHandlerProxyClient* client,
                     bool force_input_to_main_thread);
   ~InputHandlerProxy() override;
@@ -293,6 +293,10 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   }
 
   InputHandlerProxyClient* client_;
+
+  // The input handler object is owned by the compositor delegate. The input
+  // handler must call WillShutdown() on this class before it is deleted at
+  // which point this pointer will be cleared.
   cc::InputHandler* input_handler_;
 
   SynchronousInputHandler* synchronous_input_handler_;

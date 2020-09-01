@@ -85,6 +85,9 @@ class MockInputHandler : public cc::InputHandler {
  public:
   MockInputHandler() {}
   ~MockInputHandler() override {}
+  base::WeakPtr<InputHandler> AsWeakPtr() const override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   MOCK_METHOD0(PinchGestureBegin, void());
   MOCK_METHOD2(PinchGestureUpdate,
@@ -174,6 +177,8 @@ class MockInputHandler : public cc::InputHandler {
  private:
   bool is_scrolling_root_ = true;
   DISALLOW_COPY_AND_ASSIGN(MockInputHandler);
+
+  base::WeakPtrFactory<MockInputHandler> weak_ptr_factory_{this};
 };
 
 class MockSynchronousInputHandler : public SynchronousInputHandler {
@@ -268,7 +273,7 @@ const cc::InputHandler::ScrollStatus kScrollIgnoredScrollState(
 
 class TestInputHandlerProxy : public InputHandlerProxy {
  public:
-  TestInputHandlerProxy(cc::InputHandler* input_handler,
+  TestInputHandlerProxy(cc::InputHandler& input_handler,
                         InputHandlerProxyClient* client,
                         bool force_input_to_main_thread)
       : InputHandlerProxy(input_handler, client, force_input_to_main_thread) {}
@@ -326,7 +331,7 @@ class InputHandlerProxyTest
       scoped_feature_list_.InitAndDisableFeature(features::kScrollUnification);
 
     input_handler_ = std::make_unique<TestInputHandlerProxy>(
-        &mock_input_handler_, &mock_client_,
+        mock_input_handler_, &mock_client_,
         /*force_input_to_main_thread=*/false);
     scroll_result_did_scroll_.did_scroll = true;
     scroll_result_did_not_scroll_.did_scroll = false;
@@ -451,7 +456,7 @@ InputHandlerProxy::EventDisposition HandleInputEventAndFlushEventQueue(
 class InputHandlerProxyEventQueueTest : public testing::Test {
  public:
   InputHandlerProxyEventQueueTest()
-      : input_handler_proxy_(&mock_input_handler_,
+      : input_handler_proxy_(mock_input_handler_,
                              &mock_client_,
                              /*force_input_to_main_thread=*/false) {
     SetScrollPredictionEnabled(true);
@@ -1947,7 +1952,7 @@ class UnifiedScrollingInputHandlerProxyTest : public testing::Test {
   using ReturnedDisposition = base::Optional<EventDisposition>;
 
   UnifiedScrollingInputHandlerProxyTest()
-      : input_handler_proxy_(&mock_input_handler_,
+      : input_handler_proxy_(mock_input_handler_,
                              &mock_client_,
                              /*force_input_to_main_thread=*/false) {}
 
@@ -2421,7 +2426,7 @@ TEST(SynchronousInputHandlerProxyTest, StartupShutdown) {
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
       mock_synchronous_input_handler;
-  InputHandlerProxy proxy(&mock_input_handler, &mock_client, false);
+  InputHandlerProxy proxy(mock_input_handler, &mock_client, false);
 
   // When adding a SynchronousInputHandler, immediately request an
   // UpdateRootLayerStateForSynchronousInputHandler() call.
@@ -2447,7 +2452,7 @@ TEST(SynchronousInputHandlerProxyTest, UpdateRootLayerState) {
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
       mock_synchronous_input_handler;
-  InputHandlerProxy proxy(&mock_input_handler, &mock_client, false);
+  InputHandlerProxy proxy(mock_input_handler, &mock_client, false);
 
   proxy.SetSynchronousInputHandler(&mock_synchronous_input_handler);
 
@@ -2472,7 +2477,7 @@ TEST(SynchronousInputHandlerProxyTest, SetOffset) {
   testing::StrictMock<MockInputHandlerProxyClient> mock_client;
   testing::StrictMock<MockSynchronousInputHandler>
       mock_synchronous_input_handler;
-  InputHandlerProxy proxy(&mock_input_handler, &mock_client, false);
+  InputHandlerProxy proxy(mock_input_handler, &mock_client, false);
 
   proxy.SetSynchronousInputHandler(&mock_synchronous_input_handler);
 
@@ -3834,7 +3839,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
 class InputHandlerProxyForceHandlingOnMainThread : public testing::Test {
  public:
   InputHandlerProxyForceHandlingOnMainThread()
-      : input_handler_proxy_(&mock_input_handler_,
+      : input_handler_proxy_(mock_input_handler_,
                              &mock_client_,
                              /*force_input_to_main_thread=*/true) {
     input_handler_proxy_.set_event_attribution_enabled(false);
@@ -3978,7 +3983,7 @@ TEST_F(InputHandlerProxyForceHandlingOnMainThread, GestureEvents) {
 class InputHandlerProxyMomentumScrollJankTest : public testing::Test {
  public:
   InputHandlerProxyMomentumScrollJankTest()
-      : input_handler_proxy_(&mock_input_handler_,
+      : input_handler_proxy_(mock_input_handler_,
                              &mock_client_,
                              /*force_input_to_main_thread=*/false) {
     tick_clock_.SetNowTicks(base::TimeTicks::Now());

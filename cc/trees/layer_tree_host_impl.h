@@ -105,7 +105,6 @@ class RasterBufferProvider;
 class RenderFrameMetadataObserver;
 class RenderingStatsInstrumentation;
 class ResourcePool;
-class ScrollElasticityHelper;
 class SwapPromise;
 class SwapPromiseMonitor;
 class SynchronousTaskGraphRunner;
@@ -193,8 +192,7 @@ class LayerTreeHostImplClient {
 
 // LayerTreeHostImpl owns the LayerImpl trees as well as associated rendering
 // state.
-class CC_EXPORT LayerTreeHostImpl : public InputHandler,
-                                    public TileManagerClient,
+class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public LayerTreeFrameSinkClient,
                                     public BrowserControlsOffsetManagerClient,
                                     public ScrollbarAnimationControllerClient,
@@ -275,67 +273,22 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
 
   LayerTreeHostImpl& operator=(const LayerTreeHostImpl&) = delete;
 
+  // TODO(bokan): This getter is an escape-hatch for code that hasn't yet been
+  // cleaned up to decouple input from graphics. Callers should be cleaned up
+  // to avoid calling it and it should be removed.
   ThreadedInputHandler& GetInputHandler();
+  const ThreadedInputHandler& GetInputHandler() const;
 
-  // InputHandler implementation
-  void BindToClient(InputHandlerClient* client) override;
-  InputHandler::ScrollStatus ScrollBegin(ScrollState* scroll_state,
-                                         ui::ScrollInputType type) override;
-  InputHandler::ScrollStatus RootScrollBegin(ScrollState* scroll_state,
-                                             ui::ScrollInputType type) override;
-  InputHandlerScrollResult ScrollUpdate(
-      ScrollState* scroll_state,
-      base::TimeDelta delayed_by = base::TimeDelta()) override;
-  void RequestUpdateForSynchronousInputHandler() override;
-  void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::ScrollOffset& root_content_offset) override;
-  void ScrollEnd(bool should_snap = false) override;
-  void RecordScrollBegin(ui::ScrollInputType input_type,
-                         ScrollBeginThreadState scroll_start_state) override;
-  void RecordScrollEnd(ui::ScrollInputType input_type) override;
-
-  InputHandlerPointerResult MouseDown(const gfx::PointF& viewport_point,
-                                      bool shift_modifier) override;
-  InputHandlerPointerResult MouseUp(const gfx::PointF& viewport_point) override;
-  InputHandlerPointerResult MouseMoveAt(
-      const gfx::Point& viewport_point) override;
-  void MouseLeave() override;
-
-  // Returns visible_frame_element_id from the layer hit by the given point.
-  // If the hit test failed, an invalid element ID is returned.
-  ElementId FindFrameElementIdAtPoint(
-      const gfx::PointF& viewport_point) override;
-
-  void PinchGestureBegin() override;
-  void PinchGestureUpdate(float magnify_delta,
-                          const gfx::Point& anchor) override;
-  void PinchGestureEnd(const gfx::Point& anchor, bool snap_to_min) override;
   void StartPageScaleAnimation(const gfx::Vector2d& target_offset,
                                bool anchor_point,
                                float page_scale,
                                base::TimeDelta duration);
-  void SetNeedsAnimateInput() override;
-  bool IsCurrentlyScrollingViewport() const override;
-  EventListenerProperties GetEventListenerProperties(
-      EventListenerClass event_class) const override;
-  InputHandler::TouchStartOrMoveEventListenerType
-  EventListenerTypeForTouchStartOrMoveAt(
-      const gfx::Point& viewport_port,
-      TouchAction* out_touch_action) override;
-  bool HasBlockingWheelEventHandlerAt(
-      const gfx::Point& viewport_point) const override;
+  void SetNeedsAnimateInput();
   std::unique_ptr<SwapPromiseMonitor> CreateLatencyInfoSwapPromiseMonitor(
-      ui::LatencyInfo* latency) override;
+      ui::LatencyInfo* latency);
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
-  GetScopedEventMetricsMonitor(
-      std::unique_ptr<EventMetrics> event_metrics) override;
-  ScrollElasticityHelper* CreateScrollElasticityHelper() override;
-  bool GetScrollOffsetForLayer(ElementId element_id,
-                               gfx::ScrollOffset* offset) override;
-  bool ScrollLayerTo(ElementId element_id,
-                     const gfx::ScrollOffset& offset) override;
-  bool ScrollingShouldSwitchtoMainThread() override;
-  void NotifyInputEvent() override;
+  GetScopedEventMetricsMonitor(std::unique_ptr<EventMetrics> event_metrics);
+  void NotifyInputEvent();
 
   // BrowserControlsOffsetManagerClient implementation.
   float TopControlsHeight() const override;
@@ -393,6 +346,9 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   void SetViewportDamage(const gfx::Rect& damage_rect);
   void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling);
 
+  // Interface for ThreadedInputHandler
+  void BindToInputHandler(
+      std::unique_ptr<InputDelegateForCompositor> delegate) override;
   ScrollTree& GetScrollTree() const override;
   bool HasAnimatedScrollbars() const override;
   // Already overridden for BrowserControlsOffsetManagerClient which declares a
@@ -506,10 +462,6 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
 
   // Resets all of the trees to an empty state.
   void ResetTreesForTesting();
-
-  void set_force_smooth_wheel_scrolling_for_testing(bool enabled) {
-    input_handler_.set_force_smooth_wheel_scrolling_for_testing(enabled);
-  }
 
   size_t SourceAnimationFrameNumberForTesting() const;
 
@@ -662,9 +614,16 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   void QueueSwapPromiseForMainThreadScrollUpdate(
       std::unique_ptr<SwapPromise> swap_promise);
 
+  // TODO(bokan): These input-related methods shouldn't be part of
+  // LayerTreeHostImpl's interface.
+  bool IsPinchGestureActive() const;
   // See comment in equivalent ThreadedInputHandler method for what this means.
   bool IsActivelyPrecisionScrolling() const;
   bool ScrollAffectsScrollHandler() const;
+  void SetExternalPinchGestureActive(bool active);
+  void set_force_smooth_wheel_scrolling_for_testing(bool enabled) {
+    GetInputHandler().set_force_smooth_wheel_scrolling_for_testing(enabled);
+  }
 
   virtual void SetVisible(bool visible);
   bool visible() const { return visible_; }
@@ -734,13 +693,6 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   virtual viz::ResourceId ResourceIdForUIResource(UIResourceId uid) const;
 
   virtual bool IsUIResourceOpaque(UIResourceId uid) const;
-
-  bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
-      const gfx::Vector2dF& natural_displacement_in_viewport,
-      gfx::Vector2dF* out_initial_position,
-      gfx::Vector2dF* out_target_position) override;
-
-  void ScrollEndForSnapFling(bool did_finish) override;
 
   void ScheduleMicroBenchmark(std::unique_ptr<MicroBenchmarkImpl> benchmark);
 
@@ -984,11 +936,9 @@ class CC_EXPORT LayerTreeHostImpl : public InputHandler,
   void LogAverageLagEvents(uint32_t frame_token,
                            const viz::FrameTimingDetails& details);
 
-  // TODO(bokan): Temporary, keep multiple pointers to the input_handler_ while
-  // we decouple this into clean interfaces. Once we're done LTHI should only
-  // talk to InputDelegateForCompositor.
-  InputDelegateForCompositor* input_delegate_;
-  ThreadedInputHandler input_handler_;
+  // Once bound, this instance owns the InputHandler. However, an InputHandler
+  // need not be bound so this should be null-checked before dereferencing.
+  std::unique_ptr<InputDelegateForCompositor> input_delegate_;
 
   const LayerTreeSettings settings_;
 

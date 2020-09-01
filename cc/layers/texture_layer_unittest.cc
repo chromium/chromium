@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"

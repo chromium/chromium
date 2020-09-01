@@ -391,7 +391,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
           std::make_unique<CompositorFrameReportingController>(
               /*should_report_metrics=*/!settings
                   .single_thread_proxy_scheduler)),
-      input_handler_(*this),
       settings_(settings),
       is_synchronous_single_threaded_(!task_runner_provider->HasImplThread() &&
                                       !settings_.single_thread_proxy_scheduler),
@@ -423,9 +422,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
                       compositor_frame_reporting_controller_.get()),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       frame_rate_estimator_(GetTaskRunner()) {
-  // TODO(bokan): Temporary while we decouple input from the layer tree.
-  input_delegate_ = static_cast<InputDelegateForCompositor*>(&input_handler_);
-
   DCHECK(mutator_host_);
   mutator_host_->SetMutatorHostClient(this);
   mutator_events_ = mutator_host_->CreateEvents();
@@ -473,7 +469,8 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   DCHECK(!image_decode_cache_);
   DCHECK(!single_thread_synchronous_task_graph_runner_);
 
-  input_delegate_->WillShutdown();
+  if (input_delegate_)
+    input_delegate_->WillShutdown();
 
   // The layer trees must be destroyed before the LayerTreeHost. Also, if they
   // are holding onto any resources, destroying them will release them, before
@@ -499,7 +496,15 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
 }
 
 ThreadedInputHandler& LayerTreeHostImpl::GetInputHandler() {
-  return input_handler_;
+  DCHECK(input_delegate_) << "Requested InputHandler when one wasn't bound. "
+                             "Call BindToInputHandler to bind to one";
+  return static_cast<ThreadedInputHandler&>(*input_delegate_.get());
+}
+
+const ThreadedInputHandler& LayerTreeHostImpl::GetInputHandler() const {
+  DCHECK(input_delegate_) << "Requested InputHandler when one wasn't bound. "
+                             "Call BindToInputHandler to bind to one";
+  return static_cast<const ThreadedInputHandler&>(*input_delegate_.get());
 }
 
 void LayerTreeHostImpl::WillSendBeginMainFrame() {
@@ -558,7 +563,8 @@ void LayerTreeHostImpl::BeginCommit() {
 void LayerTreeHostImpl::CommitComplete() {
   TRACE_EVENT0("cc", "LayerTreeHostImpl::CommitComplete");
 
-  input_delegate_->DidCommit();
+  if (input_delegate_)
+    input_delegate_->DidCommit();
 
   if (CommitToActiveTree()) {
     active_tree_->HandleScrollbarShowRequestsFromMain();
@@ -868,7 +874,8 @@ void LayerTreeHostImpl::AnimateInternal() {
 
   // TODO(bokan): This should return did_animate, see TODO in
   // ElasticOverscrollController::Animate. crbug.com/551138.
-  input_delegate_->TickAnimations(monotonic_time);
+  if (input_delegate_)
+    input_delegate_->TickAnimations(monotonic_time);
 
   did_animate |= AnimatePageScale(monotonic_time);
   did_animate |= AnimateLayers(monotonic_time, /* is_active_tree */ true);
@@ -878,7 +885,8 @@ void LayerTreeHostImpl::AnimateInternal() {
   if (did_animate) {
     // Animating stuff can change the root scroll offset, so inform the
     // synchronous input handler.
-    input_delegate_->RootLayerStateMayHaveChanged();
+    if (input_delegate_)
+      input_delegate_->RootLayerStateMayHaveChanged();
 
     // If the tree changed, then we want to draw at the end of the current
     // frame.
@@ -949,28 +957,6 @@ void LayerTreeHostImpl::SetNeedsAnimateInput() {
   SetNeedsOneBeginImplFrame();
 }
 
-bool LayerTreeHostImpl::IsCurrentlyScrollingViewport() const {
-  return input_handler_.IsCurrentlyScrollingViewport();
-}
-
-EventListenerProperties LayerTreeHostImpl::GetEventListenerProperties(
-    EventListenerClass event_class) const {
-  return input_handler_.GetEventListenerProperties(event_class);
-}
-
-InputHandler::TouchStartOrMoveEventListenerType
-LayerTreeHostImpl::EventListenerTypeForTouchStartOrMoveAt(
-    const gfx::Point& viewport_point,
-    TouchAction* out_touch_action) {
-  return input_handler_.EventListenerTypeForTouchStartOrMoveAt(
-      viewport_point, out_touch_action);
-}
-
-bool LayerTreeHostImpl::HasBlockingWheelEventHandlerAt(
-    const gfx::Point& viewport_point) const {
-  return input_handler_.HasBlockingWheelEventHandlerAt(viewport_point);
-}
-
 std::unique_ptr<SwapPromiseMonitor>
 LayerTreeHostImpl::CreateLatencyInfoSwapPromiseMonitor(
     ui::LatencyInfo* latency) {
@@ -981,24 +967,6 @@ std::unique_ptr<EventsMetricsManager::ScopedMonitor>
 LayerTreeHostImpl::GetScopedEventMetricsMonitor(
     std::unique_ptr<EventMetrics> event_metrics) {
   return events_metrics_manager_.GetScopedMonitor(std::move(event_metrics));
-}
-
-ScrollElasticityHelper* LayerTreeHostImpl::CreateScrollElasticityHelper() {
-  return input_handler_.CreateScrollElasticityHelper();
-}
-
-bool LayerTreeHostImpl::GetScrollOffsetForLayer(ElementId element_id,
-                                                gfx::ScrollOffset* offset) {
-  return input_handler_.GetScrollOffsetForLayer(element_id, offset);
-}
-
-bool LayerTreeHostImpl::ScrollLayerTo(ElementId element_id,
-                                      const gfx::ScrollOffset& offset) {
-  return input_handler_.ScrollLayerTo(element_id, offset);
-}
-
-bool LayerTreeHostImpl::ScrollingShouldSwitchtoMainThread() {
-  return input_handler_.ScrollingShouldSwitchtoMainThread();
 }
 
 void LayerTreeHostImpl::NotifyInputEvent() {
@@ -1488,7 +1456,8 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
                          TRACE_ID_GLOBAL(CurrentBeginFrameArgs().trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "step", "GenerateRenderPass");
-  input_delegate_->WillDraw();
+  if (input_delegate_)
+    input_delegate_->WillDraw();
 
   // |client_name| is used for various UMA histograms below.
   // GetClientNameForMetrics only returns one non-null value over the lifetime
@@ -2779,7 +2748,8 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
     SetNeedsRedraw();
   }
 
-  input_delegate_->WillBeginImplFrame(args);
+  if (input_delegate_)
+    input_delegate_->WillBeginImplFrame(args);
 
   Animate();
 
@@ -3030,13 +3000,29 @@ const ScrollNode* LayerTreeHostImpl::CurrentlyScrollingNode() const {
   return active_tree()->CurrentlyScrollingNode();
 }
 
+bool LayerTreeHostImpl::IsPinchGestureActive() const {
+  if (!input_delegate_)
+    return false;
+  return GetInputHandler().pinch_gesture_active();
+}
+
 bool LayerTreeHostImpl::IsActivelyPrecisionScrolling() const {
+  if (!input_delegate_)
+    return false;
   return input_delegate_->IsActivelyPrecisionScrolling();
 }
 
 bool LayerTreeHostImpl::ScrollAffectsScrollHandler() const {
+  if (!input_delegate_)
+    return false;
   return settings_.enable_synchronized_scrolling &&
          scroll_affects_scroll_handler_;
+}
+
+void LayerTreeHostImpl::SetExternalPinchGestureActive(bool active) {
+  DCHECK(input_delegate_ || !active);
+  if (input_delegate_)
+    GetInputHandler().set_external_pinch_gesture_active(active);
 }
 
 void LayerTreeHostImpl::CreatePendingTree() {
@@ -3187,7 +3173,8 @@ void LayerTreeHostImpl::ActivateSyncTree() {
                             pending_page_scale_animation->duration);
   }
 
-  input_delegate_->DidActivatePendingTree();
+  if (input_delegate_)
+    input_delegate_->DidActivatePendingTree();
 
   // Update the child's LocalSurfaceId.
   if (active_tree()->local_surface_id_allocation_from_parent().IsValid()) {
@@ -3736,23 +3723,6 @@ gfx::ScrollOffset LayerTreeHostImpl::ViewportScrollOffset() const {
   return viewport_->TotalScrollOffset();
 }
 
-void LayerTreeHostImpl::BindToClient(InputHandlerClient* client) {
-  input_handler_.BindToClient(client);
-}
-
-InputHandler::ScrollStatus LayerTreeHostImpl::RootScrollBegin(
-    ScrollState* scroll_state,
-    ui::ScrollInputType type) {
-  return input_handler_.RootScrollBegin(scroll_state, type);
-}
-
-InputHandler::ScrollStatus LayerTreeHostImpl::ScrollBegin(
-    ScrollState* scroll_state,
-    ui::ScrollInputType type) {
-  return input_handler_.ScrollBegin(scroll_state, type);
-}
-
-
 bool LayerTreeHostImpl::AutoScrollAnimationCreate(const ScrollNode& scroll_node,
                                                   const gfx::Vector2dF& delta,
                                                   float autoscroll_velocity) {
@@ -3824,12 +3794,6 @@ void LayerTreeHostImpl::SetRenderFrameObserver(
   render_frame_metadata_observer_->BindToCurrentThread();
 }
 
-InputHandlerScrollResult LayerTreeHostImpl::ScrollUpdate(
-    ScrollState* scroll_state,
-    base::TimeDelta delayed_by) {
-  return input_handler_.ScrollUpdate(scroll_state, delayed_by);
-}
-
 void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {
   // Flash the overlay scrollbar even if the scroll delta is 0.
   if (settings().scrollbar_flash_after_any_scroll_update) {
@@ -3874,57 +3838,9 @@ float LayerTreeHostImpl::PageScaleFactor() const {
   return active_tree_->page_scale_factor_for_scroll();
 }
 
-void LayerTreeHostImpl::RequestUpdateForSynchronousInputHandler() {
-  input_handler_.RequestUpdateForSynchronousInputHandler();
-}
-
-void LayerTreeHostImpl::SetSynchronousInputHandlerRootScrollOffset(
-    const gfx::ScrollOffset& root_content_offset) {
-  input_handler_.SetSynchronousInputHandlerRootScrollOffset(
-      root_content_offset);
-}
-
-bool LayerTreeHostImpl::GetSnapFlingInfoAndSetAnimatingSnapTarget(
-    const gfx::Vector2dF& natural_displacement_in_viewport,
-    gfx::Vector2dF* out_initial_position,
-    gfx::Vector2dF* out_target_position) {
-  return input_handler_.GetSnapFlingInfoAndSetAnimatingSnapTarget(
-      natural_displacement_in_viewport, out_initial_position,
-      out_target_position);
-}
-
-void LayerTreeHostImpl::ScrollEndForSnapFling(bool did_finish) {
-  input_handler_.ScrollEndForSnapFling(did_finish);
-}
-
-void LayerTreeHostImpl::ScrollEnd(bool should_snap) {
-  input_handler_.ScrollEnd(should_snap);
-}
-
-void LayerTreeHostImpl::RecordScrollBegin(
-    ui::ScrollInputType input_type,
-    ScrollBeginThreadState scroll_start_state) {
-  input_handler_.RecordScrollBegin(input_type, scroll_start_state);
-}
-
-void LayerTreeHostImpl::RecordScrollEnd(ui::ScrollInputType input_type) {
-  input_handler_.RecordScrollEnd(input_type);
-}
-
-InputHandlerPointerResult LayerTreeHostImpl::MouseDown(
-    const gfx::PointF& viewport_point,
-    bool shift_modifier) {
-  return input_handler_.MouseDown(viewport_point, shift_modifier);
-}
-
-InputHandlerPointerResult LayerTreeHostImpl::MouseUp(
-    const gfx::PointF& viewport_point) {
-  return input_handler_.MouseUp(viewport_point);
-}
-
-InputHandlerPointerResult LayerTreeHostImpl::MouseMoveAt(
-    const gfx::Point& viewport_point) {
-  return input_handler_.MouseMoveAt(viewport_point);
+void LayerTreeHostImpl::BindToInputHandler(
+    std::unique_ptr<InputDelegateForCompositor> delegate) {
+  input_delegate_ = std::move(delegate);
 }
 
 ScrollTree& LayerTreeHostImpl::GetScrollTree() const {
@@ -3933,29 +3849,6 @@ ScrollTree& LayerTreeHostImpl::GetScrollTree() const {
 
 bool LayerTreeHostImpl::HasAnimatedScrollbars() const {
   return !scrollbar_animation_controllers_.empty();
-}
-
-void LayerTreeHostImpl::MouseLeave() {
-  input_handler_.MouseLeave();
-}
-
-ElementId LayerTreeHostImpl::FindFrameElementIdAtPoint(
-    const gfx::PointF& viewport_point) {
-  return input_handler_.FindFrameElementIdAtPoint(viewport_point);
-}
-
-void LayerTreeHostImpl::PinchGestureBegin() {
-  input_handler_.PinchGestureBegin();
-}
-
-void LayerTreeHostImpl::PinchGestureUpdate(float magnify_delta,
-                                           const gfx::Point& anchor) {
-  input_handler_.PinchGestureUpdate(magnify_delta, anchor);
-}
-
-void LayerTreeHostImpl::PinchGestureEnd(const gfx::Point& anchor,
-                                        bool snap_to_min) {
-  input_handler_.PinchGestureEnd(anchor, snap_to_min);
 }
 
 void LayerTreeHostImpl::CollectScrollbarUpdatesForCommit(
@@ -3971,7 +3864,8 @@ std::unique_ptr<CompositorCommitData>
 LayerTreeHostImpl::ProcessCompositorDeltas() {
   auto commit_data = std::make_unique<CompositorCommitData>();
 
-  input_delegate_->ProcessCommitDeltas(commit_data.get());
+  if (input_delegate_)
+    input_delegate_->ProcessCommitDeltas(commit_data.get());
   CollectScrollbarUpdatesForCommit(commit_data.get());
 
   commit_data->page_scale_delta =
@@ -4143,7 +4037,8 @@ void LayerTreeHostImpl::RegisterScrollbarAnimationController(
 void LayerTreeHostImpl::DidUnregisterScrollbarLayer(
     ElementId scroll_element_id) {
   scrollbar_animation_controllers_.erase(scroll_element_id);
-  input_delegate_->DidUnregisterScrollbar(scroll_element_id);
+  if (input_delegate_)
+    input_delegate_->DidUnregisterScrollbar(scroll_element_id);
 }
 
 ScrollbarAnimationController*
@@ -4796,7 +4691,8 @@ void LayerTreeHostImpl::AnimationScalesChanged(ElementId element_id,
 }
 
 void LayerTreeHostImpl::ScrollOffsetAnimationFinished() {
-  input_delegate_->ScrollOffsetAnimationFinished();
+  if (input_delegate_)
+    input_delegate_->ScrollOffsetAnimationFinished();
 }
 
 void LayerTreeHostImpl::NotifyAnimationWorkletStateChange(

@@ -548,7 +548,13 @@ class LayerTreeHostForTesting : public LayerTreeHost {
             rendering_stats_instrumentation(), image_worker_task_runner_);
 
     host_impl->InitializeUkm(ukm_recorder_factory_->CreateRecorder());
-    input_handler_weak_ptr_ = host_impl->AsWeakPtr();
+    compositor_delegate_weak_ptr_ = host_impl->AsWeakPtr();
+
+    // Many tests using this class are specifically meant as input tests so
+    // we'll need an input handler. Ideally these would be split out into a
+    // separate test harness.
+    InputHandler::Create(*compositor_delegate_weak_ptr_);
+
     return host_impl;
   }
 

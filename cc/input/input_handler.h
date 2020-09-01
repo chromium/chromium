@@ -36,6 +36,7 @@ class LatencyInfo;
 namespace cc {
 
 class EventMetrics;
+class CompositorDelegateForInput;
 class ScrollElasticityHelper;
 
 enum class PointerResultType { kUnhandled = 0, kScrollbarScroll };
@@ -150,12 +151,26 @@ struct InputHandlerCommitData {
   bool has_scrolled_by_precisiontouchpad = false;
 };
 
-// The InputHandler is a way for the embedders to interact with the impl thread
-// side of the compositor implementation. There is one InputHandler per
-// LayerTreeHost. To use the input handler, implement the InputHanderClient
-// interface and bind it to the handler on the compositor thread.
+// The InputHandler interface is a way for the embedders to interact with the
+// input system running on the compositor thread. Each instance of a compositor
+// (i.e. a LayerTreeHostImpl) is associated with one InputHandler instance. The
+// InputHandler sits in between the embedder (the UI compositor or Blink) and
+// the compositor (LayerTreeHostImpl); as such, it must be bound to both.
+//
+// To use the input handler, instantiate it by passing in the compositor's
+// CompositorDelegateForInput to the Create factory method. The compositor
+// assumes ownership of the InputHandler and will bind itself. Then, implement
+// the InputHandlerClient interface and bind it to the handler by calling
+// BindToClient on the input handler. This should all be done on the
+// input-handling thread (i.e. the "compositor" thread if one exists).
 class CC_EXPORT InputHandler {
  public:
+  // Creates an instance of the InputHandler and binds it to the layer tree
+  // delegate. The delegate owns the InputHandler so their lifetimes
+  // are tied together, hence, this returns a WeakPtr.
+  static base::WeakPtr<InputHandler> Create(
+      CompositorDelegateForInput& compositor_delegate);
+
   // Note these are used in a histogram. Do not reorder or delete existing
   // entries.
   enum class ScrollThread {
@@ -196,6 +211,8 @@ class CC_EXPORT InputHandler {
     HANDLER,
     HANDLER_ON_SCROLLING_LAYER
   };
+
+  virtual base::WeakPtr<InputHandler> AsWeakPtr() const = 0;
 
   // Binds a client to this handler to receive notifications. Only one client
   // can be bound to an InputHandler. The client must live at least until the
@@ -238,7 +255,7 @@ class CC_EXPORT InputHandler {
   // returned SCROLL_STARTED. No-op if ScrollBegin wasn't called or didn't
   // result in a successful scroll latch. Snap to a snap position if
   // |should_snap| is true.
-  virtual void ScrollEnd(bool should_snap) = 0;
+  virtual void ScrollEnd(bool should_snap = false) = 0;
 
   // Called to notify every time scroll-begin/end is attempted by an input
   // event.
@@ -350,8 +367,8 @@ class CC_EXPORT InputHandler {
   virtual void NotifyInputEvent() = 0;
 
  protected:
-  InputHandler() = default;
   virtual ~InputHandler() = default;
+  InputHandler() = default;
 };
 
 }  // namespace cc

@@ -38,59 +38,69 @@ class ScrollTree;
 class SwapPromiseMonitor;
 class Viewport;
 
-class CC_EXPORT ThreadedInputHandler : public InputDelegateForCompositor {
+class CC_EXPORT ThreadedInputHandler : public InputHandler,
+                                       public InputDelegateForCompositor {
  public:
   explicit ThreadedInputHandler(
       CompositorDelegateForInput& compositor_delegate);
-  ~ThreadedInputHandler();
+  ~ThreadedInputHandler() override;
 
   // =========== InputHandler "Interface" - will override in a future CL
-  void BindToClient(InputHandlerClient* client);
+  base::WeakPtr<InputHandler> AsWeakPtr() const override;
+  void BindToClient(InputHandlerClient* client) override;
   InputHandler::ScrollStatus ScrollBegin(ScrollState* scroll_state,
-                                         ui::ScrollInputType type);
+                                         ui::ScrollInputType type) override;
   InputHandler::ScrollStatus RootScrollBegin(ScrollState* scroll_state,
-                                             ui::ScrollInputType type);
+                                             ui::ScrollInputType type) override;
   InputHandlerScrollResult ScrollUpdate(
       ScrollState* scroll_state,
-      base::TimeDelta delayed_by = base::TimeDelta());
-  void ScrollEnd(bool should_snap = false);
+      base::TimeDelta delayed_by = base::TimeDelta()) override;
+  void ScrollEnd(bool should_snap = false) override;
   void RecordScrollBegin(ui::ScrollInputType input_type,
-                         ScrollBeginThreadState scroll_start_state);
-  void RecordScrollEnd(ui::ScrollInputType input_type);
-  InputHandlerPointerResult MouseMoveAt(const gfx::Point& viewport_point);
+                         ScrollBeginThreadState scroll_start_state) override;
+  void RecordScrollEnd(ui::ScrollInputType input_type) override;
+  InputHandlerPointerResult MouseMoveAt(
+      const gfx::Point& viewport_point) override;
   InputHandlerPointerResult MouseDown(const gfx::PointF& viewport_point,
-                                      bool shift_modifier);
-  InputHandlerPointerResult MouseUp(const gfx::PointF& viewport_point);
-  void MouseLeave();
-  ElementId FindFrameElementIdAtPoint(const gfx::PointF& viewport_point);
-  void RequestUpdateForSynchronousInputHandler();
+                                      bool shift_modifier) override;
+  InputHandlerPointerResult MouseUp(const gfx::PointF& viewport_point) override;
+  void MouseLeave() override;
+  ElementId FindFrameElementIdAtPoint(
+      const gfx::PointF& viewport_point) override;
+  void RequestUpdateForSynchronousInputHandler() override;
   void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::ScrollOffset& root_content_offset);
-  void PinchGestureBegin();
-  void PinchGestureUpdate(float magnify_delta, const gfx::Point& anchor);
-  void PinchGestureEnd(const gfx::Point& anchor, bool snap_to_min);
-  void SetNeedsAnimateInput();
-  bool IsCurrentlyScrollingViewport() const;
+      const gfx::ScrollOffset& root_content_offset) override;
+  void PinchGestureBegin() override;
+  void PinchGestureUpdate(float magnify_delta,
+                          const gfx::Point& anchor) override;
+  void PinchGestureEnd(const gfx::Point& anchor, bool snap_to_min) override;
+  void SetNeedsAnimateInput() override;
+  bool IsCurrentlyScrollingViewport() const override;
   EventListenerProperties GetEventListenerProperties(
-      EventListenerClass event_class) const;
-  bool HasBlockingWheelEventHandlerAt(const gfx::Point& viewport_point) const;
+      EventListenerClass event_class) const override;
+  bool HasBlockingWheelEventHandlerAt(
+      const gfx::Point& viewport_point) const override;
   InputHandler::TouchStartOrMoveEventListenerType
-  EventListenerTypeForTouchStartOrMoveAt(const gfx::Point& viewport_port,
-                                         TouchAction* out_touch_action);
+  EventListenerTypeForTouchStartOrMoveAt(
+      const gfx::Point& viewport_port,
+      TouchAction* out_touch_action) override;
   std::unique_ptr<SwapPromiseMonitor> CreateLatencyInfoSwapPromiseMonitor(
-      ui::LatencyInfo* latency);
+      ui::LatencyInfo* latency) override;
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
-  GetScopedEventMetricsMonitor(std::unique_ptr<EventMetrics> event_metrics);
-  ScrollElasticityHelper* CreateScrollElasticityHelper();
-  bool GetScrollOffsetForLayer(ElementId element_id, gfx::ScrollOffset* offset);
-  bool ScrollLayerTo(ElementId element_id, const gfx::ScrollOffset& offset);
-  bool ScrollingShouldSwitchtoMainThread();
+  GetScopedEventMetricsMonitor(
+      std::unique_ptr<EventMetrics> event_metrics) override;
+  ScrollElasticityHelper* CreateScrollElasticityHelper() override;
+  bool GetScrollOffsetForLayer(ElementId element_id,
+                               gfx::ScrollOffset* offset) override;
+  bool ScrollLayerTo(ElementId element_id,
+                     const gfx::ScrollOffset& offset) override;
+  bool ScrollingShouldSwitchtoMainThread() override;
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement_in_viewport,
       gfx::Vector2dF* out_initial_position,
-      gfx::Vector2dF* out_target_position);
-  void ScrollEndForSnapFling(bool did_finish);
-  void NotifyInputEvent();
+      gfx::Vector2dF* out_target_position) override;
+  void ScrollEndForSnapFling(bool did_finish) override;
+  void NotifyInputEvent() override;
 
   // =========== InputDelegateForCompositor Interface - This section implements
   // the interface that LayerTreeHostImpl uses to communicate with the input
@@ -419,6 +429,10 @@ class CC_EXPORT ThreadedInputHandler : public InputDelegateForCompositor {
   bool has_scrolled_by_wheel_ = false;
   bool has_scrolled_by_touch_ = false;
   bool has_scrolled_by_precisiontouchpad_ = false;
+
+  // Must be the last member to ensure this is destroyed first in the
+  // destruction order and invalidates all weak pointers.
+  base::WeakPtrFactory<ThreadedInputHandler> weak_factory_{this};
 };
 
 }  // namespace cc

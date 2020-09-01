@@ -5,6 +5,8 @@
 #ifndef CC_INPUT_COMPOSITOR_INPUT_INTERFACES_H_
 #define CC_INPUT_COMPOSITOR_INPUT_INTERFACES_H_
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "cc/paint/element_id.h"
 
@@ -30,6 +32,8 @@ class ScrollTree;
 // input handler.
 class InputDelegateForCompositor {
  public:
+  virtual ~InputDelegateForCompositor() = default;
+
   // Called during a commit to fill in the changes that have occurred since the
   // last commit.
   virtual void ProcessCommitDeltas(CompositorCommitData* commit_data) = 0;
@@ -82,6 +86,11 @@ class InputDelegateForCompositor {
 // handler.
 class CompositorDelegateForInput {
  public:
+  virtual ~CompositorDelegateForInput() = default;
+
+  virtual void BindToInputHandler(
+      std::unique_ptr<InputDelegateForCompositor> delegate) = 0;
+
   virtual ScrollTree& GetScrollTree() const = 0;
   virtual bool HasAnimatedScrollbars() const = 0;
   virtual void SetNeedsCommit() = 0;
