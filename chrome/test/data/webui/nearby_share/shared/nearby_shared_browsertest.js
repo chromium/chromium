@@ -79,6 +79,25 @@ TEST_F('NearbyVisibilityPageTest', 'All', () => mocha.run());
 /**
  * @extends {NearbySharedBrowserTest}
  */
+var NearbyPageTemplateTest = class extends NearbySharedBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'shared/nearby_page_template.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      'nearby_page_template_test.js',
+    ]);
+  }
+};
+
+TEST_F('NearbyPageTemplateTest', 'All', () => mocha.run());
+
+/**
+ * @extends {NearbySharedBrowserTest}
+ */
 var NearbyContactVisibilityTest = class extends NearbySharedBrowserTest {
   /** @override */
   get browsePreload() {

@@ -21,6 +21,10 @@
                file="nearby_onboarding_page.html" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_ONBOARDING_PAGE_JS"
                file="nearby_onboarding_page.js" type="BINDATA" compress="false"/>
+      <include name="IDR_NEARBY_PAGE_TEMPLATE_HTML"
+               file="nearby_page_template.html" type="BINDATA" compress="false"/>
+      <include name="IDR_NEARBY_PAGE_TEMPLATE_JS"
+               file="nearby_page_template.js" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_SHARE_SETTINGS_HTML"
                file="nearby_share_settings.html" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_SHARE_SETTINGS_JS"

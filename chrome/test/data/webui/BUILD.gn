@@ -219,6 +219,7 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/fake_nearby_share_settings.m.js",
       "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_contact_visibility_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_onboarding_page_test.m.js",
+      "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_page_template_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_visibility_page_test.m.js",
       "$root_gen_dir/chrome/test/data/webui/resources/list_property_update_behavior_tests.m.js",
       "$root_gen_dir/chrome/test/data/webui/settings/fake_input_method_private.m.js",

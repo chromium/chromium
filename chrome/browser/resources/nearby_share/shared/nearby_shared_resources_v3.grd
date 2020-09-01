@@ -19,6 +19,9 @@
       <include name="IDR_NEARBY_ONBOARDING_PAGE_M_JS"
                file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_onboarding_page.m.js"
                use_base_dir="false" type="BINDATA" compress="false"/>
+      <include name="IDR_NEARBY_PAGE_TEMPLATE_M_JS"
+               file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_page_template.m.js"
+               use_base_dir="false" type="BINDATA" compress="false"/>
       <include name="IDR_NEARBY_SHARE_SETTINGS_M_JS"
                file="${root_gen_dir}/chrome/browser/resources/nearby_share/shared/nearby_share_settings.m.js"
                use_base_dir="false" type="BINDATA" compress="false"/>

@@ -1,0 +1,83 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+
+<dom-module id="nearby-page-template">
+  <template>
+    <style include="cr-icons cr-shared-style"></style>
+    <style>
+      :host {
+        --nearby-page-space-block: 24px;
+        --nearby-page-space-inline: 24px;
+      }
+
+      #pageContainer {
+        display: flex;
+        flex-direction: column;
+        height: 385px;
+        padding-block-end: var(--nearby-page-space-block);
+        padding-block-start: var(--nearby-page-space-block);
+      }
+
+      #header {
+        margin-inline-end:  var(--nearby-page-space-inline);
+        margin-inline-start: var(--nearby-page-space-inline);
+      }
+
+      #contentContainer {
+        box-sizing: border-box;
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      #pageTitle {
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+
+      #actions {
+        padding-block-start: var(--nearby-page-space-block);
+        padding-inline-end:  var(--nearby-page-space-inline);
+        padding-inline-start: var(--nearby-page-space-inline);
+        text-align: end;
+      }
+
+      #utilityButton {
+        margin-inline-end: auto;
+      }
+    </style>
+    <div id="pageContainer">
+      <div id="header">
+        <div id="pageTitle">[[title]]</div>
+        <div id="pageSubTitle">[[subTitle]]</div>
+      </div>
+
+      <div id="contentContainer">
+        <slot name="content"></slot>
+      </div>
+
+      <div id="actions">
+        <template is="dom-if" if="[[utilityButtonLabel]]">
+          <cr-button id="utilityButton" class="cancel-button"
+              on-click="onUtilityClick_">
+            [[utilityButtonLabel]]
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[cancelButtonLabel]]">
+          <cr-button id="cancelButton" class="cancel-button"
+              on-click="onCancelClick_">
+            [[cancelButtonLabel]]
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[actionButtonLabel]]">
+          <cr-button id="actionButton" class="action-button"
+              on-click="onActionClick_">
+            [[actionButtonLabel]]
+          </cr-button>
+        </template>
+      </div>
+    </div>
+  </template>
+  <script src="nearby_page_template.js"></script>
+</dom-module>
