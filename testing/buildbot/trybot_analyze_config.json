@@ -22,7 +22,6 @@
       "build/vs_toolchain.py",
       "infra/scripts/.*",
       "DEPS",
-      "testing/buildbot/.*json",
       "testing/merge_scripts/.*",
       "testing/scripts/.*",
       "testing/test_env.py",
