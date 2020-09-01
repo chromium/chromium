@@ -41372,6 +41372,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Discarding.WinOSPressureSignals.AvailableMemoryMbOnLowMemoryNotification"
+    units="MB" expires_after="2021-01-31">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The amount of physical memory available when receiving a low memory
+    notification, in megabytes. Windows 8.1+ only.
+  </summary>
+</histogram>
+
+<histogram name="Discarding.WinOSPressureSignals.LowMemorySessionLength"
+    units="ms" expires_after="2021-01-31">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time it takes to receive a high memory notification from the OS after
+    receiving a low memory notification. Windows 8.1+ only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Discarding.WinOSPressureSignals.PressureLevelOnLowMemoryNotification"
+    enum="MemoryPressureLevel" expires_after="2021-01-31">
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The memory pressure level when receiving a low memory notification from the
+    OS. Windows 8.1+ only.
+  </summary>
+</histogram>
+
 <histogram name="DiskBasedCertCache.CertIo" enum="CertificateChainPosition"
     expires_after="2016-01-25">
   <obsolete>
