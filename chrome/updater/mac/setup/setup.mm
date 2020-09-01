@@ -33,6 +33,8 @@ namespace updater {
 
 namespace {
 
+constexpr char kLoggingModuleSwitchValue[] = "*/updater/*=2";
+
 #pragma mark Helpers
 const base::FilePath GetUpdateFolderName() {
   return base::FilePath(COMPANY_SHORTNAME_STRING)
@@ -113,6 +115,11 @@ NSString* MakeProgramArgument(const char* argument) {
   return base::SysUTF8ToNSString(base::StrCat({"--", argument}));
 }
 
+NSString* MakeProgramArgumentWithValue(const char* argument,
+                                       const char* value) {
+  return base::SysUTF8ToNSString(base::StrCat({"--", argument, "=", value}));
+}
+
 base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
     const base::FilePath& updater_path) {
   // See the man page for launchd.plist.
@@ -121,7 +128,10 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateServiceLaunchdPlist(
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
       base::SysUTF8ToNSString(updater_path.value()),
       MakeProgramArgument(kServerSwitch),
-      @"--vmodule=*/updater/*=2",
+      MakeProgramArgumentWithValue(kServerServiceSwitch,
+                                   kServerUpdateServiceSwitchValue),
+      MakeProgramArgumentWithValue(kLoggingModuleSwitch,
+                                   kLoggingModuleSwitchValue),
     ],
     @LAUNCH_JOBKEY_MACHSERVICES : @{GetServiceMachName() : @YES},
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,
@@ -166,7 +176,10 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateControlLaunchdPlist(
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
       base::SysUTF8ToNSString(updater_path.value()),
       MakeProgramArgument(kServerSwitch),
-      @"--vmodule=*/updater/*=2",
+      MakeProgramArgumentWithValue(kServerServiceSwitch,
+                                   kServerControlServiceSwitchValue),
+      MakeProgramArgumentWithValue(kLoggingModuleSwitch,
+                                   kLoggingModuleSwitchValue),
     ],
     @LAUNCH_JOBKEY_MACHSERVICES : @{GetVersionedServiceMachName() : @YES},
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @NO,

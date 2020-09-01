@@ -8,6 +8,7 @@
 #include <xpc/xpc.h>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
@@ -19,6 +20,7 @@
 #import "chrome/updater/app/server/mac/app_server.h"
 #include "chrome/updater/app/server/mac/service_delegate.h"
 #include "chrome/updater/configurator.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/control_service_in_process.h"
 #include "chrome/updater/mac/setup/setup.h"
 #import "chrome/updater/mac/xpc_service_names.h"
@@ -43,32 +45,49 @@ void AppServerMac::Uninitialize() {
 
 void AppServerMac::ActiveDuty() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (!command_line.HasSwitch(kServerServiceSwitch)) {
+    LOG(ERROR) << "Command line is missing " << kServerServiceSwitch
+               << " switch.";
+    return;
+  }
+  std::string service = command_line.GetSwitchValueASCII(kServerServiceSwitch);
 
-  @autoreleasepool {
-    // Sets up a listener and delegate for the CRUUpdateChecking XPC
-    // connection
-    update_check_delegate_.reset([[CRUUpdateCheckServiceXPCDelegate alloc]
-        initWithUpdateService:base::MakeRefCounted<UpdateServiceInProcess>(
-                                  config_)
-                    appServer:scoped_refptr<AppServerMac>(this)]);
+  if (service == kServerControlServiceSwitchValue) {
+    @autoreleasepool {
+      // Sets up a listener and delegate for the CRUControlling XPC connection.
+      control_service_delegate_.reset([[CRUControlServiceXPCDelegate alloc]
+          initWithControlService:base::MakeRefCounted<ControlServiceInProcess>(
+                                     config_)
+                       appServer:scoped_refptr<AppServerMac>(this)]);
 
-    update_check_listener_.reset([[NSXPCListener alloc]
-        initWithMachServiceName:GetServiceMachName().get()]);
-    update_check_listener_.get().delegate = update_check_delegate_.get();
+      control_service_listener_.reset([[NSXPCListener alloc]
+          initWithMachServiceName:GetVersionedServiceMachName().get()]);
+      control_service_listener_.get().delegate =
+          control_service_delegate_.get();
 
-    [update_check_listener_ resume];
+      [control_service_listener_ resume];
+    }
+  } else if (service == kServerUpdateServiceSwitchValue) {
+    @autoreleasepool {
+      // Sets up a listener and delegate for the CRUUpdateChecking XPC
+      // connection.
+      update_check_delegate_.reset([[CRUUpdateCheckServiceXPCDelegate alloc]
+          initWithUpdateService:base::MakeRefCounted<UpdateServiceInProcess>(
+                                    config_)
+                      appServer:scoped_refptr<AppServerMac>(this)]);
 
-    // Sets up a listener and delegate for the CRUControlling XPC connection
-    control_service_delegate_.reset([[CRUControlServiceXPCDelegate alloc]
-        initWithControlService:base::MakeRefCounted<ControlServiceInProcess>(
-                                   config_)
-                     appServer:scoped_refptr<AppServerMac>(this)]);
+      update_check_listener_.reset([[NSXPCListener alloc]
+          initWithMachServiceName:GetServiceMachName().get()]);
+      update_check_listener_.get().delegate = update_check_delegate_.get();
 
-    control_service_listener_.reset([[NSXPCListener alloc]
-        initWithMachServiceName:GetVersionedServiceMachName().get()]);
-    control_service_listener_.get().delegate = control_service_delegate_.get();
-
-    [control_service_listener_ resume];
+      [update_check_listener_ resume];
+    }
+  } else {
+    LOG(ERROR) << "Unexpected value of command line switch "
+               << kServerServiceSwitch << ": " << service;
+    return;
   }
 }
 

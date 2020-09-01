@@ -30,6 +30,10 @@ const char kAppIdSwitch[] = "app-id";
 const char kAppVersionSwitch[] = "app-version";
 const char kWakeSwitch[] = "wake";
 
+const char kServerServiceSwitch[] = "service";
+const char kServerControlServiceSwitchValue[] = "control";
+const char kServerUpdateServiceSwitchValue[] = "update";
+
 #if defined(OS_WIN)
 const char kInstallFromOutDir[] = "install-from-out-dir";
 #endif  // OS_WIN

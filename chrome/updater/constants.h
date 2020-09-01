@@ -38,6 +38,13 @@ extern const char kNullVersion[];
 //   (say, read-only) functionality for that same set of interfaces.
 extern const char kServerSwitch[];
 
+// This switch specifies the XPC service the server registers to listen to.
+extern const char kServerServiceSwitch[];
+
+// Valid values for the kServerServiceSwitch.
+extern const char kServerControlServiceSwitchValue[];
+extern const char kServerUpdateServiceSwitchValue[];
+
 // This switch starts the COM service. This switch is invoked by the Service
 // Manager when CoCreate is called on one of several CLSIDs that the server
 // supports.
