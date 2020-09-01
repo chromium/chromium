@@ -57,7 +57,7 @@ LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     // shouldn't have any negative impact on LayoutNG, and in the legacy engine,
     // a fieldset isn't allowed to be a multicol container anyway.
     if (curr->IsHTMLLegendElement() && !curr->IsOutOfFlowPositioned() &&
-        curr->Parent()->IsLayoutFlowThread())
+        !curr->IsColumnSpanAll() && curr->Parent()->IsLayoutFlowThread())
       return ToLayoutFlowThread(curr->Parent());
     if (curr->IsLayoutFlowThread())
       return ToLayoutFlowThread(curr);
