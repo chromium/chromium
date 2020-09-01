@@ -44,10 +44,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string input = data_provider.ConsumeRemainingBytesAsString();
 
   std::string result;
-  net::SniffMimeType(input.data(), input.length(), GURL(url_string),
-                     mime_type_hint, force_sniff_file_urls_for_html, &result);
+  net::SniffMimeType(input, GURL(url_string), mime_type_hint,
+                     force_sniff_file_urls_for_html, &result);
 
-  net::SniffMimeTypeFromLocalData(input.data(), input.length(), &result);
+  net::SniffMimeTypeFromLocalData(input, &result);
 
   return 0;
 }

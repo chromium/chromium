@@ -72,7 +72,7 @@ const char kRepresentativePlainText[] =
 void RunLooksLikeBinary(const std::string& plaintext, size_t iterations) {
   bool looks_like_binary = false;
   for (size_t i = 0; i < iterations; ++i) {
-    if (LooksLikeBinary(plaintext.data(), plaintext.size()))
+    if (LooksLikeBinary(plaintext))
       looks_like_binary = true;
   }
   CHECK(!looks_like_binary);
