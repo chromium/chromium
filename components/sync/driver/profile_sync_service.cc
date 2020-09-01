@@ -21,6 +21,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -45,6 +46,7 @@
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/sync_error.h"
 #include "components/version_info/version_info_values.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -252,7 +254,12 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
       start_behavior_(init_params.start_behavior),
       passphrase_prompt_triggered_by_version_(false),
       is_stopping_and_clearing_(false),
-      should_record_trusted_vault_error_shown_on_startup_(true) {
+      should_record_trusted_vault_error_shown_on_startup_(true),
+#if defined(OS_ANDROID)
+      sessions_invalidations_enabled_(false) {
+#else
+      sessions_invalidations_enabled_(true) {
+#endif
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_client_);
   DCHECK(IsLocalSyncEnabled() || identity_manager_ != nullptr);
@@ -1337,18 +1344,14 @@ void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
   DCHECK(!configure_context.cache_guid.empty());
   DCHECK_NE(configure_context.reason, CONFIGURE_REASON_UNKNOWN);
 
-  // Note: When local Sync is enabled, then we want full-sync mode (not just
-  // transport), even though Sync-the-feature is not considered enabled.
-  bool use_transport_only_mode =
-      !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
+  const bool use_transport_only_mode = UseTransportOnlyMode();
 
-  ModelTypeSet types = GetPreferredDataTypes();
-  // In transport-only mode, only a subset of data types is supported.
   if (use_transport_only_mode) {
-    types = Intersection(types, GetModelTypesForTransportOnlyMode());
     configure_context.sync_mode = SyncMode::kTransportOnly;
   }
-  data_type_manager_->Configure(types, configure_context);
+  data_type_manager_->Configure(GetDataTypesToConfigure(), configure_context);
+
+  UpdateDataTypesForInvalidations();
 
   // Record in UMA whether we're configuring the full Sync feature or only the
   // transport.
@@ -1376,6 +1379,12 @@ void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
       }
     }
   }
+}
+
+bool ProfileSyncService::UseTransportOnlyMode() const {
+  // Note: When local Sync is enabled, then we want full-sync mode (not just
+  // transport), even though Sync-the-feature is not considered enabled.
+  return !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
 }
 
 ModelTypeSet ProfileSyncService::GetModelTypesForTransportOnlyMode() const {
@@ -1419,6 +1428,30 @@ ModelTypeSet ProfileSyncService::GetModelTypesForTransportOnlyMode() const {
 #endif  // defined(OS_CHROMEOS)
 
   return allowed_types;
+}
+
+ModelTypeSet ProfileSyncService::GetDataTypesToConfigure() const {
+  ModelTypeSet types = GetPreferredDataTypes();
+  // In transport-only mode, only a subset of data types is supported.
+  if (UseTransportOnlyMode()) {
+    types = Intersection(types, GetModelTypesForTransportOnlyMode());
+  }
+  return types;
+}
+
+void ProfileSyncService::UpdateDataTypesForInvalidations() {
+  SyncInvalidationsService* invalidations_service =
+      sync_client_->GetSyncInvalidationsService();
+  if (!invalidations_service) {
+    return;
+  }
+
+  // No need to register invalidations for commit-only types.
+  ModelTypeSet types = Difference(GetDataTypesToConfigure(), CommitOnlyTypes());
+  if (!sessions_invalidations_enabled_) {
+    types.Remove(SESSIONS);
+  }
+  invalidations_service->SetSubscribedDataTypes(types);
 }
 
 SyncCycleSnapshot ProfileSyncService::GetLastCycleSnapshotForDebugging() const {
@@ -1781,6 +1814,9 @@ void ProfileSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {
   if (engine_ && engine_->IsInitialized()) {
     engine_->SetInvalidationsForSessionsEnabled(enabled);
   }
+
+  sessions_invalidations_enabled_ = enabled;
+  UpdateDataTypesForInvalidations();
 }
 
 void ProfileSyncService::AddTrustedVaultDecryptionKeysFromWeb(

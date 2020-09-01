@@ -37,6 +37,8 @@ ProfileSyncServiceBundle::CreateSyncClientMock() {
   ON_CALL(*sync_client, GetPrefService()).WillByDefault(Return(&pref_service_));
   ON_CALL(*sync_client, GetSyncApiComponentFactory())
       .WillByDefault(Return(&component_factory_));
+  ON_CALL(*sync_client, GetSyncInvalidationsService())
+      .WillByDefault(Return(sync_invalidations_service()));
   // Used by control types.
   ON_CALL(*sync_client, CreateModelWorkerForGroup(GROUP_PASSIVE))
       .WillByDefault(Return(base::MakeRefCounted<PassiveModelWorker>()));
