@@ -45,7 +45,7 @@ class CastDisplayConfigurator : public display::NativeDisplayObserver {
 
   // display::NativeDisplayObserver implementation
   void OnConfigurationChanged() override;
-  void OnDisplaySnapshotsInvalidated() override {}
+  void OnDisplaySnapshotsInvalidated() override;
 
   void EnableDisplay(display::ConfigureCallback callback);
   void DisableDisplay(display::ConfigureCallback callback);

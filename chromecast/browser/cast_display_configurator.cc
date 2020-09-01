@@ -126,6 +126,10 @@ void CastDisplayConfigurator::OnConfigurationChanged() {
       false /* force_initial_configure */));
 }
 
+void CastDisplayConfigurator::OnDisplaySnapshotsInvalidated() {
+  display_ = nullptr;
+}
+
 void CastDisplayConfigurator::EnableDisplay(
     display::ConfigureCallback callback) {
   if (!delegate_ || !display_)
