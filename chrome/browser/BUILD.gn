@@ -3426,8 +3426,6 @@ static_library("browser") {
       "nearby_sharing/paired_key_verification_runner.h",
       "nearby_sharing/payload_tracker.cc",
       "nearby_sharing/payload_tracker.h",
-      "nearby_sharing/share_target.cc",
-      "nearby_sharing/share_target.h",
       "nearby_sharing/share_target_discovered_callback.h",
       "nearby_sharing/share_target_info.cc",
       "nearby_sharing/share_target_info.h",
