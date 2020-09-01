@@ -1017,7 +1017,7 @@ enum WebFeature {
   kMultipleOriginsInTimingAllowOrigin = 1482,
   kStarInTimingAllowOrigin = 1483,
   kSVGSMILAdditiveAnimation = 1484,
-  kSendBeaconWithNonSimpleContentType = 1485,
+  kOBSOLETE_SendBeaconWithNonSimpleContentType = 1485,
   kChromeLoadTimesRequestTime = 1486,
   kChromeLoadTimesStartLoadTime = 1487,
   kChromeLoadTimesCommitLoadTime = 1488,

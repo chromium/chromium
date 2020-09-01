@@ -177,8 +177,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
                                      execution_context, std::move(form_data)),
                                  nullptr /* AbortSignal */);
     content_type = "application/x-www-form-urlencoded;charset=UTF-8";
-  } else if (RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-             RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
+  } else if (RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
                  execution_context) &&
              V8ReadableStream::HasInstance(body, isolate)) {
     ReadableStream* readable_stream =

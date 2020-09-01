@@ -70,9 +70,6 @@ const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
 const char kUnsafelyTreatInsecureOriginAsSecure[] =
     "unsafely-treat-insecure-origin-as-secure";
 
-// Disable OOR-CORS in child processes regardless of the base::Feature flag.
-const char kForceToDisableOutOfBlinkCors[] = "disable-oor-cors";
-
 // Manually sets additional Trust Tokens key commitments in the network service
 // to the given value, which should be a JSON dictionary satisfying the
 // requirements of TrustTokenKeyCommitmentParser::ParseMultipleIssuers.

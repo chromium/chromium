@@ -153,22 +153,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   // It's ok to expose rendering timestamp for data URIs so exclude those from
   // the Timing-Allow-Origin check.
   if (!url.ProtocolIsData()) {
-    bool timing_allow_check = false;
-    // Use the TimingAllowPassed() check from the response if OutOfBlinkCors is
-    // enabled. If it is not enabled then that flag is not computed, so use to
-    // the single PassesTimingAllowCheck(), which is incorrect because it does
-    // not check the full redirect chain. See crbug.com/1003943.
-    if (RuntimeEnabledFeatures::OutOfBlinkCorsEnabled()) {
-      timing_allow_check = cached_image.GetResponse().TimingAllowPassed();
-    } else {
-      bool response_tainting_not_basic = false;
-      bool tainted_origin_flag = false;
-      timing_allow_check = Performance::PassesTimingAllowCheck(
-          cached_image.GetResponse(), cached_image.GetResponse(),
-          *context->GetSecurityOrigin(), context, &response_tainting_not_basic,
-          &tainted_origin_flag);
-    }
-    if (!timing_allow_check) {
+    if (!cached_image.GetResponse().TimingAllowPassed()) {
       WindowPerformance* performance =
           DOMWindowPerformance::performance(*GetSupplementable());
       if (performance) {

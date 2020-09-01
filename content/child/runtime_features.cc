@@ -25,7 +25,6 @@
 #include "net/base/features.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/switches.h"
@@ -701,12 +700,6 @@ void SetRuntimeFeaturesDefaultsAndUpdateFromArgs(
   if (command_line.HasSwitch(
           switches::kDisableOriginTrialControlledBlinkFeatures)) {
     WebRuntimeFeatures::EnableOriginTrialControlledFeatures(false);
-  }
-
-  if (!command_line.HasSwitch(
-          network::switches::kForceToDisableOutOfBlinkCors) &&
-      base::FeatureList::IsEnabled(network::features::kOutOfBlinkCors)) {
-    WebRuntimeFeatures::EnableOutOfBlinkCors(true);
   }
 
   // TODO(rodneyding): add doc explaining ways to add new runtime features

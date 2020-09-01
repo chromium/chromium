@@ -1373,9 +1373,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      name: "OutOfBlinkCors",
-    },
-    {
       name: "OverflowClip",
     },
     {

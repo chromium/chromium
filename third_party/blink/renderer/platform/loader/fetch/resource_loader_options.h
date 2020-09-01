@@ -104,6 +104,7 @@ struct PLATFORM_EXPORT ResourceLoaderOptions {
   // When set to kDisableCorsHandlingByResourceFetcher, the ResourceFetcher
   // suppresses part of its CORS handling logic.
   // Used by ThreadableLoader which does CORS handling by itself.
+  // TODO(crbug.com/1053866): Remove the flag and relevant code.
   CorsHandlingByResourceFetcher cors_handling_by_resource_fetcher;
 
   // Corresponds to the CORS flag in the Fetch spec.

@@ -2272,11 +2272,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
       }
 
-      if (!profile->ShouldEnableOutOfBlinkCors()) {
-        command_line->AppendSwitch(
-            network::switches::kForceToDisableOutOfBlinkCors);
-      }
-
       if (prefs->HasPrefPath(prefs::kAppCacheForceEnabled) &&
           prefs->GetBoolean(prefs::kAppCacheForceEnabled)) {
         command_line->AppendSwitch(switches::kAppCacheForceEnabled);

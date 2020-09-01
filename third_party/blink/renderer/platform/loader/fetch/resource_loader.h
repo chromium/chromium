@@ -195,16 +195,12 @@ class PLATFORM_EXPORT ResourceLoader final
   void OnProgress(uint64_t delta) override;
   void FinishedCreatingBlob(const scoped_refptr<BlobDataHandle>&);
 
-  bool GetCorsFlag() const { return resource_->Options().cors_flag; }
-
   base::Optional<ResourceRequestBlockedReason> CheckResponseNosniff(
       mojom::RequestContextType,
       const ResourceResponse&);
 
   // Processes Data URL in ResourceLoader instead of using |loader_|.
   void HandleDataUrl();
-
-  bool ShouldCheckCorsInResourceLoader() const;
 
   std::unique_ptr<WebURLLoader> loader_;
   ResourceLoadScheduler::ClientId scheduler_client_id_;

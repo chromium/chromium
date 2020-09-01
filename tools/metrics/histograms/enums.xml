@@ -26973,7 +26973,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1482" label="MultipleOriginsInTimingAllowOrigin"/>
   <int value="1483" label="StarInTimingAllowOrigin"/>
   <int value="1484" label="SVGSMILAdditiveAnimation"/>
-  <int value="1485" label="SendBeaconWithNonSimpleContentType"/>
+  <int value="1485" label="OBSOLETE_SendBeaconWithNonSimpleContentType"/>
   <int value="1486" label="ChromeLoadTimesRequestTime"/>
   <int value="1487" label="ChromeLoadTimesStartLoadTime"/>
   <int value="1488" label="ChromeLoadTimesCommitLoadTime"/>

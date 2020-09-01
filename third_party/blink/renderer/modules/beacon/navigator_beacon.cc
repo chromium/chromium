@@ -100,19 +100,6 @@ bool NavigatorBeacon::SendBeaconImpl(
         *script_state, GetSupplementable()->GetFrame(), url, data_view);
   } else if (data.IsBlob()) {
     Blob* blob = data.GetAsBlob();
-    if (!RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-        !cors::IsCorsSafelistedContentType(blob->type())) {
-      UseCounter::Count(context,
-                        WebFeature::kSendBeaconWithNonSimpleContentType);
-      if (RuntimeEnabledFeatures::
-              SendBeaconThrowForBlobWithNonSimpleTypeEnabled()) {
-        exception_state.ThrowSecurityError(
-            "sendBeacon() with a Blob whose type is not any of the "
-            "CORS-safelisted values for the Content-Type request header is "
-            "disabled temporarily. See http://crbug.com/490015 for details.");
-        return false;
-      }
-    }
     allowed = PingLoader::SendBeacon(
         *script_state, GetSupplementable()->GetFrame(), url, blob);
   } else if (data.IsString()) {

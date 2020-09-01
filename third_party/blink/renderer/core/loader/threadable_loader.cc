@@ -209,7 +209,7 @@ ThreadableLoader::ThreadableLoader(
       execution_context_(execution_context),
       resource_fetcher_(resource_fetcher),
       resource_loader_options_(resource_loader_options),
-      out_of_blink_cors_(RuntimeEnabledFeatures::OutOfBlinkCorsEnabled()),
+      out_of_blink_cors_(true),
       async_(resource_loader_options.synchronous_policy ==
              kRequestAsynchronously),
       request_context_(mojom::RequestContextType::UNSPECIFIED),
@@ -597,6 +597,10 @@ bool ThreadableLoader::RedirectReceived(
 
     DCHECK_EQ(redirect_mode_, network::mojom::RedirectMode::kFollow);
 
+    // TODO(crbug.com/1053866): Dead code as the redirect limit is checked in
+    // the network service with OOR-CORS today. This will be removed very soon.
+    // Consider if it's possible to show similar console messages, and to
+    // notify |client|.
     if (redirect_limit_ <= 0) {
       ThreadableLoaderClient* client = client_;
       Clear();

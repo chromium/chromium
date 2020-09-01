@@ -123,24 +123,8 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulPaint(
       return;
 
     const KURL& url = cached_image->Url();
-    bool expose_paint_time_to_api = url.ProtocolIsData();
-    // Use TimingAllowPassed() if possible, see comment in ImageElementTiming.
-    if (!expose_paint_time_to_api) {
-      if (RuntimeEnabledFeatures::OutOfBlinkCorsEnabled()) {
-        expose_paint_time_to_api =
-            cached_image->GetResponse().TimingAllowPassed();
-      } else {
-        auto* document = window_performance_->GetExecutionContext();
-        bool response_tainting_not_basic = false;
-        bool tainted_origin_flag = false;
-        expose_paint_time_to_api =
-            document &&
-            Performance::PassesTimingAllowCheck(
-                cached_image->GetResponse(), cached_image->GetResponse(),
-                *document->GetSecurityOrigin(), document,
-                &response_tainting_not_basic, &tainted_origin_flag);
-      }
-    }
+    bool expose_paint_time_to_api =
+        url.ProtocolIsData() || cached_image->GetResponse().TimingAllowPassed();
     const String& image_url =
         url.ProtocolIsData()
             ? url.GetString().Left(ImageElementTiming::kInlineImageMaxChars)

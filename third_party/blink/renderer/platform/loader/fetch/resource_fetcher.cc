@@ -972,29 +972,8 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
   if (!params.Url().IsValid())
     return ResourceRequestBlockedReason::kOther;
 
-  if (!RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-      options.cors_handling_by_resource_fetcher ==
-          kEnableCorsHandlingByResourceFetcher) {
-    const scoped_refptr<const SecurityOrigin> origin =
-        resource_request.RequestorOrigin();
-    DCHECK(!options.cors_flag);
-    params.MutableOptions().cors_flag =
-        cors::CalculateCorsFlag(params.Url(), origin.get(),
-                                resource_request.IsolatedWorldOrigin().get(),
-                                resource_request.GetMode());
-    // TODO(yhirano): Reject requests for non CORS-enabled schemes.
-    // See https://crrev.com/c/1298828.
-    resource_request.SetAllowStoredCredentials(cors::CalculateCredentialsFlag(
-        resource_request.GetCredentialsMode(),
-        cors::CalculateResponseTainting(
-            params.Url(), resource_request.GetMode(), origin.get(),
-            resource_request.IsolatedWorldOrigin().get(),
-            params.Options().cors_flag ? CorsFlag::Set : CorsFlag::Unset)));
-  }
-
-  if (RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-      resource_request.GetCredentialsMode() ==
-          network::mojom::CredentialsMode::kOmit) {
+  if (resource_request.GetCredentialsMode() ==
+      network::mojom::CredentialsMode::kOmit) {
     // See comments at network::ResourceRequest::credentials_mode.
     resource_request.SetAllowStoredCredentials(false);
   }
@@ -1048,12 +1027,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
 
   const ResourceType resource_type = factory.GetType();
-
-  if (!RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-      resource_request.RequestorOrigin()) {
-    resource_request.SetHttpOriginIfNeeded(
-        resource_request.RequestorOrigin().get());
-  }
 
   WebScopedVirtualTimePauser pauser;
 

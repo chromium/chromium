@@ -84,9 +84,6 @@ KURL ErrorURL() {
 KURL RedirectURL() {
   return KURL("http://example.com/redirect").Copy();
 }
-KURL RedirectLoopURL() {
-  return KURL("http://example.com/loop").Copy();
-}
 
 void SetUpSuccessURL() {
   // TODO(crbug.com/751425): We should use the mock functionality
@@ -120,30 +117,10 @@ void SetUpRedirectURL() {
       url, test::CoreTestDataPath(kFileName), response);
 }
 
-void SetUpRedirectLoopURL() {
-  KURL url = RedirectLoopURL();
-
-  network::mojom::LoadTimingInfoPtr timing =
-      network::mojom::LoadTimingInfo::New();
-
-  WebURLResponse response;
-  response.SetCurrentRequestUrl(url);
-  response.SetHttpStatusCode(301);
-  response.SetLoadTiming(*timing);
-  response.AddHttpHeaderField("Location", RedirectLoopURL().GetString());
-  response.AddHttpHeaderField("Access-Control-Allow-Origin", "http://fake.url");
-
-  // TODO(crbug.com/751425): We should use the mock functionality
-  // via |dummy_page_holder_|.
-  url_test_helpers::RegisterMockedURLLoadWithCustomResponse(
-      url, test::CoreTestDataPath(kFileName), response);
-}
-
 void SetUpMockURLs() {
   SetUpSuccessURL();
   SetUpErrorURL();
   SetUpRedirectURL();
-  SetUpRedirectLoopURL();
 }
 
 enum ThreadableLoaderToTest {
@@ -490,24 +467,6 @@ TEST_F(ThreadableLoaderTest, ClearInDidFailInStart) {
   ServeRequests();
 }
 
-TEST_F(ThreadableLoaderTest, DidFailAccessControlCheck) {
-  InSequence s;
-  EXPECT_CALL(GetCheckpoint(), Call(1));
-  CreateLoader();
-  CallCheckpoint(1);
-
-  EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(),
-              DidFail(ResourceError(
-                  SuccessURL(),
-                  network::CorsErrorStatus(
-                      network::mojom::CorsError::kMissingAllowOriginHeader))));
-
-  StartLoader(SuccessURL(), network::mojom::RequestMode::kCors);
-  CallCheckpoint(2);
-  ServeRequests();
-}
-
 TEST_F(ThreadableLoaderTest, RedirectDidFinishLoading) {
   InSequence s;
   EXPECT_CALL(GetCheckpoint(), Call(1));
@@ -556,69 +515,6 @@ TEST_F(ThreadableLoaderTest, ClearInRedirectDidFinishLoading) {
   StartLoader(RedirectURL());
   CallCheckpoint(2);
   ServeRequests();
-}
-
-TEST_F(ThreadableLoaderTest, DidFailRedirectCheck) {
-  InSequence s;
-  EXPECT_CALL(GetCheckpoint(), Call(1));
-  CreateLoader();
-  CallCheckpoint(1);
-
-  EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFailRedirectCheck());
-
-  StartLoader(RedirectLoopURL(), network::mojom::RequestMode::kCors);
-  CallCheckpoint(2);
-  ServeRequests();
-}
-
-TEST_F(ThreadableLoaderTest, CancelInDidFailRedirectCheck) {
-  InSequence s;
-  EXPECT_CALL(GetCheckpoint(), Call(1));
-  CreateLoader();
-  CallCheckpoint(1);
-
-  EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFailRedirectCheck())
-      .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
-
-  StartLoader(RedirectLoopURL(), network::mojom::RequestMode::kCors);
-  CallCheckpoint(2);
-  ServeRequests();
-}
-
-TEST_F(ThreadableLoaderTest, ClearInDidFailRedirectCheck) {
-  InSequence s;
-  EXPECT_CALL(GetCheckpoint(), Call(1));
-  CreateLoader();
-  CallCheckpoint(1);
-
-  EXPECT_CALL(GetCheckpoint(), Call(2));
-  EXPECT_CALL(*Client(), DidFailRedirectCheck())
-      .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::ClearLoader));
-
-  StartLoader(RedirectLoopURL(), network::mojom::RequestMode::kCors);
-  CallCheckpoint(2);
-  ServeRequests();
-}
-
-// This test case checks blink doesn't crash even when the response arrives
-// synchronously.
-TEST_F(ThreadableLoaderTest, GetResponseSynchronously) {
-  InSequence s;
-  EXPECT_CALL(GetCheckpoint(), Call(1));
-  CreateLoader();
-  CallCheckpoint(1);
-
-  EXPECT_CALL(*Client(), DidFail(_));
-  EXPECT_CALL(GetCheckpoint(), Call(2));
-
-  // Currently didFailAccessControlCheck is dispatched synchronously. This
-  // test is not saying that didFailAccessControlCheck should be dispatched
-  // synchronously, but is saying that even when a response is served
-  // synchronously it should not lead to a crash.
-  StartLoader(KURL("about:blank"), network::mojom::RequestMode::kCors);
-  CallCheckpoint(2);
 }
 
 TEST(ThreadableLoaderCreatePreflightRequestTest, LexicographicalOrder) {

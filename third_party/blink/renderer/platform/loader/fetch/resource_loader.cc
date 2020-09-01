@@ -494,14 +494,6 @@ void ResourceLoader::Start() {
     throttle_option = ResourceLoadScheduler::ThrottleOption::kStoppable;
   }
 
-  if (ShouldCheckCorsInResourceLoader()) {
-    const auto origin = resource_->GetOrigin();
-    response_tainting_ = cors::CalculateResponseTainting(
-        request.Url(), request.GetMode(), origin.get(),
-        request.IsolatedWorldOrigin().get(),
-        GetCorsFlag() ? CorsFlag::Set : CorsFlag::Unset);
-  }
-
   if (request.IsAutomaticUpgrade()) {
     mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> pending_recorder;
     Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
@@ -745,11 +737,6 @@ bool ResourceLoader::WillFollowRedirect(
           new_url, new_method, new_site_for_cookies, new_referrer,
           new_referrer_policy,
           !passed_redirect_response.WasFetchedViaServiceWorker());
-  if (!RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-      (new_request->HttpMethod() != http_names::kGET &&
-       new_request->HttpMethod() != http_names::kHEAD)) {
-    new_request->SetHttpBody(request_body_.FormBody());
-  }
 
   ResourceType resource_type = resource_->GetType();
 
@@ -798,34 +785,6 @@ bool ResourceLoader::WillFollowRedirect(
       return false;
     }
 
-    if (ShouldCheckCorsInResourceLoader()) {
-      scoped_refptr<const SecurityOrigin> origin = resource_->GetOrigin();
-      base::Optional<network::CorsErrorStatus> cors_error =
-          cors::CheckRedirectLocation(
-              new_url, request_mode, origin.get(),
-              GetCorsFlag() ? CorsFlag::Set : CorsFlag::Unset);
-      if (!cors_error && GetCorsFlag()) {
-        cors_error =
-            cors::CheckAccess(new_url, redirect_response.HttpHeaderFields(),
-                              credentials_mode, *origin);
-      }
-      if (cors_error) {
-        HandleError(
-            ResourceError(redirect_response.CurrentRequestUrl(), *cors_error));
-        return false;
-      }
-      // If |actualResponse|’s location URL’s origin is not same origin with
-      // |request|’s current url’s origin and |request|’s origin is not same
-      // origin with |request|’s current url’s origin, then set |request|’s
-      // tainted origin flag.
-      if (origin &&
-          !SecurityOrigin::AreSameOrigin(
-              new_url, redirect_response.CurrentRequestUrl()) &&
-          !origin->CanRequest(redirect_response.CurrentRequestUrl())) {
-        origin = SecurityOrigin::CreateUniqueOpaque();
-        new_request->SetRequestorOrigin(origin);
-      }
-    }
     if (resource_type == ResourceType::kImage &&
         fetcher_->ShouldDeferImageLoad(new_url)) {
       CancelForRedirectAccessCheckError(new_url,
@@ -836,27 +795,6 @@ bool ResourceLoader::WillFollowRedirect(
 
   fetcher_->RecordResourceTimingOnRedirect(resource_.Get(), redirect_response,
                                            new_url);
-
-  base::Optional<ResourceResponse> redirect_response_with_type;
-  if (ShouldCheckCorsInResourceLoader()) {
-    new_request->SetAllowStoredCredentials(
-        cors::CalculateCredentialsFlag(credentials_mode, response_tainting_));
-    if (!redirect_response.WasFetchedViaServiceWorker()) {
-      auto response_type = response_tainting_;
-      if (initial_request.GetRedirectMode() ==
-          network::mojom::RedirectMode::kManual) {
-        response_type = network::mojom::FetchResponseType::kOpaqueRedirect;
-      }
-      if (response_type != redirect_response.GetType()) {
-        redirect_response_with_type = redirect_response;
-        redirect_response_with_type->SetType(response_type);
-      }
-    }
-  }
-  // TODO(yhirano): Remove this once out-of-blink CORS is enabled.
-  const ResourceResponse& redirect_response_to_pass =
-      redirect_response_with_type ? *redirect_response_with_type
-                                  : redirect_response;
 
   // The following two calls may rewrite the new_request->Url() to
   // something else not for rejecting redirect but for other reasons.
@@ -870,11 +808,10 @@ bool ResourceLoader::WillFollowRedirect(
   // TODO(yoichio): Have PrepareRequest use ResourceRequestHead.
   Context().PrepareRequest(*new_request, resource_->Options().initiator_info,
                            unused_virtual_time_pauser, resource_->GetType());
-  if (RuntimeEnabledFeatures::OutOfBlinkCorsEnabled())
-    DCHECK(!new_request->HttpBody());
+  DCHECK(!new_request->HttpBody());
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     observer->WillSendRequest(resource_->InspectorId(), *new_request,
-                              redirect_response_to_pass, resource_->GetType(),
+                              redirect_response, resource_->GetType(),
                               options.initiator_info);
   }
 
@@ -894,32 +831,10 @@ bool ResourceLoader::WillFollowRedirect(
     return false;
   }
 
-  if (!resource_->WillFollowRedirect(*new_request, redirect_response_to_pass)) {
+  if (!resource_->WillFollowRedirect(*new_request, redirect_response)) {
     CancelForRedirectAccessCheckError(new_request->Url(),
                                       ResourceRequestBlockedReason::kOther);
     return false;
-  }
-
-  if (ShouldCheckCorsInResourceLoader()) {
-    bool new_cors_flag =
-        GetCorsFlag() ||
-        cors::CalculateCorsFlag(
-            new_request->Url(), resource_->GetOrigin().get(),
-            new_request->IsolatedWorldOrigin().get(), request_mode);
-    resource_->MutableOptions().cors_flag = new_cors_flag;
-    // Cross-origin requests are only allowed certain registered schemes.
-    if (GetCorsFlag() && !SchemeRegistry::ShouldTreatURLSchemeAsCorsEnabled(
-                             new_request->Url().Protocol())) {
-      HandleError(
-          ResourceError(new_request->Url(),
-                        network::CorsErrorStatus(
-                            network::mojom::CorsError::kCorsDisabledScheme)));
-      return false;
-    }
-    response_tainting_ = cors::CalculateResponseTainting(
-        new_request->Url(), request_mode, resource_->GetOrigin().get(),
-        new_request->IsolatedWorldOrigin().get(),
-        GetCorsFlag() ? CorsFlag::Set : CorsFlag::Unset);
   }
 
   report_raw_headers = new_request->ReportRawHeaders();
@@ -1089,39 +1004,14 @@ void ResourceLoader::DidReceiveResponseInternal(
     }
   }
 
-  base::Optional<ResourceResponse> response_with_type;
-  if (ShouldCheckCorsInResourceLoader() &&
-      !response.WasFetchedViaServiceWorker() &&
-      !(resource_->IsCacheValidator() && response.HttpStatusCode() == 304)) {
-    if (GetCorsFlag()) {
-      base::Optional<network::CorsErrorStatus> cors_error = cors::CheckAccess(
-          response.CurrentRequestUrl(), response.HttpHeaderFields(),
-          initial_request.GetCredentialsMode(), *resource_->GetOrigin());
-      if (cors_error) {
-        HandleError(ResourceError(response.CurrentRequestUrl(), *cors_error));
-        return;
-      }
-    }
-    if (response_tainting_ != response.GetType()) {
-      response_with_type = response;
-      response_with_type->SetType(response_tainting_);
-    }
-  }
-  // TODO(yhirano): Remove this once out-of-blink CORS is enabled.
-  const ResourceResponse& response_to_pass =
-      response_with_type ? *response_with_type : response;
-
   // A response should not serve partial content if it was not requested via a
   // Range header: https://fetch.spec.whatwg.org/#main-fetch
-  if (response_to_pass.GetType() ==
-          network::mojom::FetchResponseType::kOpaque &&
-      response_to_pass.HttpStatusCode() == 206 &&
-      response_to_pass.HasRangeRequested() &&
+  if (response.GetType() == network::mojom::FetchResponseType::kOpaque &&
+      response.HttpStatusCode() == 206 && response.HasRangeRequested() &&
       !initial_request.HttpHeaderFields().Contains(
           net::HttpRequestHeaders::kRange)) {
     HandleError(ResourceError::CancelledDueToAccessCheckError(
-        response_to_pass.CurrentRequestUrl(),
-        ResourceRequestBlockedReason::kOther));
+        response.CurrentRequestUrl(), ResourceRequestBlockedReason::kOther));
     return;
   }
 
@@ -1131,11 +1021,11 @@ void ResourceLoader::DidReceiveResponseInternal(
     // TODO(yoichio): Have DidReceiveResponse take a ResourceResponseHead, not
     // ResourceRequest.
     observer->DidReceiveResponse(
-        resource_->InspectorId(), request_for_obserber, response_to_pass,
-        resource_, ResourceLoadObserver::ResponseSource::kNotFromMemoryCache);
+        resource_->InspectorId(), request_for_obserber, response, resource_,
+        ResourceLoadObserver::ResponseSource::kNotFromMemoryCache);
   }
 
-  resource_->ResponseReceived(response_to_pass);
+  resource_->ResponseReceived(response);
 
   // Send the cached code after we notify that the response is received.
   // Resource expects that we receive the response first before the
@@ -1161,10 +1051,9 @@ void ResourceLoader::DidReceiveResponseInternal(
   if (!resource_->Loader())
     return;
 
-  if (response_to_pass.HttpStatusCode() >= 400 &&
+  if (response.HttpStatusCode() >= 400 &&
       !resource_->ShouldIgnoreHTTPStatusCodeErrors()) {
-    HandleError(
-        ResourceError::CancelledError(response_to_pass.CurrentRequestUrl()));
+    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
     return;
   }
 }
@@ -1609,12 +1498,6 @@ void ResourceLoader::HandleDataUrl() {
   // end.
   DidFinishLoading(base::TimeTicks::Now(), data_size, data_size, data_size,
                    false /* should_report_corb_blocking */);
-}
-
-bool ResourceLoader::ShouldCheckCorsInResourceLoader() const {
-  return !RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-         resource_->Options().cors_handling_by_resource_fetcher ==
-             kEnableCorsHandlingByResourceFetcher;
 }
 
 }  // namespace blink

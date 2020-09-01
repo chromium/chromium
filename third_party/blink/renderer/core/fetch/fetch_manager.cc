@@ -725,8 +725,7 @@ void FetchManager::Loader::PerformHTTPFetch() {
           fetch_request_data_->Buffer()->DrainAsFormData();
       if (form_data) {
         request.SetHttpBody(form_data);
-      } else if (RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-                 RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
+      } else if (RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
                      execution_context_)) {
         UseCounter::Count(execution_context_,
                           WebFeature::kFetchUploadStreaming);
@@ -755,16 +754,6 @@ void FetchManager::Loader::PerformHTTPFetch() {
   request.SetSkipServiceWorker(world_->IsIsolatedWorld());
 
   if (fetch_request_data_->Keepalive()) {
-    if (!RuntimeEnabledFeatures::OutOfBlinkCorsEnabled() &&
-        cors::IsCorsEnabledRequestMode(fetch_request_data_->Mode()) &&
-        (!cors::IsCorsSafelistedMethod(request.HttpMethod()) ||
-         !cors::ContainsOnlyCorsSafelistedOrForbiddenHeaders(
-             request.HttpHeaderFields()))) {
-      PerformNetworkError(
-          "Preflight request for request with keepalive "
-          "specified is currently not supported");
-      return;
-    }
     request.SetKeepalive(true);
     UseCounter::Count(execution_context_, mojom::WebFeature::kFetchKeepalive);
   }
