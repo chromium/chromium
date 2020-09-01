@@ -1700,10 +1700,14 @@ void WebContentsImpl::SetWasDiscarded(bool was_discarded) {
 void WebContentsImpl::IncrementCapturerCount(const gfx::Size& capture_size,
                                              bool stay_hidden) {
   DCHECK(!is_being_destroyed_);
-  if (stay_hidden)
+  if (stay_hidden) {
+    // A hidden capture should not have side effect on the web contents, so it
+    // should not pass a non-empty |capture_size| which will cause side effect.
+    DCHECK(capture_size.IsEmpty());
     ++hidden_capturer_count_;
-  else
+  } else {
     ++visible_capturer_count_;
+  }
 
   // Note: This provides a hint to upstream code to size the views optimally
   // for quality (e.g., to avoid scaling).

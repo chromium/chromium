@@ -64,10 +64,7 @@ class ScopedThumbnailCapture {
       : web_contents_observer_(web_contents_observer) {
     auto* const contents = web_contents_observer->web_contents();
     if (contents) {
-      contents->IncrementCapturerCount(
-          gfx::ScaleToFlooredSize(GetMinimumThumbnailSize(),
-                                  kMinThumbnailScaleFactor),
-          /* stay_hidden */ true);
+      contents->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ true);
       captured_ = true;
     }
   }
