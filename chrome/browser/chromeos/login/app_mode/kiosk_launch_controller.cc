@@ -86,6 +86,31 @@ void RecordKioskLaunchUMA(bool is_auto_launch) {
   }
 }
 
+// This is a not-owning wrapper around ArcKioskAppService which allows to be
+// plugged into a unique_ptr safely.
+// TODO(apotapchuk): Remove this when ARC kiosk is fully deprecated.
+class ArcKioskAppServiceWrapper : public KioskAppLauncher {
+ public:
+  ArcKioskAppServiceWrapper(ArcKioskAppService* service,
+                            KioskAppLauncher::Delegate* delegate)
+      : service_(service) {
+    service_->SetDelegate(delegate);
+  }
+
+  ~ArcKioskAppServiceWrapper() override { service_->SetDelegate(nullptr); }
+
+  // KioskAppLauncher:
+  void Initialize() override { service_->Initialize(); }
+  void ContinueWithNetworkReady() override {
+    service_->ContinueWithNetworkReady();
+  }
+  void RestartLauncher() override { service_->RestartLauncher(); }
+  void LaunchApp() override { service_->LaunchApp(); }
+
+ private:
+  ArcKioskAppService* const service_;
+};
+
 }  // namespace
 
 KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
@@ -147,27 +172,29 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   // Reset virtual keyboard to use IME engines in app profile early.
   ChromeKeyboardControllerClient::Get()->RebuildKeyboardIfEnabled();
 
-  switch (kiosk_app_id_.type) {
-    case KioskAppType::ARC_APP:
-      ArcKioskAppService::Get(profile_)->SetDelegate(this);
-      break;
-    case KioskAppType::CHROME_APP:
-      // Do not set update |app_launcher_| if has been set.
-      if (!app_launcher_)
+  // Do not set update |app_launcher_| if has been set.
+  if (!app_launcher_) {
+    switch (kiosk_app_id_.type) {
+      case KioskAppType::ARC_APP:
+        // ArcKioskAppService lifetime is bound to the profile, therefore
+        // wrap it into a separate object.
+        app_launcher_ = std::make_unique<ArcKioskAppServiceWrapper>(
+            ArcKioskAppService::Get(profile_), this);
+        break;
+      case KioskAppType::CHROME_APP:
         app_launcher_ = std::make_unique<StartupAppLauncher>(
             profile_, *kiosk_app_id_.app_id, this);
-      app_launcher_->Initialize();
-      break;
-    case KioskAppType::WEB_APP:
-      // Make keyboard config sync with the |VirtualKeyboardFeatures| policy.
-      ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
-      // Do not set update |app_launcher_| if has been set.
-      if (!app_launcher_)
+        break;
+      case KioskAppType::WEB_APP:
+        // Make keyboard config sync with the |VirtualKeyboardFeatures| policy.
+        ChromeKeyboardControllerClient::Get()->SetKeyboardConfigFromPref(true);
         app_launcher_ = std::make_unique<WebKioskAppLauncher>(
             profile, this, *kiosk_app_id_.account_id);
-      app_launcher_->Initialize();
-      break;
+        break;
+    }
   }
+
+  app_launcher_->Initialize();
   if (network_ui_state_ == NetworkUIState::NEED_TO_SHOW)
     ShowNetworkConfigureUI();
 }
@@ -242,9 +269,6 @@ void KioskLaunchController::CleanUp() {
   splash_wait_timer_.Stop();
 
   kiosk_profile_loader_.reset();
-
-  if (kiosk_app_id_.type == KioskAppType::ARC_APP)
-    ArcKioskAppService::Get(profile_)->SetDelegate(nullptr);
   // Can be null in tests.
   if (host_)
     host_->Finalize(base::OnceClosure());

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
@@ -130,6 +132,23 @@ class WebKioskTest : public OobeBaseTest {
       // Click on continue button.
       test::OobeJS().TapOnPath(kNetworkConfigureScreenContinueButton);
     }
+  }
+
+  void ExpectKeyboardConfig() {
+    const keyboard::KeyboardConfig config =
+        ash::KeyboardController::Get()->GetKeyboardConfig();
+
+    // |auto_capitalize| is not controlled by the policy
+    // 'VirtualKeyboardFeatures', and its default value remains true.
+    EXPECT_TRUE(config.auto_capitalize);
+
+    // The other features are controlled by the policy
+    // 'VirtualKeyboardFeatures', and their default values should be false.
+    EXPECT_FALSE(config.auto_complete);
+    EXPECT_FALSE(config.auto_correct);
+    EXPECT_FALSE(config.handwriting);
+    EXPECT_FALSE(config.spell_check);
+    EXPECT_FALSE(config.voice_input);
   }
 
  private:
@@ -252,6 +271,15 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, HiddenShelf) {
 
   // The shelf should be still hidden after the gesture.
   EXPECT_FALSE(ash::ShelfTestApi().IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(WebKioskTest, KeyboardConfigPolicy) {
+  SetOnline(true);
+  PrepareAppLaunch();
+  LaunchApp();
+  KioskSessionInitializedWaiter().Wait();
+
+  ExpectKeyboardConfig();
 }
 
 }  // namespace chromeos
