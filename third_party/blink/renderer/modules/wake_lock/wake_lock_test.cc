@@ -77,8 +77,9 @@ TEST(WakeLockTest, RequestWakeLockDenied) {
   EXPECT_EQ("NotAllowedError", dom_exception->name());
 }
 
+// Test is flaky : http://crbug.com/1123879
 // https://w3c.github.io/wake-lock/#handling-document-loss-of-full-activity
-TEST(WakeLockTest, LossOfDocumentActivity) {
+TEST(WakeLockTest, DISABLED_LossOfDocumentActivity) {
   MockWakeLockService wake_lock_service;
   WakeLockTestingContext context(&wake_lock_service);
 
