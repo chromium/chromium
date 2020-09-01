@@ -11,8 +11,10 @@ import androidx.lifecycle.LifecycleObserver;
 
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
+import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -76,7 +78,12 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
 
         mMediator = new PasswordCheckMediator(
                 new PasswordCheckChangePasswordHelper(mFragmentView.getActivity()),
-                mReauthenticationHelper);
+                mReauthenticationHelper,
+                new PasswordCheckIconHelper(
+                        new LargeIconBridge(Profile.getLastUsedRegularProfile()),
+                        mFragmentView.getResources().getDimensionPixelSize(
+                                org.chromium.chrome.browser.ui.favicon.R.dimen
+                                        .default_favicon_size)));
     }
 
     private void launchCheckupInAccount() {

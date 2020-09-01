@@ -63,6 +63,7 @@ android_library("internal_java") {
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
+    "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
@@ -91,6 +92,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckViewDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckViewHolder.java",
     "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckChangePasswordHelper.java",
+    "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckIconHelper.java",
     "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckReauthenticationHelper.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

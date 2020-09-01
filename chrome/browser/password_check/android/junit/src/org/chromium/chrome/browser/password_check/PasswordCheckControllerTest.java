@@ -56,6 +56,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
+import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckReauthenticationHelper.ReauthReason;
 import org.chromium.chrome.test.util.browser.Features;
@@ -92,6 +93,8 @@ public class PasswordCheckControllerTest {
     private PasswordCheck mPasswordCheck;
     @Mock
     private PasswordCheckReauthenticationHelper mReauthenticationHelper;
+    @Mock
+    private PasswordCheckIconHelper mIconHelper;
 
     // DO NOT INITIALIZE HERE! The objects would be shared here which leaks state between tests.
     private PasswordCheckMediator mMediator;
@@ -101,7 +104,8 @@ public class PasswordCheckControllerTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mModel = PasswordCheckProperties.createDefaultModel();
-        mMediator = new PasswordCheckMediator(mChangePasswordDelegate, mReauthenticationHelper);
+        mMediator = new PasswordCheckMediator(
+                mChangePasswordDelegate, mReauthenticationHelper, mIconHelper);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mMediator.initialize(mModel, mDelegate, PasswordCheckReferrer.PASSWORD_SETTINGS, () -> {});
     }
@@ -208,6 +212,7 @@ public class PasswordCheckControllerTest {
         assertThat(mModel.get(ITEMS).get(1).model.get(COMPROMISED_CREDENTIAL), equalTo(ANA));
         assertThat(mModel.get(ITEMS).get(1).model.get(CREDENTIAL_HANDLER), is(mMediator));
         assertThat(mModel.get(ITEMS).get(1).model.get(HAS_MANUAL_CHANGE_BUTTON), is(true));
+        verify(mIconHelper).getLargeIcon(eq(ANA), any(Callback.class));
     }
 
     @Test

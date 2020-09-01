@@ -22,11 +22,13 @@
   <dimen name="compromised_credential_row_button_icon_start_padding">12dp</dimen>
   <dimen name="compromised_credential_row_button_icon_end_padding">16dp</dimen>
   <dimen name="compromised_credential_row_button_margin_top">16dp</dimen>
+  <dimen name="compromised_credential_row_icon_margin_start_end">16dp</dimen>
+  <dimen name="compromised_credential_row_icon_margin_top">20dp</dimen>
+  <dimen name="compromised_credential_row_icon_size">36dp</dimen>
   <dimen name="compromised_credential_row_more_padding_end">8dp</dimen>
   <dimen name="compromised_credential_row_more_padding_start">16dp</dimen>
   <dimen name="compromised_credential_row_more_size">48dp</dimen>
   <dimen name="compromised_credential_row_padding_bottom">16dp</dimen>
-  <dimen name="compromised_credential_row_padding_start">16dp</dimen>
   <dimen name="compromised_credential_row_padding_top">12dp</dimen>
   <dimen name="compromised_credential_row_reason_margin_top">2dp</dimen>
 

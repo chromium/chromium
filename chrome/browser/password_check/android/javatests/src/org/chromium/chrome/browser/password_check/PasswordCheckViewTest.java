@@ -175,6 +175,10 @@ public class PasswordCheckViewTest {
         assertThat(getCredentialMoreButtonAt(1).getVisibility(), is(View.VISIBLE));
         assertThat(getCredentialMoreButtonAt(1).getContentDescription(),
                 is(getString(org.chromium.chrome.R.string.more)));
+
+        // Has a favicon.
+        assertNotNull(getCredentialFaviconAt(1));
+        assertThat(getCredentialFaviconAt(1).getVisibility(), is(View.VISIBLE));
     }
 
     @Test
@@ -807,6 +811,10 @@ public class PasswordCheckViewTest {
     private ListMenuButton getCredentialMoreButtonAt(int index) {
         return getPasswordCheckViewList().getChildAt(index).findViewById(
                 R.id.credential_menu_button);
+    }
+
+    private ImageView getCredentialFaviconAt(int index) {
+        return getPasswordCheckViewList().getChildAt(index).findViewById(R.id.credential_favicon);
     }
 
     private String getString(@IdRes int stringResource) {
