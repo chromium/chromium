@@ -2207,7 +2207,7 @@ v8::Local<v8::Object> WebAXObjectProxyList::GetOrCreate(
     return {};
   }
 
-  elements_.emplace_back(isolate, std::move(handle));
+  elements_.emplace_back(isolate, handle);
   return handle;
 }
 
