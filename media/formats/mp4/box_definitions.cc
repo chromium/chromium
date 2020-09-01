@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/big_endian.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -718,6 +719,82 @@ bool AVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
 
   return true;
 }
+
+bool AVCDecoderConfigurationRecord::Serialize(std::vector<uint8_t>& output) {
+  // See ISO/IEC 14496-15 5.3.3.1.2 for the format description
+  constexpr uint8_t sps_list_size_mask = (1 << 5) - 1;  // 5 bits
+  if (sps_list.size() > sps_list_size_mask)
+    return false;
+
+  constexpr uint8_t pps_list_size_mask = 0xff;
+  if (pps_list.size() > pps_list_size_mask)
+    return false;
+
+  if (length_size > 4)
+    return false;
+
+  // Calculating total size of the buffer we'll need for serialization
+  size_t expected_size =
+      1 +  // configurationVersion
+      1 +  // AVCProfileIndication
+      1 +  // profile_compatibility
+      1 +  // AVCLevelIndication
+      1 +  // lengthSizeMinusOne
+      1 +  // numOfSequenceParameterSets, i.e. length of sps_list
+      1;   // numOfPictureParameterSets, i.e. length of pps_list
+
+  constexpr size_t max_vector_size = (1 << 16) - 1;  // 2 bytes
+  for (auto& sps : sps_list) {
+    expected_size += 2;  // 2 bytes for sequenceParameterSetLength
+    if (sps.size() > max_vector_size)
+      return false;
+    expected_size += sps.size();
+  }
+
+  for (auto& pps : pps_list) {
+    expected_size += 2;  // 2 bytes for pictureParameterSetLength;
+    if (pps.size() > max_vector_size)
+      return false;
+    expected_size += pps.size();
+  }
+
+  output.clear();
+  output.resize(expected_size);
+  base::BigEndianWriter writer(reinterpret_cast<char*>(output.data()),
+                               output.size());
+  bool result = true;
+
+  // configurationVersion
+  result &= writer.WriteU8(version);
+  // AVCProfileIndication
+  result &= writer.WriteU8(profile_indication);
+  // profile_compatibility
+  result &= writer.WriteU8(profile_compatibility);
+  // AVCLevelIndication
+  result &= writer.WriteU8(avc_level);
+  // lengthSizeMinusOne
+  uint8_t length_size_minus_one = (length_size - 1) | 0xfc;
+  result &= writer.WriteU8(length_size_minus_one);
+  // numOfSequenceParameterSets
+  uint8_t sps_size = sps_list.size() | ~sps_list_size_mask;
+  result &= writer.WriteU8(sps_size);
+  // sequenceParameterSetNALUnits
+  for (auto& sps : sps_list) {
+    result &= writer.WriteU16(sps.size());
+    writer.WriteBytes(sps.data(), sps.size());
+  }
+  // numOfPictureParameterSets
+  uint8_t pps_size = pps_list.size();
+  result &= writer.WriteU8(pps_size);
+  // pictureParameterSetNALUnit
+  for (auto& pps : pps_list) {
+    result &= writer.WriteU16(pps.size());
+    writer.WriteBytes(pps.data(), pps.size());
+  }
+
+  return result;
+}
+
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 VPCodecConfigurationRecord::VPCodecConfigurationRecord()

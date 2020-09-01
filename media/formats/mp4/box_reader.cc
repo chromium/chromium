@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <set>
 
+#include "base/big_endian.h"
 #include "media/formats/mp4/box_definitions.h"
 
 namespace media {
@@ -27,12 +28,9 @@ bool BufferReader::Read1(uint8_t* v) {
 template<typename T> bool BufferReader::Read(T* v) {
   RCHECK(HasBytes(sizeof(T)));
 
-  T tmp = 0;
-  for (size_t i = 0; i < sizeof(T); i++) {
-    tmp <<= 8;
-    tmp += buf_[pos_++];
-  }
-  *v = tmp;
+  // MPEG-4 uses big endian byte order
+  base::ReadBigEndian(reinterpret_cast<const char*>(buf_ + pos_), v);
+  pos_ += sizeof(T);
   return true;
 }
 

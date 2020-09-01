@@ -486,5 +486,63 @@ TEST_F(BoxReaderTest, OutsideOfBoxRead) {
   EXPECT_FALSE(reader->Read4(&value));
 }
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromMp4) {
+  std::vector<uint8_t> test_data{
+      0x1,        // configurationVersion
+      0x64,       // AVCProfileIndication
+      0x0,        // profile_compatibility
+      0xc,        // AVCLevelIndication
+      0xff,       // lengthSizeMinusOne
+      0xe1,       // numOfSequenceParameterSets = 1
+      0x0, 0x19,  // sequenceParameterSetLength = 25
+
+      // sequenceParameterSet
+      0x67, 0x64, 0x0, 0xc, 0xac, 0xd9, 0x41, 0x41, 0xfb, 0x1, 0x10, 0x0, 0x0,
+      0x3, 0x0, 0x10, 0x0, 0x0, 0x3, 0x1, 0x40, 0xf1, 0x42, 0x99, 0x60,
+
+      0x1,       // numOfPictureParameterSets
+      0x0, 0x6,  // pictureParameterSetLength = 6
+      0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0,
+
+      // Profile specific params are not supported yet, skip last bytes
+      // 0xfd, 0xf8, 0xf8, 0x0
+  };
+
+  AVCDecoderConfigurationRecord record;
+  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+
+  EXPECT_EQ(record.version, 1);
+  EXPECT_EQ(record.profile_indication, 0x64);
+  EXPECT_EQ(record.profile_compatibility, 0);
+  EXPECT_EQ(record.avc_level, 0xc);
+  EXPECT_EQ(record.length_size, 4);
+  EXPECT_EQ(record.sps_list.size(), 1ull);
+  EXPECT_EQ(record.sps_list[0].size(), 25ull);
+  EXPECT_EQ(record.pps_list.size(), 1ull);
+  EXPECT_EQ(record.pps_list[0].size(), 6ull);
+
+  std::vector<uint8_t> output;
+  EXPECT_TRUE(record.Serialize(output));
+  EXPECT_EQ(output.size(), test_data.size());
+  ASSERT_THAT(output, testing::ElementsAreArray(test_data));
+}
+
+TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromStream) {
+  std::vector<uint8_t> test_data{
+      0x01, 0x4D, 0x00, 0x15, 0xff, 0xe1, 0x00, 0x2F, 0x67, 0x4D, 0x40,
+      0x15, 0x96, 0x52, 0x02, 0x83, 0xF6, 0x02, 0xA1, 0x00, 0x00, 0x03,
+      0x00, 0x01, 0x00, 0x00, 0x03, 0x00, 0x28, 0xE0, 0x60, 0x03, 0x0D,
+      0x40, 0x00, 0x49, 0x3E, 0x7F, 0x18, 0xE3, 0x03, 0x00, 0x18, 0x6A,
+      0x00, 0x02, 0x49, 0xF3, 0xF8, 0xC7, 0x0E, 0xD0, 0xB1, 0x68, 0x90,
+      0x01, 0x00, 0x04, 0x68, 0xEB, 0x73, 0x52};
+  AVCDecoderConfigurationRecord record;
+  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  std::vector<uint8_t> output;
+  EXPECT_TRUE(record.Serialize(output));
+  ASSERT_THAT(output, testing::ElementsAreArray(test_data));
+}
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
 }  // namespace mp4
 }  // namespace media
