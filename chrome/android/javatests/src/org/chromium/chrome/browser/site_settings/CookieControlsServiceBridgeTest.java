@@ -81,8 +81,6 @@ public class CookieControlsServiceBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
             prefService.setInteger(PrefNames.COOKIE_CONTROLS_MODE, mode);
-            prefService.setBoolean(PrefNames.BLOCK_THIRD_PARTY_COOKIES,
-                    mode == CookieControlsMode.BLOCK_THIRD_PARTY);
         });
     }
 

@@ -86,13 +86,6 @@
   </message>
 
   <!-- Site settings supplemental global toggle settings -->
-
-  <message name="IDS_BLOCK_THIRD_PARTY_COOKIES_TITLE" desc="Title for Block Third Party Cookies preference">
-    Block third-party cookies
-  </message>
-  <message name="IDS_BLOCK_THIRD_PARTY_COOKIES_SUMMARY" desc="Summary text for Block Third Party Cookies preference">
-    Prevent third-party websites from saving and reading cookie data
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NOTIFICATIONS_QUIET" desc="A setting that, if turned on will enable a quieter permission prompt for notifications.">
     Use quieter messaging (blocks notification prompts from interrupting you)
   </message>

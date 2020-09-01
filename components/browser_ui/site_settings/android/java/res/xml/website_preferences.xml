@@ -27,13 +27,6 @@
     <org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference
         android:key="four_state_cookie_toggle" />
 
-    <!-- A toggle for blocking third-party cookies, only shown for the Cookies category. -->
-    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
-        android:key="third_party_cookies"
-        android:title="@string/block_third_party_cookies_title"
-        android:summary="@string/block_third_party_cookies_summary"
-        android:defaultValue="true"
-        android:persistent="false" />
     <!-- A checkbox for enabling a quiet ui for notification prompts. Only shown in the Notifications category. -->
     <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
         android:key="notifications_quiet_ui"

@@ -16,7 +16,7 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.getVisibleMenuSize;
-import static org.chromium.components.content_settings.PrefNames.BLOCK_THIRD_PARTY_COOKIES;
+import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -121,6 +121,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
+import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -1969,12 +1970,12 @@ public class CustomTabActivityTest {
         // Needs the browser process to be initialized.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            boolean old_block_pref = prefs.getBoolean(BLOCK_THIRD_PARTY_COOKIES);
-            prefs.setBoolean(BLOCK_THIRD_PARTY_COOKIES, false);
+            int old_block_pref = prefs.getInteger(COOKIE_CONTROLS_MODE);
+            prefs.setInteger(COOKIE_CONTROLS_MODE, CookieControlsMode.OFF);
             Assert.assertTrue(connection.maySpeculate(token));
-            prefs.setBoolean(BLOCK_THIRD_PARTY_COOKIES, true);
+            prefs.setInteger(COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
             Assert.assertFalse(connection.maySpeculate(token));
-            prefs.setBoolean(BLOCK_THIRD_PARTY_COOKIES, old_block_pref);
+            prefs.setInteger(COOKIE_CONTROLS_MODE, old_block_pref);
         });
     }
 

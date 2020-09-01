@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.site_settings;
 
 import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
-import static org.chromium.components.content_settings.PrefNames.BLOCK_THIRD_PARTY_COOKIES;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.ENABLE_QUIET_NOTIFICATION_PERMISSION_UI;
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
@@ -129,7 +128,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     public static final String FOUR_STATE_COOKIE_TOGGLE_KEY = "four_state_cookie_toggle";
 
     // Keys for category-specific preferences (toggle, link, button etc.), dynamically shown.
-    public static final String THIRD_PARTY_COOKIES_TOGGLE_KEY = "third_party_cookies";
     public static final String NOTIFICATIONS_VIBRATE_TOGGLE_KEY = "notifications_vibrate";
     public static final String NOTIFICATIONS_QUIET_UI_TOGGLE_KEY = "notifications_quiet_ui";
     public static final String EXPLAIN_PROTECTED_MEDIA_KEY = "protected_content_learn_more";
@@ -445,9 +443,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 WebsitePreferenceBridge.setCategoryEnabled(browserContextHandle,
                         SiteSettingsCategory.contentSettingsType(type), (boolean) newValue);
 
-                if (type == SiteSettingsCategory.Type.COOKIES) {
-                    updateThirdPartyCookiesCheckBox();
-                } else if (type == SiteSettingsCategory.Type.NOTIFICATIONS) {
+                if (type == SiteSettingsCategory.Type.NOTIFICATIONS) {
                     updateNotificationsSecondaryControls();
                 }
                 break;
@@ -463,8 +459,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         } else if (FOUR_STATE_COOKIE_TOGGLE_KEY.equals(preference.getKey())) {
             setCookieSettingsPreference((CookieSettingsState) newValue);
             getInfoForOrigins();
-        } else if (THIRD_PARTY_COOKIES_TOGGLE_KEY.equals(preference.getKey())) {
-            prefService.setBoolean(BLOCK_THIRD_PARTY_COOKIES, (boolean) newValue);
         } else if (NOTIFICATIONS_VIBRATE_TOGGLE_KEY.equals(preference.getKey())) {
             prefService.setBoolean(NOTIFICATIONS_VIBRATE_ENABLED, (boolean) newValue);
         } else if (NOTIFICATIONS_QUIET_UI_TOGGLE_KEY.equals(preference.getKey())) {
@@ -509,8 +503,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 allowCookies);
         PrefService prefService = UserPrefs.get(getSiteSettingsClient().getBrowserContextHandle());
         prefService.setInteger(COOKIE_CONTROLS_MODE, mode);
-        prefService.setBoolean(
-                BLOCK_THIRD_PARTY_COOKIES, mode == CookieControlsMode.BLOCK_THIRD_PARTY);
     }
 
     private boolean cookieSettingsExceptionShouldBlock() {
@@ -848,7 +840,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 (FourStateCookieSettingsPreference) screen.findPreference(
                         FOUR_STATE_COOKIE_TOGGLE_KEY);
         // TODO(crbug.com/1104836): Remove the old third-party cookie blocking UI
-        Preference thirdPartyCookies = screen.findPreference(THIRD_PARTY_COOKIES_TOGGLE_KEY);
         Preference notificationsVibrate = screen.findPreference(NOTIFICATIONS_VIBRATE_TOGGLE_KEY);
         Preference notificationsQuietUi = screen.findPreference(NOTIFICATIONS_QUIET_UI_TOGGLE_KEY);
         Preference explainProtectedMediaKey = screen.findPreference(EXPLAIN_PROTECTED_MEDIA_KEY);
@@ -878,7 +869,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         if (permissionBlockedByOs) {
             maybeShowOsWarning(screen);
 
-            screen.removePreference(thirdPartyCookies);
             screen.removePreference(notificationsVibrate);
             screen.removePreference(notificationsQuietUi);
             screen.removePreference(explainProtectedMediaKey);
@@ -888,14 +878,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             // Since all preferences are hidden, there's nothing to do further and we can
             // simply return.
             return;
-        }
-
-        // Configure/hide the third-party cookies toggle, as needed.
-        if (mCategory.showSites(SiteSettingsCategory.Type.COOKIES) && !mRequiresFourStateSetting) {
-            thirdPartyCookies.setOnPreferenceChangeListener(this);
-            updateThirdPartyCookiesCheckBox();
-        } else {
-            screen.removePreference(thirdPartyCookies);
         }
 
         // Configure/hide the notifications secondary controls, as needed.
@@ -980,7 +962,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         params.allowCookies = WebsitePreferenceBridge.isCategoryEnabled(
                 getSiteSettingsClient().getBrowserContextHandle(), ContentSettingsType.COOKIES);
         PrefService prefService = UserPrefs.get(getSiteSettingsClient().getBrowserContextHandle());
-        params.blockThirdPartyCookies = prefService.getBoolean(BLOCK_THIRD_PARTY_COOKIES);
         params.cookieControlsMode = prefService.getInteger(COOKIE_CONTROLS_MODE);
         params.cookiesContentSettingEnforced = mCategory.isManaged();
         params.cookieControlsModeEnforced = prefService.isManagedPreference(COOKIE_CONTROLS_MODE);
@@ -1024,23 +1005,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             binaryToggle.setChecked(
                     WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, contentType));
         }
-    }
-
-    private void updateThirdPartyCookiesCheckBox() {
-        ChromeBaseCheckBoxPreference thirdPartyCookiesPref =
-                (ChromeBaseCheckBoxPreference) getPreferenceScreen().findPreference(
-                        THIRD_PARTY_COOKIES_TOGGLE_KEY);
-        PrefService prefService = UserPrefs.get(getSiteSettingsClient().getBrowserContextHandle());
-        thirdPartyCookiesPref.setChecked(prefService.getBoolean(BLOCK_THIRD_PARTY_COOKIES));
-        thirdPartyCookiesPref.setEnabled(WebsitePreferenceBridge.isCategoryEnabled(
-                getSiteSettingsClient().getBrowserContextHandle(), ContentSettingsType.COOKIES));
-        thirdPartyCookiesPref.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
-                getSiteSettingsClient().getManagedPreferenceDelegate()) {
-            @Override
-            public boolean isPreferenceControlledByPolicy(Preference preference) {
-                return prefService.isManagedPreference(BLOCK_THIRD_PARTY_COOKIES);
-            }
-        });
     }
 
     private void updateNotificationsSecondaryControls() {

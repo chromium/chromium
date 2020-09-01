@@ -12,7 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.components.content_settings.PrefNames.BLOCK_THIRD_PARTY_COOKIES;
+import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
 import android.support.test.InstrumentationRegistry;
 
@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.R;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -65,10 +66,10 @@ public class CookieControlsViewTest {
         onView(withId(org.chromium.chrome.R.id.location_bar_status_icon)).perform(click());
     }
 
-    private void setThirdPartyCookieBlocking(boolean value) {
+    private void setThirdPartyCookieBlocking(@CookieControlsMode int value) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(BLOCK_THIRD_PARTY_COOKIES, value);
+                    .setInteger(COOKIE_CONTROLS_MODE, value);
         });
     }
 
@@ -98,7 +99,7 @@ public class CookieControlsViewTest {
     @MediumTest
     @FlakyTest(message = "https://crbug.com/1062645")
     public void testHiddenOnBlankPage() {
-        setThirdPartyCookieBlocking(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         onView(withId(org.chromium.chrome.R.id.location_bar_status_icon)).perform(click());
         onView(withId(R.id.page_info_cookie_controls_view))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
@@ -111,7 +112,7 @@ public class CookieControlsViewTest {
     @MediumTest
     @FlakyTest(message = "https://crbug.com/1062645")
     public void testHiddenWhenDisabled() {
-        setThirdPartyCookieBlocking(false);
+        setThirdPartyCookieBlocking(CookieControlsMode.OFF);
         loadUrlAndOpenPageInfo(mTestServer.getURLWithHostName("foo.com", mPath));
         onView(withId(R.id.page_info_cookie_controls_view))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
@@ -124,7 +125,7 @@ public class CookieControlsViewTest {
     @MediumTest
     @FlakyTest(message = "https://crbug.com/1062645")
     public void testShow() {
-        setThirdPartyCookieBlocking(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServer.getURLWithHostName("foo.com", mPath));
         onView(withId(R.id.page_info_cookie_controls_view))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -139,7 +140,7 @@ public class CookieControlsViewTest {
     public void testUpdate() {
         Assert.assertEquals(0, getTotalPageActionHistogramCount());
 
-        setThirdPartyCookieBlocking(true);
+        setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServer.getURLWithHostName("foo.com", mPath));
         Assert.assertEquals(1, getTotalPageActionHistogramCount());
         Assert.assertEquals(1, getPageActionHistogramCount(PageInfoAction.PAGE_INFO_OPENED));

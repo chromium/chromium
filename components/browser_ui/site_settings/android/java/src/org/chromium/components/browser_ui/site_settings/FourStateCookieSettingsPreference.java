@@ -39,8 +39,6 @@ public class FourStateCookieSettingsPreference
     public static class Params {
         // Whether the cookies content setting is enabled.
         public boolean allowCookies;
-        //  Whether third-party blocking is enabled.
-        public boolean blockThirdPartyCookies;
         // An enum indicating when to block third-party cookies.
         public @CookieControlsMode int cookieControlsMode;
 
@@ -146,8 +144,7 @@ public class FourStateCookieSettingsPreference
         // combination of multiple signals.
         if (!params.allowCookies) {
             return CookieSettingsState.BLOCK;
-        } else if (params.blockThirdPartyCookies
-                || params.cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
+        } else if (params.cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
             return CookieSettingsState.BLOCK_THIRD_PARTY;
         } else if (params.cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY) {
             return CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO;
@@ -209,6 +206,7 @@ public class FourStateCookieSettingsPreference
      */
     private RadioButtonWithDescription[] getEnforcedButtons(Params params) {
         if (!params.cookiesContentSettingEnforced && !params.cookieControlsModeEnforced) {
+            // Nothing is enforced.
             return buttons();
         }
         if (params.cookiesContentSettingEnforced && params.cookieControlsModeEnforced) {
@@ -223,8 +221,8 @@ public class FourStateCookieSettingsPreference
                         mBlockThirdPartyButton, mBlockButton);
             }
         }
-        if (params.blockThirdPartyCookies
-                || params.cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
+        // cookieControlsModeEnforced must be true.
+        if (params.cookieControlsMode == CookieControlsMode.BLOCK_THIRD_PARTY) {
             return buttons(mAllowButton, mBlockThirdPartyIncognitoButton);
         } else {
             return buttons(mBlockThirdPartyIncognitoButton, mBlockThirdPartyButton);
