@@ -196313,7 +196313,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.AdaptChangesPerMinute" units="changes/minute"
-    expires_after="2021-01-24">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196323,7 +196325,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.AverageRoundTripTimeInMilliseconds" units="ms"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>holmer@chromium.org</owner>
   <summary>
     The average round-trip time of a WebRTC call in milliseconds. Recorded when
@@ -196332,7 +196336,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.AVSyncOffsetInMs" units="ms"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The absolute value of the sync offset between a rendered video frame and the
@@ -196341,7 +196347,10 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.BadCall.Any" units="%" expires_after="2020-05-31">
+<histogram name="WebRTC.Video.BadCall.Any" units="%" expires_after="2020-08-27">
+  <obsolete>
+    Removed 08/27/2020.
+  </obsolete>
   <owner>sprang@chromium.org</owner>
   <summary>
     Fraction of time the call was classified as bad because of any reason.
@@ -196349,7 +196358,10 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.BadCall.FrameRate" units="%"
-    expires_after="2020-08-31">
+    expires_after="2020-08-27">
+  <obsolete>
+    Removed 08/27/2020.
+  </obsolete>
   <owner>sprang@chromium.org</owner>
   <summary>
     Fraction of time the call was classified as bad because of low framerate.
@@ -196357,7 +196369,10 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.BadCall.FrameRateVariance" units="%"
-    expires_after="2020-05-31">
+    expires_after="2020-08-27">
+  <obsolete>
+    Removed 08/27/2020.
+  </obsolete>
   <owner>sprang@chromium.org</owner>
   <summary>
     Fraction of time the call was classified as bad because of high framerate
@@ -196365,7 +196380,10 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.BadCall.Qp" units="%" expires_after="2020-06-07">
+<histogram name="WebRTC.Video.BadCall.Qp" units="%" expires_after="2020-08-27">
+  <obsolete>
+    Removed 08/27/2020.
+  </obsolete>
   <owner>sprang@chromium.org</owner>
   <summary>
     Fraction of time the call was classified as bad because of high qp.
@@ -196373,7 +196391,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.BandwidthLimitedResolutionInPercent" units="%"
-    expires_after="2021-01-24">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of sent frames that are limited in resolution due to bandwidth
@@ -196382,7 +196402,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.BandwidthLimitedResolutionsDisabled"
-    units="disabled resolutions" expires_after="2021-02-21">
+    units="disabled resolutions" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196393,7 +196415,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.BitrateReceivedInKbps" units="kbps"
-    expires_after="2021-01-03">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received bits per second for a received video stream. Recorded
@@ -196403,7 +196427,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.BitrateSentInKbps" units="kbps"
-    expires_after="2021-02-07">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent bits per second for a sent video stream. Recorded when a
@@ -196426,7 +196452,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.CpuLimitedResolutionInPercent" units="%"
-    expires_after="2021-02-07">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of frames that are limited in resolution due to CPU for a sent
@@ -196435,7 +196463,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.CurrentDelayInMs" units="ms"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Average current delay for a received video stream. This is the actual delay
@@ -196445,7 +196475,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Decoded.Vp8.Qp" units="qp value"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average QP (quantizer value) per frame for a received VP8 video stream.
@@ -196454,7 +196486,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.DecodedFramesPerSecond" units="fps"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of decoded frames per second for a received video stream.
@@ -196463,8 +196497,9 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.DecodeTimeInMs" units="ms"
-    expires_after="2020-12-27">
+<histogram name="WebRTC.Video.DecodeTimeInMs" units="ms" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average decode time per frame for a received video stream. Recorded when
@@ -196482,7 +196517,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.DelayedFramesToRenderer" units="%"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of delayed frames to renderer for a received video stream.
@@ -196491,7 +196528,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.DelayedFramesToRenderer_AvgDelayInMs" units="ms"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average delay of delayed frames to renderer for a received video stream.
@@ -196512,7 +196551,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.DroppedFrames.Capturer" units="frames"
-    expires_after="2020-11-01">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196522,7 +196563,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.DroppedFrames.Encoder" units="frames"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196532,7 +196575,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.DroppedFrames.EncoderQueue" units="frames"
-    expires_after="2020-11-22">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196542,7 +196587,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.DroppedFrames.Ratelimiter" units="frames"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196552,7 +196599,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.DroppedFrames.Receiver" units="frames"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196574,7 +196623,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Encoded.Qp" units="qp value"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average QP (quantizer value) per frame for a sent video stream. Recorded
@@ -196583,7 +196634,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Encoder.CodecType" enum="WebRtcVideoCodecs"
-    expires_after="2021-01-24">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196593,8 +196646,9 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.EncodeTimeInMs" units="ms"
-    expires_after="2020-12-27">
+<histogram name="WebRTC.Video.EncodeTimeInMs" units="ms" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average encode time per frame for a sent video stream. Recorded when a
@@ -196603,7 +196657,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.EndToEndDelayInMs" units="ms"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average end-to-end delay per frame for a received video stream. Recorded
@@ -196612,7 +196668,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.EndToEndDelayMaxInMs" units="ms"
-    expires_after="2021-01-10">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196622,7 +196680,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.FecBitrateReceivedInKbps" units="kbps"
-    expires_after="2020-10-18">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received FEC bits per second for a received video stream.
@@ -196632,7 +196692,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.FecBitrateSentInKbps" units="kbps"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent FEC bits per second for a sent video stream. Recorded
@@ -196642,7 +196704,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.FirPacketsReceivedPerMinute"
-    units="packets/minute" expires_after="2020-10-25">
+    units="packets/minute" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received RTCP FIR packets per minute for a sent video stream.
@@ -196652,7 +196716,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.FirPacketsSentPerMinute" units="packets/minute"
-    expires_after="2020-11-22">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent RTCP FIR packets per minute for a received video stream.
@@ -196662,7 +196728,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.H264DecoderImpl.Event"
-    enum="WebRtcH264DecoderImplEvent" expires_after="2020-12-27">
+    enum="WebRtcH264DecoderImplEvent" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>hbos@chromium.org</owner>
   <summary>
     The number of |H264DecoderImpl| events, such as an initialization or
@@ -196675,7 +196743,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.H264EncoderImpl.Event"
-    enum="WebRtcH264EncoderImplEvent" expires_after="2020-12-27">
+    enum="WebRtcH264EncoderImplEvent" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>hbos@chromium.org</owner>
   <summary>
     The number of |H264EncoderImpl| events, such as an initialization or
@@ -196699,7 +196769,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.InputFramesPerSecond" units="fps"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of incoming frames per second for a sent video stream. Recorded
@@ -196709,7 +196781,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.InputHeightInPixels" units="pixels"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average input height per frame (for incoming frames to video engine) for
@@ -196718,7 +196792,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.InputWidthInPixels" units="pixels"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average input width per frame (for incoming frames to video engine) for
@@ -196727,7 +196803,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.InterframeDelay95PercentileInMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196737,7 +196813,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.InterframeDelayInMs" units="ms"
-    expires_after="2020-11-15">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196747,7 +196825,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.InterframeDelayMaxInMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196757,7 +196837,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.JitterBufferDelayInMs" units="ms"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Average jitter buffer delay for a received video stream. Recorded when a
@@ -196766,7 +196848,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.KeyFramesReceivedInPermille" units="permille"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Permille of frames that are key frames for a received video stream. Recorded
@@ -196775,7 +196859,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.KeyFramesSentInPermille" units="permille"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Permille of frames that are key frames for a sent video stream. Recorded
@@ -196784,7 +196870,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.MeanFreezeDurationMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196794,7 +196882,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.MeanTimeBetweenFreezesMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196804,7 +196894,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.MediaBitrateReceivedInKbps" units="kbps"
-    expires_after="2021-01-03">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received media payload bits per second for a received video
@@ -196814,7 +196906,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.MediaBitrateSentInKbps" units="kbps"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent media payload bits per second for a sent video stream.
@@ -196824,7 +196918,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.NackPacketsReceivedPerMinute"
-    units="packets/minute" expires_after="2021-01-03">
+    units="packets/minute" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received RTCP NACK packets per minute for a sent video stream.
@@ -196834,7 +196930,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.NackPacketsSentPerMinute" units="packets/minute"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent RTCP NACK packets per minute for a received video stream.
@@ -196844,7 +196942,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.NumberFreezesPerMinute" units="freezes/minute"
-    expires_after="2020-10-04">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ssilkin@chromium.org</owner>
   <summary>
     The number of video freezes per minute for a received video stream. Recorded
@@ -196853,7 +196953,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.NumberOfPauseEvents" units="pause events"
-    expires_after="2020-10-04">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of times a video stream has been paused/resumed during a call.
@@ -196862,7 +196964,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.NumberResolutionDownswitchesPerMinute"
-    units="switches/minute" expires_after="2020-11-01">
+    units="switches/minute" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -196871,8 +196975,9 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.OnewayDelayInMs" units="ms"
-    expires_after="2021-02-14">
+<histogram name="WebRTC.Video.OnewayDelayInMs" units="ms" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Average delay (network delay (rtt/2) + jitter delay + decode time + render
@@ -196881,7 +196986,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.PaddingBitrateReceivedInKbps" units="kbps"
-    expires_after="2021-01-03">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received padding bits per second for a received video stream.
@@ -196891,7 +196998,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.PaddingBitrateSentInKbps" units="kbps"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent padding bits per second for a sent video stream. Recorded
@@ -196901,7 +197010,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.PausedTimeInPercent" units="%"
-    expires_after="2020-10-25">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of time that the video has been paused for a sent video stream.
@@ -196910,7 +197021,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.PliPacketsReceivedPerMinute"
-    units="packets/minute" expires_after="2021-02-21">
+    units="packets/minute" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received RTCP PLI packets per minute for a sent video stream.
@@ -196920,7 +197033,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.PliPacketsSentPerMinute" units="packets/minute"
-    expires_after="2021-02-07">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent RTCP PLI packets per minute for a received video stream.
@@ -196930,7 +197045,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.QualityLimitedResolutionDownscales"
-    units="downscales" expires_after="2021-01-24">
+    units="downscales" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     For frames that are downscaled in resolution due to quality, the average
@@ -196940,7 +197057,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.QualityLimitedResolutionInPercent" units="%"
-    expires_after="2021-02-07">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of sent frames that are downscaled in resolution due to quality
@@ -196949,7 +197068,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.ReceivedFecPacketsInPercent" units="%"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of received FEC packets for a received video stream. Recorded
@@ -196958,7 +197079,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.ReceivedHeightInPixels" units="pixels"
-    expires_after="2021-01-24">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average received height per frame for a received video stream. Recorded
@@ -196967,7 +197090,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.ReceivedPacketsLostInPercent" units="%"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of received packets lost for a received video stream. Recorded
@@ -196976,7 +197101,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.ReceivedWidthInPixels" units="pixels"
-    expires_after="2021-01-24">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average received width per frame for a received video stream. Recorded
@@ -196985,7 +197112,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.ReceiveStreamLifetimeInSeconds" units="seconds"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The lifetime of a video receive stream. Recorded when a VideoReceiveStream
@@ -196994,7 +197123,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.RecoveredMediaPacketsInPercentOfFec" units="%"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of recovered media packets from FEC packets for a received video
@@ -197003,7 +197134,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.RenderFramesPerSecond" units="fps"
-    expires_after="2021-02-07">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent frames to the renderer per second for a received video
@@ -197013,7 +197146,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.RenderSqrtPixelsPerSecond" units="pps"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of pixels (sqrt(width*height)) of sent frames to the renderer per
@@ -197023,7 +197158,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.RetransmittedBitrateReceivedInKbps" units="kbps"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of retransmitted bits per second for a received video stream.
@@ -197033,7 +197170,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.RetransmittedBitrateSentInKbps" units="kbps"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of retransmitted bits per second for a sent video stream.
@@ -197043,7 +197182,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.RtpToNtpFreqOffsetInKhz" units="kHz"
-    expires_after="2020-10-25">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The absolute value of the difference between the estimated frequency during
@@ -197055,7 +197196,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.RtxBitrateReceivedInKbps" units="kbps"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of received bits over RTX per second for a received video stream.
@@ -197065,7 +197208,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.RtxBitrateSentInKbps" units="kbps"
-    expires_after="2020-10-25">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent bits over RTX per second for a sent video stream.
@@ -197075,7 +197220,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.BandwidthLimitedResolutionInPercent"
-    units="%" expires_after="2020-07-13">
+    units="%" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Percentage of sent frames that are limited in resolution due to bandwidth
@@ -197084,7 +197231,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.BandwidthLimitedResolutionsDisabled"
-    units="disabled resolutions" expires_after="M82">
+    units="disabled resolutions" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     For frames that are limited in resolution due to bandwidth, the average
@@ -197094,7 +197243,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.BitrateSentInKbps" units="kbps"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of sent bits per second for a sent screenshare stream. Recorded
@@ -197104,7 +197255,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.Decoded.Vp8.Qp" units="qp value"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197114,7 +197267,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.DroppedFrames.Capturer"
-    units="frames" expires_after="M88">
+    units="frames" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197124,7 +197279,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.DroppedFrames.Encoder" units="frames"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197134,7 +197291,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.DroppedFrames.EncoderQueue"
-    units="frames" expires_after="M88">
+    units="frames" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197144,7 +197303,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.DroppedFrames.Ratelimiter"
-    units="frames" expires_after="M88">
+    units="frames" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197154,7 +197315,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.EncodeTimeInMs" units="ms"
-    expires_after="M80">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The average encode time per frame for a sent (screen content) video stream.
@@ -197163,7 +197326,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.EndToEndDelayInMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197173,7 +197338,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.EndToEndDelayMaxInMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197183,7 +197350,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.FecBitrateSentInKbps" units="kbps"
-    expires_after="M80">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of sent FEC bits per second for a sent screenshare stream.
@@ -197193,7 +197362,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.FirPacketsReceivedPerMinute"
-    units="packets/minute" expires_after="M80">
+    units="packets/minute" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of received RTCP FIR packets per minute for a sent screenshare
@@ -197203,7 +197374,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.FramesPerDrop"
-    units="sent/dropped ratio" expires_after="2020-08-31">
+    units="sent/dropped ratio" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Ratio of sent frames to dropped frames at the encoder. The value is reported
@@ -197213,7 +197386,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.FramesPerOvershoot"
-    units="sent/overshoot ratio" expires_after="M80">
+    units="sent/overshoot ratio" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Ratio of sent frames to number of re-encoded frames (due to target bitrate
@@ -197223,7 +197398,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.InputFramesPerSecond" units="fps"
-    expires_after="M80">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of incoming frames per second for a sent (screen content) video
@@ -197233,7 +197410,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.InputHeightInPixels" units="pixels"
-    expires_after="M80">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The average input height per frame (for incoming frames to video engine) for
@@ -197242,7 +197421,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.InputWidthInPixels" units="pixels"
-    expires_after="M80">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The average input width per frame (for incoming frames to video engine) for
@@ -197251,7 +197432,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.InterframeDelay95PercentileInMs"
-    units="ms" expires_after="M88">
+    units="ms" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197261,7 +197444,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.InterframeDelayInMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197271,7 +197456,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.InterframeDelayMaxInMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197281,7 +197468,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.KeyFramesReceivedInPermille"
-    units="permille" expires_after="M88">
+    units="permille" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197291,7 +197480,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.KeyFramesSentInPermille"
-    units="permille" expires_after="M81">
+    units="permille" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Permille of frames that are key frames for a sent (screen content) video
@@ -197300,7 +197491,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.Layer0" units="units"
-    expires_after="M81">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Stats for the lower layer (TL0) of a screenshare stream in conference mode.
@@ -197308,7 +197501,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.Layer1" units="units"
-    expires_after="M81">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Stats for the higher layer (TL1) of a screenshare stream in conference mode.
@@ -197316,7 +197511,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.MeanFreezeDurationMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197326,7 +197523,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.MeanTimeBetweenFreezesMs" units="ms"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197336,7 +197535,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.MediaBitrateReceivedInKbps"
-    units="kbps" expires_after="M88">
+    units="kbps" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197347,7 +197548,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.MediaBitrateSentInKbps" units="kbps"
-    expires_after="M80">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of sent media payload bits per second for a sent screenshare
@@ -197357,7 +197560,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.NackPacketsReceivedPerMinute"
-    units="packets/minute" expires_after="M81">
+    units="packets/minute" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of received RTCP NACK packets per minute for a sent screenshare
@@ -197379,7 +197584,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.PaddingBitrateSentInKbps"
-    units="kbps" expires_after="M86">
+    units="kbps" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of sent padding bits per second for a sent screenshare stream.
@@ -197389,7 +197596,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.PliPacketsReceivedPerMinute"
-    units="packets/minute" expires_after="M86">
+    units="packets/minute" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of received RTCP PLI packets per minute for a sent screenshare
@@ -197399,7 +197608,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.QualityLimitedResolutionDownscales"
-    units="downscales" expires_after="M85">
+    units="downscales" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     For frames that are downscaled in resolution due to quality, the average
@@ -197409,7 +197620,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.QualityLimitedResolutionInPercent"
-    units="%" expires_after="M85">
+    units="%" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Percentage of sent frames that are downscaled in resolution due to quality
@@ -197418,7 +197631,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.ReceivedHeightInPixels"
-    units="pixels" expires_after="M88">
+    units="pixels" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197428,7 +197643,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.ReceivedPacketsLostInPercent"
-    units="%" expires_after="M88">
+    units="%" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197438,7 +197655,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.ReceivedWidthInPixels" units="pixels"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197448,7 +197667,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.ReceiveStreamLifetimeInSeconds"
-    units="seconds" expires_after="M88">
+    units="seconds" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197458,7 +197679,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.RetransmittedBitrateSentInKbps"
-    units="kbps" expires_after="M81">
+    units="kbps" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of retransmitted bits per second for a sent screenshare stream.
@@ -197468,7 +197691,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.RtxBitrateSentInKbps" units="kbps"
-    expires_after="M83">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The number of sent bits over RTX per second for a sent screenshare stream.
@@ -197478,7 +197703,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.SendSideDelayInMs" units="ms"
-    expires_after="M81">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The average delay (of average delays) of sent packets for a sent (screen
@@ -197491,7 +197718,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.SendSideDelayMaxInMs" units="ms"
-    expires_after="M81">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The average delay (of max delays) of sent packets for a sent (screen
@@ -197504,7 +197733,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.SentFramesPerSecond" units="fps"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197515,7 +197746,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.SentHeightInPixels" units="pixels"
-    expires_after="M85">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The average sent height per frame for a sent (screen content) video stream.
@@ -197524,7 +197757,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.SentPacketsLostInPercent" units="%"
-    expires_after="M81">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Percentage of sent packets lost for a sent screenshare stream. Recorded when
@@ -197533,7 +197768,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.SentToInputFpsRatioPercent" units="%"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197545,7 +197782,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.SentWidthInPixels" units="pixels"
-    expires_after="M86">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     The average sent width per frame for a sent (screen content) video stream.
@@ -197554,7 +197793,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.TimeInBlockyVideoPercentage"
-    units="%" expires_after="M88">
+    units="%" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197564,7 +197805,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.TimeInHdPercentage" units="%"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197574,7 +197817,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.UniqueNackRequestsReceivedInPercent"
-    units="%" expires_after="M80">
+    units="%" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>sprang@chromium.org</owner>
   <summary>
     Percentage of unique RTCP NACK requests that are received in response to a
@@ -197582,8 +197827,9 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.SendDelayInMs" units="ms"
-    expires_after="2021-02-14">
+<histogram name="WebRTC.Video.SendDelayInMs" units="ms" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average send delay of sent packets for a sent video stream. Recorded
@@ -197593,7 +197839,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.SendSideDelayInMs" units="ms"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average delay (of average delays) of sent packets for a sent video
@@ -197605,7 +197853,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.SendSideDelayMaxInMs" units="ms"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average delay (of max delays) of sent packets for a sent video stream.
@@ -197617,7 +197867,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.SendStreamLifetimeInSeconds" units="seconds"
-    expires_after="2020-12-27">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The lifetime of a video send stream. Recorded when a VideoSendStream
@@ -197626,7 +197878,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.SentFramesPerSecond" units="fps"
-    expires_after="2021-02-14">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The number of sent frames per second for a sent video stream. Recorded when
@@ -197636,7 +197890,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.SentHeightInPixels" units="pixels"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average sent height per frame for a sent video stream. Recorded when a
@@ -197645,7 +197901,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.SentPacketsLostInPercent" units="%"
-    expires_after="2021-02-07">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of sent packets lost for a sent video stream. Recorded when a
@@ -197654,7 +197912,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.SentToInputFpsRatioPercent" units="%"
-    expires_after="M88">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197665,7 +197925,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.SentWidthInPixels" units="pixels"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     The average sent width per frame for a sent video stream. Recorded when a
@@ -197673,8 +197935,9 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Video.TargetDelayInMs" units="ms"
-    expires_after="2021-02-21">
+<histogram name="WebRTC.Video.TargetDelayInMs" units="ms" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Average target delay (jitter delay + decode time + render delay) for a
@@ -197683,7 +197946,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.TimeInBlockyVideoPercentage" units="%"
-    expires_after="2020-11-15">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197693,7 +197958,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.TimeInHdPercentage" units="%"
-    expires_after="2020-10-25">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -197703,7 +197970,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.UniqueNackRequestsReceivedInPercent" units="%"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of unique RTCP NACK requests that are received in response to a
@@ -197712,7 +197981,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.UniqueNackRequestsSentInPercent" units="%"
-    expires_after="2021-02-21">
+    expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>asapersson@chromium.org</owner>
   <summary>
     Percentage of unique RTCP NACK requests that are sent in response to a
@@ -197721,7 +197992,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Video.VP8DecoderImpl.TooManyPendingFrames"
-    units="counts" expires_after="M85">
+    units="counts" expires_after="never">
+<!-- expires-never: WebRTC health metric. -->
+
   <owner>perkj@chromium.org</owner>
   <summary>
     Counts occurences of if the VP8 software decoder runs out of buffers due to
