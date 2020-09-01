@@ -139,6 +139,7 @@ source_set("password_util") {
   deps = [
     "//base",
     "//ios/chrome/common/app_group",
+    "//ios/chrome/credential_provider_extension:metrics_util",
   ]
   frameworks = [
     "Security.framework",

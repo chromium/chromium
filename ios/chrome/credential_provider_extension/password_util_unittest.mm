@@ -102,4 +102,14 @@ TEST_F(PasswordUtilKeychainTest, CheckRestoreOfSavedPasswords) {
   RemovePasswordForKey(kCredentialKey2);
 }
 
+// Tests retrieval of saved passwords, using an empty string as arg.
+TEST_F(PasswordUtilKeychainTest, EmptyArgument) {
+  ASSERT_TRUE([PasswordWithKeychainIdentifier(@"") isEqualToString:@""]);
+}
+
+// Tests retrieval of saved passwords, nil as arg.
+TEST_F(PasswordUtilKeychainTest, NilArgument) {
+  ASSERT_TRUE([PasswordWithKeychainIdentifier(nil) isEqualToString:@""]);
+}
+
 }  // credential_provider_extension

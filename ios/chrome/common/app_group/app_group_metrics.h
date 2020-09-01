@@ -62,6 +62,14 @@ extern NSString* const kCredentialExtensionPasswordUseCount;
 // a Password to the context without direct user intervention.
 extern NSString* const kCredentialExtensionQuickPasswordUseCount;
 
+// An app_group key to the number of times Credential Extension couldn't
+// find a password in the keychain.
+extern NSString* const kCredentialExtensionFetchPasswordFailureCount;
+
+// An app_group key to the number of times Credential Extension was queried
+// for a password with a nil argument.
+extern NSString* const kCredentialExtensionFetchPasswordNilArgumentCount;
+
 // Offsets the sessionID to avoid collision. The sessionID is limited to 1<<23.
 int AppGroupSessionID(int sessionID, AppGroupApplications application);
 

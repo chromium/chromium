@@ -78,6 +78,21 @@ void RecordWidgetUsage() {
                                credential_extension_quick_password_use_count);
   [shared_defaults setInteger:0
                        forKey:kCredentialExtensionQuickPasswordUseCount];
+  int credential_extension_fetch_password_failure_count = [shared_defaults
+      integerForKey:kCredentialExtensionFetchPasswordFailureCount];
+  base::UmaHistogramCounts1000(
+      "IOS.CredentialExtension.FetchPasswordFailure",
+      credential_extension_fetch_password_failure_count);
+  [shared_defaults setInteger:0
+                       forKey:kCredentialExtensionFetchPasswordFailureCount];
+  int credential_extension_fetch_password_nil_argument_count = [shared_defaults
+      integerForKey:kCredentialExtensionFetchPasswordNilArgumentCount];
+  base::UmaHistogramCounts1000(
+      "IOS.CredentialExtension.FetchPasswordNilArgument",
+      credential_extension_fetch_password_nil_argument_count);
+  [shared_defaults
+      setInteger:0
+          forKey:kCredentialExtensionFetchPasswordNilArgumentCount];
 }
 
 void ProcessPendingLogs(ProceduralBlockWithData callback) {
