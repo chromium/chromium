@@ -93,7 +93,11 @@ class EVPBackedPrivateKey : public VirtualFidoDevice::PrivateKey {
     ret.resize(EVP_PKEY_size(pkey_.get()));
 
     size_t sig_len = ret.size();
-    CHECK(EVP_DigestSignInit(md_ctx.get(), /*pctx=*/nullptr, EVP_sha256(),
+    // Ed25519 does not separate out the hash function as an independent
+    // variable so it must be nullptr in that case.
+    const EVP_MD* digest =
+        EVP_PKEY_id(pkey_.get()) == EVP_PKEY_ED25519 ? nullptr : EVP_sha256();
+    CHECK(EVP_DigestSignInit(md_ctx.get(), /*pctx=*/nullptr, digest,
                              /*engine=*/nullptr, pkey_.get()) &&
           EVP_DigestSign(md_ctx.get(), ret.data(), &sig_len, msg.data(),
                          msg.size()) &&

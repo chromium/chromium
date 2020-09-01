@@ -41,6 +41,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/test/test_render_frame_host.h"
+#include "crypto/sha2.h"
 #include "device/base/features.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -3354,6 +3355,72 @@ TEST_F(AuthenticatorImplTest, GetPublicKey) {
     ASSERT_TRUE(pkey.get());
 
     EXPECT_EQ(test.evp_id.value(), EVP_PKEY_id(pkey.get()));
+  }
+}
+
+TEST_F(AuthenticatorImplTest, VirtualAuthenticatorPublicKeyAlgos) {
+  // Exercise all the public key types in the virtual authenticator for create()
+  // and get().
+  device::VirtualCtap2Device::Config config;
+  virtual_device_factory_->SetCtap2Config(config);
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  static const struct {
+    device::CoseAlgorithmIdentifier algo;
+    const EVP_MD* digest;
+  } kTests[] = {
+      {device::CoseAlgorithmIdentifier::kEs256, EVP_sha256()},
+      {device::CoseAlgorithmIdentifier::kRs256, EVP_sha256()},
+      {device::CoseAlgorithmIdentifier::kEdDSA, nullptr},
+  };
+
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(static_cast<int>(test.algo));
+
+    PublicKeyCredentialCreationOptionsPtr create_options =
+        GetTestPublicKeyCredentialCreationOptions();
+    create_options->public_key_parameters =
+        GetTestPublicKeyCredentialParameters(static_cast<int32_t>(test.algo));
+
+    MakeCredentialResult create_result =
+        AuthenticatorMakeCredential(std::move(create_options));
+    ASSERT_EQ(create_result.status, AuthenticatorStatus::SUCCESS);
+    EXPECT_EQ(create_result.response->public_key_algo,
+              static_cast<int32_t>(test.algo));
+
+    const std::vector<uint8_t>& public_key_der =
+        create_result.response->public_key_der.value();
+    CBS cbs;
+    CBS_init(&cbs, public_key_der.data(), public_key_der.size());
+    bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
+    EXPECT_EQ(0u, CBS_len(&cbs));
+    ASSERT_TRUE(pkey.get());
+
+    PublicKeyCredentialRequestOptionsPtr get_options =
+        GetTestPublicKeyCredentialRequestOptions();
+    device::PublicKeyCredentialDescriptor public_key(
+        device::CredentialType::kPublicKey,
+        create_result.response->info->raw_id,
+        {device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
+    get_options->allow_credentials = {std::move(public_key)};
+    GetAssertionResult get_result =
+        AuthenticatorGetAssertion(std::move(get_options));
+    ASSERT_EQ(get_result.status, AuthenticatorStatus::SUCCESS);
+    base::span<const uint8_t> signature(get_result.response->signature);
+    std::vector<uint8_t> signed_data(
+        get_result.response->info->authenticator_data);
+    const std::array<uint8_t, crypto::kSHA256Length> client_data_json_hash(
+        crypto::SHA256Hash(get_result.response->info->client_data_json));
+    signed_data.insert(signed_data.end(), client_data_json_hash.begin(),
+                       client_data_json_hash.end());
+
+    bssl::ScopedEVP_MD_CTX md_ctx;
+    ASSERT_EQ(EVP_DigestVerifyInit(md_ctx.get(), /*pctx=*/nullptr, test.digest,
+                                   /*engine=*/nullptr, pkey.get()),
+              1);
+    EXPECT_EQ(EVP_DigestVerify(md_ctx.get(), signature.data(), signature.size(),
+                               signed_data.data(), signed_data.size()),
+              1);
   }
 }
 
