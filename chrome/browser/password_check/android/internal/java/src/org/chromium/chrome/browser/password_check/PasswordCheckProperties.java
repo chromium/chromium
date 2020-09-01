@@ -82,10 +82,12 @@ class PasswordCheckProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("launch_account_checkup_action");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> RESTART_BUTTON_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("restart_button_action");
+        static final PropertyModel.WritableBooleanPropertyKey SHOW_CHECK_SUBTITLE =
+                new PropertyModel.WritableBooleanPropertyKey("show_check_subtitle");
 
         static final PropertyKey[] ALL_KEYS = {CHECK_PROGRESS, CHECK_STATUS, CHECK_TIMESTAMP,
-                COMPROMISED_CREDENTIALS_COUNT, LAUNCH_ACCOUNT_CHECKUP_ACTION,
-                RESTART_BUTTON_ACTION};
+                COMPROMISED_CREDENTIALS_COUNT, LAUNCH_ACCOUNT_CHECKUP_ACTION, RESTART_BUTTON_ACTION,
+                SHOW_CHECK_SUBTITLE};
 
         static final Pair<Integer, Integer> UNKNOWN_PROGRESS = new Pair<>(-1, -1);
 

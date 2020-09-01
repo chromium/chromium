@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.password_check.PasswordCheckProperties
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.COMPROMISED_CREDENTIALS_COUNT;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.LAUNCH_ACCOUNT_CHECKUP_ACTION;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.RESTART_BUTTON_ACTION;
+import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.SHOW_CHECK_SUBTITLE;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.HeaderProperties.UNKNOWN_PROGRESS;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.ITEMS;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.VIEW_CREDENTIAL;
@@ -132,6 +133,7 @@ class PasswordCheckMediator
                              .with(COMPROMISED_CREDENTIALS_COUNT, null)
                              .with(LAUNCH_ACCOUNT_CHECKUP_ACTION, mLaunchCheckupInAccount)
                              .with(RESTART_BUTTON_ACTION, this::startCheckManually)
+                             .with(SHOW_CHECK_SUBTITLE, false)
                              .build();
         } else {
             header = items.get(0).model;
@@ -144,6 +146,7 @@ class PasswordCheckMediator
         if (status == PasswordCheckUIStatus.IDLE) {
             compromisedCredentialCount = getPasswordCheck().getCompromisedCredentialsCount();
             checkTimestamp = getPasswordCheck().getLastCheckTimestamp();
+            header.set(SHOW_CHECK_SUBTITLE, true);
         }
         header.set(CHECK_TIMESTAMP, checkTimestamp);
         header.set(COMPROMISED_CREDENTIALS_COUNT, compromisedCredentialCount);
@@ -266,10 +269,13 @@ class PasswordCheckMediator
         assert items.size() >= 1;
 
         PropertyModel header = items.get(0).model;
+        Integer compromisedCredentialsCount = getPasswordCheck().getCompromisedCredentialsCount();
         if (header.get(CHECK_STATUS) == PasswordCheckUIStatus.IDLE) {
-            header.set(COMPROMISED_CREDENTIALS_COUNT,
-                    Integer.valueOf(getPasswordCheck().getCompromisedCredentialsCount()));
+            header.set(COMPROMISED_CREDENTIALS_COUNT, compromisedCredentialsCount);
         }
+        header.set(SHOW_CHECK_SUBTITLE,
+                compromisedCredentialsCount > 0
+                        || header.get(CHECK_STATUS) == PasswordCheckUIStatus.IDLE);
     }
 
     public void stopCheck() {
