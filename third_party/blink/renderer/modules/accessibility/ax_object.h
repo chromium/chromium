@@ -31,8 +31,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_OBJECT_H_
 
 #include <ostream>
+#include <utility>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -670,7 +672,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual ax::mojom::blink::TextPosition GetTextPosition() const {
     return ax::mojom::blink::TextPosition::kNone;
   }
-  virtual int TextLength() const { return 0; }
 
   virtual void GetTextStyleAndTextDecorationStyle(
       int32_t* text_style,
@@ -693,8 +694,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // settings->inlineTextBoxAccessibilityEnabled() is false.
   virtual void LoadInlineTextBoxes() {}
 
-  // Walk the AXObjects on the same line. This is supported on any
-  // object type but primarily intended to be used for inline text boxes.
+  // Walk the AXObjects on the same line.
   virtual AXObject* NextOnLine() const { return nullptr; }
   virtual AXObject* PreviousOnLine() const { return nullptr; }
 
@@ -702,18 +702,52 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // marker, such as spelling or grammar error.
   virtual void Markers(Vector<DocumentMarker::MarkerType>&,
                        Vector<AXRange>&) const;
-  // For an inline text box.
-  // The integer horizontal pixel offset of each character in the string;
-  // negative values for RTL.
+
+  // For all inline text objects: Returns the horizontal pixel offset of each
+  // character in the object's text, rounded to the nearest integer. Negative
+  // values are returned for RTL text.
   virtual void TextCharacterOffsets(Vector<int>&) const;
-  // The start and end character offset of each word in the object's text.
+
+  // For all inline text boxes: Returns the start and end character offset of
+  // each word in the object's text.
   virtual void GetWordBoundaries(Vector<int>& word_starts,
                                  Vector<int>& word_ends) const;
-  // Returns the text offset (text offset as in AXPosition, not as in
-  // pixel offset) in the container of an inline text box.
-  virtual unsigned TextOffsetInContainer(unsigned offset) const {
-    return offset;
-  }
+
+  virtual int TextLength() const { return 0; }
+
+  // Supported on layout inline, layout text, layout replaced, layout block flow
+  // and native text field. For all other object types, returns |offset|.
+  //
+  // For layout inline, text, replaced, and block flow: Translates the given
+  // character offset to the equivalent offset in the object's formatting
+  // context. This is the deepest block flow ancestor, (excluding the current
+  // object), e.g. a paragraph. If this object is somehow not a descendant of a
+  // block flow in the layout tree, returns the given offset.
+  //
+  // For example, if the given offset is 0, this would return the number of
+  // characters, excluding any collapsed white space found in the DOM, from the
+  // start of the layout inline's deepest block flow ancestor, e.g. the
+  // beginning of the paragraph in which a span is found.
+  //
+  // For native text fields: Simply returns |offset|, because native text fields
+  // have no collapsed white space and so no translation is necessary.
+  virtual int TextOffsetInFormattingContext(int offset) const;
+
+  // For all inline text boxes and native text fields. For all other object
+  // types, returns |offset|.
+  //
+  // For inline text boxes: Translates the given character offset to the
+  // equivalent offset in the object's static text or line break parent. If this
+  // object is somehow not a descendant of a block flow in the layout tree,
+  // returns the given offset.
+  //
+  // For example, if the given offset is 0, this would return the number of
+  // characters, excluding any collapsed white space found in the DOM, from the
+  // start of the inline text box's static text parent.
+  //
+  // For native text fields: Simply returns |offset|, because native text fields
+  // have no collapsed white space and so no translation is necessary.
+  virtual int TextOffsetInContainer(int offset) const;
 
   // Properties of interactive elements.
   ax::mojom::blink::DefaultActionVerb Action() const;

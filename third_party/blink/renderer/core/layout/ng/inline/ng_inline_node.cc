@@ -864,7 +864,7 @@ const NGOffsetMapping* NGInlineNode::GetOffsetMapping(
   }
 
   // If this is not LayoutNG, compute the offset mapping and store into
-  // |LayoutBlockFlowRateData|.
+  // |LayoutBlockFlowRareData|.
   if (const NGOffsetMapping* mapping = layout_block_flow->GetOffsetMapping())
     return mapping;
   NGInlineNodeData data;

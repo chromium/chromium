@@ -38,28 +38,21 @@ namespace blink {
 class Node;
 class AXObjectCacheImpl;
 
+// Encapsulates an AbstractInlineTextBox and adapts it for use in Blink's
+// accessibility tree.
 class AXInlineTextBox final : public AXObject {
  public:
   AXInlineTextBox(scoped_refptr<AbstractInlineTextBox>, AXObjectCacheImpl&);
 
- protected:
-  void Init() override;
-  void Detach() override;
-  bool IsDetached() const override { return !inline_text_box_; }
-  bool IsAXInlineTextBox() const override { return true; }
-
-  bool IsLineBreakingObject() const override;
-
- public:
-  ax::mojom::Role RoleValue() const override {
-    return ax::mojom::Role::kInlineTextBox;
-  }
-  String GetName(ax::mojom::NameFrom&,
+  // AXObject overrides.
+  ax::mojom::blink::Role RoleValue() const override;
+  String GetName(ax::mojom::blink::NameFrom&,
                  AXObject::AXObjectVector* name_objects) const override;
   void TextCharacterOffsets(Vector<int>&) const override;
   void GetWordBoundaries(Vector<int>& word_starts,
                          Vector<int>& word_ends) const override;
-  unsigned TextOffsetInContainer(unsigned offset) const override;
+  int TextOffsetInFormattingContext(int offset) const override;
+  int TextOffsetInContainer(int offset) const override;
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,
                          SkMatrix44& out_container_transform,
@@ -70,10 +63,18 @@ class AXInlineTextBox final : public AXObject {
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
 
- private:
-  scoped_refptr<AbstractInlineTextBox> inline_text_box_;
+ protected:
+  void Init() override;
+  void Detach() override;
+  bool IsDetached() const override;
+  bool IsAXInlineTextBox() const override;
+  bool IsLineBreakingObject() const override;
+  int TextLength() const override;
 
+ private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
+
+  scoped_refptr<AbstractInlineTextBox> inline_text_box_;
 
   DISALLOW_COPY_AND_ASSIGN(AXInlineTextBox);
 };

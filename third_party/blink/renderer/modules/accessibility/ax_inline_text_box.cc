@@ -28,13 +28,16 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 
-#include "third_party/blink/renderer/core/dom/range.h"
+#include <utility>
+
+#include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
-#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
 
@@ -43,22 +46,8 @@ AXInlineTextBox::AXInlineTextBox(
     AXObjectCacheImpl& ax_object_cache)
     : AXObject(ax_object_cache), inline_text_box_(std::move(inline_text_box)) {}
 
-void AXInlineTextBox::Init() {}
-
-void AXInlineTextBox::Detach() {
-  AXObject::Detach();
-  inline_text_box_ = nullptr;
-}
-
-bool AXInlineTextBox::IsLineBreakingObject() const {
-  if (IsDetached())
-    return AXObject::IsLineBreakingObject();
-
-  // If this object is a forced line break, or the parent is a <br>
-  // element, then this object is line breaking.
-  const AXObject* parent = ParentObject();
-  return inline_text_box_->IsLineBreak() ||
-         (parent && parent->RoleValue() == ax::mojom::Role::kLineBreak);
+ax::mojom::blink::Role AXInlineTextBox::RoleValue() const {
+  return ax::mojom::blink::Role::kInlineTextBox;
 }
 
 void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
@@ -70,8 +59,9 @@ void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
   out_container_transform.setIdentity();
 
   if (!inline_text_box_ || !ParentObject() ||
-      !ParentObject()->GetLayoutObject())
+      !ParentObject()->GetLayoutObject()) {
     return;
+  }
 
   *out_container = ParentObject();
   out_bounds_in_container = FloatRect(inline_text_box_->LocalBounds());
@@ -99,17 +89,16 @@ bool AXInlineTextBox::ComputeAccessibilityIsIgnored(
 }
 
 void AXInlineTextBox::TextCharacterOffsets(Vector<int>& offsets) const {
-  if (!inline_text_box_)
+  if (IsDetached())
     return;
 
-  unsigned len = inline_text_box_->Len();
   Vector<float> widths;
   inline_text_box_->CharacterWidths(widths);
-  DCHECK_EQ(widths.size(), len);
-  offsets.resize(len);
+  DCHECK_EQ(int{widths.size()}, TextLength());
+  offsets.resize(TextLength());
 
   float width_so_far = 0;
-  for (unsigned i = 0; i < len; i++) {
+  for (int i = 0; i < TextLength(); i++) {
     width_so_far += widths[i];
     offsets[i] = roundf(width_so_far);
   }
@@ -118,8 +107,9 @@ void AXInlineTextBox::TextCharacterOffsets(Vector<int>& offsets) const {
 void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
                                         Vector<int>& word_ends) const {
   if (!inline_text_box_ ||
-      inline_text_box_->GetText().ContainsOnlyWhitespaceOrEmpty())
+      inline_text_box_->GetText().ContainsOnlyWhitespaceOrEmpty()) {
     return;
+  }
 
   Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
   inline_text_box_->GetWordBoundaries(boundaries);
@@ -131,19 +121,44 @@ void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
   }
 }
 
-unsigned AXInlineTextBox::TextOffsetInContainer(unsigned offset) const {
-  if (!inline_text_box_)
+int AXInlineTextBox::TextOffsetInFormattingContext(int offset) const {
+  DCHECK_GE(offset, 0);
+  if (IsDetached())
     return 0;
 
-  return inline_text_box_->TextOffsetInContainer(offset);
+  // Retrieve the text offset from the start of the layout block flow ancestor.
+  return int{inline_text_box_->TextOffsetInFormattingContext(
+      static_cast<unsigned int>(offset))};
 }
 
-String AXInlineTextBox::GetName(ax::mojom::NameFrom& name_from,
+int AXInlineTextBox::TextOffsetInContainer(int offset) const {
+  DCHECK_GE(offset, 0);
+  if (IsDetached())
+    return 0;
+
+  // Retrieve the text offset from the start of the layout block flow ancestor.
+  int offset_in_block_flow_container = TextOffsetInFormattingContext(offset);
+  const AXObject* parent = ParentObject();
+  if (!parent)
+    return offset_in_block_flow_container;
+
+  // If the parent object in the accessibility tree exists, then it is either
+  // a static text object or a line break. In the static text case, it is an
+  // AXLayoutObject associated with an inline text object. Hence the container
+  // is another inline object, not a layout block flow. We need to subtract the
+  // text start offset of the static text parent from the text start offset of
+  // this inline text box.
+  int offset_in_inline_parent = parent->TextOffsetInFormattingContext(0);
+  DCHECK_LE(offset_in_inline_parent, offset_in_block_flow_container);
+  return offset_in_block_flow_container - offset_in_inline_parent;
+}
+
+String AXInlineTextBox::GetName(ax::mojom::blink::NameFrom& name_from,
                                 AXObject::AXObjectVector* name_objects) const {
-  if (!inline_text_box_)
+  if (IsDetached())
     return String();
 
-  name_from = ax::mojom::NameFrom::kContents;
+  name_from = ax::mojom::blink::NameFrom::kContents;
   return inline_text_box_->GetText();
 }
 
@@ -161,7 +176,7 @@ AXObject* AXInlineTextBox::ComputeParent() const {
 // In addition to LTR and RTL direction, edit fields also support
 // top to bottom and bottom to top via the CSS writing-mode property.
 ax::mojom::blink::WritingDirection AXInlineTextBox::GetTextDirection() const {
-  if (!inline_text_box_)
+  if (IsDetached())
     return AXObject::GetTextDirection();
 
   switch (inline_text_box_->GetDirection()) {
@@ -179,13 +194,16 @@ ax::mojom::blink::WritingDirection AXInlineTextBox::GetTextDirection() const {
 }
 
 Node* AXInlineTextBox::GetNode() const {
-  if (!inline_text_box_)
+  if (IsDetached())
     return nullptr;
 
   return inline_text_box_->GetNode();
 }
 
 AXObject* AXInlineTextBox::NextOnLine() const {
+  if (IsDetached())
+    return nullptr;
+
   if (inline_text_box_->IsLast())
     return ParentObject()->NextOnLine();
 
@@ -198,6 +216,9 @@ AXObject* AXInlineTextBox::NextOnLine() const {
 }
 
 AXObject* AXInlineTextBox::PreviousOnLine() const {
+  if (IsDetached())
+    return nullptr;
+
   if (inline_text_box_->IsFirst())
     return ParentObject()->PreviousOnLine();
 
@@ -207,6 +228,38 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
     return ax_object_cache_->GetOrCreate(previous_on_line.get());
 
   return nullptr;
+}
+
+void AXInlineTextBox::Init() {}
+
+void AXInlineTextBox::Detach() {
+  inline_text_box_ = nullptr;
+  AXObject::Detach();
+}
+
+bool AXInlineTextBox::IsDetached() const {
+  return !inline_text_box_ || AXObject::IsDetached();
+}
+
+bool AXInlineTextBox::IsAXInlineTextBox() const {
+  return true;
+}
+
+bool AXInlineTextBox::IsLineBreakingObject() const {
+  if (IsDetached())
+    return AXObject::IsLineBreakingObject();
+
+  // If this object is a forced line break, or the parent is a <br>
+  // element, then this object is line breaking.
+  const AXObject* parent = ParentObject();
+  return inline_text_box_->IsLineBreak() ||
+         (parent && parent->RoleValue() == ax::mojom::blink::Role::kLineBreak);
+}
+
+int AXInlineTextBox::TextLength() const {
+  if (IsDetached())
+    return 0;
+  return int{inline_text_box_->Len()};
 }
 
 }  // namespace blink

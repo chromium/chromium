@@ -227,7 +227,7 @@ class CORE_EXPORT NGOffsetMapping {
   // ------ APIs inspecting the text content string ------
 
   // Returns false if all characters in [start, end) of |text_| are bidi
-  // control charcters. Returns true otherwise.
+  // control characters. Returns true otherwise.
   bool HasBidiControlCharactersOnly(unsigned start, unsigned end) const;
 
  private:

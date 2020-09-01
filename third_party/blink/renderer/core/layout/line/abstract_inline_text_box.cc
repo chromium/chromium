@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
@@ -152,32 +153,60 @@ unsigned LegacyAbstractInlineTextBox::Len() const {
                               : inline_text_box_->Len();
 }
 
-unsigned LegacyAbstractInlineTextBox::TextOffsetInContainer(
+unsigned LegacyAbstractInlineTextBox::TextOffsetInFormattingContext(
     unsigned offset) const {
   if (!inline_text_box_)
     return 0U;
 
   // The start offset of the inline text box returned by
-  // inline_text_box_->Start() includes the collapsed white-spaces. Here, we
-  // want the position in the parent node after white-space collapsing.
+  // inline_text_box_->Start() includes the collapsed white-spaces in the inline
+  // box's parent, which could be e.g. a text node or a br element. Here, we
+  // want the position in the layout block flow ancestor object after
+  // white-space collapsing.
+  //
   // NGOffsetMapping can map an offset before whites-spaces are collapsed to the
-  // offset after white-spaces are collapsed.
-  unsigned int offset_in_container = inline_text_box_->Start() + offset;
-  const Position position(GetNode(), offset_in_container);
+  // offset after white-spaces are collapsed even when using Legacy Layout.
+  unsigned int offset_in_parent = inline_text_box_->Start() + offset;
+
+  const Node* node = GetNode();
+  // If the associated node is a text node, then |offset_in_parent| is a text
+  // offset, otherwise we can't represent the exact offset using a DOM position.
+  // We fall back to using the layout object associated with this inline text
+  // box. In other words, if the associated node is a text node, then we can
+  // return a more exact offset in our formatting context. Otherwise, we need to
+  // approximate the offset using our associated layout object.
+  if (node && node->IsTextNode()) {
+    const Position position(node, int{offset_in_parent});
+    LayoutBlockFlow* formatting_context =
+        NGOffsetMapping::GetInlineFormattingContextOf(position);
+    // If "formatting_context" is not a Layout NG object, the offset mappings
+    // will be computed on demand and cached.
+    const NGOffsetMapping* offset_mapping =
+        formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+                           : nullptr;
+    if (!offset_mapping)
+      return offset_in_parent;
+
+    return offset_mapping->GetTextContentOffset(position).value_or(
+        offset_in_parent);
+  }
+
+  const LayoutObject* layout_object =
+      LineLayoutAPIShim::LayoutObjectFrom(GetLineLayoutItem());
+  DCHECK(layout_object);
   LayoutBlockFlow* formatting_context =
-      NGOffsetMapping::GetInlineFormattingContextOf(position);
-  if (!formatting_context)
-    return offset_in_container;
-
-  // If "formatting_context" is not a Layout NG object, the offset mappings will
-  // be computed on demand and cached.
+      NGOffsetMapping::GetInlineFormattingContextOf(*layout_object);
   const NGOffsetMapping* offset_mapping =
-      NGInlineNode::GetOffsetMapping(formatting_context);
+      formatting_context ? NGInlineNode::GetOffsetMapping(formatting_context)
+                         : nullptr;
   if (!offset_mapping)
-    return offset_in_container;
+    return offset_in_parent;
 
-  return offset_mapping->GetTextContentOffset(position).value_or(
-      offset_in_container);
+  base::span<const NGOffsetMappingUnit> mapping_units =
+      offset_mapping->GetMappingUnitsForLayoutObject(*layout_object);
+  if (mapping_units.empty())
+    return offset_in_parent;
+  return mapping_units.front().ConvertDOMOffsetToTextContent(offset_in_parent);
 }
 
 AbstractInlineTextBox::Direction LegacyAbstractInlineTextBox::GetDirection()

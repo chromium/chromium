@@ -131,7 +131,7 @@ TEST_P(AbstractInlineTextBoxTest, GetTextWithLineBreakAtTrailingWhiteSpace) {
   }
 }
 
-TEST_P(AbstractInlineTextBoxTest, GetTextOffsetInContainer) {
+TEST_P(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   // The span should not affect the offset in container of the following inline
   // text boxes in the paragraph.
   //
@@ -161,25 +161,26 @@ TEST_P(AbstractInlineTextBoxTest, GetTextOffsetInContainer) {
       layout_text.FirstAbstractInlineTextBox();
   String text = "First sentence";
   EXPECT_EQ(LayoutNGEnabled() ? text : text + " ", inline_text_box->GetText());
-  EXPECT_EQ(6u, inline_text_box->TextOffsetInContainer(0));
+  EXPECT_EQ(6u, inline_text_box->TextOffsetInFormattingContext(0));
 
   // We need to jump over the AbstractInlineTextBox with the line break.
   inline_text_box = inline_text_box->NextInlineTextBox()->NextInlineTextBox();
   text = "of the paragraph. Second sentence of";
   EXPECT_EQ(LayoutNGEnabled() ? text : text + " ", inline_text_box->GetText());
-  EXPECT_EQ(21u, inline_text_box->TextOffsetInContainer(0u));
+  EXPECT_EQ(21u, inline_text_box->TextOffsetInFormattingContext(0u));
 
   // See comment above.
   inline_text_box = inline_text_box->NextInlineTextBox()->NextInlineTextBox();
   EXPECT_EQ("the paragraph.", inline_text_box->GetText());
-  EXPECT_EQ(58u, inline_text_box->TextOffsetInContainer(0u));
+  EXPECT_EQ(58u, inline_text_box->TextOffsetInFormattingContext(0u));
 
-  // Ensure that calling TextOffsetInContainer on a br gives the correct result.
+  // Ensure that calling TextOffsetInFormattingContext on a br gives the correct
+  // result.
   const Element& br_element = *GetDocument().getElementById("br");
   LayoutText& br_text = *ToLayoutText(br_element.GetLayoutObject());
   inline_text_box = br_text.FirstAbstractInlineTextBox();
   EXPECT_EQ("\n", inline_text_box->GetText());
-  EXPECT_EQ(0u, inline_text_box->TextOffsetInContainer(0));
+  EXPECT_EQ(0u, inline_text_box->TextOffsetInFormattingContext(0));
 }
 
 TEST_P(AbstractInlineTextBoxTest, CharacterWidths) {

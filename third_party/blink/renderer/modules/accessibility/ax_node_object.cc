@@ -29,9 +29,11 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 
 #include <math.h>
+#include <memory>
 
 #include <algorithm>
 
+#include "base/optional.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
@@ -88,6 +90,8 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_table.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -3119,6 +3123,67 @@ void AXNodeObject::AddTableChildren() {
         children_.push_front(caption_object);
     }
   }
+}
+
+int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
+  DCHECK_GE(offset, 0);
+  if (IsDetached())
+    return 0;
+
+  // When a node has the first-letter CSS style applied to it, it is split into
+  // two parts (two branches) in the layout tree. The "first-letter part"
+  // contains its first letter and any surrounding Punctuation. The "remaining
+  // part" contains the rest of the text.
+  //
+  // We need to ensure that we retrieve the correct layout object: either the
+  // one for the "first-letter part" or the one for the "remaining part",
+  // depending of the value of |offset|.
+  const LayoutObject* layout_obj =
+      GetNode() ? AssociatedLayoutObjectOf(*GetNode(), offset)
+                : GetLayoutObject();
+  if (!layout_obj)
+    return AXObject::TextOffsetInFormattingContext(offset);
+
+  // We support calculating the text offset from the start of the formatting
+  // contexts of the following layout objects: (Note that in the following
+  // examples, the paragraph is the formatting context.
+  //
+  // Layout replaced, e.g. <p><img></p>.
+  // Layout inline with a layout text child, e.g. <p><a href="#">link</a></p>.
+  // Layout block flow, e.g. <p><b style="display: inline-block;"></b></p>.
+  // Layout text, e.g. <p>Hello</p>.
+  // Layout br (subclass of layout text), e.g. <p><br></p>.
+  if (layout_obj->IsLayoutInline()) {
+    // The NGOffsetMapping class doesn't map layout inline objects to their text
+    // mappings. We need to retrieve the first layout text or layout replaced
+    // child.
+    const AXObject* first_child = FirstChildIncludingIgnored();
+    return first_child ? first_child->TextOffsetInFormattingContext(offset)
+                       : offset;
+  }
+  if (!layout_obj->IsLayoutReplaced() && !layout_obj->IsLayoutBlockFlow() &&
+      !layout_obj->IsText()) {
+    // Not in a formatting context in which text offsets are meaningful.
+    return AXObject::TextOffsetInFormattingContext(offset);
+  }
+
+  LayoutBlockFlow* formatting_context =
+      NGOffsetMapping::GetInlineFormattingContextOf(*layout_obj);
+  if (!formatting_context || formatting_context == layout_obj)
+    return AXObject::TextOffsetInFormattingContext(offset);
+
+  // If "formatting_context" is not a Layout NG object, the offset mappings will
+  // be computed on demand and cached.
+  const NGOffsetMapping* inline_offset_mapping =
+      NGInlineNode::GetOffsetMapping(formatting_context);
+  if (!inline_offset_mapping)
+    return AXObject::TextOffsetInFormattingContext(offset);
+
+  const base::span<const NGOffsetMappingUnit> mapping_units =
+      inline_offset_mapping->GetMappingUnitsForLayoutObject(*layout_obj);
+  if (mapping_units.empty())
+    return AXObject::TextOffsetInFormattingContext(offset);
+  return int{mapping_units.front().TextContentStart()} + offset;
 }
 
 //

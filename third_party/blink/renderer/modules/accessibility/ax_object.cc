@@ -2298,6 +2298,16 @@ void AXObject::TextCharacterOffsets(Vector<int>&) const {}
 void AXObject::GetWordBoundaries(Vector<int>& word_starts,
                                  Vector<int>& word_ends) const {}
 
+int AXObject::TextOffsetInFormattingContext(int offset) const {
+  DCHECK_GE(offset, 0);
+  return offset;
+}
+
+int AXObject::TextOffsetInContainer(int offset) const {
+  DCHECK_GE(offset, 0);
+  return offset;
+}
+
 ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
   Element* action_element = ActionElement();
   if (!action_element)

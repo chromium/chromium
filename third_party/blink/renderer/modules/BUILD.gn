@@ -270,6 +270,7 @@ source_set("unit_tests") {
     "accessibility/accessibility_object_model_test.cc",
     "accessibility/ax_inline_text_box_test.cc",
     "accessibility/ax_layout_object_test.cc",
+    "accessibility/ax_node_object_test.cc",
     "accessibility/ax_object_cache_test.cc",
     "accessibility/ax_object_test.cc",
     "accessibility/ax_position_test.cc",

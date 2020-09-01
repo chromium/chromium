@@ -146,6 +146,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   String GetText() const override;
   String ImageDataUrl(const IntSize& max_size) const final;
   int TextLength() const override;
+  int TextOffsetInFormattingContext(int offset) const override;
 
   // Object attributes.
   ax::mojom::blink::TextAlign GetTextAlign() const final;
