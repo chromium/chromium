@@ -1579,9 +1579,9 @@ void WebTestControlHost::ClearAllDatabases() {
   scoped_refptr<storage::DatabaseTracker> db_tracker =
       base::WrapRefCounted(storage_partition->GetDatabaseTracker());
 
-  db_tracker->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(run_on_database_sequence, std::move(db_tracker)));
+  base::SequencedTaskRunner* task_runner = db_tracker->task_runner();
+  task_runner->PostTask(FROM_HERE, base::BindOnce(run_on_database_sequence,
+                                                  std::move(db_tracker)));
 }
 
 void WebTestControlHost::SimulateWebNotificationClick(
