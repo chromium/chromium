@@ -355,7 +355,7 @@ void PepperMediaStreamVideoTrackHost::OnVideoFrame(
   scoped_refptr<media::VideoFrame> frame = video_frame;
   // Drop alpha channel since we do not support it yet.
   if (frame->format() == media::PIXEL_FORMAT_I420A)
-    frame = media::WrapAsI420VideoFrame(std::move(video_frame));
+    frame = media::WrapAsI420VideoFrame(video_frame);
   PP_VideoFrame_Format ppformat = ToPpapiFormat(frame->format());
   if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     // NV12 is the only supported GMB pixel format at the moment, and there is
