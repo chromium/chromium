@@ -1569,6 +1569,7 @@ void NetworkStateHandler::CheckPortalListChanged(
 }
 
 void NetworkStateHandler::HostnameChanged(const std::string& hostname) {
+  NET_LOG(EVENT) << "HostnameChanged: " << hostname;
   hostname_ = hostname;
   for (auto& observer : observers_)
     observer.HostnameChanged(hostname);

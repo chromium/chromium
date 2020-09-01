@@ -55,6 +55,16 @@ cr.define('network_ui', function() {
      * @return {Promise<!Array>}
      */
     storeLogs(options) {}
+
+    /**
+     * @return {Promise<string>}
+     */
+    getHostname() {}
+
+    /**
+     * @param {string} hostname
+     */
+    setHostname(hostname) {}
   }
 
   /**
@@ -114,6 +124,20 @@ cr.define('network_ui', function() {
     /** @override */
     storeLogs(options) {
       return cr.sendWithPromise('storeLogs', options);
+    }
+
+    /**
+     * @return {Promise<string>}
+     */
+    getHostname() {
+      return cr.sendWithPromise('getHostname');
+    }
+
+    /**
+     * @param {string} hostname
+     */
+    setHostname(hostname) {
+      chrome.send('setHostname', [hostname]);
     }
   }
 

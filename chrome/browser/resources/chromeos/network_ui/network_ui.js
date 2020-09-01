@@ -39,6 +39,11 @@ Polymer({
       type: Number,
       value: 0,
     },
+
+    hostname_: {
+      type: String,
+      value: '',
+    },
   },
 
   /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
@@ -64,6 +69,7 @@ Polymer({
     this.$$('#import-onc').value = '';
 
     this.requestGlobalPolicy_();
+    this.getHostname_();
     this.selectTabFromHash_();
     window.addEventListener('hashchange', () => {
       this.selectTabFromHash_();
@@ -143,6 +149,19 @@ Polymer({
       this.$$('#global-policy').textContent =
           JSON.stringify(result.result, null, '\t');
     });
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onHostnameChanged_(event) {
+    this.browserProxy_.setHostname(this.hostname_);
+  },
+
+  /** @private */
+  getHostname_() {
+    this.browserProxy_.getHostname().then(result => this.hostname_ = result);
   },
 
   /**

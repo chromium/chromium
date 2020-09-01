@@ -3569,6 +3569,9 @@
   <message name="IDS_NETWORK_UI_FORMAT_SHILL" desc="Label in network property format dropdown for Shill properties">
     Shill
   </message>
+  <message name="IDS_NETWORK_UI_DHCP_HOSTNAME" desc="Label for the DHCP Hostname field in the chrome://network debugging UI.">
+    DHCP Hostname
+  </message>
   <message name="IDS_NETWORK_UI_GLOBAL_POLICY" desc="Label for global policy properties">
     Global Policy:
   </message>

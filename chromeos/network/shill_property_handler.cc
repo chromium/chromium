@@ -346,7 +346,7 @@ void ShillPropertyHandler::ManagerPropertyChanged(const std::string& key,
     listener_->DefaultNetworkServiceChanged(service_path);
     return;
   }
-  NET_LOG(DEBUG) << "ManagerPropertyChanged: " << key;
+  NET_LOG(DEBUG) << "ManagerPropertyChanged: " << key << " = " << value;
   if (key == shill::kServiceCompleteListProperty) {
     const base::ListValue* vlist = GetListValue(key, value);
     if (vlist) {

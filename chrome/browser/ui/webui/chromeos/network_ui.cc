@@ -58,6 +58,8 @@ constexpr char kOpenCellularActivationUi[] = "openCellularActivationUi";
 constexpr char kShowNetworkDetails[] = "showNetworkDetails";
 constexpr char kShowNetworkConfig[] = "showNetworkConfig";
 constexpr char kShowAddNewWifiNetworkDialog[] = "showAddNewWifi";
+constexpr char kGetHostname[] = "getHostname";
+constexpr char kSetHostname[] = "setHostname";
 
 bool GetServicePathFromGuid(const std::string& guid,
                             std::string* service_path) {
@@ -133,6 +135,14 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     web_ui()->RegisterMessageCallback(
         kShowAddNewWifiNetworkDialog,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowAddNewWifi,
+                            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kGetHostname,
+        base::BindRepeating(&NetworkConfigMessageHandler::GetHostname,
+                            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kSetHostname,
+        base::BindRepeating(&NetworkConfigMessageHandler::SetHostname,
                             base::Unretained(this)));
   }
 
@@ -240,21 +250,17 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void ShowNetworkDetails(const base::ListValue* arg_list) {
+    CHECK_EQ(1u, arg_list->GetSize());
     std::string guid;
-    if (!arg_list->GetString(0, &guid)) {
-      NOTREACHED();
-      return;
-    }
+    CHECK(arg_list->GetString(0, &guid));
 
     InternetDetailDialog::ShowDialog(guid);
   }
 
   void ShowNetworkConfig(const base::ListValue* arg_list) {
+    CHECK_EQ(1u, arg_list->GetSize());
     std::string guid;
-    if (!arg_list->GetString(0, &guid)) {
-      NOTREACHED();
-      return;
-    }
+    CHECK(arg_list->GetString(0, &guid));
 
     InternetConfigDialog::ShowDialogForNetworkId(guid);
   }
@@ -279,6 +285,23 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     base::ListValue return_arg_list;
     return_arg_list.Append(std::move(*result));
     Respond(callback_id, return_arg_list);
+  }
+
+  void GetHostname(const base::ListValue* arg_list) {
+    CHECK_EQ(1u, arg_list->GetSize());
+    std::string callback_id;
+    CHECK(arg_list->GetString(0, &callback_id));
+    std::string hostname =
+        NetworkHandler::Get()->network_state_handler()->hostname();
+    Respond(callback_id, base::Value(hostname));
+  }
+
+  void SetHostname(const base::ListValue* arg_list) {
+    CHECK_EQ(1u, arg_list->GetSize());
+    std::string hostname;
+    CHECK(arg_list->GetString(0, &hostname));
+    NET_LOG(USER) << "SET HOSTNAME: " << hostname;
+    NetworkHandler::Get()->network_state_handler()->SetHostname(hostname);
   }
 
   void ErrorCallback(const std::string& callback_id,
@@ -387,6 +410,9 @@ void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
       "shillFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_SHILL));
 
+  localized_strings->SetString(
+      "dhcpHostnameLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_DHCP_HOSTNAME));
   localized_strings->SetString(
       "globalPolicyLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_GLOBAL_POLICY));
