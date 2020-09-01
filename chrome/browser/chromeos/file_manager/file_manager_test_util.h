@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
+#include "chrome/browser/platform_util.h"
 
 class Profile;
 
@@ -23,8 +24,16 @@ class FolderInMyFiles {
   explicit FolderInMyFiles(Profile* profile);
   ~FolderInMyFiles();
 
-  // Copies additional files into |folder_|, adding to |files_|.
+  // Copies additional files into |folder_|, appending to |files_|.
   void Add(const std::vector<base::FilePath>& files);
+
+  // Use platform_util::OpenItem() on the file with basename matching |path| to
+  // simulate a user request to open that path, e.g., from the Files app or
+  // chrome://downloads.
+  platform_util::OpenOperationResult Open(const base::FilePath& path);
+
+  // Refreshes `files_` by re-reading directory contents, sorting by name.
+  void Refresh();
 
   const std::vector<base::FilePath> files() { return files_; }
 
@@ -32,6 +41,7 @@ class FolderInMyFiles {
   FolderInMyFiles(const FolderInMyFiles&) = delete;
   FolderInMyFiles& operator=(const FolderInMyFiles&) = delete;
 
+  Profile* const profile_;
   base::FilePath folder_;
   std::vector<base::FilePath> files_;
 };

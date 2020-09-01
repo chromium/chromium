@@ -71,21 +71,25 @@ std::string SandboxedWebUiAppTestBase::LoadJsTestLibrary(
   return injected_content;
 }
 
+// static
+content::RenderFrameHost* SandboxedWebUiAppTestBase::GetAppFrame(
+    content::WebContents* web_ui) {
+  // GetAllFrames does a breadth-first traversal. Assume the first subframe
+  // is the app.
+  std::vector<content::RenderFrameHost*> frames = web_ui->GetAllFrames();
+  EXPECT_EQ(2u, frames.size());
+  EXPECT_TRUE(frames[1]);
+  return frames[1];
+}
+
+// static
 content::EvalJsResult SandboxedWebUiAppTestBase::EvalJsInAppFrame(
     content::WebContents* web_ui,
     const std::string& script) {
   // Clients of this helper all run in the same isolated world.
   constexpr int kWorldId = 1;
-
-  // GetAllFrames does a breadth-first traversal. Assume the first subframe
-  // is the app.
-  std::vector<content::RenderFrameHost*> frames = web_ui->GetAllFrames();
-  EXPECT_EQ(2u, frames.size());
-  content::RenderFrameHost* app_frame = frames[1];
-  EXPECT_TRUE(app_frame);
-
-  return EvalJs(app_frame, script, content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                kWorldId);
+  return EvalJs(GetAppFrame(web_ui), script,
+                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, kWorldId);
 }
 
 void SandboxedWebUiAppTestBase::SetUpOnMainThread() {

@@ -59,8 +59,7 @@ async function getFileErrors() {
   return response.testQueryResult;
 }
 
-/** @implements FileSystemWritableFileStream */
-class FakeWritableFileStream {
+class FakeWritableFileSink {
   constructor(/** !Blob= */ data = new Blob()) {
     this.data = data;
 
@@ -74,29 +73,30 @@ class FakeWritableFileStream {
       this.resolveClose = resolve;
     });
   }
-  /** @override */
+  /** @param {?BufferSource|!Blob|string|!WriteParams} data */
   async write(data) {
     const position = 0;  // Assume no seeks.
     if (!data) {
       this.writes.push({position, size: 0});
       return;
     }
-    this.writes.push({position, size: data.size});
+    const dataSize = data.size === undefined ? data.length : data.size;
+    this.writes.push({position, size: dataSize});
     this.data = new Blob([
       this.data.slice(0, position),
       data,
-      this.data.slice(position + data.size),
+      this.data.slice(position + dataSize),
     ]);
   }
-  /** @override */
+  /** @param {number} size */
   async truncate(size) {
     this.data = this.data.slice(0, size);
   }
-  /** @override */
+  /** Resolves the close promise. */
   async close() {
     this.resolveClose(this.data);
   }
-  /** @override */
+  /** @param {number} offset */
   async seek(offset) {
     throw new Error('seek() not implemented.');
   }
@@ -132,9 +132,7 @@ class FakeFileSystemFileHandle extends FakeFileSystemHandle {
   constructor(
       name = 'fake_file.png', type = '', lastModified = 0, blob = new Blob()) {
     super(name);
-    this.lastWritable = new FakeWritableFileStream();
-
-    this.lastWritable.data = blob;
+    this.lastWritable = new FakeWritableFileSink(blob);
 
     /** @type {string} */
     this.type = type;
@@ -150,8 +148,16 @@ class FakeFileSystemFileHandle extends FakeFileSystemHandle {
     if (this.nextCreateWritableError) {
       throw this.nextCreateWritableError;
     }
-    this.lastWritable = new FakeWritableFileStream();
-    return this.lastWritable;
+    const sink = this.lastWritable;
+    const stream = new WritableStream(sink);
+
+    // The FileSystemWritableFileStream supports both streams and direct writes.
+    // Splice on the direct writing capabilities by delegating to the sink.
+    const writable = /** @type {!FileSystemWritableFileStream} */ (stream);
+    writable.write = (data) => sink.write(data);
+    writable.truncate = (size) => sink.truncate(size);
+    writable.close = () => sink.close();
+    return writable;
   }
   /** @override */
   async getFile() {

@@ -8,8 +8,6 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
 #include "chrome/browser/chromeos/file_manager/web_file_tasks.h"
 #include "chrome/browser/chromeos/web_applications/system_web_app_integration_test.h"
@@ -88,37 +86,6 @@ base::FilePath TestFile(const std::string& ascii_name) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_TRUE(base::PathExists(path));
   return path;
-}
-
-// Use platform_util::OpenItem() on the given |path| to simulate a user request
-// to open that path, e.g., from the Files app or chrome://downloads.
-OpenOperationResult OpenPathWithPlatformUtil(Profile* profile,
-                                             const base::FilePath& path) {
-  base::RunLoop run_loop;
-  OpenOperationResult open_result;
-  platform_util::OpenItem(
-      profile, path, platform_util::OPEN_FILE,
-      base::BindLambdaForTesting([&](OpenOperationResult result) {
-        open_result = result;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  // On ChromeOS, the OpenOperationResult is determined in
-  // OpenFileMimeTypeAfterTasksListed() which also invokes
-  // ExecuteFileTaskForUrl(). For WebApps like chrome://media-app, that invokes
-  // WebApps::LaunchAppWithFiles() via AppServiceProxy.
-  // Depending how the mime type of |path| is determined (e.g. extension,
-  // metadata sniffing), there may be a number of asynchronous steps involved
-  // before the call to ExecuteFileTaskForUrl(). After that, the OpenItem
-  // callback is invoked, which exits the RunLoop above.
-  // That used to be enough to also launch a Browser for the WebApp. However,
-  // since r755257, ExecuteFileTaskForUrl() goes through the mojo AppService, so
-  // it's necessary to flush those calls for the WebApp to open.
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->FlushMojoCallsForTesting();
-
-  return open_result;
 }
 
 void PrepareAppForTest(content::WebContents* web_ui) {
@@ -372,9 +339,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
   file_manager::test::FolderInMyFiles folder(profile());
   folder.Add({TestFile(kFilePng800x600)});
-
-  OpenOperationResult open_result =
-      OpenPathWithPlatformUtil(profile(), folder.files()[0]);
+  OpenOperationResult open_result = folder.Open(TestFile(kFilePng800x600));
 
   // Window focus changes on ChromeOS are synchronous, so just get the newly
   // focused window.
@@ -416,7 +381,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
                 base::Time::UnixEpoch() + base::TimeDelta::FromDays(1));
 
   // Sent an open request using only the 640x480 JPEG file.
-  OpenPathWithPlatformUtil(profile(), copied_jpeg_640x480);
+  folder.Open(copied_jpeg_640x480);
   content::WebContents* web_ui = PrepareActiveBrowserForTest();
 
   EXPECT_EQ("640x480", WaitForImageAlt(web_ui, kFileJpeg640x480));
@@ -451,6 +416,31 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
   // is no file type we register as a handler for that is not an image or video
   // file, and they all appear in the same "camera roll", so there is no way to
   // test mixed file types.
+}
+
+// Integration test for rename using the WritableFileSystem and Streams APIs.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, RenameFile) {
+  WaitForTestSystemAppInstall();
+
+  file_manager::test::FolderInMyFiles folder(profile());
+  folder.Add({TestFile(kFileJpeg640x480)});
+  folder.Open(TestFile(kFileJpeg640x480));
+  content::WebContents* web_ui = PrepareActiveBrowserForTest();
+  content::RenderFrameHost* app = MediaAppUiBrowserTest::GetAppFrame(web_ui);
+
+  // Rename "image3.jpg" to "x.jpg".
+  constexpr int kRenameResultSuccess = 0;
+  constexpr char kScript[] =
+      "lastLoadedReceivedFileList.item(0).renameOriginalFile('x.jpg')"
+      ".then(result => domAutomationController.send(result));";
+  int result = ~kRenameResultSuccess;
+  EXPECT_EQ(true, content::ExecuteScriptAndExtractInt(app, kScript, &result));
+  EXPECT_EQ(kRenameResultSuccess, result);
+
+  folder.Refresh();
+
+  EXPECT_EQ(1u, folder.files().size());
+  EXPECT_EQ("x.jpg", folder.files()[0].BaseName().value());
 }
 
 INSTANTIATE_TEST_SUITE_P(

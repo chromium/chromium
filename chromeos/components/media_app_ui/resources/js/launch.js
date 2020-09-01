@@ -165,10 +165,10 @@ guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
       await directory.getFileHandle(renameMsg.newFilename, {create: true});
   // Copy file data over to the new file.
   const writer = await renamedFileHandle.createWritable();
-  // TODO(b/153021155): Use originalFile.stream().
-  await writer.write(await originalFile.arrayBuffer());
-  await writer.truncate(originalFile.size);
-  await writer.close();
+  const sink = /** @type {!WritableStream<*>} */ (writer);
+  const source =
+      /** @type {{stream: function(): !ReadableStream}} */ (originalFile);
+  await source.stream().pipeTo(sink);
 
   // Remove the old file since the new file has all the data & the new name.
   // Note even though removing an entry that doesn't exist is considered
