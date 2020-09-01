@@ -12,11 +12,8 @@
     background-color: var(--viewer-pdf-toolbar-background-color);
     color: white;
     display: flex;
-    height: 48px;
-  }
-
-  #sidenavToggle {
-    margin: 0 6px;
+    height: 56px;
+    padding: 0 16px;
   }
 
   #title {
@@ -53,8 +50,8 @@
     border-inline-end: 1px solid rgba(255, 255, 255, 0.3);
     border-inline-start: 1px solid rgba(255, 255, 255, 0.3);
     margin-inline-end: 12px;
-    margin-inline-start: 21px;
-    padding: 0 6px;
+    margin-inline-start: 20px;
+    padding: 0 4px;
   }
 
   #zoom-controls input::selection {
@@ -119,11 +116,20 @@
   }
 
 <if expr="chromeos">
+  #annotate {
+    margin-inline-end: 4px;
+  }
+
   :host([annotation-mode]) #annotate {
     background-color: var(--active-button-bg);
     border-radius: 50%;
   }
 </if>
+
+   #print,
+   #more {
+     margin-inline-start: 4px;
+   }
 
   .dropdown-item {
     padding-inline-end: 16px;
