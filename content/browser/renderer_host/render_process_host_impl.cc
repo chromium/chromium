@@ -235,6 +235,7 @@
 #include "content/public/browser/android/java_interfaces.h"
 #include "ipc/ipc_sync_channel.h"
 #include "media/audio/android/audio_manager_android.h"
+#include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom.h"
 #else
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #endif
@@ -1369,6 +1370,13 @@ class RenderProcessHostImpl::IOThreadHostImpl
                                             std::move(r));
       return;
     }
+
+#if defined(OS_ANDROID)
+    if (auto r = receiver.As<blink::mojom::AndroidFontLookup>()) {
+      content::GetGlobalJavaInterfaces()->GetInterface(std::move(r));
+      return;
+    }
+#endif
 
     std::string interface_name = *receiver.interface_name();
     mojo::ScopedMessagePipeHandle pipe = receiver.PassPipe();
