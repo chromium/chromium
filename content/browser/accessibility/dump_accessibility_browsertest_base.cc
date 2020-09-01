@@ -187,8 +187,7 @@ void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
           node_filter, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       // Silently skip over parsing errors like the rest of the enclosing code.
       if (parts.size() == 2) {
-        node_filters_.push_back(
-            NodeFilter(parts[0], base::UTF8ToUTF16(parts[1])));
+        node_filters_.emplace_back(parts[0], parts[1]);
       }
     } else if (base::StartsWith(line, no_load_expected_str,
                                 base::CompareCase::SENSITIVE)) {

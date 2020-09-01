@@ -345,7 +345,7 @@ bool AccessibilityTreeFormatter::MatchesNodeFilters(
     const std::vector<NodeFilter>& node_filters,
     const base::DictionaryValue& dict) {
   for (const auto& filter : node_filters) {
-    base::string16 value;
+    std::string value;
     if (!dict.GetString(filter.property, &value)) {
       continue;
     }

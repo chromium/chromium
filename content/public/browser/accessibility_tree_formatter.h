@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -92,9 +91,9 @@ class CONTENT_EXPORT AccessibilityTreeFormatter
   //   {property='internalRole', pattern='inlineTextBox'};
   struct NodeFilter {
     std::string property;
-    base::string16 pattern;
+    std::string pattern;
 
-    NodeFilter(std::string property, base::string16 pattern)
+    NodeFilter(const std::string& property, const std::string& pattern)
         : property(property), pattern(pattern) {}
   };
 
