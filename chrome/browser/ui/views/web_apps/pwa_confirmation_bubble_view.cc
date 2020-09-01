@@ -33,7 +33,8 @@
 
 namespace {
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
 constexpr char kDeviceTypeForCheckbox[] = "computer";
 #else
 constexpr char kDeviceTypeForCheckbox[] = "other";
