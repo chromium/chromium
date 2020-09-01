@@ -6534,7 +6534,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tracks the number of times we encounter a corrupt resource while checking if
     we can reuse an existing resource. This is only called when we find a
     corrupt resource, so any resources that are corrupt but aren't tested won't
-    be included in this count.
+    be included in this count. If all resources are non-corrupt, then the
+    default value (0) will be sent for metrics collection.
   </summary>
 </histogram>
 
@@ -6548,11 +6549,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     request. This metric is always emitted upon AppCacheUpdateJob destruction
     and is only incremented when the corruption recovery feature is enabled and
     a corrupt resource is detected. If either corruption recovery is disabled or
-    no corrupt resources are detected, then the default value (0) will be sent
-    for metrics collection.
+    no corrupt resources are recovered, then this will not be emitted.
 
     This metric was enabled in M81 (Dec 19, 2019), disabled in M82 (Feb 18,
-    2020), and re-enabled in M86 (Aug 2020).
+    2020), and re-enabled in M86 (Aug 2020). In M86 this includes 0 values (no
+    corruption recovered), but in M87 and later it does not.
   </summary>
 </histogram>
 
@@ -6564,7 +6565,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tracks the number of times we encounter a non-corrupt resource while
     checking if we can reuse an existing resource. This is only called when we
     find a non-corrupt resource, so any resources that aren't corrupt but aren't
+    tested won't be included in this count. If all resources are corrupt, then
+    the default value (0) will be sent for metrics collection.
+  </summary>
+</histogram>
+
+<histogram name="appcache.UpdateJob.ExistingResourceOnlyCorrupt"
+    units="resources" expires_after="2021-05-25">
+  <owner>cmp@chromium.org</owner>
+  <owner>enne@chromium.org</owner>
+  <summary>
+    Tracks the number of times we encounter a corrupt resource while checking if
+    we can reuse an existing resource. This is only called when we find a
+    corrupt resource, so any resources that are corrupt but aren't tested won't
+    be included in this count.
+
+    Unlike ExistingResourceCorrupt this is only emitted when there are any
+    corrupt resources found.
+  </summary>
+</histogram>
+
+<histogram name="appcache.UpdateJob.ExistingResourceOnlyNotCorrupt"
+    units="resources" expires_after="2021-05-25">
+  <owner>cmp@chromium.org</owner>
+  <owner>enne@chromium.org</owner>
+  <summary>
+    Tracks the number of times we encounter a non-corrupt resource while
+    checking if we can reuse an existing resource. This is only called when we
+    find a non-corrupt resource, so any resources that aren't corrupt but aren't
     tested won't be included in this count.
+
+    Unlike ExistingResourceNotCorrupt this is only emitted when there are any
+    non-corrupt resources found.
   </summary>
 </histogram>
 
