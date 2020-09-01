@@ -6547,7 +6547,6 @@ crbug.com/1102167 external/wpt/fetch/redirect-navigate/preserve-fragment.html [ 
 crbug.com/1104910 [ Mac ] external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/osc-basic-waveform.html [ Pass Failure ]
 crbug.com/1105957 fast/dom/cssTarget-crash.html [ Pass Timeout ]
 crbug.com/1104910 fast/peerconnection/RTCPeerConnection-reload-interesting-usage.html [ Pass Failure ]
-crbug.com/1104910 [ Win ] virtual/cache-storage-eager-reading/external/wpt/service-workers/service-worker/registration-updateviacache.https.html [ Pass Failure ]
 crbug.com/1104910 [ Mac ] editing/selection/selection-background.html [ Pass Failure ]
 crbug.com/1104910 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/unsafe-url/worker-classic.http.html [ Pass Failure ]
 crbug.com/1104910 [ Linux ] external/wpt/referrer-policy/gen/worker-module.http-rp/unset/worker-module.http.html [ Pass Failure ]

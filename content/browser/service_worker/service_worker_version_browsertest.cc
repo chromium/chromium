@@ -1732,16 +1732,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserV8FullCodeCacheTest,
   StopWorker();
 }
 
-class CacheStorageEagerReadingTestBase
-    : public ServiceWorkerVersionBrowserTest {
+class CacheStorageEagerReadingTest : public ServiceWorkerVersionBrowserTest {
  public:
-  explicit CacheStorageEagerReadingTestBase(bool enabled) {
-    if (enabled)
-      feature_list.InitAndEnableFeature(features::kCacheStorageEagerReading);
-    else
-      feature_list.InitAndDisableFeature(features::kCacheStorageEagerReading);
-  }
-
   void SetupServiceWorkerAndDoFetch(
       std::string fetch_url,
       blink::mojom::FetchAPIResponsePtr* response_out) {
@@ -1804,42 +1796,14 @@ class CacheStorageEagerReadingTestBase
   base::test::ScopedFeatureList feature_list;
 };
 
-class CacheStorageEagerReadingEnabledTest
-    : public CacheStorageEagerReadingTestBase {
- public:
-  CacheStorageEagerReadingEnabledTest()
-      : CacheStorageEagerReadingTestBase(true) {}
-};
-
-class CacheStorageEagerReadingDisabledTest
-    : public CacheStorageEagerReadingTestBase {
- public:
-  CacheStorageEagerReadingDisabledTest()
-      : CacheStorageEagerReadingTestBase(false) {}
-};
-
-IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingDisabledTest,
-                       CacheMatchInRelatedFetchEvent) {
-  blink::mojom::FetchAPIResponsePtr response;
-  SetupServiceWorkerAndDoFetch(kCacheMatchURL, &response);
-  ExpectNormalCacheResponse(std::move(response));
-}
-
-IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingDisabledTest,
-                       CacheMatchInUnrelatedFetchEvent) {
-  blink::mojom::FetchAPIResponsePtr response;
-  SetupServiceWorkerAndDoFetch(kOtherURL, &response);
-  ExpectNormalCacheResponse(std::move(response));
-}
-
-IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingEnabledTest,
+IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,
                        CacheMatchInRelatedFetchEvent) {
   blink::mojom::FetchAPIResponsePtr response;
   SetupServiceWorkerAndDoFetch(kCacheMatchURL, &response);
   ExpectEagerlyReadCacheResponse(std::move(response));
 }
 
-IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingEnabledTest,
+IN_PROC_BROWSER_TEST_F(CacheStorageEagerReadingTest,
                        CacheMatchInUnrelatedFetchEvent) {
   blink::mojom::FetchAPIResponsePtr response;
   SetupServiceWorkerAndDoFetch(kOtherURL, &response);

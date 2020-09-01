@@ -76,10 +76,8 @@ bool ValidBatchOperations(
 
 blink::mojom::MatchResultPtr EagerlyReadResponseBody(
     blink::mojom::FetchAPIResponsePtr response) {
-  if (!response->blob ||
-      !base::FeatureList::IsEnabled(features::kCacheStorageEagerReading)) {
+  if (!response->blob)
     return blink::mojom::MatchResult::NewResponse(std::move(response));
-  }
 
   MojoCreateDataPipeOptions options;
   options.struct_size = sizeof(MojoCreateDataPipeOptions);

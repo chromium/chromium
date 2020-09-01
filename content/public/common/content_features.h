@@ -36,7 +36,6 @@ CONTENT_EXPORT extern const base::Feature
 CONTENT_EXPORT extern const base::Feature kBrowserVerifiedUserActivationMouse;
 CONTENT_EXPORT extern const base::Feature kCacheInlineScriptCode;
 CONTENT_EXPORT extern const base::Feature kCacheStorageParallelOps;
-CONTENT_EXPORT extern const base::Feature kCacheStorageEagerReading;
 CONTENT_EXPORT extern const base::Feature kCanvas2DImageChromium;
 CONTENT_EXPORT extern const base::Feature kCanvasOopRasterization;
 CONTENT_EXPORT extern const base::Feature kClickPointerEvent;

@@ -8,9 +8,6 @@
 ### external/wpt/service-workers/service-worker/
 crbug.com/901056 external/wpt/service-workers/service-worker/xhr-response-url.https.html [ Crash ]
 
-### virtual/cache-storage-eager-reading/external/wpt/service-workers/service-worker/
-crbug.com/901056 virtual/cache-storage-eager-reading/external/wpt/service-workers/service-worker/xhr-response-url.https.html [ Crash ]
-
 ### virtual/cache-storage-sequence/external/wpt/service-workers/service-worker/
 crbug.com/901056 virtual/cache-storage-sequence/external/wpt/service-workers/service-worker/xhr-response-url.https.html [ Crash ]
 

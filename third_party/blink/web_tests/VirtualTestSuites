@@ -570,11 +570,6 @@
     "args": ["--enable-features=CacheStorageSequence"]
   },
   {
-    "prefix": "cache-storage-eager-reading",
-    "bases": ["external/wpt/service-workers"],
-    "args": ["--disable-features=CacheStorageEagerReading"]
-  },
-  {
     "prefix": "conditional-appcache-delay",
     "bases": ["http/tests/loading/appcache-delay"],
     "args": ["--enable-features=VerifyHTMLFetchedFromAppCacheBeforeDelay"]
