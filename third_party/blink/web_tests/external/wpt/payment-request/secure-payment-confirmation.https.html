@@ -265,4 +265,20 @@ test(() => {
     }], details);
   });
 }, 'Timeout longer than 1 hour throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        action: 'authenticate',
+        // Large instrumentId value.
+        instrumentId: 'x'.repeat(1024 * 1024),
+        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        fallbackUrl: 'https://fallback.example/url'
+      },
+    }], details);
+  });
+}, 'Large instrumentId value throws exception.');
 </script>

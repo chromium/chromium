@@ -208,7 +208,7 @@ ScriptPromise PaymentRequestEvent::changePaymentMethod(
   if (!method_details.IsNull()) {
     DCHECK(!method_details.IsEmpty());
     PaymentsValidators::ValidateAndStringifyObject(
-        script_state->GetIsolate(), "Method details", method_details,
+        script_state->GetIsolate(), method_details,
         method_data->stringified_data, exception_state);
     if (exception_state.HadException())
       return ScriptPromise();

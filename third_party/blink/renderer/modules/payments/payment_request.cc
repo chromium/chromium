@@ -419,8 +419,8 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
                                          PaymentMethodDataPtr& output,
                                          ExceptionState& exception_state) {
   PaymentsValidators::ValidateAndStringifyObject(
-      execution_context.GetIsolate(), "Payment method data", input,
-      output->stringified_data, exception_state);
+      execution_context.GetIsolate(), input, output->stringified_data,
+      exception_state);
   if (exception_state.HadException())
     return;
 
@@ -634,9 +634,7 @@ void ValidateAndConvertPaymentDetailsUpdate(const PaymentDetailsUpdate* input,
 
   if (input->hasPaymentMethodErrors()) {
     PaymentsValidators::ValidateAndStringifyObject(
-        execution_context.GetIsolate(), "Payment method errors",
-        input->paymentMethodErrors(),
-
+        execution_context.GetIsolate(), input->paymentMethodErrors(),
         output->stringified_payment_method_errors, exception_state);
   }
 }

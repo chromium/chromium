@@ -70,10 +70,9 @@ class MODULES_EXPORT PaymentsValidators final {
   //
   // If the |input| is valid, the JSON serialization is saved in |output|.
   //
-  // If the |input| is invalid, throws a TypeError through the |exception_state|
-  // and uses the |input_name| to better describe what was being validated.
+  // If the |input| is invalid, throws a TypeError through the
+  // |exception_state|.
   static void ValidateAndStringifyObject(v8::Isolate* isolate,
-                                         const String& input_name,
                                          const ScriptValue& input,
                                          String& output,
                                          ExceptionState& exception_state);

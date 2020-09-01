@@ -177,7 +177,6 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
 
 void PaymentsValidators::ValidateAndStringifyObject(
     v8::Isolate* isolate,
-    const String& input_name,
     const ScriptValue& input,
     String& output,
     ExceptionState& exception_state) {
@@ -186,8 +185,8 @@ void PaymentsValidators::ValidateAndStringifyObject(
       !v8::JSON::Stringify(isolate->GetCurrentContext(),
                            input.V8Value().As<v8::Object>())
            .ToLocal(&value)) {
-    exception_state.ThrowTypeError(input_name +
-                                   " should be a JSON-serializable object");
+    exception_state.ThrowTypeError(
+        "PaymentRequest objects should be JSON-serializable objects");
     return;
   }
 
@@ -197,9 +196,10 @@ void PaymentsValidators::ValidateAndStringifyObject(
   static constexpr size_t kMaxJSONStringLength = 1024 * 1024;
 
   if (output.length() > kMaxJSONStringLength) {
-    exception_state.ThrowTypeError(String::Format(
-        "JSON serialization of %s should be no longer than %zu characters",
-        input_name.Characters8(), kMaxJSONStringLength));
+    exception_state.ThrowTypeError(
+        String::Format("JSON serialization of PaymentRequest objects should be "
+                       "no longer than %zu characters",
+                       kMaxJSONStringLength));
   }
 }
 
