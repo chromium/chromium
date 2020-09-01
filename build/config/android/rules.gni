@@ -3358,6 +3358,7 @@ if (enable_java_templates) {
                  [
                    "lint_baseline_file",
                    "lint_min_sdk_version",
+                   "lint_suppressions_dep",
                    "lint_suppressions_file",
                  ])
     }
@@ -5039,6 +5040,7 @@ if (enable_java_templates) {
                  [
                    "lint_baseline_file",
                    "lint_min_sdk_version",
+                   "lint_suppressions_dep",
                    "lint_suppressions_file",
                  ])
     }
