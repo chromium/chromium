@@ -78,8 +78,6 @@ export class Preview {
     [state.State.EXPERT, state.State.SHOW_METADATA].forEach((s) => {
       state.addObserver(s, this.updateShowMetadata_.bind(this));
     });
-
-    this.video_.cleanup = () => {};
   }
 
   /**
@@ -101,9 +99,8 @@ export class Preview {
    * @override
    */
   toString() {
-    return this.video_.videoHeight ?
-        `${this.video_.videoWidth} x ${this.video_.videoHeight}` :
-        '';
+    const {videoWidth, videoHeight} = this.video_;
+    return videoHeight ? `${videoWidth} x ${videoHeight}` : '';
   }
 
   /**
@@ -111,34 +108,28 @@ export class Preview {
    * @param {!MediaStream} stream Stream to be the source.
    * @return {!Promise} Promise for the operation.
    */
-  setSource_(stream) {
+  async setSource_(stream) {
     const video =
         assertInstanceof(document.createElement('video'), HTMLVideoElement);
     video.id = 'preview-video';
     video.classList = this.video_.classList;
     video.muted = true;  // Mute to avoid echo from the captured audio.
-    return new Promise((resolve) => {
-             const handler = () => {
-               video.removeEventListener('canplay', handler);
-               resolve();
-             };
-             video.addEventListener('canplay', handler);
-             video.srcObject = stream;
-           })
-        .then(() => video.play())
-        .then(() => {
-          video.cleanup = () => {
-            video.removeAttribute('srcObject');
-            video.load();
-          };
-          this.video_.parentElement.replaceChild(video, this.video_).cleanup();
-          this.video_ = video;
-          video.addEventListener(
-              'resize', () => this.onIntrinsicSizeChanged_());
-          video.addEventListener(
-              'click', (event) => this.onFocusClicked_(event));
-          return this.onIntrinsicSizeChanged_();
-        });
+    await new Promise((resolve) => {
+      const handler = () => {
+        video.removeEventListener('canplay', handler);
+        resolve();
+      };
+      video.addEventListener('canplay', handler);
+      video.srcObject = stream;
+    });
+    await video.play();
+    this.video_.parentElement.replaceChild(video, this.video_);
+    this.video_.removeAttribute('srcObject');
+    this.video_.load();
+    this.video_ = video;
+    video.addEventListener('resize', () => this.onIntrinsicSizeChanged_());
+    video.addEventListener('click', (event) => this.onFocusClicked_(event));
+    return this.onIntrinsicSizeChanged_();
   }
 
   /**
@@ -460,7 +451,7 @@ export class Preview {
               if (focus !== this.focus_) {
                 return;  // Focus was cancelled.
               }
-              const aim = document.querySelector('#preview-focus-aim');
+              const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
               const clone = aim.cloneNode(true);
               clone.style.left = `${event.offsetX + this.video_.offsetLeft}px`;
               clone.style.top = `${event.offsetY + this.video_.offsetTop}px`;
