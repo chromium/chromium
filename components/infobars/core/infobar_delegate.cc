@@ -122,7 +122,6 @@ InfoBarDelegate::AsOfflinePageInfoBarDelegate() {
 }
 #endif
 
-InfoBarDelegate::InfoBarDelegate() : nav_entry_id_(0) {
-}
+InfoBarDelegate::InfoBarDelegate() = default;
 
 }  // namespace infobars
