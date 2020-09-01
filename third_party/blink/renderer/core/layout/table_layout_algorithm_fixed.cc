@@ -226,7 +226,8 @@ void TableLayoutAlgorithmFixed::ApplyPreferredLogicalWidthQuirks(
   // In this example, the two inner tables should be as large as the outer
   // table. We can achieve this effect by making the maxwidth of fixed tables
   // with percentage widths be infinite.
-  if (table_->StyleRef().LogicalWidth().IsPercentOrCalc() &&
+  if (!table_->IsOutOfFlowPositioned() &&
+      table_->StyleRef().LogicalWidth().IsPercentOrCalc() &&
       max_width < kTableMaxWidth)
     max_width = LayoutUnit(kTableMaxWidth);
 }
