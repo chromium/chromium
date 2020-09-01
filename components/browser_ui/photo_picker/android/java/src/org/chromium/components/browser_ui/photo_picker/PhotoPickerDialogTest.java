@@ -29,6 +29,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
@@ -56,6 +57,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Tests for the PhotoPickerDialog class.
  */
+@DisabledTest(message = "https://crbug.com/1123848")
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         implements PhotoPickerListener, SelectionObserver<PickerBitmap>,
