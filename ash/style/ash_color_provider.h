@@ -236,6 +236,9 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // Toggles pref |kDarkModeEnabled|.
   void Toggle();
 
+  // Gets the background base color for login screen.
+  SkColor GetLoginBackgroundBaseColor() const;
+
   bool is_themed() const { return is_themed_; }
 
  private:

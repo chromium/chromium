@@ -18,17 +18,20 @@ namespace login_constants {
 // extracted from wallpaper is invalid.
 constexpr SkColor kDefaultBaseColor = SK_ColorBLACK;
 
+// The light mode base color of the login/lock screen when the color extracted
+// from the wallpaper is invalid.
+constexpr SkColor kLightModeBaseColor = SK_ColorWHITE;
+
 // Color used on text associated with an auth method, e.g., password,
 // fingerprint.
 constexpr SkColor kAuthMethodsTextColor =
     SkColorSetARGB(0xAB, 0xFF, 0xFF, 0xFF);
 
-// When the wallpaper is not blurred, a black background with this alpha should
+// When the wallpaper is not blurred, a background with this alpha should
 // be rendered behind UI elements so they remain legible.
 constexpr int kNonBlurredWallpaperBackgroundAlpha = 0xCC;  // 0xCC -> 80% of 255
 
-// Per above, the black background should be a rounded rect with this corner
-// radius.
+// Per above, the background should be a rounded rect with this corner radius.
 constexpr int kNonBlurredWallpaperBackgroundRadiusDp = 4;
 
 // The alpha value for the login/lock screen background.

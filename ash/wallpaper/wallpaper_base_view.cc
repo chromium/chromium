@@ -7,6 +7,7 @@
 #include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/wallpaper_types.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -29,11 +30,12 @@ SkColor GetWallpaperDarkenColor() {
       Shell::Get()->wallpaper_controller()->GetProminentColor(
           color_utils::ColorProfile(color_utils::LumaRange::DARK,
                                     color_utils::SaturationRange::MUTED));
-  if (darken_color == kInvalidWallpaperColor)
-    darken_color = login_constants::kDefaultBaseColor;
+  if (darken_color == kInvalidWallpaperColor) {
+    darken_color = AshColorProvider::Get()->GetLoginBackgroundBaseColor();
+  }
 
   darken_color = color_utils::GetResultingPaintColor(
-      SkColorSetA(login_constants::kDefaultBaseColor,
+      SkColorSetA(AshColorProvider::Get()->GetLoginBackgroundBaseColor(),
                   login_constants::kTranslucentColorDarkenAlpha),
       SkColorSetA(darken_color, 0xFF));
 

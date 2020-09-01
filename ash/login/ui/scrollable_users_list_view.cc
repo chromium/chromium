@@ -13,6 +13,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/login_constants.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/numerics/ranges.h"
@@ -251,7 +252,7 @@ ScrollableUsersListView::GradientParams::BuildForStyle(
               color_utils::ColorProfile(color_utils::LumaRange::DARK,
                                         color_utils::SaturationRange::MUTED));
       SkColor tint_color = color_utils::GetResultingPaintColor(
-          SkColorSetA(login_constants::kDefaultBaseColor,
+          SkColorSetA(AshColorProvider::Get()->GetLoginBackgroundBaseColor(),
                       login_constants::kTranslucentColorDarkenAlpha),
           SkColorSetA(dark_muted_color, SK_AlphaOPAQUE));
       tint_color =
@@ -424,7 +425,7 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setColor(
-        SkColorSetA(login_constants::kDefaultBaseColor,
+        SkColorSetA(AshColorProvider::Get()->GetLoginBackgroundBaseColor(),
                     login_constants::kNonBlurredWallpaperBackgroundAlpha));
     canvas->DrawRoundRect(
         render_bounds, login_constants::kNonBlurredWallpaperBackgroundRadiusDp,

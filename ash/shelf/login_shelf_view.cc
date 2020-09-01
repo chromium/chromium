@@ -24,6 +24,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -72,6 +73,27 @@ namespace {
 
 const char* kLoginShelfButtonClassName = "LoginShelfButton";
 
+SkColor GetButtonTextColor() {
+  AshColorProvider* ash_color_provider = AshColorProvider::Get();
+  return ash_color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonLabelColor,
+      AshColorProvider::AshColorMode::kDark);
+}
+
+SkColor GetButtonIconColor() {
+  AshColorProvider* ash_color_provider = AshColorProvider::Get();
+  return ash_color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor,
+      AshColorProvider::AshColorMode::kDark);
+}
+
+SkColor GetButtonBackgroundColor() {
+  AshColorProvider* ash_color_provider = AshColorProvider::Get();
+  return ash_color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
+      AshColorProvider::AshColorMode::kDark);
+}
+
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
   switch (button_id) {
     case LoginShelfView::kShutdown:
@@ -106,14 +128,8 @@ constexpr int kButtonMarginRightDp = 16;
 // Spacing between the button image and label.
 constexpr int kImageLabelSpacingDp = 10;
 
-// The color of the button text.
-constexpr SkColor kButtonTextColor = gfx::kGoogleGrey100;
-
 // The color of the button text during OOBE.
 constexpr SkColor kButtonTextColorOobe = gfx::kGoogleGrey700;
-
-// The color of the button icon.
-constexpr SkColor kButtonIconColor = SkColorSetRGB(0xEB, 0xEA, 0xED);
 
 void AnimateButtonOpacity(ui::Layer* layer,
                           float target_opacity,
@@ -155,11 +171,12 @@ class LoginShelfButton : public views::LabelButton {
         text_resource_id_(text_resource_id),
         icon_(icon) {
     SetAccessibleName(GetText());
+    SkColor button_icon_color = GetButtonIconColor();
     SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(icon, kButtonIconColor));
+             gfx::CreateVectorIcon(icon, button_icon_color));
     SetImage(views::Button::STATE_DISABLED,
              gfx::CreateVectorIcon(
-                 icon, SkColorSetA(kButtonIconColor,
+                 icon, SkColorSetA(button_icon_color,
                                    login_constants::kButtonDisabledAlpha)));
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetInstallFocusRingOnFocus(true);
@@ -181,10 +198,12 @@ class LoginShelfButton : public views::LabelButton {
     SetTextSubpixelRenderingEnabled(false);
 
     SetImageLabelSpacing(kImageLabelSpacingDp);
-    SetEnabledTextColors(kButtonTextColor);
+
+    SkColor button_text_color = GetButtonTextColor();
+    SetEnabledTextColors(button_text_color);
     SetTextColor(
         views::Button::STATE_DISABLED,
-        SkColorSetA(kButtonTextColor, login_constants::kButtonDisabledAlpha));
+        SkColorSetA(button_text_color, login_constants::kButtonDisabledAlpha));
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   }
@@ -205,7 +224,7 @@ class LoginShelfButton : public views::LabelButton {
   void PaintButtonContents(gfx::Canvas* canvas) override {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(ShelfConfig::Get()->GetShelfControlButtonColor());
+    flags.setColor(GetButtonBackgroundColor());
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawPath(GetButtonHighlightPath(this), flags);
   }
@@ -231,9 +250,10 @@ class LoginShelfButton : public views::LabelButton {
   }
 
   void PaintLightColors() {
-    SetEnabledTextColors(kButtonTextColor);
+    SkColor button_text_color = GetButtonTextColor();
+    SetEnabledTextColors(button_text_color);
     SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(icon_, kButtonTextColor));
+             gfx::CreateVectorIcon(icon_, button_text_color));
     SchedulePaint();
   }
 
@@ -293,9 +313,9 @@ class KioskAppsButton : public views::MenuButton,
     SetTextSubpixelRenderingEnabled(false);
 
     SetImage(views::Button::STATE_NORMAL,
-             CreateVectorIcon(kShelfAppsButtonIcon, kButtonIconColor));
+             CreateVectorIcon(kShelfAppsButtonIcon, GetButtonIconColor()));
     SetImageLabelSpacing(kImageLabelSpacingDp);
-    SetEnabledTextColors(kButtonTextColor);
+    SetEnabledTextColors(GetButtonTextColor());
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   }
@@ -371,9 +391,9 @@ class KioskAppsButton : public views::MenuButton,
   }
 
   void PaintLightColors() {
-    SetEnabledTextColors(kButtonTextColor);
+    SetEnabledTextColors(GetButtonTextColor());
     SetImage(views::Button::STATE_NORMAL,
-             CreateVectorIcon(kShelfAppsButtonIcon, kButtonIconColor));
+             CreateVectorIcon(kShelfAppsButtonIcon, GetButtonIconColor()));
     SchedulePaint();
   }
 
