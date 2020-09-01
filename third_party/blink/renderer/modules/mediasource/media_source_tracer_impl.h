@@ -16,9 +16,9 @@ class MediaSource;
 // Concrete MediaSourceTracer that enables an HTMLMediaElement and its attached
 // MediaSource on the same (main) thread to trace into each other. This enables
 // garbage collection to automatically detect and collect idle attachments of
-// these objects that have no other strong references.
-// A MediaSourceAttachmentImpl uses a MediaSourceTracerImpl as the authoritative
-// reference holder for each side of the attachment.
+// these objects that have no other strong references. Concrete
+// MediaSourceAttachments use MediaSourceTracerImpls as the authoritative
+// reference holders for each side of the attachments.
 class MediaSourceTracerImpl final : public MediaSourceTracer {
  public:
   MediaSourceTracerImpl(HTMLMediaElement* media_element,

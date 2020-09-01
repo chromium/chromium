@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/mediasource/media_source_attachment_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_attachment.h"
 
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_tracer_impl.h"
@@ -24,7 +24,8 @@ blink::MediaSource* GetMediaSource(blink::MediaSourceTracer* tracer) {
 
 namespace blink {
 
-MediaSourceAttachmentImpl::MediaSourceAttachmentImpl(MediaSource* media_source)
+SameThreadMediaSourceAttachment::SameThreadMediaSourceAttachment(
+    MediaSource* media_source)
     : registered_media_source_(media_source) {
   // This kind of attachment only operates on the main thread.
   DCHECK(IsMainThread());
@@ -36,9 +37,9 @@ MediaSourceAttachmentImpl::MediaSourceAttachmentImpl(MediaSource* media_source)
   DCHECK(HasOneRef());
 }
 
-MediaSourceAttachmentImpl::~MediaSourceAttachmentImpl() = default;
+SameThreadMediaSourceAttachment::~SameThreadMediaSourceAttachment() = default;
 
-void MediaSourceAttachmentImpl::Unregister() {
+void SameThreadMediaSourceAttachment::Unregister() {
   DVLOG(1) << __func__ << " this=" << this;
 
   // The only expected caller is a MediaSourceRegistryImpl on the main thread.
@@ -52,7 +53,8 @@ void MediaSourceAttachmentImpl::Unregister() {
   registered_media_source_ = nullptr;
 }
 
-MediaSourceTracer* MediaSourceAttachmentImpl::StartAttachingToMediaElement(
+MediaSourceTracer*
+SameThreadMediaSourceAttachment::StartAttachingToMediaElement(
     HTMLMediaElement* element) {
   if (!registered_media_source_)
     return nullptr;
@@ -60,42 +62,44 @@ MediaSourceTracer* MediaSourceAttachmentImpl::StartAttachingToMediaElement(
   return registered_media_source_->StartAttachingToMediaElement(element);
 }
 
-void MediaSourceAttachmentImpl::CompleteAttachingToMediaElement(
+void SameThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
     MediaSourceTracer* tracer,
     std::unique_ptr<WebMediaSource> web_media_source) {
   GetMediaSource(tracer)->CompleteAttachingToMediaElement(
       std::move(web_media_source));
 }
 
-void MediaSourceAttachmentImpl::Close(MediaSourceTracer* tracer) {
+void SameThreadMediaSourceAttachment::Close(MediaSourceTracer* tracer) {
   GetMediaSource(tracer)->Close();
 }
 
-bool MediaSourceAttachmentImpl::IsClosed(MediaSourceTracer* tracer) const {
+bool SameThreadMediaSourceAttachment::IsClosed(
+    MediaSourceTracer* tracer) const {
   return GetMediaSource(tracer)->IsClosed();
 }
 
-double MediaSourceAttachmentImpl::duration(MediaSourceTracer* tracer) const {
+double SameThreadMediaSourceAttachment::duration(
+    MediaSourceTracer* tracer) const {
   return GetMediaSource(tracer)->duration();
 }
 
-WebTimeRanges MediaSourceAttachmentImpl::BufferedInternal(
+WebTimeRanges SameThreadMediaSourceAttachment::BufferedInternal(
     MediaSourceTracer* tracer) const {
   return GetMediaSource(tracer)->BufferedInternal();
 }
 
-WebTimeRanges MediaSourceAttachmentImpl::SeekableInternal(
+WebTimeRanges SameThreadMediaSourceAttachment::SeekableInternal(
     MediaSourceTracer* tracer) const {
   return GetMediaSource(tracer)->SeekableInternal();
 }
 
-TimeRanges* MediaSourceAttachmentImpl::Buffered(
+TimeRanges* SameThreadMediaSourceAttachment::Buffered(
     MediaSourceTracer* tracer) const {
   return GetMediaSource(tracer)->Buffered();
 }
 
-void MediaSourceAttachmentImpl::OnTrackChanged(MediaSourceTracer* tracer,
-                                               TrackBase* track) {
+void SameThreadMediaSourceAttachment::OnTrackChanged(MediaSourceTracer* tracer,
+                                                     TrackBase* track) {
   GetMediaSource(tracer)->OnTrackChanged(track);
 }
 

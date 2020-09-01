@@ -35,8 +35,8 @@
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source.h"
-#include "third_party/blink/renderer/modules/mediasource/media_source_attachment_impl.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/same_thread_media_source_attachment.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -63,7 +63,8 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
   // further detail.
   // TODO(https://crbug.com/878133): Support creation of a cross-thread
   // attachment.
-  MediaSourceAttachment* attachment = new MediaSourceAttachmentImpl(source);
+  MediaSourceAttachment* attachment =
+      new SameThreadMediaSourceAttachment(source);
   DCHECK(attachment->HasOneRef());
 
   String url = DOMURL::CreatePublicURL(execution_context, attachment);
