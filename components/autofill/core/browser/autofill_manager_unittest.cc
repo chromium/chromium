@@ -8684,6 +8684,18 @@ TEST_F(AutofillManagerTest, PossibleFieldTypesForEnhancementVotes) {
             ServerFieldTypeSet({UNKNOWN_TYPE}));
 }
 
+TEST_F(AutofillManagerTest, PageLanguageGetsCorrectlySet) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+
+  autofill_client_.set_page_language("test_lang");
+
+  FormStructure* parsed_form = autofill_manager_->ParseFormForTest(form);
+
+  ASSERT_TRUE(parsed_form);
+  ASSERT_EQ("test_lang", parsed_form->page_language());
+}
+
 // AutofillManagerTest with kAutofillDisabledMixedForms feature enabled.
 class AutofillManagerTestWithMixedForms : public AutofillManagerTest {
  protected:

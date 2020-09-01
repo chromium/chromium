@@ -141,12 +141,17 @@ class AutofillHandler {
 
   AutofillDriver* driver() { return driver_; }
 
-#if defined(UNIT_TEST)
+#ifdef UNIT_TEST
   // A public wrapper that calls |mutable_form_structures| for testing purposes
   // only.
   std::map<FormRendererId, std::unique_ptr<FormStructure>>*
   mutable_form_structures_for_test() {
     return mutable_form_structures();
+  }
+
+  // A public wrapper that calls |ParseForm| for testing purposes only.
+  FormStructure* ParseFormForTest(const FormData& form) {
+    return ParseForm(form, nullptr);
   }
 #endif
 
@@ -205,6 +210,9 @@ class AutofillHandler {
   // the returned form structure to the |form_structures_|.
   FormStructure* ParseForm(const FormData& form,
                            const FormStructure* cached_form);
+
+  // Returns the page language, if available.
+  virtual base::Optional<std::string> GetPageLanguage() const;
 
   bool value_from_dynamic_change_form_ = false;
 

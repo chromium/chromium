@@ -2065,12 +2065,6 @@ void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms,
     std::set<FormType> current_form_types = form_structure->GetFormTypes();
     form_types.insert(current_form_types.begin(), current_form_types.end());
 
-    // Annotate the form with the source language of the page.
-    // TODO(898510): Move this earlier in the form parsing flow. Ideally the
-    // form structure should be annotated with the page language before the
-    // heuristics are run.
-    form_structure->set_page_language(client_->GetPageLanguage());
-
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.
     form_structure->set_is_rich_query_enabled(is_rich_query_enabled_);
@@ -2759,6 +2753,11 @@ FormEventLoggerBase* AutofillManager::GetEventFormLogger(
   }
   NOTREACHED();
   return nullptr;
+}
+
+base::Optional<std::string> AutofillManager::GetPageLanguage() const {
+  DCHECK(client_);
+  return base::make_optional(client_->GetPageLanguage());
 }
 
 }  // namespace autofill
