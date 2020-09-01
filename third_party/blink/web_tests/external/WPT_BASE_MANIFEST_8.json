@@ -204716,7 +204716,7 @@
     ],
     "resources": {
      "generic-sensor-helpers.js": [
-      "c2afb400207d1ebf92c227522acec550e06ac8f3",
+      "40f2c906f6572b4f9723cce594d643419eb36e62",
       []
      ],
      "iframe_sensor_handler.html": [
@@ -219529,7 +219529,7 @@
      []
     ],
     "native-file-system.idl": [
-     "1fd2cb8b3a1da36a1b403c7e8970a4e40dc7beb2",
+     "c77f9a306ac0b0901147491984f44bc59e6d3c33",
      []
     ],
     "navigation-timing.idl": [
@@ -219848,6 +219848,10 @@
      "3aa17a7fe0c8020f6101c0fee29107ce7b24cb37",
      []
     ],
+    "webxr-hand-input.idl": [
+     "0dbfc57292227040e1edb0b0a38e51b868a2da53",
+     []
+    ],
     "webxr.idl": [
      "63d4ebf8800162e40c13ab3c2257286a95ee3fc3",
      []
@@ -220080,7 +220084,7 @@
     ]
    },
    "lint.ignore": [
-    "354e28be6be2e4b0c54157025d6815d9042f33a8",
+    "4f201914aea3d24473c8816572ab31270f5db63f",
     []
    ],
    "loading": {
@@ -221516,7 +221520,7 @@
     ],
     "resources": {
      "imagecapture-helpers.js": [
-      "8252f42a637eb7f9c24917d63113f0adc1bf415a",
+      "8301b1c2b64ad5567d13b33be7a37d04ed89fdaf",
       []
      ]
     }
@@ -222062,14 +222066,6 @@
      "6905a68e7901ce26bc1a363062304e1536604400",
      []
     ],
-    "idlharness.https.any-expected.txt": [
-     "f60869b56b88631912181d81893b45c382435cb5",
-     []
-    ],
-    "idlharness.https.any.worker-expected.txt": [
-     "71b1e0161c3c6673a40587016803c361eccc5ad3",
-     []
-    ],
     "native_FileSystemWritableFileStream-write-manual.https-expected.txt": [
      "53bf72d0a209fb6a85c7ebc48adb92dfdd4bb1de",
      []
@@ -222450,7 +222446,7 @@
     },
     "resources": {
      "orientation-event-helpers.js": [
-      "3f81fec5867f7f05ea1dbfafb091c9a0f5da563a",
+      "51154ad73765e498650f05e365837fe7fe30fdba",
       []
      ]
     }
@@ -225889,14 +225885,6 @@
       "6805c323df5a975231648b830e33ce183c3cbbd3",
       []
      ],
-     "image_capture-mojom.js.headers": [
-      "6c61a34a4ec2e75096db0eb9f7748b142f0db7bb",
-      []
-     ],
-     "image_capture.mojom.js": [
-      "f145d7a3402543a18229629da0133dea81dd3755",
-      []
-     ],
      "mock-barcodedetection.js": [
       "c11f879b5b6e0ce43bffef7f8f5cabe6fba51632",
       []
@@ -225947,14 +225935,6 @@
      ],
      "nfc-mock.js": [
       "1a7e15819e67ce0bc9d1db841cb4f091364e8138",
-      []
-     ],
-     "sensor.mojom.js": [
-      "7578dd6d64f0e91d94c9dcc32432fd2ceadd38b6",
-      []
-     ],
-     "sensor_provider.mojom.js": [
-      "d82b15a304a2439f5206e5bc86b91c51fcf94bd8",
       []
      ],
      "web-bluetooth-test.js": [
@@ -243355,6 +243335,12 @@
     "dom-overlay": {
      "idlharness.https.window-expected.txt": [
       "f94d4a50ffb940c639a6e7d6d180c642b211fc88",
+      []
+     ]
+    },
+    "hand-input": {
+     "idlharness.https.window-expected.txt": [
+      "7b709e946e53b78848baa6d171fa11983aa6a384",
       []
      ]
     },
@@ -362348,7 +362334,7 @@
    },
    "native-file-system": {
     "idlharness.https.any.js": [
-     "a9090baeee5a9a073513d5fdaae2d84d50d90556",
+     "9e7b52261ced9aef9a517b8db02788ce2e11ef6b",
      [
       "native-file-system/idlharness.https.any.html",
       {
@@ -412598,6 +412584,26 @@
       {}
      ]
     ],
+    "hand-input": {
+     "idlharness.https.window.js": [
+      "184ec6b3060a45a2ebcd9f0268f5bbdf7353a250",
+      [
+       "webxr/hand-input/idlharness.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/WebIDLParser.js"
+         ],
+         [
+          "script",
+          "/resources/idlharness.js"
+         ]
+        ]
+       }
+      ]
+     ]
+    },
     "hit-test": {
      "ar_hittest_source_cancel.https.html": [
       "66f22b1f0c4bede2543f10f8e2cbd6ff78d981d3",

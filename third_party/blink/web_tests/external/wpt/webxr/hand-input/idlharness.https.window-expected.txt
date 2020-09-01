@@ -1,0 +1,84 @@
+This is a testharness.js-based test.
+Found 80 tests; 6 PASS, 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface XRInputSource: original interface defined
+PASS Partial interface XRInputSource: member names are unique
+PASS Partial interface XRFrame: original interface defined
+PASS Partial interface XRFrame: member names are unique
+FAIL XRHand interface: existence and properties of interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface object length assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface object name assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: existence and properties of interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: iterable<XRJointSpace> Cannot read property 'prototype' of undefined
+FAIL XRHand interface: attribute length assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: operation joint(unsigned long) assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant WRIST on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant WRIST on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant THUMB_METACARPAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant THUMB_METACARPAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant THUMB_PHALANX_PROXIMAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant THUMB_PHALANX_PROXIMAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant THUMB_PHALANX_DISTAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant THUMB_PHALANX_DISTAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant THUMB_PHALANX_TIP on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant THUMB_PHALANX_TIP on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_METACARPAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_METACARPAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_PHALANX_PROXIMAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_PHALANX_PROXIMAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_PHALANX_INTERMEDIATE on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_PHALANX_INTERMEDIATE on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_PHALANX_DISTAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_PHALANX_DISTAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_PHALANX_TIP on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant INDEX_PHALANX_TIP on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_METACARPAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_METACARPAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_PHALANX_PROXIMAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_PHALANX_PROXIMAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_PHALANX_INTERMEDIATE on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_PHALANX_INTERMEDIATE on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_PHALANX_DISTAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_PHALANX_DISTAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_PHALANX_TIP on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant MIDDLE_PHALANX_TIP on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_METACARPAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_METACARPAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_PHALANX_PROXIMAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_PHALANX_PROXIMAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_PHALANX_INTERMEDIATE on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_PHALANX_INTERMEDIATE on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_PHALANX_DISTAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_PHALANX_DISTAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_PHALANX_TIP on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant RING_PHALANX_TIP on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_METACARPAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_METACARPAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_PHALANX_PROXIMAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_PHALANX_PROXIMAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_PHALANX_INTERMEDIATE on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_PHALANX_INTERMEDIATE on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_PHALANX_DISTAL on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_PHALANX_DISTAL on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_PHALANX_TIP on interface object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRHand interface: constant LITTLE_PHALANX_TIP on interface prototype object assert_own_property: self does not have own property "XRHand" expected property "XRHand" missing
+FAIL XRJointSpace interface: existence and properties of interface object assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+FAIL XRJointSpace interface object length assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+FAIL XRJointSpace interface object name assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+FAIL XRJointSpace interface: existence and properties of interface prototype object assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+FAIL XRJointSpace interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+FAIL XRJointSpace interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "XRJointSpace" expected property "XRJointSpace" missing
+FAIL XRJointPose interface: existence and properties of interface object assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+FAIL XRJointPose interface object length assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+FAIL XRJointPose interface object name assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+FAIL XRJointPose interface: existence and properties of interface prototype object assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+FAIL XRJointPose interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+FAIL XRJointPose interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+FAIL XRJointPose interface: attribute radius assert_own_property: self does not have own property "XRJointPose" expected property "XRJointPose" missing
+FAIL XRFrame interface: operation getJointPose(XRJointSpace, XRSpace) assert_own_property: interface prototype object missing non-static operation expected property "getJointPose" missing
+FAIL XRInputSource interface: attribute hand assert_true: The prototype object must have a property "hand" expected true got false
+Harness: the test ran to completion.
+
