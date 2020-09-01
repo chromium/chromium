@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/shell/renderer/web_test/mock_screen_orientation_client.h"
+#include "content/shell/renderer/web_test/fake_screen_orientation_impl.h"
 
 #include <memory>
 
@@ -19,11 +19,11 @@
 
 namespace content {
 
-MockScreenOrientationClient::MockScreenOrientationClient() = default;
+FakeScreenOrientationImpl::FakeScreenOrientationImpl() = default;
 
-MockScreenOrientationClient::~MockScreenOrientationClient() = default;
+FakeScreenOrientationImpl::~FakeScreenOrientationImpl() = default;
 
-void MockScreenOrientationClient::ResetData() {
+void FakeScreenOrientationImpl::ResetData() {
   web_view_test_proxy_ = nullptr;
   current_lock_ = device::mojom::ScreenOrientationLockType::DEFAULT;
   device_orientation_ = blink::mojom::ScreenOrientation::kPortraitPrimary;
@@ -32,7 +32,7 @@ void MockScreenOrientationClient::ResetData() {
   receivers_.Clear();
 }
 
-bool MockScreenOrientationClient::UpdateDeviceOrientation(
+bool FakeScreenOrientationImpl::UpdateDeviceOrientation(
     WebViewTestProxy* web_view_test_proxy,
     blink::mojom::ScreenOrientation orientation) {
   web_view_test_proxy_ = web_view_test_proxy;
@@ -45,7 +45,7 @@ bool MockScreenOrientationClient::UpdateDeviceOrientation(
   return UpdateScreenOrientation(orientation);
 }
 
-bool MockScreenOrientationClient::UpdateScreenOrientation(
+bool FakeScreenOrientationImpl::UpdateScreenOrientation(
     blink::mojom::ScreenOrientation orientation) {
   if (current_orientation_ == orientation)
     return false;
@@ -59,13 +59,13 @@ bool MockScreenOrientationClient::UpdateScreenOrientation(
 }
 
 base::Optional<blink::mojom::ScreenOrientation>
-MockScreenOrientationClient::CurrentOrientationType() const {
+FakeScreenOrientationImpl::CurrentOrientationType() const {
   if (is_disabled_)
     return base::nullopt;
   return current_orientation_;
 }
 
-void MockScreenOrientationClient::SetDisabled(
+void FakeScreenOrientationImpl::SetDisabled(
     WebViewTestProxy* web_view_test_proxy,
     bool disabled) {
   if (is_disabled_ == disabled)
@@ -78,7 +78,7 @@ void MockScreenOrientationClient::SetDisabled(
   }
 }
 
-bool MockScreenOrientationClient::IsOrientationAllowedByCurrentLock(
+bool FakeScreenOrientationImpl::IsOrientationAllowedByCurrentLock(
     blink::mojom::ScreenOrientation orientation) {
   if (current_lock_ == device::mojom::ScreenOrientationLockType::DEFAULT ||
       current_lock_ == device::mojom::ScreenOrientationLockType::ANY) {
@@ -111,14 +111,14 @@ bool MockScreenOrientationClient::IsOrientationAllowedByCurrentLock(
   }
 }
 
-void MockScreenOrientationClient::AddReceiver(
+void FakeScreenOrientationImpl::AddReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receivers_.Add(
       this, mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>(
                 std::move(handle)));
 }
 
-void MockScreenOrientationClient::OverrideAssociatedInterfaceProviderForFrame(
+void FakeScreenOrientationImpl::OverrideAssociatedInterfaceProviderForFrame(
     blink::WebLocalFrame* frame) {
   if (!frame)
     return;
@@ -130,26 +130,26 @@ void MockScreenOrientationClient::OverrideAssociatedInterfaceProviderForFrame(
 
   provider->OverrideBinderForTesting(
       device::mojom::ScreenOrientation::Name_,
-      base::BindRepeating(&MockScreenOrientationClient::AddReceiver,
+      base::BindRepeating(&FakeScreenOrientationImpl::AddReceiver,
                           base::Unretained(this)));
 }
 
-void MockScreenOrientationClient::LockOrientation(
+void FakeScreenOrientationImpl::LockOrientation(
     device::mojom::ScreenOrientationLockType orientation,
     LockOrientationCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&MockScreenOrientationClient::UpdateLockSync,
+      base::BindOnce(&FakeScreenOrientationImpl::UpdateLockSync,
                      base::Unretained(this), orientation, std::move(callback)));
 }
 
-void MockScreenOrientationClient::UnlockOrientation() {
+void FakeScreenOrientationImpl::UnlockOrientation() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&MockScreenOrientationClient::ResetLockSync,
+      FROM_HERE, base::BindOnce(&FakeScreenOrientationImpl::ResetLockSync,
                                 base::Unretained(this)));
 }
 
-void MockScreenOrientationClient::UpdateLockSync(
+void FakeScreenOrientationImpl::UpdateLockSync(
     device::mojom::ScreenOrientationLockType lock,
     LockOrientationCallback callback) {
   DCHECK(lock != device::mojom::ScreenOrientationLockType::DEFAULT);
@@ -160,7 +160,7 @@ void MockScreenOrientationClient::UpdateLockSync(
                               SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS);
 }
 
-void MockScreenOrientationClient::ResetLockSync() {
+void FakeScreenOrientationImpl::ResetLockSync() {
   bool will_screen_orientation_need_updating =
       !IsOrientationAllowedByCurrentLock(device_orientation_);
   current_lock_ = device::mojom::ScreenOrientationLockType::DEFAULT;
@@ -169,7 +169,7 @@ void MockScreenOrientationClient::ResetLockSync() {
 }
 
 blink::mojom::ScreenOrientation
-MockScreenOrientationClient::SuitableOrientationForCurrentLock() {
+FakeScreenOrientationImpl::SuitableOrientationForCurrentLock() {
   switch (current_lock_) {
     case device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY:
       return blink::mojom::ScreenOrientation::kPortraitSecondary;

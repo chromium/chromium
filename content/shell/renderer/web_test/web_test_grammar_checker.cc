@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/shell/renderer/web_test/mock_grammar_check.h"
+#include "content/shell/renderer/web_test/web_test_grammar_checker.h"
 
 #include <stddef.h>
 
@@ -24,7 +24,7 @@ bool IsASCIIAlpha(char ch) {
 
 namespace content {
 
-bool MockGrammarCheck::CheckGrammarOfString(
+bool WebTestGrammarChecker::CheckGrammarOfString(
     const blink::WebString& text,
     std::vector<blink::WebTextCheckingResult>* results) {
   DCHECK(results);

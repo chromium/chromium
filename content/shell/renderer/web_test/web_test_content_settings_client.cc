@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/shell/renderer/web_test/mock_content_settings_client.h"
+#include "content/shell/renderer/web_test/web_test_content_settings_client.h"
 
 #include "content/public/common/origin_util.h"
 #include "content/shell/common/web_test/web_test_string_util.h"
@@ -15,19 +15,19 @@
 
 namespace content {
 
-MockContentSettingsClient::MockContentSettingsClient(
+WebTestContentSettingsClient::WebTestContentSettingsClient(
     TestRunner* test_runner,
     WebTestRuntimeFlags* web_test_runtime_flags)
     : test_runner_(test_runner), flags_(web_test_runtime_flags) {}
 
-MockContentSettingsClient::~MockContentSettingsClient() {}
+WebTestContentSettingsClient::~WebTestContentSettingsClient() = default;
 
-bool MockContentSettingsClient::AllowImage(bool enabled_per_settings,
-                                           const blink::WebURL& image_url) {
+bool WebTestContentSettingsClient::AllowImage(bool enabled_per_settings,
+                                              const blink::WebURL& image_url) {
   bool allowed = enabled_per_settings && flags_->images_allowed();
   if (flags_->dump_web_content_settings_client_callbacks()) {
     test_runner_->PrintMessage(
-        std::string("MockContentSettingsClient: allowImage(") +
+        std::string("WebTestContentSettingsClient: allowImage(") +
         web_test_string_util::NormalizeWebTestURL(
             image_url.GetString().Utf8()) +
         "): " + (allowed ? "true" : "false") + "\n");
@@ -35,17 +35,17 @@ bool MockContentSettingsClient::AllowImage(bool enabled_per_settings,
   return allowed;
 }
 
-bool MockContentSettingsClient::AllowScript(bool enabled_per_settings) {
+bool WebTestContentSettingsClient::AllowScript(bool enabled_per_settings) {
   return enabled_per_settings && flags_->scripts_allowed();
 }
 
-bool MockContentSettingsClient::AllowScriptFromSource(
+bool WebTestContentSettingsClient::AllowScriptFromSource(
     bool enabled_per_settings,
     const blink::WebURL& script_url) {
   bool allowed = enabled_per_settings && flags_->scripts_allowed();
   if (flags_->dump_web_content_settings_client_callbacks()) {
     test_runner_->PrintMessage(
-        std::string("MockContentSettingsClient: allowScriptFromSource(") +
+        std::string("WebTestContentSettingsClient: allowScriptFromSource(") +
         web_test_string_util::NormalizeWebTestURL(
             script_url.GetString().Utf8()) +
         "): " + (allowed ? "true" : "false") + "\n");
@@ -53,11 +53,11 @@ bool MockContentSettingsClient::AllowScriptFromSource(
   return allowed;
 }
 
-bool MockContentSettingsClient::AllowStorage(bool enabled_per_settings) {
+bool WebTestContentSettingsClient::AllowStorage(bool enabled_per_settings) {
   return flags_->storage_allowed();
 }
 
-bool MockContentSettingsClient::AllowRunningInsecureContent(
+bool WebTestContentSettingsClient::AllowRunningInsecureContent(
     bool enabled_per_settings,
     const blink::WebURL& url) {
   return enabled_per_settings || flags_->running_insecure_content_allowed();

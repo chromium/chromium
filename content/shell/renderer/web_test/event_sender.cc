@@ -26,8 +26,8 @@
 #include "content/renderer/compositor/compositor_dependencies.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_widget.h"
-#include "content/shell/renderer/web_test/mock_spell_check.h"
 #include "content/shell/renderer/web_test/test_runner.h"
+#include "content/shell/renderer/web_test/web_test_spell_checker.h"
 #include "content/shell/renderer/web_test/web_view_test_proxy.h"
 #include "content/shell/renderer/web_test/web_widget_test_proxy.h"
 #include "gin/handle.h"
@@ -486,11 +486,10 @@ std::vector<std::string> MakeMenuItemStringsFor(
       strings.push_back(*item);
     }
     WebVector<WebString> suggestions;
-    MockSpellCheck::FillSuggestionList(context_menu->misspelled_word,
-                                       &suggestions);
-    for (size_t i = 0; i < suggestions.size(); ++i) {
-      strings.push_back(suggestions[i].Utf8());
-    }
+    WebTestSpellChecker::FillSuggestionList(context_menu->misspelled_word,
+                                            &suggestions);
+    for (const WebString& suggestion : suggestions)
+      strings.push_back(suggestion.Utf8());
   } else {
     for (const char** item = kNonEditableMenuStrings; *item; ++item) {
       strings.push_back(*item);

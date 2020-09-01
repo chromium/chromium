@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/shell/renderer/web_test/mock_spell_check.h"
+#include "content/shell/renderer/web_test/web_test_spell_checker.h"
 
 #include <stddef.h>
 
@@ -35,12 +35,12 @@ bool IsNotASCIIAlpha(char ch) {
 
 }  // namespace
 
-MockSpellCheck::MockSpellCheck() = default;
-MockSpellCheck::~MockSpellCheck() = default;
+WebTestSpellChecker::WebTestSpellChecker() = default;
+WebTestSpellChecker::~WebTestSpellChecker() = default;
 
-bool MockSpellCheck::SpellCheckWord(const blink::WebString& text,
-                                    size_t* misspelled_offset,
-                                    size_t* misspelled_length) {
+bool WebTestSpellChecker::SpellCheckWord(const blink::WebString& text,
+                                         size_t* misspelled_offset,
+                                         size_t* misspelled_length) {
   DCHECK(misspelled_offset);
   DCHECK(misspelled_length);
 
@@ -76,8 +76,8 @@ bool MockSpellCheck::SpellCheckWord(const blink::WebString& text,
     // Look up our misspelled-word table to check if the extracted word is a
     // known misspelled word, and return the offset and the length of the
     // extracted word if this word is a known misspelled word.
-    // (See the comment in MockSpellCheck::InitializeIfNeeded() why we use a
-    // misspelled-word table.)
+    // (See the comment in WebTestSpellChecker::InitializeIfNeeded() why we use
+    // a misspelled-word table.)
     for (size_t i = 0; i < misspelled_words_.size(); ++i) {
       word_length =
           static_cast<int>(misspelled_words_.at(i).length()) > max_word_length
@@ -112,12 +112,12 @@ bool MockSpellCheck::SpellCheckWord(const blink::WebString& text,
   return false;
 }
 
-bool MockSpellCheck::HasInCache(const blink::WebString& word) {
+bool WebTestSpellChecker::HasInCache(const blink::WebString& word) {
   return word == "Spell wellcome. Is it broken?" ||
          word == "Spell wellcome.\x007F";
 }
 
-bool MockSpellCheck::IsMultiWordMisspelling(
+bool WebTestSpellChecker::IsMultiWordMisspelling(
     const blink::WebString& text,
     std::vector<blink::WebTextCheckingResult>* results) {
   if (text == "Helllo wordl.") {
@@ -132,7 +132,7 @@ bool MockSpellCheck::IsMultiWordMisspelling(
   return false;
 }
 
-void MockSpellCheck::FillSuggestionList(
+void WebTestSpellChecker::FillSuggestionList(
     const blink::WebString& word,
     blink::WebVector<blink::WebString>* suggestions) {
   if (word == "wellcome")
@@ -145,7 +145,7 @@ void MockSpellCheck::FillSuggestionList(
     Append(suggestions, blink::WebString::FromUTF8("world"));
 }
 
-bool MockSpellCheck::InitializeIfNeeded() {
+bool WebTestSpellChecker::InitializeIfNeeded() {
   // Exit if we have already initialized this object.
   if (initialized_)
     return false;
@@ -174,7 +174,7 @@ bool MockSpellCheck::InitializeIfNeeded() {
   // or more.
   initialized_ = true;
 
-  // Since this MockSpellCheck class doesn't download dictionaries, this
+  // Since this WebTestSpellChecker class doesn't download dictionaries, this
   // function always returns false.
   return false;
 }

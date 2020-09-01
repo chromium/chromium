@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_CONTENT_SETTINGS_CLIENT_H_
-#define CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_CONTENT_SETTINGS_CLIENT_H_
+#ifndef CONTENT_SHELL_RENDERER_WEB_TEST_WEB_TEST_CONTENT_SETTINGS_CLIENT_H_
+#define CONTENT_SHELL_RENDERER_WEB_TEST_WEB_TEST_CONTENT_SETTINGS_CLIENT_H_
 
 #include <map>
 
@@ -18,13 +18,17 @@ namespace content {
 class TestRunner;
 class WebTestRuntimeFlags;
 
-class MockContentSettingsClient : public blink::WebContentSettingsClient {
+class WebTestContentSettingsClient : public blink::WebContentSettingsClient {
  public:
   // The |test_runner| and |layout_test_runtime_flags| must outlive this class.
-  MockContentSettingsClient(TestRunner* test_runner,
-                            WebTestRuntimeFlags* layout_test_runtime_flags);
+  WebTestContentSettingsClient(TestRunner* test_runner,
+                               WebTestRuntimeFlags* layout_test_runtime_flags);
 
-  ~MockContentSettingsClient() override;
+  ~WebTestContentSettingsClient() override;
+
+  WebTestContentSettingsClient(const WebTestContentSettingsClient&) = delete;
+  WebTestContentSettingsClient& operator=(const WebTestContentSettingsClient&) =
+      delete;
 
   // blink::WebContentSettingsClient:
   bool AllowImage(bool enabled_per_settings,
@@ -39,10 +43,8 @@ class MockContentSettingsClient : public blink::WebContentSettingsClient {
  private:
   TestRunner* const test_runner_;
   WebTestRuntimeFlags* const flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockContentSettingsClient);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_CONTENT_SETTINGS_CLIENT_H_
+#endif  // CONTENT_SHELL_RENDERER_WEB_TEST_WEB_TEST_CONTENT_SETTINGS_CLIENT_H_

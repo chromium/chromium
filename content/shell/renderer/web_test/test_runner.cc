@@ -29,7 +29,7 @@
 #include "content/shell/common/web_test/web_test_string_util.h"
 #include "content/shell/renderer/web_test/app_banner_service.h"
 #include "content/shell/renderer/web_test/blink_test_helpers.h"
-#include "content/shell/renderer/web_test/mock_web_document_subresource_filter.h"
+#include "content/shell/renderer/web_test/fake_subresource_filter.h"
 #include "content/shell/renderer/web_test/pixel_dump.h"
 #include "content/shell/renderer/web_test/spell_check_client.h"
 #include "content/shell/renderer/web_test/test_preferences.h"
@@ -301,9 +301,8 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetCustomPolicyDelegate(gin::Arguments* args);
   void SetCustomTextOutput(const std::string& output);
   void SetDatabaseQuota(int quota);
-  void SetDisallowedSubresourcePathSuffixes(
-      const std::vector<std::string>& suffixes,
-      bool block_subresources);
+  void SetDisallowedSubresourcePathSuffixes(std::vector<std::string> suffixes,
+                                            bool block_subresources);
   void SetDomainRelaxationForbiddenForURLScheme(bool forbidden,
                                                 const std::string& scheme);
   void SetDumpConsoleMessages(bool value);
@@ -1272,12 +1271,12 @@ void TestRunnerBindings::DisableMockScreenOrientation() {
 }
 
 void TestRunnerBindings::SetDisallowedSubresourcePathSuffixes(
-    const std::vector<std::string>& suffixes,
+    std::vector<std::string> suffixes,
     bool block_subresources) {
   if (invalid_)
     return;
   GetWebFrame()->GetDocumentLoader()->SetSubresourceFilter(
-      new MockWebDocumentSubresourceFilter(suffixes, block_subresources));
+      new FakeSubresourceFilter(std::move(suffixes), block_subresources));
 }
 
 void TestRunnerBindings::SetPopupBlockingEnabled(bool block_popups) {
@@ -2192,7 +2191,7 @@ void TestRunner::WorkQueue::ProcessWork() {
 
 TestRunner::TestRunner()
     : work_queue_(this),
-      mock_content_settings_client_(this, &web_test_runtime_flags_) {
+      test_content_settings_client_(this, &web_test_runtime_flags_) {
   // NOTE: please don't put feature specific enable flags here,
   // instead add them to runtime_enabled_features.json5.
   //
@@ -2209,19 +2208,19 @@ void TestRunner::Install(WebFrameTestProxy* frame,
   bool is_main_test_window = frame->GetWebViewTestProxy()->is_main_window();
   TestRunnerBindings::Install(this, frame, spell_check,
                               IsWebPlatformTestsMode(), is_main_test_window);
-  mock_screen_orientation_client_.OverrideAssociatedInterfaceProviderForFrame(
+  fake_screen_orientation_impl_.OverrideAssociatedInterfaceProviderForFrame(
       frame->GetWebFrame());
   gamepad_controller_.Install(frame);
   frame->GetWebViewTestProxy()
       ->GetWebView()
       ->SetScreenOrientationOverrideForTesting(
-          mock_screen_orientation_client_.CurrentOrientationType());
+          fake_screen_orientation_impl_.CurrentOrientationType());
 }
 
 void TestRunner::Reset() {
   loading_frames_.clear();
   web_test_runtime_flags_.Reset();
-  mock_screen_orientation_client_.ResetData();
+  fake_screen_orientation_impl_.ResetData();
   gamepad_controller_.Reset();
   drag_image_.reset();
 
@@ -2261,7 +2260,7 @@ void TestRunner::ResetWebView(WebViewTestProxy* web_view_test_proxy) {
   web_view->GetSettings()->SetHighlightAds(false);
   web_view->DisableAutoResizeForTesting(gfx::Size());
   web_view->SetScreenOrientationOverrideForTesting(
-      mock_screen_orientation_client_.CurrentOrientationType());
+      fake_screen_orientation_impl_.CurrentOrientationType());
 }
 
 void TestRunner::ResetWebWidget(WebWidgetTestProxy* web_widget_test_proxy) {
@@ -2440,7 +2439,7 @@ bool TestRunner::CanOpenWindows() const {
 }
 
 blink::WebContentSettingsClient* TestRunner::GetWebContentSettings() {
-  return &mock_content_settings_client_;
+  return &test_content_settings_client_;
 }
 
 bool TestRunner::ShouldDumpBackForwardList() const {
@@ -2839,10 +2838,6 @@ void TestRunner::UseUnfortunateSynchronousResizeMode() {
   }
 }
 
-MockScreenOrientationClient* TestRunner::GetMockScreenOrientationClient() {
-  return &mock_screen_orientation_client_;
-}
-
 void TestRunner::SetMockScreenOrientation(WebViewTestProxy* view_proxy,
                                           const std::string& orientation_str) {
   blink::mojom::ScreenOrientation orientation;
@@ -2858,14 +2853,14 @@ void TestRunner::SetMockScreenOrientation(WebViewTestProxy* view_proxy,
     orientation = blink::mojom::ScreenOrientation::kLandscapeSecondary;
   }
 
-  bool changed = mock_screen_orientation_client_.UpdateDeviceOrientation(
+  bool changed = fake_screen_orientation_impl_.UpdateDeviceOrientation(
       view_proxy, orientation);
   if (changed)
     GetWebTestControlHostRemote()->SetScreenOrientationChanged();
 }
 
 void TestRunner::DisableMockScreenOrientation(WebViewTestProxy* view_proxy) {
-  mock_screen_orientation_client_.SetDisabled(view_proxy, true);
+  fake_screen_orientation_impl_.SetDisabled(view_proxy, true);
 }
 
 std::string TestRunner::GetAcceptLanguages() const {

@@ -1,12 +1,12 @@
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): true
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif?nocache): false
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
-MockContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): true
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif?nocache): false
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
+WebTestContentSettingsClient: allowImage((file test):permissionclient/resources/boston.gif): false
 Blocked images can be reloaded, so neither onload nor onerror is called. Only check here that onload is never called when image is blocked.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

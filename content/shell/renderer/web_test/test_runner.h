@@ -22,10 +22,10 @@
 #include "base/strings/string16.h"
 #include "content/shell/common/web_test/web_test.mojom.h"
 #include "content/shell/common/web_test/web_test_bluetooth_fake_adapter_setter.mojom.h"
+#include "content/shell/renderer/web_test/fake_screen_orientation_impl.h"
 #include "content/shell/renderer/web_test/gamepad_controller.h"
 #include "content/shell/renderer/web_test/layout_dump.h"
-#include "content/shell/renderer/web_test/mock_content_settings_client.h"
-#include "content/shell/renderer/web_test/mock_screen_orientation_client.h"
+#include "content/shell/renderer/web_test/web_test_content_settings_client.h"
 #include "content/shell/renderer/web_test/web_test_runtime_flags.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -51,7 +51,6 @@ class Arguments;
 }  // namespace gin
 
 namespace content {
-class MockScreenOrientationClient;
 class RenderFrame;
 class RenderView;
 class SpellCheckClient;
@@ -173,7 +172,6 @@ class TestRunner {
   // Methods used by WebViewTestClient and WebFrameTestClient.
   std::string GetAcceptLanguages() const;
   bool ShouldStayOnPageAfterHandlingBeforeUnload() const;
-  MockScreenOrientationClient* GetMockScreenOrientationClient();
   bool ShouldDumpAsCustomText() const;
   std::string CustomDumpText() const;
   void ShowDevTools(const std::string& settings,
@@ -562,8 +560,8 @@ class TestRunner {
   // test that was not waiting for NotifyDone() at all.
   bool did_notify_done_ = false;
 
-  MockContentSettingsClient mock_content_settings_client_;
-  MockScreenOrientationClient mock_screen_orientation_client_;
+  WebTestContentSettingsClient test_content_settings_client_;
+  FakeScreenOrientationImpl fake_screen_orientation_impl_;
   GamepadController gamepad_controller_;
 
   // Captured drag image.

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_SPELL_CHECK_H_
-#define CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_SPELL_CHECK_H_
+#ifndef CONTENT_SHELL_RENDERER_WEB_TEST_WEB_TEST_SPELL_CHECKER_H_
+#define CONTENT_SHELL_RENDERER_WEB_TEST_WEB_TEST_SPELL_CHECKER_H_
 
 #include <vector>
 
@@ -14,20 +14,22 @@
 
 namespace content {
 
-// A mock implementation of a spell-checker used for WebKit tests.
-// This class only implements the minimal functionalities required by WebKit
-// tests, i.e. this class just compares the given string with known misspelled
-// words in webkit tests and mark them as misspelled.
-// Even though this is sufficient for webkit tests, this class is not suitable
-// for any other usages.
-class MockSpellCheck {
+// A spell-checker used for web tests. This class only implements the minimal
+// functionalities required by web tests, i.e. this class just compares the
+// given string with known misspelled words in web tests and mark them as
+// misspelled. Even though this is sufficient for web tests, this class is not
+// suitable for any other usages.
+class WebTestSpellChecker {
  public:
   static void FillSuggestionList(
       const blink::WebString& word,
       blink::WebVector<blink::WebString>* suggestions);
 
-  MockSpellCheck();
-  ~MockSpellCheck();
+  WebTestSpellChecker();
+  ~WebTestSpellChecker();
+
+  WebTestSpellChecker(const WebTestSpellChecker&) = delete;
+  WebTestSpellChecker& operator=(const WebTestSpellChecker&) = delete;
 
   // Checks the spellings of the specified text.
   // This function returns true if the text consists of valid words, and
@@ -66,10 +68,8 @@ class MockSpellCheck {
 
   // A flag representing whether or not this object is initialized.
   bool initialized_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSpellCheck);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_SPELL_CHECK_H_
+#endif  // CONTENT_SHELL_RENDERER_WEB_TEST_WEB_TEST_SPELL_CHECKER_H_

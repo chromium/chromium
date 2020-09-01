@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "content/shell/common/web_test/web_test_string_util.h"
-#include "content/shell/renderer/web_test/mock_screen_orientation_client.h"
 #include "content/shell/renderer/web_test/test_runner.h"
 #include "content/shell/renderer/web_test/web_frame_test_proxy.h"
 #include "net/base/filename_util.h"

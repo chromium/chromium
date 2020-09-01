@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_WEB_DOCUMENT_SUBRESOURCE_FILTER_H_
-#define CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_WEB_DOCUMENT_SUBRESOURCE_FILTER_H_
+#ifndef CONTENT_SHELL_RENDERER_WEB_TEST_FAKE_SUBRESOURCE_FILTER_H_
+#define CONTENT_SHELL_RENDERER_WEB_TEST_FAKE_SUBRESOURCE_FILTER_H_
 
 #include <string>
 #include <vector>
@@ -18,13 +18,15 @@ class WebURL;
 
 namespace content {
 
-class MockWebDocumentSubresourceFilter
-    : public blink::WebDocumentSubresourceFilter {
+class FakeSubresourceFilter : public blink::WebDocumentSubresourceFilter {
  public:
-  explicit MockWebDocumentSubresourceFilter(
-      const std::vector<std::string>& disallowed_path_suffixes,
+  explicit FakeSubresourceFilter(
+      std::vector<std::string> disallowed_path_suffixes,
       bool block_resources);
-  ~MockWebDocumentSubresourceFilter() override;
+  ~FakeSubresourceFilter() override;
+
+  FakeSubresourceFilter(const FakeSubresourceFilter&) = delete;
+  FakeSubresourceFilter& operator=(const FakeSubresourceFilter&) = delete;
 
   // blink::WebDocumentSubresourceFilter:
   LoadPolicy GetLoadPolicy(const blink::WebURL& resource_url,
@@ -35,13 +37,12 @@ class MockWebDocumentSubresourceFilter
   bool ShouldLogToConsole() override;
 
  private:
-  LoadPolicy getLoadPolicyImpl(const blink::WebURL& url);
-  std::vector<std::string> disallowed_path_suffixes_;
-  bool block_subresources_;
+  LoadPolicy GetLoadPolicyImpl(const blink::WebURL& url);
 
-  DISALLOW_COPY_AND_ASSIGN(MockWebDocumentSubresourceFilter);
+  const std::vector<std::string> disallowed_path_suffixes_;
+  const bool block_subresources_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_WEB_DOCUMENT_SUBRESOURCE_FILTER_H_
+#endif  // CONTENT_SHELL_RENDERER_WEB_TEST_FAKE_SUBRESOURCE_FILTER_H_

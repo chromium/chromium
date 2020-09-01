@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/shell/renderer/web_test/mock_spell_check.h"
+#include "content/shell/renderer/web_test/web_test_spell_checker.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
@@ -60,7 +60,7 @@ class SpellCheckClient : public blink::WebTextCheckClient {
   bool enabled_ = false;
 
   // The mock spellchecker used in CheckSpelling().
-  MockSpellCheck spell_check_;
+  WebTestSpellChecker spell_checker_;
 
   blink::WebString last_requested_text_check_string_;
   std::unique_ptr<blink::WebTextCheckingCompletion>

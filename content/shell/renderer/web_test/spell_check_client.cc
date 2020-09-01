@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
-#include "content/shell/renderer/web_test/mock_grammar_check.h"
+#include "content/shell/renderer/web_test/web_test_grammar_checker.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
@@ -52,7 +52,7 @@ void SpellCheckClient::CheckSpelling(
   }
 
   // Check the spelling of the given text.
-  spell_check_.SpellCheckWord(text, &misspelled_offset, &misspelled_length);
+  spell_checker_.SpellCheckWord(text, &misspelled_offset, &misspelled_length);
 }
 
 void SpellCheckClient::RequestCheckingOfText(
@@ -74,7 +74,7 @@ void SpellCheckClient::RequestCheckingOfText(
 
   last_requested_text_checking_completion_ = std::move(completion);
   last_requested_text_check_string_ = text;
-  if (spell_check_.HasInCache(text)) {
+  if (spell_checker_.HasInCache(text)) {
     FinishLastTextCheck();
   } else {
     frame_->GetTaskRunner(blink::TaskType::kInternalTest)
@@ -89,18 +89,18 @@ void SpellCheckClient::FinishLastTextCheck() {
     return;
   std::vector<blink::WebTextCheckingResult> results;
   size_t offset = 0;
-  if (!spell_check_.IsMultiWordMisspelling(last_requested_text_check_string_,
-                                           &results)) {
+  if (!spell_checker_.IsMultiWordMisspelling(last_requested_text_check_string_,
+                                             &results)) {
     base::string16 text = last_requested_text_check_string_.Utf16();
     while (text.length()) {
       size_t misspelled_position = 0;
       size_t misspelled_length = 0;
-      spell_check_.SpellCheckWord(blink::WebString::FromUTF16(text),
-                                  &misspelled_position, &misspelled_length);
+      spell_checker_.SpellCheckWord(blink::WebString::FromUTF16(text),
+                                    &misspelled_position, &misspelled_length);
       if (!misspelled_length)
         break;
       blink::WebVector<blink::WebString> suggestions;
-      spell_check_.FillSuggestionList(
+      spell_checker_.FillSuggestionList(
           blink::WebString::FromUTF16(
               text.substr(misspelled_position, misspelled_length)),
           &suggestions);
@@ -110,8 +110,8 @@ void SpellCheckClient::FinishLastTextCheck() {
       text = text.substr(misspelled_position + misspelled_length);
       offset += misspelled_position + misspelled_length;
     }
-    MockGrammarCheck::CheckGrammarOfString(last_requested_text_check_string_,
-                                           &results);
+    WebTestGrammarChecker::CheckGrammarOfString(
+        last_requested_text_check_string_, &results);
   }
   last_requested_text_checking_completion_->DidFinishCheckingText(results);
   last_requested_text_checking_completion_.reset();

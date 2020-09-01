@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_SCREEN_ORIENTATION_CLIENT_H_
-#define CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_SCREEN_ORIENTATION_CLIENT_H_
+#ifndef CONTENT_SHELL_RENDERER_WEB_TEST_FAKE_SCREEN_ORIENTATION_IMPL_H_
+#define CONTENT_SHELL_RENDERER_WEB_TEST_FAKE_SCREEN_ORIENTATION_IMPL_H_
 
 #include <memory>
 
@@ -22,10 +22,16 @@ class WebLocalFrame;
 namespace content {
 class WebViewTestProxy;
 
-class MockScreenOrientationClient : public device::mojom::ScreenOrientation {
+// An implementation of mojom::ScreenOrientation for web tests, that lives in
+// the renderer process.
+class FakeScreenOrientationImpl : public device::mojom::ScreenOrientation {
  public:
-  explicit MockScreenOrientationClient();
-  ~MockScreenOrientationClient() override;
+  explicit FakeScreenOrientationImpl();
+  ~FakeScreenOrientationImpl() override;
+
+  FakeScreenOrientationImpl(const FakeScreenOrientationImpl&) = delete;
+  FakeScreenOrientationImpl& operator=(const FakeScreenOrientationImpl&) =
+      delete;
 
   void ResetData();
   bool UpdateDeviceOrientation(WebViewTestProxy* web_view,
@@ -62,10 +68,8 @@ class MockScreenOrientationClient : public device::mojom::ScreenOrientation {
       blink::mojom::ScreenOrientation::kPortraitPrimary;
   bool is_disabled_ = false;
   mojo::AssociatedReceiverSet<device::mojom::ScreenOrientation> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockScreenOrientationClient);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_SHELL_RENDERER_WEB_TEST_MOCK_SCREEN_ORIENTATION_CLIENT_H_
+#endif  // CONTENT_SHELL_RENDERER_WEB_TEST_FAKE_SCREEN_ORIENTATION_IMPL_H_
