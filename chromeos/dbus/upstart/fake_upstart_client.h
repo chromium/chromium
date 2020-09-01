@@ -22,10 +22,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   FakeUpstartClient();
   ~FakeUpstartClient() override;
 
-  // Adds or removes an observer.
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-
   // Returns the fake global instance if initialized. May return null.
   static FakeUpstartClient* Get();
 

@@ -29,9 +29,6 @@ FakeUpstartClient::~FakeUpstartClient() {
   g_instance = nullptr;
 }
 
-void FakeUpstartClient::AddObserver(Observer* observer) {}
-void FakeUpstartClient::RemoveObserver(Observer* observer) {}
-
 // static
 FakeUpstartClient* FakeUpstartClient::Get() {
   return g_instance;
