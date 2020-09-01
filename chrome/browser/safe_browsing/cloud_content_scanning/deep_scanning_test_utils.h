@@ -73,6 +73,16 @@ class EventReportValidator {
                                 int expected_content_size,
                                 const std::string& expected_result);
 
+  void ExpectDangerousDownloadEvent(
+      const std::string& expected_url,
+      const std::string& expected_filename,
+      const std::string& expected_sha256,
+      const std::string& expected_threat_type,
+      const std::string& expected_trigger,
+      const std::set<std::string>* expected_mimetypes,
+      int expected_content_size,
+      const std::string& expected_result);
+
   // Closure to run once all expected events are validated.
   void SetDoneClosure(base::RepeatingClosure closure);
 

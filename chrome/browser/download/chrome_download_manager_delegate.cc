@@ -39,6 +39,8 @@
 #include "chrome/browser/download/download_target_determiner.h"
 #include "chrome/browser/download/mixed_content_download_blocking.h"
 #include "chrome/browser/download/save_package_file_picker.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -321,6 +323,35 @@ void HandleMixedDownloadInfoBarResult(
 }
 #endif
 
+void MaybeReportDangerousDownloadBlocked(
+    DownloadPrefs::DownloadRestriction download_restriction,
+    std::string danger_type,
+    std::string download_path,
+    download::DownloadItem* download) {
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  if (download_restriction !=
+          DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES &&
+      download_restriction !=
+          DownloadPrefs::DownloadRestriction::DANGEROUS_FILES) {
+    return;
+  }
+
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(download);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile)
+    return;
+
+  std::string raw_digest_sha256 = download->GetHash();
+  extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile)
+      ->OnDangerousDownloadEvent(
+          download->GetURL(), download_path,
+          base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
+          danger_type, download->GetMimeType(), download->GetTotalBytes(),
+          safe_browsing::EventResult::BLOCKED);
+#endif
+}
+
 }  // namespace
 
 ChromeDownloadManagerDelegate::ChromeDownloadManagerDelegate(Profile* profile)
@@ -550,6 +581,10 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
                << "() SB service disabled. Marking download as DANGEROUS FILE";
       if (ShouldBlockFile(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
                           item)) {
+        MaybeReportDangerousDownloadBlocked(
+            download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
+            item->GetTargetFilePath().AsUTF8Unsafe(), item);
+
         item->OnContentCheckCompleted(
             // Specifying a dangerous type here would take precedence over the
             // blocking of the file.
@@ -1272,8 +1307,12 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       // blocking of the file. For BLOCKED_TOO_LARGE and
       // BLOCKED_PASSWORD_PROTECTED, we want to display more clear UX, so
       // allow those danger types.
-      if (!IsDangerTypeBlocked(danger_type))
+      if (!IsDangerTypeBlocked(danger_type)) {
         danger_type = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
+        MaybeReportDangerousDownloadBlocked(
+            download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
+            item->GetTargetFilePath().AsUTF8Unsafe(), item);
+      }
       item->OnContentCheckCompleted(
           danger_type, download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     } else {
@@ -1329,6 +1368,9 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
     DownloadItemModel(item).SetDangerLevel(target_info->danger_level);
   }
   if (ShouldBlockFile(target_info->danger_type, item)) {
+    MaybeReportDangerousDownloadBlocked(
+        download_prefs_->download_restriction(), "DANGEROUS_FILE_TYPE",
+        target_info->target_path.AsUTF8Unsafe(), item);
     target_info->result = download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
     // A dangerous type would take precedence over the blocking of the file.
     target_info->danger_type = download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;

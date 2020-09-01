@@ -626,13 +626,14 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
           event_result));
 }
 
-void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarning(
+void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const GURL& url,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& threat_type,
     const std::string& mime_type,
-    const int64_t content_size) {
+    const int64_t content_size,
+    safe_browsing::EventResult event_result) {
   if (!IsRealtimeReportingEnabled())
     return;
 
@@ -643,7 +644,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarning(
              const std::string& download_digest_sha256,
              const std::string& profile_user_name,
              const std::string& threat_type, const std::string& mime_type,
-             const int64_t content_size) {
+             const int64_t content_size,
+             safe_browsing::EventResult event_result) {
             // Create a real-time event dictionary and report it.
             base::Value event(base::Value::Type::DICTIONARY);
             event.SetStringKey(kKeyUrl, url);
@@ -659,13 +661,13 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarning(
             if (content_size >= 0)
               event.SetIntKey(kKeyContentSize, content_size);
             event.SetStringKey(kKeyTrigger, kTriggerFileDownload);
-            event.SetStringKey(kKeyEventResult,
-                               safe_browsing::EventResultToString(
-                                   safe_browsing::EventResult::WARNED));
+            event.SetStringKey(
+                kKeyEventResult,
+                safe_browsing::EventResultToString(event_result));
             return event;
           },
           url.spec(), file_name, download_digest_sha256, GetProfileUserName(),
-          threat_type, mime_type, content_size));
+          threat_type, mime_type, content_size, event_result));
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(

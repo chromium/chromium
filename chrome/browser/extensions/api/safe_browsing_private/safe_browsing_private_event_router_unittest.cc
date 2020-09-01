@@ -176,14 +176,15 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
                                           "PHISHING", -201);
   }
 
-  void TriggerOnDangerousDownloadWarningEvent() {
+  void TriggerOnDangerousDownloadEvent() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnDangerousDownloadWarning(
+        ->OnDangerousDownloadEvent(
             GURL("https://maybevil.com/warning.exe"), "/path/to/warning.exe",
-            "sha256_of_warning_exe", "POTENTIALLY_UNWANTED", "exe", 567);
+            "sha256_of_warning_exe", "POTENTIALLY_UNWANTED", "exe", 567,
+            safe_browsing::EventResult::WARNED);
   }
 
-  void TriggerOnDangerousDownloadWarningEventBypass() {
+  void TriggerOnDangerousDownloadEventBypass() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadWarningBypassed(
             GURL("https://bypassevil.com/bypass.exe"), "/path/to/bypass.exe",
@@ -469,7 +470,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
       .WillOnce(CaptureArg(&report));
 
-  TriggerOnDangerousDownloadWarningEvent();
+  TriggerOnDangerousDownloadEvent();
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
@@ -511,7 +512,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _))
       .WillOnce(CaptureArg(&report));
 
-  TriggerOnDangerousDownloadWarningEventBypass();
+  TriggerOnDangerousDownloadEventBypass();
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
@@ -676,7 +677,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   base::Value report;
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _)).Times(0);
 
-  TriggerOnDangerousDownloadWarningEvent();
+  TriggerOnDangerousDownloadEvent();
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
@@ -693,7 +694,7 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   base::Value report;
   EXPECT_CALL(*client_, UploadRealtimeReport_(_, _)).Times(0);
 
-  TriggerOnDangerousDownloadWarningEventBypass();
+  TriggerOnDangerousDownloadEventBypass();
   base::RunLoop().RunUntilIdle();
 
   Mock::VerifyAndClearExpectations(client_.get());
