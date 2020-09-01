@@ -1374,7 +1374,7 @@
     ],
 
     'angle_ozone_linux_system_gbm_libdrm_release_trybot': [
-      'angle_tests', 'ozone_linux', 'system_gbm_libdrm', 'release_trybot',
+      'angle_tests', 'ozone_linux', 'ozone_linux_non_x11', 'system_gbm_libdrm', 'release_trybot',
     ],
 
     'asan_clang_shared_v8_heap_minimal_symbols_release_tot': [
@@ -2894,6 +2894,14 @@
 
     'ozone_linux': {
       'gn_args': 'use_ozone=true ozone_platform="headless" use_bundled_weston=true',
+    },
+
+    # TODO(anglebug.com/4977): Make angle understand what platform it should
+    # use. Otherwise, the use_x11 && use_ozone config breaks Linux Ozone FYI (Intel) bot
+    # that exercises angle + ozone (though, it is ozone/drm in reality. We don't support
+    # angle on Linux Ozone/X11/Wayland yet).
+    'ozone_linux_non_x11': {
+      'gn_args': 'use_x11=false'
     },
 
     # Used to pass the list of files to instrument for coverage to the compile

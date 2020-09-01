@@ -11,6 +11,7 @@
 #include "ui/events/platform/platform_event_source.h"
 
 #if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -30,13 +31,15 @@ class VulkanTestSuite : public base::TestSuite {
 
 #if defined(USE_OZONE)
     // Make Ozone run in single-process mode.
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
+    if (features::IsUsingOzonePlatform()) {
+      ui::OzonePlatform::InitParams params;
+      params.single_process = true;
 
-    // This initialization must be done after TaskEnvironment has
-    // initialized the UI thread.
-    ui::OzonePlatform::InitializeForUI(params);
-    ui::OzonePlatform::InitializeForGPU(params);
+      // This initialization must be done after TaskEnvironment has
+      // initialized the UI thread.
+      ui::OzonePlatform::InitializeForUI(params);
+      ui::OzonePlatform::InitializeForGPU(params);
+    }
 #endif
   }
 
