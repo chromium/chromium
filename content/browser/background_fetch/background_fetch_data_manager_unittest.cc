@@ -2327,8 +2327,6 @@ TEST_F(BackgroundFetchDataManagerTest, CreateInParallel) {
   ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
             service_worker_registration_id);
 
-  std::vector<blink::mojom::FetchAPIRequestPtr> requests =
-      CreateValidRequests(origin());
   auto options = blink::mojom::BackgroundFetchOptions::New();
 
   std::vector<blink::mojom::BackgroundFetchError> errors(5);
@@ -2343,6 +2341,8 @@ TEST_F(BackgroundFetchDataManagerTest, CreateInParallel) {
       base::BarrierClosure(num_parallel_creates, run_loop.QuitClosure());
 
   for (int i = 0; i < num_parallel_creates; i++) {
+    std::vector<blink::mojom::FetchAPIRequestPtr> requests =
+        CreateValidRequests(origin());
     // New |unique_id| per iteration, since each is a distinct registration.
     BackgroundFetchRegistrationId registration_id(
         service_worker_registration_id, origin(), kExampleDeveloperId,

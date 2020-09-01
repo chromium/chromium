@@ -113,7 +113,7 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchCompletionEvent(
   auto registration = blink::mojom::BackgroundFetchRegistration::New(
       std::move(registration_data),
       BackgroundFetchRegistrationServiceImpl::CreateInterfaceInfo(
-          std::move(registration_id), background_fetch_context_->GetWeakPtr()));
+          registration_id, background_fetch_context_->GetWeakPtr()));
 
   switch (registration->registration_data->failure_reason) {
     case blink::mojom::BackgroundFetchFailureReason::NONE:
@@ -184,7 +184,7 @@ void BackgroundFetchEventDispatcher::DispatchBackgroundFetchClickEvent(
   auto registration = blink::mojom::BackgroundFetchRegistration::New(
       std::move(registration_data),
       BackgroundFetchRegistrationServiceImpl::CreateInterfaceInfo(
-          std::move(registration_id), background_fetch_context_->GetWeakPtr()));
+          registration_id, background_fetch_context_->GetWeakPtr()));
 
   LoadServiceWorkerRegistrationForDispatch(
       registration_id, ServiceWorkerMetrics::EventType::BACKGROUND_FETCH_CLICK,
