@@ -6,13 +6,12 @@
 #define CONTENT_BROWSER_RENDERER_HOST_AGENT_SCHEDULING_GROUP_HOST_H_
 
 #include <stdint.h>
-#include <memory>
 
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
-#include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace IPC {
@@ -34,7 +33,8 @@ class SiteInstance;
 //
 // An AgentSchedulingGroupHost is stored as (and owned by) UserData on the
 // RenderProcessHost.
-class CONTENT_EXPORT AgentSchedulingGroupHost {
+class CONTENT_EXPORT AgentSchedulingGroupHost
+    : public mojom::AgentSchedulingGroupHost {
  public:
   // Get the appropriate AgentSchedulingGroupHost for the given |instance| and
   // |process|. For now, each RenderProcessHost has a single
@@ -45,7 +45,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost {
 
   // Should not be called explicitly. Use Get() instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
-  ~AgentSchedulingGroupHost();
+  ~AgentSchedulingGroupHost() override;
 
   RenderProcessHost* GetProcess();
 
@@ -65,14 +65,13 @@ class CONTENT_EXPORT AgentSchedulingGroupHost {
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   RenderProcessHost& process_;
 
-  // Internal implementation of content::mojom::AgentSchedulingGroupHost, used
-  // for responding to calls from the (renderer-side) AgentSchedulingGroup.
-  std::unique_ptr<content::mojom::AgentSchedulingGroupHost> mojo_impl_;
+  // Implementation of `mojom::AgentSchedulingGroupHost`, used for responding to
+  // calls from the (renderer-side) `AgentSchedulingGroup`.
+  mojo::Receiver<mojom::AgentSchedulingGroupHost> receiver_{this};
 
-  // Remote stub of content::mojom::AgentSchedulingGroup, used for sending calls
-  // to the (renderer-side) AgentSchedulingGroup.
-  std::unique_ptr<mojo::Remote<content::mojom::AgentSchedulingGroup>>
-      mojo_remote_;
+  // Remote stub of `mojom::AgentSchedulingGroup`, used for sending calls to the
+  // (renderer-side) `AgentSchedulingGroup`.
+  mojo::Remote<mojom::AgentSchedulingGroup> mojo_remote_;
 };
 
 }  // namespace content

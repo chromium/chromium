@@ -14,10 +14,10 @@ namespace content {
 
 namespace {
 
-using IPC::ChannelProxy;
-using IPC::Listener;
-using mojom::CreateFrameParamsPtr;
-using mojom::RouteProvider;
+using ::IPC::ChannelProxy;
+using ::IPC::Listener;
+using ::mojo::PendingRemote;
+using ::mojo::Receiver;
 
 static constexpr char kAgentGroupHostDataKey[] =
     "AgentSchedulingGroupHostUserDataKey";
@@ -36,6 +36,7 @@ class AgentGroupHostUserData : public base::SupportsUserData::Data {
  private:
   std::unique_ptr<AgentSchedulingGroupHost> agent_group_;
 };
+
 }  // namespace
 
 // static
@@ -57,7 +58,10 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::Get(
 
 AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process)
     : process_(process) {
-  process_.GetRendererInterface()->CreateAgentSchedulingGroup();
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  process_.GetRendererInterface()->CreateAgentSchedulingGroup(
+      receiver_.BindNewPipeAndPassRemote(),
+      mojo_remote_.BindNewPipeAndPassReceiver());
 }
 
 // DO NOT USE |process_| HERE! At this point it (or at least parts of it) is no
@@ -85,13 +89,13 @@ void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
   process_.RemoveRoute(routing_id);
 }
 
-RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
+mojom::RouteProvider* AgentSchedulingGroupHost::GetRemoteRouteProvider() {
   RenderProcessHostImpl& process =
       static_cast<RenderProcessHostImpl&>(process_);
   return process.GetRemoteRouteProvider();
 }
 
-void AgentSchedulingGroupHost::CreateFrame(CreateFrameParamsPtr params) {
+void AgentSchedulingGroupHost::CreateFrame(mojom::CreateFrameParamsPtr params) {
   process_.GetRendererInterface()->CreateFrame(std::move(params));
 }
 

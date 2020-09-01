@@ -5,10 +5,10 @@
 #ifndef CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 #define CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 
-#include <memory>
-
+#include "base/callback.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
@@ -18,10 +18,16 @@ namespace content {
 // Blink's unit of scheduling and performance isolation, which is the only way
 // to obtain ordering guarantees between different Mojo (associated) interfaces
 // and legacy IPC messages.
-class CONTENT_EXPORT AgentSchedulingGroup {
+class CONTENT_EXPORT AgentSchedulingGroup : public mojom::AgentSchedulingGroup {
  public:
-  explicit AgentSchedulingGroup();
-  ~AgentSchedulingGroup();
+  // |mojo_disconnect_handler| will be called with |this| when |receiver| is
+  // disconnected.
+  AgentSchedulingGroup(
+      mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
+      mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver,
+      base::OnceCallback<void(const AgentSchedulingGroup*)>
+          mojo_disconnect_handler);
+  ~AgentSchedulingGroup() override;
 
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;
   AgentSchedulingGroup(const AgentSchedulingGroup&&) = delete;
@@ -29,14 +35,13 @@ class CONTENT_EXPORT AgentSchedulingGroup {
   AgentSchedulingGroup& operator=(const AgentSchedulingGroup&&) = delete;
 
  private:
-  // Internal implementation of content::mojom::AgentSchedulingGroup, used for
-  // responding to calls from the (browser-side) AgentSchedulingGroupHost.
-  std::unique_ptr<content::mojom::AgentSchedulingGroup> mojo_impl_;
+  // Implementation of `mojom::AgentSchedulingGroup`, used for responding to
+  // calls from the (browser-side) `AgentSchedulingGroupHost`.
+  mojo::Receiver<mojom::AgentSchedulingGroup> receiver_;
 
-  // Remote stub of content::mojom::AgentSchedulingGroupHost, used for sending
-  // calls to the (browser-side) AgentSchedulingGroupHost.
-  std::unique_ptr<mojo::Remote<content::mojom::AgentSchedulingGroupHost>>
-      mojo_remote_;
+  // Remote stub of mojom::AgentSchedulingGroupHost, used for sending calls to
+  // the (browser-side) AgentSchedulingGroupHost.
+  mojo::Remote<mojom::AgentSchedulingGroupHost> host_remote_;
 };
 
 }  // namespace content

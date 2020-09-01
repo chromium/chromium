@@ -17,6 +17,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/clang_profiling_buildflags.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -28,6 +29,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/child/child_thread_impl.h"
+#include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/frame_replication_state.h"
@@ -443,7 +445,11 @@ class CONTENT_EXPORT RenderThreadImpl
   void CreateView(mojom::CreateViewParamsPtr params) override;
   void DestroyView(int32_t view_id) override;
   void CreateFrame(mojom::CreateFrameParamsPtr params) override;
-  void CreateAgentSchedulingGroup() override;
+  void CreateAgentSchedulingGroup(
+      mojo::PendingRemote<mojom::AgentSchedulingGroupHost>
+          agent_scheduling_group_host,
+      mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group)
+      override;
   void CreateFrameProxy(
       int32_t routing_id,
       int32_t render_view_routing_id,
@@ -507,6 +513,11 @@ class CONTENT_EXPORT RenderThreadImpl
 
   void OnRendererInterfaceReceiver(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
+
+  void RemoveAgentSchedulingGroup(
+      const AgentSchedulingGroup* agent_scheduling_group);
+  base::RepeatingCallback<void(const AgentSchedulingGroup*)>
+      remove_agent_scheduling_group_callback_;
 
   std::unique_ptr<base::DiscardableMemoryAllocator>
       discardable_memory_allocator_;
@@ -616,7 +627,8 @@ class CONTENT_EXPORT RenderThreadImpl
 
   mojo::AssociatedRemote<mojom::RenderMessageFilter> render_message_filter_;
 
-  std::set<std::unique_ptr<AgentSchedulingGroup>> agent_scheduling_groups_;
+  std::set<std::unique_ptr<AgentSchedulingGroup>, base::UniquePtrComparator>
+      agent_scheduling_groups_;
 
   RendererMemoryMetrics purge_and_suspend_memory_metrics_;
   bool needs_to_record_first_active_paint_;

@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "content/common/agent_scheduling_group.mojom";
 import "content/common/document_scoped_interface_bundle.mojom";
 import "content/common/native_types.mojom";
 import "content/public/common/web_preferences.mojom";
@@ -257,8 +258,13 @@ interface Renderer {
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
 
-  // Tells the renderer to create a new AgentSchedulingGroup.
-  CreateAgentSchedulingGroup();
+  // Tells the renderer to create a new AgentSchedulingGroup, that will
+  // communicate via the pending |agent_scheduling_group_host| and
+  // |agent_scheduling_group|.
+  CreateAgentSchedulingGroup(
+    pending_remote<AgentSchedulingGroupHost> agent_scheduling_group_host,
+    pending_receiver<AgentSchedulingGroup> agent_scheduling_group
+  );
 
   // Tells the renderer to create a new RenderFrameProxy object with
   // |routing_id|.  |render_view_routing_id| identifies the
