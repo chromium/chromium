@@ -290,14 +290,18 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.ParseFromString(metadata_str);
 
+  const bool initial_sync_done =
+      model_metadata.model_type_state().initial_sync_done();
+  const bool bookmarks_metadata_empty =
+      model_metadata.bookmarks_metadata().empty();
+
   bookmark_tracker_ = SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
       model, std::move(model_metadata));
 
   if (bookmark_tracker_) {
     bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
     StartTrackingMetadata();
-  } else if (!model_metadata.model_type_state().initial_sync_done() &&
-             !model_metadata.bookmarks_metadata().empty()) {
+  } else if (!initial_sync_done && !bookmarks_metadata_empty) {
     DLOG(ERROR)
         << "Persisted Metadata not empty while initial sync is not done.";
   }
