@@ -36718,7 +36718,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Cryptohome.LECredential"
-    enum="CryptohomeLECredError" expires_after="2020-12-27">
+    enum="CryptohomeLECredError" expires_after="2021-02-28">
 <!-- Name completed by histogram_suffixes name="LECredentialOps" -->
 
   <owner>pmalani@chromium.org</owner>
@@ -37491,7 +37491,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.WarmupStateOnLaunch" enum="WarmupStateOnLaunch"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Recorded only on Android. Reports whether warmup() has been called when a
@@ -50989,7 +50989,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.VpdUpdateStatus" units="units"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>igorcov@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <summary>
@@ -153045,7 +153045,7 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
-<histogram name="SB2.RemoteCall.Elapsed" units="ms" expires_after="2020-12-27">
+<histogram name="SB2.RemoteCall.Elapsed" units="ms" expires_after="2021-02-28">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -155064,7 +155064,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SBIRS.UploadResult" enum="ReportProcessingResult"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>caitkp@google.com</owner>
   <summary>
     The result of an attempted report upload by the safe browsing incident
@@ -178363,7 +178363,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.PostedClientToServerMessageLatency" units="ms"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>mastiz@chromium.org</owner>
   <summary>
     Time taken for a client-initiated request to be sent over the network and
@@ -178398,7 +178398,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.PostedGetUpdatesOrigin" enum="SyncGetUpdatesOrigin"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -179261,7 +179261,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Sync.URLFetchResponse"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2020-12-27">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2021-02-28">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -188545,7 +188545,7 @@ regressions. -->
 </histogram>
 
 <histogram name="V8.WasmCompileModuleAsyncMicroSeconds" units="microseconds"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -191642,7 +191642,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
-    enum="WebAppUrlLoaderResult" expires_after="2020-12-30">
+    enum="WebAppUrlLoaderResult" expires_after="2021-02-28">
   <owner>qjw@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
@@ -194062,7 +194062,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.HadBlankText" enum="BooleanHadBlankText"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>
@@ -195094,7 +195094,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Audio.Encoder.CodecType" enum="WebRtcAudioCodecs"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>aleloi@chromium.org</owner>
   <summary>
     Histogram of audio codec usage. Every sample corresponds to 5 seconds of
@@ -195230,7 +195230,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.Audio.TargetBitrateInKbps" units="kbps"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The target bitrate in kbps that the audio codec should try to produce on
@@ -195363,7 +195363,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.BWE.InitialBandwidthEstimate" units="kbps"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>holmer@chromium.org</owner>
   <summary>The bandwidth estimate 2 seconds into a WebRTC call.</summary>
 </histogram>
@@ -195481,7 +195481,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebRTC.BWE.RampUpTimeTo2000kbpsInMs" units="ms"
-    expires_after="2020-12-27">
+    expires_after="2021-02-28">
   <owner>holmer@chromium.org</owner>
   <summary>
     The time it takes the estimated bandwidth to reach 2000 kbps from the first
