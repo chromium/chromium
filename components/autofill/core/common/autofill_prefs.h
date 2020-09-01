@@ -41,6 +41,7 @@ extern const char kAutofillOrphanRowsRemoved[];
 extern const char kAutofillProfileEnabled[];
 extern const char kAutofillProfileValidity[];
 extern const char kAutofillSyncTransportOptIn[];
+extern const char kAutofillStatesDataDir[];
 extern const char kAutofillUploadEncodingSeed[];
 extern const char kAutofillUploadEvents[];
 extern const char kAutofillUploadEventsLastResetTimestamp[];

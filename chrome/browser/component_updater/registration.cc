@@ -9,6 +9,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/autofill_states_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
@@ -195,6 +196,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #endif  // !defined(OS_CHROMEOS)
 
   RegisterZxcvbnDataComponent(cus);
+
+  RegisterAutofillStatesComponent(cus, profile_prefs);
 }
 
 }  // namespace component_updater

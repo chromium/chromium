@@ -3243,6 +3243,7 @@ test("unit_tests") {
     "../browser/command_updater_impl_unittest.cc",
     "../browser/complex_tasks/endpoint_fetcher/endpoint_fetcher_unittest.cc",
     "../browser/complex_tasks/task_tab_helper_unittest.cc",
+    "../browser/component_updater/autofill_states_component_installer_unittest.cc",
     "../browser/component_updater/chrome_component_updater_configurator_unittest.cc",
     "../browser/component_updater/crl_set_component_installer_unittest.cc",
     "../browser/component_updater/floc_blocklist_component_installer_unittest.cc",

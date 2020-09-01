@@ -99,6 +99,10 @@ const char kAutofillProfileEnabled[] = "autofill.profile_enabled";
 // migrating this back to "autofill." in the future.
 const char kAutofillProfileValidity[] = "autofill_profile_validity";
 
+// This pref stores the file path where the autofill states data is
+// downloaded to.
+const char kAutofillStatesDataDir[] = "autofill.states_data_dir";
+
 // The opt-ins for Sync Transport features for each client.
 const char kAutofillSyncTransportOptIn[] = "autofill.sync_transport_opt_ins";
 
@@ -181,6 +185,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kAutofillUploadEventsLastResetTimestamp,
                              base::Time());
   registry->RegisterDictionaryPref(prefs::kAutofillSyncTransportOptIn);
+  registry->RegisterStringPref(prefs::kAutofillStatesDataDir, "");
 
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillJapanCityFieldMigratedDeprecated,
