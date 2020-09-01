@@ -113,8 +113,9 @@ void OsIntegrationManager::InstallOsHooks(
   // from adding a shortcut to desktop.
   if (options.add_to_applications_menu &&
       shortcut_manager_->CanCreateShortcuts()) {
+    const bool add_to_desktop = options.add_to_desktop;
     shortcut_manager_->CreateShortcuts(
-        app_id, options.add_to_desktop,
+        app_id, add_to_desktop,
         base::BindOnce(&OsIntegrationManager::OnShortcutsCreated,
                        weak_ptr_factory_.GetWeakPtr(), app_id,
                        std::move(web_app_info), std::move(options), barrier));
