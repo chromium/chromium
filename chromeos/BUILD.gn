@@ -295,6 +295,7 @@ if (is_chromeos_device) {
       "crostini.Basic.artifact",
       "crostini.PackageInfo.artifact",
       "crostini.PackageInstallUninstall.artifact",
+      "crostini.Sanity.artifact",
       "crostini.SecureCopyPaste.copy_wayland_artifact",
       "crostini.SecureCopyPaste.copy_x11_artifact",
       "crostini.SecureCopyPaste.paste_wayland_artifact",
