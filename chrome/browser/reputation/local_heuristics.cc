@@ -111,13 +111,15 @@ bool ShouldTriggerSafetyTipFromKeywordInURL(
     const char* const sensitive_keywords[],
     const size_t num_sensitive_keywords) {
   return HostnameContainsKeyword(url, navigated_domain.domain_and_registry,
-                                 sensitive_keywords, num_sensitive_keywords);
+                                 sensitive_keywords, num_sensitive_keywords,
+                                 /* search_e2ld = */ true);
 }
 
 bool HostnameContainsKeyword(const GURL& url,
                              const std::string& eTLD_plus_one,
                              const char* const keywords[],
-                             const size_t num_keywords) {
+                             const size_t num_keywords,
+                             bool search_e2ld) {
   // We never want to trigger this heuristic on any non-http / https sites.
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return false;
@@ -150,10 +152,10 @@ bool HostnameContainsKeyword(const GURL& url,
   // Any problems that would result in an empty e2LD should have been caught via
   // the |eTLD_plus_one| check.
 
-  // If the e2LD is itself a keyword, then chop that off and only
-  // search the rest of it. Otherwise, we keep the full e2LD included to
-  // detect hyphenated spoofs (e.g. "evil-google.com").
-  if (SortedWordListContains(e2LD, keywords, num_keywords)) {
+  // If we want to exclude the e2LD, or if the e2LD is itself a keyword, then
+  // chop that off and only search the rest of it. Otherwise, we keep the full
+  // e2LD included to detect hyphenated spoofs (e.g. "evil-google.com").
+  if (!search_e2ld || SortedWordListContains(e2LD, keywords, num_keywords)) {
     // If the user visited the eTLD+1 directly, bail here.
     if (search_substr.size() == e2LD.size()) {
       return false;
