@@ -236,8 +236,13 @@ constexpr int kPrivacyScreenToastSpacing = 16;
 
 // constants used for holding space tray.
 constexpr gfx::Insets kHoldingSpaceContainerPadding = gfx::Insets(16);
+constexpr gfx::Insets kHoldingSpaceChipPadding = gfx::Insets(8);
+constexpr int kHoldingSpaceChipChildSpacing = 8;
+constexpr int kHoldingSpaceChipCornerRadius = 8;
 constexpr int kHoldingSpaceContainerSeparation = 8;
-
+constexpr int kHoldingSpaceColumnWidth = 160;
+constexpr int kHoldingSpaceColumnPadding = 8;
+constexpr int kHoldingSpaceRowPadding = 8;
 // Constants used for media tray.
 constexpr int kMediaTrayPadding = 8;
 

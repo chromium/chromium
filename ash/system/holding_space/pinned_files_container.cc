@@ -3,9 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/system/holding_space/pinned_files_container.h"
-#include <memory>
 
+#include "ash/public/cpp/holding_space/holding_space_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/holding_space/holding_space_item_chip_view.h"
+#include "ash/system/holding_space/holding_space_item_chips_container.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,8 +33,12 @@ PinnedFilesContainer::PinnedFilesContainer() {
   title_label->SetPaintToLayer();
   title_label->layer()->SetFillsBoundsOpaquely(false);
 
-  auto* separator = AddChildView(std::make_unique<views::Separator>());
-  separator->SetBorder(views::CreateEmptyBorder(72, 0, 0, 0));
+  item_chips_container_ =
+      AddChildView(std::make_unique<HoldingSpaceItemChipsContainer>());
+  for (const auto& item : HoldingSpaceController::Get()->model()->items()) {
+    if (item->type() == HoldingSpaceItem::Type::kPinnedFile)
+      item_chips_container_->AddItemChip(item.get());
+  }
 }
 
 PinnedFilesContainer::~PinnedFilesContainer() = default;

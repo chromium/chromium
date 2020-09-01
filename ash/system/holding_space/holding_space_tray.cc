@@ -34,7 +34,7 @@ namespace {
 constexpr int kTrayIconMainAxisInset = 6;
 
 // Width of the holding space bubble itself (dp).
-constexpr int kHoldingSpaceWidth = 332;
+constexpr int kHoldingSpaceWidth = 360;
 
 void SetupChildLayer(views::View* child) {
   child->SetPaintToLayer(ui::LAYER_SOLID_COLOR);

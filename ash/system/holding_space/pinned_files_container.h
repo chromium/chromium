@@ -9,6 +9,8 @@
 
 namespace ash {
 
+class HoldingSpaceItemChipsContainer;
+
 // Container for pinned files that the user adds to the holding space bubble.
 class PinnedFilesContainer : public views::View {
  public:
@@ -19,6 +21,9 @@ class PinnedFilesContainer : public views::View {
 
   // views::View:
   const char* GetClassName() const override;
+
+ private:
+  HoldingSpaceItemChipsContainer* item_chips_container_ = nullptr;
 };
 
 }  // namespace ash
