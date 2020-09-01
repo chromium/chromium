@@ -88,10 +88,15 @@ guidelines are as follows:
 * **reward-**{**topanel**, **unpaid**, **na**, **inprocess**, _#_}: Labels used
 in tracking bugs nominated for our [Vulnerability Reward
 Program](https://www.chromium.org/Home/chromium-security/vulnerability-rewards-program).
-If a bug is filed by a Google or Chromium user on behalf of an external party,
-but is not within scope for a vulnerability reward, nevertheless use **reward-na**
-to ensure that the report is still properly credited to the external reporter
-in the release notes.
+* **reward_to-**. If a bug is filed by a Google or Chromium user on behalf of
+an external party, use **reward_to** to ensure the report is still properly credited
+to the external reporter in the release notes. Normally, the latter half of this
+label would be an e-mail address with '@' replaced with '_at_'. But if the
+reporter was a whole organization or some other entity without a specific e-mail
+address, then **reward_to-external** is sufficient to ensure it is credited.
+Despite its name, you should add this label whether or not the reporter is
+in scope for the vulnerability rewards program, because external reports are
+credited in the release notes irrespective.
 * **M-#**: Target milestone for the fix.
 * Component: For bugs filed as **Type-Bug-Security**, we also want to track
 which component(s) the bug is in.

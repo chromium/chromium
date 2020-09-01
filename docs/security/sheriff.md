@@ -283,6 +283,8 @@ was filed using the Security template):
   comments contain PII**, add **Restrict-View-SecurityEmbargo**.
 * **Security_Severity** - your responsibility as Sheriff.
 * **Security_Impact** - your responsibility as Sheriff.
+* **reward_to** - if the bug was filed internally on behalf of somebody
+  external. This is also very important; please check.
 
 You can expect Sheriffbot to fill in lots of other labels; for example,
 the `M-` label to indicate the target milestone. It's best to allow
