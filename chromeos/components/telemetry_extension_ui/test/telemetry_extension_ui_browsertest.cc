@@ -274,6 +274,19 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
         chromeos::cros_healthd::mojom::MemoryResult::NewMemoryInfo(
             std::move(memory_info));
   }
+  {
+    auto backlight_info = chromeos::cros_healthd::mojom::BacklightInfo::New();
+    backlight_info->path = "/sys/backlight";
+    backlight_info->max_brightness = 536880912;
+    backlight_info->brightness = 436880912;
+
+    std::vector<chromeos::cros_healthd::mojom::BacklightInfoPtr> infos;
+    infos.push_back(std::move(backlight_info));
+
+    telemetry_info->backlight_result =
+        chromeos::cros_healthd::mojom::BacklightResult::NewBacklightInfo(
+            std::move(infos));
+  }
 
   DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
 

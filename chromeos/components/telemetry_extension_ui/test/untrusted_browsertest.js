@@ -233,6 +233,13 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
         availableMemoryKib: 2147571148,
         pageFaultsSinceLastBoot: 2199971148
       }
+    },
+    backlightResult: {
+      backlightInfo: [{
+        path: '/sys/backlight',
+        maxBrightness: 536880912,
+        brightness: 436880912,
+      }]
     }
   });
 });
