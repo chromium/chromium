@@ -348,6 +348,15 @@ void Combobox::SetInvalid(bool invalid) {
   OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
 }
 
+void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
+  if (size_to_largest_label_ == size_to_largest_label)
+    return;
+
+  size_to_largest_label_ = size_to_largest_label;
+  content_size_ = GetContentSize();
+  OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
+}
+
 void Combobox::OnThemeChanged() {
   View::OnThemeChanged();
   SetBackground(
@@ -708,6 +717,7 @@ PrefixSelector* Combobox::GetPrefixSelector() {
 BEGIN_METADATA(Combobox, View)
 ADD_PROPERTY_METADATA(int, SelectedIndex)
 ADD_PROPERTY_METADATA(bool, Invalid)
+ADD_PROPERTY_METADATA(bool, SizeToLargestLabel)
 ADD_PROPERTY_METADATA(base::string16, AccessibleName)
 END_METADATA
 

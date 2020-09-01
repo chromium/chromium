@@ -127,7 +127,7 @@ PermissionCombobox::PermissionCombobox(ComboboxModelAdapter* model,
   set_listener(this);
   SetEnabled(enabled);
   UpdateSelectedIndex(use_default);
-  set_size_to_largest_label(false);
+  SetSizeToLargestLabel(false);
 }
 
 PermissionCombobox::~PermissionCombobox() {}
