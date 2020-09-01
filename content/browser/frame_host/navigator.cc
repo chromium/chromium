@@ -245,8 +245,7 @@ void Navigator::DidNavigate(
   }
   bool is_cross_document_same_site_navigation =
       !is_same_document_navigation &&
-      frame_tree_node->render_manager()->IsCurrentlySameSite(old_frame_host,
-                                                             params.url);
+      old_frame_host->IsNavigationSameSite(params.url);
   if (is_cross_document_same_site_navigation) {
     UMA_HISTOGRAM_BOOLEAN(
         "BackForwardCache.ProactiveSameSiteBISwap.SameSiteNavigationDidSwap",

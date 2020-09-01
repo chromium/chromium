@@ -5906,8 +5906,7 @@ bool RenderFrameHostImpl::ShouldDispatchPagehideAndVisibilitychangeDuringCommit(
   if (old_frame_host->GetProcess() != GetProcess()) {
     return false;
   }
-  if (!frame_tree_node_->render_manager()->IsCurrentlySameSite(old_frame_host,
-                                                               dest_url)) {
+  if (!old_frame_host->IsNavigationSameSite(dest_url)) {
     return false;
   }
   DCHECK(frame_tree_node_->IsMainFrame());
@@ -8048,6 +8047,12 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
   return CreateMessageFilterForAssociatedReceiverImpl(
       this, interface_name,
       BackForwardCacheImpl::GetChannelAssociatedMessageHandlingPolicy());
+}
+
+bool RenderFrameHostImpl::IsNavigationSameSite(const GURL& dest_url) {
+  return GetSiteInstance()->IsNavigationSameSite(
+      last_successful_url(), GetLastCommittedOrigin(),
+      frame_tree_node()->IsMainFrame(), dest_url);
 }
 
 bool RenderFrameHostImpl::ValidateDidCommitParams(

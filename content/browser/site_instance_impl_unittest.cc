@@ -52,11 +52,6 @@ namespace {
 
 using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
-bool IsSameSite(BrowserContext* context, const GURL& url1, const GURL& url2) {
-  return SiteInstanceImpl::IsSameSite(IsolationContext(context), url1, url2,
-                                      true /* should_use_effective_urls */);
-}
-
 }  // namespace
 
 const char kPrivilegedScheme[] = "privileged";
@@ -175,6 +170,13 @@ class SiteInstanceTest : public testing::Test {
   SiteInfo GetSiteInfoForURL(const std::string& url) {
     return SiteInstanceImpl::ComputeSiteInfo(IsolationContext(&context_),
                                              GURL(url));
+  }
+
+  static bool IsSameSite(BrowserContext* context,
+                         const GURL& url1,
+                         const GURL& url2) {
+    return SiteInstanceImpl::IsSameSite(IsolationContext(context), url1, url2,
+                                        /*should_compare_effective_urls=*/true);
   }
 
  private:

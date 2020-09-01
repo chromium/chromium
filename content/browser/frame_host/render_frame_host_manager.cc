@@ -1323,7 +1323,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
       is_failure && SiteIsolationPolicy::IsErrorPageIsolationEnabled(
                         frame_tree_node_->IsMainFrame());
   if (current_instance->HasSite() &&
-      !IsCurrentlySameSite(render_frame_host_.get(), destination_url) &&
+      !render_frame_host_->IsNavigationSameSite(destination_url) &&
       !CanUseSourceSiteInstance(
           destination_url, source_instance, was_server_redirect, is_failure,
           is_coop_coep_cross_origin_isolated, is_speculative) &&
@@ -1345,11 +1345,9 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
     const GURL& destination_url,
     bool is_reload,
     bool should_replace_current_entry) {
-  auto* current_rfhi =
-      static_cast<RenderFrameHostImpl*>(render_frame_host_.get());
   // If we've disabled proactive BrowsingInstance swap for this RenderFrameHost,
   // we should not try to do a proactive swap.
-  if (current_rfhi->IsProactiveBrowsingInstanceSwapDisabledForTesting())
+  if (render_frame_host_->IsProactiveBrowsingInstanceSwapDisabledForTesting())
     return ShouldSwapBrowsingInstance::kNo_ProactiveSwapDisabled;
   // We should only do proactive swap when either the flag is enabled, or if
   // it's needed for the back-forward cache (and the bfcache flag is enabled).
@@ -1419,7 +1417,7 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   if (is_reload)
     return ShouldSwapBrowsingInstance::kNo_Reload;
 
-  bool is_same_site = IsCurrentlySameSite(current_rfhi, destination_url);
+  bool is_same_site = render_frame_host_->IsNavigationSameSite(destination_url);
   if (is_same_site) {
     // If it's a same-site navigation, we should only swap if same-site
     // ProactivelySwapBrowsingInstance is enabled, or if same-site
@@ -1650,9 +1648,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       IsSameSiteBackForwardCacheEnabled();
   if (is_same_site_proactive_swap_enabled && is_history_navigation &&
       swapped_browsing_instance &&
-      IsCurrentlySameSite(
-          static_cast<RenderFrameHostImpl*>(render_frame_host_.get()),
-          dest_url)) {
+      render_frame_host_->IsNavigationSameSite(dest_url)) {
     reuse_current_process_if_possible = true;
   }
 
@@ -1884,7 +1880,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   }
 
   // Use the current SiteInstance for same site navigations.
-  if (IsCurrentlySameSite(render_frame_host_.get(), dest_url) &&
+  if (render_frame_host_->IsNavigationSameSite(dest_url) &&
       IsSiteInstanceCompatibleWithCoopCoepCrossOriginIsolation(
           render_frame_host_->GetSiteInstance(),
           frame_tree_node_->IsMainFrame(), dest_url,
@@ -1910,16 +1906,16 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   if (!frame_tree_node_->IsMainFrame()) {
     RenderFrameHostImpl* main_frame =
         frame_tree_node_->frame_tree()->root()->current_frame_host();
-    if (IsCurrentlySameSite(main_frame, dest_url))
+    if (IsCandidateSameSite(main_frame, dest_url))
       return SiteInstanceDescriptor(main_frame->GetSiteInstance());
     RenderFrameHostImpl* parent = frame_tree_node_->parent();
-    if (IsCurrentlySameSite(parent, dest_url))
+    if (IsCandidateSameSite(parent, dest_url))
       return SiteInstanceDescriptor(parent->GetSiteInstance());
   }
   if (frame_tree_node_->opener()) {
     RenderFrameHostImpl* opener_frame =
         frame_tree_node_->opener()->current_frame_host();
-    if (IsCurrentlySameSite(opener_frame, dest_url))
+    if (IsCandidateSameSite(opener_frame, dest_url))
       return SiteInstanceDescriptor(opener_frame->GetSiteInstance());
   }
 
@@ -2094,93 +2090,17 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   return true;
 }
 
-bool RenderFrameHostManager::IsCurrentlySameSite(RenderFrameHostImpl* candidate,
+bool RenderFrameHostManager::IsCandidateSameSite(RenderFrameHostImpl* candidate,
                                                  const GURL& dest_url) {
-  BrowserContext* browser_context =
-      delegate_->GetControllerForRenderManager().GetBrowserContext();
-
-  // Ask embedder whether effective URLs should be used when determining if
-  // |dest_url| should end up in |candidate|'s SiteInstance.
-  // This is used to keep same-site scripting working for hosted apps.
-  bool should_compare_effective_urls =
-      candidate->GetSiteInstance()->IsDefaultSiteInstance() ||
-      GetContentClient()
-          ->browser()
-          ->ShouldCompareEffectiveURLsForSiteInstanceSelection(
-              browser_context, candidate->GetSiteInstance(),
-              frame_tree_node_->IsMainFrame(),
-              candidate->GetSiteInstance()->original_url(), dest_url);
-
-  bool src_has_effective_url =
-      !candidate->GetSiteInstance()->IsDefaultSiteInstance() &&
-      SiteInstanceImpl::HasEffectiveURL(
-          browser_context, candidate->GetSiteInstance()->original_url());
-  bool dest_has_effective_url =
-      SiteInstanceImpl::HasEffectiveURL(browser_context, dest_url);
-
-  // If IsSuitableForURL finds a process type mismatch, reject the candidate
-  // even if |dest_url| is same-site.  (The URL may have been installed as an
-  // app since the last time we visited it.)
-  //
-  // This check must be skipped to keep same-site subframe navigations from a
-  // hosted app to non-hosted app, and vice versa, in the same process.
-  // Otherwise, this would return false due to a process privilege level
-  // mismatch.
-  bool should_check_for_wrong_process =
-      should_compare_effective_urls ||
-      (!src_has_effective_url && !dest_has_effective_url);
-  if (should_check_for_wrong_process &&
-      !candidate->GetSiteInstance()->IsSuitableForURL(dest_url)) {
-    return false;
-  }
-
-  // If we don't have a last successful URL, we can't trust the origin or URL
-  // stored on the frame, so we fall back to the SiteInstance URL.  This case
-  // matters for newly created frames which haven't committed a navigation yet,
-  // as well as for net errors. Note that we use the SiteInstance's
-  // original_url() and not the site URL, so that we can do this comparison
-  // without the effective URL resolution if needed.
-  if (candidate->last_successful_url().is_empty()) {
-    return candidate->GetSiteInstance()->IsOriginalUrlSameSite(
-        dest_url, should_compare_effective_urls);
-  }
-
-  // In the common case, we use the RenderFrameHost's last successful URL. Thus,
-  // we compare against the last successful commit when deciding whether to swap
-  // this time.
-  if (SiteInstanceImpl::IsSameSite(
-          candidate->GetSiteInstance()->GetIsolationContext(),
-          candidate->last_successful_url(), dest_url,
-          should_compare_effective_urls)) {
-    return true;
-  }
-
-  // It is possible that last_successful_url() was a nonstandard scheme (for
-  // example, "about:blank"). If so, examine the replicated origin to determine
-  // the site.
-  if (!candidate->GetLastCommittedOrigin().opaque() &&
-      SiteInstanceImpl::IsSameSite(
-          candidate->GetSiteInstance()->GetIsolationContext(),
-          GURL(candidate->GetLastCommittedOrigin().Serialize()), dest_url,
-          should_compare_effective_urls)) {
-    return true;
-  }
-
-  // If the last successful URL was "about:blank" with a unique origin (which
-  // implies that it was a browser-initiated navigation to "about:blank"), none
-  // of the cases above apply, but we should still allow a scenario like
-  // foo.com -> about:blank -> foo.com to be treated as same-site, as some
-  // tests rely on that behavior.  To accomplish this, compare |dest_url|
-  // against the site URL.
-  if (candidate->last_successful_url().IsAboutBlank() &&
-      candidate->GetLastCommittedOrigin().opaque() &&
-      candidate->GetSiteInstance()->IsOriginalUrlSameSite(
-          dest_url, should_compare_effective_urls)) {
-    return true;
-  }
-
-  // Not same-site.
-  return false;
+  DCHECK_EQ(delegate_->GetControllerForRenderManager().GetBrowserContext(),
+            candidate->GetSiteInstance()->GetBrowserContext());
+  // Note: We are mixing the frame_tree_node_->IsMainFrame() status of this
+  // object with the URL & origin of |candidate|. This is to determine if
+  // |dest_url| would be considered "same site" if |candidate| occupied the
+  // position of this object in the frame tree.
+  return candidate->GetSiteInstance()->IsNavigationSameSite(
+      candidate->last_successful_url(), candidate->GetLastCommittedOrigin(),
+      frame_tree_node_->IsMainFrame(), dest_url);
 }
 
 void RenderFrameHostManager::CreateProxiesForNewRenderFrameHost(

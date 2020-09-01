@@ -189,20 +189,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
 
   static bool ShouldAssignSiteForURL(const GURL& url);
 
-  // Return whether both URLs are part of the same web site, for the purpose of
-  // assigning them to processes accordingly.  The decision is currently based
-  // on the registered domain of the URLs (google.com, bbc.co.uk), as well as
-  // the scheme (https, http).  Note that if the destination is a blank page,
-  // we consider that to be part of the same web site for the purposes for
-  // process assignment.  |should_compare_effective_urls| allows comparing URLs
-  // without converting them to effective URLs first.  This is useful for
-  // avoiding OOPIFs when otherwise same-site URLs may look cross-site via
-  // their effective URLs.
-  static bool IsSameSite(const IsolationContext& isolation_context,
-                         const GURL& src_url,
-                         const GURL& dest_url,
-                         bool should_compare_effective_urls);
-
   // SiteInstance interface overrides.
   int32_t GetId() override;
   int32_t GetBrowsingInstanceId() override;
@@ -272,16 +258,21 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
     return original_url_;
   }
 
-  // Returns true if |original_url()| is the same site as
-  // |dest_url| or this object is a default SiteInstance and can be
-  // considered the same site as |dest_url|.
-  bool IsOriginalUrlSameSite(const GURL& dest_url,
-                             bool should_compare_effective_urls);
-
-  // True if |url| resolves to an effective URL that is different from |url|.
-  // See GetEffectiveURL().  This will be true for hosted apps as well as NTP
-  // URLs.
-  static bool HasEffectiveURL(BrowserContext* browser_context, const GURL& url);
+  // This is primarily a helper for RenderFrameHostImpl::IsNavigationSameSite();
+  // most callers should use that API.
+  //
+  // Returns true if navigating a frame with (|last_successful_url| and
+  // |last_committed_origin|) to |dest_url| should stay in the same SiteInstance
+  // to preserve scripting relationships.
+  //
+  // |for_main_frame| is set to true if the caller is interested in an
+  // answer for a main frame. This is set to false for subframe navigations.
+  // Note: In some circumstances, like hosted apps, different answers can be
+  // returned if we are navigating a main frame instead of a subframe.
+  bool IsNavigationSameSite(const GURL& last_successful_url,
+                            const url::Origin last_committed_origin,
+                            bool for_main_frame,
+                            const GURL& dest_url);
 
   // SiteInfo related functions.
 
@@ -501,6 +492,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   friend class BrowsingInstance;
   friend class SiteInstanceTestBrowserClient;
   FRIEND_TEST_ALL_PREFIXES(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL);
+  // Friend tests that need direct access to IsSameSite().
+  friend class SiteInstanceTest;
 
   // Create a new SiteInstance.  Only BrowsingInstance should call this
   // directly; clients should use Create() or GetRelatedSiteInstance() instead.
@@ -542,6 +535,30 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // a new one later replaces it.
   void SetProcessInternal(RenderProcessHost* process);
 
+  // Returns true if |original_url()| is the same site as
+  // |dest_url| or this object is a default SiteInstance and can be
+  // considered the same site as |dest_url|.
+  bool IsOriginalUrlSameSite(const GURL& dest_url,
+                             bool should_compare_effective_urls);
+
+  // Return whether both URLs must share a process to preserve script
+  // relationships.  The decision is based on a variety of factors such as
+  // the registered domain of the URLs (google.com, bbc.co.uk), the scheme
+  // (https, http), and isolated origins.  Note that if the destination is a
+  // blank page, we consider that to be part of the same web site for the
+  // purposes for process assignment.  |should_compare_effective_urls| allows
+  // comparing URLs without converting them to effective URLs first.  This is
+  // useful for avoiding OOPIFs when otherwise same-site URLs may look
+  // cross-site via their effective URLs.
+  // Note: This method is private because it is an internal detail of this class
+  // and there is subtlety around how it can be called because of hosted
+  // apps. Most code outside this class should call
+  // RenderFrameHostImpl::IsNavigationSameSite() instead.
+  static bool IsSameSite(const IsolationContext& isolation_context,
+                         const GURL& src_url,
+                         const GURL& dest_url,
+                         bool should_compare_effective_urls);
+
   // Returns the site for the given URL, which includes only the scheme and
   // registered domain.  Returns an empty GURL if the URL has no host.
   // |should_use_effective_urls| specifies whether to resolve |url| to an
@@ -553,6 +570,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
                                     const GURL& url,
                                     bool should_use_effective_urls,
                                     bool allow_default_site_url);
+
+  // True if |url| resolves to an effective URL that is different from |url|.
+  // See GetEffectiveURL().  This will be true for hosted apps as well as NTP
+  // URLs.
+  static bool HasEffectiveURL(BrowserContext* browser_context, const GURL& url);
 
   // Returns true if pages loaded from |site_url| ought to be handled only by a
   // renderer process isolated from other sites. If --site-per-process is used,

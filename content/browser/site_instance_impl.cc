@@ -781,6 +781,81 @@ bool SiteInstanceImpl::IsOriginalUrlSameSite(
                     should_compare_effective_urls);
 }
 
+bool SiteInstanceImpl::IsNavigationSameSite(
+    const GURL& last_successful_url,
+    const url::Origin last_committed_origin,
+    bool for_main_frame,
+    const GURL& dest_url) {
+  BrowserContext* browser_context = GetBrowserContext();
+
+  // Ask embedder whether effective URLs should be used when determining if
+  // |dest_url| should end up in this SiteInstance.
+  // This is used to keep same-site scripting working for hosted apps.
+  bool should_compare_effective_urls =
+      IsDefaultSiteInstance() ||
+      GetContentClient()
+          ->browser()
+          ->ShouldCompareEffectiveURLsForSiteInstanceSelection(
+              browser_context, this, for_main_frame, original_url(), dest_url);
+
+  bool src_has_effective_url = !IsDefaultSiteInstance() &&
+                               HasEffectiveURL(browser_context, original_url());
+  bool dest_has_effective_url = HasEffectiveURL(browser_context, dest_url);
+
+  // If IsSuitableForURL finds a process type mismatch, return false
+  // even if |dest_url| is same-site.  (The URL may have been installed as an
+  // app since the last time we visited it.)
+  //
+  // This check must be skipped to keep same-site subframe navigations from a
+  // hosted app to non-hosted app, and vice versa, in the same process.
+  // Otherwise, this would return false due to a process privilege level
+  // mismatch.
+  bool should_check_for_wrong_process =
+      should_compare_effective_urls ||
+      (!src_has_effective_url && !dest_has_effective_url);
+  if (should_check_for_wrong_process && !IsSuitableForURL(dest_url))
+    return false;
+
+  // If we don't have a last successful URL, we can't trust the origin or URL
+  // stored on the frame, so we fall back to the SiteInstance URL.  This case
+  // matters for newly created frames which haven't committed a navigation yet,
+  // as well as for net errors. Note that we use the SiteInstance's
+  // original_url() and not the site URL, so that we can do this comparison
+  // without the effective URL resolution if needed.
+  if (last_successful_url.is_empty())
+    return IsOriginalUrlSameSite(dest_url, should_compare_effective_urls);
+
+  // In the common case, we use the last successful URL. Thus, we compare
+  // against the last successful commit when deciding whether to swap this time.
+  if (IsSameSite(GetIsolationContext(), last_successful_url, dest_url,
+                 should_compare_effective_urls)) {
+    return true;
+  }
+
+  // It is possible that last_successful_url was a nonstandard scheme (for
+  // example, "about:blank"). If so, examine the last committed origin to
+  // determine the site.
+  if (!last_committed_origin.opaque() &&
+      IsSameSite(GetIsolationContext(), GURL(last_committed_origin.Serialize()),
+                 dest_url, should_compare_effective_urls)) {
+    return true;
+  }
+
+  // If the last successful URL was "about:blank" with a unique origin (which
+  // implies that it was a browser-initiated navigation to "about:blank"), none
+  // of the cases above apply, but we should still allow a scenario like
+  // foo.com -> about:blank -> foo.com to be treated as same-site, as some
+  // tests rely on that behavior.  To accomplish this, compare |dest_url|
+  // against the site URL.
+  if (last_successful_url.IsAboutBlank() && last_committed_origin.opaque() &&
+      IsOriginalUrlSameSite(dest_url, should_compare_effective_urls)) {
+    return true;
+  }
+
+  // Not same-site.
+  return false;
+}
+
 // static
 bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
                                   const GURL& real_src_url,

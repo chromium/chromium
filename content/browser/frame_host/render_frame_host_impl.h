@@ -566,6 +566,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Return the http status code of the last committed navigation.
   int last_http_status_code() { return last_http_status_code_; }
 
+  // Returns true if |dest_url| should be considered the same site as the
+  // current contents of this frame. This is the primary entry point for
+  // determining if a navigation to |dest_url| should stay in this
+  // RenderFrameHost's SiteInstance.
+  bool IsNavigationSameSite(const GURL& dest_url);
+
   // Returns |frame_origin| if this frame is the top (i.e. root) frame in the
   // frame tree. Otherwise, it returns the top frame's origin.
   const url::Origin& ComputeTopFrameOrigin(

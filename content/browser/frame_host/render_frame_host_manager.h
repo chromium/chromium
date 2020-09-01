@@ -505,10 +505,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   scoped_refptr<SiteInstance> GetSiteInstanceForNavigationRequest(
       NavigationRequest* navigation_request);
 
-  // Returns true if |candidate| is currently on the same web site as dest_url.
-  bool IsCurrentlySameSite(RenderFrameHostImpl* candidate,
-                           const GURL& dest_url);
-
   // Helper to initialize the main RenderFrame if it's not initialized.
   // TODO(https://crbug.com/936696): Remove this. For now debug URLs and
   // WebView JS execution are an exception to replacing all crashed frames for
@@ -623,7 +619,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   // already be committed to a Web UI URL (such as the NTP). Note that we don't
   // pass the effective URL for destination URL here and instead calculate the
   // destination's effective URL within the function because some methods called
-  // in the function like IsCurrentlySameSite expects a non-effective URL.
+  // in the function like IsNavigationSameSite expects a non-effective URL.
   ShouldSwapBrowsingInstance ShouldSwapBrowsingInstancesForNavigation(
       const GURL& current_effective_url,
       bool current_is_view_source_mode,
@@ -734,6 +730,13 @@ class CONTENT_EXPORT RenderFrameHostManager
   scoped_refptr<SiteInstance> ConvertToSiteInstance(
       const SiteInstanceDescriptor& descriptor,
       SiteInstanceImpl* candidate_instance);
+
+  // Returns true if |candidate| is currently on the same web site as
+  // |dest_url|. This method is a special case for handling hosted apps in
+  // this object. Most code should call IsNavigationSameSite() on
+  // |candidate| instead of this method.
+  bool IsCandidateSameSite(RenderFrameHostImpl* candidate,
+                           const GURL& dest_url);
 
   // Ensure that we have created all needed proxies for a new RFH with
   // SiteInstance |new_instance|: (1) create swapped-out RVHs and proxies for
