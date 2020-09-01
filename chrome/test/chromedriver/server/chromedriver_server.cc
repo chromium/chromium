@@ -39,94 +39,14 @@
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/server/http_handler.h"
+#include "chrome/test/chromedriver/server/http_server.h"
 #include "mojo/core/embedder/embedder.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/base/url_util.h"
 #include "net/log/net_log_source.h"
-#include "net/server/http_server.h"
-#include "net/server/http_server_request_info.h"
-#include "net/server/http_server_response_info.h"
-#include "net/socket/tcp_server_socket.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
 namespace {
-
-// Maximum message size between app and ChromeDriver. Data larger than 150 MB
-// or so can cause crashes in Chrome (https://crbug.com/890854), so there is no
-// need to support messages that are too large.
-const int kBufferSize = 256 * 1024 * 1024;  // 256 MB
-
-typedef base::RepeatingCallback<void(const net::HttpServerRequestInfo&,
-                                     const HttpResponseSenderFunc&)>
-    HttpRequestHandlerFunc;
-
-int ListenOnIPv4(net::ServerSocket* socket, uint16_t port, bool allow_remote) {
-  std::string binding_ip = net::IPAddress::IPv4Localhost().ToString();
-  if (allow_remote)
-    binding_ip = net::IPAddress::IPv4AllZeros().ToString();
-  return socket->ListenWithAddressAndPort(binding_ip, port, 5);
-}
-
-int ListenOnIPv6(net::ServerSocket* socket, uint16_t port, bool allow_remote) {
-  std::string binding_ip = net::IPAddress::IPv6Localhost().ToString();
-  if (allow_remote)
-    binding_ip = net::IPAddress::IPv6AllZeros().ToString();
-  return socket->ListenWithAddressAndPort(binding_ip, port, 5);
-}
-
-bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
-                          bool allow_remote,
-                          const std::vector<net::IPAddress>& whitelisted_ips) {
-  // To guard against browser-originating cross-site requests, when host header
-  // and/or origin header are present, serve only those coming from localhost
-  // or from an explicitly whitelisted ip.
-  std::string origin_header = info.GetHeaderValue("origin");
-  bool local_origin = false;
-  if (!origin_header.empty()) {
-    GURL url = GURL(origin_header);
-    local_origin = net::IsLocalhost(url);
-    if (!local_origin) {
-      if (!allow_remote) {
-        LOG(ERROR)
-            << "Remote connections not allowed; rejecting request with origin: "
-            << origin_header;
-        return false;
-      }
-      if (!whitelisted_ips.empty()) {
-        net::IPAddress address = net::IPAddress();
-        if (!ParseURLHostnameToAddress(origin_header, &address)) {
-          LOG(ERROR) << "Unable to parse origin to IPAddress: "
-                     << origin_header;
-          return false;
-        }
-        if (!base::Contains(whitelisted_ips, address)) {
-          LOG(ERROR) << "Rejecting request with origin: " << origin_header;
-          return false;
-        }
-      }
-    }
-  }
-  // TODO https://crbug.com/chromedriver/3389
-  //  When remote access is allowed and origin is not specified,
-  // we should confirm that host is current machines ip or hostname
-
-  if (local_origin || !allow_remote) {
-    // when origin is localhost host must be localhost
-    // when origin is not set, and no remote access, host must be localhost
-    std::string host_header = info.GetHeaderValue("host");
-    if (!host_header.empty()) {
-      GURL url = GURL("http://" + host_header);
-      if (!net::IsLocalhost(url)) {
-        LOG(ERROR) << "Rejecting request with host: " << host_header
-                   << ". origin is " << origin_header;
-        return false;
-      }
-    }
-  }
-  return true;
-}
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 // Ensure that there is a writable shared memory directory. We use
@@ -148,139 +68,6 @@ void EnsureSharedMemory(base::CommandLine* cmd_line) {
   }
 }
 #endif
-
-class HttpServer : public net::HttpServer::Delegate {
- public:
-  explicit HttpServer(const std::string& url_base,
-                      const std::vector<net::IPAddress>& whitelisted_ips,
-                      const HttpRequestHandlerFunc& handle_request_func)
-      : url_base_(url_base),
-        handle_request_func_(handle_request_func),
-        allow_remote_(false),
-        whitelisted_ips_(whitelisted_ips) {}
-
-  ~HttpServer() override = default;
-
-  int Start(uint16_t port, bool allow_remote, bool use_ipv4) {
-    allow_remote_ = allow_remote;
-    std::unique_ptr<net::ServerSocket> server_socket(
-        new net::TCPServerSocket(nullptr, net::NetLogSource()));
-    int status = use_ipv4
-                     ? ListenOnIPv4(server_socket.get(), port, allow_remote)
-                     : ListenOnIPv6(server_socket.get(), port, allow_remote);
-    if (status != net::OK) {
-      VLOG(0) << "listen on " << (use_ipv4 ? "IPv4" : "IPv6")
-              << " failed with error " << net::ErrorToShortString(status);
-      return status;
-    }
-    server_.reset(new net::HttpServer(std::move(server_socket), this));
-    net::IPEndPoint address;
-    return server_->GetLocalAddress(&address);
-  }
-
-  // Overridden from net::HttpServer::Delegate:
-  void OnConnect(int connection_id) override {
-    server_->SetSendBufferSize(connection_id, kBufferSize);
-    server_->SetReceiveBufferSize(connection_id, kBufferSize);
-  }
-
-  void OnHttpRequest(int connection_id,
-                     const net::HttpServerRequestInfo& info) override {
-    if (!RequestIsSafeToServe(info, allow_remote_, whitelisted_ips_)) {
-      server_->Send500(connection_id,
-                       "Host header or origin header is specified and is not "
-                       "whitelisted or localhost.",
-                       TRAFFIC_ANNOTATION_FOR_TESTS);
-      return;
-    }
-    handle_request_func_.Run(
-        info, base::BindRepeating(&HttpServer::OnResponse,
-                                  weak_factory_.GetWeakPtr(), connection_id,
-                                  !info.HasHeaderValue("connection", "close")));
-  }
-
-  void OnWebSocketRequest(int connection_id,
-                          const net::HttpServerRequestInfo& info) override {
-    std::string path = info.path;
-    std::string session_id;
-
-    if (!base::StartsWith(path, url_base_, base::CompareCase::SENSITIVE)) {
-      net::HttpServerResponseInfo response(net::HTTP_BAD_REQUEST);
-      response.SetBody("invalid websocket request url path", "text/plain");
-      server_->SendResponse(connection_id, response,
-                            TRAFFIC_ANNOTATION_FOR_TESTS);
-      return;
-    }
-    path.erase(0, url_base_.length());
-
-    std::vector<std::string> path_parts = base::SplitString(
-        path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    std::vector<std::string> command_path_parts = base::SplitString(
-        kCreateWebSocketPath, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-    if (path_parts.size() != command_path_parts.size()) {
-      net::HttpServerResponseInfo response(net::HTTP_BAD_REQUEST);
-      response.SetBody("invalid websocket request url path", "text/plain");
-      server_->SendResponse(connection_id, response,
-                            TRAFFIC_ANNOTATION_FOR_TESTS);
-      return;
-    }
-
-    for (size_t i = 0; i < path_parts.size(); ++i) {
-      if (command_path_parts[i][0] == ':') {
-        std::string name = command_path_parts[i];
-        name.erase(0, 1);
-        CHECK(name.length());
-        if (name == "sessionId")
-          session_id = path_parts[i];
-      } else if (command_path_parts[i] != path_parts[i]) {
-        net::HttpServerResponseInfo response(net::HTTP_BAD_REQUEST);
-        response.SetBody("invalid websocket request url path", "text/plain");
-        server_->SendResponse(connection_id, response,
-                              TRAFFIC_ANNOTATION_FOR_TESTS);
-        return;
-      }
-    }
-
-    server_->AcceptWebSocket(connection_id, info, TRAFFIC_ANNOTATION_FOR_TESTS);
-    connection_to_session_map[connection_id] = session_id;
-  }
-
-  void OnWebSocketMessage(int connection_id, std::string data) override {
-    base::Optional<base::Value> parsed_data = base::JSONReader::Read(data);
-    std::string path = url_base_ + kSendCommandFromWebSocket;
-    base::ReplaceFirstSubstringAfterOffset(
-        &path, 0, ":sessionId", connection_to_session_map[connection_id]);
-
-    net::HttpServerRequestInfo request;
-    request.method = "post";
-    request.path = path;
-    request.data = data;
-    OnHttpRequest(connection_id, request);
-  }
-
-  void OnClose(int connection_id) override {}
-
- private:
-  void OnResponse(int connection_id,
-                  bool keep_alive,
-                  std::unique_ptr<net::HttpServerResponseInfo> response) {
-    if (!keep_alive)
-      response->AddHeader("Connection", "close");
-    server_->SendResponse(connection_id, *response,
-                          TRAFFIC_ANNOTATION_FOR_TESTS);
-    // Don't need to call server_->Close(), since SendResponse() will handle
-    // this for us.
-  }
-
-  const std::string url_base_;
-  HttpRequestHandlerFunc handle_request_func_;
-  std::unique_ptr<net::HttpServer> server_;
-  std::map<int, std::string> connection_to_session_map;
-  bool allow_remote_;
-  const std::vector<net::IPAddress> whitelisted_ips_;
-  base::WeakPtrFactory<HttpServer> weak_factory_{this};  // Should be last.
-};
 
 void SendResponseOnCmdThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
@@ -339,11 +126,14 @@ void StopServerOnIOThread() {
   delete server;
 }
 
-void StartServerOnIOThread(uint16_t port,
-                           bool allow_remote,
-                           const std::string& url_base,
-                           const std::vector<net::IPAddress>& whitelisted_ips,
-                           const HttpRequestHandlerFunc& handle_request_func) {
+void StartServerOnIOThread(
+    uint16_t port,
+    bool allow_remote,
+    const std::string& url_base,
+    const std::vector<net::IPAddress>& whitelisted_ips,
+    const HttpRequestHandlerFunc& handle_request_func,
+    base::WeakPtr<HttpHandler> handler,
+    const scoped_refptr<base::SingleThreadTaskRunner>& cmd_task_runner) {
   std::unique_ptr<HttpServer> temp_server;
 
 // On Linux and Windows, we listen to IPv6 first, and then optionally listen
@@ -358,8 +148,8 @@ void StartServerOnIOThread(uint16_t port,
 // ensures that we successfully listen to both IPv4 and IPv6.
 
 #if defined(OS_MAC)
-  temp_server.reset(
-      new HttpServer(url_base, whitelisted_ips, handle_request_func));
+  temp_server = std::make_unique<HttpServer>(
+      url_base, whitelisted_ips, handle_request_func, handler, cmd_task_runner);
   int ipv4_status = temp_server->Start(port, allow_remote, true);
   if (ipv4_status == net::OK) {
     lazy_tls_server_ipv4.Pointer()->Set(temp_server.release());
@@ -375,8 +165,8 @@ void StartServerOnIOThread(uint16_t port,
   }
 #endif
 
-  temp_server.reset(
-      new HttpServer(url_base, whitelisted_ips, handle_request_func));
+  temp_server = std::make_unique<HttpServer>(
+      url_base, whitelisted_ips, handle_request_func, handler, cmd_task_runner);
   int ipv6_status = temp_server->Start(port, allow_remote, false);
   if (ipv6_status == net::OK) {
     lazy_tls_server_ipv6.Pointer()->Set(temp_server.release());
@@ -426,8 +216,9 @@ void StartServerOnIOThread(uint16_t port,
   if (need_ipv4 == NeedIPv4::NOT_NEEDED) {
     ipv4_status = ipv6_status;
   } else {
-    temp_server.reset(
-        new HttpServer(url_base, whitelisted_ips, handle_request_func));
+    temp_server = std::make_unique<HttpServer>(url_base, whitelisted_ips,
+                                               handle_request_func, handler,
+                                               cmd_task_runner);
     ipv4_status = temp_server->Start(port, allow_remote, true);
     if (ipv4_status == net::OK) {
       lazy_tls_server_ipv4.Pointer()->Set(temp_server.release());
@@ -463,7 +254,7 @@ void RunServer(uint16_t port,
   base::SingleThreadTaskExecutor main_task_executor;
   base::RunLoop cmd_run_loop;
   HttpHandler handler(cmd_run_loop.QuitClosure(), io_thread.task_runner(),
-                      url_base, adb_port);
+                      main_task_executor.task_runner(), url_base, adb_port);
   HttpRequestHandlerFunc handle_request_func =
       base::BindRepeating(&HandleRequestOnCmdThread, &handler, whitelisted_ips);
 
@@ -473,7 +264,8 @@ void RunServer(uint16_t port,
                      whitelisted_ips,
                      base::BindRepeating(&HandleRequestOnIOThread,
                                          main_task_executor.task_runner(),
-                                         handle_request_func)));
+                                         handle_request_func),
+                     handler.WeakPtr(), main_task_executor.task_runner()));
   // Run the command loop. This loop is quit after the response for a shutdown
   // request is posted to the IO loop. After the command loop quits, a task
   // is posted to the IO loop to stop the server. Lastly, the IO thread is

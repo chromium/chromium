@@ -77,14 +77,24 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
   return web_view->EvaluateScript(frame_id, expression, awaitPromise, &result);
 }
 
+void InitSessionForWebSocketConnection(SessionConnectionMap* session_map,
+                                       std::string session_id) {
+  session_map->insert({session_id, -1});
+}
+
 }  // namespace
 
-InitSessionParams::InitSessionParams(network::mojom::URLLoaderFactory* factory,
-                                     const SyncWebSocketFactory& socket_factory,
-                                     DeviceManager* device_manager)
+InitSessionParams::InitSessionParams(
+    network::mojom::URLLoaderFactory* factory,
+    const SyncWebSocketFactory& socket_factory,
+    DeviceManager* device_manager,
+    const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
+    SessionConnectionMap* session_map)
     : url_loader_factory(factory),
       socket_factory(socket_factory),
-      device_manager(device_manager) {}
+      device_manager(device_manager),
+      cmd_task_runner(cmd_task_runner),
+      session_map(session_map) {}
 
 InitSessionParams::InitSessionParams(const InitSessionParams& other) = default;
 
@@ -595,6 +605,12 @@ Status ExecuteInitSession(const InitSessionParams& bound_params,
     session->quit = true;
     if (session->chrome != NULL)
       session->chrome->Quit();
+  } else {
+    // TODO only do this when WebSocketUrl capability is specified
+    // https://bugs.chromium.org/p/chromedriver/issues/detail?id=3588
+    bound_params.cmd_task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&InitSessionForWebSocketConnection,
+                                  bound_params.session_map, session->id));
   }
   return status;
 }

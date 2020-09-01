@@ -21,6 +21,7 @@
 #include "chrome/test/chromedriver/element_commands.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "chrome/test/chromedriver/session_commands.h"
+#include "chrome/test/chromedriver/session_connection_map.h"
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/window_commands.h"
 
@@ -42,6 +43,8 @@ class Adb;
 class DeviceManager;
 class URLRequestContextGetter;
 class WrapperURLLoaderFactory;
+
+class HttpServer;
 
 enum HttpMethod {
   kGet,
@@ -73,12 +76,15 @@ class HttpHandler {
   explicit HttpHandler(const std::string& url_base);
   HttpHandler(const base::RepeatingClosure& quit_func,
               const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+              const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
               const std::string& url_base,
               int adb_port);
   ~HttpHandler();
 
   void Handle(const net::HttpServerRequestInfo& request,
               const HttpResponseSenderFunc& send_response_func);
+
+  base::WeakPtr<HttpHandler> WeakPtr();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, HandleUnknownCommand);
@@ -88,6 +94,8 @@ class HttpHandler {
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, HandleCommand);
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, StandardResponse_ErrorNoMessage);
   typedef std::vector<CommandMapping> CommandMap;
+
+  friend class HttpServer;
 
   Command WrapToCommand(const char* name,
                         const SessionCommand& session_command,
@@ -119,6 +127,11 @@ class HttpHandler {
       std::unique_ptr<base::Value> value,
       const std::string& session_id);
 
+  void OnWebSocketRequest(int connection_id,
+                          const net::HttpServerRequestInfo& info);
+
+  void OnClose(int connection_id);
+
   base::ThreadChecker thread_checker_;
   base::RepeatingClosure quit_func_;
   std::string url_base_;
@@ -129,6 +142,7 @@ class HttpHandler {
   std::unique_ptr<WrapperURLLoaderFactory> wrapper_url_loader_factory_;
   SyncWebSocketFactory socket_factory_;
   SessionThreadMap session_thread_map_;
+  SessionConnectionMap session_connection_map_;
   std::unique_ptr<CommandMap> command_map_;
   std::unique_ptr<Adb> adb_;
   std::unique_ptr<DeviceManager> device_manager_;

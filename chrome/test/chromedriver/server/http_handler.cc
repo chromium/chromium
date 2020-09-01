@@ -30,6 +30,7 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"
+#include "chrome/test/chromedriver/server/http_server.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/util.h"
@@ -139,6 +140,7 @@ HttpHandler::HttpHandler(const std::string& url_base)
 HttpHandler::HttpHandler(
     const base::RepeatingClosure& quit_func,
     const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
     const std::string& url_base,
     int adb_port)
     : quit_func_(quit_func), url_base_(url_base), received_shutdown_(false) {
@@ -163,12 +165,14 @@ HttpHandler::HttpHandler(
           kPost, internal::kNewSessionPathPattern,
           base::BindRepeating(
               &ExecuteCreateSession, &session_thread_map_,
-              WrapToCommand("InitSession",
-                            base::BindRepeating(
-                                &ExecuteInitSession,
-                                InitSessionParams(
-                                    wrapper_url_loader_factory_.get(),
-                                    socket_factory_, device_manager_.get()))))),
+              WrapToCommand(
+                  "InitSession",
+                  base::BindRepeating(
+                      &ExecuteInitSession,
+                      InitSessionParams(wrapper_url_loader_factory_.get(),
+                                        socket_factory_, device_manager_.get(),
+                                        cmd_task_runner,
+                                        &session_connection_map_))))),
       CommandMapping(kDelete, "session/:sessionId",
                      base::BindRepeating(
                          &ExecuteSessionCommand, &session_thread_map_, "Quit",
@@ -975,6 +979,10 @@ void HttpHandler::Handle(const net::HttpServerRequestInfo& request,
     received_shutdown_ = true;
 }
 
+base::WeakPtr<HttpHandler> HttpHandler::WeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 Command HttpHandler::WrapToCommand(const char* name,
                                    const SessionCommand& session_command,
                                    bool w3c_standard_command) {
@@ -1279,6 +1287,10 @@ HttpHandler::PrepareStandardResponse(
   return response;
 }
 
+void HttpHandler::OnWebSocketRequest(int connection_id,
+                                     const net::HttpServerRequestInfo& info) {}
+
+void HttpHandler::OnClose(int connection_id) {}
 
 namespace internal {
 

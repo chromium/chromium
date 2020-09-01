@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "chrome/test/chromedriver/command.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
+#include "chrome/test/chromedriver/session_connection_map.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace base {
@@ -24,15 +25,20 @@ struct Session;
 class Status;
 
 struct InitSessionParams {
-  InitSessionParams(network::mojom::URLLoaderFactory* factory,
-                    const SyncWebSocketFactory& socket_factory,
-                    DeviceManager* device_manager);
+  InitSessionParams(
+      network::mojom::URLLoaderFactory* factory,
+      const SyncWebSocketFactory& socket_factory,
+      DeviceManager* device_manager,
+      const scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner,
+      SessionConnectionMap* session_map);
   InitSessionParams(const InitSessionParams& other);
   ~InitSessionParams();
 
   network::mojom::URLLoaderFactory* url_loader_factory;
   SyncWebSocketFactory socket_factory;
   DeviceManager* device_manager;
+  scoped_refptr<base::SingleThreadTaskRunner> cmd_task_runner;
+  SessionConnectionMap* session_map;
 };
 
 bool GetW3CSetting(const base::DictionaryValue& params);
