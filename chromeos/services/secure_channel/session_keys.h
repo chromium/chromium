@@ -14,14 +14,14 @@ namespace chromeos {
 namespace secure_channel {
 
 // This class contains the secure channel (secure context) session keys. This
-// class derives (from the master symmetric key) different keys for encryption
+// class derives (from the session symmetric key) different keys for encryption
 // and decryption. The protocol initiator (i.e. the Chromebook) should use
 // |initiator_encode_key()| to encrypt the messages, and the responder should
 // use |responder_encode_key()|. This is reversed for decryption.
 class SessionKeys {
  public:
-  // Create session keys derived from the |master_symmetric_key|.
-  explicit SessionKeys(const std::string& master_symmetric_key);
+  // Create session keys derived from the |session_symmetric_key|.
+  explicit SessionKeys(const std::string& session_symmetric_key);
 
   SessionKeys();
 

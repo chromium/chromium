@@ -34,8 +34,8 @@ void SaveResult(std::string* result_out, const std::string& result) {
 // inverted.
 class InvertedSessionKeys : public SessionKeys {
  public:
-  explicit InvertedSessionKeys(const std::string& master_symmetric_key)
-      : SessionKeys(master_symmetric_key) {}
+  explicit InvertedSessionKeys(const std::string& session_symmetric_key)
+      : SessionKeys(session_symmetric_key) {}
 
   InvertedSessionKeys() : SessionKeys() {}
 

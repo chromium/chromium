@@ -30,12 +30,12 @@ const char kResponderPurpose[] = "responder";
 
 }  // namespace
 
-SessionKeys::SessionKeys(const std::string& master_symmetric_key) {
+SessionKeys::SessionKeys(const std::string& session_symmetric_key) {
   std::string salt(reinterpret_cast<const char*>(&kSalt[0]), sizeof(kSalt));
 
-  initiator_encode_key_ = crypto::HkdfSha256(master_symmetric_key, salt,
+  initiator_encode_key_ = crypto::HkdfSha256(session_symmetric_key, salt,
                                              kInitiatorPurpose, kKeySize);
-  responder_encode_key_ = crypto::HkdfSha256(master_symmetric_key, salt,
+  responder_encode_key_ = crypto::HkdfSha256(session_symmetric_key, salt,
                                              kResponderPurpose, kKeySize);
 }
 
