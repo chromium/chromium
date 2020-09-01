@@ -148,6 +148,10 @@ class FeedStreamApi {
   // The user started scrolling the feed. Typically followed by a call to
   // |ReportStreamScrolled()|.
   virtual void ReportStreamScrollStart() = 0;
+  // The user selected the 'Turn on' option in the control menu.
+  virtual void ReportTurnOnAction() = 0;
+  // The user selected the 'Turn off' option in the control menu.
+  virtual void ReportTurnOffAction() = 0;
 
   // The following methods are used for the internals page.
 

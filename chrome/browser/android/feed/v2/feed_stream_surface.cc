@@ -257,4 +257,14 @@ void FeedStreamSurface::ReportStreamScrollStart(
   feed_stream_api_->ReportStreamScrollStart();
 }
 
+void FeedStreamSurface::ReportTurnOnAction(JNIEnv* env,
+                                           const JavaParamRef<jobject>& obj) {
+  feed_stream_api_->ReportTurnOnAction();
+}
+
+void FeedStreamSurface::ReportTurnOffAction(JNIEnv* env,
+                                            const JavaParamRef<jobject>& obj) {
+  feed_stream_api_->ReportTurnOffAction();
+}
+
 }  // namespace feed

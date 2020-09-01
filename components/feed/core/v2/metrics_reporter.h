@@ -50,7 +50,9 @@ enum class FeedUserActionType {
   kTappedOpenInNewIncognitoTab = 11,
   kEphemeralChange = 12,
   kEphemeralChangeRejected = 13,
-  kMaxValue = kEphemeralChangeRejected,
+  kTappedTurnOn = 14,
+  kTappedTurnOff = 15,
+  kMaxValue = kTappedTurnOff,
 };
 
 }  // namespace internal
@@ -84,6 +86,8 @@ class MetricsReporter {
   void ContextMenuOpened();
   void EphemeralStreamChange();
   void EphemeralStreamChangeRejected();
+  void TurnOnAction();
+  void TurnOffAction();
 
   // Indicates the user scrolled the feed by |distance_dp| and then stopped
   // scrolling.

@@ -249,6 +249,14 @@ void MetricsReporter::LearnMoreAction() {
   RecordInteraction();
 }
 
+void MetricsReporter::TurnOnAction() {
+  ReportUserActionHistogram(FeedUserActionType::kTappedTurnOn);
+}
+
+void MetricsReporter::TurnOffAction() {
+  ReportUserActionHistogram(FeedUserActionType::kTappedTurnOff);
+}
+
 void MetricsReporter::NavigationStarted() {
   // TODO(harringtond): Use this or remove it.
 }

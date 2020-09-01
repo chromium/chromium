@@ -111,6 +111,10 @@ class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
                             int distance_dp);
   void ReportStreamScrollStart(JNIEnv* env,
                                const base::android::JavaParamRef<jobject>& obj);
+  void ReportTurnOnAction(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& obj);
+  void ReportTurnOffAction(JNIEnv* env,
+                           const base::android::JavaParamRef<jobject>& obj);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

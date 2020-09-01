@@ -709,5 +709,11 @@ void FeedStream::ReportStreamScrolled(int distance_dp) {
 void FeedStream::ReportStreamScrollStart() {
   metrics_reporter_->StreamScrollStart();
 }
+void FeedStream::ReportTurnOnAction() {
+  metrics_reporter_->TurnOnAction();
+}
+void FeedStream::ReportTurnOffAction() {
+  metrics_reporter_->TurnOffAction();
+}
 
 }  // namespace feed

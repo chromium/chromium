@@ -534,4 +534,16 @@ TEST_F(MetricsReporterTest, TimeSpentInFeedTracksWholeScrollTime) {
                                     base::TimeDelta::FromSeconds(3), 1);
 }
 
+TEST_F(MetricsReporterTest, TurnOnAction) {
+  reporter_->TurnOnAction();
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
+                                FeedUserActionType::kTappedTurnOn, 1);
+}
+
+TEST_F(MetricsReporterTest, TurnOffAction) {
+  reporter_->TurnOffAction();
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
+                                FeedUserActionType::kTappedTurnOff, 1);
+}
+
 }  // namespace feed

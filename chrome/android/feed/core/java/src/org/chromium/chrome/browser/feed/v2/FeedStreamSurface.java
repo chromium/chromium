@@ -1057,6 +1057,9 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         void reportDownloadAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
         void reportContextMenuOpened(long nativeFeedStreamSurface, FeedStreamSurface caller);
         void reportManageInterestsAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
+        // TODO(crbug.com/1123044): Call these from the front end.
+        void reportTurnOnAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
+        void reportTurnOffAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
 
         // TODO(crbug.com/1111101): These actions aren't visible to the client, so these functions
         // are never called.
