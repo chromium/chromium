@@ -1,0 +1,23 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="text/javasctipt" id="worker">
+  var offscreenCanvas = new OffscreenCanvas(100, 100);
+  var ctx = offscreenCanvas.getContext("2d");
+  ctx.globalCompositeOperation = "copy";
+  ctx.rect(10, 10, 150, 100);
+  ctx.fill("evenodd");
+  ctx.lineTo(1,1);
+  ctx.fillText("", 1, 1);
+</script>
+<script>
+test(function() {
+    const worker = new Worker(
+        URL.createObjectURL(
+            new Blob(
+                [document.querySelector("#worker").textContent],
+                {type: 'text/javascript'}
+            )
+        )
+    );
+}, "crbug.com/1111737, pass by not crashing.");
+</script>
