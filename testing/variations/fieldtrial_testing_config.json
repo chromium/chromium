@@ -3063,27 +3063,6 @@
             ]
         }
     ],
-    "HeapMojoUseContextObserver": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "android_weblayer",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HeapMojoUseContextObserver"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeapProfiling": [
         {
             "platforms": [
