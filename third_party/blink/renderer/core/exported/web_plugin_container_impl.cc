@@ -402,8 +402,6 @@ void WebPluginContainerImpl::Copy() {
   LocalFrame* frame = element_->GetDocument().GetFrame();
   frame->GetSystemClipboard()->WriteHTML(web_plugin_->SelectionAsMarkup(),
                                          KURL());
-  // TODO(dsleeps): consider consolidating ReplaceNBSPWithSpace into
-  // WritePlainText. WriteHTML always used ReplaceNBSOWithSpace before writing.
   String text = web_plugin_->SelectionAsText();
   ReplaceNBSPWithSpace(text);
   frame->GetSystemClipboard()->WritePlainText(text);

@@ -207,8 +207,6 @@ void ClipboardCommands::WriteSelectionToClipboard(LocalFrame& frame) {
   String plain_text = frame.SelectedTextForClipboard();
   frame.GetSystemClipboard()->WriteHTML(html, url,
                                         GetSmartReplaceOption(frame));
-  // TODO(dsleeps): consider consolidating ReplaceNBSPWithSpace into
-  // WritePlainText. WriteHTML always used ReplaceNBSOWithSpace before writing.
   ReplaceNBSPWithSpace(plain_text);
   frame.GetSystemClipboard()->WritePlainText(plain_text,
                                              GetSmartReplaceOption(frame));
