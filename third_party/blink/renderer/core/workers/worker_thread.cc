@@ -748,14 +748,17 @@ void WorkerThread::PrepareForShutdownOnWorkerThread() {
   GetWorkerReportingProxy().WillDestroyWorkerGlobalScope();
 
   probe::AllAsyncTasksCanceled(GlobalScope());
+
+  // This will eventually call the |child_threads_|'s Terminate() through
+  // ContextLifecycleObserver::ContextDestroyed(), because the nested workers
+  // are observer of the |GlobalScope()| (see the DedicatedWorker class) and
+  // they initiate thread termination on destruction of the parent context.
   GlobalScope()->NotifyContextDestroyed();
+
   worker_scheduler_->Dispose();
 
   // No V8 microtasks should get executed after shutdown is requested.
   GetWorkerBackingThread().BackingThread().RemoveTaskObserver(this);
-
-  for (WorkerThread* child : child_threads_)
-    child->Terminate();
 }
 
 void WorkerThread::PerformShutdownOnWorkerThread() {
