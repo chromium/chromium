@@ -62,52 +62,6 @@ void TelemetryExtensionUiBrowserTest::SetUpCommandLine(
   SandboxedWebUiAppTestBase::SetUpCommandLine(command_line);
 }
 
-void TelemetryExtensionUiBrowserTest::
-    ConfigureDiagnosticsForInteractiveUpdate() {
-  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-
-  auto input = cros_healthd::RoutineUpdate::New();
-  auto routineUpdateUnion = cros_healthd::RoutineUpdateUnion::New();
-  auto interactiveRoutineUpdate = cros_healthd::InteractiveRoutineUpdate::New();
-
-  interactiveRoutineUpdate->user_message =
-      cros_healthd::DiagnosticRoutineUserMessageEnum::kUnplugACPower;
-
-  routineUpdateUnion->set_interactive_update(
-      std::move(interactiveRoutineUpdate));
-
-  input->progress_percent = 0;
-  input->output = chromeos::MojoUtils::CreateReadOnlySharedMemoryMojoHandle(
-      "This routine is running!");
-  input->routine_update_union = std::move(routineUpdateUnion);
-
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
-      ->SetGetRoutineUpdateResponseForTesting(input);
-}
-
-void TelemetryExtensionUiBrowserTest::
-    ConfigureDiagnosticsForNonInteractiveUpdate() {
-  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
-
-  auto input = cros_healthd::RoutineUpdate::New();
-  auto routineUpdateUnion = cros_healthd::RoutineUpdateUnion::New();
-  auto nonInteractiveRoutineUpdate =
-      cros_healthd::NonInteractiveRoutineUpdate::New();
-
-  nonInteractiveRoutineUpdate->status =
-      cros_healthd::DiagnosticRoutineStatusEnum::kReady;
-  nonInteractiveRoutineUpdate->status_message = "Routine ran by Google.";
-
-  routineUpdateUnion->set_noninteractive_update(
-      std::move(nonInteractiveRoutineUpdate));
-
-  input->progress_percent = 3147483771;
-  input->routine_update_union = std::move(routineUpdateUnion);
-
-  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
-      ->SetGetRoutineUpdateResponseForTesting(input);
-}
-
 void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
   {
     namespace cros_diagnostics = ::chromeos::cros_healthd::mojom;
@@ -328,4 +282,50 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 
   SandboxedWebUiAppTestBase::SetUpOnMainThread();
+}
+
+void TelemetryExtensionUiBrowserTest::
+    ConfigureDiagnosticsForInteractiveUpdate() {
+  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+
+  auto input = cros_healthd::RoutineUpdate::New();
+  auto routineUpdateUnion = cros_healthd::RoutineUpdateUnion::New();
+  auto interactiveRoutineUpdate = cros_healthd::InteractiveRoutineUpdate::New();
+
+  interactiveRoutineUpdate->user_message =
+      cros_healthd::DiagnosticRoutineUserMessageEnum::kUnplugACPower;
+
+  routineUpdateUnion->set_interactive_update(
+      std::move(interactiveRoutineUpdate));
+
+  input->progress_percent = 0;
+  input->output = chromeos::MojoUtils::CreateReadOnlySharedMemoryMojoHandle(
+      "This routine is running!");
+  input->routine_update_union = std::move(routineUpdateUnion);
+
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetGetRoutineUpdateResponseForTesting(input);
+}
+
+void TelemetryExtensionUiBrowserTest::
+    ConfigureDiagnosticsForNonInteractiveUpdate() {
+  namespace cros_healthd = ::chromeos::cros_healthd::mojom;
+
+  auto input = cros_healthd::RoutineUpdate::New();
+  auto routineUpdateUnion = cros_healthd::RoutineUpdateUnion::New();
+  auto nonInteractiveRoutineUpdate =
+      cros_healthd::NonInteractiveRoutineUpdate::New();
+
+  nonInteractiveRoutineUpdate->status =
+      cros_healthd::DiagnosticRoutineStatusEnum::kReady;
+  nonInteractiveRoutineUpdate->status_message = "Routine ran by Google.";
+
+  routineUpdateUnion->set_noninteractive_update(
+      std::move(nonInteractiveRoutineUpdate));
+
+  input->progress_percent = 3147483771;
+  input->routine_update_union = std::move(routineUpdateUnion);
+
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetGetRoutineUpdateResponseForTesting(input);
 }
