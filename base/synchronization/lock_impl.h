@@ -21,13 +21,26 @@
 #endif
 
 namespace base {
+class Lock;
+class ConditionVariable;
+
+namespace win {
+namespace internal {
+class AutoNativeLock;
+class ScopedHandleVerifier;
+}  // namespace internal
+}  // namespace win
+
 namespace internal {
 
 // This class implements the underlying platform-specific spin-lock mechanism
-// used for the Lock class.  Most users should not use LockImpl directly, but
-// should instead use Lock.
+// used for the Lock class. Do not use, use Lock instead.
 class BASE_EXPORT LockImpl {
- public:
+  friend class base::Lock;
+  friend class base::ConditionVariable;
+  friend class base::win::internal::AutoNativeLock;
+  friend class base::win::internal::ScopedHandleVerifier;
+
 #if defined(OS_WIN)
   using NativeHandle = CHROME_SRWLOCK;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
@@ -58,7 +71,6 @@ class BASE_EXPORT LockImpl {
   static bool PriorityInheritanceAvailable();
 #endif
 
- private:
   NativeHandle native_handle_;
 
   DISALLOW_COPY_AND_ASSIGN(LockImpl);

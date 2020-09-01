@@ -39,24 +39,6 @@ using HandleMap =
     std::unordered_map<HANDLE, ScopedHandleVerifierInfo, HandleHash>;
 using NativeLock = base::internal::LockImpl;
 
-NativeLock* GetScopedHandleVerifierLock() {
-  static auto* native_lock = new NativeLock();
-  return native_lock;
-}
-
-// Simple automatic locking using a native critical section so it supports
-// recursive locking.
-class AutoNativeLock {
- public:
-  explicit AutoNativeLock(NativeLock& lock) : lock_(lock) { lock_.Lock(); }
-
-  ~AutoNativeLock() { lock_.Unlock(); }
-
- private:
-  NativeLock& lock_;
-  DISALLOW_COPY_AND_ASSIGN(AutoNativeLock);
-};
-
 NOINLINE void ReportErrorOnScopedHandleOperation(
     const base::debug::StackTrace& creation_stack) {
   auto creation_stack_copy = creation_stack;
@@ -77,6 +59,19 @@ NOINLINE void ReportErrorOnScopedHandleOperation(
 }
 
 }  // namespace
+
+// Simple automatic locking using a native critical section so it supports
+// recursive locking.
+class AutoNativeLock {
+ public:
+  explicit AutoNativeLock(NativeLock& lock) : lock_(lock) { lock_.Lock(); }
+
+  ~AutoNativeLock() { lock_.Unlock(); }
+
+ private:
+  NativeLock& lock_;
+  DISALLOW_COPY_AND_ASSIGN(AutoNativeLock);
+};
 
 ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(
     const void* owner,
@@ -116,10 +111,11 @@ bool CloseHandleWrapper(HANDLE handle) {
 
 // Assigns the g_active_verifier global within the ScopedHandleVerifier lock.
 // If |existing_verifier| is non-null then |enabled| is ignored.
-void ThreadSafeAssignOrCreateScopedHandleVerifier(
+// static
+void ScopedHandleVerifier::ThreadSafeAssignOrCreateScopedHandleVerifier(
     ScopedHandleVerifier* existing_verifier,
     bool enabled) {
-  AutoNativeLock lock(*GetScopedHandleVerifierLock());
+  AutoNativeLock lock(*GetLock());
   // Another thread in this module might be trying to assign the global
   // verifier, so check that within the lock here.
   if (g_active_verifier)
@@ -180,7 +176,8 @@ bool ScopedHandleVerifier::CloseHandle(HANDLE handle) {
 
 // static
 NativeLock* ScopedHandleVerifier::GetLock() {
-  return GetScopedHandleVerifierLock();
+  static auto* native_lock = new NativeLock();
+  return native_lock;
 }
 
 void ScopedHandleVerifier::StartTracking(HANDLE handle,

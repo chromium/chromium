@@ -87,6 +87,8 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
 
   static base::internal::LockImpl* GetLock();
   static void InstallVerifier();
+  static void ThreadSafeAssignOrCreateScopedHandleVerifier(
+      ScopedHandleVerifier * existing_verifier, bool enabled);
 
   base::debug::StackTrace creation_stack_;
   bool enabled_;
