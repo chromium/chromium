@@ -141244,6 +141244,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Printing.CUPS.ZeroconfPrinterSetupResult"
+    enum="PrinterSetupResult" expires_after="2021-08-28">
+  <owner>kdlee@chromium.org</owner>
+  <owner>cros-printing-dev@chromium.org</owner>
+  <summary>
+    The success or error code for the setup of a Zeroconf printer. Recorded when
+    setup is attempted through the settings dialogs. Only recorded on Chrome OS.
+    Printer setup results go into either this histogram or the
+    Printing.CUPS.PrinterSetupResult histogram - not both.
+  </summary>
+</histogram>
+
 <histogram name="Printing.FrameIsActiveOnCreateLoaderFactory"
     enum="BooleanEnabled" expires_after="2020-07-31">
   <obsolete>

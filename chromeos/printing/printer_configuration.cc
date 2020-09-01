@@ -227,4 +227,8 @@ bool Printer::HasSecureProtocol() const {
   }
 }
 
+bool Printer::IsZeroconf() const {
+  return base::EndsWith(uri_.GetHost(), ".local");
+}
+
 }  // namespace chromeos

@@ -736,8 +736,14 @@ void CupsPrintersHandler::OnAddedOrEditedPrinterCommon(
     const Printer& printer,
     PrinterSetupResult result_code,
     bool is_automatic) {
-  UMA_HISTOGRAM_ENUMERATION("Printing.CUPS.PrinterSetupResult", result_code,
-                            PrinterSetupResult::kMaxValue);
+  if (printer.IsZeroconf()) {
+    UMA_HISTOGRAM_ENUMERATION("Printing.CUPS.ZeroconfPrinterSetupResult",
+                              result_code, PrinterSetupResult::kMaxValue);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Printing.CUPS.PrinterSetupResult", result_code,
+                              PrinterSetupResult::kMaxValue);
+  }
+
   switch (result_code) {
     case PrinterSetupResult::kSuccess:
       UMA_HISTOGRAM_ENUMERATION("Printing.CUPS.PrinterAdded",

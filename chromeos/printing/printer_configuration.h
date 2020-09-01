@@ -197,6 +197,12 @@ class CHROMEOS_EXPORT Printer {
   // secure (kIpps or kHttps).
   bool HasSecureProtocol() const;
 
+  // Returns true if the host component of the printer's URI ends with
+  // ".local"
+  //
+  // This method is meaningless to call without a URI set.
+  bool IsZeroconf() const;
+
   // Returns true if the printer uri is set and false when the uri is empty.
   bool HasUri() const { return !uri_.GetScheme().empty(); }
 
