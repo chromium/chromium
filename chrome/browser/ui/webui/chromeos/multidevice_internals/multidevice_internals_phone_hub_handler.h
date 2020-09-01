@@ -33,6 +33,7 @@ class MultidevicePhoneHubHandler : public content::WebUIMessageHandler {
   void SetSystemPhoneHubManagerEnabled();
   void SetFakePhoneHubManagerEnabled();
   void HandleSetFakePhoneHubManagerEnabled(const base::ListValue* args);
+  void HandleSetFeatureStatus(const base::ListValue* args);
 
   std::unique_ptr<phonehub::FakePhoneHubManager> fake_phone_hub_manager_;
 };

@@ -7,6 +7,7 @@
 #include "ash/public/cpp/system_tray.h"
 #include "chrome/browser/chromeos/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
 
 namespace chromeos {
@@ -25,6 +26,11 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
       base::BindRepeating(
           &MultidevicePhoneHubHandler::HandleSetFakePhoneHubManagerEnabled,
           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "setFeatureStatus",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFeatureStatus,
+                          base::Unretained(this)));
 }
 
 void MultidevicePhoneHubHandler::SetSystemPhoneHubManagerEnabled() {
@@ -50,6 +56,15 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneHubManagerEnabled(
     return;
   }
   SetSystemPhoneHubManagerEnabled();
+}
+
+void MultidevicePhoneHubHandler::HandleSetFeatureStatus(
+    const base::ListValue* args) {
+  int feature_as_int = 0;
+  CHECK(args->GetInteger(0, &feature_as_int));
+
+  auto feature = static_cast<phonehub::FeatureStatus>(feature_as_int);
+  fake_phone_hub_manager_->fake_feature_status_provider()->SetStatus(feature);
 }
 
 }  // namespace multidevice

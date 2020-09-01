@@ -13,7 +13,15 @@ export class MultidevicePhoneHubBrowserProxy {
    * @param {boolean} enabled Whether to enable the fake phone hub manager.
    */
   setFakePhoneHubManagerEnabled(enabled) {
-    return chrome.send('setFakePhoneHubManagerEnabled', [enabled]);
+    chrome.send('setFakePhoneHubManagerEnabled', [enabled]);
+  }
+
+  /**
+   * Enables or disables the FakePhoneHubManager.
+   * @param {number} featureStatus The status of the feature.
+   */
+  setFeatureStatus(featureStatus) {
+    chrome.send('setFeatureStatus', [featureStatus]);
   }
 }
 

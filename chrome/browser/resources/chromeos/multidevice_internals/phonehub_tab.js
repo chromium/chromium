@@ -3,11 +3,49 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
+import 'chrome://resources/cr_elements/md_select_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './shared_style.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultidevicePhoneHubBrowserProxy} from './multidevice_phonehub_browser_proxy.js';
+
+/**
+ * Numerical values should not be changed because they must stay in sync with
+ * chromeos/components/phonehub/feature_status.h.
+ * @enum{number}
+ */
+const FeatureStatus = {
+  NOT_ELIGIBLE_FOR_FEATURE: 0,
+  ELIGIBLE_PHONE_BUT_NOT_SETUP: 1,
+  PHONE_SELECTED_AND_PENDING_SETUP: 2,
+  DISABLED: 3,
+  UNAVAILABLE_BLUETOOTH_OFF: 4,
+  ENABLED_BUT_DISCONNECTED: 5,
+  ENABLED_AND_CONNECTING: 6,
+  ENABLED_AND_CONNECTED: 7,
+};
+
+/**
+ * Maps a FeatureStatus to it's title label in the dropdown.
+ * @type {!Map<FeatureStatus, String>}
+ */
+const featureStatusToStringMap = new Map([
+  [FeatureStatus.NOT_ELIGIBLE_FOR_FEATURE, 'Not eligible for feature'],
+  [
+    FeatureStatus.ELIGIBLE_PHONE_BUT_NOT_SETUP,
+    'Eligible for phone but not setup'
+  ],
+  [
+    FeatureStatus.PHONE_SELECTED_AND_PENDING_SETUP,
+    'Phone selected and pending setup'
+  ],
+  [FeatureStatus.DISABLED, 'Disabled'],
+  [FeatureStatus.UNAVAILABLE_BLUETOOTH_OFF, 'Unavailable bluetooth off'],
+  [FeatureStatus.ENABLED_BUT_DISCONNECTED, 'Enabled but disconnected'],
+  [FeatureStatus.ENABLED_AND_CONNECTING, 'Enabled and connecting'],
+  [FeatureStatus.ENABLED_AND_CONNECTED, 'Enabled and connected'],
+]);
 
 Polymer({
   is: 'phonehub-tab',
@@ -15,10 +53,32 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
+    /** @private */
     shouldEnableFakePhoneHubManager_: {
       type: Boolean,
       value: false,
       observer: 'onShouldEnableFakePhoneHubManagerChanged_'
+    },
+
+    /**
+     * Must stay in order with FeatureStatus.
+     * @private
+     */
+    featureStatusList_: {
+      type: Array,
+      value: () => {
+        return [
+          FeatureStatus.NOT_ELIGIBLE_FOR_FEATURE,
+          FeatureStatus.ELIGIBLE_PHONE_BUT_NOT_SETUP,
+          FeatureStatus.PHONE_SELECTED_AND_PENDING_SETUP,
+          FeatureStatus.DISABLED,
+          FeatureStatus.UNAVAILABLE_BLUETOOTH_OFF,
+          FeatureStatus.ENABLED_BUT_DISCONNECTED,
+          FeatureStatus.ENABLED_AND_CONNECTING,
+          FeatureStatus.ENABLED_AND_CONNECTED,
+        ];
+      },
+      readonly: true,
     },
   },
 
@@ -34,5 +94,28 @@ Polymer({
   onShouldEnableFakePhoneHubManagerChanged_() {
     this.browserProxy_.setFakePhoneHubManagerEnabled(
         this.shouldEnableFakePhoneHubManager_);
+
+    if (!this.shouldEnableFakePhoneHubManager_) {
+      return;
+    }
+
+    // Propgagate default values to fake PhoneHub manager.
+    flush();
+    this.onFeatureStatusSelected_();
+  },
+
+  /** @private */
+  onFeatureStatusSelected_() {
+    const select = /** @type {!HTMLSelectElement} */
+        (this.$$('#featureStatusList'));
+    this.browserProxy_.setFeatureStatus(select.selectedIndex);
+  },
+
+  /**
+   * @param {FeatureStatus} featureStatus The feature status enum.
+   * @private
+   */
+  getFeatureStatusName_(featureStatus) {
+    return featureStatusToStringMap.get(featureStatus);
   },
 });
