@@ -259,7 +259,7 @@ js_type_check("closure_compile_module") {
     #  ":network_config.m",
     ":network_config_element_behavior.m",
     #  ":network_config_input.m",
-    #  ":network_config_select.m",
+    ":network_config_select.m",
     ":network_config_toggle.m",
     ":network_icon.m",
 
@@ -357,7 +357,13 @@ js_library("network_config_input.m") {
 js_library("network_config_select.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/network_config_select.m.js" ]
   deps = [
-    # TODO: Fill those in.
+    ":cr_policy_network_behavior_mojo.m",
+    ":cr_policy_network_indicator_mojo.m",
+    ":network_config_element_behavior.m",
+    ":network_shared_css.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":network_config_select_module" ]
 }
@@ -600,6 +606,7 @@ polymer_modulizer("network_config_select") {
   js_file = "network_config_select.js"
   html_file = "network_config_select.html"
   html_type = "dom-module"
+  auto_imports = cr_components_chromeos_auto_imports
 }
 
 polymer_modulizer("network_config_toggle") {

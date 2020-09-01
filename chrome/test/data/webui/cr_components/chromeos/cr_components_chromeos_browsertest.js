@@ -33,6 +33,7 @@ GEN('#include "content/public/test/browser_test.h"');
     ]
   ],
   ['NetworkConfigElementBehavior', 'network/network_config_element_behavior_test.js', []],
+  ['NetworkConfigSelect', 'network/network_config_select_test.js', []],
   ['NetworkConfigToggle', 'network/network_config_toggle_test.js', []],
   ['NetworkIpConfig', 'network/network_ip_config_test.js', []],
   ['NetworkList', 'network/network_list_test.js', []],
