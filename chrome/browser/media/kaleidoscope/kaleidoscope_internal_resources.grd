@@ -162,6 +162,7 @@
       <include name="IDR_GOOGLE_SANS_BOLD" file="internal/resources/fonts/GoogleSans-Bold.woff2" type="BINDATA" compress="gzip" />
       <include name="IDR_GOOGLE_SANS_MEDIUM" file="internal/resources/fonts/GoogleSans-Medium.woff2" type="BINDATA" compress="gzip" />
       <include name="IDR_GOOGLE_SANS_REGULAR" file="internal/resources/fonts/GoogleSans-Regular.woff2" type="BINDATA" compress="gzip" />
+      <include name="IDR_GOOGLE_SANS_DISPLAY_REGULAR" file="internal/resources/fonts/GoogleSansDisplay-Regular.woff2" type="BINDATA" compress="gzip" />
    </includes>
   </release>
 </grit>

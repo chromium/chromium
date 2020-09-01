@@ -339,6 +339,9 @@ content::WebUIDataSource* KaleidoscopeUI::CreateUntrustedWebUIDataSource() {
                                     IDR_GOOGLE_SANS_MEDIUM);
   untrusted_source->AddResourcePath("resources/fonts/GoogleSans-Regular.woff2",
                                     IDR_GOOGLE_SANS_REGULAR);
+  untrusted_source->AddResourcePath(
+      "resources/fonts/GoogleSansDisplay-Regular.woff2",
+      IDR_GOOGLE_SANS_DISPLAY_REGULAR);
 
   untrusted_source->AddResourcePath("content.html",
                                     IDR_KALEIDOSCOPE_CONTENT_HTML);
