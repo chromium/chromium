@@ -3301,6 +3301,21 @@ bool AXPlatformNodeAuraLinux::IsPlatformCheckable() const {
   return AXPlatformNodeBase::IsPlatformCheckable();
 }
 
+base::Optional<int> AXPlatformNodeAuraLinux::GetIndexInParent() {
+  AXPlatformNode* parent =
+      AXPlatformNode::FromNativeViewAccessible(GetParent());
+  // Even though the node doesn't have its parent, GetParent() could return the
+  // application. Since the detached view has the kUnknown role and the
+  // restriction is kDisabled, it early returns before finding the index.
+  if (parent == AXPlatformNodeAuraLinux::application() &&
+      GetData().role == ax::mojom::Role::kUnknown &&
+      GetData().GetRestriction() == ax::mojom::Restriction::kDisabled) {
+    return base::nullopt;
+  }
+
+  return AXPlatformNodeBase::GetIndexInParent();
+}
+
 void AXPlatformNodeAuraLinux::EnsureAtkObjectIsValid() {
   if (atk_object_) {
     // If the object's role changes and that causes its
