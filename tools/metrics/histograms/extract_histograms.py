@@ -488,16 +488,18 @@ def _ExtractVariantNodes(node):
   """
   variant_list = []
   for variant_node in IterElementsWithTag(node, 'variant', 1):
-    variant = dict(name=variant_node.getAttribute('name'),
-                   summary=variant_node.getAttribute('summary'))
+    name = variant_node.getAttribute('name')
+    summary = variant_node.getAttribute('summary') if variant_node.hasAttribute(
+        'summary') else name
+    variant = dict(name=name, summary=summary)
 
     obsolete_text = _GetObsoleteReason(variant_node)
     if obsolete_text:
       variant['obsolete'] = obsolete_text
 
-    variant_owners, variant_has_owners = _ExtractOwners(variant_node)
+    owners, variant_has_owners = _ExtractOwners(variant_node)
     if variant_has_owners:
-      variant['owners'] = variant_owners
+      variant['owners'] = owners
 
     variant_list.append(variant)
 

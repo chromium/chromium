@@ -121,18 +121,18 @@ TEST_BASE_HISTOGRAM_XML_CONTENT = """
 TEST_HISTOGRAM_WITH_TOKENS = """
 <histogram-configuration>
 <histograms>
-<histogram name="HistogramName{Color}{Size}" expires_after="2017-10-16">
+<histogram name="HistogramName.{Color}{Size}" expires_after="2017-10-16">
   <owner>me@chromium.org</owner>
   <summary>
     This is a histogram for button of {Color} color and {Size} size.
   </summary>
   <token key="Color">
-    <variant name=".red" summary="red">
+    <variant name="red">
       <obsolete>
         Obsolete red
       </obsolete>
     </variant>
-    <variant name=".green" summary="green">
+    <variant name="green">
       <owner>green@chromium.org</owner>
     </variant>
   </token>
@@ -167,18 +167,18 @@ TEST_HISTOGRAM_WITH_VARIANTS = """
   <variant name=".large" summary="large"/>
 </variants>
 
-<histogram name="HistogramName{Color}{Size}" expires_after="2017-10-16">
+<histogram name="HistogramName.{Color}{Size}" expires_after="2017-10-16">
   <owner>me@chromium.org</owner>
   <summary>
     This is a histogram for button of {Color} color and {Size} size.
   </summary>
   <token key="Color">
-    <variant name=".red" summary="red">
+    <variant name="red">
       <obsolete>
         Obsolete red
       </obsolete>
     </variant>
-    <variant name=".green" summary="green">
+    <variant name="green">
       <owner>green@chromium.org</owner>
     </variant>
   </token>
@@ -690,6 +690,8 @@ class ExtractHistogramsTest(unittest.TestCase):
         histogram_with_token, {})
     histograms_dict, _ = extract_histograms._UpdateHistogramsWithTokens(
         histograms_dict)
+    # Use the variant's name to format the summary when the variant's summary
+    # attribute is omitted.
     self.assertEqual(
         'This is a histogram for button of red color and small size.',
         histograms_dict['HistogramName.red.small']['summary'])
