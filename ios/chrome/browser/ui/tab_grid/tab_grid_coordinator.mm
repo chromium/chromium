@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
@@ -417,9 +418,11 @@
       IsIPadIdiom() ? UIAlertControllerStyleAlert
                     : UIAlertControllerStyleActionSheet;
 
-  // TODO(crbug.com/1119319): Displays the number of tabs to close.
   [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON)
+      addItemWithTitle:base::SysUTF16ToNSString(
+                           l10n_util::GetPluralStringFUTF16(
+                               IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
+                               numberOfTabs))
                 action:^{
                   base::RecordAction(base::UserMetricsAction(
                       "MobileTabGridCloseAllTabsConfirmationConfirmed"));
