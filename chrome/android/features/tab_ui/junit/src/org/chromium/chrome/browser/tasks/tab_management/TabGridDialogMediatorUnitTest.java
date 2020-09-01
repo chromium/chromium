@@ -57,6 +57,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -128,6 +130,8 @@ public class TabGridDialogMediatorUnitTest {
     Editable mEditable;
     @Mock
     ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock
+    SnackbarManager mSnackbarManager;
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -192,7 +196,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
         mMediator = new TabGridDialogMediator(mContext, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler,
-                mAnimationSourceViewProvider, mShareDelegateSupplier, "");
+                mAnimationSourceViewProvider, mShareDelegateSupplier, mSnackbarManager, "");
 
         // TabModelObserver is registered when native is ready.
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(true));
@@ -601,6 +605,7 @@ public class TabGridDialogMediatorUnitTest {
 
         assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
         verify(mTabSwitcherResetHandler).resetWithTabList(mTabGroupModelFilter, false, false);
+        verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB1_ID));
     }
 
     @Test
@@ -623,6 +628,7 @@ public class TabGridDialogMediatorUnitTest {
         assertThat(
                 mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
         verify(mTabSwitcherResetHandler).resetWithTabList(mTabGroupModelFilter, false, false);
+        verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB2_ID));
     }
 
     @Test
@@ -639,6 +645,32 @@ public class TabGridDialogMediatorUnitTest {
         assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
         verify(mTabSwitcherResetHandler, never())
                 .resetWithTabList(mTabGroupModelFilter, false, false);
+        verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB1_ID));
+    }
+
+    @Test
+    public void tabClosureCommitted() {
+        mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
+
+        verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB1_ID));
+    }
+
+    @Test
+    public void tabPendingClosure_DialogVisible() {
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+
+        mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1);
+
+        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void tabPendingClosure_DialogInVisible() {
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+
+        mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1);
+
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
     }
 
     @Test
@@ -882,7 +914,7 @@ public class TabGridDialogMediatorUnitTest {
         // the animationParamsProvider is null.
         mMediator = new TabGridDialogMediator(mContext, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
-                mShareDelegateSupplier, "");
+                mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(mTabSelectionEditorController, mTabGroupTitleEditor);
 
         // Mock that the dialog is hidden and animation source view, header title and scrim click
@@ -913,7 +945,7 @@ public class TabGridDialogMediatorUnitTest {
         // the animationParamsProvider is null.
         mMediator = new TabGridDialogMediator(mContext, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
-                mShareDelegateSupplier, "");
+                mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(mTabSelectionEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
@@ -947,7 +979,7 @@ public class TabGridDialogMediatorUnitTest {
         // the animationParamsProvider is null.
         mMediator = new TabGridDialogMediator(mContext, mDialogController, mModel,
                 mTabModelSelector, mTabCreatorManager, mTabSwitcherResetHandler, null,
-                mShareDelegateSupplier, "");
+                mShareDelegateSupplier, mSnackbarManager, "");
         mMediator.initWithNative(mTabSelectionEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view is set to some mock view for
         // testing purpose.
@@ -1009,6 +1041,24 @@ public class TabGridDialogMediatorUnitTest {
 
         doReturn(tabgroup2).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
         assertThat(shareString2, equalTo(mMediator.getTabGroupStringForSharingForTesting()));
+    }
+
+    @Test
+    public void testSnackbarController_onAction() {
+        doReturn(mTabModel).when(mTabModelSelector).getModelForTabId(TAB1_ID);
+
+        mMediator.onAction(TAB1_ID);
+
+        verify(mTabModel).cancelTabClosure(eq(TAB1_ID));
+    }
+
+    @Test
+    public void testSnackbarController_onDismissNoAction() {
+        doReturn(mTabModel).when(mTabModelSelector).getModelForTabId(TAB1_ID);
+
+        mMediator.onDismissNoAction(TAB1_ID);
+
+        verify(mTabModel).commitTabClosure(eq(TAB1_ID));
     }
 
     @Test

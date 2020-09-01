@@ -74,6 +74,7 @@ public class TabGridDialogView extends FrameLayout
     private View mAnimationCardView;
     private View mItemView;
     private View mUngroupBar;
+    private ViewGroup mSnackBarContainer;
     private ViewGroup mParent;
     private TextView mUngroupBarTextView;
     private RelativeLayout mDialogContainerView;
@@ -157,6 +158,7 @@ public class TabGridDialogView extends FrameLayout
         mBackgroundFrame = findViewById(R.id.dialog_frame);
         mBackgroundFrame.setLayoutParams(mContainerParams);
         mAnimationCardView = findViewById(R.id.dialog_animation_card_view);
+        mSnackBarContainer = findViewById(R.id.dialog_snack_bar_container_view);
         updateDialogWithOrientation(mContext.getResources().getConfiguration().orientation);
 
         prepareAnimation();
@@ -674,6 +676,7 @@ public class TabGridDialogView extends FrameLayout
         mDialogContainerView.addView(toolbarView);
         mDialogContainerView.addView(recyclerView);
         mDialogContainerView.addView(mUngroupBar);
+        mDialogContainerView.addView(mSnackBarContainer);
         RelativeLayout.LayoutParams params =
                 (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
         params.setMargins(0, mToolbarHeight, 0, 0);
@@ -802,6 +805,13 @@ public class TabGridDialogView extends FrameLayout
      */
     void updateUngroupBarTextAppearance(int textAppearance) {
         mUngroupBarTextAppearance = textAppearance;
+    }
+
+    /**
+     * Return the container view for undo closure snack bar.
+     */
+    ViewGroup getSnackBarContainer() {
+        return mSnackBarContainer;
     }
 
     @VisibleForTesting

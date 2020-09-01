@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -63,10 +65,13 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mDialogView = containerView.findViewById(R.id.dialog_parent_view);
             mDialogView.setupScrimCoordinator(scrimCoordinator);
         }
+        Activity activity = (Activity) context;
+        SnackbarManager snackbarManager =
+                new SnackbarManager(activity, mDialogView.getSnackBarContainer(), null);
 
         mMediator = new TabGridDialogMediator(context, this, mModel, tabModelSelector,
                 tabCreatorManager, resetHandler, animationSourceViewProvider, shareDelegateSupplier,
-                mComponentName);
+                snackbarManager, mComponentName);
 
         // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to take
         // in a mode parameter instead.

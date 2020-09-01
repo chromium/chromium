@@ -131,8 +131,9 @@ public class TabGridDialogViewTest extends DummyUiActivityTestCase {
 
         mTabGridDialogView.resetDialog(toolbarView, recyclerView);
 
-        // It should contain three child views: top tool bar, recyclerview and ungroup bar.
-        Assert.assertEquals(3, mTabGridDialogContainer.getChildCount());
+        // It should contain four child views: top tool bar, recyclerview, ungroup bar and undo bar
+        // container.
+        Assert.assertEquals(4, mTabGridDialogContainer.getChildCount());
         Assert.assertEquals(View.VISIBLE, recyclerView.getVisibility());
         RelativeLayout.LayoutParams params =
                 (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
