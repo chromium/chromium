@@ -19,6 +19,7 @@ import filecmp
 import json
 import hashlib
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -109,11 +110,11 @@ def UpdateXcodeProject(project_dir, configurations, root_dir):
     # Teach build shell script to look for the configuration and platform.
     if isa == 'PBXShellScriptBuildPhase':
       shell_path = value['shellPath']
-      if shell_path.endswith('sh'):
+      if shell_path.endswith('/sh'):
         value['shellScript'] = value['shellScript'].replace(
             'ninja -C .',
             'ninja -C "../${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}"')
-      elif shell_path.endswith('python') or shell_path.endswith('python3'):
+      elif re.search('[ /]python[23]?$', shell_path):
         value['shellScript'] = value['shellScript'].replace(
             'ninja_params = [ \'-C\', \'.\' ]',
             'ninja_params = [ \'-C\', \'../\' + os.environ[\'CONFIGURATION\']'
