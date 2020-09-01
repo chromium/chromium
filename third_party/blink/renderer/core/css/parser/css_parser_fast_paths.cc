@@ -176,6 +176,22 @@ static inline bool IsColorPropertyID(CSSPropertyID property_id) {
   }
 }
 
+// https://quirks.spec.whatwg.org/#the-hashless-hex-color-quirk
+static inline bool ColorPropertyAllowsQuirkyColor(CSSPropertyID property_id) {
+  switch (property_id) {
+    case CSSPropertyID::kColor:
+    case CSSPropertyID::kBackgroundColor:
+    case CSSPropertyID::kBorderBottomColor:
+    case CSSPropertyID::kBorderLeftColor:
+    case CSSPropertyID::kBorderRightColor:
+    case CSSPropertyID::kBorderTopColor:
+      return true;
+    default:
+      DCHECK(IsColorPropertyID(property_id));
+      return false;
+  }
+}
+
 // Returns the number of characters which form a valid double
 // and are terminated by the given terminator character
 template <typename CharacterType>
@@ -507,8 +523,12 @@ static bool FastParseColorInternal(RGBA32& rgb,
   return false;
 }
 
-CSSValue* CSSParserFastPaths::ParseColor(const String& string,
-                                         CSSParserMode parser_mode) {
+static CSSValue* ParseColor(CSSPropertyID property_id,
+                            const String& string,
+                            CSSParserMode parser_mode) {
+  if (!IsColorPropertyID(property_id))
+    return nullptr;
+
   DCHECK(!string.IsEmpty());
   CSSValueID value_id = CssValueKeywordID(string);
   if (StyleColor::IsColorKeyword(value_id)) {
@@ -518,7 +538,8 @@ CSSValue* CSSParserFastPaths::ParseColor(const String& string,
   }
 
   RGBA32 color;
-  bool quirks_mode = IsQuirksModeBehavior(parser_mode);
+  bool quirks_mode = IsQuirksModeBehavior(parser_mode) &&
+                     ColorPropertyAllowsQuirkyColor(property_id);
 
   // Fast path for hex colors and rgb()/rgba() colors
   bool parse_result =
@@ -528,6 +549,11 @@ CSSValue* CSSParserFastPaths::ParseColor(const String& string,
   if (!parse_result)
     return nullptr;
   return cssvalue::CSSColorValue::Create(color);
+}
+
+CSSValue* CSSParserFastPaths::ParseColor(const String& string,
+                                         CSSParserMode parser_mode) {
+  return blink::ParseColor(CSSPropertyID::kColor, string, parser_mode);
 }
 
 bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
@@ -1369,8 +1395,8 @@ CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
   if (CSSValue* length =
           ParseSimpleLengthValue(property_id, string, parser_mode))
     return length;
-  if (IsColorPropertyID(property_id))
-    return ParseColor(string, parser_mode);
+  if (CSSValue* color = blink::ParseColor(property_id, string, parser_mode))
+    return color;
   if (CSSValue* keyword = ParseKeywordValue(property_id, string, parser_mode))
     return keyword;
   if (CSSValue* transform = ParseSimpleTransform(property_id, string))
