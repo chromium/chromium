@@ -204,6 +204,14 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // aren't painted by the PDF engine).
   void CalculateBackgroundParts();
 
+  // Returns a VarArray of Attachments. Each Attachment is a VarDictionary
+  // which contains the following key/values:
+  // - "name" - a string Var.
+  // - "size" - an int Var (-1 indicates the attachment file is too big to be
+  // downloaded).
+  // - "readable" a bool Var.
+  pp::VarArray GetDocumentAttachments();
+
   // Computes document width/height in device pixels, based on current zoom and
   // device scale
   int GetDocumentPixelWidth() const;

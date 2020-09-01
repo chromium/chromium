@@ -228,7 +228,7 @@ constexpr char kJSDocumentHasFocus[] = "hasFocus";
 
 constexpr int kFindResultCooldownMs = 100;
 
-// Do not save forms with over 100 MB. This cap should be kept in sync with and
+// Do not save files with over 100 MB. This cap should be kept in sync with and
 // is also enforced in chrome/browser/resources/pdf/pdf_viewer.js.
 constexpr size_t kMaximumSavedFileSize = 100u * 1000u * 1000u;
 
@@ -1117,6 +1117,28 @@ void OutOfProcessInstance::CalculateBackgroundParts() {
       pp::Rect(0, bottom, plugin_size_.width(), plugin_size_.height() - bottom);
   if (!part.location.IsEmpty())
     background_parts_.push_back(part);
+}
+
+pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
+  const std::vector<DocumentAttachmentInfo>& list =
+      engine()->GetDocumentAttachmentInfoList();
+  pp::VarArray attachments;
+  attachments.SetLength(list.size());
+
+  for (size_t i = 0; i < list.size(); ++i) {
+    const DocumentAttachmentInfo& attachment_info = list[i];
+    pp::VarDictionary dict;
+    dict.Set(pp::Var("name"), pp::Var(base::UTF16ToUTF8(attachment_info.name)));
+    // Set |size| to -1 to indicate that the attachment is too big to be
+    // downloaded.
+    int32_t size = attachment_info.size_bytes <= kMaximumSavedFileSize
+                       ? static_cast<int32_t>(attachment_info.size_bytes)
+                       : -1;
+    dict.Set(pp::Var("size"), pp::Var(size));
+    dict.Set(pp::Var("readable"), pp::Var(attachment_info.is_readable));
+    attachments.Set(i, dict);
+  }
+  return attachments;
 }
 
 int OutOfProcessInstance::GetDocumentPixelWidth() const {

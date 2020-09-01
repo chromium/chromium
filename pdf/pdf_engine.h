@@ -454,8 +454,8 @@ class PDFEngine {
   // Returns true if all the pages are the same size.
   virtual bool GetPageSizeAndUniformity(gfx::Size* size) = 0;
 
-  // Returns a VarArray of Bookmarks, each a VarDictionary containing the
-  // following key/values:
+  // Returns a VarArray of Bookmarks. Each Bookmark is a VarDictionary
+  // which contains the following key/values:
   // - "title" - a string Var.
   // - "page" - an int Var.
   // - "children" - a VarArray(), with each entry containing a VarDictionary of
