@@ -49,14 +49,6 @@
   {
     "repeat": 1,
     "stories": [
-      "toBlob_duration.html",
-      "toBlob-small-canvas-in-worker.html"
-    ],
-    "name": "blink_perf.canvas"
-  },
-  {
-    "repeat": 1,
-    "stories": [
       "AttributeDescendantSelector.html",
       "CSSPropertySetterGetter.html",
       "CSSPropertySetterGetterMethods.html",

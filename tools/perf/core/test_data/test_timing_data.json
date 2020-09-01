@@ -216,10 +216,6 @@
         "name": "blink_perf.bindings/undefined-id-getter.html"
     },
     {
-        "duration": "5.406577264646463",
-        "name": "blink_perf.canvas/toBlob_duration.html"
-    },
-    {
         "duration": "13.611388484848492",
         "name": "blink_perf.css/AttributeDescendantSelector.html"
     },

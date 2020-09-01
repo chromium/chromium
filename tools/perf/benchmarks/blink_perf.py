@@ -11,8 +11,6 @@ import re
 from core import path_util
 from core import perf_benchmark
 
-from page_sets import webgl_supported_shared_state
-
 from telemetry import benchmark
 from telemetry import page as page_module
 from telemetry.core import memory_cache_http_server
@@ -449,36 +447,6 @@ class BlinkPerfCSS(_BlinkPerfBenchmark):
   @classmethod
   def Name(cls):
     return 'blink_perf.css'
-
-@benchmark.Info(emails=['aaronhk@chromium.org', 'fserb@chromium.org'],
-                documentation_url='https://bit.ly/blink-perf-benchmarks',
-                component='Blink>Canvas')
-class BlinkPerfCanvas(_BlinkPerfBenchmark):
-  SUBDIR = 'canvas'
-  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
-
-  @classmethod
-  def Name(cls):
-    return 'blink_perf.canvas'
-
-  def CreateStorySet(self, options):
-    path = os.path.join(BLINK_PERF_BASE_DIR, self.SUBDIR)
-    story_set = CreateStorySetFromPath(
-        path, SKIPPED_FILE,
-        shared_page_state_class=(
-            webgl_supported_shared_state.WebGLSupportedSharedState))
-    raf_story_set = CreateStorySetFromPath(
-        path, SKIPPED_FILE,
-        shared_page_state_class=(
-            webgl_supported_shared_state.WebGLSupportedSharedState),
-        append_query="RAF")
-    for raf_story in raf_story_set:
-      story_set.AddStory(raf_story)
-    # WebGLSupportedSharedState requires the skipped_gpus property to
-    # be set on each page.
-    for page in story_set:
-      page.skipped_gpus = []
-    return story_set
 
 @benchmark.Info(emails=['masonfreed@chromium.org'],
                 component='Blink>DOM',

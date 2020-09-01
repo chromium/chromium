@@ -212,14 +212,6 @@
         "name": "blink_perf.bindings/worker-transferable-to-worker.html"
     },
     {
-        "duration": "54.0",
-        "name": "blink_perf.canvas/toBlob_duration.html"
-    },
-    {
-        "duration": "58.0",
-        "name": "blink_perf.canvas/toBlob_duration_RAF.html?RAF"
-    },
-    {
         "duration": "40.0",
         "name": "blink_perf.css/AttributeDescendantSelector.html"
     },

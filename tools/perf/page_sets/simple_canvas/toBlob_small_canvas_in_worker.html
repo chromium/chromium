@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script src = "../resources/runner.js"></script>
+<script src="resources/canvas_runner.js"></script>
 <script type="text/javascript" id="worker">
 /*
     Because of task scheduling worker toBlob operations can be take an
@@ -12,10 +12,9 @@ function offscreenCanvasToBlobOnWorker() {
   const ctx = offscreenCanvas.getContext("2d");
   ctx.fillStyle = "red";
   ctx.fillRect(0, 0, 32, 32);
-  const startTime = performance.now();
-  offscreenCanvas.convertToBlob({type: "image/png"}).then((blob) => {
-    postMessage(performance.now() - startTime);
-  });
+    offscreenCanvas.convertToBlob({type: "image/png"}).then((blob) => {
+      CanvasRunner.gc();
+    });
 }
 
 self.addEventListener("message", (e) => {
@@ -23,15 +22,16 @@ self.addEventListener("message", (e) => {
     postMessage("loaded");
   }
   if (e.data == "start") {
-    offscreenCanvasToBlobOnWorker();
+    offscreenCanvasToBlobOnWorker;
   }
 });
 </script>
 
 <script>
-var isDone = false;
-
-function invokeToBlobInWorker() {
+  var myCanvas = document.createElement("canvas");
+  var context = myCanvas.getContext("2d");
+  var colourCounter = 0;
+  function invokeToBlobInWorker() {
     const worker = new Worker(
         URL.createObjectURL(
             new Blob(
@@ -40,32 +40,23 @@ function invokeToBlobInWorker() {
             )
         )
     );
+    context.drawImage(myCanvas, 0, 0, 1, 1, 0, 0, 1, 1);
     worker.postMessage("load");
     worker.onmessage = e => {
         if (e.data === "loaded")
             worker.postMessage("start");
-        else {
-            PerfTestRunner.measureValueAsync(e.data);
-            if (!isDone) runTest();
-        }
+        else
+            requestAnimationFrame(invokeToBlobInWorker);
     }
-}
-
-function runTest() {
-    invokeToBlobInWorker();
+    worker.terminate();
+    requestAnimationFrame(invokeToBlobInWorker);
 }
 
 window.onload = function () {
-    PerfTestRunner.startMeasureValuesAsync({
-        unit: 'ms',
-        done: function () {
-            isDone = true;
-        },
-        run: function() {
-            runTest();
-        },
-        description: "Measures the time for executing toBlob in a worker."
-    });
+    document.body.appendChild(myCanvas);
+    context.fillStyle = 'green';
+    context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+    invokeToBlobInWorker();
 };
 </script>
 </body>

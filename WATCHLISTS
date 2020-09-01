@@ -300,13 +300,6 @@
     'blink_bluetooth': {
       'filepath': 'third_party/(WebKit|blink)/.*[Bb]luetooth'
     },
-    'blink_canvas': {
-      'filepath': 'third_party/blink/renderer/core/html/canvas' \
-                  '|third_party/blink/renderer/core/offscreencanvas' \
-                  '|third_party/blink/renderer/core/geometry' \
-                  '|third_party/blink/renderer/modules/canvas' \
-                  '|third_party/blink/renderer/platform/graphics/canvas',
-    },
     'blink_client_hints': {
       'filepath': 'third_party/blink/renderer/core/loader/accept_client_hints*' \
                   '|third_party/blink/renderer/core/loader/frame_fetch_context*' \
@@ -2179,7 +2172,6 @@
     'blink_bluetooth': ['mattreynolds+watch@chromium.org',
                         'ortuno+watch@chromium.org',
                         'odejesush+watch@chromium.org'],
-    'blink_canvas': ['fserb+watch@chromium.org'],
     'blink_client_hints': ['yoavweiss@chromium.org'],
     'blink_clipboard': ['dcheng@chromium.org'],
     'blink_common': ['jbroman+watch@chromium.org',

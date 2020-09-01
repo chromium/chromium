@@ -7,9 +7,6 @@
             "blink_perf.bindings": {
                 "abridged": false
             },
-            "blink_perf.canvas": {
-                "abridged": false
-            },
             "blink_perf.css": {
                 "end": 10,
                 "abridged": false

@@ -137,9 +137,19 @@ class SheetsRender(SimpleCanvasPage):
   URL = 'file://../simple_canvas/sheets_render.html'
 
 
+class ToBlobDuration(SimpleCanvasPage):
+  BASE_NAME = 'toBlob_duration.html'
+  URL = 'file://../simple_canvas/toBlob_duration.html'
+
+
 class ToBlobDurationJpeg(SimpleCanvasPage):
   BASE_NAME = 'toBlob_duration_jpeg.html'
   URL = 'file://../simple_canvas/toBlob_duration_jpeg.html'
+
+
+class ToBlobSmallCanvasInWorker(SimpleCanvasPage):
+  BASE_NAME = 'toBlob_small_canvas_in_worker.html'
+  URL = 'file://../simple_canvas/toBlob_small_canvas_in_worker.html'
 
 
 class TransferFromImageBitmap(SimpleCanvasPage):
