@@ -103,14 +103,13 @@ static const size_t kBytesRequiredForMagic = 42;
 
 struct MagicNumber {
   const char* const mime_type;
-  const char* const magic;
-  size_t magic_len;
+  const base::StringPiece magic;
   bool is_string;
   const char* const mask;  // if set, must have same length as |magic|
 };
 
 #define MAGIC_NUMBER(mime_type, magic) \
-  { (mime_type), (magic), sizeof(magic)-1, false, NULL }
+  { (mime_type), base::StringPiece((magic), sizeof(magic) - 1), false, nullptr }
 
 template <int MagicSize, int MaskSize>
 class VerifySizes {
@@ -123,12 +122,15 @@ class VerifySizes {
 #define verified_sizeof(magic, mask) \
 VerifySizes<sizeof(magic), sizeof(mask)>::SIZES
 
-#define MAGIC_MASK(mime_type, magic, mask) \
-  { (mime_type), (magic), verified_sizeof(magic, mask)-1, false, (mask) }
+#define MAGIC_MASK(mime_type, magic, mask)                                     \
+  {                                                                            \
+    (mime_type), base::StringPiece((magic), verified_sizeof(magic, mask) - 1), \
+        false, (mask)                                                          \
+  }
 
 // Magic strings are case insensitive and must not include '\0' characters
 #define MAGIC_STRING(mime_type, magic) \
-  { (mime_type), (magic), sizeof(magic)-1, true, NULL }
+  { (mime_type), base::StringPiece((magic), sizeof(magic) - 1), true, nullptr }
 
 static const MagicNumber kMagicNumbers[] = {
   // Source: HTML 5 specification
@@ -197,12 +199,11 @@ enum OfficeDocType {
 
 struct OfficeExtensionType {
   OfficeDocType doc_type;
-  const char* const extension;
-  size_t extension_len;
+  const base::StringPiece extension;
 };
 
 #define OFFICE_EXTENSION(type, extension) \
-  { (type), (extension), sizeof(extension) - 1 }
+  { (type), base::StringPiece((extension), sizeof(extension) - 1) }
 
 static const OfficeExtensionType kOfficeExtensionTypes[] = {
   OFFICE_EXTENSION(DOC_TYPE_WORD, ".doc"),
@@ -310,26 +311,24 @@ static bool MagicMaskCmp(base::StringPiece content,
 static bool MatchMagicNumber(base::StringPiece content,
                              const MagicNumber& magic_entry,
                              std::string* result) {
-  const size_t magic_len = magic_entry.magic_len;
-
   // Keep kBytesRequiredForMagic honest.
-  DCHECK_LE(magic_len, kBytesRequiredForMagic);
+  DCHECK_LE(magic_entry.magic.length(), kBytesRequiredForMagic);
 
   bool match = false;
-  base::StringPiece magic_string(magic_entry.magic, magic_len);
-  if (content.length() >= magic_len) {
+  if (content.length() >= magic_entry.magic.length()) {
     if (magic_entry.is_string) {
       // Consistency check - string entries should have no embedded nulls.
-      DCHECK_EQ(strlen(magic_entry.magic), magic_len);
+      DCHECK_EQ(base::StringPiece::npos, magic_entry.magic.find('\0'));
 
       // Do a case-insensitive prefix comparison.
-      match = base::StartsWith(content, magic_string,
+      match = base::StartsWith(content, magic_entry.magic,
                                base::CompareCase::INSENSITIVE_ASCII);
     } else if (!magic_entry.mask) {
-      match = MagicCmp(content, magic_string);
+      match = MagicCmp(content, magic_entry.magic);
     } else {
-      base::StringPiece magic_mask(magic_entry.mask, magic_len);
-      match = MagicMaskCmp(content, magic_string, magic_mask);
+      base::StringPiece magic_mask(magic_entry.mask,
+                                   magic_entry.magic.length());
+      match = MagicMaskCmp(content, magic_entry.magic, magic_mask);
     }
   }
 
@@ -408,14 +407,8 @@ static bool SniffForOfficeDocs(base::StringPiece content,
   OfficeDocType type = DOC_TYPE_NONE;
   base::StringPiece url_path = url.path_piece();
   for (const auto& office_extension : kOfficeExtensionTypes) {
-    if (url_path.length() < office_extension.extension_len)
-      continue;
-
-    base::StringPiece extension =
-        url_path.substr(url_path.length() - office_extension.extension_len);
-    if (base::EqualsCaseInsensitiveASCII(
-            extension, base::StringPiece(office_extension.extension,
-                                         office_extension.extension_len))) {
+    if (base::EndsWith(url_path, office_extension.extension,
+                       base::CompareCase::INSENSITIVE_ASCII)) {
       type = office_extension.doc_type;
       break;
     }
@@ -510,10 +503,10 @@ static bool SniffForInvalidOfficeDocs(base::StringPiece content,
   return true;
 }
 
-// Byte order marks
+// Tags that indicate the content is likely XML.
 static const MagicNumber kMagicXML[] = {
-  MAGIC_STRING("application/atom+xml", "<feed"),
-  MAGIC_STRING("application/rss+xml", "<rss"),  // UTF-8
+    MAGIC_STRING("application/atom+xml", "<feed"),
+    MAGIC_STRING("application/rss+xml", "<rss"),
 };
 
 // Returns true and sets result if the content appears to contain XHTML or a
@@ -541,20 +534,15 @@ static bool SniffXML(base::StringPiece content,
     if (pos == base::StringPiece::npos)
       return false;
 
+    base::StringPiece current = content.substr(pos);
+
+    // Skip XML and DOCTYPE declarations.
     static constexpr base::StringPiece kXmlPrefix("<?xml");
     static constexpr base::StringPiece kDocTypePrefix("<!DOCTYPE");
-
-    base::StringPiece current = content.substr(pos);
-    if (base::EqualsCaseInsensitiveASCII(current.substr(0, kXmlPrefix.size()),
-                                         kXmlPrefix)) {
-      // Skip XML declarations.
-      ++pos;
-      continue;
-    }
-
-    if (base::EqualsCaseInsensitiveASCII(
-            current.substr(0, kDocTypePrefix.size()), kDocTypePrefix)) {
-      // Skip DOCTYPE declarations.
+    if (base::StartsWith(current, kXmlPrefix,
+                         base::CompareCase::INSENSITIVE_ASCII) ||
+        base::StartsWith(current, kDocTypePrefix,
+                         base::CompareCase::INSENSITIVE_ASCII)) {
       ++pos;
       continue;
     }
