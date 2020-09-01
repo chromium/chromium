@@ -153,6 +153,10 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
     'timezone', 'memory', 'backlight', 'fan', 'stateful-partition', 'bluetooth'
   ]);
 
+  // Rounded down to the nearest 100MiB due to privacy requirement.
+  const availableSpace =
+      Math.floor(1125899906842624 / (100 * 1024 * 1024)) * (100 * 1024 * 1024);
+
   assertDeepEquals(response, {
     batteryResult: {
       batteryInfo: {
@@ -245,6 +249,12 @@ UNTRUSTED_TEST('UntrustedRequestTelemetryInfo', async () => {
       fanInfo: [{
         speedRpm: 999880912,
       }]
+    },
+    statefulPartitionResult: {
+      partitionInfo: {
+        availableSpace: availableSpace,
+        totalSpace: 1125900006842624,
+      }
     }
   });
 });

@@ -297,6 +297,15 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
     telemetry_info->fan_result =
         chromeos::cros_healthd::mojom::FanResult::NewFanInfo(std::move(infos));
   }
+  {
+    auto partition_info =
+        chromeos::cros_healthd::mojom::StatefulPartitionInfo::New();
+    partition_info->available_space = 1125899906842624;
+    partition_info->total_space = 1125900006842624;
+
+    telemetry_info->stateful_partition_result = chromeos::cros_healthd::mojom::
+        StatefulPartitionResult::NewPartitionInfo(std::move(partition_info));
+  }
 
   DCHECK(chromeos::cros_healthd::FakeCrosHealthdClient::Get());
 
