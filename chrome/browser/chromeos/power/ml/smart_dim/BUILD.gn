@@ -4,6 +4,7 @@
 
 source_set("smart_dim") {
   public = [
+    "metrics.h",
     "ml_agent.h",
     "model.h",
     "model_impl.h",
@@ -15,7 +16,6 @@ source_set("smart_dim") {
     "download_worker.cc",
     "download_worker.h",
     "metrics.cc",
-    "metrics.h",
     "ml_agent.cc",
     "ml_agent.h",
     "ml_agent_util.cc",

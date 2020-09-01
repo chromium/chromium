@@ -18,7 +18,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/browser/chromeos/power/ml/smart_dim/download_worker.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/metrics.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/ml_agent.h"
 #include "chromeos/constants/chromeos_features.h"
