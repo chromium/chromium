@@ -303,13 +303,16 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     }
   }
 
-  void SetTableCellAlignmentBaseline(LayoutUnit table_cell_alignment_baseline) {
+  void SetTableCellAlignmentBaseline(
+      const base::Optional<LayoutUnit>& table_cell_alignment_baseline) {
 #if DCHECK_IS_ON()
     DCHECK(!is_table_cell_alignment_baseline_set_);
     is_table_cell_alignment_baseline_set_ = true;
 #endif
-    space_.EnsureRareData()->SetTableCellAlignmentBaseline(
-        table_cell_alignment_baseline);
+    if (is_in_parallel_flow_ && table_cell_alignment_baseline) {
+      space_.EnsureRareData()->SetTableCellAlignmentBaseline(
+          *table_cell_alignment_baseline);
+    }
   }
 
   void SetTableCellColumnIndex(wtf_size_t column_index) {
@@ -318,6 +321,14 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     is_table_cell_column_index_set_ = true;
 #endif
     space_.EnsureRareData()->SetTableCellColumnIndex(column_index);
+  }
+
+  void SetIsTableCellHiddenForPaint(bool is_hidden_for_paint) {
+#if DCHECK_IS_ON()
+    DCHECK(!is_table_cell_hidden_for_paint_set_);
+    is_table_cell_hidden_for_paint_set_ = true;
+#endif
+    space_.EnsureRareData()->SetIsTableCellHiddenForPaint(is_hidden_for_paint);
   }
 
   void SetTableCellChildLayoutMode(
@@ -437,6 +448,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   bool is_table_cell_intrinsic_padding_set_ = false;
   bool is_table_cell_alignment_baseline_set_ = false;
   bool is_table_cell_column_index_set_ = false;
+  bool is_table_cell_hidden_for_paint_set_ = false;
   bool is_custom_layout_data_set_ = false;
   bool is_lines_until_clamp_set_ = false;
   bool is_table_row_data_set_ = false;

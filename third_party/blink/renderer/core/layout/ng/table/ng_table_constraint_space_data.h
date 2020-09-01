@@ -22,12 +22,16 @@ class NGTableConstraintSpaceData
  public:
   // Table grid columns are used to compute cell geometry.
   struct ColumnLocation {
-    ColumnLocation(LayoutUnit offset, LayoutUnit inline_size)
-        : offset(offset), inline_size(inline_size) {}
-    LayoutUnit offset;
-    LayoutUnit inline_size;
+    ColumnLocation(LayoutUnit offset, LayoutUnit inline_size, bool is_collapsed)
+        : offset(offset),
+          inline_size(inline_size),
+          is_collapsed(is_collapsed) {}
+    const LayoutUnit offset;
+    const LayoutUnit inline_size;
+    const bool is_collapsed;
     bool operator==(const ColumnLocation& other) const {
-      return offset == other.offset && inline_size == other.inline_size;
+      return offset == other.offset && inline_size == other.inline_size &&
+             is_collapsed == other.is_collapsed;
     }
   };
 
