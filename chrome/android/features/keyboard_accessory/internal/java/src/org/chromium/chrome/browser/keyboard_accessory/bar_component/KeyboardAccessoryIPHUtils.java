@@ -30,9 +30,9 @@ class KeyboardAccessoryIPHUtils {
      * @param feature The feature to emit a filling event for. Fails if no event to emit.
      */
     static void emitFillingEvent(String feature) {
-        // TODO(https://crbug.com/1041781): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It is wrong and need to be
-        // fixed not to cause data leakage from incognito to regular profile.
+        // TODO(https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+        // incognito profile) instead of always using regular profile. It works correctly now,
+        // but it is not safe.
         final Tracker tracker =
                 TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         if (!tracker.isInitialized()) return;
@@ -60,9 +60,9 @@ class KeyboardAccessoryIPHUtils {
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
      */
     static void showHelpBubble(String feature, ChipView view, View rootView) {
-        // TODO(https://crbug.com/1041781): Use the current profile (i.e., regular profile or
-        // incognito profile) instead of always using regular profile. It is wrong and need to be
-        // fixed not to cause data leakage from incognito to regular profile.
+        // TODO(https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+        // incognito profile) instead of always using regular profile. It works correctly now,
+        // but it is not safe.
         final Tracker tracker =
                 TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
         if (!tracker.isInitialized()) return;
