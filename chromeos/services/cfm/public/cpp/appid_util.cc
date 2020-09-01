@@ -10,7 +10,7 @@ namespace chromeos {
 namespace cfm {
 
 namespace {
-// List of whitelisted internal App IDs for CfM.
+// List of allowed internal App IDs for CfM.
 constexpr char const* kInternalHotrodAppIds[] = {
     "moklfjoegmpoolceggbebbmgbddlhdgp",  // Stable
     "ldmpofkllgeicjiihkimgeccbhghhmfj",  // Beta
@@ -19,7 +19,7 @@ constexpr char const* kInternalHotrodAppIds[] = {
     // Keep in sync with app_info.ts (go/googlehotrodappids).
 };
 
-// List of whitelisted external App IDs for CfM.
+// List of allowed external App IDs for CfM.
 constexpr char const* kExternalHotrodAppIds[] = {
     "ikfcpmgefdpheiiomgmhlmmkihchmdlj",  // Stable
     "jlgegmdnodfhciolbdjciihnlaljdbjo",  // Beta
