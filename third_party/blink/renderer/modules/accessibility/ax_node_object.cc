@@ -1650,31 +1650,9 @@ String AXNodeObject::AutoComplete() const {
   return String();
 }
 
-namespace {
-
-bool MarkerTypeIsUsedForAccessibility(DocumentMarker::MarkerType type) {
-  return DocumentMarker::MarkerTypes(
-             DocumentMarker::kSpelling | DocumentMarker::kGrammar |
-             DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
-             DocumentMarker::kSuggestion | DocumentMarker::kTextFragment)
-      .Contains(type);
-}
-
-base::Optional<DocumentMarker::MarkerType> GetAriaSpellingOrGrammarMarker(
-    const AXObject& obj) {
-  const AtomicString& attribute_value =
-      obj.GetAOMPropertyOrARIAAttribute(AOMStringProperty::kInvalid);
-  if (EqualIgnoringASCIICase(attribute_value, "spelling"))
-    return DocumentMarker::kSpelling;
-  else if (EqualIgnoringASCIICase(attribute_value, "grammar"))
-    return DocumentMarker::kGrammar;
-  return base::nullopt;
-}
-
-}  // namespace
-
-void AXNodeObject::Markers(Vector<DocumentMarker::MarkerType>& marker_types,
-                           Vector<AXRange>& marker_ranges) const {
+void AXNodeObject::GetDocumentMarkers(
+    Vector<DocumentMarker::MarkerType>* marker_types,
+    Vector<AXRange>* marker_ranges) const {
   if (!GetNode() || !GetDocument() || !GetDocument()->View())
     return;
 
@@ -1683,34 +1661,23 @@ void AXNodeObject::Markers(Vector<DocumentMarker::MarkerType>& marker_types,
     return;
 
   // First use ARIA markers for spelling/grammar if available.
-  // As an optimization, only checks until the nearest block-like ancestor.
-  AXObject* ax_ancestor = ParentObjectUnignored();
-  base::Optional<DocumentMarker::MarkerType> aria_marker;
-  while (ax_ancestor) {
-    aria_marker = GetAriaSpellingOrGrammarMarker(*ax_ancestor);
-    if (aria_marker)
-      break;  // Result obtained.
-    if (ax_ancestor->GetNode()) {
-      if (const ComputedStyle* style =
-              ax_ancestor->GetNode()->GetComputedStyle()) {
-        if (style->IsDisplayBlockContainer())
-          break;  // Do not go higher than block container.
-      }
-    }
-    ax_ancestor = ax_ancestor->ParentObjectUnignored();
-  }
-  if (aria_marker) {
-    marker_types.push_back(aria_marker.value());
-    marker_ranges.push_back(AXRange::RangeOfContents(*this));
+  base::Optional<DocumentMarker::MarkerType> aria_marker_type =
+      GetAriaSpellingOrGrammarMarker();
+  if (aria_marker_type) {
+    marker_types->push_back(aria_marker_type.value());
+    marker_ranges->push_back(AXRange::RangeOfContents(*this));
   }
 
   DocumentMarkerController& marker_controller = GetDocument()->Markers();
-  DocumentMarkerVector markers = marker_controller.MarkersFor(*text_node);
-  for (DocumentMarker* marker : markers) {
-    if (!MarkerTypeIsUsedForAccessibility(marker->GetType()) ||
-        aria_marker == marker->GetType()) {
+  const DocumentMarker::MarkerTypes markers_used_by_accessibility(
+      DocumentMarker::kSpelling | DocumentMarker::kGrammar |
+      DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
+      DocumentMarker::kSuggestion | DocumentMarker::kTextFragment);
+  const DocumentMarkerVector markers =
+      marker_controller.MarkersFor(*text_node, markers_used_by_accessibility);
+  for (const DocumentMarker* marker : markers) {
+    if (aria_marker_type == marker->GetType())
       continue;
-    }
 
     const Position start_position(*GetNode(), marker->StartOffset());
     const Position end_position(*GetNode(), marker->EndOffset());
@@ -1719,8 +1686,8 @@ void AXNodeObject::Markers(Vector<DocumentMarker::MarkerType>& marker_types,
       continue;
     }
 
-    marker_types.push_back(marker->GetType());
-    marker_ranges.emplace_back(
+    marker_types->push_back(marker->GetType());
+    marker_ranges->emplace_back(
         AXPosition::FromPosition(start_position, TextAffinity::kDownstream,
                                  AXPositionAdjustmentBehavior::kMoveLeft),
         AXPosition::FromPosition(end_position, TextAffinity::kDownstream,

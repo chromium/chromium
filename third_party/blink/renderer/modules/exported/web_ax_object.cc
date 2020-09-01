@@ -1371,9 +1371,9 @@ void WebAXObject::Markers(WebVector<ax::mojom::MarkerType>& types,
   if (IsDetached())
     return;
 
-  Vector<DocumentMarker::MarkerType> marker_types;
-  Vector<AXRange> marker_ranges;
-  private_->Markers(marker_types, marker_ranges);
+  VectorOf<DocumentMarker::MarkerType> marker_types;
+  VectorOf<AXRange> marker_ranges;
+  private_->GetDocumentMarkers(&marker_types, &marker_ranges);
   DCHECK_EQ(marker_types.size(), marker_ranges.size());
 
   WebVector<ax::mojom::MarkerType> web_marker_types(marker_types.size());

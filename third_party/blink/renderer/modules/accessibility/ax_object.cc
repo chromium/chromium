@@ -2290,8 +2290,39 @@ AccessibilityOrientation AXObject::Orientation() const {
   return kAccessibilityOrientationUndefined;
 }
 
-void AXObject::Markers(Vector<DocumentMarker::MarkerType>&,
-                       Vector<AXRange>&) const {}
+void AXObject::LoadInlineTextBoxes() {}
+
+AXObject* AXObject::NextOnLine() const {
+  return nullptr;
+}
+
+AXObject* AXObject::PreviousOnLine() const {
+  return nullptr;
+}
+
+base::Optional<const DocumentMarker::MarkerType>
+AXObject::GetAriaSpellingOrGrammarMarker() const {
+  AtomicString aria_invalid_value;
+  const AncestorsIterator iter = std::find_if(
+      UnignoredAncestorsBegin(), UnignoredAncestorsEnd(),
+      [&aria_invalid_value](const AXObject& ancestor) {
+        return ancestor.HasAOMPropertyOrARIAAttribute(
+                   AOMStringProperty::kInvalid, aria_invalid_value) ||
+               ancestor.IsLineBreakingObject();
+      });
+
+  if (iter == UnignoredAncestorsEnd())
+    return base::nullopt;
+  if (EqualIgnoringASCIICase(aria_invalid_value, "spelling"))
+    return DocumentMarker::kSpelling;
+  if (EqualIgnoringASCIICase(aria_invalid_value, "grammar"))
+    return DocumentMarker::kGrammar;
+  return base::nullopt;
+}
+
+void AXObject::GetDocumentMarkers(
+    VectorOf<DocumentMarker::MarkerType>* marker_types,
+    VectorOf<AXRange>* marker_ranges) const {}
 
 void AXObject::TextCharacterOffsets(Vector<int>&) const {}
 

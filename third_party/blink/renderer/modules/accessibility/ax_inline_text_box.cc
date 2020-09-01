@@ -30,7 +30,11 @@
 
 #include <utility>
 
+#include "base/numerics/clamped_math.h"
 #include "base/optional.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -228,6 +232,82 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
     return ax_object_cache_->GetOrCreate(previous_on_line.get());
 
   return nullptr;
+}
+
+void AXInlineTextBox::GetDocumentMarkers(
+    Vector<DocumentMarker::MarkerType>* marker_types,
+    Vector<AXRange>* marker_ranges) const {
+  if (IsDetached())
+    return;
+
+  int text_length = TextLength();
+  if (!text_length)
+    return;
+  const auto ax_range = AXRange::RangeOfContents(*this);
+
+  // First use ARIA markers for spelling/grammar if available.
+  base::Optional<DocumentMarker::MarkerType> aria_marker_type =
+      GetAriaSpellingOrGrammarMarker();
+  if (aria_marker_type) {
+    marker_types->push_back(aria_marker_type.value());
+    marker_ranges->push_back(ax_range);
+  }
+
+  DocumentMarkerController& marker_controller = GetDocument()->Markers();
+  const Position dom_range_start =
+      ax_range.Start().ToPosition(AXPositionAdjustmentBehavior::kMoveLeft);
+  const Position dom_range_end =
+      ax_range.End().ToPosition(AXPositionAdjustmentBehavior::kMoveRight);
+  if (dom_range_start.IsNull() || dom_range_end.IsNull())
+    return;
+
+  const EphemeralRangeInFlatTree dom_range(
+      ToPositionInFlatTree(dom_range_start),
+      ToPositionInFlatTree(dom_range_end));
+  DCHECK(dom_range.IsNotNull());
+  const DocumentMarker::MarkerTypes markers_used_by_accessibility(
+      DocumentMarker::kSpelling | DocumentMarker::kGrammar |
+      DocumentMarker::kTextMatch | DocumentMarker::kActiveSuggestion |
+      DocumentMarker::kSuggestion | DocumentMarker::kTextFragment);
+  // "MarkersIntersectingRange" performs a binary search through the document
+  // markers list for markers in the given range and of the given types. It
+  // should be of a logarithmic complexity.
+  const VectorOfPairs<const Text, DocumentMarker> node_marker_pairs =
+      marker_controller.MarkersIntersectingRange(dom_range,
+                                                 markers_used_by_accessibility);
+  const int start_text_offset_in_parent = TextOffsetInContainer(0);
+  for (const auto& node_marker_pair : node_marker_pairs) {
+    DCHECK_EQ(GetNode(), node_marker_pair.first);
+    const DocumentMarker* marker = node_marker_pair.second;
+
+    if (aria_marker_type == marker->GetType())
+      continue;
+
+    // The document markers are represented by DOM offsets in this object's
+    // static text parent. We need to translate to text offsets in the
+    // accessibility tree, first in this object's parent and then to local text
+    // offsets.
+    const auto start_position = AXPosition::FromPosition(
+        Position(*GetNode(), marker->StartOffset()), TextAffinity::kDownstream,
+        AXPositionAdjustmentBehavior::kMoveLeft);
+    const auto end_position = AXPosition::FromPosition(
+        Position(*GetNode(), marker->EndOffset()), TextAffinity::kDownstream,
+        AXPositionAdjustmentBehavior::kMoveRight);
+    if (!start_position.IsValid() || !end_position.IsValid())
+      continue;
+
+    const int local_start_offset = base::ClampMax(
+        start_position.TextOffset() - start_text_offset_in_parent, 0);
+    DCHECK_LE(local_start_offset, text_length);
+    const int local_end_offset = base::ClampMin(
+        end_position.TextOffset() - start_text_offset_in_parent, text_length);
+    DCHECK_GE(local_end_offset, 0);
+
+    marker_types->push_back(marker->GetType());
+    marker_ranges->emplace_back(
+        AXPosition::CreatePositionInTextObject(*this, local_start_offset),
+        AXPosition::CreatePositionInTextObject(*this, local_end_offset));
+  }
 }
 
 void AXInlineTextBox::Init() {}

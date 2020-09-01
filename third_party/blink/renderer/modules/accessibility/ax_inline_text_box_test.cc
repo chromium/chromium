@@ -5,7 +5,12 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -36,6 +41,107 @@ TEST_P(ParameterizedAccessibilityTest, GetWordBoundaries) {
   ax_inline_text_box->GetWordBoundaries(word_starts, word_ends);
   EXPECT_EQ(expected_word_starts, word_starts);
   EXPECT_EQ(expected_word_ends, word_ends);
+}
+
+TEST_P(ParameterizedAccessibilityTest, GetDocumentMarkers) {
+  // There should be four inline text boxes in the following paragraph.
+  SetBodyInnerHTML(R"HTML(
+      <style>* { font-size: 10px; }</style>
+      <p id="paragraph" style="width: 10ch;">
+        Misspelled text with a grammar error.
+      </p>)HTML");
+
+  const Node* text = GetElementById("paragraph")->firstChild();
+  ASSERT_NE(nullptr, text);
+  ASSERT_TRUE(text->IsTextNode());
+
+  // Mark the part of the paragraph that says "Misspelled text" with a spelling
+  // marker, and the part that says "a grammar error" with a grammar marker.
+  //
+  // Note that the inline text boxes and the markers do not occupy the same text
+  // range. The ranges simply overlap. Also note that the marker ranges include
+  // non-collapsed white space found in the DOM.
+  DocumentMarkerController& marker_controller = GetDocument().Markers();
+  const EphemeralRange misspelled_range(Position(text, 9), Position(text, 24));
+  marker_controller.AddSpellingMarker(misspelled_range);
+  const EphemeralRange grammar_range(Position(text, 30), Position(text, 45));
+  marker_controller.AddGrammarMarker(grammar_range);
+
+  AXObject* ax_paragraph = GetAXObjectByElementId("paragraph");
+  ASSERT_NE(nullptr, ax_paragraph);
+  ASSERT_EQ(ax::mojom::Role::kParagraph, ax_paragraph->RoleValue());
+  ax_paragraph->LoadInlineTextBoxes();
+
+  // kStaticText: "Misspelled text with a grammar error.".
+  const AXObject* ax_text = ax_paragraph->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, ax_text);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, ax_text->RoleValue());
+  ASSERT_EQ(4, ax_text->ChildCountIncludingIgnored());
+
+  // For each inline text box, angle brackets indicate where the marker starts
+  // and ends respectively.
+
+  // kInlineTextBox: "<Misspelled >".
+  AXObject* ax_inline_text_box = ax_text->ChildAtIncludingIgnored(0);
+  ASSERT_NE(nullptr, ax_inline_text_box);
+  VectorOf<DocumentMarker::MarkerType> marker_types;
+  VectorOf<AXRange> marker_ranges;
+  ax_inline_text_box->GetDocumentMarkers(&marker_types, &marker_ranges);
+  EXPECT_EQ((VectorOf<DocumentMarker::MarkerType>{DocumentMarker::kSpelling}),
+            marker_types);
+  EXPECT_EQ(
+      (VectorOf<AXRange>{AXRange(
+          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 0),
+          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 11))}),
+      marker_ranges);
+
+  // kInlineTextBox: "<text> with <a >".
+  ax_inline_text_box = ax_text->ChildAtIncludingIgnored(1);
+  ASSERT_NE(nullptr, ax_inline_text_box);
+  marker_types.clear();
+  marker_ranges.clear();
+  ax_inline_text_box->GetDocumentMarkers(&marker_types, &marker_ranges);
+  EXPECT_EQ((VectorOf<DocumentMarker::MarkerType>{DocumentMarker::kSpelling,
+                                                  DocumentMarker::kGrammar}),
+            marker_types);
+  EXPECT_EQ(
+      (VectorOf<AXRange>{
+          AXRange(
+              AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 0),
+              AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 4)),
+          AXRange(
+              AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 10),
+              AXPosition::CreatePositionInTextObject(*ax_inline_text_box,
+                                                     12))}),
+      marker_ranges);
+
+  // kInlineTextBox: "<grammar >".
+  ax_inline_text_box = ax_text->ChildAtIncludingIgnored(2);
+  ASSERT_NE(nullptr, ax_inline_text_box);
+  marker_types.clear();
+  marker_ranges.clear();
+  ax_inline_text_box->GetDocumentMarkers(&marker_types, &marker_ranges);
+  EXPECT_EQ((VectorOf<DocumentMarker::MarkerType>{DocumentMarker::kGrammar}),
+            marker_types);
+  EXPECT_EQ(
+      (VectorOf<AXRange>{AXRange(
+          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 0),
+          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 8))}),
+      marker_ranges);
+
+  // kInlineTextBox: "<error>.".
+  ax_inline_text_box = ax_text->ChildAtIncludingIgnored(3);
+  ASSERT_NE(nullptr, ax_inline_text_box);
+  marker_types.clear();
+  marker_ranges.clear();
+  ax_inline_text_box->GetDocumentMarkers(&marker_types, &marker_ranges);
+  EXPECT_EQ((VectorOf<DocumentMarker::MarkerType>{DocumentMarker::kGrammar}),
+            marker_types);
+  EXPECT_EQ(
+      (VectorOf<AXRange>{AXRange(
+          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 0),
+          AXPosition::CreatePositionInTextObject(*ax_inline_text_box, 5))}),
+      marker_ranges);
 }
 
 TEST_P(ParameterizedAccessibilityTest, TextOffsetInContainerWithASpan) {

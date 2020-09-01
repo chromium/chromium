@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_NODE_OBJECT_H_
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
@@ -136,8 +137,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool CanvasHasFallbackContent() const final;
   int HeadingLevel() const final;
   unsigned HierarchicalLevel() const final;
-  void Markers(Vector<DocumentMarker::MarkerType>&,
-               Vector<AXRange>&) const override;
+  void GetDocumentMarkers(Vector<DocumentMarker::MarkerType>* marker_types,
+                          Vector<AXRange>* marker_ranges) const override;
   AXObject* InPageLinkTarget() const override;
   AccessibilityOrientation Orientation() const override;
   AXObjectVector RadioButtonsInGroup() const override;

@@ -30,6 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_INLINE_TEXT_BOX_H_
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 
@@ -62,6 +63,8 @@ class AXInlineTextBox final : public AXObject {
   Node* GetNode() const override;
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
+  void GetDocumentMarkers(Vector<DocumentMarker::MarkerType>* marker_types,
+                          Vector<AXRange>* marker_ranges) const override;
 
  protected:
   void Init() override;

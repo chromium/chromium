@@ -692,16 +692,26 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Load inline text boxes for just this node, even if
   // settings->inlineTextBoxAccessibilityEnabled() is false.
-  virtual void LoadInlineTextBoxes() {}
+  virtual void LoadInlineTextBoxes();
 
   // Walk the AXObjects on the same line.
-  virtual AXObject* NextOnLine() const { return nullptr; }
-  virtual AXObject* PreviousOnLine() const { return nullptr; }
+  virtual AXObject* NextOnLine() const;
+  virtual AXObject* PreviousOnLine() const;
 
-  // For all node objects. The start and end character offset of each
-  // marker, such as spelling or grammar error.
-  virtual void Markers(Vector<DocumentMarker::MarkerType>&,
-                       Vector<AXRange>&) const;
+  // Searches the object's ancestors for an aria-invalid attribute of type
+  // spelling or grammar, and returns a document marker representing the value
+  // of this attribute. As an optimization, goes up until the deepest line
+  // breaking object which, in most cases, is the paragraph containing this
+  // object.
+  base::Optional<const DocumentMarker::MarkerType>
+  GetAriaSpellingOrGrammarMarker() const;
+
+  // For all node and inline text box objects. The start and end character
+  // offset of each document marker, such as spelling or grammar error expressed
+  // as an AXRange.
+  virtual void GetDocumentMarkers(
+      Vector<DocumentMarker::MarkerType>* marker_types,
+      Vector<AXRange>* marker_ranges) const;
 
   // For all inline text objects: Returns the horizontal pixel offset of each
   // character in the object's text, rounded to the nearest integer. Negative

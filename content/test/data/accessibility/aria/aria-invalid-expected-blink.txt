@@ -4,20 +4,20 @@ rootWebArea
 ++++++genericContainer invalidState=true
 ++++++++staticText name='invalid=true'
 ++++++++++inlineTextBox name='invalid=true'
-++++++textField value='An eror via invalid=spelling'
+++++++textField value='An error via invalid=spelling'
 ++++++++staticText name='An '
 ++++++++++inlineTextBox name='An '
 ++++++++genericContainer ariaInvalidValue='spelling' invalidState=other
-++++++++++staticText name='eror' markerTypes=1 markerStarts=0 markerEnds=4
-++++++++++++inlineTextBox name='eror'
+++++++++++staticText name='error' markerTypes=1 markerStarts=0 markerEnds=5
+++++++++++++inlineTextBox name='error' markerTypes=1 markerStarts=0 markerEnds=5
 ++++++++staticText name=' via invalid=spelling'
 ++++++++++inlineTextBox name=' via invalid=spelling'
-++++++textField value='An errors via invalid=grammar'
+++++++textField value='An error via invalid=grammar'
 ++++++++staticText name='An '
 ++++++++++inlineTextBox name='An '
 ++++++++genericContainer ariaInvalidValue='grammar' invalidState=other
-++++++++++staticText name='errors' markerTypes=2 markerStarts=0 markerEnds=6
-++++++++++++inlineTextBox name='errors'
+++++++++++staticText name='error' markerTypes=2 markerStarts=0 markerEnds=5
+++++++++++++inlineTextBox name='error' markerTypes=2 markerStarts=0 markerEnds=5
 ++++++++staticText name=' via invalid=grammar'
 ++++++++++inlineTextBox name=' via invalid=grammar'
 ++++++genericContainer invalidState=false
