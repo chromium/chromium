@@ -397,7 +397,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
   #override
   def SetUp(self):
     @local_device_environment.handle_shard_failures_with(
-        on_failure=self._env.BlacklistDevice)
+        on_failure=self._env.DenylistDevice)
     @trace_event.traced
     def individual_device_set_up(device, host_device_tuples):
       def install_apk(dev):
@@ -510,7 +510,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     # test list so that tests can be split up and run in batches rather than all
     # at once (since test output is not streamed).
     @local_device_environment.handle_shard_failures_with(
-        on_failure=self._env.BlacklistDevice)
+        on_failure=self._env.DenylistDevice)
     def list_tests(dev):
       timeout = 30
       retries = 1

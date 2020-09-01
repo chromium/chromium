@@ -165,7 +165,7 @@ class LocalDeviceInstrumentationTestRun(
     target_package = _GetTargetPackageName(self._test_instance.test_apk)
 
     @local_device_environment.handle_shard_failures_with(
-        self._env.BlacklistDevice)
+        self._env.DenylistDevice)
     @trace_event.traced
     def individual_device_set_up(device, host_device_tuples):
       steps = []
@@ -404,7 +404,7 @@ class LocalDeviceInstrumentationTestRun(
       return
 
     @local_device_environment.handle_shard_failures_with(
-        self._env.BlacklistDevice)
+        self._env.DenylistDevice)
     @trace_event.traced
     def individual_device_tear_down(dev):
       if str(dev) in self._flag_changers:

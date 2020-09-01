@@ -144,7 +144,7 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
     enable_device_cache: Whether to enable on-device caching of checksums.
     use_concurrency: Whether to speed things up using multiple threads.
     permissions: A list of the permissions to grant, or None to grant all
-                 non-blacklisted permissions in the manifest.
+                 non-denylisted permissions in the manifest.
   """
   if isinstance(install_json, basestring):
     with open(install_json) as f:

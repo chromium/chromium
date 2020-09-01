@@ -257,10 +257,14 @@ def AddDeviceOptions(parser):
       type=os.path.realpath,
       help='Specify the absolute path of the adb binary that '
            'should be used.')
-  parser.add_argument(
-      '--blacklist-file',
-      type=os.path.realpath,
-      help='Device blacklist file.')
+  # TODO(crbug.com/1097306): Remove this once callers have all switched to
+  # --denylist-file.
+  parser.add_argument('--blacklist-file',
+                      dest='denylist_file',
+                      help=argparse.SUPPRESS)
+  parser.add_argument('--denylist-file',
+                      type=os.path.realpath,
+                      help='Device denylist file.')
   parser.add_argument(
       '-d', '--device', nargs='+',
       dest='test_devices',

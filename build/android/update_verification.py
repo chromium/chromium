@@ -31,7 +31,7 @@ import sys
 import devil_chromium
 
 from devil.android import apk_helper
-from devil.android import device_blacklist
+from devil.android import device_denylist
 from devil.android import device_errors
 from devil.android import device_utils
 from devil.utils import run_tests_helper
@@ -63,7 +63,10 @@ def main():
       description="Script to do semi-automated upgrade testing.")
   parser.add_argument('-v', '--verbose', action='count',
                       help='Print verbose log information.')
-  parser.add_argument('--blacklist-file', help='Device blacklist JSON file.')
+  parser.add_argument('--blacklist-file',
+                      dest='denylist_file',
+                      help=argparse.SUPPRESS)
+  parser.add_argument('--denylist-file', help='Device denylist JSON file.')
   command_parsers = parser.add_subparsers(dest='command')
 
   subparser = command_parsers.add_parser('create_app_data')
@@ -90,11 +93,10 @@ def main():
 
   devil_chromium.Initialize()
 
-  blacklist = (device_blacklist.Blacklist(args.blacklist_file)
-               if args.blacklist_file
-               else None)
+  denylist = (device_denylist.Denylist(args.denylist_file)
+              if args.denylist_file else None)
 
-  devices = device_utils.DeviceUtils.HealthyDevices(blacklist)
+  devices = device_utils.DeviceUtils.HealthyDevices(denylist)
   if not devices:
     raise device_errors.NoDevicesError()
   device = devices[0]

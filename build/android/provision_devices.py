@@ -28,7 +28,7 @@ import _strptime  # pylint: disable=unused-import
 
 import devil_chromium
 from devil.android import battery_utils
-from devil.android import device_blacklist
+from devil.android import device_denylist
 from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import device_utils
@@ -63,11 +63,12 @@ class _PHASES(object):
 
 
 def ProvisionDevices(args):
-  blacklist = (device_blacklist.Blacklist(args.blacklist_file)
-               if args.blacklist_file
-               else None)
-  devices = [d for d in device_utils.DeviceUtils.HealthyDevices(blacklist)
-             if not args.emulators or d.adb.is_emulator]
+  denylist = (device_denylist.Denylist(args.denylist_file)
+              if args.denylist_file else None)
+  devices = [
+      d for d in device_utils.DeviceUtils.HealthyDevices(denylist)
+      if not args.emulators or d.adb.is_emulator
+  ]
   if args.device:
     devices = [d for d in devices if d == args.device]
   if not devices:
@@ -76,19 +77,19 @@ def ProvisionDevices(args):
   if args.emulators:
     parallel_devices.pMap(SetProperties, args)
   else:
-    parallel_devices.pMap(ProvisionDevice, blacklist, args)
+    parallel_devices.pMap(ProvisionDevice, denylist, args)
   if args.auto_reconnect:
     _LaunchHostHeartbeat()
-  blacklisted_devices = blacklist.Read() if blacklist else []
-  if args.output_device_blacklist:
-    with open(args.output_device_blacklist, 'w') as f:
-      json.dump(blacklisted_devices, f)
-  if all(d in blacklisted_devices for d in devices):
+  denylisted_devices = denylist.Read() if denylist else []
+  if args.output_device_denylist:
+    with open(args.output_device_denylist, 'w') as f:
+      json.dump(denylisted_devices, f)
+  if all(d in denylisted_devices for d in devices):
     raise device_errors.NoDevicesError
   return 0
 
 
-def ProvisionDevice(device, blacklist, options):
+def ProvisionDevice(device, denylist, options):
   def should_run_phase(phase_name):
     return not options.phases or phase_name in options.phases
 
@@ -132,17 +133,18 @@ def ProvisionDevice(device, blacklist, options):
     CheckExternalStorage(device)
 
   except device_errors.CommandTimeoutError:
-    logging.exception('Timed out waiting for device %s. Adding to blacklist.',
+    logging.exception('Timed out waiting for device %s. Adding to denylist.',
                       str(device))
-    if blacklist:
-      blacklist.Extend([str(device)], reason='provision_timeout')
+    if denylist:
+      denylist.Extend([str(device)], reason='provision_timeout')
 
   except (device_errors.CommandFailedError,
           device_errors.DeviceUnreachableError):
-    logging.exception('Failed to provision device %s. Adding to blacklist.',
+    logging.exception('Failed to provision device %s. Adding to denylist.',
                       str(device))
-    if blacklist:
-      blacklist.Extend([str(device)], reason='provision_failure')
+    if denylist:
+      denylist.Extend([str(device)], reason='provision_failure')
+
 
 def CheckExternalStorage(device):
   """Checks that storage is writable and if not makes it writable.
@@ -499,7 +501,12 @@ def main():
                       ' (the default is to provision all devices attached)')
   parser.add_argument('--adb-path',
                       help='Absolute path to the adb binary to use.')
-  parser.add_argument('--blacklist-file', help='Device blacklist JSON file.')
+  # TODO(crbug.com/1097306): Remove this once callers have all switched to
+  # --denylist-file.
+  parser.add_argument('--blacklist-file',
+                      dest='denylist_file',
+                      help=argparse.SUPPRESS)
+  parser.add_argument('--denylist-file', help='Device denylist JSON file.')
   parser.add_argument('--phase', action='append', choices=_PHASES.ALL,
                       dest='phases',
                       help='Phases of provisioning to run. '
@@ -537,8 +544,13 @@ def main():
                       help='Log more information.')
   parser.add_argument('--max-battery-temp', type=int, metavar='NUM',
                       help='Wait for the battery to have this temp or lower.')
+  # TODO(crbug.com/1097306): Remove this once callers have all switched to
+  # --output-device-denylist.
   parser.add_argument('--output-device-blacklist',
-                      help='Json file to output the device blacklist.')
+                      dest='output_device_denylist',
+                      help=argparse.SUPPRESS)
+  parser.add_argument('--output-device-denylist',
+                      help='Json file to output the device denylist.')
   parser.add_argument('--chrome-specific-wipe', action='store_true',
                       help='only wipe chrome specific data during provisioning')
   parser.add_argument('--emulators', action='store_true',

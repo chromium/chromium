@@ -45,7 +45,7 @@ def DetermineDeviceToUse(devices):
   Returns:
     A single device_utils.DeviceUtils instance.
   Raises:
-    device_errors.NoDevicesError: Raised when no non-blacklisted devices exist.
+    device_errors.NoDevicesError: Raised when no non-denylisted devices exist.
     device_errors.MultipleDevicesError: Raise when multiple devices exist, but
         |devices| does not distinguish which to use.
   """
