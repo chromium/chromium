@@ -222,10 +222,14 @@ D3D11VideoDecoder::CreateD3D11Decoder() {
   UINT config_count = 0;
   hr = video_device_->GetVideoDecoderConfigCount(
       decoder_configurator_->DecoderDescriptor(), &config_count);
-  if (FAILED(hr) || config_count == 0) {
+
+  if (FAILED(hr)) {
     return Status(StatusCode::kCannotGetDecoderConfigCount)
         .AddCause(HresultToStatus(hr));
   }
+
+  if (config_count == 0)
+    return Status(StatusCode::kCannotGetDecoderConfigCount);
 
   D3D11_VIDEO_DECODER_CONFIG dec_config = {};
   bool found = false;
@@ -273,7 +277,11 @@ D3D11VideoDecoder::CreateD3D11Decoder() {
   Microsoft::WRL::ComPtr<ID3D11VideoDecoder> video_decoder;
   hr = video_device_->CreateVideoDecoder(
       decoder_configurator_->DecoderDescriptor(), &dec_config, &video_decoder);
-  if (!video_decoder.Get() || FAILED(hr)) {
+
+  if (!video_decoder.Get())
+    return Status(StatusCode::kDecoderFailedCreation);
+
+  if (FAILED(hr)) {
     return Status(StatusCode::kDecoderFailedCreation)
         .AddCause(HresultToStatus(hr));
   }
