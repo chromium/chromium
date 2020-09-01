@@ -24,7 +24,7 @@
 // Tells the receiver to close the item with identifier |itemID|. If there is
 // no item with that identifier, no item is closed.
 - (void)closeItemWithID:(NSString*)itemID;
-// Tells the receiver to close all items. This operation does not save items.
+// Tells the receiver to close all items.
 - (void)closeAllItems;
 // Tells the receiver to save all items for an undo operation, then close all
 // items.
@@ -35,6 +35,9 @@
 // Tells the receiver to discard saved closed items. If the consumer has saved
 // closed items, it will discard them. Otherwise, this is a no-op.
 - (void)discardSavedClosedItems;
+// Shows an action sheet that asks for confirmation when 'Close All' button is
+// tapped.
+- (void)showCloseAllConfirmationActionSheet;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_GRID_GRID_COMMANDS_H_

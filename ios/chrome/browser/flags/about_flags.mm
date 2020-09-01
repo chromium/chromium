@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
 #include "ios/chrome/browser/ui/settings/autofill/features.h"
+#import "ios/chrome/browser/ui/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
@@ -677,6 +678,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWellKnownChangePasswordName,
      flag_descriptions::kWellKnownChangePasswordDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kWellKnownChangePassword)},
+    {"enable-close-all-tabs-confirmation",
+     flag_descriptions::kEnableCloseAllTabsConfirmationName,
+     flag_descriptions::kEnableCloseAllTabsConfirmationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableCloseAllTabsConfirmation)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

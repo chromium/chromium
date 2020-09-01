@@ -1273,6 +1273,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-close-all-tabs-confirmation",
+    "owners": [ "ewannpv. gambard" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "enable-close-tab-suggestions",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90

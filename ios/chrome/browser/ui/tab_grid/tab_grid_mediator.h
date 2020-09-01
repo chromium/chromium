@@ -11,12 +11,26 @@
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_grid/grid/grid_image_data_source.h"
 
-@protocol GridConsumer;
 class Browser;
+@protocol GridConsumer;
+@class TabGridMediator;
 
 namespace sessions {
 class TabRestoreService;
 }  // namespace sessions
+
+// Delegate protocol for an object that can handle the action sheet that asks
+// for confirmation from the tab grid.
+@protocol TabGridMediatorDelegate <NSObject>
+
+// Shows an action sheet that asks for confirmation when 'Close All' button is
+// tapped.
+- (void)showCloseAllConfirmationActionSheetWitTabGridMediator:
+            (TabGridMediator*)tabGridMediator
+                                                 numberOfTabs:
+                                                     (NSInteger)numberOfTabs;
+
+@end
 
 // Mediates between model layer and tab grid UI layer.
 @interface TabGridMediator
@@ -26,6 +40,8 @@ class TabRestoreService;
 @property(nonatomic, assign) Browser* browser;
 // TabRestoreService holds the recently closed tabs.
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
+// Delegate to handle presenting the action sheet.
+@property(nonatomic, weak) id<TabGridMediatorDelegate> delegate;
 
 // Initializer with |consumer| as the receiver of model layer updates.
 - (instancetype)initWithConsumer:(id<GridConsumer>)consumer

@@ -235,6 +235,12 @@ const char kEnableClipboardProviderImageSuggestionsName[] =
 const char kEnableClipboardProviderImageSuggestionsDescription[] =
     "Enable suggesting a search for the image copied to the clipboard";
 
+const char kEnableCloseAllTabsConfirmationName[] =
+    "Enable Close All Tabs confirmation";
+const char kEnableCloseAllTabsConfirmationDescription[] =
+    "Enable showing an action sheet that asks for confirmation when 'Close "
+    "All' button is tapped on the tab grid to avoid unwanted clearing.";
+
 const char kEnableFullPageScreenshotName[] = "Enable fullpage screenshots";
 const char kEnableFullPageScreenshotDescription[] =
     "Enables the option of capturing an entire webpage as a PDF when a "

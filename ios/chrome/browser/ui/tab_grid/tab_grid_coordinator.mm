@@ -9,11 +9,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
+#import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
@@ -28,6 +30,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_paging.h"
@@ -38,15 +41,18 @@
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface TabGridCoordinator () <TabPresentationDelegate,
-                                  HistoryPresentationDelegate,
+@interface TabGridCoordinator () <HistoryPresentationDelegate,
                                   RecentTabsContextMenuDelegate,
-                                  RecentTabsPresentationDelegate> {
+                                  RecentTabsPresentationDelegate,
+                                  TabGridMediatorDelegate,
+                                  TabPresentationDelegate> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
   Browser* _incognitoBrowser;
@@ -75,6 +81,8 @@
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 @property(nonatomic, strong)
     RecentTabsContextMenuHelper* recentTabsContextMenuHelper;
+// The action sheet coordinator, if one is currently being shown.
+@property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
 
 @end
 
@@ -265,6 +273,7 @@
       _regularBrowser ? _regularBrowser->GetWebStateList() : nullptr;
 
   self.regularTabsMediator.browser = _regularBrowser;
+  self.regularTabsMediator.delegate = self;
   if (regularBrowserState) {
     self.regularTabsMediator.tabRestoreService =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
@@ -273,6 +282,7 @@
   self.incognitoTabsMediator = [[TabGridMediator alloc]
       initWithConsumer:baseViewController.incognitoTabsConsumer];
   self.incognitoTabsMediator.browser = _incognitoBrowser;
+  self.incognitoTabsMediator.delegate = self;
   baseViewController.regularTabsDelegate = self.regularTabsMediator;
   baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
   baseViewController.regularTabsDragDropHandler = self.regularTabsMediator;
@@ -352,6 +362,8 @@
   [self.baseViewController.remoteTabsViewController dismissModals];
   [self.remoteTabsMediator disconnect];
   self.remoteTabsMediator = nil;
+  [self.actionSheetCoordinator stop];
+  self.actionSheetCoordinator = nil;
 }
 
 #pragma mark - TabPresentationDelegate
@@ -379,6 +391,37 @@
   [self.delegate tabGrid:self
       shouldFinishWithBrowser:activeBrowser
                  focusOmnibox:focusOmnibox];
+}
+
+- (void)showCloseAllConfirmationActionSheetWitTabGridMediator:
+            (TabGridMediator*)tabGridMediator
+                                                 numberOfTabs:
+                                                     (NSInteger)numberOfTabs {
+  self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           title:nil
+                         message:nil
+                            rect:self.baseViewController.view.frame
+                            view:self.baseViewController.view];
+  self.actionSheetCoordinator.popoverArrowDirection = 0;
+  self.actionSheetCoordinator.alertStyle =
+      IsIPadIdiom() ? UIAlertControllerStyleAlert
+                    : UIAlertControllerStyleActionSheet;
+
+  // TODO(crbug.com/1119319): Displays the number of tabs to close.
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_TAB_GRID_CLOSE_ALL_BUTTON)
+                action:^{
+                  [tabGridMediator closeAllItems];
+                }
+                 style:UIAlertActionStyleDestructive];
+  [self.actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                action:^{
+                }
+                 style:UIAlertActionStyleCancel];
+  [self.actionSheetCoordinator start];
 }
 
 #pragma mark - RecentTabsPresentationDelegate

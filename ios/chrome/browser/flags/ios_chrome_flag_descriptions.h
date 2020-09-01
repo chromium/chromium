@@ -196,6 +196,11 @@ extern const char kEnableAutofillPasswordReauthIOSDescription[];
 extern const char kEnableClipboardProviderImageSuggestionsName[];
 extern const char kEnableClipboardProviderImageSuggestionsDescription[];
 
+// Title and description for the flag to enable the confirmational action sheet
+// for the tab grid "Close All" action.
+extern const char kEnableCloseAllTabsConfirmationName[];
+extern const char kEnableCloseAllTabsConfirmationDescription[];
+
 // Title and description for the flag to enable fullpage screenshots.
 extern const char kEnableFullPageScreenshotName[];
 extern const char kEnableFullPageScreenshotDescription[];

@@ -10,6 +10,8 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/scoped_observer.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -315,12 +317,23 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 }
 
 - (void)closeAllItems {
+  if (!self.browserState->IsOffTheRecord()) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridCloseAllIncognitoTabs"));
+  }
   // This is a no-op if |webStateList| is already empty.
   self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
 }
 
+// TODO(crbug.com/1123536): Merges this method with |closeAllItems| once
+// EnableCloseAllTabsConfirmation is landed.
 - (void)saveAndCloseAllItems {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
   if (self.webStateList->empty())
     return;
   self.closedSessionWindow = SerializeWebStateList(self.webStateList);
@@ -334,6 +347,8 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 }
 
 - (void)undoCloseAllItems {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridUndoCloseAllRegularTabs"));
   if (!self.closedSessionWindow)
     return;
   SessionRestorationBrowserAgent::FromBrowser(self.browser)
@@ -349,6 +364,13 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   self.syncedClosedTabsCount = 0;
   self.closedSessionWindow = nil;
   SnapshotBrowserAgent::FromBrowser(self.browser)->RemoveAllSnapshots();
+}
+
+- (void)showCloseAllConfirmationActionSheet {
+  [self.delegate
+      showCloseAllConfirmationActionSheetWitTabGridMediator:self
+                                               numberOfTabs:self.webStateList
+                                                                ->count()];
 }
 
 #pragma mark GridCommands helpers
