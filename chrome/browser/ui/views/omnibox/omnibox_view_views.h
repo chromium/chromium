@@ -256,11 +256,9 @@ class OmniboxViewViews : public OmniboxView,
     // The current offset, exposed for testing.
     int current_offset_;
 
-    // As the animation runs, each range fades from |starting_color_| to
-    // |ending_color_|. This is normally the ranges surrounding the simplified
-    // domain, but can omit one of them if the simplified domain is not
-    // displayed contiguously (which can happen for some bidirectional URLs).
-    std::vector<gfx::Range> ranges_to_color_;
+    // Holds the ranges surrounding the simplified domain part. As the animation
+    // runs, each range fades from |starting_color_| to |ending_color_|.
+    std::vector<gfx::Range> ranges_surrounding_simplified_domain_;
     SkColor starting_color_;
     SkColor ending_color_;
 
@@ -284,8 +282,6 @@ class OmniboxViewViews : public OmniboxView,
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest, HoverAndExit);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest, HoverAndExitIDN);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest,
-                           PathNotTransparentSplitURL);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsRevealOnHoverTest, PrivateRegistry);
   FRIEND_TEST_ALL_PREFIXES(
       OmniboxViewViewsHideOnInteractionAndRevealOnHoverTest,

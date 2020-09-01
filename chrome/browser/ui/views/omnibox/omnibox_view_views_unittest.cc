@@ -1897,50 +1897,6 @@ TEST_P(OmniboxViewViewsRevealOnHoverTest, HoverAndExitIDN) {
       kSimplifiedDomainDisplayIDNUrlPath, ShouldElideToRegistrableDomain()));
 }
 
-// Tests the path doesn't disappear for a URL where it appears in between of the
-// unelided section (and thus is not elided).
-TEST_P(OmniboxViewViewsRevealOnHoverTest, PathNotTransparentSplitURL) {
-  // A bidirectional URL with this format causes the tld (مثال) to appear
-  // separate from the host (test), and with the path (إختبار) displayed in
-  // between.
-  const base::string16 kSimplifiedDomainDisplaySplitUrl =
-      base::UTF8ToUTF16("https://test.مثال/إختبار");
-  const base::string16 kSimplifiedDomainDisplaySplitUrlHostnameAndScheme =
-      base::UTF8ToUTF16("https://test.مثال");
-  UpdateDisplayURL(kSimplifiedDomainDisplaySplitUrl);
-
-  // Call OnThemeChanged() to create the animations.
-  omnibox_view()->OnThemeChanged();
-
-  // Check that the path is not transparent.
-  EXPECT_NE(SK_ColorTRANSPARENT,
-            omnibox_view()->GetLatestColorForRange(gfx::Range(
-                kSimplifiedDomainDisplaySplitUrlHostnameAndScheme.size(),
-                kSimplifiedDomainDisplaySplitUrl.size())));
-
-  // Simulate mouse hovering to trigger the unelision animation.
-  omnibox_view()->OnMouseMoved(CreateMouseEvent(ui::ET_MOUSE_MOVED, {0, 0}));
-  OmniboxViewViews::ElideAnimation* hover_animation =
-      omnibox_view()->GetHoverElideOrUnelideAnimationForTesting();
-  ASSERT_TRUE(hover_animation);
-  ASSERT_TRUE(hover_animation->IsAnimating());
-
-  // Advance the clock to let the elision animation finish. Assume it takes less
-  // than 2 seconds.
-  omnibox_view()->StepSimplifiedDomainHoverAnimation(2000);
-
-  // Exit the mouse and let the elision animation run until it finishes.
-  omnibox_view()->OnMouseExited(CreateMouseEvent(ui::ET_MOUSE_EXITED, {0, 0}));
-  ASSERT_TRUE(hover_animation->IsAnimating());
-  omnibox_view()->StepSimplifiedDomainHoverAnimation(2000);
-
-  // Check the path is still not transparent after the animation runs.
-  EXPECT_NE(SK_ColorTRANSPARENT,
-            omnibox_view()->GetLatestColorForRange(gfx::Range(
-                kSimplifiedDomainDisplaySplitUrlHostnameAndScheme.size(),
-                kSimplifiedDomainDisplaySplitUrl.size())));
-}
-
 // Tests the field trial variation that shows a simplified domain by default
 // using a private registry (https://publicsuffix.org/list/). Private registries
 // should be ignored when computing the simplified domain, to avoid creating

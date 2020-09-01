@@ -188,6 +188,9 @@ OmniboxViewViews::ElideAnimation::ElideAnimation(OmniboxViewViews* view,
 
 OmniboxViewViews::ElideAnimation::~ElideAnimation() = default;
 
+// TODO(estark): this code doesn't work for URLs with RTL components. Will need
+// to figure out another animation or just skip the animation entirely on URLs
+// with RTL components.
 void OmniboxViewViews::ElideAnimation::Start(
     const gfx::Range& elide_to_bounds,
     uint32_t delay_ms,
@@ -196,37 +199,23 @@ void OmniboxViewViews::ElideAnimation::Start(
     SkColor ending_color) {
   DCHECK(ranges_surrounding_simplified_domain.size() == 1 ||
          ranges_surrounding_simplified_domain.size() == 2);
-
+  ranges_surrounding_simplified_domain_ = ranges_surrounding_simplified_domain;
   starting_color_ = starting_color;
   ending_color_ = ending_color;
 
   // simplified_domain_bounds_ will be set to a rectangle surrounding the part
   // of the URL that is never elided, on its original position before any
-  // animation runs. If ranges_surrounding_simplified_domain only contains one
+  // animation runs. If ranges_surrounding_simplified_domain_ only contains one
   // range it means we are not eliding on the right side, so we use the right
   // side of elide_to_bounds as the range as it will always be the right limit
   // of the simplified section.
   gfx::Range simplified_domain_range(
-      ranges_surrounding_simplified_domain[0].end(),
-      ranges_surrounding_simplified_domain.size() == 2
-          ? ranges_surrounding_simplified_domain[1].start()
+      ranges_surrounding_simplified_domain_[0].end(),
+      ranges_surrounding_simplified_domain_.size() == 2
+          ? ranges_surrounding_simplified_domain_[1].start()
           : elide_to_bounds.end());
   for (auto rect : render_text_->GetSubstringBounds(simplified_domain_range)) {
     simplified_domain_bounds_.Union(rect - render_text_->GetLineOffset(0));
-  }
-
-  // Keep track of which ranges need to be colored. Any range that when
-  // displayed is in the middle of the unelided section (which can happen for
-  // certain bidirectional URLs) won't be elided, and should not be colored.
-  for (auto range : ranges_surrounding_simplified_domain) {
-    if (range.length() > 0) {
-      gfx::Rect range_bounds;
-      for (auto rect : render_text_->GetSubstringBounds(range))
-        range_bounds.Union(rect - render_text_->GetLineOffset(0));
-      if (!simplified_domain_bounds_.Contains(range_bounds)) {
-        ranges_to_color_.push_back(range);
-      }
-    }
   }
 
   // After computing |elide_to_rect_| below, |elide_to_bounds| aren't actually
@@ -333,7 +322,7 @@ void OmniboxViewViews::ElideAnimation::AnimationProgressed(
                                                 ending_display_offset_);
   render_text_->SetDisplayOffset(current_offset_);
 
-  for (const auto& range : ranges_to_color_) {
+  for (const auto& range : ranges_surrounding_simplified_domain_) {
     view_->ApplyColor(GetCurrentColor(), range);
   }
 
@@ -2716,19 +2705,9 @@ void OmniboxViewViews::ElideURL() {
 
   // GetSubstringBounds() rounds outward internally, so there may be small
   // portions of text still showing. Set the ranges surrounding the simplified
-  // domain to transparent so that these artifacts don't show. Skip this if
-  // the range is inside the simplified domain bounds (which can happen for
-  // some bidirectional URLs), since it won't be elided in that case.
-  for (const auto& range : ranges_surrounding_simplified_domain) {
-    if (range.length() > 0) {
-      gfx::Rect range_bounds;
-      for (auto rect : GetRenderText()->GetSubstringBounds(range))
-        range_bounds.Union(rect);
-      if (!shifted_simplified_domain_rect.Contains(range_bounds)) {
-        ApplyColor(SK_ColorTRANSPARENT, range);
-      }
-    }
-  }
+  // domain to transparent so that these artifacts don't show.
+  for (const auto& range : ranges_surrounding_simplified_domain)
+    ApplyColor(SK_ColorTRANSPARENT, range);
 }
 
 void OmniboxViewViews::ShowFullURL() {
