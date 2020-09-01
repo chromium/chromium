@@ -8,6 +8,7 @@
 #include <string>
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/optional.h"
 #include "chromeos/components/bloom/screenshot_grabber.h"
 
 class GoogleServiceAuthError;
@@ -47,6 +48,8 @@ class BloomInteraction {
  private:
   void StartAssistantInteraction(std::string&& access_token,
                                  Screenshot&& screenshot);
+
+  void OnServerResponse(base::Optional<std::string> html);
 
   void FetchAccessTokenAsync();
   void FetchScreenshotAsync();

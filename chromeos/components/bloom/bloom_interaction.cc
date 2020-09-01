@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/bloom/bloom_controller_impl.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
+#include "chromeos/components/bloom/bloom_server_proxy.h"
 #include "chromeos/components/bloom/public/cpp/future_value.h"
 #include "chromeos/components/bloom/screenshot_grabber.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
@@ -34,7 +35,17 @@ void BloomInteraction::Start() {
 void BloomInteraction::StartAssistantInteraction(std::string&& access_token,
                                                  Screenshot&& screenshot) {
   controller_->ShowUI();
-  // TODO(jeroendh): continue here by contacting the Bloom service.
+  controller_->server_proxy()->AnalyzeProblem(
+      access_token, screenshot, Bind(&BloomInteraction::OnServerResponse));
+}
+
+void BloomInteraction::OnServerResponse(base::Optional<std::string> html) {
+  if (!html) {
+    controller_->StopInteraction(BloomInteractionResolution ::kServerError);
+    return;
+  }
+
+  controller_->ShowResult(html.value());
 }
 
 void BloomInteraction::FetchAccessTokenAsync() {

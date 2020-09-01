@@ -16,6 +16,7 @@ std::string ToString(BloomInteractionResolution resolution) {
     CASE(kNormal);
     CASE(kNoAccessToken);
     CASE(kNoScreenshot);
+    CASE(kServerError);
   }
 }
 

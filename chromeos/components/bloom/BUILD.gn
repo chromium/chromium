@@ -11,6 +11,9 @@ source_set("bloom") {
     "bloom_interaction_observer.h",
     "bloom_interaction_observer_impl.cc",
     "bloom_interaction_observer_impl.h",
+    "bloom_server_proxy.h",
+    "bloom_server_proxy_impl.cc",
+    "bloom_server_proxy_impl.h",
     "screenshot_grabber.h",
   ]
 

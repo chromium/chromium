@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "chromeos/components/bloom/bloom_interaction.h"
+#include "chromeos/components/bloom/bloom_server_proxy.h"
 #include "chromeos/components/bloom/screenshot_grabber.h"
 
 namespace chromeos {
@@ -13,11 +14,14 @@ namespace bloom {
 
 BloomControllerImpl::BloomControllerImpl(
     signin::IdentityManager* identity_manager,
-    std::unique_ptr<ScreenshotGrabber> screenshot_grabber)
+    std::unique_ptr<ScreenshotGrabber> screenshot_grabber,
+    std::unique_ptr<BloomServerProxy> server_proxy)
     : identity_manager_(identity_manager),
-      screenshot_grabber_(std::move(screenshot_grabber)) {
+      screenshot_grabber_(std::move(screenshot_grabber)),
+      server_proxy_(std::move(server_proxy)) {
   DCHECK(identity_manager_);
   DCHECK(screenshot_grabber_);
+  DCHECK(server_proxy_);
 }
 
 BloomControllerImpl::~BloomControllerImpl() = default;
@@ -37,6 +41,11 @@ void BloomControllerImpl::StartInteraction() {
 void BloomControllerImpl::ShowUI() {
   for (auto& observer : interaction_observers_)
     observer.OnShowUI();
+}
+
+void BloomControllerImpl::ShowResult(const std::string& result) {
+  for (auto& observer : interaction_observers_)
+    observer.OnShowResult(result);
 }
 
 void BloomControllerImpl::StopInteraction(

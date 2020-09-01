@@ -5,6 +5,7 @@
 #include "chromeos/components/bloom/bloom_controller_impl.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/bloom/bloom_interaction_observer.h"
+#include "chromeos/components/bloom/bloom_server_proxy.h"
 #include "chromeos/components/bloom/public/cpp/bloom_interaction_resolution.h"
 #include "chromeos/components/bloom/screenshot_grabber.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
@@ -19,10 +20,13 @@ namespace bloom {
 
 namespace {
 
+using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::NiceMock;
 
 const char kEmail[] = "test@gmail.com";
+
+#define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
 
 class ScreenshotGrabberMock : public ScreenshotGrabber {
  public:
@@ -95,7 +99,35 @@ class BloomInteractionTracker : public BloomInteractionObserver {
       BloomInteractionResolution::kNormal;
 };
 
-#define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0)
+class BloomServerProxyMock : public BloomServerProxy {
+ public:
+  BloomServerProxyMock() {
+    ON_CALL(*this, AnalyzeProblem)
+        .WillByDefault([this](const std::string& access_token,
+                              const Screenshot screenshot, Callback callback) {
+          // Store the callback passed to AnalyzeProblem() so we can invoke it
+          // later from our tests.
+          this->callback_ = std::move(callback);
+        });
+  }
+  MOCK_METHOD(void,
+              AnalyzeProblem,
+              (const std::string& access_token,
+               const Screenshot screenshot,
+               Callback callback));
+
+  void SendResponse(base::Optional<std::string> html = std::string("<html/>")) {
+    EXPECT_TRUE(callback_) << "AnalyzeProblem() was never called.";
+
+    if (callback_)
+      std::move(callback_).Run(html);
+  }
+
+  void SendResponseFailure() { SendResponse(base::nullopt); }
+
+ private:
+  Callback callback_;
+};
 
 }  // namespace
 
@@ -111,6 +143,7 @@ void PrintTo(const BloomInteractionResolution& value, std::ostream* output) {
     CASE(kNormal);
     CASE(kNoScreenshot);
     CASE(kNoAccessToken);
+    CASE(kServerError);
   }
 }
 
@@ -121,6 +154,14 @@ class BloomControllerImplTest : public testing::Test {
   }
 
  protected:
+  void StartInteractionAndSendAccessTokenAndScreenshot(
+      std::string access_token = "<access-token>",
+      Screenshot screenshot = Screenshot()) {
+    controller().StartInteraction();
+    IssueAccessToken(access_token);
+    screenshot_grabber_mock().SendScreenshot(screenshot);
+  }
+
   // Returns the |ScopeSet| that was passed to the access token request.
   // Fails the test and returns an empty |ScopeSet| if there were no access
   // token requests.
@@ -156,6 +197,10 @@ class BloomControllerImplTest : public testing::Test {
     return raw_ptr;
   }
 
+  BloomServerProxyMock& bloom_server() {
+    return *static_cast<BloomServerProxyMock*>(controller_.server_proxy());
+  }
+
   void IssueAccessToken(std::string token = std::string("<access-token>")) {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
         token, /*expiration=*/base::Time::Max());
@@ -172,7 +217,8 @@ class BloomControllerImplTest : public testing::Test {
 
   BloomControllerImpl controller_{
       identity_test_env_.identity_manager(),
-      std::make_unique<NiceMock<ScreenshotGrabberMock>>()};
+      std::make_unique<NiceMock<ScreenshotGrabberMock>>(),
+      std::make_unique<NiceMock<BloomServerProxyMock>>()};
 };
 
 TEST_F(BloomControllerImplTest, ShouldBeReturnedWhenCallingGet) {
@@ -221,6 +267,27 @@ TEST_F(BloomControllerImplTest, ShouldAbortWhenFetchingScreenshotFails) {
             interaction_tracker->GetLastInteractionResolution());
 }
 
+TEST_F(BloomControllerImplTest,
+       ShouldPassAccessTokenAndScreenshotToBloomServer) {
+  const std::string& access_token = "<the-access-token>";
+  const Screenshot screenshot{1, 2, 3, 4, 5};
+
+  EXPECT_CALL(bloom_server(), AnalyzeProblem(access_token, screenshot, _));
+
+  StartInteractionAndSendAccessTokenAndScreenshot(access_token, screenshot);
+}
+
+TEST_F(BloomControllerImplTest, ShouldAbortWhenBloomServerFails) {
+  auto* interaction_tracker = AddInteractionTracker();
+  StartInteractionAndSendAccessTokenAndScreenshot();
+
+  bloom_server().SendResponseFailure();
+
+  EXPECT_FALSE(interaction_tracker->HasInteraction());
+  EXPECT_EQ(BloomInteractionResolution::kServerError,
+            interaction_tracker->GetLastInteractionResolution());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ///
 /// Below are the tests to ensure the BloomInteractionObserver is invoked.
@@ -240,7 +307,6 @@ TEST_F(BloomInteractionObserverTest,
 TEST_F(BloomInteractionObserverTest,
        ShouldCallOnShowUIWhenAccessTokenAndScreenshotAreReady) {
   auto* observer = AddInteractionObserverMock();
-  EXPECT_CALL(*observer, OnInteractionStarted);
 
   EXPECT_CALL(*observer, OnShowUI);
 
@@ -252,7 +318,6 @@ TEST_F(BloomInteractionObserverTest,
 TEST_F(BloomInteractionObserverTest,
        ShouldNotCallOnShowUIBeforeAccessTokenArrives) {
   auto* observer = AddInteractionObserverMock();
-  EXPECT_CALL(*observer, OnInteractionStarted);
 
   EXPECT_NO_CALLS(*observer, OnShowUI);
 
@@ -263,12 +328,20 @@ TEST_F(BloomInteractionObserverTest,
 TEST_F(BloomInteractionObserverTest,
        ShouldNotCallOnShowUIBeforeScreenshotArrives) {
   auto* observer = AddInteractionObserverMock();
-  EXPECT_CALL(*observer, OnInteractionStarted);
 
   EXPECT_NO_CALLS(*observer, OnShowUI);
 
   controller().StartInteraction();
   IssueAccessToken();
+}
+
+TEST_F(BloomInteractionObserverTest, ShouldForwardServerResponse) {
+  auto* observer = AddInteractionObserverMock();
+  StartInteractionAndSendAccessTokenAndScreenshot();
+
+  EXPECT_CALL(*observer, OnShowResult("<html>response</html>"));
+
+  bloom_server().SendResponse("<html>response</html>");
 }
 
 }  // namespace bloom

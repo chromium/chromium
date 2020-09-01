@@ -16,10 +16,12 @@ enum class BloomInteractionResolution {
   // Bloom interaction completed normally.
   kNormal = 0,
   // Bloom interaction failed to fetch an access token.
-  kNoAccessToken = 1,
+  kNoAccessToken,
   // Bloom interaction failed to take a screenshot
   // (or the user aborted while taking a screenshot).
-  kNoScreenshot = 2,
+  kNoScreenshot,
+  // Bloom server returned an error.
+  kServerError,
 };
 
 std::string COMPONENT_EXPORT(BLOOM)
