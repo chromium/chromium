@@ -207,7 +207,7 @@ void BrowserManager::Start() {
   state_ = State::CREATING_LOG_FILE;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&CreateLogFile),
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateLogFile),
       base::BindOnce(&BrowserManager::StartWithLogFile,
                      weak_factory_.GetWeakPtr()));
 }
