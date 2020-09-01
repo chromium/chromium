@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "components/viz/common/features.h"
@@ -21,6 +23,7 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
@@ -32,21 +35,8 @@ namespace gpu {
 const base::Feature kGPUMemoryAblationFeature{
     "GPUMemoryAblation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// TODO(jonross): Replace these feature flags with Field Trial Param lookup.
-const base::Feature kGPUMemoryAblationGPUSmall{
-    "GPUMemoryAblationGPUSmall", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kGPUMemoryAblationGPUMedium{
-    "GPUMemoryAblationGPUMedium", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kGPUMemoryAblationGPULarge{
-    "GPUMemoryAblationGPULarge", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// The size to use when allocating images. The sizes vary based on the chosen
-// experiment.
-constexpr gfx::Size kSmallSize(256, 256);
-constexpr gfx::Size kMediumSize(256 * 4, 256 * 4);
-constexpr gfx::Size kLargeSize(256 * 8, 256 * 8);
+// Field Trial Parameter that defines the size of memory allocations.
+const char kGPUMemoryAblationFeatureSizeParam[] = "Size";
 
 // Image allocation parameters.
 constexpr viz::ResourceFormat kFormat = viz::ResourceFormat::RGBA_8888;
@@ -75,13 +65,6 @@ GpuMemoryAblationExperiment::GpuMemoryAblationExperiment(
     : channel_manager_(channel_manager), task_runner_(task_runner) {
   if (!GpuMemoryAblationExperiment::ExperimentSupported())
     init_status_ = Status::DISABLED;
-  if (base::FeatureList::IsEnabled(kGPUMemoryAblationGPUSmall)) {
-    size_ = kSmallSize;
-  } else if (base::FeatureList::IsEnabled(kGPUMemoryAblationGPUMedium)) {
-    size_ = kMediumSize;
-  } else if (base::FeatureList::IsEnabled(kGPUMemoryAblationGPULarge)) {
-    size_ = kLargeSize;
-  }
 }
 
 GpuMemoryAblationExperiment::~GpuMemoryAblationExperiment() {
@@ -218,6 +201,16 @@ bool GpuMemoryAblationExperiment::InitGpu(GpuChannelManager* channel_manager) {
   context_state_ = channel_manager->GetSharedContextState(&result);
   if (result != ContextResult::kSuccess)
     return false;
+
+  const int default_value = 0;
+  int arg_value = base::GetFieldTrialParamByFeatureAsInt(
+      kGPUMemoryAblationFeature, kGPUMemoryAblationFeatureSizeParam,
+      default_value);
+  if (arg_value == default_value)
+    return false;
+  int texture_size =
+      std::min(256 * arg_value, context_state_->gr_context()->maxTextureSize());
+  size_ = gfx::Size(texture_size, texture_size);
 
   std::unique_ptr<ui::ScopedMakeCurrent> scoped_current =
       ScopedMakeContextCurrent();
