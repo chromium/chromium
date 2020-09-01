@@ -57,7 +57,11 @@ TEST_F(LacrosUtilTest, AllowedForGoogler) {
   EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::CANARY));
   EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::DEV));
   EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::BETA));
-  EXPECT_TRUE(browser_util::IsLacrosAllowed(Channel::STABLE));
+}
+
+TEST_F(LacrosUtilTest, BlockedForGoogler) {
+  AddRegularUser("user@google.com");
+  EXPECT_FALSE(browser_util::IsLacrosAllowed(Channel::STABLE));
 }
 
 TEST_F(LacrosUtilTest, BlockedForChildUser) {
