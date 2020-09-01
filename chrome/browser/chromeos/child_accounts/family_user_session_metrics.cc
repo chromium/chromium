@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -35,58 +36,8 @@ int DayOfWeek(base::Time time) {
   return exploded.day_of_week;
 }
 
-}  // namespace
-
-// static
-const char FamilyUserSessionMetrics::kSessionEngagementStartActionName[] =
-    "FamilyUser.SessionEngagement.Start";
-const char
-    FamilyUserSessionMetrics::kUserSessionEngagementWeekdayHistogramName[] =
-        "FamilyUser.SessionEngagement.Weekday";
-const char
-    FamilyUserSessionMetrics::kUserSessionEngagementWeekendHistogramName[] =
-        "FamilyUser.SessionEngagement.Weekend";
-const char
-    FamilyUserSessionMetrics::kUserSessionEngagementTotalHistogramName[] =
-        "FamilyUser.SessionEngagement.Total";
-
-// static
-void FamilyUserSessionMetrics::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(
-      prefs::kFamilyUserMetricsSessionEngagementStartTime, base::Time());
-}
-
-FamilyUserSessionMetrics::FamilyUserSessionMetrics(PrefService* pref_service)
-    : pref_service_(pref_service) {
-  DCHECK(pref_service_);
-  chromeos::UsageTimeStateNotifier::GetInstance()->AddObserver(this);
-}
-
-FamilyUserSessionMetrics::~FamilyUserSessionMetrics() {
-  if (is_user_active_) {
-    is_user_active_ = false;
-    UpdateUserEngagement();
-  }
-
-  chromeos::UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
-}
-
-void FamilyUserSessionMetrics::OnUsageTimeStateChange(
-    chromeos::UsageTimeStateNotifier::UsageTimeState state) {
-  is_user_active_ =
-      state == chromeos::UsageTimeStateNotifier::UsageTimeState::ACTIVE;
-
-  UpdateUserEngagement();
-}
-
-void FamilyUserSessionMetrics::SaveSessionEngagementStartTime() {
-  pref_service_->SetTime(prefs::kFamilyUserMetricsSessionEngagementStartTime,
-                         base::Time::Now());
-}
-
-void FamilyUserSessionMetrics::ReportUserEngagementHourToUma(base::Time start,
-                                                             base::Time end) {
+// Reports every active hour between |start| and |end| to UMA.
+void ReportUserEngagementHourToUma(base::Time start, base::Time end) {
   if (start.is_null() || end.is_null() || end < start)
     return;
   base::Time time = start;
@@ -94,15 +45,18 @@ void FamilyUserSessionMetrics::ReportUserEngagementHourToUma(base::Time start,
     int day_of_week = DayOfWeek(time);
     int hour_of_day = HourOfDay(time);
     if (day_of_week == 0 || day_of_week == 6) {
-      base::UmaHistogramExactLinear(kUserSessionEngagementWeekendHistogramName,
-                                    hour_of_day, kEngagementHourBuckets);
+      base::UmaHistogramExactLinear(
+          FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName,
+          hour_of_day, kEngagementHourBuckets);
     } else {
-      base::UmaHistogramExactLinear(kUserSessionEngagementWeekdayHistogramName,
-                                    hour_of_day, kEngagementHourBuckets);
+      base::UmaHistogramExactLinear(
+          FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName,
+          hour_of_day, kEngagementHourBuckets);
     }
 
-    base::UmaHistogramExactLinear(kUserSessionEngagementTotalHistogramName,
-                                  hour_of_day, kEngagementHourBuckets);
+    base::UmaHistogramExactLinear(
+        FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName,
+        hour_of_day, kEngagementHourBuckets);
 
     // When the difference between end and time less than 1 hour and their hours
     // of day are different, i.e. time = 10:55 and end = 11:05, we need to
@@ -116,15 +70,53 @@ void FamilyUserSessionMetrics::ReportUserEngagementHourToUma(base::Time start,
   }
 }
 
-void FamilyUserSessionMetrics::ReportSessionEngagementStartToUma() {
-  base::RecordAction(
-      base::UserMetricsAction(kSessionEngagementStartActionName));
+}  // namespace
+
+// static
+const char FamilyUserSessionMetrics::kSessionEngagementStartActionName[] =
+    "FamilyUser.SessionEngagement.Start";
+const char FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName[] =
+    "FamilyUser.SessionEngagement.Weekday";
+const char FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName[] =
+    "FamilyUser.SessionEngagement.Weekend";
+const char FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName[] =
+    "FamilyUser.SessionEngagement.Total";
+
+// static
+void FamilyUserSessionMetrics::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(
+      prefs::kFamilyUserMetricsSessionEngagementStartTime, base::Time());
+}
+
+FamilyUserSessionMetrics::FamilyUserSessionMetrics(PrefService* pref_service)
+    : pref_service_(pref_service) {
+  DCHECK(pref_service_);
+  UsageTimeStateNotifier::GetInstance()->AddObserver(this);
+}
+
+FamilyUserSessionMetrics::~FamilyUserSessionMetrics() {
+  if (is_user_active_) {
+    is_user_active_ = false;
+    UpdateUserEngagement();
+  }
+
+  UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
+}
+
+void FamilyUserSessionMetrics::OnUsageTimeStateChange(
+    UsageTimeStateNotifier::UsageTimeState state) {
+  is_user_active_ = state == UsageTimeStateNotifier::UsageTimeState::ACTIVE;
+
+  UpdateUserEngagement();
 }
 
 void FamilyUserSessionMetrics::UpdateUserEngagement() {
   if (is_user_active_) {
-    ReportSessionEngagementStartToUma();
-    SaveSessionEngagementStartTime();
+    base::RecordAction(
+        base::UserMetricsAction(kSessionEngagementStartActionName));
+    pref_service_->SetTime(prefs::kFamilyUserMetricsSessionEngagementStartTime,
+                           base::Time::Now());
   } else {
     base::Time start = pref_service_->GetTime(
         prefs::kFamilyUserMetricsSessionEngagementStartTime);
@@ -132,13 +124,7 @@ void FamilyUserSessionMetrics::UpdateUserEngagement() {
     ReportUserEngagementHourToUma(
         /*start=*/start,
         /*end=*/base::Time::Now());
-
-    ResetSessionEngagementStartPref();
   }
-}
-
-void FamilyUserSessionMetrics::ResetSessionEngagementStartPref() {
-  pref_service_->ClearPref(prefs::kFamilyUserMetricsSessionEngagementStartTime);
 }
 
 }  // namespace chromeos

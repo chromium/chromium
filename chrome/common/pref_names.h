@@ -327,6 +327,7 @@ extern const char kPerAppTimeLimitsLatestLimitUpdateTime[];
 extern const char kPerAppTimeLimitsPolicy[];
 extern const char kPerAppTimeLimitsAllowlistPolicy[];
 extern const char kFamilyUserMetricsSessionEngagementStartTime[];
+extern const char kFamilyUserMetricsDayId[];
 extern const char kDeviceWallpaperImageFilePath[];
 extern const char kKerberosRememberPasswordEnabled[];
 extern const char kKerberosAddAccountsAllowed[];

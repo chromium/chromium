@@ -6,18 +6,17 @@
 
 #include <memory>
 
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -48,14 +47,12 @@ class FamilyUserSessionMetricsTest : public testing::Test {
 
   void SetUp() override {
     PowerManagerClient::InitializeFake();
-    SessionManagerClient::InitializeFakeInMemory();
     InitiateFamilyUserSessionMetrics();
     FamilyUserSessionMetrics::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void TearDown() override {
     DestructFamilyUserSessionMetrics();
-    SessionManagerClient::Shutdown();
     PowerManagerClient::Shutdown();
   }
 
@@ -68,7 +65,9 @@ class FamilyUserSessionMetricsTest : public testing::Test {
         std::make_unique<FamilyUserSessionMetrics>(&pref_service_);
   }
 
-  void SetupTaskRunnerWithTime(base::Time start_time) {
+  void SetupTaskRunnerWithTime(const std::string& start_time_str) {
+    base::Time start_time;
+    EXPECT_TRUE(base::Time::FromString(start_time_str.c_str(), &start_time));
     base::TimeDelta forward_by = start_time - base::Time::Now();
     EXPECT_LT(base::TimeDelta(), forward_by);
     task_environment_.FastForwardBy(forward_by);
@@ -105,9 +104,7 @@ TEST_F(FamilyUserSessionMetricsTest, SessionStateChange) {
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
-  base::Time start_time;
-  ASSERT_TRUE(base::Time::FromString("1 Jan 2020 10:00", &start_time));
-  SetupTaskRunnerWithTime(start_time);
+  SetupTaskRunnerWithTime("1 Jan 2020 10:00");
 
   SetSessionState(session_manager::SessionState::ACTIVE);
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
@@ -129,22 +126,19 @@ TEST_F(FamilyUserSessionMetricsTest, SessionStateChange) {
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
   histogram_tester.ExpectBucketCount(
-      FamilyUserSessionMetrics::kUserSessionEngagementWeekdayHistogramName, 10,
-      3);
+      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 10, 3);
 
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kUserSessionEngagementWeekdayHistogramName, 26);
+      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 26);
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kUserSessionEngagementTotalHistogramName, 26);
+      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 26);
 }
 
 TEST_F(FamilyUserSessionMetricsTest, ScreenStateChange) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
-  base::Time start_time;
-  ASSERT_TRUE(base::Time::FromString("3 Jan 2020 23:00", &start_time));
-  SetupTaskRunnerWithTime(start_time);
+  SetupTaskRunnerWithTime("3 Jan 2020 23:00");
 
   SetSessionState(session_manager::SessionState::ACTIVE);
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(60));
@@ -165,23 +159,19 @@ TEST_F(FamilyUserSessionMetricsTest, ScreenStateChange) {
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserSessionMetrics::kUserSessionEngagementWeekdayHistogramName, 23,
-      1);
+      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 23, 1);
   histogram_tester.ExpectUniqueSample(
-      FamilyUserSessionMetrics::kUserSessionEngagementWeekendHistogramName, 0,
-      2);
+      FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, 0, 2);
 
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kUserSessionEngagementTotalHistogramName, 3);
+      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 3);
 }
 
 TEST_F(FamilyUserSessionMetricsTest, SuspendStateChange) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
-  base::Time start_time;
-  ASSERT_TRUE(base::Time::FromString("4 Jan 2020 6:00", &start_time));
-  SetupTaskRunnerWithTime(start_time);
+  SetupTaskRunnerWithTime("4 Jan 2020 6:00");
 
   SetSessionState(session_manager::SessionState::ACTIVE);
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(10));
@@ -207,19 +197,16 @@ TEST_F(FamilyUserSessionMetricsTest, SuspendStateChange) {
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserSessionMetrics::kUserSessionEngagementWeekendHistogramName, 6,
-      2);
+      FamilyUserSessionMetrics::kSessionEngagementWeekendHistogramName, 6, 2);
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kUserSessionEngagementTotalHistogramName, 2);
+      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 2);
 }
 
 TEST_F(FamilyUserSessionMetricsTest, ClockBackward) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
-  base::Time start_time;
-  ASSERT_TRUE(base::Time::FromString("1 Jan 2020 10:00", &start_time));
-  SetupTaskRunnerWithTime(start_time);
+  SetupTaskRunnerWithTime("1 Jan 2020 10:00");
 
   SetSessionState(session_manager::SessionState::ACTIVE);
 
@@ -239,26 +226,24 @@ TEST_F(FamilyUserSessionMetricsTest, ClockBackward) {
 
   // Engagement hour data will be ignored if start time > end time.
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kUserSessionEngagementWeekdayHistogramName, 0);
+      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 0);
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kUserSessionEngagementTotalHistogramName, 0);
+      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 0);
 }
 
+// Tests destroying FamilyUserSessionMetrics without invoking
+// OnUsageTimeStateChange(). It may happens during shutdown of device.
 TEST_F(FamilyUserSessionMetricsTest,
        DestructionAndCreationOfFamilyUserSessionMetrics) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
 
-  base::Time start_time;
-  ASSERT_TRUE(base::Time::FromString("1 Jan 2020 10:00", &start_time));
-  SetupTaskRunnerWithTime(start_time);
+  SetupTaskRunnerWithTime("1 Jan 2020 10:00");
 
   SetSessionState(session_manager::SessionState::ACTIVE);
 
   task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
 
-  // Test destroying FamilyUserSessionMetrics without invoking
-  // OnUsageTimeStateChange(). It may happens during shutdown of device.
   DestructFamilyUserSessionMetrics();
   SetSessionState(session_manager::SessionState::UNKNOWN);
 
@@ -266,8 +251,7 @@ TEST_F(FamilyUserSessionMetricsTest,
             user_action_tester.GetActionCount(
                 FamilyUserSessionMetrics::kSessionEngagementStartActionName));
   histogram_tester.ExpectUniqueSample(
-      FamilyUserSessionMetrics::kUserSessionEngagementWeekdayHistogramName, 10,
-      1);
+      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 10, 1);
 
   // Test restart.
   InitiateFamilyUserSessionMetrics();
@@ -282,10 +266,9 @@ TEST_F(FamilyUserSessionMetricsTest,
   SetSessionState(session_manager::SessionState::LOCKED);
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserSessionMetrics::kUserSessionEngagementWeekdayHistogramName, 10,
-      2);
+      FamilyUserSessionMetrics::kSessionEngagementWeekdayHistogramName, 10, 2);
   histogram_tester.ExpectTotalCount(
-      FamilyUserSessionMetrics::kUserSessionEngagementTotalHistogramName, 2);
+      FamilyUserSessionMetrics::kSessionEngagementTotalHistogramName, 2);
 }
 
 }  // namespace chromeos

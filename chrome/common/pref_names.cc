@@ -970,6 +970,10 @@ const char kPerAppTimeLimitsAllowlistPolicy[] =
 const char kFamilyUserMetricsSessionEngagementStartTime[] =
     "family_user.metrics.session_engagement_start_time";
 
+// Integer pref to record the day id (number of days since origin of time) when
+// family user metrics were last recorded.
+const char kFamilyUserMetricsDayId[] = "family_user.metrics.day_id";
+
 // List of preconfigured network file shares.
 const char kNetworkFileSharesPreconfiguredShares[] =
     "network_file_shares.preconfigured_shares";

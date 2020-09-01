@@ -3117,6 +3117,7 @@ source_set("unit_tests") {
     "certificate_provider/certificate_provider_service_unittest.cc",
     "child_accounts/child_user_service_unittest.cc",
     "child_accounts/event_based_status_reporting_service_unittest.cc",
+    "child_accounts/family_user_metrics_service_unittest.cc",
     "child_accounts/family_user_session_metrics_unittest.cc",
     "child_accounts/parent_access_code/authenticator_unittest.cc",
     "child_accounts/parent_access_code/parent_access_test_utils.cc",
