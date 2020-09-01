@@ -551,6 +551,8 @@ void Node::NativeApplyScroll(ScrollState& scroll_state) {
 
   ScrollableArea* scrollable_area =
       ScrollableArea::GetForScrolling(ToLayoutBox(GetLayoutObject()));
+  if (!scrollable_area)
+    return;
   LayoutBox* box_to_scroll = scrollable_area->GetLayoutBox();
 
   // TODO(bokan): This is a hack to fix https://crbug.com/977954. If we have a
@@ -567,12 +569,6 @@ void Node::NativeApplyScroll(ScrollState& scroll_state) {
                                      IsA<LayoutView>(box_to_scroll);
   DCHECK(!also_scroll_visual_viewport ||
          !box_to_scroll->IsGlobalRootScroller());
-
-  if (!scrollable_area) {
-    // The LayoutView should always create a ScrollableArea.
-    DCHECK(!also_scroll_visual_viewport);
-    return;
-  }
 
   ScrollResult result =
       scrollable_area->UserScroll(scroll_state.delta_granularity(), delta,
