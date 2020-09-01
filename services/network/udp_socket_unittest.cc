@@ -778,8 +778,8 @@ TEST_F(UDPSocketTest, ErrorHappensDuringSocketOptionsConfiguration) {
   // It's legal to retry Connect() with valid options.
   mojom::UDPSocketOptionsPtr valid_options = mojom::UDPSocketOptions::New();
   valid_options->multicast_time_to_live = 255;
-  ASSERT_EQ(net::OK,
-            helper.ConnectSync(server_addr, std::move(options), &local_addr));
+  ASSERT_EQ(net::OK, helper.ConnectSync(server_addr, std::move(valid_options),
+                                        &local_addr));
   EXPECT_NE(0, local_addr.port());
 }
 
