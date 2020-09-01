@@ -30,6 +30,11 @@ class DeskActivationAnimation : public DeskAnimationBase {
   metrics_util::ReportCallback GetReportCallback() const override;
 
  private:
+  // Prepares the desk associated with |index| for taking a screenshot. Exits
+  // overview and splitview if necessary and then activates the desk. Restores
+  // splitview if necessary after activating the desk.
+  void PrepareDeskForScreenshot(int index);
+
   // The switch source that requested this animation.
   const DesksSwitchSource switch_source_;
 };

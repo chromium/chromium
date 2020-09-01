@@ -9,7 +9,9 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/auto_reset.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -19,6 +21,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/transform.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -44,17 +47,13 @@ constexpr base::TimeDelta kRemovedDeskWindowTranslationDuration =
 
 // Create the layer that will be the parent of the screenshot layer, with a
 // solid black color to act as the background showing behind the two
-// screenshot layers in the |kDesksSpacing| region between them.
-// This is the layer that will be animated.
+// screenshot layers in the |kDesksSpacing| region between them. It will get
+// sized as children get added to it. This is the layer that will be animated.
 std::unique_ptr<ui::LayerTreeOwner> CreateAnimationLayerOwner(
     aura::Window* root) {
   auto animation_layer = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
-  gfx::Rect layer_bounds(root->layer()->size());
-  layer_bounds.set_width(2 * layer_bounds.width() + kDesksSpacing);
-  animation_layer->SetBounds(layer_bounds);
   animation_layer->SetName("Desk switch animation layer");
   animation_layer->SetColor(SK_ColorBLACK);
-
   return std::make_unique<ui::LayerTreeOwner>(std::move(animation_layer));
 }
 
@@ -98,6 +97,10 @@ std::unique_ptr<ui::Layer> CreateLayerFromScreenshotResult(
       layer_size);
 
   return screenshot_layer;
+}
+
+std::string GetScreenshotLayerName(int index) {
+  return "Desk " + base::NumberToString(index) + " screenshot layer";
 }
 
 }  // namespace
@@ -171,32 +174,10 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
   DCHECK(ending_desk_screenshot_taken_);
   DCHECK(!animation_finished_);
 
+  // Set a transform so that the ending desk will be visible.
   gfx::Transform animation_layer_ending_transform;
-
-  if (starting_desk_index_ < ending_desk_index_) {
-    // Starting desk is one the left, so the ending transform of the parent
-    // "animation layer" is then a translation to the left such that at the end,
-    // the ending screenshot layer becomes the one visible on the screen.
-    //
-    //                         +-----------+
-    //                         | Animation |
-    //                         |  layer    |
-    //                         +-----------+
-    //                           /        \
-    //                +------------+      +------------+
-    //                | start desk |      | end desk   |
-    //                | screenshot |      | screenshot |
-    //                |  layer     |      |  layer     |
-    //                +------------+      +------------+
-    //                      ^
-    //                 start here
-    //
-    //                |<------------------|
-    //                          ^
-    //               `x_translation_offset_`
-    //
-    animation_layer_ending_transform.Translate(-x_translation_offset_, 0);
-  }
+  animation_layer_ending_transform.Translate(
+      -GetXPositionOfScreenshot(ending_desk_index_), 0);
 
   // Animate the parent "animation layer" towards the ending transform.
   ui::Layer* animation_layer = animation_layer_owner_->root();
@@ -225,7 +206,7 @@ void RootWindowDeskSwitchAnimator::StartAnimation() {
   }
 }
 
-void RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
+bool RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
   DCHECK(features::IsEnhancedDeskAnimations());
   DCHECK(!for_remove_);
   DCHECK_NE(new_ending_desk_index, ending_desk_index_);
@@ -233,17 +214,24 @@ void RootWindowDeskSwitchAnimator::ReplaceAnimation(int new_ending_desk_index) {
   starting_desk_index_ = ending_desk_index_;
   ending_desk_index_ = new_ending_desk_index;
 
-  // TODO(sammiequon): Change this function to return a boolean. The caller will
-  // then start the animation, or take a new screenshot.
   if (!!screenshot_layers_[ending_desk_index_]) {
-    return;
+    // Notify the caller to start an animation to |ending_desk_index_|.
+    return false;
   }
 
   ending_desk_screenshot_retries_ = 0;
   ending_desk_screenshot_taken_ = false;
+
+  // Notify the caller to activate the next desk and request a screenshot.
+  return true;
 }
 
 void RootWindowDeskSwitchAnimator::OnImplicitAnimationsCompleted() {
+  // |setting_new_transform_| is true we call SetTransform while an animation is
+  // under progress. Do not notify our delegate in that case.
+  if (setting_new_transform_)
+    return;
+
   StopObservingImplicitAnimations();
   animation_finished_ = true;
   delegate_->OnDeskSwitchAnimationFinished();
@@ -255,42 +243,11 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
 
   ui::Layer* starting_desk_screenshot_layer = layer.release();
   screenshot_layers_[starting_desk_index_] = starting_desk_screenshot_layer;
-  gfx::Rect screenshot_bounds(root_window_->layer()->size());
-  gfx::Transform animation_layer_starting_transform;
+  starting_desk_screenshot_layer->SetName(
+      GetScreenshotLayerName(starting_desk_index_));
 
-  if (starting_desk_index_ > ending_desk_index_) {
-    // Starting desk is one the right, so we need to offset the screenshot layer
-    // horizontally to the right by an amount equal to its width plus
-    // kDesksSpacing (|x_translation_offset_|).
-    //
-    //                         +-----------+
-    //                         | Animation |
-    //                         |  layer    |
-    //                         +-----------+
-    //                           /        \
-    //                +------------+      +------------+
-    //                | end desk   |      | start desk |
-    //                | screenshot |      | screenshot |
-    //                |  layer     |      |  layer     |
-    //                +------------+      +------------+
-    //                                          ^
-    //                |----------------->| start here
-    //                         ^
-    //               `x_translation_offset_`
-    //
-    screenshot_bounds.Offset(x_translation_offset_, 0);
-
-    // However the parent "animation layer" is startingly translated by the same
-    // amount in the opposite direction such that starting desk screenshot is
-    // the one shown on the screen.
-    animation_layer_starting_transform.Translate(-x_translation_offset_, 0);
-  }
-
-  starting_desk_screenshot_layer->SetName("Starting desk screenshot");
-  starting_desk_screenshot_layer->SetBounds(screenshot_bounds);
   auto* animation_layer = animation_layer_owner_->root();
   animation_layer->Add(starting_desk_screenshot_layer);
-  animation_layer->SetTransform(animation_layer_starting_transform);
 
   // Add the layers on top of everything, so that things that result from desk
   // activation (such as showing and hiding windows, exiting overview mode ...
@@ -319,6 +276,7 @@ void RootWindowDeskSwitchAnimator::CompleteAnimationPhase1WithLayer(
   }
 
   starting_desk_screenshot_taken_ = true;
+  OnScreenshotLayerCreated();
   delegate_->OnStartingDeskScreenshotTaken(ending_desk_index_);
 }
 
@@ -365,41 +323,132 @@ void RootWindowDeskSwitchAnimator::OnEndingDeskScreenshotTaken(
   ui::Layer* ending_desk_screenshot_layer =
       CreateLayerFromScreenshotResult(std::move(copy_result)).release();
   screenshot_layers_[ending_desk_index_] = ending_desk_screenshot_layer;
-  gfx::Rect screenshot_bounds(root_window_->layer()->size());
-
-  if (starting_desk_index_ < ending_desk_index_) {
-    // Starting desk is one the left, so we need to offset the ending desk
-    // screenshot layer horizontally to the right by an amount equal to its
-    // width plus kDesksSpacing (|x_translation_offset_|).
-    //
-    //                         +-----------+
-    //                         | Animation |
-    //                         |  layer    |
-    //                         +-----------+
-    //                           /        \
-    //                +------------+      +------------+
-    //                | start desk |      | end desk   |
-    //                | screenshot |      | screenshot |
-    //                |  layer     |      |  layer     |
-    //                +------------+      +------------+
-    //                      ^
-    //                  start here
-    //
-    //                |------------------>|
-    //                          ^
-    //                `x_translation_offset_`
-    //
-    screenshot_bounds.Offset(x_translation_offset_, 0);
-  }
-
-  ending_desk_screenshot_layer->SetName("Ending desk screenshot");
-  ending_desk_screenshot_layer->SetBounds(screenshot_bounds);
-
-  auto* animation_layer = animation_layer_owner_->root();
-  animation_layer->Add(ending_desk_screenshot_layer);
+  ending_desk_screenshot_layer->SetName(
+      GetScreenshotLayerName(ending_desk_index_));
+  animation_layer_owner_->root()->Add(ending_desk_screenshot_layer);
 
   ending_desk_screenshot_taken_ = true;
+  OnScreenshotLayerCreated();
   delegate_->OnEndingDeskScreenshotTaken();
+}
+
+void RootWindowDeskSwitchAnimator::OnScreenshotLayerCreated() {
+  // Set the layer bounds. |screenshot_layers_| always matches the order of the
+  // desks, which is left to right.
+  int num_screenshots = 0;
+  const gfx::Size root_window_size = root_window_->bounds().size();
+  DCHECK_EQ(x_translation_offset_, root_window_size.width() + kDesksSpacing);
+  for (ui::Layer* layer : screenshot_layers_) {
+    if (!layer)
+      continue;
+
+    const int x = num_screenshots * x_translation_offset_;
+    layer->SetBounds(gfx::Rect(gfx::Point(x, 0), root_window_size));
+    ++num_screenshots;
+  }
+
+  // The animation layer is sized to contain all the screenshot layers plus
+  // |kDesksSpacing| between any two adjacent screenshot layers.
+  const gfx::Rect animation_layer_bounds(
+      num_screenshots * x_translation_offset_ - kDesksSpacing,
+      root_window_size.height());
+  auto* animation_layer = animation_layer_owner_->root();
+  animation_layer->SetBounds(animation_layer_bounds);
+
+  // Two examples of simple animations (two desks involved), one moving left and
+  // one moving right. Starting desk is one the left, so we start off with no
+  // offset and then slide the animation layer so that ending desk is visible
+  // (target transform of -|x_translation_offset_| translation).
+  //
+  //                         +-----------+
+  //                         | Animation |
+  //                         |  layer    |
+  //                         +-----------+
+  //                           /        \
+  //                +------------+      +------------+
+  //                | start desk |      | end desk   |
+  //                | screenshot |      | screenshot |
+  //                |  layer (1) |      |  layer (2) |
+  //                +------------+      +------------+
+  //                      ^
+  //                  start here
+  //
+  //                |------------------>|
+  //                          ^
+  //                `x_translation_offset_`
+  //
+  // Starting desk is one the right, so we need to offset the animation layer
+  // horizontally so that the starting desk is visible
+  // (-|x_translation_offset_|) and the slide the animation layer so that the
+  // ending desk is visible (target transform of 0 translation).
+  //
+  //                         +-----------+
+  //                         | Animation |
+  //                         |  layer    |
+  //                         +-----------+
+  //                           /        \
+  //                +------------+      +------------+
+  //                | end desk   |      | start desk |
+  //                | screenshot |      | screenshot |
+  //                |  layer (1) |      |  layer (2) |
+  //                +------------+      +------------+
+  //                                          ^
+  //                |----------------->| start here
+  //                         ^
+  //               `x_translation_offset_`
+  //
+  // Chained animation example, we are in the middle of animating from desk 3 to
+  // desk 2 (start' to end'), currently halfway through the animation. Desk 1 is
+  // added, so the x position of both desk 2 and desk 3 will get shifted by
+  // |x_translation_offset_|. Shift animation layer by -|x_translation_offset_|
+  // so that half of desk 3 and half of desk 2 are still visible. Without this
+  // shift, there will be a jump and we will see half of desk 2 and half of
+  // desk 1. We then animate from start to end.
+  //
+  //                +---------------------------------------+
+  //                |          Animation                    |
+  //                |           layer                       |
+  //                +---------------------------------------+
+  //                    /               |                  \
+  //          +------------+      +------------+      +------------+
+  //          | desk 1     |      | desk 2     |      | desk 3     |
+  //          | screenshot |      | screenshot |      | screenshot |
+  //          |  layer     |      |  layer     |      |  layer     |
+  //          +------------+      +------------+      +------------+
+  //          ^                   ^       ^           ^
+  //         end                 end'   start       start'
+
+  // If there is an existing transform, continue animating from there.
+  gfx::Transform current_transform = animation_layer->transform();
+  DCHECK(current_transform.IsIdentityOr2DTranslation());
+  if (!current_transform.IsIdentity()) {
+    // If the new layer is located on the left of the prior created layers,
+    // shift the animation layer transform so that the content shown to users
+    // remain the same.
+    if (ending_desk_index_ < starting_desk_index_) {
+      // Setting a new transform will end an ongoing animation, which will
+      // trigger OnImplicitAnimationsCompleted, which notifies our delegate to
+      // delete us. For this case, set a flag so that
+      // OnImplicitAnimationsCompleted does no notifying.
+      base::AutoReset<bool> auto_reset(&setting_new_transform_, true);
+      current_transform.Translate(-x_translation_offset_, 0);
+      animation_layer->SetTransform(current_transform);
+    }
+    return;
+  }
+
+  // Otherwise, transform |animation_layer| so that starting desk screenshot
+  // layer is the current visible layer.
+  gfx::Transform animation_layer_starting_transform;
+  animation_layer_starting_transform.Translate(
+      -GetXPositionOfScreenshot(starting_desk_index_), 0);
+  animation_layer->SetTransform(animation_layer_starting_transform);
+}
+
+int RootWindowDeskSwitchAnimator::GetXPositionOfScreenshot(int index) {
+  ui::Layer* layer = screenshot_layers_[index];
+  DCHECK(layer);
+  return layer->bounds().x();
 }
 
 }  // namespace ash

@@ -47,6 +47,15 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   if (source != switch_source_)
     return false;
 
+  // If any of the animators are still taking either screenshot, do not replace
+  // the animation.
+  for (const auto& animator : desk_switch_animators_) {
+    if (!animator->starting_desk_screenshot_taken() ||
+        !animator->ending_desk_screenshot_taken()) {
+      return false;
+    }
+  }
+
   const int new_ending_desk_index = ending_desk_index_ + (moving_left ? -1 : 1);
   // Already at the leftmost or rightmost desk, nothing to replace.
   if (new_ending_desk_index < 0 ||
@@ -55,14 +64,56 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   }
 
   ending_desk_index_ = new_ending_desk_index;
-  for (const auto& animator : desk_switch_animators_)
-    animator->ReplaceAnimation(new_ending_desk_index);
+
+  // List of animators that need a screenshot. It should be either empty or
+  // match the size of |desk_switch_animators_| as all the animations should be
+  // in sync.
+  // TODO(sammiequon): Verify all the animations are in sync.
+  std::vector<RootWindowDeskSwitchAnimator*> pending_animators;
+  for (const auto& animator : desk_switch_animators_) {
+    if (animator->ReplaceAnimation(new_ending_desk_index))
+      pending_animators.push_back(animator.get());
+  }
+
+  // No screenshot needed. Call OnEndingDeskScreenshotTaken which will start the
+  // animation.
+  if (pending_animators.empty()) {
+    OnEndingDeskScreenshotTaken();
+    return true;
+  }
+
+  // Activate the target desk and take a screenshot.
+  DCHECK_EQ(pending_animators.size(), desk_switch_animators_.size());
+  PrepareDeskForScreenshot(new_ending_desk_index);
+  for (auto* animator : pending_animators)
+    animator->TakeEndingDeskScreenshot();
   return true;
 }
 
 void DeskActivationAnimation::OnStartingDeskScreenshotTakenInternal(
     int ending_desk_index) {
   DCHECK_EQ(ending_desk_index_, ending_desk_index);
+  PrepareDeskForScreenshot(ending_desk_index);
+}
+
+void DeskActivationAnimation::OnDeskSwitchAnimationFinishedInternal() {
+  // During a chained animation we may not switch desks if a replaced target
+  // desk does not require a new screenshot. If that is the case, activate the
+  // proper desk here.
+  controller_->ActivateDeskInternal(
+      controller_->desks()[ending_desk_index_].get(),
+      /*update_window_activation=*/true);
+}
+
+metrics_util::ReportCallback DeskActivationAnimation::GetReportCallback()
+    const {
+  return metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+    UMA_HISTOGRAM_PERCENTAGE(kDeskActivationSmoothnessHistogramName,
+                             smoothness);
+  }));
+}
+
+void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
   // The order here matters. Overview must end before ending tablet split view
   // before switching desks. (If clamshell split view is active on one or more
   // displays, then it simply will end when we end overview.) That's because
@@ -90,23 +141,6 @@ void DeskActivationAnimation::OnStartingDeskScreenshotTakenInternal(
       /*update_window_activation=*/true);
 
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
-}
-
-void DeskActivationAnimation::OnDeskSwitchAnimationFinishedInternal() {
-  // During a chained animation we may not switch desks if a replaced target
-  // desk does not require a new screenshot. If that is the case, activate the
-  // proper desk here.
-  controller_->ActivateDeskInternal(
-      controller_->desks()[ending_desk_index_].get(),
-      /*update_window_activation=*/true);
-}
-
-metrics_util::ReportCallback DeskActivationAnimation::GetReportCallback()
-    const {
-  return metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
-    UMA_HISTOGRAM_PERCENTAGE(kDeskActivationSmoothnessHistogramName,
-                             smoothness);
-  }));
 }
 
 // -----------------------------------------------------------------------------

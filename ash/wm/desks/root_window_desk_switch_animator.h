@@ -151,6 +151,12 @@ namespace ash {
 //   the desks screenshots are animating horizontally.
 // This gives the effect that the removed desk windows are jumping from their
 // desk to the target desk.
+//
+// TODO(sammiequon): Update the class docs. It has been modified slightly to
+// accommodate the chained desk animations feature, and will be modified
+// slightly more to accommodate the continuous desk animations feature. The base
+// algorithm is still valid, but once the features are near completion these
+// need to be updated.
 class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
  public:
   class Delegate {
@@ -209,8 +215,9 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
   void StartAnimation();
 
   // Replace the current animation with one that goes to
-  // |new_ending_desk_index|.
-  void ReplaceAnimation(int new_ending_desk_index);
+  // |new_ending_desk_index|. Returns true if a screenshot of the new desk needs
+  // to be taken.
+  bool ReplaceAnimation(int new_ending_desk_index);
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -230,6 +237,15 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
       std::unique_ptr<viz::CopyOutputResult> copy_result);
   void OnEndingDeskScreenshotTaken(
       std::unique_ptr<viz::CopyOutputResult> copy_result);
+
+  // Called when a screenshot layer is created and added to the animation layer.
+  // Sets its bounds and transforms the animation layer to the correct starting
+  // position.
+  void OnScreenshotLayerCreated();
+
+  // Gets the x position of the |screenshot_layer_| associated with |index| in
+  // its parent layer's coordinates (|animation_layer_owner_->root()|).
+  int GetXPositionOfScreenshot(int index);
 
   // The root window that this animator is associated with.
   aura::Window* const root_window_;
@@ -282,6 +298,11 @@ class RootWindowDeskSwitchAnimator : public ui::ImplicitAnimationObserver {
 
   // True when phase (3) finishes.
   bool animation_finished_ = false;
+
+  // True while setting a new transform for chaining. If a animation is active,
+  // calling SetTranform will trigger OnImplicitAnimationsCompleted. In these
+  // cases we do not want to notify our delegate that the animation is finished.
+  bool setting_new_transform_ = false;
 
   base::WeakPtrFactory<RootWindowDeskSwitchAnimator> weak_ptr_factory_{this};
 };
