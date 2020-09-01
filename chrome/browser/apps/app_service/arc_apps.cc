@@ -1131,7 +1131,8 @@ void ArcApps::OnIntentFiltersUpdated(
   auto GetAppInfoAndPublish = [prefs, this](std::string app_id) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
     if (app_info) {
-      Publish(Convert(prefs, app_id, *app_info), subscribers_);
+      Publish(Convert(prefs, app_id, *app_info, false /* update_icon */),
+              subscribers_);
     }
   };
 
