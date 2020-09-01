@@ -66,6 +66,9 @@ group("policy_testserver_pyproto") {
     "$root_out_dir/pyproto/components/policy/proto/device_management_backend_pb2.py",
     "$root_out_dir/pyproto/components/policy/proto/cloud_policy_pb2.py",
     "$root_out_dir/pyproto/components/policy/proto/policy_common_definitions_pb2.py",
+    "$root_out_dir/pyproto/third_party/shell-encryption/src/serialization_pb2.py",
+    "$root_out_dir/pyproto/third_party/private_membership/src/private_membership_pb2.py",
+    "$root_out_dir/pyproto/third_party/private_membership/src/private_membership_rlwe_pb2.py",
   ]
 
   if (!is_android) {
@@ -800,6 +803,9 @@ if (!is_android) {
       "//chrome:browser_tests_pak",
       "//chrome/browser/resources/media/mei_preload:component",
       "//chrome/test/data/webui:modulize",
+      "//components/policy/proto",
+      "//third_party/private_membership:private_membership_proto",
+      "//third_party/shell-encryption:serialization_proto",
 
       # TODO(thakis): Why do these need copying in browser_tests?
       # content_browsertests uses the non-copied files instead.
