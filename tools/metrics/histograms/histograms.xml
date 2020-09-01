@@ -118031,6 +118031,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.PedalShown" enum="SuggestionPedalType"
+    expires_after="2021-06-01">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Counts the type (concept ID) of omnibox pedals shown when the user used the
+    omnibox to go somewhere.
+
+    Pedals are a button attached to a search suggestion that either navigate to
+    a chrome:// URL or trigger a Chrome action (for example, opening the page
+    translation dialog or opening a new window in Incognito mode).
+
+    Note that, while it is uncommon, it is possible for multiple pedals to be
+    shown at one time so this can't be used as a count of how many times a pedal
+    or pedals were present.
+
+    This histogram is related to Omnibox.SuggestionUsed.Pedal.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.PhysicalWebProvider.SuggestionUsedWithoutOmniboxFocus"
     enum="Boolean" expires_after="2018-04-17">
   <obsolete>
@@ -118488,10 +118509,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>orinj@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
-    Counts how often omnibox pedals are used and records the type of pedal.
+    Counts how often omnibox pedals are used and records the type (concept ID)
+    of the pedal used.
+
     Pedals are a button attached to a search suggestion that either navigate to
-    a chrome://settings page or trigger a Chrome action (for example, opening
-    the page translation dialog or opening a new window in Incognito mode).
+    a chrome:// URL or trigger a Chrome action (for example, opening the page
+    translation dialog or opening a new window in Incognito mode).
+
+    This histogram is related to Omnibox.PedalShown.
   </summary>
 </histogram>
 

@@ -715,6 +715,17 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 void OmniboxEditModel::ExecutePedal(const AutocompleteMatch& match,
                                     base::TimeTicks match_selection_timestamp) {
   CHECK(match.pedal);
+
+  // Record the presence of any Pedals in the result set.
+  for (const AutocompleteMatch& match_in_result : result()) {
+    if (match_in_result.pedal) {
+      base::UmaHistogramEnumeration("Omnibox.PedalShown",
+                                    match_in_result.pedal->id(),
+                                    OmniboxPedalId::TOTAL_COUNT);
+    }
+  }
+
+  // Record the use of this Pedal.
   base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
                                 match.pedal->id(), OmniboxPedalId::TOTAL_COUNT);
   {
@@ -743,6 +754,15 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
 
   // Save the result of the interaction, but do not record the histogram yet.
   focus_resulted_in_navigation_ = true;
+
+  // Record the presence of any Pedals in the result set.
+  for (const AutocompleteMatch& match_in_result : result()) {
+    if (match_in_result.pedal) {
+      base::UmaHistogramEnumeration("Omnibox.PedalShown",
+                                    match_in_result.pedal->id(),
+                                    OmniboxPedalId::TOTAL_COUNT);
+    }
+  }
 
   // Matches with |pedal| may be opened normally or executed, but when a match
   // is a dedicated Pedal suggestion, it should always be executed. This only
