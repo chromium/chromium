@@ -28,8 +28,6 @@ MarkingVisitorBase::MarkingVisitorBase(ThreadState* state,
       ephemeron_pairs_to_process_worklist_(
           Heap().GetEphemeronPairsToProcessWorklist(),
           task_id),
-      backing_store_callback_worklist_(Heap().GetBackingStoreCallbackWorklist(),
-                                       task_id),
       marking_mode_(marking_mode),
       task_id_(task_id) {}
 
@@ -37,7 +35,6 @@ void MarkingVisitorBase::FlushCompactionWorklists() {
   if (marking_mode_ != kGlobalMarkingWithCompaction)
     return;
   movable_reference_worklist_.FlushToGlobal();
-  backing_store_callback_worklist_.FlushToGlobal();
 }
 
 void MarkingVisitorBase::RegisterWeakCallback(WeakCallback callback,
@@ -320,7 +317,6 @@ void ConcurrentMarkingVisitor::FlushWorklists() {
   // Flush compaction worklists.
   if (marking_mode_ == kGlobalMarkingWithCompaction) {
     movable_reference_worklist_.FlushToGlobal();
-    backing_store_callback_worklist_.FlushToGlobal();
   }
 }
 

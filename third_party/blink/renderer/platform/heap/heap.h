@@ -73,11 +73,6 @@ struct EphemeronPairItem {
   TraceCallback value_trace_callback;
 };
 
-struct BackingStoreCallbackItem {
-  const void* backing;
-  MovingObjectCallback callback;
-};
-
 struct CustomCallbackItem {
   WeakCallback callback;
   const void* parameter;
@@ -104,8 +99,6 @@ using MovableReferenceWorklist =
     Worklist<const MovableReference*, 256 /* local entries */>;
 using EphemeronPairsWorklist =
     Worklist<EphemeronPairItem, 64 /* local entries */>;
-using BackingStoreCallbackWorklist =
-    Worklist<BackingStoreCallbackItem, 16 /* local entries */>;
 using V8ReferencesWorklist = Worklist<V8Reference, 16 /* local entries */>;
 using NotSafeToConcurrentlyTraceWorklist =
     Worklist<NotSafeToConcurrentlyTraceItem, 64 /* local entries */>;
@@ -240,10 +233,6 @@ class PLATFORM_EXPORT ThreadHeap {
 
   EphemeronPairsWorklist* GetEphemeronPairsToProcessWorklist() const {
     return ephemeron_pairs_to_process_worklist_.get();
-  }
-
-  BackingStoreCallbackWorklist* GetBackingStoreCallbackWorklist() const {
-    return backing_store_callback_worklist_.get();
   }
 
   V8ReferencesWorklist* GetV8ReferencesWorklist() const {
@@ -450,10 +439,6 @@ class PLATFORM_EXPORT ThreadHeap {
   // MarkingVisitor to ThreadHeap.
   std::unique_ptr<EphemeronPairsWorklist> discovered_ephemeron_pairs_worklist_;
   std::unique_ptr<EphemeronPairsWorklist> ephemeron_pairs_to_process_worklist_;
-
-  // This worklist is used to passing backing store callback to HeapCompact.
-  std::unique_ptr<BackingStoreCallbackWorklist>
-      backing_store_callback_worklist_;
 
   // Worklist for storing the V8 references until ThreadHeap can flush them
   // to V8.

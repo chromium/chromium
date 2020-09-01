@@ -235,11 +235,6 @@ class PLATFORM_EXPORT Visitor {
 
   // Dynamic visitor interface.
 
-  // Registers backing store pointers so that they can be moved and properly
-  // updated.
-  virtual void RegisterBackingStoreCallback(const void* backing,
-                                            MovingObjectCallback) {}
-
   // Adds a |callback| that is invoked with |parameter| after liveness has been
   // computed on the whole object graph. The |callback| may use the provided
   // |LivenessBroker| to determine whether an object is considered alive or

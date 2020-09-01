@@ -94,10 +94,6 @@ class PLATFORM_EXPORT HeapCompact final {
   // (Called by the sweep compaction pass.)
   void Relocate(Address from, Address to);
 
-  // Updates the callbacks collection of MovableObjectFixups in preparation
-  // for compaction.
-  void UpdateBackingStoreCallbacks();
-
   // Enables compaction for the next garbage collection if technically possible.
   void EnableCompactionForNextGCForTesting() { force_for_next_gc_ = true; }
 

@@ -54,7 +54,6 @@ class HeapCompact::MovableObjectFixups final {
   void dumpDebugStats() {
     LOG_HEAP_COMPACTION() << "Fixups: pages=" << relocatable_pages_.size()
                           << " objects=" << fixups_.size()
-                          << " callbacks=" << fixup_callbacks_.size()
                           << " interior-size=" << interior_fixups_.size();
   }
 #endif
@@ -67,10 +66,6 @@ class HeapCompact::MovableObjectFixups final {
   // Map from movable reference (value) to its slots. Upon moving an object its
   // slot pointing to it requires updating.
   HashMap<MovableReference, MovableReference*> fixups_;
-
-  // Map from movable regions to callbacks that need to be invoked
-  // when the region moves.
-  HashMap<MovableReference, MovingObjectCallback> fixup_callbacks_;
 
   // Map of interior slots to their final location. Needs to be an ordered map
   // as it is used to walk through slots starting at a given memory address.
@@ -190,12 +185,6 @@ void HeapCompact::MovableObjectFixups::Relocate(Address from, Address to) {
       RelocateInteriorFixups(from, to, size);
     }
 
-    // Execute custom callback after interior fixups have been processed.
-    auto callback = fixup_callbacks_.find(from);
-    if (UNLIKELY(callback != fixup_callbacks_.end())) {
-      callback->value(from, to, size);
-    }
-
     auto it = fixups_.find(from);
     // This means that there is no corresponding slot for a live backing store.
     // This may happen because a mutator may change the slot to point to a
@@ -279,15 +268,6 @@ void HeapCompact::MovableObjectFixups::RelocateInteriorFixups(Address from,
     if (interior_it == interior_fixups_.end())
       return;
     offset = reinterpret_cast<Address>(interior_it->first) - from;
-  }
-}
-
-void HeapCompact::MovableObjectFixups::UpdateCallbacks() {
-  BackingStoreCallbackWorklist::View backing_store_callbacks(
-      heap_->GetBackingStoreCallbackWorklist(), WorklistTaskId::MutatorThread);
-  BackingStoreCallbackItem item;
-  while (backing_store_callbacks.Pop(&item)) {
-    fixup_callbacks_.insert(item.backing, item.callback);
   }
 }
 
@@ -429,13 +409,6 @@ void HeapCompact::Relocate(Address from, Address to) {
   Fixups().Relocate(from, to);
 }
 
-void HeapCompact::UpdateBackingStoreCallbacks() {
-  if (!do_compact_)
-    return;
-
-  Fixups().UpdateCallbacks();
-}
-
 void HeapCompact::FilterNonLiveSlots() {
   if (!do_compact_)
     return;
@@ -472,7 +445,6 @@ void HeapCompact::Cancel() {
   last_fixup_count_for_testing_ = 0;
   do_compact_ = false;
   heap_->GetMovableReferenceWorklist()->Clear();
-  heap_->GetBackingStoreCallbackWorklist()->Clear();
   fixups_.reset();
 }
 

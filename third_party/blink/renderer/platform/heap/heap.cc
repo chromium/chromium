@@ -182,8 +182,6 @@ void ThreadHeap::SetupWorklists(bool should_initialize_compaction_worklists) {
       std::make_unique<NotSafeToConcurrentlyTraceWorklist>();
   if (should_initialize_compaction_worklists) {
     movable_reference_worklist_ = std::make_unique<MovableReferenceWorklist>();
-    backing_store_callback_worklist_ =
-        std::make_unique<BackingStoreCallbackWorklist>();
   }
 }
 
@@ -241,7 +239,6 @@ void ThreadHeap::DestroyMarkingWorklists(BlinkGC::StackState stack_state) {
 
 void ThreadHeap::DestroyCompactionWorklists() {
   movable_reference_worklist_.reset();
-  backing_store_callback_worklist_.reset();
 }
 
 HeapCompact* ThreadHeap::Compaction() {

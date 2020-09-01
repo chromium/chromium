@@ -1386,7 +1386,6 @@ void ThreadState::AtomicPauseSweepAndCompact(
     ThreadHeapStatsCollector::Scope stats_scope(
         Heap().stats_collector(),
         ThreadHeapStatsCollector::kAtomicPauseCompaction);
-    Heap().Compaction()->UpdateBackingStoreCallbacks();
     Heap().Compaction()->FilterNonLiveSlots();
   }
 

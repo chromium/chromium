@@ -145,13 +145,6 @@ class PLATFORM_EXPORT HeapAllocator {
                              Traits>::Trace(visitor, &t);
   }
 
-  template <typename T, typename VisitorDispatcher>
-  static void RegisterBackingStoreCallback(VisitorDispatcher visitor,
-                                           T* backing,
-                                           MovingObjectCallback callback) {
-    visitor->RegisterBackingStoreCallback(backing, callback);
-  }
-
   static void EnterGCForbiddenScope() {
     ThreadState::Current()->EnterGCForbiddenScope();
   }
