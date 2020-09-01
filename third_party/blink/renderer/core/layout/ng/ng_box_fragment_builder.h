@@ -226,6 +226,16 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // building now.
   void SetConsumedBlockSize(LayoutUnit size) { consumed_block_size_ = size; }
 
+  // Set how much of the column block-size we've used so far. This will be used
+  // to determine the block-size of any new columns added by descendant
+  // out-of-flow positioned elements.
+  void SetBlockOffsetForAdditionalColumns(LayoutUnit size) {
+    block_offset_for_additional_columns_ = size;
+  }
+  LayoutUnit BlockOffsetForAdditionalColumns() const {
+    return block_offset_for_additional_columns_;
+  }
+
   void SetSequenceNumber(unsigned sequence_number) {
     sequence_number_ = sequence_number;
   }
@@ -542,6 +552,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_math_fraction_ = false;
   bool is_at_block_end_ = false;
   LayoutUnit consumed_block_size_;
+  LayoutUnit block_offset_for_additional_columns_;
   unsigned sequence_number_ = 0;
 
   LayoutUnit minimal_space_shortage_ = LayoutUnit::Max();

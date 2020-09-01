@@ -294,6 +294,8 @@ scoped_refptr<const NGLayoutResult> NGColumnLayoutAlgorithm::Layout() {
   container_builder_.SetFragmentsTotalBlockSize(previously_consumed_block_size +
                                                 block_size);
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
+  container_builder_.SetBlockOffsetForAdditionalColumns(
+      CurrentContentBlockOffset());
 
   if (ConstraintSpace().HasBlockFragmentation()) {
     // In addition to establishing one, we're nested inside another

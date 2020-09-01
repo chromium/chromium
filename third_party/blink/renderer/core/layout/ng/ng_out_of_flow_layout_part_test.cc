@@ -966,6 +966,8 @@ TEST_F(NGOutOfFlowLayoutPartTest,
 
   // TODO(1079031): With top set to 0px, the abspos should start in the first
   // column with an offset of (0,0).
+  // TODO(1079031): The offsets of the columns following the spanner are
+  // incorrect. (The first should start at (0,10)).
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x40
     offset:0,0 size:1000x40
@@ -979,12 +981,69 @@ TEST_F(NGOutOfFlowLayoutPartTest,
       offset:0,10 size:1000x0
       offset:0,10 size:1000x0
       offset:0,10 size:1000x0
-      offset:1016,0 size:492x40
-        offset:0,0 size:5x40
-      offset:1524,0 size:492x40
-        offset:0,0 size:5x40
-      offset:2032,0 size:492x40
+      offset:1016,0 size:492x30
         offset:0,0 size:5x30
+      offset:1524,0 size:492x30
+        offset:0,0 size:5x30
+      offset:2032,0 size:492x30
+        offset:0,0 size:5x30
+      offset:2540,0 size:492x30
+        offset:0,0 size:5x20
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Tests that new column fragments are added correctly if a positioned node
+// fragments beyond the last fragmentainer in a context directly after a
+// spanner.
+TEST_F(NGOutOfFlowLayoutPartTest,
+       PositionedFragmentationWithNewColumnsAfterSpanner) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; width:5px; height:50px; top:25px;
+        }
+        .content { height:20px; }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel">
+            <div class="content"></div>
+            <div class="abs"></div>
+          </div>
+          <div style="column-span:all;"></div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  // TODO(1079031): With top set to 25px, the abspos should start in the third
+  // column with an offset of (0,5).
+  // TODO(1079031): The offsets of the columns following the spanner are
+  // incorrect. (The first should start at (0,10)).
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x10
+        offset:0,0 size:30x10
+          offset:0,0 size:30x10
+      offset:508,0 size:492x10
+        offset:0,0 size:30x10
+          offset:0,0 size:30x10
+      offset:0,10 size:1000x0
+      offset:1016,0 size:492x30
+        offset:0,15 size:5x15
+      offset:1524,0 size:492x30
+        offset:0,0 size:5x30
+      offset:2032,0 size:492x30
+        offset:0,0 size:5x5
 )DUMP";
   EXPECT_EQ(expectation, dump);
 }

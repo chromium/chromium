@@ -1152,9 +1152,10 @@ const NGConstraintSpace& NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
       original_column_block_size_ != kIndefiniteSize &&
       !container_builder_->Children()[index + 1]
            .fragment->IsFragmentainerBox()) {
-    // TODO(almaher): Should we take the consumed column block size into
-    // account?
-    column_size.block_size = original_column_block_size_;
+    column_size.block_size =
+        original_column_block_size_ -
+        container_builder_->BlockOffsetForAdditionalColumns();
+    column_size.block_size = column_size.block_size.ClampNegativeToZero();
   }
 
   // TODO(bebeaudr): Need to handle different fragmentation types. It won't
@@ -1227,9 +1228,10 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   if (original_column_block_size_ != kIndefiniteSize &&
       !container_builder_->Children()[child_index - 1]
            .fragment->IsFragmentainerBox()) {
-    // TODO(almaher): Should we take the consumed column block size into
-    // account?
-    fragmentainer_block_size = original_column_block_size_;
+    fragmentainer_block_size =
+        original_column_block_size_ -
+        container_builder_->BlockOffsetForAdditionalColumns();
+    fragmentainer_block_size = fragmentainer_block_size.ClampNegativeToZero();
   }
 
   wtf_size_t additional_fragment_count =
