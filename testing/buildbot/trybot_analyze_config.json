@@ -22,7 +22,6 @@
       "build/vs_toolchain.py",
       "infra/scripts/.*",
       "DEPS",
-      "testing/buildbot/.*json",
       "testing/buildbot/gn_isolate_map.pyl",
       "testing/merge_scripts/.*",
       "testing/scripts/.*",
