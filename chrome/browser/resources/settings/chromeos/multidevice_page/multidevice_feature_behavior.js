@@ -158,6 +158,16 @@ const MultiDeviceFeatureBehaviorImpl = {
         return this.i18nAdvanced('multideviceInstantTetheringItemSummary');
       case settings.MultiDeviceFeature.MESSAGES:
         return this.i18nAdvanced('multideviceAndroidMessagesItemSummary');
+      case settings.MultiDeviceFeature.PHONE_HUB:
+        return this.i18nAdvanced('multidevicePhoneHubItemSummary');
+      case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS:
+        return this.i18nAdvanced('multidevicePhoneHubNotificationsItemSummary');
+      case settings.MultiDeviceFeature.PHONE_HUB_NOTIFICATION_BADGE:
+        return this.i18nAdvanced(
+            'multidevicePhoneHubNotificationBadgeItemSummary');
+      case settings.MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION:
+        return this.i18nAdvanced(
+            'multidevicePhoneHubTaskContinuationItemSummary');
       default:
         return '';
     }

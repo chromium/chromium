@@ -253,6 +253,10 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATION_BADGE_SECTION_TITLE},
       {"multidevicePhoneHubTaskContinuationItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SECTION_TITLE},
+      {"multidevicePhoneHubNotificationBadgeItemSummary",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATION_BADGE_SUMMARY},
+      {"multidevicePhoneHubTaskContinuationItemSummary",
+       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY},
       {"multideviceNotificationAccessSetupAckTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE},
       {"multideviceNotificationAccessSetupConnectingTitle",
@@ -328,6 +332,15 @@ void MultiDeviceSection::AddLoadTimeData(
           IDS_SETTINGS_MULTIDEVICE_SMART_LOCK_SUMMARY,
           ui::GetChromeOSDeviceName(),
           GetHelpUrlWithBoard(chrome::kEasyUnlockLearnMoreUrl)));
+  html_source->AddString(
+      "multidevicePhoneHubItemSummary",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY,
+                                 ui::GetChromeOSDeviceName()));
+  html_source->AddString(
+      "multidevicePhoneHubNotificationsItemSummary",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY,
+          ui::GetChromeOSDeviceName()));
 
   AddEasyUnlockStrings(html_source);
   ::settings::AddNearbyShareData(html_source);
