@@ -697,6 +697,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/feedback/FeedbackContextFeedbackSource.java",
   "java/src/org/chromium/chrome/browser/feedback/FeedbackReporter.java",
   "java/src/org/chromium/chrome/browser/feedback/FeedbackSource.java",
+  "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherImpl.java",
   "java/src/org/chromium/chrome/browser/feedback/HistogramFeedbackSource.java",
   "java/src/org/chromium/chrome/browser/feedback/IMEFeedbackSource.java",
   "java/src/org/chromium/chrome/browser/feedback/InterestFeedFeedbackSource.java",

@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.help;
+package org.chromium.chrome.browser.feedback;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,10 +18,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.feedback.ChromeFeedbackCollector;
-import org.chromium.chrome.browser.feedback.FeedFeedbackCollector;
-import org.chromium.chrome.browser.feedback.FeedbackCollector;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -31,23 +27,22 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
- * TODO(crbug.com/1117343): Remove this class when downstream dependency is removed.
  * Launches an activity that displays a relevant support page and has an option to provide feedback.
  */
-public class HelpAndFeedback implements HelpAndFeedbackLauncher {
+public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     protected static final String FALLBACK_SUPPORT_URL =
             "https://support.google.com/chrome/topic/6069782";
     private static final String TAG = "HelpAndFeedback";
 
-    private static HelpAndFeedback sInstance;
+    private static HelpAndFeedbackLauncher sInstance;
 
     /**
-     * Returns the singleton instance of HelpAndFeedback, creating it if needed.
+     * Returns the singleton instance of HelpAndFeedbackLauncher, creating it if needed.
      */
-    public static HelpAndFeedback getInstance() {
+    public static HelpAndFeedbackLauncher getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
-            sInstance = AppHooks.get().createHelpAndFeedback();
+            sInstance = AppHooks.get().createHelpAndFeedbackLauncher();
         }
         return sInstance;
     }

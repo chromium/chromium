@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.directactions.DirectActionCoordinator;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.feedback.FeedbackReporter;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.gsa.GSAHelper;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
@@ -177,6 +179,14 @@ public abstract class AppHooks {
     }
 
     /**
+     * Returns a new instance of HelpAndFeedbackLauncher.
+     */
+    public HelpAndFeedbackLauncher createHelpAndFeedbackLauncher() {
+        return new HelpAndFeedbackLauncherImpl();
+    }
+
+    /**
+     * TODO(crbug.com/1117343): Remove this method when downstream dependency is removed.
      * Returns a new instance of HelpAndFeedback.
      */
     public HelpAndFeedback createHelpAndFeedback() {
