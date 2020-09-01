@@ -265,27 +265,16 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   // Returns a new registration id which is guaranteed to be unique in the
   // storage. Returns blink::mojom::kInvalidServiceWorkerRegistrationId if the
   // storage is disabled.
-  // NOTE: Currently this method is synchronous but intentionally uses async
-  // style because ServiceWorkerStorage will be accessed via mojo calls soon.
-  // See crbug.com/1046335 for details.
   void GetNewRegistrationId(
       base::OnceCallback<void(int64_t registration_id)> callback);
 
   // Returns a new version id which is guaranteed to be unique in the storage.
   // Returns kInvalidServiceWorkerVersionId if the storage is disabled.
-  // NOTE: Currently this method can return a new version id synchronously
-  // and doesn't have to take a callback. Using a callback is a preparation
-  // for using ServiceWorkerStorage via a mojo interface.
-  // See crbug.com/1046335 for details.
   void GetNewVersionId(base::OnceCallback<void(int64_t version_id)> callback);
 
   // Returns a new resource id which is guaranteed to be unique in the storage.
   // Returns blink::mojom::kInvalidServiceWorkerResourceId if the storage
   // is disabled.
-  // NOTE: Currently this method can return a new resource id synchronously
-  // and doesn't have to take a callback. Using a callback is a preparation
-  // for using ServiceWorkerStorage via a mojo interface.
-  // See crbug.com/1046335 for details.
   void GetNewResourceId(base::OnceCallback<void(int64_t resource_id)> callback);
 
   void Disable();
