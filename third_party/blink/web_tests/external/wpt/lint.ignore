@@ -729,8 +729,6 @@ MISSING DEPENDENCY: webxr/resources/webxr_util.js
 
 # TODO(Hexcles): delete these files once we include them in mojojs.zip.
 MOJOM-JS: resources/chromium/image_capture.mojom.js
-MOJOM-JS: resources/chromium/sensor_provider.mojom.js
-MOJOM-JS: resources/chromium/sensor.mojom.js
 
 # Tests that are false positives for using Ahem as a system font
 AHEM SYSTEM FONT: acid/acid3/test.html
