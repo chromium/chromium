@@ -31,9 +31,9 @@ class PDFModule : public pp::Module {
 PDFModule::PDFModule() = default;
 
 PDFModule::~PDFModule() {
-  if (IsSDKInitializedViaPepper()) {
+  if (IsSDKInitializedViaPlugin()) {
     ShutdownSDK();
-    SetIsSDKInitializedViaPepper(false);
+    SetIsSDKInitializedViaPlugin(false);
   }
 }
 
@@ -42,7 +42,7 @@ bool PDFModule::Init() {
 }
 
 pp::Instance* PDFModule::CreateInstance(PP_Instance instance) {
-  if (!IsSDKInitializedViaPepper()) {
+  if (!IsSDKInitializedViaPlugin()) {
     v8::StartupData snapshot;
     pp::PDF::GetV8ExternalSnapshotData(pp::InstanceHandle(instance),
                                        &snapshot.data, &snapshot.raw_size);
@@ -51,7 +51,7 @@ pp::Instance* PDFModule::CreateInstance(PP_Instance instance) {
     }
 
     InitializeSDK(/*enable_v8=*/true);
-    SetIsSDKInitializedViaPepper(true);
+    SetIsSDKInitializedViaPlugin(true);
   }
 
   return new OutOfProcessInstance(instance);

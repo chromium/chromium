@@ -8,16 +8,16 @@ namespace chrome_pdf {
 
 namespace {
 
-bool g_sdk_initialized_via_pepper = false;
+bool g_sdk_initialized_via_plugin = false;
 
 }  // namespace
 
-bool IsSDKInitializedViaPepper() {
-  return g_sdk_initialized_via_pepper;
+bool IsSDKInitializedViaPlugin() {
+  return g_sdk_initialized_via_plugin;
 }
 
-void SetIsSDKInitializedViaPepper(bool initialized_via_pepper) {
-  g_sdk_initialized_via_pepper = initialized_via_pepper;
+void SetIsSDKInitializedViaPlugin(bool initialized_via_plugin) {
+  g_sdk_initialized_via_plugin = initialized_via_plugin;
 }
 
 }  // namespace chrome_pdf

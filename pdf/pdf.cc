@@ -19,7 +19,7 @@ namespace {
 class ScopedSdkInitializer {
  public:
   explicit ScopedSdkInitializer(bool enable_v8) {
-    if (!IsSDKInitializedViaPepper())
+    if (!IsSDKInitializedViaPlugin())
       InitializeSDK(enable_v8);
   }
 
@@ -27,7 +27,7 @@ class ScopedSdkInitializer {
   ScopedSdkInitializer& operator=(const ScopedSdkInitializer&) = delete;
 
   ~ScopedSdkInitializer() {
-    if (!IsSDKInitializedViaPepper())
+    if (!IsSDKInitializedViaPlugin())
       ShutdownSDK();
   }
 };

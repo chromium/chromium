@@ -11,8 +11,11 @@
 
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_checker.h"
 #include "cc/paint/paint_canvas.h"
 #include "pdf/pdf_engine.h"
+#include "pdf/pdf_init.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -27,22 +30,76 @@
 
 namespace chrome_pdf {
 
+namespace {
+
+// Initialization performed per renderer process. Initialization may be
+// triggered from multiple plugin instances, but should only execute once.
+//
+// TODO(crbug.com/1123621): We may be able to simplify this once we've figured
+// out exactly which processes need to initialize and shutdown PDFium.
+class PerProcessInitializer final {
+ public:
+  static PerProcessInitializer& GetInstance() {
+    static PerProcessInitializer instance;
+    return instance;
+  }
+
+  void Acquire() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    DCHECK_GE(init_count_, 0);
+    if (init_count_++ > 0)
+      return;
+
+    DCHECK(!IsSDKInitializedViaPlugin());
+    // TODO(crbug.com/1111024): Support JavaScript.
+    InitializeSDK(/*enable_v8=*/false);
+    SetIsSDKInitializedViaPlugin(true);
+  }
+
+  void Release() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    DCHECK_GT(init_count_, 0);
+    if (--init_count_ > 0)
+      return;
+
+    DCHECK(IsSDKInitializedViaPlugin());
+    ShutdownSDK();
+    SetIsSDKInitializedViaPlugin(false);
+  }
+
+ private:
+  int init_count_ GUARDED_BY_CONTEXT(thread_checker_) = 0;
+
+  // TODO(crbug.com/1123731): Assuming PDFium is thread-hostile for now, and
+  // must use one thread exclusively.
+  THREAD_CHECKER(thread_checker_);
+};
+
+}  // namespace
+
 PdfViewWebPlugin::PdfViewWebPlugin(const blink::WebPluginParams& params) {}
 
-PdfViewWebPlugin::~PdfViewWebPlugin() {
-  // Explicitly destroy the PDFEngine during destruction as it may call back
-  // into this object.
-  DestroyEngine();
-}
+PdfViewWebPlugin::~PdfViewWebPlugin() = default;
 
 bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   DCHECK_EQ(container->Plugin(), this);
   container_ = container;
+
+  PerProcessInitializer::GetInstance().Acquire();
   InitializeEngine(/*enable_javascript=*/false);
   return true;
 }
 
 void PdfViewWebPlugin::Destroy() {
+  if (container_) {
+    // Explicitly destroy the PDFEngine during destruction as it may call back
+    // into this object.
+    DestroyEngine();
+    PerProcessInitializer::GetInstance().Release();
+  }
+
   container_ = nullptr;
   delete this;
 }

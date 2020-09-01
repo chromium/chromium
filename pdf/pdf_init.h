@@ -7,8 +7,8 @@
 
 namespace chrome_pdf {
 
-bool IsSDKInitializedViaPepper();
-void SetIsSDKInitializedViaPepper(bool initialized_via_pepper);
+bool IsSDKInitializedViaPlugin();
+void SetIsSDKInitializedViaPlugin(bool initialized_via_plugin);
 
 }  // namespace chrome_pdf
 
