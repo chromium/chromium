@@ -193,7 +193,8 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
                                            bool obscure_pin)
     : on_input_change_(std::move(on_input_change)),
       on_enter_(std::move(on_enter)),
-      on_escape_(std::move(on_escape)) {
+      on_escape_(std::move(on_escape)),
+      is_obscure_pin_(obscure_pin) {
   DCHECK_LT(0, length);
   DCHECK(on_input_change_);
 
@@ -211,7 +212,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
         gfx::Size(kAccessCodeInputFieldWidthDp, kAccessCodeInputFieldHeightDp));
     field->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     field->SetBackgroundColor(SK_ColorTRANSPARENT);
-    if (obscure_pin) {
+    if (is_obscure_pin_) {
       field->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
     } else {
       field->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
@@ -232,7 +233,7 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     layout->SetFlexForView(field, 1);
   }
 
-  text_value_for_a11y_ = std::string(length, ' ');
+  text_value_for_a11y_ = base::string16(length, ' ');
 }
 
 FixedLengthCodeInput::~FixedLengthCodeInput() = default;
@@ -303,11 +304,16 @@ void FixedLengthCodeInput::RequestFocus() {
 }
 
 void FixedLengthCodeInput::ResetTextValueForA11y() {
-  std::string result = std::string(input_fields_.size(), ' ');
+  base::string16 result;
 
   for (size_t i = 0; i < input_fields_.size(); ++i) {
-    if (!input_fields_[i]->GetText().empty())
-      result[i] = base::UTF16ToUTF8(input_fields_[i]->GetText())[0];
+    if (input_fields_[i]->GetText().empty()) {
+      result.push_back(' ');
+    } else {
+      result.push_back(is_obscure_pin_ ?
+                       base::UTF8ToUTF16("\u2022" /*bullet*/)[0]
+                     : input_fields_[i]->GetText()[0]);
+    }
   }
 
   text_value_for_a11y_ = result;
@@ -333,6 +339,8 @@ void FixedLengthCodeInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   const gfx::Range& range = GetSelectedRangeOfTextValueForA11y();
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
                              range.start());
+  if (is_obscure_pin_)
+    node_data->AddState(ax::mojom::State::kProtected);
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, range.end());
 }
 
