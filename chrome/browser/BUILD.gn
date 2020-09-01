@@ -3620,6 +3620,8 @@ static_library("browser") {
       "serial/serial_chooser_context_factory.h",
       "serial/serial_chooser_histograms.h",
       "sharesheet/sharesheet_controller.h",
+      "sharesheet/sharesheet_metrics.cc",
+      "sharesheet/sharesheet_metrics.h",
       "sharesheet/sharesheet_service.cc",
       "sharesheet/sharesheet_service.h",
       "sharesheet/sharesheet_service_delegate.cc",

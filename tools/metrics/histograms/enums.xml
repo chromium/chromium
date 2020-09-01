@@ -9594,6 +9594,12 @@ histogram as enum -->
   <int value="11" label="salesforce"/>
 </enum>
 
+<enum name="ChromeOSSharesheetAction">
+  <summary>Defines Chrome OS sharesheet actions.</summary>
+  <int value="0" label="Cancelled by user"/>
+  <int value="1" label="Launch ARC app"/>
+</enum>
+
 <enum name="ChromeOSUICommands">
 <!-- Please put in checks to ensure Command IDs are stable before adding them to this enum. -->
 
