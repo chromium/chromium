@@ -9,6 +9,7 @@
 <link rel="import" href="../../controls/settings_toggle_button.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_page/settings_subpage.html">
@@ -33,7 +34,8 @@
             restamp>
           <settings-toggle-button id="timeZoneAutoDetect"
               label="$i18n{timeZoneGeolocation}"
-              pref="{{prefs.generated.resolve_timezone_by_geolocation_on_off}}">
+              pref="{{prefs.generated.resolve_timezone_by_geolocation_on_off}}"
+              deep-link-focus-id$="[[Setting.kChangeTimeZone]]">
           </settings-toggle-button>
         </template>
         <template is="dom-if"
@@ -58,7 +60,8 @@
         <settings-toggle-button
             class="hr"
             pref="{{prefs.settings.clock.use_24hour_clock}}"
-            label="$i18n{use24HourClock}">
+            label="$i18n{use24HourClock}"
+            deep-link-focus-id$="[[Setting.k24HourClock]]">
         </settings-toggle-button>
         <cr-link-row class="hr" id="setDateTime"
             on-click="onSetDateTimeTap_" hidden$="[[!canSetDateTime_]]"

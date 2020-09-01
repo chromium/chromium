@@ -46,6 +46,11 @@ Polymer({
     'resetToPrefValue(pref.*)',
   ],
 
+  /** @override */
+  focus() {
+    this.$$('cr-radio-group').focus();
+  },
+
   /** Reset the selected value to match the current pref value. */
   resetToPrefValue() {
     const pref = /** @type {!chrome.settingsPrivate.PrefObject} */ (this.pref);

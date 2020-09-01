@@ -19,6 +19,7 @@ js_library("date_time_page") {
   deps = [
     ":date_time_types",
     ":timezone_selector",
+    "..:deep_linking_behavior",
     "..:os_route",
     "../..:router",
     "../../prefs:prefs_behavior",
@@ -50,6 +51,7 @@ js_library("timezone_subpage") {
     ":date_time_types",
     ":timezone_browser_proxy",
     ":timezone_selector",
+    "..:deep_linking_behavior",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:cr",
   ]
@@ -69,6 +71,7 @@ js_type_check("closure_compile_module") {
 js_library("date_time_page.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/date_time_page/date_time_page.m.js" ]
   deps = [
+    "..:deep_linking_behavior.m",
     "..:os_settings_routes.m",
     "../../prefs:prefs_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -115,9 +118,10 @@ js_library("timezone_subpage.m") {
   deps = [
     ":date_time_types.m",
     ":timezone_browser_proxy.m",
+    "..:deep_linking_behavior.m",
     "..:os_settings_routes.m",
-    "../../prefs:prefs_behavior.m",
     "../..:router.m",
+    "../../prefs:prefs_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",

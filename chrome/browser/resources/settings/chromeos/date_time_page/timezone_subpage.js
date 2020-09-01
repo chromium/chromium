@@ -9,8 +9,12 @@
 Polymer({
   is: 'timezone-subpage',
 
-  behaviors:
-      [PrefsBehavior, WebUIListenerBehavior, settings.RouteObserverBehavior],
+  behaviors: [
+    DeepLinkingBehavior,
+    PrefsBehavior,
+    settings.RouteObserverBehavior,
+    WebUIListenerBehavior,
+  ],
 
   properties: {
     /**
@@ -19,6 +23,15 @@ Polymer({
     activeTimeZoneDisplayName: {
       type: String,
       notify: true,
+    },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([chromeos.settings.mojom.Setting.kChangeTimeZone]),
     },
   },
 
@@ -41,13 +54,20 @@ Polymer({
    * @protected
    */
   currentRouteChanged(newRoute) {
-    if (this.shouldAskForParentAccessCode_(newRoute)) {
+    if (newRoute !== settings.routes.DATETIME_TIMEZONE_SUBPAGE) {
+      return;
+    }
+
+    // Check if should ask for parent access code.
+    if (loadTimeData.getBoolean('isChild')) {
       this.disableTimeZoneSetting_();
       this.addWebUIListener(
           'access-code-validation-complete',
           this.enableTimeZoneSetting_.bind(this));
       this.browserProxy_.showParentAccessForTimeZone();
     }
+
+    this.attemptDeepLink();
   },
 
   /**
@@ -89,15 +109,6 @@ Polymer({
           loadTimeData.getString('setTimeZoneAutomaticallyWithAllLocationInfo')
     });
     return result;
-  },
-
-  /**
-   * @param {!settings.Route} route
-   * @private
-   */
-  shouldAskForParentAccessCode_(route) {
-    return route === settings.routes.DATETIME_TIMEZONE_SUBPAGE &&
-        loadTimeData.getBoolean('isChild');
   },
 
   /**

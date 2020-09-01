@@ -9,6 +9,7 @@
 <link rel="import" href="../../prefs/prefs_behavior.html">
 <link rel="import" href="../../router.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="date_time_types.html">
 <link rel="import" href="timezone_browser_proxy.html">
@@ -31,7 +32,8 @@
     </style>
     <div class="settings-box block first">
       <settings-radio-group id="timeZoneRadioGroup"
-          pref="{{prefs.generated.resolve_timezone_by_geolocation_on_off}}">
+          pref="{{prefs.generated.resolve_timezone_by_geolocation_on_off}}"
+          deep-link-focus-id$="[[Setting.kChangeTimeZone]]">
         <controlled-radio-button
             id="timeZoneAutoDetectOn"
             name="true"
