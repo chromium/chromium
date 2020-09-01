@@ -1228,7 +1228,12 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTranslation(
   // Also avoid re-rasterization during pinch-zoom.
   if (layer_tree_impl()->PinchGestureActive())
     return false;
-  return true;
+  // TODO(crbug.com/1123555): Temporarily disable recreation of tiling on
+  // raster translation change to investigate the performance regression. Only
+  // recreate tiling when we are disabling LCD text.
+  if (high_res.can_use_lcd_text() && !can_use_lcd_text())
+    return true;
+  return false;
 }
 
 void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(

@@ -147,6 +147,21 @@ virtual/composite-after-paint/paint/frames/* [ Pass ]
 virtual/composite-after-paint/scrollingcoordinator/* [ Pass ]
 # --- End CompositeAfterPaint Tests --
 
+# TODO(crbug.com/1123555): These tests are temporarily disabled during investigation
+# of the performance regression.
+crbug.com/1123555 external/wpt/css/css-transforms/subpixel-transform-changes-002.html [ Failure ]
+crbug.com/1123555 external/wpt/css/css-transforms/subpixel-transform-changes-004.html [ Failure ]
+crbug.com/1123555 fast/overflow/overflow-of-video-outline.html [ Failure ]
+crbug.com/1123555 http/tests/media/video-buffered-range-contains-currentTime.html [ Failure ]
+crbug.com/1123555 media/controls-layout-direction.html [ Failure ]
+crbug.com/1123555 media/media-controls-clone.html [ Failure ]
+crbug.com/1123555 media/media-controls-grey-scrubber.html [ Failure ]
+crbug.com/1123555 media/controls/time-update-after-unload.html [ Failure ]
+crbug.com/1123555 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash ]
+crbug.com/1123555 paint/frames/frameset-with-stacking-context-and-not-stacking-context-children.html [ Failure ]
+crbug.com/1123555 virtual/composite-after-paint/paint/frames/frameset-with-stacking-context-and-not-stacking-context-children.html [ Failure ]
+crbug.com/1123555 virtual/dark-color-scheme/media/audio-controls-rendering.html [ Failure ]
+
 # These tests require portals, and some require cross-origin portals.
 # Keep this in sync with VirtualTestSuites.
 crbug.com/1093466 external/wpt/fetch/metadata/portal.https.sub.html [ Skip ]

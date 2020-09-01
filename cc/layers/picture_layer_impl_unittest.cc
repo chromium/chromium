@@ -5029,9 +5029,11 @@ TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextInvalidatesPendingTree) {
   pending_layer()->SetContentsOpaque(true);
   pending_layer()->UpdateTiles();
   EXPECT_TRUE(pending_layer()->can_use_lcd_text());
+  // TODO(crbug.com/1123555): Re-enabling LCD text is temporarily disabled to
+  // investigate performance regression.
   EXPECT_TRUE(pending_layer()->HighResTiling()->has_tiles());
   for (Tile* tile : pending_layer()->HighResTiling()->AllTilesForTesting())
-    EXPECT_TRUE(tile->can_use_lcd_text());
+    EXPECT_FALSE(tile->can_use_lcd_text());
 }
 
 TEST_F(LegacySWPictureLayerImplTest, UpdateLCDTextPushToActiveTree) {
@@ -5798,8 +5800,10 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageHistogramsOverflow) {
       false, 0);
 }
 
+// TODO(crbug.com/1123555): Tiling invalidation on change of raster
+// translation is temporarily disabled to investigate performance regression.
 TEST_F(LegacySWPictureLayerImplTest,
-       ChangeRasterTranslationNukePendingLayerTiles) {
+       DISABLED_ChangeRasterTranslationNukePendingLayerTiles) {
   gfx::Size layer_bounds(200, 200);
   gfx::Size tile_size(256, 256);
   auto raster_source = FakeRasterSource::CreateFilledWithText(layer_bounds);
@@ -6064,8 +6068,10 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
   EXPECT_TRUE(shared_quad_state->quad_to_target_transform.IsIdentity());
 }
 
+// TODO(crbug.com/1123555): Tiling invalidation on change of raster
+// translation is temporarily disabled to investigate performance regression.
 TEST_F(LegacySWPictureLayerImplTest,
-       TransformedRasterizationAndContentsOpaqueAndLCDText) {
+       DISABLED_TransformedRasterizationAndContentsOpaqueAndLCDText) {
   auto raster_source =
       FakeRasterSource::CreateFilledWithText(gfx::Size(200, 200));
   SetupTreesWithInvalidation(raster_source, raster_source, Region());
