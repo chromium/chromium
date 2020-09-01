@@ -508,6 +508,10 @@
     "script": "//testing/xvfb.py",
     "type": "script",
   },
+  "chromedriver_webview_shell_apk": {
+    "label": "//chrome/test/chromedriver/test/webview_shell:chromedriver_webview_shell_apk",
+    "type": "additional_compile_target",
+  },
   "webdriver_wpt_tests": {
     "label": "//:webdriver_wpt_tests",
     "type": "script",

@@ -92843,6 +92843,10 @@
     ]
   },
   "Site Isolation Android": {
+    "additional_compile_targets": [
+      "content_browsertests",
+      "content_unittests"
+    ],
     "gtest_tests": [
       {
         "args": [
@@ -131363,6 +131367,9 @@
     ]
   },
   "WebKit Linux composite_after_paint Dummy Builder": {
+    "additional_compile_targets": [
+      "blink_tests"
+    ],
     "isolated_scripts": [
       {
         "args": [
@@ -131394,6 +131401,9 @@
     ]
   },
   "WebKit Linux layout_ng_disabled Builder": {
+    "additional_compile_targets": [
+      "blink_tests"
+    ],
     "gtest_tests": [
       {
         "args": [

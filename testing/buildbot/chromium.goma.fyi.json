@@ -294,7 +294,33 @@
   },
   "android-archive-dbg-goma-canary": {
     "additional_compile_targets": [
-      "all"
+      "all",
+      "chromedriver_webview_shell_apk"
+    ]
+  },
+  "android-archive-dbg-goma-latest": {
+    "additional_compile_targets": [
+      "chromedriver_webview_shell_apk"
+    ]
+  },
+  "android-archive-dbg-goma-rbe-ats-canary": {
+    "additional_compile_targets": [
+      "chromedriver_webview_shell_apk"
+    ]
+  },
+  "android-archive-dbg-goma-rbe-ats-latest": {
+    "additional_compile_targets": [
+      "chromedriver_webview_shell_apk"
+    ]
+  },
+  "android-archive-dbg-goma-rbe-canary": {
+    "additional_compile_targets": [
+      "chromedriver_webview_shell_apk"
+    ]
+  },
+  "android-archive-dbg-goma-rbe-latest": {
+    "additional_compile_targets": [
+      "chromedriver_webview_shell_apk"
     ]
   },
   "chromeos-amd64-generic-rel-goma-canary": {
@@ -499,6 +525,11 @@
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
       }
+    ]
+  },
+  "mac-archive-rel-goma-latest-localoutputcache": {
+    "additional_compile_targets": [
+      "chrome"
     ]
   },
   "win32-archive-rel-goma-canary-localoutputcache": {
