@@ -216,10 +216,6 @@ class ExtensionTabUtil {
                                       GURL* url,
                                       std::string* error);
 
-  // Logs if the URL of a tab that an extension is creating or navitaging to has
-  // the devtools scheme.
-  static void LogPossibleDevtoolsSchemeNavigation(const GURL& url);
-
   // Opens a tab for the specified |web_contents|.
   static void CreateTab(std::unique_ptr<content::WebContents> web_contents,
                         const std::string& extension_id,

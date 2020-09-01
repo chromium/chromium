@@ -56491,6 +56491,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.ApiUrlNavigationDevtools" enum="Boolean"
     expires_after="2020-09-13">
+  <obsolete>
+    Removed 09/2020 as it is no longer needed for analysis.
+  </obsolete>
   <owner>tjudkins@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

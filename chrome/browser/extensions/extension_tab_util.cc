@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
@@ -797,17 +796,8 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
     return false;
   }
 
-  // Log if this navigation looks like it is to a devtools URL.
-  ExtensionTabUtil::LogPossibleDevtoolsSchemeNavigation(url);
-
   return_url->Swap(&url);
   return true;
-}
-
-void ExtensionTabUtil::LogPossibleDevtoolsSchemeNavigation(const GURL& url) {
-  const bool is_devtools_scheme = url.SchemeIs(content::kChromeDevToolsScheme);
-  UMA_HISTOGRAM_BOOLEAN("Extensions.ApiUrlNavigationDevtools",
-                        is_devtools_scheme);
 }
 
 void ExtensionTabUtil::CreateTab(std::unique_ptr<WebContents> web_contents,
