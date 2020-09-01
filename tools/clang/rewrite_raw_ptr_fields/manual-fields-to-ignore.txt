@@ -165,3 +165,18 @@ blink::(anonymous namespace)::ThreadMarker::creating_thread_
 blink::ControlKey::name_
 performance_manager::frame_priority::BoostingVoteAggregator::Edge::src_
 performance_manager::frame_priority::BoostingVoteAggregator::Edge::dst_
+
+# Populated manually - these pointers crash when converted to CheckedPtr.
+# It's mostly mismatching tag, unless otherwise specified.
+# Under investigation.
+base::internal::UnretainedWrapper::ptr_
+blink::NGPhysicalContainerFragment::buffer_
+blink::DisplayItem::client_
+cc::FrameSequenceMetrics::throughput_ukm_reporter_
+cc::(anonymous namespace)::RasterTaskImpl::tile_tracing_id_
+content::MediaPlayerId::render_frame_host
+content::RenderViewImpl::webview_
+mojo::core::WatcherDispatcher::last_watch_to_block_arming_
+net::IOBuffer::data_
+safe_browsing::RemoteSafeBrowsingDatabaseManager::ClientRequest::client_
+x11::ReadBuffer::fds  # Assigned address appears unallocated
