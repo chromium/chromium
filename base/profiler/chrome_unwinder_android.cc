@@ -38,10 +38,16 @@ UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
     uintptr_t func_addr = pc - module->GetBaseAddress();
 
     auto entry = cfi_table_->FindEntryForAddress(func_addr);
-    if (!entry)
+    if (entry) {
+      if (!Step(thread_context, stack_top, *entry))
+        return UnwindResult::ABORTED;
+    } else if (stack->size() == 1) {
+      // Try unwinding by sourcing the return address from the lr register.
+      if (!StepUsingLrRegister(thread_context, stack_top))
+        return UnwindResult::ABORTED;
+    } else {
       return UnwindResult::ABORTED;
-    if (!Step(thread_context, stack_top, *entry))
-      return UnwindResult::ABORTED;
+    }
     stack->emplace_back(RegisterContextInstructionPointer(thread_context),
                         module_cache->GetModuleForAddress(
                             RegisterContextInstructionPointer(thread_context)));
@@ -55,35 +61,45 @@ bool ChromeUnwinderAndroid::Step(RegisterContext* thread_context,
                                  const ArmCFITable::FrameEntry& entry) {
   CHECK_NE(RegisterContextStackPointer(thread_context), 0U);
   CHECK_LE(RegisterContextStackPointer(thread_context), stack_top);
-  if (entry.cfa_offset == 0) {
-    uintptr_t pc = RegisterContextInstructionPointer(thread_context);
-    uintptr_t return_address = static_cast<uintptr_t>(thread_context->arm_lr);
+  if (entry.cfa_offset == 0)
+    return StepUsingLrRegister(thread_context, stack_top);
 
-    if (pc == return_address)
-      return false;
-
-    RegisterContextInstructionPointer(thread_context) = return_address;
-  } else {
-    // The rules for unwinding using the CFI information are:
-    // SP_prev = SP_cur + cfa_offset and
-    // PC_prev = * (SP_prev - ra_offset).
-    auto new_sp =
-        CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) +
-        CheckedNumeric<uint16_t>(entry.cfa_offset);
-    if (!new_sp.AssignIfValid(&RegisterContextStackPointer(thread_context)) ||
-        RegisterContextStackPointer(thread_context) >= stack_top) {
-      return false;
-    }
-
-    if (entry.ra_offset > entry.cfa_offset)
-      return false;
-
-    // Underflow is prevented because |ra_offset| <= |cfa_offset|.
-    uintptr_t ip_address = (new_sp - CheckedNumeric<uint16_t>(entry.ra_offset))
-                               .ValueOrDie<uintptr_t>();
-    RegisterContextInstructionPointer(thread_context) =
-        *reinterpret_cast<uintptr_t*>(ip_address);
+  // The rules for unwinding using the CFI information are:
+  // SP_prev = SP_cur + cfa_offset and
+  // PC_prev = * (SP_prev - ra_offset).
+  auto new_sp =
+      CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) +
+      CheckedNumeric<uint16_t>(entry.cfa_offset);
+  if (!new_sp.AssignIfValid(&RegisterContextStackPointer(thread_context)) ||
+      RegisterContextStackPointer(thread_context) >= stack_top) {
+    return false;
   }
+
+  if (entry.ra_offset > entry.cfa_offset)
+    return false;
+
+  // Underflow is prevented because |ra_offset| <= |cfa_offset|.
+  uintptr_t ip_address = (new_sp - CheckedNumeric<uint16_t>(entry.ra_offset))
+                             .ValueOrDie<uintptr_t>();
+  RegisterContextInstructionPointer(thread_context) =
+      *reinterpret_cast<uintptr_t*>(ip_address);
+  return true;
+}
+
+// static
+bool ChromeUnwinderAndroid::StepUsingLrRegister(RegisterContext* thread_context,
+                                                uintptr_t stack_top) {
+  CHECK_NE(RegisterContextStackPointer(thread_context), 0U);
+  CHECK_LE(RegisterContextStackPointer(thread_context), stack_top);
+
+  uintptr_t pc = RegisterContextInstructionPointer(thread_context);
+  uintptr_t return_address = static_cast<uintptr_t>(thread_context->arm_lr);
+
+  // The step failed if the pc doesn't change.
+  if (pc == return_address)
+    return false;
+
+  RegisterContextInstructionPointer(thread_context) = return_address;
   return true;
 }
 

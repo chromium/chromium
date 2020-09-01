@@ -41,6 +41,9 @@ class BASE_EXPORT ChromeUnwinderAndroid : public Unwinder {
   static bool Step(RegisterContext* thread_context,
                    uintptr_t stack_top,
                    const ArmCFITable::FrameEntry& entry);
+  // Fallback setp that attempts to use lr as return address.
+  static bool StepUsingLrRegister(RegisterContext* thread_context,
+                                  uintptr_t stack_top);
 
   const ArmCFITable* cfi_table_;
   const uintptr_t chrome_module_base_address_;

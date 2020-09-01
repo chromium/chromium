@@ -315,10 +315,13 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindNoData) {
       reinterpret_cast<uintptr_t>(stack_buffer.data());
   context.arm_lr = 0x12AA;
 
-  // Aborted because there's no unwind info for the instruction pointer.
+  // Unwinding will first use arm_lr as fallback because there's no unwind info
+  // for the instruction pointer, and then abort.
   EXPECT_EQ(UnwindResult::ABORTED,
             unwinder.TryUnwind(&context, stack_top, &module_cache, &stack));
-  EXPECT_EQ(std::vector<Frame>({{0x1200, chrome_module}}), stack);
+  EXPECT_EQ(
+      std::vector<Frame>({{0x1200, chrome_module}, {0x12AA, chrome_module}}),
+      stack);
 }
 
 }  // namespace base
