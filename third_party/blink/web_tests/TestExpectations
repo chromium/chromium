@@ -1093,7 +1093,7 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/insert-spann
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/insert-spanner-into-stf-unconstrained-width.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/relpos-becomes-static-has-abspos.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/remove-column-content-next-to-abspos-between-spanners.html [ Failure ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/static-becomes-relpos-has-abspos.html [ Crash Failure ]
+crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/dynamic/static-becomes-relpos-has-abspos.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/event-offset-in-nested.html [ Failure ]
 crbug.com/875235 virtual/layout_ng_block_frag/fast/multicol/fieldset-as-multicol.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/file-upload-as-multicol.html [ Failure ]

@@ -605,6 +605,11 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
 
 void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     Vector<NGLogicalOutOfFlowPositionedNode>* descendants) {
+  original_column_block_size_ =
+      ShrinkLogicalSize(container_builder_->InitialBorderBoxSize(),
+                        container_builder_->BorderScrollbarPadding())
+          .block_size;
+
   while (descendants->size() > 0) {
     for (auto& descendant : *descendants) {
       LayoutFragmentainerDescendant(descendant);
@@ -629,8 +634,6 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
 void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
     const NGLogicalOutOfFlowPositionedNode& descendant) {
-  // TODO(almaher): Properly implement the layout algorithm for fragmented
-  // positioned elements.
   NGBlockNode node = descendant.node;
   const NGPhysicalContainerFragment* containing_block_fragment =
       descendant.containing_block_fragment.get();
@@ -848,8 +851,9 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   // Determine in which fragmentainer this OOF element will start its layout and
   // adjust the offset to be relative to that fragmentainer.
   wtf_size_t start_index = 0;
+  wtf_size_t num_children = container_builder_->Children().size();
   if (is_fragmentainer_descendant) {
-    DCHECK_GT(container_builder_->Children().size(), 0u);
+    DCHECK_GT(num_children, 0u);
     ComputeStartFragmentIndexAndRelativeOffset(
         container_info, default_writing_mode, &start_index, &offset);
   }
@@ -907,8 +911,15 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
   do {
     if (break_token) {
       layout_result = nullptr;
-      // TODO(almaher): You might want to skip spanning fragments here.
       start_index++;
+
+      // Skip over spanning fragments when finding the next fragmentainer to add
+      // an OOF result to.
+      while (start_index < num_children &&
+             !container_builder_->Children()[start_index]
+                  .fragment->IsFragmentainerBox()) {
+        start_index++;
+      }
       offset.block_offset = LayoutUnit();
     }
 
@@ -1048,18 +1059,21 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
     }
     DCHECK_EQ(index, container_builder_->Children().size());
   }
+  const NGConstraintSpace& space = GetFragmentainerConstraintSpace(index);
 
-  // TODO(almaher): Ensure that we are skipping over spanning fragments when
-  // creating new fragmentainers and when calculating |num_children|.
-  const auto& fragmentainer =
-      is_new_fragment ? container_builder_->Children()[num_children - 1]
-                      : container_builder_->Children()[index];
+  // If we are a new fragment, find a non-spanner fragmentainer as a basis.
+  while (
+      index >= num_children ||
+      !container_builder_->Children()[index].fragment->IsFragmentainerBox()) {
+    DCHECK_GT(num_children, 0u);
+    index--;
+  }
 
+  const auto& fragmentainer = container_builder_->Children()[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
   const NGBlockNode& node = container_builder_->Node();
   const auto& fragment =
       To<NGPhysicalBoxFragment>(*fragmentainer.fragment.get());
-  const NGConstraintSpace& space = GetFragmentainerConstraintSpace(index);
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
   NGLayoutAlgorithmParams params(node, fragment_geometry, space,
@@ -1112,26 +1126,43 @@ const NGConstraintSpace& NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
 
   wtf_size_t num_children = container_builder_->Children().size();
   bool is_new_fragment = index >= num_children;
+  bool is_first_fragmentainer = index == 0;
 
-  // TODO(almaher): Ensure that we are skipping over spanning fragments when
-  // creating the constraint space for new fragmentainers and when calculating
-  // |num_children|.
-  const auto& fragmentainer =
-      is_new_fragment ? container_builder_->Children()[num_children - 1]
-                      : container_builder_->Children()[index];
+  // If we are a new fragment, find a non-spanner fragmentainer to base our
+  // constraint space off of.
+  while (
+      index >= num_children ||
+      !container_builder_->Children()[index].fragment->IsFragmentainerBox()) {
+    DCHECK_GT(num_children, 0u);
+    index--;
+  }
+
+  const auto& fragmentainer = container_builder_->Children()[index];
   DCHECK(fragmentainer.fragment->IsFragmentainerBox());
   const auto& fragment =
       To<NGPhysicalBoxFragment>(*fragmentainer.fragment.get());
   const WritingMode container_writing_mode =
       container_builder_->Style().GetWritingMode();
+  LogicalSize column_size =
+      fragment.Size().ConvertToLogical(container_writing_mode);
+
+  // If we are a new fragment and are separated from other columns by a
+  // spanner, compute the correct column block size to use.
+  if (is_new_fragment && index != num_children - 1 &&
+      original_column_block_size_ != kIndefiniteSize &&
+      !container_builder_->Children()[index + 1]
+           .fragment->IsFragmentainerBox()) {
+    // TODO(almaher): Should we take the consumed column block size into
+    // account?
+    column_size.block_size = original_column_block_size_;
+  }
 
   // TODO(bebeaudr): Need to handle different fragmentation types. It won't
   // always be multi-column.
   NGConstraintSpace fragmentainer_constraint_space =
       CreateConstraintSpaceForColumns(
           *container_builder_->ConstraintSpace(), container_writing_mode,
-          fragment.Size().ConvertToLogical(container_writing_mode),
-          /* is_first_fragmentainer */ index == 0, /* balance_columns */ false);
+          column_size, is_first_fragmentainer, /* balance_columns */ false);
 
   return fragmentainer_constraint_space_map_
       .insert(stored_index, fragmentainer_constraint_space)
@@ -1190,11 +1221,20 @@ void NGOutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   // If the right fragmentainer hasn't been found yet, the OOF element will
   // start its layout in a proxy fragment.
   LayoutUnit remaining_block_offset = block_offset_from_root - used_block_size;
+
+  // If we are a new fragment and are separated from other columns by a
+  // spanner, compute the correct fragmentainer_block_size.
+  if (original_column_block_size_ != kIndefiniteSize &&
+      !container_builder_->Children()[child_index - 1]
+           .fragment->IsFragmentainerBox()) {
+    // TODO(almaher): Should we take the consumed column block size into
+    // account?
+    fragmentainer_block_size = original_column_block_size_;
+  }
+
   wtf_size_t additional_fragment_count =
       int(std::floorf(remaining_block_offset / fragmentainer_block_size));
   *start_index = child_index + additional_fragment_count;
-  // TODO(almaher): This might need to be updated in the case where we add proxy
-  // fragments directly after a spanner.
   offset->block_offset = remaining_block_offset -
                          additional_fragment_count * fragmentainer_block_size;
 }

@@ -19,19 +19,19 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
     : NGLayoutAlgorithm(params),
       writing_direction_(Style().GetWritingDirection()) {
   DCHECK(fragment.IsFragmentainerBox());
+  DCHECK(params.space.HasKnownFragmentainerBlockSize());
 
   container_builder_.SetBoxType(fragment.BoxType());
-  LayoutUnit old_block_size =
-      NGFragment(writing_direction_.GetWritingMode(), fragment).BlockSize();
-  container_builder_.SetFragmentBlockSize(old_block_size);
-
-  // We need the previous physical container size to calculate the position of
-  // any child fragments.
-  previous_physical_container_size_ = fragment.Size();
+  container_builder_.SetFragmentBlockSize(
+      params.space.FragmentainerBlockSize());
 
   // Don't apply children to new fragments.
   if (is_new_fragment)
     return;
+
+  // We need the previous physical container size to calculate the position of
+  // any child fragments.
+  previous_physical_container_size_ = fragment.Size();
 
   // The OOF fragments need to be added after the already existing child
   // fragments. Add them now so they are added before we append the OOF results.

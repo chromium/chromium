@@ -751,5 +751,344 @@ TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationAndColumnSpanners) {
   EXPECT_EQ(expectation, dump);
 }
 
+// Tests that column spanners are skipped over when laying out fragmented abspos
+// elements.
+TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanner) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; width:5px; height:50px;
+        }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel">
+            <div style="column-span:all;"></div>
+            <div class="abs"></div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x1
+        offset:0,0 size:30x0
+      offset:0,0 size:1000x0
+      offset:0,0 size:492x40
+        offset:0,0 size:30x0
+        offset:0,0 size:5x40
+      offset:508,0 size:492x40
+        offset:0,0 size:5x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Tests that column spanners are skipped over when laying out fragmented abspos
+// elements.
+TEST_F(NGOutOfFlowLayoutPartTest, PositionedFragmentationWithNestedSpanners) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; width:5px; height:50px;
+        }
+        .content { height:20px; }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div style="column-span:all;"></div>
+          <div class="rel">
+            <div class="content"></div>
+            <div style="column-span:all;"></div>
+            <div style="column-span:all;"></div>
+            <div style="column-span:all;"></div>
+            <div class="abs"></div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x1
+      offset:0,0 size:1000x0
+      offset:0,0 size:492x10
+        offset:0,0 size:30x10
+          offset:0,0 size:30x10
+      offset:508,0 size:492x10
+        offset:0,0 size:30x10
+          offset:0,0 size:30x10
+      offset:0,10 size:1000x0
+      offset:0,10 size:1000x0
+      offset:0,10 size:1000x0
+      offset:0,10 size:492x30
+        offset:0,0 size:30x0
+        offset:0,0 size:5x30
+      offset:508,10 size:492x30
+        offset:0,0 size:5x20
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Tests that column spanners are used as the containing block for abspos
+// elements nested inside of a spanner.
+// TODO(almaher): Abspos elements nested in a spanner are never getting laid
+// out.
+TEST_F(NGOutOfFlowLayoutPartTest, DISABLED_AbsposInSpanner) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; width:5px; height:50px;
+        }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel">
+            <div style="column-span:all;">
+              <div class="abs"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x1
+        offset:0,0 size:30x0
+      offset:0,0 size:1000x0
+        offset:0,0 size:5x50
+      offset:0,0 size:492x40
+        offset:0,0 size:30x0
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Tests fragmented abspos elements with a spanner nested inside.
+TEST_F(NGOutOfFlowLayoutPartTest, SpannerInAbspos) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; width:5px; height:50px;
+        }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel">
+            <div class="abs">
+              <div style="column-span:all;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x40
+        offset:0,0 size:30x0
+        offset:0,0 size:5x40
+          offset:0,0 size:5x0
+      offset:508,0 size:492x40
+        offset:0,0 size:5x10
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Tests that new column fragments are added correctly if a positioned node
+// fragments beyond the last fragmentainer in a context in the presence of a
+// spanner.
+TEST_F(NGOutOfFlowLayoutPartTest,
+       PositionedFragmentationWithNewColumnsAndSpanners) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; width:5px; height:120px; top:0px;
+        }
+        .content { height:20px; }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel">
+            <div class="content"></div>
+            <div class="abs"></div>
+          </div>
+          <div style="column-span:all;"></div>
+          <div style="column-span:all;"></div>
+          <div style="column-span:all;"></div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  // TODO(1079031): With top set to 0px, the abspos should start in the first
+  // column with an offset of (0,0).
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x10
+        offset:0,0 size:30x10
+          offset:0,0 size:30x10
+      offset:508,0 size:492x10
+        offset:0,0 size:30x10
+          offset:0,0 size:30x10
+        offset:0,0 size:5x10
+      offset:0,10 size:1000x0
+      offset:0,10 size:1000x0
+      offset:0,10 size:1000x0
+      offset:1016,0 size:492x40
+        offset:0,0 size:5x40
+      offset:1524,0 size:492x40
+        offset:0,0 size:5x40
+      offset:2032,0 size:492x40
+        offset:0,0 size:5x30
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Tests that new column fragments are added correctly if a positioned node
+// fragments beyond the last fragmentainer in a context in the presence of a
+// spanner.
+TEST_F(NGOutOfFlowLayoutPartTest,
+       AbsposFragWithSpannerAndNewColumnsAutoHeight) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; width:5px; height:4px;
+        }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel">
+            <div class="abs"></div>
+          </div>
+          <div style="column-span:all;"></div>
+          <div style="column-span:all;"></div>
+          <div style="column-span:all;"></div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x0
+    offset:0,0 size:1000x0
+      offset:0,0 size:492x1
+        offset:0,0 size:30x0
+        offset:0,0 size:5x1
+      offset:0,0 size:1000x0
+      offset:0,0 size:1000x0
+      offset:0,0 size:1000x0
+      offset:508,0 size:492x1
+        offset:0,0 size:5x1
+      offset:1016,0 size:492x1
+        offset:0,0 size:5x1
+      offset:1524,0 size:492x1
+        offset:0,0 size:5x1
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
+// Tests that empty column fragments are added if an OOF element begins layout
+// in a fragmentainer that is more than one index beyond the last existing
+// column fragmentainer in the presence of a spanner.
+TEST_F(NGOutOfFlowLayoutPartTest, AbsposFragWithSpannerAndNewEmptyColumns) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <style>
+        #multicol {
+          column-count:2; column-fill:auto; column-gap:16px; height:40px;
+        }
+        .rel {
+          position: relative; width:30px;
+        }
+        .abs {
+          position:absolute; top:80px; width:5px; height:120px;
+        }
+      </style>
+      <div id="container">
+        <div id="multicol">
+          <div class="rel">
+            <div class="abs"></div>
+          </div>
+          <div style="column-span:all;"></div>
+          <div style="column-span:all;"></div>
+          <div style="column-span:all;"></div>
+        </div>
+      </div>
+      )HTML");
+  String dump = DumpFragmentTree(GetElementById("container"));
+
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x40
+    offset:0,0 size:1000x40
+      offset:0,0 size:492x1
+        offset:0,0 size:30x0
+      offset:0,0 size:1000x0
+      offset:0,0 size:1000x0
+      offset:0,0 size:1000x0
+      offset:508,0 size:492x40
+      offset:1016,0 size:492x40
+        offset:0,39 size:5x1
+      offset:1524,0 size:492x40
+        offset:0,0 size:5x40
+      offset:2032,0 size:492x40
+        offset:0,0 size:5x40
+      offset:2540,0 size:492x40
+        offset:0,0 size:5x39
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
 }  // namespace
 }  // namespace blink

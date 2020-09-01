@@ -163,6 +163,10 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       fragmentainer_descendant_results_;
   const WritingMode writing_mode_;
   LayoutUnit column_inline_progression_ = kIndefiniteSize;
+  // The block size of the multi-column (before adjustment for spanners, etc.)
+  // This is used to calculate the column size of any newly added proxy
+  // fragments when handling fragmentation for abspos elements.
+  LayoutUnit original_column_block_size_ = kIndefiniteSize;
   bool is_absolute_container_;
   bool is_fixed_container_;
   bool allow_first_tier_oof_cache_;
