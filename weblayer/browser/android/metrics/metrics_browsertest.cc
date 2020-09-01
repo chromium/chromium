@@ -145,6 +145,28 @@ IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, PageLoadsEnableMultipleUploads) {
   // might potentially have a third metrics log in the queue.
 }
 
+IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, NavigationIncrementsPageLoadCount) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  metrics::ChromeUserMetricsExtension log = WaitForNextMetricsLog();
+  // The initial log should not have a page load count (because nothing was
+  // loaded).
+  {
+    const metrics::SystemProfileProto& system_profile = log.system_profile();
+    ASSERT_TRUE(system_profile.has_stability());
+    EXPECT_EQ(0, system_profile.stability().page_load_count());
+  }
+
+  // Loading a page should increment the page load count.
+  NavigateAndWaitForCompletion(
+      embedded_test_server()->GetURL("/simple_page.html"), shell());
+  log = WaitForNextMetricsLog();
+  {
+    const metrics::SystemProfileProto& system_profile = log.system_profile();
+    ASSERT_TRUE(system_profile.has_stability());
+    EXPECT_EQ(1, system_profile.stability().page_load_count());
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(MetricsBrowserTest, RendererHistograms) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -10,6 +10,8 @@
 
 #include "base/base64.h"
 #include "base/no_destructor.h"
+#include "components/metrics/content/content_stability_metrics_provider.h"
+#include "components/metrics/content/extensions_helper.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -150,6 +152,9 @@ int WebLayerMetricsServiceClient::GetPackageNameLimitRatePerMille() {
 
 void WebLayerMetricsServiceClient::RegisterAdditionalMetricsProviders(
     metrics::MetricsService* service) {
+  service->RegisterMetricsProvider(
+      std::make_unique<metrics::ContentStabilityMetricsProvider>(pref_service(),
+                                                                 nullptr));
   service->RegisterMetricsProvider(std::make_unique<PageLoadMetricsProvider>());
 }
 
