@@ -62,6 +62,7 @@ void RegisterNearbySharedResources(content::WebUIDataSource* data_source) {
 
 void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"nearbyShareAccountRowLabel", IDS_NEARBY_ACCOUNT_ROW_LABEL},
       {"nearbyShareActionsCancel", IDS_NEARBY_ACTIONS_CANCEL},
       {"nearbyShareActionsConfirm", IDS_NEARBY_ACTIONS_CONFIRM},
       {"nearbyShareActionsNext", IDS_NEARBY_ACTIONS_NEXT},

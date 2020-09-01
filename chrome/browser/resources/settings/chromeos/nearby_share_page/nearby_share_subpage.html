@@ -9,6 +9,7 @@
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../../shared/nearby_share_settings_behavior.html">
 <link rel="import" href="../os_route.html">
+<link rel="import" href="nearby_account_manager_browser_proxy.html">
 <link rel="import" href="nearby_share_contact_visibility_dialog.html">
 <link rel="import" href="nearby_share_device_name_dialog.html">
 <link rel="import" href="nearby_share_data_usage_dialog.html">
@@ -28,6 +29,17 @@
       <settings-toggle-button id="featureToggleButton" aria-describedby="onOff"
           pref="{{prefs.nearby_sharing.enabled}}">
       </settings-toggle-button>
+    </div>
+    <div class="settings-box two-line">
+      <div class="start" aria-label="[[getAccountRowLabel(
+          prefs.nearby_sharing.device_name.value, profileLabel_)]]">
+        <div id="accountRowDeviceName" role="heading" aria-hidden="true">
+          [[prefs.nearby_sharing.device_name.value]]
+        </div>
+        <div id="profileLabel" class="secondary" aria-hidden="true">
+          [[profileLabel_]]
+        </div>
+      </div>
     </div>
     <div class="settings-box two-line">
       <div class="start">

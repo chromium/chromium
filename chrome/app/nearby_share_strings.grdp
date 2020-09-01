@@ -145,6 +145,9 @@
 
 
   <!-- Settings Strings -->
+  <message name="IDS_NEARBY_ACCOUNT_ROW_LABEL" desc="Label to describe the account row which displays the device name and user email that will identify them when using the Nearby Share feature." is_accessibility_with_no_ui="true">
+      Nearby Share settings for <ph name="USER_EMAIL">$1<ex>example@gmail.com</ex></ph>'s device, '<ph name="DEVICE_NAME">$2<ex>My Chromebook</ex></ph>'.
+  </message>
   <message name="IDS_NEARBY_VISIBLITY_ALL_CONTACTS" desc="Describes the user preference state for the user to be visibile to all their contacts in the Nearby Share feature.">
     All contacts
   </message>

@@ -653,6 +653,11 @@
            use_base_dir="false"
            compress="false"
            type="BINDATA" />
+  <include name="IDR_OS_SETTINGS_NEARBY_ACCOUNT_MANAGER_BROWSER_PROXY_M_JS"
+           file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_account_manager_browser_proxy.m.js"
+           use_base_dir="false"
+           compress="false"
+           type="BINDATA" />
   <include name="IDR_OS_SETTINGS_NEARBY_SHARE_SUBPAGE_M_JS"
            file="${root_gen_dir}/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_subpage.m.js"
            use_base_dir="false"

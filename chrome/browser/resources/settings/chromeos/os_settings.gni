@@ -11,6 +11,9 @@ os_settings_namespace_rewrites = settings_namespace_rewrites +
                                  cr_components_chromeos_namespace_rewrites +
                                  cr_elements_chromeos_namespace_rewrites + [
                                    "// #polymer3 |",
+                                   "nearby_share.Account|Account",
+                                   "nearby_share.NearbyAccountManagerBrowserProxy|NearbyAccountManagerBrowserProxy",
+                                   "nearby_share.NearbyAccountManagerBrowserProxyImpl|NearbyAccountManagerBrowserProxyImpl",
                                    "nearby_share.NearbyShareSettingsBehavior|NearbyShareSettingsBehavior",
                                    "parental_controls.ParentalControlsBrowserProxy|ParentalControlsBrowserProxy",
                                    "settings.AccountManagerBrowserProxy|AccountManagerBrowserProxy",
@@ -91,6 +94,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_constants.html|MultiDeviceSettingsMode,MultiDeviceFeature,MultiDeviceFeatureState,MultiDevicePageContentData,SmartLockSignInEnabledState",
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_feature_behavior.html|MultiDeviceFeatureBehavior",
                              "chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_browser_proxy.html|MultiDeviceBrowserProxy,MultiDeviceBrowserProxyImpl",
+                             "chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_account_manager_browser_proxy.html|NearbyAccountManagerBrowserProxy,NearbyAccountManagerBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/nearby_share_page/types.html|NearbyShareDataUsage,dataUsageStringToEnum",
                              "chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.html|generateOptions,getFirstPartyInputMethodEngineId,getOptionLabelName,getOptionMenuItems,getOptionUiType,getOptionUrl,hasOptionsPageInSettings,InputToolCode,isNumberValue,OPTION_DEFAULT,OptionType,UiType",
                              "chrome/browser/resources/settings/chromeos/os_languages_page/languages_metrics_proxy.html|LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction",

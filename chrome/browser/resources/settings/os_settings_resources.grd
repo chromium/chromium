@@ -1328,6 +1328,12 @@
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_CONTACT_VISIBILITY_DIALOG_JS"
                  file="chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.js"
                  compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_ACCOUNT_MANAGER_BROWSER_PROXY_HTML"
+                 file="chromeos/nearby_share_page/nearby_account_manager_browser_proxy.html"
+                 compress="false" type="chrome_html" />
+      <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_ACCOUNT_MANAGER_BROWSER_PROXY_JS"
+                 file="chromeos/nearby_share_page/nearby_account_manager_browser_proxy.js"
+                 compress="false" type="chrome_html" />
       <structure name="IDR_OS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_DIALOG_HTML"
                  file="chromeos/nearby_share_page/nearby_share_device_name_dialog.html"
                  compress="false" type="chrome_html" />

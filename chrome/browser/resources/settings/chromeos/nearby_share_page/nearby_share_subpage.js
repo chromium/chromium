@@ -24,6 +24,11 @@ Polymer({
       notify: true,
     },
 
+    profileLabel_: {
+      type: String,
+      value: '',
+    },
+
     /** @private {boolean} */
     showDeviceNameDialog_: {
       type: Boolean,
@@ -47,6 +52,21 @@ Polymer({
       type: Boolean,
       value: false,
     },
+  },
+
+  attached() {
+    // TODO(b/166779043): Check whether the Account Manager is enabled and fall
+    // back to profile name, or just hide the row. This is not urgent because
+    // the Account Manager should be available whenever Nearby Share is enabled.
+    nearby_share.NearbyAccountManagerBrowserProxyImpl.getInstance()
+        .getAccounts()
+        .then(accounts => {
+          if (accounts.length === 0) {
+            return;
+          }
+
+          this.profileLabel_ = accounts[0].email;
+        });
   },
 
   /**
@@ -245,5 +265,15 @@ Polymer({
         this.$$('#receiveDialog').showConfirmPage();
       }
     }
+  },
+
+  /**
+   * @param {string} deviceName Customizable name of the device.
+   * @param {string} profileLabel The user's email.
+   * @return {string} Localized label.
+   * @private
+   */
+  getAccountRowLabel(deviceName, profileLabel) {
+    return this.i18n('nearbyShareAccountRowLabel', profileLabel, deviceName);
   },
 });

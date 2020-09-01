@@ -37,6 +37,7 @@ export {AmbientModeTemperatureUnit, AmbientModeTopicSource} from './ambient_mode
 export {bluetoothApis} from './bluetooth_page/bluetooth_page.m.js';
 export {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_page/multidevice_browser_proxy.m.js';
 export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, SmartLockSignInEnabledState} from './multidevice_page/multidevice_constants.m.js';
+export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl} from './nearby_share_page/nearby_account_manager_browser_proxy.m.js';
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.m.js';
 export {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from './os_people_page/kerberos_accounts_browser_proxy.m.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.m.js';

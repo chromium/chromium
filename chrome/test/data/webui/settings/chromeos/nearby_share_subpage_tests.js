@@ -3,11 +3,39 @@
 // found in the LICENSE file.
 
 // clang-format off
+// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 // #import {assertEquals} from '../../chai_assert.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl, setNearbyShareSettingsForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
 // clang-format on
+
+/** @implements {nearby_share.AccountManagerBrowserProxy} */
+class TestAccountManagerBrowserProxy extends TestBrowserProxy {
+  constructor() {
+    super([
+      'getAccounts',
+    ]);
+  }
+
+  /** @override */
+  getAccounts() {
+    this.methodCalled('getAccounts');
+
+    return Promise.resolve([
+      {
+        id: '123',
+        accountType: 1,
+        isDeviceAccount: true,
+        isSignedIn: true,
+        unmigrated: false,
+        fullName: 'Primary Account',
+        pic: 'data:image/png;base64,primaryAccountPicData',
+        email: 'primary@gmail.com',
+      },
+    ]);
+  }
+}
 
 suite('NearbyShare', function() {
   /** @type {?SettingsNearbyShareSubpage} */
@@ -18,8 +46,14 @@ suite('NearbyShare', function() {
   let featureToggleButton = null;
   /** @type {?HTMLElement} */
   let toggleRow = null;
+  /** @type {nearby_share.AccountManagerBrowserProxy} */
+  let accountManagerBrowserProxy = null;
 
   setup(function() {
+    accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
+    nearby_share.NearbyAccountManagerBrowserProxyImpl.instance_ =
+        accountManagerBrowserProxy;
+
     /** @type {!nearbyShare.mojom.NearbyShareSettingsInterface} */
     const fakeSettings = new nearby_share.FakeNearbyShareSettings();
     fakeSettings.setEnabled(true);
@@ -91,6 +125,19 @@ suite('NearbyShare', function() {
     assertEquals(newName, subpage.prefs.nearby_sharing.device_name.value);
   });
 
+  test('update data usage preference', function() {
+    assertEquals(3, subpage.prefs.nearby_sharing.data_usage.value);
+
+    subpage.$$('#editDataUsageButton').click();
+    Polymer.dom.flush();
+
+    const dialog = subpage.$$('nearby-share-data-usage-dialog');
+    dialog.$$('#dataUsageDataButton').click();
+    dialog.$$('.action-button').click();
+
+    assertEquals(2, subpage.prefs.nearby_sharing.data_usage.value);
+  });
+
   test('update visibility shows dialog', function() {
     // NOTE: all value editing is done and tested in the
     // nearby-contact-visibility component which is hosted directly on the
@@ -104,17 +151,14 @@ suite('NearbyShare', function() {
     dialog.$$('.action-button').click();
   });
 
-  test('update data usage preference', function() {
-    assertEquals(3, subpage.prefs.nearby_sharing.data_usage.value);
-
-    subpage.$$('#editDataUsageButton').click();
+  test('GAIA email, account manager enabled', async () => {
+    await accountManagerBrowserProxy.whenCalled('getAccounts');
     Polymer.dom.flush();
 
-    const dialog = subpage.$$('nearby-share-data-usage-dialog');
-    dialog.$$('#dataUsageDataButton').click();
-    dialog.$$('.action-button').click();
-
-    assertEquals(2, subpage.prefs.nearby_sharing.data_usage.value);
+    const profileLabel = subpage.$$('#profileLabel');
+    assertEquals('primary@gmail.com', profileLabel.textContent.trim());
+    const deviceLabel = subpage.$$('#accountRowDeviceName');
+    assertEquals('', deviceLabel.textContent.trim());
   });
 
   test('show receive dialog', function() {
