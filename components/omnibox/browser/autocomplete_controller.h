@@ -228,18 +228,14 @@ class AutocompleteController : public AutocompleteProviderListener,
   // relevance before this is called.
   void UpdateAssociatedKeywords(AutocompleteResult* result);
 
-  // Called for zero-prefix suggestions only.
-  // - Updates |result| with suggestion group ID to header mapping information.
-  // - Ensures matches that belong to a group appear at the bottom.
-  // Remote zero-prefix suggestions may be backfilled with local zero-prefix
-  // suggestions if there are not enough of them to fill all the available
-  // slots. However this cannot be done when remote reactive zero-prefix
-  // suggestions (aka rZPS) are present (i.e., there are suggestions with a
-  // |suggestion_groupd_id|), as those must appear under a header for
-  // transparency reasons. Hence we demote grouped matches to the bottom here.
-  // This function makes an implicit assumption that remote non-rZPS are not
-  // grouped. Otherwise local ZPS would appear at the top of the list.
-  void UpdateHeaders(AutocompleteResult* result);
+  // Updates |result| with the suggestion group ID to header string mapping as
+  // well as the set of hidden suggestion group IDs. Also, strips all match
+  // group IDs that don't have a equivalent header string; essentially treating
+  // those matches as ordinary ones that do not belong to any suggestion group.
+  // Called for zero-prefix suggestions only. This call is followed by
+  // AutocompleteResult::GroupAndDemoteMatchesWithHeaders() which groups and
+  // demotes matches with suggestion group IDs to the bottom of the result set.
+  void UpdateHeaderInfoFromZeroSuggestProvider(AutocompleteResult* result);
 
   // For each group of contiguous matches from the same TemplateURL, show the
   // provider name as a description on the first match in the group.

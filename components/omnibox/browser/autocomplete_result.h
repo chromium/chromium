@@ -73,6 +73,20 @@ class AutocompleteResult {
                    TemplateURLService* template_url_service,
                    const AutocompleteMatch* preserve_default_match = nullptr);
 
+  // Ensures that matches with headers, i.e., matches with a suggestion_group_id
+  // value, are grouped together at the bottom of result set based on their
+  // suggestion_group_id values and in the order the group IDs first appear.
+  // Certain types of remote zero-prefix matches need to appear under a header
+  // for transparency reasons. This information is sent to Chrome by the server.
+  // Also it is possible for zero-prefix matches from different providers (e.g.,
+  // local and remote) to mix and match. Hence, we group matches with the same
+  // headers and demote them to the bottom of the result set to ensure, one,
+  // matches without headers appear at the top of the result set, and two, there
+  // are no interleaving headers whether this is caused by bad server data or by
+  // mixing of local and remote zero-prefix suggestions.
+  // Called after matches are deduped and sorted and before they are culled.
+  void GroupAndDemoteMatchesWithHeaders();
+
   // Sets |pedal| in matches that have Pedal-triggering text.
   void ConvertInSuggestionPedalMatches(AutocompleteProviderClient* client);
 

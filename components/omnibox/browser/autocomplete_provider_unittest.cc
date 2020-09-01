@@ -550,8 +550,10 @@ void AutocompleteProviderTest::UpdateResultsWithHeaderTestData(
   result_.Reset();
   result_.AppendMatches(AutocompleteInput(), matches);
 
-  // Update the result with the header information and demote grouped matches.
-  controller_->UpdateHeaders(&result_);
+  // Update the result with the header information.
+  controller_->UpdateHeaderInfoFromZeroSuggestProvider(&result_);
+  // Group matches with headers and move them to the bottom of the result set.
+  result_.GroupAndDemoteMatchesWithHeaders();
 }
 
 void AutocompleteProviderTest::RunAssistedQueryStatsTest(
@@ -775,7 +777,7 @@ TEST_F(AutocompleteProviderTest, ExactMatchKeywords) {
 }
 
 // Tests that the AutocompleteResult is updated with the header information and
-// grouped matches are demoted correctly.
+// matches with headers are grouped and demoted correctly.
 TEST_F(AutocompleteProviderTest, Headers) {
   ResetControllerWithKeywordAndSearchProviders();
 
@@ -820,22 +822,22 @@ TEST_F(AutocompleteProviderTest, Headers) {
                                 {
                                     {base::nullopt},
                                     {kRecentSearchesGroupId},
+                                    {base::nullopt},
                                     {kRecommendedForYouGroupId},
-                                    {base::nullopt},
-                                    {base::nullopt},
+                                    {kRecentSearchesGroupId},
                                 }};
     UpdateResultsWithHeaderTestData(test_data);
 
-    // Verifies that matches with group IDs sink to the bottom.
+    // Verifies that matches with group IDs are grouped and sink to the bottom.
     EXPECT_FALSE(result_.match_at(0)->suggestion_group_id.has_value());
     EXPECT_FALSE(result_.match_at(1)->suggestion_group_id.has_value());
-    EXPECT_FALSE(result_.match_at(2)->suggestion_group_id.has_value());
+    EXPECT_EQ(kRecentSearchesGroupId,
+              result_.match_at(2)->suggestion_group_id.value());
     EXPECT_EQ(kRecentSearchesGroupId,
               result_.match_at(3)->suggestion_group_id.value());
     EXPECT_EQ(kRecommendedForYouGroupId,
               result_.match_at(4)->suggestion_group_id.value());
   }
-
   {
     HeaderTestData test_data = {headers_map,
                                 {{kGroupIdWithoutHeaderText},

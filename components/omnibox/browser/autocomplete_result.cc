@@ -265,6 +265,8 @@ void AutocompleteResult::SortAndCull(
     LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), max_url_count,
                            comparing_object);
 
+  GroupAndDemoteMatchesWithHeaders();
+
   // Limit total matches accounting for suggestions score <= 0, sub matches, and
   // feature configs such as OmniboxUIExperimentMaxAutocompleteMatches,
   // OmniboxMaxZeroSuggestMatches, and OmniboxDynamicMaxAutocomplete.
@@ -321,6 +323,49 @@ void AutocompleteResult::SortAndCull(
       }
     }
   }
+}
+
+void AutocompleteResult::GroupAndDemoteMatchesWithHeaders() {
+  constexpr int kNoHeaderSuggesetionGroupId = -1;
+
+  // Create a map from suggestion group ID to the index it first appears.
+  // Reserve the first spot for matches without headers.
+  std::map<int, int> group_id_index_map = {{kNoHeaderSuggesetionGroupId, 0}};
+  for (auto it = matches_.begin(); it != matches_.end(); ++it) {
+    if (it->suggestion_group_id.has_value()) {
+      // Make sure every suggestion group ID has an equivalent header string.
+      // AutocompleteController::UpdateHeaderInfoFromZeroSuggestProvider() is
+      // expected to always have be called before this function.
+      DCHECK(!GetHeaderForGroupId(it->suggestion_group_id.value()).empty());
+    }
+
+    int group_id =
+        it->suggestion_group_id.value_or(kNoHeaderSuggesetionGroupId);
+    // Use the 1-based index of the match to record the first appearance of its
+    // group ID since 0 is reserved for matches without headers. We are
+    // interested in the relative values of these indices only and their
+    // absolute values hardly matter.
+    int index = std::distance(matches_.begin(), it) + 1;
+    // map::insert doesn't insert the value if the map already contains the key.
+    group_id_index_map.insert(std::pair<int, int>(group_id, index));
+  }
+
+  // No need to group and demote matches with headers if none exists.
+  if (group_id_index_map.size() == 1)
+    return;
+
+  // Sort the matches based on the order in which their group IDs first appear
+  // while preserving the existing order of matches with the same group ID.
+  std::stable_sort(
+      matches_.begin(), matches_.end(),
+      [&group_id_index_map, kNoHeaderSuggesetionGroupId](const auto& a,
+                                                         const auto& b) {
+        const int a_group_id =
+            a.suggestion_group_id.value_or(kNoHeaderSuggesetionGroupId);
+        const int b_group_id =
+            b.suggestion_group_id.value_or(kNoHeaderSuggesetionGroupId);
+        return group_id_index_map[a_group_id] < group_id_index_map[b_group_id];
+      });
 }
 
 void AutocompleteResult::DemoteOnDeviceSearchSuggestions() {
