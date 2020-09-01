@@ -12,6 +12,7 @@
 #include "components/content_capture/android/content_capture_controller.h"
 #include "components/content_capture/android/jni_headers/ContentCaptureData_jni.h"
 #include "components/content_capture/android/jni_headers/ContentCaptureReceiverManager_jni.h"
+#include "components/content_capture/common/content_capture_features.h"
 #include "content/public/browser/web_contents.h"
 
 using base::android::AttachCurrentThread;
@@ -147,6 +148,11 @@ void ContentCaptureReceiverManagerAndroid::DidRemoveSession(
 }
 
 bool ContentCaptureReceiverManagerAndroid::ShouldCapture(const GURL& url) {
+  // Capture all urls for experiment, the url will be checked
+  // before the content is sent to the consumers.
+  if (features::ShouldTriggerContentCaptureForExperiment())
+    return true;
+
   return ContentCaptureController::Get()->ShouldCapture(url);
 }
 

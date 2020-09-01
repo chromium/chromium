@@ -20,8 +20,13 @@ public class ContentCaptureFeatures {
         return CommandLine.getInstance().hasSwitch(FLAG);
     }
 
+    public static boolean shouldTriggerContentCaptureForExperiment() {
+        return ContentCaptureFeaturesJni.get().shouldTriggerContentCaptureForExperiment();
+    }
+
     @NativeMethods
     interface Natives {
         boolean isEnabled();
+        boolean shouldTriggerContentCaptureForExperiment();
     }
 }

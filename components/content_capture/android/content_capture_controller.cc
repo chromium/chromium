@@ -93,4 +93,17 @@ bool ContentCaptureController::ShouldCapture(const GURL& url) {
   return false;
 }
 
+bool ContentCaptureController::ShouldCapture(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    const base::android::JavaParamRef<jobjectArray>& urls) {
+  std::vector<base::string16> url_list;
+  AppendJavaStringArrayToStringVector(env, urls, &url_list);
+  for (auto url : url_list) {
+    if (!ShouldCapture(GURL(url)))
+      return false;
+  }
+  return true;
+}
+
 }  // namespace content_capture
