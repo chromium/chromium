@@ -352,4 +352,30 @@ suite('TabSearchAppTest', () => {
           assertTrue(withSearch);
         });
   });
+
+  test('Verify showUI() is called correctly.', async () => {
+    assertEquals(0, testProxy.getCallCount('showUI'));
+
+    await setupTest(sampleData());
+    await waitAfterNextRender(tabSearchApp);
+
+    // Make sure that tab data has been received.
+    verifyTabIds(queryRows(), [ 1, 5, 6, 2, 3, 4 ]);
+
+    // Ensure that showUI() has been called once after initial data has been
+    // rendered.
+    assertEquals(1, testProxy.getCallCount('showUI'));
+
+    // Force a change to filtered tab data that would result in a
+    // re-render.
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+    searchField.setValue('bing');
+    await flushTasks();
+    await waitAfterNextRender(tabSearchApp);
+    verifyTabIds(queryRows(), [ 2 ]);
+
+    // |showUI()| should still have only been called once.
+    assertEquals(1, testProxy.getCallCount('showUI'));
+  });
 });

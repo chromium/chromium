@@ -93,9 +93,15 @@ export class TabSearchAppElement extends PolymerElement {
           const event = /** @type {!CustomEvent<!{value: number}>} */ (e);
           // Ensure that the full list of tabs has been rendered.
           assert(event.detail.value === this.filteredOpenTabs_.length);
-          chrome.metricsPrivate.recordTime(
+
+          // Push showUI() to the event loop to allow reflow to occur following
+          // the DOM update.
+          setTimeout(() => {
+            this.apiProxy_.showUI();
+            chrome.metricsPrivate.recordTime(
               'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
               Math.round(window.performance.now()));
+          }, 0);
         });
       }
       this.openTabs_ = profileTabs.windows;

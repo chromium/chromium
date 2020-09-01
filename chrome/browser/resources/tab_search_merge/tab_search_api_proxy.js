@@ -33,6 +33,8 @@ export class TabSearchApiProxy {
 
   /** @return {!tabSearch.mojom.PageCallbackRouter} */
   getCallbackRouter() {}
+
+  showUI() {}
 }
 
 /** @implements {TabSearchApiProxy} */
@@ -73,6 +75,11 @@ export class TabSearchApiProxyImpl {
   /** @override */
   getCallbackRouter() {
     return this.callbackRouter;
+  }
+
+  /** @override */
+  showUI() {
+    this.handler.showUI();
   }
 }
 

@@ -12,6 +12,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
       'closeTab',
       'getProfileTabs',
       'switchToTab',
+      'showUI',
     ]);
 
     /** @type {!tabSearch.mojom.PageCallbackRouter} */
@@ -39,6 +40,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   /** @override */
   switchToTab(tabInfo, withSearch) {
     this.methodCalled('switchToTab', [ tabInfo, withSearch ]);
+  }
+
+  /** @override */
+  showUI() {
+    this.methodCalled('showUI');
   }
 
   /** @override */
