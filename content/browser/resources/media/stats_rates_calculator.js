@@ -512,9 +512,8 @@ class StatsRatesCalculator {
               'bytesReceived', 'timestamp', CalculatorModifier.kBytesToBits),
           // TODO(https://crbug.com/webrtc/10569): Add packetsSent and
           // packetsReceived once implemented.
-          totalRoundTripTime: new RateCalculator(
-              'totalRoundTripTime', 'responsesReceived',
-              CalculatorModifier.kMillisecondsFromSeconds),
+          totalRoundTripTime:
+              new RateCalculator('totalRoundTripTime', 'responsesReceived'),
         },
       },
     ];
