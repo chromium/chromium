@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "cc/cc_export.h"
@@ -106,9 +107,6 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   // each type.
   ActiveFrameSequenceTrackers FrameSequenceTrackerActiveTypes();
 
-  // Reports the accumulated kCustom tracker results and clears it.
-  CustomTrackerResults TakeCustomTrackerResults();
-
   FrameSequenceTracker* GetRemovalTrackerForTesting(
       FrameSequenceTrackerType type);
 
@@ -122,6 +120,13 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   base::Optional<int> TakeLastMainPercent();
 
   void ComputeUniversalThroughputForTesting();
+
+  using NotifyCustomerTrackerResutlsCallback =
+      base::RepeatingCallback<void(CustomTrackerResults)>;
+  void set_custom_tracker_results_added_callback(
+      NotifyCustomerTrackerResutlsCallback callback) {
+    custom_tracker_results_added_callback_ = std::move(callback);
+  }
 
  private:
   friend class FrameSequenceTrackerTest;
@@ -163,7 +168,10 @@ class CC_EXPORT FrameSequenceTrackerCollection {
   // Custom trackers are keyed by a custom sequence id.
   base::flat_map<int, std::unique_ptr<FrameSequenceTracker>>
       custom_frame_trackers_;
-  CustomTrackerResults custom_tracker_results_;
+
+  // Called when throughput metrics are available for custom trackers added by
+  // |AddCustomTrackerResult()|.
+  NotifyCustomerTrackerResutlsCallback custom_tracker_results_added_callback_;
 
   std::vector<std::unique_ptr<FrameSequenceTracker>> removal_trackers_;
   CompositorFrameReportingController* const

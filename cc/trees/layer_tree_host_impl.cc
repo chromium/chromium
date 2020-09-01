@@ -454,6 +454,10 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   SetDebugState(settings.initial_debug_state);
   compositor_frame_reporting_controller_->SetDroppedFrameCounter(
       &dropped_frame_counter_);
+
+  frame_trackers_.set_custom_tracker_results_added_callback(
+      base::BindRepeating(&LayerTreeHostImpl::NotifyThroughputTrackerResults,
+                          weak_factory_.GetWeakPtr()));
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
@@ -1991,13 +1995,6 @@ void LayerTreeHostImpl::DidPresentCompositorFrame(
   client_->DidPresentCompositorFrameOnImplThread(
       frame_token, std::move(activated.main_thread_callbacks), details);
 
-  // Send throughput tracker results to main-thread if any.
-  auto throughput_tracker_results = frame_trackers_.TakeCustomTrackerResults();
-  if (!throughput_tracker_results.empty()) {
-    client_->NotifyThroughputTrackerResults(
-        std::move(throughput_tracker_results));
-  }
-
   // Send all pending lag events waiting on the frame pointed by |frame_token|.
   // It is posted as a task because LayerTreeHostImpl::DidPresentCompositorFrame
   // is in the rendering critical path (it is called by AsyncLayerTreeFrameSink
@@ -2012,6 +2009,11 @@ void LayerTreeHostImpl::LogAverageLagEvents(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
   lag_tracking_manager_.DidPresentCompositorFrame(frame_token, details);
+}
+
+void LayerTreeHostImpl::NotifyThroughputTrackerResults(
+    CustomTrackerResults results) {
+  client_->NotifyThroughputTrackerResults(std::move(results));
 }
 
 void LayerTreeHostImpl::DidNotNeedBeginFrame() {

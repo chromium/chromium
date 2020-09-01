@@ -936,6 +936,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void LogAverageLagEvents(uint32_t frame_token,
                            const viz::FrameTimingDetails& details);
 
+  // Notifies client about the custom tracker results.
+  void NotifyThroughputTrackerResults(CustomTrackerResults results);
+
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;

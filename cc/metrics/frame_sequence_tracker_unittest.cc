@@ -4,7 +4,12 @@
 
 #include "cc/metrics/frame_sequence_tracker.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/macros.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -1950,6 +1955,13 @@ TEST_F(FrameSequenceTrackerTest, ImplFrameNoDamageWaitingOnMain5) {
 }
 
 TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
+  CustomTrackerResults results;
+  collection_.set_custom_tracker_results_added_callback(
+      base::BindLambdaForTesting([&](CustomTrackerResults reported) {
+        for (const auto& pair : reported)
+          results[pair.first] = pair.second;
+      }));
+
   // Start custom tracker 1.
   collection_.StartCustomSequence(1);
   EXPECT_EQ(1u, NumberOfCustomTrackers());
@@ -1957,7 +1969,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
   // No reports.
   uint32_t frame_token = 1u;
   collection_.NotifyFramePresented(frame_token, {});
-  auto results = collection_.TakeCustomTrackerResults();
   EXPECT_EQ(0u, results.size());
 
   // Start custom tracker 2 and 3 in addition to 1.
@@ -1967,7 +1978,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
 
   // All custom trackers are running. No reports.
   collection_.NotifyFramePresented(frame_token, {});
-  results = collection_.TakeCustomTrackerResults();
   EXPECT_EQ(0u, results.size());
 
   // Tracker 2 is stopped and scheduled to terminate.
@@ -1976,7 +1986,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
 
   // Tracker 2 has no data to report.
   collection_.NotifyFramePresented(frame_token, {});
-  results = collection_.TakeCustomTrackerResults();
   EXPECT_EQ(0u, results.size());
 
   // Simple sequence of one frame.
@@ -1990,7 +1999,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackers) {
 
   // Tracker 1 and 3 and should report.
   collection_.NotifyFramePresented(frame_token, {});
-  results = collection_.TakeCustomTrackerResults();
   EXPECT_EQ(2u, results.size());
   EXPECT_EQ(1u, results[1].frames_produced);
   EXPECT_EQ(1u, results[1].frames_expected);

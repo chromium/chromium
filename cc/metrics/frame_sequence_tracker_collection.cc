@@ -411,13 +411,6 @@ FrameSequenceTrackerCollection::FrameSequenceTrackerActiveTypes() {
   return encoded_types;
 }
 
-CustomTrackerResults
-FrameSequenceTrackerCollection::TakeCustomTrackerResults() {
-  CustomTrackerResults results;
-  results.swap(custom_tracker_results_);
-  return results;
-}
-
 FrameSequenceTracker*
 FrameSequenceTrackerCollection::GetRemovalTrackerForTesting(
     FrameSequenceTrackerType type) {
@@ -438,9 +431,11 @@ void FrameSequenceTrackerCollection::SetUkmManager(UkmManager* manager) {
 void FrameSequenceTrackerCollection::AddCustomTrackerResult(
     int custom_sequence_id,
     FrameSequenceMetrics::ThroughputData throughput_data) {
-  // |custom_tracker_results_| should be picked up timely.
-  DCHECK_LT(custom_tracker_results_.size(), 500u);
-  custom_tracker_results_[custom_sequence_id] = std::move(throughput_data);
+  DCHECK(custom_tracker_results_added_callback_);
+
+  CustomTrackerResults results;
+  results[custom_sequence_id] = std::move(throughput_data);
+  custom_tracker_results_added_callback_.Run(std::move(results));
 }
 
 }  // namespace cc
