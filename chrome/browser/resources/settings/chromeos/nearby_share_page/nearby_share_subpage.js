@@ -41,6 +41,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private {boolean} */
+    showReceiveDialog_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /**
@@ -94,6 +100,14 @@ Polymer({
    */
   onDataUsageDialogClose_(event) {
     this.showDataUsageDialog_ = false;
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onReceiveDialogClose_(event) {
+    this.showReceiveDialog_ = false;
   },
 
   /**
@@ -214,8 +228,13 @@ Polymer({
     const router = settings.Router.getInstance();
     if (router.getCurrentRoute().path.endsWith('nearbyshare')) {
       const queryParams = router.getQueryParameters();
+
       if (queryParams.has('deviceName')) {
         this.showDeviceNameDialog_ = true;
+      }
+
+      if (queryParams.has('receive')) {
+        this.showReceiveDialog_ = true;
       }
     }
   },

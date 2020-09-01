@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
     ":nearby_share_contact_visibility_dialog",
     ":nearby_share_data_usage_dialog",
     ":nearby_share_device_name_dialog",
+    ":nearby_share_receive_dialog",
     ":nearby_share_subpage",
     ":types",
   ]
@@ -53,11 +54,21 @@ js_library("nearby_share_device_name_dialog") {
   ]
 }
 
+js_library("nearby_share_receive_dialog") {
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
 js_library("nearby_share_subpage") {
   deps = [
     ":nearby_share_contact_visibility_dialog",
     ":nearby_share_data_usage_dialog",
     ":nearby_share_device_name_dialog",
+    ":nearby_share_receive_dialog",
     ":types",
     "../..:router",
     "../../prefs",
@@ -80,6 +91,7 @@ group("polymer3_elements") {
     ":nearby_share_contact_visibility_dialog_module",
     ":nearby_share_data_usage_dialog_module",
     ":nearby_share_device_name_dialog_module",
+    ":nearby_share_receive_dialog_module",
     ":nearby_share_subpage_module",
     "../../controls:polymer3_elements",
     "../../prefs:polymer3_elements",
@@ -97,6 +109,7 @@ js_type_check("closure_compile_module") {
     ":nearby_share_contact_visibility_dialog.m",
     ":nearby_share_data_usage_dialog.m",
     ":nearby_share_device_name_dialog.m",
+    ":nearby_share_receive_dialog.m",
     ":nearby_share_subpage.m",
   ]
 }
@@ -142,12 +155,24 @@ js_library("nearby_share_device_name_dialog.m") {
   extra_deps = [ ":nearby_share_device_name_dialog_module" ]
 }
 
+js_library("nearby_share_receive_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_receive_dialog.m.js" ]
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":nearby_share_receive_dialog_module" ]
+}
+
 js_library("nearby_share_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_subpage.m.js" ]
   deps = [
     ":nearby_share_contact_visibility_dialog.m",
     ":nearby_share_data_usage_dialog.m",
     ":nearby_share_device_name_dialog.m",
+    ":nearby_share_receive_dialog.m",
     ":types.m",
     "../..:router.m",
     "../../prefs:prefs.m",
@@ -206,6 +231,14 @@ polymer_modulizer("nearby_share_data_usage_dialog") {
 polymer_modulizer("nearby_share_device_name_dialog") {
   js_file = "nearby_share_device_name_dialog.js"
   html_file = "nearby_share_device_name_dialog.html"
+  html_type = "dom-module"
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("nearby_share_receive_dialog") {
+  js_file = "nearby_share_receive_dialog.js"
+  html_file = "nearby_share_receive_dialog.html"
   html_type = "dom-module"
   namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports

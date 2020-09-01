@@ -12,6 +12,7 @@
 <link rel="import" href="nearby_share_contact_visibility_dialog.html">
 <link rel="import" href="nearby_share_device_name_dialog.html">
 <link rel="import" href="nearby_share_data_usage_dialog.html">
+<link rel="import" href="nearby_share_receive_dialog.html">
 <link rel="import" href="types.html">
 
 <dom-module id="settings-nearby-share-subpage">
@@ -86,6 +87,11 @@
       <nearby-share-data-usage-dialog prefs="{{prefs}}" id="dataUsageDialog"
           on-close="onDataUsageDialogClose_">
       </nearby-share-data-usage-dialog>
+    </template>
+    <template is="dom-if" if="[[showReceiveDialog_]]" restamp>
+      <nearby-share-receive-dialog id="receiveDialog"
+          on-close="onReceiveDialogClose_">
+      </nearby-share-receive-dialog>
     </template>
   </template>
   <script src="nearby_share_subpage.js"></script>

@@ -47,6 +47,7 @@ js_modulizer("modulize") {
     "multidevice_page_tests.js",
     "multidevice_smartlock_subpage_test.js",
     "multidevice_subpage_tests.js",
+    "nearby_share_receive_dialog_tests.js",
     "nearby_share_subpage_tests.js",
     "os_languages_page_tests.js",
     "os_languages_page_v2_tests.js",

@@ -49,6 +49,7 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
  ['MultideviceSubPage', 'multidevice_subpage_tests.m.js'],
  ['OsLanguagesPage', 'os_languages_page_tests.m.js'],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.m.js'],
+ ['NearbyShareReceiveDialog', 'nearby_share_receive_dialog_tests.m.js'],
  ['NearbyShareSubPage', 'nearby_share_subpage_tests.m.js'],
  ['ParentalControlsPage', 'parental_controls_page_test.m.js'],
  ['PeoplePage', 'os_people_page_test.m.js'],

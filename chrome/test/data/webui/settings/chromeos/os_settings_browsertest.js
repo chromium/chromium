@@ -1056,6 +1056,29 @@ TEST_F('OSSettingsMultideviceSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
+// Test fixture for the Nearby Share receive dialog.
+// eslint-disable-next-line no-var
+var OSSettingsNearbyShareReceiveDialogTest =
+    class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload +
+        'chromeos/nearby_share_page/nearby_share_receive_dialog.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      '../../test_util.js',
+      'nearby_share_receive_dialog_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsNearbyShareReceiveDialogTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 // Test fixture for the Nearby Share settings subpage.
 // eslint-disable-next-line no-var
 var OSSettingsNearbyShareSubPageTest = class extends OSSettingsBrowserTest {

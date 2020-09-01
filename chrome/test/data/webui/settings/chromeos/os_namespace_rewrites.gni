@@ -22,6 +22,7 @@ os_test_namespace_rewrites = os_settings_namespace_rewrites + [
                                "test_util.eventToPromise|eventToPromise",
                                "test_util.fakeDataBind|fakeDataBind",
                                "test_util.flushTasks|flushTasks",
+                               "test_util.isChildVisible|isChildVisible",
                                "test_util.waitAfterNextRender|waitAfterNextRender",
                                "MockInteractions.keyEventOn|keyEventOn",
                                "cups_printer_test_util.createCupsPrinterInfo|createCupsPrinterInfo",

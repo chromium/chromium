@@ -116,4 +116,13 @@ suite('NearbyShare', function() {
 
     assertEquals(2, subpage.prefs.nearby_sharing.data_usage.value);
   });
+
+  test('show receive dialog', function() {
+    subpage.showReceiveDialog_ = true;
+    Polymer.dom.flush();
+
+    const dialog = subpage.$$('nearby-share-receive-dialog');
+    assertTrue(!!dialog);
+  });
+
 });
