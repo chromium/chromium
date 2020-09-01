@@ -8991,11 +8991,30 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.OpenIn">
+  <obsolete>Renamed to IOS.OpenIn.Tapped, 08/2020</obsolete>
   <owner>eugenebut@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <description>
     Recorded when the user taps on OPEN IN... button to share the page
     (typically PDF).
+  </description>
+</action>
+
+<action name="IOS.OpenIn.Presented" not_user_triggered="true">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <description>
+    Recorded when the user loads a web page containing a file that can be
+    exported and the &quot;Open In&quot; toolbar is presented.
+  </description>
+</action>
+
+<action name="IOS.OpenIn.Tapped">
+  <owner>eugenebut@chromium.org</owner>
+  <owner>mrefaat@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <description>
+    Recorded when the user taps on OPEN IN... button to export the file.
   </description>
 </action>
 

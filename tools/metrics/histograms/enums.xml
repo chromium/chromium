@@ -37697,6 +37697,21 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
 </enum>
 
+<enum name="IOSOpenInMimeType">
+  <int value="0" label="Not handled"/>
+  <int value="1" label="PDF"/>
+  <int value="2" label="Microsof tWord"/>
+  <int value="3" label="Microsoft Word OpenXML"/>
+  <int value="4" label="JPEG"/>
+  <int value="5" label="PNG"/>
+  <int value="6" label="Microsoft PowerPoint"/>
+  <int value="7" label="Microsoft PowerPoint OpenXML"/>
+  <int value="8" label="RTF"/>
+  <int value="9" label="SVG"/>
+  <int value="10" label="Microsoft Excel"/>
+  <int value="11" label="Microsoft Excel OpenXML"/>
+</enum>
+
 <enum name="IOSOutOfSyncURLAction">
   <int value="0" label="No action"/>
   <int value="1" label="Go back"/>

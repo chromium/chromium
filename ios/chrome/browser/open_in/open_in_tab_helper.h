@@ -14,6 +14,24 @@ namespace net {
 class HttpResponseHeaders;
 }  //  namespace net
 
+// Enum used to determine the MIME type of a previewed file. Entries should
+// always keep synced with the IOS.OpenIn.MimeType UMA histogram.
+enum class OpenInMimeType {
+  kMimeTypeNotHandled = 0,
+  kMimeTypePDF = 1,
+  kMimeTypeMicrosoftWord = 2,
+  kMimeTypeMicrosoftWordOpenXML = 3,
+  kMimeTypeJPEG = 4,
+  kMimeTypePNG = 5,
+  kMimeTypeMicrosoftPowerPoint = 6,
+  kMimeTypeMicrosoftPowerPointOpenXML = 7,
+  kMimeTypeRTF = 8,
+  kMimeTypeSVG = 9,
+  kMimeTypeMicrosoftExcel = 10,
+  kMimeTypeMicrosoftExcelOpenXML = 11,
+  kMaxValue = kMimeTypeMicrosoftExcelOpenXML,
+};
+
 @class OpenInController;
 
 // A tab helper that observes WebState and shows open in button for PDF
@@ -40,8 +58,8 @@ class OpenInTabHelper : public web::WebStateObserver,
   // PDF.
   void HandleExportableFile();
 
-  // Tests that files are exportable.
-  bool isExportableFile() const;
+  // Tests that files are exportable and returns their MIME type.
+  OpenInMimeType GetUmaResult(const std::string& mime_type) const;
 
   // WebStateObserver implementation.
   void PageLoaded(

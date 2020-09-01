@@ -350,7 +350,7 @@ class OpenInControllerBridge
   DCHECK([view isKindOfClass:[UIView class]]);
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
-  base::RecordAction(base::UserMetricsAction("IOS.OpenIn"));
+  base::RecordAction(base::UserMetricsAction("IOS.OpenIn.Tapped"));
 
   if (!_webState)
     return;
