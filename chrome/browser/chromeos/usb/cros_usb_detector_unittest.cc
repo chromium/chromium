@@ -758,8 +758,8 @@ TEST_F(CrosUsbDetectorTest, SharedDevicesGetAttachedOnStartup) {
   cros_usb_detector_->ConnectSharedDevicesOnVmStartup(
       crostini::kCrostiniDefaultVmName);
   base::RunLoop().RunUntilIdle();
-  // Attaching an already attached device is a no-op currently.
-  EXPECT_EQ(0, usb_device_observer_.notify_count());
+  // On VM startup, we have to re-attach devices.
+  EXPECT_EQ(1, usb_device_observer_.notify_count());
   EXPECT_TRUE(IsSharedWithCrostini(GetSingleDeviceInfo()));
 }
 
