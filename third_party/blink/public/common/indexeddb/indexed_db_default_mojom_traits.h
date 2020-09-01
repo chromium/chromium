@@ -84,11 +84,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::IDBIndexMetadataDataView,
 
 template <>
 struct BLINK_COMMON_EXPORT
-    UnionTraits<blink::mojom::IDBKeyDataDataView, blink::IndexedDBKey> {
-  static blink::mojom::IDBKeyDataDataView::Tag GetTag(
+    UnionTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey> {
+  static blink::mojom::IDBKeyDataView::Tag GetTag(
       const blink::IndexedDBKey& key);
-  static bool Read(blink::mojom::IDBKeyDataDataView data,
-                   blink::IndexedDBKey* out);
+  static bool Read(blink::mojom::IDBKeyDataView data, blink::IndexedDBKey* out);
   static const std::vector<blink::IndexedDBKey>& key_array(
       const blink::IndexedDBKey& key) {
     return key.array();
@@ -109,13 +108,6 @@ struct BLINK_COMMON_EXPORT
   static bool other_none(const blink::IndexedDBKey& key) {
     return key.type() == blink::mojom::IDBKeyType::None;
   }
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey> {
-  static const blink::IndexedDBKey& data(const blink::IndexedDBKey& key);
-  static bool Read(blink::mojom::IDBKeyDataView data, blink::IndexedDBKey* out);
 };
 
 template <>

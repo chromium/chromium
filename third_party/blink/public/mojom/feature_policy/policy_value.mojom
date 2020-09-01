@@ -20,15 +20,9 @@ enum PolicyValueType {
 // This union includes all the types that can be used to specify a policy's
 // parameter.
 // TODO(crbug.com/1119481): Add the following types: inc/dec int, inc double, set.
-union PolicyValueData {
+union PolicyValue {
   bool null_value;
   bool bool_value;
   double dec_double_value;
   int32 enum_value;
 };
-
-// Defined as a structure so that it can be typemapped with StructTraits.
-struct PolicyValue {
-  PolicyValueData data;
-};
-

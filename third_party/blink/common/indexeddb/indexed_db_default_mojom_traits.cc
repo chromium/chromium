@@ -67,84 +67,70 @@ bool StructTraits<blink::mojom::IDBIndexMetadataDataView,
 }
 
 // static
-blink::mojom::IDBKeyDataDataView::Tag
-UnionTraits<blink::mojom::IDBKeyDataDataView, blink::IndexedDBKey>::GetTag(
+blink::mojom::IDBKeyDataView::Tag
+UnionTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey>::GetTag(
     const blink::IndexedDBKey& key) {
   switch (key.type()) {
     case blink::mojom::IDBKeyType::Array:
-      return blink::mojom::IDBKeyDataDataView::Tag::KEY_ARRAY;
+      return blink::mojom::IDBKeyDataView::Tag::KEY_ARRAY;
     case blink::mojom::IDBKeyType::Binary:
-      return blink::mojom::IDBKeyDataDataView::Tag::BINARY;
+      return blink::mojom::IDBKeyDataView::Tag::BINARY;
     case blink::mojom::IDBKeyType::String:
-      return blink::mojom::IDBKeyDataDataView::Tag::STRING;
+      return blink::mojom::IDBKeyDataView::Tag::STRING;
     case blink::mojom::IDBKeyType::Date:
-      return blink::mojom::IDBKeyDataDataView::Tag::DATE;
+      return blink::mojom::IDBKeyDataView::Tag::DATE;
     case blink::mojom::IDBKeyType::Number:
-      return blink::mojom::IDBKeyDataDataView::Tag::NUMBER;
+      return blink::mojom::IDBKeyDataView::Tag::NUMBER;
     case blink::mojom::IDBKeyType::None:
-      return blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE;
+      return blink::mojom::IDBKeyDataView::Tag::OTHER_NONE;
 
     // Not used, fall through to NOTREACHED.
     case blink::mojom::IDBKeyType::Invalid:  // Only used in blink.
     case blink::mojom::IDBKeyType::Min:;     // Only used in the browser.
   }
   NOTREACHED();
-  return blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE;
+  return blink::mojom::IDBKeyDataView::Tag::OTHER_NONE;
 }
 
 // static
-bool UnionTraits<blink::mojom::IDBKeyDataDataView, blink::IndexedDBKey>::Read(
-    blink::mojom::IDBKeyDataDataView data,
+bool UnionTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey>::Read(
+    blink::mojom::IDBKeyDataView data,
     blink::IndexedDBKey* out) {
   switch (data.tag()) {
-    case blink::mojom::IDBKeyDataDataView::Tag::KEY_ARRAY: {
+    case blink::mojom::IDBKeyDataView::Tag::KEY_ARRAY: {
       std::vector<blink::IndexedDBKey> array;
       if (!data.ReadKeyArray(&array))
         return false;
       *out = blink::IndexedDBKey(std::move(array));
       return true;
     }
-    case blink::mojom::IDBKeyDataDataView::Tag::BINARY: {
+    case blink::mojom::IDBKeyDataView::Tag::BINARY: {
       ArrayDataView<uint8_t> bytes;
       data.GetBinaryDataView(&bytes);
       std::string binary(bytes.data(), bytes.data() + bytes.size());
       *out = blink::IndexedDBKey(std::move(binary));
       return true;
     }
-    case blink::mojom::IDBKeyDataDataView::Tag::STRING: {
+    case blink::mojom::IDBKeyDataView::Tag::STRING: {
       base::string16 string;
       if (!data.ReadString(&string))
         return false;
       *out = blink::IndexedDBKey(std::move(string));
       return true;
     }
-    case blink::mojom::IDBKeyDataDataView::Tag::DATE:
+    case blink::mojom::IDBKeyDataView::Tag::DATE:
       *out = blink::IndexedDBKey(data.date(), blink::mojom::IDBKeyType::Date);
       return true;
-    case blink::mojom::IDBKeyDataDataView::Tag::NUMBER:
+    case blink::mojom::IDBKeyDataView::Tag::NUMBER:
       *out =
           blink::IndexedDBKey(data.number(), blink::mojom::IDBKeyType::Number);
       return true;
-    case blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE:
+    case blink::mojom::IDBKeyDataView::Tag::OTHER_NONE:
       *out = blink::IndexedDBKey(blink::mojom::IDBKeyType::None);
       return true;
   }
 
   return false;
-}
-
-// static
-const blink::IndexedDBKey&
-StructTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey>::data(
-    const blink::IndexedDBKey& key) {
-  return key;
-}
-
-// static
-bool StructTraits<blink::mojom::IDBKeyDataView, blink::IndexedDBKey>::Read(
-    blink::mojom::IDBKeyDataView data,
-    blink::IndexedDBKey* out) {
-  return data.ReadData(out);
 }
 
 // static

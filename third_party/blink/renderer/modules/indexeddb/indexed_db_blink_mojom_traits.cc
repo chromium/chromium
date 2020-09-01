@@ -81,66 +81,65 @@ bool StructTraits<blink::mojom::IDBIndexMetadataDataView,
 }
 
 // static
-blink::mojom::IDBKeyDataDataView::Tag
-UnionTraits<blink::mojom::IDBKeyDataDataView, std::unique_ptr<blink::IDBKey>>::
+blink::mojom::IDBKeyDataView::Tag
+UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     GetTag(const std::unique_ptr<blink::IDBKey>& key) {
   DCHECK(key.get());
   switch (key->GetType()) {
     case blink::mojom::IDBKeyType::Array:
-      return blink::mojom::IDBKeyDataDataView::Tag::KEY_ARRAY;
+      return blink::mojom::IDBKeyDataView::Tag::KEY_ARRAY;
     case blink::mojom::IDBKeyType::Binary:
-      return blink::mojom::IDBKeyDataDataView::Tag::BINARY;
+      return blink::mojom::IDBKeyDataView::Tag::BINARY;
     case blink::mojom::IDBKeyType::String:
-      return blink::mojom::IDBKeyDataDataView::Tag::STRING;
+      return blink::mojom::IDBKeyDataView::Tag::STRING;
     case blink::mojom::IDBKeyType::Date:
-      return blink::mojom::IDBKeyDataDataView::Tag::DATE;
+      return blink::mojom::IDBKeyDataView::Tag::DATE;
     case blink::mojom::IDBKeyType::Number:
-      return blink::mojom::IDBKeyDataDataView::Tag::NUMBER;
+      return blink::mojom::IDBKeyDataView::Tag::NUMBER;
     case blink::mojom::IDBKeyType::None:
-      return blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE;
+      return blink::mojom::IDBKeyDataView::Tag::OTHER_NONE;
 
     // Not used, fall through to NOTREACHED.
     case blink::mojom::IDBKeyType::Invalid:  // Only used in blink.
     case blink::mojom::IDBKeyType::Min:;     // Only used in the browser.
   }
   NOTREACHED();
-  return blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE;
+  return blink::mojom::IDBKeyDataView::Tag::OTHER_NONE;
 }
 
 // static
-bool UnionTraits<
-    blink::mojom::IDBKeyDataDataView,
-    std::unique_ptr<blink::IDBKey>>::Read(blink::mojom::IDBKeyDataDataView data,
-                                          std::unique_ptr<blink::IDBKey>* out) {
+bool UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
+    Read(blink::mojom::IDBKeyDataView data,
+         std::unique_ptr<blink::IDBKey>* out) {
   switch (data.tag()) {
-    case blink::mojom::IDBKeyDataDataView::Tag::KEY_ARRAY: {
+    case blink::mojom::IDBKeyDataView::Tag::KEY_ARRAY: {
       Vector<std::unique_ptr<blink::IDBKey>> array;
       if (!data.ReadKeyArray(&array))
         return false;
       *out = blink::IDBKey::CreateArray(std::move(array));
       return true;
     }
-    case blink::mojom::IDBKeyDataDataView::Tag::BINARY: {
+    case blink::mojom::IDBKeyDataView::Tag::BINARY: {
       ArrayDataView<uint8_t> bytes;
       data.GetBinaryDataView(&bytes);
       *out = blink::IDBKey::CreateBinary(SharedBuffer::Create(
           reinterpret_cast<const char*>(bytes.data()), bytes.size()));
       return true;
     }
-    case blink::mojom::IDBKeyDataDataView::Tag::STRING: {
+    case blink::mojom::IDBKeyDataView::Tag::STRING: {
       String string;
       if (!data.ReadString(&string))
         return false;
       *out = blink::IDBKey::CreateString(String(string));
       return true;
     }
-    case blink::mojom::IDBKeyDataDataView::Tag::DATE:
+    case blink::mojom::IDBKeyDataView::Tag::DATE:
       *out = blink::IDBKey::CreateDate(data.date());
       return true;
-    case blink::mojom::IDBKeyDataDataView::Tag::NUMBER:
+    case blink::mojom::IDBKeyDataView::Tag::NUMBER:
       *out = blink::IDBKey::CreateNumber(data.number());
       return true;
-    case blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE:
+    case blink::mojom::IDBKeyDataView::Tag::OTHER_NONE:
       *out = blink::IDBKey::CreateNone();
       return true;
   }
@@ -150,31 +149,16 @@ bool UnionTraits<
 
 // static
 const Vector<std::unique_ptr<blink::IDBKey>>&
-UnionTraits<blink::mojom::IDBKeyDataDataView, std::unique_ptr<blink::IDBKey>>::
+UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     key_array(const std::unique_ptr<blink::IDBKey>& key) {
   return key->Array();
 }
 
 // static
 Vector<uint8_t>
-UnionTraits<blink::mojom::IDBKeyDataDataView, std::unique_ptr<blink::IDBKey>>::
+UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     binary(const std::unique_ptr<blink::IDBKey>& key) {
   return key->Binary()->CopyAs<Vector<uint8_t>>();
-}
-
-// static
-const std::unique_ptr<blink::IDBKey>&
-StructTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
-    data(const std::unique_ptr<blink::IDBKey>& key) {
-  return key;
-}
-
-// static
-bool StructTraits<
-    blink::mojom::IDBKeyDataView,
-    std::unique_ptr<blink::IDBKey>>::Read(blink::mojom::IDBKeyDataView data,
-                                          std::unique_ptr<blink::IDBKey>* out) {
-  return data.ReadData(out);
 }
 
 // static

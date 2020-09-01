@@ -85,7 +85,7 @@ enum IDBTransactionDurability {
   Relaxed,
 };
 
-union IDBKeyData {
+union IDBKey {
   array<IDBKey> key_array;
   array<uint8> binary;
   mojo_base.mojom.String16 string;
@@ -93,11 +93,6 @@ union IDBKeyData {
   double number;
   // TODO(jsbell): Consider using Optional<> instead.
   bool other_none;
-};
-
-// Defined as a structure so that it can by typemapped with StructTraits.
-struct IDBKey {
-  IDBKeyData data;
 };
 
 // In order of the least to the highest precedent in terms of sort order.

@@ -13,23 +13,23 @@ namespace mojo {
 
 template <>
 struct BLINK_COMMON_EXPORT
-    UnionTraits<blink::mojom::PolicyValueDataDataView, blink::PolicyValue> {
+    UnionTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue> {
  public:
-  static blink::mojom::PolicyValueDataDataView::Tag GetTag(
+  static blink::mojom::PolicyValueDataView::Tag GetTag(
       const blink::PolicyValue& value) {
     switch (value.Type()) {
       case blink::mojom::PolicyValueType::kNull:
-        return blink::mojom::PolicyValueDataDataView::Tag::NULL_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::NULL_VALUE;
       case blink::mojom::PolicyValueType::kBool:
-        return blink::mojom::PolicyValueDataDataView::Tag::BOOL_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::BOOL_VALUE;
       case blink::mojom::PolicyValueType::kDecDouble:
-        return blink::mojom::PolicyValueDataDataView::Tag::DEC_DOUBLE_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::DEC_DOUBLE_VALUE;
       case blink::mojom::PolicyValueType::kEnum:
-        return blink::mojom::PolicyValueDataDataView::Tag::ENUM_VALUE;
+        return blink::mojom::PolicyValueDataView::Tag::ENUM_VALUE;
     }
 
     NOTREACHED();
-    return blink::mojom::PolicyValueDataDataView::Tag::NULL_VALUE;
+    return blink::mojom::PolicyValueDataView::Tag::NULL_VALUE;
   }
   static bool null_value(const blink::PolicyValue& value) { return false; }
   static bool bool_value(const blink::PolicyValue& value) {
@@ -41,17 +41,7 @@ struct BLINK_COMMON_EXPORT
   static int32_t enum_value(const blink::PolicyValue& value) {
     return value.IntValue();
   }
-  static bool Read(blink::mojom::PolicyValueDataDataView in,
-                   blink::PolicyValue* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue> {
-  static const blink::PolicyValue& data(const blink::PolicyValue& value) {
-    return value;
-  }
-  static bool Read(blink::mojom::PolicyValueDataView data,
+  static bool Read(blink::mojom::PolicyValueDataView in,
                    blink::PolicyValue* out);
 };
 

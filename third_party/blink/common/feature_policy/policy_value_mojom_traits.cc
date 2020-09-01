@@ -6,32 +6,27 @@
 
 namespace mojo {
 
-bool UnionTraits<blink::mojom::PolicyValueDataDataView, blink::PolicyValue>::
-    Read(blink::mojom::PolicyValueDataDataView in, blink::PolicyValue* out) {
+bool UnionTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue>::Read(
+    blink::mojom::PolicyValueDataView in,
+    blink::PolicyValue* out) {
   switch (in.tag()) {
-    case blink::mojom::PolicyValueDataDataView::Tag::BOOL_VALUE:
+    case blink::mojom::PolicyValueDataView::Tag::BOOL_VALUE:
       out->SetType(blink::mojom::PolicyValueType::kBool);
       out->SetBoolValue(in.bool_value());
       return true;
-    case blink::mojom::PolicyValueDataDataView::Tag::DEC_DOUBLE_VALUE:
+    case blink::mojom::PolicyValueDataView::Tag::DEC_DOUBLE_VALUE:
       out->SetType(blink::mojom::PolicyValueType::kDecDouble);
       out->SetDoubleValue(in.dec_double_value());
       return true;
-    case blink::mojom::PolicyValueDataDataView::Tag::ENUM_VALUE:
+    case blink::mojom::PolicyValueDataView::Tag::ENUM_VALUE:
       out->SetType(blink::mojom::PolicyValueType::kEnum);
       out->SetIntValue(in.enum_value());
       return true;
-    case blink::mojom::PolicyValueDataDataView::Tag::NULL_VALUE:
+    case blink::mojom::PolicyValueDataView::Tag::NULL_VALUE:
       break;
   }
   NOTREACHED();
   return false;
-}
-
-bool StructTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue>::Read(
-    blink::mojom::PolicyValueDataView data,
-    blink::PolicyValue* out) {
-  return data.ReadData(out);
 }
 
 }  // namespace mojo
