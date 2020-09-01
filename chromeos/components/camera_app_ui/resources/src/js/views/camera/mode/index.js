@@ -258,7 +258,7 @@ export class Modes {
       });
       element.addEventListener('change', async (event) => {
         if (element.checked) {
-          const mode = element.dataset.mode;
+          const mode = /** @type {!Mode} */ (element.dataset['mode']);
           this.updateModeUI_(mode);
           state.set(state.State.MODE_SWITCHING, true);
           const isSuccess = await this.doSwitchMode_();
@@ -387,7 +387,9 @@ export class Modes {
     dom.getAll('div.mode-item', HTMLDivElement).forEach((element) => {
       const radio = dom.getFrom(element, 'input[type=radio]', HTMLInputElement);
       element.classList.toggle(
-          'hide', !supportedModes.includes(radio.dataset.mode));
+          'hide',
+          !supportedModes.includes(
+              /** @type {!Mode} */ (radio.dataset['mode'])));
     });
     this.modesGroup_.classList.toggle('scrollable', supportedModes.length > 3);
     this.modesGroup_.classList.remove('hide');

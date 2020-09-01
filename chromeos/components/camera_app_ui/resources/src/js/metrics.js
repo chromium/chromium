@@ -95,8 +95,8 @@ export function initMetrics() {
       }, i[r].l = 1 * new Date();
       const a = s.createElement(o);
       const m = s.getElementsByTagName(o)[0];
-      a.async = 1;
-      a.src = g;
+      a['async'] = 1;
+      a['src'] = g;
       m.parentNode.insertBefore(a, m);
     })(window, document, 'script', '../js/lib/analytics.js', 'ga');
 
@@ -317,7 +317,8 @@ export class PerfEventParam {
  * @param {!PerfEventParam} param
  */
 export function sendPerfEvent({event, duration, extras = {}}) {
-  const {resolution = '', facing = ''} = extras;
+  const resolution = extras['resolution'] || '';
+  const facing = extras['facing'] || '';
   sendEvent(
       {
         eventCategory: 'perf',

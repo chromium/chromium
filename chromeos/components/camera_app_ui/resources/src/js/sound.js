@@ -16,7 +16,8 @@ export function play(selector) {
   let cancel;
   const p = new Promise((resolve, reject) => {
     const element = dom.get(selector, HTMLAudioElement);
-    const timeout = setTimeout(resolve, Number(element.dataset.timeout || 0));
+    const timeout =
+        setTimeout(resolve, Number(element.dataset['timeout'] || 0));
     cancel = () => {
       clearTimeout(timeout);
       reject(new Error('cancel'));

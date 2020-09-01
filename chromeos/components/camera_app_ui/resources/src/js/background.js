@@ -206,7 +206,7 @@ class CCAWindow {
               this.testingCallbacks_.onClosed(windowUrl);
             }
           });
-          appWindow.contentWindow.backgroundOps = this;
+          appWindow.contentWindow['backgroundOps'] = this;
           if (this.testingCallbacks_ !== null) {
             this.testingCallbacks_.onCreated(windowUrl);
           }
@@ -588,8 +588,9 @@ chrome.app.runtime.onLaunched.addListener((launchData) => {
     background = new Background();
   }
   try {
-    if (launchData.url) {
-      const intent = Intent.create(new URL(launchData.url));
+    const /** (string|undefined) */ url = launchData['url'];
+    if (url !== undefined) {
+      const intent = Intent.create(new URL(url));
       background.launchIntent(intent);
     } else {
       background.launchApp();

@@ -53,7 +53,7 @@ function activate(index) {
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'false');
   dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
-    element.setAttribute('tabindex', element.dataset.tabindex);
+    element.setAttribute('tabindex', element.dataset['tabindex']);
     element.removeAttribute('data-tabindex');
   });
   view.focus();
@@ -67,7 +67,7 @@ function inactivate(index) {
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'true');
   dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
-    element.dataset.tabindex = element.getAttribute('tabindex');
+    element.dataset['tabindex'] = element.getAttribute('tabindex');
     element.setAttribute('tabindex', '-1');
   });
   document.activeElement.blur();

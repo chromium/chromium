@@ -7,7 +7,7 @@ import {
   ForegroundOps,  // eslint-disable-line no-unused-vars
 } from './background_ops.js';
 import {browserProxy} from './browser_proxy/browser_proxy.js';
-import {assert} from './chrome_util.js';
+import {assert, assertInstanceof} from './chrome_util.js';
 import {
   PhotoConstraintsPreferrer,
   VideoConstraintsPreferrer,
@@ -131,22 +131,26 @@ export class App {
    */
   setupToggles_() {
     browserProxy.localStorageGet({expert: false})
-        .then(({expert}) => state.set(state.State.EXPERT, expert));
+        .then((values) => state.set(state.State.EXPERT, values['expert']));
     dom.getAll('input', HTMLInputElement).forEach((element) => {
-      element.addEventListener(
-          'keypress',
-          (event) =>
-              util.getShortcutIdentifier(event) === 'Enter' && element.click());
+      element.addEventListener('keypress', (event) => {
+        const e = assertInstanceof(event, KeyboardEvent);
+        if (util.getShortcutIdentifier(e) === 'Enter') {
+          element.click();
+        }
+      });
 
-      const payload = (element) => ({[element.dataset.key]: element.checked});
+      const payload = (element) =>
+          ({[element.dataset['key']]: element.checked});
       const save = (element) => {
-        if (element.dataset.key !== undefined) {
+        if (element.dataset['key'] !== undefined) {
           browserProxy.localStorageSet(payload(element));
         }
       };
       element.addEventListener('change', (event) => {
-        if (element.dataset.state !== undefined) {
-          state.set(state.assertState(element.dataset.state), element.checked);
+        if (element.dataset['state'] !== undefined) {
+          state.set(
+              state.assertState(element.dataset['state']), element.checked);
         }
         if (event.isTrusted) {
           save(element);
@@ -160,12 +164,12 @@ export class App {
           }
         }
       });
-      if (element.dataset.key !== undefined) {
+      if (element.dataset['key'] !== undefined) {
         // Restore the previously saved state on startup.
         browserProxy.localStorageGet(payload(element))
             .then(
-                (values) =>
-                    util.toggleChecked(element, values[element.dataset.key]));
+                (values) => util.toggleChecked(
+                    element, values[element.dataset['key']]));
       }
     });
   }
@@ -228,7 +232,7 @@ export class App {
    */
   onKeyPressed_(event) {
     tooltip.hide();  // Hide shown tooltip on any keypress.
-    nav.onKeyPressed(event);
+    nav.onKeyPressed(assertInstanceof(event, KeyboardEvent));
   }
 
   /**

@@ -251,7 +251,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
    */
   restoreFpsPreference_() {
     browserProxy.localStorageGet({deviceVideoFps: {}})
-        .then((values) => this.prefFpses_ = values.deviceVideoFps);
+        .then((values) => this.prefFpses_ = values['deviceVideoFps']);
   }
 
   /**

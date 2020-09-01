@@ -84,7 +84,7 @@ export class BaseSettings extends View {
   openSubSettings(name) {
     // Dismiss master-settings if sub-settings was dismissed by background
     // click.
-    nav.open(name).then((cond) => cond && cond.bkgnd && this.leave(cond));
+    nav.open(name).then((cond) => cond && cond['bkgnd'] && this.leave(cond));
   }
 }
 
@@ -405,7 +405,7 @@ export class ResolutionSettings extends BaseSettings {
      * @param {function(!Resolution, !ResolutionList): string} optTextTempl
      */
     const prepItem = (item, id, {prefResol, resols}, optTextTempl) => {
-      item.dataset.deviceId = id;
+      item.dataset['deviceId'] = id;
       item.classList.toggle('multi-option', resols.length > 1);
       item.querySelector('.description>span').textContent =
           optTextTempl(prefResol, resols);
@@ -435,7 +435,7 @@ export class ResolutionSettings extends BaseSettings {
     const prevFocus = /** @type {?HTMLElement} */ (
         this.resMenu_.querySelector('.menu-item.external-camera:focus'));
     /** @type {?string} */
-    const prevFId = prevFocus && prevFocus.dataset.deviceId;
+    const prevFId = prevFocus && prevFocus.dataset['deviceId'];
     const /** number */ focusIdx =
         this.externalSettings_.findIndex(({deviceId}) => deviceId === prevFId);
     const fTitle = /** @type {?HTMLElement} */ (this.resMenu_.querySelector(
@@ -445,7 +445,7 @@ export class ResolutionSettings extends BaseSettings {
 
     dom.getAllFrom(this.resMenu_, '.menu-item.external-camera', HTMLElement)
         .forEach(
-            (element) => element.dataset.deviceId !== focusedId &&
+            (element) => element.dataset['deviceId'] !== focusedId &&
                 element.parentNode.removeChild(element));
 
     this.externalSettings_.forEach((config, index) => {
@@ -486,7 +486,7 @@ export class ResolutionSettings extends BaseSettings {
         photoItem = /** @type {!HTMLElement}*/ (fTitle.nextElementSibling);
         videoItem = /** @type {!HTMLElement}*/ (photoItem.nextElementSibling);
       }
-      titleItem.dataset.deviceId = deviceId;
+      titleItem.dataset['deviceId'] = deviceId;
       prepItem(photoItem, deviceId, config.photo, this.photoOptTextTempl_);
       prepItem(videoItem, deviceId, config.video, this.videoOptTextTempl_);
     });
@@ -629,9 +629,9 @@ export class ResolutionSettings extends BaseSettings {
           document.importNode(this.resItemTempl_.content, true));
       const input = dom.getFrom(item, 'input', HTMLInputElement);
       item.querySelector('span').textContent = optTextTempl(r, resolutions);
-      input.name = menu.dataset.name;
-      input.dataset.width = r.width;
-      input.dataset.height = r.height;
+      input.name = menu.dataset['name'];
+      input.dataset['width'] = r.width.toString();
+      input.dataset['height'] = r.height.toString();
       if (r.equals(selectedR)) {
         captionText.textContent = optTextTempl(r, resolutions);
         input.checked = true;
