@@ -45,15 +45,6 @@ public abstract class ContentCaptureController {
     public void clearContentCaptureDataForURLs(String[] urlsToDelete) {}
 
     /**
-     * @param urls the urls need to check.
-     * @return if the content of all urls should be captured.
-     */
-    public boolean shouldCapture(String[] urls) {
-        return ContentCaptureControllerJni.get().shouldCapture(
-                mNativeContentCaptureController, ContentCaptureController.this, urls);
-    }
-
-    /**
      * Invoked by native side to pull the allowlist, the subclass should implement this and set
      * the allowlist by call setAllowlist.
      */
@@ -78,7 +69,5 @@ public abstract class ContentCaptureController {
         long init(Object contentCaptureController);
         void setAllowlist(long nativeContentCaptureController, ContentCaptureController caller,
                 String[] allowlist, boolean[] isRegex);
-        boolean shouldCapture(long nativeContentCaptureController, ContentCaptureController caller,
-                String[] urls);
     }
 }

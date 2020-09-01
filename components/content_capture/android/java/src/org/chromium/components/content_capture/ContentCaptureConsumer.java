@@ -50,13 +50,9 @@ public abstract class ContentCaptureConsumer {
         // of the removal of session.
         if (current != null) {
             mManager = ContentCaptureReceiverManager.createOrGet(current);
-            mManager.addContentCaptureConsumer(this);
+            mManager.setContentCaptureConsumer(this);
         } else {
             mManager = null;
         }
-    }
-
-    protected boolean shouldCapture(String[] urls) {
-        return true;
     }
 }
