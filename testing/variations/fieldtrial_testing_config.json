@@ -7417,6 +7417,21 @@
             ]
         }
     ],
+    "VideoToolboxVp9Decoding": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VideoToolboxVp9Decoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "VisualClientSideDetectionModel": [
         {
             "platforms": [
