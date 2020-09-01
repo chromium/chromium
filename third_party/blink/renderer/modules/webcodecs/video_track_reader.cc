@@ -6,11 +6,13 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/video_frame.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -23,7 +25,10 @@ VideoTrackReader::VideoTrackReader(ScriptState* script_state,
       real_time_media_task_runner_(
           ExecutionContext::From(script_state)
               ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
-      track_(track) {}
+      track_(track) {
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kWebCodecs);
+}
 
 void VideoTrackReader::start(V8VideoFrameOutputCallback* callback,
                              ExceptionState& exception_state) {
