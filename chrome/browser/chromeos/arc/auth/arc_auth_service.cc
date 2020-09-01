@@ -71,72 +71,6 @@ class ArcAuthServiceFactory
   ~ArcAuthServiceFactory() override = default;
 };
 
-mojom::ArcSignInResultPtr ConvertArcSignInStatusToArcSignInResult(
-    mojom::ArcSignInStatus status,
-    mojom::ArcSignInErrorPtr error) {
-  mojom::ArcSignInResultPtr result;
-
-  switch (status) {
-    case mojom::ArcSignInStatus::SUCCESS:
-    case mojom::ArcSignInStatus::SUCCESS_ALREADY_PROVISIONED:
-      result = mojom::ArcSignInResult::NewSuccess(
-          status == mojom::ArcSignInStatus::SUCCESS
-              ? mojom::ArcSignInSuccess::SUCCESS
-              : mojom::ArcSignInSuccess::SUCCESS_ALREADY_PROVISIONED);
-      break;
-    case mojom::ArcSignInStatus::CLOUD_PROVISION_FLOW_ERROR:
-      result = mojom::ArcSignInResult::NewError(std::move(error));
-      break;
-
-#define MAP_GENERAL_ERROR(name)                 \
-  case mojom::ArcSignInStatus::name:            \
-    result = mojom::ArcSignInResult::NewError(  \
-        mojom::ArcSignInError::NewGeneralError( \
-            mojom::GeneralSignInError::name));  \
-    break
-      MAP_GENERAL_ERROR(UNKNOWN_ERROR);
-      MAP_GENERAL_ERROR(MOJO_VERSION_MISMATCH);
-      MAP_GENERAL_ERROR(PROVISIONING_TIMEOUT);
-      MAP_GENERAL_ERROR(NO_NETWORK_CONNECTION);
-      MAP_GENERAL_ERROR(CHROME_SERVER_COMMUNICATION_ERROR);
-      MAP_GENERAL_ERROR(ARC_DISABLED);
-      MAP_GENERAL_ERROR(UNSUPPORTED_ACCOUNT_TYPE);
-      MAP_GENERAL_ERROR(CHROME_ACCOUNT_NOT_FOUND);
-#undef MAP_GENERAL_ERROR
-
-#define MAP_CHECKIN_ERROR(name)                 \
-  case mojom::ArcSignInStatus::name:            \
-    result = mojom::ArcSignInResult::NewError(  \
-        mojom::ArcSignInError::NewCheckinError( \
-            mojom::DeviceCheckInError::name));  \
-    break
-
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_FAILED);
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_TIMEOUT);
-      MAP_CHECKIN_ERROR(DEVICE_CHECK_IN_INTERNAL_ERROR);
-#undef MAP_CHECKIN_ERROR
-
-#define MAP_GMS_ERROR(name)                                         \
-  case mojom::ArcSignInStatus::name:                                \
-    result = mojom::ArcSignInResult::NewError(                      \
-        mojom::ArcSignInError::NewGmsError(mojom::GMSError::name)); \
-    break
-      MAP_GMS_ERROR(GMS_NETWORK_ERROR);
-      MAP_GMS_ERROR(GMS_SERVICE_UNAVAILABLE);
-      MAP_GMS_ERROR(GMS_BAD_AUTHENTICATION);
-      MAP_GMS_ERROR(GMS_SIGN_IN_FAILED);
-      MAP_GMS_ERROR(GMS_SIGN_IN_TIMEOUT);
-      MAP_GMS_ERROR(GMS_SIGN_IN_INTERNAL_ERROR);
-#undef MAP_GMS_ERROR
-
-    default:
-      NOTREACHED() << "unknown sign result";
-      break;
-  }
-
-  return result;
-}
-
 // Converts mojom::ArcSignInStatus into ProvisiningResult.
 ProvisioningResult ConvertArcSignInResultToProvisioningResult(
     mojom::ArcSignInResult* result) {
@@ -465,21 +399,6 @@ void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
   } else {
     UpdateSecondarySigninResultUMA(provisioning_result);
   }
-}
-
-// TODO(b/146435695) Remove this method when ARC++ switches to
-// OnAuthorizationResult
-void ArcAuthService::OnAuthorizationCompleteDeprecated(
-    mojom::ArcSignInStatus status,
-    bool initial_signin,
-    const base::Optional<std::string>& account_name,
-    mojom::ArcSignInErrorPtr error) {
-  mojom::ArcSignInResultPtr result =
-      ConvertArcSignInStatusToArcSignInResult(status, std::move(error));
-  mojom::ArcSignInAccountPtr account =
-      initial_signin ? mojom::ArcSignInAccount::NewInitialSignin(1)
-                     : mojom::ArcSignInAccount::NewAccountName(account_name);
-  OnAuthorizationResult(std::move(result), std::move(account));
 }
 
 void ArcAuthService::ReportMetrics(mojom::MetricsType metrics_type,

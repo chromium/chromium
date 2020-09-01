@@ -75,12 +75,6 @@ class ArcAuthService : public KeyedService,
   void OnConnectionClosed() override;
 
   // mojom::AuthHost:
-  void OnAuthorizationCompleteDeprecated(
-      mojom::ArcSignInStatus status,
-      bool initial_signin,
-      const base::Optional<std::string>& account_name,
-      mojom::ArcSignInErrorPtr error) override;
-
   void OnAuthorizationResult(mojom::ArcSignInResultPtr result,
                              mojom::ArcSignInAccountPtr account) override;
   void ReportMetrics(mojom::MetricsType metrics_type, int32_t value) override;

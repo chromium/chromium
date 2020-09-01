@@ -431,21 +431,6 @@ struct ArcAccountInfo {
 // Next Method ID: 20.
 interface AuthHost {
   // Notifies Chrome that the authorization flow is completed and provides
-  // resulting |status|. If |initial_signin| is true then this indicates that
-  // authorization happened for initial device provisioning.
-  // If |account_name| is not present, it is assumed to be the Primary/Device
-  // account. It cannot/must not be supplied when |initial_signin| is true.
-  // |error| has the sub error codes for parent error reported in status.
-  // Currently |error| is only populated for some cases of CloudDPC errors.
-  // TODO(b/146435695) Move out all errors from ArcSignInStatus to ArcSignInError and
-  // create a union that either has success code or error code
-  [MinVersion=11] OnAuthorizationCompleteDeprecated@10(
-      ArcSignInStatus status,
-      bool initial_signin,
-      [MinVersion=18] string? account_name,
-      [MinVersion=25] ArcSignInError? error);
-
-  // Notifies Chrome that the authorization flow is completed and provides
   // |result| and |account| that was authorized.
   [MinVersion=26] OnAuthorizationResult@19(
       ArcSignInResult result,
