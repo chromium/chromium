@@ -130,6 +130,34 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoSizeConstrained) {
   EXPECT_EQ(*column_constraints[2].min_inline_size, 50);
 }
 
+TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
+  // If column widths sum match table widths exactly, column widths
+  // should not be redistributed at all.
+  // The error occurs if widths are redistributed, and column widths
+  // change due to floating point rounding.
+  LayoutUnit column_widths[] = {LayoutUnit(0.1), LayoutUnit(22.123456),
+                                LayoutUnit(33.789012), LayoutUnit(2000.345678)};
+  NGTableTypes::Columns column_constraints;
+  column_constraints.Shrink(0);
+  column_constraints.push_back(NGTableTypes::Column{
+      LayoutUnit(0), column_widths[0], base::nullopt, false});
+  column_constraints.push_back(NGTableTypes::Column{
+      LayoutUnit(3.33333), column_widths[1], base::nullopt, false});
+  column_constraints.push_back(NGTableTypes::Column{
+      LayoutUnit(3.33333), column_widths[2], base::nullopt, false});
+  column_constraints.push_back(NGTableTypes::Column{
+      LayoutUnit(0), column_widths[3], base::nullopt, false});
+
+  LayoutUnit assignable_table_inline_size =
+      column_widths[0] + column_widths[1] + column_widths[2] + column_widths[3];
+  NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
+      assignable_table_inline_size, LayoutUnit(), false, &column_constraints);
+  EXPECT_EQ(column_constraints[0].computed_inline_size, column_widths[0]);
+  EXPECT_EQ(column_constraints[1].computed_inline_size, column_widths[1]);
+  EXPECT_EQ(column_constraints[2].computed_inline_size, column_widths[2]);
+  EXPECT_EQ(column_constraints[3].computed_inline_size, column_widths[3]);
+}
+
 TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinmax) {
   NGTableTypes::Columns column_constraints;
 

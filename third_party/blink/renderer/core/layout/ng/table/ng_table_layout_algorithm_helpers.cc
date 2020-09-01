@@ -176,14 +176,23 @@ void DistributeInlineSizeToComputedInlineSizeAuto(
           guess_size_total_increases[kMaxGuess];
       LayoutUnit distributable_inline_size =
           target_inline_size - guess_sizes[kSpecifiedGuess];
-      LayoutUnit rounding_error_inline_size = distributable_inline_size;
+      // When widths match exactly, this usually means that table width
+      // is auto, and that columns should be wide enough to accommodate
+      // content without wrapping.
+      // Instead of using floating-point math to compute final column
+      // width, we use max_inline_size.
+      // Using floating-point math can cause rounding errors, and uninintended
+      // line wrap.
+      bool is_exact_match = target_inline_size == guess_sizes[kMaxGuess];
+      LayoutUnit rounding_error_inline_size =
+          is_exact_match ? LayoutUnit() : distributable_inline_size;
       NGTableTypes::Column* last_column = nullptr;
       for (NGTableTypes::Column* column = start_column; column != end_column;
            ++column) {
         if (column->percent) {
           column->computed_inline_size =
               column->ResolvePercentInlineSize(target_inline_size);
-        } else if (column->is_constrained) {
+        } else if (column->is_constrained || is_exact_match) {
           column->computed_inline_size = *column->max_inline_size;
         } else {
           last_column = column;
