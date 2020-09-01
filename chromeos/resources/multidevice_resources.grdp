@@ -26,7 +26,7 @@
       use_base_dir="false"
       type="BINDATA" />
 
-  <!-- Web resources shared by both the ProximityAuth and Pollux debug pages.. -->
+  <!-- Resources for ProximityAuth debug page. -->
   <include name="IDR_MULTIDEVICE_INDEX_HTML"
       file="../components/multidevice/debug_webui/resources/index.html"
       flattenhtml="true"
@@ -45,8 +45,6 @@
       flattenhtml="true"
       allowexternalscript="true"
       type="BINDATA" />
-
-  <!-- Resources for ProximityAuth debug page. -->
   <include name="IDR_MULTIDEVICE_PROXIMITY_AUTH_HTML"
       file="../components/multidevice/debug_webui/resources/proximity_auth.html"
       flattenhtml="true"
@@ -57,21 +55,6 @@
       type="BINDATA" />
   <include name="IDR_MULTIDEVICE_PROXIMITY_AUTH_JS"
       file="../components/multidevice/debug_webui/resources/proximity_auth.js"
-      flattenhtml="true"
-      allowexternalscript="true"
-      type="BINDATA" />
-
-  <!-- Resources for Pollux debug page. -->
-  <include name="IDR_MULTIDEVICE_POLLUX_HTML"
-      file="../components/multidevice/debug_webui/resources/pollux.html"
-      flattenhtml="true"
-      allowexternalscript="true"
-      type="BINDATA" />
-  <include name="IDR_MULTIDEVICE_POLLUX_CSS"
-      file="../components/multidevice/debug_webui/resources/pollux.css"
-      type="BINDATA" />
-  <include name="IDR_MULTIDEVICE_POLLUX_JS"
-      file="../components/multidevice/debug_webui/resources/pollux.js"
       flattenhtml="true"
       allowexternalscript="true"
       type="BINDATA" />

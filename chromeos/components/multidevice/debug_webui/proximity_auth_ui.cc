@@ -40,9 +40,6 @@ ProximityAuthUI::ProximityAuthUI(
                           IDR_MULTIDEVICE_PROXIMITY_AUTH_CSS);
   source->AddResourcePath("proximity_auth.js",
                           IDR_MULTIDEVICE_PROXIMITY_AUTH_JS);
-  source->AddResourcePath("pollux.html", IDR_MULTIDEVICE_POLLUX_HTML);
-  source->AddResourcePath("pollux.css", IDR_MULTIDEVICE_POLLUX_CSS);
-  source->AddResourcePath("pollux.js", IDR_MULTIDEVICE_POLLUX_JS);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
