@@ -294,8 +294,7 @@ class AppStateTest : public BlockCleanupTest {
 
     [appState applicationWillEnterForeground:application
                              metricsMediator:metricsMediator
-                                memoryHelper:memoryHelper
-                                   tabOpener:tabOpener];
+                                memoryHelper:memoryHelper];
 
     initializeIncognitoBlocker(window);
 
@@ -802,8 +801,7 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   // Actions.
   [getAppStateWithMock() applicationWillEnterForeground:application
                                         metricsMediator:metricsMediator
-                                           memoryHelper:memoryHelper
-                                              tabOpener:tabOpener];
+                                           memoryHelper:memoryHelper];
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(metricsMediator);
@@ -822,7 +820,6 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-  id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
   BrowserInitializationStageType stage = INITIALIZATION_STAGE_BACKGROUND;
   [[[getBrowserLauncherMock() stub] andReturnValue:@(stage)]
@@ -838,8 +835,7 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
   // Actions.
   [getAppStateWithMock() applicationWillEnterForeground:application
                                         metricsMediator:metricsMediator
-                                           memoryHelper:memoryHelper
-                                              tabOpener:tabOpener];
+                                           memoryHelper:memoryHelper];
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(getBrowserLauncherMock());
@@ -857,7 +853,6 @@ TEST_F(AppStateTest,
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-  id tabOpener = [OCMockObject mockForProtocol:@protocol(TabOpening)];
 
   id window = getWindowMock();
 
@@ -882,8 +877,7 @@ TEST_F(AppStateTest,
   // Actions.
   [getAppStateWithMock() applicationWillEnterForeground:application
                                         metricsMediator:metricsMediator
-                                           memoryHelper:memoryHelper
-                                              tabOpener:tabOpener];
+                                           memoryHelper:memoryHelper];
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(window);

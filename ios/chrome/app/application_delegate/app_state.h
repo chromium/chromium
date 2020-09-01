@@ -123,8 +123,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // Starts the browser to foreground if needed.
 - (void)applicationWillEnterForeground:(UIApplication*)application
                        metricsMediator:(MetricsMediator*)metricsMediator
-                          memoryHelper:(MemoryWarningHelper*)memoryHelper
-                             tabOpener:(id<TabOpening>)tabOpener;
+                          memoryHelper:(MemoryWarningHelper*)memoryHelper;
 
 // Sets the return value for -didFinishLaunchingWithOptions that determines if
 // UIKit should make followup delegate calls such as

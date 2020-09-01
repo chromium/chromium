@@ -206,8 +206,7 @@
 
   [_appState applicationWillEnterForeground:application
                             metricsMediator:_metricsMediator
-                               memoryHelper:_memoryHelper
-                                  tabOpener:_tabOpener];
+                               memoryHelper:_memoryHelper];
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -275,8 +274,7 @@
     if (self.foregroundSceneCount == 0) {
       [_appState applicationWillEnterForeground:UIApplication.sharedApplication
                                 metricsMediator:_metricsMediator
-                                   memoryHelper:_memoryHelper
-                                      tabOpener:_tabOpener];
+                                   memoryHelper:_memoryHelper];
     }
   }
 }
@@ -296,8 +294,7 @@
   if (@available(iOS 13, *)) {
     [_appState applicationWillEnterForeground:UIApplication.sharedApplication
                               metricsMediator:_metricsMediator
-                                 memoryHelper:_memoryHelper
-                                    tabOpener:_tabOpener];
+                                 memoryHelper:_memoryHelper];
   }
 }
 

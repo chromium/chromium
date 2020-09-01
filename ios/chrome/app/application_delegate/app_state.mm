@@ -325,8 +325,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 - (void)applicationWillEnterForeground:(UIApplication*)application
                        metricsMediator:(MetricsMediator*)metricsMediator
-                          memoryHelper:(MemoryWarningHelper*)memoryHelper
-                             tabOpener:(id<TabOpening>)tabOpener {
+                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
   if ([_browserLauncher browserInitializationStage] <
       INITIALIZATION_STAGE_FOREGROUND) {
     // The application has been launched in background and the initialization
