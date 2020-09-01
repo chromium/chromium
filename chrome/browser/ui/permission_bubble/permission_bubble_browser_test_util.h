@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "components/permissions/permission_prompt.h"
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 
 namespace base {
 class CommandLine;
@@ -77,6 +79,14 @@ class PermissionBubbleKioskBrowserTest : public PermissionBubbleBrowserTest {
   ~PermissionBubbleKioskBrowserTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
+
+ private:
+#if defined(OS_MAC)
+  // Toggling fullscreen mode on Mac can be flaky for tests run in parallel
+  // because only one window may be animating into or out of fullscreen at a
+  // time.
+  ui::test::ScopedFakeNSWindowFullscreen faked_fullscreen_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(PermissionBubbleKioskBrowserTest);
 };
