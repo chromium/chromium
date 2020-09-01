@@ -600,7 +600,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2,
                 cta.getResources().getQuantityString(
                         R.plurals.bottom_tab_grid_title_placeholder, 2, 2));
-        editDialogTitle(cta, CUSTOMIZED_TITLE1);
+        editDialogTitle(CUSTOMIZED_TITLE1);
 
         // Verify the title is updated in both tab switcher and dialog.
         clickScrimToExitDialog(cta);
@@ -611,7 +611,7 @@ public class TabGridDialogTest {
         // Modify title in dialog from tab strip.
         clickFirstTabInDialog(cta);
         openDialogFromStripAndVerify(cta, 2, CUSTOMIZED_TITLE1);
-        editDialogTitle(cta, CUSTOMIZED_TITLE2);
+        editDialogTitle(CUSTOMIZED_TITLE2);
 
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimation(cta);
@@ -776,7 +776,7 @@ public class TabGridDialogTest {
 
         // Content description should update with group title.
         openDialogFromTabSwitcherAndVerify(cta, 3, null);
-        editDialogTitle(cta, CUSTOMIZED_TITLE1);
+        editDialogTitle(CUSTOMIZED_TITLE1);
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyFirstCardTitle(CUSTOMIZED_TITLE1);
@@ -1096,9 +1096,16 @@ public class TabGridDialogTest {
                 });
     }
 
-    private void editDialogTitle(ChromeTabbedActivity cta, String title) {
+    private void editDialogTitle(String title) {
         onView(allOf(withParent(withId(R.id.main_content)), withId(R.id.title)))
-                .perform(click(), replaceText(title));
+                .perform(click())
+                .check((v, e) -> {
+                    // Verify all texts in the field are selected.
+                    EditText titleView = (EditText) v;
+                    assertEquals(titleView.getText().length(),
+                            titleView.getSelectionEnd() - titleView.getSelectionStart());
+                })
+                .perform(replaceText(title));
     }
 
     private void verifyFirstCardTitle(String title) {

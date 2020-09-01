@@ -38,7 +38,8 @@
             android:inputType="text|textNoSuggestions"
             android:imeOptions="actionDone"
             android:theme="@style/TabGridDialogTitleTheme"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:selectAllOnFocus="true"/>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/toolbar_right_button"
             style="@style/BottomToolbarButton"
