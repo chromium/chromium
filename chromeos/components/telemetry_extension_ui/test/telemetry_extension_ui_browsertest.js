@@ -233,6 +233,14 @@ TEST_F(
 
 TEST_F(
     'TelemetryExtensionUIBrowserTest',
+    'UntrustedDiagnosticsRequestRunBatteryHealthRoutine', async () => {
+      await runTestInUntrusted(
+          'UntrustedDiagnosticsRequestRunBatteryHealthRoutine');
+      testDone();
+    });
+
+TEST_F(
+    'TelemetryExtensionUIBrowserTest',
     'UntrustedRequestTelemetryInfoUnknownCategory', async () => {
       await runTestInUntrusted('UntrustedRequestTelemetryInfoUnknownCategory');
       testDone();

@@ -79,4 +79,19 @@ void DiagnosticsService::RunBatteryCapacityRoutine(
           std::move(callback)));
 }
 
+void DiagnosticsService::RunBatteryHealthRoutine(
+    uint32_t maximum_cycle_count,
+    uint32_t percent_battery_wear_allowed,
+    RunBatteryHealthRoutineCallback callback) {
+  GetService()->RunBatteryHealthRoutine(
+      maximum_cycle_count, percent_battery_wear_allowed,
+      base::BindOnce(
+          [](health::mojom::DiagnosticsService::RunBatteryHealthRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(converters::ConvertPtr(std::move(ptr)));
+          },
+          std::move(callback)));
+}
+
 }  // namespace chromeos

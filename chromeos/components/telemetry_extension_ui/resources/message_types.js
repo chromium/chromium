@@ -22,6 +22,8 @@ dpsl_internal.Message = {
   DIAGNOSTICS_ROUTINE_UPDATE: 'DiagnosticsService.GetRoutineUpdate',
   DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE:
       'DiagnosticsService.RunBatteryCapacityRoutine',
+  DIAGNOSTICS_RUN_BATTERY_HEALTH_ROUTINE:
+      'DiagnosticsService.RunBatteryHealthRoutine',
   PROBE_TELEMETRY_INFO: 'ProbeService.ProbeTelemetryInfo',
 };
 
@@ -64,6 +66,15 @@ dpsl_internal.DiagnosticsGetRoutineUpdateResponse;
  *  highMah: !number}}
  */
 dpsl_internal.DiagnosticsRunBatteryCapacityRoutineRequest;
+
+/**
+ * Request message sent by the unprivileged context to the privileged
+ * context to run battery health routine.
+ * @typedef {{
+ *  maximumCycleCount: !number,
+ *  percentBatteryWearAllowed: !number}}
+ */
+dpsl_internal.DiagnosticsRunBatteryHealthRoutineRequest;
 
 /**
  * Response message sent by the privileged context containing routine

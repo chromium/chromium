@@ -56,6 +56,24 @@ interface DiagnosticsService {
   //                routine.
   RunBatteryCapacityRoutine(uint32 low_mah, uint32 high_mah)
       => (RunRoutineResponse response);
+
+  // Requests that the BatteryHealth routine is created and started on the
+  // platform. This routine checks the cycle count and percent wear of the
+  // battery. This routine is only available if GetAvailableRoutines returned
+  // kBatteryHealth.
+  //
+  // The request:
+  // * |maximum_cycle_count| - maximum cycle count allowed for the routine to
+  //                           pass.
+  // * |percent_battery_wear_allowed| - maximum percent battery wear allowed for
+  //                                    the routine to pass.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunBatteryHealthRoutine(uint32 maximum_cycle_count,
+                          uint32 percent_battery_wear_allowed)
+      => (RunRoutineResponse response);
 };
 
 // Enumeration of each of the diagnostics routines the platform may support.

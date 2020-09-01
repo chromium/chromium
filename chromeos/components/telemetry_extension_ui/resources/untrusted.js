@@ -97,6 +97,33 @@ chromeos.test_support = {};
       }
       return response;
     }
+
+    /**
+     * Requests battery health routine to be run.
+     * @param { !number } maximumCycleCount
+     * @param { !number } percentBatteryWearAllowed
+     * @return { !Promise<!Object> }
+     * @public
+     */
+    async runBatteryHealthRoutine(
+        maximumCycleCount, percentBatteryWearAllowed) {
+      const message =
+          /**
+             @type {!dpsl_internal.DiagnosticsRunBatteryCapacityRoutineRequest}
+               */
+          ({
+            maximumCycleCount: maximumCycleCount,
+            percentBatteryWearAllowed: percentBatteryWearAllowed
+          });
+      const response =
+          /** @type {!Object} */ (await messagePipe.sendMessage(
+              dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_HEALTH_ROUTINE,
+              message));
+      if (response instanceof Error) {
+        throw response;
+      }
+      return response;
+    }
   };
 
   /**

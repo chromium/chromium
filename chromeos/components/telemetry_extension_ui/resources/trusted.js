@@ -302,6 +302,21 @@ class DiagnosticsProxy {
     return await getOrCreateDiagnosticsService().runBatteryCapacityRoutine(
         request.lowMah, request.highMah);
   };
+
+  /**
+   * Runs battery health routine.
+   * @param { !Object } message
+   * @return { !RunRoutineResponsePromise }
+   */
+  async handleRunBatteryHealthRoutine(message) {
+    const request =
+        /**
+         * @type {!dpsl_internal.DiagnosticsRunBatteryHealthRoutineRequest}
+         */
+        (message);
+    return await getOrCreateDiagnosticsService().runBatteryHealthRoutine(
+        request.maximumCycleCount, request.percentBatteryWearAllowed);
+  };
 };
 
 const diagnosticsProxy = new DiagnosticsProxy();
@@ -490,6 +505,12 @@ untrustedMessagePipe.registerHandler(
     dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_CAPACITY_ROUTINE,
     (message) => diagnosticsProxy.genericRunRoutineHandler(
         (message) => diagnosticsProxy.handleRunBatteryCapacityRoutine(message),
+        message));
+
+untrustedMessagePipe.registerHandler(
+    dpsl_internal.Message.DIAGNOSTICS_RUN_BATTERY_HEALTH_ROUTINE,
+    (message) => diagnosticsProxy.genericRunRoutineHandler(
+        (message) => diagnosticsProxy.handleRunBatteryHealthRoutine(message),
         message));
 
 untrustedMessagePipe.registerHandler(
