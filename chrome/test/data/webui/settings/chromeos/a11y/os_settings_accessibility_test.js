@@ -42,18 +42,18 @@ OSSettingsAccessibilityTest.axeOptionsExcludeLinkInTextBlock =
 // Default accessibility audit options. Specify in test definition to use.
 OSSettingsAccessibilityTest.violationFilter = {
   'aria-valid-attr': function(nodeResult) {
-    const attributeWhitelist = [
+    const attributeAllowlist = [
       'aria-active-attribute',  // Polymer components use aria-active-attribute.
       'aria-roledescription',   // This attribute is now widely supported.
     ];
 
-    return attributeWhitelist.some(a => nodeResult.element.hasAttribute(a));
+    return attributeAllowlist.some(a => nodeResult.element.hasAttribute(a));
   },
   'aria-allowed-attr': function(nodeResult) {
-    const attributeWhitelist = [
+    const attributeAllowlist = [
       'aria-roledescription',  // This attribute is now widely supported.
     ];
-    return attributeWhitelist.some(a => nodeResult.element.hasAttribute(a));
+    return attributeAllowlist.some(a => nodeResult.element.hasAttribute(a));
   },
   'button-name': function(nodeResult) {
     if (nodeResult.element.classList.contains('icon-expand-more')) {
