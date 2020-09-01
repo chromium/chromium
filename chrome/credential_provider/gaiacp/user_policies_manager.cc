@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
@@ -25,8 +26,8 @@ namespace credential_provider {
 namespace {
 
 // HTTP endpoint on the GCPW service to fetch user policies.
-const char kUserEmailUrlPlaceholder[] = "{email}";
-const char kGcpwServiceFetchUserPoliciesPath[] = "/v1/users/{email}/policies";
+const char kUserIdUrlPlaceholder[] = "{user_id}";
+const char kGcpwServiceFetchUserPoliciesPath[] = "/v1/users/{user_id}/policies";
 
 // Default timeout when trying to make requests to the GCPW service.
 const base::TimeDelta kDefaultFetchPoliciesRequestTimeout =
@@ -120,12 +121,19 @@ bool UserPoliciesManager::CloudPoliciesEnabled() const {
 GURL UserPoliciesManager::GetGcpwServiceUserPoliciesUrl(
     const base::string16& sid) {
   GURL gcpw_service_url = GetGcpwServiceUrl();
+  base::string16 user_id;
 
-  std::string fetchUserPoliciesPath(kGcpwServiceFetchUserPoliciesPath);
-  std::string placeholder(kUserEmailUrlPlaceholder);
-  fetchUserPoliciesPath.replace(fetchUserPoliciesPath.find(placeholder),
-                                placeholder.size(), GetUserEmailFromSid(sid));
-  return gcpw_service_url.Resolve(fetchUserPoliciesPath);
+  HRESULT status = GetIdFromSid(sid.c_str(), &user_id);
+  if (FAILED(status)) {
+    LOGFN(ERROR) << "Could not get user id from sid " << sid;
+    return GURL();
+  }
+
+  std::string user_policies_path(kGcpwServiceFetchUserPoliciesPath);
+  std::string placeholder(kUserIdUrlPlaceholder);
+  user_policies_path.replace(user_policies_path.find(placeholder),
+                             placeholder.size(), base::UTF16ToUTF8(user_id));
+  return gcpw_service_url.Resolve(user_policies_path);
 }
 
 HRESULT UserPoliciesManager::FetchAndStoreCloudUserPolicies(
@@ -134,11 +142,16 @@ HRESULT UserPoliciesManager::FetchAndStoreCloudUserPolicies(
   fetch_status_ = E_FAIL;
   base::Optional<base::Value> request_result;
 
+  GURL user_policies_url =
+      UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid);
+  if (!user_policies_url.is_valid()) {
+    return (fetch_status_ = E_FAIL);
+  }
+
   // Make the fetch policies HTTP request.
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
-      UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid),
-      access_token, {}, {}, kDefaultFetchPoliciesRequestTimeout,
-      kMaxNumHttpRetries, &request_result);
+      user_policies_url, access_token, {}, {},
+      kDefaultFetchPoliciesRequestTimeout, kMaxNumHttpRetries, &request_result);
 
   if (FAILED(hr)) {
     LOGFN(ERROR) << "BuildRequestAndFetchResultFromHttpService hr="

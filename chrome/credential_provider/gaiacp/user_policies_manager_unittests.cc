@@ -91,10 +91,15 @@ TEST_P(GcpUserPoliciesFetchAndReadTest, CloudPoliciesWin) {
   std::string expected_response;
   base::JSONWriter::Write(policies_value, &expected_response);
 
+  GURL user_policies_url =
+      UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid_);
+
+  ASSERT_TRUE(user_policies_url.is_valid());
+  ASSERT_NE(std::string::npos, user_policies_url.spec().find(kDefaultGaiaId));
+
   // Set valid cloud policies for all settings.
   fake_http_url_fetcher_factory()->SetFakeResponse(
-      UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid_),
-      FakeWinHttpUrlFetcher::Headers(), expected_response);
+      user_policies_url, FakeWinHttpUrlFetcher::Headers(), expected_response);
 
   ASSERT_TRUE(
       SUCCEEDED(UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(
