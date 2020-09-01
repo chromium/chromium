@@ -61,7 +61,7 @@ def _UploadSizeFile(size_path, version, arch):
   dst_url = os.path.join(_REPORTS_GS_URL, version, arch,
                          report_basename + '.size')
 
-  cmd = [_GSUTIL, 'cp', '-a', 'public-read', size_path, dst_url]
+  cmd = [_GSUTIL, 'cp', size_path, dst_url]
   logging.warning(' '.join(cmd))
   subprocess.check_call(cmd)
 

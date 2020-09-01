@@ -73,7 +73,8 @@ _DESIRED_VERSIONS = [
     '81.0.4044.138',
     '83.0.4103.60',
     '84.0.4147.89',
-    '85.0.4183.25',  # Canary
+    '85.0.4183.81',
+    '86.0.4240.11',  # Canary
 ]
 
 
@@ -205,14 +206,15 @@ def main():
     _WriteMilestonesJson(os.path.join(staging_dir, 'milestones.json'))
 
     if args.sync:
-      subprocess.check_call([
-          _GSUTIL, '-m', 'rsync', '-J', '-a', 'public-read', '-r', staging_dir,
-          _PUSH_URL
-      ])
-      subprocess.check_call([
-          _GSUTIL, 'setmeta', '-h', 'Cache-Control:no-cache',
-          _PUSH_URL + 'milestones.json'
-      ])
+      subprocess.check_call(
+          [_GSUTIL, '-m', 'rsync', '-J', '-r', staging_dir, _PUSH_URL])
+      milestones_json = _PUSH_URL + 'milestones.json'
+      # The main index.html page has no authentication code, so make .json file
+      # world-readable.
+      subprocess.check_call(
+          [_GSUTIL, 'acl', 'set', '-a', 'public-read', milestones_json])
+      subprocess.check_call(
+          [_GSUTIL, 'setmeta', '-h', 'Cache-Control:no-cache', milestones_json])
     else:
       logging.warning('Finished dry run. Run with --sync to upload.')
 
