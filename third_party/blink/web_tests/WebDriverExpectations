@@ -180,3 +180,5 @@ crbug.com/1065297 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer
 crbug.com/1065297 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer.py>>test_drag_and_drop_with_draggable_element[0] [ Failure ]
 crbug.com/1065297 [ Linux ] external/wpt/webdriver/tests/perform_actions/pointer.py>>test_drag_and_drop_with_draggable_element[300] [ Failure ]
 crbug.com/1065297 [ Linux ] external/wpt/webdriver/tests/perform_actions/key_shortcuts.py>>test_mod_a_mod_c_right_mod_v_pastes_text [ Failure ]
+crbug.com/1123907 [ Linux ] external/wpt/webdriver/tests/fullscreen_window/fullscreen.py>>test_fullscreen_twice_is_idempotent [ Failure Pass ]
+crbug.com/1123907 [ Linux ] external/wpt/webdriver/tests/fullscreen_window/stress.py>>test_stress [ Failure Pass ]
