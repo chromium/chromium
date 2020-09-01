@@ -109,15 +109,6 @@ void ProfileSigninConfirmationDialogViews::ShowDialog(
     Profile* profile,
     const std::string& username,
     std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) {
-  // Hides the new avatar bubble if it is currently shown. The new avatar bubble
-  // should be automatically closed when it loses focus. However on windows the
-  // profile signin confirmation dialog is not modal yet thus it does not take
-  // away focus, thus as a temporary workaround we need to manually close the
-  // bubble.
-  // TODO(guohui): removes the workaround once the profile confirmation dialog
-  // is fixed.
-  ProfileMenuView::Hide();
-
   // Checking whether to show the prompt is sometimes asynchronous. Defer
   // constructing the dialog (in ::Show) until that check completes.
   ui::CheckShouldPromptForNewProfile(
