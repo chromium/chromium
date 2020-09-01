@@ -197,4 +197,14 @@ public class BottomControlsCoordinator {
         if (mTabGroupUi != null) mTabGroupUi.destroy();
         mMediator.destroy();
     }
+
+    /**
+     * @return {@link Supplier} that provides dialog visibility.
+     */
+    public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
+        if (mTabGroupUi == null) {
+            return null;
+        }
+        return mTabGroupUi.getTabGridDialogVisibilitySupplier();
+    }
 }
