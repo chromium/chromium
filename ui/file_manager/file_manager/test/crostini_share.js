@@ -267,6 +267,9 @@ shareBase.testSharePaths = async (
 const createMockFilesAppToast = () => {
   const toast = document.querySelector('#toast');
 
+  if (!toast.shadowRoot) {
+    toast.attachShadow({mode: 'open'});
+  }
   toast.shadowRoot.innerHTML = `
     <div class="container" id="container" hidden>
       <div class="text" id="text" hidden></div>
