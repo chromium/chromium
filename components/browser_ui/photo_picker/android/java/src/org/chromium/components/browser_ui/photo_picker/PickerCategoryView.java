@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.net.MimeTypeFilter;
 import org.chromium.ui.base.PhotoPickerListener;
+import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.vr.VrModeProvider;
 
@@ -277,8 +278,6 @@ public class PickerCategoryView extends RelativeLayout
             mDecoderServiceHost.unbind(mWindowAndroid.getContext().get());
             mDecoderServiceHost = null;
         }
-
-        mDialog = null;
     }
 
     /**
@@ -286,7 +285,6 @@ public class PickerCategoryView extends RelativeLayout
      * @param uri The uri of the video to start playing.
      */
     public void startVideoPlaybackAsync(Uri uri) {
-        if (mDialog == null) return;
         mVideoPlayer.startVideoPlaybackAsync(uri, mDialog.getWindow().getDecorView());
     }
 
@@ -642,7 +640,8 @@ public class PickerCategoryView extends RelativeLayout
     private void executeAction(
             @PhotoPickerListener.PhotoPickerAction int action, Uri[] photos, int umaId) {
         mListener.onPhotoPickerUserAction(action, photos);
-        if (mDialog != null) mDialog.dismiss();
+        mDialog.dismiss();
+        SelectFileDialog.onPhotoPickerDismissed();
         recordFinalUmaStats(umaId);
     }
 

@@ -95,7 +95,6 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.ContactsPickerListener;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.base.PhotoPicker;
 import org.chromium.ui.base.PhotoPickerDelegate;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.SelectFileDialog;
@@ -217,17 +216,23 @@ public class ProcessInitializationHandler {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_PHOTO_PICKER)) {
             SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegate() {
+                private PhotoPickerDialog mDialog;
+
                 @Override
-                public PhotoPicker showPhotoPicker(WindowAndroid windowAndroid,
+                public void showPhotoPicker(WindowAndroid windowAndroid,
                         PhotoPickerListener listener, boolean allowMultiple,
                         List<String> mimeTypes) {
-                    PhotoPickerDialog dialog = new PhotoPickerDialog(windowAndroid,
+                    mDialog = new PhotoPickerDialog(windowAndroid,
                             windowAndroid.getContext().get().getContentResolver(), listener,
                             allowMultiple, mimeTypes, new VrModeProviderImpl());
-                    dialog.getWindow().getAttributes().windowAnimations =
+                    mDialog.getWindow().getAttributes().windowAnimations =
                             R.style.PickerDialogAnimation;
-                    dialog.show();
-                    return dialog;
+                    mDialog.show();
+                }
+
+                @Override
+                public void onPhotoPickerDismissed() {
+                    mDialog = null;
                 }
 
                 @Override

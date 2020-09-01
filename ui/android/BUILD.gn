@@ -255,7 +255,6 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/base/IntentWindowAndroid.java",
     "java/src/org/chromium/ui/base/LocalizationUtils.java",
     "java/src/org/chromium/ui/base/PermissionCallback.java",
-    "java/src/org/chromium/ui/base/PhotoPicker.java",
     "java/src/org/chromium/ui/base/PhotoPickerDelegate.java",
     "java/src/org/chromium/ui/base/PhotoPickerListener.java",
     "java/src/org/chromium/ui/base/ResourceBundle.java",
