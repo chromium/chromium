@@ -51,6 +51,15 @@ class AffiliationServiceImpl : public AffiliationService,
 
   AffiliationFetcherInterface* GetFetcherForTesting() { return fetcher_.get(); }
 
+  void SetURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    url_loader_factory_ = std::move(url_loader_factory);
+  }
+
+  void SetSyncServiceForTesting(syncer::SyncService* sync_service) {
+    sync_service_ = sync_service;
+  }
+
  private:
   // AffiliationFetcherDelegate:
   void OnFetchSucceeded(
@@ -69,7 +78,7 @@ class AffiliationServiceImpl : public AffiliationService,
       const AffiliationFetcherInterface::RequestInfo request_info);
 
   syncer::SyncService* sync_service_;
-  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::vector<url::SchemeHostPort> requested_tuple_origins_;
   std::map<url::SchemeHostPort, GURL> change_password_urls_;
   // TODO(crbug.com/1117045): A vector of pending fetchers to be created.

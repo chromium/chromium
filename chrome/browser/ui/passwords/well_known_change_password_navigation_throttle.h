@@ -19,6 +19,7 @@ class NavigationHandle;
 }  // namespace content
 
 namespace password_manager {
+class AffiliationService;
 class ChangePasswordUrlService;
 }  // namespace password_manager
 
@@ -58,8 +59,10 @@ class WellKnownChangePasswordNavigationThrottle
 
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
-  password_manager::ChangePasswordUrlService* change_password_url_service_;
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
+  password_manager::ChangePasswordUrlService* change_password_url_service_ =
+      nullptr;
+  password_manager::AffiliationService* affiliation_service_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_NAVIGATION_THROTTLE_H_
