@@ -104,7 +104,7 @@ interface InputChannel {
 // Implemented in the browser process, used to perform network requests or
 // access privileged resources on behalf of the core IME service in ChromeOS.
 interface PlatformAccessProvider {
-  // Download language module from a whitelisted url to a given path.
+  // Download language module from a allowlisted url to a given path.
   // Provider will validate the url and return an empty file path if it's
   // invalid or downloading fails.
   DownloadImeFileTo(url.mojom.Url url,

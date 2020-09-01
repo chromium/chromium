@@ -70,7 +70,7 @@ void ImeService::SimpleDownloadFinished(SimpleDownloadCallback callback,
   if (file.empty()) {
     callback(SIMPLE_DOWNLOAD_ERROR_FAILED, "");
   } else {
-    // Convert downloaded file path to an whitelisted path.
+    // Convert downloaded file path to an allowlisted path.
     base::FilePath target(kUserInputMethodsDirPath);
     target = target.Append(kLanguageDataDirName).Append(file.BaseName());
     callback(SIMPLE_DOWNLOAD_ERROR_OK, target.MaybeAsASCII().c_str());
