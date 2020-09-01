@@ -342,6 +342,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky - https://crbug.com/1123958")
     public void switchTabBetweenDifferentPeekModes() {
         ArrayList<ActionProto> listA = new ArrayList<>();
         listA.add((ActionProto) ActionProto.newBuilder()
