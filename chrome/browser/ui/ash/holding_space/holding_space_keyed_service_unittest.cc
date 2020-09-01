@@ -25,6 +25,7 @@
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -140,14 +141,34 @@ class HoldingSpaceModelAttachedWaiter : public HoldingSpaceControllerObserver {
   std::unique_ptr<base::RunLoop> wait_loop_;
 };
 
+// A mock `content::DownloadManager` which can notify observers of events.
+class MockDownloadManager : public content::MockDownloadManager {
+ public:
+  // content::MockDownloadManager:
+  void AddObserver(Observer* observer) override {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(Observer* observer) override {
+    observers_.RemoveObserver(observer);
+  }
+
+  void NotifyDownloadCreated(download::DownloadItem* item) {
+    for (auto& observer : observers_)
+      observer.OnDownloadCreated(this, item);
+  }
+
+ private:
+  base::ObserverList<content::DownloadManager::Observer>::Unchecked observers_;
+};
+
 }  // namespace
 
 class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   HoldingSpaceKeyedServiceTest()
       : fake_user_manager_(new chromeos::FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
-        download_manager_(new testing::NiceMock<content::MockDownloadManager>) {
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
     scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
   }
   HoldingSpaceKeyedServiceTest(const HoldingSpaceKeyedServiceTest& other) =
@@ -281,33 +302,9 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     return result;
   }
 
-  std::unique_ptr<download::MockDownloadItem> CreateMockDownloadItem(
-      base::FilePath full_file_path) {
-    std::unique_ptr<download::MockDownloadItem> item(
-        new testing::NiceMock<download::MockDownloadItem>());
-    ON_CALL(*item, GetId()).WillByDefault(testing::Return(1));
-    ON_CALL(*item, GetGuid())
-        .WillByDefault(testing::ReturnRefOfCopy(
-            std::string("14CA04AF-ECEC-4B13-8829-817477EFAB83")));
-    ON_CALL(*item, GetFullPath())
-        .WillByDefault(testing::ReturnRefOfCopy(full_file_path));
-    ON_CALL(*item, GetURL())
-        .WillByDefault(testing::ReturnRefOfCopy(GURL("foo/bar")));
-    ON_CALL(*item, GetMimeType()).WillByDefault(testing::Return(std::string()));
-    content::DownloadItemUtils::AttachInfo(item.get(), GetProfile(), nullptr);
-
-    return item;
-  }
-
-  content::MockDownloadManager* download_manager() {
-    return download_manager_.get();
-  }
-
  private:
   chromeos::FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-
-  std::unique_ptr<content::MockDownloadManager> download_manager_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -551,7 +548,52 @@ TEST_F(HoldingSpaceKeyedServiceTest, RestorePersistentStorage) {
             persisted_holding_space_items_after_restoration);
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
+class HoldingSpaceKeyedServiceDownloadsTest
+    : public HoldingSpaceKeyedServiceTest {
+ public:
+  HoldingSpaceKeyedServiceDownloadsTest()
+      : download_manager_(
+            std::make_unique<testing::NiceMock<MockDownloadManager>>()) {}
+
+  std::unique_ptr<download::MockDownloadItem> CreateMockDownloadItem(
+      base::FilePath full_file_path) {
+    auto item =
+        std::make_unique<testing::NiceMock<download::MockDownloadItem>>();
+    ON_CALL(*item, GetId()).WillByDefault(testing::Return(1));
+    ON_CALL(*item, GetGuid())
+        .WillByDefault(testing::ReturnRefOfCopy(
+            std::string("14CA04AF-ECEC-4B13-8829-817477EFAB83")));
+    ON_CALL(*item, GetFullPath())
+        .WillByDefault(testing::ReturnRefOfCopy(full_file_path));
+    ON_CALL(*item, GetURL())
+        .WillByDefault(testing::ReturnRefOfCopy(GURL("foo/bar")));
+    ON_CALL(*item, GetMimeType()).WillByDefault(testing::Return(std::string()));
+    content::DownloadItemUtils::AttachInfo(item.get(), GetProfile(), nullptr);
+    return item;
+  }
+
+  MockDownloadManager* download_manager() { return download_manager_.get(); }
+
+ private:
+  // HoldingSpaceKeyedServiceTest:
+  void SetUp() override {
+    SetUpDownloadManager();
+    HoldingSpaceKeyedServiceTest::SetUp();
+  }
+
+  void SetUpDownloadManager() {
+    // The `content::DownloadManager` needs to be set prior to initialization
+    // of the `HoldingSpaceDownloadsDelegate`. This must happen before the
+    // `HoldingSpaceKeyedService` is created for the profile under test.
+    MockDownloadManager* mock_download_manager = download_manager();
+    HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
+        mock_download_manager);
+  }
+
+  std::unique_ptr<MockDownloadManager> download_manager_;
+};
+
+TEST_F(HoldingSpaceKeyedServiceDownloadsTest, RetrieveHistory) {
   TestingProfile* profile = GetProfile();
   // Create a test downloads mount point.
   ScopedDownloadsMountPoint downloads_mount(profile);
@@ -591,15 +633,10 @@ TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
   EXPECT_CALL(*mock_download_manager, GetAllDownloads(testing::_))
       .WillOnce(testing::SetArgPointee<0>(download_items_mock));
 
+  CreateSecondaryProfile();
+  ActivateSecondaryProfile();
+
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
-  ASSERT_EQ(0u, model->items().size());
-
-  // Set the testing download manager, it should retrieve history and add the
-  // completed downloads to the model.
-  HoldingSpaceKeyedService* const holding_space_service =
-      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
-  holding_space_service->SetDownloadManagerForTesting(mock_download_manager);
-
   ASSERT_EQ(2u, model->items().size());
 
   for (int i = 0; i < static_cast<int>(model->items().size()); ++i) {
@@ -625,36 +662,29 @@ TEST_F(HoldingSpaceKeyedServiceTest, RetrieveHistory) {
     delete download_items_mock[i];
 }
 
-TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
+TEST_F(HoldingSpaceKeyedServiceDownloadsTest, AddDownloadItem) {
   TestingProfile* profile = GetProfile();
   // Create a test downloads mount point.
   ScopedDownloadsMountPoint downloads_mount(profile);
   ASSERT_TRUE(downloads_mount.IsValid());
 
-  const base::FilePath download_item_virtual_path("Download 1.png");
   // Create a fake download file on the local file system - later parts of the
   // test will try to resolve the file's file system URL, which fails if the
   // file does not exist.
+  const base::FilePath download_item_virtual_path("Download 1.png");
   const base::FilePath download_item_full_path =
       CreateFile(downloads_mount, download_item_virtual_path, "download 1");
 
-  content::MockDownloadManager* mock_download_manager = download_manager();
+  MockDownloadManager* mock_download_manager = download_manager();
   std::unique_ptr<download::MockDownloadItem> item(
       CreateMockDownloadItem(download_item_full_path));
-
-  HoldingSpaceKeyedService* const holding_space_service =
-      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
-  holding_space_service->SetDownloadManagerForTesting(mock_download_manager);
 
   download::MockDownloadItem* mock_download_item = item.get();
   EXPECT_CALL(*mock_download_manager, MockCreateDownloadItem(testing::_))
       .WillRepeatedly(testing::DoAll(
-          testing::InvokeWithoutArgs([&holding_space_service,
-                                      mock_download_manager,
+          testing::InvokeWithoutArgs([mock_download_manager,
                                       mock_download_item]() {
-            static_cast<content::DownloadManager::Observer*>(
-                holding_space_service)
-                ->OnDownloadCreated(mock_download_manager, mock_download_item);
+            mock_download_manager->NotifyDownloadCreated(mock_download_item);
           }),
           testing::Return(item.get())));
 

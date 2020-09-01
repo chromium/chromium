@@ -28,7 +28,6 @@ class HoldingSpaceFileSystemDelegate : public HoldingSpaceKeyedServiceDelegate {
   HoldingSpaceFileSystemDelegate(Profile* profile,
                                  HoldingSpaceModel* model,
                                  FileRemovedCallback file_removed_callback);
-
   HoldingSpaceFileSystemDelegate(const HoldingSpaceFileSystemDelegate&) =
       delete;
   HoldingSpaceFileSystemDelegate& operator=(

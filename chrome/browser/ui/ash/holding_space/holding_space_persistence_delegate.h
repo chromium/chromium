@@ -43,7 +43,6 @@ class HoldingSpacePersistenceDelegate
       HoldingSpaceModel* model,
       ItemRestoredCallback item_restored_callback,
       ModelRestoredCallback model_restored_callback);
-
   HoldingSpacePersistenceDelegate(const HoldingSpacePersistenceDelegate&) =
       delete;
   HoldingSpacePersistenceDelegate& operator=(

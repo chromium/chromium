@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_file_system_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_persistence_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
@@ -28,7 +29,6 @@ ProfileManager* GetProfileManager() {
 
 }  // namespace
 
-// TODO(dmblack): Add a delegate for downloads.
 HoldingSpaceKeyedService::HoldingSpaceKeyedService(Profile* profile,
                                                    const AccountId& account_id)
     : profile_(profile),
@@ -112,16 +112,9 @@ void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
   holding_space_model_.AddItem(std::move(item));
 }
 
-void HoldingSpaceKeyedService::SetDownloadManagerForTesting(
-    content::DownloadManager* manager) {
-  RemoveDownloadManagerObservers();
-  download_manager_ = manager;
-  download_manager_->AddObserver(this);
-  RetrieveDownloadHistory();
-}
-
 void HoldingSpaceKeyedService::Shutdown() {
-  RemoveDownloadManagerObservers();
+  for (auto& delegate : delegates_)
+    delegate->Shutdown();
 }
 
 void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
@@ -131,40 +124,13 @@ void HoldingSpaceKeyedService::OnProfileAdded(Profile* profile) {
   }
 }
 
-void HoldingSpaceKeyedService::ManagerGoingDown(
-    content::DownloadManager* manager) {
-  RemoveDownloadManagerObservers();
-  download_manager_ = nullptr;
-}
-
-void HoldingSpaceKeyedService::OnDownloadCreated(
-    content::DownloadManager* manager,
-    download::DownloadItem* item) {
-  download_items_observer_.Add(item);
-}
-
-void HoldingSpaceKeyedService::OnDownloadUpdated(download::DownloadItem* item) {
-  switch (item->GetState()) {
-    case download::DownloadItem::COMPLETE:
-      AddDownload(item->GetFullPath());
-      FALLTHROUGH;
-    case download::DownloadItem::CANCELLED:
-    case download::DownloadItem::INTERRUPTED:
-      download_items_observer_.Remove(item);
-      break;
-    case download::DownloadItem::IN_PROGRESS:
-    case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      break;
-  }
-}
-
-void HoldingSpaceKeyedService::RemoveDownloadManagerObservers() {
-  if (download_manager_)
-    download_manager_->RemoveObserver(this);
-  download_items_observer_.RemoveAll();
-}
-
 void HoldingSpaceKeyedService::OnProfileReady() {
+  // The `HoldingSpaceDownloadsDelegate` monitors the status of downloads.
+  delegates_.push_back(std::make_unique<HoldingSpaceDownloadsDelegate>(
+      profile_, &holding_space_model_, /*item_downloaded_callback=*/
+      base::BindRepeating(&HoldingSpaceKeyedService::AddDownload,
+                          weak_factory_.GetWeakPtr())));
+
   // The `HoldingSpaceFileSystemDelegate` monitors the file system for changes.
   delegates_.push_back(std::make_unique<HoldingSpaceFileSystemDelegate>(
       profile_, &holding_space_model_,
@@ -204,29 +170,6 @@ void HoldingSpaceKeyedService::OnModelRestored() {
 
   HoldingSpaceController::Get()->RegisterClientAndModelForUser(
       account_id_, &holding_space_client_, &holding_space_model_);
-
-  // NOTE: `download_manager_` may have already been set in tests.
-  if (download_manager_)
-    return;
-
-  // Once the `holding_space_model_` has been restored from persistence, we can
-  // start to observe the `download_manager_` to track downloaded files.
-  download_manager_ = content::BrowserContext::GetDownloadManager(profile_);
-  download_manager_->AddObserver(this);
-  RetrieveDownloadHistory();
-}
-
-void HoldingSpaceKeyedService::RetrieveDownloadHistory() {
-  DCHECK(download_manager_);
-  download::SimpleDownloadManager::DownloadVector downloads;
-  download_manager_->GetAllDownloads(&downloads);
-  for (auto* download : downloads) {
-    download::DownloadItem::DownloadState state = download->GetState();
-    if (state == download::DownloadItem::COMPLETE)
-      AddDownload(download->GetFullPath());
-    else if (state == download::DownloadItem::IN_PROGRESS)
-      download_items_observer_.Add(download);
-  }
 }
 
 }  // namespace ash

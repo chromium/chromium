@@ -25,6 +25,10 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // to do so during or anytime after initialization.
   virtual void Init() = 0;
 
+  // Invoked by `HoldingSpaceKeyedService` when the service is shutting down.
+  // Delegates should perform any necessary clean up.
+  virtual void Shutdown();
+
   // Invoked by `HoldingSpaceKeyedService` to notify delegates when the holding
   // space model has been restored from persistence.
   void NotifyHoldingSpaceModelRestored();
@@ -47,7 +51,7 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) override;
 
   // Invoked when the holding space model has been restored from persistence.
-  void OnHoldingSpaceModelRestored();
+  virtual void OnHoldingSpaceModelRestored();
 
   Profile* const profile_;
   const HoldingSpaceModel* const model_;

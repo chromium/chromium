@@ -1870,6 +1870,8 @@ static_library("ui") {
       "ash/clipboard_util.h",
       "ash/holding_space/holding_space_client_impl.cc",
       "ash/holding_space/holding_space_client_impl.h",
+      "ash/holding_space/holding_space_downloads_delegate.cc",
+      "ash/holding_space/holding_space_downloads_delegate.h",
       "ash/holding_space/holding_space_file_system_delegate.cc",
       "ash/holding_space/holding_space_file_system_delegate.h",
       "ash/holding_space/holding_space_keyed_service.cc",

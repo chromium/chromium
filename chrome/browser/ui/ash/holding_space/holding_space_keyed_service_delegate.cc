@@ -19,6 +19,8 @@ ProfileManager* GetProfileManager() {
 
 HoldingSpaceKeyedServiceDelegate::~HoldingSpaceKeyedServiceDelegate() = default;
 
+void HoldingSpaceKeyedServiceDelegate::Shutdown() {}
+
 void HoldingSpaceKeyedServiceDelegate::NotifyHoldingSpaceModelRestored() {
   DCHECK(is_restoring_);
   is_restoring_ = false;

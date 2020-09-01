@@ -17,9 +17,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_thumbnail_loader.h"
 #include "components/account_id/account_id.h"
-#include "components/download/public/common/download_item.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/download_manager.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -46,9 +44,7 @@ namespace ash {
 // *   Manages the temporary holding space per-profile data model.
 // *   Serves as an entry point to add holding space items from Chrome.
 class HoldingSpaceKeyedService : public KeyedService,
-                                 public ProfileManagerObserver,
-                                 public content::DownloadManager::Observer,
-                                 public download::DownloadItem::Observer {
+                                 public ProfileManagerObserver {
  public:
   HoldingSpaceKeyedService(Profile* profile, const AccountId& account_id);
   HoldingSpaceKeyedService(const HoldingSpaceKeyedService& other) = delete;
@@ -98,27 +94,12 @@ class HoldingSpaceKeyedService : public KeyedService,
     return &thumbnail_loader_;
   }
 
-  void SetDownloadManagerForTesting(content::DownloadManager* manager);
-
  private:
   // KeyedService:
   void Shutdown() override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
-
-  // content::DownloadManager::Observer:
-  void ManagerGoingDown(content::DownloadManager* manager) override;
-  void OnDownloadCreated(content::DownloadManager* manager,
-                         download::DownloadItem* item) override;
-
-  // download::DownloadItem::Observer:
-  void OnDownloadUpdated(download::DownloadItem* item) override;
-
-  // Removes all observers from:
-  // - `download_manager_`
-  // - `download_items_observer_`.
-  void RemoveDownloadManagerObservers();
 
   // Invoked when the associated profile is ready.
   void OnProfileReady();
@@ -128,8 +109,6 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   // Invoked when the holding space model has been restored from persistence.
   void OnModelRestored();
-
-  void RetrieveDownloadHistory();
 
   Profile* const profile_;
   const AccountId account_id_;
@@ -146,10 +125,6 @@ class HoldingSpaceKeyedService : public KeyedService,
 
   ScopedObserver<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};
-
-  content::DownloadManager* download_manager_ = nullptr;
-  ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
-      download_items_observer_{this};
 
   base::WeakPtrFactory<HoldingSpaceKeyedService> weak_factory_{this};
 };
