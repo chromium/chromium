@@ -94661,15 +94661,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Record success rate of Nearby Share storage operation {Operation}.
   </summary>
   <token key="Operation">
-    <variant name="AddPublicCertificates" label="AddPublicCertificates"/>
-    <variant name="ClearPublicCertificates" label="ClearPublicCertificates"/>
-    <variant name="Initialize" label="Initialize"/>
+    <variant name="AddPublicCertificates" summary="AddPublicCertificates"/>
+    <variant name="ClearPublicCertificates" summary="ClearPublicCertificates"/>
+    <variant name="Initialize" summary="Initialize"/>
     <variant name="RemoveExpiredPublicCertificates"
-        label="RemoveExpiredPublicCertificates"/>
+        summary="RemoveExpiredPublicCertificates"/>
     <variant name="ReplacePublicCertificatesDestroy"
-        label="ReplacePublicCertificatesDestroy"/>
+        summary="ReplacePublicCertificatesDestroy"/>
     <variant name="ReplacePublicCertificatesUpdateEntries"
-        label="ReplacePublicCertificatesUpdateEntries"/>
+        summary="ReplacePublicCertificatesUpdateEntries"/>
   </token>
 </histogram>
 
