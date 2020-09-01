@@ -110,7 +110,7 @@ public class StaticLayout extends Layout {
     public StaticLayout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
             LayoutManagerHost viewHost,
             CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectoSupplier,
+            TabModelSelector tabModelSelector,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             ObservableSupplier<BrowserControlsStateProvider> browserControlsStateProviderSupplier) {
         super(context, updateHost, renderHost);
@@ -118,13 +118,8 @@ public class StaticLayout extends Layout {
         mViewHost = viewHost;
         mRequestSupplier = requestSupplier;
 
-        tabModelSelectoSupplier.addObserver(new Callback<TabModelSelector>() {
-            @Override
-            public void onResult(TabModelSelector tabModelSelector) {
-                setTabModelSelector(tabModelSelector);
-                tabModelSelectoSupplier.removeObserver(this);
-            }
-        });
+        assert tabModelSelector != null;
+        setTabModelSelector(tabModelSelector);
 
         tabContentManagerSupplier.addObserver(new Callback<TabContentManager>() {
             @Override

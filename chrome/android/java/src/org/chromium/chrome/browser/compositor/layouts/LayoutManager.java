@@ -160,8 +160,6 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      */
     private ObservableSupplierImpl<Tab> mCurrentTabSupplier;
 
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<TabContentManager> mTabContentManagerSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<BrowserControlsStateProvider>
@@ -418,8 +416,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
         // Build Layouts
         mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                mTabModelSelectorSupplier, mTabContentManagerSupplier,
-                mBrowserControlsStateProviderSupplier);
+                selector, mTabContentManagerSupplier, mBrowserControlsStateProviderSupplier);
 
         // Set up layout parameters
         mStaticLayout.setLayoutHandlesTabLifecycles(true);
@@ -472,9 +469,10 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         }
     }
 
+    // TODO(hanxi): Passes the TabModelSelectorSupplier in the constructor since the
+    // mTabModelSelector should only be set once.
     public void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
-        mTabModelSelectorSupplier.set(selector);
         mCurrentTabSupplier.set(selector.getCurrentTab());
         mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
