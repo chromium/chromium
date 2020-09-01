@@ -39,7 +39,40 @@ const CGFloat kFallbackIconSize = 180;
 
 // Radius of the rounded corner of the fallback icon.
 const CGFloat kFallbackRoundedCorner = 8;
+
+// Create an image with a rounded square with color |backgroundColor| and
+// |string| centered in color |textColor|.
+UIImage* GetFallbackImageWithStringAndColor(NSString* string,
+                                            UIColor* backgroundColor,
+                                            UIColor* textColor) {
+  CGRect rect = CGRectMake(0, 0, kFallbackIconSize, kFallbackIconSize);
+  UIGraphicsBeginImageContext(rect.size);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextSetFillColorWithColor(context, [backgroundColor CGColor]);
+  CGContextSetStrokeColorWithColor(context, [textColor CGColor]);
+  UIBezierPath* rounded =
+      [UIBezierPath bezierPathWithRoundedRect:rect
+                                 cornerRadius:kFallbackRoundedCorner];
+  [rounded fill];
+  UIFont* font = [MDCTypography headlineFont];
+  font = [font fontWithSize:(kFallbackIconSize / 2)];
+  CGRect textRect = CGRectMake(0, (kFallbackIconSize - [font lineHeight]) / 2,
+                               kFallbackIconSize, [font lineHeight]);
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  [paragraphStyle setAlignment:NSTextAlignmentCenter];
+  NSMutableDictionary* attributes = [[NSMutableDictionary alloc] init];
+  [attributes setValue:font forKey:NSFontAttributeName];
+  [attributes setValue:textColor forKey:NSForegroundColorAttributeName];
+  [attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
+
+  [string drawInRect:textRect withAttributes:attributes];
+  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return image;
 }
+
+}  // namespace
 
 @interface BaseSpotlightManager () {
   // Domain of the spotlight manager.
@@ -62,12 +95,6 @@ const CGFloat kFallbackRoundedCorner = 8;
 // Compute a hash consisting of the first 8 bytes of the MD5 hash of a string
 // containing |URL| and |title|.
 - (int64_t)getHashForURL:(const GURL&)URL title:(NSString*)title;
-
-// Create an image with a rounded square with color |backgroundColor| and
-// |string| centered in color |textColor|.
-UIImage* GetFallbackImageWithStringAndColor(NSString* string,
-                                            UIColor* backgroundColor,
-                                            UIColor* textColor);
 
 // Returns an array of Keywords for Spotlight search.
 - (NSArray*)keywordsForSpotlightItems;
@@ -163,36 +190,6 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   NSString* itemID = [self spotlightIDForURL:indexedURL title:defaultTitle];
   return [NSArray arrayWithObject:[self spotlightItemWithItemID:itemID
                                                    attributeSet:attributeSet]];
-}
-
-UIImage* GetFallbackImageWithStringAndColor(NSString* string,
-                                            UIColor* backgroundColor,
-                                            UIColor* textColor) {
-  CGRect rect = CGRectMake(0, 0, kFallbackIconSize, kFallbackIconSize);
-  UIGraphicsBeginImageContext(rect.size);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, [backgroundColor CGColor]);
-  CGContextSetStrokeColorWithColor(context, [textColor CGColor]);
-  UIBezierPath* rounded =
-      [UIBezierPath bezierPathWithRoundedRect:rect
-                                 cornerRadius:kFallbackRoundedCorner];
-  [rounded fill];
-  UIFont* font = [MDCTypography headlineFont];
-  font = [font fontWithSize:(kFallbackIconSize / 2)];
-  CGRect textRect = CGRectMake(0, (kFallbackIconSize - [font lineHeight]) / 2,
-                               kFallbackIconSize, [font lineHeight]);
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  [paragraphStyle setAlignment:NSTextAlignmentCenter];
-  NSMutableDictionary* attributes = [[NSMutableDictionary alloc] init];
-  [attributes setValue:font forKey:NSFontAttributeName];
-  [attributes setValue:textColor forKey:NSForegroundColorAttributeName];
-  [attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
-
-  [string drawInRect:textRect withAttributes:attributes];
-  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
 }
 
 - (void)refreshItemsWithURL:(const GURL&)URLToRefresh title:(NSString*)title {
