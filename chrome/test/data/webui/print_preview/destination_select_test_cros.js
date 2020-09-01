@@ -330,6 +330,7 @@ destination_select_test_cros.TestNames = {
   ChangeIconDeprecationWarnings: 'change icon deprecation warnings',
   EulaIsDisplayed: 'eula is displayed',
   SelectDriveDestination: 'select drive destination',
+  IsDriveMounted: 'is drive mounted',
 };
 
 suite(destination_select_test_cros.suiteName, function() {
@@ -606,6 +607,29 @@ suite(destination_select_test_cros.suiteName, function() {
             .then(() => {
               assertEquals(
                   expectedKey, destinationSelect.$$('.md-select').value);
+            });
+      });
+
+  test(
+      assert(destination_select_test_cros.TestNames.IsDriveMounted),
+      function() {
+        return waitBeforeNextRender(destinationSelect)
+            .then(() => {
+              const options =
+                  Array.from(destinationSelect.getVisibleItemsForTest());
+              assertTrue(!!options.find(
+                  option =>
+                      option.value === SAVE_TO_DRIVE_CROS_DESTINATION_KEY));
+
+              destinationSelect.isDriveMounted = false;
+              return waitBeforeNextRender(destinationSelect);
+            })
+            .then(() => {
+              const options =
+                  Array.from(destinationSelect.getVisibleItemsForTest());
+              assertTrue(!options.find(
+                  option =>
+                      option.value === SAVE_TO_DRIVE_CROS_DESTINATION_KEY));
             });
       });
 });

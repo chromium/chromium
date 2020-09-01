@@ -113,6 +113,17 @@ Polymer({
 
     /** @private {number} */
     maxSheets_: Number,
+
+    // <if expr="chromeos">
+    /** @private */
+    saveToDriveFlagEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('printSaveToDrive');
+      },
+      readOnly: true,
+    },
+    // </if>
   },
 
   listeners: {
@@ -330,6 +341,11 @@ Polymer({
           settings.serializedDefaultDestinationSelectionRulesStr,
           settings.userAccounts || null, settings.syncAvailable,
           settings.pdfPrinterDisabled);
+      // <if expr="chromeos">
+      if (this.saveToDriveFlagEnabled_) {
+        this.$.sidebar.setIsDriveMounted(settings.isDriveMounted);
+      }
+      // </if>
       this.destinationsManaged_ = settings.destinationsManaged;
       this.isInKioskAutoPrintMode_ = settings.isInKioskAutoPrintMode;
 

@@ -196,6 +196,11 @@ const char kUserAccounts[] = "userAccounts";
 // Print Preview will always send a request to the Google Cloud Print server on
 // load, to check the user's sign in state.
 const char kSyncAvailable[] = "syncAvailable";
+#if defined(OS_CHROMEOS)
+// Name of a dictionary field indicating whether the user's Drive directory is
+// mounted.
+const char kIsDriveMounted[] = "isDriveMounted";
+#endif  // defined(OS_CHROMEOS)
 
 // Get the print job settings dictionary from |json_str|.
 // Returns |base::Value()| on failure.
@@ -456,10 +461,6 @@ void PrintPreviewHandler::RegisterMessages() {
       base::BindRepeating(
           &PrintPreviewHandler::HandleRequestPrinterStatusUpdate,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "isDriveMounted",
-      base::BindRepeating(&PrintPreviewHandler::HandleIsDriveMounted,
-                          base::Unretained(this)));
 #endif
 }
 
@@ -1029,6 +1030,16 @@ void PrintPreviewHandler::SendInitialSettings(
     GetUserAccountList(&initial_settings);
   }
 
+#if defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(chromeos::features::kPrintSaveToDrive)) {
+    drive::DriveIntegrationService* drive_service =
+        drive::DriveIntegrationServiceFactory::GetForProfile(
+            Profile::FromWebUI(web_ui()));
+    initial_settings.SetBoolKey(kIsDriveMounted,
+                                drive_service && drive_service->IsMounted());
+  }
+#endif  // defined(OS_CHROMEOS)
+
   ResolveJavascriptCallback(base::Value(callback_id), initial_settings);
 }
 
@@ -1409,18 +1420,6 @@ void PrintPreviewHandler::OnPrinterStatusUpdated(
     const std::string& callback_id,
     const base::Value& cups_printer_status) {
   ResolveJavascriptCallback(base::Value(callback_id), cups_printer_status);
-}
-
-void PrintPreviewHandler::HandleIsDriveMounted(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  const std::string& callback_id = args->GetList()[0].GetString();
-
-  drive::DriveIntegrationService* drive_service =
-      drive::DriveIntegrationServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui()));
-  ResolveJavascriptCallback(
-      base::Value(callback_id),
-      base::Value(drive_service && drive_service->IsMounted()));
 }
 #endif
 

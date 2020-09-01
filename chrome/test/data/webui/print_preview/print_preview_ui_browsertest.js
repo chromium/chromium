@@ -1293,6 +1293,12 @@ TEST_F(
           destination_select_test_cros.TestNames.ChangeIconDeprecationWarnings);
     });
 
+TEST_F(
+    'PrintPreviewDestinationSelectTestCrOSSaveToDriveEnabled', 'IsDriveMounted',
+    function() {
+      this.runMochaTest(destination_select_test_cros.TestNames.IsDriveMounted);
+    });
+
 // eslint-disable-next-line no-var
 var PrintPreviewPrinterStatusTestCros = class extends PrintPreviewTest {
   /** @override */

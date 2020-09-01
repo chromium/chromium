@@ -318,10 +318,6 @@ class PrintPreviewHandler : public content::WebUIMessageHandler,
   // Resolves callback with printer status.
   void OnPrinterStatusUpdated(const std::string& callback_id,
                               const base::Value& cups_printer_status);
-
-  // Resolves Javascript callback with true if the user's local Drive folder is
-  // mounted.
-  void HandleIsDriveMounted(const base::ListValue* args);
 #endif
 
   // A count of how many requests received to regenerate preview data.

@@ -47,6 +47,11 @@ Polymer({
 
     driveDestinationKey: String,
 
+    isDriveMounted: {
+      type: Boolean,
+      value: true,
+    },
+
     loaded: Boolean,
 
     noDestinations: Boolean,
@@ -123,8 +128,8 @@ Polymer({
     /** @private */
     driveDestinationKeyCros_: {
       type: String,
-      computed:
-          'computeDriveDestinationKeyCros_(driveDestinationKey, saveToDriveFlagEnabled_)',
+      computed: 'computeDriveDestinationKeyCros_(' +
+          'driveDestinationKey, saveToDriveFlagEnabled_, isDriveMounted)',
     },
   },
 
@@ -428,7 +433,10 @@ Polymer({
    * @private
    */
   computeDriveDestinationKeyCros_: function() {
-    return this.saveToDriveFlagEnabled_ ? SAVE_TO_DRIVE_CROS_DESTINATION_KEY :
-                                          this.driveDestinationKey;
-  }
+    if (!this.saveToDriveFlagEnabled_) {
+      return this.driveDestinationKey;
+    }
+
+    return this.isDriveMounted ? SAVE_TO_DRIVE_CROS_DESTINATION_KEY : '';
+  },
 });

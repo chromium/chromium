@@ -553,5 +553,10 @@ Polymer({
     this.destination.eulaUrl = e.detail;
     this.notifyPath('destination.eulaUrl');
   },
+
+  /** @param {boolean} isDriveMounted */
+  setIsDriveMounted(isDriveMounted) {
+    this.$.destinationSelect.isDriveMounted = isDriveMounted;
+  },
   // </if>
 });
