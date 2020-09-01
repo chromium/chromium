@@ -31,7 +31,13 @@ void StorageModule::AddRecord(Priority priority,
 
 void StorageModule::ReportSuccess(
     SequencingInformation sequencing_information) {
-  LOG(ERROR) << "ReportSuccess isn't implemented";
+  storage_->Confirm(
+      sequencing_information.priority(), sequencing_information.sequencing_id(),
+      base::BindOnce([](Status status) {
+        if (!status.ok()) {
+          LOG(ERROR) << "Unable to confirm record deletion: " << status;
+        }
+      }));
 }
 
 // static

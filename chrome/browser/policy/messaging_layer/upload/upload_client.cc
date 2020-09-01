@@ -30,6 +30,8 @@ StatusOr<std::unique_ptr<UploadClient>> UploadClient::Create(
 
 Status UploadClient::EnqueueUpload(
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
+  DCHECK(records);
+
   if (records->empty()) {
     return Status::StatusOK();
   }
