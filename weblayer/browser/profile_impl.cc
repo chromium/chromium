@@ -428,8 +428,9 @@ std::unique_ptr<ProfileImpl> ProfileImpl::DestroyAndDeleteDataFromDisk(
   if (profile->GetNumberOfBrowsers() > 0)
     return profile;
 
+  ProfileInfo profile_info = profile->info_;
   GetBackgroundDiskOperationTaskRunner()->PostTaskAndReply(
-      FROM_HERE, base::BindOnce(&MarkProfileAsDeleted, profile->info_),
+      FROM_HERE, base::BindOnce(&MarkProfileAsDeleted, profile_info),
       base::BindOnce(&ProfileImpl::OnProfileMarked, std::move(profile),
                      std::move(done_callback)));
   return nullptr;
@@ -443,7 +444,7 @@ void ProfileImpl::OnProfileMarked(std::unique_ptr<ProfileImpl> profile,
 
   ProfileImpl* raw_profile = profile.get();
   auto* clearer = new DataClearer(
-      profile->GetBrowserContext(),
+      raw_profile->GetBrowserContext(),
       base::BindOnce(&ProfileImpl::NukeDataAfterRemovingData,
                      std::move(profile), std::move(done_callback)));
   uint64_t remove_all_mask = 0xffffffffffffffffull;
