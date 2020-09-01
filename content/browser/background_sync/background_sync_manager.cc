@@ -1920,6 +1920,7 @@ void BackgroundSyncManager::ReviveDidStoreRegistration(
     // The service worker registration is gone.
     active_registrations_.erase(service_worker_registration_id);
     std::move(done_closure).Run();
+    return;
   }
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
