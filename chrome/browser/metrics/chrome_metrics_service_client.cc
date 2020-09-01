@@ -146,6 +146,7 @@
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/printing/printer_metrics_provider.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/metrics/ambient_mode_metrics_provider.h"
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/signin/signin_status_metrics_provider_chromeos.h"
@@ -729,6 +730,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AssistantServiceMetricsProvider>());
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<AmbientModeMetricsProvider>());
 #endif  // defined(OS_CHROMEOS)
 
 #if !defined(OS_CHROMEOS)

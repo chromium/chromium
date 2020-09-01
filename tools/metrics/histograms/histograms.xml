@@ -9679,6 +9679,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.AmbientMode.Enabled" enum="BooleanEnabled"
+    expires_after="2021-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users, whether the user has Ambient mode enabled. Recorded
+    once for every UMA upload. The set of eligible users includes all users with
+    profiles that can allow Ambient mode to be enabled. This is limited by
+    profile type, whether the user is primary, if the user has a supported
+    email, etc.
+  </summary>
+</histogram>
+
 <histogram name="Ash.AppList.TimeBetweenTaskSwitches" units="seconds"
     expires_after="2016-10-04">
   <obsolete>

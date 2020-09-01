@@ -3957,6 +3957,8 @@ static_library("browser") {
       "memory/memory_kills_histogram.h",
       "memory/memory_kills_monitor.cc",
       "memory/memory_kills_monitor.h",
+      "metrics/ambient_mode_metrics_provider.cc",
+      "metrics/ambient_mode_metrics_provider.h",
       "metrics/assistant_service_metrics_provider.cc",
       "metrics/assistant_service_metrics_provider.h",
       "metrics/chromeos_metrics_provider.cc",
