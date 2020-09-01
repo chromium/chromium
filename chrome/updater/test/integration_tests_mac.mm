@@ -67,6 +67,15 @@ void Clean() {
   EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
       Launchd::User, Launchd::Agent, updater::CopyServiceLaunchdName()));
   EXPECT_TRUE(base::DeletePathRecursively(GetDataDirPath()));
+
+  @autoreleasepool {
+    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults
+        removeObjectForKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
+    [userDefaults
+        removeObjectForKey:[NSString
+                               stringWithUTF8String:kDevOverrideKeyUseCUP]];
+  }
 }
 
 void ExpectClean() {
@@ -79,6 +88,18 @@ void ExpectClean() {
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
       Launchd::User, Launchd::Agent, updater::CopyServiceLaunchdName()));
   EXPECT_FALSE(base::PathExists(GetDataDirPath()));
+}
+
+void EnterTestMode() {
+  // TODO(crbug.com/1119857): Point this to an actual fake server.
+  @autoreleasepool {
+    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setURL:[NSURL URLWithString:@"http://localhost:8367"]
+                  forKey:[NSString stringWithUTF8String:kDevOverrideKeyUrl]];
+    [userDefaults
+        setBool:NO
+         forKey:[NSString stringWithUTF8String:kDevOverrideKeyUseCUP]];
+  }
 }
 
 void ExpectInstalled() {

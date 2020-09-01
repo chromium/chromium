@@ -19,6 +19,9 @@ void Clean();
 // test.
 void ExpectClean();
 
+// Place the updater into test mode (use local servers and disable CUP).
+void EnterTestMode();
+
 // Expect that the updater is installed on the system.
 void ExpectInstalled();
 

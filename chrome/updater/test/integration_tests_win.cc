@@ -8,12 +8,15 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
+#include "chrome/updater/win/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -73,6 +76,8 @@ base::FilePath GetDataDirPath() {
 
 void Clean() {
   // TODO(crbug.com/1062288): Delete the Client / ClientState registry keys.
+  base::win::RegKey(HKEY_LOCAL_MACHINE, L"", KEY_SET_VALUE)
+      .DeleteKey(UPDATE_DEV_KEY);
   // TODO(crbug.com/1062288): Delete the COM server items.
   // TODO(crbug.com/1062288): Delete the COM service items.
   // TODO(crbug.com/1062288): Delete the COM interfaces.
@@ -84,6 +89,7 @@ void Clean() {
 void ExpectClean() {
   // TODO(crbug.com/1062288): Assert there are no Client / ClientState registry
   // keys.
+  // TODO(crbug.com/1062288): Assert there is no UpdateDev registry key.
   // TODO(crbug.com/1062288): Assert there are no COM server items.
   // TODO(crbug.com/1062288): Assert there are no COM service items.
   // TODO(crbug.com/1062288): Assert there are no COM interfaces.
@@ -92,6 +98,19 @@ void ExpectClean() {
   // Files must not exist on the file system.
   EXPECT_FALSE(base::PathExists(GetProductPath()));
   EXPECT_FALSE(base::PathExists(GetDataDirPath()));
+}
+
+void EnterTestMode() {
+  // TODO(crbug.com/1119857): Point this to an actual fake server.
+  base::win::RegKey key(HKEY_LOCAL_MACHINE, L"", KEY_SET_VALUE);
+  ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, UPDATE_DEV_KEY, KEY_WRITE),
+            ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUrl).c_str(),
+                           L"http://localhost:8367"),
+            ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(base::UTF8ToUTF16(kDevOverrideKeyUseCUP).c_str(),
+                           static_cast<DWORD>(0)),
+            ERROR_SUCCESS);
 }
 
 void ExpectInstalled() {

@@ -37,6 +37,7 @@ class IntegrationTest : public ::testing::Test {
   void SetUp() override {
     Clean();
     ExpectClean();
+    EnterTestMode();
   }
 
   void TearDown() override {
