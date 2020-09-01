@@ -38,7 +38,6 @@
 #include "content/shell/browser/web_test/web_test_bluetooth_fake_adapter_setter_impl.h"
 #include "content/shell/browser/web_test/web_test_browser_context.h"
 #include "content/shell/browser/web_test/web_test_browser_main_parts.h"
-#include "content/shell/browser/web_test/web_test_client_impl.h"
 #include "content/shell/browser/web_test/web_test_control_host.h"
 #include "content/shell/browser/web_test/web_test_permission_manager.h"
 #include "content/shell/browser/web_test/web_test_storage_access_manager.h"
@@ -234,13 +233,9 @@ void WebTestContentBrowserClient::ExposeInterfacesToRenderer(
           base::Unretained(this)),
       ui_task_runner);
 
-  associated_registry->AddInterface(
-      base::BindRepeating(&WebTestContentBrowserClient::BindWebTestControlHost,
-                          base::Unretained(this)));
   associated_registry->AddInterface(base::BindRepeating(
-      &WebTestContentBrowserClient::BindWebTestClient,
-      render_process_host->GetID(),
-      BrowserContext::GetDefaultStoragePartition(browser_context())));
+      &WebTestContentBrowserClient::BindWebTestControlHost,
+      base::Unretained(this), render_process_host->GetID()));
 }
 
 void WebTestContentBrowserClient::BindPermissionAutomation(
@@ -490,18 +485,11 @@ void WebTestContentBrowserClient::CreateFakeBluetoothChooserFactory(
 }
 
 void WebTestContentBrowserClient::BindWebTestControlHost(
+    int render_process_id,
     mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver) {
   if (WebTestControlHost::Get())
-    WebTestControlHost::Get()->AddWebTestControlHostReceiver(
-        std::move(receiver));
-}
-
-// static
-void WebTestContentBrowserClient::BindWebTestClient(
-    int render_process_id,
-    StoragePartition* partition,
-    mojo::PendingAssociatedReceiver<mojom::WebTestClient> receiver) {
-  WebTestClientImpl::Create(render_process_id, std::move(receiver));
+    WebTestControlHost::Get()->BindWebTestControlHostForRenderer(
+        render_process_id, std::move(receiver));
 }
 
 #if defined(OS_WIN)

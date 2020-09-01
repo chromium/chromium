@@ -505,10 +505,6 @@ class TestRunner {
   mojo::AssociatedRemote<mojom::WebTestControlHost>
       web_test_control_host_remote_;
 
-  mojo::AssociatedRemote<mojom::WebTestClient>& GetWebTestClientRemote();
-  void HandleWebTestClientDisconnected();
-  mojo::AssociatedRemote<mojom::WebTestClient> web_test_client_remote_;
-
   mojom::WebTestBluetoothFakeAdapterSetter& GetBluetoothFakeAdapterSetter();
   void HandleBluetoothFakeAdapterSetterDisconnected();
   mojo::Remote<mojom::WebTestBluetoothFakeAdapterSetter>

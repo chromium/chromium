@@ -39,6 +39,7 @@
 #include "content/common/page_state_serialization.h"
 #include "content/common/unique_name_helper.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_index_context.h"
@@ -85,6 +86,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "storage/browser/database/database_tracker.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_rect.h"
@@ -655,6 +657,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   // is done. New channels will be opened for the next test.
   web_test_render_frame_map_.clear();
   web_test_render_thread_map_.clear();
+  receiver_bindings_.Clear();
 
   printer_->PrintTextFooter();
   printer_->PrintImageFooter();
@@ -672,7 +675,6 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
       ->GetWebTestBrowserContext()
       ->GetWebTestPermissionManager()
       ->ResetPermissions();
-  blink_test_client_receivers_.Clear();
   check_for_leaked_windows_ = false;
   renderer_dump_result_ = nullptr;
   navigation_history_dump_ = "";
@@ -1340,26 +1342,6 @@ void WebTestControlHost::OnTextDump(const std::string& dump) {
   printer_->PrintTextFooter();
 }
 
-void WebTestControlHost::OnWebTestRuntimeFlagsChanged(
-    int sender_process_host_id,
-    const base::DictionaryValue& changed_web_test_runtime_flags) {
-  // Stash the accumulated changes for future, not-yet-created renderers.
-  accumulated_web_test_runtime_flags_changes_.MergeDictionary(
-      &changed_web_test_runtime_flags);
-
-  // Propagate the changes to all the tracked renderer processes.
-  for (RenderProcessHost* process : all_observed_render_process_hosts_) {
-    // Do not propagate the changes back to the process that originated
-    // them. (propagating them back could also clobber subsequent changes in the
-    // originator).
-    if (process->GetID() == sender_process_host_id)
-      continue;
-
-    GetWebTestRenderThreadRemote(process)->ReplicateWebTestRuntimeFlagsChanges(
-        changed_web_test_runtime_flags.Clone());
-  }
-}
-
 void WebTestControlHost::PrintMessageToStderr(const std::string& message) {
   printer_->AddMessageToStderr(message);
 }
@@ -1625,6 +1607,50 @@ void WebTestControlHost::SimulateWebContentIndexDelete(const std::string& id) {
       registration_data.first, registration_data.second, id);
 }
 
+void WebTestControlHost::WebTestRuntimeFlagsChanged(
+    base::Value changed_web_test_runtime_flags) {
+  const int render_process_id = receiver_bindings_.current_context();
+
+  // Stash the accumulated changes for future, not-yet-created renderers.
+  accumulated_web_test_runtime_flags_changes_.MergeDictionary(
+      &changed_web_test_runtime_flags);
+
+  // Propagate the changes to all the tracked renderer processes.
+  for (RenderProcessHost* process : all_observed_render_process_hosts_) {
+    // Do not propagate the changes back to the process that originated
+    // them. Propagating them back could also clobber subsequent changes in the
+    // originator.
+    if (process->GetID() == render_process_id)
+      continue;
+
+    GetWebTestRenderThreadRemote(process)->ReplicateWebTestRuntimeFlagsChanges(
+        changed_web_test_runtime_flags.Clone());
+  }
+}
+
+void WebTestControlHost::RegisterIsolatedFileSystem(
+    const std::vector<base::FilePath>& file_paths,
+    RegisterIsolatedFileSystemCallback callback) {
+  const int render_process_id = receiver_bindings_.current_context();
+
+  ChildProcessSecurityPolicy* policy =
+      ChildProcessSecurityPolicy::GetInstance();
+
+  storage::IsolatedContext::FileInfoSet file_info_set;
+  for (auto& path : file_paths) {
+    file_info_set.AddPath(path, nullptr);
+    if (!policy->CanReadFile(render_process_id, path))
+      policy->GrantReadFile(render_process_id, path);
+  }
+
+  std::string filesystem_id =
+      storage::IsolatedContext::GetInstance()->RegisterDraggedFileSystem(
+          file_info_set);
+  policy->GrantReadFileSystem(render_process_id, filesystem_id);
+
+  std::move(callback).Run(filesystem_id);
+}
+
 void WebTestControlHost::GoToOffset(int offset) {
   main_window_->GoBackOrForward(offset);
 }
@@ -1766,9 +1792,10 @@ void WebTestControlHost::BlockThirdPartyCookies(bool block) {
       ->BlockThirdPartyCookies(block);
 }
 
-void WebTestControlHost::AddWebTestControlHostReceiver(
+void WebTestControlHost::BindWebTestControlHostForRenderer(
+    int render_process_id,
     mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver) {
-  blink_test_client_receivers_.Add(this, std::move(receiver));
+  receiver_bindings_.Add(this, std::move(receiver), render_process_id);
 }
 
 mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
@@ -1816,11 +1843,14 @@ void WebTestControlHost::HandleWebTestRenderThreadRemoteError(
   web_test_render_thread_map_.erase(key);
 }
 
-WebTestControlHost::Node::Node() = default;
 WebTestControlHost::Node::Node(RenderFrameHost* host)
     : render_frame_host(host),
       render_frame_host_id(host->GetProcess()->GetID(), host->GetRoutingID()) {}
+
 WebTestControlHost::Node::Node(Node&& other) = default;
+WebTestControlHost::Node& WebTestControlHost::Node::operator=(Node&& other) =
+    default;
+
 WebTestControlHost::Node::~Node() = default;
 
 }  // namespace content

@@ -132,12 +132,8 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
           receiver);
 
   void BindWebTestControlHost(
-      mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
-
-  static void BindWebTestClient(
       int render_process_id,
-      StoragePartition* partition,
-      mojo::PendingAssociatedReceiver<mojom::WebTestClient> receiver);
+      mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
 
   std::unique_ptr<MockPlatformNotificationService>
       mock_platform_notification_service_;

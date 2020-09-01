@@ -219,10 +219,7 @@ interface WebTestControlHost {
 
   // Simulates a user deleting a content index entry.
   SimulateWebContentIndexDelete(string id);
-};
 
-// Web test messages sent from the renderer process to the browser.
-interface WebTestClient {
   // Notifies the browser that one of renderers has changed web test runtime
   // flags (i.e. has set dump_as_text).
   WebTestRuntimeFlagsChanged(

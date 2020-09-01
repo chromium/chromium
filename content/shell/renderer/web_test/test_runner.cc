@@ -3099,8 +3099,8 @@ void TestRunner::PrintMessageToStderr(const std::string& message) {
 blink::WebString TestRunner::RegisterIsolatedFileSystem(
     const std::vector<base::FilePath>& file_paths) {
   std::string filesystem_id;
-  GetWebTestClientRemote()->RegisterIsolatedFileSystem(file_paths,
-                                                       &filesystem_id);
+  GetWebTestControlHostRemote()->RegisterIsolatedFileSystem(file_paths,
+                                                            &filesystem_id);
   return blink::WebString::FromUTF8(filesystem_id);
 }
 
@@ -3156,7 +3156,7 @@ void TestRunner::OnWebTestRuntimeFlagsChanged() {
   if (web_test_runtime_flags_.tracked_dictionary().changed_values().empty())
     return;
 
-  GetWebTestClientRemote()->WebTestRuntimeFlagsChanged(
+  GetWebTestControlHostRemote()->WebTestRuntimeFlagsChanged(
       web_test_runtime_flags_.tracked_dictionary().changed_values().Clone());
 
   web_test_runtime_flags_.tracked_dictionary().ResetChangeTracking();
@@ -3298,21 +3298,6 @@ TestRunner::GetWebTestControlHostRemote() {
 
 void TestRunner::HandleWebTestControlHostDisconnected() {
   web_test_control_host_remote_.reset();
-}
-
-mojo::AssociatedRemote<mojom::WebTestClient>&
-TestRunner::GetWebTestClientRemote() {
-  if (!web_test_client_remote_) {
-    RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        &web_test_client_remote_);
-    web_test_client_remote_.set_disconnect_handler(base::BindOnce(
-        &TestRunner::HandleWebTestClientDisconnected, base::Unretained(this)));
-  }
-  return web_test_client_remote_;
-}
-
-void TestRunner::HandleWebTestClientDisconnected() {
-  web_test_client_remote_.reset();
 }
 
 mojom::WebTestBluetoothFakeAdapterSetter&

@@ -116,15 +116,13 @@ class WebTestControlHost : public WebContentsObserver,
   WebTestControlHost();
   ~WebTestControlHost() override;
 
+  WebTestControlHost(const WebTestControlHost&) = delete;
+  WebTestControlHost& operator=(const WebTestControlHost&) = delete;
+
   // True if the controller is ready for testing.
   bool PrepareForWebTest(const TestInfo& test_info);
   // True if the controller was reset successfully.
   bool ResetBrowserAfterWebTest();
-
-  // IPC messages forwarded from elsewhere.
-  void OnWebTestRuntimeFlagsChanged(
-      int sender_process_host_id,
-      const base::DictionaryValue& changed_web_test_runtime_flags);
 
   // Allows WebTestControlHost to track all WebContents created by tests, either
   // by Javascript or by C++ code in the browser.
@@ -143,7 +141,10 @@ class WebTestControlHost : public WebContentsObserver,
 
   void DevToolsProcessCrashed();
 
-  void AddWebTestControlHostReceiver(
+  // Called when a renderer wants to bind a connection to the
+  // WebTestControlHost.
+  void BindWebTestControlHostForRenderer(
+      int render_process_id,
       mojo::PendingAssociatedReceiver<mojom::WebTestControlHost> receiver);
 
   // WebContentsObserver implementation.
@@ -171,6 +172,26 @@ class WebTestControlHost : public WebContentsObserver,
       const {
     return accumulated_web_test_runtime_flags_changes_;
   }
+
+ private:
+  enum TestPhase { BETWEEN_TESTS, DURING_TEST, CLEAN_UP };
+
+  // Node structure to construct a RenderFrameHost tree.
+  struct Node {
+    explicit Node(RenderFrameHost* host);
+    ~Node();
+
+    Node(Node&& other);
+    Node& operator=(Node&& other);
+
+    RenderFrameHost* render_frame_host = nullptr;
+    GlobalFrameRoutingId render_frame_host_id;
+    std::vector<Node*> children;
+  };
+
+  class WebTestWindowObserver;
+
+  static WebTestControlHost* instance_;
 
   // WebTestControlHost implementation.
   void InitiateCaptureDump(
@@ -214,27 +235,11 @@ class WebTestControlHost : public WebContentsObserver,
   void SimulateWebNotificationClose(const std::string& title,
                                     bool by_user) override;
   void SimulateWebContentIndexDelete(const std::string& id) override;
-
- private:
-  enum TestPhase { BETWEEN_TESTS, DURING_TEST, CLEAN_UP };
-
-  // Node structure to construct a RenderFrameHost tree.
-  struct Node {
-    Node();
-    explicit Node(RenderFrameHost* host);
-    Node(Node&& other);
-    ~Node();
-
-    RenderFrameHost* render_frame_host = nullptr;
-    GlobalFrameRoutingId render_frame_host_id;
-    std::vector<Node*> children;
-
-    DISALLOW_COPY_AND_ASSIGN(Node);
-  };
-
-  class WebTestWindowObserver;
-
-  static WebTestControlHost* instance_;
+  void WebTestRuntimeFlagsChanged(
+      base::Value changed_web_test_runtime_flags) override;
+  void RegisterIsolatedFileSystem(
+      const std::vector<base::FilePath>& file_paths,
+      RegisterIsolatedFileSystemCallback callback) override;
 
   void DiscardMainWindow();
   void CloseTestOpenedWindows();
@@ -338,8 +343,8 @@ class WebTestControlHost : public WebContentsObserver,
   std::set<RenderProcessHost*> main_window_render_process_hosts_;
   std::set<RenderViewHost*> main_window_render_view_hosts_;
 
-  // Changes reported by OnWebTestRuntimeFlagsChanged that have accumulated
-  // since PrepareForWebTest (i.e. changes that need to be send to a fresh
+  // Changes reported by WebTestRuntimeFlagsChanged() that have accumulated
+  // since PrepareForWebTest (i.e. changes that need to be sent to a fresh
   // renderer created while test is in progress).
   base::DictionaryValue accumulated_web_test_runtime_flags_changes_;
 
@@ -371,16 +376,19 @@ class WebTestControlHost : public WebContentsObserver,
            mojo::AssociatedRemote<mojom::WebTestRenderThread>>
       web_test_render_thread_map_;
 
-  mojo::AssociatedReceiverSet<mojom::WebTestControlHost>
-      blink_test_client_receivers_;
+  // The set of bindings that receive messages on the mojom::WebTestControlHost
+  // interface from renderer processes. There should be one per renderer
+  // process, and we store it with the |render_process_id| attached to it
+  // so that we can tell where a given message came from if needed.
+  mojo::AssociatedReceiverSet<mojom::WebTestControlHost,
+                              int /*render_process_id*/>
+      receiver_bindings_;
 
   base::ScopedTempDir writable_directory_for_tests_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<WebTestControlHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestControlHost);
 };
 
 }  // namespace content
