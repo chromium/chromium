@@ -14,7 +14,6 @@
 #include "base/optional.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 #include "url/gurl.h"
@@ -25,6 +24,10 @@ namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
 }  // namespace content
+
+namespace ukm {
+class UkmRecorder;
+}
 
 namespace badging {
 class BadgeManagerDelegate;
@@ -72,13 +75,11 @@ class BadgeManager : public KeyedService, public blink::mojom::BadgeService {
   // badged.
   base::Optional<BadgeValue> GetBadgeValue(const web_app::AppId& app_id);
 
-  void SetBadgeForTesting(
-      const web_app::AppId& app_id,
-      BadgeValue value,
-      ukm::UkmRecorder* test_recorder = ukm::TestUkmRecorder::Get());
-  void ClearBadgeForTesting(
-      const web_app::AppId& app_id,
-      ukm::UkmRecorder* test_recorder = ukm::TestUkmRecorder::Get());
+  void SetBadgeForTesting(const web_app::AppId& app_id,
+                          BadgeValue value,
+                          ukm::UkmRecorder* test_recorder);
+  void ClearBadgeForTesting(const web_app::AppId& app_id,
+                            ukm::UkmRecorder* test_recorder);
 
  private:
   // The BindingContext of a mojo request. Allows mojo calls to be tied back

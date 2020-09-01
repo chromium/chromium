@@ -106,10 +106,11 @@ TEST_F(BadgeManagerUnittest, SetBadgeForMultipleApps) {
   const web_app::AppId kOtherAppId = "2";
   constexpr uint64_t kOtherContents = 2;
 
-  badge_manager()->SetBadgeForTesting(kAppId,
-                                      base::make_optional(kBadgeContents));
+  badge_manager()->SetBadgeForTesting(
+      kAppId, base::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
   badge_manager()->SetBadgeForTesting(kOtherAppId,
-                                      base::make_optional(kOtherContents));
+                                      base::make_optional(kOtherContents),
+                                      ukm::TestUkmRecorder::Get());
 
   EXPECT_EQ(2UL, delegate()->set_badges().size());
 
@@ -121,11 +122,11 @@ TEST_F(BadgeManagerUnittest, SetBadgeForMultipleApps) {
 }
 
 TEST_F(BadgeManagerUnittest, SetBadgeForAppAfterClear) {
-  badge_manager()->SetBadgeForTesting(kAppId,
-                                      base::make_optional(kBadgeContents));
-  badge_manager()->ClearBadgeForTesting(kAppId);
-  badge_manager()->SetBadgeForTesting(kAppId,
-                                      base::make_optional(kBadgeContents));
+  badge_manager()->SetBadgeForTesting(
+      kAppId, base::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager()->ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
+  badge_manager()->SetBadgeForTesting(
+      kAppId, base::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
 
   EXPECT_EQ(2UL, delegate()->set_badges().size());
 
@@ -139,8 +140,8 @@ TEST_F(BadgeManagerUnittest, SetBadgeForAppAfterClear) {
 TEST_F(BadgeManagerUnittest, ClearBadgeForBadgedApp) {
   ukm::TestUkmRecorder test_recorder;
 
-  badge_manager()->SetBadgeForTesting(kAppId,
-                                      base::make_optional(kBadgeContents));
+  badge_manager()->SetBadgeForTesting(
+      kAppId, base::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
   badge_manager()->ClearBadgeForTesting(kAppId, &test_recorder);
   auto entries =
       test_recorder.GetEntriesByName(ukm::builders::Badging::kEntryName);
@@ -161,13 +162,16 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   auto* other_delegate = owned_other_delegate.get();
   other_badge_manager->SetDelegate(std::move(owned_other_delegate));
 
-  other_badge_manager->SetBadgeForTesting(kAppId, base::nullopt);
-  other_badge_manager->SetBadgeForTesting(kAppId,
-                                          base::make_optional(kBadgeContents));
-  other_badge_manager->SetBadgeForTesting(kAppId, base::nullopt);
-  other_badge_manager->ClearBadgeForTesting(kAppId);
+  other_badge_manager->SetBadgeForTesting(kAppId, base::nullopt,
+                                          ukm::TestUkmRecorder::Get());
+  other_badge_manager->SetBadgeForTesting(
+      kAppId, base::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  other_badge_manager->SetBadgeForTesting(kAppId, base::nullopt,
+                                          ukm::TestUkmRecorder::Get());
+  other_badge_manager->ClearBadgeForTesting(kAppId,
+                                            ukm::TestUkmRecorder::Get());
 
-  badge_manager()->ClearBadgeForTesting(kAppId);
+  badge_manager()->ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
 
   EXPECT_EQ(3UL, other_delegate->set_badges().size());
   EXPECT_EQ(0UL, delegate()->set_badges().size());
@@ -184,10 +188,11 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
 TEST_F(BadgeManagerUnittest, BadgingWithNoDelegateDoesNotCrash) {
   badge_manager()->SetDelegate(nullptr);
 
-  badge_manager()->SetBadgeForTesting(kAppId, base::nullopt);
-  badge_manager()->SetBadgeForTesting(kAppId,
-                                      base::make_optional(kBadgeContents));
-  badge_manager()->ClearBadgeForTesting(kAppId);
+  badge_manager()->SetBadgeForTesting(kAppId, base::nullopt,
+                                      ukm::TestUkmRecorder::Get());
+  badge_manager()->SetBadgeForTesting(
+      kAppId, base::make_optional(kBadgeContents), ukm::TestUkmRecorder::Get());
+  badge_manager()->ClearBadgeForTesting(kAppId, ukm::TestUkmRecorder::Get());
 }
 
 }  // namespace badging
