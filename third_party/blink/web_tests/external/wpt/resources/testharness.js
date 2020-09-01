@@ -2084,7 +2084,7 @@ policies and contribution forms [3].
                                                   timeout=3000, interval=100) {
         /**
          * Poll for a function to return true, and invoke a callback
-         * followed this.done() once it does, or assert if a timeout
+         * followed by this.done() once it does, or assert if a timeout
          * is reached. This is preferred over a simple step_timeout
          * whenever possible since it allows the timeout to be longer
          * to reduce intermittents without compromising test execution speed
