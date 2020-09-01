@@ -142,14 +142,12 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
     io_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](FileStreamReaderToDataPipe* adapter,
-               mojo::ScopedDataPipeProducerHandle pipe, uint64_t length,
+            [](FileStreamReaderToDataPipe* adapter, uint64_t length,
                base::OnceCallback<void(int)> result_callback) {
               adapter->Start(std::move(result_callback), length);
             },
             // |raw_adapter| is owned by |result_callback|.
-            base::Unretained(raw_adapter), std::move(pipe), length,
-            std::move(result_callback)));
+            base::Unretained(raw_adapter), length, std::move(result_callback)));
   }
 
   void ReadSideData(ReadSideDataCallback callback) override {
