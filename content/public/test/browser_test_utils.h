@@ -98,10 +98,13 @@ typedef int PROPERTYID;
 // If it only works with content_browsertests, it should be in
 // content\test\content_browser_test_utils.h.
 
+namespace blink {
+struct FrameVisualProperties;
+}
+
 namespace content {
 
 class BrowserContext;
-struct FrameVisualProperties;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
@@ -1776,10 +1779,10 @@ class SynchronizeVisualPropertiesMessageFilter
  private:
   void OnSynchronizeFrameHostVisualProperties(
       const viz::FrameSinkId& frame_sink_id,
-      const FrameVisualProperties& visual_properties);
+      const blink::FrameVisualProperties& visual_properties);
   void OnSynchronizeVisualProperties(
       const viz::FrameSinkId& frame_sink_id,
-      const FrameVisualProperties& visual_properties);
+      const blink::FrameVisualProperties& visual_properties);
   // |rect| is in DIPs.
   void OnUpdatedFrameRectOnUI(const gfx::Rect& rect);
   void OnUpdatedFrameSinkIdOnUI();

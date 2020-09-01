@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_FRAME_VISUAL_PROPERTIES_H_
-#define CONTENT_COMMON_FRAME_VISUAL_PROPERTIES_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_VISUAL_PROPERTIES_H_
+#define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_VISUAL_PROPERTIES_H_
 
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "components/viz/common/surfaces/local_surface_id_allocation.h"
-#include "content/common/content_export.h"
+#include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace content {
+namespace blink {
 
 // TODO(fsamuel): We might want to unify this with content::ResizeParams.
-struct CONTENT_EXPORT FrameVisualProperties {
+struct BLINK_COMMON_EXPORT FrameVisualProperties {
   FrameVisualProperties();
   FrameVisualProperties(const FrameVisualProperties& other);
   ~FrameVisualProperties();
@@ -50,6 +49,6 @@ struct CONTENT_EXPORT FrameVisualProperties {
   viz::LocalSurfaceIdAllocation local_surface_id_allocation;
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_COMMON_FRAME_VISUAL_PROPERTIES_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_VISUAL_PROPERTIES_H_

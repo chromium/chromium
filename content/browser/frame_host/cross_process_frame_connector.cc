@@ -22,6 +22,7 @@
 #include "content/common/frame_messages.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "gpu/ipc/common/gpu_messages.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -290,7 +291,7 @@ void CrossProcessFrameConnector::UnlockMouse() {
 
 void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
     const viz::FrameSinkId& frame_sink_id,
-    const FrameVisualProperties& visual_properties) {
+    const blink::FrameVisualProperties& visual_properties) {
   TRACE_EVENT_WITH_FLOW2(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "CrossProcessFrameConnector::OnSynchronizeVisualProperties Receive "

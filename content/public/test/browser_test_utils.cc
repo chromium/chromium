@@ -56,7 +56,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/frame_messages.h"
-#include "content/common/frame_visual_properties.h"
 #include "content/common/input_messages.h"
 #include "content/common/widget_messages.h"
 #include "content/public/browser/browser_context.h"
@@ -115,6 +114,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -3438,13 +3438,13 @@ SynchronizeVisualPropertiesMessageFilter::
 void SynchronizeVisualPropertiesMessageFilter::
     OnSynchronizeFrameHostVisualProperties(
         const viz::FrameSinkId& frame_sink_id,
-        const FrameVisualProperties& visual_properties) {
+        const blink::FrameVisualProperties& visual_properties) {
   OnSynchronizeVisualProperties(frame_sink_id, visual_properties);
 }
 
 void SynchronizeVisualPropertiesMessageFilter::OnSynchronizeVisualProperties(
     const viz::FrameSinkId& frame_sink_id,
-    const FrameVisualProperties& visual_properties) {
+    const blink::FrameVisualProperties& visual_properties) {
   // Monitor |is_pinch_gesture_active| to determine when pinch gestures begin
   // and end.
   if (visual_properties.is_pinch_gesture_active &&

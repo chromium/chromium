@@ -26,7 +26,6 @@
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/common/frame_visual_properties.h"
 #include "content/common/view_messages.h"
 #include "content/common/widget_messages.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -40,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/platform/viewport_intersection_state.h"
 #include "ui/base/ui_base_features.h"
@@ -295,7 +295,7 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
       allocator.GetCurrentLocalSurfaceIdAllocation();
   constexpr viz::FrameSinkId frame_sink_id(1, 1);
 
-  FrameVisualProperties visual_properties;
+  blink::FrameVisualProperties visual_properties;
   visual_properties.screen_space_rect = screen_space_rect;
   visual_properties.compositor_viewport = compositor_viewport_pixel_rect;
   visual_properties.local_frame_size = compositor_viewport_pixel_rect.size();

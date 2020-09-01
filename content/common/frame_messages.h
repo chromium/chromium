@@ -26,7 +26,6 @@
 #include "content/common/content_param_traits.h"
 #include "content/common/frame_delete_intention.h"
 #include "content/common/frame_replication_state.h"
-#include "content/common/frame_visual_properties.h"
 #include "content/common/navigation_gesture.h"
 #include "content/common/navigation_params.h"
 #include "content/public/common/common_param_traits.h"
@@ -47,6 +46,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/navigation/triggering_event_info.h"
@@ -197,7 +197,7 @@ IPC_STRUCT_TRAITS_BEGIN(blink::mojom::FrameOwnerProperties)
   IPC_STRUCT_TRAITS_MEMBER(required_csp)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(content::FrameVisualProperties)
+IPC_STRUCT_TRAITS_BEGIN(blink::FrameVisualProperties)
   IPC_STRUCT_TRAITS_MEMBER(screen_info)
   IPC_STRUCT_TRAITS_MEMBER(auto_resize_enabled)
   IPC_STRUCT_TRAITS_MEMBER(visible_viewport_size)
@@ -607,7 +607,7 @@ IPC_MESSAGE_ROUTED0(FrameHostMsg_Unload_ACK)
 // Tells the browser that a child's visual properties have changed.
 IPC_MESSAGE_ROUTED2(FrameHostMsg_SynchronizeVisualProperties,
                     viz::FrameSinkId /* frame_sink_id */,
-                    content::FrameVisualProperties)
+                    blink::FrameVisualProperties)
 
 // Sent by a parent frame to notify its child about the state of the child's
 // intersection with the parent's viewport, primarily for use by the

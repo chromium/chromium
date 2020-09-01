@@ -12,7 +12,6 @@
 #include "content/common/content_export.h"
 #include "content/common/frame_messages.h"
 #include "content/common/frame_proxy.mojom.h"
-#include "content/common/frame_visual_properties.h"
 #include "content/renderer/child_frame_compositor.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -22,6 +21,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
@@ -285,11 +285,11 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   // therefore don't care to synchronize ResizeParams with viz::LocalSurfaceIds.
   // Perhaps this can be moved to ChildFrameCompositingHelper?
   // The last ResizeParams sent to the browser process, if any.
-  base::Optional<FrameVisualProperties> sent_visual_properties_;
+  base::Optional<blink::FrameVisualProperties> sent_visual_properties_;
 
   // The current set of ResizeParams. This may or may not match
   // |sent_visual_properties_|.
-  FrameVisualProperties pending_visual_properties_;
+  blink::FrameVisualProperties pending_visual_properties_;
 
   bool crashed_ = false;
 

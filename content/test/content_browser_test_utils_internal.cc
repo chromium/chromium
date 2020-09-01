@@ -27,7 +27,6 @@
 #include "content/browser/frame_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/frame_visual_properties.h"
 #include "content/common/view_messages.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,6 +41,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 
 namespace content {
 

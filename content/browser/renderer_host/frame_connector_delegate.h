@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
+struct FrameVisualProperties;
 class WebGestureEvent;
 }
 
@@ -36,7 +37,6 @@ namespace content {
 class RenderWidgetHostViewBase;
 class RenderWidgetHostViewChildFrame;
 class WebCursor;
-struct FrameVisualProperties;
 
 //
 // FrameConnectorDelegate
@@ -81,7 +81,7 @@ class CONTENT_EXPORT FrameConnectorDelegate {
   // Sends new resize parameters to the sub-frame's renderer.
   void SynchronizeVisualProperties(
       const viz::FrameSinkId& frame_sink_id,
-      const FrameVisualProperties& visual_properties);
+      const blink::FrameVisualProperties& visual_properties);
 
   // Return the size of the CompositorFrame to use in the child renderer.
   const gfx::Size& local_frame_size_in_pixels() const {

@@ -88,6 +88,7 @@ source_set("common") {
     "fetch/fetch_api_request_body_mojom_traits.cc",
     "frame/frame_policy.cc",
     "frame/frame_policy_mojom_traits.cc",
+    "frame/frame_visual_properties.cc",
     "frame/from_ad_state.cc",
     "frame/user_activation_state.cc",
     "indexeddb/indexed_db_default_mojom_traits.cc",

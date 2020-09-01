@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/frame_visual_properties.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 
-namespace content {
+namespace blink {
 
 FrameVisualProperties::FrameVisualProperties() = default;
 
@@ -16,4 +16,4 @@ FrameVisualProperties::~FrameVisualProperties() = default;
 FrameVisualProperties& FrameVisualProperties::operator=(
     const FrameVisualProperties& other) = default;
 
-}  // namespace content
+}  // namespace blink

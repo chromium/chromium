@@ -13,12 +13,15 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/renderer_host/frame_connector_delegate.h"
 #include "content/common/content_export.h"
-#include "content/common/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 
 namespace IPC {
 class Message;
+}
+
+namespace blink {
+struct FrameVisualProperties;
 }
 
 namespace content {
@@ -187,7 +190,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector
   // Handlers for messages received from the parent frame.
   void OnSynchronizeVisualProperties(
       const viz::FrameSinkId& frame_sink_id,
-      const FrameVisualProperties& visual_properties);
+      const blink::FrameVisualProperties& visual_properties);
   void OnUpdateViewportIntersection(
       const blink::ViewportIntersectionState& viewport_intersection);
 
