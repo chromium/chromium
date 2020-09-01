@@ -29339,6 +29339,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="14" label="Turn on"/>
   <int value="15" label="Turn off"/>
   <int value="16" label="Tapped Manage Activity"/>
+  <int value="17" label="Added to Read Later"/>
 </enum>
 
 <enum name="FeedZeroStateShowReason">
