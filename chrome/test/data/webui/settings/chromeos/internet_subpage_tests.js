@@ -43,7 +43,11 @@ suite('InternetSubpage', function() {
     internetSubpage.deviceState = mojoApi_.getDeviceStateForTest(type);
   }
 
-  setup(function() {
+  function initSubpage(isUpdatedCellularUiEnabled) {
+    if (isUpdatedCellularUiEnabled !== undefined) {
+      loadTimeData.overrideValues(
+          {updatedCellularActivationUi: !!isUpdatedCellularUiEnabled});
+    }
     PolymerTest.clearBody();
     internetSubpage = document.createElement('settings-internet-subpage');
     assertTrue(!!internetSubpage);
@@ -51,7 +55,7 @@ suite('InternetSubpage', function() {
     document.body.appendChild(internetSubpage);
     internetSubpage.init();
     return flushAsync();
-  });
+  }
 
   teardown(function() {
     internetSubpage.remove();
@@ -61,6 +65,7 @@ suite('InternetSubpage', function() {
 
   suite('SubPage', function() {
     test('WiFi', function() {
+      initSubpage();
       const mojom = chromeos.networkConfig.mojom;
       setNetworksForTest(mojom.NetworkType.kWiFi, [
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi1'),
@@ -78,6 +83,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Deep link to WiFi on/off toggle', async () => {
+      initSubpage();
       const mojom = chromeos.networkConfig.mojom;
       setNetworksForTest(mojom.NetworkType.kWiFi, [
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi1'),
@@ -100,6 +106,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Tether', function() {
+      initSubpage();
       const mojom = chromeos.networkConfig.mojom;
       setNetworksForTest(mojom.NetworkType.kTether, [
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
@@ -121,6 +128,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Deep link to tether on/off toggle w/o cellular', async () => {
+      initSubpage();
       const mojom = chromeos.networkConfig.mojom;
       setNetworksForTest(mojom.NetworkType.kTether, [
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
@@ -147,6 +155,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Fire show cellular setup event on add cellular clicked', () => {
+      initSubpage();
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular);
       setNetworksForTest(mojom.NetworkType.kCellular, [
@@ -173,6 +182,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Tether plus Cellular', function() {
+      initSubpage(false /* isUpdatedCellularUiEnabled */);
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether);
       setNetworksForTest(mojom.NetworkType.kCellular, [
@@ -200,6 +210,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Deep link to tether on/off toggle w/ cellular', async () => {
+      initSubpage(false /* isUpdatedCellularUiEnabled */);
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether);
       setNetworksForTest(mojom.NetworkType.kCellular, [
@@ -229,10 +240,10 @@ suite('InternetSubpage', function() {
     });
 
     suite('VPN', function() {
-      setup(function() {
+      function initVpn() {
         addTestVpnProviders();
         addTestVpnNetworks();
-      });
+      }
 
       function addTestVpnProviders() {
         const mojom = chromeos.networkConfig.mojom;
@@ -335,6 +346,8 @@ suite('InternetSubpage', function() {
       }
 
       test('should update network state list properly', function() {
+        initSubpage();
+        initVpn();
         return flushAsync().then(() => {
           const allNetworkLists =
               internetSubpage.shadowRoot.querySelectorAll('network-list');
@@ -354,6 +367,8 @@ suite('InternetSubpage', function() {
       test(
           'should not show built-in VPN list when device is disabled',
           function() {
+            initSubpage();
+            initVpn();
             const mojom = chromeos.networkConfig.mojom;
             internetSubpage.deviceState = {
               type: mojom.NetworkType.kVPN,

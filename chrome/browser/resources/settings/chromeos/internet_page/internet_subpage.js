@@ -110,7 +110,9 @@ Polymer({
     /** @private */
     isUpdatedCellularUiEnabled_: {
       type: Boolean,
-      value: loadTimeData.getBoolean('updatedCellularActivationUi'),
+      value() {
+        return loadTimeData.getBoolean('updatedCellularActivationUi');
+      }
     },
 
     /** @private */
@@ -776,6 +778,12 @@ Polymer({
    * @private
    */
   tetherToggleIsVisible_(deviceState, tetherDeviceState) {
+    // Do not show instant tether toggle if Updated Cellular UI is enabled.
+    // This toggle will be removed from the mobile data subpage.
+    if (this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+
     return !!deviceState && deviceState.type == mojom.NetworkType.kCellular &&
         !!tetherDeviceState;
   },
