@@ -5,22 +5,17 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "content/public/test/browser_test.h"
 
 class ToolbarActionsModelBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  ToolbarActionsModelBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-  }
+  ToolbarActionsModelBrowserTest() = default;
   ~ToolbarActionsModelBrowserTest() override = default;
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

@@ -1233,9 +1233,6 @@ TEST_F(ToolbarActionsModelUnitTest, AddUserScriptExtension) {
 }
 
 TEST_F(ToolbarActionsModelUnitTest, IsActionPinnedCorrespondsToPinningState) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -1253,9 +1250,6 @@ TEST_F(ToolbarActionsModelUnitTest, IsActionPinnedCorrespondsToPinningState) {
 
 TEST_F(ToolbarActionsModelUnitTest,
        TogglingVisibilityAppendsToPinnedExtensions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -1290,9 +1284,6 @@ TEST_F(ToolbarActionsModelUnitTest,
 }
 
 TEST_F(ToolbarActionsModelUnitTest, ChangesToPinningNotifiesObserver) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -1310,9 +1301,6 @@ TEST_F(ToolbarActionsModelUnitTest, ChangesToPinningNotifiesObserver) {
 }
 
 TEST_F(ToolbarActionsModelUnitTest, ChangesToPinningSavedInExtensionPrefs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -1346,9 +1334,6 @@ TEST_F(ToolbarActionsModelUnitTest, ChangesToPinningSavedInExtensionPrefs) {
 }
 
 TEST_F(ToolbarActionsModelUnitTest, ChangesToExtensionPrefsReflectedInModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -1373,9 +1358,6 @@ TEST_F(ToolbarActionsModelUnitTest, ChangesToExtensionPrefsReflectedInModel) {
 
 TEST_F(ToolbarActionsModelUnitTest,
        MismatchInPinnedExtensionPreferencesNotReflectedInModel) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -1405,9 +1387,6 @@ TEST_F(ToolbarActionsModelUnitTest,
 }
 
 TEST_F(ToolbarActionsModelUnitTest, PinnedExtensionsFilteredOnInitialization) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -1446,9 +1425,6 @@ TEST_F(ToolbarActionsModelUnitTest, PinnedExtensionsFilteredOnInitialization) {
 }
 
 TEST_F(ToolbarActionsModelUnitTest, ChangesToPinnedOrderSavedInExtensionPrefs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -1497,15 +1473,16 @@ TEST_F(ToolbarActionsModelUnitTest,
   // Add the three browser action extensions.
   ASSERT_TRUE(AddBrowserActionExtensions());
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
+  extensions::ExtensionPrefs* const extension_prefs =
+      extensions::ExtensionPrefs::Get(profile());
+  EXPECT_FALSE(extension_prefs->IsPinnedExtensionsMigrationComplete());
+
   // Initialization of the toolbar model triggers migration of the visible
   // extensions to pinned extensions.
   InitToolbarModelAndObserver();
 
   // Verify that the extensions that were visible are now the pinned extensions.
-  extensions::ExtensionPrefs* const extension_prefs =
-      extensions::ExtensionPrefs::Get(profile());
+  EXPECT_TRUE(extension_prefs->IsPinnedExtensionsMigrationComplete());
   EXPECT_THAT(
       extension_prefs->GetPinnedExtensions(),
       testing::ElementsAre(browser_action_a()->id(), browser_action_b()->id(),
@@ -1520,24 +1497,22 @@ TEST_F(ToolbarActionsModelUnitTest,
   // Add the three browser action extensions.
   ASSERT_TRUE(AddBrowserActionExtensions());
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
+  extensions::ExtensionPrefs* const extension_prefs =
+      extensions::ExtensionPrefs::Get(profile());
+  EXPECT_FALSE(extension_prefs->IsPinnedExtensionsMigrationComplete());
+
   // Initialization of the toolbar model triggers migration of the visible
   // extensions to pinned extensions.
   InitToolbarModelAndObserver();
 
   // Verify that the extensions that were visible are now the pinned extensions.
-  extensions::ExtensionPrefs* const extension_prefs =
-      extensions::ExtensionPrefs::Get(profile());
+  EXPECT_TRUE(extension_prefs->IsPinnedExtensionsMigrationComplete());
   EXPECT_THAT(
       extension_prefs->GetPinnedExtensions(),
       testing::ElementsAre(browser_action_a()->id(), browser_action_b()->id()));
 }
 
 TEST_F(ToolbarActionsModelUnitTest, PinStateErasedOnUninstallation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-
   Init();
 
   scoped_refptr<const extensions::Extension> extension =

@@ -71,6 +71,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The current visibility of the button; this can affect the "hide"/"show"
   // strings in the menu.
+  // TODO(devlin): Update these to be more appropriate for the extensions menu.
   enum ButtonVisibility {
     // The button is visible on the toolbar.
     VISIBLE,

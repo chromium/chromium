@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -547,9 +545,8 @@ TEST_F(ExtensionContextMenuModelTest,
       ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_ALL_SITES));
 }
 
-// Test that the "show" and "hide" menu items appear correctly in the extension
-// context menu. When kExtensionsToolbarMenu is enabled, the "hide" is instead
-// an "unpin" menu item.
+// Test that the "pin" and "unpin" menu items appear correctly in the extension
+// context menu.
 TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
   InitializeEmptyExtensionService();
   Browser* browser = GetBrowser();
@@ -566,18 +563,10 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
   // For laziness.
   const ExtensionContextMenuModel::MenuEntries visibility_command =
       ExtensionContextMenuModel::TOGGLE_VISIBILITY;
-  base::string16 hide_string = l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)
-          ? IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR
-          : IDS_EXTENSIONS_HIDE_BUTTON_IN_MENU);
-  base::string16 show_string = l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)
-          ? IDS_EXTENSIONS_PIN_TO_TOOLBAR
-          : IDS_EXTENSIONS_SHOW_BUTTON_IN_TOOLBAR);
-  base::string16 keep_string = l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)
-          ? IDS_EXTENSIONS_PIN_TO_TOOLBAR
-          : IDS_EXTENSIONS_KEEP_BUTTON_IN_TOOLBAR);
+  const base::string16 pin_string =
+      l10n_util::GetStringUTF16(IDS_EXTENSIONS_PIN_TO_TOOLBAR);
+  const base::string16 unpin_string =
+      l10n_util::GetStringUTF16(IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR);
 
   {
     // Even page actions should have a visibility option.
@@ -586,7 +575,7 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
                                    true);
     int index = menu.GetIndexOfCommandId(visibility_command);
     EXPECT_NE(-1, index);
-    EXPECT_EQ(hide_string, menu.GetLabelAt(index));
+    EXPECT_EQ(unpin_string, menu.GetLabelAt(index));
   }
 
   {
@@ -595,36 +584,33 @@ TEST_F(ExtensionContextMenuModelTest, ExtensionContextMenuShowAndHide) {
                                    true);
     int index = menu.GetIndexOfCommandId(visibility_command);
     EXPECT_NE(-1, index);
-    EXPECT_EQ(hide_string, menu.GetLabelAt(index));
+    EXPECT_EQ(unpin_string, menu.GetLabelAt(index));
 
-    if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-      // Pin before unpinning.
-      ToolbarActionsModel::Get(profile())->SetActionVisibility(
-          browser_action->id(), true);
-    }
+    // Pin before unpinning.
+    ToolbarActionsModel::Get(profile())->SetActionVisibility(
+        browser_action->id(), true);
     menu.ExecuteCommand(visibility_command, 0);
   }
 
   {
-    // If the action is overflowed, it should have the "Show button in toolbar"
-    // string.
+    // If the action is unpinned, it should have the "Pin" string.
     ExtensionContextMenuModel menu(browser_action, browser,
                                    ExtensionContextMenuModel::OVERFLOWED,
                                    nullptr, true);
     int index = menu.GetIndexOfCommandId(visibility_command);
     EXPECT_NE(-1, index);
-    EXPECT_EQ(show_string, menu.GetLabelAt(index));
+    EXPECT_EQ(pin_string, menu.GetLabelAt(index));
   }
 
   {
     // If the action is transitively visible, as happens when it is showing a
-    // popup, we should use a "Keep button in toolbar" string.
+    // popup, we should use the same "Pin" string.
     ExtensionContextMenuModel menu(
         browser_action, browser,
         ExtensionContextMenuModel::TRANSITIVELY_VISIBLE, nullptr, true);
     int index = menu.GetIndexOfCommandId(visibility_command);
     EXPECT_NE(-1, index);
-    EXPECT_EQ(keep_string, menu.GetLabelAt(index));
+    EXPECT_EQ(pin_string, menu.GetLabelAt(index));
   }
 }
 

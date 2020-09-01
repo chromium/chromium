@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -21,7 +21,6 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
@@ -77,9 +76,7 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
  public:
   ExtensionsMenuViewUnitTest()
       : allow_extension_menu_instances_(
-            ExtensionsMenuView::AllowInstancesForTesting()) {
-    feature_list_.InitAndEnableFeature(features::kExtensionsToolbarMenu);
-  }
+            ExtensionsMenuView::AllowInstancesForTesting()) {}
   ~ExtensionsMenuViewUnitTest() override = default;
 
   // TestWithBrowserView:
@@ -126,7 +123,6 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
 
  private:
   base::AutoReset<bool> allow_extension_menu_instances_;
-  base::test::ScopedFeatureList feature_list_;
 
   extensions::ExtensionService* extension_service_ = nullptr;
 
