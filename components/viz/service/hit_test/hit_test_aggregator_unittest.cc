@@ -1165,7 +1165,7 @@ TEST_F(HitTestAggregatorTest, HitTestDataNotUpdated) {
   // We updated hit-test data. Expect the index to have changed.
   support()->SubmitCompositorFrame(surface_id.local_surface_id(),
                                    MakeDefaultCompositorFrame(),
-                                   std::move(hit_test_region_list));
+                                   std::move(hit_test_region_list_copy));
   aggregator->Aggregate(surface_id);
   EXPECT_NE(last_index, aggregator->GetLastSubmitHitTestRegionListIndex());
 }
