@@ -54,6 +54,7 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
                                    const std::string& twa_package_name,
                                    bool has_authenticator)
       : ChromePaymentRequestDelegate(web_contents),
+        web_contents_(web_contents),
         is_off_the_record_(is_off_the_record),
         valid_ssl_(valid_ssl),
         prefs_(prefs),
@@ -67,12 +68,14 @@ class ChromePaymentRequestTestDelegate : public ChromePaymentRequestDelegate {
   PrefService* GetPrefService() override { return prefs_; }
   bool IsBrowserWindowActive() const override { return true; }
   std::string GetTwaPackageName() const override { return twa_package_name_; }
-  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator(
-      content::RenderFrameHost* rfh) const override {
-    return std::make_unique<TestAuthenticator>(rfh, has_authenticator_);
+  std::unique_ptr<autofill::InternalAuthenticator> CreateInternalAuthenticator()
+      const override {
+    return std::make_unique<TestAuthenticator>(web_contents_->GetMainFrame(),
+                                               has_authenticator_);
   }
 
  private:
+  content::WebContents* web_contents_;
   const bool is_off_the_record_;
   const bool valid_ssl_;
   PrefService* const prefs_;
@@ -138,6 +141,18 @@ content::WebContents*
 PaymentRequestTestController::GetPaymentHandlerWebContents() {
   // Todo(1053722): return the invoked payment app's web contents for testing.
   return nullptr;
+}
+
+bool PaymentRequestTestController::ConfirmPayment() {
+  if (!delegate_)
+    return false;
+
+  PaymentRequestDialog* dialog = delegate_->GetDialogForTesting();
+  if (!dialog)
+    return false;
+
+  dialog->ConfirmPaymentForTesting();
+  return true;
 }
 
 bool PaymentRequestTestController::ConfirmMinimalUI() {
@@ -210,6 +225,7 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
          const std::string& twa_package_name, bool has_authenticator,
          const std::string& twa_payment_app_method_name,
          const std::string& twa_payment_app_response,
+         base::WeakPtr<ContentPaymentRequestDelegate>* delegate_weakptr,
          mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
          content::RenderFrameHost* render_frame_host) {
         content::WebContents* web_contents =
@@ -218,6 +234,7 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
         auto delegate = std::make_unique<ChromePaymentRequestTestDelegate>(
             web_contents, is_off_the_record, valid_ssl, prefs, twa_package_name,
             has_authenticator);
+        *delegate_weakptr = delegate->GetContentWeakPtr();
         PaymentRequestWebContentsManager* manager =
             PaymentRequestWebContentsManager::GetOrCreateForWebContents(
                 web_contents);
@@ -233,7 +250,7 @@ void PaymentRequestTestController::UpdateDelegateFactory() {
       },
       observer_converter_.get(), is_off_the_record_, valid_ssl_, prefs_.get(),
       twa_package_name_, has_authenticator_, twa_payment_app_method_name_,
-      twa_payment_app_response_));
+      twa_payment_app_response_, &delegate_));
 }
 
 void PaymentRequestTestController::OnCanMakePaymentCalled() {

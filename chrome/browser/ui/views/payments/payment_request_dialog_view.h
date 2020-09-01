@@ -116,6 +116,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
       const GURL& url,
       PaymentHandlerOpenWindowCallback callback) override;
   void RetryDialog() override;
+  void ConfirmPaymentForTesting() override;
 
   // PaymentRequestSpec::Observer:
   void OnStartUpdating(PaymentRequestSpec::UpdateReason reason) override;

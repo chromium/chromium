@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 
 #if !defined(OS_ANDROID)
@@ -22,6 +23,8 @@ class WebContents;
 }
 
 namespace payments {
+
+class ContentPaymentRequestDelegate;
 
 struct AppDescription {
   std::string label;
@@ -82,6 +85,11 @@ class PaymentRequestTestController {
   bool ClickPaymentHandlerSecurityIcon();
 #endif
 
+  // Confirms payment in a browser payment sheet, be it either PAYMENT_REQUEST
+  // or SECURE_PAYMENT_CONFIRMATION type. Returns true if the dialog was
+  // available.
+  bool ConfirmPayment();
+
   // Confirms payment in minimal UI. Returns true on success or if the minimal
   // UI is not implemented on the current platform.
   bool ConfirmMinimalUI();
@@ -135,6 +143,8 @@ class PaymentRequestTestController {
 
   class ObserverConverter;
   std::unique_ptr<ObserverConverter> observer_converter_;
+
+  base::WeakPtr<ContentPaymentRequestDelegate> delegate_;
 #endif
 };
 

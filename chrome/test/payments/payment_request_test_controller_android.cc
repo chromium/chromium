@@ -5,6 +5,7 @@
 #include "chrome/test/payments/payment_request_test_controller.h"
 
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/android/background_task_scheduler/chrome_background_task_factory.h"
 #include "chrome/test/payments/android/payment_request_test_bridge.h"
 
@@ -21,6 +22,11 @@ PaymentRequestTestController::GetPaymentHandlerWebContents() {
 
 bool PaymentRequestTestController::ClickPaymentHandlerSecurityIcon() {
   return ClickPaymentHandlerSecurityIconForTest();
+}
+
+bool PaymentRequestTestController::ConfirmPayment() {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool PaymentRequestTestController::ConfirmMinimalUI() {

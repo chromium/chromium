@@ -44,6 +44,7 @@ class SecurePaymentConfirmationController
   void ShowPaymentHandlerScreen(
       const GURL& url,
       PaymentHandlerOpenWindowCallback callback) override;
+  void ConfirmPaymentForTesting() override;
 
   // InitializationTask::Observer:
   void OnInitialized(InitializationTask* initialization_task) override;

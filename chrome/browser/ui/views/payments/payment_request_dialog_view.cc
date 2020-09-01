@@ -212,6 +212,10 @@ void PaymentRequestDialogView::RetryDialog() {
   }
 }
 
+void PaymentRequestDialogView::ConfirmPaymentForTesting() {
+  Pay();
+}
+
 void PaymentRequestDialogView::OnStartUpdating(
     PaymentRequestSpec::UpdateReason reason) {
   ShowProcessingSpinner();

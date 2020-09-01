@@ -183,9 +183,14 @@ bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
 }
 
 std::unique_ptr<autofill::InternalAuthenticator>
-ChromePaymentRequestDelegate::CreateInternalAuthenticator(
-    content::RenderFrameHost* rfh) const {
-  return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
+ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
+  // This authenticator can be used in a cross-origin iframe only if the
+  // top-level frame allowed it with Feature Policy, e.g., with allow="payment"
+  // iframe attribute. The secure payment confirmation dialog displays the
+  // top-level origin in its UI before the user can click on the [Verify] button
+  // to invoke this authenticator.
+  return std::make_unique<content::InternalAuthenticatorImpl>(
+      web_contents_->GetMainFrame());
 }
 
 scoped_refptr<PaymentManifestWebDataService>
@@ -242,6 +247,10 @@ std::string ChromePaymentRequestDelegate::GetTwaPackageName() const {
 #else
   return "";
 #endif  // OS_CHROMEOS
+}
+
+PaymentRequestDialog* ChromePaymentRequestDelegate::GetDialogForTesting() {
+  return shown_dialog_.get();
 }
 
 }  // namespace payments

@@ -47,6 +47,9 @@ class PaymentRequestDialog {
   virtual void ShowPaymentHandlerScreen(
       const GURL& url,
       PaymentHandlerOpenWindowCallback callback) = 0;
+
+  // Confirms payment. Used only in tests.
+  virtual void ConfirmPaymentForTesting() = 0;
 };
 
 }  // namespace payments

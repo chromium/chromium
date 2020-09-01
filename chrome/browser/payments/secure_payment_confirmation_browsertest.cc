@@ -116,7 +116,14 @@ class SecurePaymentConfirmationTest
     databse_write_responded_ = true;
   }
 
+  void OnAppListReady() override {
+    PaymentRequestPlatformBrowserTestBase::OnAppListReady();
+    if (confirm_payment_)
+      ASSERT_TRUE(test_controller()->ConfirmPayment());
+  }
+
   bool databse_write_responded_ = false;
+  bool confirm_payment_ = false;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, NoAuthenticator) {
@@ -327,9 +334,13 @@ class SecurePaymentConfirmationCreationTest
 // that still needs to be investigated.
 #define MAYBE_CreatePaymentCredential DISABLED_CreatePaymentCredential
 #define MAYBE_LookupPaymentCredential DISABLED_LookupPaymentCredential
+#define MAYBE_ConfirmPaymentInCrossOriginIframe \
+  DISABLED_ConfirmPaymentInCrossOriginIframe
 #else
 #define MAYBE_CreatePaymentCredential CreatePaymentCredential
 #define MAYBE_LookupPaymentCredential LookupPaymentCredential
+#define MAYBE_ConfirmPaymentInCrossOriginIframe \
+  ConfirmPaymentInCrossOriginIframe
 #endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
                        MAYBE_CreatePaymentCredential) {
@@ -373,6 +384,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
       "}}])",
       credentialIdentifier);
 
+  // Cross the origin boundary.
+  NavigateTo("b.com", "/payment_handler_status.html");
   test_controller()->SetHasAuthenticator(true);
   ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
 
@@ -385,6 +398,37 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   EXPECT_EQ(1u, test_controller()->app_descriptions().size());
   EXPECT_EQ("display_name_for_instrument",
             test_controller()->app_descriptions().front().label);
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+                       MAYBE_ConfirmPaymentInCrossOriginIframe) {
+  NavigateTo("a.com", "/payment_handler_status.html");
+  ReplaceFidoDiscoveryFactory();
+  std::string credentialIdentifier =
+      content::EvalJs(
+          GetActiveWebContents(),
+          base::StrCat(
+              {"async function createPaymentCredential() {",
+               getPaymentCreationOptions(GetDefaultIconURL()),
+               "  const c = await navigator.credentials.create("
+               "    {payment: PAYMENT_CREATION_OPTIONS});"
+               "  return btoa(String.fromCharCode(...new Uint8Array(c.rawId)));"
+               "};"
+               "createPaymentCredential();"}))
+          .ExtractString();
+
+  NavigateTo("b.com", "/iframe_poster.html");
+  test_controller()->SetHasAuthenticator(true);
+  confirm_payment_ = true;
+  // EvalJs waits for JavaScript promise to resolve.
+  EXPECT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace(
+              "postToIframe($1, $2);",
+              https_server()->GetURL("c.com", "/iframe_receiver.html").spec(),
+              credentialIdentifier)));
 }
 #endif  // !defined(OS_ANDROID)
 
