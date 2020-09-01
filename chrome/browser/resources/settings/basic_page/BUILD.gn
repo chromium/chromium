@@ -20,6 +20,7 @@ js_library("basic_page") {
     "..:search_settings.m",
     "../chrome_cleanup_page:chrome_cleanup_proxy",
     "../prefs:prefs_behavior.m",
+    "../privacy_page:privacy_page",
     "../safety_check_page:safety_check_page",
     "../search_page",
     "../settings_page:main_page_behavior",

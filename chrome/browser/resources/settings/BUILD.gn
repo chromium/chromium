@@ -261,6 +261,7 @@ js_library("lazy_load") {
     "autofill_page:autofill_section",
     "autofill_page:payments_section",
     "chrome_cleanup_page:chrome_cleanup_proxy",
+    "clear_browsing_data_dialog:clear_browsing_data_browser_proxy",
     "languages_page:languages_browser_proxy.m",
     "languages_page:languages_metrics_proxy",
     "languages_page:languages_page",

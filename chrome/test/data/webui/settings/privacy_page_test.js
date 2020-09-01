@@ -3,38 +3,38 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isMac, isWindows, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
+import {ClearBrowsingDataBrowserProxyImpl, CookieControlsMode, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SecureDnsMode, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {TestClearBrowsingDataBrowserProxy} from 'chrome://test/settings/test_clear_browsing_data_browser_proxy.js';
-import {TestHatsBrowserProxy} from 'chrome://test/settings/test_hats_browser_proxy.js';
-import {TestMetricsBrowserProxy} from 'chrome://test/settings/test_metrics_browser_proxy.js';
-import {TestPrivacyPageBrowserProxy} from 'chrome://test/settings/test_privacy_page_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
-import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.m.js';
-import {flushTasks, isChildVisible, whenAttributeIs} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {flushTasks} from '../test_util.m.js';
+
+import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
+import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.m.js';
 
 // clang-format on
 
 suite('PrivacyPage', function() {
-  /** @type {SettingsPrivacyPageElement} */
+  /** @type {!SettingsPrivacyPageElement} */
   let page;
 
-  /** @type {TestClearBrowsingDataBrowserProxy} */
+  /** @type {!TestClearBrowsingDataBrowserProxy} */
   let testClearBrowsingDataBrowserProxy;
 
-  /** @type {TestSiteSettingsPrefsBrowserProxy}*/
-  let siteSettingsBrowserProxy = null;
+  /** @type {!TestSiteSettingsPrefsBrowserProxy}*/
+  let siteSettingsBrowserProxy;
 
-  /** @type {Array<string>} */
+  /** @type {!Array<string>} */
   const testLabels = ['test label 1', 'test label 2'];
 
   setup(async function() {
-    PolymerTest.clearBody();
-
     testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
     ClearBrowsingDataBrowserProxyImpl.instance_ =
         testClearBrowsingDataBrowserProxy;
@@ -46,7 +46,9 @@ suite('PrivacyPage', function() {
     SiteSettingsPrefsBrowserProxyImpl.instance_ = siteSettingsBrowserProxy;
     siteSettingsBrowserProxy.setCookieSettingDescription(testLabels[0]);
 
-    page = document.createElement('settings-privacy-page');
+    document.body.innerHTML = '';
+    page = /** @type {!SettingsPrivacyPageElement} */
+        (document.createElement('settings-privacy-page'));
     page.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
       signin: {
@@ -87,14 +89,13 @@ suite('PrivacyPage', function() {
     webUIListenerCallback('cookieSettingDescriptionChanged', testLabels[1]);
     assertEquals(page.$$('#cookiesLinkRow').subLabel, testLabels[1]);
   });
-
 });
 
 suite('PrivacyPageSound', function() {
-  /** @type {TestPrivacyPageBrowserProxy} */
+  /** @type {!TestPrivacyPageBrowserProxy} */
   let testBrowserProxy;
 
-  /** @type {SettingsPrivacyPageElement} */
+  /** @type {!SettingsPrivacyPageElement} */
   let page;
 
   function flushAsync() {
@@ -115,10 +116,11 @@ suite('PrivacyPageSound', function() {
 
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.instance_ = testBrowserProxy;
-    PolymerTest.clearBody();
 
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_SOUND);
-    page = document.createElement('settings-privacy-page');
+    document.body.innerHTML = '';
+    page = /** @type {!SettingsPrivacyPageElement} */
+        (document.createElement('settings-privacy-page'));
     document.body.appendChild(page);
     return flushAsync();
   });
@@ -170,7 +172,8 @@ suite('PrivacyPageSound', function() {
     loadTimeData.overrideValues({enableBlockAutoplayContentSetting: false});
 
     page.remove();
-    page = document.createElement('settings-privacy-page');
+    page = /** @type {!SettingsPrivacyPageElement} */
+        (document.createElement('settings-privacy-page'));
     document.body.appendChild(page);
 
     return flushAsync().then(() => {
@@ -202,17 +205,18 @@ suite('PrivacyPageSound', function() {
 });
 
 suite('HappinessTrackingSurveys', function() {
-  /** @type {TestHatsBrowserProxy} */
+  /** @type {!TestHatsBrowserProxy} */
   let testHatsBrowserProxy;
 
-  /** @type {SettingsPrivacyPageElement} */
+  /** @type {!SettingsPrivacyPageElement} */
   let page;
 
   setup(function() {
     testHatsBrowserProxy = new TestHatsBrowserProxy();
     HatsBrowserProxyImpl.instance_ = testHatsBrowserProxy;
-    PolymerTest.clearBody();
-    page = document.createElement('settings-privacy-page');
+    document.body.innerHTML = '';
+    page = /** @type {!SettingsPrivacyPageElement} */
+        (document.createElement('settings-privacy-page'));
     // Initialize the privacy page pref. Security page manually expands
     // the initially selected safe browsing option so the pref object
     // needs to be defined.
